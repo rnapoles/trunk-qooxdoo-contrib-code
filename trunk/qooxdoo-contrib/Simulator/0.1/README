@@ -1,0 +1,72 @@
+DESCRIPTION
+The 'source' part of the project contains a simple Skeleton-like application
+that includes a widget ("SeleniumShell.js") to send remote commands to itself
+(via the Selenium RC server). In order to make use of this, the application has
+to run under Selenium RC control (http://www.openqa.org/selenium-rc).
+
+The 'tool' part of the project contains various pieces that add qooxdoo support
+to Selenium:
+
+  - a user extension for Selenium Core (adding qooxdoo-specific commands and
+    locators; the complete package is available from the Selenium web site,
+    http://wiki.openqa.org/display/SEL/qooxdooExtension )
+  - language bindings that add support for these commands to the standard
+    language bindings that come with Selenium RC (via derived classes)
+  - complete test scripts that utilize the Selenium RC API to test existing
+    qooxdoo applications
+
+PREREQUISITES
+  - a Selenim RC installation (0.9.2 or higher); get it from
+    http://www.openqa.org/selenium-rc [mandatory]
+  - for building: Java Development Kit (JDK 1.5 or higher); (for .jar handling
+    and compilation of the extended client class); make sure to set the
+    CLASSPATH separator in Makefile.local [recommended]
+    - if you do not plan to use the Java/JavaScript API to Selenium RC, but
+      rather the Python bindings, you can actually get away without a JDK, but
+      you still have to achieve what the 'selenium-server-ext' target of the
+      Makefile achieves: get the qooxdoo server extensions into the server jar
+    - but this should be achievable through any other tool that understands the
+      zip format (in replacement for JDK's 'jar' utility); check the Makefile
+      for what you have to do
+  - for running JavaScript based tests: Rhino; get if from
+    http://www.mozilla.org/rhino/ [recommended]
+  - for running tests against the contained sample app: a local web server
+    [optional]
+
+SETUP
+  - adapt the settings in Makefile.local to your needs; this covers mainly
+    setting up some local paths and some other details about your environment;
+    not all settings are mandatory, depending on which make targets you want to
+    run (s. the PREREQUISITES and USAGE sections)
+  - some of the contained simulation scripts require you to adapt a config
+    section at the beginning; see the scripts before running them
+
+USAGE
+  - 'make simulator-build-dirs'
+    'make selenium-server-ext'  -- these two commands are the minimal targets
+    you have to build; this will provide you with a Selenium RC server with
+    qooxdoo extensions (under ./tool/script/selenium-server.jar) [required]
+  - 'make simulator' -- this covers the previous commands and will create a
+    Selenium RC server and Java client driver with qooxdoo support [recommended]
+  - 'make selenium-rc-start'  -- starts the custom Selenium RC server in the
+    background; if you want to use Selenium RC's interactive shell, replace the
+    '&' with '-interactive'; you might choose to start the server by hand
+    (rather than  through a make target); however you do it, a Selenium RC
+    instance has to be running before any testing can take place; therefore
+    [required]
+  - 'make run-simulation-showcase'  -- will run a simulation against the
+    Showcase application on the qooxdoo web site (you need Internet access for
+    this) [optional]
+  - 'make [source|build]'  -- this is the usual way to generate the sample
+    application contained with Simulator [optional]
+  - 'make run-simulation-custom'  -- will run a simulation against this sample
+    application; this requires a local web server that exports the files in this
+    package; make sure to adapt the settings in the test scripts to your web
+    server setup [optional]
+  Apart from that, there are a few utility targets which mainly serve to
+  illustrate helpful commands (but which you might choose rather not to invoke
+  through make):
+  - 'make selenium-rhino-shell'  -- this will start an interactive JavaScript
+    shell (through Rhino), which also provides the Selenium RC Java bindings
+    with qooxdoo support; this requires the 'make simulator' target to be run
+    beforehand (s.above) [optional]
