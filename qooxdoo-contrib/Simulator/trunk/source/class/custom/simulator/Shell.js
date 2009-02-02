@@ -75,10 +75,6 @@ qx.Class.define("custom.simulator.Shell",
     var t1 = new qx.ui.form.TextField();
     this.add(t1);
     this.w.quickcmd = t1;
-    t1.set({
-      liveUpdate : true
-    });
-
     t1.addListener("keydown",this._processCmd,this);
 
     // command output
