@@ -4,7 +4,7 @@
  * - runAll() has to pass back results, maybe as Json where:
  *   {'testName': {'pass': true, 'log': <string>, 'error': <string>}, ...}
  */
-qx.Class.define("testrunner.SeleniumRunner",
+qx.Class.define("custom.testrunner.SeleniumRunner",
 {
   extend : qx.dev.unit.TestCase,
 

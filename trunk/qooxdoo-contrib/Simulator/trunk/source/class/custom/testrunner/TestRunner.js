@@ -1,5 +1,5 @@
 // This is just a test class, to play with qx.dev.unit classes 
-qx.Class.define("testrunner.TestRunner",
+qx.Class.define("custom.testrunner.TestRunner",
 {
   extend : qx.dev.unit.TestCase,
 
