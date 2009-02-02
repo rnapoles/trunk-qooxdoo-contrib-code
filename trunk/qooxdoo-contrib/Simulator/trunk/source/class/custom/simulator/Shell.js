@@ -23,37 +23,23 @@
 
 qx.Class.define("custom.simulator.Shell",
 {
-  extend : qx.ui.core.Widget,
+  extend : qx.ui.window.Window,
 
   construct : function()
   {
     this.base(arguments);
-    var clientdoc = qx.ui.core.ClientDocument.getInstance();
 
     this.w = {}; // widget registry
 
-    this.w.window = new qx.ui.window.Window("Simulator Shell");
-    clientdoc.add(this.w.window);
-    var win = this.w.window;
-    this.window = this.w.window;
-    win.setSpace(100,300,200,300);
-    win.setMaxWidth(450);
-    win.setMaxHeight(400);
+    this.setMaxWidth(450);
+    this.setMaxHeight(400);
 
     // command input
-    var layout = new qx.ui.layout.VerticalBoxLayout();
-    win.add(layout);
-    layout.set({
-      width : "100%"
-      });
-
+    this.setLayout(new qx.ui.layout.VBox(10));
+    
     // 1st row
-    var r1 = new qx.ui.layout.HorizontalBoxLayout();
-    layout.add(r1);
-    r1.set ({
-      height: "auto",
-      width : "100%"
-      });
+    var r1 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+    this.add(r1)
 
     r1.add(new qx.ui.basic.Label("Command: "));
     this.w.cmd = new qx.ui.form.TextField();
@@ -63,71 +49,51 @@ qx.Class.define("custom.simulator.Shell",
     r1.add(this.w.sessid);
 
     // 3rd row
-    var r3 = new qx.ui.layout.HorizontalBoxLayout();
-    layout.add(r3);
-    r3.set ({
-      height: "auto",
-      width : "100%"
-      });
+    var r3 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+    this.add(r3);
 
     r3.add(new qx.ui.basic.Label("Param1: "));
     var tf3 = new qx.ui.form.TextField();
     r3.add(tf3);
     this.w.parm1 = tf3;
-    tf3.setWidth("1*");
 
     // 4th row
-    var r4 = new qx.ui.layout.HorizontalBoxLayout();
-    layout.add(r4);
-    r4.set ({
-      height: "auto",
-      width : "100%"
-      });
-
+    var r4 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+    this.add(r4);
+    
     r4.add(new qx.ui.basic.Label("Param2: "));
     var tf4 = new qx.ui.form.TextField();
     r4.add(tf4);
     this.w.parm2 = tf4;
-    tf4.setWidth("1*");
-
 
     // 2nd row
-    var r2 = new qx.ui.layout.HorizontalBoxLayout();
-    layout.add(r2);
-    r2.set ({
-      height: "auto",
-      width : "100%"
-      });
-
+    var r2 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+    this.add(r2);
+    
     r2.add(new qx.ui.basic.Label("QuickCommand (hit return):"));
 
     var t1 = new qx.ui.form.TextField();
-    layout.add(t1);
+    this.add(t1);
     this.w.quickcmd = t1;
     t1.set({
-      liveUpdate : true,
-      width  : "100%"
+      liveUpdate : true
     });
 
-    t1.addEventListener("keydown",this._processCmd,this);
+    t1.addListener("keydown",this._processCmd,this);
 
     // command output
     var cmdout = new qx.ui.form.TextArea();
-    layout.add(cmdout);
+    this.add(cmdout);
     this.w.cmdout = cmdout;
     cmdout.set({
       overflow : "auto",
-      height   : 100,
-      width    : "100%"
+      height   : 100
     });
 
     // 5th row
-    var r5 = new qx.ui.layout.HorizontalBoxLayout();
-    layout.add(r5);
-    r5.set ({
-      height: "auto",
-      width : "100%"
-      });
+    var r5 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+    this.add(r5);    
+
 
     // commit button
     var commitb = new qx.ui.form.Button("Send");
@@ -136,7 +102,7 @@ qx.Class.define("custom.simulator.Shell",
       horizontalAlign : "left"
       });
 
-    commitb.addEventListener("execute", this._processSend, this);
+    commitb.addListener("execute", this._processSend, this);
 
     // reset button
     var resetb = new qx.ui.form.Button("Reset");
@@ -145,25 +111,15 @@ qx.Class.define("custom.simulator.Shell",
       horizontalAlign : "right"
       });
 
-    resetb.addEventListener("execute", this._resetCmdFields, this);
+    resetb.addListener("execute", this._resetCmdFields, this);
 
     // 6th row
-    var r6 = new qx.ui.layout.HorizontalBoxLayout();
-    layout.add(r6);
-    r6.set ({
-      verticalAlign : "bottom",
-      height: "auto",
-      width : "100%"
-      });
-
+    var r6 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+    this.add(r6);
+    
     this.w.status = new qx.ui.basic.Label();
     var st = this.w.status;
     r6.add(st);
-    st.set({
-      width : "100%"
-      });
-
-
 
 
   }, // construct()
@@ -198,13 +154,13 @@ qx.Class.define("custom.simulator.Shell",
       var cmd = this.w.cmd.getValue();
       if (cmd == "") 
       {
-        this.w.status.setText("Please enter a valid command first.");
+        this.setStatus("Please enter a valid command first.");
         return;
       }
       var sessid = this.w.sessid.getValue();
       if (sessid == "")
       {
-        this.w.status.setText("You have to specify a Selenium Session ID.");
+        this.setStatus("You have to specify a Selenium Session ID.");
         return;
       }
       var cmd_txt = "cmd="+cmd;
@@ -237,7 +193,7 @@ qx.Class.define("custom.simulator.Shell",
       this.debug(url);
       req.setUrl(url);
 
-      req.addEventListener("completed", this._processResponse, this);
+      req.addListener("completed", this._processResponse, this);
       // send command
       this.outappend("Sending:\n"+cmd_txt+"\n");
       req.send();

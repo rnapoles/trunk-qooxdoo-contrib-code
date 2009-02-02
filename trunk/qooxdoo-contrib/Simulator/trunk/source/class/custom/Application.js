@@ -24,7 +24,7 @@
  */
 qx.Class.define("custom.Application",
 {
-  extend : qx.application.Gui,
+  extend : qx.application.Standalone,
 
 
 
@@ -47,76 +47,68 @@ qx.Class.define("custom.Application",
       this.base(arguments);
 
       // Define alias for custom resource path
-      qx.io.Alias.getInstance().add("custom", qx.core.Setting.get("custom.resourceUri"));
+      //qx.io.Alias.getInstance().add("custom", qx.core.Setting.get("custom.resourceUri"));
 
-      var layout = new qx.ui.layout.VerticalBoxLayout();
-      layout.addToDocument();
+      var doc = this.getRoot();
+      var container = new qx.ui.container.Composite(new qx.ui.layout.VBox)
+      doc.add(container)   
 
       // Create button
       var button1 = new qx.ui.form.Button("First Button", "custom/image/test.png");
-      layout.add(button1);
+      container.add(button1);
       this.b1 = button1;
 
-      // Set button location
-      //button1.setTop(50);
-      //button1.setLeft(50);
-
-      // Add button to document
-      //button1.addToDocument();
-
       // Attach a tooltip
-      button1.setToolTip(new qx.ui.popup.ToolTip("A nice tooltip", "icon/32/status/dialog-information.png"));
-
-      button1.setHtmlProperty("id","button");
+      button1.setToolTip(new qx.ui.tooltip.ToolTip("A nice tooltip", "icon/32/status/dialog-information.png"));
+      
+      button1.getContentElement().setAttribute("id", "button");
       button1.setUserData("thefatbutton", "this is for the simulator");
 
       // textfield
       var tf = new qx.ui.form.TextField();
-      layout.add(tf);
-      tf.setHtmlProperty("id","tf");
+      container.add(tf);      
+      tf.getContentElement().setAttribute("id", "tf");
 
       // Add an event listener
-      button1.addEventListener("execute", function(e) {
+      button1.addListener("execute", function(e) {
         tf.setValue("I was pressed!" + e);
       });
 
 
       //# tabview
-      var tv = new qx.ui.pageview.tabview.TabView();
-      layout.add(tv);
+      var tv = new qx.ui.tabview.TabView();
+      container.add(tv);
       tv.set({
         height : 200,
         width  : 300,
         padding: 10
-      });
-      var b1 = new qx.ui.pageview.tabview.Button("First Tab");
-      tv.getBar().add(b1);
-      b1.setHtmlProperty("id","First");
-      var p1 = new qx.ui.pageview.tabview.Page(b1);
-      tv.getPane().add(p1);
+      });                  
 
-      var b2 = new qx.ui.pageview.tabview.Button("Second Tab");
-      tv.getBar().add(b2);
-      b2.setHtmlProperty("id","Second");
-      var p2 = new qx.ui.pageview.tabview.Page(b2);
-      tv.getPane().add(p2);
+      var p1 = new qx.ui.tabview.Page("First Tab");      
+      p1.getContentElement().setAttribute("id", "First");
+      tv.add(p1);
+
+      var p2 = new qx.ui.tabview.Page("Second Tab");
+      p2.getContentElement().setAttribute("id", "Second");
+      tv.add(p2);
 
       // create some arbitrary object nestings
       this.c1={};
       this.c1.c2 = {};
       this.c1.c2.c3={};
-      this.c1.c2.c3.First=b1;
-      this.c1.c2.Second=b2;
+      this.c1.c2.c3.First=p1;
+      this.c1.c2.Second=p2;
 
 
       //this.tracker = new custom.MouseTracker();
       //this.tracker.window.open();
 
-      this.selsh = new custom.simulator.Shell();
-      this.selsh.window.open();
+      this.selsh = new custom.simulator.Shell("Simulator Shell");
+      doc.add(this.selsh);
+      this.selsh.open();
 
       // activate Inspector
-      inspector.Inspector.init();
+      //inspector.Inspector.init();
 
     }, //construct
 
