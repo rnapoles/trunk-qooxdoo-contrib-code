@@ -112,7 +112,7 @@ qx.Class.define("custom.Application",
       //this.tracker = new custom.MouseTracker();
       //this.tracker.window.open();
 
-      this.selsh = new simulator.Shell();
+      this.selsh = new custom.simulator.Shell();
       this.selsh.window.open();
 
       // activate Inspector
