@@ -84,20 +84,20 @@ qx.Class.define("custom.Application",
         padding: 10
       });                  
 
-      var p1 = new qx.ui.tabview.Page("First Tab");      
-      p1.getContentElement().setAttribute("id", "First");
+      var p1 = new qx.ui.tabview.Page("First Tab");
+      p1.getButton().getContentElement().setAttribute("id", "First");
       tv.add(p1);
 
       var p2 = new qx.ui.tabview.Page("Second Tab");
-      p2.getContentElement().setAttribute("id", "Second");
+      p2.getButton().getContentElement().setAttribute("id", "Second");
       tv.add(p2);
 
       // create some arbitrary object nestings
       this.c1={};
       this.c1.c2 = {};
       this.c1.c2.c3={};
-      this.c1.c2.c3.First=p1;
-      this.c1.c2.Second=p2;
+      this.c1.c2.c3.First=p1.getButton();
+      this.c1.c2.Second=p2.getButton();
 
 
       //this.tracker = new custom.MouseTracker();
