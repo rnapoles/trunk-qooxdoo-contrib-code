@@ -49,26 +49,26 @@ qx.Class.define("custom.simulator.Shell",
     this.add(this.w.cmd, {row: 0, column: 1});    
     this.add(new qx.ui.basic.Label(" sessionId:"), {row: 0, column: 2});
     this.w.sessid = new qx.ui.form.TextField();
-    this.add(this.w.sessid, {row: 0, column: 3});
+    this.add(this.w.sessid, {row: 0, column: 3});    
     
-    // 2nd row    
-    this.add(new qx.ui.basic.Label("QuickCommand (hit return):"), {row: 1, column: 0});
-    var t1 = new qx.ui.form.TextField();
-    this.add(t1, {row: 1, column: 1, colSpan: 3});
-    this.w.quickcmd = t1;
-    t1.addListener("keydown",this._processCmd,this);
-    
-    // 3rd row
-    this.add(new qx.ui.basic.Label("Param1: "), {row: 2, column: 0});
+    // 2nd row
+    this.add(new qx.ui.basic.Label("Param1: "), {row: 1, column: 0});
     var tf3 = new qx.ui.form.TextField();
-    this.add(tf3, {row: 2, column: 1, colSpan: 3});
+    this.add(tf3, {row: 1, column: 1, colSpan: 3});
     this.w.parm1 = tf3;
     
-    // 4th row
-    this.add(new qx.ui.basic.Label("Param2: "), {row: 3, column: 0});
+    // 3rd row
+    this.add(new qx.ui.basic.Label("Param2: "), {row: 2, column: 0});
     var tf4 = new qx.ui.form.TextField();
-    this.add(tf4, {row: 3, column: 1, colSpan: 3});
+    this.add(tf4, {row: 2, column: 1, colSpan: 3});
     this.w.parm2 = tf4;
+    
+    // 4th row    
+    this.add(new qx.ui.basic.Label("QuickCommand (hit return):"), {row: 3, column: 0});
+    var t1 = new qx.ui.form.TextField();
+    this.add(t1, {row: 3, column: 1, colSpan: 3});
+    this.w.quickcmd = t1;
+    t1.addListener("keydown",this._processCmd,this);
     
     // 5th row
     // command output
