@@ -23,6 +23,7 @@ var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().
 var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer) { qxReady = true; } } catch(e) {} qxReady;'; // check if demobrowser application instance exists
 var isLogDone = 'var logDone = false; var log = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer.f2.getContentElement().getDomElement().innerHTML; if (log.length >= 52 && log.indexOf("Dispose") < 0 ) { logDone = true; } logDone;'; // check if sample is finished
 var usrAgent = 'navigator.userAgent';
+var platform = 'navigator.platform';
 
 // - Config End ----------------------------------------------------------------
 
@@ -55,19 +56,6 @@ function browserLog(msg)
   return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
 }
 
-/*
-* Generated HTML elements are uppercase in IE
-*/
-function getLogArray(result)
-{
-  var logArray = [];
-  if (result.indexOf("</div>") >0 ) {
-    logArray = result.split("</div>");
-  } else if (result.indexOf("</DIV>") >0 ) {
-    logArray = result.split("</DIV>");
-  }
-  return logArray;
-}
 
 /*
 *  Runs the given script, then gets the current sample's name and log output and sends them to Selenium's log.
@@ -96,8 +84,7 @@ function sampleRunner(script)
     * If the log message is too long, the server throws an http exception.
     * So we need to chop the message into bits and make multiple calls.
     */
-    //var logArray = sampleLog.split("</DIV>");
-    var logArray = getLogArray(sampleLog);
+    var logArray = sampleLog.split(/<\/div>/i);
     // we can speed this up since we don't have to wait for the browser
     sel.setSpeed("150");
 
@@ -180,7 +167,7 @@ sel.runScript(treeSelect(2));
 sel.runScript(qxAppInst + '.tree.getSelectedItem().setOpen(true)');
 
 var agent = sel.getEval(usrAgent);
-
+var plat = sel.getEval(platform);
 var browser = getBrowser(agent);
 
 sel.getEval(browserLog("<h1>Demobrowser results from " + currentDate.toLocaleString() + "</h1>"));
@@ -216,5 +203,3 @@ while (currentSample != lastSample) {
 sel.getEval(browserLog("<p>Samples with warnings or errors: " + logsWithErrors + "</p>"));
 sel.stop();
 print("Test session finished.");
-
-
