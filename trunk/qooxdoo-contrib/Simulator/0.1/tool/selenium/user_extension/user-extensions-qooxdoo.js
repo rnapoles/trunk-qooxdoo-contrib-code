@@ -497,6 +497,9 @@ Selenium.prototype.isQxEnabled = function(locator)
     LOG.debug("isQxEnabled: qxxLocator=" + qxxLocator);
     var qxObject = this.page().findElement(qxxLocator);
     if (qxObject) {
+      while (qxObject.getEnabled() === "inherit") {
+        qxObject = qxObject.getParent();
+      }
       return qxObject.getEnabled();
     } else {
       throw new SeleniumError("No such object: " + locator)
