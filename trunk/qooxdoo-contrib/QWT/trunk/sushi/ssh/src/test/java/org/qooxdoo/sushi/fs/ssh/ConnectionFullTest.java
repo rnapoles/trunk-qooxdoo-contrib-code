@@ -96,6 +96,16 @@ public class ConnectionFullTest {
     }
 
     @Test
+    public void script() throws Exception {
+        assertEquals("6", root.exec(
+                "RESULT=0;\n" +  
+                "for N in 1 2 3; do\n" + 
+                "  let RESULT=$RESULT+$N;\n" +
+                "done;\n" +
+                "echo $RESULT;").trim());
+    }
+
+    @Test
     public void variablesLost() throws Exception {
         assertEquals("\r\n", root.exec("echo", "$FOO"));
         root.exec("export", "FOO=bar");
