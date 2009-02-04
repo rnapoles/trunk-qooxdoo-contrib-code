@@ -68,20 +68,6 @@ function getResultChunk(startAt, chars)
   return selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML.substr(' + startAt + ',' + chars + ')';
 }
 
-/*
-* Generated HTML elements are uppercase in IE
-*/
-function getLogArray(result)
-{
-  var logArray = [];
-  if (result.indexOf("</div>") >0 ) {
-    logArray = result.split("</div>");
-  } else if (result.indexOf("</DIV>") >0 ) {
-    logArray = result.split("</DIV>");
-  }
-  return logArray;
-}
-
 function getBrowser(agent)
 {
   var browser = false;
@@ -151,8 +137,9 @@ function runTests()
   sel.waitForCondition(isStatusReady,testPause);
   print("Getting log...");
 
-  //var result = sel.getEval(testResults);
+  var result = sel.getEval(testResults);
 
+  /*
   var htmlLength = sel.getEval(testResultsLength);
   print("Result is " + htmlLength + " characters long.")
   var c = 0;
@@ -161,12 +148,13 @@ function runTests()
     var chunk = sel.getEval(getResultChunk(c, 500));
     result += chunk;
     c += 500;
-  }  
+  }
+  */  
 
   print("Got log");
 
   
-  var logArray = getLogArray(result);
+  var logArray = result.split(/<\/div>/i);
   // we can speed this up since we don't have to wait for the browser
   sel.setSpeed("500");
   for (var i=0, l=logArray.length; i<l; i++) {
@@ -203,5 +191,3 @@ runTests();
 sel.getEval(browserLog("<p>Tests with warnings or errors: " + errWarn + "</p>"));
 sel.stop();
 print("Test Runner session finished.");
-
-
