@@ -11,7 +11,7 @@ var config = {
 };
 
 var stepSpeed  = "500"; // millisecs after each command
-var logPause = 5000; // millisecs to wait after loading sample
+var logPause = 7000; // millisecs to wait after loading sample
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
 var setPlayDemos = qxAppInst + '.setPlayDemos("all")'; // set demobrowser to 'autorun'
