@@ -721,6 +721,7 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
       }
     }
     this._globalQxObject = inWindow.wrappedJSObject.qx;
+    this._autWinObj = inWindow.wrappedJSObject;
   }
 
   else
@@ -1107,13 +1108,28 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
   var childs;
   var curr;
 
+  // need to get to the global 'qx' object
+  if (this._globalQxObject) {
+    var qx = this._globalQxObject;
+    var myClass = qx.Class.getByName(qxclass);
+  } else {
+    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
+  }
+
   childs = this._getQxNodeDescendants(root);
 
   for (var i=0; i<childs.length; i++)
   {
     curr = childs[i];
-    if (curr.classname === qxclass) {
-      return curr;
+    LOG.debug(curr.classname + " " + qxclass);
+    try {
+      if (curr instanceof myClass) {
+        return curr;
+      }
+    } catch(e) {
+      if (curr.classname === qxclass) {
+        return curr;
+      }
     }
   }
 
