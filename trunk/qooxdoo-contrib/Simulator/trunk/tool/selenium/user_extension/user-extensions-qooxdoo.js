@@ -667,21 +667,29 @@ PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
  * @return {qx.ui.core.ClientDocument | null} document or null
  */
 PageBot.prototype._getClientDocument = function(inWindow){
-  
-  //In qooxdoo 0.7, qx.ui.core.ClientDocument.getInstance() triggers the autoflush
-  //mechanism in qooxdoo. This will cause the rendering queues to be flushed.
-  //If the application is not set yet, Widget.flushGlobalQueues will fail.
-  //
-  //So prevent access to the client document until application is set
-  if ((inWindow != null)
-       && (inWindow.wrappedJSObject.qx != null)
-       && (inWindow.wrappedJSObject.qx.core.Init != null)
-       && (inWindow.wrappedJSObject.qx.core.Init.getApplication() != null)
-     ){
-    return inWindow.wrappedJSObject.qx.core.Init.getApplication();
-  } else{
-    return null;
+  try {
+    if ((inWindow != null)
+         && (inWindow.wrappedJSObject.qx != null)
+         && (inWindow.wrappedJSObject.qx.core.Init != null)
+         && (inWindow.wrappedJSObject.qx.core.Init.getApplication() != null)
+       ){
+      return inWindow.wrappedJSObject.qx.core.Init.getApplication();
+    } else{
+      return null;
+    }
   }
+  catch(e) {
+    if ((inWindow != null)
+        && (inWindow.qx != null)
+        && (inWindow.qx.core.Init != null)
+        && (inWindow.qx.core.Init.getApplication() != null)
+      ){
+     return inWindow.qx.core.Init.getApplication();
+   } else{
+     return null;
+   }
+  }
+  
 }
 
 
@@ -704,29 +712,34 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
 
   // the AUT window must contain the qx-Object
   var qxAppRoot;
+  
+  try {
+    if (inWindow.wrappedJSObject.qx) {
+      inWindow.qx = inWindow.wrappedJSObject.qx;
+    }
+  } catch(e) {}
 
-  if (inWindow.wrappedJSObject.qx)
+  if (inWindow.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
     // check for object space spec
     if (qxLocator.match('^app:')) 
     {
-      qxAppRoot = inWindow.wrappedJSObject.qx.core.Init.getApplication();
+      qxAppRoot = inWindow.qx.core.Init.getApplication();
     } else 
     {
       qxAppRoot = this._getClientDocument(inWindow);
       if (qxAppRoot == null){
-        LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
+        LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
         return null;
       }
     }
-    this._globalQxObject = inWindow.wrappedJSObject.qx;
-    this._autWinObj = inWindow.wrappedJSObject;
+    this._globalQxObject = inWindow.qx;
   }
 
   else
   {
-    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
+    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
 
     // do not throw here, as if the locator fails in the first place selenium will call this
     // again with all frames (and windows?) which won't result in "element not found" but in
@@ -779,20 +792,26 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
   }
 
   var qxResultObject;
+  
+  try {
+    if (inWindow.wrappedJSObject.qx) {
+      inWindow.qx = inWindow.wrappedJSObject.qx;
+    }
+  } catch(e) {}
 
   // the AUT window must contain the qx-Object
-  if (inWindow.wrappedJSObject.qx)
+  if (inWindow.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance using (qx.ui.core.ClientDocument.getInstance())");
     qxResultObject = this._getClientDocument(inWindow);
     if (qxResultObject == null){
-      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
+      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
       return null;
     }
   }
   else
   {
-    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
+    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
 
     // do not throw here, as if the locator fails in the first place selenium will call this
     // again with all frames (and windows?) which won't result in "element not found" but in
