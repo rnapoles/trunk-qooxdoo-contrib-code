@@ -42,6 +42,11 @@ function simulation(keepBrowser)
   sel.qxClick('qxh=qx.ui.form.Button'); // using qooxdoo class name
   sel.qxClick('qxh=app:c1/c2/c3/First'); // first tab, using object nesting
   sel.qxClick('qxh=[@label="First Button"]'); // using qooxdoo property
+  
+  var getTextValue = 'selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().tf.getValue()';
+  var textValue = sel.getEval(getTextValue);
+  print("Text field value: " + textValue);
+  
   if (!keepBrowser)
   {
     sel.stop();  // this would tear down the browser
