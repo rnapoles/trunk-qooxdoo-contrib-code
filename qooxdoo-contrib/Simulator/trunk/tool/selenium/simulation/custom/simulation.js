@@ -15,6 +15,7 @@
    Authors:
      * Thomas Herchenroeder (thron7)
      * Andreas Ecker (ecker)
+     * Daniel Wagner (d_wagner)
 
 ************************************************************************ */
 
@@ -36,13 +37,11 @@ var config =
 function simulation(keepBrowser)
 {
   sel.qxClick('button'); // using HTML id 'button'
-  sel.qxClick('First');  // using HTML id 'First'
   sel.qxClick('Second'); // using HTML id 'Second'
-
   sel.type('tf',"");     // clear textfield
-  sel.qxClick('qx=thefatbutton');  // click button again, using qooxdoo UserData
+  sel.qxClick('qxh=qx.ui.form.Button'); // using qooxdoo class name
   sel.qxClick('qxh=app:c1/c2/c3/First'); // first tab, using object nesting
-  sel.qxClick('qxh=*/[@label="Second Tab"]'); // second tab, using qooxdoo widget hierarchy
+  sel.qxClick('qxh=[@label="First Button"]'); // using qooxdoo property
   if (!keepBrowser)
   {
     sel.stop();  // this would tear down the browser
@@ -56,14 +55,24 @@ function init()
 
   // create Selenium object
   sel = new QxSelenium(config.serverHost, config.serverPort, 
-      config.browserStartCommand, config.browserUrl);
+      config.browserStartCommand, browserUrl);
   
   sel.setSpeed(config.speed);
   
   sel.start(); // this launches the browser
   sel.open(browserUrl);  // this opens the AUT
   
-  Packages.java.lang.Thread.sleep(config.sleep); // pausing is often helpful
+  // wait until qx application is instantiated
+  var isQxReady = 'var qxReady = false;';
+  isQxReady += 'try {';
+  isQxReady += '  if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication()) {';
+  isQxReady += '    qxReady = true;';
+  isQxReady += '  }';
+  isQxReady += '}';
+  isQxReady += 'catch(e) {}';
+  isQxReady += 'qxReady;';
+
+  sel.waitForCondition(isQxReady, "60000");
 }
 
 var keepBrowser = false;
