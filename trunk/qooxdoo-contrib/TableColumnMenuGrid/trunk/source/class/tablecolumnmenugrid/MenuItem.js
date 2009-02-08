@@ -36,6 +36,20 @@ qx.Class.define("tablecolumnmenugrid.MenuItem",
     }
   },
 
+  /**
+   * Create a new instance of an item for insertion into the table column
+   * visibility menu.
+   *
+   * @param menu {tablecolumnmenugrid.Menu}
+   *   The menu in which this item resides.
+   *
+   * @param text {String}
+   *   Text for the menu item, most typically the name of the column in the
+   *   table.
+   *
+   * @param colNum {Number}
+   *   Column number of the column associated with this menu item.
+   */
   construct : function(menu, text, colNum)
   {
     this.base(arguments, text, null, colNum);
@@ -46,6 +60,15 @@ qx.Class.define("tablecolumnmenugrid.MenuItem",
   {
     __menu : null,
 
+    /**
+     * Keep menu in sync with programmatic changes of visibility
+     *
+     * @param value {Boolean}
+     *   New visibility value
+     *
+     * @param old {Boolean}
+     *   Previous visibility value
+     */
     _applyVisible :  function(value, old)
     {
       if (value)

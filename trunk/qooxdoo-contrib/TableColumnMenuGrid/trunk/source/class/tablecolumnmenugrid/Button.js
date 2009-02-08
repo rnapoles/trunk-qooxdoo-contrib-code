@@ -30,6 +30,15 @@ qx.Class.define("tablecolumnmenugrid.Button",
   extend     : qx.ui.form.Button,
   implement  : qx.ui.table.IColumnMenuButton,
 
+  /**
+   * Create a new instance of a column visibility menu button. This button
+   * also contains the factory for creating each of the sub-widgets.
+   */
+  construct : function()
+  {
+    this.base(arguments);
+  },
+
   properties :
   {
     /** The popup instance to show when clicking on the button */
