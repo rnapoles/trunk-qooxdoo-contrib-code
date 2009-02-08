@@ -140,7 +140,6 @@ qx.Mixin.define("qcl.application.MApplication",
     /**
      * TODOC
      *
-     * @type member
      * @param first {var} TODOC
      * @param second {var} TODOC
      * @return {void} 
@@ -176,7 +175,6 @@ qx.Mixin.define("qcl.application.MApplication",
     /**
      * TODOC
      *
-     * @type member
      * @param string {String} optional string to analyze instead of location.hash
      * @return {Map} TODOC
      */
@@ -573,14 +571,17 @@ qx.Mixin.define("qcl.application.MApplication",
       this.__sessionId = sessionId;            
     },    
     
-    /**
-     * sets up the default context menu behaviour: traverse the widget tree upwards until
+    /**  
+     * Sets up the default context menu behaviour: traverse the widget tree upwards until
      * a context menu ist found, which is then displayed
+     * @return {void} 
      */
     setupContextMenu : function()
     {
 
-      // add contextmenu event handler to client document
+      /*
+       * add contextmenu event handler to client document
+       */
       qx.ui.core.ClientDocument.getInstance().addEventListener("contextmenu",function(e){
                 
         var target = e.getOriginalTarget();
@@ -594,7 +595,6 @@ qx.Mixin.define("qcl.application.MApplication",
             contextMenu.setTop( e.getClientY() );
             contextMenu.setOpener( target );
             contextMenu.show();
-            qx.event.message.Bus.dispatch("qcl.messages.contextmenu.changed",contextMenu);
             return true;
           }
           else
@@ -602,24 +602,51 @@ qx.Mixin.define("qcl.application.MApplication",
             target = target.getParent();
           }
         } 
-      },this);      
+      },this );  
     },
     
+    /**
+     * Shorthand method to return active user
+     * @return {qcl.auth.user.User}
+     */
+    getActiveUser : function()
+    {
+      return qcl.auth.user.Manager.getInstance().getActiveUser();
+    },
+    
+   /**
+    * Shorthand method to return a permission object by name
+    * @return {qcl.auth.permission.Permission}
+    */    
     getPermission : function( name )
     {
       return qcl.auth.permission.Manager.getInstance().getObject( name );   
     },
-    
+
+    /**
+     * Shorthand method to update a permission
+     * @return {void}
+     */        
     updatePermission : function( name )
     {
       this.getPermission( name ).update();
     },
-    
+
+    /**
+     * Shorthand method to return a config key
+     * @return {String|Array|Bool|Int}
+     */       
     getConfigKey : function( key )
     {
       return qcl.config.Manager.getInstance().getKey( key );
     },
-    
+
+    /**
+     * Shorthand method to set a config key
+     * @param key {String}
+     * @param value {String|Array|Bool|Int}
+     * @param {Bool} Whether setting succeeded
+     */      
     setConfigKey : function( key, value )
     {
       return qcl.config.Manager.getInstance().setKey( key, value );
