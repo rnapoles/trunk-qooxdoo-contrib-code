@@ -519,6 +519,16 @@ class qcl_core_object
   } 
   
   /**
+   * The currently executed function
+   * @return string
+   */
+  function functionName() 
+  {
+    $backtrace = debug_backtrace();
+    return $backtrace[1]['function'];
+  }  
+    
+  /**
    * OO alias for method_exists($this)
    * @param string $method
    * return bool
@@ -549,6 +559,9 @@ class qcl_core_object
     $class = str_replace(".","_",$class);
     return is_a( $this, $class );
   }
+  
+  
+
   
   //-------------------------------------------------------------
   // instance and singleton management
