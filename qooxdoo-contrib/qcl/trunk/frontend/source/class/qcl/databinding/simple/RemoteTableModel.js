@@ -127,7 +127,7 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
     },
     
     /**
-     * gets number of rows that the query will produce. 
+     * Returns number of rows that the query will produce. 
      * The value of the queryData property is passed to the 
      * service class on the server which needs to return the following 
      * response: { result : { rowCount : 1234 }, ... }
@@ -138,12 +138,28 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      */
     _loadRowCount : function() 
     {
-      if ( ! this.getServiceName() ) return 0; // do not do any updates until service name is known
+      
+      // console.log("Row count request..."); 
+      /*
+       * do not sen query if the rpc backend is not known
+       */
+      if (  ! this.getServiceName() )
+      {
+        return;
+      }
+      
+      /*
+       * send query
+       */
       this._updateClient( 
         this.getServiceName() + "." + this.getServiceMethodGetRowCount(),
         this.getQueryData()  
       );
-      this._rowCount = 0; // update is in progress
+      
+      /*
+       * mark that query is in progress
+       */
+      this._rowCount = 0; 
     },
 
     /**
@@ -152,7 +168,9 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      */
     setRowCount : function (rowCountInfo)
     {
-      // has server set a request id?
+      /*
+       * has server set a request id?
+       */
       if ( rowCountInfo && typeof rowCountInfo == "object" )
       {
         var rowCount = rowCountInfo.rowCount;
@@ -163,6 +181,10 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
       {
         var rowCount = rowCountInfo;  
       }
+      
+      /*
+       * call parent method
+       */
       this._onRowCountLoaded(rowCount);
     },
 
@@ -201,8 +223,21 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      */
     _loadRowData : function(firstRow, lastRow) 
     {
-      if ( ! this.getServiceName() ) return []; // do not do any updates until service name is known
+       //console.log("Requesting rows " + firstRow + " - " + lastRow );
+       
+      /*
+       * do not do any updates until service name is known
+       */
+      if ( ! this.getServiceName() ) return []; 
+      
+      /*
+       * query data
+       */
       var qd = this.getQueryData();
+
+      /*
+       * call hook callback function
+       */
       if ( this.getCallBeforeLoadRowData()  )
       {
         var result = this.getCallBeforeLoadRowData()(firstRow, lastRow);
@@ -211,18 +246,26 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
           qd = result;
         } 
       } 
+      
+      /*
+       * send request
+       */
       this._updateClient( 
         this.getServiceName() + "." + this.getServiceMethodGetRowData(),
         qd, firstRow, lastRow  
       );
+      
     },
 
-    /**
-     * receives the row data returned by the server and passes it on
+    /** 
+     * Receives the row data returned by the server and passes it on
      * to the _onRowDataLoaded function as required by qx.ui.table.model.Remote
      */
     setRowData : function (rowDataArr)
     {
+      /*
+       * call parent method
+       */
       this._onRowDataLoaded(rowDataArr);
     }
 

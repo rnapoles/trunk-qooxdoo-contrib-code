@@ -371,13 +371,23 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
      */
     selectByServerNodeId : function (serverNodeId,loadNodeChildrenFunc,loadIdHierarchyFunc)
     {
-      //console.log("selectByServerNodeId(" + serverNodeId + ","+loadNodeChildrenFunc+","+loadIdHierarchyFunc+")");
+     //console.log("selectByServerNodeId(" + serverNodeId + ","+loadNodeChildrenFunc+","+loadIdHierarchyFunc+")");
+      
+      /*
+       * get cached client-side node id
+       */
       var treeNodeId = this.getServerNodeIdMap()[serverNodeId];
       
+      /*
+       * has been loaded
+       */
       if ( treeNodeId )
       {
-        //console.log("Selecting already loaded node client#" + treeNodeId);
-        // load has already been loaded, select it with a small timeout
+       //console.log("Selecting already loaded node client#" + treeNodeId);
+        
+        /*
+         * load has already been loaded, select it with a small timeout
+         */
         qx.client.Timer.once(function(){
           try {
             var row = this.getDataModel().getRowFromNodeId(treeNodeId);  
@@ -391,11 +401,11 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
             var selModel = this.getSelectionModel();
             if ( selModel.isSelectedIndex(row ) )
             {
-              //console.log("Row #"+row+" is already selected. Ignoring select command.");
+             //console.log("Row #"+row+" is already selected. Ignoring select command.");
             }
             else
             {
-              //console.log("Selecting row #" + row);
+             //console.log("Selecting row #" + row);
               this.scrollCellVisible(0,row);
               selModel.clearSelection();
               selModel.addSelectionInterval(row,row);                      
@@ -408,21 +418,31 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
           }
         },this,100);
       }
+      
+      /*
+       * has not been loaded
+       */
       else
       {
-        //console.log("Cannot select, loading unloaded node #" + serverNodeId );
+       //console.log("Cannot select, loading node #" + serverNodeId );
+        
         if ( ! this.__nodeLoadedCheckSelectEvent )
         {
-          // event listener that waits for nodes to be loaded. if the server-side id matches, the node is selected
-          //console.log("Attaching nodeLoadedCheckSelectEvent event listener...");
+          /*
+           * event listener that waits for nodes to be loaded. 
+           * if the server-side id matches, the node is selected
+           */
+         //console.log("Attaching nodeLoadedCheckSelectEvent event listener...");
           this.addEventListener("nodeLoaded",function(event){
             var node    = event.getData();
             var selId   = this.getServerNodeIdToSelect();
             var isSelId = this.getServerNodeIdSelected();
-            //console.log("Loaded node server#"+node.data.id + ", we want to select server#" + selId );
+            
+           //console.log("Loaded node server#"+node.data.id + ", we want to select server#" + selId );
+            
             if ( selId && node.data.id == selId ) 
             {
-              //console.log("Bingo! Now selecting server#" + selId );
+             //console.log("Bingo! Now selecting server#" + selId );
               this.selectByServerNodeId(selId);
               this.setServerNodeIdToSelect(null);  
             }
@@ -431,13 +451,23 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
               this.selectByServerNodeId(isSelId);
             }
           },this);
+          
           this.__nodeLoadedCheckSelectEvent = true;
         }
-        // save node id for later, when the node has been loaded
-        this.setServerNodeIdToSelect(parseInt(serverNodeId));   
         
-        // load node(s)
-        this.loadNodeByServerId(serverNodeId,loadNodeChildrenFunc,loadIdHierarchyFunc);
+        /*
+         * save node id for later, when the node has been loaded
+         */
+        this.setServerNodeIdToSelect( parseInt( serverNodeId ) );   
+        
+        /*
+         * load node(s)
+         */
+        this.loadNodeByServerId(
+           serverNodeId,
+           loadNodeChildrenFunc,
+           loadIdHierarchyFunc
+        );
       }     
     },
     
@@ -533,7 +563,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
       
       if ( typeof(node) != "object")
       {
-        console.warn("Node client#"+nodeId+"does not exist!");
+        //console.warn("Node client#"+nodeId+"does not exist!");
         return false;
       }
       //console.log("node.children.length:"+node.children.length+",node.data.childCount:"+node.data.childCount);
