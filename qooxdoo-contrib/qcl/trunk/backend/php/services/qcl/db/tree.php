@@ -171,12 +171,18 @@ class qcl_db_tree extends qcl_core_mixin
   {
     if ( (int) $id == 0 )
     {
-      // top folder
+      /*
+       * top folder
+       */
       return array();
     }
-    $folder = $this->load($id);  
-    $hierarchyIds = $this->getNodeIdHierarchy( $folder[$this->col_parentId] );
+    $this->load($id);  
+    
+    $parentId = $this->get("parentId");
+    $hierarchyIds = $this->getNodeIdHierarchy( $parentId );
+    
     array_push($hierarchyIds,$id);
+    
     return $hierarchyIds;
   }
   
