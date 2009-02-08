@@ -1,0 +1,46 @@
+{
+  "info" : 
+  {
+    "name" : "TableColumnMenuGrid",
+
+    "summary" : "Alternative table column visibility menu, using a drag grid",
+    "description" :
+       "The Table widget's column visibility menu is not scrollable and
+        becomes truncated if the table height is too small for all of the
+        column names to be presented in the menu. This alternative column
+        visibility menu presents the table column names is two columns of the
+        menu: a column for the visible table column names, and a column for
+        the hidden table column names. The names may be selected and dragged
+        from one column to the other to affect column visiblity changes.",
+    
+    "keywords" : ["date", "time"],
+    "homepage" : "http://contrib.qooxdoo.org",
+
+    "license" : "LGPL",
+    "authors" : 
+    [
+      {
+        "name" : "Bill Adams",
+        "email" : "badams AT cadence DOT com"
+      },
+      {
+        "name" : "Derrell Lipman",
+        "email" : "derrell DOT lipman AT unwireduniverse DOT com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "tablecolumnmenugrid",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "library"
+  }
+}
+
