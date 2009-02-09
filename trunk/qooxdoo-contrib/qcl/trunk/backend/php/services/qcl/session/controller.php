@@ -244,9 +244,29 @@ class qcl_session_controller extends qcl_access_controller
    */
   function unregisterSession()
   {
+    $sessionId = $this->getSessionId();
     $sessionModel =& $this->getSessionModel();
-    $sessionModel->unregisterSession( $this->getSessionId() );
+    $sessionModel->unregisterSession( $sessionId );
   }
+  
+  /**
+   * Terminates a session
+   * @override
+   */
+  function method_terminate()
+  {
+    
+    $sessionModel =& $this->getSessionModel();
+    $activeUser   =& $this->getActiveUser();
+
+    $sessionId = $this->getSessionId();
+    $username  = $activeUser->username();
+    
+    $this->info("Session #$sessionId ($username) wird beendet.");
+    $sessionModel->unregisterSession( $sessionId );  
+    
+    return $this->response();
+  }  
   
   /**
    * Set the active user from the session id

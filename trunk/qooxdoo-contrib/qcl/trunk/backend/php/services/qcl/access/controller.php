@@ -651,6 +651,15 @@ class qcl_access_controller extends qcl_db_controller
     $_SESSION[QCL_ACTIVE_USER_ID_VAR] = $id;
   }
   
+  /**
+   * Terminates a session. This logs out the current user.
+   * @override
+   */
+  function method_terminate()
+  {
+    $this->logout();
+    return $this->response();
+  }    
   
   /**
    * Abort with error if active user doesn't have permission
