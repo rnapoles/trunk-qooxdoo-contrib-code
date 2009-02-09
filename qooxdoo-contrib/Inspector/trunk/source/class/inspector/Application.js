@@ -42,6 +42,8 @@ qx.Class.define("inspector.Application",
 
   members :
   {
+    __checkCount : null,
+    
     /**
      * This method contains the initial application code and gets called 
      * during startup of the application
@@ -73,44 +75,51 @@ qx.Class.define("inspector.Application",
       this._iFrame = new qx.ui.embed.Iframe();
       this.getRoot().add(this._iFrame, {top: 29, left: 0, right: 0, bottom: 0});
       
-      this._iFrame.addListener("load", function() {
-        this._toolbar.setEnabled(true);
-        this._loadedWindow = this._iFrame.getContentElement().getWindow();
-        
-        // check if the app is loaded correctly
-        if (!this.__checkWorking()) {
-          return;
-        }
-        
-        // check for the selector
-        if (!this._selector) {
-          this._selector = new inspector.components.Selector(this._loadedWindow);
-        } else {
-          this._selector.setJSWindow(this._loadedWindow);        
-        }
-        
-        // select the root app
-        this._selector.addListener("changeSelection", this._changeSelection, this);
-        this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication());
-    
-        this._loading = false;
-        
-        // save the url in a cookie
-        qx.bom.Cookie.set("url", this._iFrame.getSource());
-
-        this.__checkForReload();
-        
-        // select the root of the new app
-        this.select(this._loadedWindow.qx.core.Init.getApplication().getRoot());
-        
-        // check for the cookies
-        this.__checkCookies();        
-      }, this);  
-
+      this._iFrame.addListener("load", this.__onLoad, this);
+      
       this._loading = true;      
       this._iFrame.setSource(this._urlTextField.getValue());
     },
     
+    __onLoad : function() {
+      this.__checkCount = 0;
+      this.__initInspector();
+    },
+    
+    __initInspector : function() 
+    {
+      this._toolbar.setEnabled(true);
+      this._loadedWindow = this._iFrame.getContentElement().getWindow();
+        
+      // check if the app is loaded correctly
+      if (!this.__checkWorking()) {
+        return;
+      }
+        
+      // check for the selector
+      if (!this._selector) {
+        this._selector = new inspector.components.Selector(this._loadedWindow);
+      } else {
+        this._selector.setJSWindow(this._loadedWindow);        
+      }
+        
+      // select the root app
+      this._selector.addListener("changeSelection", this._changeSelection, this);
+      this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication());
+    
+      this._loading = false;
+        
+      // save the url in a cookie
+      qx.bom.Cookie.set("url", this._iFrame.getSource());
+
+      this.__checkForReload();
+        
+      // select the root of the new app
+      this.select(this._loadedWindow.qx.core.Init.getApplication().getRoot());
+        
+      // check for the cookies
+      this.__checkCookies();        
+    },
     
     /*
     -------------------------------------------------------------------------
@@ -172,18 +181,25 @@ qx.Class.define("inspector.Application",
     __checkWorking: function() {
       // try to access the javascript objects in the iframe
       try {
+        this.__checkCount++;
+        
         // also break if its undefined
-        if (this._loadedWindow.qx === undefined) {
+        if (this.__checkCount > 10) {
           throw new Error("qooxdoo not found!");
         }
-        // try to get the root element of the application
-        this._loadedWindow.qx.core.Init.getApplication().getRoot();
+        try {
+          // try to get the root element of the application
+          this._loadedWindow.qx.core.Init.getApplication().getRoot();
         
-        // reset the enabled properties of the toolbar stuf
-        this._selectedWidgetLabel.resetEnabled();
-        this._urlTextField.resetEnabled();
-        return true;
-      } catch (e) {
+          // reset the enabled properties of the toolbar stuf
+          this._selectedWidgetLabel.resetEnabled();
+          this._urlTextField.resetEnabled();
+          return true;
+        } catch (ex) {
+          qx.event.Timer.once(this.__initInspector, this, 500);
+          throw new Error("qooxdoo isn't ready at the moment!");
+        }
+      } catch (ex) {
         // signal that the inspector is not working
         this._toolbar.setEnabled(false);
         this._selectedWidgetLabel.setContent(
