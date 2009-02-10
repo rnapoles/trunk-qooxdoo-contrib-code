@@ -128,37 +128,84 @@ class qcl_db_tree extends qcl_core_mixin
 	}
 	
   /**
-   * gets the path of a folder in the folder hierarchy
+   * Returns the path of a folder in the folder hierarchy,
+   * separated by the pipe character
    * @return 
    */
   function getPath( $id=null )
   {
-    if ( $id !== null )
+    
+    /*
+     * return when top node has been reached
+     */
+    if ( $id === 0 )
     {
-      $folder = $this->load($id);  
+      return "";
+    }     
+
+    /*
+     * if not given, use current record
+     */    
+    elseif ( $id === null )
+    {
+      $id = $this->getId();
+    }
+
+    /*
+     * otherwise load data for current node
+     */  
+    else
+    { 
+      $this->load( $id );  
+    }
+
+    /*
+     * if the tree path is cached, return it
+     */
+    if ( ! $this->__cachePath and $this->hasProperty("path") )
+    {
+      if ( $path = $this->getProperty("path") )
+      {
+        return $path;
+      }
+      else
+      {
+        $this->__cachePath = $id;
+      }
+    }         
+
+
+    /*
+     * get path of parent if any
+     */
+    $label    =  trim( str_replace( "/", "\\/", $this->getLabel() ) );
+    $parentId = $this->get("parentId");
+    
+    if ( $parentId )
+    {
+      /*
+       * get parent path
+       */
+      $parentPath = $this->getPath( $parentId );
+      $path .= $parentPath . "|" . $label;
+      
+      /*
+       * cache path
+       */
+      if ( $id == $this->__cachePath )
+      {
+        $this->update(array(
+          'id'    => $id,
+          'path'  => $path
+        ));
+        $this->__cachePath = null;
+      }            
     }
     else
     {
-      $id = $this->currentRecord[$this->col_id];
-      $folder = $this->currentRecord;
+      $path = $label;
     }
-    
-    if ( ! $id )
-    {
-      return "";
-    }
-    
-    //if ( $this->__hasHierarchyFunc or $this->db->routineExists("{$this->table}_getHierarchyPath") )
-    //{
-    //  $this->__hasHierarchyFunc = true;
-    //  $path = $this->db->getValue( "SELECT {$this->table}_getHierarchyPath($id)");
-    //}
-    //else
-    //{
-      $label =  trim( str_replace( "/", "\\/", $folder[$this->col_label] ) );
-      $parentPath = $this->getPath( $folder[$this->col_parentId] );
-      $path .= ( $parentPath ? ($parentPath . "/") : "") . $label;
-    //}
+
     return $path;
   }
   

@@ -92,12 +92,13 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @param qcl_db_model $model
    * @param string $orderBy
    * @param mixed $properties
+   * @param bool $distinct
    */
-  function findByLinkedModel( $model, $orderBy=null, $properties="*" )
+  function findByLinkedModel( $model, $orderBy=null, $properties="*", $distinct=false )
   {
     $links = $this->getLinksByModel( &$model ); 
     $id    = $model->getId();
-    return $this->findWhere("t2.id=$id", $orderBy, $properties, $links[0] ); 
+    return $this->findWhere("t2.id=$id", $orderBy, $properties, $links[0], null, $distinct ); 
   }     
   
  	
@@ -264,7 +265,8 @@ class qcl_db_model extends qcl_db_AbstractModel
     }
     else
     {
-      $where = "`$column` LIKE '$searchExpr'"; 
+      $column = $this->getColumnName( $property );
+      $where  = "`$column` LIKE '$searchExpr'"; 
     }
     
     /*
