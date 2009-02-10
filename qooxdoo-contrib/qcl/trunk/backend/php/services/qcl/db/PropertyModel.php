@@ -652,16 +652,15 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
   }  
 
   /**
-   * Returns all values of a model property that match a where condition
+   * Returns all distinct values of a model property that match a where condition
    * @param string $property Name of property 
    * @param string|null[optional] $where Where condition to match, if null, get all
    * @param string|null[optional] $orderBy Property to order by 
-   * @param bool[optional, default false] If true, get only distinct values
    * @return array Array of values
    */
-  function findValues( $property, $where=null, $orderBy=null, $distinct=false )
+  function findDistinctValues( $property, $where=null, $orderBy=null)
   { 
-    $this->notImplemented( __CLASS__ );
+    return $this->findValues($property,$where,$orderBy,true);
   }
     
   /**
@@ -700,9 +699,22 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
    * @param bool[optional, default false] If true, get only distinct values
    * @return array Array of values
    */
-  function findDistinctValues( $property, $where=null, $orderBy=null )
+  function findDistinct( $property, $where=null, $orderBy=null )
   { 
-    return $this->findValues( $property, $where, $orderBy, true );
+    return $this->findBy( $property, $where, $orderBy, true );
+  }  
+  
+  /**
+   * Returns all values of a model property that match a where condition
+   * @param string $property Name of property 
+   * @param string|null[optional] $where Where condition to match, if null, get all
+   * @param string|null[optional] $orderBy Property to order by 
+   * @param bool[optional, default false] If true, get only distinct values
+   * @return array Array of values
+   */
+  function findValues( $property, $where=null, $orderBy=null, $distinct=false )
+  { 
+    $this->notImplemented( __CLASS__ );
   }  
   
   /**
