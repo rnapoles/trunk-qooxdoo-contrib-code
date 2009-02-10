@@ -116,7 +116,27 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       check : "Integer",
       init : 2,
       nullable : false
-    }    
+    },
+    
+    withOptions :
+    {
+      check : "Boolean",
+      init  : false
+    },
+    
+    options : 
+    {
+      check : "Array",
+      init  : null,
+      nullable : true,
+      event : "changeOptions"
+    },
+    
+    listBox :
+    {
+      check : "qx.ui.form.List",
+      nullable : true
+    }
   },
 
 	
@@ -145,7 +165,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         case "qx.ui.form.TextField":
         case "qx.ui.form.TextArea":
           this._textFieldWidget = this;
-          this._listBoxWidget = null;
+          this.setListBox( null ) ;
           break;
         
         /*
@@ -161,6 +181,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           }
           
           /*
+           * get options
+           */ 
+          this.setWithOptions( true );
+          
+          /*
            * text field widget
            */
           this._textFieldWidget = this.getField();
@@ -170,9 +195,9 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
            * default key and mouseover actions in the list box with custom
            * functions
            */
-          this._listBoxWidget = this.getList();
-          this._listBoxWidget.setEnableInlineFind(false);
-          this._listBoxWidget._onkeypress  = this._onListBoxKeypress;
+          this.setListBox( this.getList() );
+          this.getList().setEnableInlineFind(false);
+          this.getList()._onkeypress  = this._onListBoxKeypress;
           
           /*
            * hack to fix bug relating to focus management
@@ -537,7 +562,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        handler,
        this.getServiceMethodAutoComplete(), 
        input,
-       this._listBoxWidget ? true : false,
+       this.getWithOptions(),
        this.getMetaData()
       );
       this._requestPending = true;      
@@ -599,65 +624,71 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         //console.log ("we're late: '" +  input + "' != '" + cInput + "'." );
         return false;
       } 
-          
-      /*
-       * populate list widget and select matching entry
-       */
-      if ( this._listBoxWidget && data.options instanceof Array )
-      {        
-        if (data.options != this.lastOptions) 
-        {
-          // console.log("emptying listbox:");
-          this._listBoxWidget.removeAll();
-          
-          /*
-           * no need for a listbox with 1 or less entries
-           */
-          if ( data.options.length < 2 ) 
-          {
-            // console.log("no data or only one result, closing listbox:");
-            this._closePopup();
-            return false;
-          }
-          
-          // console.log("populating listbox:");
-          
-          /*
-           * populate listbox
-           */
-          for (var i = 0; i < data.options.length; i++) 
-          {
-            var l = data.options[i];
-            this._listBoxWidget.add(new qx.ui.form.ListItem(l.text, l.icon, l.value));
-          }
-          
-          /* 
-           * open popup
-           */ 
-          if (!this._listBoxWidget.isSeeable()) {
-            // console.log("opening popup");
-            this._openPopup();
-          }
-          
-          /*
-           * save options
-           */
-          delete this._lastOptions;
-          this._lastOptions = data.options;
-          
-        }
-   
-        // console.log("deselecting scrolling matched item into view");
+      
+      if (  data.options instanceof Array )
+      {
         
-        this._listBoxWidget._manager._deselectAll();  
+        this.setOptions( data.options );
         
         /*
-         * scroll matching item in the listbox into view
+         * populate list widget and select matching entry
          */
-        var matchedItem = this._listBoxWidget.findString(input);
-        if (matchedItem)
-        {
-          matchedItem.scrollIntoView();
+        if ( this.getListBox() )
+        {        
+          if ( data.options != this.lastOptions) 
+          {
+            // console.log("emptying listbox:");
+            this.getListBox().removeAll();
+            
+            /*
+             * no need for a listbox with 1 or less entries
+             */
+            if ( data.options.length < 2 ) 
+            {
+              // console.log("no data or only one result, closing listbox:");
+              this._closePopup();
+              return false;
+            }
+            
+            // console.log("populating listbox:");
+            
+            /*
+             * populate listbox
+             */
+            for (var i = 0; i < data.options.length; i++) 
+            {
+              var l = data.options[i];
+              this.getListBox().add(new qx.ui.form.ListItem(l.text, l.icon, l.value));
+            }
+            
+            /* 
+             * open popup
+             */ 
+            if (!this.getListBox().isSeeable()) {
+              // console.log("opening popup");
+              this._openPopup();
+            }
+            
+            /*
+             * save options
+             */
+            delete this._lastOptions;
+            this._lastOptions = data.options;
+            
+          }
+     
+          // console.log("deselecting scrolling matched item into view");
+          
+          this.getListBox()._manager._deselectAll();  
+          
+          /*
+           * scroll matching item in the listbox into view
+           */
+          var matchedItem = this.getListBox().findString(input);
+          if (matchedItem)
+          {
+            matchedItem.scrollIntoView();
+          }
         }
       }
 

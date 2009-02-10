@@ -406,9 +406,11 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
             else
             {
              //console.log("Selecting row #" + row);
+              this.__programmaticSelectionInProgress = true;
               this.scrollCellVisible(0,row);
               selModel.clearSelection();
-              selModel.addSelectionInterval(row,row);                      
+              selModel.addSelectionInterval(row,row); 
+              this.__programmaticSelectionInProgress = false;
             }
             this.setServerNodeIdSelected(parseInt(serverNodeId));   
           }
@@ -432,7 +434,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
            * event listener that waits for nodes to be loaded. 
            * if the server-side id matches, the node is selected
            */
-         //console.log("Attaching nodeLoadedCheckSelectEvent event listener...");
+          //console.log("Attaching nodeLoadedCheckSelectEvent event listener...");
           this.addEventListener("nodeLoaded",function(event){
             var node    = event.getData();
             var selId   = this.getServerNodeIdToSelect();
@@ -446,11 +448,29 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
               this.selectByServerNodeId(selId);
               this.setServerNodeIdToSelect(null);  
             }
-            else if (isSelId && this.isLoaded(isSelId) )
+            else if ( isSelId && this.isLoaded(isSelId) )
             {
               this.selectByServerNodeId(isSelId);
             }
+            
           },this);
+           
+          /*
+           * we need to stop selecting if user manually
+           * changes selection
+           */
+          this.addEventListener("changeSelection", function(){
+            
+            /*
+             * if the selection change comes from this mixin,
+             * ignore it, otherwise stop automatic loading
+             */
+            if ( ! this.__programmaticSelectionInProgress ) 
+            {
+              this.setServerNodeIdToSelect(null);
+            }
+            
+          },this); 
           
           this.__nodeLoadedCheckSelectEvent = true;
         }
