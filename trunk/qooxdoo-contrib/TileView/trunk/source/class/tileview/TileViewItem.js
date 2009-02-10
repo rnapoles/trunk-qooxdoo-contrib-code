@@ -43,6 +43,11 @@ qx.Class.define("tileview.TileViewItem",
      EVENTS
   *****************************************************************************
   */
+  events :
+  {
+    "changeDescription" : "qx.event.type.Data",
+    "changeStatus" : "qx.event.type.Data"
+  },
 
   properties :
   {
@@ -58,8 +63,8 @@ qx.Class.define("tileview.TileViewItem",
     {
       apply : "_applyDescription",
       nullable : true,
-      dispose : true,
-      check : "String"
+      check : "String",
+      event : "changeDescription"
     },
 
     /** The third line of text of the tileview.TileViewItem instance */
@@ -67,8 +72,8 @@ qx.Class.define("tileview.TileViewItem",
     {
       apply : "_applyStatus",
       nullable : true,
-      dispose : true,
-      check : "String"
+      check : "String",
+      event : "changeStatus"
     }
 
   },
