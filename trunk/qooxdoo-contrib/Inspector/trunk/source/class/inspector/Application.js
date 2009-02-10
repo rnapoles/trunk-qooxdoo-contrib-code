@@ -194,6 +194,7 @@ qx.Class.define("inspector.Application",
           // reset the enabled properties of the toolbar stuf
           this._selectedWidgetLabel.resetEnabled();
           this._urlTextField.resetEnabled();
+          this._reloadButton.resetEnabled();
           return true;
         } catch (ex) {
           qx.event.Timer.once(this.__initInspector, this, 500);
@@ -209,6 +210,8 @@ qx.Class.define("inspector.Application",
         this._selectedWidgetLabel.setEnabled(true);
         // enable the url field to give a chance to change the url
         this._urlTextField.setEnabled(true);
+        // enable the reload button
+        this._reloadButton.setEnabled(true);
         return false;
       }
     },
