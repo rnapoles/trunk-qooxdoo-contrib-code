@@ -192,7 +192,7 @@ qx.Class.define("inspector.console.DomView",
 
     _getHtmlToObject: function(o, index, name) {
       // create an empty string
-      var returnString = "";
+      var returnString = new qx.util.StringBuilder();
       // set a default name if none is set
       if (name == undefined) {
         var name = "Object";
@@ -201,7 +201,7 @@ qx.Class.define("inspector.console.DomView",
       // save the object in the path array
       this._breadCrumb[index] = {object: o, name: name};
       // add the breadcrums to the output
-      returnString += this._getReturnPath(index);
+      returnString.add(this._getReturnPath(index));
       
       // flag used to signal if properties were print out
       var nothingToShow = true;
@@ -209,13 +209,13 @@ qx.Class.define("inspector.console.DomView",
       // get the sorted and filtered properties
       var sortedValues = this._sortAndFilterProperties(o);
       // start the table which holds all attributes
-      returnString += "<table class='ins_dom_table'>";
+      returnString.add("<table class='ins_dom_table'>");
       // go threw all properties of the object
       for (var i = 0; i < sortedValues.length; i++) {        
         // mark that there has been a property printed out
         nothingToShow = false;
         // start the return divs
-        returnString += "";
+        returnString.add("");
         
         // if the key is a number
         if (!isNaN(sortedValues[i].key)) {
@@ -229,17 +229,17 @@ qx.Class.define("inspector.console.DomView",
         // if it is not an object
         if (!(sortedValues[i].value instanceof this._iFrameWindow.Object)) {
           // TODO build icon path!
-          returnString += "<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
-                          "../source/resources/inspector/images/spacer.gif" + 
-                          "'>" + this._console.escapeHtml(sortedValues[i].key) + "</td>";
+          returnString.add("<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
+                          "../source/resource/inspector/images/spacer.gif" + 
+                          "'>" + this._console.escapeHtml(sortedValues[i].key) + "</td>");
           
           // if the value is null
           if (sortedValues[i].value == null) {
-              returnString += "<td><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>";
+              returnString.add("<td><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>");
           } else if (typeof sortedValues[i].value == "string"){
-              returnString += "<td class='ins_dom_string'>&quot;" + this._console.escapeHtml(sortedValues[i].value) + "&quot;</td></tr>";              
+              returnString.add("<td class='ins_dom_string'>&quot;" + this._console.escapeHtml(sortedValues[i].value) + "&quot;</td></tr>");              
           } else {
-              returnString += "<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>";
+              returnString.add("<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>");
           }
           
         // if it is an object
@@ -258,21 +258,21 @@ qx.Class.define("inspector.console.DomView",
           // if it is not the selected object (self reference)
           if (sortedValues[i].value != o) {
             // print out the objects key incl. the link to select it         
-            returnString += "<tr><td class='" + keyStyle + "'><a onclick='" +
+            returnString.add("<tr><td class='" + keyStyle + "'><a onclick='" +
                             "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
                             "'><img class='ins_dom_front_image' src='" + 
                             "../source/resource/inspector/images/open.gif" + 
-                            "'>" + this._console.escapeHtml(sortedValues[i].key) + "</a></td>";
+                            "'>" + this._console.escapeHtml(sortedValues[i].key) + "</a></td>");
           }
           
           // if the object holds a reference to itself
           if (sortedValues[i].value == o) {
             // print out the objects key without the link to select it        
-            returnString += "<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
+            returnString.add("<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
                             "..source/inspector/images/spacer.gif" + 
-                            "'>" + sortedValues[i].key + "</td>";            
+                            "'>" + sortedValues[i].key + "</td>");            
             // print out a message for a self index
-            returnString += "<td class='ins_dom_self_ref'>self reference</td></tr>";
+            returnString.add("<td class='ins_dom_self_ref'>self reference</td></tr>");
 
           // if it is a function
           } else if (sortedValues[i].value instanceof this._iFrameWindow.Function) {
@@ -280,29 +280,29 @@ qx.Class.define("inspector.console.DomView",
             // if it is a qooxdoo class
             if (sortedValues[i].value.toString().substr(0, 7) == "[Class ") {
               // print out the objects value as a object
-              returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";              
+              returnString.add("<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>");              
             } else {
               // print out the objects value as a function
-              returnString += "<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                          
+              returnString.add("<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>");                          
             }
             
           } else {
             // print out the objects value
-            returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                      
+            returnString.add("<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>");                      
           }
         }
       }
       // end the table
-      returnString += "</table>";
+      returnString.add("</table>");
       
       // if there is no property
       if (nothingToShow) {
-          returnString += "<div class='ins_dom_no_prop'>There are no properties to show for this object.</div>";
+          returnString.add("<div class='ins_dom_no_prop'>There are no properties to show for this object.</div>");
       }
       
       // print out the code, if it is a function
-      returnString += this._getFunctionCode(o);
-      return returnString;
+      returnString.add(this._getFunctionCode(o));
+      return returnString.get();
     },
 
     
@@ -368,96 +368,98 @@ qx.Class.define("inspector.console.DomView",
 
     _getReturnPath: function(index) {
       // print the path to go back
-      var returnString = "<div class='ins_dom_return_path_main'>";  
+      var returnString = new qx.util.StringBuilder();
+      returnString.add("<div class='ins_dom_return_path_main'>");  
       
       // go threw the existing path
       for (var i = 0; i <= index; i++) {
         // if it is the current item
           if (i == index) {
-            returnString += " &raquo; <span class='ins_dom_return_path_selected'>"
+            returnString.add(" &raquo; <span class='ins_dom_return_path_selected'>");
         } else {
               // print out every item of the path
-            returnString += " &raquo; <span class='ins_dom_return_path_link' onclick='" + 
-                            "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + i + ")'>";            
+            returnString.add(" &raquo; <span class='ins_dom_return_path_link' onclick='" + 
+                            "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + i + ")'>");            
         }
         
         // print out the name
-        returnString += this._breadCrumb[i].name;
+        returnString.add(this._breadCrumb[i].name);
         
-        returnString += "</span>";
+        returnString.add("</span>");
       }
       // end the leading div
-      returnString += "</div>";
+      returnString.add("</div>");
       
-      return returnString;
+      return returnString.get();
     },
     
 
     _getObject: function(object, index, key) {
-      var returnString = "<a onclick='" +
-                             "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + index + ", \"" + key + "\")" + 
-                          "'>";
+      var returnString = new qx.util.StringBuilder();
+      returnString.add("<a onclick='" +
+                         "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + index + ", \"" + key + "\")" + 
+                       "'>");
                           
       // if it is a function
       if (object instanceof this._iFrameWindow.Function) {
         // if the toString contains a )
         if (object.toString().indexOf(")") != -1 ) {
           // take the first characters to the )
-          returnString += object.toString().substring(0, object.toString().indexOf(")") + 1);
+          returnString.add(object.toString().substring(0, object.toString().indexOf(")") + 1));
         } else {
           // take the whole toString
-          returnString += object.toString();
+          returnString.add(object.toString());
         }
 
       // if it is an array
       } else if (object instanceof this._iFrameWindow.Array) {
-        returnString += "[ ";
+        returnString.add("[ ");
         // print out the first elements if existent
         for (var j = 0; j < 2 && j < object.length; j++) {
           // if the element is a function
           if (object[j] instanceof this._iFrameWindow.Function) {
             // print out that it is a function int the function style
-            returnString += "<span class='ins_dom_func_object'>function()</span>";               
+            returnString.add("<span class='ins_dom_func_object'>function()</span>");               
           // if it is a string
           } else if (typeof object[j] == "string") {
             // print out the string in the string style
-            returnString += "<span class='ins_dom_string'>&quot;" + object[j] + "&quot;</span>";                               
+            returnString.add("<span class='ins_dom_string'>&quot;" + object[j] + "&quot;</span>");                               
           // if it is a object
           } else if (object[j] instanceof this._iFrameWindow.Object) {
             // print out the objects toSring in the object style
-            returnString += "<span class='ins_dom_object'>" + object[j] + "</span>";                
+            returnString.add("<span class='ins_dom_object'>" + object[j] + "</span>");                
           // in all other cases it is a primitive type
           } else {
             // print out the value in basic style
-            returnString += "<span class='ins_dom_basic'>" + object[j] + "</span>";                
+            returnString.add("<span class='ins_dom_basic'>" + object[j] + "</span>");                
           }            
           
           // print out the comma only if it is not the last element
           if (j != 1 && j != object.length - 1) {
-              returnString +=  ", ";
+              returnString.add(", ");
           }              
         }
         // if there are more elements
         if (object.length > 2) {
           // print out a message that there are more
-          returnString += ", ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]";              
+          returnString.add(", ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]");              
         } else {
           // close the array
-          returnString += " ]";
+          returnString.add(" ]");
         }
         
       // if it is a qooxdoo object  
       } else if (object instanceof this._iFrameWindow.qx.core.Object) {
-          returnString += object + "</a> <a style='color: #000000;' onclick=\"qx.core.Init.getApplication().setWidgetByHash('" + 
-                                    object.toHashCode() + "', 'console');\">select Object</u>";
+          returnString.add(object + "</a> <a style='color: #000000;' onclick=\"qx.core.Init.getApplication().setWidgetByHash('" + 
+                                    object.toHashCode() + "', 'console');\">select Object</u>");
 
       // if it is a regular object
       } else {
-          returnString += object;
+          returnString.add(object);
       }      
-      returnString += "</a>";
+      returnString.add("</a>");
       
-      return returnString;
+      return returnString.get();
     }    
     
   }
