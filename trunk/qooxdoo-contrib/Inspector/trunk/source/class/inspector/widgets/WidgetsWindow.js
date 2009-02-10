@@ -73,7 +73,7 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
     
     getSelection: function() {
       // get the selected element
-      var selectedElement = this._tree.getSelectedItem();
+      var selectedElement = this._tree.getSelected();
       // return the id if an element is selected
       if (selectedElement != null) {
         return selectedElement.getUserData("instance");
@@ -121,8 +121,8 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
         if (items.length > 1) {
           for (var m = 0; m < items.length; m++) {
             // check if the selection is on a folder which should be deleted
-            if (items[m + 1] == this._tree.getSelectedItem()) {
-              this._tree.clearSelection();
+            if (items[m + 1] == this._tree.getSelected()) {
+              this._tree.resetSelection();
             }          
             // remove all child folders
             parentTreeFolder.removeAt(0);
@@ -182,8 +182,8 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
             
             // check if the selection is on a folder which should be deleted
             if (parentTreeFolder.getItems()[i] != null) {
-              if (parentTreeFolder.getItems()[i] == this._tree.getSelectedItem()) {
-                this._tree.clearSelection();
+              if (parentTreeFolder.getItems()[i] == this._tree.getSelected()) {
+                this._tree.resetSelection();
               }
             }
             
@@ -354,7 +354,7 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
       // check the root element of the tree
       if (this._tree.getRoot().getUserData("instance").toHashCode() == id) {
         // select the root of the tree
-        this._tree.clearSelection();
+        this._tree.resetSelection();
         this._tree.addToSelection(this._tree.getRoot());
         return;
       }
@@ -365,7 +365,7 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
           // mark it as found
           elementFound = true;
           // select in in the tree
-          this._tree.clearSelection();
+          this._tree.resetSelection();
           this._tree.addToSelection(items[i]);
           // stop searching for the element
           break;
@@ -374,7 +374,7 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
       // if the element could not be found
       if (!elementFound) {
         // delete the selection in the tree
-        this._tree.clearSelection();
+        this._tree.resetSelection();
       }  
     },
     
@@ -387,7 +387,7 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
       // check the root element of the tree
       if (this._tree.getRoot().getUserData("instance").toHashCode() == id) {
         // select the root of the tree
-        this._tree.clearSelection();
+        this._tree.resetSelection();
         this._tree.addToSelection(this._tree.getRoot());
         // tell the inspector class that the widget has changed
         this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance(), this);        
