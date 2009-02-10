@@ -72,7 +72,7 @@ qx.Class.define("inspector.Application",
       this.__createToolbar();
             
       // create the iFrame
-      this._iFrame = new qx.ui.embed.Iframe();
+      this._iFrame = new qx.ui.embed.Iframe("..");
       this.getRoot().add(this._iFrame, {top: 29, left: 0, right: 0, bottom: 0});
       
       this._iFrame.addListener("load", this.__onLoad, this);
@@ -84,6 +84,10 @@ qx.Class.define("inspector.Application",
     __onLoad : function() {
       this.__checkCount = 0;
       this.__initInspector();
+      this._urlTextField.setValue(this._iFrame.getWindow().location.pathname);
+      
+      // save the url in a cookie
+      qx.bom.Cookie.set("url", this._iFrame.getSource());
     },
     
     __initInspector : function() 
@@ -109,9 +113,6 @@ qx.Class.define("inspector.Application",
     
       this._loading = false;
         
-      // save the url in a cookie
-      qx.bom.Cookie.set("url", this._iFrame.getSource());
-
       this.__checkForReload();
         
       // select the root of the new app
@@ -137,8 +138,6 @@ qx.Class.define("inspector.Application",
       if (this._widgetsWindow != null && this._widgetsWindow.isVisible()) {
         this._widgetsWindow.load(this._loadedWindow);
       }
-      
-      //TODO check for property
     },
     
     
@@ -302,7 +301,8 @@ qx.Class.define("inspector.Application",
       // get the url out of a cookie
       var cookieUrl = qx.bom.Cookie.get("url");
       if (cookieUrl == undefined || cookieUrl == "") {
-        cookieUrl = "Please enter an url here!";
+        //cookieUrl = "Please enter an url here!";
+        cookieUrl = "..";
       }
       // add the url textfield
       this._urlTextField = new qx.ui.form.TextField(cookieUrl);
