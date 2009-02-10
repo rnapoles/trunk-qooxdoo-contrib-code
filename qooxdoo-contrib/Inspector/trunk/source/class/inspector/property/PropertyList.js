@@ -417,7 +417,19 @@ qx.Class.define("inspector.property.PropertyList", {
       // read value
       var getterName = "get" + qx.lang.String.firstUp(key);
       try {
-        var value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
+        /*
+         * Fix for IE. 
+         * 
+         * The "this._controller.getQxObject()[getterName]();"
+         * could throw an exception, but the IE doesn't catch the exception.
+         * 
+         * TODO Find a solution why the IE doesen't catch the exception.
+         */
+        if (getterName === "getActiveWindow") { 
+          throw new Error("Property activeWindow of an instance of qx.ui.root.Abstract is not (yet) ready!");
+        } else {
+          var value = this._controller.getQxObject()[getterName]();
+        }
       } catch (ex) {
         return new qx.ui.basic.Label();
       }
@@ -648,7 +660,19 @@ qx.Class.define("inspector.property.PropertyList", {
       // read value
       var getterName = "get" + qx.lang.String.firstUp(key);
       try {
-        var value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());  
+        /*
+         * Fix for IE. 
+         * 
+         * The "this._controller.getQxObject()[getterName]();"
+         * could throw an exception, but the IE doesn't catch the exception.
+         * 
+         * TODO Find a solution why the IE doesen't catch the exception.
+         */
+        if (getterName === "getActiveWindow") {
+          throw new Error("Property activeWindow of an instance of qx.ui.root.Abstract is not (yet) ready!");
+        } else {
+          var value = this._controller.getQxObject()[getterName]();  
+        }
       } catch (ex) {
         layout.getCellWidget(row, 3).setVisibility("visible");
         layout.getCellWidget(row, 3).setSource("inspector/images/shell/errorIcon.png");
