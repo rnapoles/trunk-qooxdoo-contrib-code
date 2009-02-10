@@ -423,7 +423,7 @@ qx.Class.define("inspector.property.PropertyList", {
          * The "this._controller.getQxObject()[getterName]();"
          * could throw an exception, but the IE doesn't catch the exception.
          * 
-         * TODO Find a solution why the IE doesen't catch the exception.
+         * TODO Find a solution why IE doesn't catch this exception.
          */
         if (getterName === "getActiveWindow") { 
           throw new Error("Property activeWindow of an instance of qx.ui.root.Abstract is not (yet) ready!");
@@ -666,7 +666,7 @@ qx.Class.define("inspector.property.PropertyList", {
          * The "this._controller.getQxObject()[getterName]();"
          * could throw an exception, but the IE doesn't catch the exception.
          * 
-         * TODO Find a solution why the IE doesen't catch the exception.
+         * TODO Find a solution why IE doesn't catch this exception.
          */
         if (getterName === "getActiveWindow") {
           throw new Error("Property activeWindow of an instance of qx.ui.root.Abstract is not (yet) ready!");
