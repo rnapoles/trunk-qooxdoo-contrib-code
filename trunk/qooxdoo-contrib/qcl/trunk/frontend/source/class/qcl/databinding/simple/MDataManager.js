@@ -201,6 +201,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     /**
      * Generic getter for options that can be selected
      * retrieves selection manager and selects the widget
+     * @return {Object}
      */
     _applyItemSelected : function()
     {
@@ -229,7 +230,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * overriding classes can pass the arguments on like so:
      * this._updateClient.apply(this,arguments)
      * 
-     * @type member
      * @return {void}
      */
     updateClient : function()
@@ -237,14 +237,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       this._updateClient.apply(this,arguments);
     },
 
-    /**
+    /** 
      * public API function to execute a method on the server.
      * Can have a variable number of arguments.
      * Actually exactly the same function as updateClient, but 
      * doesn't expect any data response and added for the purpose
      * of clearer code.
      * 
-     * @type member
      * @return {void}
      */
     executeService : function()
