@@ -384,11 +384,14 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    * get all properties from unlinked and linked models, respectively.
    * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
    * automatically generate the necessary join query.
+   * @param bool $distinct Whether only distinct values should be returned
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $conditions=null )
+  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $conditions=null, $distict=false )
   {
+  
+    
     /*
      * columns to retrieve
      */
@@ -516,8 +519,20 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     /*
      * select 
      */
-    $sql = "\n   SELECT $columns ";
+    $sql = "\n   SELECT ";
+
+    /*
+     * distinct values?
+     */
+    if ( $distict )
+    {
+      $sql .= "DISTINCT ";
+    }
     
+    /*
+     * columns
+     */
+    $sql .= $columns;
     
     /*
      * from

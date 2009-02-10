@@ -225,6 +225,89 @@ class qcl_db_model extends qcl_db_AbstractModel
     return $translatedRow;
   }  
   
+  /**
+   * Returns values for autocompletion
+   * @param string|array $property Name of property from which values are to be drawn
+   * @param string $fragment Text fragment to be autocompleted
+   * @param string $separator If given, split the field values by this separator (for multi-value fields)
+   * @param array $match If given, match these properties
+   * @param bool $startsWith If true (default), look only for matching values at the beginning of the field.
+   * If false, match fragment anywhere.
+   * @todo move sql part into database code
+   */
+  function autoCompleteValues( $property, $fragment, $separator=null, $match=null, $startsWith = true )
+  {
+    /*
+     * how to match the field values
+     */
+    if ( $startsWith )
+    {
+      $searchExpr = "$fragment%";
+    }
+    else
+    {
+      $searchExpr = "%$fragment%";
+    }
+    
+    /*
+     * which colums to match
+     */
+    if ( is_array( $match ) )
+    {
+      $w = array();
+      foreach( $match as $p )
+      {
+        $c   = $this->getColumnName( $p );
+        $w[] = "`$c` LIKE '$searchExpr'";
+      } 
+      $where = implode(" OR ", $w );
+    }
+    else
+    {
+      $where = "`$column` LIKE '$searchExpr'"; 
+    }
+    
+    /*
+     * if several properties where requested, return all results
+     */
+    if ( is_array($property) )
+    {
+      $this->findWhere($where, $property, $property);
+      return $this->getResult();
+    }
+    
+    /*
+     * if only one property was requested, return list of distinct
+     * values, optionally split by separator
+     */
+    else
+    {
+      $list = array();
+      $values = $this->findDistinctValues($property,$where,$property);
+      foreach( $values as $value )
+      {
+        /*
+         * if a separator is given, split values
+         */
+        if ( $separator )
+        {
+          foreach( explode( $separator, $value ) as $item) 
+          {
+            if ( strtolower( substr($item, 0, strlen( $fragment ) ) )  == strtolower( $fragment ) ) 
+            {
+              $list[] = trim( $item ); 
+            }
+          } 
+        }
+        else
+        {
+          $list[] = trim( $value ); 
+        }
+      }
+      return array_unique( $list );
+    }
+  }
+  
  
   /**
    * Parse xml schema file and, if it has changed, create or update
