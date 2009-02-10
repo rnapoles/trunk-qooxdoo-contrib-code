@@ -284,8 +284,28 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 						break;		
             
           case "autocomplete":
-						cellEditor = table._getCustomAutoCompleteComboBoxCellEditor(table,metaData.autocomplete);
-						break;                        								
+            if ( metadata.autocomplete.separator )
+            {
+              var cellEditor = new qcl.databinding.simple.MultipleValueCellEditor;
+            }
+            else
+            {
+              var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditor;
+              
+              /*
+               * configure autocomplete metadata
+               */
+              cellEditor.setMetaData( metaData.autocomplete );
+              
+              /*
+               * set a reference to this property editor and overwrite open popup method
+               */
+              cellEditor.setTable( table );
+              cellEditor.setOpenPopupFunction( table._openPopup );
+              cellEditor.setClosePopupFunction( table._closePopup );              
+            }
+
+						break;
 				}	
 			}
 			return cellEditor;
@@ -310,31 +330,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     },
     
     
-    /**
-     * private method to configure the autocompleting combobox in-place-editor
-     * @return qcl.databinding.simple.AutoCompleteComboBoxCellEditor
-     */  
-	  _getCustomAutoCompleteComboBoxCellEditor : function (propertyEditor,autocompleteInfo)
-    {
-      var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditor;
-      
-      /*
-       * configure autocomplete metadata
-       */
-      cellEditor.setMetaData(autocompleteInfo);
-      
-      /*
-       * set a reference to this property editor and overwrite open popup method
-       */
-      cellEditor.setTable(propertyEditor);
-      cellEditor.setOpenPopupFunction(propertyEditor._openPopup);
-      cellEditor.setClosePopupFunction(propertyEditor._closePopup);
-      
-      /*
-       * return altered combobox
-       */
-      return cellEditor;
-    },
+
   
     /**
      * Sets the position and width of the combobox popup. Additionally dispatches an event
