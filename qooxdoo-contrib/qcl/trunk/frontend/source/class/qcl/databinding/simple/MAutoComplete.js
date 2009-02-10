@@ -129,7 +129,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
   members :
   {
     /**
-     * turn autocompletion on or off
+     * Turn autocompletion on or off
      * @return {void}
      */
     _applyAutoComplete : function(propValue,oldPropValue)
@@ -152,12 +152,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
          * ComboBox
          */
         case "qx.ui.form.ComboBox":
-          /*
+          /* 
            * if not editable, autocomplete doesn't make sense
            */       
-          if (!this.getEditable())
+          if ( !this.getEditable() )
           {
-            return false;
+            return;
           }
           
           /*
@@ -195,26 +195,24 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           
         default:
           this.error("Invalid widget!");
-          return false;
+          return;
       }
       
-      /*
-       * setup key event listener
-       */ 
-      this._textFieldWidget.addEventListener("keydown", this._handleTextFieldKeypress,this);
-      
+     
       /*
        * setup or remove event listeners
        */
-      if (propValue)
+      if ( propValue )
       {
-        this._textFieldWidget.setLiveUpdate(true);
         this._lastKeyPress = (new Date).valueOf();
+        this._textFieldWidget.setLiveUpdate(true);
+        this._textFieldWidget.addEventListener("keydown", this._handleTextFieldKeypress,this);
         this._textFieldWidget.addEventListener("input",this._onInput,this);
         this._textFieldWidget.addEventListener("changeValue",this._onChangeValue,this);
       }
       else
       {
+        this._textFieldWidget.removeEventListener("keydown", this._handleTextFieldKeypress,this);
         this._textFieldWidget.removeEventListener("input",this._onInput,this);
         this._textFieldWidget.removeEventListener("changeValue",this._onChangeValue,this);
       }
@@ -224,7 +222,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /**
      * function that overwrites the default onkeypress action of listbox widget
      *
-     * @type member
      * @param e {qx.event.type.KeyEvent} keyPress event
      * @return {void}
      */
@@ -254,7 +251,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /**
      * Handles the keypress event of the textfield
      *
-     * @type member
      * @param e {qx.event.type.KeyEvent} keyPress event
      * @return {void}
      */
@@ -262,7 +258,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     {
       var keyEvent, key = e.getKeyIdentifier();
       //console.log("text field keypress event:" +  key );
-      switch(key)
+      switch( key )
       {
         case "Enter": 
         case "Tab": 
@@ -279,8 +275,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /**
      * Event handler for value change to handle change triggered by the list box 
      *
-     * @type member
-     * @return {Object}
+     * @return {void}
      */    
     _onChangeValue : function(e)
     {
@@ -363,8 +358,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /**
      * event handler for event triggering the autocomplete action
      *
-     * @type member
-     * @return {Object}
+     * @return {void}
      */    
     _onInput : function(e)
     {
@@ -388,6 +382,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     	 * delay before sending request
     	 */
       var now = (new Date).valueOf(); 
+      
       if (( now - this._lastKeyPress) < this.getDelay() ) 
       {
         // console.log( "delay not reached");
@@ -408,7 +403,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         var _this = this;
         this.__deferredInput = window.setTimeout(function(){
           _this._onInput(e);
-        },this.getDelay() );
+        }, this.getDelay() );
         return;
       }
 
@@ -452,7 +447,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /**
      * retrieves autocomplete values from server
      *
-     * @type member
      * @return {void}
      */
     _getAutoCompleteValues : function(input)
@@ -473,6 +467,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     
     /**
      * sending a request using jsonrpc as transport
+     * @todo streamline with data manager
      */
     _useJsonRpc : function (input)
     {
@@ -484,7 +479,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       rpc.setUrl(this.getServiceUrl());
       rpc.setServiceName(this.getServiceName() );
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
-      
+
+      /*
+       * application state is sent as server data
+       */
+      var app = qx.core.Init.getInstance().getApplication();
+      rpc.setServerData( app.getStates() );  
       
       /*
        * define callback function
@@ -505,7 +505,8 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
            */
           if ( result === null )
           {
-            _this.setAutoComplete(false);
+            _this.setAutoComplete( false );
+            console.warn("No autocomplete result from server!");
             return;
           }
                           
@@ -514,7 +515,9 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
            */
           _this.__handleEventsAndMessages( _this, result );
           
-          // use the autocomplete values
+          /*
+           * use the autocomplete values
+           */
           _this._handleAutoCompleteValues(result);
           
         } 
@@ -522,10 +525,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         {
           qx.event.message.Bus.dispatch(
               "qcl.databinding.messages.rpc.error",
-              "Async(" + id + ") exception: " + 
-              "origin: " + ex.origin +
-              "; code: " + ex.code +
-              "; message: " + ex.message
+              ex.message
           );
         }
       };
@@ -553,8 +553,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      * }
      *  
      *
-     * @type member
-     * @return {Object}
+     * @return {void}
      */  
     _handleAutoCompleteValues : function (data)
     {
