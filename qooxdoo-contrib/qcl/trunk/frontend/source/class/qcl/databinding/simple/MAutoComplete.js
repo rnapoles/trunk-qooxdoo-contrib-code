@@ -19,7 +19,6 @@
 
 /* ************************************************************************
 
-#require(qcl.databinding.simple.MDataManager)
 
 ************************************************************************ */
 
@@ -81,7 +80,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     {
       init : "",
       nullable : true
-    },
+    },    
 
     /** 
      * Service method returning the autocomplete data
@@ -171,6 +170,58 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       check : "Object",
       nullable: false
     }
+    
+// Uncomment the following lines if you use this class without 
+// the qcl.databinding.simple.MDataManager mixin
+    
+//    ,/** 
+//     * The method to be used for data transport. Currently,
+//     * only jsonrpc is supported
+//     */
+//    transport :
+//    {
+//      check : [ "jsonrpc" ],
+//      init : "jsonrpc",
+//      nullable : false
+//    },
+//
+//    /**  
+//     * The uri of the rpc server 
+//     * defaults to php backend
+//     */ 
+//    serviceUrl :
+//    {
+//      check : "String",
+//      init : "../../backend/php/services/index.php",
+//      nullable : false
+//    },
+//
+//    /**  
+//     * Service class name that provides the autocomplete method
+//     */ 
+//    serviceName :
+//    {
+//      check : "String",
+//      nullable : false
+//    },
+//    
+//    /**
+//     * Timeout for request 
+//     */
+//    timeout :
+//    {
+//      check : "Integer",
+//      init : 30000
+//    },
+//
+//    /** 
+//     * Whether cross-domain requests will be used 
+//     */
+//    allowCrossDomainRequests :
+//    {
+//      check : "Boolean",
+//      init : false
+//    }    
   },
 
 	
@@ -323,6 +374,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       {
         case "Enter": 
 
+          /*
+           * pressing enter when text is selected should
+           * not delete the text, this is the common
+           * user experience for autocomplete, i.e. in 
+           * openoffice
+           */
           if ( this._autoTextSelection )
           {
             var selStart  = this.getTextBox().getSelectionStart();
@@ -577,9 +634,13 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 
       /*
        * application state is sent as server data
+       * this is part of qcl.databinding package
        */
       var app = qx.core.Init.getInstance().getApplication();
-      rpc.setServerData( app.getStates() );  
+      if ( app.getStates )
+      {
+        rpc.setServerData( app.getStates() );
+      }
       
       /*
        * define callback function
