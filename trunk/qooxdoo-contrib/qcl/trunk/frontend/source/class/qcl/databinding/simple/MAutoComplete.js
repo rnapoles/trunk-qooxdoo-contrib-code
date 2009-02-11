@@ -64,7 +64,9 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     ---------------------------------------------------------------------------
     */
 
-    /** switch to turn databinding on or off */
+    /** 
+     * Turn databinding on or off 
+     */
     autoComplete :
     {
       check : "Boolean",
@@ -72,21 +74,30 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       apply : "_applyAutoComplete"
     },
     
-    /** separator for multi-valued texts */
+    /**  
+     * Separator for multi-valued texts 
+     */
     separator :
     {
       init : "",
       nullable : true
     },
 
-    /** service method returning the autocomplete data */
+    /** 
+     * Service method returning the autocomplete data
+     */
     serviceMethodAutoComplete :
     {
       init : "",
       nullable : true
     },
     
-    /** metadata for the service method  */
+    /**
+     * Metadata for the service method. This will be sent
+     * with the rpc request and can contain additional information
+     * that the service method might need to supply the right
+     * autocomplete values
+     */
     metaData :
     {
       check : "Map",
@@ -94,7 +105,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       nullable : true
     },
     
-    /** 
+    /**  
      * Delay between keysstrockes in milliseconds before autocompleting action
      * is activated. this prevents that too many requests are dispatches when
      * typing quickly.
@@ -102,11 +113,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     delay :
     {
       check : "Integer",
-      init : 300,
+      init : 100,
       nullable : false
     },
     
-    /** 
+    /**  
      * Minimum number of characters that are needed before autocompletion is triggered
      * This can be used to tune the size of the results dependent on the size
      * of the data.
@@ -118,12 +129,21 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       nullable : false
     },
     
+    /**
+     * Whether the autocomplete service method should send a
+     * suggestion only (false) or also listItem data for 
+     * the comboBox popup or similar widgets (true)
+     */
     withOptions :
     {
       check : "Boolean",
       init  : false
     },
     
+    /**
+     * This will contain the options returned by the last
+     * rpc request
+     */
     options : 
     {
       check : "Array",
@@ -132,10 +152,24 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       event : "changeOptions"
     },
     
+    /**
+     * This contains a reference to the qx.ui.form.List widget
+     * which displays the options, if any.
+     */
     listBox :
     {
       check : "qx.ui.form.List",
       nullable : true
+    },
+    
+    /**
+     * This contains a reference to the qx.ui.form.TextField
+     * or qx.ui.form.TextArea that the user types in.
+     */
+    textBox :
+    {
+      check : "Object",
+      nullable: false
     }
   },
 
@@ -164,7 +198,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
          */
         case "qx.ui.form.TextField":
         case "qx.ui.form.TextArea":
-          this._textFieldWidget = this;
+          this.setTextBox( this );
           this.setListBox( null ) ;
           break;
         
@@ -188,7 +222,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           /*
            * text field widget
            */
-          this._textFieldWidget = this.getField();
+          this.setTextBox( this.getField() );
           
           /*
            * disable inline find and overwrite 
@@ -196,8 +230,8 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
            * functions
            */
           this.setListBox( this.getList() );
-          this.getList().setEnableInlineFind(false);
-          this.getList()._onkeypress  = this._onListBoxKeypress;
+          this.getListBox().setEnableInlineFind(false);
+          this.getListBox()._onkeypress  = this._onListBoxKeypress;
           
           /*
            * hack to fix bug relating to focus management
@@ -212,7 +246,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             }
             else
             {
-              this._textFieldWidget.focus();
+              this.getTextBox().focus();
             }
           }
           
@@ -227,19 +261,21 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       /*
        * setup or remove event listeners
        */
+      var tb = this.getTextBox();
+       
       if ( propValue )
       {
         this._lastKeyPress = (new Date).valueOf();
-        this._textFieldWidget.setLiveUpdate(true);
-        this._textFieldWidget.addEventListener("keydown", this._handleTextFieldKeypress,this);
-        this._textFieldWidget.addEventListener("input",this._onInput,this);
-        this._textFieldWidget.addEventListener("changeValue",this._onChangeValue,this);
+        tb.setLiveUpdate(true);
+        tb.addEventListener("keydown", this._handleTextFieldKeypress,this);
+        tb.addEventListener("input",this._onInput,this);
+        tb.addEventListener("changeValue",this._onChangeValue,this);
       }
       else
       {
-        this._textFieldWidget.removeEventListener("keydown", this._handleTextFieldKeypress,this);
-        this._textFieldWidget.removeEventListener("input",this._onInput,this);
-        this._textFieldWidget.removeEventListener("changeValue",this._onChangeValue,this);
+        tb.removeEventListener("keydown", this._handleTextFieldKeypress,this);
+        tb.removeEventListener("input",this._onInput,this);
+        tb.removeEventListener("changeValue",this._onChangeValue,this);
       }
     },    
 
@@ -286,6 +322,16 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       switch( key )
       {
         case "Enter": 
+
+          if ( this._autoTextSelection )
+          {
+            var selStart  = this.getTextBox().getSelectionStart();
+            var selLength = this.getTextBox().getSelectionLength();
+            if ( selLength )
+            {
+              this.getTextBox().selectFromTo( selStart+selLength,selStart+selLength);              
+            }
+          }
         case "Tab": 
         case "Up": 
         case "Down":
@@ -323,7 +369,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       
       /*
        * skip the following action if the change has
-       * been caused by it. Otherwise, we would have
+       * been caused by this very mixin. Otherwise, we would have
        * an infinite loop.
        */
       if ( this._preventChange )
@@ -362,7 +408,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
          * select what we have inserted
          */
         qx.client.Timer.once(function(){
-          this._textFieldWidget.selectFromTo( sepPosLCont, newContent.length );
+          this.getTextBox().selectFromTo( sepPosLCont, newContent.length );
         },this,100);          
               
       }
@@ -376,7 +422,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         this._lastContent = content;
       }
 
-      // console.log("saving content: " + this._lastContent );
+      // //console.log("saving content: " + this._lastContent );
     },
 
 
@@ -387,21 +433,37 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      */    
     _onInput : function(e)
     {
+      
       /*
        * is a request pending?
        */
       if ( this._requestPending )
       {
+        //console.log("A request is pending...");
         return; 
       }
       
+      var tb =  this.getTextBox();
       /*
        * get and save current content of text field
        */
-      var content = this._textFieldWidget.getValue();  
+      var content = tb.getValue();  
+      
+      /*
+       * do not start query if only whitespace has been added
+       */
+       if ( qx.lang.String.trim( content ) != tb.getValue() )
+       {
+         //console.log("Only whitespace added ...");
+         return;
+       }
+       
+      /*
+       * cache content
+       */ 
       this._lastContent = content;
       
-      // console.log( "user typed: " + content );
+      //console.log( "user typed: " + content );
     
     	/*
     	 * delay before sending request
@@ -410,7 +472,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       
       if (( now - this._lastKeyPress) < this.getDelay() ) 
       {
-        // console.log( "delay not reached");
+        //console.log( "delay not reached");
         this._lastKeyPress = now;
         
         /*
@@ -431,27 +493,31 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         }, this.getDelay() );
         return;
       }
-
       
       /*
        * separator for multi-valued fields
        */
       var sep = this.getSeparator();
       
-      /*
-       * start of text fragment to be matched
-       */
-      var start = sep ? ( content.lastIndexOf ( sep ) + 1 ) : 0;
-      
-      /*
-       * strip whitespace
-       */
-      while ( content.charAt(start) == " ") start++;
+       /*
+        * rewind
+        */
+       var selStart = tb.getSelectionStart();
+       while ( selStart > 0 
+               && content.charAt(selStart-1) != sep ) selStart--;
+       
+       /*
+        * forward
+        */
+       var selEnd = selStart;
+       while ( selEnd < content.length 
+               && content.charAt(selEnd) != sep ) selEnd++;
       
       /*
        * text fragment
        */
-      var input = content.substr(start).replace(/\n/,"");
+      var input = qx.lang.String.trim( content.substring( selStart,selEnd ) );
+      //console.log( "'" + input +"'");
       
       /*
        * Store timestamp
@@ -466,11 +532,15 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         //console.log( "sending request for " + input );
         this._getAutoCompleteValues(input);  
       }
+      else
+      {
+        //console.log("Not enough characters...");
+      }
       
     },    
     
     /**
-     * retrieves autocomplete values from server
+     * Retrieves autocomplete values from server
      *
      * @return {void}
      */
@@ -577,13 +647,18 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      *                { ... }, ... ]
      * }
      *  
-     *
+     * @todo insert at caret position
      * @return {void}
      */  
     _handleAutoCompleteValues : function (data)
     {
       
       //console.log(data);
+      /*
+       * text and list box widgets
+       */
+      var tb = this.getTextBox();
+      var lb = this.getListBox();
       
       /*
        * user input at event time
@@ -593,7 +668,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       /*
        * current content of text field
        */
-      var content = this._textFieldWidget.getValue() || "";              
+      var content = tb.getValue() || "";              
       
       /*
        * separator for multi-value fields
@@ -601,19 +676,24 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       var sep = this.getSeparator();                            
       
       /*
-       * start of text fragment that needs to be matched
+       * rewind
        */
-      var start = sep ? ( content.lastIndexOf ( sep ) + 1 ) : 0;  
+      var selStart = tb.getSelectionStart();
+      while ( selStart > 0 
+              && content.charAt(selStart-1) != sep ) selStart--;
       
       /*
-       * trim whitespace
+       * forward
        */
-      while ( content.charAt(start) == " ") start++;
+      var selEnd = selStart;
+      while ( selEnd < content.length 
+              && content.charAt(selEnd) != sep ) selEnd++;
       
       /*
        * get text fragment
        */
-      var cInput  = content.substr(start).replace(/\n/,"");
+      var cInput = qx.lang.String.trim( content.substring(selStart,selEnd) );
+      //console.log ("trying to match '" +  input + "' with '" + cInput + "'." );
       
       /*
        * check whether input is still the same so that latecoming request
@@ -622,6 +702,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       if ( input != cInput )
       {
         //console.log ("we're late: '" +  input + "' != '" + cInput + "'." );
+        this._getAutoCompleteValues( cInput );
         return false;
       } 
       
@@ -637,20 +718,20 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         {        
           if ( data.options != this.lastOptions) 
           {
-            // console.log("emptying listbox:");
-            this.getListBox().removeAll();
+            // //console.log("emptying listbox:");
+            lb.removeAll();
             
             /*
              * no need for a listbox with 1 or less entries
              */
-            if ( data.options.length < 2 ) 
+            if ( data.options.length < 2 && this._closePopup ) 
             {
-              // console.log("no data or only one result, closing listbox:");
+              // //console.log("no data or only one result, closing listbox:");
               this._closePopup();
               return false;
             }
             
-            // console.log("populating listbox:");
+            // //console.log("populating listbox:");
             
             /*
              * populate listbox
@@ -658,14 +739,14 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             for (var i = 0; i < data.options.length; i++) 
             {
               var l = data.options[i];
-              this.getListBox().add(new qx.ui.form.ListItem(l.text, l.icon, l.value));
+              lb.add(new qx.ui.form.ListItem(l.text, l.icon, l.value));
             }
             
             /* 
              * open popup
              */ 
-            if (!this.getListBox().isSeeable()) {
-              // console.log("opening popup");
+            if ( ! lb.isSeeable() && this._openPopup ) {
+              // //console.log("opening popup");
               this._openPopup();
             }
             
@@ -677,14 +758,14 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             
           }
      
-          // console.log("deselecting scrolling matched item into view");
+          // //console.log("deselecting scrolling matched item into view");
           
-          this.getListBox()._manager._deselectAll();  
+          lb._manager._deselectAll();  
           
           /*
            * scroll matching item in the listbox into view
            */
-          var matchedItem = this.getListBox().findString(input);
+          var matchedItem = lb.findString(input);
           if (matchedItem)
           {
             matchedItem.scrollIntoView();
@@ -696,30 +777,32 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       /*
        * apply matched text and suggestion to content
        */
+       this._autoTextSelection = null;
       if ( typeof data.suggest == "string")
       {
-        var part1 = content.substr(0,start);
-        var part2 = data.suggest;
-        var nContent =  part1 + part2;
-         
-        //console.log("setting: " + part1 + " + " + part2 );
+        
+        var text = data.suggest;
         
         /* 
          * set value
          */ 
         this.__autocompleteActive = true;
-        this.setValue( nContent );
+        tb.selectFromTo(selStart,selEnd);     
+        tb.setSelectionText( text );
         this.__autocompleteActive = false;
-        this._lastContent = nContent;
+        this._lastContent = tb.getValue();
         
         /*
-         * select suggested text
+         * remember what is selected
          */
-        qx.client.Timer.once(function(){
-          this._textFieldWidget.selectFromTo( content.length, nContent.length );
-        },this,100);
-
-         //console.log("selecting from " + content.length + " to " + nContent.length );
+        this._autoTextSelection = text.substr(input.length);
+        
+        /*
+         * select the added text
+         */
+        qx.client.Timer.once( function(){
+          tb.setSelectionStart(selStart+input.length);
+        },this,0);
 
       }
     }

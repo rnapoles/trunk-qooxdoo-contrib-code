@@ -64,6 +64,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     this.setKeepFirstVisibleRowComplete(true);
     this.setStatusBarVisible(false);
     this.setAlwaysUpdateCells(true);
+
     
     // navigation up and down
     this.addEventListener("changeEditedCell",function(e)
@@ -223,9 +224,16 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 			var tableModel 	= table.getTableModel();
 			var rowData			= tableModel.getRowData(cellInfo.row);
 			var metaData		= rowData[3];
-			var cellEditor 	= new qx.ui.table.celleditor.TextField;	
+			
+			/*
+			 * default
+			 */
+			var cellEditor  = new qx.ui.table.celleditor.TextField; 
 			var validationFunc 	= null;
 			 
+			/*
+			 * meta data special cases
+			 */
 			for ( var cmd in metaData )
 			{
 				switch ( cmd )
@@ -233,16 +241,20 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 					case "options":
 						cellEditor = new qx.ui.table.celleditor.ComboBox;
 						cellEditor.setListData( metaData['options'] );
-						cellEditor.setEditable( false );
 						break;
 
           case "type":
              switch ( metaData['type'] )
              {
+               case "radio" :
+                 cellEditor = new qcl.databinding.simple.RadioCellEditorFactory;
+                 break;
                case "password":
-                 cellEditor = new qx.ui.table.celleditor.PasswordField; break;  
+                 cellEditor = new qx.ui.table.celleditor.PasswordField; 
+                 break;  
                case "checkbox":
-						     cellEditor = new qx.ui.table.celleditor.CheckBox; break;
+						     cellEditor = new qx.ui.table.celleditor.CheckBox; 
+						     break;
                case "email":
     						 cellEditor.setValidationFunction (function( newValue, oldValue ){
     							 var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*\.(\w{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/;
@@ -284,27 +296,30 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 						break;		
             
           case "autocomplete":
-            if ( metadata.autocomplete.separator )
+            if ( metaData.autocomplete.separator )
             {
-              var cellEditor = new qcl.databinding.simple.MultipleValueCellEditor;
+              var cellEditor = new qcl.databinding.simple.MultipleValueCellEditorFactory;
             }
             else
             {
-              var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditor;
-              
+              var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory;
               /*
-               * configure autocomplete metadata
+               * overwrite open popup method
                */
-              cellEditor.setMetaData( metaData.autocomplete );
-              
-              /*
-               * set a reference to this property editor and overwrite open popup method
-               */
-              cellEditor.setTable( table );
               cellEditor.setOpenPopupFunction( table._openPopup );
               cellEditor.setClosePopupFunction( table._closePopup );              
             }
 
+            /* 
+             * set a reference to this property editor
+             */
+            cellEditor.setTable( table );
+            
+            /*
+             * configure autocomplete metadata
+             */
+            cellEditor.setMetaData( metaData.autocomplete );
+            
 						break;
 				}	
 			}

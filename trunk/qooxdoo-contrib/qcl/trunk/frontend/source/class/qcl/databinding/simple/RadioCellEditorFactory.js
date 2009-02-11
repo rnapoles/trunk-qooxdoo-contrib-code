@@ -29,7 +29,7 @@
  *
  *
  */
-qx.Class.define("qcl.databinding.simple.MultipleValueCellEditor",
+qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
 {
   extend : qx.core.Target,
   implement : qx.ui.table.ICellEditorFactory,
@@ -54,18 +54,6 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditor",
   properties :
   {
 
-    /**
-     * function that validates the result
-     * the function will be called with the new value and the old value and is
-     * supposed to return the value that is set as the table value.
-     **/
-    validationFunction :
-    {
-      check : "Function",
-      nullable : true,
-      init : null
-    },
-
     /** the table this cellEditor is attached to */
     table :
     {
@@ -76,7 +64,14 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditor",
     /** metadata for the cell editor */
     metaData :
     {
+      check : "Map",
       init : null,
+      nullable : true
+    },
+    
+    listData : 
+    {
+      check: "Array",
       nullable : true
     }
    
@@ -99,6 +94,11 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditor",
        * create window
        */
       var cellEditor = new qx.ui.window.Window;
+      cellEditor.setShowMinimize(false);
+      cellEditor.setShowClose(true);
+      cellEditor.setHeight("auto");
+      cellEditor.setWidth("auto");
+      cellEditor.setCaption(this.tr("Choose an option"));
       
       /*
        * center to browser when it appears
@@ -106,50 +106,29 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditor",
       cellEditor.addEventListener("appear",function(){
         cellEditor.centerToBrowser();
       },this);
-         
-      /*
-       * create content layout
-       */ 
-      var hbox = new qx.ui.layout.horizontalBoxLayout;
-      hbox.setDimension("100%","100%");
-      hbox.setSpacing(5);
-      cellEditor.add(hbox);
       
       /*
-       * textarea
+       * vertical layout
        */
-      cellEditor._textArea = new qx.ui.form.TextArea;
-      cellEditor._textArea.setWidth("1*");
-      cellEditor._textArea.setHeight("100%");
+      var vbox =  new qx.ui.layout.VerticalBoxLayout;
+      vbox.setWidth("100%");
+      vbox.setHeight("auto");
+      vbox.setPadding(3);
+      vbox.setSpacing(3);
+      cellEditor.add(vbox);
       
       /*
-       * list
+       * metadata
        */
-      cellEditor._list = new qx.ui.form.List;
-      cellEditor._list.setWidth("1*");
-      cellEditor._list.setHeight("100%");    
-      
-      hbox.add(this._textArea,this._list);
-      
-      /*
-       * setup autocomplete
-       */ 
       var metaData = this.getMetaData();
-      if ( ! metadata.separator)
-      {
-        this.error( this.classname + " can only be used with multi-value fields.");
-      }
       
-      cellEditor._textArea.setAutoComplete(true);
-      cellEditor._textArea.setServiceName(metaData.serviceName);
-      cellEditor._textArea.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
-      cellEditor._textArea.setSeparator("\n");
-      cellEditor._textArea.setMetaData(metaData);
-      cellEditor._textArea.setWithOptions(true);
-      cellEditor._textArea.setListBox(this._list);
-
-      cellEditor.originalValue = cellInfo.value;
-      
+      /*
+       * radio group
+       */
+      var gB = new qx.ui.groupBox.RadioGroupBox( metaData.legend );
+      metaData.options.forEach(function(option){
+        //
+      },this);
       return cellEditor;
     },
 
@@ -160,7 +139,17 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditor",
     {
       var metaData = this.getMetaData();
       var value    = cellEditor._textArea.getValue();
-      value = value.split("\n").join(metadata.separator);
+      var parts    = value.split("\n");
+      var string   = new qx.util.StringBuilder;
+      
+      for( var i=0; i<parts.length; i++)
+      {
+        var part = qx.lang.String.trim( parts[i] );
+        if (part) string.add( part );
+        if (i != parts.length-1) string.add( metaData.separator, " ");
+      }
+      
+      value = string.get();
       
       /* 
        * validation function will be called with new and old value

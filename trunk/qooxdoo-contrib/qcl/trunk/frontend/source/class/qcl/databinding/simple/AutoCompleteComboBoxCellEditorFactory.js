@@ -28,7 +28,7 @@
  *
  * @appearance table-editor-combobox {qx.ui.form.ComboBox}
  */
-qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
+qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory",
 {
   extend : qx.core.Target,
   implement : qx.ui.table.ICellEditorFactory,
@@ -75,7 +75,8 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
     /** metadata for the cell editor */
     metaData :
     {
-      init : null,
+      check    : "Map",
+      init     : null,
       nullable : true
     },
     
