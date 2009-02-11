@@ -101,6 +101,8 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
        */
       var cellEditor = new qx.ui.window.Window;
       cellEditor.setShowMinimize(false);
+      cellEditor.setShowMaximize(true);
+      cellEditor.setAllowMaximize(true);
       cellEditor.setShowClose(true);
       cellEditor.setHeight(200);
       cellEditor.setWidth(400);
@@ -124,72 +126,48 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
       
       /*
        * textarea
-       */
-      cellEditor._textArea = new qx.ui.form.TextArea;
-      cellEditor._textArea.setWidth("1*");
-      cellEditor._textArea.setHeight("100%");
-      cellEditor._textArea.setOverflow("auto");
+       */  
+      var textArea = new qx.ui.form.TextArea;
+      cellEditor._textArea = textArea;
+      
+      textArea.setWidth("1*");
+      textArea.setHeight("100%");
+      textArea.setOverflow("auto");
       
       /*
        * list
        */
-      cellEditor._list = new qx.ui.form.List;
-      cellEditor._list.setWidth("1*");
-      cellEditor._list.setHeight("100%");
-      cellEditor._list.setOverflow("auto");
+      var list = new qx.ui.form.List;
+      cellEditor._list = list;
+      list.setWidth("1*");
+      list.setHeight("100%");
+      list.setOverflow("auto");
       
       /*
        * select from list into textarea
        */
-      cellEditor._list.getManager().addEventListener("changeSelection",function(){
-        var content  = cellEditor._textArea.getValue();
-        var text     = cellEditor._list.getManager().getSelectedItem().getValue();
-        
-        /*
-         * rewind
-         */
-        var selStart = cellEditor._textArea.getSelectionStart();
-        while ( selStart > 0 
-                && content.charAt(selStart-1) != "\n") selStart--;
-        
-        /*
-         * forward
-         */
-        var selEnd = selStart;
-        while ( selEnd < content.length 
-                && content.charAt(selEnd) != "\n" ) selEnd++;
-        
-        cellEditor._textArea.setSelectionStart(selStart);
-        cellEditor._textArea.setSelectionLength(selEnd-selStart);
-        cellEditor._textArea.setSelectionText( text );
-        
-        /*
-         * set caret to the end of the inserted text
-         */
-        qx.client.Timer.once( function(){
-          cellEditor._textArea.setSelectionStart(selStart+text.length);
-          cellEditor._textArea.setSelectionLength(0);     
-        },this,50);
-        
+      list.getManager().addEventListener("changeSelection",function(){        
+        var text = list.getManager().getSelectedItem().getValue();
+        textArea.replaceAtCaretPosition(text);
       },this);
       
       /*
        * doubleclick jumps back into textarea
        */
-      cellEditor._list.addEventListener("dblclick",function(){
+      list.addEventListener("dblclick",function(){
         qx.client.Timer.once( function(){
-          cellEditor._textArea.focus();
+          textArea.focus();
         },this,50);
       },this);
       
       /*
        * so does the enter key
        */
-      cellEditor._list.addEventListener("keypress",function(event){
+      list.addEventListener("keypress",function(event){
         if ( event.getKeyIdentifier() == "Enter" )
         {
           qx.client.Timer.once( function(){
-            cellEditor._textArea.focus();
+            textArea.focus();
           },this,50);
         }
       },this);      
@@ -210,20 +188,20 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
         if (part) string.add( part,"\n");
       }
       
-      cellEditor._textArea.setValue(qx.lang.String.trim(string.get()));
-      cellEditor._textArea.setLiveUpdate(true);
-      cellEditor._textArea.setAutoComplete(true);
-      cellEditor._textArea.setServiceName(metaData.serviceName);
-      cellEditor._textArea.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
-      cellEditor._textArea.setSeparator("\n");
-      cellEditor._textArea.setMetaData(metaData);
-      cellEditor._textArea.setWithOptions(true);
-      cellEditor._textArea.setListBox(cellEditor._list);
+      textArea.setValue(qx.lang.String.trim(string.get()));
+      textArea.setLiveUpdate(true);
+      textArea.setAutoComplete(true);
+      textArea.setServiceName(metaData.serviceName);
+      textArea.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
+      textArea.setSeparator("\n");
+      textArea.setMetaData(metaData);
+      textArea.setWithOptions(true);
+      textArea.setListBox(list);
       
       
       cellEditor.originalValue = cellInfo.value;
       
-      hbox1.add(cellEditor._textArea,cellEditor._list);
+      hbox1.add(textArea,list);
       
       /*
        * add save-button
@@ -236,7 +214,7 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
       var cancelButton = new qx.ui.form.Button( this.tr("Cancel") );
       
       cancelButton.addEventListener("execute",function(){
-        cellEditor._textArea.setValue(cellEditor.originalValue);
+        textArea.setValue(cellEditor.originalValue);
         cellEditor.close();
       },this);
       
