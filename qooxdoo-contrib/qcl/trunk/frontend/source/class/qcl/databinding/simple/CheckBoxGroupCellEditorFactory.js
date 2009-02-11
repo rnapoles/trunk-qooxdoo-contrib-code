@@ -20,17 +20,16 @@
 /* ************************************************************************
 
 #module(ui_table)
-#require(qx.ui.form.RadioButton)
+#require(qx.ui.form.CheckBox)
 
 ************************************************************************ */
 
 /**
  * A cell editor factory creating a popup window in which the user can 
- * add and remove values to a multiple value field
- *
+ * select or unselect checkboxes
  *
  */
-qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
+qx.Class.define("qcl.databinding.simple.CheckBoxGroupCellEditorFactory",
 {
   extend : qx.core.Target,
   implement : qx.ui.table.ICellEditorFactory,
@@ -142,15 +141,15 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
         spacing : 3
       });
       gb.add(vbox2);
-      cellEditor._radioManager = new qx.ui.selection.RadioManager();
+      cellEditor._checkBoxes = [];
       metaData.options.forEach( function(option) {
-        var rb = new qx.ui.form.RadioButton;
-        rb.setManager(cellEditor._radioManager);
-        rb.setLabel( option.text || option[0] );
-        rb.setValue( option.value||option.text||option[2] );
+        var cb = new qx.ui.form.CheckBox;
+        cellEditor._checkBoxes.push( cb );
+        cb.setLabel( option.text || option[0] );
+        cb.setValue( option.value||option.text||option[2] );
         //rb.setIcon( option.icon||option[1]||null );
-        if ( option.selected ) rb.setChecked(true);
-        vbox2.add(rb);
+        if ( option.selected ) cb.setChecked(true);
+        vbox2.add(cb);
       },this);
       
       /*
@@ -177,7 +176,15 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
      */
     getCellEditorValue : function(cellEditor)
     {
-      return cellEditor._radioManager.getSelected().getValue();
+      var values = [];
+      cellEditor._checkBoxes.forEach(function(checkBox){
+        if ( checkBox.getChecked() )
+        {
+          values.push( checkBox.getValue() );
+        }
+      });
+      var separator = this.getMetaData().separator || ";";
+      return values.join(separator);
     }
   }
 });

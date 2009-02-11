@@ -356,8 +356,15 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
                 * radio group cell editor
                 */
                case "radiogroup" :
-                 cellEditor = new qcl.databinding.simple.RadioCellEditorFactory;
+                 cellEditor = new qcl.databinding.simple.RadioGroupCellEditorFactory;
                  break;
+                 
+               /*
+                * radio group cell editor
+                */
+               case "checkboxgroup" :
+                 cellEditor = new qcl.databinding.simple.CheckBoxGroupCellEditorFactory;
+                 break;                
                  
                /*
                 * password cell editor
