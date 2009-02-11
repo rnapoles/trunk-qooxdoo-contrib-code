@@ -271,12 +271,10 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
               
               var replaceMap = {};
               metaData['options'].forEach(function(row){
-                if (row instanceof Array)
-                {
-                  replaceMap[row[0]]=row[2];
-                }
+                var value = row.value || row[2];
+                var text  = row.text  || row[0];
+                replaceMap[text]=value;
               });
-              
               
               renderer.setReplaceMap(replaceMap);
   						renderer.addReversedReplaceMap();

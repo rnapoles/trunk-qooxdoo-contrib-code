@@ -363,7 +363,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     _onListBoxKeypress : function(e)
     {
       var key = e.getKeyIdentifier();
-      console.log(this + ", list box keypress event:" +  key );
+      //console.log(this + ", list box keypress event:" +  key );
       
       /*
        * selectively pass event to selection manager
@@ -394,7 +394,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       var keyEvent, key = e.getKeyIdentifier();
       var content = this.getTextBox().getValue();
       
-      console.log("Text field content:" + content + ", keypress event:" +  key );
+      //console.log("Text field content:" + content + ", keypress event:" +  key );
       switch( key )
       {
         case "Enter": 
@@ -408,12 +408,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           try
           {
             var selLength = this.getTextBox().getSelectionLength();
-            console.log("Selection length:" + selLength, ", auto text selection: " + this._autoTextSelection);
+            //console.log("Selection length:" + selLength, ", auto text selection: " + this._autoTextSelection);
             if ( selLength )
             {
               if ( this._autoTextSelection )
               {
-                console.log("Auto-Selection: Putting caret at the end of the selection");
+                //console.log("Auto-Selection: Putting caret at the end of the selection");
                 var selStart  = this.getTextBox().getSelectionStart();
                 this.getTextBox().selectFromTo( selStart+selLength,selStart+selLength);              
               }
@@ -487,8 +487,8 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             && ( content != lastContent.substr( 0, sepPosLCont-1 ) ) )
       {
         var newContent = lastContent.substr( 0, sepPosLCont ) +  " " + content;
-        console.log("lastContent: " + lastContent + ", content: " + content + ", new content: " + newContent );
-        console.log("adding to existing content");
+        //console.log("lastContent: " + lastContent + ", content: " + content + ", new content: " + newContent );
+        //console.log("adding to existing content");
                 
         /*
          * add new content
@@ -524,7 +524,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         },this,100);        
       }
 
-      console.log("saving content: " + this._lastContent );
+      //console.log("saving content: " + this._lastContent );
     },
     
     /**
@@ -557,11 +557,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         var selEnd = selStart;
         while ( selEnd < content.length 
                 && content.charAt(selEnd) != sep ) selEnd++;
-        console.log("Selecting from " + selStart + " to " + selEnd );
+        //console.log("Selecting from " + selStart + " to " + selEnd );
       }
       else
       {
-        console.log("Selecting all");
+        //console.log("Selecting all");
         var selStart = 0;
         var selEnd   = content.length;
       }
@@ -592,7 +592,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        */
       if ( this._requestPending )
       {
-        console.log("A request is pending...");
+        //console.log("A request is pending...");
         return; 
       }
       
@@ -607,7 +607,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        */
        if ( qx.lang.String.trim( content ) != tb.getValue() )
        {
-         console.log("Only whitespace added ...");
+         //console.log("Only whitespace added ...");
          return;
        }
        
@@ -616,7 +616,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        */ 
       this._lastContent = content;
       
-      console.log( "user typed: " + content );
+      //console.log( "user typed: " + content );
     
     	/*
     	 * delay before sending request
@@ -625,7 +625,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       
       if (( now - this._lastKeyPress) < this.getDelay() ) 
       {
-        console.log( "delay not reached");
+        //console.log( "delay not reached");
         this._lastKeyPress = now;
         
         /*
@@ -678,7 +678,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * text fragment
        */
       var input = qx.lang.String.trim( content.substring( selStart,selEnd ) );
-      console.log( "'" + input +"'");
+      //console.log( "'" + input +"'");
       
       /*
        * Store timestamp
@@ -690,12 +690,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        */
       if ( input.length >= this.getMinCharNumber() )
       {
-        console.log( "sending request for " + input );
+        //console.log( "sending request for " + input );
         this._getAutoCompleteValues(input);  
       }
       else
       {
-        console.log("Not enough characters...");
+        //console.log("Not enough characters...");
       }
       
     },    
@@ -806,7 +806,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     _handleAutoCompleteValues : function (data)
     {
       
-      console.log(data);
+      //console.log(data);
       /*
        * text and list box widgets
        */
@@ -827,7 +827,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * separator for multi-value fields
        */
       var sep = this.getSeparator();                            
-      console.log("Separator '"+sep+"'");
+      //console.log("Separator '"+sep+"'");
       if ( sep )
       { 
         /*
@@ -843,11 +843,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         var selEnd = selStart;
         while ( selEnd < content.length 
                 && content.charAt(selEnd) != sep ) selEnd++;
-        console.log("Selecting from " + selStart + " to " + selEnd);
+        //console.log("Selecting from " + selStart + " to " + selEnd);
       }
       else
       {
-        console.log("Selecting all...");
+        //console.log("Selecting all...");
         var selStart = 0;
         var selEnd   = content.length-1;
       }
@@ -856,7 +856,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * get text fragment
        */
       var cInput = qx.lang.String.trim( content.substring(selStart,selEnd) );
-      console.log ("trying to match '" +  input + "' with '" + cInput + "'." );
+      //console.log ("trying to match '" +  input + "' with '" + cInput + "'." );
       
       /*
        * check whether input is still the same so that latecoming request
@@ -865,7 +865,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       if ( input != cInput )
       {
         
-        console.log ("we're late: '" +  input + "' != '" + cInput + "'." );
+        //console.log ("we're late: '" +  input + "' != '" + cInput + "'." );
         this._getAutoCompleteValues( cInput );
         return false;
       } 
@@ -882,7 +882,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         {        
           if ( data.options != this.lastOptions) 
           {
-            console.log("emptying listbox:");
+            //console.log("emptying listbox:");
             lb.removeAll();
             
             /*
@@ -890,12 +890,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
              */
             if ( data.options.length == 0 && this._closePopup ) 
             {
-              console.log("no data or only one result, closing listbox:");
+              //console.log("no data or only one result, closing listbox:");
               this._closePopup();
               return false;
             }
             
-            console.log("populating listbox:");
+            //console.log("populating listbox:");
             
             /*
              * populate listbox
@@ -910,7 +910,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
              * open popup
              */ 
             if ( ! lb.isSeeable() && this._openPopup ) {
-              console.log("opening popup");
+              //console.log("opening popup");
               this._openPopup();
             }
             
@@ -922,7 +922,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             
           }
      
-          console.log("deselecting scrolling matched item into view");
+          //console.log("deselecting scrolling matched item into view");
           
           lb._manager._deselectAll();  
           
@@ -942,10 +942,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * apply matched text and suggestion to content
        */
       this._autoTextSelection = null;
-      if ( typeof data.suggest == "string")
+      //console.log("Suggestion: " + data.suggest );
+      if ( typeof data.suggest == "string" && data.suggest.length)
       {
         
-        var text = data.suggest;
+        var text = data.suggest; 
+        //console.log("Matching '" + text.substr(0,input.length) + "' with '" + input + "'");
         
         /*
          * replace all if suggestion is not like the input
@@ -981,18 +983,17 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         if ( text.substr(0,input.length) == input )
         {
           qx.client.Timer.once( function(){
-            console.log("Selection start " + (selStart+input.length) );
+            //console.log("Selection start " + (selStart+input.length) );
             tb.setSelectionStart( selStart+input.length );
           },this,0);
         }
         else
         {
           qx.client.Timer.once( function(){
-            console.log("Selection All " );
+            //console.log("selectAll()" );
             tb.selectAll();
           },this,0);          
         }
-          
       }
     }
   }
