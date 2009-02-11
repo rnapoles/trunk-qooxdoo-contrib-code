@@ -99,20 +99,6 @@ public class FileNode extends Node {
         return file.isDirectory();
     }
 
-    public boolean isLink() throws IOException {
-        return isLink(file);
-    }
-    
-    private static boolean isLink(File file) throws IOException {
-        String name;
-        File parent;
-        
-        name = file.getName();
-        parent = file.getAbsoluteFile().getParentFile();
-        File toTest = new File(parent.getCanonicalPath(), name);
-        return !toTest.getAbsolutePath().equals(toTest.getCanonicalPath());
-    }
-    
     public boolean canWrite() {
         return file.canWrite();
     }
@@ -212,6 +198,20 @@ public class FileNode extends Node {
 
     //-- links
 
+    public boolean isLink() throws IOException {
+        return isLink(file);
+    }
+    
+    private static boolean isLink(File file) throws IOException {
+        String name;
+        File parent;
+        
+        name = file.getName();
+        parent = file.getAbsoluteFile().getParentFile();
+        File toTest = new File(parent.getCanonicalPath(), name);
+        return !toTest.getAbsolutePath().equals(toTest.getCanonicalPath());
+    }
+    
     /** 
      * Creates a file dest, which is a link to this node. 
      * @return dest
