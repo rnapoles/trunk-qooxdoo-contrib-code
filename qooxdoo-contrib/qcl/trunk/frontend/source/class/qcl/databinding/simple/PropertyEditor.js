@@ -71,7 +71,9 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 
   construct : function()
   {
-    // table model and resize behaviour
+    /*
+     * table model and resize behaviour
+     */
     var tableModel = new qx.ui.table.model.Simple();
     tableModel.setColumns(
       ["(hidden)",this.getPropertyColumnLabel(),this.getValueColumnLabel(),"(hidden)"],
@@ -80,10 +82,14 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     tableModel.setColumnEditable(2,true);
     var resizeBehaviour = { tableColumnModel : function(obj){ return new qx.ui.table.columnmodel.Resize(obj); } };
     
-    // call Table constructor
+    /*
+     * call Table constructor
+     */
     this.base(arguments, tableModel, resizeBehaviour );
     
-    // configure columns
+    /*
+     * configure columns
+     */
     var columnModel = this.getTableColumnModel();
     columnModel.getBehavior().setWidth(1,100);
     columnModel.getBehavior().setWidth(2,"1*");
@@ -92,7 +98,9 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     columnModel.setDataCellRenderer(2, this.getDynamicCellRenderer() );
     columnModel.setCellEditorFactory(2, this.getDynamicCellEditor() );
     
-    // selection 
+    /*
+     * selection
+     */ 
     this.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.SINGLE_SELECTION);
     this.setColumnVisibilityButtonVisible(false);
     this.setKeepFirstVisibleRowComplete(true);
@@ -100,7 +108,9 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     this.setAlwaysUpdateCells(true);
 
     
-    // navigation up and down
+    /*
+     * navigation up and down
+     */
     this.addEventListener("changeEditedCell",function(e)
     {
       //console.log("changeEditedCell event:" +  e.getData() );
@@ -110,7 +120,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
       var row = this.getFocusedRow();
       row = row + ( direction == "Up"  ? -1 * (row > 0) : 1 * ( row < this.getTableModel().getRowCount() ) );
       this.getSelectionModel().setSelectionInterval(row,row);
-      this.setFocusedCell( col, row, true);
+      this.setFocusedCell( col, row, true );
       this.startEditing();
     });
     
@@ -214,35 +224,72 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 			var tableModel 	 = table.getTableModel();
 			var rowData			 = tableModel.getRowData(cellInfo.row);
 			var metaData		 = rowData[3];
-
+			var renderer;
+			
 			for ( var cmd in metaData )
 			{
 				switch ( cmd )
 				{	  
-          case "type":
-            switch ( metaData.type )
+          case "renderer":
+            switch ( metaData.renderer )
             {
-              case "checkbox": return new qx.ui.table.cellrenderer.Boolean;
-              case "password": return new qx.ui.table.cellrenderer.Password;
-              case "link":     return new qcl.ui.LinkCellRenderer;
+              case "text" : 
+                renderer =  new qx.ui.table.cellrenderer.Default;
+                break;
+                
+              case "checkbox" : 
+                renderer = new qx.ui.table.cellrenderer.Boolean;
+                break;
+                
+              case "password" : 
+                renderer = new qx.ui.table.cellrenderer.Password;
+                break;
+                
+              case "link" : 
+                renderer = new qcl.ui.LinkCellRenderer;
+                break;
+                
+              case "replace" : 
+                renderer = new qx.ui.table.cellrenderer.Replace;
+                break;
+                
+              default: 
+                table.error("Unsupported renderer type " + metaData.renderer );
+                return null;
             }
             break;
             
           case "options":
-            var renderer = new qx.ui.table.cellrenderer.Replace;
-            var replaceMap = {};
-            metaData['options'].forEach(function(row){
-              if (row instanceof Array)
+            if ( renderer.setReplaceMap )
+            {
+              
+              if ( typeof renderer != "object" )
               {
-                replaceMap[row[0]]=row[2];
+                table.error("You need to define the renderer type before the options");
+                return null;
               }
-            });
-            renderer.setReplaceMap(replaceMap);
-						renderer.addReversedReplaceMap();    
-            return renderer;							
+              
+              var replaceMap = {};
+              metaData['options'].forEach(function(row){
+                if (row instanceof Array)
+                {
+                  replaceMap[row[0]]=row[2];
+                }
+              });
+              
+              
+              renderer.setReplaceMap(replaceMap);
+  						renderer.addReversedReplaceMap();
+            }
 				}
       }
-      return new qx.ui.table.cellrenderer.Default;	
+			
+      if ( typeof renderer != "object" )
+      {
+        table.error("No renderer type defined");
+      }
+			
+      return renderer;	
     },
     
     /**
@@ -261,19 +308,19 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 			var validationFunc   = null;
 			
 			/*
-			 * default cellEditors
+			 * default cellEditors, for backward compatibility
 			 */
 			var cellEditor;
-			if ( ! metaData.type )
+			if ( ! metaData.editor )
 			{
 			  if ( metaData.options )
 			  {
-			    metaData.type = "combobox";
+			    metaData.editor = "combobox";
 			    cellEditor = new qx.ui.table.celleditor.ComboBox;
 			  }
 			  else
 			  {
-			    metaData.type = "text";
+			    metaData.editor = "text";
 			    cellEditor  = new qx.ui.table.celleditor.TextField; 
 			  }
 			}
@@ -286,24 +333,49 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 				switch ( cmd )
 				{	
 
-          case "type":
-             switch ( metaData['type'] )
+          case "editor":
+             switch ( metaData['editor'] )
              {
+               
+               /*
+                * normal text cell editor
+                */
                case "text" :
-                 cellEditor  = new qx.ui.table.celleditor.TextField; 
+                 cellEditor = new qx.ui.table.celleditor.TextField; 
                  break;
+                 
+               /*
+                * combo box cell editor for selections
+                * @todo: listData?/options...
+                */
                case "select":
                  cellEditor = new qx.ui.table.celleditor.ComboBox;
                  break;
+                 
+               /*
+                * radio group cell editor
+                */
                case "radiogroup" :
                  cellEditor = new qcl.databinding.simple.RadioCellEditorFactory;
                  break;
+                 
+               /*
+                * password cell editor
+                */
                case "password":
                  cellEditor = new qx.ui.table.celleditor.PasswordField; 
                  break;  
+                 
+               /*
+                * Check box cell editor
+                */
                case "checkbox":
 						     cellEditor = new qx.ui.table.celleditor.CheckBox; 
 						     break;
+						     
+						   /*
+						    * Email celll editor
+						    */
                case "email":
                  cellEditor  = new qx.ui.table.celleditor.TextField; 
                  cellEditor.setValidationFunction (function( newValue, oldValue ){
@@ -313,16 +385,42 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     							 return oldValue;  
     						 });
     						 break;
+    						 
+  		          /*
+  		           * Autocomplete cell editors. We cannot use the normal
+  		           * celleditors with the autocomplete mixin here, but need
+  		           * special factory classes for single-value and multiple-value
+  		           * fields 
+  		           */           
+  		          case "autocomplete":
+  		            if ( ! metaData.autocomplete)
+  		            {
+  		              this.error("Autocomplete metadata is missing.");
+  		            }
+  		            
+  		            if ( metaData.autocomplete.separator )
+  		            {
+  		              var cellEditor = new qcl.databinding.simple.MultipleValueCellEditorFactory;
+  		            }
+  		            else
+  		            {
+  		              var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory;
+  		              /*
+  		               * overwrite open popup method
+  		               */
+  		              cellEditor.setOpenPopupFunction( table._openPopup );
+  		              cellEditor.setClosePopupFunction( table._closePopup );              
+  		            }
+
+  		            /* 
+  		             * set a reference to this property editor
+  		             */
+  		            cellEditor.setTable( table );
+  		            
+  		            break;    						 
              }
 						
-						break;
-					
-					/*
-					 * options for comboboxes check buttons and radio buttons
-					 */
-          case "options":
-            cellEditor.setListData( metaData['options'] );
-            break;						
+						break;				
 						
           /*
            * whether the cell editor is editable
@@ -371,34 +469,6 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 							return newValue;  
 						});
 						break;		
-
-          /*
-           * Autocomplete cell editors. We cannot use the normal
-           * celleditors with the autocomplete mixin here, but need
-           * special factory classes for single-value and multiple-value
-           * fields 
-           */						
-          case "autocomplete":
-            if ( metaData.autocomplete.separator )
-            {
-              var cellEditor = new qcl.databinding.simple.MultipleValueCellEditorFactory;
-            }
-            else
-            {
-              var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory;
-              /*
-               * overwrite open popup method
-               */
-              cellEditor.setOpenPopupFunction( table._openPopup );
-              cellEditor.setClosePopupFunction( table._closePopup );              
-            }
-
-            /* 
-             * set a reference to this property editor
-             */
-            cellEditor.setTable( table );
-            
-						break;
 				}	
 			}
 			 
@@ -518,36 +588,35 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     /**
      * Hides the popup and disables the event capturing.
      * This overwrites the native method.
-     * @type member
      * @return {void}
      */
     _closePopup: function()
     {
       /*
-   * hide popup
-   */
+       * hide popup
+       */
       this._popup.hide();
       
       /*
-   * restore table width
-   */
+       * restore table width
+       */
       if (this._oldPropEdWidth) 
       {
         this._table.setWidth(this._oldPropEdWidth);
       }
       
       /*
-   * disable event capturing
-   */
+       * disable event capturing
+       */
       this.setCapture(false);
       
       /*
-   * put cursor at the end of the textfield
-   */
+       * put cursor at the end of the textfield
+       */
       qx.client.Timer.once(function()
       {
-        var lastPos = this._field.getValue().length;
-        this._field.selectFromTo(lastPos, lastPos);
+        var lastPos = this.getTextBox().getValue().length;
+        this.getTextBox().selectFromTo(lastPos, lastPos);
       }, this, 100);
       
     }  
