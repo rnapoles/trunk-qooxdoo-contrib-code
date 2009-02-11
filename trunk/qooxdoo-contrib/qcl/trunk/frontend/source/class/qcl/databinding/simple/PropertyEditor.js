@@ -24,6 +24,40 @@
 /**
  * An extension of the qx.ui.table.Table widget that can be used as a 
  * property editor and uses the qcl.databinding package for databinding
+ * 
+ * The data supplied by the backend must look like so: (@todo)
+ * 
+ * {"tabledatamodel":[
+ *   // Row : User role
+ *   // rendered with Replace, edited with radiogroup
+ *   [ 
+ *     // The label of the row (column 1)
+ *     "Role",
+ *     // The visible label of the cell (column 2)
+ *     "Portal Administrator",
+ *     // The "real" value of the cell (invisible column 3)
+ *     "admin",
+ *     // metadata
+ *     { "type"   : "radiogroup",
+ *       "options": [ 
+ *         ["Portal Administrator",null,"admin"],
+ *         ["Website Editor",null,"editor"],
+ *         ["User",null,"user"]
+ *     }
+ *   ],
+ *   // Row : Keywords associated with user
+ *   // Multi-value field, keyword separated by ";"
+ *   // Rendered with normal textfield, edited with autocomplete feature
+ *   [
+ *   "author"
+,"Creator","Boulanger, Christian",{"autocomplete":{"datasource":"test1","fieldName":"author","serviceName"
+:"bibliograph.records","serviceMethodAutoComplete":"autocomplete","separator":";"}}],["year","Year","1998"
+,[]],["title","Title","Judicial Review and the Theory of the Weak Court",[]],["date","Date","",[]],["keywords"
+,"Keywords","judicial review",{"autocomplete":{"datasource":"test1","fieldName":"keywords","serviceName"
+:"bibliograph.records","serviceMethodAutoComplete":"autocomplete","separator":";"}}],["url","Internet
+ Link","http:\/\/www.panyasan.de\/publications\/texts\/Boulanger1998.pdf",[]]]},"events":[],"messages"
+:[{"name":"bibliograph.commands.application.setTitle","data":"Boulanger, Christian (1998): Judicial Review
+ and the Theory of the Weak Court"}]}
  */
 qx.Class.define("qcl.databinding.simple.PropertyEditor",
 {
@@ -224,12 +258,25 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 			var tableModel 	= table.getTableModel();
 			var rowData			= tableModel.getRowData(cellInfo.row);
 			var metaData		= rowData[3];
+			var validationFunc   = null;
 			
 			/*
-			 * default
+			 * default cellEditors
 			 */
-			var cellEditor  = new qx.ui.table.celleditor.TextField; 
-			var validationFunc 	= null;
+			var cellEditor;
+			if ( ! metaData.type )
+			{
+			  if ( metaData.options )
+			  {
+			    metaData.type = "combobox";
+			    cellEditor = new qx.ui.table.celleditor.ComboBox;
+			  }
+			  else
+			  {
+			    metaData.type = "text";
+			    cellEditor  = new qx.ui.table.celleditor.TextField; 
+			  }
+			}
 			 
 			/*
 			 * meta data special cases
@@ -238,15 +285,17 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 			{
 				switch ( cmd )
 				{	
-					case "options":
-						cellEditor = new qx.ui.table.celleditor.ComboBox;
-						cellEditor.setListData( metaData['options'] );
-						break;
 
           case "type":
              switch ( metaData['type'] )
              {
-               case "radio" :
+               case "text" :
+                 cellEditor  = new qx.ui.table.celleditor.TextField; 
+                 break;
+               case "select":
+                 cellEditor = new qx.ui.table.celleditor.ComboBox;
+                 break;
+               case "radiogroup" :
                  cellEditor = new qcl.databinding.simple.RadioCellEditorFactory;
                  break;
                case "password":
@@ -256,7 +305,8 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 						     cellEditor = new qx.ui.table.celleditor.CheckBox; 
 						     break;
                case "email":
-    						 cellEditor.setValidationFunction (function( newValue, oldValue ){
+                 cellEditor  = new qx.ui.table.celleditor.TextField; 
+                 cellEditor.setValidationFunction (function( newValue, oldValue ){
     							 var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*\.(\w{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/;
     							 if ( re.test(newValue) ) return newValue;
     							 alert("You did not enter a valid email address");
@@ -266,11 +316,32 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
              }
 						
 						break;
+					
+					/*
+					 * options for comboboxes check buttons and radio buttons
+					 */
+          case "options":
+            cellEditor.setListData( metaData['options'] );
+            break;						
 						
+          /*
+           * whether the cell editor is editable
+           */
 					case "editable":
-						cellEditor.setEditable( metaData['editable'] === true );
+					  if ( cellEditor.setEditable )
+					  {
+					    cellEditor.setEditable( metaData['editable'] === true );
+					  }
+					  else if ( cellEditor.setReadOnly )
+					  {
+					    cellEditor.setReadOnly( metaData['editable'] === false );
+					  }
 						break;										
-
+					
+					/*
+					 * a regular expression that is used by a created
+					 * validation function
+					 */
 					case "regExp":
 						cellEditor.setValidationFunction (function( newValue, oldValue ){
 							var re = new RegExp(metaData['regExp']);
@@ -279,11 +350,17 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 							return oldValue;  
 						});
 						break;
-            
+          
+					/*
+					 * a special validation function
+					 */
  					case "validationFunc":
             cellEditor.setValidationFunction (metaData['validationFunc']);
 						break;
 						
+					/*
+					 * if the field cannot be empty
+					 */	
 					case "required":
 						cellEditor.setValidationFunction (function( newValue, oldValue ){
 							if (! newValue)
@@ -294,7 +371,13 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 							return newValue;  
 						});
 						break;		
-            
+
+          /*
+           * Autocomplete cell editors. We cannot use the normal
+           * celleditors with the autocomplete mixin here, but need
+           * special factory classes for single-value and multiple-value
+           * fields 
+           */						
           case "autocomplete":
             if ( metaData.autocomplete.separator )
             {
@@ -315,13 +398,16 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
              */
             cellEditor.setTable( table );
             
-            /*
-             * configure autocomplete metadata
-             */
-            cellEditor.setMetaData( metaData.autocomplete );
-            
 						break;
 				}	
+			}
+			 
+      /*
+       * pass  metadata to editor if supported
+       */
+			if ( cellEditor.setMetaData )
+			{
+			  cellEditor.setMetaData( metaData );
 			}
 			return cellEditor;
 		},

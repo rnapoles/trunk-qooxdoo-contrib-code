@@ -96,18 +96,27 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
      */
     createCellEditor : function(cellInfo)
     {
-      /* 
+
+       /*
+        * metadata
+        */
+       var metaData = this.getMetaData();
+       
+       /* 
        * create window
        */
       var cellEditor = new qx.ui.window.Window;
+      
       cellEditor.setShowMinimize(false);
       cellEditor.setShowMaximize(true);
       cellEditor.setAllowMaximize(true);
-      cellEditor.setShowClose(true);
+      cellEditor.setShowClose(false);
+      
       cellEditor.setHeight(200);
       cellEditor.setWidth(400);
       cellEditor.setMaxWidth(400);
-      cellEditor.setCaption(this.tr("Edit Field Values"));
+      
+      cellEditor.setCaption( metaData.caption || this.tr("Edit Field Values") );
       
       /*
        * center to browser when it appears
@@ -174,9 +183,9 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
       
       /*
        * setup autocomplete
-       */ 
-      var metaData = this.getMetaData();
-      if ( ! metaData.separator)
+       */
+      var acm = metaData.autocomplete;
+      if ( ! acm.separator)
       {
         this.error( this.classname + " can only be used with multi-value fields.");
       }
@@ -188,17 +197,28 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
         if (part) string.add( part,"\n");
       }
       
-      textArea.setValue(qx.lang.String.trim(string.get()));
-      textArea.setLiveUpdate(true);
-      textArea.setAutoComplete(true);
-      textArea.setServiceName(metaData.serviceName);
-      textArea.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
-      textArea.setSeparator("\n");
-      textArea.setMetaData(metaData);
-      textArea.setWithOptions(true);
-      textArea.setListBox(list);
+      /*
+       * put in content
+       */
+      textArea.setValue( qx.lang.String.trim(string.get()) );
+      textArea.setLiveUpdate( true);
       
+      /*
+       * configure autocomplete:
+       * local separator is newline character, independent
+       * of separator in database
+       */
+      textArea.setAutoComplete( true );
+      textArea.setServiceName( acm.serviceName );
+      textArea.setServiceMethodAutoComplete( acm.serviceMethodAutoComplete );
+      textArea.setSeparator( "\n" );
+      textArea.setMetaData( acm );
+      textArea.setWithOptions( true );
+      textArea.setListBox( list );
       
+      /*
+       * save original value
+       */
       cellEditor.originalValue = cellInfo.value;
       
       hbox1.add(textArea,list);
