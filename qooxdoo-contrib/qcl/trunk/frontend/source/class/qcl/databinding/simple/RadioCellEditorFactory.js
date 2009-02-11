@@ -54,14 +54,18 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
   properties :
   {
 
-    /** the table this cellEditor is attached to */
+    /**  
+     * The table this cellEditor is attached to 
+     */
     table :
     {
       check : "Object",
       init : null
     },
     
-    /** metadata for the cell editor */
+    /**
+     * Metadata with additional information for the celleditor
+     */
     metaData :
     {
       check : "Map",
@@ -69,6 +73,10 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
       nullable : true
     },
     
+    /**
+     * The listItem data that will be used to build the
+     * checkbox layout
+     */
     listData : 
     {
       check: "Array",
@@ -90,15 +98,21 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
      */
     createCellEditor : function(cellInfo)
     {
+       
+      /*
+       * metadata
+       */
+      var metaData = this.getMetaData();
+       
       /* 
        * create window
        */
       var cellEditor = new qx.ui.window.Window;
       cellEditor.setShowMinimize(false);
-      cellEditor.setShowClose(true);
+      cellEditor.setShowClose(false);
       cellEditor.setHeight("auto");
       cellEditor.setWidth("auto");
-      cellEditor.setCaption(this.tr("Choose an option"));
+      cellEditor.setCaption( metaData.caption || this.tr("Choose an option"));
       
       /*
        * center to browser when it appears
@@ -118,17 +132,37 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
       cellEditor.add(vbox);
       
       /*
-       * metadata
-       */
-      var metaData = this.getMetaData();
-      
-      /*
        * radio group
        */
-      var gB = new qx.ui.groupBox.RadioGroupBox( metaData.legend );
-      metaData.options.forEach(function(option){
-        //
+      var gb = new qx.ui.groupbox.GroupBox( metaData.legend || null );
+      gb.set({
+        height : "auto",
+        width  : "100%"
+      });
+      vbox.add(gb);
+      
+      
+      /*
+       * options as radio buttons
+       */
+      var vbox2 = new qx.ui.layout.VerticalBoxLayout;
+      vbox2.set({
+        height : "auto",
+        width  : "100%",
+        padding : 3,
+        spacing : 5
+      });
+      gb.add(vbox2);
+      cellEditor._radioManager = new qx.ui.selection.RadioManager();
+      metaData.options.forEach( function(option) {
+        var rb = new qx.ui.form.RadioButton;
+        rb.setManager(cellEditor._radioManager);
+        rb.setLabel(option.text);
+        rb.setValue(option.value||option.text);
+        //rb.setIcon(option.icon||null);
+        vbox2.add(rb);
       },this);
+      
       return cellEditor;
     },
 
@@ -137,31 +171,7 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
      */
     getCellEditorValue : function(cellEditor)
     {
-      var metaData = this.getMetaData();
-      var value    = cellEditor._textArea.getValue();
-      var parts    = value.split("\n");
-      var string   = new qx.util.StringBuilder;
-      
-      for( var i=0; i<parts.length; i++)
-      {
-        var part = qx.lang.String.trim( parts[i] );
-        if (part) string.add( part );
-        if (i != parts.length-1) string.add( metaData.separator, " ");
-      }
-      
-      value = string.get();
-      
-      /* 
-       * validation function will be called with new and old value
-       */
-      var validationFunc = this.getValidationFunction();
-      if ( ! this._done && validationFunc )
-      {
-         value = validationFunc( value, cellEditor.originalValue );
-         this._done = true;
-      }
-
-      return value;
+      return cellEditor._radioManager.getSelected().getValue();
     }
   }
 });

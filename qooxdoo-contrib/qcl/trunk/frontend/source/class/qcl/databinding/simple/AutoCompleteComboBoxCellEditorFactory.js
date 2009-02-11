@@ -111,6 +111,11 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory",
     createCellEditor : function(cellInfo)
     {
       /*
+       * meta data
+       */
+       var metaData = this.getMetaData();
+       
+       /*
        * configure combobox in-place editor and overwrite
        * popup functions
        */
@@ -122,13 +127,13 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory",
       cellEditor._table      = this.getTable();
       
       /*
-       *  apply meta data
+       *  apply autocomplete meta data
        */ 
-      var metaData = this.getMetaData();
-      cellEditor.setServiceName(metaData.serviceName);
-      cellEditor.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
-      cellEditor.setSeparator(metaData.separator);
-      cellEditor.setMetaData(metaData);
+      var acm = metaData.autocomplete;
+      cellEditor.setServiceName(acm.serviceName);
+      cellEditor.setServiceMethodAutoComplete(acm.serviceMethodAutoComplete);
+      cellEditor.setSeparator(acm.separator);
+      cellEditor.setMetaData(acm);
       
       cellEditor.setBorder(null);
       cellEditor.originalValue = cellInfo.value;
