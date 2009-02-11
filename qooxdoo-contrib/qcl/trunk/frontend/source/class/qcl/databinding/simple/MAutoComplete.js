@@ -435,12 +435,14 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         return;
       }      
       
-      /* 
+      /*  
        * add new content to existing content if
        * - there is a separator character
        * - the newly inserted content doesn't contain this character 
        * - the previous content does contain it
-       * - the new content is not the old one without the final separator char - this is the  situation when backspacing  
+       * - the new content is not the old one without the final separator char - this is the  situation when backspacing
+       * @todo use same algorith as further below, inserting at caret position
+       * instead of end of text box.
        */
       if ( separator &&  ! sepPosCont && sepPosLCont 
             && ( content != lastContent.substr( 0, sepPosLCont-1 ) ) )
@@ -555,20 +557,28 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * separator for multi-valued fields
        */
       var sep = this.getSeparator();
-      
-       /*
-        * rewind
-        */
-       var selStart = tb.getSelectionStart();
-       while ( selStart > 0 
-               && content.charAt(selStart-1) != sep ) selStart--;
        
-       /*
-        * forward
-        */
-       var selEnd = selStart;
-       while ( selEnd < content.length 
-               && content.charAt(selEnd) != sep ) selEnd++;
+      if ( sep )
+      {  
+         /*
+          * rewind
+          */
+         var selStart = tb.getSelectionStart();
+         while ( selStart > 0 
+                 && content.charAt(selStart-1) != sep ) selStart--;
+         
+         /*
+          * forward
+          */
+         var selEnd = selStart;
+         while ( selEnd < content.length 
+                 && content.charAt(selEnd) != sep ) selEnd++;
+      }
+      else
+      {
+        var selStart = 0;
+        var selEnd   = content.length-1;
+      }
       
       /*
        * text fragment
@@ -736,19 +746,27 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        */
       var sep = this.getSeparator();                            
       
-      /*
-       * rewind
-       */
-      var selStart = tb.getSelectionStart();
-      while ( selStart > 0 
-              && content.charAt(selStart-1) != sep ) selStart--;
-      
-      /*
-       * forward
-       */
-      var selEnd = selStart;
-      while ( selEnd < content.length 
-              && content.charAt(selEnd) != sep ) selEnd++;
+      if ( sep )
+      { 
+        /*
+         * rewind
+         */
+        var selStart = tb.getSelectionStart();
+        while ( selStart > 0 
+                && content.charAt(selStart-1) != sep ) selStart--;
+        
+        /*
+         * forward
+         */
+        var selEnd = selStart;
+        while ( selEnd < content.length 
+                && content.charAt(selEnd) != sep ) selEnd++;
+      }
+      else
+      {
+        var selStart = 0;
+        var selEnd   = content.length-1;
+      }
       
       /*
        * get text fragment
