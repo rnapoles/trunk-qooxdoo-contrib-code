@@ -205,7 +205,8 @@ qx.Class.define("inspector.console.ConsoleView",
         // run it and store the result in the global ans value
         this.setAns(
           (function(text, ans) {
-            return eval(text)
+            var iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
+            return iFrameWindow.eval(text);
           }).call(qx.core.Init.getApplication().getSelectedObject(), text, this.getAns()));
 
         // if ans is defined
