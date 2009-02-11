@@ -34,6 +34,7 @@ import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.MoveException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.file.FileNode;
@@ -142,6 +143,11 @@ public class SshNode extends Node {
             throw new DeleteException(this, e);
         }
         return this;
+    }
+
+    @Override
+    public Node move(Node dest) throws MoveException {
+    	throw new MoveException(this, dest, "SshNode cannot be moved");
     }
 
     @Override

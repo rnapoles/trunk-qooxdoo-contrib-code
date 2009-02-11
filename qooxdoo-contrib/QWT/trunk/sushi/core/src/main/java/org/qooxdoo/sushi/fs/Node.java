@@ -141,6 +141,9 @@ public abstract class Node {
     /** @return this */ 
     public abstract Node delete() throws DeleteException;
 
+    /** @return dest */
+    public abstract Node move(Node dest) throws MoveException;
+
     //-- status methods
     
     public abstract long length() throws LengthException;

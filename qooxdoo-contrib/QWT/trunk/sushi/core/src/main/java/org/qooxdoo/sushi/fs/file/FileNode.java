@@ -34,9 +34,10 @@ import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.MkfileException;
+import org.qooxdoo.sushi.fs.MoveException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.OnShutdown;
+import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.zip.ZipFilesystem;
 import org.qooxdoo.sushi.fs.zip.ZipNode;
 import org.qooxdoo.sushi.io.Buffer;
@@ -232,20 +233,34 @@ public class FileNode extends Node {
     //-- move
 
     /** @return dest */
-    public FileNode move(FileNode dest) throws IOException {
+    @Override
+    public FileNode move(Node destNode) throws MoveException {
+    	FileNode dest;
         Program p;
         String output;
         
-        dest.checkNotExists();
+        if (!(destNode instanceof FileNode)) {
+        	throw new MoveException(this, destNode, "cannot move to none-file-node");
+        }
+        dest = (FileNode) destNode;
+      	try {
+      		dest.checkNotExists();
+      	} catch (IOException e) {
+      		throw new MoveException(this, dest, "dest exists", e);
+      	}
         if (getIO().os == OS.WINDOWS) {
             p = new Program((FileNode) dest.getParent(), "cmd", "/C", "move");
         } else {
             p = new Program((FileNode) dest.getParent(), "mv");
         }
         p.add(getAbsolute(), dest.getName());
-        output = p.exec();
+        try {
+			output = p.exec();
+		} catch (IOException e) {
+			throw new MoveException(this, dest, "os command failed", e);
+		}
         if (output.length() > 0 && getIO().os != OS.WINDOWS) {
-            throw new IOException("unexpected output: " + output);
+            throw new MoveException(this, dest, "unexpected output: " + output);
         }
         return dest;
     }
