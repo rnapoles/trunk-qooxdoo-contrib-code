@@ -190,7 +190,7 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
         this.error( this.classname + " can only be used with multi-value fields.");
       }
       var string = new qx.util.StringBuilder;
-      var parts = cellInfo.value.split(metaData.separator);
+      var parts = cellInfo.value.split(acm.separator);
       for ( var i=0; i<parts.length; i++)
       {
         var part = qx.lang.String.trim(parts[i]);
@@ -254,6 +254,27 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
       vbox.add(hbox1,hbox2);
       cellEditor.add(vbox);
       
+      /*
+       * close on escape key
+       */
+      cellEditor.addEventListener("keypress",function(e){
+        if ( e.getKeyIdentifier()== "Escape")
+        {
+          cellEditor.setValue( cellEditor.originalValue );
+          cellEditor.close();
+        }
+        else if ( e.getKeyIdentifier() == "Tab" )
+        {
+          cellEditor.close();
+        }
+      }); 
+      
+      /*
+       * focus on textarea
+       */
+      qx.client.Timer.once(function(){
+        textArea.focus();
+      });
       return cellEditor;
     },
 
@@ -271,7 +292,7 @@ qx.Class.define("qcl.databinding.simple.MultipleValueCellEditorFactory",
       {
         var part = qx.lang.String.trim( parts[i] );
         if (part) string.add( part );
-        if (i != parts.length-1) string.add( metaData.separator, " ");
+        if (i != parts.length-1) string.add( metaData.autocomplete.separator, " ");
       }
       
       value = string.get();

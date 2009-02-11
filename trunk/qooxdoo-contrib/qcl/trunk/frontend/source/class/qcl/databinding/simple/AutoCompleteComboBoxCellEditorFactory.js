@@ -110,34 +110,44 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory",
      */
     createCellEditor : function(cellInfo)
     {
-      /*
+     
+       /*
+        * cell editor instance
+        */
+        var cellEditor = new qx.ui.form.ComboBox;
+        
+       /*
        * meta data
        */
        var metaData = this.getMetaData();
+      
+       /*
+        * layout
+        */
+       cellEditor.setBorder(null);
        
        /*
        * configure combobox in-place editor and overwrite
        * popup functions
        */
-      var cellEditor = new qx.ui.form.ComboBox;
+
       cellEditor.setEditable(true);
-      cellEditor.setAutoComplete(true);
       cellEditor._openPopup  = this.getOpenPopupFunction();
       cellEditor._closePopup = this.getClosePopupFunction();
       cellEditor._table      = this.getTable();
       
       /*
-       *  apply autocomplete meta data
+       *  setup autocomplete
        */ 
       var acm = metaData.autocomplete;
       cellEditor.setServiceName(acm.serviceName);
       cellEditor.setServiceMethodAutoComplete(acm.serviceMethodAutoComplete);
       cellEditor.setSeparator(acm.separator);
       cellEditor.setMetaData(acm);
+      cellEditor.setAutoComplete(true);
       
-      cellEditor.setBorder(null);
       cellEditor.originalValue = cellInfo.value;
-
+      
       /*
        * text field
        */
@@ -149,28 +159,18 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditorFactory",
        * Listbox
        */
       var listBox = cellEditor.getList();
+      
       // hack to capture the "enter" key.
       listBox.addEventListener("enterPressed",function()
       {
         this.getTable().createDispatchDataEvent("changeEditedCell","Down"); 
       },this);
       
-      
-      var value = cellInfo.value;
-
       /*
-       * replace null values
+       * set editor text
        */
-      if ( value === null )
-      {
-        value = "";
-      }
-
-      field.setValue("" + value );
-
-      field.addEventListener("appear", function() {
-        this.selectAll();
-      });
+      var value = cellInfo.value;
+      cellEditor.setValue("" + value );
       
       /*
        * catch cell action

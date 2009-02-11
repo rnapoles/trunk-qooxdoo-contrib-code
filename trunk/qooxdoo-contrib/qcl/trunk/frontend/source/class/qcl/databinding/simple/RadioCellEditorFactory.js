@@ -20,6 +20,7 @@
 /* ************************************************************************
 
 #module(ui_table)
+#require(qx.ui.form.RadioButton)
 
 ************************************************************************ */
 
@@ -71,18 +72,7 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
       check : "Map",
       init : null,
       nullable : true
-    },
-    
-    /**
-     * The listItem data that will be used to build the
-     * checkbox layout
-     */
-    listData : 
-    {
-      check: "Array",
-      nullable : true
     }
-   
   },
 
   /*
@@ -109,7 +99,7 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
        */
       var cellEditor = new qx.ui.window.Window;
       cellEditor.setShowMinimize(false);
-      cellEditor.setShowClose(false);
+      cellEditor.setShowClose(true);
       cellEditor.setHeight("auto");
       cellEditor.setWidth("auto");
       cellEditor.setCaption( metaData.caption || this.tr("Choose an option"));
@@ -141,7 +131,6 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
       });
       vbox.add(gb);
       
-      
       /*
        * options as radio buttons
        */
@@ -150,19 +139,36 @@ qx.Class.define("qcl.databinding.simple.RadioCellEditorFactory",
         height : "auto",
         width  : "100%",
         padding : 3,
-        spacing : 5
+        spacing : 3
       });
       gb.add(vbox2);
       cellEditor._radioManager = new qx.ui.selection.RadioManager();
       metaData.options.forEach( function(option) {
         var rb = new qx.ui.form.RadioButton;
         rb.setManager(cellEditor._radioManager);
-        rb.setLabel(option.text);
-        rb.setValue(option.value||option.text);
-        //rb.setIcon(option.icon||null);
+        rb.setLabel( option.text || option[0] );
+        rb.setValue( option.value||option.text||option[2] );
+        //rb.setIcon( option.icon||option[1]||null );
+        if ( option.selected ) rb.setChecked(true);
         vbox2.add(rb);
       },this);
       
+      /*
+       * close on selection
+       */
+      cellEditor._radioManager.addEventListener("changeSelected",function(){
+        cellEditor.close();
+      });
+      
+      /*
+       * close on escape key
+       */
+      cellEditor.addEventListener("keypress",function(e){
+        if ( e.getKeyIdentifier() == "Escape" )
+        {
+          cellEditor.close();
+        }
+      });      
       return cellEditor;
     },
 
