@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.MoveException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
@@ -129,6 +130,12 @@ public class ResourceNode extends Node {
     public ResourceNode delete() throws DeleteException {
         throw new DeleteException(this);
     }
+
+    @Override
+    public Node move(Node dest) throws MoveException {
+    	throw new MoveException(this, dest, "ResourceNode cannot be moved");
+    }
+
 
     @Override
     public List<ResourceNode> list() {

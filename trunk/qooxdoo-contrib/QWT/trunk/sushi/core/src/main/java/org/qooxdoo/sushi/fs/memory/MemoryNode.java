@@ -30,6 +30,7 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
 import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.MoveException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
@@ -159,6 +160,11 @@ public class MemoryNode extends Node {
         }
         type = Type.NONE;
         return this;
+    }
+
+    @Override
+    public Node move(Node dest) throws MoveException {
+    	throw new MoveException(this, dest, "MemoryNode cannot be moved");
     }
 
     @Override

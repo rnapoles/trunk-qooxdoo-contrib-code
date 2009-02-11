@@ -37,6 +37,7 @@ import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.MoveException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.file.FileNode;
@@ -233,6 +234,11 @@ public class SvnNode extends Node {
         return info.getNewRevision();
     }
     
+    @Override
+    public Node move(Node dest) throws MoveException {
+    	throw new MoveException(this, dest, "SvnNode cannot be moved");
+    }
+
     @Override
     public Node mkdir() throws MkdirException {
         ISVNEditor editor;
