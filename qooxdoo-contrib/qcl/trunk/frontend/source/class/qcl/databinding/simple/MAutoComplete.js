@@ -23,7 +23,29 @@
 ************************************************************************ */
 
 /**
- * Adds autocompletion to a widget that allows entering values
+ * Adds autocompletion to a widget that allows entering values.
+ * Currently, qx.ui.form.(TextField|TextArea|ComboBox) are supported.
+ * 
+ * Depends on the qcl.databinding.simple.MDataManager mixin. 
+ * If you want to use this mixin stand-alone you need to uncomment
+ * some code in the "properties" section. 
+ * 
+ * Use the following way:
+ * 
+ * var w = new qx.ui.form.(TextField|TextArea|ComboBox);
+ * w.setServiceName("name of rpc service that provides autocomplete");
+ * w.setServiceMethodAutoComplete("Name of service method");
+ * w.setSeparator(";"); For a multi-value field, otherwise omit this
+ * w.setAutoComplete(true);
+ * 
+ * The rpc service method that provides the autocomple values must
+ * return data structured like so:
+ * 
+ * { input : "the search query that was submitted, i.e. a word fragment",
+ *   suggest : "an autocomplete suggestion for the textfield",
+ *   options : [  { text : "text of first listItem", value : "value of first listItem", icon : "URI of icon" },
+ *                { ... }, ... ]
+ * }
  */
 qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 {
@@ -401,8 +423,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     },
 
     /**
-     * Event handler for value change to handle change triggered by the list box 
-     *
+     * Event handler for value change to handle change triggered by the 
+     * list box.
+     * @todo This is quite a hack, it would be better to intercept
+     * the listbox action at an earlier point, before it changes
+     * the value of the text box and then use the replaceAtCaretPosition()
+     * method.
      * @return {void}
      */    
     _onChangeValue : function(e)
@@ -426,41 +452,37 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       
       /*
        * skip the following action if the change has
-       * been caused by this very mixin. Otherwise, we would have
+       * been caused by this method. Otherwise, we would have
        * an infinite loop.
        */
-      if ( this._preventChange )
+      if ( this.__preventChange )
       {
-        this._preventChange = false;
         return;
       }      
       
-      /*  
+      /*   
        * add new content to existing content if
        * - there is a separator character
        * - the newly inserted content doesn't contain this character 
        * - the previous content does contain it
-       * - the new content is not the old one without the final separator char - this is the  situation when backspacing
+       * - the new content is not the old one without the final separator char - 
+       *   this is the  situation when backspacing
        * @todo use same algorith as further below, inserting at caret position
        * instead of end of text box.
        */
       if ( separator &&  ! sepPosCont && sepPosLCont 
             && ( content != lastContent.substr( 0, sepPosLCont-1 ) ) )
       {
-        var newContent   = lastContent.substr( 0, sepPosLCont ) +  " " + content;
+        var newContent = lastContent.substr( 0, sepPosLCont ) +  " " + content;
         //console.log("lastContent: " + lastContent + ", content: " + content + ", new content: " + newContent );
-        
         //console.log("adding to existing content");
-        
-        /*
-         * set flag to prevent the present action on insert
-         */
-        this._preventChange = true;
-        
+                
         /*
          * add new content
          */
+        this.__preventChange = true;
         this.setValue( newContent );
+        this.__preventChange = false;
         this._lastContent = newContent;
         
         /*
@@ -476,12 +498,71 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         /*
          * synchronize textfield value with combobox value
          */
-        this._preventChange = true;
+        this.__preventChange = true;
         this.setValue( content );
+        this.__preventChange = false;
         this._lastContent = content;
+        
+        /*
+         * select all
+         */
+        qx.client.Timer.once(function(){
+          this.getTextBox().selectAll();
+        },this,100);        
       }
 
       // //console.log("saving content: " + this._lastContent );
+    },
+    
+    /**
+     * Replaces a text fragment at the current position of the
+     * caret. If a separator has been defined, the text will replace
+     * all characters between the previous and the next separator
+     * seen from the current caret position. When no separator
+     * has been defined, replace the whole textbox content.
+     * This will select the inserted text.
+     * @param text {String}
+     */
+    replaceAtCaretPosition : function ( text )
+    {
+      var content  = this.getValue();
+      var sep      = this.getSeparator();
+      
+      if ( sep )
+      {
+      
+        /*
+         * rewind
+         */
+        var selStart = this.getSelectionStart();
+        while ( selStart > 0 
+                && content.charAt(selStart-1) != sep ) selStart--;
+        
+        /*
+         * forward
+         */
+        var selEnd = selStart;
+        while ( selEnd < content.length 
+                && content.charAt(selEnd) != sep ) selEnd++;
+        console.log("Selecting from " + selStart + " to " + selEnd );
+      }
+      else
+      {
+        console.log("Selecting all");
+        var selStart = 0;
+        var selEnd   = content.length;
+      }
+      
+      this.selectFromTo(selStart,selEnd);
+      this.setSelectionText( text );
+      
+      /*
+       * set caret to the end of the inserted text
+       */
+      qx.client.Timer.once( function(){
+        this.setSelectionStart(selStart+text.length);
+        this.setSelectionLength(0);     
+      },this,50);      
     },
 
 
@@ -675,11 +756,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             console.warn("No autocomplete result from server!");
             return;
           }
-                          
-          /*
-           * handle server messages
-           */
-          _this.__handleEventsAndMessages( _this, result );
           
           /*
            * use the autocomplete values
@@ -711,14 +787,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 
     /**
      * handles autocompletion data sent by the server
-     * expects data in the following format:
-     * { input : "the search query that was submitted, i.e. a word fragment",
-     *   suggest : "an autocomplete suggestion for the textfield",
-     *   options : [  { text : "text of first listItem", value : "value of first listItem", icon : "URI of icon" },
-     *                { ... }, ... ]
-     * }
      *  
-     * @todo insert at caret position
      * @return {void}
      */  
     _handleAutoCompleteValues : function (data)
@@ -745,7 +814,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * separator for multi-value fields
        */
       var sep = this.getSeparator();                            
-      
+      console.log("Separator '"+sep+"'");
       if ( sep )
       { 
         /*
@@ -761,9 +830,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         var selEnd = selStart;
         while ( selEnd < content.length 
                 && content.charAt(selEnd) != sep ) selEnd++;
+        //console.log("Selecting from " + selStart + " to " + selEnd);
       }
       else
       {
+        //console.log("Selecting all...");
         var selStart = 0;
         var selEnd   = content.length-1;
       }
@@ -856,18 +927,23 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       /*
        * apply matched text and suggestion to content
        */
-       this._autoTextSelection = null;
+      this._autoTextSelection = null;
       if ( typeof data.suggest == "string")
       {
         
         var text = data.suggest;
         
         /* 
-         * set value
+         * set value, preventing that other parts of this 
+         * mixin mess this up.
          */ 
         this.__autocompleteActive = true;
+        this.__preventChange = true;
+        
         tb.selectFromTo(selStart,selEnd);     
         tb.setSelectionText( text );
+        
+        this.__preventChange = false;
         this.__autocompleteActive = false;
         this._lastContent = tb.getValue();
         
@@ -880,7 +956,8 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
          * select the added text
          */
         qx.client.Timer.once( function(){
-          tb.setSelectionStart(selStart+input.length);
+          //console.log("Selection start " + (selStart+input.length) );
+          tb.setSelectionStart( selStart+input.length );
         },this,0);
 
       }
