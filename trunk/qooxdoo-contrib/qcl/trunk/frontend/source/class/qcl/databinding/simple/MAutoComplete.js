@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2007 Christian Boulanger
+     2008 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -38,7 +38,7 @@
  * w.setSeparator(";"); For a multi-value field, otherwise omit this
  * w.setAutoComplete(true);
  * 
- * The rpc service method that provides the autocomple values must
+ * The rpc service method that provides the autocomplete values must
  * return data structured like so:
  * 
  * { input : "the search query that was submitted, i.e. a word fragment",
@@ -511,7 +511,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         },this,100);        
       }
 
-      // //console.log("saving content: " + this._lastContent );
+      //console.log("saving content: " + this._lastContent );
     },
     
     /**
@@ -544,11 +544,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         var selEnd = selStart;
         while ( selEnd < content.length 
                 && content.charAt(selEnd) != sep ) selEnd++;
-        console.log("Selecting from " + selStart + " to " + selEnd );
+        //console.log("Selecting from " + selStart + " to " + selEnd );
       }
       else
       {
-        console.log("Selecting all");
+        //console.log("Selecting all");
         var selStart = 0;
         var selEnd   = content.length;
       }
@@ -814,7 +814,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        * separator for multi-value fields
        */
       var sep = this.getSeparator();                            
-      console.log("Separator '"+sep+"'");
+      //console.log("Separator '"+sep+"'");
       if ( sep )
       { 
         /*
@@ -868,7 +868,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
         {        
           if ( data.options != this.lastOptions) 
           {
-            // //console.log("emptying listbox:");
+            //console.log("emptying listbox:");
             lb.removeAll();
             
             /*
@@ -876,12 +876,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
              */
             if ( data.options.length < 2 && this._closePopup ) 
             {
-              // //console.log("no data or only one result, closing listbox:");
+              //console.log("no data or only one result, closing listbox:");
               this._closePopup();
               return false;
             }
             
-            // //console.log("populating listbox:");
+            //console.log("populating listbox:");
             
             /*
              * populate listbox
@@ -896,7 +896,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
              * open popup
              */ 
             if ( ! lb.isSeeable() && this._openPopup ) {
-              // //console.log("opening popup");
+              //console.log("opening popup");
               this._openPopup();
             }
             
@@ -908,7 +908,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
             
           }
      
-          // //console.log("deselecting scrolling matched item into view");
+          //console.log("deselecting scrolling matched item into view");
           
           lb._manager._deselectAll();  
           
