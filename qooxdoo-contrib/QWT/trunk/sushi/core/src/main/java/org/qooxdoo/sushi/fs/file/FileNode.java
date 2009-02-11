@@ -210,9 +210,12 @@ public class FileNode extends Node {
         return this;
     }
 
-    //--
+    //-- links
 
-    /** @return dest */
+    /** 
+     * Creates a file dest, which is a link to this node. 
+     * @return dest
+     */
     public FileNode link(FileNode dest) throws IOException {
         FileNode dir;
         

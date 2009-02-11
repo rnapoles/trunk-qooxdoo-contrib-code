@@ -52,10 +52,10 @@ import org.xml.sax.SAXException;
 
 /**
  * <p>Abstraction from a file: something stored under a path and you can get an input or output stream from. 
- * FileNode is probably the most prominent example of a node. Provides more methods compared to java.io.File, 
- * especially for scripting. Also, it removes some redundant methods to simplify the api (in particular the 
- * constructors).</p>
-
+ * FileNode is the most prominent example of a node. The api is similar to java.io.File. It provides the
+ * same functionality, add some methods useful for scripting, and removes some redundant methods to simplify
+ * api (in particular the constructors). </p>
+ * 
  * <p>A node is identified by a locator. It has a root, and a path. A node can have child nodes and a base.</p>
  *
  * <p>A locator is similar to a URL, it has the form filesystem ":" root separator path.</p>
@@ -75,6 +75,9 @@ import org.xml.sax.SAXException;
  * of the respective node class is rarely used directly, it's used indirectly by the filesystem. </p>
  * 
  * <p>A node is immutable, except for its base.</p>
+ * 
+ * <p>If an Implementation cannot (or does not want to) implement a method (e.g. move), it throws an
+ * UnsupportedOperationException.</p>
  */
 public abstract class Node {
     /** may be null */
