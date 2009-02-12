@@ -504,11 +504,11 @@ qx.Class.define("inspector.console.ConsoleView",
     _getLabel: function(text, clazz, icon) {
       // create the text of the label
       var text = text;
-      // TODO build icon path!
       // handle the icon uri
       if (icon == "info" || icon == "error" || icon == "warning") {
-        var iconHtml = "<img src='../source/resource/inspector/images/shell/" + 
-                       icon + "Icon.png" + "' class='ins_console_icon'>";
+        var imageURI = qx.util.ResourceManager.toUri("inspector/images/shell/" + 
+                       icon + "Icon.png");
+        var iconHtml = "<img src='" + imageURI + "' class='ins_console_icon'>";
         text = iconHtml + "&nbsp;" + text;
       }
       // create the surrounding div
