@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.cli;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
@@ -32,7 +33,7 @@ import org.qooxdoo.sushi.io.MultiOutputStream;
  */
 public class Console {
     public static Console create(IO io) {
-        return new Console(io, System.out, System.err);
+        return new Console(io, System.out, System.err, System.in);
     }
     
     public final IO io;
@@ -43,13 +44,13 @@ public class Console {
     
     private final MultiOutputStream verboseSwitch;
     
-    public Console(IO io, PrintStream info, PrintStream error) {
+    public Console(IO io, PrintStream info, PrintStream error, InputStream in) {
         this.io = io;
         this.info = info;
         this.verboseSwitch = MultiOutputStream.createNullStream();
         this.verbose = new PrintStream(verboseSwitch);
         this.error = error;
-        this.input = new Scanner(System.in);
+        this.input = new Scanner(in);
     }
     
     public boolean getVerbose() {
