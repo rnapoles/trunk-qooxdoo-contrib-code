@@ -61,18 +61,12 @@ qx.Class.define("inspector.Application",
         // support additional cross-browser console. Press F7 to toggle visibility
         qx.log.appender.Console;
       }
-
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
-      
       
       this.__createToolbar();
             
       // create the iFrame
       this._iFrame = new qx.ui.embed.Iframe("..");
+      this._iFrame.setDecorator(null);
       this.getRoot().add(this._iFrame, {top: 29, left: 0, right: 0, bottom: 0});
       
       this._iFrame.addListener("load", this.__onLoad, this);
@@ -224,12 +218,11 @@ qx.Class.define("inspector.Application",
     __createToolbar: function() {
       // create the toolbar itself
       this._toolbar = new qx.ui.toolbar.ToolBar();
-      // TODO 
       this._toolbar._getLayout().setAlignY("middle");      
       this.getRoot().add(this._toolbar, {top: 0, left: 0, right: 0});
       
       // create the headline label
-      var inspectorLabel = new qx.ui.basic.Label("qx inspector");
+      var inspectorLabel = new qx.ui.basic.Label("qooxdoo Inspector");
       inspectorLabel.setPaddingLeft(10);
       inspectorLabel.setPaddingRight(5);
       var font = new qx.bom.Font(12, ["Lucida Grande"])
@@ -241,17 +234,7 @@ qx.Class.define("inspector.Application",
       
       // add a separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
-      
-      // create the find button
-      var findButton = new qx.ui.toolbar.Button("Find a widget");
-      this._toolbar.add(findButton);
-      findButton.addListener("execute", function() {
-        this._selector.start();
-      }, this);      
-      
-      // add the second separator
-      this._toolbar.add(new qx.ui.toolbar.Separator());
-  
+        
       // Objects window
       this.__createWindow(
         "_objectsButton", "Objects", "_objectsWindow", 
@@ -271,6 +254,15 @@ qx.Class.define("inspector.Application",
         }
       ); 
       
+      // Property Window
+      this.__createWindow(
+        "_propertyButton", "Properties", "_propertyWindow", 
+        inspector.property.PropertyWindow, "property", 
+        function() {
+          this._propertyWindow.select(this._selector.getSelection());
+        }
+      );
+      
       // Console window
       this.__createWindow(
         "_consoleButton", "Console", "_consoleWindow", 
@@ -279,18 +271,23 @@ qx.Class.define("inspector.Application",
         }
       );      
       
-      // Property Window
-      this.__createWindow(
-        "_propertyButton", "Property", "_propertyWindow", 
-        inspector.property.PropertyWindow, "property", 
-        function() {
-          this._propertyWindow.select(this._selector.getSelection());
-        }
-      );
-      
       // add the third separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
+
+      // create the find button
+      this._inspectButton = new qx.ui.toolbar.CheckBox("Inspect widget");
+      this._toolbar.add(this._inspectButton);
+      this._inspectButton.addListener("changeChecked", function(e) {
+        if (e.getData()) {
+          this._selector.start();
+        } else {
+          this._selector.end();
+        }
+      }, this);      
       
+      // add the second separator
+      this._toolbar.add(new qx.ui.toolbar.Separator());
+
       // Lable showing the selected widget
       this._selectedWidgetLabel = new qx.ui.basic.Label();
       this._toolbar.add(this._selectedWidgetLabel);            
@@ -300,7 +297,7 @@ qx.Class.define("inspector.Application",
 
       // get the url out of a cookie
       var cookieUrl = qx.bom.Cookie.get("url");
-      if (cookieUrl == undefined || cookieUrl == "") {
+      if (cookieUrl == undefined || cookieUrl == "") {
         //cookieUrl = "Please enter an url here!";
         cookieUrl = "..";
       }
@@ -382,6 +379,7 @@ qx.Class.define("inspector.Application",
     -------------------------------------------------------------------------
     */    
     _changeSelection: function(e) {
+      this._inspectButton.setChecked(false);
       this.select(e.getData(), this._selector);
     },
     
@@ -421,11 +419,11 @@ qx.Class.define("inspector.Application",
     
     select: function(object, initiator) { 
       // if its currently loaiding, do nothing
-      if (this._loading) {
+      if (this._loading || !object) {
         return;
       }     
       // show the selected widget in the inspector bar
-      this._selectedWidgetLabel.setContent(object.toString());
+      this._selectedWidgetLabel.setContent("Selected Widget: " + object.toString());
       
       if (initiator != this._selector) {
         if (object !== this._selector.getSelection()) {
