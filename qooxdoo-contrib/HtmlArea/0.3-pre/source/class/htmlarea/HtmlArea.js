@@ -133,8 +133,10 @@ qx.Class.define("htmlarea.HtmlArea",
        * '     "Right"  SHIFT + "Right" -> '
        *
        */
-      var keyEventHandler = qx.event.handler.Keyboard.getInstance();
-
+      var root = qx.core.Init.getApplication().getRoot();
+      var contentWindow = qx.dom.Node.getWindow(root.getContainerElement().getDomElement());
+      var keyEventHandler = qx.event.Registration.getManager(contentWindow).getHandler(qx.event.handler.Keyboard);
+      
       /*
        * fix mapping for the keys "#", "-", "P", "S", "X"
        * for other keys there maybe also a problem with the wrong identifier,
@@ -739,10 +741,10 @@ qx.Class.define("htmlarea.HtmlArea",
         style   : qx.core.Variant.select("qx.client",
         {
            "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:visible ; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } ',
            "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: auto; }' +
-           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } '
         }),
         body    : '<body id="bodyElement">\n',
@@ -1337,10 +1339,9 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
       
-      /* Register context menu event - use contextmenu for safari (because mac safari does not fire mouse up event on right click) and mousup for all other
-       * browsers (as ie does not give the right button number for the context menu) */
-      qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
-
+      /* Register contextmenu event */
+      qx.event.Registration.addListener(doc.documentElement, "contextmenu", this.__handleContextMenuEvent, this);
+        
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         qx.event.Registration.addListener(doc.body, "focusout", this.__handleFocusOut, this);
@@ -1672,14 +1673,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       switch(keyIdentifier)
       {
-        case "tab":
-          if (qx.bom.client.Engine.GECKO)
-          {
-            /* TODO - right implementation? */
-            this.getFocusRoot().getFocusHandler()._onkeyevent(this.getFocusRoot(), e);
-          }
-        break;
-
         case "enter":
 
           /* If only "Enter" key was pressed and "messengerMode" is activated */
@@ -2095,7 +2088,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Eventlistener for all mouse up events. Fires the contextmenu event.
+     * Event Listener for the "contextmenu" event. Stops the browser from
+     * displaying the native context menu and fires an own event for the 
+     * application developers to position their own (qooxdoo) contextmenu.
      *
      * @type member
      * @param e {Object} Event object
@@ -2103,21 +2098,18 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleContextMenuEvent : function(e)
     {
-      if (e.isRightPressed())
-      {
-        var data   = {
-          x : e.getViewportLeft(),
-          y : e.getViewportTop(),
-          target : e.getTarget()
-        };
-        
-        e.preventDefault();
-        e.stopPropagation();
-        
-        qx.event.Timer.once(function() {
-          this.fireDataEvent("contextmenu", data);
-        }, this, 0);
-      }
+      var data   = {
+        x : e.getViewportLeft(),
+        y : e.getViewportTop(),
+        target : e.getTarget()
+      };
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      qx.event.Timer.once(function() {
+        this.fireDataEvent("contextmenu", data);
+      }, this, 0);
     },
     
     
