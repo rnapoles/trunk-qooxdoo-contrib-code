@@ -35,6 +35,10 @@ import org.qooxdoo.sushi.io.OS;
 
 /** TODO: move more tests into NodeTest */
 public class FileNodeTest extends NodeTest {
+    public FileNodeTest() {
+        super(true);
+    }
+
     @Override
     protected Node createWork() throws IOException {
         return IO.getTemp().createTempDirectory();
