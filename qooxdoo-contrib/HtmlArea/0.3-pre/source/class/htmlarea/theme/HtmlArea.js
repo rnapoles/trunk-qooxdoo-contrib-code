@@ -28,6 +28,6 @@ qx.Theme.define("htmlarea.theme.HtmlArea",
     decoration : qx.theme.modern.Decoration,
     font : qx.theme.modern.Font,
     icon : qx.theme.icon.Tango,
-    appearance : htmlarea.theme.Appearance
+    appearance : qx.theme.modern.Appearance
   }
 });
