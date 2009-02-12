@@ -541,6 +541,87 @@ public abstract class NodeTest extends NodeReadOnlyTest {
             assertTrue(e.getCause() instanceof FileNotFoundException);
         }
     }
+    
+    //-- move
+    
+    @Test
+    public void moveDirectory() throws IOException {
+        if (cannotMove()) {
+            return;
+        }
+        doMove(work.join("old").mkdir(), work.join("moved"));
+    }
+
+    @Test
+    public void moveFile() throws IOException {
+        if (cannotMove()) {
+            return;
+        }
+        doMove((work.join("old")).mkfile(), work.join("moved"));
+    }
+
+    @Test
+    public void moveToExistingDir() throws IOException {
+        Node destdir;
+        
+        if (cannotMove()) {
+            return;
+        }
+        destdir = work.join("subdir").mkdir();
+        doMove((work.join("old")).mkfile(), destdir.join("moved"));
+    }
+
+    @Test(expected=IOException.class)
+    public void moveToNonexistingDir() throws IOException {
+        if (cannotMove()) {
+            throw new IOException();
+        }
+        doMove((work.join("old")).mkfile(), work.join("nosuchdir/moved"));
+    }
+
+    @Test(expected=IOException.class)
+    public void moveOverExisting() throws IOException {
+        Node dest;
+        
+        if (cannotMove()) {
+            throw new IOException();
+        }
+        dest = work.join("moved").mkfile();
+        doMove(work.join("old").mkfile(), dest);
+    }
+
+    @Test(expected=IOException.class)
+    public void moveToSame() throws IOException {
+        Node node;
+        
+        node = work.join("old").mkdir();
+        doMove(node, node);
+    }
+
+    private boolean cannotMove() throws IOException {
+        Node a;
+        Node b;
+        
+        a = work.join("movetesta");
+        b = work.join("movetestb");
+        a.mkfile();
+        b.checkNotExists();
+        try {
+            a.move(b);
+        } catch (MoveException e) {
+            a.delete();
+            return true;
+        }
+        b.delete();
+        return false;
+    }
+
+    private void doMove(Node src, Node dest) throws IOException {
+        src.move(dest);
+        src.checkNotExists();
+        dest.checkExists();
+    }
+    
 
     //-- other ops
 

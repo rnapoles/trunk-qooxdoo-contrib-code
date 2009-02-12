@@ -155,51 +155,6 @@ public class FileNodeTest extends NodeTest {
         assertFalse(link.exists());
     }
 
-    @Test
-    public void moveDirectory() throws IOException {
-        doMove((FileNode) work.join("old").mkdir(), (FileNode) work.join("moved"));
-    }
-
-    @Test
-    public void moveFile() throws IOException {
-        doMove(((FileNode) work.join("old")).mkfile(), (FileNode) work.join("moved"));
-    }
-
-    @Test
-    public void moveToExistingDir() throws IOException {
-        FileNode destdir;
-        
-        destdir = (FileNode) work.join("subdir").mkdir();
-        doMove(((FileNode) work.join("old")).mkfile(), (FileNode) destdir.join("moved"));
-    }
-
-    @Test(expected=IOException.class)
-    public void moveToNonexistingDir() throws IOException {
-        doMove(((FileNode) work.join("old")).mkfile(), (FileNode) work.join("nosuchdir/moved"));
-    }
-
-    @Test(expected=IOException.class)
-    public void moveOverExisting() throws IOException {
-        FileNode dest;
-        
-        dest = ((FileNode) work.join("moved")).mkfile();
-        doMove(((FileNode) work.join("old")).mkfile(), dest);
-    }
-
-    @Test(expected=IOException.class)
-    public void moveToSame() throws IOException {
-        FileNode node;
-        
-        node = (FileNode) work.join("old").mkdir();
-        doMove(node, node);
-    }
-
-    private void doMove(FileNode src, FileNode dest) throws IOException {
-        src.move(dest);
-        src.checkNotExists();
-        dest.checkExists();
-    }
-    
     //--
     
     @Test
