@@ -57,7 +57,7 @@ qx.Class.define("inspector.components.AbstractWindow",
     _toolbar : null,
     
     /**
-     * TODO doc
+     * Window instance from the Iframe.
      */
     _iFrameWindow : null,
     
