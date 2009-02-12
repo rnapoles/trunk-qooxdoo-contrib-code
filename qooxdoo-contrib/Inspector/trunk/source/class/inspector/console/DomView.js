@@ -228,9 +228,9 @@ qx.Class.define("inspector.console.DomView",
         
         // if it is not an object
         if (!(sortedValues[i].value instanceof this._iFrameWindow.Object)) {
-          // TODO build icon path!
+          var imageURI = qx.util.ResourceManager.toUri("inspector/images/spacer.gif");
           returnString.add("<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
-                          "../source/resource/inspector/images/spacer.gif" + 
+                          imageURI + 
                           "'>" + this._console.escapeHtml(sortedValues[i].key) + "</td>");
           
           // if the value is null
@@ -258,18 +258,20 @@ qx.Class.define("inspector.console.DomView",
           // if it is not the selected object (self reference)
           if (sortedValues[i].value != o) {
             // print out the objects key incl. the link to select it         
+            var imageURI = qx.util.ResourceManager.toUri("inspector/images/open.gif");
             returnString.add("<tr><td class='" + keyStyle + "'><a onclick='" +
                             "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
                             "'><img class='ins_dom_front_image' src='" + 
-                            "../source/resource/inspector/images/open.gif" + 
+                            imageURI + 
                             "'>" + this._console.escapeHtml(sortedValues[i].key) + "</a></td>");
           }
           
           // if the object holds a reference to itself
           if (sortedValues[i].value == o) {
             // print out the objects key without the link to select it        
+            var imageURI = qx.util.ResourceManager.toUri("inspector/images/spacer.gif");
             returnString.add("<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
-                            "..source/inspector/images/spacer.gif" + 
+                            imageURI + 
                             "'>" + sortedValues[i].key + "</td>");            
             // print out a message for a self index
             returnString.add("<td class='ins_dom_self_ref'>self reference</td></tr>");
