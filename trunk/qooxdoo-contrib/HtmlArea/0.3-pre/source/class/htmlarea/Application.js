@@ -67,6 +67,15 @@ qx.Class.define("htmlarea.Application",
     {
       this.base(arguments);
       
+      // include the "htmlArea" appearance manually
+      // because the appearance theme of the HtmlArea *has* to be only the
+      // additional set of appearances which can be used to include it into
+      // other appearances.
+      // If the HtmlArea component would define an appearance theme which
+      // extends e.g. the Modern appearance theme it would clash with applications
+      // which include the HtmlArea and use the Modern appearance theme themselves
+      qx.Theme.include(qx.theme.modern.Appearance, htmlarea.theme.Appearance);
+      
       // Add log appenders
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {

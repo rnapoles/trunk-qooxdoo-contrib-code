@@ -20,7 +20,6 @@
 
 qx.Theme.define("htmlarea.theme.Appearance",
 {
-  extend : qx.theme.modern.Appearance,
   title : "HtmlArea appearance theme",
  
   appearances :
