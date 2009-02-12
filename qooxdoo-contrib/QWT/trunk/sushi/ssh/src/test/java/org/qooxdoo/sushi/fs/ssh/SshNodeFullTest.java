@@ -37,6 +37,10 @@ import com.jcraft.jsch.JSchException;
 public class SshNodeFullTest extends NodeTest {
     private static SshRoot root;
     
+    public SshNodeFullTest() {
+        super(true);
+    }
+    
     @BeforeClass
     public static void beforeClass() throws Exception {
         root = ConnectionFullTest.open();

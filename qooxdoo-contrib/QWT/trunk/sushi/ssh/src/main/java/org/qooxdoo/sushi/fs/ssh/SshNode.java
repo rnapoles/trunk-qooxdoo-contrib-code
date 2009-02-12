@@ -146,8 +146,19 @@ public class SshNode extends Node {
     }
 
     @Override
-    public Node move(Node dest) throws MoveException {
-    	throw new MoveException(this, dest, "SshNode cannot be moved");
+    public Node move(Node destNode) throws MoveException {
+        SshNode dest;
+        
+        if (!(destNode instanceof SshNode)) {
+            throw new MoveException(this, destNode, "target has is different node type");
+        }
+        dest = (SshNode) destNode;
+        try {
+            channel.rename(slashPath, dest.slashPath);
+        } catch (SftpException e) {
+            throw new MoveException(this, dest, "ssh failure", e);
+        }
+        return dest;
     }
 
     @Override

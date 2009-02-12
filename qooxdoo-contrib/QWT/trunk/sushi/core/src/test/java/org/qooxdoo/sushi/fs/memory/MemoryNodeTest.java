@@ -22,6 +22,10 @@ package org.qooxdoo.sushi.fs.memory;
 import org.qooxdoo.sushi.fs.NodeTest;
 
 public class MemoryNodeTest extends NodeTest {
+    public MemoryNodeTest() {
+        super(false);
+    }
+    
     @Override
     protected MemoryNode createWork() {
         return IO.getMemoryFilesystem().root().node("");

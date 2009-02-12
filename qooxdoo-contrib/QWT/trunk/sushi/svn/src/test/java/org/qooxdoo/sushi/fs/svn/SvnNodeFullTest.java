@@ -41,6 +41,10 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 public class SvnNodeFullTest extends NodeTest {
     private static SVNURL URL;
 
+    public SvnNodeFullTest() {
+        super(false);
+    }
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
         Node repo;

@@ -38,6 +38,12 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public abstract class NodeTest extends NodeReadOnlyTest {
+    private final boolean canmove;
+
+    public NodeTest(boolean canmove) {
+        this.canmove = canmove;
+    }
+    
     @Test
     public void work() throws IOException {
         List<?> children;
@@ -546,7 +552,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     
     @Test
     public void moveDirectory() throws IOException {
-        if (cannotMove()) {
+        if (!canmove) {
             return;
         }
         doMove(work.join("old").mkdir(), work.join("moved"));
@@ -554,7 +560,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
 
     @Test
     public void moveFile() throws IOException {
-        if (cannotMove()) {
+        if (!canmove) {
             return;
         }
         doMove((work.join("old")).mkfile(), work.join("moved"));
@@ -564,7 +570,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     public void moveToExistingDir() throws IOException {
         Node destdir;
         
-        if (cannotMove()) {
+        if (!canmove) {
             return;
         }
         destdir = work.join("subdir").mkdir();
@@ -573,7 +579,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
 
     @Test(expected=IOException.class)
     public void moveToNonexistingDir() throws IOException {
-        if (cannotMove()) {
+        if (!canmove) {
             throw new IOException();
         }
         doMove((work.join("old")).mkfile(), work.join("nosuchdir/moved"));
@@ -583,7 +589,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     public void moveOverExisting() throws IOException {
         Node dest;
         
-        if (cannotMove()) {
+        if (!canmove) {
             throw new IOException();
         }
         dest = work.join("moved").mkfile();
@@ -598,26 +604,8 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         doMove(node, node);
     }
 
-    private boolean cannotMove() throws IOException {
-        Node a;
-        Node b;
-        
-        a = work.join("movetesta");
-        b = work.join("movetestb");
-        a.mkfile();
-        b.checkNotExists();
-        try {
-            a.move(b);
-        } catch (MoveException e) {
-            a.delete();
-            return true;
-        }
-        b.delete();
-        return false;
-    }
-
     private void doMove(Node src, Node dest) throws IOException {
-        src.move(dest);
+        assertSame(dest, src.move(dest));
         src.checkNotExists();
         dest.checkExists();
     }
