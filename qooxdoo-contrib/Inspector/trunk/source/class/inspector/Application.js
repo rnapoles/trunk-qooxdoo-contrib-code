@@ -423,7 +423,7 @@ qx.Class.define("inspector.Application",
         return;
       }     
       // show the selected widget in the inspector bar
-      this._selectedWidgetLabel.setContent("Selected Widget: " + object.toString());
+      this._selectedWidgetLabel.setContent("Selected widget: " + object.toString());
       
       if (initiator != this._selector) {
         if (object !== this._selector.getSelection()) {
