@@ -2763,7 +2763,7 @@ qx.Class.define("htmlarea.HtmlArea",
       */
       var focusNode = this.getFocusNode();
 
-      if (focusNode.nodeType == 3) {
+      if (qx.dom.Node.isText(focusNode)) {
         focusNode = focusNode.parentNode;
       }
       
