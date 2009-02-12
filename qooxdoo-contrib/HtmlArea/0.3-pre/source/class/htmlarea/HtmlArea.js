@@ -831,6 +831,19 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * Returns the document of the iframe
+     * 
+     * @return {Object}
+     */
+    getContentDocument : function ()
+    {
+      if (this.__isReady)
+      {
+        return this.__iframe.getDocument();
+      }
+    },
+    
+    /**
      * Returns the body of the document
      * 
      * @return {Object}
@@ -934,7 +947,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getTextNodes : function()
     {
-      return this._fetchTextNodes(this.getContentDocument().body);
+      return this._fetchTextNodes(this.getContentBody());
     },
 
 
@@ -1587,11 +1600,10 @@ qx.Class.define("htmlarea.HtmlArea",
           case "pagedown":
           case "delete":
           case "end":
-            var sel    = this.__getSelection();
+            var focusNode = this.getFocusNode();
             
-            var doc = this.__iframe.getDocument();
             /* Set flag indicating if first line is selected */
-            this.__firstLineSelected = (sel.focusNode == doc.body.firstChild);
+            this.__firstLineSelected = (focusNode == this.getContentBody().firstChild);
           break;
         }
       }
@@ -1647,8 +1659,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
    _handleKeyPress : function(e)
    {
-      
-      var doc = this.__iframe.getDocument();
+      var doc = this.getContentDocument();
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
@@ -1701,17 +1712,23 @@ qx.Class.define("htmlarea.HtmlArea",
 
             if (qx.core.Variant.isSet("qx.client", "gecko"))
             {
-               /*
-                * Insert additionally an empty div element - this ensures that
-                * the caret is shown and the cursor moves down a line correctly
-                *
-                * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
-                * only necessary to have anything AFTER the "br" element to get it work.
-                * Strange hack, I know ;-)
-                */
-               this.insertHtml("<br /><div id='placeholder'></div>");
-               //this.insertHtml("<br _moz_dirty=\"\"/><div id='placeholder'></div>");
-               //this.insertHtml('<p><br type="_moz" /></p>');
+              // check if the caret is within a word
+              if (this.__isSelectionWithinWordBoundary())
+              {
+                this.insertHtml("<br />");
+                return;
+              }
+
+              
+              /*
+               * Insert additionally an empty div element - this ensures that
+               * the caret is shown and the cursor moves down a line correctly
+               *
+               * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
+               * only necessary to have anything AFTER the "br" element to get it work.
+               * Strange hack, I know ;-)
+               */
+              this.insertHtml("<br /><div id='placeholder'></div>");
             }
             else if (qx.core.Variant.isSet("qx.client", "webkit"))
             {
@@ -1771,7 +1788,8 @@ qx.Class.define("htmlarea.HtmlArea",
            */
           else if(qx.core.Variant.isSet("qx.client", "gecko"))
           {
-            if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
+            if (this.getInsertParagraphOnLinebreak() && 
+                !isShiftPressed && !isCtrlPressed)
             {
               var sel = this.__getSelection();
               if (sel)
@@ -1779,9 +1797,7 @@ qx.Class.define("htmlarea.HtmlArea",
                 var selNode = sel.focusNode;
                 
                 // check if the caret is within a word - Gecko can handle it
-                if (sel.isCollapsed && qx.dom.Node.isText(selNode) && 
-                    sel.anchorOffset < selNode.length)
-                {
+                if (this.__isSelectionWithinWordBoundary()) {
                   return;
                 }
                 
@@ -1805,12 +1821,12 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && isShiftPressed)
             {
+              var focusNode = this.getFocusNode();
               
-              var sel = this.__getSelection();
               var helperString = "";
 
               /* Insert bogus node if we are on an empty line: */
-              if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
+              if(focusNode.textContent == "" || focusNode.parentElement.tagName == "LI")
               {
                 helperString = "<br class='webkit-block-placeholder' />";
               }
@@ -2619,7 +2635,12 @@ qx.Class.define("htmlarea.HtmlArea",
         focus node
         ----------
       */
-      var focusNode      = this.getFocusNode();
+      var focusNode = this.getFocusNode();
+      
+      if (qx.dom.Node.isText(focusNode)) {
+        focusNode = focusNode.parentNode;
+      }
+      
       var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : doc.defaultView.getComputedStyle(focusNode, null);
 
       /*
@@ -2862,6 +2883,31 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     }),
     
+    
+    /**
+     * Checks if the cursor is within a word boundary.
+	   * ATTENTION: Currently only implemented for Gecko
+	   * 
+	   * @signature function()
+	   * @return {Boolean} within word boundary
+     */
+    __isSelectionWithinWordBoundary : qx.core.Variant.select("qx.client", {
+      "gecko" : function()
+      {
+        var sel = this.__getSelection();
+        var focusNode = this.getFocusNode();
+        
+        // check if the caret is within a word
+        return sel && sel.isCollapsed && qx.dom.Node.isText(focusNode) && 
+               sel.anchorOffset < focusNode.length;
+      },
+      
+      "default" : function()
+      {
+        return false;
+      }
+    }),
+    
 
     /*
      -----------------------------------------------------------------------------
@@ -2973,7 +3019,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
          if (sel && sel.focusNode)
          {
-           return sel.focusNode.parentNode;
+           return sel.focusNode;
          }
 
          return this.__iframe.getDocument().body;
