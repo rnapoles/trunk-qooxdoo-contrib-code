@@ -135,7 +135,7 @@ qx.Class.define("inspector.Application",
       }
       
       // save the url in a cookie
-      qx.bom.Cookie.set("url", this._iFrame.getSource());
+      qx.bom.Cookie.set("url", this._iFrame.getSource(), 7);
     },
     
     __initInspector : function() 
@@ -399,7 +399,7 @@ qx.Class.define("inspector.Application",
         wasOpen = true;
         
         // store the open status in a cookie
-        qx.bom.Cookie.set(name + "Open", e.getData());
+        qx.bom.Cookie.set(name + "Open", e.getData(), 7);
       }, this);      
     },
     
@@ -411,13 +411,13 @@ qx.Class.define("inspector.Application",
       }, this);
       // add a move listener
       win.addListener("move", function(e) {
-        qx.bom.Cookie.set(name + "Left", e.getData().left);
-        qx.bom.Cookie.set(name + "Top", e.getData().top);            
+        qx.bom.Cookie.set(name + "Left", e.getData().left, 7);
+        qx.bom.Cookie.set(name + "Top", e.getData().top, 7);            
       }, this);
       // add a resize listener
       win.addListener("resize", function(e) {
-        qx.bom.Cookie.set(name + "Width", e.getData().width);
-        qx.bom.Cookie.set(name + "Height", e.getData().height);
+        qx.bom.Cookie.set(name + "Width", e.getData().width, 7);
+        qx.bom.Cookie.set(name + "Height", e.getData().height, 7);
       }, this);      
     },
         
