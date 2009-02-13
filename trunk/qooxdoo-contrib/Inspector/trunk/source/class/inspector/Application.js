@@ -105,13 +105,34 @@ qx.Class.define("inspector.Application",
       this._iFrame.addListener("load", this.__onLoad, this);
       
       this._loading = true;      
-      this._iFrame.setSource(this._urlTextField.getValue());
+      
+      // get the url out of a cookie
+      var cookieUrl = qx.bom.Cookie.get("url");
+      if (cookieUrl == undefined || cookieUrl == "")
+      {
+        //cookieUrl = "Please enter an url here!";
+        cookieUrl = "..";
+      }
+      
+      if (window.qxinspector != undefined && qxinspector.local) 
+      {
+        this._urlTextField.setVisibility("hidden");
+        this._urlTextField.setValue("index.html");  
+      }
+      else
+      {
+        this._urlTextField.setValue(cookieUrl);     
+      }
     },
     
     __onLoad : function() {
       this.__checkCount = 0;
       this.__initInspector();
-      this._urlTextField.setValue(this._iFrame.getWindow().location.pathname);
+      
+      if (window.qxinspector == undefined) 
+      {
+        this._urlTextField.setValue(this._iFrame.getWindow().location.pathname);
+      }
       
       // save the url in a cookie
       qx.bom.Cookie.set("url", this._iFrame.getSource());
@@ -329,14 +350,8 @@ qx.Class.define("inspector.Application",
       // add a spacer to seperate the url
       this._toolbar.addSpacer();
 
-      // get the url out of a cookie
-      var cookieUrl = qx.bom.Cookie.get("url");
-      if (cookieUrl == undefined || cookieUrl == "") {
-        //cookieUrl = "Please enter an url here!";
-        cookieUrl = "..";
-      }
       // add the url textfield
-      this._urlTextField = new qx.ui.form.TextField(cookieUrl);
+      this._urlTextField = new qx.ui.form.TextField();
       this._urlTextField.setMarginRight(5);
       this._urlTextField.setWidth(300);
       this._toolbar.add(this._urlTextField);
