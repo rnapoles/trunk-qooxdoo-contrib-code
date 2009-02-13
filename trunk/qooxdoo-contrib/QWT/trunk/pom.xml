@@ -297,12 +297,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <distributionManagement>
     <repository>
-      <id>billy</id>
-      <url>scpexe://devel.schlund.de/home/billy/public_html/repository</url>
+      <id>1und1-releases</id>
+      <url>${mavenrepo.releases}</url>
     </repository>
     <snapshotRepository>
-      <id>billy</id>
-      <url>scpexe://devel.schlund.de/home/billy/public_html/repository</url>
+      <id>1und1-snapshots</id>
+      <url>${mavenrepo.snapshots}</url>
     </snapshotRepository>
     <site>
       <id>billy</id>
