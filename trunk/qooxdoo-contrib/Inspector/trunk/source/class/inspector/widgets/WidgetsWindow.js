@@ -16,6 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
+
+/* ************************************************************************
+#asset(qx/icon/Tango/22/actions/view-refresh.png)
+************************************************************************ */
+
 /**
  * This class represents the widget finder window.
  * 
@@ -33,7 +38,8 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
     this.base(arguments, "Widgets");   
     
     // create and add the reload button
-    this._reloadButton = new qx.ui.toolbar.Button("Reload");
+    this._reloadButton = new qx.ui.toolbar.Button(null, 
+        "icon/22/actions/view-refresh.png");
     this._toolbar.add(this._reloadButton);
     // add the event listener for the reload
     this._reloadButton.addListener("click", function() {
