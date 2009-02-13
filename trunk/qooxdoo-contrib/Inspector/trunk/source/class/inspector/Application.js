@@ -68,6 +68,7 @@ qx.Class.define("inspector.Application",
     /*
      * Insopactor
      */
+    _container : null,
     _iFrame : null,
     _loading : null,
     _selector : null,
@@ -91,12 +92,15 @@ qx.Class.define("inspector.Application",
         qx.log.appender.Console;
       }
       
+      this._container = new qx.ui.container.Composite(new qx.ui.layout.VBox());
+      this.getRoot().add(this._container, {edge : 0});
+      
       this.__createToolbar();
             
       // create the iFrame
       this._iFrame = new qx.ui.embed.Iframe("..");
       this._iFrame.setDecorator(null);
-      this.getRoot().add(this._iFrame, {top: 29, left: 0, right: 0, bottom: 0});
+      this._container.add(this._iFrame, {flex : 1});
       
       this._iFrame.addListener("load", this.__onLoad, this);
       
@@ -247,8 +251,9 @@ qx.Class.define("inspector.Application",
     __createToolbar: function() {
       // create the toolbar itself
       this._toolbar = new qx.ui.toolbar.ToolBar();
+      this._toolbar.setDecorator("myToolbar");
       this._toolbar._getLayout().setAlignY("middle");      
-      this.getRoot().add(this._toolbar, {top: 0, left: 0, right: 0});
+      this._container.add(this._toolbar);
       
       // create the headline label
       var inspectorLabel = new qx.ui.basic.Label("qooxdoo Inspector");
