@@ -48,6 +48,7 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
     
     // initialize tree
     this._tree = new qx.ui.tree.Tree();
+    this._tree.setDecorator(null);
     this._tree.setRootOpenClose(true);
     this.add(this._tree, {flex: 1});
     

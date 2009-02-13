@@ -50,6 +50,7 @@ qx.Class.define("inspector.objects.ObjectsWindow",
     // necessary to get the table working!
     this._model.setColumns(["", ""]);     
     this._table = new qx.ui.table.Table(this._model);
+    this._table.setDecorator(null);
     this._table.setColumnVisibilityButtonVisible(false); 
     this._table.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.SINGLE_SELECTION);
     this.add(this._table, {flex: 1});
