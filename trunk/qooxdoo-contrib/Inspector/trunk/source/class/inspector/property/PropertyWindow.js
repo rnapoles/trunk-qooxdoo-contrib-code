@@ -300,7 +300,7 @@ qx.Class.define("inspector.property.PropertyWindow",
         this.self(arguments).HIGHLIGHT_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT));    
       this._highlightCurrentPropertyButton.addListener("execute", this._highlightCurrentPropertyButtonEventListener, this);
       this._highlightCurrentPropertyButton.setEnabled(false);
-      this._toolbar.add(this._highlightCurrentPropertyButton);
+      // TODO this._toolbar.add(this._highlightCurrentPropertyButton);
   
       // go to property button
       this._gotoSelectedPropertyButton = new qx.ui.toolbar.Button(null,
@@ -309,7 +309,7 @@ qx.Class.define("inspector.property.PropertyWindow",
         this.self(arguments).GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT));      
       this._gotoSelectedPropertyButton.addListener("execute", this._gotoSelectedPropertyButtonEventListener, this);
       this._gotoSelectedPropertyButton.setEnabled(false);
-      this._toolbar.add(this._gotoSelectedPropertyButton);
+     // TODO this._toolbar.add(this._gotoSelectedPropertyButton);
     },
     
     
