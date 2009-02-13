@@ -16,6 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
+
+/* ************************************************************************
+#asset(qx/icon/Tango/22/actions/view-refresh.png)
+************************************************************************ */
+
 qx.Class.define("inspector.objects.ObjectsWindow", 
 {
   extend : inspector.components.AbstractWindow,
@@ -25,7 +30,8 @@ qx.Class.define("inspector.objects.ObjectsWindow",
   {
     this.base(arguments, "Objects");
     
-    this._reloadButton = new qx.ui.toolbar.Button("Reload");
+    this._reloadButton = new qx.ui.toolbar.Button(null, 
+        "icon/22/actions/view-refresh.png");
     this._toolbar.add(this._reloadButton);
     this._reloadButton.addListener("execute", function() {
       this.load();
