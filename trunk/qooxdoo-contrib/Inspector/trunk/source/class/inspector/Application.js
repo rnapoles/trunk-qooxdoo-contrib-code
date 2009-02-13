@@ -43,6 +43,35 @@ qx.Class.define("inspector.Application",
   members :
   {
     __checkCount : null,
+   
+    /*
+     * Toolbar
+     */
+    _toolbar : null,
+    _objectsButton : null,
+    _widgetsButton : null,
+    _consoleButton : null,
+    _propertyButton : null,
+    _inspectButton : null,
+    _selectedWidgetLabel : null,
+    _urlTextField : null,
+    _reloadButton : null,
+
+    /*
+     * Windows
+     */
+    _objectsWindow : null,
+    _widgetsWindow : null,
+    _consoleWindow : null,
+    _propertyWindow : null,
+    
+    /*
+     * Insopactor
+     */
+    _iFrame : null,
+    _loading : null,
+    _selector : null,
+    _loadedWindow : null,
     
     /**
      * This method contains the initial application code and gets called 
