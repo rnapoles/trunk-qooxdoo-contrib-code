@@ -149,12 +149,11 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * Binds a widget to this data provider
      *
-     * @type member
      * @param vWidget {Object} the widget object
      * @param vName {String} optional: the name under which the widget should be bound
      * @return {void}
      */
-    bindWidget : function(vWidget,vName)
+    bindWidget : function( vWidget, vName )
     {
       var bindName = vName || vWidget.getBindName();
       this.__boundWidgets[bindName] = vWidget;
@@ -163,7 +162,6 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * Unbinds a widget from this data provider
      *
-     * @type member
      * @param widget {Object} the widget object
      * @return {void}
      */
@@ -176,7 +174,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * gets a bound widget by its name
      *
-     * @type member
+     * 
      * @param name {String} the name of the widget
      * @return {Object}
      */
@@ -188,7 +186,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * gets the list of bound widgets as hash map
      *
-     * @type member
+     * 
      * @return {Object}
      */
     getBoundWidgets : function()
@@ -199,7 +197,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * Returns a list of names of the bound widgets
      *
-     * @type member
+     * 
      * @return {Array}
      */
     getNames : function()
@@ -216,7 +214,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
      * gets the data that should be sent to the server
      * overrides the MDataManager method
      *
-     * @type member
+     * 
      * @return {Object}
      */    
     getBoundWidgetsData : function()
@@ -239,12 +237,13 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
      * handles the data sent from the server to update the local state
      * 
      * @param result {Object}
-     * @type member
+     * 
      * @return {void}
      */    
     populateBoundWidgets : function(result)
     {
-      /*
+      //console.log("Populating ...");
+       /*
        * check result object
        */
       if ( typeof result != "object" )
@@ -265,12 +264,17 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
         try 
         { 
           var widget = this.getBoundWidget(key);
+          var value  = result[key];
+          //console.log("Populating " + widget + "(" + key + ") => '" + value + "'" );
           if (typeof widget == "object" )
           {
             if ( widget.getUpdateTarget() != "server" ) 
             {
-              var value  = result[key];
               widget.setWidgetData(value);  
+            }
+            else
+            {
+              //console.warn("Not updating bound widget '" + key + "', this is server updatable only.");
             }
           }
           else
@@ -282,15 +286,13 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
         {
           this.warn (e);
         }
-        
-
       }
     },
 
     /**
      * submit forms, emulation of submit method of html form element
      *
-     * @type member
+     * 
      * @return {void}
      */    
     submit : function()
@@ -305,7 +307,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * clears forms
      *
-     * @type member
+     * 
      * @return {void}
      */    
     clear : function()
@@ -320,7 +322,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     /**
      * resets forms - emulation of reset method of html form element
      *
-     * @type member
+     * 
      * @return {void}
      */    
     reset : function()
@@ -335,7 +337,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
 
     /**
      * enables a form 
-     * @type member
+     * 
      * @return {void}
      */    
     enableBoundWidgets : function()
@@ -349,7 +351,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     
     /**
      * disables a form 
-     * @type member
+     * 
      * @return {void}
      */    
     disableBoundWidgets : function()
