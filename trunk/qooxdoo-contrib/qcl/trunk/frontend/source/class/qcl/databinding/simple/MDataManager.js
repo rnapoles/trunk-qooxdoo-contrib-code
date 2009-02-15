@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2007 Christian Boulanger
+     2007-2008 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -82,14 +82,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 
   properties :
   {
-    /** switch to turn databinding on or off */
+    /** 
+     * switch to turn databinding on or off 
+     */
     dataBinding :
     {
       check : "Boolean",
       init: false
     },
 
-    /** 
+    /**  
      * which direction should the update go to the server only (ignore updateClient), 
      * to the client only (ignore updateServer), or both ways
      */
@@ -99,14 +101,17 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       init: "both"
     },
     
-    /** the external data manager, if set. */
+    /**  
+     * the external data manager, if set. 
+     */
     dataProvider :
     {
       check : "qcl.databinding.simple.DataProvider",
       apply : "_applyDataProvider" 
     },
 
-    /** the name of the widget similar to the name of form elements
+    /**  
+     * the name of the widget similar to the name of form elements
      * identifying it on the server and inside a bound data provider
      */
     bindName :
@@ -115,15 +120,26 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       init : ""
     },
     
-    /** the method to be used for data transport */
+   /**  
+    * The property that is bound to the result of the remote service
+    */
+   boundProperty :
+   {
+     check : "String",
+     init : ""
+   },    
+    
+    /**  
+     * the method to be used for data transport 
+     */
     transport :
     {
       check : [ "get", "post", "jsonrpc" ],
       init : "jsonrpc"
     },
 
-    /** 
-     * jsonrpc/get/post: the remote uri of the datasource 
+    /**  
+     * The remote uri of the datasource 
      * defaults to php backend
      * @todo set default path in qx:application attribute
      */ 
@@ -133,41 +149,53 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       init : "../../backend/php/services/index.php"
     },
 
-    /** jsonrpc: the service class name on the server */
+    /** 
+     * The service class name on the server 
+     */
     serviceName :
     {
       check : "String"
     },
 
-    /** jsonrpc: the service name on the server to pull the local state from  */
+    /**  
+     * The service name on the server to pull the local state from  
+     */
     serviceMethodUpdateClient :
     {
       check : "String",
       init: "updateClient"
     },
 
-    /** jsonrpc: the service name on the server receiving the local state  */
+    /** 
+     * The service name on the server receiving the local state  
+     */
     serviceMethodUpdateServer :
     {
       check : "String",
       init : "updateServer"
     },
 
-    /** timeout for request */
+    /**  
+     * Timeout for request 
+     */
     timeout :
     {
       check : "Integer",
       init : 30000
     },
 
-    /** if jsonrpc is used, whether cross-domain requests will be used  */
+    /**  
+     * If jsonrpc is used, whether cross-domain requests will be used  
+     */
     allowCrossDomainRequests :
     {
       check : "Boolean",
       init : false
     },
     
-    /** generic setter for options  */
+    /** 
+     * Generic setter for options  
+     */
     itemSelected :
     {
       check : "Boolean",
@@ -186,27 +214,26 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
   members :
   {
     /**
-     * binds widget to a data provider
+     * Binds widget to a data provider
      * @return {void}
      */
-    _applyDataProvider : function(newDataProvider,oldDataProvider)
+    _applyDataProvider : function( newDataProvider )
     {
-      if (oldDataProvider)
-      {
-        oldDataProvider.unbindWidget(this);
-      }
-      newDataProvider.bindWidget(this);
+       //console.log(this + " bound to " + newDataProvider + " as " + this.getBindName() );
+       newDataProvider.bindWidget( this );
+      
     },    
 
     /**
      * Generic getter for options that can be selected
      * retrieves selection manager and selects the widget
-     * @return {Object}
      */
     _applyItemSelected : function()
     {
-      // item might have not yet be attached to parent, set with timeout
-      qx.client.Timer.once(function(){
+      /*  
+       * item might have not yet be attached to parent, set with timeout
+       */
+      qx.client.Timer.once( function(){
         var parent = this;
         while (parent)
         {
@@ -224,8 +251,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     },
     
     
-    /**
-     * public API function to update the widget from the server.
+    /** 
+     * Public API function to update the widget from the server.
      * Can have a variable number of arguments
      * overriding classes can pass the arguments on like so:
      * this._updateClient.apply(this,arguments)
@@ -255,7 +282,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * private function doing the actual work of updating the widget
      * from the server
      *
-     * @type member
+     * 
      * @return {void}
      */
     _updateClient : function()
@@ -481,15 +508,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       }       
     },
 
-    /**
+    /** 
      * handles the data sent from the server to update the local state
      *
-     * @type member
-     * @return {void}
      */    
     __handleDataReceived : function(result)
     {
-      /*
+      /* 
        * choose method according to class 
        * @todo: this is not very elegant
        */
@@ -505,29 +530,30 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       /*
        * dispatch message that widget has been updated
        */
-      this.createDispatchEvent("widgetUpdated");      
+      this.createDispatchDataEvent("updated",result);      
     },
     
-    /**
-     * sets the widget state from the received data. Data must be a 
+    /** 
+     * Sets the widget state from the received data. Data must be a 
      * hash map. 
-     * - When a property exists that corresponds to a key,
+     * - When the data is a scalar value, update the bound widget property
+     *   with it
+     * - If the data is a map and a property exists that corresponds to a key,
      *   this property will be set with the value. 
      * - If the key is "children", the data will be added as children
-     * - in other cases, it will be saved as userdata.
      *
-     * @param data {Object} hash map
-     * @type member
+     * @param data {String|Int|Map} hash map
      * @return {void}
      */  
     setWidgetData : function (data)
     {
-      /*
+
+      /* 
        * simple setter using auto-lookup of property name
        */
       if ( typeof data != "object" )
       {
-        key = this._getWidgetDataProperties().split(",")[0]; // just use first one
+        key = this._getWidgetDataProperties();
         
         /*
          * special case: combobox: this will select the listItem that has 
@@ -542,14 +568,14 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             } 
             else
             {
-              this.setSelected(this.getList().findValue(data));
+              this.setSelected( this.getList().findValue(data) );
             }
         }
         else
         {
-          this.set(key,data);  
+          //console.log(this + " setting " + key + " to '" + data + "'" );
+          this.set( key, data );
         }
-        return;
       }
       
       /*
@@ -809,7 +835,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * overriding classes can pass the arguments on like so:
      * this._updateServer.apply(this,arguments)
      * 
-     * @type member
+     * 
      * @return {void}
      */
     updateServer : function()
@@ -823,7 +849,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * the receiving server method after the first argument which is always
      * the widget data.
      *
-     * @type member
+     * 
      * @return {void}
      */
     _updateServer : function()
@@ -1053,7 +1079,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     /**
      * gets the data that should be sent to the server
      *
-     * @type member
+     * 
      * @return {Object}
      */    
     __getWidgetData : function()
@@ -1065,7 +1091,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * gets the widget data, i.e. all data relevant properties
      * which should be sent to the server.
      *
-     * @type member
+     * 
      * @return {Object}
      */  
     getWidgetData : function ()
@@ -1168,25 +1194,24 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        return data;
     },
     
-    /**
-     * gets the widget state properties
-     * since there is no introspection method, we have to manually
-     * do this for each individual widget (not very elegant).
-     * returns a string list of properties separated by comma.
-     * unfinished!
-     * 
-     * @type member
+    /** 
+     * Returns the properties of the widget that hold the state of the widget.
+     * This is either the "boundProperty" or, if this is not set, a default
+     * value determined from the class name. 
      * @return {String}
      */  
     _getWidgetDataProperties : function ()
     {
- 
+      if ( this.getBoundProperty() )
+      {
+        return this.getBoundProperty();
+      }
       switch ( this.classname )
       {
           case "qx.ui.form.CheckBox":
             return "checked";
           case "qx.ui.form.List":
-            return "selected,children";
+            return "selected";
           case "qx.manager.selection.RadioManager":
           case "qx.ui.listview.ListView":
           case "qx.ui.tree.Tree":
@@ -1205,12 +1230,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     },    
     
 
-    /**
-     * clears widget content
-     *
-     * @type member
+    /** 
+     * Clears widget content 
      * @return {void}
-     */    
+     */
     clearWidget : function()
     {
       var stateProps = this._getWidgetDataProperties();
@@ -1254,6 +1277,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             }
          } 
        }
+      return;
     },
     
     /**
