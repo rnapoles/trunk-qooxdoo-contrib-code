@@ -164,7 +164,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       }
 
       // get the object reference
-      var object = (function(text, ans){return eval(text)}).call(qx.core.Init.getApplication().getSelectedObject(), objectRef, this._controller.getAns());
+      var object = (function(text, ans){return iFrameWindow.eval(text)}).call(qx.core.Init.getApplication().getSelectedObject(), objectRef, this._controller.getAns());
       
 
       // check if it has returned an object
