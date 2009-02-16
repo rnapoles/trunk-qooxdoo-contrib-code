@@ -43,52 +43,32 @@ qx.Class.define("tileview.controller.TileView",
     descriptionPath : 
     {
       check: "String",
-      apply: "_applyDescriptionPath",
+      apply: "_applyLabelPath",
       nullable: true
-    },
-    
-    descriptionOptions : 
-    {
-      apply: "_applyDescriptionOptions",
-      nullable: true
-    }, 
-    
-    statusPath : 
-    {
-      check: "String",
-      apply: "_applyStatusPath",
-      nullable: true
-    },
-    
-    statusOptions : 
-    {
-      apply: "_applyStatusOptions",
-      nullable: true
-    }
-  },   
-    
-  members :
-  {
-    _applyDescriptionPath : function(value, old) 
-    {
-      this.__renewBindings();
-    },
-  
-    _applyDescriptionOptions : function(value, old)
-    {
-      this.__renewBindings();
     },
 
-    _applyStatusPath : function(value, old) 
+    descriptionOptions :
     {
-      this.__renewBindings();
+      apply: "_applyLabelOptions",
+      nullable: true
     },
-  
-    _applyStatusOptions : function(value, old)
+
+    statusPath :
     {
-      this.__renewBindings();
+      check: "String",
+      apply: "_applyLabelPath",
+      nullable: true
     },
-    
+
+    statusOptions :
+    {
+      apply: "_applyLabelOptions",
+      nullable: true
+    }
+  },
+
+  members :
+  {  
     _createItem : function()
     {
       var item = new tileview.TileViewItem();
