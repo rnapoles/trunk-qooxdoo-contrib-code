@@ -40,8 +40,8 @@ qx.Class.define("inspector.components.Selector",
   members :
   {
     
-    setJSWindow : function(window) {
-      this._iFrameWindow = window;
+    setJSWindow : function(win) {
+      this._iFrameWindow = win;
       this._addedWidgets = [];
       this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();        
 
