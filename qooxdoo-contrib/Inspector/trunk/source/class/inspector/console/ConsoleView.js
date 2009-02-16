@@ -208,11 +208,10 @@ qx.Class.define("inspector.console.ConsoleView",
       // try to run the code
       try {        
         // run it and store the result in the global ans value
+        var iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
         this.setAns(
-          (function(text, ans) {
-            var iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
-            return iFrameWindow.eval(text);
-          }).call(qx.core.Init.getApplication().getSelectedObject(), text, this.getAns()));
+            new iFrameWindow.Function("return " + text).call(qx.core.Init.getApplication().getSelectedObject())
+          );
 
         // if ans is defined
         if (this.getAns() != null) {      
