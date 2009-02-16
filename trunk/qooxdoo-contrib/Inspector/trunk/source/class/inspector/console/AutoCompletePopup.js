@@ -133,12 +133,12 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     
 
     open: function(objectRef, left, top) {  
-      // load the data
-      this.load(objectRef);
       // set the popup to the current position
       this.moveTo(left, top);
       // show the popup
       this.show();
+      // load the data
+      this.load(objectRef);
     },
         
     
