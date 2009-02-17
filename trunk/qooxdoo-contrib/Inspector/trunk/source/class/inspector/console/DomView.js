@@ -355,7 +355,7 @@ qx.Class.define("inspector.console.DomView",
             sortedValues.push({key: key, value: o[key]});
           }
         } catch (ex) {
-          sortedValues.push({key: key, value: "Error"});
+          sortedValues.push({key: key, value: "Error occurs by reading value!"});
         }        
       }
       
