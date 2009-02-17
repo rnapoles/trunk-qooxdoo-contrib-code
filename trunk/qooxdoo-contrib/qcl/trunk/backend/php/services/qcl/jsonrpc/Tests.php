@@ -70,6 +70,12 @@ class class_qcl_jsonrpc_Tests extends qcl_datasource_controller
     $this->info("Messag 'bar' has been dispatched with data '$data'");
   } 
   
+  function method_testIniValue( $params )
+  {
+    $path = $params[0];
+    $this->debug($this->getIniValue($path));  
+  }
+  
 }
 
 ?>

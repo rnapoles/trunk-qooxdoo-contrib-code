@@ -39,7 +39,8 @@ class qcl_db_controller extends qcl_jsonrpc_controller
   }     
   
   /**
-   * gets the dsn information from the service.ini data
+   * Returns the dsn information from the service.ini data.
+   * By default, return user-level access to the admin database.
    * @param boolean $userdata [optional,] whether 
    * to use the userdata database (true) or the database containing 
    * the application data tables (false, default)
@@ -47,21 +48,30 @@ class qcl_db_controller extends qcl_jsonrpc_controller
    * to use a dsn with admin-level access to create tables etc. (true) or
    * just user privileges (false, default)
    */
-  function getDsn($userdata=false,$adminaccess=false)
+  function getDsn( $userdata=false, $adminaccess=false )
   {
     if ( $userdata )
     {
       if ( $adminaccess )
       {
-        return $this->getIniValue("database.dsn.userdata.admin");
+        return $this->getIniValue("database.admin_userdb");
       }
-      return $this->getIniValue("database.dsn.userdata.user");
+      else
+      {
+        return $this->getIniValue("database.user_userdb");  
+      }
     }
-    if ( $adminaccess )
+    else
     {
-      return $this->getIniValue("database.dsn.appdata.admin");
+      if ( $adminaccess )
+      {
+        return $this->getIniValue("database.admin_admindb");
+      }
+      else
+      {
+        return $this->getIniValue("database.user_admindb");
+      }
     }
-    return $this->getIniValue("database.dsn.appdata.user");
   }
   
   /**
@@ -76,10 +86,10 @@ class qcl_db_controller extends qcl_jsonrpc_controller
     return $this->_connection;
   }  
   
-  
-  
   /**
-   * Connects to a database
+   * Connects to a database. This is the default database connection when
+   * no model with its own connection is used.
+   * 
    * @param mixed $first [optional] If string, treat as dsn. If boolean, whether 
    * to use the userdata database (true) or the database containing 
    * the application data tables (false, default)
@@ -87,8 +97,9 @@ class qcl_db_controller extends qcl_jsonrpc_controller
    * to use a dsn with admin-level access to create tables etc. (true) or
    * just user privileges (false, default). Is ignored if first argument is a string
    * @return void
+   * @todo align API with qcl_datasource_db_Model
    */
-  function connect($first=false,$adminaccess=false) 
+  function connect( $first=false, $adminaccess=false ) 
   {
     /*
      * if first argument is boolean, get dsn from ini values,
@@ -96,7 +107,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
      */
     if ( is_bool($first) )
     {
-      $dsn = $this->getDsn($first,$adminaccess);
+      $dsn = $this->getDsn( $first, $adminaccess );
     }
     else
     {
@@ -108,21 +119,28 @@ class qcl_db_controller extends qcl_jsonrpc_controller
       $this->raiseError("No dsn information available.");
     }
     
-    require_once("qcl/db/type/Mysql.php"); 
+    require_once "qcl/db/type/Mysql.php"; 
     
-    $this->log("Connecting to ");
-    $this->log($dsn);
+    //$this->debug( "Connecting to " );
+    //$this->debug( $dsn );
     
     /*
      * connect to new database 
+     * @todo unhardcode type mysql
      */
     $db =& new qcl_db_type_Mysql( $dsn, &$this );
     
+    /*
+     * check for error
+     */
     if ( $db->error )
     {
       $this->raiseError( $db->error );
     }
     
+    /*
+     * save connection class
+     */
     $this->_connection =& $db;
   }
 

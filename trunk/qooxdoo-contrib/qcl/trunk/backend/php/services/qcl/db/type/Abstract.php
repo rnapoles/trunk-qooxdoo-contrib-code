@@ -152,7 +152,7 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 	  if ( is_string($dsn) or is_array($dsn) )
 		{
 			$this->setDsn($dsn);
- 			$this->db = $this->connect();	
+ 			$this->db =& $this->connect();	
 		}
 		
 		/*

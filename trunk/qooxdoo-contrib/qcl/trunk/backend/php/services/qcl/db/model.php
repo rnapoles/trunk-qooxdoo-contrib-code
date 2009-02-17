@@ -310,7 +310,66 @@ class qcl_db_model extends qcl_db_AbstractModel
     }
   }
   
- 
+  /**
+   * Switches the current database access to administrative rights
+   * Works only for the user database and admin database specified
+   * in the service.ini.php file
+   * @todo catch errors
+   * @return void
+   */
+  function dbAdminAccess()
+  {
+    if ( $this->_isAdminAccess )
+    {
+      return true;
+    }
+    
+    $controller =& $this->getController();
+    $db         =& $this->db();
+    
+    $database   = $db->getDatabase();
+    $user       = $db->getUser();
+    
+    /*
+     * admin access exists
+     */
+    if ( $user == $controller->getIniValue("database.adminname") )
+    {
+      $this->_isAdminAccess = true;
+      return true;
+    }
+
+    /*
+     * get admin access for user db
+     */
+    if ( $database == $controller->getIniValue("database.userdb") )
+    {
+      $this->debug("Getting admin access to user database");
+      $this->connect( $controller->getIniValue("database.admin_userdb") );
+    }
+    
+    /*
+     * get admin access for admin db
+     */
+    else if ( $database == $controller->getIniValue("database.admindb") )
+    {
+      $this->debug("Getting admin access to admin database");
+      $this->connect( $controller->getIniValue("database.admin_userdb") );
+    }
+    else
+    {
+      $this->raiseError("Cannot get admin access for table " . $this->table() . ", DSN:" . $db->getDsn() );
+    }
+    
+    /*
+     * success
+     */
+     
+     $this->_isAdminAccess = true;
+     return true;
+  }
+  
+  
   /**
    * Parse xml schema file and, if it has changed, create or update
    * all needed tables and columns. schema document will be available
@@ -321,12 +380,13 @@ class qcl_db_model extends qcl_db_AbstractModel
   function setupSchema( $forceUpgrade=false )
   {
 
-     $this->log("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
+    $this->log("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
     
     /*
-     * return if no database connection is present
+     * database connection
      */
-    if ( ! $this->db )
+    $db =& $this->db();
+    if ( ! $db )
     {
       $this->raiseError("Cannot setup schema - no database connection.");
     }
@@ -334,7 +394,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * sql type
      */
-    $sqltype    =  $this->db->getType();
+    $sqltype =  $db->getType();
     
     /*
      * the schema xml object and document
@@ -401,7 +461,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * Wheter the table for this model exists already
      */
-    $tableExists  = $this->db->tableExists($this->table);
+    $tableExists  = $db->tableExists($this->table);
     
     /*
      * Get the modelTableInfo persistent object to look up if this
@@ -428,18 +488,23 @@ class qcl_db_model extends qcl_db_AbstractModel
         global $qclDbModelTableInfo;
         if ( ! $qclDbModelTableInfo )
         {
-          $qclDbModelTableInfo = new qcl_db_ModelTableInfo(&$this); // pass by reference doesn't work, so two objects will always exist 
+          // pass by reference doesn't work, so two objects will always exist
+          $qclDbModelTableInfo = new qcl_db_ModelTableInfo( $this );  
         }
         $this->modelTableInfo =& $qclDbModelTableInfo; 
       }
       $datasourceModel =& $this->getDatasourceModel();
-      $isInitialized   = $this->modelTableInfo->isInitialized( &$datasourceModel, $this->table, $this->class, $this->schemaTimestamp );
+      $isInitialized   = $this->modelTableInfo->isInitialized( 
+        &$datasourceModel, 
+        $this->table, 
+        $this->class, 
+        $this->schemaTimestamp 
+      );
     }
        
     /*
      * Return if table exists and schema hasn't changed for the table
      */
-    
     if ( $tableExists and $isInitialized and ! $forceUpgrade ) 
     {
       $this->log(
@@ -454,14 +519,20 @@ class qcl_db_model extends qcl_db_AbstractModel
      * update schema
      */ 
     $this->info("Creating or updating tables for model name '{$this->name}', type '{$this->type}', class '{$this->class}' ...");
+
+    /*
+     * Get admin access
+     */
+    $this->dbAdminAccess();
+    $db =& $this->db();    
     
     /*
      * create main data table if necessary
      */
     $table = $this->table;
-    if ( !$this->db->tableExists($table) )
+    if ( ! $db->tableExists($table) )
     {
-      $this->db->createTable($table);
+      $db->createTable($table);
       $this->schemaXml->hasChanged = true;
     }
    
@@ -519,7 +590,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * descriptive definition of the existing table schema,
        */
-      $descriptiveDef = $this->db->getColumnDefinition($table,$colName);
+      $descriptiveDef = $db->getColumnDefinition($table,$colName);
       
       /*
        * normative definition of how the table schema should look like
@@ -560,7 +631,7 @@ class qcl_db_model extends qcl_db_AbstractModel
           {
             $attrs   = $index->attributes();
             $name    = $attrs['name'];
-            $this->db->dropIndex($table,$name);
+            $db->dropIndex($table,$name);
           }
         }
       }      
@@ -579,7 +650,7 @@ class qcl_db_model extends qcl_db_AbstractModel
        */      
       if ( ! $descriptiveDef )
       {
-        $this->db->addColumn( $table, $colName, $normativeDef );
+        $db->addColumn( $table, $colName, $normativeDef );
       }
       
       /*
@@ -587,7 +658,7 @@ class qcl_db_model extends qcl_db_AbstractModel
        */      
       else
       {
-        $this->db->modifyColumn($table,$colName,$normativeDef);
+        $db->modifyColumn($table,$colName,$normativeDef);
       }
 
       /* 
@@ -596,9 +667,9 @@ class qcl_db_model extends qcl_db_AbstractModel
       if ( $attr['unique'] == "yes" )
       {
         $indexName = $colName . "_unique";
-        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
+        if ( ! count( $db->getIndexColumns($table,$indexName) ) ) 
         {
-          $this->db->addIndex("unique", $table, $indexName, $colName ); 
+          $db->addIndex("unique", $table, $indexName, $colName ); 
         }
       }
 
@@ -609,9 +680,9 @@ class qcl_db_model extends qcl_db_AbstractModel
       {
         $indexName = $colName;
         $this->info("Creating index for $colName"); 
-        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
+        if ( ! count( $db->getIndexColumns($table,$indexName) ) ) 
         {
-          $this->db->addIndex("index", $table, $indexName, $colName ); 
+          $db->addIndex("index", $table, $indexName, $colName ); 
         }
       }       
       
@@ -645,7 +716,7 @@ class qcl_db_model extends qcl_db_AbstractModel
             }            
             
             // analyze existing primary key
-            $oldPrimaryKeys = $this->db->getPrimaryKey($table);
+            $oldPrimaryKeys = $db->getPrimaryKey($table);
             
             //$this->debug("Old primary key: " . implode(",",$oldPrimaryKeys) );
             //$this->debug("New primary key: " . implode(",",$primaryKeys) );
@@ -657,13 +728,13 @@ class qcl_db_model extends qcl_db_AbstractModel
                */
               if ( $oldPrimaryKeys)
               {
-                $this->db->dropPrimaryKey($table);
+                $db->dropPrimaryKey($table);
               }
               
               /*
                * add new primary key
                */
-              $this->db->addPrimaryKey($table,$primaryKeys);
+              $db->addPrimaryKey($table,$primaryKeys);
             }
             break;
         }
@@ -700,7 +771,7 @@ class qcl_db_model extends qcl_db_AbstractModel
             
             // analyze existing index
             $indexName    = either($attrs['name'],$indexProperties[0]);
-            $this->db->addIndex($indexType,$table,$indexName,$indexProperties);
+            $db->addIndex($indexType,$table,$indexName,$indexProperties);
                       
             break;
         } 
@@ -770,16 +841,16 @@ class qcl_db_model extends qcl_db_AbstractModel
         {
           $this->raiseError("A table link must have a 'table' attribute.");
         }
-        if ( ! $this->db->tableExists($link_table) )
+        if ( ! $db->tableExists($link_table) )
         {
-          $this->db->createTable($link_table);
+          $db->createTable($link_table);
         }
 
         /*
          * copy over the column definition from the main table
          */
-        $localKeyDef       = $this->db->getColumnDefinition( $table, $localKeyColName );
-        $foreignKeyDef     = $this->db->getColumnDefinition( $link_table, $foreignKeyColName );
+        $localKeyDef       = $db->getColumnDefinition( $table, $localKeyColName );
+        $foreignKeyDef     = $db->getColumnDefinition( $link_table, $foreignKeyColName );
         
         //$this->debug("Local Key Definition: $localKeyDef");
         //$this->debug("Foreign Key Definition: $foreignKeyDef");
@@ -797,14 +868,14 @@ class qcl_db_model extends qcl_db_AbstractModel
           /*
            * column does not exist, add
            */
-          $this->db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
+          $db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
         }
         elseif ( strtolower($localKeyDef) != strtolower($foreignKeyDef) ) 
         {
           /*
            * exists but is different: modifiy
            */
-          $this->db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
+          $db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
         }
         
         /*
@@ -858,14 +929,14 @@ class qcl_db_model extends qcl_db_AbstractModel
             /*
              * add or modify column
              */
-            $existing = $this->db->getColumnDefinition($link_table,$fkCol);
+            $existing = $db->getColumnDefinition($link_table,$fkCol);
             if ( ! $existing )
             {
-              $this->db->addColumn( $link_table, $fkCol, $fkDef );
+              $db->addColumn( $link_table, $fkCol, $fkDef );
             }
             elseif ( strtolower($existing) != strtolower($fkDef) )
             {
-              $this->db->modifyColumn( $link_table, $fkCol, $fkDef );
+              $db->modifyColumn( $link_table, $fkCol, $fkDef );
             }
           }
         }
@@ -877,16 +948,16 @@ class qcl_db_model extends qcl_db_AbstractModel
          * 
          * disabled momentarily because it doesn't seem to work right
          *
-        if ( $this->db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
+        if ( $db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
         { 
-          $uniqueIndexCols =  $this->db->getIndexColumns($link_table,"link");
+          $uniqueIndexCols =  $db->getIndexColumns($link_table,"link");
           if ( ! in_array($foreignKeyColName,$uniqueIndexCols) )
           {
             /*
              * create new unique index including column
              *
             $uniqueIndexCols[] = $foreignKeyColName;
-            $this->db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
+            $db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
           }
         }
         else
@@ -919,7 +990,12 @@ class qcl_db_model extends qcl_db_AbstractModel
      */
     if ( $this->modelTableInfo )
     {
-      $this->modelTableInfo->registerInitialized(&$datasourceModel, $this->table, $this->class, $this->schemaTimestamp);
+      $this->modelTableInfo->registerInitialized(
+        &$datasourceModel, 
+        $this->table, 
+        $this->class, 
+        $this->schemaTimestamp
+      );
     }
     
     /*
@@ -1180,6 +1256,16 @@ class qcl_db_model extends qcl_db_AbstractModel
   function createLink($first, $linkedId=null, $localId=null, $remove=false)
   {
     /*
+     * admin access
+     */
+    $this->dbAdminAccess();
+    
+    /*
+     * database connection
+     */
+    $db =& $this->db();    
+    
+    /*
      * context data
      */
     if ( is_a( $first,"qcl_db_model" ) )
@@ -1259,14 +1345,14 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * remove from table
        */
-      return $this->db->deleteWhere($linkTable, "`$foreignkey`=$localId AND `$jmForeignKey`=$linkedId" );      
+      return $db->deleteWhere($linkTable, "`$foreignkey`=$localId AND `$jmForeignKey`=$linkedId" );      
     }
     else
     {
       /*
        * insert into table
        */
-      return $this->db->insert($linkTable, $data);
+      return $db->insert($linkTable, $data);
     }
   }
   
@@ -1330,6 +1416,14 @@ class qcl_db_model extends qcl_db_AbstractModel
    */
   function isLinkedWith()
   {
+    /*
+     * database connection
+     */
+    $db =& $this->db();
+
+    /*
+     * parameters
+     */
     $params =& func_get_args();
     array_unshift( $params, "data" );
     $data = call_user_func_array( array( &$this, "_modifyLink" ), $params);
@@ -1349,7 +1443,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * check if link exists
        */
-      if ( ! $this->db->exists($table,$where) ) $linked = false;
+      if ( ! $db->exists($table,$where) ) $linked = false;
     }
     return $linked;
   }    
@@ -1362,6 +1456,16 @@ class qcl_db_model extends qcl_db_AbstractModel
    */
   function _modifyLink()
   {    
+    /*
+     * admin access
+     */
+    $this->dbAdminAccess();
+    
+    /*
+     * database connection
+     */
+    $db =& $this->db();    
+    
     /*
      * action
      */
@@ -1452,13 +1556,13 @@ class qcl_db_model extends qcl_db_AbstractModel
            * indexes dynamicall, we check first before
            * inserting
            */
-          if ( $this->db->exists($table, $where) )
+          if ( $db->exists($table, $where) )
           {
             $this->warn("Table $table: $where already exists.");
           }
           else
           {
-            $id = $this->db->insert( $table, $row );
+            $id = $db->insert( $table, $row );
           }
           break;
         
@@ -1466,14 +1570,14 @@ class qcl_db_model extends qcl_db_AbstractModel
          * unlink the models
          */
         case "unlink":
-          $this->db->deleteWhere( $table, $where );
+          $db->deleteWhere( $table, $where );
           break;
 
         /*
          * unlink the models
          */
         case "unlinkFromAll":
-          $this->db->deleteWhere( $table, "`$thisFKey`=$thisId" );
+          $db->deleteWhere( $table, "`$thisFKey`=$thisId" );
           break;          
           
         /*
@@ -1514,6 +1618,11 @@ class qcl_db_model extends qcl_db_AbstractModel
    */
   function exportLinkData($dir=null, $isBackup=false)
   {    
+    /*
+     * database connection
+     */
+    $db =& $this->db();
+    
     /*
      * check dir
      */
@@ -1606,7 +1715,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * get all link data
        */
-      $linkData = $this->db->getAllRecords("
+      $linkData = $db->getAllRecords("
         SELECT * FROM " . $this->getTablePrefix() . $table . "
         ORDER BY `$foreignKey`
       ");
@@ -1623,7 +1732,7 @@ class qcl_db_model extends qcl_db_AbstractModel
         if ( $this->foundNothing() )
         {
           $this->warn("Invalid entry/entries in $table for $foreignKey = $_id. Deleting...");
-          $this->db->deleteWhere($table,"$foreignKey=$_id");
+          $db->deleteWhere($table,"$foreignKey=$_id");
           continue;
         }
         
@@ -1742,7 +1851,9 @@ class qcl_db_model extends qcl_db_AbstractModel
    */
   function importLinkData($path=null)
   {
-    
+    /*
+     * controller
+     */
     $controller =& $this->getController();
     
     /*

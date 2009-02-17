@@ -37,8 +37,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		/*
 		 * connecting
 		 */
-    $this->log("Connecting to $dsn.","db");
-
+    $this->debug( "Connecting to " . ( is_array($dsn ) ? print_r($dsn,true) : $dsn ) );
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
     {
       $db =& DB::connect( $dsn );
@@ -51,7 +50,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     /*
      * error
      */
-    if (PEAR::isError($db))
+    if ( PEAR::isError($db) )
 		{
 			$this->error = $db->getMessage() . ": " . $db->getUserInfo();
 			if ( $abortQuietly )
@@ -85,6 +84,12 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		$db->query("SET NAMES $encoding");
 		$db->query("SET CHARACTER_SET $encoding");
 
+		/*
+		 * database to use
+		 */
+		$database = $this->getDatabase();
+		$db->query("USE $database;");
+		
 		/*
 		 * save database handler and return it
 		 */

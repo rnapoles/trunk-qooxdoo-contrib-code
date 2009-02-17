@@ -88,14 +88,15 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     
     /*
      * log request
-     */
-    $this->log( "\n\n" .
+     *
+    $this->debug( "\n\n" .
       "Request for " . $this->request->service . 
       "." . $this->request->method .  
       " from " . $this->request->ip,
       QCL_LOG_REQUEST
     );
-
+    */ 
+    
     /*
      * configure service
      */
@@ -227,6 +228,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * the top-level service directory. lower-level service.ini.php files can override 
 	 * config directives selectively, inheriting the rest of the settings from the upper
 	 * level config files.
+	 * @todo move this into a component
 	 **/
 	function configureService()
 	{
@@ -234,6 +236,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	  /*
 	   * get the components of the service name either from the dispatcher script (global var)
 	   * or from the class name
+	   * @todo remove global reference
 	   */
 	  global $serviceComponents;
 		if ( ! $serviceComponents )
@@ -242,9 +245,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		   * get class name without prefix
 		   */
 		  $classname = get_class($this);
-		  if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
+		  if ( substr($classname, 0, strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
       {
-        $classname = substr($classname,strlen(JsonRpcClassPrefix));          
+        $classname = substr($classname, strlen(JsonRpcClassPrefix) );          
       }
       
       /*
@@ -254,6 +257,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		}
 		
 		$currPath = defined( "servicePathPrefix" ) ? servicePathPrefix : "";
+		
+		/*
+		 * configure ini data
+		 * @todo move into model!
+		 */
 		$this->ini = array();
 		$found = false;
     
@@ -306,16 +314,40 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	/**
 	 * Returns a configuration value of the pattern "foo.bar.baz"
 	 * This retrieves the values set in the service.ini.php file.
+	 * @todo move into component
 	 */
 	function getIniValue($path)
 	{
+	  /*
+	   * if called recursively
+	   */
+	  if ( is_array($path) )
+	  {
+	    $path= $path[1];
+	  }
+	  
 	  $parts 	= explode(".",$path);
 		$value 	= $this->ini;
+	
+		/*
+		 * traverse array
+		 */
 		while( is_array($value) and $part = array_shift($parts) )
 		{
-			$value = $value[$part];  
+			$value = $value[$part];
 		}
-		return trim($value);
+		
+	  /*
+     * expand strings
+     */
+		if ( is_string( $value ) )
+		{
+		  $value = trim( preg_replace_callback('/\$\{([^}]+)\}/',array(&$this,"getIniValue"),$value ) );  
+		}
+		
+		//$this->debug("Ini value '$path'= '$value'");
+		
+		return $value;
 	}
 	
 	function abortRequest()
