@@ -194,24 +194,56 @@ class qcl_datasource_controller extends qcl_session_controller
   
   /**
    * Returns data for a combobox containing all datasource schemas
+   * @param string|array $params[0] If given, return only these schemata
    * @return qcl_jsonrpc_Response
    */
   function method_getSchemaComboBoxData( $params )
   {
+    /*
+     * schema filter
+     */
+    $filter = (array) $params[0];
     
+    /*
+     * preselected list item
+     */
+    $selected = $params[1];
+    
+    /*
+     * schema manager
+     */
     $manager   =& $this->getManager();
+    
     $listItems = array ();
     foreach ( $manager->schemaList() as $schema )
     {
+      /*
+       * filter
+       */
+      if ( $filter and ! in_array( $schema, $filter ) ) continue;
+      
+      /*
+       * get schema data
+       */
       $data = $manager->getData( $schema );
+      
+      /*
+       * create list item
+       */
       $listItems[] = array(
         'classname' => "qx.ui.form.ListItem",
         'value'     => $schema,
         'label'     => $data['title']
       );
     }
+    
     $this->set("children",$listItems);
-    $this->set("selected","default");
+    
+    if ( $selected )
+    {
+      $this->set("selected", $selected );  
+    }
+    
     
     /*
      * return client data

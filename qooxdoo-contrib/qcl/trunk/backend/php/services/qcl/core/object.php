@@ -203,7 +203,7 @@ class qcl_core_object
       /*
        * check interface methods
        */
-      $methods = get_class_methods( $interface ) ;
+      $methods = (array) get_class_methods( $interface ) ;
       foreach( $methods as $method )
       {
         if ( ! method_exists( $this, $method ) )
@@ -214,7 +214,7 @@ class qcl_core_object
       /*
        * check interface properties
        */
-      foreach( get_class_vars( $interface ) as $var )
+      foreach( (array)  get_class_vars( $interface ) as $var )
       {
         if ( !  isset( $this, $var ) )
         {
