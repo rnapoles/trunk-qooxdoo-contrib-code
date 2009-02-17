@@ -341,17 +341,22 @@ qx.Class.define("inspector.console.DomView",
       var sortedValues = [];
       // write the objects values to the new array
       for (var key in o) {
-        // if a filter is given
-        if (regExp != null) {
-          // test if the key matches the filter
-          if (regExp.test(key)) {
-            // add the key value pair to the sorted set
-            sortedValues.push({key: key, value: o[key]})
+        try
+        {
+          // if a filter is given
+          if (regExp != null) {
+            // test if the key matches the filter
+            if (regExp.test(key)) {
+              // add the key value pair to the sorted set
+              sortedValues.push({key: key, value: o[key]});
+            }
+          } else {
+            // add all key value pairs to the sorted set
+            sortedValues.push({key: key, value: o[key]});
           }
-        } else {
-          // add all key value pairs to the sorted set
-          sortedValues.push({key: key, value: o[key]})
-        }
+        } catch (ex) {
+          sortedValues.push({key: key, value: "Error"});
+        }        
       }
       
       // sort the array
