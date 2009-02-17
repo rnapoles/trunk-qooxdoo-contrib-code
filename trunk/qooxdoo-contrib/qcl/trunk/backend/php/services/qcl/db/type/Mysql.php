@@ -37,7 +37,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		/*
 		 * connecting
 		 */
-    $this->debug( "Connecting to " . ( is_array($dsn ) ? print_r($dsn,true) : $dsn ) );
+    //$this->debug( "Connecting to " . ( is_array($dsn ) ? print_r($dsn,true) : $dsn ) );
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
     {
       $db =& DB::connect( $dsn );

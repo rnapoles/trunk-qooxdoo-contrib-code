@@ -488,7 +488,7 @@ class qcl_core_object
    * being called.
    * @author Ivo Jansch (see http://www.jansch.nl/2006/08/23/mixins-in-php/)
    */
-  function __call($method, $args, &$return )
+  function __call($method, $args )
   {
     if ( phpversion() >= 5 )
     {
