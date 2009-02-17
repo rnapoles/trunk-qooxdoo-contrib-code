@@ -409,27 +409,12 @@ qx.Class.define("inspector.console.ConsoleView",
         this._printQxObject(returnValue);  
         
       // check for arrays
-      } else if (returnValue instanceof Array) {
-        // initiate a string to represent the array
-        var arrayRepresentation = "";
-        // if the array is a huge one (more than 2 elements)
-        if (returnValue.length > 2) {
-          // take the first tow elements and show how much are not shown
-          arrayRepresentation = returnValue[0] + ", " + returnValue[1] + ", ..." +
-                                    (returnValue.length - 2) + " more";
-        // if the length is exactly 2
-        } else if (returnValue.length == 2) {
-          // print out those two elements
-          arrayRepresentation = returnValue[0] + ", " + returnValue[1];
-        // if the array has only the length of one
-        } else if (returnValue.length == 1) {
-          // show only this one element
-          arrayRepresentation = returnValue[0]; 
-        }
+      } else if (returnValue instanceof iFrameWindow.Array) {
+        var arrayRepresentation = this._printArray(returnValue);        
         
-        // if yes, print out that it is one
-        var label = this._getLabel("<span class='ins_console_link'" +
-                                   "'>[" + arrayRepresentation + "]</span>", "ins_console_return_array");
+        var label = this._getLabel("<span class='ins_console_link' onclick='" + 
+                                   "qx.core.Init.getApplication().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                   "'>" + arrayRepresentation + "</span>", "ins_console_return_array");
         this._content.setHtml(this._content.getHtml() + label);
         return;
 
@@ -514,6 +499,36 @@ qx.Class.define("inspector.console.ConsoleView",
       text = "<div class='ins_console_common'><div class='" + clazz + "'>" + text + "</div></div>";
       // return the text String
       return text;      
+    },
+    
+    _printArray : function(value) 
+    {
+      var iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
+      if (value instanceof iFrameWindow.Array)
+      {
+        var result = new qx.util.StringBuilder();
+        var length = value.length;
+        var more = "";
+        
+        if (length > 2) 
+        {
+          more = ", ..." + (length - 2) + " more";
+          length = 2;
+        }
+        
+        for (var i = 0; i < length; i++) {
+          if (!result.isEmpty()) {
+            result.add(", ");
+          }
+          
+          result.add(this._printArray(value[i]));
+        }
+        
+        return "[" + result.get() + more +"]";
+      } 
+      else {
+        return value;
+      }
     },
     
     
