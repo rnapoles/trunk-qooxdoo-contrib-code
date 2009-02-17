@@ -471,7 +471,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      * the table.
      */
     $modelTableInfo = null;
-    if ( $this->instanceOf("qcl_persistence_db_Model") and $tableExists )
+    if ( $this->isInstanceOf("qcl_persistence_db_Model") and $tableExists )
     {
       $isInitialized = true;
       $forceUpgrade  = false;
@@ -1210,7 +1210,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     {
       
       $a = $linkNode->attributes(); 
-      if ( $model->instanceOf( $a['model'] ) )
+      if ( $model->isInstanceOf( $a['model'] ) )
       {
         $links[] =  $linkName;
       }
@@ -1223,7 +1223,7 @@ class qcl_db_model extends qcl_db_AbstractModel
         foreach ( $linkNode->children() as $linkedModelNode )
         {
           $a = $linkedModelNode->attributes();
-          if ( $model->instanceOf( $a['name'] ) )
+          if ( $model->isInstanceOf( $a['name'] ) )
           {
              $links[] = $linkName;
           }
@@ -1282,7 +1282,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      */
     if ( ! $linkedId )
     {
-      if ( is_object( $first ) and $first->instanceOf("qcl_db_model") )
+      if ( is_object( $first ) and $first->isInstanceOf("qcl_db_model") )
       {
         $linkedId = $first->getId();  
       }

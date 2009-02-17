@@ -168,7 +168,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
      * try to get db handler from datasource object
      */
     $dsModel =& $this->getDatasourceModel();
-    if ( is_object($dsModel) and $dsModel->instanceOf( "qcl_datasource_type_db_Model" ) )
+    if ( is_object($dsModel) and $dsModel->isInstanceOf( "qcl_datasource_type_db_Model" ) )
     {
       //$this->debug( get_class($this) . ": Getting db handler from datasource object...");
       if ( ! $dsn or $dsn == $dsModel->getDatasourceDsn() )
