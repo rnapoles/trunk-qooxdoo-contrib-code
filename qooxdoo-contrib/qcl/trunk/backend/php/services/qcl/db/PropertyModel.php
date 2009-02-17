@@ -182,12 +182,15 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
      * debug message
      */
     $c = $this->getController();
-    $this->log( "Constructing model '" . $this->className() . 
+    
+    /*
+    $this->debug( "Constructing model '" . $this->className() . 
                 "' controlled by '" . $c->className() . "'" .
                 ( is_object( $datasourceModel ) ? 
                   " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
                 "framework");
-                    
+    */
+           
     /*
      *  initialize the model
      */
@@ -303,11 +306,12 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
   function initialize( $datasourceModel=null )
   {
   
-    $this->log(
-     "Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'.", 
-     "framework" 
+    /*
+    $this->debug(
+     "Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'.",  
     );
-  
+    */
+    
     /*
      * datasource model
      */

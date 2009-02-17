@@ -143,29 +143,22 @@ class qcl_datasource_type_db_Model extends qcl_db_model
   /**
    * Returns the database connection object of the currently 
    * loaded datasource record
+   * @todo unhardcode type mysql
    * @return qcl_db_type_Mysql
    */
   function &getDatasourceConnection()
   {
     if ( ! $this->datasourceConnectionObj )
     {
-      $this->log("Connecting current datasource ...");
-      
-      require_once("qcl/db/type/Mysql.php"); 
+      //$this->debug("Connecting current datasource ...");
       
       $dsn = $this->getDatasourceDsn();
-      $this->log("Connecting to ");
-      $this->log($dsn);
       
-      /*
-       * connect to new database 
-       */
-      $db =& new qcl_db_type_Mysql($dsn, &$this);
+      //$this->debug("Datasource model connecting to ");
+      //$this->debug($dsn);
+
+      $db =& $this->createDbObject($dsn);
       
-      if ( $db->error )
-      {
-        $this->raiseError( $db->error );
-      }
       $this->datasourceConnectionObj =& $db;
     }
     return $this->datasourceConnectionObj;

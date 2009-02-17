@@ -13,6 +13,19 @@ require_once "qcl/db/PropertyModel.php";
 class qcl_db_AbstractModel extends qcl_db_PropertyModel
 {
 
+  
+  /**
+   * Returns controller of this model 
+   * @return qcl_db_controller 
+   */
+  function &getController()
+  {
+    if ( ! is_a($this->_controller,"qcl_db_controller" ) )
+    {
+      $this->raiseError("A qcl_db_AbstractModel or subclass must have a qcl_db_controller as controller." );
+    }
+    return $this->_controller;
+  } 
 
   /**
    * The datasource object instance
@@ -79,7 +92,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     /*
      * connect to datasource, if any
      */
-    $this->connect( &$datasourceModel );     
+    $this->connect();     
 
     
     /*
@@ -107,9 +120,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
       }
     
     }
-    
     return true;
-
   }
   
   /**
@@ -141,13 +152,16 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    */
   function &connect( $dsn=null )
   {
+    //$this->debug( $this->className() . " connecting to " . $dsn );
+    $controller =& $this->getController();
+    
     /*
      * disconnect if connection exists
      */
     if ( is_object( $this->db ) )
     {
      $this->db->disconnect();
-     unset($this->db); 
+     unset( $this->db ); 
     }
     
     /*
@@ -156,47 +170,46 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     $dsModel =& $this->getDatasourceModel();
     if ( is_object($dsModel) and $dsModel->instanceOf( "qcl_datasource_type_db_Model" ) )
     {
-      //$this->info( get_class($this) . ": Getting db handler from datasource object...");
-      $db =& $dsModel->getDatasourceConnection();
+      //$this->debug( get_class($this) . ": Getting db handler from datasource object...");
+      if ( ! $dsn or $dsn == $dsModel->getDatasourceDsn() )
+      {
+        $db =& $dsModel->getDatasourceConnection();
+      }
+    }      
+
+    /*
+     * try to connect to connection supplied by controller
+     */      
+    elseif ( is_object( $cdb =& $controller->getConnection() ) )
+    {
+      //$this->debug( get_class($this) . ": getting connection object from controller " . get_class($controller));
+      if ( ! $dsn or $dsn == $cdb->getDsn() )
+      {      
+        $db =& $cdb;
+      } 
     }
     
     /*
-     * otherwise, get a dsn and create new database connection handler
+     * use custom dsn
      */
-    else
+    if ( ! $db )
     {
-      if ( ! $dsn )
+      /*
+       * if no dsn at this point, fatal error.
+       */
+      if (! $dsn )
       {
-        /*
-         * try to connect to connection supplied by controller
-         */
-        $controller =& $this->getController();
-        //$this->debug( get_class($this) . ": getting connection object from controller " . get_class($controller));
-        $db =& $controller->getConnection(); 
-      }
-      else
-      {
-        /*
-         * connecting to custom dsn by creating new database connection object
-         */
-        //$this->debug("Connecting to custom dsn ...");
-        
-        require_once "qcl/db/type/Mysql.php"; 
-        
-        //$this->debug("Connecting to ");
-        //$this->debug($dsn);
-        
-        /*
-         * connect to new database 
-         */
-        $db =& new qcl_db_type_Mysql($dsn, &$this);
-        
-        if ( $db->error )
-        {
-          $this->raiseError( $db->error );
-        }
-      }
+        $this->raiseError("Cannot find a database connection object and no DSN provided");
+      }      
+      
+      /*
+       * create new database connection object 
+       */
+       //$this->debug("Connecting to custom dsn ...");
+      $db =& $this->createDbObject( $dsn );
+      
     }
+
     
     /*
      * store new connection
@@ -204,6 +217,45 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     $this->db =& $db;  
     
     return true;
+  }
+  
+  /**
+   * Creates and caches a database connection object.
+   * @todo unhardcode type mysql
+   * @param $dsn
+   * @return qcl_db_type_Mysql
+   */
+  function &createDbObject( $dsn )
+  {
+    /*
+     * pool connection objects
+     */
+    $controller =& $this->getController();
+    $cacheId = is_array($dsn) ? implode(",", array_values($dsn) ) : $dsn;
+    //$this->debug("Cache id '$cacheId'");
+    
+    global $__dbcache;
+    
+    if ( $__dbcache[$cacheId] )
+    {
+      //$this->debug("Using cached db object for $cacheId");
+      $db =& $__dbcache[$cacheId];
+    }
+    
+    /*
+     * else connect to new database 
+     */
+    else
+    {
+      require_once "qcl/db/type/Mysql.php" ; 
+      $db =& new qcl_db_type_Mysql($dsn, &$this); 
+      if ( $db->error )
+      {
+        $this->raiseError( $db->error );
+      } 
+      $__dbcache[$cacheId] =& $db;
+    }
+    return $db;
   }
   
   /**

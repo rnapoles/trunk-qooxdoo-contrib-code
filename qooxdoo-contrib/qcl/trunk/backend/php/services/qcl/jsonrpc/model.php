@@ -52,10 +52,6 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
     $this->setController( &$controller );	
 	}
 
-	//-------------------------------------------------------------
-  // public methods 
-	//-------------------------------------------------------------   
-
  	/**
  	 * sets controller of this model to be able to link to other models
  	 * connected to the controller
