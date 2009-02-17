@@ -255,11 +255,18 @@ qx.Class.define("inspector.console.DomView",
             }
           }
           
+          var postString = null;
+          if (postString == null) {
+            postString = new qx.util.StringBuilder();
+          } else {
+            postString.clear();
+          }
+          
           // if it is not the selected object (self reference)
           if (sortedValues[i].value != o) {
             // print out the objects key incl. the link to select it         
             var imageURI = qx.util.ResourceManager.toUri("inspector/images/open.gif");
-            returnString.add("<tr><td class='" + keyStyle + "'><a onclick='" +
+            postString.add("<tr><td class='" + keyStyle + "'><a onclick='" +
                             "qx.core.Init.getApplication().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
                             "'><img class='ins_dom_front_image' src='" + 
                             imageURI + 
@@ -279,6 +286,7 @@ qx.Class.define("inspector.console.DomView",
           // if it is a function
           } else if (sortedValues[i].value instanceof this._iFrameWindow.Function) {
             
+            returnString.add(postString.get());
             // if it is a qooxdoo class
             if (sortedValues[i].value.toString().substr(0, 7) == "[Class ") {
               // print out the objects value as a object
@@ -287,10 +295,19 @@ qx.Class.define("inspector.console.DomView",
               // print out the objects value as a function
               returnString.add("<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>");                          
             }
-            
           } else {
-            // print out the objects value
-            returnString.add("<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>");                      
+            try {
+              // print out the objects value
+              var stringValue = this._getObject(sortedValues[i].value, index, sortedValues[i].key);
+              returnString.add(postString.get());
+              returnString.add("<td class='ins_dom_object'>" + stringValue + "</td></tr>"); 
+            } catch (ex) {
+              var imageURI = qx.util.ResourceManager.toUri("inspector/images/spacer.gif");
+              returnString.add("<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
+                            imageURI + 
+                            "'>" + sortedValues[i].key + "</td>");
+              returnString.add("<td class='ins_dom_string'>&quot;Error occurs by reading value!&quot;</td></tr>");
+            }
           }
         }
       }
