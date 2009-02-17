@@ -354,6 +354,7 @@ class qcl_access_controller extends qcl_db_controller
   
   /**
    * Grant guest access
+   * @todo config data should be written to config table and deleted when guest user sessions are deleted.
    * @return void
    */
   function grantGuestAccess()

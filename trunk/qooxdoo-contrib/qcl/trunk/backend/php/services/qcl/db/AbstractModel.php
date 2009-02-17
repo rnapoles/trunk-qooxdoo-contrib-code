@@ -144,7 +144,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     /*
      * disconnect if connection exists
      */
-    if ( is_object($this->db ) )
+    if ( is_object( $this->db ) )
     {
      $this->db->disconnect();
      unset($this->db); 

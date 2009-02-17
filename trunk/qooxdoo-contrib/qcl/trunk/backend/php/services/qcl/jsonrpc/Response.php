@@ -30,13 +30,28 @@ class qcl_jsonrpc_Response
    * 1) The key of a key-value pair. The value is the second argument. 
    * 2) A hash map of key-value pairs. No second argument.
    * 3) A string response that is the complete response value. No second argument.
+   * 4) A property model. If a second array argument is given, the properties in the array will be copies.
+   * Otherwise, all properties will be copied from the model
    * @param string[optional] $second
    * @param mixed $value
    */
   function set( $first, $second=QCL_ARGUMENT_NOT_SET )
   {
-    
-    if ( is_array( $first ) and $second === QCL_ARGUMENT_NOT_SET )
+    if ( is_a( $first, "qcl_db_PropertyModel" ) )
+    {
+      if ( ! is_array($first->getRecord()) )
+      {
+        trigger_error("No record loaded in given model");
+      }
+      foreach ( $first->getRecord()  as $property => $value )
+      {
+        if ( $second == QCL_ARGUMENT_NOT_SET or ( is_array( $second ) and in_array( $property,$second ) ) )
+        {
+          $this->set( $property, $value );
+        }
+      }
+    }
+    elseif ( is_array( $first ) and $second === QCL_ARGUMENT_NOT_SET )
     {
       foreach( $first as $key => $value )
       {
@@ -53,7 +68,7 @@ class qcl_jsonrpc_Response
     }
     else
     {
-      $this->raiseError("Invalid parameters");
+      trigger_error("Invalid parameters");
     }
   }
   
