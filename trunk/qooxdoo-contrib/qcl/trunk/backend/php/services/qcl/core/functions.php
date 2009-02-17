@@ -573,6 +573,19 @@ function byteConvert($bytes)
     return sprintf('%.2f '.$s[$e], ($bytes/pow(1024, floor($e))));
 }
 
+if ( ! function_exists("microtime_float" ) )
+{
+  /**
+   * Simple function to replicate PHP5 behaviour
+   * from http://www.php.net/manual/de/function.microtime.php
+   */
+  function microtime_float()
+  {
+      list($usec, $sec) = explode(" ", microtime());
+      return ((float)$usec + (float)$sec);
+  }
+}
+
 /*
  * we can return here if not PHP 4
  */
@@ -681,18 +694,7 @@ if( ! function_exists('array_diff_key') )
 }
 
 
-if ( ! function_exists("microtime_float" ) )
-{
-  /**
-   * Simple function to replicate PHP5 behaviour
-   * from http://www.php.net/manual/de/function.microtime.php
-   */
-  function microtime_float()
-  {
-      list($usec, $sec) = explode(" ", microtime());
-      return ((float)$usec + (float)$sec);
-  }
-}
+
 
 
 if (!function_exists('get_headers')) 
