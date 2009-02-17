@@ -554,7 +554,7 @@ class qcl_core_object
    * @param string $class Class name. Can be java(script)-like separated by dots.
    * @return boolean 
    */
-  function instanceOf( $class )
+  function isInstanceOf( $class )
   {
     $class = str_replace(".","_",$class);
     return is_a( $this, $class );
