@@ -32,14 +32,14 @@ define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
 class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 {
 
-	/**
-	 * initial configuration contained in ini.php-files in the #
-	 * service class folders
-	 * @see qcl_core_object::configureServie()
-	 */	
-	var $ini;
+  /**
+   * initial configuration contained in ini.php-files in the #
+   * service class folders
+   * @see qcl_core_object::configureServie()
+   */  
+  var $ini;
 
-	/**
+  /**
    * The request object 
    * @var qcl_jsonrpc_Request
    */
@@ -67,12 +67,12 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   /**
    * constructor , configures the service
    */
-	function __construct()
+  function __construct()
   {
     
-		/*
-		 * call parent constructor first
-		 */
+    /*
+     * call parent constructor first
+     */
     parent::__construct();
     
     /*
@@ -100,18 +100,18 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * configure service
      */
-		$this->configureService();
-	}  
+    $this->configureService();
+  }  
 
-	/**
-	 * Returns the current request object
-	 * @return qcl_jsonrpc_Request
-	 */
-	function &requestObject()
-	{
-	  return $this->request;
-	}
-	
+  /**
+   * Returns the current request object
+   * @return qcl_jsonrpc_Request
+   */
+  function &requestObject()
+  {
+    return $this->request;
+  }
+  
   /**
    * Returns the current response object
    * @return qcl_jsonrpc_Response
@@ -119,25 +119,25 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function &responseObject()
   {
     return $this->response;
-  }	
-	
-	/**
-	 * Gets the raw json input object
-	 * @return JsonInput
-	 */
+  }  
+  
+  /**
+   * Gets the raw json input object
+   * @return JsonInput
+   */
   function &getJsonInput()
   {
     return $this->request->getJsonInput();
   }
-	
-	/**
-	 * Returns the full path of the current service
-	 * @return string
-	 */
-	function getServicePath()
-	{
-	  return $this->request->getService() . "." . $this->request->getMethod();
-	}
+  
+  /**
+   * Returns the full path of the current service
+   * @return string
+   */
+  function getServicePath()
+  {
+    return $this->request->getService() . "." . $this->request->getMethod();
+  }
 
   /**
    * Returns the parameters of the current service request
@@ -223,29 +223,29 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   var $modelTypes = array( "user", "role", "permission", "config" );  
   
-	/**
-	 * reads initial configuration. looks for service.ini.php files, starting at 
-	 * the top-level service directory. lower-level service.ini.php files can override 
-	 * config directives selectively, inheriting the rest of the settings from the upper
-	 * level config files.
-	 * @todo move this into a component
-	 **/
-	function configureService()
-	{
-		
-	  /*
-	   * get the components of the service name either from the dispatcher script (global var)
-	   * or from the class name
-	   * @todo remove global reference
-	   */
-	  global $serviceComponents;
-		if ( ! $serviceComponents )
-		{
-		  /*
-		   * get class name without prefix
-		   */
-		  $classname = get_class($this);
-		  if ( substr($classname, 0, strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
+  /**
+   * reads initial configuration. looks for service.ini.php files, starting at 
+   * the top-level service directory. lower-level service.ini.php files can override 
+   * config directives selectively, inheriting the rest of the settings from the upper
+   * level config files.
+   * @todo move this into a component
+   **/
+  function configureService()
+  {
+    
+    /*
+     * get the components of the service name either from the dispatcher script (global var)
+     * or from the class name
+     * @todo remove global reference
+     */
+    global $serviceComponents;
+    if ( ! $serviceComponents )
+    {
+      /*
+       * get class name without prefix
+       */
+      $classname = get_class($this);
+      if ( substr($classname, 0, strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
       {
         $classname = substr($classname, strlen(JsonRpcClassPrefix) );          
       }
@@ -253,113 +253,115 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
       /*
        * get service components from classname
        */
-		  $serviceComponents = explode( "_", $classname );
-		}
-		
-		$currPath = defined( "servicePathPrefix" ) ? servicePathPrefix : "";
-		
-		/*
-		 * configure ini data
-		 * @todo move into model!
-		 */
-		$this->ini = array();
-		$found = false;
+      $serviceComponents = explode( "_", $classname );
+    }
     
-		/*
-		 *  traverse service path and look for service.ini.php files
-		 */ 
-		for ( $i=0; $i<count( $serviceComponents ); $i++ )
-		{
-			 $currPath .= $serviceComponents[$i] . "/";
-			 
-			 /*
-			  * if config file exists, parse it and add/override config directives
-			  */
-			 if ( file_exists ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
-			 {
-			   $found = true;
+    $currPath = defined( "servicePathPrefix" ) ? servicePathPrefix : "";
+    
+    /*
+     * configure ini data
+     * @todo move into model!
+     */
+    $this->ini = array();
+    $found = false;
+    
+    /*
+     *  traverse service path and look for service.ini.php files
+     */ 
+    for ( $i=0; $i<count( $serviceComponents ); $i++ )
+    {
+       $currPath .= $serviceComponents[$i] . "/";
+       
+       /*
+        * if config file exists, parse it and add/override config directives
+        */
+       if ( file_exists ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
+       {
+         $found = true;
          $config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true);
-			 	 $this->ini = array_merge ( $this->ini, $config );
-			 }
-		}
+          $this->ini = array_merge ( $this->ini, $config );
+       }
+    }
     
     if ( ! $found )
     {
       $this->warn("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
     }
-	}
+    
+    $this->debug($this->ini);
+  }
 
-	/**
-	 * Return service directory url
-	 * @return string
-	 */
-	function getServiceDirUrl($append="")
-	{
-		global $serviceComponents;
-		
-		$serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
-		
-		return $serverDirUrl . $serviceComponents[0] . "/" . $append;
-	}
-	
-	/**
-	 * Returns the url of the dispatcher script
-	 * @return string
-	 */
+  /**
+   * Return service directory url
+   * @return string
+   */
+  function getServiceDirUrl($append="")
+  {
+    global $serviceComponents;
+    
+    $serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
+    
+    return $serverDirUrl . $serviceComponents[0] . "/" . $append;
+  }
+  
+  /**
+   * Returns the url of the dispatcher script
+   * @return string
+   */
   function getDispatcherUrl()
   {
     return "http://" . getenv ( HTTP_HOST ) . dirname( $_SERVER['PHP_SELF'] ) . "/index.php"; 
   }
   
-	/**
-	 * Returns a configuration value of the pattern "foo.bar.baz"
-	 * This retrieves the values set in the service.ini.php file.
-	 * @todo move into component
-	 */
-	function getIniValue($path)
-	{
-	  /*
-	   * if called recursively
-	   */
-	  if ( is_array($path) )
-	  {
-	    $path= $path[1];
-	  }
-	  
-	  $parts 	= explode(".",$path);
-		$value 	= $this->ini;
-	
-		/*
-		 * traverse array
-		 */
-		while( is_array($value) and $part = array_shift($parts) )
-		{
-			$value = $value[$part];
-		}
-		
-	  /*
+  /**
+   * Returns a configuration value of the pattern "foo.bar.baz"
+   * This retrieves the values set in the service.ini.php file.
+   * @todo move into component
+   */
+  function getIniValue($path)
+  {
+    /*
+     * if called recursively
+     */
+    if ( is_array($path) )
+    {
+      $path= $path[1];
+    }
+    
+    $parts   = explode(".",$path);
+    $value   = $this->ini;
+  
+    /*
+     * traverse array
+     */
+    while( is_array($value) and $part = array_shift($parts) )
+    {
+      $value = $value[$part];
+    }
+    
+    /*
      * expand strings
      */
-		if ( is_string( $value ) )
-		{
-		  $value = trim( preg_replace_callback('/\$\{([^}]+)\}/',array(&$this,"getIniValue"),$value ) );  
-		}
-		
-		//$this->debug("Ini value '$path'= '$value'");
-		
-		return $value;
-	}
-	
-	function abortRequest()
-	{
-	  $this->_isAborted = true;  
-	}
-	
-	function isAborted()
-	{
-	  return $this->_isAborted;
-	}
-	
+    if ( is_string( $value ) )
+    {
+      $value = trim( preg_replace_callback('/\$\{([^}]+)\}/',array(&$this,"getIniValue"),$value ) );  
+    }
+    
+    //$this->debug("Ini value '$path'= '$value'");
+    
+    return $value;
+  }
+  
+  function abortRequest()
+  {
+    $this->_isAborted = true;  
+  }
+  
+  function isAborted()
+  {
+    return $this->_isAborted;
+  }
+  
   //-------------------------------------------------------------
   // models
   //-------------------------------------------------------------
@@ -450,11 +452,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function &getConfigModel()
   {
     return $this->configModel;
-  }    	
-	
+  }      
+  
   
  
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------
   
@@ -490,7 +492,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     }
     $localeController =& $this->getLocaleController();
     return $localeController->tr($msgId, $varargs);
-  }	
+  }  
   
   /**
    * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
@@ -507,43 +509,43 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     return $localeController->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
   }
 
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // response data
   //-------------------------------------------------------------  
-	
-	/**
-	 * Set a part or the full response
-	 * @see qcl_jsonrpc_response::set()
-	 * @todo rename to setResponseData()
-	 * 
-	 */
-	function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
-	{
-		$this->response->set( $first, $second );
-	}
-	
-	/**
-	 * Returns value for particular response key
-	 * @param string $key
-	 * @todo rename to getResponseData
-	 */
-	function &get ( $key )
-	{
-		$response =& $this->getResponseObj();
-	  return $this->response->get($key);
-	}
-	
-	/**
-	 * Returns response object for return to the client. 
-	 * Can be overridden by child classes
-	 * @return qcl_jsonrpc_Response
-	 */
-	function &response()
-	{
-	  return $this->response;
-	}
+  
+  /**
+   * Set a part or the full response
+   * @see qcl_jsonrpc_response::set()
+   * @todo rename to setResponseData()
+   * 
+   */
+  function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
+  {
+    $this->response->set( $first, $second );
+  }
+  
+  /**
+   * Returns value for particular response key
+   * @param string $key
+   * @todo rename to getResponseData
+   */
+  function &get ( $key )
+  {
+    $response =& $this->getResponseObj();
+    return $this->response->get($key);
+  }
+  
+  /**
+   * Returns response object for return to the client. 
+   * Can be overridden by child classes
+   * @return qcl_jsonrpc_Response
+   */
+  function &response()
+  {
+    return $this->response;
+  }
 
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // Extend message and event system to the client
   //-------------------------------------------------------------
 
@@ -629,16 +631,16 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->addEvent( $event, $data );
   }  
   
-	/**
-	 * Adds an event to the event stack
-	 * @param mixed $event Message Event type
-	 * @param mixed[optional] $data Data dispatched with event
-	 */
-	function addEvent ( $event, $data=null )
-	{
+  /**
+   * Adds an event to the event stack
+   * @param mixed $event Message Event type
+   * @param mixed[optional] $data Data dispatched with event
+   */
+  function addEvent ( $event, $data=null )
+  {
     $reponse =& $this->responseObject();
     $reponse->addEvent( $event, $data );
-	}
+  }
 
   /**
    * Returns messages on message stack
@@ -650,7 +652,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     return $this->getEvents();
   }
 
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // request id & process management
   //-------------------------------------------------------------
 
@@ -676,28 +678,28 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   
   
   
-	/**
-	 * log a message to a file on server and as a message to the client, 
-	 * depending on the log level on the server and on the client
-	 * @override
-	 * @param string $msg
-	 * @param int $logLevel  
-	 * @return string message that was written to the logfile
-	 */
-	function log( $msg, $logLevel="debug" )
-	{
-		$message = parent::log( $msg, $logLevel );
-		$clientLogLevel = (int) $this->getSessionVar("qcl.logLevel.client");
-		if ( $clientLogLevel and $clientLogLevel <= $logLevel)
-		{
-			$this->dispatchMessage("qcl.messages.log.server",$message);			
-		}	
-		return $message;
-	}	  
-	
-	/**
-	 * Debugs the complete jsonrpc request and response to the log file
-	 */
+  /**
+   * log a message to a file on server and as a message to the client, 
+   * depending on the log level on the server and on the client
+   * @override
+   * @param string $msg
+   * @param int $logLevel  
+   * @return string message that was written to the logfile
+   */
+  function log( $msg, $logLevel="debug" )
+  {
+    $message = parent::log( $msg, $logLevel );
+    $clientLogLevel = (int) $this->getSessionVar("qcl.logLevel.client");
+    if ( $clientLogLevel and $clientLogLevel <= $logLevel)
+    {
+      $this->dispatchMessage("qcl.messages.log.server",$message);      
+    }  
+    return $message;
+  }    
+  
+  /**
+   * Debugs the complete jsonrpc request and response to the log file
+   */
   function debugJsonRpcRequest()
   {
     $request   =& $this->requestObject();
@@ -1009,6 +1011,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->set("services",$methodInfo);
     return $this->response();
   }
-  
-}	
+
+}  
 ?>
