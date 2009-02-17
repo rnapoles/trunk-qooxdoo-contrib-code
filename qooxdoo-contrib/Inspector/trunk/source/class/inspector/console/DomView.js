@@ -426,6 +426,10 @@ qx.Class.define("inspector.console.DomView",
           } else if (typeof object[j] == "string") {
             // print out the string in the string style
             returnString.add("<span class='ins_dom_string'>&quot;" + object[j] + "&quot;</span>");                               
+          // if it is a Array
+          } else if (object[j] instanceof this._iFrameWindow.Array) {
+            // print out the objects toSring in the object style
+            returnString.add("<span class='ins_dom_object'>[" + object[j] + "]</span>");                
           // if it is a object
           } else if (object[j] instanceof this._iFrameWindow.Object) {
             // print out the objects toSring in the object style
