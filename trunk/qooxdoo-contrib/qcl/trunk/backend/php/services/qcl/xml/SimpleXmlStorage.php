@@ -13,6 +13,15 @@ require_once "qcl/db/SimpleModel.php";
 
 /**
  * Persistent class to cache xml object data.
+ * 
+ * @todo
+ * function enc($x){
+ * return base64_encode(bzcompress(serialize($x),9));
+}
+
+function dec($x){
+  return unserialize(bzdecompress(base64_decode($x)));
+}
  */
 class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
 {
@@ -321,15 +330,6 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
         $doc = $cacheObj->doc;
         
         /*
-         * check if document is valid
-         */
-        if ( ! is_object( $doc ) )
-        {
-          $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
-          $doc = null;   
-        }
-        
-        /*
          * check modification date
          */
         if ( $lastModified )
@@ -343,9 +343,42 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
             if ( $this->lastModified == $cacheObj->lastModified )
             {
               $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
-              $this->doc =& $doc;
-              $this->hasChanged = false;
-              return $doc;
+              
+              /*
+               * PHP 4: load serialized object
+               */
+              if ( phpversion() < 5 )
+              {
+                /*
+                 * check if document is valid
+                 */
+                if ( ! is_object( $doc ) )
+                {
+                  $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
+                  $doc = null;   
+                } 
+              }
+              
+              /*
+               * PHP5: load 
+               */
+              else
+              {
+                if ( strlen($doc) )
+                {
+                  $doc = simplexml_load_string( unserialize( $doc ) );
+                }
+              }
+              
+              /*
+               * return object if valid
+               */
+              if ( is_object( $doc ) )
+              {
+                $this->hasChanged = false;
+                $this->doc =& $doc;
+                return $doc;
+              }
             }
             else
             {
@@ -367,6 +400,10 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
      */
     $this->hasChanged = true;
     
+    
+    /*
+     * PHP 4 implementation
+     */
     if ( PHP_VERSION < 5 )
     {
       /*
@@ -405,6 +442,10 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
         $this->raiseError("Cannot load xml data ");
       }
     }
+    
+    /*
+     * PHP 5 implementation
+     */
     else
     {
       if ( $isFile )
@@ -471,7 +512,6 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   
   /**
    * Saves parsed xml object tree to the caching storage
-   * @access private
    */
   function save()
   {
@@ -486,10 +526,16 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     }
     
     /*
-     * copy xml document tree to cache object
+     * PHP 4: copy xml document tree to cache object
      */
-    $cacheObj->doc = $this->doc;
-    
+    if ( phpversion() < 5)
+    {
+      $cacheObj->doc = $this->doc;
+    }
+    else
+    {
+      $cacheObj->doc = $xmlObj->asXML();
+    }
     $this->log("Saving xml document object to the cache...","xml");
     $cacheObj->save();
   }
