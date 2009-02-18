@@ -240,8 +240,8 @@ qx.Class.define("inspector.console.DomView",
         
         // if it is not an object
         if (!(sortedValues[i].value instanceof this._iFrameWindow.Object) &&
-            sortedValues[i].value !== this._iFrameWindow.window &&
-            sortedValues[i].value !== this._iFrameWindow.document) {
+            sortedValues[i].value != this._iFrameWindow.window &&
+            sortedValues[i].value != this._iFrameWindow.document) {
           var imageURI = qx.util.ResourceManager.toUri("inspector/images/spacer.gif");
           returnString.add("<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
                           imageURI + 
