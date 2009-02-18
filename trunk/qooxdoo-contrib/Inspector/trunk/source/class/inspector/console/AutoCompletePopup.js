@@ -207,9 +207,9 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
             // add the opening bracket for the function arguments
             var functionString = name + "(";
             // go threw all expected arguments
-            for (var j = 0; j < object[name].arity; j++) {
+            for (var j = 0; j < object[name].length; j++) {
               // if it is the last argument
-              if (j == object[name].arity - 1) {
+              if (j == object[name].length - 1) {
                 // add a character beginning by a,b,c,d,...
                 functionString += unescape("%" + (61 + j));
               } else {
