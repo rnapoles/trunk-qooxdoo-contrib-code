@@ -278,7 +278,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
        if ( file_exists ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
        {
          $found = true;
-         $config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true, phpversion() > 5 ? INI_SCANNER_RAW : null );
+         $config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true );
           $this->ini = array_merge ( $this->ini, $config );
        }
     }
