@@ -380,7 +380,9 @@ class qcl_db_model extends qcl_db_AbstractModel
   function setupSchema( $forceUpgrade=false )
   {
 
-    $this->log("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
+    $this->debug("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
+    
+    $controller =& $this->getController();
     
     /*
      * database connection
@@ -482,21 +484,26 @@ class qcl_db_model extends qcl_db_AbstractModel
       {
         /*
          * create table manually
+         * @todo move to setup class!
          * @todo unhardcode sql definition, i.e. 
          *  $table = $db->createTable("foo"); 
          *  $table->createColumn( "user", qcl_db_type_Varchar100, qcl_db_NOT_NULL, qcl_db_NOT_NULL );
          *  $table->createColumn( "created", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_TIMESTAMP_ZERO);
          *  $table->createColumn( "modified", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_CURRENT_TIMESTAMP);
          */
-        $db->createTable("persistentObjects");
-        $db->addColumn("persistentObjects","class"," varchar(100) collate utf8_unicode_ci NOT NULL");
-        $db->addColumn("persistentObjects","data","longblob");
-        $db->addColumn("persistentObjects","objectId","varchar(100) collate utf8_unicode_ci default NULL");
-        $db->addColumn("persistentObjects","userId","int(11) default NULL");
-        $db->addColumn("persistentObjects","sessionId","varchar(32) collate utf8_unicode_ci default NULL");
-        $db->addColumn("persistentObjects","instanceId","varchar(100) collate utf8_unicode_ci default NULL");
-        $db->addColumn("persistentObjects","created","timestamp NOT NULL default '0000-00-00 00:00:00'");
-        $db->addColumn("persistentObjects","modified","timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP");
+        $this->debug("Set up persistent object table manually");
+        $this->dbAdminAccess();
+        $db =& $this->db();
+        $database =  $controller->getIniValue("database.admindb");          
+        $db->createTable("`$database`.persistentObjects");
+        $db->addColumn("`$database`.persistentObjects","class"," varchar(100) collate utf8_unicode_ci NOT NULL");
+        $db->addColumn("`$database`.persistentObjects","data","longblob");
+        $db->addColumn("`$database`.persistentObjects","objectId","varchar(100) collate utf8_unicode_ci default NULL");
+        $db->addColumn("`$database`.persistentObjects","userId","int(11) default NULL");
+        $db->addColumn("`$database`.persistentObjects","sessionId","varchar(32) collate utf8_unicode_ci default NULL");
+        $db->addColumn("`$database`.persistentObjects","instanceId","varchar(100) collate utf8_unicode_ci default NULL");
+        $db->addColumn("`$database`.persistentObjects","created","timestamp NOT NULL default '0000-00-00 00:00:00'");
+        $db->addColumn("`$database`.persistentObjects","modified","timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP");
       }
     }
     else
