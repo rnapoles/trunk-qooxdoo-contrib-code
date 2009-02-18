@@ -288,7 +288,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
       $this->warn("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
     }
     
-    $this->debug($this->ini);
+    //$this->debug($this->ini);
   }
 
   /**
