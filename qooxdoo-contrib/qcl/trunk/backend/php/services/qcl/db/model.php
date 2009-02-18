@@ -398,7 +398,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      * FIXME qcl_persistence_db_Model must be SimpleModel!
      * FIXME move to setup class!
      */
-    if ( $this->isInstanceOf("qcl_persistence_db_Model") and ! $db->tableExists("persistentObjects") )
+    if ( ! $db->tableExists("persistentObjects") )
     {
       /*
        * create table manually
