@@ -10,7 +10,7 @@ class class_qcl_xml_Tests extends qcl_application_controller
   function __construct()
   {
     parent::__construct();
-    $this->controlAccess();
+    //$this->controlAccess();
   }
   
  function method_testSimpleXml()
