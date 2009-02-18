@@ -534,7 +534,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     }
     else
     {
-      $cacheObj->doc = $xmlObj->asXML();
+      $cacheObj->doc = $this->doc->asXML();
     }
     $this->log("Saving xml document object to the cache...","xml");
     $cacheObj->save();
