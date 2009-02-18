@@ -394,6 +394,36 @@ class qcl_db_model extends qcl_db_AbstractModel
     }
     
     /*
+     * hack!!
+     * FIXME qcl_persistence_db_Model must be SimpleModel!
+     * FIXME move to setup class!
+     */
+    if ( $this->isInstanceOf("qcl_persistence_db_Model") and ! $db->tableExists("persistentObjects") )
+    {
+      /*
+       * create table manually
+       * @todo unhardcode sql definition, i.e. 
+       *  $table = $db->createTable("foo"); 
+       *  $table->createColumn( "user", qcl_db_type_Varchar100, qcl_db_NOT_NULL, qcl_db_NOT_NULL );
+       *  $table->createColumn( "created", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_TIMESTAMP_ZERO);
+       *  $table->createColumn( "modified", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_CURRENT_TIMESTAMP);
+       */
+      $this->debug("Set up persistent object table manually");
+      $this->dbAdminAccess();
+      $db =& $this->db();
+      $database =  $controller->getIniValue("database.admindb");          
+      $db->createTable("`$database`.persistentObjects");
+      $db->addColumn("`$database`.persistentObjects","class"," varchar(100) collate utf8_unicode_ci NOT NULL");
+      $db->addColumn("`$database`.persistentObjects","data","longblob");
+      $db->addColumn("`$database`.persistentObjects","objectId","varchar(100) collate utf8_unicode_ci default NULL");
+      $db->addColumn("`$database`.persistentObjects","userId","int(11) default NULL");
+      $db->addColumn("`$database`.persistentObjects","sessionId","varchar(32) collate utf8_unicode_ci default NULL");
+      $db->addColumn("`$database`.persistentObjects","instanceId","varchar(100) collate utf8_unicode_ci default NULL");
+      $db->addColumn("`$database`.persistentObjects","created","timestamp NOT NULL default '0000-00-00 00:00:00'");
+      $db->addColumn("`$database`.persistentObjects","modified","timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP");
+    }    
+    
+    /*
      * sql type
      */
     $sqltype =  $db->getType();
@@ -464,6 +494,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      * Wheter the table for this model exists already
      */
     $tableExists  = $db->tableExists($this->table);
+    //$this->debug("Table {$this->table} (" . $this->className(). ")" . ($tableExists ? " exists." : " does not exist." ) );
     
     /*
      * Get the modelTableInfo persistent object to look up if this
@@ -479,31 +510,6 @@ class qcl_db_model extends qcl_db_AbstractModel
       {
         $isInitialized = true;
         $forceUpgrade  = false;
-      }
-      else
-      {
-        /*
-         * create table manually
-         * @todo move to setup class!
-         * @todo unhardcode sql definition, i.e. 
-         *  $table = $db->createTable("foo"); 
-         *  $table->createColumn( "user", qcl_db_type_Varchar100, qcl_db_NOT_NULL, qcl_db_NOT_NULL );
-         *  $table->createColumn( "created", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_TIMESTAMP_ZERO);
-         *  $table->createColumn( "modified", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_CURRENT_TIMESTAMP);
-         */
-        $this->debug("Set up persistent object table manually");
-        $this->dbAdminAccess();
-        $db =& $this->db();
-        $database =  $controller->getIniValue("database.admindb");          
-        $db->createTable("`$database`.persistentObjects");
-        $db->addColumn("`$database`.persistentObjects","class"," varchar(100) collate utf8_unicode_ci NOT NULL");
-        $db->addColumn("`$database`.persistentObjects","data","longblob");
-        $db->addColumn("`$database`.persistentObjects","objectId","varchar(100) collate utf8_unicode_ci default NULL");
-        $db->addColumn("`$database`.persistentObjects","userId","int(11) default NULL");
-        $db->addColumn("`$database`.persistentObjects","sessionId","varchar(32) collate utf8_unicode_ci default NULL");
-        $db->addColumn("`$database`.persistentObjects","instanceId","varchar(100) collate utf8_unicode_ci default NULL");
-        $db->addColumn("`$database`.persistentObjects","created","timestamp NOT NULL default '0000-00-00 00:00:00'");
-        $db->addColumn("`$database`.persistentObjects","modified","timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP");
       }
     }
     else
