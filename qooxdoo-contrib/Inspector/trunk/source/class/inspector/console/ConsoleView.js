@@ -209,17 +209,32 @@ qx.Class.define("inspector.console.ConsoleView",
       try {        
         // run it and store the result in the global ans value
         var iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
+        iFrameWindow.qx.lang.Function.globalEval([
+          "window.top.inspector.$$inspector = function()",
+          "{",
+          "  try {",
+          "    return ", text, ";",
+          "  } catch (ex) {",
+          "    return ex;",
+          "  }",
+          "};"].join("")
+        );
         this.setAns(
-            new iFrameWindow.Function("return " + text).call(qx.core.Init.getApplication().getSelectedObject())
-          );
+          inspector.$$inspector.call(qx.core.Init.getApplication().getSelectedObject())            
+        );
 
         // if ans is defined
-        if (this.getAns() != null) {      
-
+        var ans = this.getAns();
+        if (ans != null)
+        {      
+          if (ans instanceof iFrameWindow.Error) {
+            throw ans;
+          }
+          
           // store the object in the local reference folder
-          this._objectFolder[this._objectFolderIndex] = {name: text, object: this.getAns()};  
+          this._objectFolder[this._objectFolderIndex] = {name: text, object: ans};  
           // print put the return value
-          this._printReturnValue(this.getAns());
+          this._printReturnValue(ans);
           // invoke the addition to the index after the objects has been printed to the screen
           this._objectFolderIndex++;
         }
