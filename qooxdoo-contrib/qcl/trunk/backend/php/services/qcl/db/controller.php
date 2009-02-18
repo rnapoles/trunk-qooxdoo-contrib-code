@@ -35,7 +35,40 @@ class qcl_db_controller extends qcl_jsonrpc_controller
      * establish database connection
      */
     $this->connect();
+    
+    
    
+    /*
+     * hack!!
+     * FIXME qcl_persistence_db_Model must be SimpleModel!
+     * FIXME move to setup class!
+     */
+    $db =& $this->getConnection();
+    if ( ! $db->tableExists("persistentObjects") )
+    {
+      /*
+       * create table manually
+       * @todo unhardcode sql definition, i.e. 
+       *  $table = $db->createTable("foo"); 
+       *  $table->createColumn( "user", qcl_db_type_Varchar100, qcl_db_NOT_NULL, qcl_db_NOT_NULL );
+       *  $table->createColumn( "created", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_TIMESTAMP_ZERO);
+       *  $table->createColumn( "modified", qcl_db_type_Timestamp, qcl_db_NOT_NULL, QCL_DB_CURRENT_TIMESTAMP);
+       */
+      $this->debug("Set up persistent object table manually");
+      $this->dbAdminAccess();
+      $db =& $this->db();
+      $database =  $controller->getIniValue("database.admindb");          
+      $db->createTable("`$database`.persistentObjects");
+      $db->addColumn("`$database`.persistentObjects","class"," varchar(100) collate utf8_unicode_ci NOT NULL");
+      $db->addColumn("`$database`.persistentObjects","data","longblob");
+      $db->addColumn("`$database`.persistentObjects","objectId","varchar(100) collate utf8_unicode_ci default NULL");
+      $db->addColumn("`$database`.persistentObjects","userId","int(11) default NULL");
+      $db->addColumn("`$database`.persistentObjects","sessionId","varchar(32) collate utf8_unicode_ci default NULL");
+      $db->addColumn("`$database`.persistentObjects","instanceId","varchar(100) collate utf8_unicode_ci default NULL");
+      $db->addColumn("`$database`.persistentObjects","created","timestamp NOT NULL default '0000-00-00 00:00:00'");
+      $db->addColumn("`$database`.persistentObjects","modified","timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP");
+    }        
+    
   }     
   
   /**
