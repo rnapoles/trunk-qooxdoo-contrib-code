@@ -420,8 +420,8 @@ qx.Class.define("inspector.console.ConsoleView",
 
       // check for objects
       } else if (iFrameWindow && (returnValue instanceof iFrameWindow.Object ||
-          returnValue === iFrameWindow.window ||
-          returnValue === iFrameWindow.document)) {        
+          returnValue == iFrameWindow.window ||
+          returnValue == iFrameWindow.document)) {        
         // if yes, print out that it is one
         var label = this._getLabel("<span class='ins_console_link' onclick='" + 
                                    "qx.core.Init.getApplication().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
