@@ -226,6 +226,18 @@ qx.Class.define("inspector.console.DomView",
           var keyStyle = "ins_dom_key";
         }
         
+        // IE fix
+        try {
+          sortedValues[i].value instanceof this._iFrameWindow.Object
+        }catch(ex) {
+          var imageURI = qx.util.ResourceManager.toUri("inspector/images/spacer.gif");
+          returnString.add("<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
+                          imageURI + 
+                          "'>" + this._console.escapeHtml(sortedValues[i].key) + "</td>");
+          returnString.add("<td><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>");
+          continue;
+        }
+        
         // if it is not an object
         if (!(sortedValues[i].value instanceof this._iFrameWindow.Object)) {
           var imageURI = qx.util.ResourceManager.toUri("inspector/images/spacer.gif");
