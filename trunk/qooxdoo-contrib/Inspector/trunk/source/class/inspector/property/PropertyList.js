@@ -456,7 +456,7 @@ qx.Class.define("inspector.property.PropertyList", {
               } catch (ex) {
                 // alert the user if the sett could not be executed
                 alert(ex + " [" + setterName + "]");
-                checkBox.setChecked(value);
+                checkBox.setChecked(!value);
               }    
             }                
           };
