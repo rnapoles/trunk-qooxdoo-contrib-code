@@ -319,6 +319,11 @@ class qcl_db_model extends qcl_db_AbstractModel
    */
   function dbAdminAccess()
   {
+    
+    // FIXME disabled 
+    
+    return; 
+    
     if ( $this->_isAdminAccess )
     {
       return true;
