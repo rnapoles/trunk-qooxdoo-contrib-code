@@ -16,64 +16,65 @@ class qcl_db_Overload extends qcl_jsonrpc_model
    * @param array  $arguments Array or parameters passed to the method
    * @return mixed return value (PHP5 only) 
    */
-  function __call( $function, $arguments) 
+  function __call( $function, $arguments ) 
   {
+   
     /*
-     * we need to reimplement the mixin behavior from 
-     * qcl_core_object because we cannot call the parent 
-     * class method
-     * @see qcl_core_object::__call()
+     * PHP5 : call mixin method
      */
-    if ( phpversion() >= 5 and isset($this->_mixinlookup[$method] ) )
+    $result = (string) $this->__callMixinMethod( $function, $arguments );
+    
+    if ( $result == "METHOD_NOT_FOUND" )
     {
-      $elems = array();
-      for ($i=0, $_i=count($args); $i<$_i; $i++) $elems[] = "\$args[$i]";
-      eval("\$result = ".$this->_mixinlookup[$method]."::"
-          .$method."(".implode(',',$elems).");");
-      return $result;
+      
+      //$this->debug( $function . "::" . $result );
+      
+      /*
+       * php4 or no matching mixin methods found.
+       * Now we intercept method calls
+       */
+      $startsWith = strtolower( substr( $function, 0, 3 ) );
+      $endsWith   = strtolower( substr( $function, 3 ) );
+      
+      /*
+       * get.. and set... for property access
+       * @todo correct calling of method with variable arguments
+       */
+      if ( $startsWith == "set" )
+      {
+        //$this->debug("setting $endsWith = " . $arguments[0] . "(" . gettype($arguments[0]) . ")." . print_r($arguments,true));
+        $this->setProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
+      }
+      elseif ( $startsWith == "get" )
+      { 
+        $result = $this->getProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
+        //$this->debug("getting $endsWith = $return");
+      }
+      
+      /*
+       * findBy...
+       */
+      elseif ( strtolower( substr( $function, 0, 6 ) ) == "findby" )
+      {
+        $propName = strtolower( substr( $function, 6 ) );
+        $result = $this->findBy($propName,$arguments[0],$arguments[1],$arguments[2]);
+      }
+      
+      /*
+       * method not known, raise error
+       */
+      else
+      {
+        $this->raiseError("Unknown method " . get_class($this) . "::$function().");
+      }
     }
-    
-    /*
-     * php4 or no matching mixin methods found.
-     * Now we intercept method calls
-     */
-    $startsWith = strtolower( substr( $function, 0, 3 ) );
-    $endsWith   = strtolower( substr( $function, 3 ) );
-    
-    /*
-     * get.. and set... for property access
-     * @todo correct calling of method with variable arguments
-     */
-    if ( $startsWith == "set" )
-    {
-      //$this->debug("setting $endsWith = " . $arguments[0] . "(" . gettype($arguments[0]) . ")." . print_r($arguments,true));
-      $this->setProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
-    }
-    elseif ( $startsWith == "get" )
-    { 
-      $return = $this->getProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
-      //$this->debug("getting $endsWith = $return");
-    }
-    
-    /*
-     * findBy...
-     */
-    elseif ( strtolower( substr( $function, 0, 6 ) ) == "findby" )
-    {
-      $propName = strtolower( substr( $function, 6 ) );
-      $return = $this->findBy($propName,$arguments[0],$arguments[1],$arguments[2]);
-    }
-    
-    /*
-     * method not known, raise error
-     */
     else
     {
-      $this->raiseError("Unknown method " . get_class($this) . "::$function().");
+       //$this->debug( "Method $function returned '$result'" );  
     }
-    
-    return $return; // PHP 5  
-
+    // FIXME: HACK since there seems to be a bug returning the value to the requesting function
+    $GLOBALS['result'] = $result;
+    return $result;
   }
 }
 ?>

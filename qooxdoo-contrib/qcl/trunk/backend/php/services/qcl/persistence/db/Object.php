@@ -128,12 +128,10 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
    */
   function cleanUp()
   {
-    /*
     $this->_dbModel->deleteWhere("
       sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
       userId NOT IN ( SELECT id FROM users )
-    ");
-    */          
+    ");     
   }
   
   

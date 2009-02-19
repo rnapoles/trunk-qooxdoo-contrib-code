@@ -59,10 +59,10 @@ class qcl_core_object
    */
   var $_class;
  
-	/**
-	 * Array of class names that will be included as mixins. 
-	 * @var array 
-	 */
+  /**
+   * Array of class names that will be included as mixins. 
+   * @var array 
+   */
   var $include = array();
 
   /**
@@ -151,31 +151,31 @@ class qcl_core_object
   }
 
   
-	/**
-	 * Class constructor. If the mixin class property contains 
-	 * array entries, these classes will be mixed in.
-	 */
-	function __construct() 
-	{
-		
-		/*
-		 * start internal timer
-		 */
-	  $this->startTimer();
-	  
-	  /*
-	   * initialize object id
-	   */
-	  $this->objectId();
-	  
-	  /*
-	   * class name
-	   */
-	  $this->_class = get_class($this);
-	  
-		/*
-		 * apply mixins
-		 */
+  /**
+   * Class constructor. If the mixin class property contains 
+   * array entries, these classes will be mixed in.
+   */
+  function __construct() 
+  {
+    
+    /*
+     * start internal timer
+     */
+    $this->startTimer();
+    
+    /*
+     * initialize object id
+     */
+    $this->objectId();
+    
+    /*
+     * class name
+     */
+    $this->_class = get_class($this);
+    
+    /*
+     * apply mixins
+     */
     if ( is_array( $this->include ) )
     {
       foreach( $this->include as $mixin )
@@ -233,12 +233,12 @@ class qcl_core_object
      * setup the logger for this object
      */
     $this->setUpLogger();
-	}
-	
-	/**
-	 * class destructor.  This is the top-most __destruct method, currently
-	 * just an empty stub
-	 */
+  }
+  
+  /**
+   * class destructor.  This is the top-most __destruct method, currently
+   * just an empty stub
+   */
   function __destruct() {}
   
   //-------------------------------------------------------------
@@ -393,11 +393,11 @@ class qcl_core_object
      */
     if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
     {
-	    $pathname = substr($classname,strlen(JsonRpcClassPrefix));        	
+      $pathname = substr($classname,strlen(JsonRpcClassPrefix));          
     }
     else
     {
-    	$pathname = $classname;
+      $pathname = $classname;
     }
     
     /*
@@ -443,7 +443,7 @@ class qcl_core_object
     $path = qcl_core_object::getClassPath($classname);
     if ( ! file_exists ( $path ) )
     {
-  		$this->raiseError ( "Class '$classname' cannot be loaded: file '" . addslashes($path) .  "' does not exist." );    	
+      $this->raiseError ( "Class '$classname' cannot be loaded: file '" . addslashes($path) .  "' does not exist." );     
     }
       
     // load class file
@@ -458,39 +458,79 @@ class qcl_core_object
   //------------------------------------------------------------- 
   
   /**
-   * cross-version method to mixin methods from other classes.
+   * cross-version method to include mixin methods from other classes.
    * @return void
    * @param $classname class name
    */
   function mixin ($classname)
   {
-    //$this->info("Mixin $classname applied to " . get_class($this) );
+    /*
+     * load class file
+     */
+    $this->includeClassfile($classname);
+    
+    /*
+     * check class
+     */
+    if ( ! class_exists ( $classname ) ) 
+    {
+      $this->raiseError("Class $classname does not exist.");
+    }
+    
+    /*
+     * PHP4 : aggregate class
+     */
     if ( phpversion() < 5 )
     {
-      $this->includeClassfile($classname);
       aggregate( $this, $classname);
     }
+    
+    /*
+     * PHP5 : mixins via __call method 
+     */
     else
     {
-      $methods = get_class_methods($classname);
-      if ( is_array($methods) )
+      $methods = get_class_methods( $classname );
+      if ( ! count( $methods) )
       {
-        foreach($methods as $method) 
-        {
-          $this->_mixinlookup[$method] = $classname;
-        }
+        $this->raiseError("Class $classname has no methods.");
       }
+      
+      /*
+       * register class methods
+       */
+      foreach( $methods as $method ) 
+      {
+        if ( ! method_exists( $this, $method ) )
+        {
+          $this->_mixinlookup[strtolower($method)] = strtolower($classname);  
+        }
+      }      
     }
   }
   
   function hasMixin ( $classname )
   {
-    return in_array( $classname, $this->_mixinlookup );
+    if ( phpversion() < 4 )
+    {
+      $aggregateInfo = aggregate_info($this);
+      return isset( $aggregateInfo[$classname] );
+    }
+    return in_array( strtolower($classname), $this->_mixinlookup );
   }
   
   function hasMixinMethod( $method )
   {
-    return isset( $this->_mixinlookup[$method] );
+    if ( phpversion() < 4 )
+    {
+      $aggregateInfo = aggregate_info($this);
+      foreach ( $aggregateInfo as $classname => $info )
+      {
+        if ( in_array(strtolower($method), $aggregateInfo[strtolower($classname)]['methods'] ) ) return true;  
+      }
+      return false;
+    }
+    return isset( $this->_mixinlookup[strtolower($method)] );
   }
   
   /**
@@ -499,25 +539,50 @@ class qcl_core_object
    * being called.
    * @author Ivo Jansch (see http://www.jansch.nl/2006/08/23/mixins-in-php/)
    */
-  function __call($method, $args )
+  function __call( $method, $args )
   {
+    /*
+     * PHP5 : call mixin method
+     */ 
     if ( phpversion() >= 5 )
-    {
-      if ( isset( $this->_mixinlookup[$method] ) )
+    { 
+      $result = $this->__callMixinMethod( $method, $args );
+      if ( $result != "METHOD_NOT_FOUND" )
       {
-        $elems = array();
-        for ($i=0, $_i=count($args); $i<$_i; $i++) 
-        {
-          $elems[] = "\$args[$i]";
-        }
-        eval(
-          "\$result = ".$this->_mixinlookup[$method]."::" .
-           $method . "(".implode(',',$elems).");"
-        );
-        return $result;
+        return $result;  
       }
     }
-    trigger_error('Call to undefined function ' . $method );
+    
+    /*
+     * if not found, trigger an error
+     */
+    trigger_error('Call to undefined function ' . $method ); 
+  }
+ 
+  /**
+   * calls a mixin method in PHP5
+   */
+  function __callMixinMethod( $method, $args )
+  {
+    //$this->debug( $this->className() . "." . $method . "()" );
+    //$this->debug( $this->_mixinlookup );
+    $mthd = strtolower($method);
+    //$this->debug( $method . ":" . $this->_mixinlookup[ $mthd ]);
+    if ( $this->_mixinlookup[ $mthd ] )
+    {
+      $elems = array();
+      for ($i=0, $_i=count($args); $i<$_i; $i++) 
+      {
+        $elems[] = "\$args[$i]";
+      }
+      $evalCode =
+        "\$result = " . $this->_mixinlookup[ $mthd ] . "::" .
+         $method . "(".implode(',',$elems).");";
+      //$this->debug($evalCode);
+      eval($evalCode);
+      return $result;
+    }
+    return "METHOD_NOT_FOUND";
   }
  
   
@@ -581,26 +646,26 @@ class qcl_core_object
   // instance and singleton management
   //-------------------------------------------------------------  
 
-	/**
-	 * Gets singleton instance. If you want to use this method on a static class that extends this class,
-	 * you need to override this method like so: <pre>
-	 * function &getInstance( $class=__CLASS__ )
-	 * {
-	 *   return parent::getInstance( $class );
-	 * }
-	 * </pre>
-	 * The reason is that PHP cannot access the class name in static classes (which hasn't been resolved in PHP5!).
-	 * @param string[optional, defaults to __CLASS__] $class Class name. Does not need to be provided in object instances.
-	 * @return object singleton  instance of class
-	 */
-	function &getInstance( $class = __CLASS__ )
-	{
+  /**
+   * Gets singleton instance. If you want to use this method on a static class that extends this class,
+   * you need to override this method like so: <pre>
+   * function &getInstance( $class=__CLASS__ )
+   * {
+   *   return parent::getInstance( $class );
+   * }
+   * </pre>
+   * The reason is that PHP cannot access the class name in static classes (which hasn't been resolved in PHP5!).
+   * @param string[optional, defaults to __CLASS__] $class Class name. Does not need to be provided in object instances.
+   * @return object singleton  instance of class
+   */
+  function &getInstance( $class = __CLASS__ )
+  {
      if ( ! $GLOBALS[$class] )
      {
        $GLOBALS[$class] =& new $class;
      }
      return $GLOBALS[$class]; 
-	}
+  }
 
   /**
    * set (non-persistent) singleton instance of a class
@@ -615,21 +680,21 @@ class qcl_core_object
     $GLOBALS[$classname] =& $instance;
     return $instance;
   }
-	
-	/**
-	 * get (non-persistent) singleton instance of class.
-	 * if singleton already exists, return instance, otherwise
-	 * automatically load class file, create new instance and, if object is a controller, 
-	 * pass a reference to the instantiating object or, in other cases, an optional 
-	 * parameter to the constructor.
-	 * 
-	 * @param string 			$classname
-	 * @param object reference 	$controller		(optional) controller object to be passed
-	 * 											to the singleton constructor  
-	 * @return object reference to singleton instance
-	 */
-	function &getSingleton( $classname, $controller = null ) 
-	{
+  
+  /**
+   * get (non-persistent) singleton instance of class.
+   * if singleton already exists, return instance, otherwise
+   * automatically load class file, create new instance and, if object is a controller, 
+   * pass a reference to the instantiating object or, in other cases, an optional 
+   * parameter to the constructor.
+   * 
+   * @param string      $classname
+   * @param object reference  $controller   (optional) controller object to be passed
+   *                      to the singleton constructor  
+   * @return object reference to singleton instance
+   */
+  function &getSingleton( $classname, $controller = null ) 
+  {
     if ( ! $GLOBALS[$classname] )  
     {
       $GLOBALS[$classname] =& $this->getNew( $classname, &$controller );  
@@ -637,29 +702,29 @@ class qcl_core_object
     return $GLOBALS[$classname];
   }
   
-	/**
-	 * Returns new instance of classname. If the calling object is a subclass 
-	 * of qx_jsonrpc_controller, pass the object as constructor to the model class, 
-	 * otherwise pass optional parameter
-	 * @param string $classname PHP class name or dot-separated class name
-	 * @param qcl_jsonrpc_controller[optional] $controller (optional) controller object 
-	 * to be passed to the singleton constructor  
-	 * @return qcl_core_object
-	 */
-	function &getNew( $classname, $controller = null ) 
-	{       
+  /**
+   * Returns new instance of classname. If the calling object is a subclass 
+   * of qx_jsonrpc_controller, pass the object as constructor to the model class, 
+   * otherwise pass optional parameter
+   * @param string $classname PHP class name or dot-separated class name
+   * @param qcl_jsonrpc_controller[optional] $controller (optional) controller object 
+   * to be passed to the singleton constructor  
+   * @return qcl_core_object
+   */
+  function &getNew( $classname, $controller = null ) 
+  {       
     /*
      * convert dot-separated class names
      * FIXME: PHP5 is case-sensitive
      */
-	  if ( strstr( $classname,".") )
-	  {
-	    $classname = strtolower(str_replace(".","_",$classname));
-	  }
+    if ( strstr( $classname,".") )
+    {
+      $classname = strtolower(str_replace(".","_",$classname));
+    }
     
-	  /*
-	   * check for class existence
-	   */ 
+    /*
+     * check for class existence
+     */ 
     if ( ! class_exists ( $classname ) ) 
     {
       $path = $this->includeClassFile($classname);
@@ -669,7 +734,7 @@ class qcl_core_object
        */
       if ( ! class_exists ( $classname) )
       {
-    		$this->raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );    	
+        $this->raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );      
       }
     }
     
@@ -739,26 +804,26 @@ class qcl_core_object
     $this->_logger->log($msg, $filters );
   } 
   
-	/**
-	 * Log a debug message. This method should be used only for 
-	 * temporary debugging. Such method calls should be able to 
-	 * be expunged completely by a global search/replace.
+  /**
+   * Log a debug message. This method should be used only for 
+   * temporary debugging. Such method calls should be able to 
+   * be expunged completely by a global search/replace.
    * @return void
-   * @param mixed $msg 	
+   * @param mixed $msg  
    */
-	function debug($msg)
-	{
+  function debug($msg)
+  {
     if ( ! is_scalar($msg) ) $msg = print_r($msg,true);
     $msg = ">>> DEBUG <<< " . $msg;
-	  $this->log ( $msg, "info" );
-  }	
-	
+    $this->log ( $msg, "info" );
+  } 
+  
   /**
    * Logs a message with of level "info"
    * @return void
    * @param mixed $msg 
    */
-  function info ( $msg )	
+  function info ( $msg )  
   {
     $this->log ( $msg, "info" );
   }
