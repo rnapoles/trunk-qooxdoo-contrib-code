@@ -69,7 +69,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function __construct()
   {
-    
+
     /*
      * call parent constructor first
      */

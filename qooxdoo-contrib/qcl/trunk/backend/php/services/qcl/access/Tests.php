@@ -1,5 +1,6 @@
 <?php
 require_once "qcl/access/controller.php";
+require_once "qcl/persistence/db/Object.php";
 
 /**
  * Service class containing test methods
@@ -7,16 +8,39 @@ require_once "qcl/access/controller.php";
 class class_qcl_access_Tests extends qcl_access_controller
 {
   
+  function method_dummy()
+  {
+
+    return $this->response();  
+    
+  }
+  
   function method_testUser()
   {
+    
+    
+    $logger =& $this->getLogger();
+    $logger->setFilterEnabled("propertyModel",true);
+        
+    $user = either ($params[0], "admin");
+    $this->debug("Testing user $user");
     $userModel =& $this->getUserModel();
-    $userModel->findByNamedId('cboulanger');
+    $userModel->findByNamedId($user);
     
-    //$this->info($userModel->securityData());
+    if ( $userModel->foundSomething() )
+    {
+      $this->info($userModel->securityData() );
+      $this->info($userModel->roles("namedId") );
+    }
+    else
+    {
+      $this->info("User $user not found.");
+    }
     
-    //$this->info($userModel->roles("namedId"));
-    
-    
+    $logger->setFilterEnabled("propertyModel",false);
+    $this->info("blabla!");
+    echo"ljlljl";
+    return $this->result();
   }
   
   function method_testRole()
@@ -27,7 +51,7 @@ class class_qcl_access_Tests extends qcl_access_controller
     $this->info($roleModel->users('namedId'));
     
     $this->info($roleModel->permissions('namedId'));
-    
+    return $this->result();
   }
 
  

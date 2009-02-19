@@ -157,6 +157,7 @@ class qcl_core_object
 	 */
 	function __construct() 
 	{
+		
 		/*
 		 * start internal timer
 		 */

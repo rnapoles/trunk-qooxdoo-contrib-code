@@ -523,18 +523,7 @@ class SimpleXmlElement
     function addAttribute($name,$value,$namespace="")
     {
       return $this->tagAttrs[$name] = $value;
-    }        
-
-    /**
-     * added:  method to set an Attribute to the node
-     * @param string $name
-     * @param string $value
-     * @param string $namespace currently not implemented
-     */
-    function setAttribute($name,$value,$namespace="")
-    {
-      return $this->tagAttrs[$name] = $value;
-    }      
+    }           
     
     /**
      * added: PHP5 simplexml method to add a child to the node

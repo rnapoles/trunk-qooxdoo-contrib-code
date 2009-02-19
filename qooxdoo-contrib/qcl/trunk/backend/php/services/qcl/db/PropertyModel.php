@@ -108,7 +108,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
    * Shortcuts to property nodes in schema xml. Access with qcl_db_model::getPropertyNode($name)
    * @array array of object references
    */
-  var $propertyNodes;
+  var $propertyNodes =array();
 
   /**
    * An associated array having the names of all properties (including linked tables) as
@@ -188,7 +188,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
     $c = $this->getController();
     
     /*
-    $this->debug( "Constructing model '" . $this->className() . 
+    //$this->debug( "Constructing model '" . $this->className() . 
                 "' controlled by '" . $c->className() . "'" .
                 ( is_object( $datasourceModel ) ? 
                   " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
@@ -226,7 +226,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
   {
   
     /*
-    $this->debug(
+    //$this->debug(
      "Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'.",  
     );
     */
@@ -375,7 +375,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
   {
     $node  =& $this->getPropertyNode( $name );
     $attrs =  $node->attributes();
-    return $attrs['type']; 
+    return (string) $attrs['type']; 
   }
   
   /**
@@ -1434,7 +1434,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
      * defintion node
      */
     $schemaXml  =& $this->getSchemaXml(); 
-    $definition =& $schemaXml->getNode("/schema/model/definition");
+    $definition =& $schemaXml->getNode("/model/definition");
     if ( ! $definition )
     {
       $this->raiseError("Model schema xml does not have a 'definition' node.");
@@ -1454,8 +1454,9 @@ class qcl_db_PropertyModel extends qcl_db_Overload
     foreach ( $children as $propNode)
     {
       $attrs     = $propNode->attributes(); 
-      $propName  = $attrs['name'];
+      $propName  = (string) $attrs['name'];
       
+      //$this->debug("Setting up property '$propName'");
       
       /*
        * store shorcut object property for easy
@@ -1502,7 +1503,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
          * get alias
          */
         $attrs    = $alias->attributes();
-        $propName = $attrs['for'];
+        $propName = (string) $attrs['for'];
         $column   = qcl_xml_SimpleXmlStorage::getData(&$alias);
         
         /*
@@ -1542,7 +1543,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
         foreach ( $metaDataNode->children() as $metaDataPropNode )
         {
           $attrs = $metaDataPropNode->attributes();
-          $name  = $attrs['name'];
+          $name  = (string) $attrs['name'];
           //$this->debug("$name => " . gettype($this->propertyNodes[$name]) );
           if ( isset($this->propertyNodes[$name]) )
           {
@@ -1656,7 +1657,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
      * does the model schema inherit from another schema?
      */
     $rootAttrs    = $doc->attributes();
-    $includeFiles = $rootAttrs['include'];
+    $includeFiles = (string) $rootAttrs['include'];
     
     if ( $includeFiles )
     {
@@ -1706,7 +1707,8 @@ class qcl_db_PropertyModel extends qcl_db_Overload
      * does the  data inherit from another file?
      */
     $rootAttrs    = $doc->attributes();
-    $includeFiles = $rootAttrs['include'];
+    $includeFiles = (string) $rootAttrs['include'];
+    //$this->debug("Included files: $includeFiles");
     
     if ( $includeFiles )
     {
@@ -1795,7 +1797,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
     foreach( $this->propertyNodes as $propNode )
     {
       $attrs = $propNode->attributes();
-      $skipExpAttr = either($attrs['skipExport'],$attrs['skipexport']); 
+      $skipExpAttr = (string) either($attrs['skipExport'],$attrs['skipexport']); 
       if ( $skipExpAttr == "true" )
       {
         $skipPropList[] = $attrs['name'];
@@ -1920,21 +1922,29 @@ class qcl_db_PropertyModel extends qcl_db_Overload
      * iterate through all records and import them
      */
     $count = 0;
-    foreach ( $recordsNode->children() as $record)
+    $records = $recordsNode->children();
+    foreach ( $records as $record )
     {
+      
       /*
        * populate properties with attributes
        */
-      $properties = $record->attributes();
+      $properties = array();
+      $attributes = $record->attributes();
+      foreach( $attributes as $attrName => $attrVal )
+      {
+        $properties[$attrName] = (string) $attrVal;
+      }
       
       /*
        * add child node data to properties
        */
-      foreach ( $record->children() as $propNode )
+      $propChildren = $record->children();
+      foreach ( $propChildren as $propNode )
       {
         $propAttrs = $propNode->attributes();
-        $propName  = $propAttrs['name'];
-        $propData  = $schemaXml->getData(&$propNode);
+        $propName  = (string) $propAttrs['name'];
+        $propData  = $schemaXml->getData( $propNode );
         $properties[$propName] =$propData;
       }
       
@@ -1954,6 +1964,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
        * this will not overwrite existing entries which are primary keys or are part
        * of a "unique" index. 
        */
+       //$this->debug($this->properties);
       $id = $this->insert($data);
       if ($id) $count++;
     }
@@ -1971,7 +1982,7 @@ class qcl_db_PropertyModel extends qcl_db_Overload
   function hasQueryOperators()
   {
     $schemaXml =& $this->getSchemaXml();
-    $opNodes   =& $this->getNode("/schema/model/queries/operators");
+    $opNodes   =& $this->getNode("/model/queries/operators");
     return is_object($opNodes) && count( $opNodes->operator ); 
   }
   
@@ -1998,12 +2009,12 @@ class qcl_db_PropertyModel extends qcl_db_Overload
     if ( ! is_array( $queryOperators[$type] ) )
     {
       $schemaXml =& $this->getSchemaXml();
-      $operators =& $this->getNode("/schema/model/queries/operators/operator");
+      $operators =& $this->getNode("/model/queries/operators/operator");
       
       foreach ( $operators as $operatorNode )
       {
         $attrs = $operatorNode->attributes();
-        if ( $attrs['type'] == $type )
+        if ( (string) $attrs['type'] == $type )
         {
           $queryOperators[$type][] =& $operatorNode;
         }

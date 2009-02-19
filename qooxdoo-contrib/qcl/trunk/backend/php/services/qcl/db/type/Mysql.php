@@ -326,6 +326,8 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 			VALUES ($values)
 		";
 		
+		//$this->debug( $sql );
+		
 		/*
 		 * execute query
 		 */
@@ -374,7 +376,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 			WHERE `$idColumn` = '$id'
 		");
 		
-		//$this->Info($sql); 
+		//$this->debug($sql); 
 		
 		return $this->query($sql);
 	}
