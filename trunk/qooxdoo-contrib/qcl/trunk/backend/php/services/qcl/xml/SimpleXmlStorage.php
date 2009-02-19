@@ -365,7 +365,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
               {
                 if ( strlen($doc) )
                 {
-                  $doc = simplexml_load_string( unserialize( $doc ) );
+                  $doc = simplexml_load_string( $doc );
                 }
               }
               
@@ -685,7 +685,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
           $n    = (int)    $matches[2];
         }
         
-        /*â
+        /*‰
          * get node object
          */
         $tmp =& $tmp->$part;

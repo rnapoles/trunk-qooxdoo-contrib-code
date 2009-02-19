@@ -435,6 +435,7 @@ if (! $classExists)
 
 /* Instantiate the service */
 $service = new $className();
+//echo "/*  $className instantiated */";
 
 /*
  * Check if service has been aborted in the constructor. This allows
