@@ -586,7 +586,7 @@ switch($accessibility)
 $method = JsonRpcMethodPrefix . $jsonInput->method;
 
 // FIXME PHP5 mixins
-if (! method_exists($service, $method) or $service->_mixinlookup[$method] )
+if (! method_exists($service, $method) and ! $service->_mixinlookup[$method] )
 {
     $error->SetError(JsonRpcError_MethodNotFound,
                      "Method `" . $jsonInput->method . "` not found " .
