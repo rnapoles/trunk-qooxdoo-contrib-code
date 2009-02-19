@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema
   include="qcl/db/model.xml">
-
+ 
   <!-- 
     model that stores serialized objects in the database 
   -->

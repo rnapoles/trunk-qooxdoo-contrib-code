@@ -67,9 +67,10 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
      * get or create model record
      */
     //$this->debug("Loading " . $this->className() . " [$id].");
+    $instanceId = strlen($this->instanceId) > 100 ? md5($this->instanceId) : $this->instanceId;
     $this->_dbModel->findWhere(array(
       'class'      => $this->className(),
-      'instanceId' => $id,
+      'instanceId' => $instanceId,
       'userId'     => $this->_userId,
       'sessionId'  => $this->_sessionId
     ));         
@@ -99,6 +100,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
    */
   function create()
   {
+    $instanceId = strlen($this->instanceId) > 100 ? md5($this->instanceId) : $this->instanceId;
     
     /*
      * create new record in database
@@ -106,7 +108,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     $this->_dbModel->create();
     $this->_dbModel->set( array( 
       'class'      => $this->className(),
-      'instanceId' => $this->instanceId,
+      'instanceId' => $instanceId,
       'userId'     => $this->_userId,
       'sessionId'  => $this->_sessionId
     ) );
@@ -122,13 +124,16 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
   
   /*
    * clean up objects that refer to nonexisting users or sessions
+   * FIXME disabled: this requires tables sessions and users created beforehand
    */
   function cleanUp()
   {
+    /*
     $this->_dbModel->deleteWhere("
       sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
       userId NOT IN ( SELECT id FROM users )
-    ");          
+    ");
+    */          
   }
   
   
@@ -137,6 +142,8 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
    */
   function save()
   {
+    $this->log("Saving object data for '" . $this->className() . "' [$this->instanceId].","persistence");
+    
     if ( $this->_isDeleted )
     {
       $this->raiseError("Cannot save a deleted object.");
@@ -150,7 +157,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
       return; 
     }
     
-    //$this->debug("Saving object data for '" . $this->className() . "' [$this->instanceId].");
+
     
     /*
      * save object data
@@ -164,6 +171,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
       //$this->debug(" Saving '$property' with value '$data[$property]'");
     }
     $this->_dbModel->setData( serialize( $data ) );
+    
     $this->_dbModel->save();
     $this->_hasChanged = false;
   }

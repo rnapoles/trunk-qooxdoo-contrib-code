@@ -430,6 +430,8 @@ if (! $classExists)
     $error->SendAndExit();
     /* never gets here */
 }
+//echo "/* Instantiate $className */";
+//xdebug_start_trace( "/tmp/phptrace.txt" , 1 );
 
 /* Instantiate the service */
 $service = new $className();
@@ -595,10 +597,10 @@ if (! method_exists($service, $method))
 
 /* Errors from here on out will be Application-generated */
 $error->SetOrigin(JsonRpcError_Origin_Application);
-
+//echo "/* Starting Service method $className.$method */";
 /* Call the requested method passing it the provided params */
 $output = $service->$method($jsonInput->params, $error);
-
+//echo "/* Done. */"; 
 //$service->timerAsSeconds("Service executed.");
 
 /* See if the result of the function was actually an error */

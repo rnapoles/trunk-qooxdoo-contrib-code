@@ -344,7 +344,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      */
     if ( $database == $controller->getIniValue("database.userdb") )
     {
-      $this->debug("Getting admin access to user database");
+      //$this->debug("Getting admin access to user database");
       $this->connect( $controller->getIniValue("database.admin_userdb") );
     }
     
@@ -353,7 +353,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      */
     else if ( $database == $controller->getIniValue("database.admindb") )
     {
-      $this->debug("Getting admin access to admin database");
+      //$this->debug("Getting admin access to admin database");
       $this->connect( $controller->getIniValue("database.admin_userdb") );
     }
     else
@@ -380,7 +380,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   function setupSchema( $forceUpgrade=false )
   {
 
-    $this->debug("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
+    //$this->debug("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
     
     $controller =& $this->getController();
     
@@ -414,26 +414,26 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * name, should be a dot-separated, java-like class name
      */
-    $this->name  = $modelAttrs['name'];
+    $this->name  = (string) $modelAttrs['name'];
     
     /*
      * class can be specified separately, defaults
      * to name and converted into PHP-style class name
      * foo.bar.Baz => foo_bar_baz
      */
-    $this->class = strtolower(str_replace(".","_", either( $modelAttrs['class'], $modelAttrs['name'] ) ) ); 
+    $this->class = strtolower(str_replace(".","_", either( (string)$modelAttrs['class'], (string) $modelAttrs['name'] ) ) ); 
     
     /*
      * the type can be provided if class is the implementation
      * of a more generic data type
      */
-    $this->type  = $modelAttrs['type'];
+    $this->type  = (string) $modelAttrs['type'];
 
     /*
      * whether the setup process should upgrade the schema or just use existing tables in
      * whatever schema they are in
      */
-    if ( $modelAttrs['upgradeSchema'] == "no" and ! $forceUpgrade )
+    if ( (string) $modelAttrs['upgradeSchema'] == "no" and ! $forceUpgrade )
     {
       $this->log("Schema document for model name '{$this->name}' is not to be upgraded.","propertyModel");
       return null;
@@ -442,7 +442,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * This model doesn't have a table backend
      */
-    if ( $modelAttrs['table']  == "no" )
+    if ( (string) $modelAttrs['table']  == "no" )
     {
       $this->log("Model name '{$this->name}' has no table backend.","propertyModel");
       return null;  
@@ -453,12 +453,12 @@ class qcl_db_model extends qcl_db_AbstractModel
      * of the class, usually prefixed by the datasource name, 
      * if applicable to the model 
      */
-    if ( ! $modelAttrs['table'] )
+    if ( ! (string) $modelAttrs['table'] )
     {
       $this->raiseError("Model '{$this->name}': No table name!"); 
     }
     $prefix = $this->getTablePrefix();
-    $this->table = $prefix . $modelAttrs['table'];
+    $this->table = $prefix . (string) $modelAttrs['table'];
 
     /*
      * Wheter the table for this model exists already
@@ -554,7 +554,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       foreach($aliases->children() as $alias)
       {
         $a = $alias->attributes();
-        $aliasMap[$a['for']] = $modelXml->getData($alias);
+        $aliasMap[ (string) $a['for']] = $modelXml->getData($alias);
       }
     }
 
@@ -568,7 +568,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     foreach($properties as $property)
     {
       $attr      = $property->attributes();
-      $propName  = $attr['name'];
+      $propName  = (string) $attr['name'];
       $colName   = either($aliasMap[$propName],$propName);
       
       /*
@@ -636,7 +636,7 @@ class qcl_db_model extends qcl_db_AbstractModel
           foreach ( $indexes->children() as $index )
           {
             $attrs   = $index->attributes();
-            $name    = $attrs['name'];
+            $name    = (string) $attrs['name'];
             $db->dropIndex($table,$name);
           }
         }
@@ -645,7 +645,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * position
        */
-      $position  = $attr['position'];
+      $position  = (string) $attr['position'];
       if ( $position )
       {
         $normativeDef .= " " . $position;
@@ -670,7 +670,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /* 
        * unique column
        */
-      if ( $attr['unique'] == "yes" )
+      if ( (string) $attr['unique'] == "yes" )
       {
         $indexName = $colName . "_unique";
         if ( ! count( $db->getIndexColumns($table,$indexName) ) ) 
@@ -682,7 +682,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * index 
        */
-      if ( $attr['index'] == "yes" )
+      if ( (string) $attr['index'] == "yes" )
       {
         $indexName = $colName;
         $this->info("Creating index for $colName"); 
@@ -707,7 +707,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       {
         $attrs = $constraint->attributes();
 
-        switch ($attrs['type'])
+        switch ( (string) $attrs['type'] )
         {
           /*
            * primary key(s)
@@ -717,7 +717,7 @@ class qcl_db_model extends qcl_db_AbstractModel
             foreach($constraint->children() as $property)
             {
               $a = $property->attributes();
-              $propName = $a['name'];
+              $propName = ( string )$a['name'];
               $primaryKeys[] =  either($aliasMap[$propName],$propName);
             }            
             
@@ -758,7 +758,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       foreach ( $indexes->children() as $index )
       {
         $attrs        = $index->attributes();
-        $indexType    = strtoupper($attrs['type']);
+        $indexType    = strtoupper((string)$attrs['type']);
         switch ($indexType)
         {
           /*
@@ -771,12 +771,12 @@ class qcl_db_model extends qcl_db_AbstractModel
             foreach($index->children() as $property)
             {
               $a        = $property->attributes();
-              $propName = $a['name'];
+              $propName = (string) $a['name'];
               $indexProperties[] = either($aliasMap[$propName],$propName) ;
             }
             
             // analyze existing index
-            $indexName    = either($attrs['name'],$indexProperties[0]);
+            $indexName    = either( (string) $attrs['name'],(string) $indexProperties[0]);
             $db->addIndex($indexType,$table,$indexName,$indexProperties);
                       
             break;
@@ -800,9 +800,9 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * get local key column
        */
-      if ( $a['localkey'] )
+      $localKey = (string) either($a['localkey'],$a['localKey']); 
+      if ( $localKey )
       {
-        $localKey          = either($a['localkey'],$a['localKey']); 
         $localKeyColName   = either($aliasMap[$localKey],$localKey);
       }
       else
@@ -813,9 +813,9 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * get foreign key column
        */
-      if ( $a['foreignkey'])
+      $foreignKey = (string) either($a['foreignkey'],$a['foreignKey']);
+      if ( $foreignKey )
       {
-        $foreignKey        = either($a['foreignkey'],$a['foreignKey']);
         $foreignKeyColName = either($aliasMap[$foreignKey],$foreignKey);
       }
       else
@@ -834,14 +834,15 @@ class qcl_db_model extends qcl_db_AbstractModel
         /*
          * link table internal name
          */
-        $name = $a['name'];
+        $name = (string) $a['name'];
 
         /*
          * create table
          */
-        if ( $a['table'])
+        $tbl = (string) $a['table'];
+        if ( $tbl )
         {
-          $link_table = $this->getTablePrefix() . $a['table'];
+          $link_table = $this->getTablePrefix() . $tbl;
         }
         else
         {
@@ -887,21 +888,22 @@ class qcl_db_model extends qcl_db_AbstractModel
         /*
          * further linked models
          */
-        if ( count($link->children()) )
+        $linkChildren = $link->children();
+        if ( count( $linkChildren ) )
         {
-          foreach( $link->children() as $linkedModel )
+          foreach( $linkChildren as $linkedModel )
           {
             $a = $linkedModel->attributes();
             
             /*
              * share datasource?
              */
-            $shareDatasource = either($a['sharedatasource'],$a['shareDatasource']);
+            $shareDatasource = (string) either($a['sharedatasource'],$a['shareDatasource']);
             
             /*
              * linked model
              */
-            $modelName = str_replace(".","_",$a['name']);
+            $modelName = str_replace(".","_", (string) $a['name']);
             if ( ! $modelName )
             {
               $this->raiseError("linkedModel node has no 'name' attribute.");
@@ -1030,22 +1032,23 @@ class qcl_db_model extends qcl_db_AbstractModel
   function setupTableLinks()
   {
     $schemaXml =& $this->getSchemaXml(); 
-    $links     =& $schemaXml->getNode("/schema/model/links");
+    $links     =& $schemaXml->getNode("/model/links");
     
     if ( is_object($links) )
     {
       $attrs = $links->attributes();
-      $this->localKey   = either($attrs['localKey'],$attrs['localkey']);
-      $this->foreignKey = either($attrs['foreignKey'],$attrs['foreignkey']);
+      $this->localKey   = (string) either($attrs['localKey'],$attrs['localkey']);
+      $this->foreignKey = (string) either($attrs['foreignKey'],$attrs['foreignkey']);
       
       $this->linkNodes = array();
       foreach ($links->children() as $linkNode)
       {
         $attrs = $linkNode->attributes();
+        
         /*
          * link table internal name
          */
-        $name = $attrs['name'];
+        $name =  (string) $attrs['name'];
         $this->linkNodes[$name] = $linkNode; // don't use copy by reference in PHP4 here, won't work, but $linkNode is a copy anyways because of foreach
       }
     }    
@@ -1097,7 +1100,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   {
     $linkNode =& $this->getLinkNode( $name );
     $attrs= $linkNode->attributes();
-    return $this->getTablePrefix() . $attrs['table']; 
+    return $this->getTablePrefix() . (string) $attrs['table']; 
   }
 
   /**
@@ -1110,13 +1113,13 @@ class qcl_db_model extends qcl_db_AbstractModel
   {
     $linkNode =& $this->getLinkNode( $name );
     $attrs = $linkNode->attributes();
-    $modelName = $attrs['model'];
+    $modelName = (string) $attrs['model'];
 
     if ( ! $modelName and $linkNode->linkedModel )
     {
       $children  = $linkNode->children();
       $attrs     = $children[0]->attributes();
-      $modelName = $attrs['name'];      
+      $modelName = (string) $attrs['name'];      
     }
     if ( $modelName )
     {
@@ -1216,7 +1219,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     {
       
       $a = $linkNode->attributes(); 
-      if ( $model->isInstanceOf( $a['model'] ) )
+      if ( $model->isInstanceOf( (string) $a['model'] ) )
       {
         $links[] =  $linkName;
       }
@@ -1229,7 +1232,7 @@ class qcl_db_model extends qcl_db_AbstractModel
         foreach ( $linkNode->children() as $linkedModelNode )
         {
           $a = $linkedModelNode->attributes();
-          if ( $model->isInstanceOf( $a['name'] ) )
+          if ( $model->isInstanceOf( (string) $a['name'] ) )
           {
              $links[] = $linkName;
           }
@@ -1652,8 +1655,8 @@ class qcl_db_model extends qcl_db_AbstractModel
     foreach( $linkNodes as $linkNode )
     {
       $attrs = $linkNode->attributes();
-      $name  = $attrs['name'];
-      $table = $attrs['table'];
+      $name  = (string) $attrs['name'];
+      $table = (string) $attrs['table'];
 
       /*
        * get file path and delete file if it exists
@@ -1680,7 +1683,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * model names
        */
-      $model = $attrs['model'];
+      $model = (string) $attrs['model'];
       if ( $model )
       {
         $models = array($model);
@@ -1691,7 +1694,7 @@ class qcl_db_model extends qcl_db_AbstractModel
         foreach ( $linkNode->children() as $child )
         {
           $attrs = $child->attributes();
-          $models[] = $attrs['name'];
+          $models[] = (string) $attrs['name'];
         }
       }
       
@@ -1708,14 +1711,14 @@ class qcl_db_model extends qcl_db_AbstractModel
        * link node
        */
       $linkNode =& $linksNode->addChild("link");
-      $linkNode->setAttribute("name",$name);
+      $linkNode->addAttribute("name",$name);
       
       /*
        * save model name if it is a single link
        */
       if ( count($models) == 1 )
       {
-        $linkNode->setAttribute("model",$models[0]);
+        $linkNode->addAttribute("model",$models[0]);
       }
   
       /*
@@ -1883,8 +1886,8 @@ class qcl_db_model extends qcl_db_AbstractModel
     foreach( $linkNodes as $linkNode )
     {
       $attrs     = $linkNode->attributes();
-      $linkName  = $attrs['name'];
-      $table     = $attrs['table'];
+      $linkName  = (string) $attrs['name'];
+      $table     = (string) $attrs['table'];
 
       /*
        * get file path
@@ -1909,9 +1912,10 @@ class qcl_db_model extends qcl_db_AbstractModel
        */
       $linksNode =& $dataDoc->links or $this->raiseError("No links node available.");
       $attrs = $linksNode->attributes();
-      if ( $attrs['model'] != $this->name() )
+      $mdl   =  (string) $attrs['model'];
+      if ( $mdl != $this->name() )
       {
-        $this->log( "Origin model in xml ('" . $attrs['model'] . "'') does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
+        $this->log( "Origin model in xml ('$mdl') does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
         return;
       }
       
@@ -1922,8 +1926,8 @@ class qcl_db_model extends qcl_db_AbstractModel
          * link node attributes
          */
         $attrs  = $linkNode->attributes();
-        $tModel = $attrs['model'];
-        $tName  = $attrs['name'];
+        $tModel = (string) $attrs['model'];
+        $tName  = (string) $attrs['name'];
 
         /*
          * if target link name is not the current link name, skip
@@ -1952,8 +1956,8 @@ class qcl_db_model extends qcl_db_AbstractModel
         {
           
           $attrs    = $originNode->attributes();
-          $oNamedId = either($attrs['namedId'],$attrs['namedid']);
-          $oId      = $attrs['id'];
+          $oNamedId = (string) either($attrs['namedId'],$attrs['namedid']);
+          $oId      = (int) $attrs['id'];
           
           /*
            * load origin record
@@ -1982,8 +1986,8 @@ class qcl_db_model extends qcl_db_AbstractModel
           foreach ( $originNode->children() as $targetNode )
           {
             $attrs    = $targetNode->attributes();
-            $tNamedId = either($attrs['namedId'],$attrs['namedid']);
-            $tId      = $attrs['id'];
+            $tNamedId = (string) either($attrs['namedId'],$attrs['namedid']);
+            $tId      = (int) $attrs['id'];
 
             /*
              * single links

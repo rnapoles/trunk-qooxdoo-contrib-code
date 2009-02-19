@@ -39,7 +39,7 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
    * @param int $mode File permissions, defaults to 0666  
    * @return bool if file could be created
    */
-  function create( $mode="0666" )
+  function create( $mode=0666 )
   {
     /*
      * create file if it doesn't exist
@@ -53,7 +53,7 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
       if ( is_writable( dirname( $dirname ) ) )
       {
         touch( $filePath );
-        chmod( $filePath, $mode );
+        //chmod( $filePath, $mode );
         return true;
       }
       else

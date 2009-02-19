@@ -74,7 +74,6 @@ class qcl_access_controller extends qcl_db_controller
   function __construct()
   {
 
-
     /*
      * call parent constructor, this will initialize database
      * connection

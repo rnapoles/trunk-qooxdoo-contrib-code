@@ -9,7 +9,7 @@ require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/db/SimpleModel.php";
-
+// do not require_once "qcl/persistence/db/Object.php"; this results in a deadlock
 
 /**
  * Persistent class to cache xml object data.
@@ -127,7 +127,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   var $_cacheObj;
    
   /**
-   * Cconstructor
+   * Constructor
    * @param qcl_jsonrpc_controller $controller instance
    * @param qcl_io_filesystem_IFile|string $fileOrString Xml string, file name or object implementing 
    * qcl_io_filesystem_IFile 
@@ -317,7 +317,6 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       /*
        * get cached document
        */
-       
       $cacheObj =& $this->getCacheObject( $cacheId );
      
     
@@ -510,6 +509,12 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     return $this->_cacheObj; 
   }
   
+  
+  function deleteCachedObject()
+  {
+    $this->_cacheObj = null;  
+  }
+  
   /**
    * Saves parsed xml object tree to the caching storage
    */
@@ -536,7 +541,9 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     {
       $cacheObj->doc = $this->doc->asXML();
     }
+    
     $this->log("Saving xml document object to the cache...","xml");
+    
     $cacheObj->save();
   }
   
@@ -547,6 +554,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   {
     $cacheObj =& $this->getCacheObject( $this->cacheId );
     $cacheObj->delete();
+    $this->deleteCachedObject();
   }
   
   /**
@@ -596,23 +604,17 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   }
   
   /**
-   * cross-version method to get to a node. if a valid node object is
-   * passed, return it. if a string is passed, treat it as a path to the
-   * node. careful, path is not real xpath expression!
-   * cannot be called statically.
-   * @param mixed $pathOrNode (string) simplified xpath (only tag names and tag[3], no queries) or (object) node 
+   * Cross-version method to get to a node. If a valid node object is
+   * passed, return it. If a string is passed, treat it as a path to the
+   * node. 
+   * PHP4: Path is not real xpath expression (only tag names and tag[3], no queries)
+   * Cannot be called statically.
+   * @param mixed $pathOrNode (string) simplified xpath or (object) node 
    * @return object node object or NULL if path does not exist 
    */
-  function &getNode($pathOrNode)
+  function &getNode( $pathOrNode )
   {
-    /*
-     * if the passed var is a node, return it
-     */
-    if ( is_object($pathOrNode) )
-    {
-      return $pathOrNode; 
-    }
-    
+
     /*
      * check if document has already been parsed 
      */
@@ -622,32 +624,52 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     } 
     
     /*
+     * if the passed var is a node, return it
+     */
+    if ( is_object($pathOrNode) )
+    {
+      return $pathOrNode; 
+    }
+    elseif ( !is_string($pathOrNode) or ! $pathOrNode )
+    {
+      $this->raiseError("Invalid parameter");  
+    }
+    
+    $path = $pathOrNode;
+    
+    /*
+     * trim "/"
+     */
+    if ( $path[0] =="/" )
+    {
+      $path = substr($path,1);
+    }
+   
+    /*
      * traverse object tree along the path
-     * @todo php5 simpleXML has native xpath support
+     * 
      */    
-    if ( phpversion() < 5 )
+    if ( phpversion() >= 5 )
     { 
+      $doc    = $this->getDocument();
+      $result = $doc->xpath( $path );
+      if ( is_array($result) )
+      {
+        return $result[0];  
+      }
+      return false;
+    }
+    
+    /*
+     * PHP 4
+     */ 
+    else
+    {
       $tmp =& $this->getDocument();      
 
-      $parts = explode("/",$pathOrNode);
+      $parts = explode("/", $path );
       foreach ( $parts as $part )
       {
-        /*
-         * ignore initial or double slashes
-         */
-        if ( !trim($part) ) 
-        {
-          continue;  
-        }
-         
-        /*
-         * ignore root tag 
-         */
-        if ( key($parts) == 0 and $part == $tmp->getName() )
-        {
-          continue;
-        }
-        
         
         /*
          * parse content in square brackets
@@ -681,14 +703,10 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
          */
         if (! is_object ($tmp) )
         {
-          $this->error = "Path '$pathOrNode' stuck at '$part' (". gettype($tmp) . ").";
+          $this->error = "Path '$path' stuck at '$part' (". gettype($tmp) . ").";
           return null;
         }
       }
-    }
-    else
-    {
-      trigger_error("Implement!");
     }
     return $tmp;
   }  
@@ -808,16 +826,47 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
     }
     
+    /*
+     * iterate through children
+     */
     $children =& $node->children();
-    while ( list(,$child) = each($children) )
+    
+    /*
+     * PHP4
+     */
+    if ( phpversion() < 5 )
     {
-      $attr = $child->attributes();
-      $tag  = $child->getName();
-      //if ($GLOBALS['debug']==true)//$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
-      if ( $attr[$name] == $value )
+      
+      //$this->debug($children);
+      while ( list(,$child) = each($children) )
       {
-        return $child;
+        $attr = $child->attributes();
+        $tag  = $child->getName();
+        //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
+        if ( $attr[$name] == $value )
+        {
+          return $child;
+        }
       }
+    }
+    
+    /*
+     * PHP 5
+     * @todo use xpath
+     */
+    else
+    {
+      foreach ( $children as $child )
+      {
+        $attr = $child->attributes();
+        $tag  = $child->getName();
+        //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
+        if ( $child[$name] == $value )
+        {
+          return $child;
+        }
+      }      
+      
     }
     return null;
   }
@@ -829,6 +878,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
    * @param string $name
    * @param string $value
    * @return boolean True if node was found and removed, false if not found
+   * @todo: is this used anywhere? if not, remove
    */
   function removeChildNodeByAttribute($node,$name,$value)
   {
@@ -848,7 +898,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       {
         $found = true;
         //$this->debug("Removed node containing $name = $value...","xml");
-        if (phpversion() < 5)
+        if ( phpversion() < 5)
         {
           $node->removeChild($child);
         }
@@ -858,7 +908,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
            * there is no removeChild implementation
            * in SimpleXML
            */                    
-          unset($node[$i]);  
+          unset( $child );  
         }
       }
     }
@@ -924,7 +974,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
    */
   function extend($parentXml)
   {
-    if ( is_a($parentXml,"qcl_xml_SimpleXmlStorage") )
+    if ( is_a( $parentXml, "qcl_xml_SimpleXmlStorage" ) )
     {
       $doc       =& $this->getDocument();
       $parentDoc =& $parentXml->getDocument();  
@@ -934,7 +984,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       
       $this->_extend(&$doc, &$parentDoc);
       
-      //$this->debug("Result: \n\n". $doc->asXml() );
+      //$this->debug("Result: \n\n". $this->asXml() );
       
       if ( $parentXml->hasChanged )
       {
@@ -945,6 +995,62 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     {
       $this->raiseError("Argument must be a qcl_xml_simpleXml object.");
     }
+  }
+  
+  /**
+   * compares the attributes of two nodes
+   * @param SimpleXmlElement $node1
+   * @param SimpleXmlElement $node2
+   * @return bool
+   */
+  function compareAttributes( $node1, $node2 )
+  {
+    if ( ! is_a( $node1,"SimpleXMLElement" ) or ! is_a( $node2,"SimpleXMLElement" ) )
+    {
+      $this->raiseError("Invalid parameters: " . gettype($node1) . "," . gettype($node2) );  
+    }
+
+    $attrs1 = $node1->attributes();
+    $attrs2 = $node2->attributes();
+    
+    /*
+     * if the number of attributes differ, they are not identical
+     */ 
+    if ( count( $attrs1) != count( $attrs2 ) ) return false;
+
+    /*
+     * if both nodes have no attributes, they are identical
+     */ 
+    if ( ! count( $attrs1) and ! count( $attrs2 ) ) return true;
+
+    /*
+     * if one of nodes has no attributes, they are not identical
+     */ 
+    if ( ! count( $attrs1) or ! count( $attrs2 ) ) return false;
+    
+    /*
+     * check the attributes for differences
+     */
+    foreach( $attrs1 as $key => $value )
+    {
+      if ( (string) $attrs2[$key] != (string) $value ) return false;
+    }
+    foreach( $attrs2 as $key => $value )
+    {
+      if ( (string) $attrs1[$key] != (string) $value ) return false;
+    }
+    return true;
+  }
+  
+  function serializeAttributes( $node )
+  {
+    $attrs = $node->attributes();
+    $str   = "";
+    foreach( $attrs as $key => $value )
+    {
+      $str .= $key . '="' . $value . '" ';
+    }    
+    return $str;
   }
   
   /**
@@ -963,199 +1069,211 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
      * target children
      */
     $sourceChildren =& $source->children();
+    $sourceTag      =  $source->getName();
     
-    for($i=0; $i<count($sourceChildren); $i++ )
+    //$this->debug("*************");
+    //$this->debug("Parent Node <$sourceTag " . $this->serializeAttributes($source) . ">" );
+    //$this->debug(count($sourceChildren) . " children.");
+    
+    for( $i=0; $i<count($sourceChildren); $i++ )
     {
+      
+      /*
+       * the current source child node to be
+       * added to the parent
+       */
       $sourceChild =& $sourceChildren[$i];
       
-      if ( ! is_object($sourceChild) )
-      {
-        $this->warn("Invalid source child:" . gettype($sourceChild));
-        continue;
-      }
-      
+      /*
+       * the tag name of the source child node
+       */
       $tag = $sourceChild->getName();
-      $targetChild =& $target->$tag;      
-      //$this->debug("$tag -> " . gettype($targetChild) );
-
-      $doCopyNode  = true;      
-      
+      //$this->debug("");
+      //$this->debug("***** $i. source child node: <$tag " . $this->serializeAttributes($sourceChild) . "> ***" );
+           
       /*
-       * check if we have to copy or extend the node if we have
-       * two individual nodes
+       * source child attributes
        */
-      if ( is_object($sourceChild) and is_object($targetChild)  )
+      $srcChildAttrs = $sourceChild->attributes();
+      $srcChildName  = (string) $srcChildAttrs['name'];
+
+      /*
+       * Does target child node(s) with same tag exist?
+       */
+      if ( ! $target->$tag )
       {
         /*
-         * get attributes
+         * no, we can go ahead and add the source child node
          */
-        $srcChildAttrs = $sourceChild->attributes();
-        $tgtChildAttrs = $targetChild->attributes();      
-  
-        if ( count($tgtChildAttrs) and count($srcChildAttrs) )
+        $copy = true;
+      }
+      else
+      {
+        /*
+         * else, we need to have a closer look
+         */
+        $targetChildren =& $target->$tag;
+        
+        /*
+         * iterate over the target node's children
+         */
+        $copy = true;
+        for ( $j=0; $j<count($targetChildren); $j++ )
         {
+          
+          $targetChild =& $targetChildren[$j];
+          
+          //$this->debug("*** $j. target child node <$tag " . $this->serializeAttributes($targetChild) . ">" );
+          
           /*
-           * check if source 'extends' a 'name' attribute or if attributes are the same
-           * @todo Check if we can remove the "extend" stuff
+           * get target attributes
            */
-          if (
-            $tgtChildAttrs['extends'] == $srcChildAttrs['name'] or
-            $tgtChildAttrs == $srcChildAttrs
-          )
+          $tgtChildAttrs = $targetChild->attributes();    
+          
+          /*
+           * if there are attributes on both sides
+           */ 
+          if ( count( $tgtChildAttrs ) and count( $srcChildAttrs ) )
           {
             /*
-             * extend the node
+             * skip source child node if a target child node replaces it
              */
-            //$this->debug("Extending tag $tag '{$tgtChildAttrs['extends']}'' with '{$tgtChildAttrs['name']}'.");
-            
-            $this->_extend(&$targetChild,&$sourceChild);
+            $replace = (string) $tgtChildAttrs['replace'];
+            if ( $replace == $srcChildName ) 
+            {
+              //$this->debug("<$tag replace='$srcChildName' /> exists, not adding child node...");
+              $copy=false; break;
+            }
             
             /*
-             * add missing attributes
+             * check if source 'extends' a 'name' attribute 
              */
-            foreach($srcChildAttrs as $key => $value )
+            $extends = (string) $tgtChildAttrs['extends'];
+            if ( $extends == $srcChildName )
             {
-              if ( ! isset($tgtChildAttrs[$key]) )
+              /*
+               * extend the node
+               */
+              //$this->debug("Extending <$tag extends='$extends'> with <$tag name='$srcChildName'>.");
+              $this->_extend( &$targetChild, &$sourceChild );
+              
+              /*
+               * add missing attributes
+               */
+              foreach( $srcChildAttrs as $key => $value )
               {
-                $targetChild->addAttribute($key,$value);
+                if ( ! $tgtChildAttrs[$key] )
+                {
+                  //$this->debug("Adding attribute '$key' with value '$value'.");
+                  $targetChild->addAttribute( $key, $value );
+                }
               }
+              $copy=false; break;
             }
-            $doCopyNode = false;          
+            
+            /*
+             * or the attributes are identical
+             */
+            elseif ( $this->compareAttributes( $sourceChild, $targetChild ) )
+            {
+              /*
+               * extend the node
+               */
+              //$this->debug("Extending <$tag> with tag with identical attributes.");
+              $this->_extend( &$targetChild, &$sourceChild );
+              $copy = false; break ;
+            }
+             
+            /*
+             * tags are not identical, copy node
+             */
+            else
+            {
+              //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
+            }          
           }
-        }
-        elseif ( $tgtChildAttrs == $srcChildAttrs)
-        {
-          //$this->debug("Identical tag '$tag'' exists in target and source.");
+          
           /*
-           * unique node present in both nodes, just recurse
+           * or there are no attributes 
            */
-          $this->_extend(&$targetChild,&$sourceChild);
-          $doCopyNode = false;
-        }
-        else
-        {
-          //$this->debug("Tag $tag exists in target and source but is not identical");
-        }
+          elseif ( ! count($tgtChildAttrs) and ! count($srcChildAttrs) )
+          {
+            /*
+             * extend node without attributes
+             */
+            //$this->debug("Extending <$tag>.");
+            $this->_extend( &$targetChild, &$sourceChild );
+            $copy = false; break;
+          }
+         
+           /*
+           * tags are not identical, copy node
+           */
+          else
+          {
+            //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
+          }
+  
+        } 
       }
       
-      /*
-       * copy source node(s) to target node
-       */
-      if ($doCopyNode)
+      if ( $copy ) 
       {
         /*
-         * node to be copied over is a single node
+         * end of iterating through target child nodes with the same tag.
+         * we did not find a matching node, so we add our source child node
+         * to the target parent
          */
-        if ( is_object($sourceChild) )
+               
+        /*
+         * add source child to target node 
+         */
+        $cdata = trim( $this->getData(&$sourceChild) );
+        $newTargetChild =& $target->addChild( $tag, $cdata );
+        
+        //$this->debug("Creating single node <$tag>$cdata</$tag>.");
+        
+        foreach( $srcChildAttrs as $key => $value )
         {
-          /*
-           * source child attributes
-           */
-          $srcChildAttrs = $sourceChild->attributes();
-          
-          /*
-           * skip child node if target has a node that replaces 
-           * this node
-           */
-          $srcChildName = $srcChildAttrs['name'];
-          if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
-          {
-            //$this->debug("$srcChildName exists, not adding node...");
-            continue;
-          }
-          
-          /*
-           * add new child to target node
-           */
-          $cdata = $this->getData(&$sourceChild);
-          $targetChild =& $target->addChild($tag,$cdata);
-          
-          //$this->debug("Creating single node $tag.");
-          
-          foreach( $srcChildAttrs as $key => $value )
-          {
-            $targetChild->addAttribute($key,$value);
-          }
-          
-          /*
-           * extend new node with possible source node children
-           */
-          $this->_extend(&$targetChild,&$sourceChild);
+          //$this->debug("Adding attribute '$key' with value '$value'.");
+          $newTargetChild->addAttribute( $key, $value );
         }
-
-        elseif ( is_array( $sourceChild ) )
+        
+        /*
+         * extend new node with possible source node children
+         */
+        if ( count( $sourceChild->children() ) )
         {
-          //$this->debug( count($sourceChild) . " nodes.");
-          /*
-           * we need to copy over an array of nodes
-           */
-          foreach ( $sourceChild as $s )
-          {
-            /*
-             * ignore non-object array members
-             */
-            if ( !is_object($s) )
-            {
-              $this->warn("No valid child node: " . gettype($s));
-              continue;
-            }
-
-            /*
-             * source node attributes
-             */
-            $sAttr = $s->attributes();
-            
-            /*
-             * skip child node if target has a node that replaces 
-             * this node
-             */
-            $srcChildName = $sAttrs['name'];
-            //$this->debug("<$tag name='$name'>");
-            if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
-            {
-              //$this->debug("$srcChildName exists, not adding node...");
-              continue;
-            }
-            
-            /*
-             * add new child to target node 
-             */
-            $cdata = $this->getData(&$s);
-            //$this->debug("Creating sibling node $tag");
-            $targetChild =& $target->addChild($tag,$cdata);
-            
-            /*
-             * copy attributes to new node
-             */
-            foreach($s->attributes() as $key => $value )
-            {
-              $targetChild->addAttribute($key,$value);
-            }
-            
-            /*
-             * extend this new node with children of source
-             * node, if any
-             */
-            $this->_extend(&$targetChild,&$s);
-          }
+          //$this->debug("Adding children to new node...");
+          $this->_extend( &$newTargetChild, &$sourceChild );
         }
         else
         {
-          /*
-           * ignore invalid source element
-           */ 
-          $this->warn("Invalid source element: " . gettype($sourceChild));
+          //$this->debug("Next source child node ...");  
         }
       }
     }
+    
+
+    //$this->debug("End of child nodes of <$sourceTag " . $this->serializeAttributes($source) . ">" );
+    //$this->debug("^^^^^^^^^^^^^^^^^^^^^");
   }
   
   /**
-   * returns the current document as xml
+   * Returns the current document as (optionally pretty-printed) xml
+   * @param bool $pretty Pretty-print result XML
    * @return string
    */
-  function asXML()
+  function asXML($pretty=true)
   {
+    if ( $pretty and phpversion() >5 )
+    {
+      $doc = new DOMDocument('1.0');
+      $doc->preserveWhiteSpace = false;
+      $doc->loadXML($this->doc->asXML());
+      $doc->formatOutput = true;
+      return $doc->saveXML();
+    }
     return $this->doc->asXML();
   }
 

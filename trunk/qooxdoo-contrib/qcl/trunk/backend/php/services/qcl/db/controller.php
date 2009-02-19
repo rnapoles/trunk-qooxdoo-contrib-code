@@ -26,7 +26,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
    */
   function __construct()
   {    
-    
+
     /*
      * call parent constructor first
      */
