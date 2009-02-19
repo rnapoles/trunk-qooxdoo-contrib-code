@@ -1444,18 +1444,18 @@ class qcl_db_PropertyModel extends qcl_db_Overload
      * properties
      */
     $properties =& $definition->properties;
-    $children   =& $properties->children();
-
     if ( ! is_object($properties) )
     {
       $this->raiseError("Model has no properties.");
     }
     
+    $children   =& $properties->children();
     foreach ( $children as $propNode)
     {
       $attrs     = $propNode->attributes(); 
       $propName  = (string) $attrs['name'];
       
+
       //$this->debug("Setting up property '$propName'");
       
       /*

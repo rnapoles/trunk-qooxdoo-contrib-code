@@ -698,7 +698,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     if ( ! empty($rowIds) )
     {
       $result = $this->findWhere(
-        array('id' => " IN ($rowIds)"), 
+        array( 'id' => " IN ($rowIds)"), 
         $orderBy, $properties, $link 
       );
       return $result;

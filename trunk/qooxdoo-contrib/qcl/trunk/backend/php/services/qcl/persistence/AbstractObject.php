@@ -8,7 +8,7 @@ require_once "qcl/persistence/__init__.php";
 /*
  * constants
  */
-
+ 
 /**
  * Lock mode constant: no lock (default)
  */
