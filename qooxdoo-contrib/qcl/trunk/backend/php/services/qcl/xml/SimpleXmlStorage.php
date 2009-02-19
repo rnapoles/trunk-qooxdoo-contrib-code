@@ -9,7 +9,7 @@ require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/db/SimpleModel.php";
-// do not require_once "qcl/persistence/db/Object.php"; this results in a deadlock
+// FIXME do not require_once "qcl/persistence/db/Object.php"; this results in a deadlock
 
 /**
  * Persistent class to cache xml object data.

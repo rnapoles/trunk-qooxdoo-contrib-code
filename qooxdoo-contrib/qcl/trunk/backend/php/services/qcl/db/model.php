@@ -409,7 +409,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     $modelXml   =& $this->getSchemaXml();
     $doc        =& $modelXml->getDocument();
     
-    //$this->info($doc->asXml());
+    //$this->debug($doc->asXml());
 
     /*
      * model-level attributes
@@ -1053,7 +1053,7 @@ class qcl_db_model extends qcl_db_AbstractModel
         /*
          * link table internal name
          */
-        $name =  (string) $attrs['name'];
+        $name = (string) $attrs['name'];
         $this->linkNodes[$name] = $linkNode; // don't use copy by reference in PHP4 here, won't work, but $linkNode is a copy anyways because of foreach
       }
     }    
@@ -1066,7 +1066,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    */
   function &getLinkNodes()
   {
-    if ( ! $this->linkNodesn )
+    if ( ! $this->linkNodes )
     {
       $this->setupTableLinks();
     }
