@@ -483,6 +483,16 @@ class qcl_core_object
     }
   }
   
+  function hasMixin ( $classname )
+  {
+    return in_array( $classname, $this->_mixinlookup );
+  }
+  
+  function hasMixinMethod( $method )
+  {
+    return isset( $this->_mixinlookup[$method] );
+  }
+  
   /**
    * The __call magic method intercepts any method that does not exist
    * and falls back to one of the mixins if they define the method that is
@@ -493,12 +503,17 @@ class qcl_core_object
   {
     if ( phpversion() >= 5 )
     {
-      if ( isset($this->_mixinlookup[$method] ) )
+      if ( isset( $this->_mixinlookup[$method] ) )
       {
         $elems = array();
-        for ($i=0, $_i=count($args); $i<$_i; $i++) $elems[] = "\$args[$i]";
-        eval("\$result = ".$this->_mixinlookup[$method]."::"
-            .$method."(".implode(',',$elems).");");
+        for ($i=0, $_i=count($args); $i<$_i; $i++) 
+        {
+          $elems[] = "\$args[$i]";
+        }
+        eval(
+          "\$result = ".$this->_mixinlookup[$method]."::" .
+           $method . "(".implode(',',$elems).");"
+        );
         return $result;
       }
     }
