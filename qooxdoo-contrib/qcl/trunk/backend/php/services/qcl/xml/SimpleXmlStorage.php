@@ -749,7 +749,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     {
       $cdata = (string) $node;
     }
-    //$this->debug("$pathOrNode : $cdata");
+      //$this->debug("$pathOrNode : $cdata");
     return $cdata;
   }
   
@@ -836,13 +836,11 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
      */
     if ( phpversion() < 5 )
     {
-      
-      //$this->debug($children);
       while ( list(,$child) = each($children) )
       {
         $attr = $child->attributes();
         $tag  = $child->getName();
-        //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
+          //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
         if ( $attr[$name] == $value )
         {
           return $child;
@@ -860,7 +858,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       {
         $attr = $child->attributes();
         $tag  = $child->getName();
-        //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
+          //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
         if ( $child[$name] == $value )
         {
           return $child;
@@ -897,7 +895,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       if ( $childAttrs[$name] == $value )
       {
         $found = true;
-        //$this->debug("Removed node containing $name = $value...","xml");
+          //$this->debug("Removed node containing $name = $value...","xml");
         if ( phpversion() < 5)
         {
           $node->removeChild($child);
@@ -980,11 +978,11 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       $parentDoc =& $parentXml->getDocument();  
       
       $this->log("Extending document ...","xml");
-      //$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
+      ////$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
       
       $this->_extend(&$doc, &$parentDoc);
       
-      //$this->debug("Result: \n\n". $this->asXml() );
+        //$this->debug("Result: \n\n". $this->asXml() );
       
       if ( $parentXml->hasChanged )
       {
@@ -1068,12 +1066,12 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
      * iterate through source children and populate matching
      * target children
      */
-    $sourceChildren =& $source->children();
-    $sourceTag      =  $source->getName();
+    $sourceChildren = $source->children();
+    $sourceTag      = $source->getName();
     
-    //$this->debug("*************");
-    //$this->debug("Parent Node <$sourceTag " . $this->serializeAttributes($source) . ">" );
-    //$this->debug(count($sourceChildren) . " children.");
+      //$this->debug("*************");
+      //$this->debug("Parent Node <$sourceTag " . $this->serializeAttributes($source) . ">" );
+      //$this->debug(count($sourceChildren) . " children.");
     
     for( $i=0; $i<count($sourceChildren); $i++ )
     {
@@ -1085,10 +1083,15 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       $sourceChild =& $sourceChildren[$i];
       
       /*
+       * PHP4 hack
+       */
+      if ( phpversion()  < 5 and  ! is_object($sourceChild) ) continue;
+      
+      /*
        * the tag name of the source child node
        */
       $tag = $sourceChild->getName();
-      //$this->debug("");
+        //$this->debug("");
       //$this->debug("***** $i. source child node: <$tag " . $this->serializeAttributes($sourceChild) . "> ***" );
            
       /*
@@ -1113,18 +1116,30 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
          * else, we need to have a closer look
          */
         $targetChildren =& $target->$tag;
+        $tChildren = array();
         
+        /*
+         * We need to create an array for PHP4
+         */
+        if( phpversion() < 5 and ! is_array($targetChildren) )
+        {
+          $tChildren[0] =& $targetChildren;
+        }
+        else
+        {
+          $tChildren =& $targetChildren;
+        }
+                
         /*
          * iterate over the target node's children
          */
         $copy = true;
-        for ( $j=0; $j<count($targetChildren); $j++ )
+        for ( $j=0; $j<count($tChildren); $j++ )
         {
           
-          $targetChild =& $targetChildren[$j];
+          $targetChild =& $tChildren[$j];
           
-          //$this->debug("*** $j. target child node <$tag " . $this->serializeAttributes($targetChild) . ">" );
-          
+            //$this->debug("*** $j. target child node <$tag " . $this->serializeAttributes($targetChild) . ">" );
           /*
            * get target attributes
            */
@@ -1141,7 +1156,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
             $replace = (string) $tgtChildAttrs['replace'];
             if ( $replace == $srcChildName ) 
             {
-              //$this->debug("<$tag replace='$srcChildName' /> exists, not adding child node...");
+                //$this->debug("<$tag replace='$srcChildName' /> exists, not adding child node...");
               $copy=false; break;
             }
             
@@ -1154,7 +1169,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
               /*
                * extend the node
                */
-              //$this->debug("Extending <$tag extends='$extends'> with <$tag name='$srcChildName'>.");
+                //$this->debug("Extending <$tag extends='$extends'> with <$tag name='$srcChildName'>.");
               $this->_extend( &$targetChild, &$sourceChild );
               
               /*
@@ -1164,7 +1179,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
               {
                 if ( ! $tgtChildAttrs[$key] )
                 {
-                  //$this->debug("Adding attribute '$key' with value '$value'.");
+                    //$this->debug("Adding attribute '$key' with value '$value'.");
                   $targetChild->addAttribute( $key, $value );
                 }
               }
@@ -1179,7 +1194,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
               /*
                * extend the node
                */
-              //$this->debug("Extending <$tag> with tag with identical attributes.");
+                //$this->debug("Extending <$tag> with tag with identical attributes.");
               $this->_extend( &$targetChild, &$sourceChild );
               $copy = false; break ;
             }
@@ -1189,7 +1204,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
              */
             else
             {
-              //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
+                //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
             }          
           }
           
@@ -1201,7 +1216,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
             /*
              * extend node without attributes
              */
-            //$this->debug("Extending <$tag>.");
+              //$this->debug("Extending <$tag>.");
             $this->_extend( &$targetChild, &$sourceChild );
             $copy = false; break;
           }
@@ -1211,7 +1226,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
            */
           else
           {
-            //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
+              //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
           }
   
         } 
@@ -1231,11 +1246,11 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
         $cdata = trim( $this->getData(&$sourceChild) );
         $newTargetChild =& $target->addChild( $tag, $cdata );
         
-        //$this->debug("Creating single node <$tag>$cdata</$tag>.");
+          //$this->debug("Creating single node <$tag>$cdata</$tag>.");
         
         foreach( $srcChildAttrs as $key => $value )
         {
-          //$this->debug("Adding attribute '$key' with value '$value'.");
+            //$this->debug("Adding attribute '$key' with value '$value'.");
           $newTargetChild->addAttribute( $key, $value );
         }
         
@@ -1244,19 +1259,19 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
          */
         if ( count( $sourceChild->children() ) )
         {
-          //$this->debug("Adding children to new node...");
+            //$this->debug("Adding children to new node...");
           $this->_extend( &$newTargetChild, &$sourceChild );
         }
         else
         {
-          //$this->debug("Next source child node ...");  
+            //$this->debug("Next source child node ...");  
         }
       }
     }
     
 
-    //$this->debug("End of child nodes of <$sourceTag " . $this->serializeAttributes($source) . ">" );
-    //$this->debug("^^^^^^^^^^^^^^^^^^^^^");
+      //$this->debug("End of child nodes of <$sourceTag " . $this->serializeAttributes($source) . ">" );
+      //$this->debug("^^^^^^^^^^^^^^^^^^^^^");
   }
   
   /**
