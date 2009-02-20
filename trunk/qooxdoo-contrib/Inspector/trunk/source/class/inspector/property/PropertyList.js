@@ -135,6 +135,16 @@ qx.Class.define("inspector.property.PropertyList", {
       }  
     },
     
+    /**
+     * Returns a boolean weather the given property is in the current view or not.
+     * @param key {String} The name of the property.
+     * @param classname {String} The classname of the properties class.
+     * @return {boolean} True, if the given property is in the view. 
+     */
+    containsProperty: function(key, classname) {
+      return this._propertyRows[classname + "." + key] == null ? false : true;
+    },
+    
     /*
     *********************************
        PROTECTED
