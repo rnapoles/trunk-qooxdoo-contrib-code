@@ -209,20 +209,32 @@ qx.Class.define("inspector.console.ConsoleView",
       try {        
         // run it and store the result in the global ans value
         var iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
-        iFrameWindow.qx.lang.Function.globalEval([
-          "window.top.inspector.$$inspector = function()",
-          "{",
-          "  try {",
-          "    return ", text, ";",
-          "  } catch (ex) {",
-          "    return ex;",
-          "  }",
-          "};"].join("")
-        );
-        this.setAns(
-          inspector.$$inspector.call(qx.core.Init.getApplication().getSelectedObject())            
-        );
-
+        if (qx.core.Variant.isSet("qx.client", "webkit|mshtml|gecko")) {
+          if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+            text = text.replace(/^(\s*var\s+)(.*)$/, "$2");
+          }
+          
+          iFrameWindow.qx.lang.Function.globalEval([
+            "window.top.inspector.$$inspector = function()",
+            "{",
+            "  try {",
+            "    return eval.call(window, '", text, "');",
+            "  } catch (ex) {",
+            "    return ex;",
+            "  }",
+            "};"].join("")
+          );
+          this.setAns(
+            inspector.$$inspector.call(qx.core.Init.getApplication().getSelectedObject())            
+          );
+        } else if (qx.core.Variant.isSet("qx.client", "opera")) {
+          this.setAns(
+            (function(text) {
+              return iFrameWindow.eval(text);
+            }).call(qx.core.Init.getApplication().getSelectedObject())
+          );
+        }
+        
         // if ans is defined
         var ans = this.getAns();
         if (ans != null)
