@@ -46,26 +46,44 @@ qx.Class.define("custom.Application",
     {
       this.base(arguments);
 
-      // Define alias for custom resource path
-      qx.io.Alias.getInstance().add("custom", qx.core.Setting.get("custom.resourceUri"));
 
-      // Create button
-      var button1 = new qx.ui.form.Button("First Button", "custom/image/test.png");
-
-      // Set button location
-      button1.setTop(50);
-      button1.setLeft(50);
-
-      // Add button to document
-      button1.addToDocument();
-
-      // Attach a tooltip
-      button1.setToolTip(new qx.ui.popup.ToolTip("A nice tooltip", "icon/32/status/dialog-information.png"));
-
+      // Create a textfield with keypress and keydown listener
+      var input = new qx.ui.form.TextField().set({left: 10, top: 10})
+      var labeld = new qx.ui.basic.Label("keydown:").set({left: 10, top: 40});
+      var labelp = new qx.ui.basic.Label("keypress:").set({left: 10, top: 70});
+      var keydown = new qx.ui.basic.Label().set({left: 100, top: 40});
+      var keypress = new qx.ui.basic.Label().set({left: 100, top: 70});
+  
       // Add an event listener
-      button1.addEventListener("execute", function(e) {
-        alert("Hello World!");
+      
+      input.addEventListener("keydown", function(e) {
+        keydown.setText(e.getKeyIdentifier())
       });
+      input.addEventListener("keypress", function(e) {
+        keypress.setText(e.getKeyIdentifier())
+        if (e.getKeyIdentifier() == "A") {
+          e.preventDefault();
+        }
+      });
+    
+  
+      // Document is the application root
+      var doc = qx.ui.core.ClientDocument.getInstance();
+  
+      /*
+      doc.addListener("keydown", function(e) 
+      {keydown.setContent(e.getKeyIdentifier())}, this, true);
+      doc.addListener("keypress", function(e) 
+      {keypress.setContent(e.getKeyIdentifier())}, this, true);
+      */
+  
+  
+      // Add button to document at fixed coordinates
+      doc.add(input);
+      doc.add(labeld);
+      doc.add(labelp);
+      doc.add(keydown);
+      doc.add(keypress);
     },
 
 
