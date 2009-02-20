@@ -19,6 +19,7 @@
 
 package org.qooxdoo.sushi.fs.zip;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -158,7 +159,7 @@ public class ZipNode extends Node {
         zip = root.getZip();
         entry = zip.getEntry(path);
         if (entry == null) {
-            return null;
+            throw new FileNotFoundException(path);
         }
         return zip.getInputStream(entry);
     }

@@ -23,7 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -73,7 +75,24 @@ public class ZipNodeTest {
         assrt = (ZipNode) junit.join("Assert.class");
         assertTrue(assrt.exists());
         assertTrue(assrt.isFile());
+    }    
+    
+    @Test
+    public void readNonexisting() throws IOException {
+        FileNode jar;
+        Node node;
+        
+        jar = ioObj.locateClasspathItem(Object.class);
+        node = jar.openZip().getRoot().node("nosuchfile");
+        assertFalse(node.exists());
+        try {
+            node.createInputStream();
+            fail();
+        } catch (FileNotFoundException e) {
+            // ok
+        }
     }
+
  
     @Test
     public void manifest() throws IOException {
