@@ -56,42 +56,42 @@ qx.Class.define("bug1442.Application",
       */
 
        // Create a textfield with keypress and keydown listener
-            var input = new qx.ui.form.TextField();
-            var labeld = new qx.ui.basic.Label("keydown:");
-            var labelp = new qx.ui.basic.Label("keypress:");
-            var keydown = new qx.ui.basic.Label();
-            var keypress = new qx.ui.basic.Label();
-
-            // Add an event listener
-            
-            input.addListener("keydown", function(e) {
-              keydown.setContent(e.getKeyIdentifier())
-            });
-            input.addListener("keypress", function(e) {
-              keypress.setContent(e.getKeyIdentifier())
-              if (e.getKeyIdentifier() == "A") {
-                e.preventDefault();
-              }
-            });
-          
-
-            // Document is the application root
-            var doc = this.getRoot();
-
-            /*
-            doc.addListener("keydown", function(e) 
-            {keydown.setContent(e.getKeyIdentifier())}, this, true);
-            doc.addListener("keypress", function(e) 
-            {keypress.setContent(e.getKeyIdentifier())}, this, true);
-            */
-
-
-            // Add button to document at fixed coordinates
-            doc.add(input, {left: 10, top: 10});
-            doc.add(labeld, {left: 10, top: 40});
-            doc.add(labelp, {left: 10, top: 70});
-            doc.add(keydown, {left: 100, top: 40});
-            doc.add(keypress, {left: 100, top: 70});
+      var input = new qx.ui.form.TextField();
+      var labeld = new qx.ui.basic.Label("keydown:");
+      var labelp = new qx.ui.basic.Label("keypress:");
+      var keydown = new qx.ui.basic.Label();
+      var keypress = new qx.ui.basic.Label();
+  
+      // Add an event listener
+      
+      input.addListener("keydown", function(e) {
+        keydown.setContent(e.getKeyIdentifier())
+      });
+      input.addListener("keypress", function(e) {
+        keypress.setContent(e.getKeyIdentifier())
+        if (e.getKeyIdentifier() == "A") {
+          e.preventDefault();
+        }
+      });
+    
+  
+      // Document is the application root
+      var doc = this.getRoot();
+  
+      /*
+      doc.addListener("keydown", function(e) 
+      {keydown.setContent(e.getKeyIdentifier())}, this, true);
+      doc.addListener("keypress", function(e) 
+      {keypress.setContent(e.getKeyIdentifier())}, this, true);
+      */
+  
+  
+      // Add button to document at fixed coordinates
+      doc.add(input, {left: 10, top: 10});
+      doc.add(labeld, {left: 10, top: 40});
+      doc.add(labelp, {left: 10, top: 70});
+      doc.add(keydown, {left: 100, top: 40});
+      doc.add(keypress, {left: 100, top: 70});
     }
   }
 });
