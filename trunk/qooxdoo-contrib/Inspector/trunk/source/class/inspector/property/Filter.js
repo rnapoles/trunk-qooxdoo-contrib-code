@@ -230,21 +230,50 @@ qx.Class.define("inspector.property.Filter", {
      * </pre>
      */
     _defineTests: function() {
-      this._tests.push(["align", "Align"]);
-      this._tests.push(["margin", "Margins and Spacings"]);
-      this._tests.push(["spacing", "Margins and Spacings"]);
-      this._tests.push(["padding", "Paddings"]);
-      this._tests.push(["clip", "Clippings"]);
-      this._tests.push(["color", "Colors"]);
-      this._tests.push(["width", "Dimensions"]);
-      this._tests.push(["height","Dimensions"]);
-      this._tests.push(["left", "Position"]);
-      this._tests.push(["right", "Position"]);
-      this._tests.push(["top", "Position"]);
-      this._tests.push(["position", "Position"]);
-      this._tests.push(["bottom", "Position"]);
-      this._tests.push(["child", "Child dependent"]);
-    }
+      
+      this._tests.push(["margin", "Spacing"]);
+      this._tests.push(["spacing", "Spacing"]);
+      this._tests.push(["padding", "Spacing"]);
+      this._tests.push(["align", "Spacing"]);
+
+      this._tests.push(["appearance", "Appearance"]);
+      this._tests.push(["color", "Appearance"]);
+      this._tests.push(["decorator", "Appearance"]);
+      this._tests.push(["shadow", "Appearance"]);
+      this._tests.push(["font", "Appearance"]);
+      this._tests.push(["opacity", "Appearance"]);
+      this._tests.push(["cursor", "Appearance"]);
+      
+      this._tests.push(["width", "Dimension"]);
+      this._tests.push(["height","Dimension"]);
+      this._tests.push(["allowGrow", "Dimension"]);
+      this._tests.push(["allowShrink", "Dimension"]);
+      this._tests.push(["allowStretch", "Dimension"]);
+            
+      this._tests.push(["content", "Content"]);
+      this._tests.push(["rich", "Content"]);
+      this._tests.push(["enabled", "Content"]);
+      this._tests.push(["checked", "Content"]);
+      this._tests.push(["value", "Content"]);
+      this._tests.push(["name", "Content"]);
+      this._tests.push(["label", "Content"]);
+      this._tests.push(["icon", "Content"]);
+      
+      this._tests.push(["tooltip", "Tooltip & Context menu"]);
+      this._tests.push(["contextmenu", "Tooltip & Context menu"]);
+      
+      this._tests.push(["visibility", "Visibility"]);
+      this._tests.push(["zIndex", "Visibility"]);
+      
+      this._tests.push(["anonymous", "Behavior"]);
+      this._tests.push(["tabindex", "Behavior"]);
+      this._tests.push(["focusable", "Behavior"]);
+      this._tests.push(["keepfocus", "Behavior"]);
+      this._tests.push(["keepactive", "Behavior"]);
+      this._tests.push(["draggable", "Behavior"]);
+      this._tests.push(["droppable", "Behavior"]);
+      this._tests.push(["selectable", "Behavior"]);      
+     }
     
   },
   
