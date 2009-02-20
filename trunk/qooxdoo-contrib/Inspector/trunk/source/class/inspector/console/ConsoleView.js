@@ -231,7 +231,7 @@ qx.Class.define("inspector.console.ConsoleView",
           this.setAns(
             (function(text) {
               return iFrameWindow.eval(text);
-            }).call(qx.core.Init.getApplication().getSelectedObject())
+            }).call(qx.core.Init.getApplication().getSelectedObject(), text)
           );
         }
         
