@@ -45,6 +45,8 @@ qx.Class.define("inspector.components.AbstractWindow",
     
     // Create toolbar
     this._toolbar = new qx.ui.toolbar.ToolBar();
+    this._toolbar.setPaddingLeft(3);
+    this._toolbar.setPaddingRight(3);
     this._toolbar._getLayout().setAlignY("middle");
     this.add(this._toolbar);    
   },

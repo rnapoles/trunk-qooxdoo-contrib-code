@@ -36,7 +36,7 @@ qx.Class.define("inspector.console.ConsoleWindow",
     
     this._consoleButton = new qx.ui.toolbar.RadioButton("Console");
     this._toolbar.add(this._consoleButton);
-    this._domButton = new qx.ui.toolbar.RadioButton("Dom");
+    this._domButton = new qx.ui.toolbar.RadioButton("DOM");
     this._toolbar.add(this._domButton);
     
     // add a spacer
