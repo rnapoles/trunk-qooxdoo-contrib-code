@@ -11,7 +11,7 @@
   "let" :
   {
     "APPLICATION"  : "bug1442",
-    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
     "QXTHEME"      : "bug1442.theme.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
