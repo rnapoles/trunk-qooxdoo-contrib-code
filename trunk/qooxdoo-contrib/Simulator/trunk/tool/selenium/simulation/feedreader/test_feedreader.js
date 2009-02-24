@@ -151,8 +151,8 @@ function runTests()
   }
   
   // Use the preferences window to change the application language 
-  sel.qxClick('qxh=app:[@_toolBarView]/*/[@label="Preferences"]');
-  sel.qxClick('qxh=app:[@_prefWindow]/*/[@label="Deutsch"]');
+  sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/[@label="Preferences"]');
+  sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.groupbox.GroupBox/[@label="Deutsch"]');
   sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.container.Composite/[@label="OK"]');
   var label = sel.getEval(staticFeedsLabel);
   if (label.indexOf("Vordefinierte Quellen") >= 0) {
@@ -166,7 +166,7 @@ function runTests()
   
   // Add a feed
   print("Adding new feed.");
-  sel.qxClick('qxh=app:[@_toolBarView]/*/[@label="Add feed"]');
+  sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/[@label="Add feed"]');
   sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');
   sel.type('qxh=app:[@_addFeedWindow]/[@_urlTextfield]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
   sel.qxClick('qxh=app:[@_addFeedWindow]/[@label="Add"]');
