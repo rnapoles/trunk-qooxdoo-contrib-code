@@ -56,13 +56,21 @@ qx.Class.define("bug1786.Application",
       */
 
       // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "bug1786/test.png");
+      var label = new qx.ui.basic.Label("foobar?");
+      label.setSelectable(true);
+
+
+      var htmlembed = new qx.ui.embed.Html("<p>foobar!</p>");
+      htmlembed.setSelectable(true);
+
 
       // Document is the application root
       var doc = this.getRoot();
 			
       // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      doc.add(label, {left: 100, top: 50});
+      doc.add(htmlembed, {left: 100, top: 150});
+      
     }
   }
 });
