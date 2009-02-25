@@ -367,7 +367,7 @@ class qcl_core_object extends qcl_core_BaseClass
     /*
      * normalize syntax
      */
-    $pathname = strtolower(str_replace(".","_",$pathname));    
+    $pathname = str_replace(".","_",$pathname);    
     
     /*
      * return path name
