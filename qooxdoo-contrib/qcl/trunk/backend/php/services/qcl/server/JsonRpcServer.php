@@ -289,7 +289,7 @@ class JsonRpcServer extends AbstractServer
       /*
        * log error message
        */
-      $this->debug("*** Error: $err");
+      $this->logError("*** Error: $err");
       
       /*
        * return error formatted as a JSONRPC error response
@@ -394,15 +394,25 @@ class JsonRpcServer extends AbstractServer
     /*
      * log error message
      */
-    $this->debug( $errmsg );
+    $this->logError( $errmsg );
     
     /*
      * return jsonified error message
      */
-    $error->SetError($errno, $errmsg);
-    $error->SendAndExit();
+    $this->setError($errno, $errmsg);
+    $this->sendErrorAndExit();
 
     // never gets here
-  }  
+  }
+  
+  /**
+   * Hook for subclasses to locally log the error message
+   * @param $msg
+   * @return unknown_type
+   */
+  function logError( $msg )
+  {
+    @error_log( $msg . "\n", 3, JsonRpcDebugFile );
+  }
 }
 ?>

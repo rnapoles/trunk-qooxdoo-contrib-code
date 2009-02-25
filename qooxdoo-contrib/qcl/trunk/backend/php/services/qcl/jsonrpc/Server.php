@@ -3,9 +3,9 @@
 /*
  * dependencies
  */
-require_once "qcl/server/JsonRpcServerPhp4.php";
+require_once "qcl/server/JsonRpcServer.php";
 
-class qcl_jsonrpc_Server extends JsonRpcServerPhp4
+class qcl_jsonrpc_Server extends JsonRpcServer
 {
   /**
    * @override
@@ -59,8 +59,21 @@ class qcl_jsonrpc_Server extends JsonRpcServerPhp4
    */
   function debug($str)
   {
-    @error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
+    if ( $this->debug )
+    {
+      @error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
+    }
   }
+  
+  /**
+   * Hook for subclasses to locally log the error message
+   * @param $msg
+   * @return unknown_type
+   */
+  function logError( $msg )
+  {
+    @error_log( $msg . "\n" . debug_get_backtrace(3) . "\n",3,QCL_LOG_FILE);
+  }  
   
 }
 
