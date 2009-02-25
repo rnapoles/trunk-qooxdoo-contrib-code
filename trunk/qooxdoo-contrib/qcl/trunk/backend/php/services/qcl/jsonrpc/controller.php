@@ -33,6 +33,12 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 {
 
   /**
+   * The jsonrpc server
+   * @var JsonRpcServer
+   */
+  var $server;
+  
+  /**
    * initial configuration contained in ini.php-files in the #
    * service class folders
    * @see qcl_core_object::configureServie()
@@ -50,7 +56,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * @var qcl_jsonrpc_Response
    */
   var $response;
-    
   
   /**
    * The id of the session, default to PHP session id
@@ -67,7 +72,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   /**
    * constructor , configures the service
    */
-  function __construct()
+  function __construct( $server )
   {
 
     /*
@@ -76,26 +81,35 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     parent::__construct();
     
     /*
+     * set the server
+     */
+    if ( ! is_a( $server, "JsonRpcServer" ) )
+    {
+      $this->raiseError("No JsonRpcServer object passed to the controller. " . $this->className() . " got a '" . get_var_type($server) . "'");
+    }
+    $this->server =& $server;
+    
+    /*
      * request object, fetches information from current
      * request
      */
-    $this->request = new qcl_jsonrpc_Request;
+    $this->request =& new qcl_jsonrpc_Request( &$server );
     
     /*
      * response object
      */
-    $this->response = new qcl_jsonrpc_Response;
-    
+    $this->response =& new qcl_jsonrpc_Response;
+     
     /*
      * log request
-     *
-    $this->debug( "\n\n" .
+     */
+    $this->log( "\n\n" .
       "Request for " . $this->request->service . 
       "." . $this->request->method .  
       " from " . $this->request->ip,
       QCL_LOG_REQUEST
     );
-    */ 
+    
     
     /*
      * configure service
@@ -238,7 +252,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      * or from the class name
      * @todo remove global reference
      */
-    global $serviceComponents;
+    $server = $this->server;
+    $serviceComponents = $server->getServiceComponents( $server->getService() );
+    
     if ( ! $serviceComponents )
     {
       /*
@@ -557,7 +573,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function optionalErrorResponseData()
   {
-    $response =& $this->responseObject();
+    $response =& $this->response; //responseObject();
     return array(
       'result' => array(
         'messages' => $response->getMessages(),
@@ -593,13 +609,14 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function addMessage( $message, $data=null )
   {
-    $response =& $this->responseObject();
+    $response =& $this->response;//$this->responseObject();
     if ( ! is_object($response) )
     {
-      $this->raiseError(gettype($response));
+      $this->raiseError( gettype($response) );
     }
     
     $response->addMessage( $message, $data );
+    
   }
 
   /**
@@ -608,7 +625,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function &getMessages()
   {
-    $response =& $this->responseObject();
+    $response =& $this->response;  //responseObject();
     return $response->getMessages();
   }
 
@@ -638,7 +655,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function addEvent ( $event, $data=null )
   {
-    $reponse =& $this->responseObject();
+    $reponse =& $this->response; //responseObject();
     $reponse->addEvent( $event, $data );
   }
 
@@ -648,7 +665,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function &getEvents()
   {
-    $reponse =& $this->responseObject();
+    $reponse =& $this->response; //responseObject();
     return $this->getEvents();
   }
 
@@ -675,7 +692,61 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->request->setRequestId($requestId);
   }  
   
-  
+  /**
+   * Returns the server error object
+   * @return JsonRpcError
+   */
+  function &getServerErrorBehavior()
+  {
+    return $this->server->getErrorBehavior();
+  }
+
+  /**
+   * Raises a server error and exits
+   * @param string $message
+   * @param int    $number
+   * @param string $file
+   * @param int    $line
+   * @return void
+   */
+  function raiseError( $message, $number=null, $file=null, $line=null )
+  {
+    /*
+     * if error file and line have been specified
+     */
+    if ( $file and $line )
+    {
+      $message .= " in $file, line $line.";
+    }
+    
+    /*
+     * write to server log
+     */
+    $this->error( $message . "\n" . 
+      "Backtrace:\n" . 
+      $this->backtrace(true)
+    );
+    
+    /*
+     * if this is a jsonrpc request, we have a global $error object
+     * that the error can be passed to.
+     */
+    $error =& $this->getServerErrorBehavior();
+    
+    if ( is_a( $error, "JsonRpcError" ) ) 
+    {
+      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
+      $error->SendAndExit( $this->optionalErrorResponseData() );
+      // never gets here
+      exit;
+    }
+    
+    /*
+     * otherwise, it is an html request, print to output
+     */
+    echo $message;
+    exit;
+  }
   
   
   /**

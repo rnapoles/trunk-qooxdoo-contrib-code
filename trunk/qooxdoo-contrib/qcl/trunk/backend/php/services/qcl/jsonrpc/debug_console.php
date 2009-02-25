@@ -1,5 +1,4 @@
 <?php
-
 /**
  * page to test jsonrpc php backend
  * @author Christian Boulanger (cboulanger)
@@ -8,9 +7,10 @@
 if ( $_POST )
 {
   require_once "./global_settings.php";
-  require_once "qcl/registry/Session.php"; // @todo: remove dependency
+  require_once "qcl/server/JsonRpcServer.php";
+  require_once "qcl/registry/Session.php"; 
   require_once "qcl/jsonrpc/controller.php";
-  require_once "qcl/jsonrpc/Json.php";
+  require_once "qcl/server/JsonWrapper.php";
   require_once "qcl/http/JsonRpcRequest.php";
   
   class Debug_Controller extends qcl_jsonrpc_controller 
@@ -54,7 +54,7 @@ if ( $_POST )
         exit;
       }      
       
-      $json   = new Json( &$this );
+      $json   = new JsonWrapper( &$this );
       $params = $json->decode( "[" . stripslashes( $_POST['data'] ) . "]" ); 
       if ( ! is_array($params) )
       {
@@ -118,7 +118,7 @@ if ( $_POST )
   /*
    * run debug controller
    */
-  $debugController = new Debug_Controller();
+  $debugController = new Debug_Controller( new JsonRpcServer );
   echo $debugController->sendRequest();
   exit;
 }
