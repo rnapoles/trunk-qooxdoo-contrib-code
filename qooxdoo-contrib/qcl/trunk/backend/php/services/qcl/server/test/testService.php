@@ -3,7 +3,7 @@ class class_testService
 {
   function method_testMethod($params)
   {
-    return $params;
+    return print_r($params,true);
   }
   
   function method_testError()
