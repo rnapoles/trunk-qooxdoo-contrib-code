@@ -82,7 +82,7 @@ class qcl_core_BaseClass
      */
     if ( ! $accessorMethodExists )
     {
-      $this->raiseError("Unknown method " . get_class($this) . "::$method().");
+      $this->raiseError("Overload error: Unknown method " . get_class($this) . "::$method().");
     } 
     
     return $result;

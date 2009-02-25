@@ -6,6 +6,7 @@ require_once "qcl/jsonrpc/object.php";
 require_once "qcl/jsonrpc/Request.php";
 require_once "qcl/jsonrpc/Response.php";
 
+
 /*
  * constants
  */
@@ -117,6 +118,15 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->configureService();
   }  
 
+  /**
+   * Returns the server object
+   * @return qcl_jsonrpc_Server
+   */
+  function &server()
+  {
+    return $this->server;
+  }
+  
   /**
    * Returns the current request object
    * @return qcl_jsonrpc_Request
@@ -481,13 +491,15 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * a qcl_locale_manager (see there). if you want to use a different
    * controller, override this method
    * @return qcl_locale_manager
+   * @todo rename 
    */
   function &getLocaleController()
   {
     static $localeController = null;
     if ( ! $localeController )
     {
-      $localeController =& $this->getSingleton("qcl_locale_manager");
+      require_once "qcl/locale/manager.php";
+      $localeController =& qcl_locale_manager::getInstance(&$this);
     }
     return $localeController;
   }

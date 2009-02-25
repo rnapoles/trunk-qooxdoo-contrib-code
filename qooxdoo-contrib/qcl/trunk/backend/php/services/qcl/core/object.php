@@ -634,7 +634,7 @@ class qcl_core_object extends qcl_core_BaseClass
     {
       $this->raiseError("No logger object exists.");
     }
-    $this->_logger->log($msg, $filters );
+    $this->_logger->log( $msg, $filters );
   } 
   
   /**
@@ -831,7 +831,7 @@ class qcl_core_object extends qcl_core_BaseClass
     $seconds = round($time_end - $this->_timestamp,5);
     if ( $debugmsg )
     {
-      $this->debug( $debugmsg . ": $seconds seconds since timer started." );      
+      //$this->debug( $debugmsg . ": $seconds seconds since timer started." );      
     }    
     return $seconds;
   }

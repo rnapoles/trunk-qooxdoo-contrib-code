@@ -102,7 +102,7 @@ class qcl_core_BaseClass
      */
     if ( ! $accessorMethodExists )
     {
-      $this->raiseError("Unknown method " . get_class($this) . "::$method().");
+      $this->raiseError("Overload error: Unknown method " . get_class($this) . "::$method().");
     }    
     
     /*
@@ -207,12 +207,15 @@ class qcl_core_BaseClass
 }
 
 /** 
- * "clone" function
+ * "clone" function put into eval to avoid errors
+ * in PHP 5-editors.
  */
+eval('
 function clone($object) 
 {
     return $object;
 }
+');
 
 if( ! function_exists("file_put_contents") )
 {

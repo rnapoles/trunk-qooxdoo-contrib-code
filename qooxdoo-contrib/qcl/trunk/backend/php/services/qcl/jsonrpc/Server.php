@@ -29,7 +29,7 @@ class qcl_jsonrpc_Server extends JsonRpcServer
        * do not execute any method but skip to response
        * immediately
        */
-      $this->debug("Aborted...");
+      //$this->debug("Aborted...");
       $this->sendReply(
         $this->formatOutput( $serviceObject->response() ), 
         $this->scriptTransportId

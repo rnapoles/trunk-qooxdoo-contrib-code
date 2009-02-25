@@ -81,7 +81,7 @@ class qcl_session_controller extends qcl_access_controller
     if ( $parentSessionId and ! $this->sessionExists($sessionId) )
     {
       $sessionId = $this->createChildSession($parentSessionId);
-      $this->debug("Created and changed to child session id: $sessionId from parent session: $parentSessionId");
+      //$this->debug("Created and changed to child session id: $sessionId from parent session: $parentSessionId");
     }    
     
     if ( $sessionId )
@@ -338,7 +338,7 @@ class qcl_session_controller extends qcl_access_controller
      */
     $sessionId = $this->createSessionId();
     
-    $this->debug("Spawning child session #$sessionId form parent session #$parentSessionId");
+    //$this->debug("Spawning child session #$sessionId form parent session #$parentSessionId");
     
     /*
      * register new session 

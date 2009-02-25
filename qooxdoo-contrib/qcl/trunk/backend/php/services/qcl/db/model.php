@@ -1042,7 +1042,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   {
     $schemaXml =& $this->getSchemaXml(); 
     $links     =& $schemaXml->getNode("/model/links");
-    
+  //$this->debug( $links );
     if ( is_object($links) )
     {
       $attrs = $links->attributes();
@@ -1091,7 +1091,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     
     $linkNode = $this->linkNodes[$name];
     
-    if ( ! is_object($linkNode) )
+    if ( ! is_object( $linkNode ) )
     {
       $this->raiseError("No <link> node available for '$name'.");
     }

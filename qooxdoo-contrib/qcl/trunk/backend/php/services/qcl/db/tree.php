@@ -20,38 +20,35 @@ class qcl_db_tree extends qcl_core_mixin
 	function getChildren ( $parentId )
 	{
 		$parentId = (int) $parentId;
-		return $this->findWhere("{$this->col_parentId} = $parentId", $this->col_position );
+		return $this->findWhere( array("parentId" => $parentId), "position" );
 	}
 	
 	/**
-	 * gets child node ids of a branch ordered by the order field
+	 * Return child node ids of a branch ordered by the order field
 	 * @param int $parentId
 	 * @param string|null $orderBy
 	 */
 	function getChildIds ( $parentId, $orderBy=null )
 	{
-    $orderBy     = either( $orderBy, "position" );
-    $parentIdCol = $this->getColumnName("parentId");
-		return $this->findValues("id", "$parentIdCol=" . (int) $parentId, $orderBy );
+    $orderBy = either( $orderBy, "position" );
+    $this->findBy("parentId",$parentId, $orderBy, "id" );
+		return $this->values();
 	}	
 	
 	/**
-	 * gets number of child nodes of a branch
+	 * Returns number of child nodes of a branch
 	 * @param int $parentId
 	 */
 	function getChildCount ( $parentId )
 	{
-		$parentId = (int) $parentId;
-		$count = $this->db->getValue("
-			SELECT COUNT(*) 
-			FROM `{$this->table}`
-			WHERE `{$this->col_parentId}` = $parentId
-		"); 
-		return (int) $count;
+		$count = $this->countWhere( 
+		  array("parentId" => (int) $parentId ) 
+		);
+		return $count;
 	}
 	
 	/**
-	 * reorders childrens positions
+	 * Reorders childrens positions
 	 * @param int $parentId parent folder id
 	 * @param string|null $orderBy defaults to position column
 	 */
