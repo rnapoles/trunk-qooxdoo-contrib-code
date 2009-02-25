@@ -30,7 +30,11 @@ import org.qooxdoo.sushi.fs.file.FileNode;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
-
+/** 
+ * Nodes accessible via sftp. 
+ * Uses Jsch:  http://www.jcraft.com/jsch/
+ * See also: http://tools.ietf.org/id/draft-ietf-secsh-filexfer-13.txt 
+ */
 public class SshFilesystem extends Filesystem {
     private Node privateKey;
     private String passphrase;
