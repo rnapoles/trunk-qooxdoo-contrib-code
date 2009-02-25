@@ -12,6 +12,15 @@ require_once "qcl/core/PropertyObject.php";
 class qcl_jsonrpc_object extends qcl_core_PropertyObject 
 {
 
+
+  /**
+   * The controller object. Every model MUST have a controller object from
+   * which it receives service and request information
+   *
+   * @var qcl_jsonrpc_controller or subclass
+   */
+  var $_controller = null;  
+  
   /**
    * the path to the directory containing binary executables, relative to the SERVICE_PATH
    * @deprecated
@@ -25,6 +34,43 @@ class qcl_jsonrpc_object extends qcl_core_PropertyObject
    * @var array
    */
   var $__event_db = array();
+  
+ /**
+  * constructor 
+  * @param qcl_jsonrpc_controller $controller Controller object. You can 
+  */
+  function __construct( $controller=null )
+  {
+    /*
+     * initialize parent class
+     */
+    parent::__construct();
+    
+    /*
+     * set controller. This wil throw an error if no controller is available
+     */
+    $this->setController( &$controller ); 
+  }  
+  
+  /**
+   * sets controller of this model to be able to link to other models
+   * connected to the controller
+   * @param qcl_jsonrpc_controller $controller Controller object. You can 
+   * also provide a qcl_jsonrpc_model object
+   */
+  function setController ( $controller )
+  {
+    $this->_controller =& $controller;
+  }
+
+  /**
+   * Returns controller of this model 
+   * @return qcl_jsonrpc_controller 
+   */
+  function &getController()
+  {
+    return $this->_controller;
+  }   
   
   /**
    * Gets singleton instance. If you want to use this method on a static class that extends this class,
@@ -88,15 +134,6 @@ class qcl_jsonrpc_object extends qcl_core_PropertyObject
   }
   
   /**
-   * Returns the server error object
-   * @return JsonRpcError
-   */
-  function &getErrorResponseObject()
-  {
-    return $GLOBALS['error'];
-  }
-
-  /**
    * Raises a server error and exits
    * @param string $message
    * @param int    $number
@@ -106,41 +143,8 @@ class qcl_jsonrpc_object extends qcl_core_PropertyObject
    */
   function raiseError( $message, $number=null, $file=null, $line=null )
   {
-    /*
-     * if error file and line have been specified
-     */
-    if ( $file and $line )
-    {
-      $message .= " in $file, line $line.";
-    }
-    
-    /*
-     * write to server log
-     */
-    $this->error( $message . "\n" . 
-      "Backtrace:\n" . 
-      $this->backtrace(true)
-    );
-    
-    /*
-     * if this is a jsonrpc request, we have a global $error object
-     * that the error can be passed to.
-     */
-    $error =& $this->getErrorResponseObject();
-    
-    if ( is_a( $error, "JsonRpcError" ) ) 
-    {
-      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
-      $error->SendAndExit( $this->optionalErrorResponseData() );
-      // never gets here
-      exit;
-    }
-    
-    /*
-     * otherwise, it is an html request, print to output
-     */
-    echo $message;
-    exit;
+    $controller =& $this->getController();
+    $controller->raiseError( $message, $number, $file, $line );
   }
   
   /**

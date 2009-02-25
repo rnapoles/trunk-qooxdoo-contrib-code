@@ -14,6 +14,12 @@ class qcl_jsonrpc_Request extends  qcl_core_object
   var $jsonInput;
   
   /**
+   * The server to which this object is attached
+   * @var AbstractServer
+   */
+  var $server;
+  
+  /**
    * The service name
    * @var string
    */
@@ -44,23 +50,38 @@ class qcl_jsonrpc_Request extends  qcl_core_object
    */  
   var $ip;
   
-  function __construct()
+  /**
+   * Constructor
+   * @param JsonRpcServer $server
+   * @return unknown_type
+   */
+  function __construct( $server )
   {
-    global $jsonInput;
-    $this->jsonInput  = $jsonInput;
-    $this->service    = $jsonInput->service;
-    $this->method     = $jsonInput->method;
-    $this->params     = $jsonInput->params;
-    $this->serverData = $jsonInput->server_data;
+    /*
+     * server object
+     */
+    if ( ! is_a( $server,"AbstractServer" ) )
+    {
+      trigger_error("No valid server method.");
+    }
+    $this->server =& $server;
+    
+    /*
+     * request properties
+     */
+    $this->service    = $server->getService();
+    $this->method     = $server->getMethod();
+    $this->params     = $server->getParams();
+    $this->serverData = $server->getServerData();
     
     $this->ip = $_SERVER['REMOTE_ADDR'];
   }
   
   /**
    * Returns the raw json input object
-   * @var JsonInput
+   * @var object
    */
-  function &getJsonInput()
+  function getJsonInput()
   {
     return $this->jsonInput;
   }
@@ -108,9 +129,6 @@ class qcl_jsonrpc_Request extends  qcl_core_object
   {
     return $this->ip;
   }
-  
-  
-  
 }
 
 

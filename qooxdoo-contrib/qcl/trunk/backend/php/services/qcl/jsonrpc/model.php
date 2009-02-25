@@ -13,13 +13,6 @@ require_once "qcl/jsonrpc/object.php";
 class qcl_jsonrpc_model extends qcl_jsonrpc_object
 {
 
-  /**
-   * The controller object. Every model MUST have a controller object from
-   * which it receives service and request information
-   *
-   * @var qcl_jsonrpc_controller or subclass
-   */
-	var $_controller = null;
 
 	/**
 	 * The current model record data
@@ -34,23 +27,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
 	 */
   var $emptyRecord = array();
 
- /**
-  * constructor 
-   * @param qcl_jsonrpc_controller $controller Controller object. You can 
-   * also provide a qcl_jsonrpc_model object.
-  */
-	function __construct( $controller=null )
-  {
-		/*
-		 * initialize parent class
-		 */
-    parent::__construct();
-    
-    /*
-     * set controller. This wil throw an error if no controller is available
-     */
-    $this->setController( &$controller );	
-	}
+
 
  	/**
  	 * sets controller of this model to be able to link to other models
@@ -79,14 +56,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
     }
  	}
  	
- 	/**
- 	 * Returns controller of this model 
- 	 * @return qcl_jsonrpc_controller 
- 	 */
- 	function &getController()
- 	{
-    return $this->_controller;
- 	}	
+
  	  
 	//-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
