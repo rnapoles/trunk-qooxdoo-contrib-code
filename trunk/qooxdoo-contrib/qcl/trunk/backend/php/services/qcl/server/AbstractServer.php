@@ -487,7 +487,7 @@ class AbstractServer
     /*
      * start the service method and get its output
      */
-    $this->debug("Starting Service method $className.$method");
+    $this->debug("Starting Service method {$this->serviceClass}.$method");
     $this->output = $this->callServiceMethod( &$serviceObject, $method, $params );
     $this->debug("Done. Result:" . var_export($this->output,true) );
 
