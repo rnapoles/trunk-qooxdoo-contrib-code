@@ -121,6 +121,15 @@ function &qcl_get_logger()
   return $logger;
 }
 
+function boolToStr( $value )
+{
+  if ( ! is_bool($value) )
+  {
+    trigger_error("Value is not boolean");
+  }
+  return $value ? "true" : "false";
+}
+
 /**
  * function to properly encode string data for use in xml.
  * Provided by snevi at im dot com dot ve
@@ -448,118 +457,6 @@ function uuid()
 }
 
 /**
- * Calculate HMAC-SHA1 according to RFC2104
- * See http://www.faqs.org/rfcs/rfc2104.html
- * @param string $key
- * @param string $data
- *
-function hmacsha1($key,$data) {
-    $blocksize=64;
-    $hashfunc='sha1';
-    if (strlen($key)>$blocksize)
-        $key=pack('H*', $hashfunc($key));
-    $key=str_pad($key,$blocksize,chr(0x00));
-    $ipad=str_repeat(chr(0x36),$blocksize);
-    $opad=str_repeat(chr(0x5c),$blocksize);
-    $hmac = pack(
-                'H*',$hashfunc(
-                    ($key^$opad).pack(
-                        'H*',$hashfunc(
-                            ($key^$ipad).$data
-                        )
-                    )
-                )
-            );
-    return bin2hex($hmac);
-}*/
-
-/**
- * Used to encode a field for Amazon Auth
- * (taken from the Amazon S3 PHP example library)
- * @param string $str
- *
-function hex2b64($str)
-{
-    $raw = '';
-    for ($i=0; $i < strlen($str); $i+=2)
-    {
-        $raw .= chr(hexdec(substr($str, $i, 2)));
-    }
-    return base64_encode($raw);
-}*/
-
-
-/**
- * Function to retrieve the response to a http request
- * Modified from code posted mail at 3v1n0 dot net at
- * http://de2.php.net/manual/en/features.remote-files.php
- * @param string $url
- * @param int $range
- * @return array Array containing the response and the status code
- *
-function http_get($url, $range = 0)
-{
-    $url_stuff = parse_url($url);
-    $port = isset($url_stuff['port']) ? $url_stuff['port'] : 80;
-   
-    $fp = @fsockopen($url_stuff['host'], $port);
-   
-    if (!$fp)
-        return false;
-   
-    $query  = 'GET '.$url_stuff['path'].'?'.$url_stuff['query']." HTTP/1.1\r\n";
-    $query .= 'Host: '.$url_stuff['host']."\r\n";
-    $query .= 'Connection: close'."\r\n";
-    $query .= 'Cache-Control: no'."\r\n";
-    $query .= 'Accept-Ranges: bytes'."\r\n";
-    if ($range != 0)
-        $query .= 'Range: bytes='.$range.'-'."\r\n"; // -500
-    //$query .= 'Referer: http:/...'."\r\n";
-    //$query .= 'User-Agent: myphp'."\r\n";
-    $query .= "\r\n";
-   
-    fwrite($fp, $query);
-   
-    $chunksize = 1*(1024*1024);
-    $headersfound = false;
-
-    while (!feof($fp) && !$headersfound) {
-        $buffer .= @fread($fp, 1);
-        if (preg_match('/HTTP\/[0-9]\.[0-9][ ]+([0-9]{3}).*\r\n/', $buffer, $matches)) {
-            $headers['HTTP'] = $matches[1];
-            $buffer = '';
-        } else if (preg_match('/([^:][A-Za-z_-]+):[ ]+(.*)\r\n/', $buffer, $matches)) {
-            $headers[$matches[1]] = $matches[2];
-            $buffer = '';
-        } else if (preg_match('/^\r\n/', $buffer)) {
-            $headersfound = true;
-            $buffer = '';
-        }
-
-        if (strlen($buffer) >= $chunksize)
-            return false;
-    }
-
-    if (preg_match('/4[0-9]{2}/', $headers['HTTP']))
-        return false;
-    else if (preg_match('/3[0-9]{2}/', $headers['HTTP']) && !empty($headers['Location'])) {
-        $url = $headers['Location'];
-        return http_get($url, $range);
-    }
-
-    $response = "";
-    while (!feof($fp) && $headersfound) {
-        $buffer = @fread($fp, $chunksize);
-        $response .= $buffer;
-    }
-
-    $status = fclose($fp);
-
-    return array($response,$status);
-}
-*/
-
-/**
  * Converts an integer in a human-Readable byte size format.
  * Posted by olafurw at gmail.com on http://www.php.net/manual/en/function.filesize.php
  * @param int $bytes
@@ -585,153 +482,5 @@ if ( ! function_exists("microtime_float" ) )
       return ((float)$usec + (float)$sec);
   }
 }
-
-/*
- * we can return here if not PHP 4
- */
-if ( phpversion() >= 5 ) return;
-
-
-/**
- * provide PHP5 compatible functions to PHP4
- */
-
-
-/** 
- * "clone" function
- */
- eval('
-  function clone($object) {
-    return $object;
-  }
- ');
- 
-if( ! function_exists("file_put_contents") )
-{
-  /**
-   * PHP5 file_put_contents emulation
-   *
-   */
-  function file_put_contents($file,$data)
-  {
-      @unlink($file);
-      error_log($data,3,$file);
-      return file_exists($file);
-  }
-}
-
-if( ! function_exists( "stream_get_contents" ) )
-{
-  /**
-   * php4 equivalent of stream_get_contents
-   * 
-   * @param resource $resource resource handle
-   */
-  function stream_get_contents($resource)
-  {
-    $stream = "";
-    while ( ! feof ( $resource ) ) 
-    { 
-      $stream .= fread ( $resource );
-    }
-    return $stream;
-  } 
-}
-
-
-if(!function_exists('scandir')) 
-{
-  /**
-   * php4 equivalent of scandir
-   * from http://www.php.net/manual/en/function.scandir.php
-   * @return array list of files
-   * @param string $dir
-   * @param boolean $sortorder 
-   */   
-  function scandir($dir, $sortorder = 0) 
-  {
-    if(is_dir($dir) && $dirlist = @opendir($dir)) 
-    {
-      while(($file = readdir($dirlist)) !== false) 
-      {
-          $files[] = $file;
-      }
-      closedir($dirlist);
-      ($sortorder == 0) ? asort($files) : rsort($files); // arsort was replaced with rsort
-      return $files;
-    } 
-    else 
-    {
-      return false;  
-    }
-  }
-}
-
-
-if( ! function_exists('array_diff_key') ) 
-{
-  /**
-   * php4 equivalent of array_diff_key
-   * from http://de3.php.net/manual/en/function.array-diff-key.php
-   * @return array 
-   */   
-  function array_diff_key()
-  {
-    $arrs = func_get_args();
-    $result = array_shift($arrs);
-    foreach ($arrs as $array) 
-    {
-      foreach ($result as $key => $v) 
-      {
-        if (array_key_exists($key, $array)) 
-        {
-          unset($result[$key]);
-        }
-      }
-    }
-    return $result;
-   }
-}
-
-
-
-
-
-if (!function_exists('get_headers')) 
-{
-  /**
-   * Replicated PHP5's get_headers function 
-   * Posted by info at marc-gutt dot de
-   * http://www.php.net/manual/en/function.get-headers.php
-   */
-  function get_headers($url, $format=0) {
-      $headers = array();
-      $url = parse_url($url);
-      $host = isset($url['host']) ? $url['host'] : '';
-      $port = isset($url['port']) ? $url['port'] : 80;
-      $path = (isset($url['path']) ? $url['path'] : '/') . (isset($url['query']) ? '?' . $url['query'] : '');
-      $fp = fsockopen($host, $port, $errno, $errstr, 3);
-      if ($fp)
-      {
-          $hdr = "GET $path HTTP/1.1\r\n";
-          $hdr .= "Host: $host \r\n";
-          $hdr .= "Connection: Close\r\n\r\n";
-          fwrite($fp, $hdr);
-          while (!feof($fp) && $line = trim(fgets($fp, 1024)))
-          {
-              if ($line == "\r\n") break;
-              list($key, $val) = explode(': ', $line, 2);
-              if ($format)
-                  if ($val) $headers[$key] = $val;
-                  else $headers[] = $key;
-              else $headers[] = $line;
-          }
-          fclose($fp);
-          return $headers;
-      }
-      return false;
-  }
-}
-
 
 ?>

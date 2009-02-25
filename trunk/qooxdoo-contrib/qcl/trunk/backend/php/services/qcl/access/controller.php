@@ -71,14 +71,10 @@ class qcl_access_controller extends qcl_db_controller
   /**
    * Constructor. initializes access/config model
    */
-  function __construct()
+  function __construct( $server=null )
   {
 
-    /*
-     * call parent constructor, this will initialize database
-     * connection
-     */
-    parent::__construct();
+    parent::__construct( &$server );
 
     /*
      * initialize access and config models based on connection
@@ -371,6 +367,7 @@ class qcl_access_controller extends qcl_db_controller
     $this->setActiveUser( $userModel->cloneObject() );
     $userId = $userModel->getId();
     $sessionId = $this->getSessionId();
+    $this->dispatchMessage("qcl.commands.setSessionId",$sessionId); 
 
     /*
      * change config model to read-only mode for guest access
@@ -380,8 +377,7 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * log message
      */
-    $this->info ("Granting guest access (user id #$userId, session id #$sessionId )."); 
-    
+    $this->info ("Granting guest access (user id #$userId, session id #$sessionId ).");
   }
   
   
@@ -721,31 +717,6 @@ class qcl_access_controller extends qcl_db_controller
     return $this->permisssionAliasMap[$permission];    
   }
   
-  /**
-   * Overrridden method to allow debugging of response data
-   * @override
-   * @return array
-   * @todo json debug 
-   */
-  function &response()
-  {
-    /*
-     * get response object from parent method
-     */
-    $response =& parent::response(); 
-    
-    /*
-     * check if we should do a dump of it
-     */
-    $configModel =& $this->getConfigModel();
-    /* doesn't work after logout
-    if ( $configModel->get("qcl.jsonrpc.Server.dumpResponse") )
-    {
-      $this->info((array) $response );
-    }
-    */
-    return $response;
-  }   
   
 } 
 ?>

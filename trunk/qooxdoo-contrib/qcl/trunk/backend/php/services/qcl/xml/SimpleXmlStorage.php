@@ -180,13 +180,15 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     
     /*
      * If file, save it and generate cache id.
+     * We are adding the php version since the cache is different
+     * for PHP 4 and PHP5.
      */
     if ( ! $this->xml  )
     {
       if ( is_qcl_file( $fileOrString ) )
       { 
         $this->file =& $fileOrString;  
-        $this->cacheId = $this->file->resourcePath(); 
+        $this->cacheId = $this->file->resourcePath() . ( phpversion() <5 ? ".php4":""); 
       }
       else
       {
@@ -711,12 +713,33 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     return $tmp;
   }  
   
+  /**
+   * Cross-version method to get the number of child nodes.
+   * Can be called statically
+   * @param SimpleXmlElement $node
+   */
+  function nodeGetChildCount( $node )
+  {
+    if ( phpversion() < 5 )
+    {
+      return count( $node->children() );
+    }
+    else
+    {
+      if ( strlen($node->asXml() ) == 0 ) return 0;
+      $count = 0;
+      foreach( $node->children() as $child ) $count++;
+      return $count;
+    }
+  }
+  
   
   /**
-   * cross-version method to get CDATA content of a node.
+   * Cross-version method to get CDATA content of a node.
    * method can be called statically only if a valid node is passed
    * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
    * @return CDATA content or NULL if path does not exist 
+   * @todo rename to nodeGetData()
    */
   function getData($pathOrNode)
   {
@@ -753,10 +776,13 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
     return $cdata;
   }
   
+  
+  
   /**
-   * cross-version method to set CDATA content of a node
+   * Cross-version method to set CDATA content of a node
    * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
    * @return void
+   *  @todo rename to nodeSetData()
    */
   function setData($pathOrNode,$value)
   {
@@ -782,9 +808,10 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   }
 
   /**
-   * cross-version method to set an attribute of a node
+   * Cross-version method to set an attribute of a node
    * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
-   * @return 
+   * @return void
+   *  @todo rename to nodeSetAttribute()
    */
   function setAttribute($pathOrNode,$name, $value)
   {
@@ -818,6 +845,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
    * @param string $name
    * @param string $value
    * @return SimpleXmlElement or null if not found;
+   *  @todo rename to nodeGetChildNodeByAttribute()
    */
   function &getChildNodeByAttribute( $node, $name, $value )
   {
@@ -876,7 +904,8 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
    * @param string $name
    * @param string $value
    * @return boolean True if node was found and removed, false if not found
-   * @todo: is this used anywhere? if not, remove
+   * @todo: is this used anywhere? if not, remove, otherwise rename
+   * 
    */
   function removeChildNodeByAttribute($node,$name,$value)
   {
@@ -1273,6 +1302,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       //$this->debug("End of child nodes of <$sourceTag " . $this->serializeAttributes($source) . ">" );
       //$this->debug("^^^^^^^^^^^^^^^^^^^^^");
   }
+  
   
   /**
    * Returns the current document as (optionally pretty-printed) xml

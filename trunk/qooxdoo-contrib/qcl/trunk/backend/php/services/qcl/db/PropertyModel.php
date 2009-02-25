@@ -5,10 +5,6 @@
  */
 require_once "qcl/db/__init__.php";
 require_once "qcl/jsonrpc/model.php";
-if ( phpversion() < 5 ) 
-  require_once "qcl/db/Overload.php4";
-else 
-  require_once "qcl/db/Overload.php5";
 
 
 /**
@@ -19,7 +15,7 @@ else
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
-class qcl_db_PropertyModel extends qcl_db_Overload
+class qcl_db_PropertyModel extends qcl_jsonrpc_model
 {
 
  /**

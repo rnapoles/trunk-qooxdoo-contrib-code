@@ -42,13 +42,13 @@ class qcl_session_controller extends qcl_access_controller
    * if you want to use your custom session model, set it before
    * calling this parent constructor
    */
-  function __construct()
+  function __construct( $server )
   {
     /*
      * call parent constructor, this will initialize database
      * connection and access/config models
      */
-    parent::__construct();    
+    parent::__construct( &$server );
     
     /*
      * session model
@@ -97,12 +97,8 @@ class qcl_session_controller extends qcl_access_controller
        * do not authenticate
        */
       $activeUser =& $this->getUserFromSession( $sessionId );
-      if ( ! $activeUser )
+      if ( $activeUser )
       { 
-        return false;
-      }
-      else
-      {
         /*
          * set active user
          */
@@ -203,7 +199,9 @@ class qcl_session_controller extends qcl_access_controller
   function sessionExists( $sessionId )
   {
     $sessionModel =& $this->getSessionModel();
-    return $sessionModel->exists( array( 'sessionId' => $sessionId ) );
+    return $sessionModel->exists( array( 
+      'sessionId' => $sessionId 
+    ) );
   }
   
   /**

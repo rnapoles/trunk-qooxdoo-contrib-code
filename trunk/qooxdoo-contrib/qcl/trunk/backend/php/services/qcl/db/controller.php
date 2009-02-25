@@ -24,13 +24,13 @@ class qcl_db_controller extends qcl_jsonrpc_controller
   /**
    * constructor 
    */
-  function __construct()
+  function __construct( $server )
   {    
 
     /*
      * call parent constructor first
      */
-    parent::__construct();
+    parent::__construct( &$server );
 
     /*
      * establish database connection
@@ -106,8 +106,9 @@ class qcl_db_controller extends qcl_jsonrpc_controller
      * if first argument is boolean, get dsn from ini values,
      * otherwise treat as string
      */
-    if ( is_bool($first) )
+    if ( is_bool( $first ) )
     {
+      
       $dsn = $this->getDsn( $first, $adminaccess );
     }
     else
