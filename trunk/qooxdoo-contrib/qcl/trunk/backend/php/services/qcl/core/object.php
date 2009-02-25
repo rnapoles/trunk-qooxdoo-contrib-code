@@ -370,9 +370,18 @@ class qcl_core_object extends qcl_core_BaseClass
     $pathname = str_replace(".","_",$pathname);    
     
     /*
-     * return path name
+     * create array of parts
      */
-    return SERVICE_PATH . implode( "/", explode("_", $pathname ) ) . ".php";
+    $patharray = explode("_", $pathname ) ;
+    
+    /*
+     * return path name
+     * @todo bad hack to deal with case-sensitive file system. fix this!
+     */
+    $path = SERVICE_PATH . implode( "/", $patharray ) . ".php";
+    if ( file_exists($path) ) return $path;
+    $patharray[count($patharray)-1] = strtolower($patharray[count($patharray)-1]);
+    return SERVICE_PATH . implode( "/", $patharray ) . ".php";
   }
   
   /**
