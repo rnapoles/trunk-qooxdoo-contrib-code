@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -67,7 +68,7 @@ public class SshNodeFullTest extends NodeTest {
     }
 
     @Override
-    protected Node createWork() throws IOException {
+    protected SshNode createWork() throws IOException {
         SshNode node;
         
         try {
@@ -88,5 +89,19 @@ public class SshNodeFullTest extends NodeTest {
         assertEquals("", root.getPath());
         assertEquals("", root.getName());
         assertTrue(root.list().size() > 0);
+    }
+
+    @Test
+    public void deleteSymlink() throws Exception {
+        SshNode root;
+        List<SshNode> lst;
+        SshNode broken;
+        
+        root = createWork();
+        root.getRoot().exec("ln", "-s", "nosuchfile", "/" + root.getPath() + "/foo");
+        lst = root.list();
+        assertEquals(1, lst.size());
+        broken = lst.get(0);
+        broken.delete();
     }
 }

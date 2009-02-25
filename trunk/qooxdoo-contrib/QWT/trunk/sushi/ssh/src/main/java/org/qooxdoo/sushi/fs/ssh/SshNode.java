@@ -39,6 +39,7 @@ import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
+import org.qooxdoo.sushi.util.ExitCode;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
@@ -125,8 +126,13 @@ public class SshNode extends Node {
 
     @Override
     public SshNode delete() throws DeleteException {
+        SftpATTRS stat;
+        
         try {
-            if (channel.stat(slashPath).isDir()) {
+            // stat follows symlinks - lstat does *not*.
+            // we don't want to follow because the link might be broken and stat would fail with an exception
+            stat = channel.lstat(slashPath);
+            if (stat.isDir()) {
                 for (Node child : list()) {
                     child.delete();
                 }
