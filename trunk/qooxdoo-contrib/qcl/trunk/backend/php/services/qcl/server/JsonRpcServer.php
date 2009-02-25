@@ -55,7 +55,6 @@ if (! defined("JsonRpcErrorHandling"))
 
 /**
  * JSON RPC server
- * @author Christian Boulanger
  */
 class JsonRpcServer extends AbstractServer
 {
