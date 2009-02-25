@@ -54,6 +54,7 @@ class JsonRpcServerPhp5 extends JsonRpcServer
     {
       $this->setError( JsonRpcError_ScriptError, "***" . $e->getMessage() );
       $this->debug( (string) $e );
+      $this->sendErrorAndExit();
     }
   }
 }
