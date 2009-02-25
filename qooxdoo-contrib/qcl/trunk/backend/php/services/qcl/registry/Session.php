@@ -2,13 +2,12 @@
 /**
  * Dependencies
  */
-require_once "qcl/jsonrpc/object.php";
 
 /**
  * Class which maintains a registry which is valid during one 
  * PHP session
  */
-class qcl_registry_Session extends qcl_jsonrpc_object
+class qcl_registry_Session 
 {
 
   /**
@@ -20,11 +19,16 @@ class qcl_registry_Session extends qcl_jsonrpc_object
   /**
    * Returns class singleton instance
    * @access static
-   * @return qcl_registry_PageLoad singleton instance
+   * @return qcl_registry_Session singleton instance
    */
-  function &getInstance( $class=__CLASS__ )
+  function &getInstance()
   {
-    return parent::getInstance( $class );
+    global $qcl_singletons;
+    if ( ! $qcl_singletons['qcl_registry_Session']  )
+    {
+      $qcl_singletons['qcl_registry_Session'] = new qcl_registry_Session;
+    }
+    return $qcl_singletons['qcl_registry_Session'];
   }  
   
   /**
@@ -72,7 +76,5 @@ class qcl_registry_Session extends qcl_jsonrpc_object
 
   
 }
-
-
 
 ?>

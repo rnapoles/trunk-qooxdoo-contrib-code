@@ -40,7 +40,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
 
     /*
      * Initialize a dummy qcl_db_model object to create tables
-     * @todo this can be removed once qcl_db_SimpleModel does
+     * FIXME this can be removed once qcl_db_SimpleModel does
      * automatic table creation.
      */
     if ( ! class_exists( "qcl_persistence_db_Setup" ) )

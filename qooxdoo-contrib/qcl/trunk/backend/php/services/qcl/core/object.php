@@ -12,8 +12,15 @@ require_once "qcl/core/functions.php";      // global functions
 require_once "qcl/lang/String.php";         // String object similar to java
 require_once "qcl/lang/Utf8String.php";     // Class with methods to deal with Utf8 Strings
 require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
-require_once "qcl/log/Logger.php";
 
+/*
+ * Version-dependent base class
+ */
+if ( phpversion() < 5 ) 
+  require_once "qcl/core/BaseClassPHP4.php";
+else 
+  require_once "qcl/core/BaseClassPHP5.php";
+  
 /**
  * path to log file
  */
@@ -37,21 +44,17 @@ if ( ! defined( "JsonRpcClassPrefix" ) )
 define("QCL_ARGUMENT_NOT_SET", "QCL_ARGUMENT_NOT_SET");
 
 /**
- * global reqistry that is maintained during one request. For persistent storage, use
- * getSessionVar and setSessionVar
+ * global reqistry that is maintained during one request
+ * @todo deprecated, use qcl_registry_Request instead
  * @var array
  */
 $qcl_registry = array();
 
-
 /**
- * base class of all qcl classes.
- * provides cross-version (PHP4/PHP5) mixins and interfaces
- * mixin code is adapted from Ivo Jansch's blog at 
- * http://www.jansch.nl/2006/08/23/mixins-in-php/
+ * Base class of all qcl classes.
  * 
  */
-class qcl_core_object
+class qcl_core_object extends qcl_core_BaseClass
 {
   /**
    * The class name of this object
@@ -61,15 +64,12 @@ class qcl_core_object
  
   /**
    * Array of class names that will be included as mixins. 
+   * Note that the last defined property will be used, which
+   * overwrites any include values in parent-classes.
    * @var array 
    */
   var $include = array();
 
-  /**
-   * internal cache for classes that have been mixed in
-   */
-  var $_mixinlookup = array();
-  
   /**
    * PHP4/PHP5 interface implementation.
    * @var array
@@ -115,41 +115,6 @@ class qcl_core_object
    * @var float
    */
   var $_timestamp;
-  
-  /**
-   * PHP4 __construct() hack taken from cakephp
-   * taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
-   *
-   * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
-   * Copyright 2005-2007, Cake Software Foundation, Inc.
-   *                1785 E. Sahara Avenue, Suite 490-204
-   *                Las Vegas, Nevada 89104
-   *
-   * Licensed under The MIT License
-   * Redistributions of files must retain the above copyright notice.
-   *
-   * A hack to support __construct() on PHP 4
-   * Hint: descendant classes have no PHP4 class_name() constructors,
-   * so this constructor gets called first and calls the top-layer __construct()
-   * which (if present) should call parent::__construct()
-   *
-   * @return Object
-   */
-  function qcl_core_object() 
-  {
-    //trigger_error("qcl_core_object constructor called");
-    $args = func_get_args();
-    if (method_exists($this, '__destruct')) 
-    {
-      //$this->info("Registering shutdown function for " . get_class($this));
-      register_shutdown_function (array(&$this, '__destruct'));
-    }
-    if (method_exists($this, '__construct')) 
-    {
-      call_user_func_array(array(&$this, '__construct'), $args);
-    }
-  }
-
   
   /**
    * Class constructor. If the mixin class property contains 
@@ -230,16 +195,15 @@ class qcl_core_object
     }
     
     /*
-     * setup the logger for this object
+     * setup the logger for this object, except for a 
+     * logger object itself
      */
-    $this->setUpLogger();
+    if ( ! is_a($this, "qcl_log_Logger" ) )
+    {
+      $this->setUpLogger();  
+    }
   }
   
-  /**
-   * class destructor.  This is the top-most __destruct method, currently
-   * just an empty stub
-   */
-  function __destruct() {}
   
   //-------------------------------------------------------------
   // Object id and class management
@@ -453,138 +417,7 @@ class qcl_core_object
    
   }
 
-  //-------------------------------------------------------------
-  // Mixin and overloading
-  //------------------------------------------------------------- 
-  
-  /**
-   * cross-version method to include mixin methods from other classes.
-   * @return void
-   * @param $classname class name
-   */
-  function mixin ($classname)
-  {
-    /*
-     * load class file
-     */
-    $this->includeClassfile($classname);
-    
-    /*
-     * check class
-     */
-    if ( ! class_exists ( $classname ) ) 
-    {
-      $this->raiseError("Class $classname does not exist.");
-    }
-    
-    /*
-     * PHP4 : aggregate class
-     */
-    if ( phpversion() < 5 )
-    {
-      aggregate( $this, $classname);
-    }
-    
-    /*
-     * PHP5 : mixins via __call method 
-     */
-    else
-    {
-      $methods = get_class_methods( $classname );
-      if ( ! count( $methods) )
-      {
-        $this->raiseError("Class $classname has no methods.");
-      }
-      
-      /*
-       * register class methods
-       */
-      foreach( $methods as $method ) 
-      {
-        if ( ! method_exists( $this, $method ) )
-        {
-          $this->_mixinlookup[strtolower($method)] = strtolower($classname);  
-        }
-      }      
-    }
-  }
-  
-  function hasMixin ( $classname )
-  {
-    if ( phpversion() < 4 )
-    {
-      $aggregateInfo = aggregate_info($this);
-      return isset( $aggregateInfo[$classname] );
-    }
-    return in_array( strtolower($classname), $this->_mixinlookup );
-  }
-  
-  function hasMixinMethod( $method )
-  {
-    if ( phpversion() < 4 )
-    {
-      $aggregateInfo = aggregate_info($this);
-      foreach ( $aggregateInfo as $classname => $info )
-      {
-        if ( in_array(strtolower($method), $aggregateInfo[strtolower($classname)]['methods'] ) ) return true;  
-      }
-      return false;
-    }
-    return isset( $this->_mixinlookup[strtolower($method)] );
-  }
-  
-  /**
-   * The __call magic method intercepts any method that does not exist
-   * and falls back to one of the mixins if they define the method that is
-   * being called.
-   * @author Ivo Jansch (see http://www.jansch.nl/2006/08/23/mixins-in-php/)
-   */
-  function __call( $method, $args )
-  {
-    /*
-     * PHP5 : call mixin method
-     */ 
-    if ( phpversion() >= 5 )
-    { 
-      $result = $this->__callMixinMethod( $method, $args );
-      if ( $result != "METHOD_NOT_FOUND" )
-      {
-        return $result;  
-      }
-    }
-    
-    /*
-     * if not found, trigger an error
-     */
-    trigger_error('Call to undefined function ' . $method ); 
-  }
- 
-  /**
-   * calls a mixin method in PHP5
-   */
-  function __callMixinMethod( $method, $args )
-  {
-    //$this->debug( $this->className() . "." . $method . "()" );
-    //$this->debug( $this->_mixinlookup );
-    $mthd = strtolower($method);
-    //$this->debug( $method . ":" . $this->_mixinlookup[ $mthd ]);
-    if ( $this->_mixinlookup[ $mthd ] )
-    {
-      $elems = array();
-      for ($i=0, $_i=count($args); $i<$_i; $i++) 
-      {
-        $elems[] = "\$args[$i]";
-      }
-      $evalCode =
-        "\$result = " . $this->_mixinlookup[ $mthd ] . "::" .
-         $method . "(".implode(',',$elems).");";
-      //$this->debug($evalCode);
-      eval($evalCode);
-      return $result;
-    }
-    return "METHOD_NOT_FOUND";
-  }
- 
+
   
   //-------------------------------------------------------------
   // Object and class introspection 
@@ -719,7 +552,7 @@ class qcl_core_object
      */
     if ( strstr( $classname,".") )
     {
-      $classname = strtolower(str_replace(".","_",$classname));
+      $classname = str_replace(".","_",$classname);
     }
     
     /*
@@ -763,7 +596,7 @@ class qcl_core_object
    */
   function setupLogger()
   {
-
+    require_once "qcl/log/Logger.php";
     $logger =& qcl_log_Logger::getInstance();
     $this->_logger =& $logger;
     

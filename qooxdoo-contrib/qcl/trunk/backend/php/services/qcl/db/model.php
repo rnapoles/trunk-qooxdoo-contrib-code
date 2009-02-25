@@ -584,7 +584,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * skip if no column definition available
        */
-      if ( count($property->children()) == 0)
+      if ( qcl_xml_simpleXmlStorage::nodeGetChildCount($property) == 0)
       {
         continue;
       }
@@ -792,12 +792,16 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * creating link tables
      */
-    $links = $doc->model->links;
-    
-    $this->log( "Model has " . ( is_object($links) ? count($links->children() ) : "no" ) . " links.", "propertyModel" );    
-    
-    if ( is_object($links) and count($links->children() ) )
+    $links = $doc->model->links; 
+
+    $this->log( "Model has " . 
+      ( is_object( $links ) ? 
+        qcl_xml_simpleXmlStorage::nodeGetChildCount( $links ) : "no" ) . 
+      " links.", "propertyModel" );  
+
+    if ( is_object( $links ) and qcl_xml_simpleXmlStorage::nodeGetChildCount( $links ) )
     {
+       $linksChildren = $links->children();
       $this->log("Creating or updating linked tables...","propertyModel");
       
       $a = $links->attributes();
@@ -832,7 +836,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * setup each link 
        */
-      foreach ( $links->children() as $link )
+      foreach ( $linksChildren as $link )
       {
         $a = $link->attributes();
         
@@ -893,9 +897,9 @@ class qcl_db_model extends qcl_db_AbstractModel
         /*
          * further linked models
          */
-        $linkChildren = $link->children();
-        if ( count( $linkChildren ) )
+        if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $link ) )
         {
+          $linkChildren = $link->children();
           foreach( $linkChildren as $linkedModel )
           {
             $a = $linkedModel->attributes();
@@ -1232,7 +1236,7 @@ class qcl_db_model extends qcl_db_AbstractModel
       /*
        * or is it a model which is a secondary link ?
        */
-      if ( count( $linkNode->children() ) )
+      if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $linkNode ) )
       {
         foreach ( $linkNode->children() as $linkedModelNode )
         {

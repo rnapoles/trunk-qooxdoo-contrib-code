@@ -28,7 +28,7 @@
         </property>
         <property name="data" type="string">
           <sql>longblob</sql>
-        </property>
+        </property>      
       </properties> 
  
       <!-- indexes -->
