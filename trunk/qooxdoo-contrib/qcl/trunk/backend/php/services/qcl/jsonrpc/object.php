@@ -90,6 +90,15 @@ class qcl_jsonrpc_object extends qcl_core_PropertyObject
   }
   
   /**
+   * Returns the server object of the controller
+   */
+  function &server()
+  {
+    $controller =& $this->getController();
+    return $controller->server();
+  }
+  
+  /**
    * Run once for the given class during one session
    * Implementing method must call parent method before executing action like so:
    * if ( ! parent::runOncePerClassAndSession() ) return;

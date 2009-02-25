@@ -11,13 +11,13 @@ class class_qcl_xml_Tests extends qcl_db_controller
   function __construct()
   {
     parent::__construct();
-    $this->debug("Constructor ...");
+    //$this->debug("Constructor ...");
     //$this->controlAccess();
   }*/
   
  function method_testSimpleXml()
  {
-    $this->debug("Testing SimpleXml storage ...");
+    //$this->debug("Testing SimpleXml storage ...");
     
     $logger =& $this->getLogger();
     
@@ -29,13 +29,13 @@ class class_qcl_xml_Tests extends qcl_db_controller
     $parser =& new qcl_xml_SimpleXmlStorage( &$this, $testfile );
     //$parser->setOwnedBySessionId( $this->getSessionId() );
     
-    $this->debug("Deleting original xml file...");
+    //$this->debug("Deleting original xml file...");
     $parser->deleteFile();
     
-    $this->debug("Creating new empty xml file...");
+    //$this->debug("Creating new empty xml file...");
     $parser->createFile();
     
-    $this->debug("Creating document tree...");
+    //$this->debug("Creating document tree...");
     $doc =& $parser->getDocument();
    
     $record  =& $doc->addChild("record"); 
@@ -62,15 +62,15 @@ class class_qcl_xml_Tests extends qcl_db_controller
     $this->info("Document tree is:");
     $this->info( $doc->asXML() );
     
-    $this->debug("Saving to file...");
+    //$this->debug("Saving to file...");
     $parser->saveToFile();
     
-    $this->debug("Retrieving stored document from cache ...");
+    //$this->debug("Retrieving stored document from cache ...");
     $parser2 =& new qcl_xml_SimpleXmlStorage( &$this, $testfile );
     //$parser2->setOwnedBySessionId( $this->getSessionId() );
     $parser2->load();
     
-    $this->debug("Cached document tree:");
+    //$this->debug("Cached document tree:");
     $this->info($parser2->asXML());
 
     $logger->setFilterEnabled("xml",false);
@@ -81,7 +81,7 @@ class class_qcl_xml_Tests extends qcl_db_controller
 
   function method_testCache()
   {
-    $this->debug("Not implemented");
+    //$this->debug("Not implemented");
     return $this->response();
   }
  

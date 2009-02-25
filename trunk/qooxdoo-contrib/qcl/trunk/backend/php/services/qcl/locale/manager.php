@@ -37,12 +37,12 @@ class qcl_locale_manager extends qcl_datasource_controller
 	/**
  	* constructor
  	*/
-	function __construct()
+	function __construct( $server )
 	{
   	/*
   	 * initialize parent class
   	 */
-	  parent::__construct();
+	  parent::__construct( &$server );
 
 
 
@@ -62,10 +62,21 @@ class qcl_locale_manager extends qcl_datasource_controller
 
 	}
 
-	//-------------------------------------------------------------
-  // public non-rpc methods
-  //-------------------------------------------------------------
-
+	/**
+	 * Static function to return singleton instance
+	 * @param qcl_jsonrpc_object $callingObject
+	 */
+  function &getInstance( $callingObject )
+  {
+    $className = __CLASS__;
+    if ( ! $GLOBALS[$className] )
+    {
+      $server =& $callingObject->server();
+      $GLOBALS[$className] =& new $className( &$server );
+    } 
+    return $GLOBALS[$className];
+  }
+  
   /**
    * returns the locale model
    * @return qcl_locale_model_qooxdoo

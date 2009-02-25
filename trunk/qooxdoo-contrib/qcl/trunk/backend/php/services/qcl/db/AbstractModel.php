@@ -1028,6 +1028,17 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
   {
     $this->db->deleteWhere ( $this->table, $this->toSql($where) );
   }   
+  
+  
+  /**
+   * Counts records in a table matching a where condition.
+   * @param string  $where where condition
+   * @return int
+   */
+  function countWhere ( $where )
+  {
+    return (int) $this->db->countWhere ( $this->table, $this->toSql($where) );
+  }     
 
   //-----------------------------------------------------------------------
   // Information on records

@@ -436,7 +436,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	}
 
 	/**
-	 * deletes one or more records in a table matching a where condition
+	 * Deletes one or more records in a table matching a where condition
 	 * @param string 	$where where condition
 	 */
 	function deleteWhere ( $table, $where )
@@ -447,6 +447,19 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		");
 	}
 
+  /**
+   * Counts records in a table matching a where condition
+   * @param string  $where where condition
+   */
+  function countWhere ( $table, $where )
+  {
+    return $this->getValue("
+      SELECT COUNT(*)
+      FROM `$table`
+      WHERE $where
+    ");
+  }	
+	
 	/**
 	 * escapes strings for use in sql queries
 	 */

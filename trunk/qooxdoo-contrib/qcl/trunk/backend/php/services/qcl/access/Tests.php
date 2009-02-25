@@ -23,7 +23,7 @@ class class_qcl_access_Tests extends qcl_access_controller
     $logger->setFilterEnabled("propertyModel",true);
         
     $user = either ($params[0], "admin");
-    $this->debug("Testing user $user");
+    //$this->debug("Testing user $user");
     $userModel =& $this->getUserModel();
     $userModel->findByNamedId($user);
     

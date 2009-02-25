@@ -73,7 +73,7 @@ class class_qcl_jsonrpc_Tests extends qcl_datasource_controller
   function method_testIniValue( $params )
   {
     $path = $params[0];
-    $this->debug($this->getIniValue($path));  
+    //$this->debug($this->getIniValue($path));  
   }
   
 }
