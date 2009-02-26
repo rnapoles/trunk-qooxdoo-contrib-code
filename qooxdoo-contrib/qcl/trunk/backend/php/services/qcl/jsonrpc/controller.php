@@ -806,8 +806,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function debugJsonRpcRequestAsHtml()
   {
     
-    $request   =& $this->requestObject();
-    $response  =& $this->responseObject();
+    $request   =& $this->request;
+    $response  =& $this->response;
     $config    =& $this->getConfigModel();
        
        
