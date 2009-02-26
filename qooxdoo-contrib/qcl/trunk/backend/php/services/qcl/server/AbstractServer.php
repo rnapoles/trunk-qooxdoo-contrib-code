@@ -408,8 +408,8 @@ class AbstractServer
      */
     $errorBehavior->SetId( $this->id);
 
-    //$this->debug("Service request: $service.$method");
-    //$this->debug("Parameters: " . var_export($params,true) );
+    $this->debug("Service request: $service.$method");
+    $this->debug("Parameters: " . var_export($params,true) );
 
     /*
      * service components
@@ -433,7 +433,7 @@ class AbstractServer
     {
       $this->sendErrorAndExit();
     }
-    //$this->debug("Loaded file '$classFile'");
+    $this->debug("Loaded file '$classFile'");
 
     /*
      * check if class is defined in this file
@@ -447,7 +447,7 @@ class AbstractServer
     /*
      * instantiate service
      */
-    //$this->debug("Instantiating service class '{$this->serviceClass}'.");
+    $this->debug("Instantiating service class '{$this->serviceClass}'.");
     $serviceObject =& $this->getServiceObject( $this->serviceClass );
     $this->serviceObject =& $serviceObject;
 
@@ -456,7 +456,7 @@ class AbstractServer
      */
     if ( $this->accessibilityBehavior )
     {
-      //$this->debug("Checking accessibility...");
+      $this->debug("Checking accessibility...");
       if ( ! $this->accessibilityBehavior->checkAccessibility( &$serviceObject, $method ) )
       {
         $this->setError(
@@ -472,7 +472,7 @@ class AbstractServer
      * requested method by prefixing the method prefix
      */
     $method = JsonRpcMethodPrefix . $method;
-    //$this->debug("Checking service method '$method'.");
+    $this->debug("Checking service method '$method'.");
     $validMethod = $this->checkServiceMethod( &$serviceObject, $method );
     if ( ! $validMethod )
     {
@@ -487,9 +487,9 @@ class AbstractServer
     /*
      * start the service method and get its output
      */
-    //$this->debug("Starting Service method {$this->serviceClass}.$method");
+    $this->debug("Starting Service method {$this->serviceClass}.$method");
     $this->output = $this->callServiceMethod( &$serviceObject, $method, $params );
-    //$this->debug("Done. Result:" . var_export($this->output,true) );
+    $this->debug("Done. Result:" . var_export($this->output,true) );
 
     /*
      * See if the result of the function was actually an error
@@ -507,12 +507,12 @@ class AbstractServer
      * Give 'em what they came for!
      */
     $response = $this->formatOutput( $this->output );
-    //$this->debug( "Formatted response: " . $response );
+    $this->debug( "Formatted response: " . $response );
 
     /*
      * send reply
      */
-    //$this->debug("Sending response to client ...");
+    $this->debug("Sending response to client ...");
     $this->sendReply( $response, $this->scriptTransportId );
   }
 
@@ -783,7 +783,7 @@ class AbstractServer
       {
         $errorBehavior->SetError( $code, $message );
       }
-      //$this->debug("Error: " . $errorBehavior->GetErrorMessage() );
+      $this->debug("Error: " . $errorBehavior->GetErrorMessage() );
       $this->errorBehavior->SendAndExit();      
     }
     else
