@@ -28,7 +28,8 @@ $serviceComponents = array("bibliograph","security");
 /*
  * check if user is logged in
  */
-$userController =& new class_bibliograph_security;
+$server =& $this->server();
+$userController =& new class_bibliograph_security(&$server);
 if ( ! $userController->method_authenticate() )
 {
   /*

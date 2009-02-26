@@ -301,6 +301,10 @@ class qcl_datasource_controller extends qcl_session_controller
     {
       $this->set("selected",$selected);
     }
+    else
+    {
+      $this->set("selected",$listItems[0]['value']);
+    }
     
     /*
      * return client data
