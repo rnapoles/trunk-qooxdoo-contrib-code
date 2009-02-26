@@ -419,6 +419,7 @@ class AbstractServer
     /*
      * check service request
      */
+    $this->debug("Checking service $service ..." );
     $validService = $this->checkService( $service );
     if ( ! $validService )
     {
@@ -428,6 +429,7 @@ class AbstractServer
     /*
      * load service class file
      */
+    $this->debug("Loading service $service ..." );
     $classFile = $this->loadServiceClass( $service );
     if ( ! $classFile )
     {
@@ -606,6 +608,7 @@ class AbstractServer
     $classFile = $this->servicePathPrefix . $servicePath . ".php";
     if ( file_exists( $classFile ) )
     {
+      $this->debug("Loading class file '$classFile'...");
       require_once $classFile;
     }
     else
