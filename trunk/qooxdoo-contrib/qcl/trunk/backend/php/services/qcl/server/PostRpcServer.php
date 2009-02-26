@@ -15,7 +15,7 @@ class PostRpcServer extends JsonRpcServer
   {
     $input = (object) $_POST;
     $input->params = $this->json->decode( "[" . stripslashes( $input->params ). "]" );
-    //$this->debug("Getting input from post data: " . print_r($input,true) );
+    $this->debug("Getting input from post data: " . print_r($input,true) );
     return $input;
   }
  

@@ -104,7 +104,7 @@ class JsonRpcServer extends AbstractServer
     $accessibilityBehavior =& new AccessibilityBehavior( &$this );
     $this->setAccessibilityBehavior( &$accessibilityBehavior );
     
-    //$this->debug("Server initialized.");
+    $this->debug("Server initialized.");
   }  
 
   /**
