@@ -29,6 +29,8 @@ import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -328,6 +330,41 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         assertEquals('i', reader.read());
         assertEquals(-1, reader.read());
         reader.close();
+    }
+
+    private static final String SPECIAL = "äöüÄÖÜß";
+    
+    @Test
+    public void readerEncoding() throws IOException {
+        Node file;
+        Reader src;
+        int c;
+        StringBuilder str;
+        
+        file = work.join("foo");
+        file.writeBytes(SPECIAL.getBytes(file.getIO().getSettings().encoding));
+        src = file.createReader();
+        str = new StringBuilder();
+        while (true) {
+            c = src.read();
+            if (c == -1) {
+                break;
+            }
+            str.append((char) c);
+        }
+        assertEquals(SPECIAL, str.toString());
+    }
+
+    @Test
+    public void writerEncoding() throws IOException {
+        Node file;
+        Writer dest;
+        
+        file = work.join("foo");
+        dest = file.createWriter();
+        dest.write(SPECIAL);
+        dest.close();
+        assertTrue(Arrays.equals(SPECIAL.getBytes(file.getIO().getSettings().encoding), file.readBytes()));
     }
 
     @Test
@@ -747,6 +784,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     public void gidFile() throws Exception {
         doGid(work.join("file").writeBytes());
     }
+
     private void doGid(Node node) throws IOException {
         int id;
 

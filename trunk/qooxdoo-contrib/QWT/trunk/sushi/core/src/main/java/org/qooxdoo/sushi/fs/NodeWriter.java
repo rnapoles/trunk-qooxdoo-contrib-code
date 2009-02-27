@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 
 public class NodeWriter extends OutputStreamWriter {
     public static NodeWriter create(Node node, boolean append) throws IOException {
@@ -33,8 +34,8 @@ public class NodeWriter extends OutputStreamWriter {
     private final Node node;
     private final String encoding;
     
-    public NodeWriter(Node node, OutputStream dest, String encoding) {
-        super(dest);
+    public NodeWriter(Node node, OutputStream dest, String encoding) throws UnsupportedEncodingException {
+        super(dest, encoding);
         
         this.node = node;
         this.encoding = encoding;
