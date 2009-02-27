@@ -1,12 +1,12 @@
 <?php
 
 // dependencies
-require_once ("qcl/jsonrpc/model.php");
+require_once "qcl/jsonrpc/model.php";
 
 /**
- * Model to do XSLT - Transformations
+ * Model to do XSLT - Transformations in PHP4 and PHP5
  **/
-class qcl_xml_transformer extends qcl_jsonrpc_model
+class qcl_xml_Transformer extends qcl_jsonrpc_model
 {
     var $error;
     
@@ -45,7 +45,7 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
   }
     
 	/**
-	 * transforms xml data with xsl stylesheet using the php domxml extension (XSLT 1.0, PHP4 only)
+	 * Transforms xml data with xsl stylesheet using the php domxml extension (XSLT 1.0, PHP4 only)
 	 * @param mixed 	$xml 		string or filename of xml file to transform
 	 * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
 	 * @param array 	$params 	an associated array to pass to the xsl as top-level parameters
@@ -77,7 +77,9 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 		
 		$domTranObj = $domXsltObj->process($domXmlObj,$params,false,$debugfile);
 		
-		// process
+		/*
+		 * process
+		 */
 		if ( is_object ($domTranObj) )
 		{
 			return $domXsltObj->result_dump_mem($domTranObj);		
@@ -91,7 +93,7 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
   }
     
   /**
-	 * transforms xml data with xsl stylesheet using the php libxslt extension (XSLT 1.0, PHP5 only) 
+	 * Transforms xml data with xsl stylesheet using the php libxslt extension (XSLT 1.0, PHP5 only) 
 	 * this requires the presence of the JavaBridge extension
 	 * @param mixed 	$xml 		string or filename of xml file to transform
 	 * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
@@ -102,7 +104,9 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
   {
 		$doc = new DOMDocument();
     
-		// xsl
+		/*
+		 * xsl
+		 */
 		if ( is_valid_file($xsl) )
     {
 		  $doc->load($xsl);
@@ -114,7 +118,9 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 		$xsl = new XSLTProcessor();
 		$xsl->importStyleSheet($doc);
 		
-		// xml
+		/*
+		 * xml
+		 */
     if ( is_valid_file($xml) )
     {
       $doc->load($xml);

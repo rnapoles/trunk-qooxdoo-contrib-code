@@ -79,7 +79,7 @@ class qcl_application_controller extends qcl_datasource_controller
   {
     if ( $this->getActiveUser() ) 
     {
-      $configModel =& $this->getConfigModel();
+      //$configModel =& $this->getConfigModel();
 
       /*
        * doesn't work!

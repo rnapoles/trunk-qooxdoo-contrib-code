@@ -217,6 +217,8 @@ class qcl_datasource_controller extends qcl_session_controller
     $listItems = array ();
     foreach ( $manager->schemaList() as $schema )
     {
+      $this->debug($schema);
+      
       /*
        * filter
        */

@@ -1,9 +1,12 @@
 <?php
 
-require_once ("qcl/plugin/abstract.php");
+/*
+ * dependencies
+ */
+require_once "qcl/plugin/abstract.php";
 
 /**
- * plugin management class, using a database backend
+ * Plugin management class, using a database backend
  * does not inherit from abstract class, but directly from qc_db_model
  * The class cannot be used directly, you need to subclass it in your application
  */
