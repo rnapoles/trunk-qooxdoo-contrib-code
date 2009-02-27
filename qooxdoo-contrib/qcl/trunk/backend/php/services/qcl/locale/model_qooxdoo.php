@@ -10,15 +10,7 @@ require_once "qcl/persistence/db/Object.php";
 class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
 {
 	
-  /**
-   * Constuctor
-   *
-   * @param qcl_locale_manager $manager
-   */
-  function __construct( $manager )
-  {
-    parent::__construct( &$manager, __CLASS__ );
-  }
+
   
   /**
    * The current message catalogue
@@ -38,11 +30,26 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
   var $locale = null;
   
   /*
-   * @todo unhardcode
+   * 
    */
-  var $locale_dir     = "../../../frontend/source/translation"; 
-  var $locale_js_dir  = "../../../frontend/source/class/bibliograph/translation";  // todo
-  var $translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // todo
+  var $locale_dir; 
+  var $locale_js_dir;  
+  var $translation_js; 
+
+  /**
+   * Constuctor
+   *
+   * @param qcl_locale_manager $manager
+   */
+  function __construct( $manager )
+  {
+    parent::__construct( &$manager, __CLASS__ );
+    
+    $this->locale_dir     = "../../../frontend/source/translation"; 
+    $this->locale_js_dir  = "../../../frontend/source/class/bibliograph/translation";  // todo
+    $this->translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // todo
+    
+  }
   
   /**
    * does the actual lookup
