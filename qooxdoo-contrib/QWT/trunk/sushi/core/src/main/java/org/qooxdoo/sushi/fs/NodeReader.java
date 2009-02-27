@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 public class NodeReader extends InputStreamReader {
     public static NodeReader create(Node node) throws IOException {
@@ -33,8 +34,8 @@ public class NodeReader extends InputStreamReader {
     private final Node node;
     private final String encoding;
     
-    public NodeReader(Node node, InputStream source, String encoding) {
-        super(source);
+    public NodeReader(Node node, InputStream source, String encoding) throws UnsupportedEncodingException {
+        super(source, encoding);
         
         this.node = node;
         this.encoding = encoding;
