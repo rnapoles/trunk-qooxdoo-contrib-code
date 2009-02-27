@@ -12,6 +12,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <mavenrepo.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable</mavenrepo.releases><!-- CAUTION: url ends with "-s$
+    <mavenrepo.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</mavenrepo.snapshots>
+ 
     <!-- CAUTION: changing versions here affects previously deployed artifacts! 
          Use the release plugin or bump the version of this pom to avoid this!  -->
     <toolkit.version>0.3.0</toolkit.version>
