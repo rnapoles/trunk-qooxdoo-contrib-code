@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model.php";
+require_once "qcl/db/XmlSchemaModel.php";
 
 /**
  * model for messages stored in a database

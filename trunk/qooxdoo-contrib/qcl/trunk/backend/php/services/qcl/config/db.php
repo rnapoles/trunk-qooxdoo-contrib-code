@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model.php";
+require_once "qcl/db/XmlSchemaModel.php";
 
 /**
  * configuration management class, using a database backend

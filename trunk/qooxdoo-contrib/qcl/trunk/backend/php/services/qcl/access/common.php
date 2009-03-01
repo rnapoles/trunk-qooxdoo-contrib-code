@@ -3,7 +3,7 @@
 /*
  * Dependencies
  */
-require_once "qcl/db/model.php";
+require_once "qcl/db/XmlSchemaModel.php";
 
 /**
  * common base class for permission, role and user models

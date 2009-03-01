@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model.php";
+require_once "qcl/db/XmlSchemaModel.php";
 
 /**
  * Class modeling datasource information that is stored in a 

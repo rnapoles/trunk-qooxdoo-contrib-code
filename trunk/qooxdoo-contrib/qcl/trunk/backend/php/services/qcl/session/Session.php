@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model.php";
+require_once "qcl/db/XmlSchemaModel.php";
 
 /**
  * Model for session data bases on a mysql database model.
