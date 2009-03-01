@@ -6,12 +6,12 @@ require_once "qcl/db/AbstractModel.php";
 
 /**
  * Model base class for models based on a (mysql) database
- * @todo make this dbms-independent
+ * that are defined by an xml schema definition.
  * @todo rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
-class qcl_db_model extends qcl_db_AbstractModel
+class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
 {
 
   /**
@@ -36,7 +36,7 @@ class qcl_db_model extends qcl_db_AbstractModel
 
   /**
    * Returns the column name from a property name. 
-   * Alias for qcl_db_model::getPropertySchemaName
+   * Alias for qcl_db_XmlSchemaModel::getPropertySchemaName
    * @return string
    * @param string $property Property name
    */
@@ -59,7 +59,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @param string $link
    * @param string $orderBy
    * @param mixed $properties
-   * @see qcl_db_model::findWhere()
+   * @see qcl_db_XmlSchemaModel::findWhere()
    * 
    */
   function findByLinkedId( $id, $link, $orderBy=null, $properties="*" )
@@ -75,7 +75,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @param string $link
    * @param string $orderBy
    * @param mixed $properties
-   * @see qcl_db_model::findWhere()
+   * @see qcl_db_XmlSchemaModel::findWhere()
    * 
    */
   function findByLinkedNamedId( $namedId, $link, $orderBy=null, $properties="*" )
@@ -89,7 +89,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * Finds all records that are linked to the given model in 
    * its current state.
    *
-   * @param qcl_db_model $model
+   * @param qcl_db_XmlSchemaModel $model
    * @param string $orderBy
    * @param mixed $properties
    * @param bool $distinct
@@ -474,7 +474,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * Get the modelTableInfo persistent object to look up if this
      * table has been initialized already. To avoid an indefinitive loop,
-     * the qcl_persistence_db_Model used by qcl_db_ModelTableInfo must
+     * the qcl_persistence_db_Model used by qcl_db_XmlSchemaModelTableInfo must
      * be especially treated. You can upgrade its schema only be deleting
      * the table.
      */
@@ -500,7 +500,7 @@ class qcl_db_model extends qcl_db_AbstractModel
         if ( ! $qclDbModelTableInfo )
         {
           // pass by reference doesn't work, so two objects will always exist
-          $qclDbModelTableInfo = new qcl_db_ModelTableInfo( $this );  
+          $qclDbModelTableInfo = new qcl_db_XmlSchemaModelTableInfo( $this );  
         }
         $this->modelTableInfo =& $qclDbModelTableInfo; 
       }
@@ -1141,7 +1141,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * Gets an instance of the model that is joined to this model for the specific link name
    *
    * @param string $Name of the link
-   * @return qcl_db_model Model instance or false if no model could be found.
+   * @return qcl_db_XmlSchemaModel Model instance or false if no model could be found.
    */
   function &getLinkedModelInstance( $name )
   {
@@ -1202,7 +1202,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * Returns the name of the link in the schema xml, given a model instance.
    * Throws an error if the model is not linked.
    *
-   * @param qcl_db_model $model
+   * @param qcl_db_XmlSchemaModel $model
    * @return mixed Array if link(s) ar found, false if not found
    */
   function getLinksByModel( $model )
@@ -1214,9 +1214,9 @@ class qcl_db_model extends qcl_db_AbstractModel
       $this->raiseError("Model has no links.");
     }
     
-    if ( ! is_a($model,"qcl_db_model" ) )
+    if ( ! is_a($model,"qcl_db_XmlSchemaModel" ) )
     {
-      $this->raiseError("Argument needs to be a qcl_db_model or subclass.");
+      $this->raiseError("Argument needs to be a qcl_db_XmlSchemaModel or subclass.");
     }
    
     $links = array();
@@ -1263,7 +1263,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   /**
    * Create a link between this model and a different model.
    * This method is for links that connect two models only. For three or more models, use
-   * @see qcl_db_model::unlinkFrom()
+   * @see qcl_db_XmlSchemaModel::unlinkFrom()
    *
    * @param string|object $first Either the object to link to or the name of the link in the schema xml
    * @param int[optional] $linkedId Id of the recordset in the remote model. if not given, the id
@@ -1286,7 +1286,7 @@ class qcl_db_model extends qcl_db_AbstractModel
     /*
      * context data
      */
-    if ( is_a( $first,"qcl_db_model" ) )
+    if ( is_a( $first,"qcl_db_XmlSchemaModel" ) )
     {
       $links = $this->getLinksByModel( &$first );
     }
@@ -1300,7 +1300,7 @@ class qcl_db_model extends qcl_db_AbstractModel
      */
     if ( ! $linkedId )
     {
-      if ( is_object( $first ) and $first->isInstanceOf("qcl_db_model") )
+      if ( is_object( $first ) and $first->isInstanceOf("qcl_db_XmlSchemaModel") )
       {
         $linkedId = $first->getId();  
       }
@@ -1378,7 +1378,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   /**
    * Removes a link between this model and a different model.
    * This method is for links that connect two models only. For three or more models, use
-   * @see qcl_db_model::unlinkFrom()
+   * @see qcl_db_XmlSchemaModel::unlinkFrom()
    *
    * @param string|object $first Either the object to unlink from or 
    * the name of the link in the schema xml.
@@ -1394,7 +1394,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   
   /**
    * Link a variable number of models
-   * @param qcl_db_model $model2 Model
+   * @param qcl_db_XmlSchemaModel $model2 Model
    */
   function linkWith()
   {
@@ -1405,7 +1405,7 @@ class qcl_db_model extends qcl_db_AbstractModel
 
   /**
    * Unlink a variable number of models
-   * @param qcl_db_model $model2 Model
+   * @param qcl_db_XmlSchemaModel $model2 Model
    * @param bool
    */
   function unlinkFrom()
@@ -1417,7 +1417,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   
   /**
    * Remove all links from the current model instance ta variable number of models
-   * @param qcl_db_model $model2 Model
+   * @param qcl_db_XmlSchemaModel $model2 Model
    * @param bool
    */
   function unlinkFromAll()
@@ -1429,7 +1429,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   
   /**
    * Checks whether models are linked
-   * @param qcl_db_model $model2 Model
+   * @param qcl_db_XmlSchemaModel $model2 Model
    * @param bool
    */
   function isLinkedWith()
@@ -1468,9 +1468,9 @@ class qcl_db_model extends qcl_db_AbstractModel
   
   /**
    * Create or delete a link a variable number of models
-   * @param qcl_db_model $model2 Model to link with
-   * @param qcl_db_model $model3 Optional model to link with
-   * @param qcl_db_model $model4 Optional model to link with
+   * @param qcl_db_XmlSchemaModel $model2 Model to link with
+   * @param qcl_db_XmlSchemaModel $model3 Optional model to link with
+   * @param qcl_db_XmlSchemaModel $model4 Optional model to link with
    */
   function _modifyLink()
   {    
@@ -1864,7 +1864,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   /**
    * Imports initial link data for the model from an xml 
    * for the structure, 
-   * @see qcl_db_model::exportLinkData()
+   * @see qcl_db_XmlSchemaModel::exportLinkData()
    * @param string $path
    */
   function importLinkData($path=null)
@@ -2046,5 +2046,630 @@ class qcl_db_model extends qcl_db_AbstractModel
       }          
     }
   }
+
+  //-------------------------------------------------------------
+  // Model Setup methods
+  //-------------------------------------------------------------
+  
+  /**
+   * gets the path of the file that contains the initial
+   * data for the model
+   */
+  function getDataPath()
+  {
+    if ( $this->importDataPath )
+    {
+      return $this->importDataPath;
+    }
+    $class = get_class($this);
+    $path  = str_replace("_","/",$class) . ".data.xml";    
+    return $path;
+  }
+  
+  /**
+   * setup model properties
+   */
+  function setupProperties()
+  {
+
+    $this->log("Setting up properties...", "propertyModel" );
+    
+    /*
+     * defintion node
+     */
+    $schemaXml  =& $this->getSchemaXml(); 
+    $definition =& $schemaXml->getNode("/model/definition");
+    if ( ! $definition )
+    {
+      $this->raiseError("Model schema xml does not have a 'definition' node.");
+    }
+    
+    /*
+     * properties
+     */
+    $properties =& $definition->properties;
+    if ( ! is_object($properties) )
+    {
+      $this->raiseError("Model has no properties.");
+    }
+    
+    $children   =& $properties->children();
+    foreach ( $children as $propNode)
+    {
+      $attrs     = $propNode->attributes(); 
+      $propName  = (string) $attrs['name'];
+      
+
+      //$this->debug("Setting up property '$propName'");
+      
+      /*
+       * store shorcut object property for easy
+       * sql string coding: "SELECT {$this->col_id} ..."
+       * @todo remove this eventually, bad style
+       */
+      $columnVar = "col_$propName";
+      $this->$columnVar = $propName;
+      
+      /*
+       * store property node
+       */
+      $this->propertyNodes[$propName] = $propNode;
+      
+      /*
+       * make an alias to all-lowercased property name
+       * because overloading doesn't preserve letter
+       * cases
+       */
+      $this->propertyNodes[strtolower($propName)] = $propNode;
+      
+      /*
+       * store property name as key and value
+       */
+      $this->properties[$propName] = $propName; 
+      //$this->debug(gettype($propNode)); 
+    } 
+    
+//   //$this->debug("Properties:");
+//   //$this->debug(array_keys($this->propertyNodes));
+//   //$this->debug(array_keys(get_object_vars($this)));
+    
+    /*
+     * aliases
+     */
+    $aliases =& $definition->aliases;
+    if ( $aliases )
+    {
+      $aliasMap = array();
+      foreach($aliases->children() as $alias)
+      {
+        
+        /*
+         * get alias
+         */
+        $attrs    = $alias->attributes();
+        $propName = (string) $attrs['for'];
+        $column   = qcl_xml_SimpleXmlStorage::getData(&$alias);
+        
+        /*
+         * store in alias map
+         */
+        $aliasMap[$propName] = $column; 
+        
+        /*
+         * overwrite object property
+         */
+        $columnVar = "col_$propName"; 
+        $this->$columnVar = $column;
+        
+        /*
+         * overwrite property name with alias
+         */
+        $this->properties[$propName] = $column; 
+        
+        /*
+         * store in aliases array
+         */
+        $this->aliases[$column] = $propName;
+      }
+    }    
+    //$this->debug("Alias Map:");
+    //$this->debug($aliasMap);
+    
+    /*
+     * setup metadata array with shortcuts to property nodes
+     */
+    $propGroups =& $definition->propertyGroups;
+    if ( $propGroups )
+    {
+      $metaDataNode =& qcl_xml_SimpleXmlStorage::getChildNodeByAttribute($propGroups,"name","metaData"); 
+      if ( $metaDataNode )
+      {
+        foreach ( $metaDataNode->children() as $metaDataPropNode )
+        {
+          $attrs = $metaDataPropNode->attributes();
+          $name  = (string) $attrs['name'];
+          //$this->debug("$name => " . gettype($this->propertyNodes[$name]) );
+          if ( isset($this->propertyNodes[$name]) )
+          {
+            $this->metaDataProperties[$name] =& $this->propertyNodes[$name];  
+          }
+        }
+      }
+      //$this->debug("Metadata properties:"); 
+      //$this->debug( array_keys($this->metaDataProperties));      
+    }
+  }  
+  
+  /**
+   * returns the absolute path of the xml file that
+   * is connected by default to this model. It is located
+   * in the same directory as the class file 
+   * path/to/class/classname.schema.xml
+   * return string
+   */
+  function getSchmemaXmlPath()
+  {
+    if ( $this->schemaXmlPath or $this->schemaXmlPath === false )
+    {
+      return $this->schemaXmlPath;
+    }
+    $class = get_class($this);
+    return str_replace("_","/",$class) . ".model.xml";
+  }
+  
+  /**
+   * get the model schema as an simpleXml object
+   * @param string $path path of schema xml file or null if default file is used
+   * @return qcl_xml_SimpleXmlStorage
+   */  
+  function &getSchemaXml($path=null)
+  {
+        
+    /*
+     * if schema file has already been parsed, return it
+     */
+    if ( is_object( $this->schemaXml ) )
+    {
+      return $this->schemaXml;
+    }
+
+    /*
+     * get schema file location
+     */
+    $path = either( $path, $this->getSchmemaXmlPath() );
+    
+    /*
+     * if null, return null
+     */
+    if ( $path === false )
+    {
+      return null;
+    }
+    
+    /*
+     * check file
+     */
+    if ( ! is_valid_file($path) )
+    {
+      $this->raiseError("No valid file path: '$path'");
+    }
+    
+    /*
+     * get and return schema document 
+     */
+    $this->schemaXml =& $this->parseXmlSchemaFile($path);
+    return $this->schemaXml;     
+  }
+  
+  /**
+   * Parses an xml schema file, processing includes
+   * @param string $file
+   * @return qcl_xml_SimpleXmlStorage
+   */
+  function &parseXmlSchemaFile($file)
+  {
+
+    /*
+     * include simple xml library (cannot do that in header without
+     * creating include order problems)
+     */
+    require_once "qcl/xml/SimpleXmlStorage.php";    
+    
+    /*
+     * load model schema xml file
+     */
+    $this->log("Parsing model schema file '$file'...","propertyModel");
+    $controller =& $this->getController();
+    $modelXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $modelXml->load();
+
+    /*
+     * The timestamp of the schema file. When a schema extends
+     * another schema, the newest filestamp is used.
+     */
+    if ( $modelXml->lastModified() > $this->schemaTimestamp )
+    {
+      $this->schemaTimestamp = $modelXml->lastModified();
+    }
+
+    /*
+     * The document object
+     */
+    $doc =& $modelXml->getDocument();
+    
+    /*
+     * does the model schema inherit from another schema?
+     */
+    $rootAttrs    = $doc->attributes();
+    $includeFiles = (string) $rootAttrs['include'];
+    
+    if ( $includeFiles )
+    {
+      foreach( explode(",",$includeFiles) as $includeFile )
+      {
+        $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
+        $parentXml   =& $this->parseXmlSchemaFile( $includeFile );
+        $modelXml->extend($parentXml);
+        //$this->debug($modelXml->asXml());
+      } 
+    }
+     
+    /*
+     * return the aggregated schema object
+     */
+    return $modelXml;
+  }
+  
+  /**
+   * Parses an xml data file, processing includes
+   * @param string $file
+   * @return qcl_xml_SimpleXmlStorage
+   */
+  function &parseXmlDataFile( $file )
+  {
+
+    /*
+     * include simple xml library (cannot do that in header without
+     * creating include order problems
+     */
+    require_once "qcl/xml/SimpleXmlStorage.php";      
+    
+    /*
+     * load model schema xml file
+     */
+    $this->log("Parsing model data file '$file'...","propertyModel");
+    $controller =& $this->getController();
+    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $dataXml->load();
+    
+    /*
+     * The document object
+     */
+    $doc =& $dataXml->getDocument();
+    
+    /*
+     * does the  data inherit from another file?
+     */
+    $rootAttrs    = $doc->attributes();
+    $includeFiles = (string) $rootAttrs['include'];
+    //$this->debug("Included files: $includeFiles");
+    
+    if ( $includeFiles )
+    {
+      foreach( explode(",",$includeFiles) as $includeFile )
+      {
+        $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
+        $parentXml   =& $this->parseXmlSchemaFile( $includeFile );
+        $dataXml->extend($parentXml);
+        //$this->debug($dataXml->asXml());
+      } 
+    }
+     
+    /*
+     * return the aggregated schema object
+     */
+    return $dataXml;
+  }
+ 
+  //-------------------------------------------------------------
+  // Import and export of model data
+  //-------------------------------------------------------------  
+  
+  /**
+   * exports model data to an xml file
+   *
+   * @param string $path file path, defaults to the location of the inital data file
+   * @return qcl_xml_SimpleXmlStorage The xml document object
+   */
+  function &export($path=null)
+  {
+    $controller =& $this->getController();
+    
+    /*
+     * schema document
+     */
+    $schemaXml    =& $this->getSchemaXml(); 
+    $schemaXmlDoc =& $schemaXml->getDocument();
+      
+    /*
+     * path of exported file
+     */
+    $path = either($path,$this->getDataPath());
+    $this->log("Exporting {$this->name} data to $path","propertyModel");
+    
+    /*
+     * remove old file if it exists
+     */
+    @unlink($path);
+    
+    /*
+     * create new xml file
+     */
+    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $path );
+    $dataXml->createFile();
+    
+    /*
+     * create the main nodes
+     */
+    $doc         =& $dataXml->getDocument();
+    $dataNode    =& $doc->addChild("data");
+    $recordsNode =& $dataNode->addChild("records");
+
+    /*
+     * alias node
+     */
+    $aliasNode =& $schemaXml->getNode("/model/definition/aliases");
+    
+    /*
+     * property groups in model schema
+     */
+    $propGrpsNode =& $schemaXml->getNode("/model/definition/propertyGroups");
+    //$this->debug($propGrpsNode->asXml());
+    
+    /*
+     * metatdata property names
+     */
+    $metaDataProperties = array_keys($this->metaDataProperties);
+    
+    /*
+     * list of properties minus those which should be
+     * skipped
+     */
+    $propList     =  $this->properties(); 
+    $skipExpNode  =& $schemaXml->getChildNodeByAttribute(&$propGrpsNode,"name","skipExport");
+    
+    foreach( $this->propertyNodes as $propNode )
+    {
+      $attrs = $propNode->attributes();
+      $skipExpAttr = (string) either($attrs['skipExport'],$attrs['skipexport']); 
+      if ( $skipExpAttr == "true" )
+      {
+        $skipPropList[] = $attrs['name'];
+      }
+    }
+    
+    $skipPropList = array_unique($skipPropList);
+    $propList = array_diff($propList,$skipPropList);
+    
+    $this->log("Exporting properties " . implode(",",$propList) . ", skipping properties " . implode(",",$skipPropList) . ".","propertyModel");
+    
+    /*
+     * export all records
+     */ 
+    $records = $this->findAll();
+    
+    foreach($records as $record)
+    {
+      $recordNode =& $recordsNode->addChild("record");
+      
+      /*
+       * dump each column value 
+       */
+      foreach ($propList as $propName )
+      {
+        /*
+         * column data; skip empty columns
+         */
+        $columnData = $record[$propName];
+        if ( empty($columnData) )
+        {
+          continue;  
+        }
+        
+        $data = xml_entity_encode($columnData);
+         
+        if ( in_array($propName,$metaDataProperties) )
+        {
+          /*
+           * if property is part of metadata, use attribute
+           */          
+          $recordNode->addAttribute($propName,$data); 
+        }
+        else
+        { 
+          /*
+           * otherwise, create property data node 
+           */
+          $propDataNode =& $recordNode->addChild("property");
+          $propDataNode->addAttribute("name",$propName);
+          $dataXml->setData(&$propDataNode, $data);
+        }
+      }
+    }
+    
+    /*
+     * save xml
+     */
+    $dataXml->saveToFile();
+    return $dataXml;
+  }
+  
+
+  
+  /**
+   * imports initial data for the model from an xml 
+   * document into the database. The schema of the xml file is the following:
+   * <pre>
+   * <?xml version="1.0" encoding="utf-8"?>
+   * <root>
+   *  <data>
+   *    <records>
+   *      <record col1="a" col2="b">
+   *        <property name="col3">c</property>
+   *        <property name="col4">d</property>
+   *        ...
+   *      </record>
+   *      <record col1="x" col2="y">
+   *        property name="col3">z</property>
+   *        ...
+   *      </record>
+   *      ...
+   *    </records>
+   *  <data>
+   * </root>
+   * </pre>
+   * In this example, col1 and col2 are metadata columns/properties which allow
+   * searching the xml document easily via xpath. both attributes and child nodes of
+   * a <record> node will be imported into the database
+   */
+  function import($path)
+  {
+    /*
+     * check file
+     */
+    if ( !is_valid_file($path) )
+    {
+      $this->raiseError("qcl_db_model::import: '$path' is not a valid file.");
+    }
+
+    /*
+     * schema document
+     */
+    $schemaXml    =& $this->getSchemaXml();
+    $schemaXmlDoc =& $this->schemaXml->getDocument();
+    
+    $this->log("Importing data from '$path' into {$this->name}...", "propertyModel" );
+    
+    /*
+     * open xml data file and get record node
+     */
+    $dataXml     =& $this->parseXmlDataFile($path);
+    $dataDoc     =  $dataXml->getDocument(); // don't use pass by reference here
+    $recordsNode =  $dataXml->getNode("/data/records");
+    
+    if ( ! is_object($recordsNode) )
+    {
+      $this->raiseError("Data document has no records node!");
+    }
+    
+    /*
+     * iterate through all records and import them
+     */
+    $count = 0;
+    $records = $recordsNode->children();
+    foreach ( $records as $record )
+    {
+      
+      /*
+       * populate properties with attributes
+       */
+      $properties = array();
+      $attributes = $record->attributes();
+      foreach( $attributes as $attrName => $attrVal )
+      {
+        $properties[$attrName] = (string) $attrVal;
+      }
+      
+      /*
+       * add child node data to properties
+       */
+      $propChildren = $record->children();
+      foreach ( $propChildren as $propNode )
+      {
+        $propAttrs = $propNode->attributes();
+        $propName  = (string) $propAttrs['name'];
+        $propData  = $schemaXml->getData( $propNode );
+        $properties[$propName] =$propData;
+      }
+      
+      /*
+       * populate columns with de-xml-ized property data, using aliases for property
+       * names for column names
+       */
+      $data = array();
+      foreach( $properties as $propName => $propData )
+      {
+        $colName = $this->getColumnName($propName);
+        $data[$colName] = xml_entity_decode($propData);
+      }
+      
+      /*
+       * insert data into database
+       * this will not overwrite existing entries which are primary keys or are part
+       * of a "unique" index. 
+       */
+       //$this->debug($this->properties);
+      $id = $this->insert($data);
+      if ($id) $count++;
+    }
+    $this->log("$count records imported.","propertyModel");
+  }
+  
+  //-------------------------------------------------------------
+  // Queries
+  //-------------------------------------------------------------  
+  
+  /**
+   * Checks whether model supports query operators
+   * @return bool
+   */
+  function hasQueryOperators()
+  {
+    $schemaXml =& $this->getSchemaXml();
+    $opNodes   =& $this->getNode("/model/queries/operators");
+    return is_object($opNodes) && count( $opNodes->operator ); 
+  }
+  
+  /**
+   * gets all nodes from the schema xml that contain
+   * information on query operators for a certain
+   * property type (string, int, etc.)
+   *
+   * @param string $type  Type of property
+   * @return array Array of SimpleXmlElement (PH4)  objects
+   */
+  function getQueryOperatorNodes( $type )
+  {
+    if ( ! $this->hasQueryOperators() )
+    {
+      $this->raiseError("Model '{$this->name}'' does not support query operators.");
+    }
+    
+    /*
+     * return cached data if available, otherwise retrieve it from schema xml
+     */
+    static $queryOperators = array();
+    
+    if ( ! is_array( $queryOperators[$type] ) )
+    {
+      $schemaXml =& $this->getSchemaXml();
+      $operators =& $this->getNode("/model/queries/operators/operator");
+      
+      foreach ( $operators as $operatorNode )
+      {
+        $attrs = $operatorNode->attributes();
+        if ( (string) $attrs['type'] == $type )
+        {
+          $queryOperators[$type][] =& $operatorNode;
+        }
+      }
+    }
+    
+    /*
+     * return result
+     */
+    return $queryOperators[$type];
+  }  
+  
 }	
 ?>

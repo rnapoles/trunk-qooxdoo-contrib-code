@@ -4,11 +4,11 @@
  */
 require_once "qcl/db/PropertyModel.php";
 
-
-
 /**
- * Class containing all the methods shared by the qcl_db_model and qcl_db_SimpleModel
+ * Class containing all the methods shared by the qcl_db_model and 
+ * qcl_db_SimpleModel
  * @todo define interface
+ * @todo merge qcl_db_AbstractModel and qcl_db_PropertyModel
  */
 class qcl_db_AbstractModel extends qcl_db_PropertyModel
 {
@@ -36,7 +36,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
   /**
    * The schema xml path
    */
-  //var $schemaXmlPath = "qcl/db/model.xml"; 
+  //var $schemaXmlPath = "qcl/db/XmlSchemaModel.xml"; 
     
   /**
    * the name of the table in the database that holds the
