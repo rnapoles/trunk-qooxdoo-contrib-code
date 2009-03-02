@@ -6,7 +6,7 @@ require_once ("qcl/core/mixin.php");
 /**
  * mixin providing methods to model a basic tree structure based on an 
  * sql database table. Can only be used with a model that inherits from
- * qcl_db_model.
+ * qcl_db_XmlSchemaModel.
  */
 
 class qcl_db_tree extends qcl_core_mixin

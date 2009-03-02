@@ -10,7 +10,7 @@ require_once "qcl/persistence/db/Model.php";
  * automatic table creation.
  */
 require_once "qcl/db/XmlSchemaModel.php";
-class qcl_persistence_db_Setup extends qcl_db_model 
+class qcl_persistence_db_Setup extends qcl_db_XmlSchemaModel 
 {
   var $schemaXmlPath = "qcl/persistence/db/Model.xml";
 }
@@ -39,7 +39,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     $controller     =& $this->getController();
 
     /*
-     * Initialize a dummy qcl_db_model object to create tables
+     * Initialize a dummy qcl_db_XmlSchemaModel object to create tables
      * FIXME this can be removed once qcl_db_SimpleModel does
      * automatic table creation.
      */

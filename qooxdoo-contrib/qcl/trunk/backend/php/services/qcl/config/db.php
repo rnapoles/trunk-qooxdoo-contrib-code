@@ -13,7 +13,7 @@ require_once "qcl/db/XmlSchemaModel.php";
  * @todo use userId instead of username
  */
 
-class qcl_config_db extends qcl_db_model
+class qcl_config_db extends qcl_db_XmlSchemaModel
 {    
 	
   /**

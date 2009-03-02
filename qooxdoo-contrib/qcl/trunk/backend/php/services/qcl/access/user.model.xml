@@ -7,7 +7,7 @@
     table="users"
     type="qcl.types.User"
     name="qcl.access.User"
-    extends="qcl.db.Model"> 
+    extends="qcl.db.XmlSchemaModel"> 
      
     <!-- model definition -->
     <definition>
@@ -58,6 +58,7 @@
         foreignKey="userId">
       <link 
         name="role"
+        type="habtm"
         table="link_user_roles" 
         model="qcl.access.Role" />
     </links>

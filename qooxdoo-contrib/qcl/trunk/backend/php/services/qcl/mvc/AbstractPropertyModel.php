@@ -3,19 +3,17 @@
 /*
  * dependencies
  */
-require_once "qcl/db/__init__.php";
-require_once "qcl/jsonrpc/model.php";
-
+require_once "qcl/mvc/AbstractModel.php";
 
 /**
  * Model that has a set of properties which optionally can be connected to a datasource which
- * holds all connection data etc. 
+ * holds all connection data etc. You need to subclass this class in 
+ * order to use it.  
  * @todo rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
- * @todo merge qcl_db_AbstractModel and qcl_db_PropertyModel
  */
-class qcl_db_PropertyModel extends qcl_jsonrpc_model
+class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 {
 
  /**
@@ -73,38 +71,6 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
    */
   var $class;
   
-  /**
-   * The schema as an simpleXml object, containing all
-   * included xml files. Acces with qcl_db_XmlSchemaModel::getSchemaXml();
-   * @access private
-   * @var qcl_xml_SimpleXml
-   */
-  var $schemaXml;
-  
-  /**
-   * The path to the model schema xml file. ususally automatically resolved.
-   * @see qcl_db_XmlSchemaModel::getSchmemaXmlPath()
-   * @var string
-   */
-  var $schemaXmlPath = null;  
-
-  /**
-   * The timestamp of the  model schema xml file.
-   * @var string
-   */
-  var $schemaTimestamp = null;  
-  
-  /**
-   * The timestamp of an xml data file
-   * @var array
-   */
-  var $dataTimestamp = array();
-  
-  /**
-   * Shortcuts to property nodes in schema xml. Access with qcl_db_XmlSchemaModel::getPropertyNode($name)
-   * @array array of object references
-   */
-  var $propertyNodes =array();
 
   /**
    * An associated array having the names of all properties (including linked tables) as
@@ -114,28 +80,6 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
    * @var array
    */
   var $properties = array();  
-
-  /**
-   * An associated array having the names of all alias as
-   * keys and the property names as value.
-   * @access private
-   * @var array
-   */
-  var $aliases = array();    
-  
-  /**
-   * Shortcuts to property nodes which belong to metadata
-   * @array array of object references
-   */
-  var $metaDataProperties;  
-  
-  
-  /**
-   * The path containing data that will imported into the model data 
-   * when the model is initialized for the first time.
-   * @var string
-   */
-  var $importDataPath;
   
   
   /**
@@ -155,7 +99,6 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
   function __construct( $controller, $datasourceModel=null )
   {
 
-    
     /*
      * if $controller parameter is a datasource model,
      * we can use this as datasource and get the 

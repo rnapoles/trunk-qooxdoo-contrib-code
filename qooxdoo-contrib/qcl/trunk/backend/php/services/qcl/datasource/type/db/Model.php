@@ -13,7 +13,7 @@ require_once "qcl/db/XmlSchemaModel.php";
  * use a different storage for your datasource information, you must write
  * custom child classes for the other datasource models.
  */
-class qcl_datasource_type_db_Model extends qcl_db_model
+class qcl_datasource_type_db_Model extends qcl_db_XmlSchemaModel
 {
   
   /**

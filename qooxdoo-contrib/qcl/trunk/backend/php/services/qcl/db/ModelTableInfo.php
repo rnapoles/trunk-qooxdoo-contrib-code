@@ -4,7 +4,7 @@
  */
 require_once "qcl/persistence/db/Object.php";
 
-class qcl_db_ModelTableInfo extends qcl_persistence_db_Object  
+class qcl_db_XmlSchemaModelTableInfo extends qcl_persistence_db_Object  
 {
   /*
    * data

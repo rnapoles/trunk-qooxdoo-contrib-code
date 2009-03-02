@@ -2,18 +2,18 @@
 /*
  * dependencies
  */
-require_once "qcl/db/PropertyModel.php";
+require_once "qcl/db/__init__.php";
+require_once "qcl/mvc/AbstractPropertyModel.php";
 
 /**
- * Class containing all the methods shared by the qcl_db_model and 
+ * Class containing all the methods shared by the qcl_db_XmlSchemaModel and 
  * qcl_db_SimpleModel
  * @todo define interface
  * @todo merge qcl_db_AbstractModel and qcl_db_PropertyModel
  */
-class qcl_db_AbstractModel extends qcl_db_PropertyModel
+class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
 {
 
-  
   /**
    * Returns controller of this model 
    * @return qcl_db_controller 
@@ -45,11 +45,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    */
   var $table;
 
-  /**
-   * shortcuts to schema xml nodes with information on table links
-   * @var array
-   */
-  var $linkNodes = array();
+
   
   /**
    * the local key of this table, usually the id property. acces with ::getLocalKey()
@@ -69,11 +65,6 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
   var $foreignKey;
   
   
-  /**
-   * The persistent model table info object
-   * @var qcl_db_ModelTableInfo
-   */
-  var $modelTableInfo = null; 
 
   /**
    * initializes the model
@@ -83,43 +74,20 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    */
   function initialize( $datasourceModel=null )
   {
-  
+
     /*
-     * call parent method
+     * datasource model
      */
-    parent::initialize( &$datasourceModel );
-    
+    if ( is_object( $datasourceModel ) )
+    {
+      $this->setDatasourceModel( &$datasourceModel );
+    }
+        
     /*
      * connect to datasource, if any
      */
     $this->connect();     
 
-    
-    /*
-     * skip schema setup if no schema xml path
-     */
-    if ( $this->getSchmemaXmlPath() )
-    {
-    
-      /*
-       * setup schema. if necessary, create or update tables and import intial data. 
-       */
-      $this->setupSchema();
-  
-      /*
-       * setup table links
-       */
-      $this->setupTableLinks();
-      
-      /*
-       * error?
-       */
-      if ( $this->getError() )
-      {
-        return false;
-      }
-    
-    }
     return true;
   }
   
@@ -685,7 +653,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml. 
-   * @see qcl_db_model::findeWhere() for details
+   * @see qcl_db_XmlSchemaModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findById( $ids, $orderBy=null, $properties=null, $link=null )
@@ -708,7 +676,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
   
   /**
    * Loads a model record identified by id.
-   * Alias of qcl_db_model::findById().
+   * Alias of qcl_db_XmlSchemaModel::findById().
    * 
    * @param int $id
    * @return arrray()
@@ -725,7 +693,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model::findeWhere() for details
+   * @see qcl_db_XmlSchemaModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )

@@ -15,6 +15,128 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
 {
 
   /**
+   * The schema as an simpleXml object, containing all
+   * included xml files. Acces with qcl_db_XmlSchemaModel::getSchemaXml();
+   * @access private
+   * @var qcl_xml_SimpleXml
+   */
+  var $schemaXml;
+  
+  /**
+   * The path to the model schema xml file. ususally automatically resolved.
+   * @see qcl_db_XmlSchemaModel::getSchmemaXmlPath()
+   * @var string
+   */
+  var $schemaXmlPath = null;  
+
+  /**
+   * The timestamp of the  model schema xml file.
+   * @var string
+   */
+  var $schemaTimestamp = null;  
+  
+  /**
+   * The timestamp of an xml data file
+   * @var array
+   */
+  var $dataTimestamp = array();
+  
+  /**
+   * Shortcuts to property nodes in schema xml. Access with qcl_db_XmlSchemaModel::getPropertyNode($name)
+   * @array array of object references
+   */
+  var $propertyNodes =array();
+
+  /**
+   * shortcuts to schema xml nodes with information on table links
+   * @var array
+   */
+  var $linkNodes = array();  
+  
+  /**
+   * An associated array having the names of all alias as
+   * keys and the property names as value.
+   * @access private
+   * @var array
+   */
+  var $aliases = array();    
+  
+  /**
+   * Shortcuts to property nodes which belong to metadata
+   * @array array of object references
+   */
+  var $metaDataProperties;  
+  
+  /**
+   * The persistent model table info object
+   * @var qcl_db_XmlSchemaModelTableInfo
+   */
+  var $modelTableInfo = null;   
+
+  /**
+   * The path containing data that will imported into the model data 
+   * when the model is initialized for the first time.
+   * @var string
+   */
+  var $importDataPath;  
+  
+  /**
+   * initializes the model
+   * @param mixed $datasourceModel Object reference to
+   * the datasource object, or null if model is independent of a datasource
+   * @return void
+   */
+  function initialize( $datasourceModel=null )
+  {
+  
+    /*
+    //$this->debug(
+     "Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'.",  
+    );
+    */
+    
+    /*
+     * parent method establishes database connection
+     */
+    $controller =& $this->getController();
+    parent::initialize( &$datasourceModel );
+    
+    
+    /*
+     * skip schema setup if no schema xml path
+     */
+    if ( $this->getSchmemaXmlPath() )
+    {
+    
+      /*
+       * setup schema. if necessary, create or update tables and import intial data. 
+       */
+      $this->setupSchema();
+  
+      /*
+       * setup properties
+       */
+      $this->setupProperties();  
+      
+      /*
+       * setup table links
+       */
+      $this->setupTableLinks();
+      
+      /*
+       * error?
+       */
+      if ( $this->getError() )
+      {
+        return false;
+      }
+    
+    }    
+
+  }   
+  
+  
+  /**
    * Rets the name of the column that holds the unique (numeric) id of this table.
    * Usually "id".
    * @return string
@@ -43,7 +165,113 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
   function getColumnName ( $name )
   {
     return $this->getPropertySchemaName( $name );
-  }    
+  }
+  
+  /**
+   * Return the names of all properties of this model
+   * @return array
+   */
+  function properties()
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return array_keys($this->properties);
+  }  
+
+  
+  /**
+   * Checks if property exists
+   *
+   * @param string $name
+   * @return bool
+   */
+  function hasProperty( $name )
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return isset( $this->properties[$name] );    
+  }
+
+  /**
+   * checks if a property has a local alias 
+   *
+   * @param string $propName property name
+   */
+  function hasAlias($propName)
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return ( $this->properties[$propName] != $propName );
+  }
+
+  /**
+   * gets the name the property has in the model schema (i.e. either
+   * the unchanged name or a local alias)
+   * @param string $name
+   * @return string
+   */
+  function getPropertySchemaName ( $name )
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return $this->properties[$name];
+  }
+    
+  /**
+   * Gets the node in the schema xml that contains information on 
+   * the property
+   *
+   * @param string $name
+   * @return SimpleXmlElement  
+   */
+  function &getPropertyNode ( $name )
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    $node =& $this->propertyNodes[ $name ];
+    if ( ! $node )
+    {
+      $this->raiseError("Schema XML for model '{$this->name}' doesn't contain a node for property '$name'.");
+    }
+    return $node ;
+  }  
+  
+  /**
+   * Gets the simple type of the model property (string, int, etc.)
+   *
+   * @param string $name
+   * @return string
+   */
+  function getPropertyType ( $name )
+  {
+    $node  =& $this->getPropertyNode( $name );
+    $attrs =  $node->attributes();
+    return (string) $attrs['type']; 
+  }
+  
+  /**
+   * gets the property name corresponding to a column name
+   * @return string Field Name
+   * @param string $columnName
+   */
+  function getPropertyName ( $columnName )
+  {
+    $this->getSchemaXml(); // make sure aliasMap is initialized
+    static $reverseAliasMap = null;
+    if ( !$reverseAliasMap )
+    {
+      $reverseAliasMap = array_flip($this->properties);
+    }
+    return $reverseAliasMap[$columnName];
+  }  
+
+  /**
+   * Checks whether model has 'namedId' property
+   * @return string the local name of the property
+   */
+  function _checkHasNamedId()
+  {
+    if ( ! $this->hasProperty("namedId") )
+    {
+      $this->raiseError("Model " . $this->className() . " has no 'namedId' property.");  
+    }
+    return $this->getPropertySchemaName("namedId");
+  }  
   
   
   //-------------------------------------------------------------
@@ -145,6 +373,18 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
      */
     foreach( $this->links() as $link )
     {
+      /*
+       *  // @todo rename "link" into "association"
+      switch ( $this->associationType($assocName) )
+      {
+        case "habtm":
+        case "hasAndBelongsToMany":
+        
+        case "hasOne":
+        
+        case "hasMany":
+      }
+      */
       $table = $this->getLinkTable( $link );
       $this->db->delete ( $table, $ids, $this->getForeignKey() );
     }    
@@ -426,7 +666,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
      * to name and converted into PHP-style class name
      * foo.bar.Baz => foo_bar_baz
      */
-    $this->class = strtolower(str_replace(".","_", either( (string)$modelAttrs['class'], (string) $modelAttrs['name'] ) ) ); 
+    $this->class = str_replace(".","_", either( (string)$modelAttrs['class'], (string) $modelAttrs['name'] ) ); 
     
     /*
      * the type can be provided if class is the implementation
@@ -438,7 +678,8 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
      * whether the setup process should upgrade the schema or just use existing tables in
      * whatever schema they are in
      */
-    if ( (string) $modelAttrs['upgradeSchema'] == "no" and ! $forceUpgrade )
+    if ( (string) $modelAttrs['upgradeSchema'] == "no"
+       and ! $forceUpgrade )
     {
       $this->log("Schema document for model name '{$this->name}' is not to be upgraded.","propertyModel");
       return null;
@@ -544,7 +785,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     if ( ! $db->tableExists($table) )
     {
       $db->createTable($table);
-      $this->schemaXml->hasChanged = true;
+      $modelXml->hasChanged = true;
     }
    
     $this->log("Creating aliases...","propertyModel");
@@ -556,7 +797,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     if ($aliases)
     {
       $aliasMap = array();
-      foreach($aliases->children() as $alias)
+      foreach( $aliases->children() as $alias )
       {
         $a = $alias->attributes();
         $aliasMap[ (string) $a['for']] = $modelXml->getData($alias);
@@ -590,11 +831,12 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
       }
       
       /*
-       * @todo check for <sql type="$sqltype">
+       * @todo get sql definition from sql class
+       *
        */
       if ( ! is_object( $property->sql ) )
       {
-        $this->warn("Model Property '$propName' has no definition matching the sql type.");
+        $this->warn("Model Property '$propName' has no sql definition.");
         continue;
       }
 
@@ -801,7 +1043,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
 
     if ( is_object( $links ) and qcl_xml_simpleXmlStorage::nodeGetChildCount( $links ) )
     {
-       $linksChildren = $links->children();
+      $linksChildren = $links->children();
       $this->log("Creating or updating linked tables...","propertyModel");
       
       $a = $links->attributes();
@@ -809,7 +1051,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
       /*
        * get local key column
        */
-      $localKey = (string) either($a['localkey'],$a['localKey']); 
+      $localKey = (string) either($a['localkey'],$a['localKey'],"id"); 
       if ( $localKey )
       {
         $localKeyColName   = either($aliasMap[$localKey],$localKey);
@@ -846,142 +1088,149 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
         $name = (string) $a['name'];
 
         /*
-         * create table
+         * Check if we have a N:N relationship
          */
-        $tbl = (string) $a['table'];
-        if ( $tbl )
-        {
-          $link_table = $this->getTablePrefix() . $tbl;
-        }
-        else
-        {
-          $this->raiseError("A table link must have a 'table' attribute.");
-        }
-        if ( ! $db->tableExists($link_table) )
-        {
-          $db->createTable($link_table);
-        }
-
-        /*
-         * copy over the column definition from the main table
-         */
-        $localKeyDef       = $db->getColumnDefinition( $table, $localKeyColName );
-        $foreignKeyDef     = $db->getColumnDefinition( $link_table, $foreignKeyColName );
+        $tbl      = (string) $a['table'];
+        $linkType = (string) $a['type'];
         
-        //$this->debug("Local Key Definition: $localKeyDef");
-        //$this->debug("Foreign Key Definition: $foreignKeyDef");
-        
-        /*
-         * filter unwanted definition parts 
-         */
-        $localKeyDef = trim(preg_replace("/auto_increment/i","",$localKeyDef));
-        
-        /*
-         * add or modify column if necessary
-         */
-        if ( ! $foreignKeyDef )
+        if ( $tbl or $linkType=="n:n" )
         {
-          /*
-           * column does not exist, add
-           */
-          $db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
-        }
-        elseif ( strtolower($localKeyDef) != strtolower($foreignKeyDef) ) 
-        {
-          /*
-           * exists but is different: modifiy
-           */
-          $db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
-        }
-        
-        /*
-         * further linked models
-         */
-        if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $link ) )
-        {
-          $linkChildren = $link->children();
-          foreach( $linkChildren as $linkedModel )
+          
+          if ( $tbl )
           {
-            $a = $linkedModel->attributes();
-            
-            /*
-             * share datasource?
-             */
-            $shareDatasource = (string) either($a['sharedatasource'],$a['shareDatasource']);
-            
-            /*
-             * linked model
-             */
-            $modelName = str_replace(".","_", (string) $a['name']);
-            if ( ! $modelName )
-            {
-              $this->raiseError("linkedModel node has no 'name' attribute.");
-            }
-            
-            $this->log("Linking $modelName ...","propertyModel");
-            $this->includeClassfile($modelName);
-
-            if ( $shareDatasource != "no" )
-            {
-              $model =& new $modelName( &$this, &$datasourceModel );  
-            }
-            else
-            {
-              $model =& new $modelName( &$this );
-            }
-            
-            /*
-             * get foreign key
-             */
-            $modelTable = $model->table;
-            $fkCol      = $model->getForeignKey();
-            $fkDef      = $model->db->getColumnDefinition( $modelTable, "id" );
-            $fkDef      = trim( str_replace("auto_increment","",$fkDef));
-            
-            if ( ! $fkDef )
-            {
-              $this->raiseError("Cannot get definition for 'id' in table '$modelTable'.");
-            } 
-            
-            /*
-             * add or modify column
-             */
-            $existing = $db->getColumnDefinition($link_table,$fkCol);
-            if ( ! $existing )
-            {
-              $db->addColumn( $link_table, $fkCol, $fkDef );
-            }
-            elseif ( strtolower($existing) != strtolower($fkDef) )
-            {
-              $db->modifyColumn( $link_table, $fkCol, $fkDef );
-            }
+            $link_table = $this->getTablePrefix() . $tbl;
           }
-        }
+          else
+          {
+            $link_table = $this->getTablePrefix() . "link_{$table}_{$name}";
+          }
         
+          if ( ! $db->tableExists($link_table) )
+          {
+            $db->createTable($link_table);
+          }
+
         
-        /*
-         * add to unique index in link table, this works only if the table is
-         * empty
-         * 
-         * disabled momentarily because it doesn't seem to work right
-         *
-        if ( $db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
-        { 
-          $uniqueIndexCols =  $db->getIndexColumns($link_table,"link");
-          if ( ! in_array($foreignKeyColName,$uniqueIndexCols) )
+          /*
+           * copy over the column definition from the main table
+           */
+          $localKeyDef       = $db->getColumnDefinition( $table, $localKeyColName );
+          $foreignKeyDef     = $db->getColumnDefinition( $link_table, $foreignKeyColName );
+          
+          //$this->debug("Local Key Definition: $localKeyDef");
+          //$this->debug("Foreign Key Definition: $foreignKeyDef");
+          
+          /*
+           * filter unwanted definition parts 
+           */
+          $localKeyDef = trim(preg_replace("/auto_increment/i","",$localKeyDef));
+          
+          /*
+           * add or modify column if necessary
+           */
+          if ( ! $foreignKeyDef )
           {
             /*
-             * create new unique index including column
-             *
-            $uniqueIndexCols[] = $foreignKeyColName;
-            $db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
+             * column does not exist, add
+             */
+            $db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
           }
+          elseif ( strtolower($localKeyDef) != strtolower($foreignKeyDef) ) 
+          {
+            /*
+             * exists but is different: modifiy
+             */
+            $db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
+          }
+          
+          /*
+           * further linked models
+           */
+          if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $link ) )
+          {
+            $linkChildren = $link->children();
+            foreach( $linkChildren as $linkedModel )
+            {
+              $a = $linkedModel->attributes();
+              
+              /*
+               * share datasource?
+               */
+              $shareDatasource = (string) either($a['sharedatasource'],$a['shareDatasource']);
+              
+              /*
+               * linked model
+               */
+              $modelName = str_replace(".","_", (string) $a['name']);
+              if ( ! $modelName )
+              {
+                $this->raiseError("linkedModel node has no 'name' attribute.");
+              }
+              
+              $this->log("Linking $modelName ...","propertyModel");
+              $this->includeClassfile($modelName);
+  
+              if ( $shareDatasource != "no" )
+              {
+                $model =& new $modelName( &$this, &$datasourceModel );  
+              }
+              else
+              {
+                $model =& new $modelName( &$this );
+              }
+              
+              /*
+               * get foreign key
+               */
+              $modelTable = $model->table;
+              $fkCol      = $model->getForeignKey();
+              $fkDef      = $model->db->getColumnDefinition( $modelTable, "id" );
+              $fkDef      = trim( str_replace("auto_increment","",$fkDef));
+              
+              if ( ! $fkDef )
+              {
+                $this->raiseError("Cannot get definition for 'id' in table '$modelTable'.");
+              } 
+              
+              /*
+               * add or modify column
+               */
+              $existing = $db->getColumnDefinition($link_table,$fkCol);
+              if ( ! $existing )
+              {
+                $db->addColumn( $link_table, $fkCol, $fkDef );
+              }
+              elseif ( strtolower($existing) != strtolower($fkDef) )
+              {
+                $db->modifyColumn( $link_table, $fkCol, $fkDef );
+              }
+            }
+          }
+          
+          
+          /*
+           * add to unique index in link table, this works only if the table is
+           * empty
+           * 
+           * disabled momentarily because it doesn't seem to work right
+           *
+          if ( $db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
+          { 
+            $uniqueIndexCols =  $db->getIndexColumns($link_table,"link");
+            if ( ! in_array($foreignKeyColName,$uniqueIndexCols) )
+            {
+              /*
+               * create new unique index including column
+               *
+              $uniqueIndexCols[] = $foreignKeyColName;
+              $db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
+            }
+          }
+          else
+          {
+            $this->warn("Cannot create unique constraint in $link_table for " . implode(",",$uniqueIndexCols) . ": Table is not empty.");
+          }*/
         }
-        else
-        {
-          $this->warn("Cannot create unique constraint in $link_table for " . implode(",",$uniqueIndexCols) . ": Table is not empty.");
-        }*/
-        
       }
     }
     
@@ -2539,7 +2788,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
      */
     if ( !is_valid_file($path) )
     {
-      $this->raiseError("qcl_db_model::import: '$path' is not a valid file.");
+      $this->raiseError("qcl_db_XmlSchemaModel::import: '$path' is not a valid file.");
     }
 
     /*

@@ -5,7 +5,7 @@
     basic model stored in a database, containing 
     a numeric id, a modified and created column 
   -->
-  <model name="qcl.db.Model">
+  <model name="qcl.db.XmlSchemaModel">
     
     <definition>
 
@@ -81,7 +81,7 @@
         </operator> 
 
         <!-- the following is not implemented, possible syntax? -->        
-        <operator arguments="int int">
+        <operator arguments="int,int">
           <label>between</label>
           <sql placeholder="?">BETWEEN(?,?)</sql>
         </operator>

@@ -7,7 +7,7 @@
   <model
     name="qcl.session.Message"
     table="messages"
-    extends="qcl.db.Model">  
+    extends="qcl.db.XmlSchemaModel">  
     
     <definition>
       <properties>
