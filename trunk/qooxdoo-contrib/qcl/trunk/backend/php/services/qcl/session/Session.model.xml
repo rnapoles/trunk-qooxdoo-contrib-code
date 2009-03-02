@@ -5,7 +5,7 @@
   <model 
     table="sessions"
     name="qcl.session.Session"
-    extends="qcl.db.Model">
+    extends="qcl.db.XmlSchemaModel">
     
     <definition>
     

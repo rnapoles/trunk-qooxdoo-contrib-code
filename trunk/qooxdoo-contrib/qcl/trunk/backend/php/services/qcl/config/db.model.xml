@@ -4,7 +4,7 @@
   
   <model 
     name="qcl.config.Db"
-    extends="qcl.db.Model"
+    extends="qcl.db.XmlSchemaModel"
     table="config">
  
     <!-- model definition -->

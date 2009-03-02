@@ -9,12 +9,12 @@ require_once "qcl/db/XmlSchemaModel.php";
  * 'Session' here means the connection established by a particular
  * browser instance. 
  */
-class qcl_session_Session extends qcl_db_model 
+class qcl_session_Session extends qcl_db_XmlSchemaModel 
 {
 
   /**
    * the path to the model schema xml file
-   * @see qcl_db_model::getSchmemaXmlPath()
+   * @see qcl_db_XmlSchemaModel::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = "qcl/session/Session.model.xml";  

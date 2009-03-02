@@ -5,7 +5,7 @@
     table="permissions"
     type="qcl.types.Permission"
     name="qcl.access.Permission"
-    extends="qcl.db.Model">
+    extends="qcl.db.XmlSchemaModel">
     
     <definition>
     

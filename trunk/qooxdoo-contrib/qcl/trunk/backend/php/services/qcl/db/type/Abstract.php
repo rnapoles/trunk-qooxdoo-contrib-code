@@ -56,7 +56,7 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
   /**
    * contains a reference to a model if called from a model
    * @access private
-   * @var qcl_db_model
+   * @var qcl_db_XmlSchemaModel
    */
   var $model = null;
   
