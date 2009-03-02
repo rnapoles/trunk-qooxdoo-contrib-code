@@ -2,12 +2,12 @@
 /*
  * dependencies
  */
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 
 /**
  * Base class for objects modeling widget data
  */
-class qcl_databinding_widgets_Widget extends qcl_jsonrpc_model
+class qcl_databinding_widgets_Widget extends qcl_mvc_AbstractModel
 {
 
   /**

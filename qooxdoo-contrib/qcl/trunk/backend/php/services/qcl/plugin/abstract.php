@@ -1,12 +1,12 @@
 <?php
-require_once ("qcl/jsonrpc/model.php");
+require_once ("qcl/mvc/AbstractModel.php");
 
 /**
  * abstract class for classes that implement a plugin
  * 
  */
 
-class qcl_plugin_abstract extends qcl_jsonrpc_model
+class qcl_plugin_abstract extends qcl_mvc_AbstractModel
 {    
 	//-------------------------------------------------------------
   // properties

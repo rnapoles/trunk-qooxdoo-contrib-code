@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 require_once "qcl/persistence/__init__.php";
 
 /*
@@ -31,7 +31,7 @@ define("QCL_PERSISTENCE_READ_LOCK", 2);
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
  */
-class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
+class qcl_persistence_AbstractObject extends qcl_mvc_AbstractModel
 {
   
   /**

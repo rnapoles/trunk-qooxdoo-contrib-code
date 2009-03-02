@@ -441,7 +441,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function initializeModels()
   { 
-    $this->raiseError("qcl_jsonrpc_controller::initializeModels() is abstract.");
+    $this->notImplemented(__CLASS__);
   }
  
   /**

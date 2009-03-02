@@ -2,13 +2,13 @@
 /*
  * depemdencies
  */
-require_once ("qcl/jsonrpc/model.php");
+require_once "qcl/mvc/AbstractModel.php";
 
 /**
  * http request model
  * @todo rename into qcl_net_httpRequest
  */
-class qcl_http_Request extends qcl_jsonrpc_model
+class qcl_http_Request extends qcl_mvc_AbstractModel
 {
 
   /**
@@ -44,9 +44,9 @@ class qcl_http_Request extends qcl_jsonrpc_model
    * @param $method string[optional]
    * @param $data array[optional]
    */
-  function __construct($controller, $url=null, $method = "POST")
+  function __construct( $controller, $url=null, $method = "POST" )
   {
-    parent::__construct(& $controller);
+    parent::__construct( &$controller);
     $this->setUrl($url);
     $this->setMethod($method);
   }

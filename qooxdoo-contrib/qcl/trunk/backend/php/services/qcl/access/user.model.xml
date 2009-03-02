@@ -58,9 +58,8 @@
         foreignKey="userId">
       <link 
         name="role"
-        type="habtm"
-        table="link_user_roles" 
-        model="qcl.access.Role" />
+        jointable="link_user_roles" 
+        model="qcl.access.Role" />  
     </links>
     
   </model>

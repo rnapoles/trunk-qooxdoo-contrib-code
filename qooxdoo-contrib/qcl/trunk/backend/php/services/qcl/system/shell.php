@@ -2,7 +2,7 @@
 
  
 // dependencies
-require_once ("qcl/jsonrpc/model.php");
+require_once ("qcl/mvc/AbstractModel.php");
 
 /**
  * class to run binaries through the shell from php

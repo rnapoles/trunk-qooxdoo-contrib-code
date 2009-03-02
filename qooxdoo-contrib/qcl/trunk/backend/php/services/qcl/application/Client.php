@@ -1,12 +1,12 @@
 <?php
 
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 
 /**
  * Model class representing
  * client. 
  */
-class qcl_application_Client extends qcl_jsonrpc_model
+class qcl_application_Client extends qcl_mvc_AbstractModel
 {
   
   //-------------------------------------------------------------

@@ -45,8 +45,6 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    */
   var $table;
 
-
-  
   /**
    * the local key of this table, usually the id property. acces with ::getLocalKey()
    * @var string
@@ -65,7 +63,6 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   var $foreignKey;
   
   
-
   /**
    * initializes the model
    * @param mixed $datasourceModel Object reference to the datasource object, 
