@@ -55,19 +55,15 @@ qx.Class.define("custom.Application",
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
-
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
+      var list = new qx.ui.form.List();
+      this.getRoot().add(list);
+      list.getChildControl("pane").setPadding(10);
+      for (var i = 0, l = 10; i < l; i++)
+       {
+         var item = new qx.ui.form.ListItem(i.toString());
+         item.setPadding(10);
+         list.add(item);
+       }
     }
   }
 });
