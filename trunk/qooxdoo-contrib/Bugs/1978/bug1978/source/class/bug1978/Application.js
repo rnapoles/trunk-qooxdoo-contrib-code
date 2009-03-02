@@ -107,7 +107,7 @@ qx.Class.define("bug1978.Application",
           top  : 50
       });
 
-      var button = new qx.ui.form.Button("zeig dich!");
+      var button = new qx.ui.form.Button("scrollintoview html");
       button.addListener("execute", function(){
         qx.bom.element.Scroll.intoViewY(document.getElementById("foobar"), container.getContentElement().getDomElement(), null);
       }, this)
@@ -116,6 +116,20 @@ qx.Class.define("bug1978.Application",
       {
           left : 100,
           top  : 400
+      });
+
+
+      var button2 = new qx.ui.form.Button("scrollintoview list");
+
+      button2.addListener("execute", function(){
+        qx.bom.element.Scroll.intoViewY(testItem.getContentElement().getDomElement(), testItem.getLayoutParent().getLayoutParent().getLayoutParent().getContentElement().getDomElement(), null);
+      }, this)
+
+
+      doc.add(button2,
+      {
+          left : 100,
+          top  : 450
       });
 
 
