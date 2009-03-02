@@ -92,7 +92,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
   
   /**
    * Constructor 
-   * @param qcl_jsonrpc_controller  $controller You can also pass a qcl_jsonrpc_model object here,
+   * @param qcl_jsonrpc_controller  $controller You can also pass a qcl_mvc_AbstractModel object here,
    * since the controller can be retrieved from them model.
    * @param mixed $datasource Datasource model object or null if no datasource 
    */

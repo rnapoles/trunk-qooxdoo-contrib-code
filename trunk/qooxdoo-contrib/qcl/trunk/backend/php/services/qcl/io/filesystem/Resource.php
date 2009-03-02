@@ -2,12 +2,12 @@
 /*
  * dependencies
  */
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 
 /**
  * Methods common to all filesystem resources
  */
-class qcl_io_filesystem_Resource extends qcl_jsonrpc_model
+class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
 {
   /**
    * The file resource path

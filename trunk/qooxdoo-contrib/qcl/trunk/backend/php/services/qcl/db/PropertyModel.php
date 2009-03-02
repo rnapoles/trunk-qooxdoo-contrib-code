@@ -4,7 +4,7 @@
  * dependencies
  */
 require_once "qcl/db/__init__.php";
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 
 
 /**
@@ -15,7 +15,7 @@ require_once "qcl/jsonrpc/model.php";
  * model data.
  * @todo merge qcl_db_AbstractModel and qcl_db_PropertyModel
  */
-class qcl_db_PropertyModel extends qcl_jsonrpc_model
+class qcl_db_PropertyModel extends qcl_mvc_AbstractModel
 {
 
  /**
@@ -148,7 +148,7 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
   
   /**
    * Constructor 
-   * @param qcl_jsonrpc_controller  $controller You can also pass a qcl_jsonrpc_model object here,
+   * @param qcl_jsonrpc_controller  $controller You can also pass a qcl_mvc_AbstractModel object here,
    * since the controller can be retrieved from them model.
    * @param mixed $datasource Datasource model object or null if no datasource 
    */

@@ -1,5 +1,5 @@
 <?php
-require_once ("qcl/jsonrpc/model.php");
+require_once ("qcl/mvc/AbstractModel.php");
 
 /**
  * abstract class for classes that implement configuration management
@@ -21,7 +21,7 @@ require_once ("qcl/jsonrpc/model.php");
  *   cached there.  
  */
 
-class qcl_config extends qcl_jsonrpc_model
+class qcl_config extends qcl_mvc_AbstractModel
 {    
 
 	//-------------------------------------------------------------

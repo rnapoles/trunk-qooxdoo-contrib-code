@@ -28,7 +28,7 @@
         foreignKey="permissionId" >
       <link 
         name="role"
-        table="link_roles_permissions"
+        jointable="link_roles_permissions"
         model="qcl.access.Role"/>
     </links>
   </model>

@@ -91,7 +91,7 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 	  /*
 	   * store master objects if given
 	   */
-    if ( is_a($master,"qcl_jsonrpc_model") )
+    if ( is_a($master,"qcl_mvc_AbstractModel") )
     {
       $this->model  =& $master;
       $controller   =& $master->getController();
@@ -114,7 +114,7 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
   
   /**
    * getter for model
-   * @return qcl_jsonrpc_model
+   * @return qcl_mvc_AbstractModel
    */
   function &getModel()
   {

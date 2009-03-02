@@ -1,12 +1,12 @@
 <?php
 
 // dependencies
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 
 /**
  * Model to do XSLT - Transformations in PHP4 and PHP5
  **/
-class qcl_xml_Transformer extends qcl_jsonrpc_model
+class qcl_xml_Transformer extends qcl_mvc_AbstractModel
 {
     var $error;
     

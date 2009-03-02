@@ -116,6 +116,13 @@ class qcl_core_object extends qcl_core_BaseClass
    */
   var $_timestamp;
   
+   /**
+   * database for event listeners registered on this object
+   * @todo mover everything related to events and messages to event package
+   * @var array
+   */
+  var $__event_db = array(); 
+  
   /**
    * Class constructor. If the mixin class property contains 
    * array entries, these classes will be mixed in.
@@ -328,6 +335,16 @@ class qcl_core_object extends qcl_core_BaseClass
      $this->error = null;
    }
 
+  /**
+   * Raises an error about a missing method implementation
+   * @param string class name
+   * @todo get class and method name from backtrace.
+   */
+  function notImplemented( $class = __CLASS__ )
+  {
+    $this->raiseError( "Method (see backtrace) not implemented for class $class. You may have to subclass this class in order to use it." );
+  }   
+   
   /**
    * get include path for a class name
    * @return 
@@ -772,30 +789,24 @@ class qcl_core_object extends qcl_core_BaseClass
       "Backtrace:\n" . 
       $this->backtrace()
     );
-    echo $message;
-    exit;
+    trigger_error($message);
   }  
   
-  function dumpObject($object=null)
+  /**
+   * Exits the current service with a user notice. This
+   * is technically an error, but has no backtrace
+   * @param string $message
+   * @return void
+   */
+  function userNotice ( $message )
   {
-    if ( is_null($object) )
-    {
-      $object =& $this;
-    }
-    $dump = array();
-    foreach ( get_object_vars($object) as $key => $value )
-    {
-      $type   = gettype($value);
-      $class  = is_object($value) ? "(" . get_class($value) . ")" : "";
-      $dump[] = " $key => $type $class";
-      
-    }
-    $this->info("\n" . implode("\n",$dump) );
-  }
+    trigger_error( $message );
+  }  
 
+  
 
   /*
-   * todo: the following methods really should be functions
+   * @todo: the following methods really should be functions
    */
   function checkType( $type, $var )
   {
@@ -844,6 +855,295 @@ class qcl_core_object extends qcl_core_BaseClass
     }    
     return $seconds;
   }
+  
+  
+  //-------------------------------------------------------------
+  // Simple programmatic message and event system 
+  // This might later be rewritten more oo-style with event and 
+  // message objects.
+  //-------------------------------------------------------------
+  
+  /**
+   * Adds a message subscriber. This works only for objects which have been
+   * initialized during runtime. Filtering not yet supported, i.e. message name must
+   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * @todo move to external class
+   * @param string $filter
+   * @param string $method Callback method of the current object
+   */
+  function addMessageSubscriber( $filter, $method )
+  {
+    global $message_db;
+    if ( ! $message_db )
+    {
+      $message_db = array(
+        'filters'  => array(),
+        'data'     => array()
+      );
+    }
+    
+    /*
+     * object id
+     */
+    $objectId = $this->objectId();
+    
+    /*
+     * search if we already have an entry for the filter
+     */
+    $index = array_search( $filter, $message_db['filters'] );
+    if ( $index === false )
+    {
+      /*
+       * filter not found, create new filter and data
+       */
+      $message_db['filters'][] = $filter;
+      $index = count($message_db['filters']) -1;
+      $message_db['data'][$index] = array( array( $objectId, $method ) ); 
+    }
+    else
+    {
+      /*
+       * filter found, add data
+       */
+      $message_db['data'][$index][] = array( $objectId, $method ); 
+    }
+    
+  }
+  
+  /**
+   * Dispatches a message. Filtering not yet supported, i.e. message name must
+   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * @param string $message Message name 
+   * @param mixed $data Data dispatched with message
+   * @todo move to external class
+   */
+  function dispatchMessage ( $message, $data=true )
+  {
+    $this->log("Message $message"); 
+    
+    /*
+     * search message database 
+     */
+    global $message_db;
+    $index = array_search ( $message, (array) $message_db['filters'] );
+    
+    /*
+     * abort if no subcriber for this message registered
+     */
+    if ( $index === false ) return;
+    
+    /*
+     * call object methods
+     */
+    foreach ( $message_db['data'][$index] as $target )
+    {
+      list( $objectId, $method ) = $target;
+      $object =& $this->getObjectById( $objectId );
+      $object->$method($data);
+    }
+    
+  }
+  
+  /**
+   * Adds an event listener. Works only during runtime, i.e. event bindings are not 
+   * persisted.
+   * @todo rewrite using event objects and support persisted event bindings
+   * @param string $type The name of the event
+   * @param string|qcl_jsonrpc_object $object The object or the object id retrieved by '$this->objectId()'
+   * @param string $method callback method of the object 
+   * @todo move to external class
+   */
+  function addEventListener( $type, $object, $method )
+  {
+    /*
+     * object id
+     */
+    if ( is_a( $object,"qcl_jsonrpc_object" ) )
+    {
+      $objectId = $object->objectId();
+    }
+    elseif ( is_string($object) and ! empty( $object ) )
+    {
+      $objectId = $object;
+    }
+    else    
+    {
+      $this->raiseError("Invalid object or object id");
+    }
+    
+    /*
+     * event database
+     */
+    $event_db =& $this->__event_db;
+    if ( ! $event_db )
+    {
+      $event_db = array(
+        'types'  => array(),
+        'data'     => array()
+      );
+    }
+    
+    /*
+     * search if we already have an entry for the event type
+     */
+    $index = array_search( $type, $event_db['types'] );
+    if ( $index === false )
+    {
+      /*
+       * filter not found, create new filter and data
+       */
+      $event_db['types'][] = $type;
+      $index = count($event_db['types']) -1;
+      $event_db['data'][$index] = array( array( $objectId, $method ) ); 
+    }
+    else
+    {
+      /*
+       * filter found, add data
+       */
+      $event_db['data'][$index][] = array( $objectId, $method ); 
+    }
+    
+  }  
+  
+  /**
+   * Dispatches a server event
+   * @param mixed $event Message Event type
+   * @param mixed $data Data dispatched with event
+   * @todo move to external class
+   */
+  function dispatchEvent ( $event, $data=true )
+  {
+    $this->log("Event $event","event");
+    
+    /*
+     * search message database 
+     */
+    $event_db =& $this->__event_db;
+    $index = array_search ( $event, (array) $event_db['types'] );
+    
+    /*
+     * abort if no event listener for this message has been registered
+     */
+    if ( $index === false ) return;
+    
+    /*
+     * call object methods
+     */
+    foreach ( $event_db['data'][$index] as $target )
+    {
+      list( $objectId, $method ) = $target;
+      $object =& $this->getObjectById( $objectId );
+      $object->$method($data);
+    }
+  }
+  
+  //-------------------------------------------------------------
+  // session variables
+  //-------------------------------------------------------------  
+  
+  /**
+   * save a variable in the session 
+   * @param string  $name name of the variable
+   * @param mixed   $data data to be saved
+   * @depreated Use qcl_registry_Session instead
+   */
+  function setSessionVar ( $name, $data )
+  {
+    $reg =& qcl_registry_Session::getInstance();
+    $reg->set($name,$data);
+  }
+  
+  /**
+   * get a variable from the session 
+   * @param string  $name name of the variable
+   * @return reference a  reference to the session variable
+   * @depreated Use qcl_registry_Session instead
+   */
+  function getSessionVar ( $name )
+  {
+    require_once "qcl/registry/Session.php";
+    $reg =& qcl_registry_Session::getInstance();
+    return $reg->get($name);
+  }
+
+  /**
+   * checks if sesion variable exists
+   * @param string  $name name of the variable
+   * @return Boolean
+   * @depreated Use qcl_registry_Session instead
+   */
+  function hasSessionVar ( $name )
+  {
+    require_once "qcl/registry/Session.php";
+    $reg =& qcl_registry_Session::getInstance();
+    return $reg->has($name);
+  }
+    
+/**
+   * the path to the directory containing binary executables, relative to the SERVICE_PATH
+   * @deprecated
+   * @todo move everything related to execution of binaries to a separate class
+   */
+  var $bin_path    = "../../bin/";    
+  
+
+  /**
+   * Run once for the given class during one session
+   * Implementing method must call parent method before executing action like so:
+   * if ( ! parent::runOncePerClassAndSession() ) return;
+   * @todo rewrite using external class
+   * @return bool
+   */
+  function runOncePerClassAndSession()
+  {
+    $flag = get_class($this) . ".runOnceInSession";
+    if ( $this->getSessionVar($flag) ) return false;
+    $this->setSessionVar($flag,true);
+    return true;
+  }  
+
+  /**
+   * Returns file path to binary executables depending on operating system
+   * @return string
+   * @deprecated
+   * @todo move to external class
+   */
+  function getOsBinDir()
+  {
+    $path = SERVICE_PATH . $this->bin_path;
+    switch ( strtolower ( PHP_OS ) )
+    {
+      case "darwin":  $path .= "Darwin/"; break;
+      case "WINNT":   $path .= "win32/";   break;
+      default:        $path .= "i386linux/"; 
+    }
+    return $path;
+  }
+  
+  /**
+   * Returns the path to a directory where temporary data will be stored with
+   * a trailing slash
+   * @deprecated
+   * @todo move to external system class
+   */
+  function tmpDir()
+  {
+    return realpath(QCL_TMP_PATH) . "/";
+  }
+  
+  /**
+   * Hook to return optional error response data. By default, return an 
+   * empty array. Override this method if you want to provide
+   * addition data to be passed with the error response.
+   * @return array
+   */
+  function optionalErrorResponseData()
+  {
+    return array();
+  }
+    
+  
 }
 
 /*

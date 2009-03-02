@@ -51,13 +51,6 @@ class qcl_db_SimpleModel extends qcl_db_AbstractModel
    */
   var $modified = QCL_DB_PROPERTY_TIMESTAMP;  
   
-  /**
-   * Initializes the model. Does nothing currently.
-   */
-  function initialize()
-  {
-    //
-  }
   
   /**
    * simplyfied method that does not rely on the property system

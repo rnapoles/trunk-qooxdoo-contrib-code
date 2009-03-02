@@ -13,6 +13,14 @@ require_once "qcl/jsonrpc/object.php";
 class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
 {
 
+  /**
+   * The controller object. Every model MUST have a controller object from
+   * which it receives service and request information
+   *
+   * @var qcl_jsonrpc_controller or subclass
+   */
+  var $_controller = null;    
+
 	/**
 	 * The current model record data
 	 * @todo rename qcl_jsonrpc::$_data
@@ -26,11 +34,22 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
 	 */
   var $emptyRecord = array();
 
+  /**
+   * Constructor
+   * @param $controller
+   * @return unknown_type
+   */
+  function __construct( $controller )
+  {
+    parent::__construct();
+    $this->setController( &$controller );
+  }
+  
  	/**
  	 * sets controller of this model to be able to link to other models
  	 * connected to the controller
  	 * @param qcl_jsonrpc_controller $controller Controller object. You can 
- 	 * also provide a qcl_jsonrpc_model object
+ 	 * also provide a qcl_mvc_AbstractModel object
  	 */
  	function setController ( $controller )
  	{
@@ -38,7 +57,7 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
 		{
 			$this->_controller =& $controller;
 		}
-		elseif ( is_a( $controller,"qcl_jsonrpc_model" ) )
+		elseif ( is_a( $controller,"qcl_mvc_AbstractModel" ) )
 		{
 		  $this->_controller =& $controller->getController();
 		}
@@ -53,8 +72,24 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
     }
  	}
  	
+ 	/**
+ 	 * Returns the controller object
+ 	 * @return qcl_jsonrpc_controller
+ 	 */
+  function &getController()
+  {
+    return $this->_controller;
+  }
 
- 	  
+  /**
+   * Returns the controller object
+   * @return qcl_jsonrpc_controller
+   */  
+  function &controller()
+  {
+    return $this->_controller;
+  }
+  
 	//-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------
@@ -106,6 +141,30 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
     $controller =& $this->getController();
     $controller->warn( $msg );
   }    
+  
+  /**
+   * Raises a server error and exits
+   * @param string $message
+   * @param int    $number
+   * @param string $file
+   * @param int    $line
+   * @return void
+   */
+  function raiseError( $message, $number=null, $file=null, $line=null )
+  {
+    $controller =& $this->getController();
+    $controller->raiseError( $message, $number, $file, $line );
+  }  
+  
+   /**
+   * Returns the server object of the controller
+   */
+  function &server()
+  {
+    $controller =& $this->getController();
+    return $controller->server();
+  }
+   
   
 }	
 ?>

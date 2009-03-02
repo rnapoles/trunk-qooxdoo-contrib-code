@@ -4,9 +4,9 @@
  * class to convert from one text encoding to another
  */
 
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 
-class qcl_encoding_converter extends qcl_jsonrpc_model 
+class qcl_encoding_converter extends qcl_mvc_AbstractModel 
 {
   var $converter_cmd = "";  
   

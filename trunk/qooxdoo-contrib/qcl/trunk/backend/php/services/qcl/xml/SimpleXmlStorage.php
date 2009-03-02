@@ -4,7 +4,7 @@
  * dependencies
  */
 require_once "qcl/xml/__init__.php";
-require_once "qcl/jsonrpc/model.php";
+require_once "qcl/mvc/AbstractModel.php";
 require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
@@ -51,7 +51,7 @@ class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
  * @see qcl_xml_SimpleXmlStorage::getCacheObject() for details
  * 
  **/
-class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
+class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
 {
  
   /**
