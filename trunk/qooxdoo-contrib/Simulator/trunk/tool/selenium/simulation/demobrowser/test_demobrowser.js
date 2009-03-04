@@ -5,13 +5,12 @@ var config = {
   selServer   : "localhost",
   selPort     : 4444,
   testBrowser : "*custom /usr/lib/firefox-3.0.5/firefox -no-remote",
-  autHost     : "http://172.17.12.142",
-  autPath     : "/~dwagner/workspace/qooxdoo.trunk/application/demobrowser/source/"
-//autPath     : "/~dwagner/workspace/qooxdoo.trunk/application/demobrowser/source/"
+  autHost     : "http://172.17.13.245:8000",
+  autPath     : "/application/demobrowser/source/"
 };
 
-var stepSpeed  = "500"; // millisecs after each command
-var logPause = 7000; // millisecs to wait after loading sample
+var stepSpeed  = "1000"; // millisecs after each command
+var logPause = 10000; // millisecs to wait after loading sample
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
 var setPlayDemos = qxAppInst + '.setPlayDemos("all")'; // set demobrowser to 'autorun'
@@ -24,6 +23,13 @@ var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWi
 var isLogDone = 'var logDone = false; var log = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer.f2.getContentElement().getDomElement().innerHTML; if (log.length >= 52 && log.indexOf("Dispose") < 0 ) { logDone = true; } logDone;'; // check if sample is finished
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
+
+/*
+ * List of demos to ignore. Format: Category:Demo (using the tree items' labels),
+ * i.e. spaces instead of underscores. These demos will be loaded, but the script
+ * won't wait until they're finished and simply move on to the next demo.
+ */ 
+var ignore = ['data:Gears'];
 
 // - Config End ----------------------------------------------------------------
 
@@ -56,6 +62,19 @@ function browserLog(msg)
   return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
 }
 
+/*
+* Generated HTML elements are uppercase in IE
+*/
+function getLogArray(result)
+{
+  var logArray = [];
+  if (result.indexOf("</div>") >0 ) {
+    logArray = result.split("</div>");
+  } else if (result.indexOf("</DIV>") >0 ) {
+    logArray = result.split("</DIV>");
+  }
+  return logArray;
+}
 
 /*
 *  Runs the given script, then gets the current sample's name and log output and sends them to Selenium's log.
@@ -64,27 +83,58 @@ function sampleRunner(script)
 {
   scriptCode = script ? script : runSample;
   // run the sample
-  sel.runScript(script);  
+  sel.runScript(script);
+  Packages.java.lang.Thread.sleep(2000);
   var currentSample = sel.getEval(getSampleLabel);
-  var category = sel.getEval(getSampleCategory);  
+  var category = sel.getEval(getSampleCategory);
+  
+  var skip = false;
+  for (var i=0;i<ignore.length; i++) {
+    var cat = ignore[i].substring(0,ignore[i].indexOf(':'));
+    var sam = ignore[i].substr(ignore[i].indexOf(':') + 1);
+    if (category == cat && currentSample == sam) {
+      skip = true;
+    }
+  }
+  
+  if (skip) {
+    print("Skipping sample: " + category + ' - ' + currentSample);
+    sel.getEval(browserLog('<h3>SKIPPED ' + category + ' - ' + currentSample + '</h3>'));
+    return currentSample;
+  }
+  
+  sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
   // wait for the sample to finish, then get its log output
-  Packages.java.lang.Thread.sleep(logPause);  
-  sel.waitForCondition(isLogDone, "20000");  
+  //Packages.java.lang.Thread.sleep(logPause);
+  try {
+    sel.waitForCondition(isLogDone, "120000");
+  }
+  catch(ex) {
+    logsWithErrors++;
+    print("Error in demo: " + category + " - " + currentSample);
+    sel.getEval(browserLog('<DIV>Error in demo: ' + category + ' - ' + currentSample + '</DIV>'));
+  }
   print(category + " - " + currentSample + ": Processing log");
 
-  var sampleLog = sel.getEval(qxLog);
+  var sampleLog = '';
+  try {
+    sampleLog = sel.getEval(qxLog);
+  }
+  catch(ex) {
+    print("Unable to get log for demo " + + category + ' - ' + currentSample);
+    sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
+  }
 
   // we're only interested in logs containing warnings or errors
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {    
     logsWithErrors++;
-    sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
     sel.getEval(browserLog('<DIV style="padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px" class="qxappender">'));
 
     /* Selenium uses http get requests to pass messages to the server log.
     * If the log message is too long, the server throws an http exception.
     * So we need to chop the message into bits and make multiple calls.
     */
-    var logArray = sampleLog.split(/<\/div>/i);
+    var logArray = getLogArray(sampleLog);
     // we can speed this up since we don't have to wait for the browser
     sel.setSpeed("150");
 
@@ -105,6 +155,9 @@ function sampleRunner(script)
   return currentSample;
 }
 
+/*
+ * Identify the browser by its user agent string.
+ */
 function getBrowser(agent)
 {
   var browser = false;
@@ -149,6 +202,49 @@ function getBrowser(agent)
   return browser;
 }
 
+function runTest()
+  {
+    //sel.runScript(setPlayDemos);
+  sel.runScript(treeSelect(2));
+  sel.runScript(qxAppInst + '.tree.getSelectedItem().setOpen(true)');
+  
+  var agent = sel.getEval(usrAgent);
+  var plat = sel.getEval(platform);
+  var browser = getBrowser(agent);
+  
+  sel.getEval(browserLog("<h1>Demobrowser results from " + currentDate.toLocaleString() + "</h1>"));
+  if (browser) {
+      sel.getEval(browserLog("<p>Browser: " + browser + " on " + plat + "</p>"));
+    }
+  sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
+  
+  print("Starting sample playback");
+  currentSample = sampleRunner(runSample);
+  while (currentSample != lastSample) {
+    lastSample = currentSample;
+    print("Done playing " + lastSample + ", starting next sample");
+  
+    // Demos might pop up alert boxes that will break the test if they aren't removed
+    // before the next Selenium action. getAlert() simulates clicking "OK".
+    while (sel.isAlertPresent()) {
+      var al = sel.getAlert();
+      print("Dismissed alert box:");
+      print(al);
+    }
+  
+    // Ditto for confirmation dialogs.
+    while (sel.isConfirmationPresent()) {
+      sel.chooseCancelOnNextConfirmation();
+      var con = sel.getConfirmation();
+      print("Dismissed confirmation dialog:");
+      print(conf);
+    }
+  
+    currentSample = sampleRunner(runNextSample);
+  }
+  sel.getEval(browserLog("<p>Samples with warnings or errors: " + logsWithErrors + "</p>"));
+}
+
 // - Main --------------------------------------------------------------------
 
 print("Starting test session with browser " + config.testBrowser);
@@ -160,46 +256,14 @@ sel.setSpeed(stepSpeed);
 var currentSample = "current";
 var lastSample = "last";
 
-sel.waitForCondition(isQxReady, "25000");
-
-//sel.runScript(setPlayDemos);
-sel.runScript(treeSelect(2));
-sel.runScript(qxAppInst + '.tree.getSelectedItem().setOpen(true)');
-
-var agent = sel.getEval(usrAgent);
-var plat = sel.getEval(platform);
-var browser = getBrowser(agent);
-
-sel.getEval(browserLog("<h1>Demobrowser results from " + currentDate.toLocaleString() + "</h1>"));
-if (browser) {
-    sel.getEval(browserLog("<p>Browser: " + browser + " on " + plat + "</p>"));
-  }
-sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
-
-print("Starting sample playback");
-currentSample = sampleRunner(runSample);
-while (currentSample != lastSample) {
-  lastSample = currentSample;
-  print("Done playing " + lastSample + ", starting next sample");
-
-  // Demos might pop up alert boxes that will break the test if they aren't removed
-  // before the next Selenium action. getAlert() simulates clicking "OK".
-  while (sel.isAlertPresent()) {
-    var al = sel.getAlert();
-    print("Dismissed alert box:");
-    print(al);
-  }
-
-  // Ditto for confirmation dialogs.
-  while (sel.isConfirmationPresent()) {
-    sel.chooseCancelOnNextConfirmation();
-    var con = sel.getConfirmation();
-    print("Dismissed confirmation dialog:");
-    print(conf);
-  }
-
-  currentSample = sampleRunner(runNextSample);
+try {
+  sel.waitForCondition(isQxReady, "25000");
+  runTest();
 }
-sel.getEval(browserLog("<p>Samples with warnings or errors: " + logsWithErrors + "</p>"));
+catch(ex) {
+  print("Couldn't find qx instance in AUT window.");
+  sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
+}
+
 sel.stop();
 print("Test session finished.");
