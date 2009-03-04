@@ -7,7 +7,7 @@
   provides 
     - central state storage, 
     - browser history support 
-    - access to the top appication with the clipboard
+    - a central clipboard
 
    Copyright:
      2007 Christian Boulanger
@@ -181,7 +181,15 @@ qx.Mixin.define("qcl.application.MApplication",
     _analyzeHashString : function(string)
     { 
       var h  = string || location.hash || "";
-      h = h.replace(/#/,"").replace(/%3D/g,"=").replace(/%26/g,"&"); // safari doesn't properly decodes the URI, therefore a manual replacement
+      /*
+       * Safari bug
+       */
+      while ( h.search(/%25/) != -1 )
+      {
+        h = h.replace(/%25/g,"%");
+      }      
+      
+      h = h.replace(/#/,"").replace(/%3D/g,"=").replace(/%26/g,"&"); 
       var hP = {};
       if (h)
       {
@@ -207,17 +215,17 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     getHashParam : function(key)
     {
-      var hP = this._analyzeHashString();
-      return hP[key];
+       var hP = this._analyzeHashString();
+       return hP[key];
     },
 
 
-    /**
-     * TODOC
+    /** 
+     * Sets an url hash parameter
      *
      * @type member
-     * @param first {var} TODOC
-     * @param second {var} TODOC
+     * @param first {Map|String} Either a map of key-value pairs or the key
+     * @param second {String|undefined} A value or undefined if first parameter is a Map
      * @return {Map} 
      */
     setHashParam : function(first, second)
@@ -244,6 +252,15 @@ qx.Mixin.define("qcl.application.MApplication",
       }
 
       window.location.hash = p.join("&");
+      
+      /*
+       * Safari bug
+       */      
+      while ( window.location.hash.search(/%25/) != -1 )
+      {
+        window.location.hash = window.location.hash.replace(/%25/g,"%");
+      }
+      
       //console.log(window.location.hash);
       return hP;
     },
@@ -271,6 +288,15 @@ qx.Mixin.define("qcl.application.MApplication",
         }
         
         window.location.hash = p.join("&");
+        
+        /*
+         * Safari bug
+         */        
+        while ( window.location.hash.search(/%25/) != -1 )
+        {
+          window.location.hash = window.location.hash.replace(/%25/g,"%");
+        }
+        
       }
       //console.log(window.location.hash);
       return hP;
