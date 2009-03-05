@@ -1,29 +1,16 @@
 <?php
 
-require_once "qcl/persistence/db/Object.php";
 
 /**
  * Persistent object storing and managing datasource information 
  */
-class qcl_datasource_SchemaManager extends qcl_persistence_db_Object 
+class qcl_datasource_SchemaModel extends qcl_db_XmlSchemaModel 
 {
   /**
-   * Maps datasource schema names to datasource information
-   *
-   * @var array
+   * The path of the xml schema definition
    */
-  var $data = array();
-  
-  /**
-   * Constructor. Makes sure only one instance of this class is initialized
-   * by passing the class name as id for the persistent instance
-   * @param qcl_jsonrpc_controller $controller
-   */
-  function __construct( $controller )
-  {    
-    parent::__construct( &$controller, __CLASS__ );
-  }
-  
+  var $schemaXmlPath = "qcl/datasource/SchemaModel.xml";
+    
   /**
    * Register datasource
    * @param string $name Name of datasource schema
@@ -34,12 +21,28 @@ class qcl_datasource_SchemaManager extends qcl_persistence_db_Object
    */
   function register( $name, $class, $title, $description=null )
   {    
-    $this->data[$name] = array(
+    if ( !$name or !$class )
+    {
+      $this->raiseError("Invalid parameters.");
+    }
+    
+    /*
+     * delete entry if exists
+     */
+    $this->deleteWhere(array(
+      'name'        => $name,
+      'class'       => $class    
+    ));
+    
+    /*
+     * insert new entry
+     */
+    $this->insert( array(
+      'name'        => $name,
       'class'       => $class,
       'title'       => $title,
       'description' => $description
-    );
-    $this->save();
+    ) );
   }
   
   /**
@@ -54,11 +57,13 @@ class qcl_datasource_SchemaManager extends qcl_persistence_db_Object
   {
     if ( $name )
     {
-      return $this->data[$name];  
+      $this->findBy("name",$name);
+      return $this->getRecord();
     }
     else
     {
-      return $this->data;
+      $this->findAll();
+      return $this->getResult();
     }
   }
   
@@ -72,8 +77,12 @@ class qcl_datasource_SchemaManager extends qcl_persistence_db_Object
     {
       $this->raiseError("No schema name provided.");
     }
-    $data = $this->getData( $name );
-    return $data['class'];
+    $this->findBy("name",$name);
+    if ( $this->foundSomething() )
+    {
+      return $this->getProperty("class");
+    }
+    $this->raiseError("No class registered for schema '$name'" );
   }
   
   /**
@@ -83,7 +92,8 @@ class qcl_datasource_SchemaManager extends qcl_persistence_db_Object
    */
   function schemaList()
   {
-    return array_keys($this->getData());
+    $this->findWhere(null,"name","name");
+    return $this->values();
   }
     
 }

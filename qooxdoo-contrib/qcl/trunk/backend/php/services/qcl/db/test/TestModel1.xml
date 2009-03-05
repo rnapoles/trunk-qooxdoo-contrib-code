@@ -37,7 +37,7 @@
       
       <!-- link 
        name="parent"
-       type="hasOne" 
+       type="1:1" 
        foreignKey="parentId"
        model="qcl.db.Model1"/>  -->
          
@@ -46,7 +46,7 @@
         type="n:n">
         <linkedModel
           path="qcl/db/test/TestModel2.php" 
-          name="TestModel2" />
+          class="TestModel2" />
       </link>  
     
     </links>

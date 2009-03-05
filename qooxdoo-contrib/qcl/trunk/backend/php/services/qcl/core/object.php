@@ -1,4 +1,5 @@
 <?php
+
 /*
  * for constant definition, use global variable $constId
  * define("MY_CONSTANT", $constId++);

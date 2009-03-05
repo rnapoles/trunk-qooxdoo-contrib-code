@@ -22,6 +22,55 @@ require_once "qcl/db/SimpleModel.php";
 function dec($x){
   return unserialize(bzdecompress(base64_decode($x)));
 }
+
+
+Extending PHP5
+class cNode extends SimpleXMLElement {
+  function getName() {
+     return dom_import_simplexml($this)->nodeName;
+  }
+
+  function getType() {
+     return dom_import_simplexml($this)->nodeType;
+  }
+}
+
+$xml = '<root />';
+
+$sxe = simplexml_load_string($xml, 'cNode');
+print $sxe->getName()."n";
+print $sxe->getType()."n";
+
+
+class VerySimpleXMLElement extends SimpleXMLElement
+{
+    private function getAttributeArray()
+    {
+        return (array) $this->attributes();
+    }
+ 
+    public function getAttribute($name, $default=Ó)
+    {
+        $attrs = $this->getAttributeArray();
+        if (isset($attrs[$name]))
+        {
+            return (string) $attrs[$name];
+        }
+        return (string) $default;
+    }
+ 
+    public function getAttributeCount()
+    {
+         return (int) sizeof($this->getAttributeArray());
+    }
+ 
+    public function hasAttributes()
+    {
+        return (bool) $this->getAttributeCount();
+    }
+}
+
+
  */
 class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
 {
