@@ -63,6 +63,20 @@ function browserLog(msg)
   return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
 }
 
+/*
+* Generated HTML elements are uppercase in IE
+*/
+function getLogArray(result)
+{
+  var logArray = [];
+  if (result.indexOf("</div>") >0 ) {
+    logArray = result.split("</div>");
+  } else if (result.indexOf("</DIV>") >0 ) {
+    logArray = result.split("</DIV>");
+  }
+  return logArray;
+}
+
 function getResultChunk(startAt, chars)
 {
   return selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML.substr(' + startAt + ',' + chars + ')';
@@ -114,7 +128,14 @@ function getBrowser(agent)
 
 function runTests()
 {
-  sel.waitForCondition(isQxReady, "60000");
+  try {
+    sel.waitForCondition(isQxReady, "60000");
+  } 
+  catch(ex) {
+    print("Couldn't find qx instance in AUT window. " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window: " + ex + "</DIV>"));
+    return;  
+  }
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
 
@@ -127,34 +148,58 @@ function runTests()
   }
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
 
-  print("Waiting for application to load...")
-  sel.waitForCondition(isStatusReady,testPause);
+  print("Waiting for application to load...");
+  try {
+    sel.waitForCondition(isStatusReady,testPause);
+  }
+  catch(ex) {
+    print("Test file not loaded: " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Test file not loaded: " + ex + "</DIV>"));
+    return;
+  }
 
   print("Starting tests for " + config.autHost + config.autPath);
+  var startTime = new Date();
   sel.runScript(qxAppInst + '.runTest();');
 
   print("Waiting for tests to finish...");
-  sel.waitForCondition(isStatusReady,testPause);
+  try {
+    sel.waitForCondition(isStatusReady,testPause);
+  }
+  catch(ex) {
+    print("Test run did not finish correctly: " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Test run did not finish correctly: " + ex + "</DIV>"));
+    return;
+  }
+  
+  var stopTime = new Date();
+  var elapsed = stopTime.getTime() - startTime.getTime();
+  elapsed = (elapsed / 1000);
+  min = Math.floor(elapsed / 60);
+  sec = Math.round(elapsed % 60);
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
+  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
+  
   print("Getting log...");
 
-  var result = sel.getEval(testResults);
-
-  /*
-  var htmlLength = sel.getEval(testResultsLength);
-  print("Result is " + htmlLength + " characters long.")
-  var c = 0;
-  var result = '';
-  while (c < htmlLength) {
-    var chunk = sel.getEval(getResultChunk(c, 500));
-    result += chunk;
-    c += 500;
+  try {
+    var result = sel.getEval(testResults);
   }
-  */  
+  catch(ex) {
+    print("Could not get test results: " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Could not get test results: " + ex + "</DIV>"));
+    return;
+  }
 
   print("Got log");
 
   
-  var logArray = result.split(/<\/div>/i);
+  //var logArray = result.split(/<\/div>/ig);
+  var logArray = getLogArray(result);
+  print("Split result into " + logArray.length + " array entries.")
   // we can speed this up since we don't have to wait for the browser
   sel.setSpeed("500");
   for (var i=0, l=logArray.length; i<l; i++) {
@@ -170,7 +215,7 @@ function runTests()
       line = line.replace(/\n/g, "<br/>");
       line = line.replace(/\r/g, "<br/>");
       errWarn++;
-      print("Logging line")
+      print("Logging line " + line);
       sel.getEval(browserLog(line));
     }
   }
