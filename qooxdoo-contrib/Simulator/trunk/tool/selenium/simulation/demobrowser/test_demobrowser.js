@@ -10,7 +10,7 @@ var config = {
 };
 
 var stepSpeed  = "1000"; // millisecs after each command
-var logPause = 10000; // millisecs to wait after loading sample
+var logPause = 4000; // millisecs to wait after loading sample
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
 var setPlayDemos = qxAppInst + '.setPlayDemos("all")'; // set demobrowser to 'autorun'
@@ -28,8 +28,15 @@ var platform = 'navigator.platform';
  * List of demos to ignore. Format: Category:Demo (using the tree items' labels),
  * i.e. spaces instead of underscores. These demos will be loaded, but the script
  * won't wait until they're finished and simply move on to the next demo.
+ * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears'];
+var ignore = [];
+
+/*
+ * List of demos to run. All others will be ignored.
+ * var include = ['ui:Font','progressive:ProgressiveTable','widget:SelectBox'];
+ */
+var include = [];
 
 // - Config End ----------------------------------------------------------------
 
@@ -84,18 +91,21 @@ function sampleRunner(script)
   scriptCode = script ? script : runSample;
   // run the sample
   sel.runScript(script);
-  Packages.java.lang.Thread.sleep(2000);
+  killBoxes();
+  Packages.java.lang.Thread.sleep(2000);  
   var currentSample = sel.getEval(getSampleLabel);
   var category = sel.getEval(getSampleCategory);
   
   var skip = false;
-  for (var i=0;i<ignore.length; i++) {
-    var cat = ignore[i].substring(0,ignore[i].indexOf(':'));
-    var sam = ignore[i].substr(ignore[i].indexOf(':') + 1);
-    if (category == cat && currentSample == sam) {
-      skip = true;
+  if (ignore.length > 0) {
+    for (var i = 0; i < ignore.length; i++) {
+      var cat = ignore[i].substring(0, ignore[i].indexOf(':'));
+      var sam = ignore[i].substr(ignore[i].indexOf(':') + 1);
+      if (category == cat && currentSample == sam) {
+        skip = true;
+      }
     }
-  }
+  }  
   
   if (skip) {
     print("Skipping sample: " + category + ' - ' + currentSample);
@@ -105,14 +115,14 @@ function sampleRunner(script)
   
   sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
   // wait for the sample to finish, then get its log output
-  //Packages.java.lang.Thread.sleep(logPause);
+  Packages.java.lang.Thread.sleep(logPause);
   try {
     sel.waitForCondition(isLogDone, "120000");
   }
   catch(ex) {
     logsWithErrors++;
-    print("Error in demo: " + category + " - " + currentSample);
-    sel.getEval(browserLog('<DIV>Error in demo: ' + category + ' - ' + currentSample + '</DIV>'));
+    print("Unable to determine if demo was loaded: " + category + " - " + currentSample);
+    sel.getEval(browserLog('<DIV>Unable to determine if demo was loaded: ' + category + ' - ' + currentSample + '</DIV>'));
   }
   print(category + " - " + currentSample + ": Processing log");
 
@@ -202,11 +212,48 @@ function getBrowser(agent)
   return browser;
 }
 
+function getDemoChooser(category, sample)
+{
+  var func = 'function chooseDemo(category, sample) {';
+  func +=      'var viewer = qx.core.Init.getApplication().viewer;';
+  func +=      'var tree = viewer.tree;'; 
+  func +=      'items = tree.getItems();';
+  func +=      'for (var i=1; i<items.length; i++) {';
+  func +=        'if (items[i].getParent().getLabel() == category) {';
+  func +=          'if (items[i].getLabel() == sample) {';
+  func +=            'items[i].getParent().setOpen(true);';
+  func +=            'tree.addToSelection(items[i]);';
+  func +=            'viewer.runSample();';
+  func +=          '}';
+  func +=        '}';
+  func +=      '}';
+  func +=    '}';
+  func +=    'chooseDemo("' + category + '","' + sample + '");';
+  return func;
+}
+
+function killBoxes()
+{
+  // Demos might pop up alert boxes that will break the test if they aren't removed
+  // before the next Selenium action. getAlert() simulates clicking "OK".
+  while (sel.isAlertPresent()) {
+    var al = sel.getAlert();
+    print("Dismissed alert box:");
+    print(al);
+  }
+  
+  // Ditto for confirmation dialogs.
+  while (sel.isConfirmationPresent()) {
+    sel.chooseCancelOnNextConfirmation();
+    var con = sel.getConfirmation();
+    print("Dismissed confirmation dialog:");
+    print(conf);
+  }  
+}
+
 function runTest()
-  {
-    //sel.runScript(setPlayDemos);
-  sel.runScript(treeSelect(2));
-  sel.runScript(qxAppInst + '.tree.getSelectedItem().setOpen(true)');
+{
+  //sel.runScript(setPlayDemos);
   
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
@@ -219,29 +266,29 @@ function runTest()
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
   
   print("Starting sample playback");
-  currentSample = sampleRunner(runSample);
-  while (currentSample != lastSample) {
-    lastSample = currentSample;
-    print("Done playing " + lastSample + ", starting next sample");
   
-    // Demos might pop up alert boxes that will break the test if they aren't removed
-    // before the next Selenium action. getAlert() simulates clicking "OK".
-    while (sel.isAlertPresent()) {
-      var al = sel.getAlert();
-      print("Dismissed alert box:");
-      print(al);
+  if (include.length == 0) {
+    sel.runScript(treeSelect(2));
+    sel.runScript(qxAppInst + '.tree.getSelectedItem().setOpen(true)');
+    currentSample = sampleRunner(runSample);
+    while (currentSample != lastSample) {
+      lastSample = currentSample;
+      print("Done playing " + lastSample + ", starting next sample");      
+      killBoxes();
+      currentSample = sampleRunner(runNextSample);
     }
-  
-    // Ditto for confirmation dialogs.
-    while (sel.isConfirmationPresent()) {
-      sel.chooseCancelOnNextConfirmation();
-      var con = sel.getConfirmation();
-      print("Dismissed confirmation dialog:");
-      print(conf);
-    }
-  
-    currentSample = sampleRunner(runNextSample);
   }
+  else {
+    sel.getEval(browserLog("<p>Selective run: " + include.length + " demos selected.</p>"));
+    for (var j=0; j<include.length; j++) {
+      var cat = include[j].substring(0, include[j].indexOf(':'));
+      var sam = include[j].substr(include[j].indexOf(':') + 1);
+      var runIncluded = getDemoChooser(cat, sam);
+      currentSample = sampleRunner(runIncluded);
+      killBoxes();
+    }
+  }
+  
   sel.getEval(browserLog("<p>Samples with warnings or errors: " + logsWithErrors + "</p>"));
 }
 
@@ -261,7 +308,7 @@ try {
   runTest();
 }
 catch(ex) {
-  print("Couldn't find qx instance in AUT window.");
+  print("Couldn't find qx instance in AUT window. " + ex);
   sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
 }
 
