@@ -6,9 +6,9 @@
 require_once "qcl/mvc/AbstractModel.php";
 
 /**
- * Model that has a set of properties which optionally can be connected to a datasource which
- * holds all connection data etc. You need to subclass this class in 
- * order to use it.  
+ * Model that has a set of properties which optionally can be connected 
+ * to a datasource which holds all connection data etc. You need to 
+ * subclass this class in order to use it.  
  * @todo rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
@@ -92,7 +92,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
   
   /**
    * Constructor 
-   * @param qcl_jsonrpc_controller  $controller You can also pass a qcl_mvc_AbstractModel object here,
+   * @param qcl_jsonrpc_controller|qcl_mvc_AbstractModel  $controller You can also pass a qcl_mvc_AbstractModel object here,
    * since the controller can be retrieved from them model.
    * @param mixed $datasource Datasource model object or null if no datasource 
    */
@@ -116,11 +116,9 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
     
     /*
      * debug message
-     */
+     *
     $c = $this->getController();
-    
-    /*
-    //$this->debug( "Constructing model '" . $this->className() . 
+    $this->debug( "Constructing model '" . $this->className() . 
                 "' controlled by '" . $c->className() . "'" .
                 ( is_object( $datasourceModel ) ? 
                   " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),

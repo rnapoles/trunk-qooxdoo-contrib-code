@@ -4,7 +4,8 @@
  */
 require_once "qcl/session/controller.php";
 require_once "qcl/datasource/type/db/Model.php";
-require_once "qcl/datasource/SchemaManager.php";
+// No! require_once "qcl/datasource/SchemaModel.php"; 
+require_once "qcl/persistence/db/Object.php";
 
 /*
  * constants
@@ -81,7 +82,8 @@ class qcl_datasource_controller extends qcl_session_controller
   {
     if ( ! $this->_manager )
     { 
-      $this->_manager =& new qcl_datasource_SchemaManager(&$this); 
+      require_once "qcl/datasource/SchemaModel.php";
+      $this->_manager =& new qcl_datasource_SchemaModel(&$this); 
       //$this->info("New schemamanager " . $this->_manager->objectId() );
     }
     return $this->_manager;
@@ -117,11 +119,6 @@ class qcl_datasource_controller extends qcl_session_controller
 
     $manager =& $this->getManager();
     $class = $manager->getClassFor($schemaName);
-    
-    if ( ! $class )
-    {
-      $this->raiseError("Schema '$schemaName' has no corresponding class name.'");
-    }
     
     //$this->debug("Found class $class for schema $schemaName");
 

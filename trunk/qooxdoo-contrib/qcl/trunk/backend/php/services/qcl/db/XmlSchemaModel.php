@@ -377,12 +377,9 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
        *  // @todo rename "link" into "association"
       switch ( $this->associationType($assocName) )
       {
-        case "habtm":
-        case "hasAndBelongsToMany":
-        
-        case "hasOne":
-        
-        case "hasMany":
+        case "n:n":        
+        case "1:1":
+        case "1:n":
       }
       */
       $table = $this->getLinkTable( $link );
@@ -664,19 +661,24 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     /*
      * class can be specified separately, defaults
      * to name and converted into PHP-style class name
-     * foo.bar.Baz => foo_bar_baz
+     * foo.bar.Baz => foo_bar_Baz
      */
-    $this->class = str_replace(".","_", either( (string)$modelAttrs['class'], (string) $modelAttrs['name'] ) ); 
+    $this->class = str_replace(".","_", 
+      either( 
+        (string) $modelAttrs['class'], 
+        (string) $modelAttrs['name'] 
+      ) 
+    ); 
     
     /*
      * the type can be provided if class is the implementation
      * of a more generic data type
      */
-    $this->type  = (string) $modelAttrs['type'];
+    $this->type = (string) $modelAttrs['type'];
 
     /*
-     * whether the setup process should upgrade the schema or just use existing tables in
-     * whatever schema they are in
+     * whether the setup process should upgrade the schema or just 
+     * use existing tables in whatever schema they are in
      */
     if ( (string) $modelAttrs['upgradeSchema'] == "no"
        and ! $forceUpgrade )
@@ -686,7 +688,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     }    
 
     /*
-     * This model doesn't have a table backend
+     * Whether the model has a table backend at all
      */
     if ( (string) $modelAttrs['table']  == "no" )
     {
@@ -709,15 +711,15 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     /*
      * Wheter the table for this model exists already
      */
-    $tableExists  = $db->tableExists($this->table);
+    $tableExists  = $db->tableExists( $this->table );
     //$this->debug("Table {$this->table} (" . $this->className(). ")" . ($tableExists ? " exists." : " does not exist." ) );
     
     /*
      * Get the modelTableInfo persistent object to look up if this
-     * table has been initialized already. To avoid an indefinitive loop,
-     * the qcl_persistence_db_Model used by qcl_db_XmlSchemaModelTableInfo must
-     * be especially treated. You can upgrade its schema only be deleting
-     * the table.
+     * table has been initialized already. To avoid an indefinitive 
+     * loop, the qcl_persistence_db_Model used by 
+     * qcl_db_XmlSchemaModelTableInfo must be especially treated. 
+     * You can upgrade its schema only be deleting the table.
      */
     $modelTableInfo = null;
     if ( $this->isInstanceOf("qcl_persistence_db_Model") )
@@ -1154,6 +1156,10 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
            */
           if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $link ) )
           {
+            
+            /*
+             * iterate through all the linked models
+             */
             $linkChildren = $link->children();
             foreach( $linkChildren as $linkedModel )
             {
@@ -1167,10 +1173,13 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
               /*
                * linked model
                */
-              $modelName = str_replace(".","_", (string) $a['name']);
+              $modelName = str_replace(".","_", 
+                (string) either($a['class'], $a['name'], $a['model'] )
+              );
+              
               if ( ! $modelName )
               {
-                $this->raiseError("linked model node has no 'name' attribute.");
+                $this->raiseError("linked model node has no 'name','class' or 'model' attribute.");
               }
               
               $this->log("Linking $modelName ...","propertyModel");
@@ -1179,8 +1188,9 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
                * if you provide a "path" attribute, it will load this file,
                * otherwise the package/subpackage/Class.php pattern will
                * be used
+               * @todo document
                */
-              if ( $a['path'] )
+              if ( strlen( (string) $a['path'] ) )
               {
                 require_once $a['path']; 
               }
@@ -1189,6 +1199,11 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
                 $this->includeClassfile($modelName);  
               }
               
+              /*
+               * if the associated model shares the datasource with 
+               * this model
+               * @todo document
+               */
               if ( $shareDatasource != "no" )
               {
                 $model =& new $modelName( &$this, &$datasourceModel );  
@@ -1225,13 +1240,24 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
               }
               
               /*
-               * add link in target schema xml if it doesn't exist
+               * add a backlink in target schema xml if it doesn't exist
+               * @todo document
                */
-              $targetSchemaXml =& $model->getSchemaXml();
-              $targetSchemaDoc =& $targetSchemaXml->getDocument();          
-              $targetLinksNode =& $targetSchemaDoc->model->links;
-              if ( is_object($targetLinksNode) )
+              if ( (string) $a['backlink'] == "true" )
               {
+                
+                /*
+                 * get <links> node in target model
+                 */
+                $targetSchemaXml =& $model->getSchemaXml();
+                $targetSchemaDoc =& $targetSchemaXml->getDocument();          
+                $targetLinksNode =& $targetSchemaDoc->model->links;
+                
+                if ( ! is_object($targetLinksNode) )
+                {
+                  $this->raiseError("Linked model must have a <links> node.");
+                }
+                  
                 $found = false;
                 foreach( $targetLinksNode->children() as $c )
                 {
@@ -1291,10 +1317,6 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
                    */
                   $targetSchemaXml->save();
                 }
-              }
-              else
-              {
-                $this->raiseError("Linked model must have a <links> node.");
               }
             }
           }
@@ -1457,8 +1479,9 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
   function getLinkTable( $name )
   {
     $linkNode =& $this->getLinkNode( $name );
-    $attrs= $linkNode->attributes();
-    $tbl = (string) either($attrs['jointable'],$attrs['joinTable']);
+    //$this->debug("*** table " . $this->table() . ", link $name *** " . $linkNode->asXml() );
+    $attrs = $linkNode->attributes();
+    $tbl =  either( (string) $attrs['jointable'], (string) $attrs['joinTable'] );
     if ( ! $tbl )
     {
       $tbl = "link_" . $this->table() . "_" . $name;
