@@ -16,6 +16,9 @@ var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser insta
 var setPlayDemos = qxAppInst + '.setPlayDemos("all")'; // set demobrowser to 'autorun'
 var getSampleCategory = selWin + '.' + qxAppInst + '.tree.getSelectedItem().getParent().getLabel()'; // get category name
 var getSampleLabel = selWin + '.' + qxAppInst + '.tree.getSelectedItem().getLabel()'; // get sample name
+var getNextSampleCategory = selWin + '.' + qxAppInst + '.tree.getNextSiblingOf(' + selWin + '.' + qxAppInst + '.tree.getSelectedItem()).getParent().getLabel()';
+var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextSiblingOf(' + selWin + '.' + qxAppInst + '.tree.getSelectedItem()).getLabel()';
+var selectNextSample = qxAppInst + '.tree.addToSelection(' + qxAppInst + '.tree.getNextSiblingOf(' + qxAppInst + '.tree.getSelectedItem()))';
 var runSample = qxAppInst + '.runSample()'; // play currently selected sample
 var runNextSample = qxAppInst + '.playNext()'; // play next sample
 var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
@@ -26,8 +29,7 @@ var platform = 'navigator.platform';
 
 /*
  * List of demos to ignore. Format: Category:Demo (using the tree items' labels),
- * i.e. spaces instead of underscores. These demos will be loaded, but the script
- * won't wait until they're finished and simply move on to the next demo.
+ * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
 var ignore = [];
@@ -88,29 +90,36 @@ function getLogArray(result)
 */
 function sampleRunner(script)
 {
-  scriptCode = script ? script : runSample;
-  // run the sample
-  sel.runScript(script);
-  killBoxes();
-  Packages.java.lang.Thread.sleep(2000);  
-  var currentSample = sel.getEval(getSampleLabel);
-  var category = sel.getEval(getSampleCategory);
+  var scriptCode = script ? script : runSample;  
   
   var skip = false;
-  if (ignore.length > 0) {
-    for (var i = 0; i < ignore.length; i++) {
-      var cat = ignore[i].substring(0, ignore[i].indexOf(':'));
-      var sam = ignore[i].substr(ignore[i].indexOf(':') + 1);
-      if (category == cat && currentSample == sam) {
-        skip = true;
+  // If we have an ignore list, check if the next Sample is in there.
+  if (ignore.length > 0 && scriptCode.indexOf('playNext') > 0 ) {
+    var nextSampleCategory = sel.getEval(getNextSampleCategory);
+    var nextSampleLabel = sel.getEval(getNextSampleLabel);
+    for (var i = 0; i < ignore.length; i++) {      
+      var ignoreCategory = ignore[i].substring(0, ignore[i].indexOf(':'));      
+      if (nextSampleCategory == ignoreCategory) {        
+        var ignoreSample = ignore[i].substr(ignore[i].indexOf(':') + 1);        
+        if (nextSampleLabel == ignoreSample) {
+          sel.runScript(selectNextSample);
+          skip = true;
+        }
       }
     }
-  }  
-  
+  } 
+
   if (skip) {
-    print("Skipping sample: " + category + ' - ' + currentSample);
-    sel.getEval(browserLog('<h3>SKIPPED ' + category + ' - ' + currentSample + '</h3>'));
-    return currentSample;
+    print("Skipping sample: " + nextSampleCategory + ' - ' + nextSampleLabel);
+    sel.getEval(browserLog('<h3>SKIPPED ' + nextSampleCategory + ' - ' + nextSampleLabel + '</h3>'));
+    return nextSampleLabel;
+  } else {
+    // run the sample
+    sel.runScript(scriptCode);
+    killBoxes();
+    Packages.java.lang.Thread.sleep(2000);  
+    var currentSample = sel.getEval(getSampleLabel);
+    var category = sel.getEval(getSampleCategory);
   }
   
   sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
