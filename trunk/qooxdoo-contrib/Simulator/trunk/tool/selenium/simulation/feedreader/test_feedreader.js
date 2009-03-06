@@ -108,7 +108,6 @@ function getBrowser(agent)
 
 function runTests()
 {
-  sel.waitForCondition(isQxReady, "60000");
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
 
@@ -124,7 +123,15 @@ function runTests()
   print("Waiting for feeds to load..."); 
   var lastFeed = sel.getEval(lastFeedNum);
   var isLastFeedLoaded = tree + ".getItems()[" + lastFeed + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
-  sel.waitForCondition(isLastFeedLoaded, testPause);
+  
+  try {
+    sel.waitForCondition(isLastFeedLoaded, testPause);
+  }
+  catch(ex) {
+    print("Couldn't determine if all feeds loaded correctly.");
+    sel.getEval(browserLog("<DIV>ERROR: Unable to determine if all feeds loaded correctly.</DIV>"));
+    return;
+  }
   
   var getLastFeedLabel = tree + ".getItems()[" + lastFeed + "].getLabel()";
   var lastFeedLabel = sel.getEval(getLastFeedLabel); 
@@ -150,31 +157,51 @@ function runTests()
     sel.getEval(browserLog('<div class="qxappender"><div class="level-error">No article found after selecting the first item of the first feed.</div></div>'));    
   }
   
-  // Use the preferences window to change the application language 
-  sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/[@label="Preferences"]');
-  sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.groupbox.GroupBox/[@label="Deutsch"]');
-  sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.container.Composite/[@label="OK"]');
-  var label = sel.getEval(staticFeedsLabel);
-  if (label.indexOf("Vordefinierte Quellen") >= 0) {
-    print("Language changed successfully.")
-  } 
-  else {
+  // Use the preferences window to change the application language
+  try { 
+    sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/child[5]');
+    sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.groupbox.GroupBox/[@label="Italiano"]');
+    sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.container.Composite/[@label="OK"]');
+    var label = sel.getEval(staticFeedsLabel);
+    if (label.indexOf("Feed statici") >= 0) {
+      print("Language changed successfully.")
+    } 
+    else {
+      totalErrors ++;
+      print("ERROR: Unexpected Label: " + label);
+      sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected Label. Language selection failed?</div></div>'));    
+    }
+  }
+  catch(ex) {
     totalErrors ++;
-    print("ERROR: Unexpected Label.");
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected Label. Language selection failed?</div></div>'));    
+    print("ERROR: Failed to change language.");
+    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to change language: ' + ex + ' </div></div>'));    
   }
   
   // Add a feed
   print("Adding new feed.");
-  sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/[@label="Add feed"]');
-  sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');
-  sel.type('qxh=app:[@_addFeedWindow]/[@_urlTextfield]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
-  sel.qxClick('qxh=app:[@_addFeedWindow]/[@label="Add"]');
+  try {
+    sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/child[0]');
+    sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');
+    sel.type('qxh=app:[@_addFeedWindow]/[@_urlTextfield]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
+    sel.qxClick('qxh=app:[@_addFeedWindow]/qx.ui.form.Button');
+  }
+  catch(ex) {
+    totalErrors ++;
+    print("ERROR: Failed to add feed.");
+    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to add feed: ' + ex + ' </div></div>'));    
+  }
   
   lastFeed = sel.getEval(lastFeedNum);
   isLastFeedLoaded = tree + ".getItems()[" + lastFeed + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
   print("Waiting for new feed to load.");
-  sel.waitForCondition(isLastFeedLoaded, testPause);
+  try {
+    sel.waitForCondition(isLastFeedLoaded, testPause);
+  }
+  catch(ex) {
+    print("ERROR: New feed did not load correctly.");
+    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">New feed did not load correctly: ' + ex + ' </div></div>'));    
+  }
   
   var getLastFeedLabel = tree + ".getItems()[" + lastFeed + "].getLabel()";
   var lastFeedLabel = sel.getEval(getLastFeedLabel); 
@@ -217,7 +244,14 @@ sel.start();
 sel.open(config.autHost + config.autPath);
 sel.setSpeed(stepSpeed);
 
-runTests();
+try {
+  sel.waitForCondition(isQxReady, "60000");
+  runTests();  
+}
+catch(ex) {
+  print("Couldn't find qx instance in AUT window.");
+  sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
+}
 
 sel.stop();
 print("Test Runner session finished.");
