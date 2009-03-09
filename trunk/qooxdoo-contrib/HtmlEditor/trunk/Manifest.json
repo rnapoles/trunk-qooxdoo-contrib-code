@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "HtmlEditor",
+ 
+    "summary" : "Fully featured Rich Text editor based on HtmlArea",
+    "description" : "HtmlEditor adds toolbars and other essential functionality to HtmlArea",
+    
+    "keywords" : ["html", "wysiwyg", "editor", "rich", "text"],
+    "homepage" : "http://www.zenesis.com/qx/dev",
+ 
+    "license" : "Same as Qooxdoo",
+    "authors" : 
+    [
+      {
+        "name" : "John Spackman (spackers)",
+        "email" : "john.spackman@zenesis.com"
+      }
+    ],
+ 
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8.1", "trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "htmleditor",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
