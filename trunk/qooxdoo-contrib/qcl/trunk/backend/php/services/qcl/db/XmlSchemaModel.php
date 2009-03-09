@@ -1204,7 +1204,7 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
                * this model
                * @todo document
                */
-              if ( $shareDatasource != "no" )
+              if ( $shareDatasource != "no" and  $shareDatasource != "false" )
               {
                 $model =& new $modelName( &$this, &$datasourceModel );  
               }

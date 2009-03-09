@@ -60,6 +60,17 @@
         name="role"
         jointable="link_user_roles" 
         model="qcl.access.Role" />  
+      <!-- link 
+        name="datasource"
+        type="n:n"
+        jointable="link_users_datasources">
+        <linkedModel 
+          name="qcl.datasource.type.db.Model"
+          backlink="true" />
+        <linkedModel 
+          name="qcl.access.Role" 
+          backlink="true" />  
+      </link-->
     </links>
     
   </model>

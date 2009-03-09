@@ -179,6 +179,16 @@ class qcl_datasource_type_db_Model extends qcl_db_XmlSchemaModel
     return "";
   }
   
+  function isActive()
+  {
+    return (bool) $this->getProperty("active");
+  }
+  
+  function isHidden()
+  {
+    return (bool) $this->getProperty("hidden");
+  }  
+  
   /**
    * checks if datasource is read-only
    * @return bool result

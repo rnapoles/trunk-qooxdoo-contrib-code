@@ -460,7 +460,7 @@ class qcl_core_object extends qcl_core_BaseClass
   } 
   
   /**
-   * The currently executed function
+   * The currently executed function. 
    * @return string
    */
   function functionName() 
@@ -574,12 +574,11 @@ class qcl_core_object extends qcl_core_BaseClass
   function &getNew( $classname, $controller = null ) 
   {       
     /*
-     * convert dot-separated class names
-     * FIXME: PHP5 is case-sensitive
+     * convert dot-separated class names into php-style
      */
-    if ( strstr( $classname,".") )
+    if ( strstr( $classname, "." ) )
     {
-      $classname = str_replace(".","_",$classname);
+      $classname = str_replace( ".", "_", $classname );
     }
     
     /*
@@ -587,14 +586,14 @@ class qcl_core_object extends qcl_core_BaseClass
      */ 
     if ( ! class_exists ( $classname ) ) 
     {
-      $path = $this->includeClassFile($classname);
+      $path = qcl_core_object::includeClassFile( $classname );
       
       /*
        * Check class
        */
-      if ( ! class_exists ( $classname) )
+      if ( ! class_exists ( $classname ) )
       {
-        $this->raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );      
+        qcl_core_object::raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );      
       }
     }
     
