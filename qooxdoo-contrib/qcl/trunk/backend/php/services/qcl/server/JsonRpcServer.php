@@ -115,34 +115,42 @@ class JsonRpcServer extends AbstractServer
    */
   function start()
   {
-      /**
-     * main error handling code
+    /*
+     * setup php4-style error handling
      */
     if (JsonRpcErrorHandling == "on")
     {
-      /*
-       * start buffering to catch errors with handler function
-       */
-      ob_start( array($this,"jsonrpc_catch_errors") );
-    
-      /*
-       * This will not always work, so do some more hacking to 
-       * comment out uncaught errors. You'll need to examine the
-       * http response to see the uncaught errors!
-       */
-      ini_set('error_prepend_string', "/*");
-      ini_set('error_append_string', "*/");
-    
-      /*
-       * error handler function for php jsonrpc
-       */
-      set_error_handler( array($this,"jsonRpcErrorHandler") );
+      $this->setupErrorHandling();
     }
     
     /*
      * call parent method
      */
     parent::start();
+  }
+  
+  /**
+   * Setup a PHP4-style error handling
+   */
+  function setupErrorHandling()
+  {
+    /*
+     * start buffering to catch errors with handler function
+     */
+    ob_start( array($this,"jsonrpc_catch_errors") );
+  
+    /*
+     * This will not always work, so do some more hacking to 
+     * comment out uncaught errors. You'll need to examine the
+     * http response to see the uncaught errors!
+     */
+    ini_set('error_prepend_string', "/*");
+    ini_set('error_append_string', "*/");
+  
+    /*
+     * error handler function for php jsonrpc
+     */
+    set_error_handler( array($this,"jsonRpcErrorHandler") );    
   }
   
   
