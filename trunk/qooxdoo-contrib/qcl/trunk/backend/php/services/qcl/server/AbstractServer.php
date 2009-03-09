@@ -59,7 +59,10 @@ require_once dirname(__FILE__) . "/AccessibilityBehavior.php";
 /**
  * The location of the service class directories.
  */
-define("servicePathPrefix", "");
+if ( ! defined("servicePathPrefix") )
+{
+  define("servicePathPrefix", "");
+}
 
 /**
  * Prefixes for RPC classes and methods
