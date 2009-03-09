@@ -41,6 +41,7 @@ class qcl_datasource_controller extends qcl_session_controller
    */
   function &getDatasourceModel( $name )
   {
+    
     if ( ! $name or !is_string($name) )
     {
       $this->raiseError("Invalid datasource name '$name");

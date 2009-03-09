@@ -257,57 +257,32 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function configureService()
   {
     
-    /*
-     * get the components of the service name either from the dispatcher script (global var)
-     * or from the class name
-     * @todo remove global reference
-     */
-    $server = $this->server;
-    $serviceComponents = $server->getServiceComponents( $server->getService() );
-    
-    if ( ! $serviceComponents )
-    {
-      /*
-       * get class name without prefix
-       */
-      $classname = get_class($this);
-      if ( substr($classname, 0, strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
-      {
-        $classname = substr($classname, strlen(JsonRpcClassPrefix) );          
-      }
-      
-      /*
-       * get service components from classname
-       */
-      $serviceComponents = explode( "_", $classname );
-    }
-    
-    $currPath = defined( "servicePathPrefix" ) ? servicePathPrefix : "";
-    
-    /*
-     * configure ini data
-     * @todo move into model!
-     */
+    $currPath = defined( "servicePathPrefix" ) ? servicePathPrefix : "";    
     $this->ini = array();
-    $found = false;
+    $found     = false;
+    $currPath  = SERVICE_PATH;
+    $parts     = explode( "_", $this->className() );
     
     /*
-     *  traverse service path and look for service.ini.php files
+     * traverse path to this class file and look for service.ini.php files
      */ 
-    for ( $i=0; $i<count( $serviceComponents ); $i++ )
+    do
     {
-       $currPath .= $serviceComponents[$i] . "/";
+      /*
+       * if config file exists in the current path, 
+       * parse it and add/override config directives
+       */
+      $path = $currPath . QCL_SERVICE_CONFIG_FILE;
+      if ( file_exists ( $path ) )
+      {
+        $found = true;
+        $config = parse_ini_file ( $path, true );
+        $this->ini = array_merge ( $this->ini, $config );
+      }
        
-       /*
-        * if config file exists, parse it and add/override config directives
-        */
-       if ( file_exists ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
-       {
-         $found = true;
-         $config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true );
-          $this->ini = array_merge ( $this->ini, $config );
-       }
+      $currPath .= array_shift( $parts ) . "/";
     }
+    while ( count($parts) );
     
     if ( ! $found )
     {
@@ -334,9 +309,10 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * Returns the url of the dispatcher script
    * @return string
    */
-  function getDispatcherUrl()
+  function getServerUrl()
   {
-    return "http://" . getenv ( HTTP_HOST ) . dirname( $_SERVER['PHP_SELF'] ) . "/index.php"; 
+    $server =& $this->server();
+    return $server->getUrl(); 
   }
   
   /**

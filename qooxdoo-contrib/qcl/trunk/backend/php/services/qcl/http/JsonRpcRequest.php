@@ -23,7 +23,7 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
   function __construct($controller)
   {
     parent::__construct(&$controller);
-    $this->setUrl( $controller->getDispatcherUrl() );
+    $this->setUrl( $controller->serverUrl() );
   }
   
   /**

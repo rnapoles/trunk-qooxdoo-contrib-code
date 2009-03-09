@@ -44,6 +44,7 @@ class qcl_session_controller extends qcl_access_controller
    */
   function __construct( $server )
   {
+    
     /*
      * call parent constructor, this will initialize database
      * connection and access/config models
@@ -59,36 +60,44 @@ class qcl_session_controller extends qcl_access_controller
      * session model
      */
     $this->_sessionModel =& new qcl_session_Session(&$this);    
+    
   }
   
   /**
    * This overrides and extends the parent method by providing a way to determine
    * the user by a given session id in the request. 
+   * @param string[optional] optional session id, if not provided, try to
+   * get it from the server data
    * @see qcl_access_controller::isValidUserSession()
    * @override
    */
-  function isValidUserSession()  
+  function isValidUserSession( $sessionId=null )  
   {
     /*
      * Does the request contain a session id?
      */
-    $sessionId       = $this->getServerData("sessionId");
-    $parentSessionId = $this->getServerData("parentSessionId");
-    
-    /*
-     * If not, is this a sub-session of a parent session?
-     */ 
-    if ( $parentSessionId and ! $this->sessionExists($sessionId) )
+    if ( ! $sessionId )
     {
-      $sessionId = $this->createChildSession($parentSessionId);
-      //$this->debug("Created and changed to child session id: $sessionId from parent session: $parentSessionId");
-    }    
-    
+      $sessionId       = $this->getServerData("sessionId");
+      $parentSessionId = $this->getServerData("parentSessionId");
+      
+      /*
+       * Is this a sub-session of a parent session?
+       */ 
+      if ( $parentSessionId and ! $this->sessionExists($sessionId) )
+      {
+        $sessionId = $this->createChildSession($parentSessionId);
+        //$this->debug("Created and changed to child session id: $sessionId from parent session: $parentSessionId");
+      }    
+    }
+
+    /*
+     * if we have a session id by now, set it and try to 
+     * get the user from the session
+     */
     if ( $sessionId )
     { 
-      /*
-       * set session id 
-       */
+
       $this->setSessionId( $sessionId );
      //$this->debug("Getting session id from request: $sessionId");
     

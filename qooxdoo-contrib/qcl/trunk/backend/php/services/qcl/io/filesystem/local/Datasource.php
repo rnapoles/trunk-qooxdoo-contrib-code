@@ -97,6 +97,11 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
 
     return true;
   }  
+  
+  function isFileStorage()
+  {
+    return true; 
+  }    
 
 }
 
