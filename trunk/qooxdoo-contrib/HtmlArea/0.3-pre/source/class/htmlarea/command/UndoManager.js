@@ -45,7 +45,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     /* Initialize */
     this.__undoStack = [];
     this.__redoStack = [];
-    this.__commands  = null;
+    this._commands  = null;
     this.__doc       = null;
 
     this.__populateCommandList();
@@ -147,14 +147,14 @@ qx.Class.define("htmlarea.command.UndoManager",
        * otherwise pass it along to the command manager and collect
        * undo infos.
        */
-      if (this.__commands[command])
+      if (this._commands[command])
       {
         /*
          * Pass all commands directly to the commandManager if
          * they marked as "passthrough". This way it is possible
          * to execute commands without adding them to the undoStack.
          */
-        if (this.__commands[command].passthrough)
+        if (this._commands[command].passthrough)
         {
           result = this.__commandManager.execute(command, value);
         }
@@ -285,7 +285,24 @@ qx.Class.define("htmlarea.command.UndoManager",
          if (this.__knownActionTypes[undoStep.actionType.toLowerCase()])
          {
            /* Pass the undo-handling to the specialized methods ("__undo" + actionType) */
-           result = this["__undo"+undoStep.actionType].call(this, undoStep);
+           switch(undoStep.actionType)
+           {
+             case "Command":
+               result = this.__undoCommand(undoStep);
+               break;
+             
+             case "Content":
+               result = this.__undoContent(undoStep);
+               break;
+               
+             case "Internal":
+               result = this.__undoInternal(undoStep);
+               break;
+               
+             case "Custom":
+               result = this.__undoCustom(undoStep);
+               break;
+           }
          }
          /* Any there any handlers which are registered to this actionType? */
          else if(this.__registeredHandler[undoStep.actionType])
@@ -523,8 +540,25 @@ qx.Class.define("htmlarea.command.UndoManager",
            
            if (this.__knownActionTypes[redoStep.actionType.toLowerCase()]) 
            {
-            /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
-            result = this["__redo" + redoStep.actionType].call(this, redoStep);
+             /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
+             switch(redoStep.actionType)
+             {
+               case "Command":
+                 result = this.__redoCommand(redoStep);
+                 break;
+               
+               case "Content":
+                 result = this.__redoContent(redoStep);
+                 break;
+                 
+               case "Internal":
+                 result = this.__redoInternal(redoStep);
+                 break;
+                 
+               case "Custom":
+                 result = this.__redoCustom(redoStep);
+                 break;
+             }
            }
            else if(this.__registeredHandler[redoStep.actionType])
            {
@@ -662,7 +696,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __populateCommandList : function()
     {
-      this.__commands = {
+      this._commands = {
         undo         : { passthrough : false },
         redo         : { passthrough : false },
         
@@ -676,12 +710,12 @@ qx.Class.define("htmlarea.command.UndoManager",
        * execCommand. This is only needed for non-mshtml as IE uses his own
        * undo mechanism.
        */
-      this.__commandManager.__commands["backgroundcolor"].customUndo = true;
-      this.__commandManager.__commands["backgroundimage"].customUndo = true;      
+      this.__commandManager.getCommandObject("backgroundcolor").custumUndo = true;
+      this.__commandManager.getCommandObject("backgroundimage").custumUndo = true;
       
       if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
-        this.__commandManager.__commands["inserthyperlink"].customUndo = true;
+        this.__commandManager.getCommandObject("inserthyperlink").custumUndo = true;
       }
     },
     
@@ -703,7 +737,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       undoObject.value         = value;
       undoObject.actionType    = "Custom";
       
-      var sel = this.__editorInstance.__getSelection(); 
+      var sel = this.__editorInstance.getSelection(); 
 
       if (commandObject.customUndo)
       {
@@ -983,7 +1017,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       "gecko" : function(e)
       {
         /* Get the current selected node (if available) */
-        var sel = this.__editorInstance.__getSelection();
+        var sel = this.__editorInstance.getSelection();
         
         // if no selection exists, we have no selected node
         if (!sel)
@@ -1160,6 +1194,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     }
     catch(e) {}
     
-    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "__commands", "__doc", "__knownActionTypes", "__registeredHandler");
+    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "_commands", "__doc", "__knownActionTypes", "__registeredHandler");
   }
 });
