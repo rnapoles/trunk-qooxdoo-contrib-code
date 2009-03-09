@@ -39,7 +39,7 @@ qx.Class.define("htmlarea.command.Manager",
     this.__editorInstance = editorInstance;
     this.__doc            = null;
 
-    this.__commands       = null;
+    this._commands       = null;
     this.__populateCommandList();
   },
 
@@ -122,9 +122,9 @@ qx.Class.define("htmlarea.command.Manager",
      */
     getCommandObject : function(commandName)
     {
-      if (this.__commands[commandName])
+      if (this._commands[commandName])
       {
-        return this.__commands[commandName];
+        return this._commands[commandName];
       }
       else
       {
@@ -139,7 +139,7 @@ qx.Class.define("htmlarea.command.Manager",
      */
     __populateCommandList : function()
     {
-      this.__commands = {
+      this._commands = {
         bold                  : { useBuiltin : true, identifier : "Bold", method : null },
         italic                : { useBuiltin : true, identifier : "Italic", method : null },
         underline             : { useBuiltin : false, identifier : "Underline", method : "__setUnderline" },
@@ -197,7 +197,7 @@ qx.Class.define("htmlarea.command.Manager",
      */
     execute : function(command, value)
     {
-      if (!this.__editorInstance.__isReady)
+      if (!this.__editorInstance.isReady())
       {
         this.error("editor not ready! '"+command+"':'"+value+"'");
         return false;
@@ -208,9 +208,9 @@ qx.Class.define("htmlarea.command.Manager",
       value   = value != null ? value : null;
 
       /* Check if the given command is supported */
-      if (this.__commands[command])
+      if (this._commands[command])
       {
-        var commandObject = this.__commands[command];
+        var commandObject = this._commands[command];
 
 				/**
 				 * We have to make sure that the elements inside the selection are
@@ -254,7 +254,7 @@ qx.Class.define("htmlarea.command.Manager",
      */
 		__paragraphMissing : function()
 		{
-			var focusNode = this.__editorInstance.__getSelection().focusNode;
+			var focusNode = this.__editorInstance.getFocusNode();
 			var isInParagraph = false;
 			var bodyIsFocusNode = false;
 
@@ -481,7 +481,7 @@ qx.Class.define("htmlarea.command.Manager",
          {
            this.__doc.body.focus();
            
-           var sel   = this.__editorInstance.__getSelection();
+           var sel   = this.__editorInstance.getSelection();
            var range = this.__editorInstance.getRange();
            
            /* DO NOT allow pasteHTML on control selections (like selected images) */
@@ -795,7 +795,7 @@ qx.Class.define("htmlarea.command.Manager",
            delete attributes.src;
            
            /* Get the image node */
-           var sel = this.__editorInstance.__getSelection();
+           var sel = this.__editorInstance.getSelection();
            
            // TODO: need to revert the execCommand if no selection exists?
            if (sel)
@@ -909,7 +909,7 @@ qx.Class.define("htmlarea.command.Manager",
           * only working solution is to use the "pasteHTML" method of the
           * TextRange Object. 
           */
-         var sel = this.__editorInstance.__getSelection();
+         var sel = this.__editorInstance.getSelection();
          var currRange = this.__editorInstance.getRange();
          
          /* DO NOT allow pasteHTML at control selections (like selected images) */
@@ -1018,8 +1018,8 @@ qx.Class.define("htmlarea.command.Manager",
      {
        "gecko" : function(url, commandObject)
        {
-         var sel      = this.__editorInstance.__getSelection();
-         var rng      = this.__editorInstance.__createRange(sel);
+         var sel      = this.__editorInstance.getSelection();
+         var rng      = this.__editorInstance.getRange();
          
          /* 
           * SPECIAL CASE
@@ -1310,7 +1310,7 @@ qx.Class.define("htmlarea.command.Manager",
        if (elem == null)
        {
          /* Current selection */
-         var sel = this.__editorInstance.__getSelection();
+         var sel = this.__editorInstance.getSelection();
          
          /* Check the focusNode - if not available return a empty map */
          if (!sel || sel.focusNode == null)
@@ -1498,7 +1498,7 @@ qx.Class.define("htmlarea.command.Manager",
      __setFontSize : function(value, commandObject)
      {
        /* Current selection and range */
-       var sel = this.__editorInstance.__getSelection();
+       var sel = this.__editorInstance.getSelection();
 
        var rng = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
            this.__editorInstance.getRange() :
@@ -1742,7 +1742,7 @@ qx.Class.define("htmlarea.command.Manager",
        
        "webkit" : function(value, commandObject) 
        {
-         var sel = this.__editorInstance.__getSelection();
+         var sel = this.__editorInstance.getSelection();
          var rng = this.__editorInstance.getRange();
          
          /* check for a range */
@@ -2033,7 +2033,7 @@ qx.Class.define("htmlarea.command.Manager",
              focusNode.appendChild(helper);
  
              // Set the cursor behind the created element
-             var sel = this.__editorInstance.__getSelection();
+             var sel = this.__editorInstance.getSelection();
              sel.extend(helper, 0);
              if (!sel.isCollapsed) {
                sel.collapseToEnd();
@@ -2073,7 +2073,7 @@ qx.Class.define("htmlarea.command.Manager",
          var helper = this.__doc.createElement("span");
          qx.bom.element.Style.set(helper, "textDecoration", "line-through");
          focusNode.appendChild(helper);
-         var sel = this.__editorInstance.__getSelection();
+         var sel = this.__editorInstance.getSelection();
          sel.extend(helper, 0);
          if (!sel.isCollapsed) {
            sel.collapseToEnd();
@@ -2097,6 +2097,6 @@ qx.Class.define("htmlarea.command.Manager",
    */
   destruct : function()
   {
-    this._disposeFields("__doc", "__editorInstance", "__commands");
+    this._disposeFields("__doc", "__editorInstance", "_commands");
   }
 });

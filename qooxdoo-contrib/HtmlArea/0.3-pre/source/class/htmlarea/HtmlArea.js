@@ -1079,6 +1079,17 @@ qx.Class.define("htmlarea.HtmlArea",
 
     
     /**
+     * Whether the editor is ready to accept commands etc.
+     * 
+     * @return {Boolean} ready or not
+     */
+    isReady : function()
+    {
+      return this.__isReady;
+    },
+    
+    
+    /**
      * Initializes the command manager, sets the document editable, renders
      * the content and adds a needed event listeners when the document is ready
      * for it.
@@ -1519,7 +1530,7 @@ qx.Class.define("htmlarea.HtmlArea",
             case "enter":
               if (this.getInsertLinebreakOnCtrlEnter())
               {
-                var sel = this.__getSelection();
+                var sel = this.getSelection();
                 var rng = this.__createRange(sel);
                 rng.collapse(true);
                 rng.pasteHTML('<br/><div class="placeholder"></div>');
@@ -1740,7 +1751,7 @@ qx.Class.define("htmlarea.HtmlArea",
                 * br element on node-level. The selection of the node afterwards is necessary for Opera
                 * to show the cursor correctly.
                 */
-               var sel    = this.__getSelection();
+               var sel    = this.getSelection();
                var rng    = this.__createRange(sel);
 
                var brNode = doc.createElement("br");
@@ -1784,7 +1795,7 @@ qx.Class.define("htmlarea.HtmlArea",
             if (this.getInsertParagraphOnLinebreak() && 
                 !isShiftPressed && !isCtrlPressed)
             {
-              var sel = this.__getSelection();
+              var sel = this.getSelection();
               if (sel)
               {
                 var selNode = sel.focusNode;
@@ -1844,7 +1855,7 @@ qx.Class.define("htmlarea.HtmlArea",
         if (qx.bom.client.Engine.GECKO && qx.bom.client.Engine.FULLVERSION < 1.9 && isShiftPressed)
         {
           /* Fetch selection */
-          var sel = this.__getSelection();
+          var sel = this.getSelection();
 
           /* First line is selected */
           if(sel.focusNode == doc.body.firstChild)
@@ -1876,7 +1887,7 @@ qx.Class.define("htmlarea.HtmlArea",
             if(isCtrlPressed)
             {
               /* Fetch current selection */
-              var sel = this.__getSelection();
+              var sel = this.getSelection();
 
               /*
                * Select text from current position to first
@@ -2533,7 +2544,7 @@ qx.Class.define("htmlarea.HtmlArea",
        */
       else if (qx.bom.client.Engine.WEBKIT)
       {
-        var sel = this.__getSelection();
+        var sel = this.getSelection();
         var rng = doc.createRange();
 
         sel.addRange(rng);
@@ -2786,7 +2797,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @return {Selection} Selection object
     */
-    __getSelection : qx.core.Variant.select("qx.client",
+    getSelection : qx.core.Variant.select("qx.client",
     {
        "mshtml" : function()
        {
@@ -2866,12 +2877,12 @@ qx.Class.define("htmlarea.HtmlArea",
     clearSelection : qx.core.Variant.select("qx.client", {
       "mshtml" : function()
       {
-        this.__getSelection().empty(); 
+        this.getSelection().empty(); 
       },
       
       "default" : function()
       {
-        this.__getSelection().collapseToStart();
+        this.getSelection().collapseToStart();
       }
     }),
     
@@ -2886,7 +2897,7 @@ qx.Class.define("htmlarea.HtmlArea",
     __isSelectionWithinWordBoundary : qx.core.Variant.select("qx.client", {
       "gecko" : function()
       {
-        var sel = this.__getSelection();
+        var sel = this.getSelection();
         var focusNode = this.getFocusNode();
         
         // check if the caret is within a word
@@ -2914,7 +2925,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getRange : function()
     {
-      return this.__createRange(this.__getSelection());
+      return this.__createRange(this.getSelection());
     },
 
 
@@ -2976,7 +2987,7 @@ qx.Class.define("htmlarea.HtmlArea",
     {
        "mshtml" : function()
        {
-         var sel = this.__getSelection();
+         var sel = this.getSelection();
          var rng;
 
          switch(sel.type)
@@ -3007,7 +3018,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
        "default" : function()
        {
-         var sel = this.__getSelection();
+         var sel = this.getSelection();
 
          if (sel && sel.focusNode)
          {
