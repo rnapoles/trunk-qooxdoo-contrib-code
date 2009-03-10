@@ -45,6 +45,7 @@ var logTestResults = 'function getResultArray() {  var resultArr = [];  var html
 
 var currentDate = new Date();
 var errWarn = 0;
+var testFailed = false;
 
 // store command line parameters in config object
 for (i in arguments) {
@@ -132,6 +133,7 @@ function runTests()
     sel.waitForCondition(isQxReady, "60000");
   } 
   catch(ex) {
+    testFailed = true;
     print("Couldn't find qx instance in AUT window. " + ex);
     sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window: " + ex + "</DIV>"));
     return;  
@@ -153,6 +155,7 @@ function runTests()
     sel.waitForCondition(isStatusReady,testPause);
   }
   catch(ex) {
+    testFailed = true;
     print("Test file not loaded: " + ex);
     sel.getEval(browserLog("<DIV>ERROR: Test file not loaded: " + ex + "</DIV>"));
     return;
@@ -167,6 +170,7 @@ function runTests()
     sel.waitForCondition(isStatusReady,testPause);
   }
   catch(ex) {
+    testFailed = true;
     print("Test run did not finish correctly: " + ex);
     sel.getEval(browserLog("<DIV>ERROR: Test run did not finish correctly: " + ex + "</DIV>"));
     return;
@@ -189,6 +193,7 @@ function runTests()
     var result = sel.getEval(testResults);
   }
   catch(ex) {
+    testFailed = true;
     print("Could not get test results: " + ex);
     sel.getEval(browserLog("<DIV>ERROR: Could not get test results: " + ex + "</DIV>"));
     return;
@@ -232,7 +237,8 @@ sel.open(config.autHost + config.autPath);
 sel.setSpeed(stepSpeed);
 
 runTests();
-
-sel.getEval(browserLog("<p>Tests with warnings or errors: " + errWarn + "</p>"));
+if (!testFailed) {
+  sel.getEval(browserLog("<p>Tests with warnings or errors: " + errWarn + "</p>"));
+}
 sel.stop();
 print("Test Runner session finished.");
