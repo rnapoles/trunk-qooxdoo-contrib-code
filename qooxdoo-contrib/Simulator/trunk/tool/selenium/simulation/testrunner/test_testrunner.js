@@ -13,7 +13,7 @@ var stepSpeed  = "250"; // millisecs after each command
 var testPause = 360000; // millisecs to wait for all tests to finish
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
-var qxStatusText = '.widgets["statuspane.systeminfo"].getContent()["__txt"]'; // content of status text field
+var qxStatusText = '.widgets["statuspane.systeminfo"].getContent().toString()'; // content of status text field
 var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' + selWin + '.' + qxAppInst + qxStatusText + ' == "Enabled auto-reload"'; // check if test run has finished
 var testResults = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML'; // content of result iframe
 var testResultsLength = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML.length';
