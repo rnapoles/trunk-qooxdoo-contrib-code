@@ -51,6 +51,7 @@ qx.Class.define("custom.Application",
 
       var i;
       var j;
+      
       var page;
       var subTabs;
       var subPage;
