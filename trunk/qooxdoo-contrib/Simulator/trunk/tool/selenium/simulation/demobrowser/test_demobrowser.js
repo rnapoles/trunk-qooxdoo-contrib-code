@@ -32,7 +32,7 @@ var platform = 'navigator.platform';
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = [];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
 
 /*
  * List of demos to run. All others will be ignored.
@@ -93,19 +93,27 @@ function sampleRunner(script)
   var scriptCode = script ? script : runSample;  
   
   var skip = false;
-  // If we have an ignore list, check if the next Sample is in there.
+  // If we have an ignore list, check if the next sample is in there.
   if (ignore.length > 0 && scriptCode.indexOf('playNext') > 0 ) {
-    var nextSampleCategory = sel.getEval(getNextSampleCategory);
-    var nextSampleLabel = sel.getEval(getNextSampleLabel);
-    for (var i = 0; i < ignore.length; i++) {      
-      var ignoreCategory = ignore[i].substring(0, ignore[i].indexOf(':'));      
-      if (nextSampleCategory == ignoreCategory) {        
-        var ignoreSample = ignore[i].substr(ignore[i].indexOf(':') + 1);        
-        if (nextSampleLabel == ignoreSample) {
-          sel.runScript(selectNextSample);
-          skip = true;
+    try {
+      var nextSampleCategory = sel.getEval(getNextSampleCategory);
+      var nextSampleLabel = sel.getEval(getNextSampleLabel);
+      for (var i = 0; i < ignore.length; i++) {
+        var ignoreCategory = ignore[i].substring(0, ignore[i].indexOf(':'));
+        if (nextSampleCategory == ignoreCategory) {
+          var ignoreSample = ignore[i].substr(ignore[i].indexOf(':') + 1);
+          if (nextSampleLabel == ignoreSample) {
+            sel.runScript(selectNextSample);
+            skip = true;
+          }
         }
       }
+    }
+    catch(ex) {
+      /* If we can't identify the next sample, we've either reached the end of
+         the list, or something went wrong. */
+      print("Unable to retrieve next sample's category and/or label.");
+      return;
     }
   } 
 
