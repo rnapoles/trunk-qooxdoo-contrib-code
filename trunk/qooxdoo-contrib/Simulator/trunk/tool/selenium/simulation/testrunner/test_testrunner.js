@@ -10,7 +10,7 @@ var config = {
 };
 
 var stepSpeed  = "250"; // millisecs after each command
-var testPause = 360000; // millisecs to wait for all tests to finish
+var testPause = 990000; // millisecs to wait for all tests to finish
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
 var qxStatusText = '.widgets["statuspane.systeminfo"].getContent().toString()'; // content of status text field
