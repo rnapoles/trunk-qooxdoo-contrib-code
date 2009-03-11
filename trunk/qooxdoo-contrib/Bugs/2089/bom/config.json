@@ -2,7 +2,7 @@
   "let" :
   {
     "APPLICATION"  : "bom",
-    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
     "ROOT"         : "."
   },
 
