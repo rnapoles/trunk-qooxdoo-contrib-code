@@ -9,68 +9,27 @@ require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/db/SimpleModel.php";
+
+/*
+ * If php4, use simplexml backport library, otherwise
+ * load extended class
+ */
+if ( PHP_VERSION < 5 )
+{
+  require_once 'qcl/xml/SimpleXMLPhp4.php';
+}
+else
+{
+  require_once "qcl/xml/SimpleXMLElement.php";  
+}
+
+
+
 // FIXME do not require_once "qcl/persistence/db/Object.php"; this results in a deadlock
 
 /**
  * Persistent class to cache xml object data.
  * 
- * @todo
- * function enc($x){
- * return base64_encode(bzcompress(serialize($x),9));
-}
-
-function dec($x){
-  return unserialize(bzdecompress(base64_decode($x)));
-}
-
-
-Extending PHP5
-class cNode extends SimpleXMLElement {
-  function getName() {
-     return dom_import_simplexml($this)->nodeName;
-  }
-
-  function getType() {
-     return dom_import_simplexml($this)->nodeType;
-  }
-}
-
-$xml = '<root />';
-
-$sxe = simplexml_load_string($xml, 'cNode');
-print $sxe->getName()."n";
-print $sxe->getType()."n";
-
-
-class VerySimpleXMLElement extends SimpleXMLElement
-{
-    private function getAttributeArray()
-    {
-        return (array) $this->attributes();
-    }
- 
-    public function getAttribute($name, $default=Ó)
-    {
-        $attrs = $this->getAttributeArray();
-        if (isset($attrs[$name]))
-        {
-            return (string) $attrs[$name];
-        }
-        return (string) $default;
-    }
- 
-    public function getAttributeCount()
-    {
-         return (int) sizeof($this->getAttributeArray());
-    }
- 
-    public function hasAttributes()
-    {
-        return (bool) $this->getAttributeCount();
-    }
-}
-
-
  */
 class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
 {
@@ -81,8 +40,8 @@ class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
   var $lastModified;
   
   /*
-   * the xml document tree
-   * @var simpleXMLDocument
+   * the serialized xml document tree
+   * @var string
    */
   var $doc;
 }
@@ -190,14 +149,6 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
      * parent constructor
      */
     parent::__construct( &$controller );
-
-    /*
-     * If php4, use simplexml backport library
-     */
-    if ( PHP_VERSION < 5 )
-    {
-      require_once 'qcl/xml/parser_php4.php';
-    }
 
 
     /*
@@ -464,7 +415,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       /*
        * prohibited tag names
        */
-      $xmlTag =& new SimpleXmlElement('dummy');
+      $xmlTag =& new SimpleXMLElement('dummy');
       $this->invalidTags = $xmlTag->invalidTags;
       
       /*
@@ -502,12 +453,12 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       {
         $path = $file->filePath();
         $this->log("Loading document from file $path...","xml");
-        $this->doc = simplexml_load_file($path);
+        $this->doc = simplexml_load_file( $path, "qcl_xml_SimpleXMLElement" );
       }
       elseif ( is_string ( $this->xml ) )
       {
         $this->log("Loading document from string...","xml");
-        $this->doc = simplexml_load_string( $this->xml );
+        $this->doc = simplexml_load_string( $this->xml, "qcl_xml_SimpleXMLElement" );
       }
       else
       {
@@ -648,10 +599,9 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
    * @param mixed $node
    * @return boolean
    */
-  function isNode($node,$raiseError=true)
+  function isNode( $node )
   {
-    $class = strtolower( get_class($node) );
-    return ( $class == "simplexmlelement" );
+    return ( is_a( $node, "SimpleXMLElement" ) );
   }
   
   /**
@@ -669,7 +619,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     /*
      * check if document has already been parsed 
      */
-    if (! is_object ($this->doc) )
+    if ( ! is_object ($this->doc) )
     {
       $this->raiseError("No xml document available.");
     } 
@@ -806,7 +756,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     }
     else
     {
-      qcl_xml_SimpleXmlStorage::raiseError("qcl_simpleXML::getData: invalid parameter.");
+      qcl_xml_SimpleXmlStorage::raiseError("Invalid parameter.");
     }
     
     /*
@@ -831,7 +781,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
    * Cross-version method to set CDATA content of a node
    * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
    * @return void
-   *  @todo rename to nodeSetData()
+   * @todo rename to nodeSetData()
    */
   function setData($pathOrNode,$value)
   {
@@ -883,8 +833,6 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       eval('$node[$name] = $value'); // PHP4 throws an error otherwise
     }
-  
-        
   }  
   
   /**
