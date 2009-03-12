@@ -12,7 +12,7 @@ class qcl_datasource_SchemaModel extends qcl_db_XmlSchemaModel
   var $schemaXmlPath = "qcl/datasource/SchemaModel.xml";
     
   /**
-   * Register datasource
+   * Register datasource schema
    * @param string $name Name of datasource schema
    * @param string $class Name of datasource model class
    * @param string $title Descriptive title of the datasource
@@ -27,23 +27,46 @@ class qcl_datasource_SchemaModel extends qcl_db_XmlSchemaModel
     }
     
     /*
-     * delete entry if exists
+     * find entry if exists
      */
-    $this->deleteWhere(array(
-      'name'        => $name,
-      'class'       => $class    
+    $this->findWhere(array(
+      'name'        => $name  
     ));
     
     /*
-     * insert new entry
+     * insert new entry if not
      */
-    $this->insert( array(
-      'name'        => $name,
-      'class'       => $class,
-      'title'       => $title,
-      'description' => $description
-    ) );
+    if ( $this->foundNothing() )
+    {
+      $this->insert( array(
+        'name'        => $name,
+        'class'       => $class,
+        'title'       => $title,
+        'description' => $description
+      ) );
+    }
   }
+  
+  /**
+   * Register datasource schema
+   * @param string $name Name of datasource schema
+   * return void
+   */
+  function unregister( $name )
+  {    
+    if ( !$name )
+    {
+      $this->raiseError("Invalid parameters.");
+    }
+    
+    /*
+     * delete entry if exists
+     */
+    $this->deleteWhere(array(
+      'name'        => $name    
+    ));
+    
+  }  
   
   /**
    * Returns the schema data. If an

@@ -389,16 +389,7 @@ class qcl_jsonrpc_Server extends JsonRpcServer
     exit;
   }
   
-  /**
-   * Returns the url of the server
-   * @return string
-   */
-  function getUrl()
-  {
-    return "http://" . getenv ( HTTP_HOST ) . 
-            dirname( $_SERVER['PHP_SELF'] ) . 
-            "/index.php";
-  }
+
   
   
   /**

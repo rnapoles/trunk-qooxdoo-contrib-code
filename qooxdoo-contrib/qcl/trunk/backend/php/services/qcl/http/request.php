@@ -322,11 +322,11 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     stream_set_blocking ( $fp, 0 );
     while ( ! feof( $fp )  and ( time() - $time <  $timeout ) )
     {
-      $r = fgets($fp, 1024*8);
-      if ( $r )
+      if ( $r = fgets($fp, 1024*8) )
       {
         $response .= $r;
         $time = time();
+        if ( feof( $fp ) ) break;
       }
     }
     

@@ -422,5 +422,7 @@ class JsonRpcServer extends AbstractServer
   {
     @error_log( $msg . "\n", 3, JsonRpcDebugFile );
   }
+  
+
 }
 ?>

@@ -20,10 +20,10 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
    * Constructor. Automatically sets URL
    * @param qcl_jsonrpc_controller $controlller 
    */
-  function __construct($controller)
+  function __construct( $controller )
   {
-    parent::__construct(&$controller);
-    $this->setUrl( $controller->serverUrl() );
+    parent::__construct( &$controller );
+    $this->setUrl( $controller->getServerUrl() );
   }
   
   /**
