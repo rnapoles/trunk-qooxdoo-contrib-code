@@ -64,7 +64,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   
   
   /**
-   * initializes the model
+   * Initializes the model. This is called from the constructor. 
    * @param mixed $datasourceModel Object reference to the datasource object, 
    * or null if model is independent of a datasource
    * @return bool Success

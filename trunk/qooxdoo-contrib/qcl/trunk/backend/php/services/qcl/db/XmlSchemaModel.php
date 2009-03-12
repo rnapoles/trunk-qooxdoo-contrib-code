@@ -627,20 +627,6 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     $controller =& $this->getController();
     
     /*
-     * database connection
-     */
-    $db =& $this->db();
-    if ( ! $db )
-    {
-      $this->raiseError("Cannot setup schema - no database connection.");
-    }
-    
-    /*
-     * sql type
-     */
-    $sqltype =  $db->getType();
-    
-    /*
      * the schema xml object and document
      */
     $modelXml   =& $this->getSchemaXml();
@@ -690,11 +676,26 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     /*
      * Whether the model has a table backend at all
      */
-    if ( (string) $modelAttrs['table']  == "no" )
+    if ( (string) $modelAttrs['table']  == "no" or (string) $modelAttrs['table']  == "false" )
     {
       $this->log("Model name '{$this->name}' has no table backend.","propertyModel");
       return null;  
     }
+        
+    /*
+     * Now that we know we have a table, we need a database connection
+     */
+    $db =& $this->db();
+    if ( ! $db )
+    {
+      $this->raiseError("Cannot setup schema - no database connection.");
+    }
+    
+    /*
+     * sql type
+     */
+    $sqltype =  $db->getType();
+
     
     /*
      * The table name is provided as the 'table' property
@@ -2592,8 +2593,9 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
    * returns the absolute path of the xml file that
    * is connected by default to this model. It is located
    * in the same directory as the class file 
-   * path/to/class/classname.schema.xml
-   * return string
+   * path/to/class/classname.xml
+   * @return string
+   * @todo remove ".model."
    */
   function getSchmemaXmlPath()
   {

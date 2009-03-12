@@ -627,11 +627,11 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     /*
      * if the passed var is a node, return it
      */
-    if ( is_object($pathOrNode) )
+    if ( is_object( $pathOrNode ) )
     {
       return $pathOrNode; 
     }
-    elseif ( !is_string($pathOrNode) or ! $pathOrNode )
+    elseif ( !is_string( $pathOrNode ) or ! $pathOrNode )
     {
       $this->raiseError("Invalid parameter");  
     }
@@ -686,7 +686,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
           $n    = (int)    $matches[2];
         }
         
-        /*‰
+        /*
          * get node object
          */
         $tmp =& $tmp->$part;
@@ -773,6 +773,32 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     }
       //$this->debug("$pathOrNode : $cdata");
     return $cdata;
+  }
+  
+  
+  function nodeGetAttribute( $pathOrNode, $attribute )
+  {
+    if ( is_string( $pathOrNode ) )
+    {
+      $node =& $this->getNode(&$pathOrNode);
+      if ( ! $node )
+      {
+        return null;
+      }
+    }
+    elseif ( qcl_xml_SimpleXmlStorage::isNode( $pathOrNode ) )
+    {
+      $node =& $pathOrNode;
+    }
+    else
+    {
+      qcl_xml_SimpleXmlStorage::raiseError("Invalid parameter.");
+    }
+    
+    /*
+     * get node data cross-version
+     */
+    return $node->getAttribute($attribute);
   }
   
   

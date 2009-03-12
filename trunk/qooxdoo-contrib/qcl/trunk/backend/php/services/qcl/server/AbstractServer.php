@@ -834,7 +834,9 @@ class AbstractServer
     }
     else
     {
-      /* Otherwise, we need to add a call to a qooxdoo-specific function */
+      /* 
+       * Otherwise, we need to add a call to a qooxdoo-specific function
+       */
       $reply =
             "qx.remote.ScriptTransport._requestFinished(" .
       $scriptTransportId . ", " . $reply .
@@ -847,6 +849,15 @@ class AbstractServer
      */
     exit;
   }
+  
+  /**
+   * Returns the url of the server
+   * @return string
+   */
+  function getUrl()
+  {
+    return "http://" . getenv ( HTTP_HOST ) . $_SERVER['PHP_SELF'];
+  }    
 
 }
 ?>

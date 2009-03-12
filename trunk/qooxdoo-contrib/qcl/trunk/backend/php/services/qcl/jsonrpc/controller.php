@@ -295,14 +295,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   /**
    * Return service directory url
    * @return string
+   * @deprecated Use getServerUrl instead
    */
   function getServiceDirUrl($append="")
   {
-    global $serviceComponents;
-    
-    $serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
-    
-    return $serverDirUrl . $serviceComponents[0] . "/" . $append;
+    return $this->getServerUrl();
   }
   
   /**

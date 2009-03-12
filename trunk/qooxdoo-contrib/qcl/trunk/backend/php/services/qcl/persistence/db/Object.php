@@ -36,7 +36,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
    */
   function initialize()
   {
-    $controller     =& $this->getController();
+    $controller =& $this->getController();
 
     /*
      * Initialize a dummy qcl_db_XmlSchemaModel object to create tables

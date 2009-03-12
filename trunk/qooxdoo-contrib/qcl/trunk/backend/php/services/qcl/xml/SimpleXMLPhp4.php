@@ -835,71 +835,49 @@ class SimpleXMLElement
   }
 
   /**
-   * loads an xml document from a string
-   * @return boolean
-   * @param $xmlstr string
-   */
-  function load_string ( $xmlstr )
-  {
-    if ( ! $dom = domxml_open_mem($xmlstr, DOMXML_LOAD_RECOVERING, &$error ) ) 
-    {
-      $this->error = "Error while parsing the document:" . print_r( $error, true );
-      return false;
-    }
-    $this->dom =& $dom;
-    return true;
-  }
-
-  /**
    * executes an xpath (1.0) query on the current document
    * @return XPathObject
    */
-  function evalXpath( $expr ) 
+  function xpath( $expr ) 
   {
-    $xpCxt =& $this->dom->xpath_new_context();
-    $xpObj =& $xpCxt->xpath_eval_expression($expr);
-    return $xpObj;
-  }
-  
-  /**
-   * gets the value of the first element an xpath query
-   * @return 
-   * @param $xpObj XPathObject
-   * @param $attrName string
-   */
-  function &getXpathValue( $expr )
-  {
-    $xpObj     =& $this->evalXpath( $expr );
-    $firstNode =& $xpObj->nodeset[0];
-    //$this->info(array( $xpObj, $firstNode, $firstNode->get_content() ) );
-    if ( is_object( $firstNode )  )
+    /*
+     * create a dom xml document from the stringyfied xml
+     */
+    $dom = domxml_open_mem(
+      $this->asXML(), 
+      DOMXML_LOAD_RECOVERING, 
+      &$error 
+    );
+    
+    if ( ! $dom ) 
     {
-      return $firstNode->get_content();
-    }
-    return null;
-  }
-
-  /**
-   * gets the string content of the first element an xpath query
-   * @return 
-   * @param $xpObj XPathObject
-   * @param $attrName string
-   */
-  function &getXpathDump( $expr, $withContainingElement=true )
-  {
-    $xpObj     =& $this->evalXpath( $expr );
-    $firstNode =& $xpObj->nodeset[0];
-    //$this->info(array( $xpObj, $firstNode ) );
-    //$this->info($this->dom->dump_mem( 2,"utf-8"));
-    if ( is_object( $firstNode )  )
+      $this->error = "Error while parsing the document:" . print_r( $error, true );
+      return false;
+    } 
+    
+    /*
+     * create new context and evaluate the xpath expression
+     */
+    $xpCxt =& $this->dom->xpath_new_context();
+    $xpObj =& $xpCxt->xpath_eval_expression( $expr );
+    if ( ! $xpObj ) return null;
+    
+    /*
+     * for each node found, create a SimpleXMLElement
+     */
+    $nodeSetArray=array();
+    foreach ( $xpObj->nodeset as $node)
     {
       $doc =& domxml_new_doc("1.0");
-      $doc->append_child( $firstNode->clone_node( true ) );
+      $doc->append_child( $node->clone_node( true ) );
       $xmlString = $doc->dump_mem( 2,"utf-8");
-      return $xmlString;
+      $parser = new XMLParser($xmlString);
+      $parser->Parse();
+      $nodeSetArray[] =& $parser->document; 
     }
-    return null;
-  }  
+    return $nodeSetArray;
+  }
+ 
   
   
 }
