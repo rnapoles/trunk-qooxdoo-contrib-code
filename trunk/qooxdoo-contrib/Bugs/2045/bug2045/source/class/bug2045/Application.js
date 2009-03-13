@@ -42,7 +42,7 @@ qx.Class.define("bug2045.Application",
       this.base(arguments);
 
 
-      var label = new qx.legacy.ui.basic.Label(this.tr("Login Name:").toString());
+      var label = new qx.legacy.ui.basic.Label(this.tr("Login Name:"));
       // Set button location
       label.setTop(50);
       label.setLeft(50);
