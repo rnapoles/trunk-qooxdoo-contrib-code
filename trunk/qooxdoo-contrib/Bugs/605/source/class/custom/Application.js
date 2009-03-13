@@ -1,73 +1,134 @@
-/* ************************************************************************
+/*
+#require(qx.log.appender.Native)
+#require(qx.log.appender.Console)
+*/
 
-   Copyright:
-
-   License:
-
-   Authors:
-
-************************************************************************ */
-
-/* ************************************************************************
-
-#asset(custom/*)
-
-************************************************************************ */
-
-/**
- * This is the main application class of your custom application "605"
- */
 qx.Class.define("custom.Application",
 {
   extend : qx.application.Standalone,
 
-
-
-  /*
-  *****************************************************************************
-     MEMBERS
-  *****************************************************************************
-  */
-
   members :
   {
-    /**
-     * This method contains the initial application code and gets called 
-     * during startup of the application
-     */
     main : function()
     {
-      // Call super class
       this.base(arguments);
-
-      // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
-      {
-        // support native logging capabilities, e.g. Firebug for Firefox
-        qx.log.appender.Native;
-        // support additional cross-browser console. Press F7 to toggle visibility
-        qx.log.appender.Console;
+      
+      var container = new qx.ui.container.Composite(new qx.ui.layout.HBox(5));
+      this.getRoot().add(container, {edge: 5});
+      
+      container.add(this.createTree(), {width: "50%"});
+      container.add(this.createTable(), {width: "50%"});
+      
+      var log = function(e) {
+        //qx.log.Logger.debug(e.getType() + e.getTarget())
+        this.debug(e.getType() + " " +  qx.core.ObjectRegistry.toHashCode(e.getTarget()));
       }
+      
+      qx.bom.Element.addListener(document.body, "mousedown", log, this, true);
+      qx.bom.Element.addListener(document.body, "mouseup", log, this, true);
+      qx.bom.Element.addListener(document.body, "click", log, this, true);
+      qx.bom.Element.addListener(document.body, "dblclick", log, this, true);
+    },
+    
+    
+    createTree : function()
+    {
+      var custom = {
+        selectionManager: function(obj)
+        {
+          return new qx.ui.table.selection.Manager(obj);
+        }
+      }
+      
+      
+      var tree = new qx.ui.treevirtual.TreeVirtual(["Name"], custom);
+      tree.setOpenCloseClickSelectsRow(true);
+      tree.setShowCellFocusIndicator(false);
+      tree.setStatusBarVisible(false);
 
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
+    tree.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.SINGLE_SELECTION);
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
+      var resizeBehavior = tree.getTableColumnModel().getBehavior();
+      resizeBehavior.set(0, { width:"1*" });
+/*
+      tree.addListener("dblclick", function(e)
+                       {
+                         alert("dblclick - " +
+                               this.getSelectedNodes()[0].label);
+                       },
+                       tree);
+*/
+      var dataModel = tree.getDataModel();
+      var root = dataModel.addBranch(null, "Root", true);
 
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      var f1 = dataModel.addBranch(root, "Folder 1", false);
+      for (var i = 1; i < 10; i++)
+      {
+          dataModel.addLeaf(f1, "File 1" + i);
+      }
+      
+      var f2 = dataModel.addBranch(root, "Folder 2", false);
+      for (var i = 1; i < 5; i++)
+      {
+          dataModel.addLeaf(f2, "File 2" + i);
+      }
+      
+      dataModel.setData();
 
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
+      tree.focus();
+      return tree;
+    },
+    
+    
+    createTable : function()
+    {
+      // Create the initial data
+      var rowData = this.createRandomRows(50);
+
+      // table model
+      var tableModel = this._tableModel = new qx.ui.table.model.Simple();
+      tableModel.setColumns([ "ID", "A number", "A date", "Boolean" ]);
+      tableModel.setData(rowData);
+      tableModel.setColumnEditable(1, true);
+      tableModel.setColumnEditable(2, true);
+      tableModel.setColumnSortable(3, false);
+
+      // table
+      var table = new qx.ui.table.Table(tableModel);
+
+      table.set({
+        width: 600,
+        height: 400,
+        decorator : null,
+        focusCellOnMouseMove : true,
+        showCellFocusIndicator : false
       });
+     table.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.SINGLE_SELECTION);
+
+      var tcm = table.getTableColumnModel();
+
+      // Display a checkbox in column 3
+      tcm.setDataCellRenderer(3, new qx.ui.table.cellrenderer.Boolean());
+
+      // use a different header renderer
+      tcm.setHeaderCellRenderer(2, new qx.ui.table.headerrenderer.Icon("icon/16/apps/office-calendar.png", "A date"));
+
+      return table;
+    },
+    
+    
+    nextId : 0,
+    createRandomRows : function(rowCount)
+    {
+      var rowData = [];
+      var now = new Date().getTime();
+      var dateRange = 400 * 24 * 60 * 60 * 1000; // 400 days
+      for (var row = 0; row < rowCount; row++) {
+        var date = new Date(now + Math.random() * dateRange - dateRange / 2);
+        rowData.push([ this.nextId++, Math.random() * 10000, date, (Math.random() > 0.5) ]);
+      }
+      return rowData;
     }
+      
   }
 });
