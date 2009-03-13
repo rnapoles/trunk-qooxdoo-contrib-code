@@ -208,12 +208,12 @@ function runTests()
   // we can speed this up since we don't have to wait for the browser
   sel.setSpeed("500");
   for (var i=0, l=logArray.length; i<l; i++) {
-    var line = logArray[i] + '</div></div>';
+    var line = logArray[i];
     // only log warnings and errors
     if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) && line.indexOf('testResult success') < 0) {
       // strip uninformative stack trace
       if (line.indexOf('Stack trace:') > 0) {
-        line = line.substring(0,line.indexOf('Stack trace:')) + '</div>';
+        line = line.substring(0,line.indexOf('<div class="trace')) + '</div>';
       }
       line = line.replace(/\<br\>/gi, "<br/>");
       line = line.replace(/\'/g, "\\'");
