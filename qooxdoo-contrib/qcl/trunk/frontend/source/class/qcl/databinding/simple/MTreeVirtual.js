@@ -418,7 +418,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
           {
             console.warn("No row number available for node client#" + treeNodeId + ", server#" + serverNodeId+" - probably not loaded yet.");  
           }
-        },this,100);
+        },this,50);
       }
       
       /*
@@ -442,12 +442,21 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
             
            //console.log("Loaded node server#"+node.data.id + ", we want to select server#" + selId );
             
+            /*
+             * if the node we have loaded is the one 
+             * we are looking for, then mission accomplished
+             */
             if ( selId && node.data.id == selId ) 
             {
              //console.log("Bingo! Now selecting server#" + selId );
+              
               this.selectByServerNodeId(selId);
-              this.setServerNodeIdToSelect(null);  
+              this.setServerNodeIdToSelect(null);
             }
+            /*
+             * Otherwise, keep the original node
+             * selected
+             */
             else if ( isSelId && this.isLoaded(isSelId) )
             {
               this.selectByServerNodeId(isSelId);
