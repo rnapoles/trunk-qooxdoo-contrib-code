@@ -19,9 +19,8 @@
    ======================================================================
 
    This class uses ideas and code snipplets presented at
-   http://webreflection.blogspot.com/2008/05/habemus-array-unlocked-length-in-ie8.html
-   http://webreflection.blogspot.com/2008/05/stack-and-arrayobject-how-to-create.html
-   
+     http://webreflection.blogspot.com/2009/02/after-array-subclassed-string.html   
+
    Author:
      Andrea Giammarchi
        
