@@ -1019,6 +1019,15 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   }
 
   /**
+   * Returns number of records in the last query resultset
+   * @return int
+   */
+  function countResult()
+  {
+    return count( $this->getResult() );
+  }  
+  
+  /**
    * Returns the lowest id number 
    * @return int
    */
@@ -1122,64 +1131,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     }
     return $map;
   }  
-  
-  //-------------------------------------------------------------
-  // options: one column which contains a serialized assoc. array
-  // containing additional dynamic fields that need not have their
-  // own database columns
-  //-------------------------------------------------------------
-
-  /**
-   * get unserialized options from record
-   * @return array
-   * @param $id int[optional]
-   */
-  function getOptions( $id = null )
-  {
-    return (array) unserialize( $this->getProperty( "options", $id ) );
-  }
-
-  /**
-   * serializes option array and saves it to record
-   * @return 
-   * @param $options array
-   * @param $id int[optional]
-   */
-  function setOptions( $options, $id = null )
-  {
-    if ( ! is_array( $options) or ! count ( $options ) )
-    {
-      $this->raiseError("Invalid Options.");
-    }
-    $this->setProperty("options", serialize($options), $id );
-  }
-  
-  /**
-   * gets a single option value
-   * @return 
-   * @param $name string
-   * @param $id int/string[optional]
-   */
-  function getOption($name, $id=null)
-  {
-    $options = $this->getOptions( $id );
-    return $options[$name];
-  }
-
-  /**
-   * sets a single option value
-   * @return 
-   * @param $name string
-   * @param $value mixed
-   * @param $id int/string[optional]
-   */
-  function setOption($name, $value, $id=null)
-  {
-    $options = $this->getOptions( $id );
-    $options[$name] = $value;
-    $this->setOptions( $options, $id );
-  }
-  
+    
   /**
    * Gets the name of the main data table
    * @return string

@@ -1011,6 +1011,29 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
     
     return true;
   }  
+  
+  /**
+   * Removes the given properties from the current record
+   * This has no effect on the property schema or the data stored
+   * in the database.
+   * @param array $properties
+   * @return void
+   */
+  function unsetProperties( $properties=null )
+  {
+    if ( ! is_array($properties ) )
+    {
+      $this->raiseError("Invalid parameter.");
+    }
+    foreach ( $properties as $p )
+    {
+      if ( ! $this->hasProperty($p) )
+      {
+        $this->raiseError("Model does not have property '$p'");
+      }
+      unset( $this->currentRecord[$p] );
+    }
+  }
 
   //-------------------------------------------------------------
   // Data creation and manipulation

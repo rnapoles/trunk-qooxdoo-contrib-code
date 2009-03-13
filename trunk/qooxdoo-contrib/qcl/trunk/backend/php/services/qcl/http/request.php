@@ -325,17 +325,17 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     stream_set_blocking ( $fp, 0 );
     $clt = "Content-Length:"; $cll = strlen($clt); $len = 0;
     while ( ! feof( $fp )  and ( time() - $time <  $timeout ) )
-    {
-      if ( $r = fgets($fp, 1024*8) )
+    { 
+      if ( $r = fgets( $fp, 1024*8 ) )
       {
         $response .= $r;
-        if ( ! strncmp( $r, $clt, $cll) ) 
+        if ( ! strncmp( $r, $clt, $cll ) ) 
         {
-          $len = ( (int) substr( $r, $cll ) ) + strlen($response);
+          $len = ( (int) substr( $r, $cll ) ) + strlen( $response );
         }
         $time = time();
-        if( feof( $fp ) ) break;
-        if( $len and strlen( $response ) >= $len ) break;
+        if ( feof( $fp ) ) break;
+        if ( $len and strlen( $response ) >= $len ) break;
       }
     }
 
