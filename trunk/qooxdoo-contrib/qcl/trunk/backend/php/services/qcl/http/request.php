@@ -14,18 +14,18 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
   /**
    * Request method, only POST implemented so far
    */
-  var $method  = "POST";    
-  
+  var $method  = "POST";
+
   /**
    * Request data
    */
   var $data = null;
-  
+
   /**
    * Optional headers to send with the request
    */
   var $headers  = array ();
-  
+
   /**
    * Request timeout
    */
@@ -35,8 +35,8 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
    * Request content type
    */
   var $contentType ="application/x-www-form-urlencoded";
-  
-  
+
+
   /**
    * constructor
    * @return
@@ -90,8 +90,8 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
       $this->raiseError("qcl_http_request::setData : argument must be associative array.");
     }
   }
-  
-  
+
+
   /**
    * getter for data
    * @return array
@@ -124,7 +124,7 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
   {
     $this->timeout = $timeout;
   }
-  
+
   /**
    * add a http header
    * @param $header string
@@ -160,10 +160,10 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     if ( is_array( $this->data ) )
     {
       foreach ( $this->data as $key => $value )
-      {        
+      {
         $data .= urlencode($key) . "=" . $this->safe_urlencode($value). "&";
       }
-      
+
       /*
        * save for debugging
        */
@@ -173,57 +173,57 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     {
       $data = $this->data;
     }
-    
+
     /*
      * send request
      * FIXME Does this work in PHP5 also? It should
      */
     if ($this->method == "POST")
     {
-       $response = $this->post($this->url, $data, $this->timeout, $headers);
+      $response = $this->post($this->url, $data, $this->timeout, $headers);
     }
     else
     {
       $this->raiseError("Request method {$this->method} not yet supported.");
     }
-    
+
     /*
      * save response
      */
     $this->response = $response;
-    
+
     return $this->response;
   }
-  
+
   function safe_urlencode($value)
   {
     /*
      * urlencode
      */
     $value = urlencode( $value );
-    
+
     /*
      * double-encode ampersands
      */
     $value = str_replace("%26","%2526", $value );
-    
+
     /*
      * encode hash sign
      */
     $value = str_replace("#", "%23", $value);
-        
+
     return $value;
   }
-  
+
   function safe_urldecode($value)
   {
     /*
      * decode
      */
     $value = urldecode( $value );
-    
+
     return $value;
-  }  
+  }
 
   /**
    * Get the raw response data including http headers
@@ -248,14 +248,14 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
   /**
    * PHP4/PHP5 POST request
    * taken from http://www.enyem.com/wiki/index.php/Send_POST_request_(PHP)
-   * 
-   * @param string $url 
+   *
+   * @param string $url
    * @param string $data
    * @param array[optional] $optional_headers
    * @return string
-   * @todo use curl if available 
+   * @todo use curl if available
    */
-  function post($url, $data, $timeout=10, $optional_headers = null)
+  function post( $url, $data, $timeout=10, $optional_headers = null )
   {
     $start    = strpos($url, '//') + 2;
     $end      = either(strpos($url,"/",$start),strlen($url));
@@ -280,7 +280,7 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     //$this->debug("Connecting to $host, port $port, path $domain.");
     $errno = ""; $errstr="";
     $fp = fsockopen($host, $port, $errno, $errstr, $timeout );
-    
+
     /*
      * handle errors
      */
@@ -299,15 +299,15 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     {
       fputs($fp, $optional_headers);
     }
-    
+
     /*
      * content type
      */
     if ( $this->contentType )
     {
-      fputs($fp, "Content-type: {$this->contentType}\r\n");  
+      fputs($fp, "Content-type: {$this->contentType}\r\n");
     }
-    
+
     fputs($fp, "Content-length: " . strlen($data) . "\r\n\r\n");
     fputs($fp, "$data\r\n\r\n");
 
@@ -315,21 +315,30 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     $time = time();
 
     /*
-     * Get response. Badly behaving servers might not maintain or close the stream properly, 
-     * we need to check for a timeout if the server doesn't send 
-     * anything.
+     * Get response. Badly behaving servers might not maintain or close the stream properly,
+     * we need to check for a timeout if the server doesn't send
+     * anything. At the same time, there is a bug in php that prevents the
+     * correct setting of feof when a stream is opened with fsockopen()
+     * @todo rewrite this using the curl library or native stream functions
+     * when upgrading to php5
      */
     stream_set_blocking ( $fp, 0 );
+    $clt = "Content-Length:"; $cll = strlen($clt); $len = 0;
     while ( ! feof( $fp )  and ( time() - $time <  $timeout ) )
     {
       if ( $r = fgets($fp, 1024*8) )
       {
         $response .= $r;
+        if ( ! strncmp( $r, $clt, $cll) ) 
+        {
+          $len = ( (int) substr( $r, $cll ) ) + strlen($response);
+        }
         $time = time();
-        if ( feof( $fp ) ) break;
+        if( feof( $fp ) ) break;
+        if( $len and strlen( $response ) >= $len ) break;
       }
     }
-    
+
     /*
      * Close stream and return response data.
      */
