@@ -34,7 +34,7 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = PLEASE_DEFINE_QOOXDOO_PATH
+QOOXDOO_PATH = ../../../../../qooxdoo.legacy_0_7_x/qooxdoo
 
 #
 # Namespace of your application e.g. custom
@@ -47,6 +47,8 @@ APPLICATION_NAMESPACE = custom
 # directory (space separated list). The default list is empty.
 #
 APPLICATION_FILES = index.html
+
+APPLICATION_LOCALES = de fr
 
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 
