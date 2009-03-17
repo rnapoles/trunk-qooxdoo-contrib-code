@@ -62,18 +62,18 @@ qx.Class.define("bug2109.Application",
       panel.add(new qx.ui.basic.Label("----- Min=0, Max=2 -----"), {row:0, column:1, colSpan:3});
       panel.add(new qx.ui.basic.Label("----- Min=0, Max=1 -----"), {row:0, column:4, colSpan:2});
       panel.add(new qx.ui.basic.Label("Non-wrapping spinners"), {row:1, column:0});
-      /*panel.add(spinner1, {row:1, column:1});
+      panel.add(spinner1, {row:1, column:1});
       panel.add(spinner2, {row:1, column:2});
       panel.add(spinner3, {row:1, column:3});
       panel.add(spinner4, {row:1, column:4});
-      panel.add(spinner5, {row:1, column:5});*/
+      panel.add(spinner5, {row:1, column:5});
 
       panel.add(new qx.ui.basic.Label("Wrapping spinners"), {row:2, column:0});
       panel.add(spinner6, {row:2, column:1});
-      /*panel.add(spinner7, {row:2, column:2});
+      panel.add(spinner7, {row:2, column:2});
       panel.add(spinner8, {row:2, column:3});
       panel.add(spinner9, {row:2, column:4});
-      panel.add(spinner10, {row:2, column:5});*/
+      panel.add(spinner10, {row:2, column:5});
 
       var check = new qx.ui.form.CheckBox("Panel enabled");
       check.setChecked(true);
