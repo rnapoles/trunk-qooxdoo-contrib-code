@@ -201,6 +201,18 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       check : "Boolean",
       init : false,
       apply : "_applyItemSelected"
+    },
+    
+    /**
+     * Contains the currently ongoing request, if any
+     * This will only contain the last request dispatched.
+     */
+    currentRequest :
+    {
+      check : "qx.io.remote.Rpc",
+      event : "changeCurrentRequest",
+      nullable : true,
+      init : null
     }
   },
 
@@ -356,7 +368,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       /*
        * configure new request object
        */
-      var rpc = new qx.io.remote.Rpc();      
+      var rpc = new qx.io.remote.Rpc();
+      this.setCurrentRequest(rpc);
       rpc.setTimeout(this.getTimeout());
       rpc.setUrl(this.getServiceUrl());
       rpc.setServiceName(serviceName);
@@ -404,6 +417,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
          * dispose request @todo: recycle object
          */
         rpc.dispose();
+        _this.setCurrentRequest(null);
         delete rpc;
 
         /*
@@ -908,7 +922,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       /*
        * configure request object
        */
-      var rpc = new qx.io.remote.Rpc();      
+      var rpc = new qx.io.remote.Rpc();  
+      this.setCurrentRequest(rpc);
       rpc.setServiceName( serviceName );
       rpc.setTimeout( this.getTimeout() );
       rpc.setUrl( this.getServiceUrl() );
@@ -959,6 +974,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
          * dispose request @todo: recycle
          */            
         rpc.dispose();
+        _this.setCurrentRequest(null);
         delete rpc; 
         
         /*
