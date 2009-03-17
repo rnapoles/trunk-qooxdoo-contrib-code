@@ -12,9 +12,10 @@ Building
 Directory structure
 
   sushi          gerneral purpose stuff, like apache commons
-  eclipse        addition jar needed for the compiler
   toolkit        qwt itself
   application    example applications
 
 
-See also: http://contrib.qooxdoo.org/QWT
+Homepage
+
+  http://qooxdoo.org/contrib/project/qwt
