@@ -5,7 +5,7 @@
   "description" : "Similar to GWT: an application is written in Java and QWT translates the client part to JavaScript.",
   
   "keywords" : ["toolkit", "java"],
-  "homepage" : "http://contrib.qooxdoo.org/QWT",
+  "homepage" : "http://qooxdoo.org/contrib/project/qwt",
 
   "license" : "LGPL/EPL",
   "authors" : [
