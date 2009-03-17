@@ -209,7 +209,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */
     currentRequest :
     {
-      check : "qx.io.remote.Rpc",
+      check : "qx.io.remote.Request",
       event : "changeCurrentRequest",
       nullable : true,
       init : null
@@ -369,7 +369,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        * configure new request object
        */
       var rpc = new qx.io.remote.Rpc();
-      this.setCurrentRequest(rpc);
       rpc.setTimeout(this.getTimeout());
       rpc.setUrl(this.getServiceUrl());
       rpc.setServiceName(serviceName);
@@ -486,7 +485,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         * pass request object to subscribers and event listeners
         */  
        qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.object", request );
-       this.createDispatchDataEvent( "requestSent", request ); 
+       this.createDispatchDataEvent( "requestSent", request ); // @todo deprecated
+       this.setCurrentRequest( request );
     },
 
     /**
@@ -923,7 +923,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        * configure request object
        */
       var rpc = new qx.io.remote.Rpc();  
-      this.setCurrentRequest(rpc);
       rpc.setServiceName( serviceName );
       rpc.setTimeout( this.getTimeout() );
       rpc.setUrl( this.getServiceUrl() );
@@ -1027,7 +1026,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        * pass request object to message subscribers and event listeners
        */
       qx.event.message.Bus.dispatch("qcl.databinding.messages.rpc.object",request); 
-      this.createDispatchDataEvent("requestSent",request);     
+      this.createDispatchDataEvent("requestSent",request); // @todo deprecated
+      this.setCurrentRequest(request);
     },
     
     
