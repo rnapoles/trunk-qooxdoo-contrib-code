@@ -275,6 +275,10 @@ function html2utf8( $str )
           );  
 }
 
+function stripquotes( $string )
+{
+  return str_replace("'","",str_replace('"',"",$string));
+}
 
 /**
  * Checks whether the input array is a list and not 

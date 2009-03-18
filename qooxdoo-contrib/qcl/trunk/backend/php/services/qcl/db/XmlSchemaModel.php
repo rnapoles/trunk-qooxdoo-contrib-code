@@ -62,6 +62,13 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
   var $aliases = array();    
   
   /**
+   * An associated array, having the name of the property
+   * as keys and their alias as value
+   * @var unknown_type
+   */
+  var $aliasMap = array();
+  
+  /**
    * Shortcuts to property nodes which belong to metadata
    * @array array of object references
    */
@@ -191,16 +198,28 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
   }
 
   /**
-   * checks if a property has a local alias 
-   *
+   * Checks if a property has a local alias 
    * @param string $propName property name
    */
   function hasAlias($propName)
   {
     $this->getSchemaXml(); // make sure schema has been initialized
-    return ( $this->properties[$propName] != $propName );
+    return isset( $this->aliasMap[$propName]  );
   }
 
+  /**
+   * Returns the local alias of the property name
+   * @param string $propName property name
+   */
+  function getAlias( $propName )
+  {
+    if ( ! $this->hasAlias($propName) )
+    {
+      $this->raiseError("'$propName' has no alias.");
+    }
+    return $this->aliasMap[$propName];
+  }  
+  
   /**
    * gets the name the property has in the model schema (i.e. either
    * the unchanged name or a local alias)
@@ -223,7 +242,18 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
   function &getPropertyNode ( $name )
   {
     $this->getSchemaXml(); // make sure schema has been initialized
-    $node =& $this->propertyNodes[ $name ];
+    if ( $this->hasAlias($name) )
+    {
+      $node =& $this->propertyNodes[ $this->getAlias( $name) ];
+      if ( ! $node )
+      {
+        $node =& $this->propertyNodes[ $name ];
+      }
+    }
+    else
+    {
+      $node =& $this->propertyNodes[ $name ];
+    }
     if ( ! $node )
     {
       $this->raiseError("Schema XML for model '{$this->name}' doesn't contain a node for property '$name'.");
@@ -2528,8 +2558,8 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     $aliases =& $definition->aliases;
     if ( $aliases )
     {
-      $aliasMap = array();
-      foreach($aliases->children() as $alias)
+      
+      foreach( $aliases->children() as $alias )
       {
         
         /*
@@ -2542,10 +2572,11 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
         /*
          * store in alias map
          */
-        $aliasMap[$propName] = $column; 
+        $this->aliasMap[$propName] = $column; 
         
         /*
          * overwrite object property
+         * @todo remove
          */
         $columnVar = "col_$propName"; 
         $this->$columnVar = $column;
@@ -2560,7 +2591,8 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
          */
         $this->aliases[$column] = $propName;
       }
-    }    
+    }
+  
     //$this->debug("Alias Map:");
     //$this->debug($aliasMap);
     
@@ -3005,10 +3037,202 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     $this->log("$count records imported.","propertyModel");
   }
   
+   //-------------------------------------------------------------
+  // Fields 
+  //-------------------------------------------------------------
+
+  /**
+   * Return all fields defined in the schema. This needs to be called
+   * at least once before field metadata is accessed.
+   * Fields are different from properties in the sense that there can
+   * be fields that combine several properties for searching, such as
+   * a "fulltext" field
+   * @return array Array of fields
+   */
+  function getFields()
+  {
+    if ( ! count( $this->fields ) )
+    {
+      /*
+       * setup properties
+       */
+      $this->setupProperties();
+      
+      /*
+       * setup fields
+       */
+      $schemaXml  =& $this->getSchemaXml();
+      $xmlDoc     =& $schemaXml->getDocument();
+      $fieldsNode =& $schemaXml->getNode("/model/dataStructure/fields");
+      
+      if ( ! is_object( $fieldsNode ) )
+      {
+        $this->raiseError("Model schema xml for {$this->name} has no <fields> node");
+      }
+      
+      $this->fields = array();
+      
+      foreach ( $fieldsNode->children() as $node )
+      {
+        
+        $attrs = $node->attributes();
+        $name  = (string) $attrs['name'];
+        $type  = (string) $attrs['type'];
+        $alias = (string) $attrs['alias'];
+        $ftext = (string) $attrs['fulltext'];
+        $index = (string) either( $attrs['useIndex'],$attrs['useindex']);
+        $sfld  = (string) either( $attrs['searchField'],$attrs['searchfield']);
+        $mapTo = (string) either( $attrs['mapTo'],$attrs['mapto']);
+              
+        /*
+         * using an index as a field
+         */
+        if ( $index )
+        {
+           if ( ! $this->hasIndex($index) )
+           {
+             $this->raiseError("Index $index does not exist.");
+           }
+        }
+        
+        /*
+         * fulltext fields
+         * @document
+         */
+        if ( $ftext )
+        {
+          $this->fullTextFieldNodes[$name] = $node;
+        }
+                
+        /*
+         * if field shouldn't be mapped to a property
+         * @todo document
+         */
+        elseif ( $mapTo !="none" and $sfld != "true" )
+        {
+          /*
+           * check if corresponding property exists
+           */
+          $prop = either( $mapTo, $name );
+          if ( ! $this->hasProperty ( $prop ) )
+          {
+            $this->raiseError("Model has no property '$prop'.");
+          }
+          
+          /*
+           * check type
+           */
+          if ( $type and $type != $this->getPropertyType( $prop ) )
+          {
+            $this->warn ( "Field '$name' doesn't have the same type as the corresponding property '$prop'.");
+          }
+        }
+                
+        /*
+         * store the bibliograph field name as the key
+         * and a possible alias (field name as called in the schema) or,
+         * if there is no alias, the reference type name as the value
+         */
+        $this->fields[$name] = either( $alias, $name );
+        
+        /*
+         * store a reference to the field node so that it can be quickly accessed later
+         */
+        $this->fieldNode[$name] = $node; // do not use copy by reference here (PHP4)
+
+      }
+    }
+    $fields = array_keys($this->fields);
+    //$this->debug( $fields );
+    return $fields;
+  }
+  
+  /**
+   * Returns the node of a field in the schema xml
+   *
+   * @param string $name The bibliograph name of the field
+   * @return SimpleXmlElement  or SimpleXmlElement(PHP5)
+   */
+  function &getFieldNode( $name )
+  {
+    if ( ! is_array( $this->fieldNode) )
+    {
+      $this->getFields();
+    } 
+    $node =& $this->fieldNode[$name];
+    if ( ! is_object($node) )
+    {
+      $this->raiseError("No <field> node exists for '$name'.");
+    }
+    return $node;
+  }
+  
+  /**
+   * Returns the label (description) of a field
+   * 
+   * @param string $name bibliograph reference type
+   * @param strin|null[optional] $reftype The field might have different labels according to the reference type
+   * @return string
+   */
+  function getFieldLabel( $name, $reftype = null )
+  {
+    $node =& $this->getFieldNode( $name );
+    if ( is_object ($node->label ) )
+    {
+      return qcl_xml_SimpleXmlStorage::getData( $node->label );  
+    }
+    elseif ( is_array ( $node->label) )
+    {
+      $labels = array();
+      foreach ( $node->label as $labelNode )
+      {
+        $attrs = $labelNode->attributes();
+        $type  = (string) $attrs['type'];
+        if ( $type )
+        {
+          $labels[$type] = qcl_xml_SimpleXmlStorage::getData( $labelNode );
+        }
+        else
+        {
+          $defaultLabel = qcl_xml_SimpleXmlStorage::getData( $labelNode );
+        }
+      }
+      return either ( $labels[$reftype], $defaultLabel, "*** Error ***" );
+    }
+    $this->raiseError("Reference type '$name' has no label node.");
+  }   
+  
+  /**
+   * get the type of a field
+   * @param string $name field name
+   * @return string field type
+   */
+  function getFieldType( $name )
+  {
+    $node  =& $this->getFieldNode( $name );
+    $attrs = $node->attributes();
+    return (string) $attrs['type'];
+  }  
+  
   //-------------------------------------------------------------
   // Queries
   //-------------------------------------------------------------  
-  
+ 
+  /**
+   * Return operators of a field for search function 
+   * @param string $field field name
+   * @return array Array of SimpleXmlElement Objects
+   */
+   function getFieldOperators( $name )
+   {
+     if ( ! $this->hasQueryOperators() )
+     {
+      $this->raiseError("Model does not support query operators"); 
+     }
+     $type    = $this->getFieldType( $name );
+     return $this->getQueryOperatorNodes( $type ); 
+   }
+     
   /**
    * Checks whether model supports query operators
    * @return bool
