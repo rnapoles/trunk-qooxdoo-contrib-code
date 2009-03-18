@@ -518,12 +518,12 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     /*
      * remove dupliate plus signs (in case the user has added them)
      */
-    $expr = str_replace("++","+", implode(" ",$searchWords) );
+    $expr = str_replace("++","+", implode(" ",$searchWords ) );
 
     /*
      * get index columns
      */
-    $fullTextCols = $this->getIndexColumns($table, $indexName);
+    $fullTextCols = $this->getIndexColumns( $table, $indexName );
     if( !count($fullTextCols) )
     {
       $this->raiseError("Model has no fulltext index '$indexName'");
@@ -897,7 +897,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   }
   
   /**
-   * get columns in index
+   * Return the columns in index
    * @param string $table
    * @param string $index 
    * @return array Array of column names that belong to the index
@@ -905,7 +905,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   function getIndexColumns($table, $index)
   {
     $records = $this->getAllRecords("
-      SHOW KEYS FROM `$table`
+      SHOW INDEX FROM `$table`
       WHERE `Key_name`='$index'
     ");
     $result = array();
@@ -917,13 +917,42 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   }
   
   /**
-   * adds a an index
+   * Returns an array of index names defined in the table
+   * @param $table
+   * @return array
+   */
+  function indexes( $table )
+  {
+    $records = $this->getAllRecords("
+      SHOW INDEX FROM `$table`
+    ");
+    $result = array();
+    foreach( $records as $record )
+    {
+      $result[] = $record['Key_name'];
+    }
+    return $result;    
+  }
+  
+  /**
+   * Checks whether an index exists
+   * @param $table
+   * @param $index
+   * @return boolean
+   */
+  function hasIndex( $table, $index )
+  {
+    return count( $this->getIndexColumns( $table, $index ) ) > 0;
+  }
+  
+  /**
+   * Adds a an index
    * @param string $type FULLTEXT|UNIQUE
    * @param string $table
    * @param string $index index name
    * @param string|array  $columns name(s) of column(s) in the index
    */
-  function addIndex($type, $table, $index, $columns)
+  function addIndex( $type, $table, $index, $columns )
   {
     if ( ! count( $this->getIndexColumns($table, $index ) ) ) 
     {

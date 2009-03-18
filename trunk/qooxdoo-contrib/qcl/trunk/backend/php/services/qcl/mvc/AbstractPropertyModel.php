@@ -899,14 +899,14 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
    * @param qcl_db_XmlSchemaModel $model
    * @return void
    */
-  function copySharedProperties ( $model )
+  function copySharedProperties ( $model, $exclude=array() )
   {
     $myProperties    = $this->getProperties();
     $data            = $model->getRecord();
     
     foreach( $data as $key => $value )
     {
-      if ( $key != "id" and in_array($key, $myProperties) )
+      if ( $key != "id" and in_array( $key, $myProperties ) and ! in_array( $key, $exclude ) )
       {
         $this->setProperty($key,$value);
       }

@@ -6,10 +6,9 @@ require_once "qcl/db/__init__.php";
 require_once "qcl/mvc/AbstractPropertyModel.php";
 
 /**
- * Class containing all the methods shared by the qcl_db_XmlSchemaModel and 
- * qcl_db_SimpleModel
+ * Abstrac class for models that are based on a relational 
+ * database. 
  * @todo define interface
- * @todo merge qcl_db_AbstractModel and qcl_db_PropertyModel
  */
 class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
 {
@@ -678,10 +677,10 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    * @param int $id
    * @return arrray()
    */
-  function load($id)
+  function load( $id, $requestId=null )
   {
-    $this->checkInt($id);
-    return $this->findById($id);      
+    $this->checkInt( $id ) ;
+    return $this->findById( $id );      
   }
  
   /**
@@ -1157,7 +1156,28 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     }
     //$this->info("Prefix for {$this->name} is '$prefix'.");
     return $prefix; 
-  }  
+  }
+  
+  /**
+   * Whether the model has the given index
+   * @param $index
+   * @return boolean
+   */
+  function hasIndex( $index )
+  {
+    return in_array( $index, $this->indexes() );
+  }
+  
+  /**
+   * Returns a list of index names of the table
+   * which holds the records of this model
+   * @return array
+   */
+  function indexes()
+  {
+    $db = $this->db();
+    return $db->indexes( $this->table() );
+  }
     
 }
 ?>
