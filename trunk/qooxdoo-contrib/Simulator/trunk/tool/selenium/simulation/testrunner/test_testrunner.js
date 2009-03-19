@@ -10,7 +10,7 @@ var config = {
 };
 
 var stepSpeed  = "250"; // millisecs after each command
-var testPause = 990000; // millisecs to wait for all tests to finish
+var testPause = 1800000; // millisecs to wait for all tests to finish
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
 var qxStatusText = '.widgets["statuspane.systeminfo"].getContent().toString()'; // content of status text field
@@ -209,16 +209,36 @@ function runTests()
   sel.setSpeed("500");
   for (var i=0, l=logArray.length; i<l; i++) {
     var line = logArray[i];
+    // Workaround for (rhino?) issue with replace() and single quotes. 
+    line = line.split("'");
+    line = line.join("\'");
     // only log warnings and errors
     if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) && line.indexOf('testResult success') < 0) {
       // strip uninformative stack trace
       if (line.indexOf('Stack trace:') > 0) {
-        line = line.substring(0,line.indexOf('<div class="trace')) + '</div>';
+        line = line.substring(0,line.indexOf('<div class="trace'));
       }
-      line = line.replace(/\<br\>/gi, "<br/>");
-      line = line.replace(/\'/g, "\\'");
-      line = line.replace(/\n/g, "<br/>");
-      line = line.replace(/\r/g, "<br/>");
+      try {
+        line = line.replace(/\<br\>/gi, "<br/>");
+        line = line.replace(/\'/g, "\\'");
+        line = line.replace(/\n/g, "<br/>");
+        line = line.replace(/\r/g, "<br/>");
+      }
+      catch(ex) {
+        print("Error while replacing: " + ex);
+      }
+      // make sure all div tags are closed
+      var odivs = line.match(/\<div/g);
+      var cdivs = line.match(/\<\/div/g);
+      if (odivs) {        
+        cdivs = cdivs ? cdivs : [];      
+        var divdiff = odivs.length - cdivs.length;
+        if (divdiff > 0) {
+          for (var j=0; j<divdiff; j++) {
+            line += "</div>";
+          }
+        } 
+      }
       errWarn++;
       print("Logging line " + line);
       sel.getEval(browserLog(line));
