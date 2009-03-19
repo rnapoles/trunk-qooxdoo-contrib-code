@@ -41,6 +41,14 @@ qx.Class.define("bug1462.Application",
       win.setHeight(50);
       win.open();
       
+      button.addListener("execute", function(e)
+      {
+        var doc = this.getRoot();
+        var test = new qx.ui.window.Window("test").set({modal: true});
+        test.open();
+        doc.add(test, {left: 200, top: 200});
+      }, this);
+      
       var doc = this.getRoot();
       doc.add(button, {left: 100, top: 100});
       doc.add(win, {left: 20, top: 20});
