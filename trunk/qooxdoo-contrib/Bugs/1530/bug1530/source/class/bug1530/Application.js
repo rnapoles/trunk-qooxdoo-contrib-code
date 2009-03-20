@@ -65,11 +65,17 @@ qx.Class.define("bug1530.Application",
       l2.setRich(true);
       l2.setSelectable(true);
 
+      var  l3 = new qx.ui.basic.Label("Test rich");
+      l3.setSelectable(true);
+      l3.setRich(true);
+      l3.setSelectable(false);
+
 
 
       // Add button to document at fixed coordinates
       doc.add(l1, {left: 100, top: 50});
       doc.add(l2, {left: 100, top: 100});
+      doc.add(l3, {left: 100, top: 150});
 
     }
   }
