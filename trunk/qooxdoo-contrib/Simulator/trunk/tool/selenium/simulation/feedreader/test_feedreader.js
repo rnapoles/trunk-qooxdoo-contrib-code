@@ -12,15 +12,17 @@ var config = {
 var stepSpeed  = "250"; // millisecs after each command
 var testPause = 360000; // millisecs to wait for all tests to finish
 var selWin = "selenium.browserbot.getCurrentWindow()"; // get application iframe
-var tree = selWin + ".qx.core.Init.getApplication()._treeView"; // get feed tree
+var qxApp = "qx.core.Init.getApplication()";
+var tree = selWin + "." + qxApp + "._treeView"; // get feed tree
 var lastFeedNum = tree +".getItems().length - 1";
 var treeReset = tree + ".resetSelection()";
 var treeSelect = tree + ".addToSelection(" + tree + ".getItems()[1])"; // select qooxdoo news feed
-var list = selWin + ".qx.core.Init.getApplication()._listView._list"; // get feed item list
+var list = selWin + "." + qxApp + "._listView._list"; // get feed item list
 var listSelect = list +  ".addToSelection(" + list + ".getChildren()[0])"; // select first feed item
-var article = selWin + ".qx.core.Init.getApplication()._articleView.getArticle()"; // the article - null if no item selected
+var article = selWin + "." + qxApp + "._articleView.getArticle()"; // the article - null if no item selected
 var isArticle = article + " instanceof selenium.browserbot.getCurrentWindow().feedreader.model.Article";
 var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getDomElement().childNodes[0].value";
+var addFeedWindowLabel = selWin + "." + qxApp + '._addFeedWindow.getCaption().toString()';
 var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication()._treeView) { qxReady = true; } } catch(e) {} qxReady;'; // check if testrunner instance exists
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
@@ -158,23 +160,24 @@ function runTests()
   }
   
   // Use the preferences window to change the application language
-  try { 
+  try {
+    var oldLabel = sel.getEval(staticFeedsLabel);
     sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/child[5]');
     sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.groupbox.GroupBox/[@label="Italiano"]');
     sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.container.Composite/[@label="OK"]');
-    var label = sel.getEval(staticFeedsLabel);
-    if (label.indexOf("Feed statici") >= 0) {
+    var newLabel = sel.getEval(staticFeedsLabel);
+    if (oldLabel != newLabel) {
       print("Language changed successfully.")
     } 
     else {
       totalErrors ++;
-      print("ERROR: Unexpected Label: " + label);
-      sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected Label. Language selection failed?</div></div>'));    
+      print("ERROR: Unexpected Label: " + newLabel);
+      sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected Label "' + newLabel + '" . Language selection failed?</div></div>'));    
     }
   }
   catch(ex) {
     totalErrors ++;
-    print("ERROR: Failed to change language.");
+    print("ERROR while changing language: " + ex);
     sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to change language: ' + ex + ' </div></div>'));    
   }
   
@@ -182,14 +185,18 @@ function runTests()
   print("Adding new feed.");
   try {
     sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/child[0]');
-    sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');
+    var addLabel = sel.getEval(addFeedWindowLabel);
+    if (addLabel.indexOf('Aggiungi') < 0 ) {
+      throw('Feed window has unexpected title "' + addLabel + '". Possible translation problem.');
+    }
+    sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');    
     sel.type('qxh=app:[@_addFeedWindow]/[@_urlTextfield]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
     sel.qxClick('qxh=app:[@_addFeedWindow]/qx.ui.form.Button');
   }
   catch(ex) {
     totalErrors ++;
-    print("ERROR: Failed to add feed.");
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to add feed: ' + ex + ' </div></div>'));    
+    print("ERROR while adding feed: " + ex);
+    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Error while adding feed: ' + ex + ' </div></div>'));    
   }
   
   lastFeed = sel.getEval(lastFeedNum);
@@ -199,7 +206,7 @@ function runTests()
     sel.waitForCondition(isLastFeedLoaded, testPause);
   }
   catch(ex) {
-    print("ERROR: New feed did not load correctly.");
+    print("ERROR: New feed did not load correctly. " + ex);
     sel.getEval(browserLog('<div class="qxappender"><div class="level-error">New feed did not load correctly: ' + ex + ' </div></div>'));    
   }
   
@@ -211,7 +218,7 @@ function runTests()
   }
   else {
     totalErrors++;
-    print("Error: Unexpected Feed Label.");
+    print("ERROR: Unexpected Feed Label.");
     sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected Label. New feed not added?</div></div>'));
   }
   
