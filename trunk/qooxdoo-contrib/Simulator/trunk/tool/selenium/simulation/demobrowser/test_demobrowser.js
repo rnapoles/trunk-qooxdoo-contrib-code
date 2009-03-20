@@ -32,7 +32,7 @@ var platform = 'navigator.platform';
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe'];
 
 /*
  * List of demos to run. All others will be ignored.
@@ -130,7 +130,6 @@ function sampleRunner(script)
     var category = sel.getEval(getSampleCategory);
   }
   
-  sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
   // wait for the sample to finish, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
   try {
@@ -153,7 +152,8 @@ function sampleRunner(script)
   }
 
   // we're only interested in logs containing warnings or errors
-  if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {    
+  if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
+    sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));    
     logsWithErrors++;
     sel.getEval(browserLog('<DIV style="padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px" class="qxappender">'));
 
