@@ -1,4 +1,0 @@
-<settings>
-  <localRepository>${env.HOME}/.m2/qwt-download-repository</localRepository>
-</settings>
-
