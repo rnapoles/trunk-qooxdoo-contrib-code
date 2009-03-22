@@ -6,7 +6,7 @@
       "let" :
       {
         "APPLICATION_NAMESPACE": "ssvg",
-        "QOOXDOO_PATH" : "../../../../../trunk/qooxdoo/framework",
+        "QOOXDOO_PATH" : "../../../../../trunk/qooxdoo",
         "QOOXDOO_URI"  : "../${QOOXDOO_PATH}"
       },
 
@@ -20,8 +20,7 @@
         },
 
         {
-          "manifest" : "Manifest.json",
-          "uri"      : ".."
+          "manifest" : "Manifest.json"
         }
       ],
 
