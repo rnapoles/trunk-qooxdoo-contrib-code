@@ -59,7 +59,7 @@ MEMBERS
       }
       else
       {
-        var o = new qx.ui.basic.Terminator();
+        var o = new qx.ui.core.Widget();
         o.set(
           {
             top : 100,
