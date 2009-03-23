@@ -180,6 +180,9 @@ qx.Class.define("htmlarea.Application",
         button.addEventListener("execute", toolbarEntries[entry].action, htmlArea);
         hb.add(button);
         
+        // add the "unselectable" HTML attribute for IE8 to prevent the 
+        // stealing of the selection during the execution of the command at 
+        // the HtmlArea
         if (qx.core.Variant.isSet("qx.client", "mshtml") &&
             qx.core.Client.getVersion() >= 8)
         {
