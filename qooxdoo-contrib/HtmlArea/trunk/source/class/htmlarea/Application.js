@@ -179,6 +179,24 @@ qx.Class.define("htmlarea.Application",
         button = new qx.ui.form.Button("", toolbarEntries[entry].image);
         button.addEventListener("execute", toolbarEntries[entry].action, htmlArea);
         hb.add(button);
+        
+        if (qx.core.Variant.isSet("qx.client", "mshtml") &&
+            qx.core.Client.getVersion() >= 8)
+        {
+          button.addEventListener("appear", function(e){
+            var domNode = this.getElement();
+            domNode.setAttribute('unselectable', 'on');
+  
+            var allNodes = domNode.getElementsByTagName('*');
+  
+            for (var i=0; i<allNodes.length; i++)
+            {
+              if (allNodes[i].nodeType == 1) {
+                allNodes[i].setAttribute('unselectable', 'on');
+              }
+            }
+          });
+        }
       }
 
       /* Add toolbar and HtmlArea widget */
