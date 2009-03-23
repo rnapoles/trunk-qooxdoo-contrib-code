@@ -22,7 +22,11 @@ var listSelect = list +  ".addToSelection(" + list + ".getChildren()[0])"; // se
 var article = selWin + "." + qxApp + "._articleView.getArticle()"; // the article - null if no item selected
 var isArticle = article + " instanceof selenium.browserbot.getCurrentWindow().feedreader.model.Article";
 var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getDomElement().childNodes[0].value";
+var isPrefWindowVisible = selWin + "." + qxApp + "._prefWindow.getVisibility() == 'visible'";
+var isPrefWindowHidden = selWin + "." + qxApp + "._prefWindow.getVisibility() == 'hidden'";
 var addFeedWindowLabel = selWin + "." + qxApp + '._addFeedWindow.getCaption().toString()';
+var isAddFeedWindowVisible = selWin + "." + qxApp + "._addFeedWindow.getVisibility() == 'visible'";
+var isAddFeedWindowHidden = selWin + "." + qxApp + "._addFeedWindow.getVisibility() == 'hidden'";
 var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication()._treeView) { qxReady = true; } } catch(e) {} qxReady;'; // check if testrunner instance exists
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
@@ -163,8 +167,15 @@ function runTests()
   try {
     var oldLabel = sel.getEval(staticFeedsLabel);
     sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/child[5]');
+    print("Waiting for Preferences window to open.");
+    sel.waitForCondition(isPrefWindowVisible, 10000);
+    print("Selecting language.");
     sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.groupbox.GroupBox/[@label="Italiano"]');
+    print("Clicking OK.");
     sel.qxClick('qxh=app:[@_prefWindow]/qx.ui.container.Composite/[@label="OK"]');
+    sel.waitForCondition(isPrefWindowHidden, 10000);
+    print("Waiting for Preferences window to close.");
+    print("Getting 'Static Feeds' label.");
     var newLabel = sel.getEval(staticFeedsLabel);
     if (oldLabel != newLabel) {
       print("Language changed successfully.")
@@ -185,13 +196,20 @@ function runTests()
   print("Adding new feed.");
   try {
     sel.qxClick('qxh=app:[@_toolBarView]/qx.ui.toolbar.Part/child[0]');
+    print("Waiting for Add Feed window to open.");
+    sel.waitForCondition(isAddFeedWindowVisible, 10000);
     var addLabel = sel.getEval(addFeedWindowLabel);
     if (addLabel.indexOf('Aggiungi') < 0 ) {
       throw('Feed window has unexpected title "' + addLabel + '". Possible translation problem.');
     }
-    sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');    
+    print("Entering new feed title.");
+    sel.type('qxh=app:[@_addFeedWindow]/[@_titleTextfield]', 'Golem');
+    print("Entering new feed URL.");
     sel.type('qxh=app:[@_addFeedWindow]/[@_urlTextfield]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
+    print("Clicking 'Add'.");
     sel.qxClick('qxh=app:[@_addFeedWindow]/qx.ui.form.Button');
+    print("Waiting for Add Feed window to close.");
+    sel.waitForCondition(isAddFeedWindowHidden, 10000);
   }
   catch(ex) {
     totalErrors ++;
