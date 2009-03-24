@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import net.sf.qooxdoo.rpc.RpcHandler;
 import net.sf.qooxdoo.rpc.log.IRpcLogger;
@@ -37,11 +36,21 @@ public class RpcServlet extends HttpServlet implements IRpcLogger {
      * Implementation of an instance container that uses the user's session.
      */
     protected IServiceInstanceContainer instanceContainer=new IServiceInstanceContainer() {
-	public Object getServiceInstance(String name) {
-	    return requestTl.get().getSession(true).getAttribute("qooxdoo-RpcServlet:"+name);
+	
+	protected String getSessionKey(String serviceName, String instanceName) {
+	    String name="qooxdoo-RpcServlet:"+serviceName;
+	    if (instanceName!=null) name+="/"+instanceName;
+	    return name;
+	}
+	
+	public Object getServiceInstance(String serviceName) {
+	    HttpServletRequest request=requestTl.get();
+	    return request.getSession(true).getAttribute(getSessionKey(serviceName,request.getParameter("instanceId")));
 	};
-	public void putServiceInstance(String name, Object instance) {
-	    requestTl.get().getSession(true).setAttribute("qooxdoo-RpcServlet:"+name,instance);
+	
+	public void putServiceInstance(String serviceName, Object instance) {
+	    HttpServletRequest request=requestTl.get();
+	    request.getSession(true).setAttribute(getSessionKey(serviceName,request.getParameter("instanceId")),instance);
 	};
     };
     

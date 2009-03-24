@@ -8,6 +8,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -66,7 +68,7 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
     @SuppressWarnings("unchecked")
     @Override
     public Object toJava(Object jsonObject, Class<?> javaClass,
-	    Type genericJavaType, Annotation[] typeAnnotations) {
+	    Type genericJavaType, Annotation[] typeAnnotations) throws Exception {
 	// check null
 	if (jsonObject == JSONObject.NULL) {
 	    if (javaClass.isPrimitive())
@@ -82,6 +84,8 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	} else if (javaClass == Integer.class || javaClass == Integer.TYPE) {
 	    if (jsonObject instanceof Number)
 		return ((Number) jsonObject).intValue();
+	    if (jsonObject instanceof String)
+		return new Integer((String) jsonObject);
 	} else if (javaClass == Double.class || javaClass == Double.TYPE) {
 	    if (jsonObject instanceof Number)
 		return ((Number) jsonObject).doubleValue();
@@ -110,6 +114,12 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 		}
 		return s.charAt(0);
 	    }
+	} else if (javaClass==Date.class) {
+	    if (jsonObject instanceof Date)
+		return (Date) jsonObject;
+	} else if (Date.class.isAssignableFrom(javaClass)) { // any other type derived from date -> construct with "long" argument
+	    if (jsonObject instanceof Date)
+		return javaClass.getConstructor(Long.TYPE).newInstance(((Date)jsonObject).getTime());
 	} else if (Enum.class.isAssignableFrom(javaClass)) {
 	    if (jsonObject instanceof String)
 		return Enum.valueOf((Class<Enum>) javaClass,
@@ -128,11 +138,46 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	    }
 	}
 
+	if (jsonObject instanceof JSONObject)
+	{
+	    return toJavaBean((JSONObject) jsonObject, javaClass, genericJavaType, typeAnnotations);
+	}
+	
 	throw new IllegalArgumentException("Cannot convert "
 		+ jsonObject.getClass().getName() + " to "
 		+ javaClass.getName());
+	
     }
 
+    
+    @SuppressWarnings("unchecked")
+    protected Object toJavaBean(JSONObject jsonObject, Class<?> javaClass,
+	    Type genericJavaType, Annotation[] typeAnnotations)
+	    throws Exception {
+	if (javaClass.getName().startsWith("java."))
+		throw new IllegalArgumentException("Cannot convert "
+			+ jsonObject.getClass().getName() + " to "
+			+ javaClass.getName());
+	
+	Object javaBean=javaClass.newInstance();
+	
+	for (Iterator<String> keyI=(Iterator<String>)jsonObject.keys();keyI.hasNext();)
+	{
+	    String key=keyI.next();
+	    PropertyDescriptor pd=PropertyUtils.getPropertyDescriptor(javaBean, key);
+	    if (pd==null) continue;
+	    Method setter=pd.getWriteMethod();
+	    if (setter==null) continue;
+	    setter.invoke(javaBean, toJava(jsonObject.opt(key),
+		    setter.getParameterTypes()[0],
+		    setter.getGenericParameterTypes()[0],
+		    setter.getParameterAnnotations()[0]));
+	}
+	
+	return javaBean;
+    }
+	
+    
     @SuppressWarnings("unchecked")
     @Override
     public Object fromJava(Object javaObject, Class<?> javaClass,
