@@ -10,9 +10,6 @@ public class RpcNullLogger implements IRpcLogger {
 	return false;
     }
 
-    public void log(RpcLogType type, String message) {
-    }
-
-    public void log(RpcLogType type, String message, Throwable exception) {
+    public void log(RpcLogType type, String message, Throwable optionalException) {
     }
 }

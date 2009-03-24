@@ -8,7 +8,5 @@ package net.sf.qooxdoo.rpc.log;
 public interface IRpcLogger {
     public boolean isLogEnabled(RpcLogType type);
 
-    public void log(RpcLogType type, String message);
-
-    public void log(RpcLogType type, String message, Throwable exception);
+    public void log(RpcLogType type, String message, Throwable optionalException);
 }

@@ -16,7 +16,7 @@ import net.sf.qooxdoo.rpc.json.JSONArray;
 public abstract class AbstractJwsRpcServiceFactory extends
 	AbstractRpcServiceFactory {
     @Override
-    protected Class<?> getServiceClass(String serviceName) {
+    protected Class<?> getServiceClass(String serviceName) throws Exception {
 	return getServiceClass(getServiceImplementation(serviceName));
     }
 

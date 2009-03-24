@@ -12,9 +12,8 @@ import net.sf.qooxdoo.rpc.json.JSONArray;
  * @author mwyraz
  */
 public abstract class AbstractRpcServiceFactory implements IRpcServiceFactory {
-    public abstract Object getServiceImplementation(String serviceName);
-
-    protected Class<?> getServiceClass(String serviceName) {
+    
+    protected Class<?> getServiceClass(String serviceName) throws Exception {
 	Object service = getServiceImplementation(serviceName);
 	if (service == null)
 	    return null;

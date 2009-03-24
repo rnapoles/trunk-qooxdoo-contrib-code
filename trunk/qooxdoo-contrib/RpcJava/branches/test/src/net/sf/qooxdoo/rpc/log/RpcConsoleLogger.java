@@ -28,18 +28,13 @@ public class RpcConsoleLogger implements IRpcLogger {
     }
 
     @Override
-    public void log(RpcLogType type, String message) {
-	log(type, message, null);
-    }
-
-    @Override
-    public void log(RpcLogType type, String message, Throwable exception) {
+    public void log(RpcLogType type, String message, Throwable optionalException) {
 	if (!isLogEnabled(type))
 	    return;
 
 	target.println(type + ": " + message);
-	if (exception != null)
-	    exception.printStackTrace(target);
+	if (optionalException != null)
+	    optionalException.printStackTrace(target);
     }
 
     /**
