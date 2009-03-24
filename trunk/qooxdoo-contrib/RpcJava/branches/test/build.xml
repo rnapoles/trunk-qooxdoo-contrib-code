@@ -1,0 +1,32 @@
+<project name="RpcJava" default="dist" basedir=".">
+	
+	<property name="version" value="0.8.1-test"/>
+	<property name="builddir" value="${basedir}/build"/>
+	
+	<target name="dist">
+		<delete dir="${builddir}"/>
+		<mkdir dir="${builddir}"/>
+		<mkdir dir="${builddir}/classes"/>
+		<javac srcdir="src" destdir="${builddir}/classes"
+			encoding="utf-8" source="1.6" target="1.6" debug="true">
+			
+			<exclude name="test/**"/>
+			
+			<classpath>
+				<fileset dir="lib" includes="*.jar"/>
+			</classpath>
+		</javac>
+		
+		<jar destfile="${builddir}/qooxdoo-JavaRpc-${version}.jar">
+			<fileset dir="${builddir}/classes"/>
+		</jar>
+		<zip destfile="${builddir}/qooxdoo-JavaRpc-${version}-src.zip" >
+			<fileset dir="src">
+				<exclude name="test"/>
+				<exclude name="test/**"/>
+			</fileset>
+		</zip>
+		
+	</target>
+	
+</project>
