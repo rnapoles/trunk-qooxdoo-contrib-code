@@ -53,7 +53,7 @@ public class RpcHandler implements IRpcLogger {
 	if (!inited)
 	    init();
 	JSONObject res = new JSONObject();
-	log(RpcLogType.REQUEST_TEXT, jsonRequestString);
+	log(RpcLogType.REQUEST_TEXT, jsonRequestString, null);
 
 	JSONObject req = new JSONObject(jsonRequestString);
 	Object serviceNameObject = req.get("service");
@@ -80,7 +80,7 @@ public class RpcHandler implements IRpcLogger {
 	}
 
 	String jsonResponseString = res.toString();
-	log(RpcLogType.RESPONSE_TEXT, jsonResponseString);
+	log(RpcLogType.RESPONSE_TEXT, jsonResponseString, null);
 	return jsonResponseString;
     }
 
@@ -193,10 +193,6 @@ public class RpcHandler implements IRpcLogger {
 
     public void log(RpcLogType type, String message, Throwable exception) {
 	logger.log(type, message, exception);
-    }
-
-    public void log(RpcLogType type, String message) {
-	logger.log(type, message);
     }
 
 }
