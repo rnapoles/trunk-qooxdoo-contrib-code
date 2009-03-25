@@ -75,7 +75,9 @@ public class RpcHandler implements IRpcLogger {
 		    args));
 
 	} catch (Throwable e) {
-	    log(RpcLogType.RPC_ERROR, "Error handling RPC request", e);
+	    Throwable th=e;
+	    if (th instanceof InvocationTargetException) th=th.getCause();
+	    log(RpcLogType.RPC_ERROR, "Error handling RPC request", th);
 	    res.put("error", convertException(e));
 	}
 

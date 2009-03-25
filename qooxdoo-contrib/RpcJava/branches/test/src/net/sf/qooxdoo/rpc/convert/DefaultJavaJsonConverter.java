@@ -98,6 +98,9 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	} else if (javaClass == Boolean.class || javaClass == Boolean.TYPE) {
 	    if (jsonObject instanceof Boolean)
 		return (Boolean) jsonObject;
+	    if (jsonObject instanceof String) {
+		return ((String) jsonObject).equalsIgnoreCase("true") || jsonObject.equals("1");
+	    }
 	} else if (javaClass == Long.class || javaClass == Long.TYPE) {
 	    if (jsonObject instanceof Number)
 		return ((Number) jsonObject).longValue();
@@ -121,9 +124,12 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	    if (jsonObject instanceof Date)
 		return javaClass.getConstructor(Long.TYPE).newInstance(((Date)jsonObject).getTime());
 	} else if (Enum.class.isAssignableFrom(javaClass)) {
-	    if (jsonObject instanceof String)
+	    if (jsonObject instanceof String) {
+		String jsonString=(String) jsonObject;
+		if (jsonString.length()==0) return null;
 		return Enum.valueOf((Class<Enum>) javaClass,
-			(String) jsonObject);
+			jsonString);
+	    }
 	} else if (javaClass.isArray()) {
 	    if (jsonObject instanceof JSONArray) {
 		JSONArray jsArray = (JSONArray) jsonObject;
@@ -201,10 +207,12 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	    return javaObject;
 	if (javaObject instanceof Number)
 	    return javaObject;
+	if (javaObject instanceof Date)
+	    return javaObject;
 
 	if (javaObject instanceof Enum)
 	    return ((Enum) javaObject).name();
-
+	
 	if (javaClass.isArray()) {
 	    JSONArray array = new JSONArray();
 	    Class oc = javaClass.getComponentType();
