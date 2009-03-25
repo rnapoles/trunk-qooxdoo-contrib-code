@@ -26,68 +26,6 @@
 require "JSON.phps";
 
 /*
- * There may be cases where all services need use of some libraries or
- * system-wide definitions.  Those may be provided by a file named
- * "global_settings.php" in the same directory as this file.  If it exists, we
- * include it.
- *
- * The global settings file may provide values for the following manifest
- * constants whose default values are otherwise provided below:
- *
- *   servicePathPrefix
- *   defaultAccessibility
- *   handleQooxdooDates
- *
- */
-if (file_exists("global_settings.php"))
-{
-    require "global_settings.php";
-}
-
-
-/*
- * Whether to encode and decode Date objects the "qooxdoo way"
- *
- * JSON does not handle dates in any standard way.  For qooxdoo, we have
- * defined a format for encoding and decoding Date objects such that they can
- * be passed reliably from the client to the server and back again,
- * unaltered.  Doing this necessitates custom changes to the encoder and
- * decoder functions, which means that the standard (as of PHP 5.2.2)
- * json_encode() and json_decode() functions can not be used.  Instead we just
- * use the encoder and decoder written in PHP which is, of course, much
- * slower.
- *
- * We here provide the option for an application to specify whether Dates
- * should be handled in the qooxdoo way.  If not, and the functions
- * json_encode() and json_decode() are available, we will use them.  Otherwise
- * we'll use the traditional, PHP, slower but complete for qooxdoo
- * implementation.
- *
- * (This is really broken.  It's not possible to determine, on a system-wide
- * basis, whether Dates will be used.  This should be settable as a pragma on
- * the request so we know whether we can use the built-in decoder, and we
- * provide some way to should keep track of whether any Dates are included in
- * the response, so we can decide whether to use the built-in encoder.)
- */
-if (! defined("handleQooxdooDates"))
-{
-    define("handleQooxdooDates",               true);
-}
-
-
-/**
- * The location of the service class directories.
- *
- * The service path prefix may have been set by the global settings file
- * included above, in which case that value is used instead of this hard-coded
- * default.
- */
-if (! defined("servicePathPrefix"))
-{
-    define("servicePathPrefix",                "");
-}
-
-/*
  * Method Accessibility values
  *
  * Possible values are:
@@ -112,39 +50,6 @@ define("Accessibility_Public",             "public");
 define("Accessibility_Domain",             "domain");
 define("Accessibility_Session",            "session");
 define("Accessibility_Fail",               "fail");
-
-/**
- * Default accessibility for methods when not overridden by the service class.
- *
- * The default accessibility value may have been set by the global settings
- * file included above, in which case that value is used instead of this
- * hard-coded default.
- */
-if (! defined("defaultAccessibility"))
-{
-    define("defaultAccessibility",             Accessibility_Domain);
-}
-
-/**
- * Prefixes for RPC classes and methods
- * 
- * Since you do not want to expose all classes or all methods that are 
- * present in the files accessible to the server, a prefix is needed
- * for classes and methods. By default, this is "class_" for classes
- * and "method_" for methods. You might want to keep those prefixes if
- * you want to share backend class code with others (otherwise, a simple
- * search & replace takes care of quickly, too) - otherwise define the 
- * following constants in global_settings.php
- */
-if (! defined("JsonRpcClassPrefix"))
-{
-    define("JsonRpcClassPrefix",                "class_");
-}
-
-if (! defined("JsonRpcMethodPrefix"))
-{
-    define("JsonRpcMethodPrefix",                "method_");
-}
 
 /**
  * JSON-RPC error origins
@@ -239,6 +144,107 @@ define("JsonRpcError_ParameterMismatch",   5);
 define("JsonRpcError_PermissionDenied",    6);
 
 define("ScriptTransport_NotInUse",         -1);
+
+
+
+
+/*
+ * There may be cases where all services need use of some libraries or
+ * system-wide definitions.  Those may be provided by a file named
+ * "global_settings.php" in the same directory as this file.  If it exists, we
+ * include it.
+ *
+ * The global settings file may provide values for the following manifest
+ * constants whose default values are otherwise provided below:
+ *
+ *   servicePathPrefix
+ *   defaultAccessibility
+ *   handleQooxdooDates
+ *
+ */
+if (file_exists("global_settings.php"))
+{
+    require "global_settings.php";
+}
+
+
+
+
+
+/*
+ * Whether to encode and decode Date objects the "qooxdoo way"
+ *
+ * JSON does not handle dates in any standard way.  For qooxdoo, we have
+ * defined a format for encoding and decoding Date objects such that they can
+ * be passed reliably from the client to the server and back again,
+ * unaltered.  Doing this necessitates custom changes to the encoder and
+ * decoder functions, which means that the standard (as of PHP 5.2.2)
+ * json_encode() and json_decode() functions can not be used.  Instead we just
+ * use the encoder and decoder written in PHP which is, of course, much
+ * slower.
+ *
+ * We here provide the option for an application to specify whether Dates
+ * should be handled in the qooxdoo way.  If not, and the functions
+ * json_encode() and json_decode() are available, we will use them.  Otherwise
+ * we'll use the traditional, PHP, slower but complete for qooxdoo
+ * implementation.
+ *
+ * (This is really broken.  It's not possible to determine, on a system-wide
+ * basis, whether Dates will be used.  This should be settable as a pragma on
+ * the request so we know whether we can use the built-in decoder, and we
+ * provide some way to should keep track of whether any Dates are included in
+ * the response, so we can decide whether to use the built-in encoder.)
+ */
+if (! defined("handleQooxdooDates"))
+{
+    define("handleQooxdooDates",               true);
+}
+
+
+/**
+ * The location of the service class directories.
+ *
+ * The service path prefix may have been set by the global settings file
+ * included above, in which case that value is used instead of this hard-coded
+ * default.
+ */
+if (! defined("servicePathPrefix"))
+{
+    define("servicePathPrefix",                "");
+}
+
+/**
+ * Default accessibility for methods when not overridden by the service class.
+ *
+ * The default accessibility value may have been set by the global settings
+ * file included above, in which case that value is used instead of this
+ * hard-coded default.
+ */
+if (! defined("defaultAccessibility"))
+{
+    define("defaultAccessibility",             Accessibility_Domain);
+}
+
+/**
+ * Prefixes for RPC classes and methods
+ * 
+ * Since you do not want to expose all classes or all methods that are 
+ * present in the files accessible to the server, a prefix is needed
+ * for classes and methods. By default, this is "class_" for classes
+ * and "method_" for methods. You might want to keep those prefixes if
+ * you want to share backend class code with others (otherwise, a simple
+ * search & replace takes care of quickly, too) - otherwise define the 
+ * following constants in global_settings.php
+ */
+if (! defined("JsonRpcClassPrefix"))
+{
+    define("JsonRpcClassPrefix",                "class_");
+}
+
+if (! defined("JsonRpcMethodPrefix"))
+{
+    define("JsonRpcMethodPrefix",                "method_");
+}
 
 
 function SendReply($reply, $scriptTransportId)
