@@ -55,19 +55,34 @@ qx.Class.define("custom.Application",
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
-
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
+      var b = new custom.B();
+      b.setEnabled(true);      
     }
   }
+});
+
+
+
+qx.Class.define("custom.A",
+{
+  extend : qx.core.Object,
+  
+  properties : {
+    enabled : {}
+  }
+});
+
+a = new custom.A();
+
+qx.Interface.define("custom.IForm",
+{
+  members : {
+    setEnabled : function(value) {},
+  }
+});
+
+qx.Class.define("custom.B", 
+{
+  extend : custom.A,
+  implement : custom.IForm
 });
