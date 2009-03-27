@@ -189,7 +189,7 @@ function runTests()
       else {
         totalErrors++;
         print(sampleArr[i] + " did not load and/or start correctly.");
-        sel.getEval(browserLog('<div class="qxappender"><div class="level-error">' + sampleArr[i] + 'did not load and/or start correctly.</div></div>'));
+        sel.getEval(browserLog('<div class="qxappender"><div class="level-error">' + sampleArr[i] + ' did not load and/or start correctly.</div></div>'));
       }
     }
   }
