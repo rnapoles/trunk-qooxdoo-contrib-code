@@ -117,12 +117,12 @@ function getBrowser(agent)
   }
 
   if (!browser) {
-    var regSa = /.*(Safari)\/([\d\.]*)/;
+    var regSa = /Version\/([\d\.]+).*(Safari)/;
     var match = regSa.exec(agent);
     if (match) {
-      browser = match[1] + " " + match[2];
+      browser = match[2] + " " + match[1];
     }
-  }  
+  }
 
   return browser;
 }
