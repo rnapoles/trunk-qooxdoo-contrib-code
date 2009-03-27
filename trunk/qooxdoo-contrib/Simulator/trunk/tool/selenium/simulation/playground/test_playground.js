@@ -19,6 +19,7 @@ var isLogExcluded = selWin + "." + qxApp + ".stack.getVisibility() == 'excluded'
 var logHtml = selWin + "." + qxApp + ".logelem.innerHTML";
 var currentSample = selWin + "." + qxApp + ".playAreaCaption.getContent()";
 var sampleList = selWin + '.' + qxApp + '.widgets["toolbar.selectSampleButton"].getMenu().getChildren()';
+var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
 var totalErrors = 0;
@@ -145,6 +146,18 @@ function runTests()
   }
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
 
+  // Make sure the locale is 'en' to simplify dealing with log messages.  
+  sel.runScript(setLocale);
+  
+  try {
+    sel.qxClick('qxh=app:[@widgets]/[@toolbar.runButton]');
+  }
+  catch(ex) {
+    totalErrors++;
+    print("Pressing run button failed: " + ex);
+    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Pressing run button failed: ' + ex + '</div></div>'));    
+  }
+   
   // Open log pane
   try {
     print("Opening log.");
@@ -193,8 +206,6 @@ function runTests()
       }
     }
   }
-
-  //sel.qxClick('qxh=app:[@widgets]/[@toolbar.runButton]');  
   
   sel.getEval(browserLog("<p>Playground ended with warnings or errors: " + totalErrors + "</p>"));
   
