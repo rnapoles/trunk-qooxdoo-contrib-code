@@ -155,7 +155,15 @@ class qcl_db_tree extends qcl_core_mixin
     { 
       $this->load( $id );  
     }
-
+    
+    /*
+     * if id cannot be found, abort
+     */
+    if ( $this->foundNothing() )
+    {
+      return "#";
+    }
+    
     /*
      * if the tree path is cached, return it
      */
