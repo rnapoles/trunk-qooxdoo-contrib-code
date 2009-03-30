@@ -217,7 +217,7 @@ function runTests()
       // strip uninformative stack trace
       if (line.indexOf('Stack trace:') > 0) {
         if (line.indexOf('<DIV') >= 0) {
-          line = line.substring(0,line.indexOf('<DIV class="trace'));
+          line = line.substring(0,line.indexOf('<DIV class'));
         }
         else {
           line = line.substring(0,line.indexOf('<div class="trace'));
