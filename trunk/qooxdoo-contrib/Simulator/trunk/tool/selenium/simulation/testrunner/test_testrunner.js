@@ -20,26 +20,25 @@ var testResultsLength = selWin + '.' + qxAppInst + '.f1.getContentElement().getD
 var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer) { qxReady = true; } } catch(e) {} qxReady;'; // check if testrunner instance exists
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
-/*
-function getResultArray() {
-  var resultArr = [];
-  var html = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer.f1.getContentElement().getDomElement().innerHTML;
-  var htmlLength = html.length;
-  var c = 0;
-  while (c < htmlLength) {
-    var chunk = html.substr(c, 500);
-    resultArr.push(chunk);
-    c += 500;
-  }
-  return resultArr;
-}
-var now = new Date();
-var resArr = getResultArray();
-for (var i=0,l=resArr.length; i<l;i++) {
-  LOG.error('qxSimulator_' + now.getTime() + ':' + resArr[i]);
-}
-*/
 var logTestResults = 'function getResultArray() {  var resultArr = [];  var html = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer.f1.getContentElement().getDomElement().innerHTML;  var htmlLength = html.length;  var c = 0;  while (c < htmlLength) {    var chunk = html.substr(c, 500);    resultArr.push(chunk);    c += 500;  }  return resultArr;} var now = new Date(); var resArr = getResultArray(); for (var i=0,l=resArr.length; i<l;i++) {   LOG.error("qxSimulator_" + now.getTime() + ":" + resArr[i]); }';
+var packageFunc= 'function getPkg() {';
+packageFunc+= '  var temp = {};';
+packageFunc+= '  var iter = ' + selWin + '.' + qxAppInst + '.tests.handler.ttree.getIterator("depth");';
+packageFunc+= '  var curr;';
+packageFunc+= '  while (curr = iter()) {';
+packageFunc+= '    pack = curr.pwd()[3];';
+packageFunc+= '    if (pack) {';
+packageFunc+= '      temp[pack] = "";';
+packageFunc+= '    }';
+packageFunc+= '  }';
+packageFunc+= '  return temp;';
+packageFunc+= '}';
+packageFunc+= 'var packObj = getPkg();';
+packageFunc+= 'var packStr = "";';
+packageFunc+= 'for (pack in packObj) {';
+packageFunc+= '  packStr += pack + ",";';
+packageFunc+= '}';
+packageFunc+= 'packStr;';
 
 // - Config End ----------------------------------------------------------------
 
@@ -58,7 +57,7 @@ for (i in arguments) {
 /*
 *  Write a message to Selenium's browser side log
 */
-function browserLog(msg) 
+function browserLog(msg)
 {
   msg = msg ? msg : "";
   return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
@@ -127,20 +126,19 @@ function getBrowser(agent)
   return browser;
 }
 
-function runTests()
+function getPackageArray()
 {
-  try {
-    sel.waitForCondition(isQxReady, "60000");
-  } 
-  catch(ex) {
-    testFailed = true;
-    print("Couldn't find qx instance in AUT window. " + ex);
-    sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window: " + ex + "</DIV>"));
-    return;  
-  }
+  var packs = sel.getEval(packageFunc);
+  packs = String(packs);
+  packs = packs.substr(0,packs.length-1);
+  var packArr = packs.split(',');
+  return packArr;
+}
+
+function logBrowserInfo()
+{
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
-
   var browser = getBrowser(agent);
 
   sel.getEval(browserLog("<h1>Test Runner results from " + currentDate.toLocaleString() + "</h1>"));
@@ -149,33 +147,54 @@ function runTests()
     sel.getEval(browserLog("<p>Browser: " + browser + " on " + plat + "</p>"));
   }
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
+}
 
+function isAutReady()
+{
   print("Waiting for application to load...");
   try {
     sel.waitForCondition(isStatusReady,testPause);
+    return true;
   }
   catch(ex) {
     testFailed = true;
     print("Test file not loaded: " + ex);
     sel.getEval(browserLog("<DIV>ERROR: Test file not loaded: " + ex + "</DIV>"));
-    return;
+    return false;
   }
+}
 
-  print("Starting tests for " + config.autHost + config.autPath);
-  var startTime = new Date();
-  sel.runScript(qxAppInst + '.runTest();');
+function isRunnerReady()
+{
+  try {
+    sel.waitForCondition(isQxReady, "60000");
+    return true;
+  }
+  catch(ex) {
+    testFailed = true;
+    print("Couldn't find qx instance in AUT window. " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window: " + ex + "</DIV>"));
+    return false;
+  }
+}
 
+function isTestsDone()
+{
   print("Waiting for tests to finish...");
   try {
     sel.waitForCondition(isStatusReady,testPause);
+    return true;
   }
   catch(ex) {
     testFailed = true;
     print("Test run did not finish correctly: " + ex);
     sel.getEval(browserLog("<DIV>ERROR: Test run did not finish correctly: " + ex + "</DIV>"));
-    return;
+    return false;
   }
-  
+}
+
+function logTestDuration(startTime)
+{
   var stopTime = new Date();
   var elapsed = stopTime.getTime() - startTime.getTime();
   elapsed = (elapsed / 1000);
@@ -186,30 +205,17 @@ function runTests()
   }
   print("Test run finished in: " + min + " minutes " + sec + " seconds.");
   sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
-  
-  print("Getting log...");
+}
 
-  try {
-    var result = sel.getEval(testResults);
-  }
-  catch(ex) {
-    testFailed = true;
-    print("Could not get test results: " + ex);
-    sel.getEval(browserLog("<DIV>ERROR: Could not get test results: " + ex + "</DIV>"));
-    return;
-  }
-
-  print("Got log");
-
-  
-  //var logArray = result.split(/<\/div>/ig);
+function logErrors(result)
+{
   var logArray = getLogArray(result);
   print("Split result into " + logArray.length + " array entries.")
   // we can speed this up since we don't have to wait for the browser
   sel.setSpeed("500");
   for (var i=0, l=logArray.length; i<l; i++) {
     var line = logArray[i];
-    // Workaround for (rhino?) issue with replace() and single quotes. 
+    // Workaround for (rhino?) issue with replace() and single quotes.
     line = line.split("'");
     line = line.join("\'");
     // only log warnings and errors
@@ -235,14 +241,14 @@ function runTests()
       // make sure all div tags are closed
       var odivs = line.match(/\<div/gi);
       var cdivs = line.match(/\<\/div/gi);
-      if (odivs) {        
-        cdivs = cdivs ? cdivs : [];      
+      if (odivs) {
+        cdivs = cdivs ? cdivs : [];
         var divdiff = odivs.length - cdivs.length;
         if (divdiff > 0) {
           for (var j=0; j<divdiff; j++) {
             line += "</div>";
           }
-        } 
+        }
       }
       errWarn++;
       print("Logging line " + line);
@@ -250,6 +256,57 @@ function runTests()
     }
   }
   print(errWarn + " lines logged");
+}
+
+function runTests1()
+{
+  try {
+    sel.waitForCondition(isQxReady, "60000");
+  }
+  catch(ex) {
+    print("Couldn't find qx instance in AUT window. " + ex);
+    return;
+  }
+
+
+}
+
+function runTests()
+{
+  if (!isRunnerReady()) {
+    return;
+  }
+
+  logBrowserInfo();
+
+  if (!isAutReady()) {
+    return;
+  }
+
+  print("Starting tests for " + config.autHost + config.autPath);
+  var startTime = new Date();  
+  sel.runScript(qxAppInst + '.runTest();');
+  
+  if (!isTestsDone()) {
+    return;
+  }
+
+  logTestDuration(startTime); 
+
+  print("Getting log...");
+
+  try {
+    var result = sel.getEval(testResults);
+    print("Got log");
+  }
+  catch(ex) {
+    testFailed = true;
+    print("Could not get test results: " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Could not get test results: " + ex + "</DIV>"));
+    return;
+  }  
+
+  logErrors(result);
 
 }
 
