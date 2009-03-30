@@ -216,20 +216,25 @@ function runTests()
     if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) && line.indexOf('testResult success') < 0) {
       // strip uninformative stack trace
       if (line.indexOf('Stack trace:') > 0) {
-        line = line.substring(0,line.indexOf('<div class="trace'));
+        if (line.indexOf('<DIV') >= 0) {
+          line = line.substring(0,line.indexOf('<DIV class="trace'));
+        }
+        else {
+          line = line.substring(0,line.indexOf('<div class="trace'));
+        }
       }
       try {
         line = line.replace(/\<br\>/gi, "<br/>");
         line = line.replace(/\'/g, "\\'");
-        line = line.replace(/\n/g, "<br/>");
-        line = line.replace(/\r/g, "<br/>");
+        line = line.replace(/\n/g, "");
+        line = line.replace(/\r/g, "");
       }
       catch(ex) {
         print("Error while replacing: " + ex);
       }
       // make sure all div tags are closed
-      var odivs = line.match(/\<div/g);
-      var cdivs = line.match(/\<\/div/g);
+      var odivs = line.match(/\<div/gi);
+      var cdivs = line.match(/\<\/div/gi);
       if (odivs) {        
         cdivs = cdivs ? cdivs : [];      
         var divdiff = odivs.length - cdivs.length;
