@@ -26,8 +26,9 @@ packageFunc+= '  var temp = {};';
 packageFunc+= '  var iter = ' + selWin + '.' + qxAppInst + '.tests.handler.ttree.getIterator("depth");';
 packageFunc+= '  var curr;';
 packageFunc+= '  while (curr = iter()) {';
-packageFunc+= '    pack = curr.pwd()[3];';
-packageFunc+= '    if (pack) {';
+packageFunc+= '    var path = curr.pwd();';
+packageFunc+= '    if (path[3]) {';
+packageFunc+= '      var pack = path[1] + "." + path[2] + "." + path[3];';
 packageFunc+= '      temp[pack] = "";';
 packageFunc+= '    }';
 packageFunc+= '  }';
@@ -193,10 +194,15 @@ function isTestsDone()
   }
 }
 
-function logTestDuration(startTime)
+function getTestDuration(startTime)
 {
   var stopTime = new Date();
   var elapsed = stopTime.getTime() - startTime.getTime();
+  return elapsed;
+}
+
+function logTestDuration(elapsed)
+{
   elapsed = (elapsed / 1000);
   min = Math.floor(elapsed / 60);
   sec = Math.round(elapsed % 60);
@@ -222,8 +228,11 @@ function logErrors(result)
     if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) && line.indexOf('testResult success') < 0) {
       // strip uninformative stack trace
       if (line.indexOf('Stack trace:') > 0) {
-        if (line.indexOf('<DIV') >= 0) {
-          line = line.substring(0,line.indexOf('<DIV class'));
+        if (line.indexOf('<DIV class="trace') >= 0) {
+          line = line.substring(0,line.indexOf('<DIV class="trace'));
+        }
+        if (line.indexOf('<DIV class=trace') >= 0) {
+          line = line.substring(0,line.indexOf('<DIV class=trace'));
         }
         else {
           line = line.substring(0,line.indexOf('<div class="trace'));
@@ -276,12 +285,6 @@ function getResultLog()
 
 function runTests()
 {
-  if (!isRunnerReady()) {
-    return;
-  }
-
-  logBrowserInfo();
-
   if (!isAutReady()) {
     return;
   }
@@ -294,7 +297,7 @@ function runTests()
     return;
   }
 
-  logTestDuration(startTime); 
+  logTestDuration(getTestDuration(startTime)); 
 
   var result = getResultLog();
   
@@ -303,6 +306,46 @@ function runTests()
   }
 
   logErrors(result);
+}
+
+function runTestsSteps()
+{
+  var packages = getPackageArray();
+  print("TEST PACKAGES: " + packages);
+  var autUri = sel.getEval(selWin + '.document.getElementsByTagName("input")[0].value');
+  autUri = autUri.substring(0,autUri.indexOf('=')+1);
+    
+  var elapsedTotal = 0;
+  for (var i=0; i<packages.length; i++) {
+    print("Loading package: " + packages[i]);
+    sel.type("dom=document.getElementsByTagName('input')[0]", autUri + packages[i]);
+    sel.runScript(qxAppInst + '.reloadTestSuite();');
+    
+    if (!isAutReady()) {
+      sel.getEval(browserLog("<DIV>Failed while attempting to test package " + packages[i] + "</DIV>"));
+      return;
+    }
+  
+    print("Starting tests in package " + packages[i]);
+    var startTime = new Date();
+    sel.runScript(qxAppInst + '.runTest();');
+    
+    if (!isTestsDone()) {
+      return;
+    }
+  
+    elapsedTotal += getTestDuration(startTime); 
+  
+    var result = getResultLog();
+    
+    if (!result) {
+      return;
+    }
+  
+    logErrors(result);
+
+  }  
+  logTestDuration(elapsedTotal);
 
 }
 
@@ -314,8 +357,13 @@ sel.start();
 sel.open(config.autHost + config.autPath);
 sel.setSpeed(stepSpeed);
 
-runTests();
+if (isRunnerReady()) {
+  logBrowserInfo();
+  runTestsSteps();
+}
+
 if (!testFailed) {
+  print("Test run finished successfully.");
   sel.getEval(browserLog("<p>Tests with warnings or errors: " + errWarn + "</p>"));
 }
 sel.stop();
