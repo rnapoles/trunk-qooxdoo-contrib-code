@@ -20,7 +20,7 @@ class qcl_io_filesystem_local_TempFile extends qcl_io_filesystem_local_File
     /*
      * resource path is a temporary file
      */
-    $resourcePath = tempnam();
+    $resourcePath = "file://" . tempnam(null,"");
     if ( ! $resourcePath )
     {
       $this->raiseError("Problem creating temporary file."); 
