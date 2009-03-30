@@ -69,13 +69,15 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 
   members :
   {
+    
+    
+    
     /**
-     * the API method called by the MDataManager to handle data returned by a
+     * The API method called by the MDataManager to handle data returned by a
      * updateClient() call.
      *
-     * @type member
      * @param data {Object}
-     * @return {void}
+     * @return {void} void
      */
     handleServerData : function( data )
     {
@@ -276,7 +278,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
      * 
      * @return {void} 
      */
-    loadNodeByServerId : function(nodeId,loadNodeChildrenFunc,loadIdHierarchyFunc)
+    loadNodeByServerId : function( nodeId, loadNodeChildrenFunc, loadIdHierarchyFunc )
     {
       if ( typeof(loadNodeChildrenFunc) != "function" || typeof(loadIdHierarchyFunc) != "function" )
       {
@@ -284,15 +286,20 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
       }
       
       var map = this.getServerNodeIdMap();
+      
       if ( ! map[nodeId] )
       {
-        // node has not been loaded, add event listener if it hasn't been added yet
+        
+        /*
+         * node has not been loaded, add event listener if it hasn't been added yet
+         */
         if ( ! this.__nodeIdHierarchyLoadedEvent )
         {
           //console.log("adding event listener nodeIdHierarchyLoaded");
-          this.addEventListener("nodeIdHierarchyLoaded",function(e){
+          this.addEventListener("nodeIdHierarchyLoaded",function(e)
+          {
             var ids = e.getData();
-            //console.log("Received node hierarchy " + ids );
+          //console.log("Received node hierarchy " + ids );
             
             if ( ids instanceof Array )
             {
@@ -302,18 +309,20 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
                 return;
               }
              
-              // attach event listener that waits for nodes to be loaded and checks if their children should be loaded
+              /*
+               * attach event listener that waits for nodes to be 
+               * loaded and checks if their children should be loaded
+               */
               if ( ! this.__nodeLoadedLoadChildrenEvent )
-              { 
-                //console.log("Attaching nodeLoadedLoadChildrenEvent event listener...");
+              {  
                 this.addEventListener("nodeLoaded",function(event){
                   var node = event.getData();
                   var serverNodeId = node.data.id;
-                  //console.log("Received node server#"+serverNodeId);
+                //console.log("Received node server#"+serverNodeId);
                   if ( this.__nodeIndexLoadChildren[serverNodeId] ) 
                   {
-                    //console.log("Node is in child load list. Loading Children... ");
-                    loadNodeChildrenFunc(serverNodeId);
+                  //console.log("Node is in child load list. Loading Children... ");
+                    loadNodeChildrenFunc( serverNodeId );
                     delete this.__nodeIndexLoadChildren[serverNodeId]
                   }
                 },this);
@@ -339,8 +348,12 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
               {
                 this.__nodeIndexLoadChildren[ids[i]] = true;
               }
-              //console.log("Loading first node of hierarchy id... server#"+ids[0]);
-              loadNodeChildrenFunc(ids[0]);
+              
+              /*
+               * start loading node hierarchy if not already dispatched
+               */
+            //console.log("Loading first node of hierarchy id... server#"+ids[0]);
+              loadNodeChildrenFunc( ids[0] );
             }
             else
             {
@@ -350,8 +363,11 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
           this.__nodeIdHierarchyLoadedEvent = true;
         }
         //console.log("requesting node hierarchy for node#" + nodeId);
-        // dispatch server request
-        loadIdHierarchyFunc(nodeId );
+        
+        /*
+         * dispatch server request if not already in progress
+         */
+        loadIdHierarchyFunc( nodeId );
       }
       else
       {
@@ -416,7 +432,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
           }
           else
           {
-            console.warn("No row number available for node client#" + treeNodeId + ", server#" + serverNodeId+" - probably not loaded yet.");  
+            //console.warn("No row number available for node client#" + treeNodeId + ", server#" + serverNodeId+" - probably not loaded yet.");  
           }
         },this,50);
       }
@@ -440,7 +456,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
             var selId   = this.getServerNodeIdToSelect();
             var isSelId = this.getServerNodeIdSelected();
             
-           //console.log("Loaded node server#"+node.data.id + ", we want to select server#" + selId );
+         //console.log("Loaded node server#"+node.data.id + ", we want to select server#" + selId );
             
             /*
              * if the node we have loaded is the one 
@@ -517,7 +533,8 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         nodeId = map[node.data.id];
         if ( typeof(nodeId) != "number" )
         {
-          throw new Error("Cannot update node - node hasn't been loaded yet.");
+          //this.warn("Cannot update node - node hasn't been loaded yet.");
+          return;
         }
       }  
       // select properties to update, ideally, they should be filtered out already
