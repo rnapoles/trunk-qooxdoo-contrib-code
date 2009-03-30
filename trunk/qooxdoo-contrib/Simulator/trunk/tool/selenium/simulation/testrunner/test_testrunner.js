@@ -258,17 +258,20 @@ function logErrors(result)
   print(errWarn + " lines logged");
 }
 
-function runTests1()
+function getResultLog()
 {
+  print("Getting log...");
   try {
-    sel.waitForCondition(isQxReady, "60000");
+    var result = sel.getEval(testResults);
+    print("Got log");
+    return result;
   }
   catch(ex) {
-    print("Couldn't find qx instance in AUT window. " + ex);
-    return;
+    testFailed = true;
+    print("Could not get test results: " + ex);
+    sel.getEval(browserLog("<DIV>ERROR: Could not get test results: " + ex + "</DIV>"));
+    return false;
   }
-
-
 }
 
 function runTests()
@@ -293,18 +296,11 @@ function runTests()
 
   logTestDuration(startTime); 
 
-  print("Getting log...");
-
-  try {
-    var result = sel.getEval(testResults);
-    print("Got log");
-  }
-  catch(ex) {
-    testFailed = true;
-    print("Could not get test results: " + ex);
-    sel.getEval(browserLog("<DIV>ERROR: Could not get test results: " + ex + "</DIV>"));
+  var result = getResultLog();
+  
+  if (!result) {
     return;
-  }  
+  }
 
   logErrors(result);
 
