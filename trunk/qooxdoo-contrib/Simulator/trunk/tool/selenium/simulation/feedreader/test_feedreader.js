@@ -86,11 +86,23 @@ function getBrowser(agent)
   }
 
   if (!browser) {
-    var regIe = /.*MSIE ([\d\.]*)/;
-    var match = regIe.exec(agent);
+    var regIe8Comp = /.*MSIE 7\.0.*(Trident)/;
+    var match = regIe8Comp.exec(agent);
     if (match) {
-      browser = "Internet Explorer " + match[1];
+      browser = "Internet Explorer 8 in IE7 compatibility mode";
     }
+    var regIe8Std = /.*MSIE 8\.0.*(Trident)/;
+    var match1 = regIe8Std.exec(agent);
+    if (match1) {
+      browser = "Internet Explorer 8 in standards mode";
+    }
+    if (!browser) {
+      var regIe = /.*MSIE ([\d\.]*)/;
+      var match2 = regIe.exec(agent);
+      if (match2) {
+        browser = "Internet Explorer " + match2[1];
+      }
+    }    
   }
 
   if (!browser) {
@@ -102,10 +114,10 @@ function getBrowser(agent)
   }
 
   if (!browser) {
-    var regSa = /.*(Safari)\/([\d\.]*)/;
+    var regSa = /Version\/([\d\.]+).*(Safari)/;
     var match = regSa.exec(agent);
     if (match) {
-      browser = match[1] + " " + match[2];
+      browser = match[2] + " " + match[1];
     }
   }  
 
