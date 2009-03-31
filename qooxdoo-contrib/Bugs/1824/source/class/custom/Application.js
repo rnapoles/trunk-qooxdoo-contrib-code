@@ -3,6 +3,7 @@
 
 /**
  * comment before class
+ * @lint ignoreReferenceField(peter)
  */
 qx.Class.define("custom.Application",
 {
@@ -12,6 +13,11 @@ qx.Class.define("custom.Application",
   members :
   {
     _foo : 12,
+    
+    _bar : {},
+    juhu : [],
+    peter : new qx.core.Object(),
+    paul : /*dfdfg*/qx.foo(),
   
     /**
      * @param foo {Int} juhu
