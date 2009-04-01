@@ -3,15 +3,20 @@ package net.sf.qooxdoo.rpc.convert;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
+
+import javax.lang.model.type.ArrayType;
 
 import net.sf.qooxdoo.rpc.json.JSONArray;
 import net.sf.qooxdoo.rpc.json.JSONObject;
@@ -37,6 +42,8 @@ import org.apache.commons.beanutils.PropertyUtils;
  * The default mode it strict to ensure maximum privacy of data.  
  * 
  * WARNING! This class is not complete yet.
+ * 
+ * FIXME: handle recursive references!
  * 
  * @author mwyraz
  */
@@ -64,7 +71,7 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
     public boolean isUseStrinctInterfaceReturnTypes() {
 	return useStrinctInterfaceReturnTypes;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public Object toJava(Object jsonObject, Class<?> javaClass,
@@ -84,11 +91,29 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	} else if (javaClass == Integer.class || javaClass == Integer.TYPE) {
 	    if (jsonObject instanceof Number)
 		return ((Number) jsonObject).intValue();
-	    if (jsonObject instanceof String)
-		return new Integer((String) jsonObject);
+	    if (jsonObject instanceof String) {
+		String s = jsonObject.toString();
+		if (s.length() == 0) {
+		    if (javaClass.isPrimitive())
+			throw new IllegalArgumentException(
+				"Cannot convert empty string to primitive 'int'");
+		    return null;
+		}
+		return new Integer(s);
+	    }
 	} else if (javaClass == Double.class || javaClass == Double.TYPE) {
 	    if (jsonObject instanceof Number)
 		return ((Number) jsonObject).doubleValue();
+	    if (jsonObject instanceof String) {
+		String s = jsonObject.toString();
+		if (s.length() == 0) {
+		    if (javaClass.isPrimitive())
+			throw new IllegalArgumentException(
+				"Cannot convert empty string to primitive 'double'");
+		    return null;
+		}
+		return new Double(s);
+	    }
 	} else if (javaClass == Float.class || javaClass == Float.TYPE) {
 	    if (jsonObject instanceof Number)
 		return ((Number) jsonObject).floatValue();
@@ -174,10 +199,14 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	    if (pd==null) continue;
 	    Method setter=pd.getWriteMethod();
 	    if (setter==null) continue;
-	    setter.invoke(javaBean, toJava(jsonObject.opt(key),
-		    setter.getParameterTypes()[0],
-		    setter.getGenericParameterTypes()[0],
-		    setter.getParameterAnnotations()[0]));
+	    try {
+        	    setter.invoke(javaBean, toJava(jsonObject.opt(key),
+        		    setter.getParameterTypes()[0],
+        		    setter.getGenericParameterTypes()[0],
+        		    setter.getParameterAnnotations()[0]));
+	    } catch (Exception ex) {
+		throw new IllegalArgumentException("Error setting field '"+key+"' on class '"+javaClass.getName()+"': "+ex.getMessage(),ex);
+	    }
 	}
 	
 	return javaBean;
@@ -225,13 +254,18 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	if (javaObject instanceof Map) {
 	    Type genericValueType = getTypeFromGeneric(genericReturnType, 1);
 	    Class<?> valueType = getRawType(genericValueType);
-
+	    
 	    JSONObject object = new JSONObject();
 	    for (Entry entry : ((Map<?, ?>) javaObject).entrySet()) {
 		Object key = entry.getKey();
 		Object value = entry.getValue();
 
-		object.put((key == null) ? null : String.valueOf(key),
+		String targetKey;
+		if (key==null) targetKey=null;
+		else if (key instanceof Enum) targetKey=((Enum)key).name();
+		else targetKey=String.valueOf(key);
+		
+		object.put(targetKey,
 			fromJava(value, valueType, genericValueType, null));
 	    }
 	    return object;
@@ -262,6 +296,11 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	if (type instanceof ParameterizedType) {
 	    return getRawType(((ParameterizedType) type).getRawType());
 	}
+	if (type instanceof GenericArrayType) {
+	    Class<?> arrayComponentType=getRawType(((GenericArrayType) type).getGenericComponentType());
+	    // TODO: Is there better way to get Object[].class from Object.class?
+	    return Array.newInstance(arrayComponentType,0).getClass();
+	}
 	throw new RuntimeException("Unimplemented: " + type.getClass());
     }
 
@@ -282,9 +321,39 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	    WildcardType wt = (WildcardType) type;
 	    return getTypeFromGeneric(wt.getUpperBounds()[typeIndex], 0);
 	}
+	if (type instanceof GenericArrayType) {
+	    return type;
+	}
 	throw new RuntimeException("Unimplemented: " + type.getClass());
     }
 
+    protected Map<Class<?>,Collection<PropertyDescriptor>> propertyDescriptorMap=new HashMap<Class<?>, Collection<PropertyDescriptor>>();
+    protected void findPropertyDescriptors(Class<?> baseClass, Map<String,PropertyDescriptor> results)
+    {
+        if (baseClass==null) return;
+        for (PropertyDescriptor pd: PropertyUtils.getPropertyDescriptors(baseClass))
+        {
+            if (!results.containsKey(pd.getName())) results.put(pd.getName(), pd);
+        }
+        if (baseClass.isInterface()) for (Class<?> iface: baseClass.getInterfaces())
+        {
+            findPropertyDescriptors(iface, results);
+        }
+        findPropertyDescriptors(baseClass.getSuperclass(), results);
+    }
+    protected Collection<PropertyDescriptor> findPropertyDescriptors(Class<?> baseClass)
+    {
+	Collection<PropertyDescriptor> result=propertyDescriptorMap.get(baseClass);
+	if (result==null)
+	{
+            Map<String,PropertyDescriptor> results=new TreeMap<String, PropertyDescriptor>();
+            findPropertyDescriptors(baseClass, results);
+            result=results.values();
+            propertyDescriptorMap.put(baseClass,result);
+	}
+	return result;
+    }
+    
     protected Object fromJavaBean(Object javaObject, Class<?> javaClass,
 	    Type genericReturnType, Annotation[] returnTypeAnnotations)
 	    throws Exception {
@@ -299,8 +368,7 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	    beanClass = javaObject.getClass();
 
 	JSONObject object = new JSONObject();
-	for (PropertyDescriptor pd : PropertyUtils
-		.getPropertyDescriptors(beanClass)) {
+	for (PropertyDescriptor pd : findPropertyDescriptors(beanClass)) {
 	    if (!filterProperty(pd, javaClass, genericReturnType,
 		    returnTypeAnnotations))
 		continue;
