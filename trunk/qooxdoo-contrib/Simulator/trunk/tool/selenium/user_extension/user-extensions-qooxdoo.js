@@ -1226,7 +1226,7 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
   {
     LOG.debug("Qxh Locator: _getQxElementFromStep4: parsed spec into: "+m);
     attrib = m[1];
-    if (m.length > 2 && m[2]!=null)
+    if (m.length > 2 && m[2]!=null && m[2] != "")
     {
       attval = m[2];
 
