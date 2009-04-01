@@ -10,7 +10,7 @@ var config = {
 };
 
 var stepSpeed  = "1000"; // millisecs after each command
-var logPause = 4000; // millisecs to wait after loading sample
+var logPause = 5000; // millisecs to wait after loading sample
 var selWin = 'selenium.browserbot.getCurrentWindow()'; // get application iframe
 var qxAppInst = 'qx.core.Init.getApplication().viewer'; // get demobrowser instance
 var setPlayDemos = qxAppInst + '.setPlayDemos("all")'; // set demobrowser to 'autorun'
@@ -132,6 +132,7 @@ function sampleRunner(script)
   
   // wait for the sample to finish, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
+  /*
   try {
     sel.waitForCondition(isLogDone, "120000");
   }
@@ -139,6 +140,7 @@ function sampleRunner(script)
     print("Unable to determine if demo was loaded: " + category + " - " + currentSample);
     sel.getEval(browserLog('<DIV>Unable to determine if demo was loaded: ' + category + ' - ' + currentSample + '</DIV>'));
   }
+  */
   print(category + " - " + currentSample + ": Processing log");
 
   var sampleLog = '';
