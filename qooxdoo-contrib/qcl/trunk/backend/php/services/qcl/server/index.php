@@ -3,7 +3,7 @@
 /*
  * if no jsonrpc request, load post server script
  */
-if ( $_SERVER["REQUEST_METHOD"] != "POST" or isset($_POST['service'])  )
+if ( $_SERVER["REQUEST_METHOD"] != "POST" or isset($_REQUEST['service'])  )
 {
   require dirname(__FILE__) . "/test_post_server.php";
   exit;
