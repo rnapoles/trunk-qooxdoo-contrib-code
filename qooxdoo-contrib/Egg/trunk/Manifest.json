@@ -1,0 +1,34 @@
+{
+   "info" : 
+   {
+      "name"         : "Egg",
+
+      "summary"      : "I.Horst's qooxdoo contributions",
+      "description"  : "Implementation of form input filters&validatation and TimeChooser",
+    
+      "homepage"     : "http://contrib.qooxdoo.org",
+
+      "license"      : "LGPL/EPL",
+      "authors"      :
+      [
+         {
+            "name"   : "Ian Horst",
+            "email"  : "ian.horst@googlemail.com"
+         }
+      ],
+
+      "version"               : "trunk",
+      "qooxdoo-versions"      : ["trunk"]
+   },
+  
+   "provides" : 
+   {
+      "namespace"   : "egg",
+      "encoding"    : "utf-8",
+      "class"       : "source/class",
+      "resource"    : "source/resource",
+      "translation" : "source/translation",
+      "type"        : "library"
+   }
+}
+

@@ -1,0 +1,55 @@
+{
+  "name"    : "eggdemo",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "eggdemo",
+    "QOOXDOO_PATH" : "../../../ajax/qooxdoo/trunk",
+    "QXTHEME"      : "eggdemo.theme.Theme",
+    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  },
+
+  // You only need to edit the remainder of this file, if you want to customize
+  // specific jobs, or add own job definitions.
+
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [
+        {
+          "manifest" : "../Manifest.json"
+        }
+      ]
+    }
+  }
+}
