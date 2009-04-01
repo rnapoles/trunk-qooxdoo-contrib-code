@@ -25,8 +25,30 @@ class PostRpcServer extends JsonRpcServer
    */
   function getInput()
   {
+    /*
+     * whether to allow GET and POST or POST only
+     */
     $input = $this->allowGetParams ? (object) $_REQUEST : (object) $_POST;
+    
+    /*
+     * decode service parameters
+     */
     $input->params = $this->json->decode( "[" . stripslashes( $input->params ). "]" );
+    
+    /*
+     * server data are all parameters that are not "service", "method", and "params"
+     */
+    $server_data_keys = array_diff( 
+      array_keys( (array) $input ),  
+      array( "service","method","params")
+    );
+    $server_data = array();
+    foreach ( $server_data_keys as $key )
+    {
+      $server_data[$key] = $input->$key;
+    }
+    $input->server_data = (array) $server_data;
+    
     $this->debug("Getting input from post data: " . print_r($input,true) );
     return $input;
   }
