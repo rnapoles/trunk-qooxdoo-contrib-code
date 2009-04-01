@@ -29,7 +29,7 @@ class PostRpcServer extends JsonRpcServer
   {
     if ( ! is_scalar($output) )
     {
-      $this->json->encode($output);
+      $output = $this->json->encode($output);
     }
     return $output;
   }  
