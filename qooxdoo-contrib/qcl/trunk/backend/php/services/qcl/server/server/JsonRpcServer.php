@@ -35,7 +35,7 @@
  * Dependencies 
  */
 require_once dirname(__FILE__) . "/AbstractServer.php";
-require_once dirname(__FILE__) . "/JsonRpcError.php";
+require_once dirname(__FILE__) . "/error/JsonRpcError.php";
 
 /**
  * Constant to indicate whether script transport is used.
@@ -199,7 +199,9 @@ class JsonRpcServer extends AbstractServer
       strcspn( $_SERVER["CONTENT_TYPE"], ";" ) ) )
       {
         case "application/json":
-          /* We found literal POSTed json-rpc data (we hope) */
+          /* 
+           * We found literal POSTed json-rpc data (we hope) 
+           */
           $input = file_get_contents('php://input');
           $input = $this->json->decode($input);
           break;

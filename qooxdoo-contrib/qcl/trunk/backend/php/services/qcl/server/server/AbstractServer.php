@@ -23,18 +23,18 @@
  * include json class, either a wrapper around a php extension/php-only implementation
  * (php4) or built-in functions (php5)
  */
-require_once dirname(__FILE__) . "/JsonWrapper.php";
+require_once dirname(__FILE__) . "/lib/JsonWrapper.php";
 
 /*
  * include JsonRpcError class
  */
-require_once dirname(__FILE__) . "/JsonRpcError.php";
+require_once dirname(__FILE__) . "/error/JsonRpcError.php";
 
 /*
  * There may be cases where all services need use of some libraries or
  * system-wide definitions.  Those may be provided by a file named
- * "global_settings.php" in the same directory as this file.  If it exists, we
- * include it.
+ * "global_settings.php" in the same directory as the file that includes
+ * this file (i.e. the file instantiating the server).
  *
  * The global settings file may provide values for the following manifest
  * constants whose default values are otherwise provided below:
@@ -52,9 +52,10 @@ if (file_exists("global_settings.php"))
  * The default accessibility behavior, which
  * serves as a base class for all more specialized
  * behaviors. Use setAccessibilityBehavior() to set
- * your custom subclass
+ * your custom accessibility behavior, which must subclass
+ * AccessibilityBehavior
  */
-require_once dirname(__FILE__) . "/AccessibilityBehavior.php";
+require_once dirname(__FILE__) . "/access/AccessibilityBehavior.php";
 
 /**
  * The location of the service class directories.
