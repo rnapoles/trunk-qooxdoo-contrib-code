@@ -166,7 +166,7 @@ function isAutReady()
 {
   print("Waiting for application to load...");
   try {
-    sel.waitForCondition(isStatusReady,testPause);
+    sel.waitForCondition(isStatusReady,"120000");
     return true;
   }
   catch(ex) {
@@ -322,6 +322,11 @@ function runTests()
 
 function runTestsSteps()
 {
+  if (!isAutReady()) {
+    sel.getEval(browserLog("<DIV>Timeout while loading test suite.</DIV>"));
+    return;
+  }
+
   var packages = getPackageArray();
   print("TEST PACKAGES: " + packages);
   var autUri = sel.getEval(selWin + '.document.getElementsByTagName("input")[0].value');
@@ -334,7 +339,7 @@ function runTestsSteps()
     sel.runScript(qxAppInst + '.reloadTestSuite();');
     
     if (!isAutReady()) {
-      sel.getEval(browserLog("<DIV>Failed while attempting to test package " + packages[i] + "</DIV>"));
+      sel.getEval(browserLog("<DIV>Failed while attempting to load package " + packages[i] + "</DIV>"));
       return;
     }
   
