@@ -146,18 +146,6 @@ function isSampleStarted(sample)
 
 function runTests()
 {
-  var agent = sel.getEval(usrAgent);
-  var plat = sel.getEval(platform);
-
-  var browser = getBrowser(agent);
-
-  sel.getEval(browserLog("<h1>Playground results from " + currentDate.toLocaleString() + "</h1>"));
-  sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
-  if (browser) {
-    sel.getEval(browserLog("<p>Browser: " + browser + " on " + plat + "</p>"));
-  }
-  sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
-
   // Make sure the locale is 'en' to simplify dealing with log messages.  
   sel.runScript(setLocale);
   
@@ -267,6 +255,18 @@ var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,conf
 sel.start();
 sel.open(config.autHost + config.autPath);
 sel.setSpeed(stepSpeed);
+
+var agent = sel.getEval(usrAgent);
+var plat = sel.getEval(platform);
+
+var browser = getBrowser(agent);
+
+sel.getEval(browserLog("<h1>Playground results from " + currentDate.toLocaleString() + "</h1>"));
+sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
+if (browser) {
+  sel.getEval(browserLog("<p>Browser: " + browser + " on " + plat + "</p>"));
+}
+sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
 
 try {
   sel.waitForCondition(isQxReady, "60000");
