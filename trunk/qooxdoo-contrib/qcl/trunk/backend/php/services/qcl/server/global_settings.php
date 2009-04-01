@@ -15,9 +15,9 @@ error_reporting( E_ALL ^ E_NOTICE /* ^ E_WARNING */ );
 define( "defaultAccessibility", "public" );
 
 /*
- * service path prefix
+ * service path prefix (trailing slash required)
  */
-define( "servicePathPrefix", "services" );
+define( "servicePathPrefix", "services/" );
 
 /*
  * turn debugging on

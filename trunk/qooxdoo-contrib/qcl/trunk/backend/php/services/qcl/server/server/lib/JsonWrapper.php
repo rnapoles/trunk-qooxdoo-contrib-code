@@ -8,13 +8,13 @@ class JsonWrapper
   var $_json = null;
   
   /**
-   * PHP 4 constructor. Will be skipped by PHP 5
+   * PHP 4 constructor
    */
   function Json()
 	{
 	  if ( ! function_exists("json_encode" ) )
 	  {
-	    require_once "qcl/lib/json/JSON.php";
+	    require_once dirname(__FILE__) ."/JSON.php";
 	    $this->_json = new JSON;
 	  }
 	}

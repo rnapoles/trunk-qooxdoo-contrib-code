@@ -1,9 +1,9 @@
 <?php
 class class_testService
 {
-  function method_testMethod($params)
+  function method_echo($params)
   {
-    return print_r($params,true);
+    return $params;
   }
   
   function method_testError()

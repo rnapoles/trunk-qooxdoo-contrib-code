@@ -20,12 +20,18 @@ class PostRpcServer extends JsonRpcServer
   }
  
   /**
-   * Format the response string. Here, just echo it.
+   * Format the response string. If we get a scalar value, just output it,
+   * otherwise jsonify it. 
    * @param mixded $output
    * @return string
    */
   function formatOutput( $output )
   {
+    if ( ! is_scalar($output) )
+    {
+      $json  =& new JsonWrapper();
+      $output = $json->encode($output);
+    }
     return $output;
   }  
 }

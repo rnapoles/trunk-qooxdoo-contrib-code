@@ -2,7 +2,7 @@
 
 // not functional and not integrated yet
 // this will integrate behavior that is now in the server class
-
+// changes will not affect existing API or behavior
 require_once dirname(__FILE__) . "/AbstractRequest.php";
 
 class JsonrpcRequest 
