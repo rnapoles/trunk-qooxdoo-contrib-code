@@ -136,7 +136,6 @@ function sampleRunner(script)
     sel.waitForCondition(isLogDone, "120000");
   }
   catch(ex) {
-    logsWithErrors++;
     print("Unable to determine if demo was loaded: " + category + " - " + currentSample);
     sel.getEval(browserLog('<DIV>Unable to determine if demo was loaded: ' + category + ' - ' + currentSample + '</DIV>'));
   }
