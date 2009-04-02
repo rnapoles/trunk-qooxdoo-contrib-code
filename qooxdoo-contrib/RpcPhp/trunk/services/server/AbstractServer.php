@@ -398,7 +398,6 @@ class AbstractServer
     $method  = $input->method;
     $params  = $input->params;
     $id      = $input->id;
-    $this->input = $input;
 
     /*
      * configure this service request properties
