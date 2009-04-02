@@ -59,10 +59,11 @@ require_once dirname(__FILE__) . "/access/AccessibilityBehavior.php";
 
 /**
  * The location of the service class directories.
+ * (trailing slash required)
  */
 if ( ! defined("servicePathPrefix") )
 {
-  define("servicePathPrefix", "");
+  define( "servicePathPrefix", "impl/" );
 }
 
 /**
