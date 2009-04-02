@@ -42,11 +42,11 @@ qx.Class.define("bug2191.Application",
       var mgr = new qx.ui.form.RadioGroup;
       
       mgr.addListener("changeValue", function(e) {
-        this.debug("changeValue: " + e.getData());
+        this.debug("changeValue (new/old): (" + e.getData() + "/" + e.getOldData() + ")");
       }, this);
       
       mgr.addListener("changeSelected", function(e) {
-        this.debug("changeSelected: " + e.getData());
+        this.debug("changeSelected (new/old): (" + e.getData() + "/" + e.getOldData() + ")");
       }, this);
             
       mgr.add(manager, client);
