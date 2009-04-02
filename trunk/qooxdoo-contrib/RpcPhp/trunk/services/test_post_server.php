@@ -23,7 +23,7 @@ if ( $_POST )
 <body>
 
 <h1>JsonRpc Server Test</h1>
-<p>This script tests the jsonrpc services by overriding the jsonrpc server and transforming POST request 
+<p>This script tests the jsonrpc services by overriding the jsonrpc server and transforming the POST request 
 into a request that can be handled by the backend services. </p>
 <form target="responseIframe" method="post">
 
