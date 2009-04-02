@@ -46,7 +46,7 @@ into a request that can be handled by the backend services. </p>
 		</tr>
 		<tr>
 			<td><b> JSON request parameters (Separated by comma, remember to
-			property quote strings)<br />
+			properly quote strings)<br />
 			</b></td>
 		</tr>
 		<tr>
