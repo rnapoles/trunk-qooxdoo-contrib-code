@@ -37,7 +37,7 @@ into a request that can be handled by the backend services. </p>
 			<td>
 			 <input 
 			   style="width: 100%" type="text" name="service"
-				 value="test.testService" />
+				 value="qooxdoo.testPHP4" />
 		  </td>
 			<td>
 			 <input type="text" name="method" 
