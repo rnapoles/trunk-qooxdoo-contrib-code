@@ -10,14 +10,15 @@
 error_reporting( E_ALL ^ E_NOTICE /* ^ E_WARNING */ );
 
 /*
- *  accessibility mode for Test.php 
+ * default accessibility mode for the services
  */
 define( "defaultAccessibility", "public" );
 
-/*
- * service path prefix (trailing slash required)
+/* 
+ * if the service classes are not in the impl/ folder,
+ * customize the service path prefix here (trailing slash required)
  */
-define( "servicePathPrefix", "services/" );
+//define( "servicePathPrefix", "/your/custom/location/" );
 
 /*
  * turn debugging on
