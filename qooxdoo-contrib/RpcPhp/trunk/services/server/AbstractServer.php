@@ -495,7 +495,8 @@ class AbstractServer
      */
     $this->debug("Starting Service method {$this->serviceClass}.$method");
     $this->output = $this->callServiceMethod( &$serviceObject, $method, $params );
-    $this->debug("Done. Result:" . var_export($this->output,true) );
+    $this->debug("Done. " );
+    //$this->debug("Result:" . var_export($this->output,true) );
 
     /*
      * See if the result of the function was actually an error
@@ -513,7 +514,7 @@ class AbstractServer
      * Give 'em what they came for!
      */
     $response = $this->formatOutput( $this->output );
-    $this->debug( "Formatted response: " . $response );
+    //$this->debug( "Formatted response: " . $response );
 
     /*
      * send reply
