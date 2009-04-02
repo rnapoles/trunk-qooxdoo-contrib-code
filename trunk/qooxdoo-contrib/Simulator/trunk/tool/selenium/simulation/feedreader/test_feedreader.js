@@ -21,7 +21,7 @@ var list = selWin + "." + qxApp + "._listView._list"; // get feed item list
 var listSelect = list +  ".addToSelection(" + list + ".getChildren()[0])"; // select first feed item
 var article = selWin + "." + qxApp + "._articleView.getArticle()"; // the article - null if no item selected
 var isArticle = article + " instanceof selenium.browserbot.getCurrentWindow().feedreader.model.Article";
-var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getDomElement().childNodes[0].value";
+var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getContent().toString()";
 var isPrefWindowVisible = selWin + "." + qxApp + "._prefWindow.getVisibility() == 'visible'";
 var isPrefWindowHidden = selWin + "." + qxApp + "._prefWindow.getVisibility() == 'hidden'";
 var addFeedWindowLabel = selWin + "." + qxApp + '._addFeedWindow.getCaption().toString()';
