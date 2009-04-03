@@ -42,9 +42,10 @@ qx.Class.define("t",
       this._protected12.setStyle("foo", "bar");  // protected in a call
       this._protected13 = "bar";                 // protected in a direct assignment
       this._protected14.style.foo = "bar";       // protected in an assignment
+      this._protected15().style = "bar";         // protected in embedded call
 
-      a.b._protected15(1,2);
-      a.b._protected16.style = "bar";
+      a.b._protected16(1,2);
+      a.b._protected17.style = "bar";
     },
 
     // check rval positions
