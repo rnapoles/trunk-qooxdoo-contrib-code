@@ -98,6 +98,16 @@ function sampleRunner(script)
     try {
       var nextSampleCategory = sel.getEval(getNextSampleCategory);
       var nextSampleLabel = sel.getEval(getNextSampleLabel);
+
+      // Category "Demos" means there's a category folder selected, 
+      // so look at the first sample inside.
+      if (nextSampleCategory == "Demos") {
+        sel.runScript(selectNextSample);
+        nextSampleCategory = sel.getEval(getNextSampleCategory);
+        nextSampleLabel = sel.getEval(getNextSampleLabel);
+      }
+
+      print("Next Sample: " + nextSampleCategory + ":" + nextSampleLabel);
       for (var i = 0; i < ignore.length; i++) {
         var ignoreCategory = ignore[i].substring(0, ignore[i].indexOf(':'));
         if (nextSampleCategory == ignoreCategory) {
