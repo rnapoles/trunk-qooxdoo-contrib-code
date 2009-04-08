@@ -31,6 +31,10 @@ def lint(file, popup):
         lint.checkMaps()
         lint.checkUnusedVariables()
         lint.checkUndefinedVariables(["qx"])
+        lint.checkRequiredBlocks()
+        lint.checkFields()
+        lint.checkReferenceFields()
+        
     except treegenerator.SyntaxException, e:
         errorRe = re.compile("(.*file:, line:(\d+), column:(\d+))")
         match = errorRe.match(str(e)).groups()
