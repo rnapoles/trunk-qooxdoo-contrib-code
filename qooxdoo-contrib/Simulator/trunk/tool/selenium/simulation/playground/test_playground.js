@@ -150,7 +150,7 @@ function runTests()
   sel.runScript(setLocale);
   
   try {
-    sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/[@label="Run"]');
+    sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]');
   }
   catch(ex) {
     totalErrors++;
