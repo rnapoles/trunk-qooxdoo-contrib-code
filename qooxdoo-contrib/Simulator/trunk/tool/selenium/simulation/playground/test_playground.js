@@ -150,7 +150,7 @@ function runTests()
   sel.runScript(setLocale);
   
   try {
-    sel.qxClick('qxh=app:[@widgets]/[@toolbar.runButton]');
+    sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/[@label="Run"]');
   }
   catch(ex) {
     totalErrors++;
@@ -161,7 +161,7 @@ function runTests()
   // Open log pane
   try {
     print("Opening log.");
-    sel.qxClick('qxh=app:[@widgets]/[@toolbar.logCheckButton]');
+    sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox');
     sel.waitForCondition(isLogVisible, 10000); 
   } 
   catch(ex) {
@@ -187,8 +187,8 @@ function runTests()
     if (sampleArr[i] != "") {
       print("Selecting next sample: " + sampleArr[i]);
       try {
-        sel.qxClick('qxh=app:[@widgets]/[@toolbar.selectSampleButton]');
-        sel.qxClick('qxh=app:[@widgets]/[@toolbar.selectSampleButton]/qx.ui.menu.Menu/child[' + i + ']');
+        sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton');
+        sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']');
       } 
       catch (ex) {
         totalErrors++;
@@ -214,7 +214,8 @@ function runTests()
 function getSampleNames()
 {
   var func = 'function getNames() {';
-  func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().widgets["toolbar.selectSampleButton"].getMenu().getChildren();';
+  func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot().getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[1].getMenu().getChildren();';
+  //func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().widgets["toolbar.selectSampleButton"].getMenu().getChildren();';
   func +=    'var sampleNames = "";';
   func +=    'for(var i=0,l=kids.length; i<l; i++) {';
   //func +=    'sampleNames.push(kids[i].getLabel());';
