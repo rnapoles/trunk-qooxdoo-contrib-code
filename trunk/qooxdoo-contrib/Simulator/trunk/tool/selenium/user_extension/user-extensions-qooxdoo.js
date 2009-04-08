@@ -672,8 +672,9 @@ PageBot.prototype._getClientDocument = function(inWindow){
          && (inWindow.wrappedJSObject.qx != null)
          && (inWindow.wrappedJSObject.qx.core.Init != null)
          && (inWindow.wrappedJSObject.qx.core.Init.getApplication() != null)
+         && (inWindow.wrappedJSObject.qx.core.Init.getApplication().getRoot() != null)
        ){
-      return inWindow.wrappedJSObject.qx.core.Init.getApplication();
+      return inWindow.wrappedJSObject.qx.core.Init.getApplication().getRoot();
     } else{
       return null;
     }
@@ -683,8 +684,9 @@ PageBot.prototype._getClientDocument = function(inWindow){
         && (inWindow.qx != null)
         && (inWindow.qx.core.Init != null)
         && (inWindow.qx.core.Init.getApplication() != null)
+        && (inWindow.qx.core.Init.getApplication().getRoot() != null)
       ){
-     return inWindow.qx.core.Init.getApplication();
+     return inWindow.qx.core.Init.getApplication().getRoot();
    } else{
      return null;
    }
