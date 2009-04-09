@@ -83,62 +83,6 @@ function getResultChunk(startAt, chars)
   return selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML.substr(' + startAt + ',' + chars + ')';
 }
 
-function getBrowser(agent)
-{
-  var browser = false;
-  var regFF = /.*(Firefox)\/([\d\.]*)/;
-  var match = regFF.exec(agent);
-  if (match) {
-    browser = match[1] + " " + match[2];
-  }
-
-  if (!browser) {
-    var regOp = /.*(Opera)\/([\d\.]*)/;
-    var match = regOp.exec(agent);
-    if (match) {
-      browser = match[1] + " " + match[2];
-    }
-  }
-
-  if (!browser) {    
-    var regIe8Comp = /.*MSIE 7\.0.*(Trident)/;
-    var match = regIe8Comp.exec(agent);
-    if (match) {
-      browser = "Internet Explorer 8 in IE7 compatibility mode";
-    }
-    var regIe8Std = /.*MSIE 8\.0.*(Trident)/;
-    var match1 = regIe8Std.exec(agent);
-    if (match1) {
-      browser = "Internet Explorer 8 in standards mode";
-    }
-    if (!browser) {
-      var regIe = /.*MSIE ([\d\.]*)/;
-      var match2 = regIe.exec(agent);
-      if (match2) {
-        browser = "Internet Explorer " + match2[1];
-      }
-    }    
-  }
-
-  if (!browser) {
-    var regCh = /.*(Chrome)\/([\d\.]*)/;
-    var match = regCh.exec(agent);
-    if (match) {
-      browser = match[1] + " " + match[2];
-    }
-  }
-
-  if (!browser) {
-    var regSa = /Version\/([\d\.]+).*(Safari)/;
-    var match = regSa.exec(agent);
-    if (match) {
-      browser = match[2] + " " + match[1];
-    }
-  }
-
-  return browser;
-}
-
 function getPackageArray()
 {
   var packs = sel.getEval(packageFunc);
@@ -156,9 +100,7 @@ function logBrowserInfo()
 
   sel.getEval(browserLog("<h1>Test Runner results from " + currentDate.toLocaleString() + "</h1>"));
   sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
-  if (browser) {
-    sel.getEval(browserLog("<p>Browser: " + browser + " on " + plat + "</p>"));
-  }
+  sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
 }
 
