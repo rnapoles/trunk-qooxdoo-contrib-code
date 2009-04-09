@@ -221,8 +221,6 @@ sel.setSpeed(stepSpeed);
 var agent = sel.getEval(usrAgent);
 var plat = sel.getEval(platform);
 
-var browser = getBrowser(agent);
-
 sel.getEval(browserLog("<h1>Feedreader results from " + currentDate.toLocaleString() + "</h1>"));
 sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
 sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));

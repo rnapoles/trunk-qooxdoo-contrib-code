@@ -238,7 +238,6 @@ function runTest()
   
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
-  var browser = getBrowser(agent);
   
   sel.getEval(browserLog("<h1>Demobrowser results from " + currentDate.toLocaleString() + "</h1>"));
   sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
