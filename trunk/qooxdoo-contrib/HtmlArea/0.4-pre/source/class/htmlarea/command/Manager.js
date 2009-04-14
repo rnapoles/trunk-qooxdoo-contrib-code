@@ -338,12 +338,14 @@ qx.Class.define("htmlarea.command.Manager",
       {
         if (focusNode.nodeType == 3)
         {
-          // Check the focus node is inside a paragraph tag.
+          // Check the focus node is inside a paragraph or list tag.
           var parents = qx.dom.Hierarchy.getAncestors(focusNode);
 
           for(var i=0, j=parents.length; i<j; i++)
           {
-            if (parents[i].tagName == "P")
+            if (parents[i].tagName == "P" || 
+                parents[i].tagName == "UL" || 
+                parents[i].tagName == "OL")
             {
               isInParagraph = true;
               break;
@@ -1054,15 +1056,21 @@ qx.Class.define("htmlarea.command.Manager",
          this.__manualOutdent(focusNode);
        }
        
-       /* Body element must have focus before executing command */
+       // Body element must have focus before executing command
        this.__editorInstance.getContentWindow().focus();
 
        // If a saved range is available use it
        var target = this.__currentRange !== null ? this.__currentRange : this.__doc;
        var returnValue = target.execCommand(commandObject.identifier, false, value);
        
-       /* (re)-focus the editor after the execCommand */
+       // (re)-focus the editor after the execCommand
        this.__focusAfterExecCommand();
+       
+       
+       // If the list was removed check if a paragraph has to be added
+       if (this.__paragraphMissing()) {
+         this.__insertHelperParagraph();
+       }
        
        if (qx.core.Variant.isSet("qx.client", "webkit"))
        {
