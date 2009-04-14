@@ -1,9 +1,11 @@
       qx.Class.define("bug730.Menu",
       {
         extend : qx.ui.menu.Menu,
+        include : [qx.ui.core.MNativeOverflow],
 
         members :
         {
+          __dimensions : null,
 
           /**
            * Measure and store the menu height. This method must be called if the menu
@@ -48,29 +50,47 @@
             this._measuredHeight = height;
           },
 
-
-          // overridden
-          // show vertical scroll bars if needed
-          _beforeAppear : function()
+          __correctSizes : function(availableWidth, availableHeight)
           {
-            //Enforce max height
-            var menuHeight = this._measuredHeight;
-            if (!menuHeight) {
-              return this.base(arguments);;
-            }
-
-            var availableHeight = qx.ui.core.ClientDocument.getInstance().getInnerHeight();
-
-            if ( menuHeight > availableHeight)
+            
+            var location = this.getContentLocation();
+            var dimensions = qx.bom.element.Dimension.getSize(this.getContainerElement().getDomElement());
+            
+            availableHeight -= location.top;
+            availableWidth -= location.left;
+            
+            if (dimensions.height > availableHeight)
             {
-              this.setOverflow("scrollY");
+              this.__oldHeight = dimensions.height;
+              this.setOverflowY("scroll");
               this.setHeight(availableHeight);
             }
             else
             {
-//              this.setHeight("auto");
-              this.setOverflow("hidden");
+              this.setHeight(this.__oldHeight);
+              this.setOverflowY("hidden");
             }
+
+          },
+
+          // overridden
+          // show vertical scroll bars if needed
+          open : function()
+          {
+            this.base(arguments);
+            
+            var availableHeight = qx.bom.Viewport.getHeight();
+            var availableWidth = qx.bom.Viewport.getWidth();
+            
+            var timer = qx.util.TimerManager.getInstance();
+
+            timer.start(
+              function(){
+                this.__correctSizes(availableWidth, availableHeight);
+              },
+              0,
+              this
+            );
 
             this.base(arguments);
           }
