@@ -32,7 +32,7 @@ var platform = 'navigator.platform';
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe'];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','test:Flash','bom:Iframe'];
 
 /*
  * List of demos to run. All others will be ignored.
