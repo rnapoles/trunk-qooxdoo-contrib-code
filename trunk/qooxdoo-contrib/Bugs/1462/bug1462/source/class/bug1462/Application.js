@@ -52,6 +52,10 @@ qx.Class.define("bug1462.Application",
       var doc = this.getRoot();
       doc.add(button, {left: 100, top: 100});
       doc.add(win, {left: 20, top: 20});
+      
+      //Set blocker style
+      doc.setBlockerColor("red");
+      doc.setBlockerOpacity(0.1);
     }
   }
 });
