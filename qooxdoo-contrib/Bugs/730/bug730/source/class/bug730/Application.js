@@ -55,19 +55,60 @@ qx.Class.define("bug730.Application",
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "bug730/test.png");
 
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+            var d = this.getRoot();
 
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
+
+             var m2 = new bug730.Menu();
+
+             for (var i=1; i<45; i++) {
+               m2.add(new qx.ui.menu.Button("Item #" + i))
+             }
+
+             d.add(m2, {left: 10, top : 20})
+
+//             console.log(m2.measureHeight());
+
+             var m1 = new qx.ui.menu.Menu;
+
+             var mb1_01 = new qx.ui.menu.Button("View/Lists");
+             var mb1_02 = new qx.ui.menu.Button("Syntax Highlighting");
+             var ms1    = new qx.ui.menu.Separator();
+             var mb1_03 = new qx.ui.menu.Button("Window Font");
+             var mb1_04 = new qx.ui.menu.Button("Printer Font");
+             var ms2    = new qx.ui.menu.Separator();
+             var mb1_14 = new qx.ui.menu.Button("View", null, null, m2);
+
+             m1.add(mb1_01);
+             m1.add(mb1_02);
+             m1.add(ms1);
+             m1.add(mb1_03);
+             m1.add(mb1_04);
+             m1.add(ms2);
+             m1.add(mb1_14);
+
+             d.add(m1, {left: 200, top : 20});
+
+
+             var w1 = new qx.ui.form.Button("Open");
+
+
+             w1.addListener("click", function(e)
+             {
+               m1.setOpener(w1);
+               m1.open();
+               e.stopPropagation();
+             });
+
+             w1.addListener("mousedown", function(e)
+             {
+               e.stopPropagation();
+             });
+
+
+             d.add(w1, {left: 10, top : 100});
+
+
     }
   }
 });
