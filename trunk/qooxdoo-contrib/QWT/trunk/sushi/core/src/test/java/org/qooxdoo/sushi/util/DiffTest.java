@@ -73,6 +73,14 @@ public class DiffTest {
         assertEquals("- before\n+ after\n", Diff.diff("before\nsame\n", "after\nsame\n"));
     }
 
+    @Test
+    public void context() {
+        assertEquals("  3\n- before\n+ after\n  X\n  Y\n- in\n  4\n", Diff.diff("1\n2\n3\nbefore\nX\nY\nin\n4\n5\n6\n7\n", "1\n2\n3\nafter\nX\nY\n4\n5\n6\n7\n", 1));
+        assertEquals("  2\n  3\n- before\n+ after\n  X\n  Y\n- in\n  4\n  5\n", Diff.diff("1\n2\n3\nbefore\nX\nY\nin\n4\n5\n6\n7\n", "1\n2\n3\nafter\nX\nY\n4\n5\n6\n7\n", 2));
+        assertEquals("  1\n  2\n  3\n- before\n+ after\n  X\n  Y\n- in\n  4\n  5\n  6\n", Diff.diff("1\n2\n3\nbefore\nX\nY\nin\n4\n5\n6\n7\n", "1\n2\n3\nafter\nX\nY\n4\n5\n6\n7\n", 3));
+        assertEquals("  1\n  2\n  3\n- before\n+ after\n  X\n  Y\n- in\n  4\n  5\n  6\n  7\n", Diff.diff("1\n2\n3\nbefore\nX\nY\nin\n4\n5\n6\n7\n", "1\n2\n3\nafter\nX\nY\n4\n5\n6\n7\n", 4));
+    }
+
     //--
 
     @Test

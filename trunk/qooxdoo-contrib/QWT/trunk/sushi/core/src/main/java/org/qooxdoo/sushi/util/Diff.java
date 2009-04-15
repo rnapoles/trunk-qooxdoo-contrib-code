@@ -24,16 +24,29 @@ import java.util.List;
 
 public class Diff {
     public static String diff(String leftStr, String rightStr) {
-        return diff(Strings.lines(leftStr), Strings.lines(rightStr));
+        return diff(leftStr, rightStr, 0);
     }
 
-    public static String diff(List<String> left, List<String> right) {
+    public static String diff(String leftStr, String rightStr, int context) {
+        return diff(Strings.lines(leftStr), Strings.lines(rightStr), context);
+    }
+    
+    public static String diff(List<String> left, List<String> right, int context) {
+        List<String> commons;
         List<Chunk> chunks;
+        Chunk chunk;
         StringBuilder result;
+        int ci;
         
-        chunks = diff(left, Lcs.compute(left, right), right);
+        commons = Lcs.compute(left, right);
+        chunks = diff(left, commons, right);
         result = new StringBuilder();
-        for (Chunk chunk : chunks) {
+        for (int c = 0; c < chunks.size(); c++) {
+            chunk = chunks.get(c);
+            ci = Math.max(chunk.common - context, c == 0 ? 0 : chunks.get(c - 1).common);
+            for (int i = ci; i < chunk.common; i++) {
+                result.append("  ").append(commons.get(i));
+            }
             if (chunk.delete > 0) {
                 for (int i = chunk.left; i < chunk.left + chunk.delete; i++) {
                     result.append("- " + left.get(i));
@@ -43,6 +56,10 @@ public class Diff {
                 for (String line : chunk.add) {
                     result.append("+ ").append(line);
                 }
+            }
+            ci = Math.min(chunk.common + context, c == chunks.size() - 1 ? commons.size() : chunks.get(c + 1).common - context);
+            for (int i = chunk.common; i < ci; i++) {
+                result.append("  ").append(commons.get(i));
             }
         }
         return result.toString();
@@ -65,7 +82,7 @@ public class Diff {
         for (int ci = 0; ci <= commons.size(); ci++) {
             common = ci < commons.size() ? commons.get(ci) : null;
             if (li < lmax && !left.get(li).equals(common)) {
-                chunk = new Chunk(li, ri);
+                chunk = new Chunk(li, ci, ri);
                 result.add(chunk);
                 do {
                     li++;
@@ -77,7 +94,7 @@ public class Diff {
             }
             if (ri < rmax && !right.get(ri).equals(common)) {
                 if (chunk == null) {
-                    chunk = new Chunk(li, ri);
+                    chunk = new Chunk(li, ci, ri);
                     result.add(chunk);
                 }
                 do {
@@ -92,13 +109,15 @@ public class Diff {
 
     private static class Chunk {
         public final int left;
+        public final int common;
         public final int right;
         public int delete;
         public final List<String> add;
         
-        public Chunk(int left, int right) {
+        public Chunk(int left, int common, int right) {
             this.left = left;
             this.right = right;
+            this.common = common;
             this.add = new ArrayList<String>();
         }
     }
