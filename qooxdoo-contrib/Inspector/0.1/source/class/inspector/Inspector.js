@@ -232,7 +232,7 @@ qx.Class.define("inspector.Inspector", {
     * @internal
     */
    windowSelected: function(window) {
-     // go threw all registered windows
+     // go through all registered windows
      for (var i = 0; i < this._windowQueue.length; i++) {
        // if the current windows is found
        if (this._windowQueue[i] == window) {
@@ -246,7 +246,7 @@ qx.Class.define("inspector.Inspector", {
        this._windowQueue.unshift(window);
      }
 
-     // go threw all windows again
+     // go through all windows again
      for (var i = 0; i < this._windowQueue.length; i++) {
        // mark that the zIndex will be changed
        this._windowQueue[i].setInChange(true);
