@@ -59,6 +59,11 @@ public class DiffTest {
     }
 
     @Test
+    public void changeall() {
+        assertEquals("- a\n- b\n+ 1\n+ 2\n", Diff.diff("0\na\nb\nc\n", "0\n1\n2\nc\n"));
+    }
+    
+    @Test
     public void mixed() {
         assertEquals("- b\n- B\n+ d\n+ D\n", Diff.diff("a\nb\nB\nc\n", "a\nc\nd\nD\n"));
     }

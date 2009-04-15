@@ -19,51 +19,87 @@
 
 package org.qooxdoo.sushi.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Diff {
     public static String diff(String leftStr, String rightStr) {
-        List<String> left;
-        List<String> right;
-        int li;
-        int ri;
-        int lmax;
-        int rmax;
-        int rnext;
+        return diff(Strings.lines(leftStr), Strings.lines(rightStr));
+    }
+
+    public static String diff(List<String> left, List<String> right) {
+        List<Chunk> chunks;
         StringBuilder result;
         
-        left = Strings.lines(leftStr);
-        right = Strings.lines(rightStr);
-        li = 0;
-        ri = 0;
-        lmax = left.size();
-        rmax = right.size();
+        chunks = diff(left, Lcs.compute(left, right), right);
         result = new StringBuilder();
-        while (li < lmax || ri < rmax) {
-            rnext = li < lmax ? indexOf(right, ri, left.get(li)) : rmax;
-            if (rnext == ri) {
-                li++;
-                ri++;
-            } else if (rnext == -1) {
-                result.append("- " + left.get(li++));
-            } else {
-                for ( ; ri < rnext; ri++) {
-                    result.append("+ " + right.get(ri));
+        for (Chunk chunk : chunks) {
+            if (chunk.delete > 0) {
+                for (int i = chunk.left; i < chunk.left + chunk.delete; i++) {
+                    result.append("- " + left.get(i));
+                }
+            }
+            if (chunk.add.size() > 0) {
+                for (String line : chunk.add) {
+                    result.append("+ ").append(line);
                 }
             }
         }
         return result.toString();
     }
     
-    private static int indexOf(List<String> all, int ofs, String str) {
-        int max;
-
-        max = all.size();
-        for (int i = ofs; i < max; i++) {
-            if (str.equals(all.get(i))) {
-                return i;
+    public static List<Chunk> diff(List<String> left, List<String> commons, List<String> right) {
+        Chunk chunk;
+        List<Chunk> result;
+        int li;
+        int ri;
+        int lmax;
+        int rmax;
+        String common;
+        
+        result = new ArrayList<Chunk>();
+        lmax = left.size();
+        rmax = right.size();
+        li = 0;
+        ri = 0;
+        for (int ci = 0; ci <= commons.size(); ci++) {
+            common = ci < commons.size() ? commons.get(ci) : null;
+            if (li < lmax && !left.get(li).equals(common)) {
+                chunk = new Chunk(li, ri);
+                result.add(chunk);
+                do {
+                    li++;
+                } while (li < lmax && !left.get(li).equals(common));
+                chunk.delete = li - chunk.left; 
+            } else {
+                // definite assignment
+                chunk = null;
             }
+            if (ri < rmax && !right.get(ri).equals(common)) {
+                if (chunk == null) {
+                    chunk = new Chunk(li, ri);
+                    result.add(chunk);
+                }
+                do {
+                    chunk.add.add(right.get(ri++));
+                } while (ri < rmax && !right.get(ri).equals(common));
+            }
+            li++;
+            ri++;
         }
-        return -1;
+        return result;
+    }
+
+    private static class Chunk {
+        public final int left;
+        public final int right;
+        public int delete;
+        public final List<String> add;
+        
+        public Chunk(int left, int right) {
+            this.left = left;
+            this.right = right;
+            this.add = new ArrayList<String>();
+        }
     }
 }
