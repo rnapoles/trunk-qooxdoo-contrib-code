@@ -22,16 +22,19 @@ package org.qooxdoo.sushi.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Output in unified format. See http://en.wikipedia.org/wiki/Diff
+ */
 public class Diff {
     public static String diff(String leftStr, String rightStr) {
-        return diff(leftStr, rightStr, 0);
+        return diff(leftStr, rightStr, false, 0);
     }
 
-    public static String diff(String leftStr, String rightStr, int context) {
-        return diff(Strings.lines(leftStr), Strings.lines(rightStr), context);
+    public static String diff(String leftStr, String rightStr, boolean range, int context) {
+        return diff(Strings.lines(leftStr), Strings.lines(rightStr), range, context);
     }
     
-    public static String diff(List<String> left, List<String> right, int context) {
+    public static String diff(List<String> left, List<String> right, boolean range, int context) {
         List<String> commons;
         List<Chunk> chunks;
         Chunk chunk;
@@ -43,6 +46,9 @@ public class Diff {
         result = new StringBuilder();
         for (int c = 0; c < chunks.size(); c++) {
             chunk = chunks.get(c);
+            if (range) {
+                result.append(chunk.range());
+            }
             ci = Math.max(chunk.common - context, c == 0 ? 0 : chunks.get(c - 1).common);
             for (int i = ci; i < chunk.common; i++) {
                 result.append("  ").append(commons.get(i));
@@ -119,6 +125,10 @@ public class Diff {
             this.right = right;
             this.common = common;
             this.add = new ArrayList<String>();
+        }
+        
+        public String range() {
+            return "@@ -" + (left + 1) + "," + delete + " +" + (right + 1) + "," + add.size() + " @@\n"; 
         }
     }
 }
