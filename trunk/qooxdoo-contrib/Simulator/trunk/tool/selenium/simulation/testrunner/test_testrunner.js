@@ -96,8 +96,9 @@ function logBrowserInfo()
 {
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
+  var now = currentDate.toLocaleString();
 
-  sel.getEval(browserLog("<h1>Test Runner results from " + currentDate.toLocaleString() + "</h1>"));
+  sel.getEval(browserLog("<h1>Test Runner results from " + now + "</h1>"));
   sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
   sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
