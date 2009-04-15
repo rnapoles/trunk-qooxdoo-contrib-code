@@ -74,11 +74,11 @@ public class CopyDiffTest {
         variables.put("machine", "fritz");
         assertEquals("M file\nM folder/file\n", brief(destdir));
         assertEquals("### file\n" +
-                "- machine: walter\n" +
-                "+ machine: fritz\n" +
+                "-machine: walter\n" +
+                "+machine: fritz\n" +
                 "### folder/file\n" + 
-                "- machine: walter\n" +
-                "+ machine: fritz\n", diff(destdir));
+                "-machine: walter\n" +
+                "+machine: fritz\n", diff(destdir));
         copy.directory(destdir);
         assertEquals("", brief(destdir));
         assertEquals("", diff(destdir));

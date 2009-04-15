@@ -40,36 +40,33 @@ public class Diff {
         Chunk chunk;
         StringBuilder result;
         int ci;
-        Chunk last;
         
         commons = Lcs.compute(left, right);
         chunks = diff(left, commons, right);
         result = new StringBuilder();
-        last = null;
         for (int c = 0; c < chunks.size(); c++) {
             chunk = chunks.get(c);
-            if (range && (last == null || !last.touches(chunk, context))) {
-                addRange(result, chunks, c, commons.size(), context);
+            if (range) {
+                result.append(chunk.range());
             }
             ci = Math.max(chunk.common - context, c == 0 ? 0 : chunks.get(c - 1).common);
             for (int i = ci; i < chunk.common; i++) {
-                result.append(" ").append(commons.get(i));
+                result.append("  ").append(commons.get(i));
             }
             if (chunk.delete > 0) {
                 for (int i = chunk.left; i < chunk.left + chunk.delete; i++) {
-                    result.append("-" + left.get(i));
+                    result.append("- " + left.get(i));
                 }
             }
             if (chunk.add.size() > 0) {
                 for (String line : chunk.add) {
-                    result.append("+").append(line);
+                    result.append("+ ").append(line);
                 }
             }
             ci = Math.min(chunk.common + context, c == chunks.size() - 1 ? commons.size() : chunks.get(c + 1).common - context);
             for (int i = chunk.common; i < ci; i++) {
-                result.append(" ").append(commons.get(i));
+                result.append("  ").append(commons.get(i));
             }
-            last = chunk;
         }
         return result.toString();
     }
@@ -116,49 +113,6 @@ public class Diff {
         return result;
     }
 
-    private static void addRange(StringBuilder result, List<Chunk> chunks, int ofs, int cmax, int context) {
-        Chunk first;
-        Chunk prev;
-        Chunk current;
-        int leftStart;
-        int leftCount;
-        int rightStart;
-        int rightCount;
-        
-        first = chunks.get(ofs);
-        leftStart = Math.max(first.left - context, 0);
-        rightStart = Math.max(first.right - context, 0);
-        leftCount = first.left - leftStart;
-        rightCount = first.right - rightStart;
-        prev = null;
-        for ( ; ofs < chunks.size(); ofs++) {
-            current = chunks.get(ofs);
-            if (prev != null && !prev.touches(current, context)) {
-                break;
-            }
-            leftCount += current.delete;
-            rightCount += current.add.size();
-            prev = current;
-        }
-        current = chunks.get(ofs - 1);
-        leftCount += current.common - first.common;
-        leftCount += Math.min(current.common + context, cmax) - current.common;
-        rightCount += current.common - first.common;
-        rightCount += Math.min(current.common + context, cmax) - current.common;
-        result.append("@@ -");
-        addRange(result, leftStart, leftCount);
-        result.append(" +");
-        addRange(result, rightStart, rightCount);
-        result.append(" @@\n");
-    }
-
-    private static void addRange(StringBuilder result, int idx, int count) {
-        result.append(idx + 1);
-        if (count != 1) {
-            result.append(',').append(count);
-        }
-    }
-    
     private static class Chunk {
         public final int left;
         public final int common;
@@ -171,10 +125,6 @@ public class Diff {
             this.right = right;
             this.common = common;
             this.add = new ArrayList<String>();
-        }
-        
-        public boolean touches(Chunk chunk, int context) {
-            return Math.abs(common - chunk.common) <= context * 2;
         }
         
         public String range() {

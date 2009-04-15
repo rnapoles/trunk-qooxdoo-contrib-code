@@ -118,7 +118,6 @@ public class Diff {
 
     private static void addRange(StringBuilder result, List<Chunk> chunks, int ofs, int cmax, int context) {
         Chunk first;
-        Chunk prev;
         Chunk current;
         int leftStart;
         int leftCount;
@@ -130,15 +129,13 @@ public class Diff {
         rightStart = Math.max(first.right - context, 0);
         leftCount = first.left - leftStart;
         rightCount = first.right - rightStart;
-        prev = null;
         for ( ; ofs < chunks.size(); ofs++) {
             current = chunks.get(ofs);
-            if (prev != null && !prev.touches(current, context)) {
+            if (!first.touches(current, context)) {
                 break;
             }
             leftCount += current.delete;
             rightCount += current.add.size();
-            prev = current;
         }
         current = chunks.get(ofs - 1);
         leftCount += current.common - first.common;
