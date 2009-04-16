@@ -32,59 +32,81 @@ import org.qooxdoo.sushi.util.SubstitutionException;
 
 public abstract class Template {
     private final Map<Character, Method> contextConstructors;
-
-    private static final String PREFIX = "context";
+    private final Map<String, Method> calls;
+    
+    private static final String CONTEXT = "context";
+    private static final String CALL = "call";
     
     public Template() {
         String name;
         char c;
         
         contextConstructors = new HashMap<Character, Method>();
+        calls = new HashMap<String, Method>();
         for (Method m : getClass().getDeclaredMethods()) {
             name = m.getName();
-            if (name.startsWith(PREFIX)) {
-                c = Character.toUpperCase(name.substring(PREFIX.length()).charAt(0));                
+            if (name.startsWith(CONTEXT)) {
+                c = Character.toUpperCase(name.substring(CONTEXT.length()).charAt(0));                
                 if (contextConstructors.put(c, m) != null) {
                     throw new IllegalArgumentException("duplicate context character: " + c);
                 }
+            } else if (name.startsWith(CALL)) {
+            	name = name.substring(CALL.length()).toLowerCase();
+            	if (calls.put(name, m) != null) {
+                    throw new IllegalArgumentException("duplicate call: " + name);
+            	}
             }
         }
     }
     
-    public void applyDirectory(Node src, Node dest, Map<String, String> context) throws IOException, TemplateException {
+    public void applyDirectory(Node srcdir, Node dest, Map<String, String> context) throws IOException, TemplateException {
         String template;
         String srcname;
         List<Map<String, String>> children;
         Substitution s;
         Node destfile;
         
-        for (Node srcfile : src.list()) {
+        for (Node srcfile : srcdir.list()) {
             srcname = srcfile.getName();
             if (".svn".equals(srcname)) { // TODO
             	continue;
             }
             children = new ArrayList<Map<String, String>>();
-            srcname = split(srcfile.getName(), context, children);
-            for (Map<String, String> child : children) {
-                s =  new Substitution("${{", "}}", '\\', child);
-                try {
-                    destfile = dest.join(s.apply(srcname)); 
-                } catch (SubstitutionException e) {
-                    throw new TemplateException(srcfile.getPath() + ": cannot subsitute name:" + e.getMessage(), e);
-                }
-                if (srcfile.isDirectory()) {
-                    destfile.mkdir();
-                    applyDirectory(srcfile, destfile, child);
-                } else {
-                    template = srcfile.readString();
+            if (srcname.startsWith("!")) {
+            	call(srcname.substring(1), srcdir, context);
+            } else {
+                srcname = split(srcfile.getName(), context, children);
+                for (Map<String, String> child : children) {
+                    s =  new Substitution("${{", "}}", '\\', child);
                     try {
-                        destfile.writeString(s.apply(template));
+                        destfile = dest.join(s.apply(srcname)); 
                     } catch (SubstitutionException e) {
-                        throw new TemplateException(srcfile.getPath() + ": cannot subsitute:" + e.getMessage(), e);
+                        throw new TemplateException(srcfile.getPath() + ": cannot substitute name:" + e.getMessage(), e);
+                    }
+                    if (srcfile.isDirectory()) {
+                        destfile.mkdir();
+                        applyDirectory(srcfile, destfile, child);
+                    } else {
+                        template = srcfile.readString();
+                        try {
+                            destfile.writeString(s.apply(template));
+                        } catch (SubstitutionException e) {
+                            throw new TemplateException(srcfile.getPath() + ": cannot substitute:" + e.getMessage(), e);
+                        }
                     }
                 }
             }                
         }
+    }
+
+    private void call(String name, Node parent, Map<String, String> context) throws TemplateException {
+    	Method m;
+    	
+    	m = calls.get(name);
+    	if (m == null) {
+    		throw new TemplateException("unknown call: " + name);
+    	}
+        doInvoke(m, parent, context);
     }
 
     private String split(String name, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
@@ -114,15 +136,19 @@ public abstract class Template {
         tmp = new ArrayList<Map<String, String>>(contexts);
         contexts.clear();
         for (Map<String, String> map : tmp) {
-            invoke(m, map, contexts);
+            context(m, map, contexts);
         }
     }
 
-    private void invoke(Method m, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
+    private void context(Method m, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
+        result.addAll((List<Map<String, String>>) doInvoke(m, parent));
+    }
+
+    private Object doInvoke(Method m, Object ... args) throws TemplateException {
         try {
-            result.addAll((List<Map<String, String>>) m.invoke(this, parent));
+            return m.invoke(this, args);
         } catch (InvocationTargetException e) {
-            throw new TemplateException("context method failed", e.getTargetException());
+            throw new TemplateException(m.getName() + " failed", e.getTargetException());
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (IllegalAccessException e) {
