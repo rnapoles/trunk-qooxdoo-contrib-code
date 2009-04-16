@@ -313,6 +313,7 @@ function runTestsSteps()
 print("Starting Test Runner session with browser " + config.testBrowser);
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
 sel.start();
+sel.setTimeout(60000);
 sel.open(config.autHost + config.autPath);
 sel.setSpeed(stepSpeed);
 
