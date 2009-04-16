@@ -1,6 +1,7 @@
 package org.qooxdoo.sushi.fs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import org.junit.Test;
 
 public class TemplateTest {
     public static class Foo extends Template {
+    	public boolean called = false;
+    	
         public List<Map<String, String>> contextN(Map<String, String> parent) {
             return ctx(parent, "n");
         }
@@ -19,6 +22,10 @@ public class TemplateTest {
             return ctx(parent, "m");
         }
 
+        public void callTest(Node node, Map<String, String> context) {
+        	called = true;
+        }
+        
         private List<Map<String, String>> ctx(Map<String, String> parent, String name) {
             List<Map<String, String>> result;
             
@@ -39,6 +46,7 @@ public class TemplateTest {
     
     @Test
     public void empty() throws Exception {
+    	Foo foo;
         IO io;
         Node src;
         Node dest;
@@ -50,7 +58,9 @@ public class TemplateTest {
         context = new HashMap<String, String>();
         context.put("var", "value");
         context.put("name", "foo");
-        new Foo().applyDirectory(src, dest, context);
+        foo = new Foo();
+        foo.applyDirectory(src, dest, context);
+        assertTrue(foo.called);
         assertEquals("", dest.join("a").readString());
         assertEquals("value\n", dest.join("b").readString());
         assertEquals("bar", dest.join("foo").readString());
