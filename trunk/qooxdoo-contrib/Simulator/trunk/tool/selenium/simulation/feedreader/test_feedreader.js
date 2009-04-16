@@ -232,7 +232,7 @@ function runTests()
     sel.qxClick('qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]');    
     print("Waiting for Preferences window to close.");
     Packages.java.lang.Thread.sleep(2000);
-    if (sel.getEval(isPrefWindowVisible)) {
+    if (sel.getEval(isPrefWindowVisible) == "true") {
       sel.qxClick('qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]');
     }
     sel.waitForCondition(isPrefWindowHidden, 10000);
