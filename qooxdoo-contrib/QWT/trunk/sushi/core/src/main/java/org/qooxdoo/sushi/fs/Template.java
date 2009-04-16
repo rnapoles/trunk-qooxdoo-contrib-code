@@ -60,6 +60,9 @@ public abstract class Template {
         
         for (Node srcfile : src.list()) {
             srcname = srcfile.getName();
+            if (".svn".equals(srcname)) { // TODO
+            	continue;
+            }
             children = new ArrayList<Map<String, String>>();
             srcname = split(srcfile.getName(), context, children);
             for (Map<String, String> child : children) {
