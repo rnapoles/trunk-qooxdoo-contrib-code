@@ -30,7 +30,8 @@ import org.qooxdoo.sushi.util.Substitution;
 /** Copy configuration and command. */
 public class Copy {
     private final Node sourcedir;
-	/** relevant files in source dir */
+
+    /** applied to sourcedir */
 	private final Filter filter;
 
 	private final boolean modes;
@@ -48,10 +49,14 @@ public class Copy {
     }
     
     public Copy(Node srcdir, Filter filter, boolean modes) {
-        this(srcdir, filter, modes, null, null, null);
+        this(srcdir, filter, modes, null, null);
     }
     
-	public Copy(Node srcdir, Filter filter, boolean modes, Substitution path, Substitution content, Map<String, String> variables) {
+    public Copy(Node srcdir, Filter filter, boolean modes, Substitution subst, Map<String, String> variables) {
+        this(srcdir, filter, modes, subst, subst, variables);
+    }
+
+    public Copy(Node srcdir, Filter filter, boolean modes, Substitution path, Substitution content, Map<String, String> variables) {
 	    this.sourcedir = srcdir;
         this.filter = filter;
         this.modes = modes;

@@ -62,7 +62,7 @@ public abstract class Template {
         }
     }
     
-    public void applyDirectory(Node srcdir, Node dest, Map<String, String> context) throws IOException, TemplateException {
+    public void applyDirectory(Node srcdir, Node dest, Map<String, String> variables) throws IOException, TemplateException {
         Filter filter;
         TreeAction action;
         Tree tree;
@@ -74,7 +74,7 @@ public abstract class Template {
         if (tree == null) {
             throw new TemplateException("empty template in directory " + srcdir);
         }
-        applyDirectory(tree, dest, context);
+        applyDirectory(tree, dest, variables);
     }
 
     private void applyDirectory(Tree parent, Node destParent, Map<String, String> parentVariables) throws IOException, TemplateException {
