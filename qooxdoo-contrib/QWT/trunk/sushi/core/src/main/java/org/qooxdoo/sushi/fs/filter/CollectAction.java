@@ -30,7 +30,13 @@ public class CollectAction implements Action {
         this.collection = collection;
     }
     
-    public void invoke(Node node) {
+    public void enter(Node node) {
+    }
+
+    public void leave(Node node) {
+    }
+    
+    public void select(Node node) {
         collection.add(node);
     }
 }
