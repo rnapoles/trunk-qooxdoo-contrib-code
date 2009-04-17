@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.fs.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -134,6 +135,33 @@ public class FilterTest {
         assertEquals(0, root.getIO().node("/").find("lost+found/*").size());
     }
 
+    @Test
+    public void tree() throws IOException {
+        Filter filter;
+        TreeAction action;
+        Tree tree;
+        
+        create("a/a", "a/b", "b/a", "b/b");
+        filter = filter().include("**/b");
+        action = new TreeAction();
+        filter.invoke(root, action);
+        tree = action.getResult();
+        assertEquals(2, tree.children.size());
+        
+        assertEquals("a", tree.children.get(0).node.getName());
+        assertEquals(1, tree.children.get(0).children.size());
+        assertEquals("b", tree.children.get(0).children.get(0).node.getName());
+        
+        assertEquals("b", tree.children.get(1).node.getName());
+        assertEquals(1, tree.children.get(1).children.size());
+        assertEquals("b", tree.children.get(1).children.get(0).node.getName());
+
+        action = new TreeAction();
+        filter = filter().include("**/b");
+        filter.invoke(root, action);
+        assertNull(action.getResult());
+    }
+    
     //--
     
     private Filter filter() {
