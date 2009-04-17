@@ -142,7 +142,7 @@ public class Copy {
 		return result;
 	}
 	
-	private void copy(Node srcparent, Node destparent, Tree src, List<Node> result, Map<String, String> parentVariables) throws CopyException {
+	private void copy(Node srcParent, Node destParent, Tree src, List<Node> result, Map<String, String> parentVariables) throws CopyException {
 	    String name;
         Node dest;
         List<Map<String, String>> childVariablesList;
@@ -152,13 +152,13 @@ public class Copy {
         dest = null;
         try {
             if (callPrefix != 0 && name.length() > 0 && name.charAt(0) == callPrefix) {
-                call(name.substring(1), src.node, parentVariables);
+                call(name.substring(1), destParent, parentVariables);
             } else {
                 childVariablesList = new ArrayList<Map<String, String>>();
                 name = splitContext(name, parentVariables, childVariablesList);
                 isDir = src.node.isDirectory();
                 for (Map<String, String> childVariables : childVariablesList) {
-                    dest = destparent.join(path == null ? name : path.apply(name, childVariables));
+                    dest = destParent.join(path == null ? name : path.apply(name, childVariables));
                     if (isDir) {
                         dest.mkdirsOpt();
                     } else {
@@ -182,20 +182,20 @@ public class Copy {
             throw e;
         } catch (Exception e) {
             if (dest == null) {
-                dest = destparent.join(name);
+                dest = destParent.join(name);
             }
             throw new CopyException(src.node, dest, e);
         }
 	}
 
-    private void call(String name, Node parent, Map<String, String> context) throws ReflectionException {
+    private void call(String name, Node destParent, Map<String, String> context) throws ReflectionException {
         Method m;
         
         m = calls.get(name);
         if (m == null) {
             throw new ReflectionException("unknown call: " + name);
         }
-        doInvoke(m, parent, context);
+        doInvoke(m, destParent, context);
     }
 
     private String splitContext(String name, Map<String, String> parent, List<Map<String, String>> result) throws ReflectionException {
@@ -240,7 +240,7 @@ public class Copy {
         try {
             return m.invoke(this, args);
         } catch (InvocationTargetException e) {
-            throw new ReflectionException(m.getName() + " failed", e.getTargetException());
+            throw new ReflectionException(m.getName() + " failed: " + e.getMessage(), e.getTargetException());
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (IllegalAccessException e) {

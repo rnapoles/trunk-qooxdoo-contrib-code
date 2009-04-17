@@ -1,7 +1,6 @@
 package org.qooxdoo.sushi.fs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,13 +113,13 @@ public class CopyDiffTest {
         
         io = new IO();
         src = io.guessProjectHome(getClass()).join("src/test/template");
-        dest = io.getTemp().createTempDirectory();
+        dest = io.getTemp().createTempDirectory().join("dest").mkdir();
         context = new HashMap<String, String>();
         context.put("var", "value");
         context.put("name", "foo");
         foo = new CopyExt(src, context);
         foo.directory(dest);
-        assertTrue(foo.called);
+        assertEquals("dest", foo.called);
         assertEquals("", dest.join("a").readString());
         assertEquals("value\n", dest.join("b").readString());
         assertEquals("bar", dest.join("foo").readString());
@@ -150,7 +149,7 @@ public class CopyDiffTest {
     }
 
     public static class CopyExt extends Copy {
-        public boolean called = false;
+        public String called = null;
         
         public CopyExt(Node srcdir, Map<String, String> variables) {
             super(srcdir, srcdir.getIO().filter().includeAll(), false, variables);
@@ -165,7 +164,7 @@ public class CopyDiffTest {
         }
 
         public void callTest(Node node, Map<String, String> context) {
-            called = true;
+            called = node.getName();
         }
         
         private List<Map<String, String>> ctx(Map<String, String> parent, String name) {
