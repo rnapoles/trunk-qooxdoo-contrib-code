@@ -724,7 +724,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         src.join("dir").mkdir();
         dest = work.join("dest");
         dest.mkdir();
-        assertEquals(2, src.copyDirectory(dest).size());
+        assertEquals(3, src.copyDirectory(dest).size());
         assertEquals("A", dest.join("a").readString());
         assertEquals("B", dest.join("b").readString());
         dest.join("dir").checkDirectory();

@@ -21,7 +21,7 @@ public class CopyDiffTest {
 		variables = new HashMap<String, String>();
         copy = new Copy(io.getTemp().createTempDirectory(),
                 io.filter().includeAll(), true, 
-                Substitution.path(), Substitution.ant(), variables);
+                variables, Substitution.path(), Substitution.ant(), Copy.DEFAULT_CONTEXT_DELIMITER, Copy.DEFAULT_CALL_PREFIX);
 	}
 
 	@Test

@@ -20,7 +20,10 @@
 package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +31,16 @@ import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.fs.filter.Tree;
 import org.qooxdoo.sushi.fs.filter.TreeAction;
 import org.qooxdoo.sushi.util.Substitution;
+import org.qooxdoo.sushi.util.SubstitutionException;
 
 /** Copy configuration and command. */
 public class Copy {
+    public static final char DEFAULT_CONTEXT_DELIMITER = ':';
+    public static final char DEFAULT_CALL_PREFIX = '@';
+    
+    private static final String CONTEXT = "context";
+    private static final String CALL = "call";
+    
     private final Node sourcedir;
 
     /** applied to sourcedir */
@@ -40,7 +50,12 @@ public class Copy {
 	
     private final Substitution path;
     private final Substitution content;
-    private final Map<String, String> variables;
+    private final Map<String, String> rootVariables;
+    
+    private final char contextDelimiter;
+    private final Map<Character, Method> contextConstructors;
+    private final char callPrefix;
+    private final Map<String, Method> calls;
     
 	public Copy(Node srcdir) {
 		this(srcdir, srcdir.getIO().filter().includeAll());
@@ -54,78 +69,183 @@ public class Copy {
         this(srcdir, filter, modes, null, null);
     }
     
-    public Copy(Node srcdir, Filter filter, boolean modes, Substitution subst, Map<String, String> variables) {
-        this(srcdir, filter, modes, subst, subst, variables);
+    public Copy(Node srcdir, Filter filter, boolean modes, Map<String, String> variables, Substitution subst) {
+        this(srcdir, filter, modes, variables, subst, subst, 
+                variables == null ? 0 : DEFAULT_CONTEXT_DELIMITER, 
+                variables == null ? 0 : DEFAULT_CALL_PREFIX);
     }
 
-    public Copy(Node srcdir, Filter filter, boolean modes, Substitution path, Substitution content, Map<String, String> variables) {
+    public Copy(Node srcdir, Filter filter, boolean modes, Map<String, String> variables, Substitution path, Substitution content, char contextDelimiter, char callPrefix) {
 	    this.sourcedir = srcdir;
         this.filter = filter;
         this.modes = modes;
 		this.path = path;
 		this.content = content;
-		this.variables = variables;
-	}
+		this.rootVariables = variables;
+		this.contextDelimiter = contextDelimiter;
+        this.contextConstructors = new HashMap<Character, Method>();
+        this.callPrefix = callPrefix;
+        this.calls = new HashMap<String, Method>();
+        if (!getClass().equals(Copy.class)) {
+            initReflection();
+        }
+    }
+    
+    private void initReflection() {
+        String name;
+        char c;
+        
+        for (Method m : getClass().getDeclaredMethods()) {
+            name = m.getName();
+            if (name.startsWith(CONTEXT)) {
+                c = Character.toUpperCase(name.substring(CONTEXT.length()).charAt(0));                
+                if (contextConstructors.put(c, m) != null) {
+                    throw new IllegalArgumentException("duplicate context character: " + c);
+                }
+            } else if (name.startsWith(CALL)) {
+                name = name.substring(CALL.length()).toLowerCase();
+                if (calls.put(name, m) != null) {
+                    throw new IllegalArgumentException("duplicate call: " + name);
+                }
+            }
+        }
+    }
 
 	public Node getSourceDir() {
 	    return sourcedir;
 	}
 	
-	/** @return Source files copied */
-	public List<Node> directory(Node destdir) throws IOException {
+	/** @return Target files or directories created. */
+	public List<Node> directory(Node destdir) throws CopyException {
         List<Node> result;
         TreeAction action;
         Tree tree;
         
         result = new ArrayList<Node>();
-		sourcedir.checkDirectory();
-		destdir.checkDirectory();
-		action = new TreeAction();
-		filter.invoke(sourcedir, action);
+        try {
+            sourcedir.checkDirectory();
+            destdir.checkDirectory();
+            action = new TreeAction();
+            filter.invoke(sourcedir, action);
+        } catch (IOException e) {
+            throw new CopyException(sourcedir, destdir, "scanning source files failed", e);
+        }
 		tree = action.getResult();
 		if (tree != null) {
-		    copy(sourcedir, destdir, tree, result);
+		    for (Tree child : tree.children) {
+		        copy(sourcedir, destdir, child, result, rootVariables);
+		    }
 		}
 		return result;
 	}
 	
-	private void copy(Node sourceroot, Node destroot, Tree src, List<Node> result) throws CopyException {
+	private void copy(Node srcparent, Node destparent, Tree src, List<Node> result, Map<String, String> parentVariables) throws CopyException {
+	    String name;
         Node dest;
-        String relative;
-        String replaced;
-	    
-	    relative = src.node.getRelative(sourceroot);
-		dest = null;
+        List<Map<String, String>> childVariablesList;
+        boolean isDir;
+        
+        name = src.node.getName();
+        dest = null;
         try {
-            if (path != null) {
-                relative = path.apply(relative, variables);
-			}
-			dest = destroot.join(relative);
-			if (src.node.isDirectory()) {
-			    dest.mkdirsOpt();
-			} else {
-			    dest.getParent().mkdirsOpt();
-			    if (content != null) {
-                    replaced = content.apply(src.node.readString(), variables);
-			  	    dest.writeString(replaced);
-			    } else {
-			  	    src.node.copyFile(dest);
-			    }
-			    result.add(src.node);
-			}
-			if (modes) {
-			    dest.setMode(src.node.getMode());
-			}
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+            if (callPrefix != 0 && name.length() > 0 && name.charAt(0) == callPrefix) {
+                call(name.substring(1), src.node, parentVariables);
+            } else {
+                childVariablesList = new ArrayList<Map<String, String>>();
+                name = splitContext(name, parentVariables, childVariablesList);
+                isDir = src.node.isDirectory();
+                for (Map<String, String> childVariables : childVariablesList) {
+                    dest = destparent.join(path == null ? name : path.apply(name, childVariables));
+                    if (isDir) {
+                        dest.mkdirsOpt();
+                    } else {
+                        dest.getParent().mkdirsOpt();
+                        if (content != null) {
+                            dest.writeString(content.apply(src.node.readString(), childVariables));
+                        } else {
+                            src.node.copyFile(dest);
+                        }
+                    }
+                    if (modes) {
+                        dest.setMode(src.node.getMode());
+                    }
+                    result.add(dest);
+                    for (Tree child : src.children) {
+                        copy(src.node, dest, child, result, parentVariables);
+                    }
+                }
+            }
+        } catch (SubstitutionException e) {
             if (dest == null) {
-                dest = destroot.join(relative);
+                dest = destparent.join(name);
+            }
+            throw new CopyException(src.node, dest, e);
+        } catch (IOException e) {
+            if (dest == null) {
+                dest = destparent.join(name);
             }
             throw new CopyException(src.node, dest, e);
         }
-        for (Tree child : src.children) {
-            copy(sourceroot, destroot, child, result);
-        }
 	}
+
+    private void call(String name, Node parent, Map<String, String> context) throws TemplateException {
+        Method m;
+        
+        m = calls.get(name);
+        if (m == null) {
+            throw new TemplateException("unknown call: " + name);
+        }
+        doInvoke(m, parent, context);
+    }
+
+    private String splitContext(String name, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
+        int idx;
+        char c;
+        Method m;
+        
+        if (contextDelimiter == 0) {
+            result.add(parent);
+            return name;
+        }
+        idx = name.indexOf(contextDelimiter);
+        result.add(parent);
+        if (idx == -1) {
+            return name;
+        }
+        for (int i = 0; i < idx; i++) {
+            c = name.charAt(i);
+            m = contextConstructors.get(name.charAt(i));
+            if (m == null) {
+                throw new TemplateException("unkown context: " + c);
+            }
+            apply(m, result);
+        }
+        return name.substring(idx + 1);
+    }
+    
+    private void apply(Method m, List<Map<String, String>> contexts) throws TemplateException {
+        List<Map<String, String>> tmp;
+        
+        tmp = new ArrayList<Map<String, String>>(contexts);
+        contexts.clear();
+        for (Map<String, String> map : tmp) {
+            context(m, map, contexts);
+        }
+    }
+
+    private void context(Method m, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
+        result.addAll((List<Map<String, String>>) doInvoke(m, parent));
+    }
+
+    private Object doInvoke(Method m, Object ... args) throws TemplateException {
+        try {
+            return m.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            throw new TemplateException(m.getName() + " failed", e.getTargetException());
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

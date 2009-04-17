@@ -1,6 +1,8 @@
 package org.qooxdoo.sushi.fs;
 
-public class TemplateException extends Exception {
+import java.io.IOException;
+
+public class TemplateException extends IOException {
     public TemplateException(String msg) {
         super(msg);
     }
