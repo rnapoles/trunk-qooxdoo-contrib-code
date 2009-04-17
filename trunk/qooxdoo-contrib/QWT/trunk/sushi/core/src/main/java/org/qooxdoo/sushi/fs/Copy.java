@@ -215,7 +215,7 @@ public class Copy {
             c = name.charAt(i);
             m = contextConstructors.get(name.charAt(i));
             if (m == null) {
-                throw new ReflectionException("unkown context: " + c);
+                throw new ReflectionException("unkown context: " + c + "(available: " + contextConstructors.keySet() + ")");
             }
             apply(m, result);
         }
