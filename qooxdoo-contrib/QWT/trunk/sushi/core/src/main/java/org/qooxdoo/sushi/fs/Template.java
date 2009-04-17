@@ -72,7 +72,7 @@ public abstract class Template {
             	continue;
             }
             children = new ArrayList<Map<String, String>>();
-            if (srcname.startsWith("!")) {
+            if (srcname.startsWith("@")) {
             	call(srcname.substring(1), srcdir, context);
             } else {
                 srcname = split(srcfile.getName(), context, children);
