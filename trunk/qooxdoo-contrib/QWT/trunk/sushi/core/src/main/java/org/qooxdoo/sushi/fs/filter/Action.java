@@ -22,5 +22,8 @@ package org.qooxdoo.sushi.fs.filter;
 import org.qooxdoo.sushi.fs.Node;
 
 public interface Action {
-    void invoke(Node node);
+    void enter(Node node);
+    void leave(Node node);
+    void select(Node node);
+    
 }

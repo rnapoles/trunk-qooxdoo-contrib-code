@@ -247,6 +247,7 @@ public class Filter {
         if (children == null) {
             // ignore file
         } else {
+            result.enter(parent);
             currentDepth++;
             for (Node child : children) {
                 name = child.getName();
@@ -255,12 +256,13 @@ public class Filter {
                 in = doMatch(name, includes, remainingIncludes);
                 ex = doMatch(name, excludes, remainingExcludes);
                 if (in && !ex && currentDepth >= minDepth && matchPredicates(child)) {
-                    result.invoke(child);
+                    result.select(child);
                 }
                 if (remainingIncludes.size() > 0 && !excludesAll(remainingExcludes)) {
                     doInvoke(currentDepth, child, remainingIncludes, remainingExcludes, result);
                 }
             }
+            result.leave(parent);
         }
     }
 
