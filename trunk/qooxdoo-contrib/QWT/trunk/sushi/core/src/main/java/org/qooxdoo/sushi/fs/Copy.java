@@ -69,6 +69,10 @@ public class Copy {
         this(srcdir, filter, modes, null, null);
     }
     
+    public Copy(Node srcdir, Filter filter, boolean modes, Map<String, String> variables) {
+        this(srcdir, filter, modes, variables, variables == null ? null : new Substitution("${{", "}}", '\\'));
+    }
+
     public Copy(Node srcdir, Filter filter, boolean modes, Map<String, String> variables, Substitution subst) {
         this(srcdir, filter, modes, variables, subst, subst, 
                 variables == null ? 0 : DEFAULT_CONTEXT_DELIMITER, 
@@ -171,7 +175,7 @@ public class Copy {
                     }
                     result.add(dest);
                     for (Tree child : src.children) {
-                        copy(src.node, dest, child, result, parentVariables);
+                        copy(src.node, dest, child, result, childVariables);
                     }
                 }
             }
@@ -203,12 +207,11 @@ public class Copy {
         char c;
         Method m;
         
+        result.add(parent);
         if (contextDelimiter == 0) {
-            result.add(parent);
             return name;
         }
         idx = name.indexOf(contextDelimiter);
-        result.add(parent);
         if (idx == -1) {
             return name;
         }
