@@ -157,7 +157,7 @@ public class FilterTest {
         assertEquals("b", tree.children.get(1).children.get(0).node.getName());
 
         action = new TreeAction();
-        filter = filter().include("**/b");
+        filter = filter().include("**/c");
         filter.invoke(root, action);
         assertNull(action.getResult());
     }
