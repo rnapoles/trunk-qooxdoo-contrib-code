@@ -347,7 +347,7 @@ function runTests()
   print("Selecting first item from new feed.");
   
   try {
-    sel.qxClick("qxh=app:child[7]/qx.ui.form.List/child[0]");  
+    sel.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]');  
   }
   catch(ex) {
     totalErrors ++;
