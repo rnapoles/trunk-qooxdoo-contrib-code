@@ -77,34 +77,34 @@ public abstract class Template {
         applyDirectory(tree, dest, context);
     }
 
-    private void applyDirectory(Tree parent, Node destParent, Map<String, String> parentContext) throws IOException, TemplateException {
+    private void applyDirectory(Tree parent, Node destParent, Map<String, String> parentVariables) throws IOException, TemplateException {
         String name;
-        List<Map<String, String>> childContexts;
+        List<Map<String, String>> childVariablesList;
         Substitution s;
         String template;
         Node destChild;
         
+        s =  new Substitution("${{", "}}", '\\');
         for (Tree srcchild : parent.children) {
             name = srcchild.node.getName();
             if (name.startsWith("@")) {
-            	call(name.substring(1), parent.node, parentContext);
+            	call(name.substring(1), parent.node, parentVariables);
             } else {
-                childContexts = new ArrayList<Map<String, String>>();
-                name = split(name, parentContext, childContexts);
-                for (Map<String, String> childContext : childContexts) {
-                    s =  new Substitution("${{", "}}", '\\', childContext);
+                childVariablesList = new ArrayList<Map<String, String>>();
+                name = split(name, parentVariables, childVariablesList);
+                for (Map<String, String> childVariables : childVariablesList) {
                     try {
-                        destChild = destParent.join(s.apply(name)); 
+                        destChild = destParent.join(s.apply(name, childVariables)); 
                     } catch (SubstitutionException e) {
                         throw new TemplateException(srcchild.node.getPath() + ": cannot substitute name:" + e.getMessage(), e);
                     }
                     if (srcchild.node.isDirectory()) {
                         destChild.mkdir();
-                        applyDirectory(srcchild, destChild, childContext);
+                        applyDirectory(srcchild, destChild, childVariables);
                     } else {
                         template = srcchild.node.readString();
                         try {
-                            destChild.writeString(s.apply(template));
+                            destChild.writeString(s.apply(template, childVariables));
                         } catch (SubstitutionException e) {
                             throw new TemplateException(srcchild.node.getPath() + ": cannot substitute:" + e.getMessage(), e);
                         }

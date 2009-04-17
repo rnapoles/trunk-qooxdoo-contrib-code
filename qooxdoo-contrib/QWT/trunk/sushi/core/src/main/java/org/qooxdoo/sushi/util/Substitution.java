@@ -22,27 +22,25 @@ package org.qooxdoo.sushi.util;
 import java.util.Map;
 
 public class Substitution {
-    public static Substitution ant(Map<String, String> variables) {
-        return new Substitution("${", "}", '\\', variables);        
+    public static Substitution ant() {
+        return new Substitution("${", "}", '\\');        
     }
-    public static Substitution path(Map<String, String> variables) {
-        return new Substitution("__", "__", '\\', variables);     
+    public static Substitution path() {
+        return new Substitution("__", "__", '\\');     
     }
     
 	private final String prefix;
 	private final String suffix;
 	/** do not match if this character prefixes the prefix */ 
     private final char escape;
-    private final Map<String, String> variables;
 	
-	public Substitution(String prefix, String suffix, char escape, Map<String, String> variables) {
+	public Substitution(String prefix, String suffix, char escape) {
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.escape = escape;
-		this.variables = variables;
 	}
 	
-	public String apply(String content) throws SubstitutionException {
+	public String apply(String content, Map<String, String> variables) throws SubstitutionException {
 		StringBuilder builder;
 		int start;
 		int end;

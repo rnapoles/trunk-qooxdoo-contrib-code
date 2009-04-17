@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.util.Substitution;
@@ -36,7 +37,8 @@ public class Copy {
 	
     private final Substitution path;
     private final Substitution content;
-
+    private final Map<String, String> variables;
+    
 	public Copy(Node srcdir) {
 		this(srcdir, srcdir.getIO().filter().includeAll());
 	}
@@ -46,15 +48,16 @@ public class Copy {
     }
     
     public Copy(Node srcdir, Filter filter, boolean modes) {
-        this(srcdir, filter, modes, null, null);
+        this(srcdir, filter, modes, null, null, null);
     }
     
-	public Copy(Node srcdir, Filter filter, boolean modes, Substitution path, Substitution content) {
+	public Copy(Node srcdir, Filter filter, boolean modes, Substitution path, Substitution content, Map<String, String> variables) {
 	    this.sourcedir = srcdir;
         this.filter = filter;
         this.modes = modes;
 		this.path = path;
 		this.content = content;
+		this.variables = variables;
 	}
 
 	public Node getSourceDir() {
@@ -76,7 +79,7 @@ public class Copy {
 			dest = null;
             try {
                 if (path != null) {
-			        relative = path.apply(relative);
+			        relative = path.apply(relative, variables);
 			    }
 			    dest = destdir.join(relative);
 			    if (src.isDirectory()) {
@@ -84,7 +87,7 @@ public class Copy {
 			    } else {
 			        dest.getParent().mkdirsOpt();
 			        if (content != null) {
-                        replaced = content.apply(src.readString());
+                        replaced = content.apply(src.readString(), variables);
 			    	    dest.writeString(replaced);
 			        } else {
 			    	    src.copyFile(dest);

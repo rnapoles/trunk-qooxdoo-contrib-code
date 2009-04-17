@@ -20,8 +20,8 @@ public class CopyDiffTest {
 		io = new IO();
 		variables = new HashMap<String, String>();
         copy = new Copy(io.getTemp().createTempDirectory(),
-                io.filter().includeAll(), true,
-                Substitution.path(variables), Substitution.ant(variables));
+                io.filter().includeAll(), true, 
+                Substitution.path(), Substitution.ant(), variables);
 	}
 
 	@Test
