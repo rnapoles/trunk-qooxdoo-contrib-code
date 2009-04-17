@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.fs.filter.Tree;
+import org.qooxdoo.sushi.fs.filter.TreeAction;
 import org.qooxdoo.sushi.util.Substitution;
 import org.qooxdoo.sushi.util.SubstitutionException;
 
@@ -60,38 +63,50 @@ public abstract class Template {
     }
     
     public void applyDirectory(Node srcdir, Node dest, Map<String, String> context) throws IOException, TemplateException {
-        String template;
-        String srcname;
-        List<Map<String, String>> children;
-        Substitution s;
-        Node destfile;
+        Filter filter;
+        TreeAction action;
+        Tree tree;
         
-        for (Node srcfile : srcdir.list()) {
-            srcname = srcfile.getName();
-            if (".svn".equals(srcname)) { // TODO
-            	continue;
-            }
-            children = new ArrayList<Map<String, String>>();
-            if (srcname.startsWith("@")) {
-            	call(srcname.substring(1), srcdir, context);
+        filter = srcdir.getIO().filter().includeAll();
+        action = new TreeAction();
+        filter.invoke(srcdir, action);
+        tree = action.getResult();
+        if (tree == null) {
+            throw new TemplateException("empty template in directory " + srcdir);
+        }
+        applyDirectory(tree, dest, context);
+    }
+
+    private void applyDirectory(Tree parent, Node destParent, Map<String, String> parentContext) throws IOException, TemplateException {
+        String name;
+        List<Map<String, String>> childContexts;
+        Substitution s;
+        String template;
+        Node destChild;
+        
+        for (Tree srcchild : parent.children) {
+            name = srcchild.node.getName();
+            if (name.startsWith("@")) {
+            	call(name.substring(1), parent.node, parentContext);
             } else {
-                srcname = split(srcfile.getName(), context, children);
-                for (Map<String, String> child : children) {
-                    s =  new Substitution("${{", "}}", '\\', child);
+                childContexts = new ArrayList<Map<String, String>>();
+                name = split(name, parentContext, childContexts);
+                for (Map<String, String> childContext : childContexts) {
+                    s =  new Substitution("${{", "}}", '\\', childContext);
                     try {
-                        destfile = dest.join(s.apply(srcname)); 
+                        destChild = destParent.join(s.apply(name)); 
                     } catch (SubstitutionException e) {
-                        throw new TemplateException(srcfile.getPath() + ": cannot substitute name:" + e.getMessage(), e);
+                        throw new TemplateException(srcchild.node.getPath() + ": cannot substitute name:" + e.getMessage(), e);
                     }
-                    if (srcfile.isDirectory()) {
-                        destfile.mkdir();
-                        applyDirectory(srcfile, destfile, child);
+                    if (srcchild.node.isDirectory()) {
+                        destChild.mkdir();
+                        applyDirectory(srcchild, destChild, childContext);
                     } else {
-                        template = srcfile.readString();
+                        template = srcchild.node.readString();
                         try {
-                            destfile.writeString(s.apply(template));
+                            destChild.writeString(s.apply(template));
                         } catch (SubstitutionException e) {
-                            throw new TemplateException(srcfile.getPath() + ": cannot substitute:" + e.getMessage(), e);
+                            throw new TemplateException(srcchild.node.getPath() + ": cannot substitute:" + e.getMessage(), e);
                         }
                     }
                 }
