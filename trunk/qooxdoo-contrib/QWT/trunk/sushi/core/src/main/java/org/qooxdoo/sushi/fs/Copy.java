@@ -179,12 +179,9 @@ public class Copy {
                     }
                 }
             }
-        } catch (SubstitutionException e) {
-            if (dest == null) {
-                dest = destparent.join(name);
-            }
-            throw new CopyException(src.node, dest, e);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
             if (dest == null) {
                 dest = destparent.join(name);
             }
@@ -192,17 +189,17 @@ public class Copy {
         }
 	}
 
-    private void call(String name, Node parent, Map<String, String> context) throws TemplateException {
+    private void call(String name, Node parent, Map<String, String> context) throws ReflectionException {
         Method m;
         
         m = calls.get(name);
         if (m == null) {
-            throw new TemplateException("unknown call: " + name);
+            throw new ReflectionException("unknown call: " + name);
         }
         doInvoke(m, parent, context);
     }
 
-    private String splitContext(String name, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
+    private String splitContext(String name, Map<String, String> parent, List<Map<String, String>> result) throws ReflectionException {
         int idx;
         char c;
         Method m;
@@ -219,14 +216,14 @@ public class Copy {
             c = name.charAt(i);
             m = contextConstructors.get(name.charAt(i));
             if (m == null) {
-                throw new TemplateException("unkown context: " + c);
+                throw new ReflectionException("unkown context: " + c);
             }
             apply(m, result);
         }
         return name.substring(idx + 1);
     }
     
-    private void apply(Method m, List<Map<String, String>> contexts) throws TemplateException {
+    private void apply(Method m, List<Map<String, String>> contexts) throws ReflectionException {
         List<Map<String, String>> tmp;
         
         tmp = new ArrayList<Map<String, String>>(contexts);
@@ -236,15 +233,15 @@ public class Copy {
         }
     }
 
-    private void context(Method m, Map<String, String> parent, List<Map<String, String>> result) throws TemplateException {
+    private void context(Method m, Map<String, String> parent, List<Map<String, String>> result) throws ReflectionException {
         result.addAll((List<Map<String, String>>) doInvoke(m, parent));
     }
 
-    private Object doInvoke(Method m, Object ... args) throws TemplateException {
+    private Object doInvoke(Method m, Object ... args) throws ReflectionException {
         try {
             return m.invoke(this, args);
         } catch (InvocationTargetException e) {
-            throw new TemplateException(m.getName() + " failed", e.getTargetException());
+            throw new ReflectionException(m.getName() + " failed", e.getTargetException());
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (IllegalAccessException e) {
