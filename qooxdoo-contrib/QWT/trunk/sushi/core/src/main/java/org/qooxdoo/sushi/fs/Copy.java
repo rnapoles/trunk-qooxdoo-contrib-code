@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.fs.filter.Tree;
+import org.qooxdoo.sushi.fs.filter.TreeAction;
 import org.qooxdoo.sushi.util.Substitution;
 
 /** Copy configuration and command. */
@@ -71,46 +73,59 @@ public class Copy {
 	
 	/** @return Source files copied */
 	public List<Node> directory(Node destdir) throws IOException {
-		Node dest;
-		String relative;
-        String replaced;
         List<Node> result;
+        TreeAction action;
+        Tree tree;
         
         result = new ArrayList<Node>();
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
-		for (Node src : sourcedir.find(filter)) {
-			relative = src.getRelative(sourcedir);
-			dest = null;
-            try {
-                if (path != null) {
-			        relative = path.apply(relative, variables);
-			    }
-			    dest = destdir.join(relative);
-			    if (src.isDirectory()) {
-		            dest.mkdirsOpt();
-			    } else {
-			        dest.getParent().mkdirsOpt();
-			        if (content != null) {
-                        replaced = content.apply(src.readString(), variables);
-			    	    dest.writeString(replaced);
-			        } else {
-			    	    src.copyFile(dest);
-			        }
-			        result.add(src);
-			    }
-			    if (modes) {
-				    dest.setMode(src.getMode());
-			    }
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                if (dest == null) {
-                    dest = destdir.join(relative);
-                }
-                throw new CopyException(src, dest, e);
-            }
+		action = new TreeAction();
+		filter.invoke(sourcedir, action);
+		tree = action.getResult();
+		if (tree != null) {
+		    copy(sourcedir, destdir, tree, result);
 		}
 		return result;
+	}
+	
+	private void copy(Node sourceroot, Node destroot, Tree src, List<Node> result) throws CopyException {
+        Node dest;
+        String relative;
+        String replaced;
+	    
+	    relative = src.node.getRelative(sourceroot);
+		dest = null;
+        try {
+            if (path != null) {
+                relative = path.apply(relative, variables);
+			}
+			dest = destroot.join(relative);
+			if (src.node.isDirectory()) {
+			    dest.mkdirsOpt();
+			} else {
+			    dest.getParent().mkdirsOpt();
+			    if (content != null) {
+                    replaced = content.apply(src.node.readString(), variables);
+			  	    dest.writeString(replaced);
+			    } else {
+			  	    src.node.copyFile(dest);
+			    }
+			    result.add(src.node);
+			}
+			if (modes) {
+			    dest.setMode(src.node.getMode());
+			}
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            if (dest == null) {
+                dest = destroot.join(relative);
+            }
+            throw new CopyException(src.node, dest, e);
+        }
+        for (Tree child : src.children) {
+            copy(sourceroot, destroot, child, result);
+        }
 	}
 }
