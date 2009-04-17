@@ -385,12 +385,18 @@ public abstract class Node {
     
     //--
     
-    public void copy(Node dest) throws IOException {
-        if (isDirectory()) {
-            dest.mkdirOpt(); 
-            copyDirectory(dest);
-        } else {
-            copyFile(dest);
+    public void copy(Node dest) throws CopyException {
+        try {
+            if (isDirectory()) {
+                dest.mkdirOpt();
+                copyDirectory(dest);
+            } else {
+                copyFile(dest);
+            }
+        } catch (CopyException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new CopyException(this, dest, e);
         }
     }
 
@@ -398,24 +404,29 @@ public abstract class Node {
      * Overwrites existing files.
      * @return dest 
      */
-    public Node copyFile(Node dest) throws IOException {
+    public Node copyFile(Node dest) throws CopyException {
         InputStream in;
-        
-        in = createInputStream();
-        getIO().getBuffer().copy(in, dest);
-        in.close();
-        return dest;
+
+        try {
+            in = createInputStream();
+            getIO().getBuffer().copy(in, dest);
+            in.close();
+            return dest;
+        } catch (IOException e) {
+            throw new CopyException(this, dest, e);
+        }
     }
 
-    public List<Node> copyDirectory(Node dest) throws IOException {
+    /** @return list of files and directories created */
+    public List<Node> copyDirectory(Node dest) throws CopyException {
         return copyDirectory(dest, getIO().filter().includeAll());
     }
 
     /**
      * Overwrites existing files
-     * @return source files actually copied, no directories 
+     * @return list of files and directories created
      */
-    public List<Node> copyDirectory(Node destdir, Filter filter) throws IOException {
+    public List<Node> copyDirectory(Node destdir, Filter filter) throws CopyException {
         return new Copy(this, filter).directory(destdir);
     }
 

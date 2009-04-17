@@ -31,7 +31,6 @@ import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.fs.filter.Tree;
 import org.qooxdoo.sushi.fs.filter.TreeAction;
 import org.qooxdoo.sushi.util.Substitution;
-import org.qooxdoo.sushi.util.SubstitutionException;
 
 /** Copy configuration and command. */
 public class Copy {
