@@ -161,10 +161,11 @@ function sampleRunner(script)
     print("Unable to get log for demo " + + category + ' - ' + currentSample);
     sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
   }
+  
+  sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
 
   // we're only interested in logs containing warnings or errors
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
-    sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));    
     logsWithErrors++;
     sel.getEval(browserLog('<DIV style="padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px" class="qxappender">'));
 
