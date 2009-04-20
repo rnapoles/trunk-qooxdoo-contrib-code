@@ -42,6 +42,7 @@ import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
+import org.qooxdoo.sushi.util.Program;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
@@ -566,5 +567,33 @@ public class SvnNode extends Node {
             return message.toString();
         }
         return null;
+    }
+
+    //--
+    
+    public static String getSvnUrl(FileNode workspace) throws IOException {
+        String url;
+
+        if (!workspace.join(".svn").exists()) {
+            return null;
+        }
+        url = new Program((FileNode) workspace, "svn", "info").exec();
+        return extract(url, "URL:");
+    }
+
+    private static String extract(String str, String key) throws IOException {
+        int start;
+        int end;
+            
+        start = str.indexOf(key);
+        if (start == - 1) {
+            throw new IOException("missing " + key + " in " + str);
+        }
+        start += key.length();
+        end = str.indexOf('\n', start);
+        if (end == -1) {
+            throw new IOException("missing newline in " + str);
+        }
+        return str.substring(start, end).trim();
     }
 }
