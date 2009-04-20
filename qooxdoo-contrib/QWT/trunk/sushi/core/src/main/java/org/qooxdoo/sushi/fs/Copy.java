@@ -36,6 +36,7 @@ import org.qooxdoo.sushi.util.Substitution;
 public class Copy {
     public static final char DEFAULT_CONTEXT_DELIMITER = ':';
     public static final char DEFAULT_CALL_PREFIX = '@';
+    public static final Substitution DEFAULT_SUBST = new Substitution("${{", "}}", '\\');
     
     private static final String CONTEXT = "context";
     private static final String CALL = "call";
@@ -69,7 +70,7 @@ public class Copy {
     }
     
     public Copy(Node srcdir, Filter filter, boolean modes, Map<String, String> variables) {
-        this(srcdir, filter, modes, variables, variables == null ? null : new Substitution("${{", "}}", '\\'));
+        this(srcdir, filter, modes, variables, variables == null ? null : DEFAULT_SUBST);
     }
 
     public Copy(Node srcdir, Filter filter, boolean modes, Map<String, String> variables, Substitution subst) {
