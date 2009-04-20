@@ -119,7 +119,8 @@ public class CopyDiffTest {
         context.put("name", "foo");
         foo = new CopyExt(src, context);
         foo.directory(dest);
-        assertEquals("dest", foo.called);
+        assertEquals("testdir", foo.called);
+        assertEquals("value", dest.join("testfile").readString());
         assertEquals("", dest.join("a").readString());
         assertEquals("value\n", dest.join("b").readString());
         assertEquals("bar", dest.join("foo").readString());
@@ -163,8 +164,12 @@ public class CopyDiffTest {
             return ctx(parent, "m");
         }
 
-        public void callTest(Node node, Map<String, String> context) {
+        public void callTestDir(Node node, Map<String, String> context) {
             called = node.getName();
+        }
+
+        public String callTestFile(Map<String, String> context) {
+            return context.get("var");
         }
         
         private List<Map<String, String>> ctx(Map<String, String> parent, String name) {
