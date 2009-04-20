@@ -153,7 +153,7 @@ public class CopyDiffTest {
         public String called = null;
         
         public CopyExt(Node srcdir, Map<String, String> variables) {
-            super(srcdir, srcdir.getIO().filter().includeAll(), false, variables);
+            super(srcdir, srcdir.getIO().filter().includeAll(), false, variables, Copy.DEFAULT_SUBST, Copy.DEFAULT_SUBST, '|', '@');
         }
         
         public List<Map<String, String>> contextN(Map<String, String> parent) {
