@@ -152,7 +152,7 @@ public class Copy {
         dest = null;
         try {
             if (callPrefix != 0 && name.length() > 0 && name.charAt(0) == callPrefix) {
-                call(name.substring(1), destParent, parentVariables);
+                result.add(call(name, src.node, destParent, parentVariables));
             } else {
                 childVariablesList = new ArrayList<Map<String, String>>();
                 name = splitContext(name, parentVariables, childVariablesList);
@@ -188,16 +188,42 @@ public class Copy {
         }
 	}
 
-    private void call(String name, Node destParent, Map<String, String> context) throws ReflectionException {
+    private Node call(String name, Node src, Node destParent, Map<String, String> context) throws ReflectionException, IOException {
+        String fileName;
+        String methodName;
         Method m;
+        Node dest;
         
-        m = calls.get(name);
+        fileName = name.substring(1);
+        methodName = normalize(fileName);
+        m = calls.get(methodName);
         if (m == null) {
-            throw new ReflectionException("unknown call: " + name);
+            throw new ReflectionException("unknown call: " + methodName + " (defined: " + calls.keySet() + ")");
         }
-        doInvoke(m, destParent, context);
+        dest = destParent.join(fileName);
+        if (src.isDirectory()) {
+            dest.mkdirsOpt();
+            doInvoke(m, dest, context);
+        } else {
+            dest.writeString((String) doInvoke(m, context));
+        }
+        return dest;
     }
 
+    private static String normalize(String str) {
+        StringBuilder builder;
+        char ch;
+        
+        builder = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            ch = str.charAt(i);
+            if (Character.isJavaIdentifierPart(ch)) {
+                builder.append(Character.toLowerCase(ch));
+            }
+        }
+        return builder.toString();
+    }
+    
     private String splitContext(String name, Map<String, String> parent, List<Map<String, String>> result) throws ReflectionException {
         int idx;
         char c;
@@ -215,7 +241,7 @@ public class Copy {
             c = name.charAt(i);
             m = contextConstructors.get(name.charAt(i));
             if (m == null) {
-                throw new ReflectionException("unkown context: " + c + "(available: " + contextConstructors.keySet() + ")");
+                throw new ReflectionException("unkown context: " + c + " (defined: " + contextConstructors.keySet() + ")");
             }
             apply(m, result);
         }
@@ -242,7 +268,7 @@ public class Copy {
         } catch (InvocationTargetException e) {
             throw new ReflectionException(m.getName() + " failed: " + e.getMessage(), e.getTargetException());
         } catch (IllegalArgumentException e) {
-            throw e;
+            throw new IllegalArgumentException(m.getName() + ": " + e.getMessage(), e);
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         }
