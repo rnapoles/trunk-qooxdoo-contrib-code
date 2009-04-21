@@ -21,9 +21,14 @@ package org.qooxdoo.sushi.fs.svn;
 
 import org.qooxdoo.sushi.fs.InstantiateException;
 import org.qooxdoo.sushi.fs.Root;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.io.SVNRepository;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNInfo;
+import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnRoot implements Root {
     private final SvnFilesystem filesystem;
@@ -56,6 +61,13 @@ public class SvnRoot implements Root {
         return repository;
     }
     
+    public SVNInfo getInfo(FileNode node) throws SVNException {
+        SVNClientManager manager;
+        
+        manager = SVNClientManager.newInstance(SVNWCUtil.createDefaultOptions(true), repository.getAuthenticationManager());
+        return manager.getWCClient().doInfo(node.getFile(), SVNRevision.WORKING);
+    }
+
     public SvnNode node(String path) throws InstantiateException {
         try {
             return new SvnNode(this, repository.checkPath(path, -1) == SVNNodeKind.DIR, path);

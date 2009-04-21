@@ -56,6 +56,8 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNInfo;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -520,7 +522,7 @@ public class SvnNode extends Node {
 
     //--
     
-    public String checkWorkspace(FileNode basedir) throws SVNException {
+    public String checkWorkspace(FileNode basedir, boolean checkRemote) throws SVNException {
         final List<String> local;
         final List<String> remote;
         StringBuilder message;
@@ -531,7 +533,7 @@ public class SvnNode extends Node {
         local = new ArrayList<String>();
         remote = new ArrayList<String>();
         manager = SVNClientManager.newInstance(SVNWCUtil.createDefaultOptions(true), repository.getAuthenticationManager());
-        manager.getStatusClient().doStatus(basedir.getFile(), true /* recursive */, true /* remote - make sure we detect global changes */, 
+        manager.getStatusClient().doStatus(basedir.getFile(), true /* recursive */, checkRemote, 
                     true /* report all */, false /* includeIgnored */, false /* collect parent externals */, new ISVNStatusHandler() {
                         public void handleStatus(SVNStatus status) throws SVNException {
                             SVNStatusType s;
@@ -568,8 +570,6 @@ public class SvnNode extends Node {
         }
         return null;
     }
-
-    //--
     
     public static String getSvnUrl(FileNode workspace) throws IOException {
         String url;
@@ -584,7 +584,7 @@ public class SvnNode extends Node {
     private static String extract(String str, String key) throws IOException {
         int start;
         int end;
-            
+ 
         start = str.indexOf(key);
         if (start == - 1) {
             throw new IOException("missing " + key + " in " + str);
