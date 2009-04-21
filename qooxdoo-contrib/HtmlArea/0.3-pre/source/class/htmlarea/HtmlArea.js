@@ -63,11 +63,13 @@ qx.Class.define("htmlarea.HtmlArea",
     // **********************************************************************
     this.base(arguments);
     
+    var uri = source || qx.util.ResourceManager.toUri("htmlarea/static/blank.html");
+
     // set a layout
     this._setLayout(new qx.ui.layout.Grow);
     
     // create the iframe object
-    this.__iframe = new qx.ui.embed.Iframe(qx.util.ResourceManager.toUri("htmlarea/static/blank.html"));
+    this.__iframe = new qx.ui.embed.Iframe(uri);
     this.__iframe.setFocusable(true);
     this._add(this.__iframe);
     
