@@ -245,7 +245,9 @@ public class DefaultJavaJsonConverter implements IJavaJsonConverter {
 	if (javaClass.isArray()) {
 	    JSONArray array = new JSONArray();
 	    Class oc = javaClass.getComponentType();
-	    for (Object o : (Object[]) javaObject) {
+	    final int count=Array.getLength(javaObject);
+	    for (int i=0;i<count;i++) {
+		Object o=Array.get(javaObject, i);
 		array.put(fromJava(o, oc, oc, null));
 	    }
 	    return array;
