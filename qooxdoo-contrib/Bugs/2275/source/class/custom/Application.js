@@ -39,12 +39,11 @@ qx.Class.define("custom.Application",
   {
     main : function()
     {
-      // Call super class
       this.base(arguments);
       
       var scroller = this.getWidgetCellSpanScroller();
-      this.getRoot().add(scroller, {row: edge: 0});   
-    }   
+      this.getRoot().add(scroller, {edge: 0});   
+    },
     
     
     getWidgetCellSpanScroller : function()
