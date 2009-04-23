@@ -39,7 +39,6 @@ import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
-import org.qooxdoo.sushi.util.Program;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
