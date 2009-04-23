@@ -300,11 +300,18 @@ qx.Class.define("htmlarea.HtmlArea",
       for (i = 0; i < a.length; i++)
       {
         var style = a[i], sep = style.indexOf(":");
-        if (sep === -1) continue;
+
+        if (sep === -1) {
+          continue;
+        }
     
         var name =  qx.lang.String.trim(style.substring(0, sep));
         var value = qx.lang.String.trim(style.substring(sep+1, style.length));
-        if (name && value) map[name] = value;
+
+        if (name && value) {
+          map[name] = value;
+        }
+
       }
     
       return map;
@@ -387,7 +394,9 @@ qx.Class.define("htmlarea.HtmlArea",
               a = attrs[i];
               
               // TODO: Document this, I don't know what "specified" means
-              if (!a.specified) continue;
+              if (!a.specified) {
+                continue;
+              }
 
               // Attribute name and value pair
               var name = a.nodeName.toLowerCase();
@@ -439,11 +448,19 @@ qx.Class.define("htmlarea.HtmlArea",
               }
 
               // Ignore old id
-              if (name == "old_id") continue;
+              if (name == "old_id") {
+                continue;
+              }
+
               // Ignore attributes with no values
-              if (!value) continue;
+              if (!value) {
+                continue;
+              }
+
               // Ignore qooxdoo attributes (for example $$hash)
-              if (name.charAt(0) === "$") continue
+              if (name.charAt(0) === "$") { 
+                continue;
+              }
 
               // Interesting attrubutes are added to attributes array
               attributes[name] = value;
@@ -600,7 +617,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param node {Node} Node
      * @return {Boolean} whether it is a block node
      */
-    isBlockNode : function(node) {
+    isBlockNode : function(node)
+    {
       if (!qx.dom.Node.isElement(node))
       {
        return false;
@@ -732,6 +750,21 @@ qx.Class.define("htmlarea.HtmlArea",
 
   members :
   {
+    
+    __isReady : null,
+    __commandManager : null,
+    __isEditable : null,
+    __firstLineSelected : null,
+    __currentEvent : null,
+    __storedSelectedHtml : null,
+    __iframe : null,
+    __isLoaded : null,
+    __handleFocusEvent : null,
+    __handleMouseEvent : null,
+    __handleContextMenuEvent : null,
+    __handleFocusOut : null,
+    __styleInformation : null,
+    
     /** Initial content which is written dynamically into the iframe's document */
     __contentWrap :
     {
@@ -1522,7 +1555,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one
        * the linebreak gets inserted.
        */
-      if (qx.core.Variant.isSet("qx.client", "mshtml|webkit"))
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         /* Handle all shortcuts with "Ctrl+KEY" */
         if (this.__controlPressed)
@@ -1621,8 +1654,37 @@ qx.Class.define("htmlarea.HtmlArea",
           break;
         }
       }
+      else if (qx.core.Variant.isSet("qx.client", "webkit"))
+      {
+        if (e.isCtrlPressed() && this.getInsertLinebreakOnCtrlEnter() && keyIdentifier == "enter")
+        {
+          this.__insertWebkitLineBreak();
+
+          /* Stop event */
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+
     },
 
+    /**
+     * Helper function which inserts an linebreak at the selection.
+     *
+     */
+    __insertWebkitLineBreak : function()
+    {
+      var sel = this.getSelection();
+      var helperString = "";
+      /* Insert bogus node if we are on an empty line: */
+      
+      if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
+      {
+        helperString = "<br class='webkit-block-placeholder' />";
+      }
+
+      this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
+    },
 
     /**
      * All keyDown events are delegated to this method
@@ -1655,10 +1717,10 @@ qx.Class.define("htmlarea.HtmlArea",
          * otherwise holding the "Ctrl" key and hitting e.g. "z"
          * will start the browser shortcut at the second time.
          */
-        if(keyIdentifier == "control")
-        {
+        if(keyIdentifier == "control") {
           this.__controlPressed = true;
         }
+
       },
       
       "default" : function(e) {}
@@ -1735,16 +1797,6 @@ qx.Class.define("htmlarea.HtmlArea",
                * Strange hack, I know ;-)
                */
               this.insertHtml("<br /><div id='placeholder'></div>");
-            }
-            else if (qx.core.Variant.isSet("qx.client", "webkit"))
-            {
-               /*
-                * TODO: this mechanism works well when the user already typed in some text at the
-                * current line. If the linebreak is done without any text at the current line the
-                * cursor DOES NOT correspond -> it stays at the current line although the linebreak
-                * is inserted. Navigating to the next line with the arrow down key is possible.
-                */
-               this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
             }
             else if (qx.core.Variant.isSet("qx.client", "opera"))
             {
@@ -1827,23 +1879,12 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && isShiftPressed)
             {
-              var focusNode = this.getFocusNode();
-              
-              var helperString = "";
-
-              /* Insert bogus node if we are on an empty line: */
-              if(focusNode.textContent == "" || focusNode.parentElement.tagName == "LI")
-              {
-                helperString = "<br class='webkit-block-placeholder' />";
-              }
-
-              this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
+              this.__insertWebkitLineBreak();
 
               /* Stop event */
               e.preventDefault();
               e.stopPropagation();
-
-            }
+           }
           }
           break;
 
@@ -2563,7 +2604,10 @@ qx.Class.define("htmlarea.HtmlArea",
     getHtml : function(skipHtmlEncoding)
     {
       var doc = this.__iframe.getDocument();
-      if (doc == null) return null;
+
+      if (doc == null) {
+        return null;
+      }
 
       return htmlarea.HtmlArea.__getHtml(doc.body, false, skipHtmlEncoding, this.getPostprocess());
     },
