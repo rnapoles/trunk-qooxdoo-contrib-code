@@ -81,6 +81,15 @@ qx.Class.define("htmlarea.command.UndoManager",
     /* Map with infos about custom registered handler */
     __registeredHandler : {},
     
+    __commandManager : null,
+    __doc : null,
+    __undoStack : null,
+    __redoStack : null,
+    __editorInstance : null,
+    __handleKeyPress : null,
+    __handleMouseUp : null,
+    __handleMouseDown : null,
+    
     /* *******************************************************
      *
      *                 PUBLIC METHODS
