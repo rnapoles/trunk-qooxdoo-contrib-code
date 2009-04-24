@@ -162,7 +162,7 @@ function sampleRunner(script)
     sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
   }
   
-  sel.getEval(browserLog('<h3>' + category + ' - ' + currentSample + '</h3>'));
+  sel.getEval(browserLog('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>'));
 
   // we're only interested in logs containing warnings or errors
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
