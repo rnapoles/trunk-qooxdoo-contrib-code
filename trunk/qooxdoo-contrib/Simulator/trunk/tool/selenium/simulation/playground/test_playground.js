@@ -22,6 +22,8 @@ var sampleList = selWin + '.' + qxApp + '.widgets["toolbar.selectSampleButton"].
 var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
+var errorPre = '<div class="qxappender"><div class="level-error">';
+var errorSuf = '</div></div>';
 var totalErrors = 0;
 
 // - Config End ----------------------------------------------------------------
@@ -88,18 +90,33 @@ function isSampleStarted(sample)
   return sampleStarted;
 }
 
+function logError(info, ex)
+{
+  totalErrors++;
+  var msg = String(ex);
+  msg = msg.replace(/\n/,'');
+  msg = msg.replace(/\r/,'');
+  msg = msg.replace(/'/, '\'');
+  
+  print(info + ": " + msg );
+  sel.getEval(browserLog(errorPre + info + ': ' + msg + errorSuf));
+}
+
 function runTests()
 {
-  // Make sure the locale is 'en' to simplify dealing with log messages.  
-  sel.runScript(setLocale);
+  // Make sure the locale is 'en' to simplify dealing with log messages.
+  try {   
+    sel.runScript(setLocale);
+  }
+  catch(ex) {
+    logError("Error shile setting locale", ex);
+  }
   
   try {
     sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]');
   }
   catch(ex) {
-    totalErrors++;
-    print("Pressing run button failed: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Pressing run button failed: ' + ex + '</div></div>'));    
+    logError("Pressing run button failed", ex);   
   }
    
   // Open log pane
@@ -109,22 +126,18 @@ function runTests()
     sel.waitForCondition(isLogVisible, 10000); 
   } 
   catch(ex) {
-    totalErrors++;
-    print("Log failed to open: " + log);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Log failed to open: ' + ex + '</div></div>'));
+    logError("Opening log failed", ex);
   }
  
   try {
     print("Getting available samples.");
     var sampleNames = sel.getEval(getSampleNames());
-    sampleNames = String(sampleNames);    
+    sampleNames = String(sampleNames);
     var sampleArr = sampleNames.split(",");
     print("Found " + sampleArr.length + " samples: " + sampleArr);
   }
   catch(ex) {
-    totalErrors++;
-    print("Error getting sample names: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Error getting sample names: ' + ex + '</div></div>'));
+    logError("Getting sample names failed", ex);
   }
     
   for (var i=0; i<sampleArr.length; i++) {
@@ -135,18 +148,19 @@ function runTests()
         sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']');
       } 
       catch (ex) {
-        totalErrors++;
-        print("Error while selecting sample " + sampleArr[i] + ": " + ex);
-        sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Error while changing sample ' + sampleArr[i] + ': ' + ex + '</div></div>'));
+        logError("Error while selecting sample " + sampleArr[i], ex);
+      }
+
+      while (sel.isAlertPresent()) {
+        var al = String(sel.getAlert());
+        logError("Found alert box", al.substring(0,75) + "...");        
       }
       
       if (checkSample(sampleArr[i])) {
         print(sampleArr[i] + " loaded and started.");
       }
       else {
-        totalErrors++;
-        print(sampleArr[i] + " did not load and/or start correctly.");
-        sel.getEval(browserLog('<div class="qxappender"><div class="level-error">' + sampleArr[i] + ' did not load and/or start correctly.</div></div>'));
+        logError(sampleArr[i] + " did not load and/or start correctly.", "");        
       }
     }
   }
@@ -158,11 +172,9 @@ function runTests()
 function getSampleNames()
 {
   var func = 'function getNames() {';
-  func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot().getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[1].getMenu().getChildren();';
-  //func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().widgets["toolbar.selectSampleButton"].getMenu().getChildren();';
+  func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot().getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[1].getMenu().getChildren();';  
   func +=    'var sampleNames = "";';
-  func +=    'for(var i=0,l=kids.length; i<l; i++) {';
-  //func +=    'sampleNames.push(kids[i].getLabel());';
+  func +=    'for(var i=0,l=kids.length; i<l; i++) {';  
   func +=    'sampleNames += kids[i].getLabel() + ",";';
   func +=    '}';
   func +=    'return sampleNames;';
@@ -181,9 +193,7 @@ function checkSample(sampleName) {
     sampleStarted = isSampleStarted(sampleName);    
   }
   catch(ex) {
-    totalErrors ++;
-    print("Error while checking " + sampleName + ": " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Error while checking ' + sampleName + ': ' + ex + '</div></div>'));    
+    logError("Error while checking " + sampleName, ex);
   }
   
   if (sampleLoaded && sampleStarted) {
@@ -197,10 +207,16 @@ function checkSample(sampleName) {
 
 print("Starting Playground session with browser " + config.testBrowser);
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
-sel.start();
-sel.setTimeout(120000);
-sel.open(config.autHost + config.autPath);
-sel.setSpeed(stepSpeed);
+
+try {
+  sel.start();
+  sel.setTimeout(120000);
+  sel.open(config.autHost + config.autPath);
+  sel.setSpeed(stepSpeed);
+}
+catch(ex) {
+  logError("Error while initializing test",ex);
+}
 
 var agent = sel.getEval(usrAgent);
 var plat = sel.getEval(platform);
@@ -210,13 +226,19 @@ sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost 
 sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
 sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
 
+
 try {
   sel.waitForCondition(isQxReady, "60000");
+}
+catch(ex) {
+  logError("Error loading application",ex);
+}
+
+try {
   runTests();  
 }
 catch(ex) {
-  print("Couldn't find qx instance in AUT window.");
-  sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
+  logError("Unexpected error during test",ex);
 }
 
 sel.stop();
