@@ -33,7 +33,6 @@ var totalErrors = 0;
 // - Config End ----------------------------------------------------------------
 
 var currentDate = new Date();
-var errWarn = 0;
 
 // store command line parameters in config object
 for (i in arguments) {
@@ -136,8 +135,30 @@ function checkArticle()
   }  
 }
 
+function getTestDuration(startTime)
+{
+  var stopTime = new Date();
+  var elapsed = stopTime.getTime() - startTime.getTime();
+  return elapsed;
+}
+
+function logTestDuration(elapsed)
+{
+  elapsed = (elapsed / 1000);
+  min = Math.floor(elapsed / 60);
+  sec = Math.round(elapsed % 60);
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
+  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
+}
+
 function runTests()
 {
+
+  var startTime = new Date();
+
   print("Waiting for feeds to load...");
   
   var lastFeedNum = sel.getEval(treeFunc + ".getItems().length - 1"); 
@@ -357,6 +378,8 @@ function runTests()
   
   checkArticle();
   
+  logTestDuration(getTestDuration(startTime));
+
   sel.getEval(browserLog("<p>Feedreader ended with warnings or errors: " + totalErrors + "</p>"));
   
 
