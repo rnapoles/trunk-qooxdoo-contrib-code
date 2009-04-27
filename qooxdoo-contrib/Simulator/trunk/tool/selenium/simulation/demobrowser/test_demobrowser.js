@@ -134,7 +134,7 @@ function sampleRunner(script)
   } else {
     // run the sample
     sel.runScript(scriptCode);
-    killBoxes();
+    //killBoxes();
     Packages.java.lang.Thread.sleep(2000);  
     var currentSample = sel.getEval(getSampleLabel);
     var category = sel.getEval(getSampleCategory);
@@ -218,14 +218,14 @@ function killBoxes()
 {
   // Demos might pop up alert boxes that will break the test if they aren't removed
   // before the next Selenium action. getAlert() simulates clicking "OK".
-  while (sel.isAlertPresent()) {
+  if (sel.isAlertPresent()) {
     var al = sel.getAlert();
     print("Dismissed alert box:");
     print(al);
   }
   
   // Ditto for confirmation dialogs.
-  while (sel.isConfirmationPresent()) {
+  if (sel.isConfirmationPresent()) {
     sel.chooseCancelOnNextConfirmation();
     var con = sel.getConfirmation();
     print("Dismissed confirmation dialog:");
