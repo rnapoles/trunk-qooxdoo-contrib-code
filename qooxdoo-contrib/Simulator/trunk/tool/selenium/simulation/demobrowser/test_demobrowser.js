@@ -133,11 +133,34 @@ function sampleRunner(script)
     return nextSampleLabel;
   } else {
     // run the sample
-    sel.runScript(scriptCode);
-    //killBoxes();
-    Packages.java.lang.Thread.sleep(2000);  
-    var currentSample = sel.getEval(getSampleLabel);
-    var category = sel.getEval(getSampleCategory);
+    try {
+      sel.runScript(scriptCode);
+    }
+    catch(ex) {
+      print("Error while running script: " + ex);
+      sel.getEval(browserLog("<DIV>ERROR while running script: " + ex + "</DIV>"));
+    }
+    
+    try {      
+      killBoxes();
+    }
+    catch(ex) {
+      print("Error while trying to close dialog boxes: " + ex);
+      sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
+    }
+    
+    Packages.java.lang.Thread.sleep(2000);
+    
+    var currentSample = "Unknown demo";
+    var category = "Unknown category"; 
+    
+    try {  
+      currentSample = sel.getEval(getSampleLabel);
+      category = sel.getEval(getSampleCategory);
+    } catch(ex) {
+      print("ERROR: Unable to get determine current demo: " + ex);
+      sel.getEval(browserLog('<DIV>Unable to determine current demo: ' + ex + '</DIV>'));  
+    }
   }
   
   // wait for the sample to finish, then get its log output
@@ -252,8 +275,16 @@ function runTest()
     currentSample = sampleRunner(runSample);
     while (currentSample != lastSample) {
       lastSample = currentSample;
-      print("Done playing " + lastSample + ", starting next sample");      
-      killBoxes();
+      print("Done playing " + lastSample + ", starting next sample");
+
+      try {      
+        killBoxes();
+      }
+      catch(ex) {
+        print("Error while trying to close dialog boxes: " + ex);
+        sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
+      }
+
       currentSample = sampleRunner(runNextSample);
     }
   }
@@ -264,7 +295,13 @@ function runTest()
       var sam = include[j].substr(include[j].indexOf(':') + 1);
       var runIncluded = getDemoChooser(cat, sam);
       currentSample = sampleRunner(runIncluded);
-      killBoxes();
+      try {      
+        killBoxes();
+      }
+      catch(ex) {
+        print("Error while trying to close dialog boxes: " + ex);
+        sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
+      }
     }
   }
   
