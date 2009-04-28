@@ -256,10 +256,31 @@ function killBoxes()
   }  
 }
 
+function getTestDuration(startTime)
+{
+  var stopTime = new Date();
+  var elapsed = stopTime.getTime() - startTime.getTime();
+  return elapsed;
+}
+
+function logTestDuration(elapsed)
+{
+  elapsed = (elapsed / 1000);
+  min = Math.floor(elapsed / 60);
+  sec = Math.round(elapsed % 60);
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
+  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
+}
+
 function runTest()
 {
   //sel.runScript(setPlayDemos);
-  
+
+  var startTime = new Date();
+
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
   
@@ -304,7 +325,9 @@ function runTest()
       }
     }
   }
-  
+
+  logTestDuration(getTestDuration(startTime));
+
   sel.getEval(browserLog("<p>Samples with warnings or errors: " + logsWithErrors + "</p>"));
 }
 
