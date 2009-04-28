@@ -104,6 +104,8 @@ function logError(info, ex)
 
 function runTests()
 {
+  var startTime = new Date();
+  
   // Make sure the locale is 'en' to simplify dealing with log messages.
   try {   
     sel.runScript(setLocale);
@@ -165,6 +167,8 @@ function runTests()
     }
   }
   
+  logTestDuration(getTestDuration(startTime));
+
   sel.getEval(browserLog("<p>Playground ended with warnings or errors: " + totalErrors + "</p>"));
   
 }
@@ -201,6 +205,25 @@ function checkSample(sampleName) {
   }
   
   return sampleOk;
+}
+
+function getTestDuration(startTime)
+{
+  var stopTime = new Date();
+  var elapsed = stopTime.getTime() - startTime.getTime();
+  return elapsed;
+}
+
+function logTestDuration(elapsed)
+{
+  elapsed = (elapsed / 1000);
+  min = Math.floor(elapsed / 60);
+  sec = Math.round(elapsed % 60);
+  if (sec < 10) {
+    sec = "0" + sec;
+  }
+  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
+  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
 }
 
 // - Main --------------------------------------------------------------------
