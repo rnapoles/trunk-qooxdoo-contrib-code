@@ -41,6 +41,30 @@ qx.Class.define("htmlarea.command.Manager",
 
     this._commands       = null;
     this.__populateCommandList();
+    
+    /*
+     * When executing these commands, IE 6 sometimes selects the last <span> tag
+     * completly by mistake. It is necessary to check if the range is still
+     * collapsed after executing one of these commands.
+     */
+    this.__invalidFocusCommands = 
+    {
+      "Bold"          : true,
+      "Italic"        : true,
+      "Underline"     : true,
+      "StrikeThrough" : true
+    };
+    
+    /**
+     * Computed pixel sizes for values size attribute in <font> tag
+     */
+    this.__fontSizeNames = [ 10, 12, 16, 18, 24, 32, 48 ];
+    
+    /*
+     * In Gecko-browser hyperlinks which are based on *collapsed* selection are inserted as DOM nodes. 
+     * To keep track of these nodes they are equipped with an unique id (-> "qx_link" + __hyperLinkId)
+     */
+    this.__hyperLinkId = 0;
   },
 
   statics :
@@ -59,6 +83,15 @@ qx.Class.define("htmlarea.command.Manager",
 
   members :
   {
+    
+    __doc : null,
+    __editorInstance : null,
+    __startTyping : false,
+    __invalidFocusCommands : null,
+    __fontSizeNames : null,
+    __hyperLinkId : null,
+    
+    
     /* ****************************************************************
      *                BASIC / INITIALISATION
      * **************************************************************** */
@@ -76,39 +109,12 @@ qx.Class.define("htmlarea.command.Manager",
     },
 
     /*
-     * When executing these commands, IE 6 sometimes selects the last <span> tag
-     * completly by mistake. It is necessary to check if the range is still
-     * collapsed after executing one of these commands.
-     */
-    __invalidFocusCommands :
-    {
-      "Bold"          : true,
-      "Italic"        : true,
-      "Underline"     : true,
-      "StrikeThrough" : true
-    },
-
-    /*
      * Store the current range for IE browser to support execCommands
      * fired from e.g. toolbar buttons. If the HtmlArea looses the selection
      * because the user e.g. clicked at a toolbar button the last selection
      * has to be stored in order to perform the desired execCommand correctly.
      */
     //__currentRange    : null,
-
-    
-    /**
-     * Computed pixel sizes for values size attribute in <font> tag
-     */
-    __fontSizeNames : [ 10, 12, 16, 18, 24, 32, 48 ],
-    
-    
-    /*
-     * In Gecko-browser hyperlinks which are based on *collapsed* selection are inserted as DOM nodes. 
-     * To keep track of these nodes they are equipped with an unique id (-> "qx_link" + __hyperLinkId)
-     */
-    __hyperLinkId : 0,
-
 
     /* ****************************************************************
      *                  COMMAND PROCESSING
@@ -142,8 +148,8 @@ qx.Class.define("htmlarea.command.Manager",
       this._commands = {
         bold                  : { useBuiltin : true, identifier : "Bold", method : null },
         italic                : { useBuiltin : true, identifier : "Italic", method : null },
-        underline             : { useBuiltin : false, identifier : "Underline", method : "__setUnderline" },
-        strikethrough         : { useBuiltin : false, identifier : "StrikeThrough", method : "__setStrikeThrough" },
+        underline             : { useBuiltin : true, identifier : "Underline", method : null }, // "__setUnderline" },
+        strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null }, //"__setStrikeThrough" },
         fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : false, identifier : "FontSize", method : "__setFontSize" },
 
@@ -2038,9 +2044,6 @@ qx.Class.define("htmlarea.command.Manager",
              if (!sel.isCollapsed) {
                sel.collapseToEnd();
              }
- 
-             // Focus the HA again
-             this.__focusAfterExecCommand();
            }
            else
            {
@@ -2079,7 +2082,6 @@ qx.Class.define("htmlarea.command.Manager",
            sel.collapseToEnd();
          }
  
-         this.__focusAfterExecCommand();
          return true;
        },
  

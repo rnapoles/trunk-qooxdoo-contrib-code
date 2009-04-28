@@ -33,6 +33,7 @@ qx.Class.define("htmlarea.command.UndoManager",
    * 
    * @param commandManager {htmlarea.command.Manager} command manager instance
    * @param editorInstance {htmlarea.HtmlArea} editor instance
+   * @lint ignoreDeprecated(_commands)
    * @return {void}
    */
   construct : function(commandManager, editorInstance)
@@ -47,6 +48,10 @@ qx.Class.define("htmlarea.command.UndoManager",
     this.__redoStack = [];
     this._commands  = null;
     this.__doc       = null;
+    this.__registeredHandler = {};
+    this.__knownActionTypes = { command : true, 
+                                content : true, 
+                                custom : true };
 
     this.__populateCommandList();
     
@@ -64,6 +69,9 @@ qx.Class.define("htmlarea.command.UndoManager",
   },
   
   
+  /**
+   * @lint ignoreDeprecated(_commands)
+   */
   members :
   {
     /* Flag if a redo operation is possible */
@@ -76,10 +84,10 @@ qx.Class.define("htmlarea.command.UndoManager",
     __startTyping : false,
     
     /* Known action types */
-    __knownActionTypes : { command : true, content : true, custom : true },
+    __knownActionTypes : null,
     
     /* Map with infos about custom registered handler */
-    __registeredHandler : {},
+    __registeredHandler : null,
     
     __commandManager : null,
     __doc : null,
@@ -213,7 +221,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      *                    the given step. This object has to define
      *                  at least the "actionType" key to work properly.
      *                  This object is passed to the handler methods 
-     *                  defined in the @see{registerHandler} method.
+     *                  defined in the @link{htmlarea.command.UndoManager.registerHandler} method.
      *             
      * @return {void}
      */

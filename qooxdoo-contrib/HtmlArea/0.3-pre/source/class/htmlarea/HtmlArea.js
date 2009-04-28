@@ -55,6 +55,8 @@ qx.Class.define("htmlarea.HtmlArea",
    * @param styleInformation {String | Map | null} Optional style information for the editor's document
    *                                               Can be a string or a map (example: { "p" : "padding:2px" }
    * @param source {String} source of the iframe
+   * 
+   * @lint ignoreDeprecated(_keyCodeToIdentifierMap)
    */
   construct : function(value, styleInformation, source)
   {
@@ -67,6 +69,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
     // set a layout
     this._setLayout(new qx.ui.layout.Grow);
+    
+    // initialize content wrap
+    this.__initContentWrap();
     
     // create the iframe object
     this.__iframe = new qx.ui.embed.Iframe(uri);
@@ -764,27 +769,32 @@ qx.Class.define("htmlarea.HtmlArea",
     __handleContextMenuEvent : null,
     __handleFocusOut : null,
     __styleInformation : null,
+    __contentWrap : null,
     
-    /** Initial content which is written dynamically into the iframe's document */
-    __contentWrap :
+    
+    __initContentWrap : function()
     {
-      "xhtml" :
+      /** Initial content which is written dynamically into the iframe's document */
+      this.__contentWrap =
       {
+        "xhtml" :
+        {
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en"><title></title>',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />',
         style   : qx.core.Variant.select("qx.client",
-        {
-           "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:visible ; background-image:none; margin:0px; padding:5px; }' +
-                       'p { margin:0px; padding:0px; } ',
-           "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: auto; }' +
-           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; }' +
-                       'p { margin:0px; padding:0px; } '
-        }),
-        body    : '<body id="bodyElement">\n',
-        footer  : '</body></html>'
-      }
+            {
+          "mshtml"  : 'html { margin:0px; padding:0px; } ' +
+          'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:visible ; background-image:none; margin:0px; padding:5px; }' +
+          'p { margin:0px; padding:0px; } ',
+          "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: auto; }' +
+          'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; }' +
+          'p { margin:0px; padding:0px; } '
+            }),
+            body    : '<body id="bodyElement">\n',
+            footer  : '</body></html>'
+        }
+      };      
     },
 
 
@@ -2639,6 +2649,18 @@ qx.Class.define("htmlarea.HtmlArea",
       PROCESS CURSOR CONTEXT
       -----------------------------------------------------------------------------
     */
+    
+    
+    /**
+     * Returns the information about the current context (focusNode). It's a
+     * map with information about "bold", "italic", "underline", etc.
+     * 
+     * @return {Map} formatting information about the focusNode
+     */
+    getContextInformation : function()
+    {
+      return this.__examineCursorContext();
+    },
 
     /**
      * Wrapper method to examine the current context
@@ -2649,7 +2671,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       /* setting a timeout is important to get the right result */
       qx.event.Timer.once(function(e) {
-        this.__examineCursorContext();
+        var contextInfo = this.__examineCursorContext();
+        this.fireDataEvent("cursorContext", contextInfo);
       }, this, 200);
     },
 
@@ -2666,7 +2689,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *  0 = command is possible at the moment. Used to enable the corresponding buttons (e.g. bold/italic/underline etc.)
      *  1 = cursor is over content which already received that command. Used to to activate the corresponding buttons (e.g. bold/italic/underline etc.)
      *
-     * 
+     * @lint ignoreDeprecated(_processingExamineCursorContext)
      * @return {void}
      */
     __examineCursorContext : function()
@@ -2799,9 +2822,9 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyFull         : justifyFull ? 1 : 0
       };
       
-      this.fireDataEvent("cursorContext", eventMap);
-
       this._processingExamineCursorContext = false;
+      
+      return eventMap;
     },
 
 
