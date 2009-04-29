@@ -62,13 +62,19 @@ qx.Class.define("bug2304.Application",
       
       var textarea = new qx.ui.form.TextArea();
 			
-      // Add button to document at fixed coordinates
+      var textfield = new qx.ui.form.TextField();
+			
       doc.add(textarea, {left: 10, top: 10});
 
-      // Add an event listener
-      textarea.addListener("input", function(e) {
-        this.debug("input event: " + e + " | input data: " + e.getData());
-      });
+      doc.add(textfield, {left: 10, top: 90});
+
+      textarea.addListener("input", this.__logEvent, this);
+      textfield.addListener("input", this.__logEvent, this);
+    },
+    
+    __logEvent : function(e) {
+      this.debug("input event: " + e + " | input data: " + e.getData());
     }
+
   }
 });
