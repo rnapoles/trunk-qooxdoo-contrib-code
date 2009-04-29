@@ -79,7 +79,7 @@ qx.Class.define("htmlarea.Application",
       vb.set({ top : 20, left : 20, width : "65%", height : "auto", spacing : 20 });
       vb.addToDocument();
 
-      var htmlArea = new htmlarea.HtmlArea(demoContent);
+      var htmlArea = new htmlarea.HtmlArea(demoContent, null, "blank.html");
       htmlArea.set({ width : "100%", height : 400, focused : true });
       
       var hb = new qx.ui.layout.HorizontalBoxLayout;

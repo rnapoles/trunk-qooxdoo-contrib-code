@@ -49,7 +49,10 @@ qx.Class.define("htmlarea.HtmlArea",
     // **********************************************************************
     //   INIT
     // **********************************************************************
-    this.base(arguments, source);
+
+    var uri = source || null;
+
+    this.base(arguments, uri);
 
     /* Set some init values */
     this.__isLoaded = false;
