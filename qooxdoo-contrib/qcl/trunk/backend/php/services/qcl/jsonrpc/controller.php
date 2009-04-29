@@ -933,8 +933,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function info($msg)
   {
     parent::info($msg);
-    $html = "<div style='color:green'>$msg</div>";
-    $this->dispatchMessage("qcl.messages.htmlDebug",$html);
+    //$html = "<div style='color:green'>$msg</div>";
+    //$this->dispatchMessage("qcl.messages.htmlDebug",$html);
   }
   
 

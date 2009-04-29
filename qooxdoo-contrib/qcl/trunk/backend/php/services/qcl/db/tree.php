@@ -28,12 +28,54 @@ class qcl_db_tree extends qcl_core_mixin
 	 * @param int $parentId
 	 * @param string|null $orderBy
 	 */
-	function getChildIds ( $parentId, $orderBy=null )
+	function getChildIds ( $parentId=null, $orderBy=null )
 	{
-    $orderBy = either( $orderBy, "position" );
-    $this->findBy("parentId",$parentId, $orderBy, "id" );
-		return $this->values();
+	  /*
+	   * remember id to restore state at the end
+	   */
+	  if ( $this->foundSomething() )
+	  {
+	    $id = $this->getId();
+	  }
+	  
+    $this->findChildren( $parentId, $orderBy, "id" );
+	  $childIds = $this->foundSomething() ? 
+	   $this->values() : array();
+    
+    /*
+     * restore model state
+     */
+    if ( $id )
+    {
+      $this->load( $id );
+    }
+    
+    return $childIds;
 	}	
+	
+  /**
+   * Return child node ids of a branch ordered by the order field
+   * @param int $parentId
+   * @param string|null $orderBy
+   * @param array|string|null $properties
+   */
+  function findChildren ( $parentId=null, $orderBy=null, $properties=null )
+  {
+    $orderBy  = either( $orderBy, "position" );
+    if ( $parentId === null )
+    {
+      $parentId = $this->getId();
+    }
+
+    if ( ! is_numeric ( $parentId ) )
+    {
+      $this->raiseError( "Invalid parent id.");
+    }
+    
+    $this->findBy("parentId", $parentId, $orderBy, $properties );
+
+    return $this->getResult();
+  } 	
 	
 	/**
 	 * Returns number of child nodes of a branch
