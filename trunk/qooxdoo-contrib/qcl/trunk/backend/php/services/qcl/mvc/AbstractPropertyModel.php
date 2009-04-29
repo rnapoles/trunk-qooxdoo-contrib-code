@@ -12,6 +12,7 @@ require_once "qcl/mvc/AbstractModel.php";
  * @todo rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
+ * FIXME merge qcl_db_AbstractModel and qcl_db_PropertyModel
  */
 class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 {
@@ -803,6 +804,23 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
     return $value;
   }
+  
+  /**
+   * Returns a list of properties
+   * @param $prop1
+   * @param $prop2
+   * @param $prop3 ...
+   * @return array
+   */
+  function listProperties()
+  {
+    $result = array();
+    foreach ( func_get_args() as $property )
+    {
+      $result[] = $this->getProperty($property);
+    }
+    return $result;
+  }  
   
   /**
    * Cast the given value to the correct php type according to its

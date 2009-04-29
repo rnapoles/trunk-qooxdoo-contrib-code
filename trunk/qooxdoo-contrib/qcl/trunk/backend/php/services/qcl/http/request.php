@@ -151,7 +151,7 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     /*
      * create header string from array
      */
-    $headers = count($this->headers) > 0 ? implode("\n\r", $this->headers) : null;
+    $headers = count($this->headers) > 0 ? implode("\r\n", $this->headers) . "\r\n" : null;
 
     /*
      * encode data
@@ -244,6 +244,36 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     return substr( $content, strpos($content,"\n\n") +1 );
   }
 
+  /**
+   * Returns an array of headers
+   * @return array
+   */
+  function getHeaders()
+  {
+    $content = str_replace("\r\n", "\n", $this->response );
+    $headers = explode("\n", substr( $content, 0, strpos( $content,"\n\n" ) +1 ) );
+    array_shift( $headers ); // remove http response code
+    array_pop( $headers ); // remove empty line at the end
+    return $headers;
+  }  
+  
+  /**
+   * Returns a map of headers
+   * @return array
+   */
+  function getHeaderMap()
+  {
+    $headers = $this->getHeaders();
+    $map = array();
+    foreach( $headers as $header )
+    {
+      $splitPos = strpos( $header, ":" );
+      $key = substr( $header, 0, $splitPos );
+      $value = trim( substr( $header, $splitPos+1 ) );
+      if ($key) $map[$key] = $value;
+    }    
+    return $map;
+  }
 
   /**
    * PHP4/PHP5 POST request

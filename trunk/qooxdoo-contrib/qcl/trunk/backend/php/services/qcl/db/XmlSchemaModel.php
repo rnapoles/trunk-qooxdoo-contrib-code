@@ -3146,12 +3146,27 @@ class qcl_db_XmlSchemaModel extends qcl_db_AbstractModel
     //$this->debug( $fields );
     return $fields;
   }
+
+  /**
+   * Checks if a field exists
+   *
+   * @param string $name The bibliograph name of the field
+   * @return SimpleXmlElement  or SimpleXmlElement(PHP5)
+   */
+  function hasField( $name )
+  {
+    if ( ! is_array( $this->fieldNode) )
+    {
+      $this->getFields();
+    } 
+    return isset( $this->fieldNode[$name] );
+  }  
   
   /**
    * Returns the node of a field in the schema xml
    *
    * @param string $name The bibliograph name of the field
-   * @return SimpleXmlElement  or SimpleXmlElement(PHP5)
+   * @return SimpleXmlElement
    */
   function &getFieldNode( $name )
   {

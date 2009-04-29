@@ -7,10 +7,10 @@
 if ( $_POST )
 {
   require_once "./global_settings.php";
-  require_once "qcl/server/JsonRpcServer.php";
+  require_once "qcl/server/server/JsonRpcServer.php";
   require_once "qcl/registry/Session.php"; 
   require_once "qcl/jsonrpc/controller.php";
-  require_once "qcl/server/JsonWrapper.php";
+  require_once "qcl/server/server/lib/JsonWrapper.php";
   require_once "qcl/http/JsonRpcRequest.php";
   
   class Debug_Controller extends qcl_jsonrpc_controller 
@@ -45,9 +45,14 @@ if ( $_POST )
       $request->setTimeout($timeout);
       
       /*
+       * forward headers from client
+       */
+      $request->addHeader("User-Agent: " . $_SERVER["HTTP_USER_AGENT"] );
+      
+      /*
        * request parameters
        */
-      $service = $_POST['service'];
+      $service = $_POST['jsonrpcservice'];
       if ( ! trim($service) )
       {
         echo "<p style='color:red'>Missing service name.</p>";
@@ -93,7 +98,7 @@ if ( $_POST )
             $sessionId = $msg['data'];
            //$this->debug("Setting Session Id to $sessionId ... ");
             $this->setSessionId($sessionId);
-            echo "
+            $response .= "
               <script>
                  top.setSessionId('$sessionId');
               </script>
@@ -104,14 +109,15 @@ if ( $_POST )
             * automatically resubmit form
             */
             if (  $msg['name'] == "qcl.commands.repeatLastRequest" )
-            echo "
+            $response .= "
               <script>
                  top.resubmit('" . addslashes($msg['data'] ) . "');
               </script>
             ";
         }
       }
-      return $response;
+      $headers = $request->getHeaders();
+      return array($response,$headers);
     }
   }
   
@@ -119,7 +125,12 @@ if ( $_POST )
    * run debug controller
    */
   $debugController = new Debug_Controller( new JsonRpcServer );
-  echo $debugController->sendRequest();
+  list($response,$headers) = $debugController->sendRequest();
+  foreach($headers as $header )
+  {
+    header($header);
+  }
+  echo $response;
   exit;
 }
 
@@ -159,7 +170,7 @@ if ( $_POST )
       </tr>
       <tr>
         <td>
-          <input style="width:100%" type="text" name="service" />
+          <input style="width:100%" type="text" name="jsonrpcservice" />
         </td>
         <td>
           <input  type="text" name="timeout" value="3" />

@@ -107,9 +107,9 @@ class qcl_system_shell extends qcl_core_object
      * streams and pipes
      */
     $descriptorspec = array(
-      0 => array("pipe", "r"),  // stdin
-      1 => array("pipe", "w"),  // stdout
-      2 => array("pipe", "r")   // @todo stderr, should be "w" but this crashes PHP4 on MAMP
+    0 => array("pipe", "r"),  // stdin
+    1 => array("pipe", "w"),  // stdout
+    2 => array("pipe", "r")   // @todo stderr, should be "w" but this crashes PHP4 on MAMP
     );
 
     /*
@@ -145,7 +145,7 @@ class qcl_system_shell extends qcl_core_object
     $error="";
     while( $s= fgets( $pipes[2], 1024) ) $error .= $s;
     fclose( $pipes[2] );
-    
+
     /*
      * close process and handle error
      */
@@ -159,5 +159,78 @@ class qcl_system_shell extends qcl_core_object
 
     return $output;
  	}
+
+ 	function runExternal($cmd,&$code) {
+ 	  $descriptorspec = array(
+ 	  0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+ 	  1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+ 	  2 => array("pipe", "w") // stderr is a file to write to
+ 	  );
+ 	   
+ 	  $pipes= array();
+ 	  $process = proc_open($cmd, $descriptorspec, $pipes);
+ 	   
+ 	  $output= "";
+ 	   
+ 	  if (!is_resource($process)) return false;
+ 	   
+ 	  #close child's input imidiately
+ 	  fclose($pipes[0]);
+ 	   
+ 	  stream_set_blocking($pipes[1],false);
+ 	  stream_set_blocking($pipes[2],false);
+ 	   
+ 	  $todo= array($pipes[1],$pipes[2]);
+ 	   
+ 	  while( true ) {
+ 	    $read= array();
+ 	    if( !feof($pipes[1]) ) $read[]= $pipes[1];
+ 	    if( !feof($pipes[2]) ) $read[]= $pipes[2];
+ 	     
+ 	    if (!$read) break;
+ 	     
+ 	    $ready= stream_select($read, $write=NULL, $ex= NULL, 2);
+ 	     
+ 	    if ($ready === false) {
+ 	      break; #should never happen - something died
+ 	    }
+ 	     
+ 	    foreach ($read as $r) {
+ 	      $s= fread($r,1024);
+ 	      $output.= $s;
+ 	    }
+ 	  }
+ 	   
+ 	  fclose($pipes[1]);
+ 	  fclose($pipes[2]);
+ 	   
+ 	  $code= proc_close($process);
+ 	   
+ 	  return $output;
+ 	}
+
+  function cmd_exec($cmd, &$stdout, &$stderr)
+  {
+    $outfile = tempnam( null, "cmd");
+    $errfile = tempnam( null, "cmd");
+    $descriptorspec = array(
+      0 => array("pipe", "r"),
+      1 => array("file", $outfile, "w"),
+      2 => array("file", $errfile, "w")
+    );
+    $proc = proc_open($cmd, $descriptorspec, $pipes);
+     
+    if (!is_resource($proc)) return 255;
+
+    fclose($pipes[0]);    //Don't really want to give any input
+
+    $exit = proc_close($proc);
+    $stdout = file($outfile);
+    $stderr = file($errfile);
+
+    unlink($outfile);
+    unlink($errfile);
+    return $exit;
+  }
 }
 ?>

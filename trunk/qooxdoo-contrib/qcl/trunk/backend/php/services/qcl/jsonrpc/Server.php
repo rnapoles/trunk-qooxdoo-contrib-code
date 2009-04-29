@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/server/JsonRpcServer.php";
+require_once "qcl/server/server/JsonRpcServer.php";
 
 
 /**
@@ -38,6 +38,7 @@ class qcl_jsonrpc_Server extends JsonRpcServer
    */
   function __construct()
   {
+
     /*
      * call backend debug console
      * @todo secure this
@@ -50,7 +51,7 @@ class qcl_jsonrpc_Server extends JsonRpcServer
     
     /*
      * output phpinfo
-     * @todo secure this
+     * @todo allow this only from localhost!
      */
     if ( isset( $_GET['phpinfo'] ) )
     {
@@ -290,7 +291,7 @@ class qcl_jsonrpc_Server extends JsonRpcServer
   function downloadFile()
   {
 
-    $this->debug("Starting download ..."); 
+    //$this->debug("Starting download ..."); 
         
     $filename   = $_REQUEST['download'];
     $datasource = $_REQUEST['datasource'];

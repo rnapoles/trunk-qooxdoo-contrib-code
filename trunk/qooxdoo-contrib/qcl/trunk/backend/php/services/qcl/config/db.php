@@ -56,7 +56,8 @@ class qcl_config_db extends qcl_db_XmlSchemaModel
 		// check permission
     $controller  =& $this->getController();
     $activeUser  =& $controller->getActiveUser();
-    $activeUser->requirePermission("qcl.config.permissions.manage");
+    
+    //$activeUser->requirePermission("qcl.config.permissions.manage");
 		
 		// todo: check if key already exists, if yes, abort
 		

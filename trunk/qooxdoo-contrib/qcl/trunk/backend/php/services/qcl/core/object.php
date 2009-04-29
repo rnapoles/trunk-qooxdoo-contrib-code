@@ -1,7 +1,8 @@
 <?php
 
 /*
- * for constant definition, use global variable $constId
+ * For constant definition for which a simple integer is sufficient, 
+ * use global variable $constId like so:
  * define("MY_CONSTANT", $constId++);
  */
 $constId = 0;
