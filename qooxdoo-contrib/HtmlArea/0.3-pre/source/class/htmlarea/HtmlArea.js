@@ -2903,8 +2903,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __getRangeContents : qx.core.Variant.select("qx.client", {
       "mshtml" : function(range) {
-        this.debug("__getRangeContents");
-        return ""; //range.item ? range.item(0).outerHTML : range.htmlText;
+        return range.item ? range.item(0).outerHTML : range.htmlText;
       },
       
       "default" : function(range)
