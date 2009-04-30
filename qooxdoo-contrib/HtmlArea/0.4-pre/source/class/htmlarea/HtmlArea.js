@@ -49,9 +49,7 @@ qx.Class.define("htmlarea.HtmlArea",
     // **********************************************************************
     //   INIT
     // **********************************************************************
-
     var uri = source || null;
-
     this.base(arguments, uri);
 
     /* Set some init values */
@@ -75,6 +73,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
+    this.__handleBlurEvent = qx.lang.Function.bind(this._handleBlurEvent, this);
     this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
 
 
@@ -297,14 +296,13 @@ qx.Class.define("htmlarea.HtmlArea",
 
           if (outputRoot)
           {
-            /*
-             * get all of the children nodes of the div placeholder
-             * but DO NOT return the placeholder div elements itself.
-             * This special case is only relevant for IE browsers
-             */
+            // get all of the children nodes of the div placeholder
+            // but DO NOT return the placeholder div elements itself.
+            // This special case is only relevant for IE browsers
             if (qx.core.Variant.isSet("qx.client", "mshtml"))
             {
-              if (root.tagName.toLowerCase() == "div" && root.className && root.className == "placeholder")
+              if (root.tagName.toLowerCase() == "div" && 
+                  root.className && root.className == "placeholder")
               {
                 for (i=root.firstChild; i; i=i.nextSibling) {
                   html += htmlarea.HtmlArea.__getHtml(i, true, skipHtmlEncoding);
@@ -1275,7 +1273,8 @@ qx.Class.define("htmlarea.HtmlArea",
                             qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : doc;
 
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur",  this.__handleFocusEvent);
+      qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
+      qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
@@ -1283,7 +1282,6 @@ qx.Class.define("htmlarea.HtmlArea",
        * browsers (as ie does not give the right button number for the context menu) */
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
 
-      qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
     },
 
 
@@ -2116,30 +2114,54 @@ qx.Class.define("htmlarea.HtmlArea",
       // otherwise the property system won't execute the "_apply" method
       // if the property value doesn't change
       // this is especially important for the first click of the user
-      this._applyFocused(e.type == "focus");
+      this._applyFocused(true);
 
-      if (e.type == "focus")
-      { 
-        this._handleFocusIn();
-      }
+      this.__storedSelectedHtml = null;
+      this.createDispatchEvent("focused");
+    },
+    
+    
+    /**
+     * Eventlistener for blur events
+     *
+     * @type member
+     * @param e {Object} Event object
+     * @return {void}
+     */
+    _handleBlurEvent : function(e) {
+      this.__value = this.getComputedValue();
     },
 
 
     /**
-     * Called with every focus event of the editor.
-     * Stores the current content of the editor for later
-     * comparison (see at {@link #__onBlur} method)
+     * Eventlistener for focus out events to save the current selection.
+     * NOTE: this method is currently only used for mshtml.
      *
      * @type member
+     * @param e {qx.event.type.Event} focus out event
      * @return {void}
      */
-   _handleFocusIn : function()
-   {
-     this.__storedSelectedHtml = null;
-
-     this.createDispatchEvent("focused");
-   },
-
+    _handleFocusOut : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function(e)
+      {
+        if (this.__commandManager) {
+          this.__commandManager.storeCurrentRange();
+        }
+        
+        // Save range text
+        if (this.__storedSelectedHtml == null) {
+          this.__storedSelectedHtml = this.getSelectedHtml();
+        }
+        
+        this.createDispatchEvent("focusOut");
+      },
+      
+      "default" : function(e) {
+        this.createDispatchEvent("focusOut");
+      }
+    }),
+    
 
     /**
      * Eventlistener for all mouse events.
@@ -2189,40 +2211,6 @@ qx.Class.define("htmlarea.HtmlArea",
         }, this, 0);
       }
     },
-
-
-    /**
-     * Eventlistener for focus out events to save the current selection.
-     * NOTE: this method is currently only used for mshtml.
-     *
-     * @type member
-     * @param e {qx.event.type.Event} focus out event
-     * @return {void}
-     */
-    _handleFocusOut : qx.core.Variant.select("qx.client",
-    {
-      "mshtml" : function(e)
-      {
-        if (this.__commandManager)
-        {
-          this.__commandManager.storeCurrentRange();
-        }
-
-        /* Save range text */
-        if (this.__storedSelectedHtml == null)
-        {
-          this.__storedSelectedHtml = this.getSelectedHtml();
-        }
-
-        this.createDispatchEvent("focusOut");
-      },
-
-      "default" : function(e)
-      {
-        this.createDispatchEvent("focusOut");
-      }
-
-    }),
 
 
     /*
@@ -3181,15 +3169,18 @@ qx.Class.define("htmlarea.HtmlArea",
       // ************************************************************************
       //   WIDGET FOCUS/BLUR EVENTS
       // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(doc, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.removeEventListener(doc, "blur",  this.__handleFocusEvent);
+      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? doc.body :
+        qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : doc;
+      
+      qx.html.EventRegistration.removeEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
+      qx.html.EventRegistration.removeEventListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
+      qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
 
       // ************************************************************************
       //   WIDGET MOUSE EVENTS
       // ************************************************************************
       qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
       qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
-      qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
     }
     catch(ex) {}
 
