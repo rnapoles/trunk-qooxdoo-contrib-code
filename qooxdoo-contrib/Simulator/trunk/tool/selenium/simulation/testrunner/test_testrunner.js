@@ -66,8 +66,6 @@ function getLogFile()
   return out;
 }
 
-var logFile = getLogFile();
-
 /*
 *  Write a message to Selenium's browser side log and the local log file.
 */
@@ -75,8 +73,10 @@ function browserLog(msg)
 {
   msg = msg ? msg : "";
   var prefix = 'qxSimulator_' + currentDate.getTime();
+  var logFile = getLogFile();
   logFile.write(prefix + ': ' + msg);
   logFile.newLine();
+  logFile.close();
   return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
 }
 
@@ -343,6 +343,5 @@ if (!testFailed) {
   sel.getEval(browserLog("<p>Tests with warnings or errors: " + errWarn + "</p>"));
 }
 
-logFile.close();
 sel.stop();
 print("Test Runner session finished.");
