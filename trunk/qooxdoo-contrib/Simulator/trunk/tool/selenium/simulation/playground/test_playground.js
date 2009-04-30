@@ -50,8 +50,6 @@ function getLogFile()
   return out;
 }
 
-var logFile = getLogFile();
-
 /*
 *  Write a message to Selenium's browser side log and the local log file.
 */
@@ -59,8 +57,10 @@ function browserLog(msg)
 {
   msg = msg ? msg : "";
   var prefix = 'qxSimulator_' + currentDate.getTime();
+  var logFile = getLogFile();
   logFile.write(prefix + ': ' + msg);
   logFile.newLine();
+  logFile.close();
   return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
 }
 
@@ -176,6 +176,7 @@ function runTests()
       
       if (checkSample(sampleArr[i])) {
         print(sampleArr[i] + " loaded and started.");
+        sel.getEval(browserLog("<p>Sample " + sampleArr[i] + " started without errors.</p>"));
       }
       else {
         logError(sampleArr[i] + " did not load and/or start correctly.", "");        
@@ -280,6 +281,5 @@ catch(ex) {
   logError("Unexpected error during test",ex);
 }
 
-logFile.close();
 sel.stop();
 print("Test Runner session finished.");
