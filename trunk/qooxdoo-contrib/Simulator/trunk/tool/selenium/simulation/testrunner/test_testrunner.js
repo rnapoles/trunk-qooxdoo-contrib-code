@@ -61,7 +61,7 @@ for (i in arguments) {
 function getLogFile()
 {
   var logFileName = config.logFile ? config.logFile :  "testrunner_" + currentDate.getTime() + ".log";
-  var fstream = new java.io.FileWriter(logFileName);
+  var fstream = new java.io.FileWriter(logFileName, true);
   var out = new java.io.BufferedWriter(fstream);
   return out;
 }
