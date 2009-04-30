@@ -40,12 +40,28 @@ for (i in arguments) {
 }
 
 /*
-*  Write a message to Selenium's browser side log
+ * Open/create a log file and return the file object.
+ */
+function getLogFile()
+{
+  var logFileName = config.logFile ? config.logFile :  "testrunner_" + currentDate.getTime() + ".log";
+  var fstream = new java.io.FileWriter(logFileName);
+  var out = new java.io.BufferedWriter(fstream);
+  return out;
+}
+
+var logFile = getLogFile();
+
+/*
+*  Write a message to Selenium's browser side log and the local log file.
 */
-function browserLog(msg) 
+function browserLog(msg)
 {
   msg = msg ? msg : "";
-  return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
+  var prefix = 'qxSimulator_' + currentDate.getTime();
+  logFile.write(prefix + ': ' + msg);
+  logFile.newLine();
+  return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
 }
 
 /*
@@ -264,5 +280,6 @@ catch(ex) {
   logError("Unexpected error during test",ex);
 }
 
+logFile.close();
 sel.stop();
 print("Test Runner session finished.");

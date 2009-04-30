@@ -43,12 +43,28 @@ for (i in arguments) {
 }
 
 /*
-*  Write a message to Selenium's browser side log
+ * Open/create a log file and return the file object.
+ */
+function getLogFile()
+{
+  var logFileName = config.logFile ? config.logFile :  "testrunner_" + currentDate.getTime() + ".log";
+  var fstream = new java.io.FileWriter(logFileName);
+  var out = new java.io.BufferedWriter(fstream);
+  return out;
+}
+
+var logFile = getLogFile();
+
+/*
+*  Write a message to Selenium's browser side log and the local log file.
 */
-function browserLog(msg) 
+function browserLog(msg)
 {
   msg = msg ? msg : "";
-  return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
+  var prefix = 'qxSimulator_' + currentDate.getTime();
+  logFile.write(prefix + ': ' + msg);
+  logFile.newLine();
+  return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
 }
 
 /*
@@ -396,8 +412,9 @@ sel.setSpeed(stepSpeed);
 
 var agent = sel.getEval(usrAgent);
 var plat = sel.getEval(platform);
+var now = currentDate.toLocaleString();
 
-sel.getEval(browserLog("<h1>Feedreader results from " + currentDate.toLocaleString() + "</h1>"));
+sel.getEval(browserLog("<h1>Feedreader results from " + now + "</h1>"));
 sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
 sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
 sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
@@ -418,5 +435,6 @@ catch(ex) {
   sel.getEval(browserLog("<DIV>ERROR: Unexpected error during test run: " + ex + "</DIV>"));
 }
 
+logFile.close();
 sel.stop();
 print("Test Runner session finished.");

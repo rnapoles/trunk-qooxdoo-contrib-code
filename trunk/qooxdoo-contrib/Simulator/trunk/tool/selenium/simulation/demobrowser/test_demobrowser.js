@@ -63,12 +63,28 @@ function treeSelect(entry)
 }
 
 /*
-*  Write a message to Selenium's browser side log, using current unix time as identifier.
+ * Open/create a log file and return the file object.
+ */
+function getLogFile()
+{
+  var logFileName = config.logFile ? config.logFile :  "testrunner_" + currentDate.getTime() + ".log";
+  var fstream = new java.io.FileWriter(logFileName);
+  var out = new java.io.BufferedWriter(fstream);
+  return out;
+}
+
+var logFile = getLogFile();
+
+/*
+*  Write a message to Selenium's browser side log and the local log file.
 */
-function browserLog(msg) 
+function browserLog(msg)
 {
   msg = msg ? msg : "";
-  return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
+  var prefix = 'qxSimulator_' + currentDate.getTime();
+  logFile.write(prefix + ': ' + msg);
+  logFile.newLine();
+  return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
 }
 
 /*
@@ -352,5 +368,6 @@ catch(ex) {
   sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
 }
 
+logFile.close();
 sel.stop();
 print("Test session finished.");
