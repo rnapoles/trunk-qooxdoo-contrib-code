@@ -56,12 +56,28 @@ for (i in arguments) {
 }
 
 /*
-*  Write a message to Selenium's browser side log
+ * Open/create a log file and return the file object.
+ */
+function getLogFile()
+{
+  var logFileName = config.logFile ? config.logFile :  "testrunner_" + currentDate.getTime() + ".log";
+  var fstream = new java.io.FileWriter(logFileName);
+  var out = new java.io.BufferedWriter(fstream);
+  return out;
+}
+
+var logFile = getLogFile();
+
+/*
+*  Write a message to Selenium's browser side log and the local log file.
 */
 function browserLog(msg)
 {
   msg = msg ? msg : "";
-  return 'LOG.error("qxSimulator_' + currentDate.getTime() + ': " + \'' + msg + '\');';
+  var prefix = 'qxSimulator_' + currentDate.getTime();
+  logFile.write(prefix + ': ' + msg);
+  logFile.newLine();
+  return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
 }
 
 /*
@@ -170,7 +186,7 @@ function logTestDuration(elapsed)
 function logErrors(result)
 {
   var logArray = getLogArray(result);
-  print("Split result into " + logArray.length + " array entries.")
+  print("Split result into " + logArray.length + " array entries.");
   // we can speed this up since we don't have to wait for the browser
   sel.setSpeed("500");
   for (var i=0, l=logArray.length; i<l; i++) {
@@ -326,5 +342,7 @@ if (!testFailed) {
   print("Test run finished successfully.");
   sel.getEval(browserLog("<p>Tests with warnings or errors: " + errWarn + "</p>"));
 }
+
+logFile.close();
 sel.stop();
 print("Test Runner session finished.");
