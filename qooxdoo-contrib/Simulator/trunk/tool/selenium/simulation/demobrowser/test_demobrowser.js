@@ -352,7 +352,7 @@ function runTest()
 print("Starting test session with browser " + config.testBrowser);
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
 sel.start();
-sel.setTimeout(120000);
+sel.setTimeout(300000);
 sel.open(config.autHost + config.autPath);
 sel.setSpeed(stepSpeed);
 
@@ -360,7 +360,7 @@ var currentSample = "current";
 var lastSample = "last";
 
 try {
-  sel.waitForCondition(isQxReady, "25000");
+  sel.waitForCondition(isQxReady, "300000");
   runTest();
 }
 catch(ex) {
