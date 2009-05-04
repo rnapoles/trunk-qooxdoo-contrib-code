@@ -41,6 +41,20 @@ require_once dirname(__FILE__) . "/JsonRpcServer.php";
  */
 class JsonRpcServerPhp5 extends JsonRpcServer
 {
+
+  /**
+   * Return singleton instance of the server
+   * return JsonRpcServerPhp5
+   */
+  function &getInstance()
+  {
+    if ( ! is_object( $GLOBALS['JsonRpcServerInstance'] ) )
+    {
+      $GLOBALS['JsonRpcServerInstance'] =& new JsonRpcServerPhp5;
+    }
+    return $GLOBALS['JsonRpcServerInstance'];
+  }    
+  
   /**
    * Overriding start() method to catch errors
    */

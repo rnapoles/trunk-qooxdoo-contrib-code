@@ -32,7 +32,7 @@ class AbstractRequest
      */
     if ( ! is_a( $server,"AbstractServer" ) )
     {
-      trigger_error("No valid server class.");
+      trigger_error("No valid server object.");
     }
     $this->server =& $server;
 

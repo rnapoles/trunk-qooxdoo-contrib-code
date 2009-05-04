@@ -71,6 +71,46 @@ class JsonRpcServer extends AbstractServer
   var $json;
   
   /**
+   * Return singleton instance of the server
+   * return JsonRpcServer
+   */
+  function &getInstance()
+  {
+    if ( ! is_object( $GLOBALS['JsonRpcServerInstance'] ) )
+    {
+      $GLOBALS['JsonRpcServerInstance'] =& new JsonRpcServer;
+    }
+    return $GLOBALS['JsonRpcServerInstance'];
+  }  
+  
+
+  /**
+   * Starts a singleton instance of the server. Must be called statically.
+   */
+  function run()
+  {
+    $_this =& JsonRpcServer::getInstance();
+    $_this->start();
+  }  
+  
+  /**
+   * Starts the server, setting up error handling.
+   */  
+  function start()
+  {
+    /*
+     * Setup php4-style error handling. The main idea is to keep PHP from
+     * messing up the JSONRPC response if a parsing or runtime error occurs, 
+     * and to allow the client application to handle those errors nicely
+     */
+    if (JsonRpcErrorHandling == "on")
+    {
+      $this->setupErrorHandling();
+    } 
+    parent::start();    
+  }
+    
+  /**
    * Initialize the server.
    * @return void
    */
@@ -107,27 +147,6 @@ class JsonRpcServer extends AbstractServer
     $this->debug("Server initialized.");
   }  
 
-  /**
-   * Overriding the start() method to do error handling
-   * The main idea of this code is to keep PHP from messing up 
-   * the JSONRPC response if a parsing or runtime error occurs, 
-   * and to allow the client application to handle those errors nicely
-   */
-  function start()
-  {
-    /*
-     * setup php4-style error handling
-     */
-    if (JsonRpcErrorHandling == "on")
-    {
-      $this->setupErrorHandling();
-    }
-    
-    /*
-     * call parent method
-     */
-    parent::start();
-  }
   
   /**
    * Setup a PHP4-style error handling

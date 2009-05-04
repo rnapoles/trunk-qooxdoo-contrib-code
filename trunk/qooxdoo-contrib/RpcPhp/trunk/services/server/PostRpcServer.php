@@ -18,6 +18,28 @@ class PostRpcServer extends JsonRpcServer
    * @var boolean
    */
   var $allowGetParams = true;
+
+  /**
+   * Return singleton instance of the server
+   * return PostRpcServer
+   */
+  function &getInstance()
+  {
+    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    {
+      $GLOBALS[__CLASS__] =& new PostRpcServer;
+    }
+    return $GLOBALS[__CLASS__];
+  }
+  
+  /**
+   * Starts a singleton instance of the server. Must be called statically.
+   */
+  function run()
+  {
+    $_this =& PostRpcServer::getInstance();
+    $_this->start();
+  }  
   
   /**
    * @override

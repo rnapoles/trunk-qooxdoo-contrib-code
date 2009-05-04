@@ -3,14 +3,10 @@
  * page to test jsonrpc php backend
  * @author Christian Boulanger (cboulanger)
  */
-
 if ( $_POST )
 {
-  
   require dirname( __FILE__ ) . "/server/PostRpcServer.php";
-   
-  $server = new PostRpcServer();
-  $server->start();
+  PostRpcServer::run();
   exit;
 }
 
