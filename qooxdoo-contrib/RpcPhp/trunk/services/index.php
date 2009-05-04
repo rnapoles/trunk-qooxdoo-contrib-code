@@ -14,8 +14,7 @@ if ( $_SERVER["REQUEST_METHOD"] != "POST" or isset($_REQUEST['service'])  )
  * start jsonrpc server
  */
 require dirname(__FILE__) . "/server/JsonRpcServer.php";
-$server =& new JsonRpcServer;
-$server->start();
+JsonRpcServer::start();
 
 
 ?>

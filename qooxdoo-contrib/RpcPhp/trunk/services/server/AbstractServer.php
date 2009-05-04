@@ -222,7 +222,7 @@ class AbstractServer
      */
     $this->initializeServer();
   }
-
+  
   /**
    * Initialize the server. This serves as a hook for subclassing
    * servers.

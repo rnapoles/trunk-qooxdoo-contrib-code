@@ -51,7 +51,7 @@ class JsonrpcRequest
      */
     if ( ! is_a( $server,"JsonRpcServer" ) )
     {
-      trigger_error("No valid server method.");
+      trigger_error("No valid server object.");
     }
     
     /*
