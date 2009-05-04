@@ -30,13 +30,17 @@
  */
 require_once dirname(__FILE__) . "/JsonRpcServer.php";
 
-
 /**
  * Example JSON RPC server for PHP5 with error catching
  * 
  * Usage: 
+ * require "/path/to/RpcPhp/services/server/JsonRpcServerPhp5.php";
  * $server = new JsonRpcServerPhp5();
  * $server->start();
+ * 
+ * Or, with a singleton pattern:
+ * require "/path/to/RpcPhp/services/server/JsonRpcServerPhp5.php";
+ * JsonRpcServerPhp5::run();
  * 
  */
 class JsonRpcServerPhp5 extends JsonRpcServer

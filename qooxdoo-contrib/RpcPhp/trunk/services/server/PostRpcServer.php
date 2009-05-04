@@ -8,6 +8,16 @@ require_once dirname(__FILE__) . "/JsonRpcServer.php";
  * This is a simple extension to the JsonRpcServer to allow to test
  * the methods with post data instead of Json data. You can also
  * allow GET data.
+ * 
+ * Usage:
+ * 
+ * require "/path/to/RpcPhp/services/server/PostRpcServer.php";
+ * $server = new PostRpcServer;
+ * $server->start();
+ * 
+ * Or, with a singleton pattern:
+ * require "/path/to/RpcPhp/services/server/PostRpcServer.php";
+ * PostRpcServer::run();
  */
 class PostRpcServer extends JsonRpcServer
 {
