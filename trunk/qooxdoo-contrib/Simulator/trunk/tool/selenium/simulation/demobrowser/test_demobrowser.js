@@ -78,7 +78,11 @@ function getLogFile()
 */
 function browserLog(msg)
 {
-  msg = msg ? msg : "";
+  msg = msg ? String(msg) : "";
+  print(msg);
+  msg = msg.replace(/\'/g, "\\'");
+  msg = msg.replace(/\n/g, "<br/>");
+  msg = msg.replace(/\r/g, "<br/>");  
   var prefix = 'qxSimulator_' + currentDate.getTime();
   var logFile = getLogFile();
   logFile.write(prefix + ': ' + msg);
@@ -144,7 +148,7 @@ function sampleRunner(script)
   } 
 
   if (skip) {
-    print("Skipping sample: " + nextSampleCategory + ' - ' + nextSampleLabel);
+    //print("Skipping sample: " + nextSampleCategory + ' - ' + nextSampleLabel);
     sel.getEval(browserLog('<h3>SKIPPED ' + nextSampleCategory + ' - ' + nextSampleLabel + '</h3>'));
     return nextSampleLabel;
   } else {
@@ -153,7 +157,7 @@ function sampleRunner(script)
       sel.runScript(scriptCode);
     }
     catch(ex) {
-      print("Error while running script: " + ex);
+      //print("Error while running script: " + ex);
       sel.getEval(browserLog("<DIV>ERROR while running script: " + ex + "</DIV>"));
     }
 
@@ -163,7 +167,7 @@ function sampleRunner(script)
       killBoxes();
     }
     catch(ex) {
-      print("Error while trying to close dialog boxes: " + ex);
+      //print("Error while trying to close dialog boxes: " + ex);
       sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
     }
     
@@ -176,7 +180,7 @@ function sampleRunner(script)
       currentSample = sel.getEval(getSampleLabel);
       category = sel.getEval(getSampleCategory);
     } catch(ex) {
-      print("ERROR: Unable to get determine current demo: " + ex);
+      //print("ERROR: Unable to get determine current demo: " + ex);
       sel.getEval(browserLog('<DIV>Unable to determine current demo: ' + ex + '</DIV>'));  
     }
   }
@@ -199,7 +203,7 @@ function sampleRunner(script)
     sampleLog = sel.getEval(qxLog);
   }
   catch(ex) {
-    print("Unable to get log for demo " + category + ' - ' + currentSample);
+    //print("Unable to get log for demo " + category + ' - ' + currentSample);
     sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
   }
   
@@ -289,7 +293,7 @@ function logTestDuration(elapsed)
   if (sec < 10) {
     sec = "0" + sec;
   }
-  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
+  //print("Test run finished in: " + min + " minutes " + sec + " seconds.");
   sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
 }
 
@@ -320,7 +324,7 @@ function runTest()
         killBoxes();
       }
       catch(ex) {
-        print("Error while trying to close dialog boxes: " + ex);
+        //print("Error while trying to close dialog boxes: " + ex);
         sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
       }
 
@@ -338,7 +342,7 @@ function runTest()
         killBoxes();
       }
       catch(ex) {
-        print("Error while trying to close dialog boxes: " + ex);
+        //print("Error while trying to close dialog boxes: " + ex);
         sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
       }
     }
@@ -352,11 +356,23 @@ function runTest()
 // - Main --------------------------------------------------------------------
 
 print("Starting test session with browser " + config.testBrowser);
-var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
-sel.start();
-sel.setTimeout(300000);
-sel.open(config.autHost + config.autPath);
-sel.setSpeed(stepSpeed);
+var sel = false;
+try {
+  sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
+  sel.start();
+  sel.setTimeout(300000);
+  sel.open(config.autHost + config.autPath);
+  sel.setSpeed(stepSpeed);
+}
+catch(ex) {
+  var msg = "<DIV>ERROR: Unable to set up test run: " + ex + "</DIV>";
+  if (sel) {
+    sel.getEval(browserLog(msg));
+  }
+  else {
+    browserLog(msg);
+  }
+}
 
 var currentSample = "current";
 var lastSample = "last";
@@ -366,11 +382,7 @@ try {
   runTest();
 }
 catch(ex) {
-  print("Unexpected error while running samples: " + ex);
-  var err = String(ex);
-  err = err.replace(/\'/g, "\\'");
-  err = err.replace(/\n/g, "<br/>");
-  err = err.replace(/\r/g, "<br/>");
+  //print("Unexpected error while running samples: " + ex);  
   sel.getEval(browserLog("<DIV>ERROR: Unexpected error while running samples:<br/>" + err + "</DIV>"));
 }
 
