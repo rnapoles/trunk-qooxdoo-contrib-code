@@ -172,6 +172,29 @@ simulation.Simulation.prototype.runScript = function(code, description)
 };
 
 /*
+ * Wrapper around QxSelenium's qxClick() that catches and logs any exceptions so 
+ * they won't cause the entire test to fail.
+ */
+simulation.Simulation.prototype.qxClick = function(locator, description)
+{
+  if (!locator) {
+    throw new Error("No locator specified for qxClick()");
+  }
+
+  var desc = description ? description : "Executing qxClick";
+
+  try {
+    this.__sel.qxClick(locator);
+  }
+  catch(ex) {
+    this.logToBrowser("ERROR: " + desc + ": " + ex);
+    print("ERROR: " + desc + ": " + ex + " \nLocator:\n  " + locator);
+  }
+
+  return;
+};
+
+/*
  * Wrapper around Selenium's type() that catches and logs any exceptions so 
  * they won't cause the entire test to fail.
  */
@@ -347,7 +370,7 @@ simulation.Simulation.prototype.killBoxes = function()
   try {
     if (this.__sel.isAlertPresent()) {
       var al = this.__sel.getAlert();
-      retVal.alert = al;
+      retVal.alert = String(al);
       this.logToBrowser("Dismissed alert box: " + al);
     }
   }
@@ -360,7 +383,7 @@ simulation.Simulation.prototype.killBoxes = function()
     if (this.__sel.isConfirmationPresent()) {
       this.__sel.chooseCancelOnNextConfirmation();
       var con = this.__sel.getConfirmation();
-      retVal.confirmation = con;
+      retVal.confirmation = String(con);
       this.logToBrowser("Dismissed confirmation dialog " + con);
     }
   }
