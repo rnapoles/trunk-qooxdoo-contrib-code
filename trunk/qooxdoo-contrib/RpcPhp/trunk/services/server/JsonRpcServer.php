@@ -26,8 +26,14 @@
  * 
  * Usage:
  * 
+ * require "/path/to/RpcPhp/services/server/JsonRpcServer.php";
  * $server = new JsonRpcServer;
  * $server->start();
+ * 
+ * Or, with a singleton pattern:
+ * require "/path/to/RpcPhp/services/server/JsonRpcServer.php";
+ * JsonRpcServer::run();
+ * 
  */
 
 
