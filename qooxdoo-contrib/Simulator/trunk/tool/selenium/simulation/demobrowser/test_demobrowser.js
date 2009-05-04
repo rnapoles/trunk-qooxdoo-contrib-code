@@ -156,7 +156,9 @@ function sampleRunner(script)
       print("Error while running script: " + ex);
       sel.getEval(browserLog("<DIV>ERROR while running script: " + ex + "</DIV>"));
     }
-    
+
+    Packages.java.lang.Thread.sleep(2000);
+
     try {      
       killBoxes();
     }
@@ -197,7 +199,7 @@ function sampleRunner(script)
     sampleLog = sel.getEval(qxLog);
   }
   catch(ex) {
-    print("Unable to get log for demo " + + category + ' - ' + currentSample);
+    print("Unable to get log for demo " + category + ' - ' + currentSample);
     sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
   }
   
@@ -216,11 +218,11 @@ function sampleRunner(script)
     // we can speed this up since we don't have to wait for the browser
     sel.setSpeed("150");
 
-    for (var i=0, l=logArray.length; i<l; i++) {
-      var line = logArray[i] + '</DIV>';
+    for (var j=0, l=logArray.length; j<l; j++) {
+      var line = logArray[j] + '</DIV>';
       // only log relevant lines
       if (line.indexOf('level-debug') < 0 && line.indexOf('level-info') < 0) {
-        print("Warning or Error found")
+        print("Warning or Error found");
         line = line.replace(/\'/g, "\\'");
         line = line.replace(/\n/g, "<br/>");
         line = line.replace(/\r/g, "<br/>");
@@ -306,7 +308,7 @@ function runTest()
   
   print("Starting sample playback");
   
-  if (include.length == 0) {
+  if (include.length === 0) {
     sel.runScript(treeSelect(2));
     sel.runScript(qxAppInst + '.tree.getSelectedItem().setOpen(true)');
     currentSample = sampleRunner(runSample);
@@ -364,8 +366,12 @@ try {
   runTest();
 }
 catch(ex) {
-  print("Couldn't find qx instance in AUT window. " + ex);
-  sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
+  print("Unexpected error while running samples: " + ex);
+  var err = String(ex);
+  err = err.replace(/\'/g, "\\'");
+  err = err.replace(/\n/g, "<br/>");
+  err = err.replace(/\r/g, "<br/>");
+  sel.getEval(browserLog("<DIV>ERROR: Unexpected error while running samples:<br/>" + err + "</DIV>"));
 }
 
 sel.stop();
