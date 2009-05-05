@@ -297,18 +297,21 @@ function logTestDuration(elapsed)
   sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
 }
 
-function runTest()
+function logEnvironmentInfo()
 {
-  //sel.runScript(setPlayDemos);
-
-  var startTime = new Date();
-
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
   
   sel.getEval(browserLog("<h1>Demobrowser results from " + currentDate.toLocaleString() + "</h1>"));
   sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
+}
+
+function runTest()
+{
+  //sel.runScript(setPlayDemos);
+
+  var startTime = new Date();
   
   print("Starting sample playback");
   
@@ -355,36 +358,67 @@ function runTest()
 
 // - Main --------------------------------------------------------------------
 
-print("Starting test session with browser " + config.testBrowser);
 var sel = false;
-try {
-  sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
-  sel.start();
-  sel.setTimeout(300000);
-  sel.open(config.autHost + config.autPath);
-  sel.setSpeed(stepSpeed);
-}
-catch(ex) {
-  var msg = "<DIV>ERROR: Unable to set up test run: " + ex + "</DIV>";
+
+(function() {
+  print("Starting test session with browser " + config.testBrowser);
+  try {
+    sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
+    if (sel) {
+      sel.start();
+      sel.setTimeout(300000);
+      sel.open(config.autHost + config.autPath);
+      sel.setSpeed(stepSpeed);
+    }
+  }
+  catch(ex) {
+    logEnvironmentInfo();
+    var msg = "<DIV>ERROR: Unable to set up test run: " + ex + "</DIV>";
+    if (sel) {
+      sel.getEval(browserLog(msg));
+      sel.stop();
+    }
+    else {
+      browserLog(msg);
+    }    
+    return;
+  }
+  
+  logEnvironmentInfo();
+  
+  var currentSample = "current";
+  var lastSample = "last";
+  
+  try {
+    sel.waitForCondition(isQxReady, "300000");
+  }
+  catch(ex) {
+    var msg = "<DIV>ERROR: Unable to find qooxdoo instance.</DIV>";
+    if (sel) {
+      sel.getEval(browserLog(msg));
+      sel.stop();
+    }
+    else {
+      browserLog(msg);
+    }
+    return;
+  }
+  
+  try {
+    runTest();
+  }
+  catch(ex) {    
+    var msg = "<DIV>ERROR: Unexpected error while running samples:<br/>" + err + "</DIV>";
+    if (sel) {
+      sel.getEval(browserLog(msg));
+    }
+    else {
+      browserLog(msg);
+    }
+  }
+  
   if (sel) {
-    sel.getEval(browserLog(msg));
+    sel.stop();
   }
-  else {
-    browserLog(msg);
-  }
-}
-
-var currentSample = "current";
-var lastSample = "last";
-
-try {
-  sel.waitForCondition(isQxReady, "300000");
-  runTest();
-}
-catch(ex) {
-  //print("Unexpected error while running samples: " + ex);  
-  sel.getEval(browserLog("<DIV>ERROR: Unexpected error while running samples:<br/>" + err + "</DIV>"));
-}
-
-sel.stop();
-print("Test session finished.");
+  print("Test session finished.");
+})();
