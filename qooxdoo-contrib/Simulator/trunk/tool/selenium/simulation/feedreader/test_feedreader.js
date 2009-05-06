@@ -132,7 +132,7 @@ function checkArticle()
   var article = null;
   try {
     var tempFunc = getObjectByClassnameSel(selWin + "." + qxApp, "feedreader.view.Article");
-    tempFunc += ".getArticle()"
+    tempFunc += ".getArticle()";
     article = sel.getEval(tempFunc);
   }
   catch(ex) {
@@ -294,7 +294,7 @@ function runTests()
   print("New label: " + newLabel);
   
   if (oldLabel != newLabel) {
-    print("Language changed successfully.")
+    print("Language changed successfully.");
   } 
   else {
     totalErrors ++;
@@ -351,9 +351,9 @@ function runTests()
   }
     
   try {
-    var getLastFeedLabel = treeFunc + ".getItems()[" + newLastFeedNum + "].getLabel()";
-    var lastFeedLabel = sel.getEval(getLastFeedLabel);
-    print("New Feed's label: " + lastFeedLabel);
+    var getNewLastFeedLabel = treeFunc + ".getItems()[" + newLastFeedNum + "].getLabel()";
+    var newLastFeedLabel = sel.getEval(getNewLastFeedLabel);
+    print("New Feed's label: " + newLastFeedLabel);
   }
   catch(ex) {
     totalErrors++;
@@ -361,8 +361,8 @@ function runTests()
     sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unable to get new feed label: ' + ex + ' </div></div>'));    
   }
   
-  if (lastFeedLabel == "Golem") {
-    print("New feed entry in list.")
+  if (newLastFeedLabel == "Golem") {
+    print("New feed entry in list.");
   }
   else {
     totalErrors++;
