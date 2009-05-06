@@ -120,8 +120,10 @@ simulation.Simulation.prototype.startSession = function()
   catch (ex) {
     var msg = "ERROR: Unable to start test session: " + ex;
     print(msg);
-    this.logToBrowser(msg, "error");
+    this.logToBrowser(msg, "error", "file");
+    return false;
   }
+  return  true;
 };
 
 /*
@@ -230,12 +232,15 @@ simulation.Simulation.prototype.getLogFile = function()
 };
 
 /*
- * Write a message to the Selenium server's browser-side log.
+ * Format a message according to the error level, then write it to the local 
+ * log file and the Selenium server's browser-side log.
  */
-simulation.Simulation.prototype.logToBrowser = function(text, level)
+simulation.Simulation.prototype.logToBrowser = function(text, level, browserLog)
 {
   var msg = text ? text : "";
   var lvl = level ? level : "debug";
+  var browser = browserLog ? browserLog : "browser";
+
   msg = String(msg);
   msg = msg.replace(/\n/,'');
   msg = msg.replace(/\r/,'');
@@ -258,8 +263,11 @@ simulation.Simulation.prototype.logToBrowser = function(text, level)
   logFile.newLine();
   logFile.close();
   
-  var message = 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
-  this.getEval(message);
+  if (browser == "browser") {
+    var message = 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
+    this.getEval(message);
+  }
+
 };
 
 /*
