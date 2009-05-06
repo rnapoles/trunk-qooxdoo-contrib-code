@@ -120,7 +120,7 @@ simulation.Simulation.prototype.startSession = function()
   catch (ex) {
     var msg = "ERROR: Unable to start test session: " + ex;
     print(msg);
-    this.logToBrowser("<DIV>" + msg + "</DIV>");
+    this.logToBrowser(msg, "error");
   }
 };
 
@@ -141,7 +141,7 @@ simulation.Simulation.prototype.getEval = function(code, description)
     ret = this.__sel.getEval(code);
   }
   catch(ex) {
-    this.logToBrowser("ERROR: " + desc + ": " + ex);
+    this.logToBrowser("ERROR: " + desc + ": " + ex, "error");
     print("ERROR: " + desc + ": " + ex + " \nScript code:\n  " + code);
   }
 
@@ -164,7 +164,7 @@ simulation.Simulation.prototype.runScript = function(code, description)
     this.__sel.runScript(code);
   }
   catch(ex) {
-    this.logToBrowser("ERROR: " + desc + ": " + ex);
+    this.logToBrowser("ERROR: " + desc + ": " + ex, "error");
     print("ERROR: " + desc + ": " + ex + " \nScript code:\n  " + code);
   }
 
@@ -187,7 +187,7 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
     this.__sel.qxClick(locator);
   }
   catch(ex) {
-    this.logToBrowser("ERROR: " + desc + ": " + ex);
+    this.logToBrowser("ERROR: " + desc + ": " + ex, "error");
     print("ERROR: " + desc + ": " + ex + " \nLocator:\n  " + locator);
   }
 
@@ -232,27 +232,31 @@ simulation.Simulation.prototype.getLogFile = function()
 /*
  * Write a message to the Selenium server's browser-side log.
  */
-simulation.Simulation.prototype.logToBrowser = function(text)
+simulation.Simulation.prototype.logToBrowser = function(text, level)
 {
   var msg = text ? text : "";
+  var lvl = level ? level : "debug";
   msg = String(msg);
   msg = msg.replace(/\n/,'');
   msg = msg.replace(/\r/,'');
   msg = msg.replace(/'/, '\'');
 
-  if (msg.substr(0,1) !== "<") {
-    msg = "<DIV>" + msg + "</DIV>";
+  if (this.debug) {
+    print("Logging message: " + msg);
   }
+  
+  // Wrap the message in a paragraph tag if it doesn't look HTML formatted.
+  if (msg.substr(0,1) !== "<") {    
+    msg = "<p>" + msg + "</p>";   
+  }
+
+  msg = '<div class="qxappender"><div class="level-' + lvl + '">' + msg + "</div></div>";
 
   var prefix = 'qxSimulator_' + this.startDate.getTime();
   var logFile = this.getLogFile();
   logFile.write(prefix + ': ' + msg);
   logFile.newLine();
   logFile.close();
-  
-  if (this.debug) {
-    print("Logging message: " + msg);
-  }
   
   var message = 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
   this.getEval(message);
@@ -266,10 +270,10 @@ simulation.Simulation.prototype.logEnvironment = function()
   var agent = this.getEval('navigator.userAgent');
   var plat = this.getEval('navigator.platform');
 
-  this.logToBrowser("<h1>" + this.config.autName + " results from " + this.startDate.toLocaleString() + "</h1>");
-  this.logToBrowser("<p>Application under test: <a href=\"" + this.config.autHost + this.config.autPath + "\">" + this.config.autHost + this.config.autPath + "</a></p>");
-  this.logToBrowser("<p>Platform: " + plat + "</p>");
-  this.logToBrowser("<p>User agent: " + agent + "</p>");
+  this.logToBrowser("<h1>" + this.config.autName + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
+  this.logToBrowser("<p>Application under test: <a href=\"" + this.config.autHost + this.config.autPath + "\">" + this.config.autHost + this.config.autPath + "</a></p>", "info");
+  this.logToBrowser("Platform: " + plat, "info");
+  this.logToBrowser("User agent: " + agent, "info");
 };
 
 /*
@@ -300,7 +304,7 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
     if (this.debug) {
       print(ex);
     }
-    this.logToBrowser("<DIV>ERROR: " + desc + "</DIV>");
+    this.logToBrowser(desc, "error");
     return false;
   }
 };
@@ -322,7 +326,7 @@ simulation.Simulation.prototype.logTestDuration = function(sDate, desc)
     sec = "0" + sec;
   }
   print(description + " finished in: " + min + " minutes " + sec + " seconds.");
-  this.logToBrowser("<p>" + description + " finished in: " + min + " minutes " + sec + " seconds.</p>");
+  this.logToBrowser(description + " finished in: " + min + " minutes " + sec + " seconds.", "info");
 };
 
 /*
@@ -371,11 +375,11 @@ simulation.Simulation.prototype.killBoxes = function()
     if (this.__sel.isAlertPresent()) {
       var al = this.__sel.getAlert();
       retVal.alert = String(al);
-      this.logToBrowser("Dismissed alert box: " + al);
+      this.logToBrowser("Dismissed alert box: " + al, "info");
     }
   }
   catch(ex) {
-    this.logToBrowser("ERROR while checking for alert box: " + ex);
+    this.logToBrowser("ERROR while checking for alert box: " + ex, "error");
   }
 
   // Ditto for confirmation dialogs.
@@ -384,11 +388,11 @@ simulation.Simulation.prototype.killBoxes = function()
       this.__sel.chooseCancelOnNextConfirmation();
       var con = this.__sel.getConfirmation();
       retVal.confirmation = String(con);
-      this.logToBrowser("Dismissed confirmation dialog " + con);
+      this.logToBrowser("Dismissed confirmation dialog " + con, "info");
     }
   }
   catch(ex) {
-    this.logToBrowser("ERROR while checking for dialog box: " + ex);
+    this.logToBrowser("ERROR while checking for dialog box: " + ex, "error");
   }
 
   if (retVal.alert || retVal.confirmation) {
