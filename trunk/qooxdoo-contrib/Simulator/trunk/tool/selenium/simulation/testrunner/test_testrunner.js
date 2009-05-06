@@ -201,7 +201,7 @@ function logErrors(result)
         if (line.indexOf('<DIV class="trace') >= 0) {
           line = line.substring(0,line.indexOf('<DIV class="trace'));
         }
-        if (line.indexOf('<DIV class=trace') >= 0) {
+        else if (line.indexOf('<DIV class=trace') >= 0) {
           line = line.substring(0,line.indexOf('<DIV class=trace'));
         }
         else {
