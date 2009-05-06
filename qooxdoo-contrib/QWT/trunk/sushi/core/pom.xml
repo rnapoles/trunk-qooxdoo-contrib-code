@@ -18,6 +18,11 @@
 
   <dependencies>
     <dependency>
+<groupId>com.oneandone.voip</groupId>
+<artifactId>opstool-client</artifactId>
+<version>1.1</version>
+    </dependency>
+    <dependency>
       <!-- sushi has a base64 codec, this is to test it: -->
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>

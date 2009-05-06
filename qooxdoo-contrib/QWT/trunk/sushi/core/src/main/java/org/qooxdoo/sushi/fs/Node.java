@@ -515,8 +515,8 @@ public abstract class Node {
     
     public Node mkdirOpt() throws MkdirException {
         try {
-			if (!exists()) {
-			    mkdir();
+			if (!isDirectory()) {
+			    mkdir(); // fail here if it's a file!
 			}
 		} catch (ExistsException e) {
 			throw new MkdirException(this, e);
@@ -528,12 +528,12 @@ public abstract class Node {
         Node parent;
         
         try {
-			if (!exists()) {
+			if (!isDirectory()) {
 			    parent = getParent();
 			    if (parent != null) {
 			        parent.mkdirsOpt();
 			    }
-			    mkdir();
+			    mkdir(); // fail here if it's a file!
 			}
 		} catch (ExistsException e) {
 			throw new MkdirException(this, e);
