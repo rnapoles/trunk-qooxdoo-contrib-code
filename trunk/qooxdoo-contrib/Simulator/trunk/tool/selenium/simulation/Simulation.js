@@ -138,6 +138,10 @@ simulation.Simulation.prototype.getEval = function(code, description)
 
   var desc = description ? description : "Unable to evaluate script";
 
+  if (this.debug) {
+    print(desc);
+  }
+
   var ret = false;
   try {
     ret = this.__sel.getEval(code);
@@ -162,6 +166,10 @@ simulation.Simulation.prototype.runScript = function(code, description)
 
   var desc = description ? description : "Unable to evaluate script";
 
+  if (this.debug) {
+    print(desc);
+  }
+
   try {
     this.__sel.runScript(code);
   }
@@ -184,6 +192,10 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
   }
 
   var desc = description ? description : "Executing qxClick";
+
+  if (this.debug) {
+    print(desc);
+  }
 
   try {
     this.__sel.qxClick(locator);
@@ -208,6 +220,10 @@ simulation.Simulation.prototype.type = function(locator, text)
   
   if (!text) {
     throw new Error("No text specified for type()");
+  }
+
+  if (this.debug) {
+    print("Typing: " + text);
   }
 
   try {
@@ -352,9 +368,9 @@ simulation.Simulation.prototype.addOwnFunction = function(funcName, func)
     throw new Error("No function specified.");
   }
   
-  var ns = String(this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation'));
+  var ns = String(this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation', 'Checking for qx.Simulation namespace'));
   if (ns == "null" || ns == "undefined") {
-    this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation = {};');
+    this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation = {};', 'Creating qx.Simulation namespace');
   }
   
   if (typeof func == "function") {
@@ -365,7 +381,7 @@ simulation.Simulation.prototype.addOwnFunction = function(funcName, func)
   func = func.replace(/\r/,'');
   //func = func.replace(/'/, '\'');
   
-  this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.' + funcName + ' = ' + func);
+  this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.' + funcName + ' = ' + func, 'Adding function ' + funcName);
 };
 
 /*
@@ -413,9 +429,20 @@ simulation.Simulation.prototype.killBoxes = function()
 
 };
 
-simulation.Simulation.prototype.getObjectGetterFunction = function()
+/*
+ * Adds a function qx.Simulation.getObjectByClassname() to the AUT's window
+ * object. This function takes two arguments: A parent object and a qooxdoo 
+ * class name string.
+ * It will search all properties of the parent object until it finds one with
+ * a classname property matching the class name string; this object is then
+ * returned.
+ * 
+ * The function should be executed through getEval like this:
+ * this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
+ */
+simulation.Simulation.prototype.addObjectGetter = function()
 {
-  var func = function(parent, classname)
+  var getObjectByClassname = function(parent, searchterm)
   {
     var obj = null;
     for (prop in parent) {
@@ -424,15 +451,16 @@ simulation.Simulation.prototype.getObjectGetterFunction = function()
         if (typeof property == "object") {
           if (property.classname == searchterm) {
             obj = property;
-          }
+          }  
         }
       }
       catch(ex) {}
     }
     return obj;
   };
-
-  return func;  
+  
+  this.addOwnFunction("getObjectByClassname", getObjectByClassname);
+  
 };
 
 /*
