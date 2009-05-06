@@ -136,7 +136,7 @@ simulation.Simulation.prototype.getEval = function(code, description)
     throw new Error("No code specified for getEval()");
   }
 
-  var desc = description ? description : "Unable to evaluate script";
+  var desc = description ? description : "Evaluating script";
 
   if (this.debug) {
     print(desc);
