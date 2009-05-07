@@ -120,7 +120,7 @@ simulation.Simulation.prototype.startSession = function()
   catch (ex) {
     var msg = "ERROR: Unable to start test session: " + ex;
     print(msg);
-    this.logToBrowser(msg, "error", "file");
+    this.log(msg, "error", "file");
     return false;
   }
   return  true;
@@ -147,7 +147,7 @@ simulation.Simulation.prototype.getEval = function(code, description)
     ret = this.__sel.getEval(code);
   }
   catch(ex) {
-    this.logToBrowser("ERROR: " + desc + ": " + ex, "error");
+    this.log("ERROR: " + desc + ": " + ex, "error");
     print("ERROR: " + desc + ": " + ex + " \nScript code:\n  " + code);
   }
 
@@ -174,7 +174,7 @@ simulation.Simulation.prototype.runScript = function(code, description)
     this.__sel.runScript(code);
   }
   catch(ex) {
-    this.logToBrowser("ERROR: " + desc + ": " + ex, "error");
+    this.log("ERROR: " + desc + ": " + ex, "error");
     print("ERROR: " + desc + ": " + ex + " \nScript code:\n  " + code);
   }
 
@@ -201,7 +201,7 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
     this.__sel.qxClick(locator);
   }
   catch(ex) {
-    this.logToBrowser("ERROR: " + desc + ": " + ex, "error");
+    this.log("ERROR: " + desc + ": " + ex, "error");
     print("ERROR: " + desc + ": " + ex + " \nLocator:\n  " + locator);
   }
 
@@ -251,7 +251,7 @@ simulation.Simulation.prototype.getLogFile = function()
  * Format a message according to the error level, then write it to the local 
  * log file and the Selenium server's browser-side log.
  */
-simulation.Simulation.prototype.logToBrowser = function(text, level, browserLog)
+simulation.Simulation.prototype.log = function(text, level, browserLog)
 {
   var msg = text ? text : "";
   var lvl = level ? level : "debug";
@@ -294,10 +294,10 @@ simulation.Simulation.prototype.logEnvironment = function()
   var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");
   var plat = this.getEval('navigator.platform', "Getting platform from browser");
 
-  this.logToBrowser("<h1>" + this.config.autName + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
-  this.logToBrowser("<p>Application under test: <a href=\"" + this.config.autHost + this.config.autPath + "\">" + this.config.autHost + this.config.autPath + "</a></p>", "info");
-  this.logToBrowser("Platform: " + plat, "info");
-  this.logToBrowser("User agent: " + agent, "info");
+  this.log("<h1>" + this.config.autName + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
+  this.log("<p>Application under test: <a href=\"" + this.config.autHost + this.config.autPath + "\">" + this.config.autHost + this.config.autPath + "</a></p>", "info");
+  this.log("Platform: " + plat, "info");
+  this.log("User agent: " + agent, "info");
 };
 
 /*
@@ -328,7 +328,7 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
     if (this.debug) {
       print(ex);
     }
-    this.logToBrowser(desc, "error");
+    this.log(desc, "error");
     return false;
   }
 };
@@ -350,7 +350,7 @@ simulation.Simulation.prototype.logTestDuration = function(sDate, desc)
     sec = "0" + sec;
   }
   print(description + " finished in: " + min + " minutes " + sec + " seconds.");
-  this.logToBrowser(description + " finished in: " + min + " minutes " + sec + " seconds.", "info");
+  this.log(description + " finished in: " + min + " minutes " + sec + " seconds.", "info");
 };
 
 /*
@@ -399,11 +399,11 @@ simulation.Simulation.prototype.killBoxes = function()
     if (this.__sel.isAlertPresent()) {
       var al = this.__sel.getAlert();
       retVal.alert = String(al);
-      this.logToBrowser("Dismissed alert box: " + al, "info");
+      this.log("Dismissed alert box: " + al, "info");
     }
   }
   catch(ex) {
-    this.logToBrowser("ERROR while checking for alert box: " + ex, "error");
+    this.log("ERROR while checking for alert box: " + ex, "error");
   }
 
   // Ditto for confirmation dialogs.
@@ -412,11 +412,11 @@ simulation.Simulation.prototype.killBoxes = function()
       this.__sel.chooseCancelOnNextConfirmation();
       var con = this.__sel.getConfirmation();
       retVal.confirmation = String(con);
-      this.logToBrowser("Dismissed confirmation dialog " + con, "info");
+      this.log("Dismissed confirmation dialog " + con, "info");
     }
   }
   catch(ex) {
-    this.logToBrowser("ERROR while checking for dialog box: " + ex, "error");
+    this.log("ERROR while checking for dialog box: " + ex, "error");
   }
 
   if (retVal.alert || retVal.confirmation) {
