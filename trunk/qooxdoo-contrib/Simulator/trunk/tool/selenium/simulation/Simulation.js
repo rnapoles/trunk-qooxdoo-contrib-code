@@ -39,6 +39,17 @@ var simulation = simulation || {};
 
 simulation.Simulation = function(baseConf, args)
 {
+  // Required configuration settings. Can't run a test without these.
+  var required = ['selServer', 'selPort', 'testBrowser', 'autHost', 'autPath'];
+  
+  // Some default settings.
+  var defaults = {
+    debug : false,
+    autName : "Unnamed Application",
+    stepSpeed : "250",
+    globalTimeout : 120000
+  };
+  
   /*
    * Basic sanity check: No sense in continuing without a QxSelenium instance.
    */
@@ -58,27 +69,109 @@ simulation.Simulation = function(baseConf, args)
     + simulation.Simulation.QXAPPINSTANCE 
     + ') { qxReady = true; } } catch(e) {} qxReady;';
 
-
-  this.debug = true;
-  this.config = baseConf ? baseConf : {};
-  this.totalErrors = 0;
-  this.startDate = new Date();
-
-  /* 
-   * If the script was called with any external arguments (e.g. on the Rhino
-   * command line), add those settings to the config map, overriding any 
-   * properties already defined in baseConf. 
+  /*
+   * The total number of times log() was called with the level set to "error". 
    */
-  if (args) {
-    var argConf = this.getConfig(args);
-    for (prop in argConf) {
-      this.config[prop] = argConf[prop];
+  var totalErrorsLogged = 0;
+  
+  this.getTotalErrorsLogged = function()
+  {
+    return totalErrorsLogged;
+  };
+  
+  this.incrementTotalErrorsLogged = function() 
+  {
+    totalErrorsLogged++;
+  };
+
+  /*
+   * The test run's configuration.
+   */    
+  function initConfig(baseConf, args)
+  {
+    /* 
+     * If the script was called with any external arguments (e.g. on the Rhino
+     * command line), add those settings to the config map, overriding any 
+     * properties already defined in baseConf. 
+     */
+    
+    var conf = baseConf || {};
+    if (args) {      
+      var argConf = getConfigFromArgs(args);
+      for (prop in argConf) {
+        conf[prop] = argConf[prop];
+      }
     }
+    
+    /*
+     * Check if all required keys are set.
+     */
+    for (var i=0,l=required.length; i<l; i++) {
+      if (!required[i] in conf) {
+        throw new Error("Required property " + required[i] + " not in configuration!");
+      }
+    }
+    
+    /*
+     * Set defaults if they're not already set.
+     */
+    for (key in defaults) {
+      if (!key in conf) {
+        conf[key] = defaults[key];
+      }
+    }
+    
+    return conf;
+  }
+  
+  var config = initConfig(baseConf || false, args || false);
+  
+  /*
+   * Split an array of 'key=value' strings (e.g. Rhino's arguments property) and 
+   * store them in a map.
+   */
+  function getConfigFromArgs(args)
+  { 
+    conf = {}; 
+    for (i in args) {
+      if (args[i].indexOf("=") >0) {
+        var tempArr = args[i].split("=");
+        conf[tempArr[0]] = tempArr[1];
+      }
+    }
+    return conf;
+  }
+  
+  /*
+   * Public getter method for configuration settings. 
+   */
+  this.getConfigSetting = function(prop)
+  {
+    if (!prop) {
+      throw new Error("No configuration key specified!");
+    }
+    else if (!prop in config) {
+      throw new Error("Key " + prop + " not in configuration!");
+    }
+    else {
+      return config[prop];
+    }   
+  };
+  
+  this.startDate = new Date();
+  
+  // Determine the name for the log file.
+  this.logFileName = false;
+  if (this.getConfigSetting("logFileName")) {
+    this.logFileName = this.getConfigSetting("logFileName");
+  }
+  else {
+    this.logFileName = this.getConfigSetting("autName") + "_" + this.startDate.getTime() + ".log"; 
   }
 
   // Create QxSelenium instance.
   try {
-    this.__sel = new QxSelenium(this.config.selServer,this.config.selPort,this.config.testBrowser,this.config.autHost);
+    this.__sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
   }
   catch(ex) {
     throw new Error("Unable to create QxSelenium instance: " + ex);
@@ -87,35 +180,19 @@ simulation.Simulation = function(baseConf, args)
 };
 
 /*
- * Split an array of 'key=value' strings (e.g. Rhino's arguments property) and 
- * store them in a map.
- */
-simulation.Simulation.prototype.getConfig = function(args)
-{ 
-  conf = {}; 
-  for (i in args) {
-    if (args[i].indexOf("=") >0) {
-      var tempArr = args[i].split("=");
-      conf[tempArr[0]] = tempArr[1];
-    }
-  }
-  return conf;
-};
-
-/*
  * Start the Selenium session and set some basic options.
  */
 simulation.Simulation.prototype.startSession = function()
-{
-  if (this.debug) {
-    print("Starting " + this.config.autName + " session with browser " + this.config.testBrowser);
+{  
+  if (this.getConfigSetting("debug")) {
+    print("Starting " + this.getConfigSetting("autName") + " session with browser " + this.getConfigSetting("testBrowser"));
   }
 
   try {
     this.__sel.start();
-    this.__sel.setTimeout(this.config.globalTimeout);
-    this.__sel.open(this.config.autHost + this.config.autPath);
-    this.__sel.setSpeed(this.config.stepSpeed);
+    this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));    
+    this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
+    this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
   }
   catch (ex) {
     var msg = "ERROR: Unable to start test session: " + ex;
@@ -136,7 +213,7 @@ simulation.Simulation.prototype.getEval = function(code, description)
     throw new Error("No code specified for getEval()");
   }
   
-  if (this.debug && description) {
+  if (this.getConfigSetting("debug") && description) {
     print(description);
   }
 
@@ -166,7 +243,7 @@ simulation.Simulation.prototype.runScript = function(code, description)
 
   var desc = description ? description : "Unable to evaluate script";
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print(desc);
   }
 
@@ -193,7 +270,7 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
 
   var desc = description ? description : "Executing qxClick";
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print(desc);
   }
 
@@ -222,7 +299,7 @@ simulation.Simulation.prototype.type = function(locator, text)
     throw new Error("No text specified for type()");
   }
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print("Typing: " + text);
   }
 
@@ -241,8 +318,7 @@ simulation.Simulation.prototype.type = function(locator, text)
  */
 simulation.Simulation.prototype.getLogFile = function()
 {
-  var logFileName = this.config.logFile ? this.config.logFile :  this.config.autName + "_" + this.startDate.getTime() + ".log";
-  var fstream = new java.io.FileWriter(logFileName, true);
+  var fstream = new java.io.FileWriter(this.logFileName, true);
   var out = new java.io.BufferedWriter(fstream);
   return out;
 };
@@ -257,12 +333,16 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
   var lvl = level ? level : "debug";
   var browser = browserLog ? browserLog : "browser";
 
-  msg = String(msg);
-  msg = msg.replace(/\n/,'');
-  msg = msg.replace(/\r/,'');
-  msg = msg.replace(/'/, '\'');
+  if (lvl == "error") {
+    this.incrementTotalErrorsLogged();
+  }
 
-  if (this.debug) {
+  msg = String(msg);
+  msg = msg.replace(/\n/g,'<br/>');
+  msg = msg.replace(/\r/g,'<br/>');
+  msg = msg.replace(/'/g, '&quot;');
+
+  if (this.getConfigSetting("debug")) {
     print("Logging message: " + msg);
   }
   
@@ -294,8 +374,8 @@ simulation.Simulation.prototype.logEnvironment = function()
   var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");
   var plat = this.getEval('navigator.platform', "Getting platform from browser");
 
-  this.log("<h1>" + this.config.autName + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
-  this.log("<p>Application under test: <a href=\"" + this.config.autHost + this.config.autPath + "\">" + this.config.autHost + this.config.autPath + "</a></p>", "info");
+  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
+  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "info");
   this.log("Platform: " + plat, "info");
   this.log("User agent: " + agent, "info");
 };
@@ -316,7 +396,7 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
 
   var desc = description ? description : "Waiting for condition";   
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print(desc);
   }
 
@@ -325,7 +405,7 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
     return true;
   }
   catch(ex) {
-    if (this.debug) {
+    if (this.getConfigSetting("debug")) {
       print(ex);
     }
     this.log(desc, "error");
@@ -470,7 +550,7 @@ simulation.Simulation.prototype.addObjectGetter = function()
 simulation.Simulation.prototype.stop = function()
 {
   this.__sel.stop();
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print("Simulation finished.");
   }
 };
