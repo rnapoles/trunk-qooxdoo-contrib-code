@@ -27,6 +27,9 @@ var isLogDone = 'var logDone = false; var log = selenium.browserbot.getCurrentWi
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
 
+var currentSample = "current";
+var lastSample = "last";
+
 /*
  * List of demos to ignore. Format: Category:Demo (using the tree items' labels),
  * i.e. spaces instead of underscores.
@@ -386,9 +389,6 @@ var sel = false;
   
   logEnvironmentInfo();
   
-  var currentSample = "current";
-  var lastSample = "last";
-  
   try {
     sel.waitForCondition(isQxReady, "300000");
   }
@@ -408,7 +408,7 @@ var sel = false;
     runTest();
   }
   catch(ex) {    
-    var msg = "<DIV>ERROR: Unexpected error while running samples:<br/>" + err + "</DIV>";
+    var msg = "<DIV>ERROR: Unexpected error while running samples:<br/>" + ex + "</DIV>";
     if (sel) {
       sel.getEval(browserLog(msg));
     }
