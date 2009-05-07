@@ -135,12 +135,12 @@ simulation.Simulation.prototype.getEval = function(code, description)
   if (!code) {
     throw new Error("No code specified for getEval()");
   }
+  
+  if (this.debug && description) {
+    print(description);
+  }
 
   var desc = description ? description : "Evaluating script";
-
-  if (this.debug) {
-    print(desc);
-  }
 
   var ret = false;
   try {
@@ -291,8 +291,8 @@ simulation.Simulation.prototype.logToBrowser = function(text, level, browserLog)
  */
 simulation.Simulation.prototype.logEnvironment = function()
 {
-  var agent = this.getEval('navigator.userAgent');
-  var plat = this.getEval('navigator.platform');
+  var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");
+  var plat = this.getEval('navigator.platform', "Getting platform from browser");
 
   this.logToBrowser("<h1>" + this.config.autName + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
   this.logToBrowser("<p>Application under test: <a href=\"" + this.config.autHost + this.config.autPath + "\">" + this.config.autHost + this.config.autPath + "</a></p>", "info");
