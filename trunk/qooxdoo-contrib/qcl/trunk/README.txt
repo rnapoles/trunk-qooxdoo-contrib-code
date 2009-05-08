@@ -1,27 +1,20 @@
-===== qcl =====
-
 qoodoo component library
+========================
 
-A couple of interoperating extensions that are useful for web 
-application development:
+A qooxdoo-compatible javascript library tightly interoperating with
+a PHP json-rpc backend, providing features  that are commonly needed 
+for web  application development.
 
-- authentication / gui security
-- databinding
-(more components to come)
+Currently, this means:
 
-Currently with a PHP/MySQL backend, but others might follow.
+- Access control on client and server
+- Centralized clipboard support
+- Application state saved in the browser hash
 
-You can use the qcl project in two ways.
+... much more ...
 
-1) You use the classes in source/qcl/ for your own projects
-   by adding  
-   APPLICATION_INCLUDES += contrib://qcl/trunk/frontend
-   to your makefile 
-   
-2) You build a full-fledged application modifying and extending a sample 
-	 application that will be added later.
-	 
-Keep tuned!
+Currently, only qooxdoo 0.7 /QxTransformer 0.3 is supported, but support
+for qx 0.8 and qxt 0.4 is underway.
 
 
 
