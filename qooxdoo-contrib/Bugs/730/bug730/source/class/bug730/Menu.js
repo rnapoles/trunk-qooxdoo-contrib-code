@@ -1,7 +1,7 @@
 qx.Class.define("bug730.Menu",
 {
-  extend : qx.ui.core.Widget,
-  include : [ qx.ui.core.MPlacement, qx.ui.core.MRemoteChildrenHandling ],
+  extend : qx.ui.container.SlideBar,
+  include : [ qx.ui.core.MPlacement ],
 
 
   /*
@@ -14,13 +14,8 @@ qx.Class.define("bug730.Menu",
   {
     this.base(arguments);
 
-    this._setLayout(new qx.ui.layout.Grow)
-
-    this.__slideBar = new qx.ui.container.SlideBar;
-
-    this.__slideBar._setLayout(new qx.ui.menu.Layout);
-
-    this.add(this.__slideBar);
+    this.__menuLayout = new qx.ui.menu.Layout;
+    this.setLayout(this.__menuLayout);
 
     // Automatically add to application's root
     this.getApplicationRoot().add(this);
@@ -211,11 +206,44 @@ qx.Class.define("bug730.Menu",
 
     __slideBar : null,
     __scheduledOpen : null,
+    __menuLayout : null,
+
+    /*
+    ---------------------------------------------------------------------------
+      WIDGET API
+    ---------------------------------------------------------------------------
+    */
 
     getChildrenContainer : function()
     {
       return this.__slideBar;
     },
+
+    _createChildControlImpl : function(id)
+    {
+      var control;
+
+      switch(id)
+      {
+
+        case "content":
+          control = new qx.ui.container.Composite(new qx.ui.menu.Layout);
+
+          /*
+           * Gecko does not update the scroll position after removing an
+           * element. So we have to do this by hand.
+           */
+          if (qx.bom.client.Engine.GECKO) {
+            control.addListener("removeChildWidget", this._onRemoveChild, this);
+          }
+
+          this.getChildControl("scrollpane").add(control);
+          break;
+      }
+
+      return control || this.base(arguments, id);
+    },
+
 
     /*
     ---------------------------------------------------------------------------
@@ -247,7 +275,7 @@ qx.Class.define("bug730.Menu",
      * @return {Array} List of all column widths
      */
     getColumnSizes : function() {
-      return this.__slideBar._getLayout().getColumnSizes();
+      return this.__menuLayout.getColumnSizes();
     },
 
 
@@ -261,25 +289,25 @@ qx.Class.define("bug730.Menu",
 
     // property apply
     _applyIconColumnWidth : function(value, old) {
-      this.__slideBar._getLayout().setIconColumnWidth(value);
+      this.__menuLayout.setIconColumnWidth(value);
     },
 
 
     // property apply
     _applyArrowColumnWidth : function(value, old) {
-      this.__slideBar._getLayout().setArrowColumnWidth(value);
+      this.__menuLayout.setArrowColumnWidth(value);
     },
 
 
     // property apply
     _applySpacingX : function(value, old) {
-      this.__slideBar._getLayout().setColumnSpacing(value);
+      this.__menuLayout.setColumnSpacing(value);
     },
 
 
     // property apply
     _applySpacingY : function(value, old) {
-      this.__slideBar._getLayout().setSpacing(value);
+      this.__menuLayout.setSpacing(value);
     },
 
 
@@ -441,7 +469,33 @@ qx.Class.define("bug730.Menu",
           mgr.cancelOpen(this.__scheduledOpen);
         }
       }
+    },
+
+    /*
+    ---------------------------------------------------------------------------
+      PROPERTY APPLY ROUTINES
+    ---------------------------------------------------------------------------
+    */
+
+
+    // property apply
+    _applyOrientation : function(value, old)
+    {
+      var oldLayout = this._getLayout();
+
+      if (value == "horizontal") {
+        this._setLayout(new qx.ui.layout.HBox());
+      } else {
+        this._setLayout(new qx.ui.layout.VBox());
+      }
+
+      if (oldLayout) {
+        oldLayout.dispose();
+      }
+
     }
+
+
   },
 
   /*
