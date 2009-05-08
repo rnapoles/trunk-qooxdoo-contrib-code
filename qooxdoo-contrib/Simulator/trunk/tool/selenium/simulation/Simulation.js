@@ -17,6 +17,9 @@
 
 ************************************************************************ */
 
+// Create the simulation namespace if it doesn't exist
+var simulation = simulation || {};
+
 /**
  * This class represents automated interaction tests ("Simulations") of 
  * qooxdoo-based applications. It contains generic functionality such as 
@@ -31,14 +34,22 @@
  * 
  * [1] http://qooxdoo.org/contrib/project/simulator/selenium-user-extension
  * [2] http://qooxdoo.org/contrib/project/simulator#javascript
+ * 
+ * @constructor
+ * @param baseConf {Map} basic configuration settings for this Simulation
+ * @param args {String} optional Rhino command line arguments 
  */
-
-importClass(Packages.com.thoughtworks.selenium.QxSelenium);
-
-var simulation = simulation || {};
-
 simulation.Simulation = function(baseConf, args)
 {
+  // Basic sanity check: No sense in continuing without QxSelenium.
+  try {
+    importClass(Packages.com.thoughtworks.selenium.QxSelenium);
+  }
+  catch(ex) {
+    throw new Error("Couldn't import QxSelenium class! Make sure the qooxdoo " 
+    + "Selenium user extensions are installed in your Selenium client.\n" + ex);
+  }
+  
   // Required configuration settings. Can't run a test without these.
   var required = ['selServer', 'selPort', 'testBrowser', 'autHost', 'autPath'];
   
@@ -51,14 +62,6 @@ simulation.Simulation = function(baseConf, args)
   };
   
   /*
-   * Basic sanity check: No sense in continuing without a QxSelenium instance.
-   */
-  if (typeof QxSelenium == "undefined") {
-    throw new Error("Global QxSelenium object not found! Make sure the qooxdoo " 
-    + "Selenium user extensions are installed in your Selenium client.");
-  }
-  
-  /*
    * Frequently used Javascript code snippets meant to be run in the tested 
    * application's context through the getEval() method. 
    */
@@ -69,23 +72,40 @@ simulation.Simulation = function(baseConf, args)
     + simulation.Simulation.QXAPPINSTANCE 
     + ') { qxReady = true; } } catch(e) {} qxReady;';
 
-  /*
-   * The total number of times log() was called with the level set to "error". 
-   */
-  var totalErrorsLogged = 0;
+
+  var __totalErrorsLogged = 0;
   
+  /**
+   * Sets the total number of errors logged.
+   * 
+   * @private
+   * @param errors {Integer} The new error count
+   * @return {void}
+   */
+  setTotalErrorsLogged = function(errors) 
+  {
+    __totalErrorsLogged = errors;
+  };
+  
+  /**
+   * Returns the total number of errors logged by the {@link #log} method.
+   * 
+   * @return {Integer} Number of errors logged so far in the current Simulation
+   */
   this.getTotalErrorsLogged = function()
   {
-    return totalErrorsLogged;
-  };
-  
-  this.incrementTotalErrorsLogged = function() 
-  {
-    totalErrorsLogged++;
+    return __totalErrorsLogged;
   };
 
-  /*
-   * The test run's configuration.
+  /**
+   * Initalizes the configuration, sets defaults if necessary and validates the 
+   * configuration.
+   * 
+   * @private
+   * @param baseConf {Map} a map of configuration settings
+   * @param args {String} optional space-delimited string of 'key=value' pairs
+   * @return {Map} the configuration for this Simulation instance
+   * @throws an exception if a required setting is missing
    */    
   function initConfig(baseConf, args)
   {
@@ -102,33 +122,33 @@ simulation.Simulation = function(baseConf, args)
         conf[prop] = argConf[prop];
       }
     }
-    
-    /*
-     * Check if all required keys are set.
-     */
+
+    // Check if all required keys are set.
     for (var i=0,l=required.length; i<l; i++) {
       if (!required[i] in conf) {
         throw new Error("Required property " + required[i] + " not in configuration!");
       }
     }
-    
-    /*
-     * Set defaults if they're not already set.
-     */
+
+     // Set defaults if they're not already set.
     for (key in defaults) {
       if (!key in conf) {
         conf[key] = defaults[key];
       }
     }
-    
+
     return conf;
   }
   
-  var config = initConfig(baseConf || false, args || false);
+  var __config = initConfig(baseConf || false, args || false);
   
-  /*
+  /**
    * Split an array of 'key=value' strings (e.g. Rhino's arguments property) and 
    * store them in a map.
+   * 
+   * @private
+   * @param args {String} a space-delimited string of 'key=value' pairs
+   * @return {Map} a map of key-value pairs
    */
   function getConfigFromArgs(args)
   { 
@@ -142,36 +162,39 @@ simulation.Simulation = function(baseConf, args)
     return conf;
   }
   
-  /*
-   * Public getter method for configuration settings. 
+  /**
+   * Public getter for configuration settings.
+   * 
+   * @param prop {String} the name of a configuration key
+   * @return {String} the value of the requested configuration key
+   * @throw an exception if no key was specified or the key doesn't exist in the
+   *   configuration map
    */
   this.getConfigSetting = function(prop)
   {
     if (!prop) {
       throw new Error("No configuration key specified!");
     }
-    else if (!prop in config) {
+    else if (!prop in __config) {
       throw new Error("Key " + prop + " not in configuration!");
     }
     else {
-      return config[prop];
+      return __config[prop];
     }   
   };
   
   this.startDate = new Date();
   
   // Determine the name for the log file.
-  this.logFileName = false;
-  if (this.getConfigSetting("logFileName")) {
-    this.logFileName = this.getConfigSetting("logFileName");
-  }
-  else {
-    this.logFileName = this.getConfigSetting("autName") + "_" + this.startDate.getTime() + ".log"; 
+  if (!"logFileName" in __config) {
+    var fname = __config.autName + "_" + this.startDate.getTime() + ".log";
+    __config.logFileName = fname; 
   }
 
   // Create QxSelenium instance.
   try {
-    this.__sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
+    this.__sel = new QxSelenium(__config.selServer,__config.selPort,
+                                __config.testBrowser,__config.autHost);
   }
   catch(ex) {
     throw new Error("Unable to create QxSelenium instance: " + ex);
@@ -179,8 +202,22 @@ simulation.Simulation = function(baseConf, args)
 
 };
 
-/*
+/**
+ * Increments the number of total errors logged by one
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.incrementTotalErrorsLogged = function()
+{
+  var oldCount = this.getTotalErrorsLogged();
+  var newCount = oldCount + 1;
+  setTotalErrorsLogged(newCount);  
+};
+
+/**
  * Start the Selenium session and set some basic options.
+ * 
+ * @return {Boolean} true if the Selenium session started without errors
  */
 simulation.Simulation.prototype.startSession = function()
 {  
@@ -200,12 +237,18 @@ simulation.Simulation.prototype.startSession = function()
     this.log(msg, "error", "file");
     return false;
   }
-  return  true;
+  return true;
 };
 
-/*
- * Wrapper around Selenium's getEval() that catches and logs any exceptions so 
+/**
+ * Wrapper around Selenium's <code>getEval</code> that catches and logs any exceptions so 
  * they won't cause the entire test to fail.
+ * 
+ * @param code {String} JavaScript code to be evaluated
+ * @param description {String} optional description that will be logged if there
+ *   was an exception during evaluation 
+ * @throw an exception if no code was specified
+ * @return the results of the evaluation
  */
 simulation.Simulation.prototype.getEval = function(code, description)
 {
@@ -231,9 +274,15 @@ simulation.Simulation.prototype.getEval = function(code, description)
   return ret;
 };
 
-/*
- * Wrapper around Selenium's runScript() that catches and logs any exceptions so 
+/**
+ * Wrapper around Selenium's <code>runScript</code> that catches and logs any exceptions so 
  * they won't cause the entire test to fail.
+ * 
+ * @param code {String} JavaScript code to be evaluated
+ * @param description {String} optional description that will be logged if there
+ *   was an exception during evaluation
+ * @throw an exception if no code was specified
+ * @return {void}
  */
 simulation.Simulation.prototype.runScript = function(code, description)
 {
@@ -258,9 +307,16 @@ simulation.Simulation.prototype.runScript = function(code, description)
   return;
 };
 
-/*
- * Wrapper around QxSelenium's qxClick() that catches and logs any exceptions so 
- * they won't cause the entire test to fail.
+/**
+ * Wrapper around QxSelenium's qxClick method that catches and logs any 
+ * exceptions so they won't cause the Simulation to fail.
+ * 
+ * @param locator {String} Selenium locator identifying the element that should 
+ *   receive the click event
+ * @param description {String} optional description that will be logged if there
+ *   was an exception during evaluation
+ * @throw an exception if no locator was specified
+ * @return {void}
  */
 simulation.Simulation.prototype.qxClick = function(locator, description)
 {
@@ -285,9 +341,15 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
   return;
 };
 
-/*
+/**
  * Wrapper around Selenium's type() that catches and logs any exceptions so 
  * they won't cause the entire test to fail.
+ * 
+ * @param locator {String} Selenium locator identifying the element that should
+ *   receive the keydown/keyup/keypress events 
+ * @param text {String} the text to be typed
+ * @throw an exception if no locator or text were specified
+ * @return {void}
  */
 simulation.Simulation.prototype.type = function(locator, text)
 {
@@ -313,19 +375,28 @@ simulation.Simulation.prototype.type = function(locator, text)
   return;
 };
 
-/*
- * Open/create a log file and return the file object.
+/**
+ * Opens a log file and returns the file object.
+ * 
+ * @return {Object} the log file object (java.io.BufferedWriter instance)
  */
 simulation.Simulation.prototype.getLogFile = function()
 {
-  var fstream = new java.io.FileWriter(this.logFileName, true);
+  var fstream = new java.io.FileWriter(this.getConfigSetting("logFileName"), true);
   var out = new java.io.BufferedWriter(fstream);
   return out;
 };
 
-/*
- * Format a message according to the error level, then write it to the local 
- * log file and the Selenium server's browser-side log.
+/**
+ * Formats a message according to the error level, then writes it to the local 
+ * log file and optionally to the Selenium server's browser-side log.
+ * 
+ * @param text {String} the message to be logged
+ * @param level {String?"debug"} The message's error level. One of "debug", 
+ *   "info", "warn", "error"
+ * @param browserLog {String?"browser"} "browser" also logs to the server's 
+ *   browser-side log, anything else logs only to the local log file
+ * @return {void}
  */
 simulation.Simulation.prototype.log = function(text, level, browserLog)
 {
@@ -337,6 +408,7 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
     this.incrementTotalErrorsLogged();
   }
 
+  // The message might be a Java object, so cast it as a String just to be sure.
   msg = String(msg);
   msg = msg.replace(/\n/g,'<br/>');
   msg = msg.replace(/\r/g,'<br/>');
@@ -361,13 +433,15 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
   
   if (browser == "browser") {
     var message = 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
-    this.getEval(message);
+    this.getEval(message, "Logging message to browser");
   }
 
 };
 
-/*
- * Log information about the test environment. 
+/**
+ * Logs information about the test environment.
+ * 
+ * @return {void}
  */
 simulation.Simulation.prototype.logEnvironment = function()
 {
@@ -380,11 +454,19 @@ simulation.Simulation.prototype.logEnvironment = function()
   this.log("User agent: " + agent, "info");
 };
 
-/*
+/**
  * Wrapper around Selenium's waitForCondition() function. Logs any exceptions
  * (e.g. because the timeout was reached) along with an optional description.
+ * 
+ * @param condition {String} a JavaScript expression that will be evaluated
+ * @param timeout {Integer} timeout in milliseconds
+ * @param description {String} optional description that will be logged if there
+ *   was an exception during evaluation
+ * @throw an exception if no condition or timeout were specified
+ * @return {Boolean} true if the condition was met before the timeout
  */
-simulation.Simulation.prototype.waitForCondition = function(condition, timeout, description)
+simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
+                                                            description)
 {
   if (!condition) {
     throw new Error("No condition to wait for specified.");
@@ -413,8 +495,13 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
   }
 };
 
-/*
- * Log the amount of time passed since the given start date. 
+/**
+ * Logs the amount of time passed since the given start date.
+ * 
+ * @param sDate {Date} the start date
+ * @param desc {String} optional description
+ * 
+ * @return {void}
  */
 simulation.Simulation.prototype.logTestDuration = function(sDate, desc)
 {
@@ -429,14 +516,22 @@ simulation.Simulation.prototype.logTestDuration = function(sDate, desc)
   if (sec < 10) {
     sec = "0" + sec;
   }
-  print(description + " finished in: " + min + " minutes " + sec + " seconds.");
+
+  if (this.getConfigSetting("debug")) {
+    print(description + " finished in: " + min + " minutes " + sec + " seconds.");
+  }
+
   this.log(description + " finished in: " + min + " minutes " + sec + " seconds.", "info");
 };
 
-/*
+/**
  * Adds a function to the "qx.Simulation" namespace of the application under 
  * test. This function can then be called using 
- * Simulation.getEval("selenium.browserbot.getCurrentWindow().qx.Simulation.funcName();") 
+ * <code>Simulation.getEval("selenium.browserbot.getCurrentWindow().qx.Simulation.funcName();")</code>
+ * 
+ * @param funcName {String} name of the function to be added
+ * @param func {Function} the function to be added
+ * @return {void}
  */
 simulation.Simulation.prototype.addOwnFunction = function(funcName, func)
 {  
@@ -464,9 +559,12 @@ simulation.Simulation.prototype.addOwnFunction = function(funcName, func)
   this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.' + funcName + ' = ' + func, 'Adding function ' + funcName);
 };
 
-/*
- * Demos might pop up alert boxes that will break the test if they aren't 
- * removed before the next Selenium action. getAlert() simulates clicking "OK".
+/**
+ * Dismisses any alert or dialog boxes currently open in the application under 
+ * test.
+ * 
+ * @return {Map|false} a map containing the text content of any closed boxes in the 
+ *   'alert' and 'confirmation' keys or false if no boxes were dismissed
  */
 simulation.Simulation.prototype.killBoxes = function()
 {
@@ -509,16 +607,20 @@ simulation.Simulation.prototype.killBoxes = function()
 
 };
 
-/*
- * Adds a function qx.Simulation.getObjectByClassname() to the AUT's window
- * object. This function takes two arguments: A parent object and a qooxdoo 
+/**
+ * Adds a function <code>qx.Simulation.getObjectByClassname</code> to the AUT's 
+ * window. This function takes two arguments: A parent object and a qooxdoo 
  * class name string.
  * It will search all properties of the parent object until it finds one with
  * a classname property matching the class name string; this object is then
  * returned.
  * 
  * The function should be executed through getEval like this:
- * this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
+ * <code>this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';</code>
+ * 
+ * TODO: Return an array of *all* objects that are instances of the wanted class
+ * 
+ * @return {void}
  */
 simulation.Simulation.prototype.addObjectGetter = function()
 {
@@ -543,9 +645,11 @@ simulation.Simulation.prototype.addObjectGetter = function()
   
 };
 
-/*
+/**
  * Call Selenium's stop method, which *should* also close the browser. This 
  * won't work in older versions of Firefox (<=2.0.0).
+ * 
+ * @return {void}
  */
 simulation.Simulation.prototype.stop = function()
 {
