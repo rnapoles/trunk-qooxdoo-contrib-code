@@ -125,14 +125,14 @@ simulation.Simulation = function(baseConf, args)
 
     // Check if all required keys are set.
     for (var i=0,l=required.length; i<l; i++) {
-      if (!required[i] in conf) {
+      if (!(required[i] in conf)) {
         throw new Error("Required property " + required[i] + " not in configuration!");
       }
     }
 
      // Set defaults if they're not already set.
     for (key in defaults) {
-      if (!key in conf) {
+      if (!(key in conf)) {
         conf[key] = defaults[key];
       }
     }
@@ -175,18 +175,18 @@ simulation.Simulation = function(baseConf, args)
     if (!prop) {
       throw new Error("No configuration key specified!");
     }
-    else if (!prop in __config) {
+    else if (!(prop in __config)) {
       throw new Error("Key " + prop + " not in configuration!");
     }
     else {
       return __config[prop];
     }   
   };
-  
+
   this.startDate = new Date();
   
   // Determine the name for the log file.
-  if (!"logFileName" in __config) {
+  if (!("logFileName" in __config)) {
     var fname = __config.autName + "_" + this.startDate.getTime() + ".log";
     __config.logFileName = fname; 
   }
