@@ -12,7 +12,7 @@
  */
 
 
-qx.Class.define("soapdemo.soap.parameters", { extend : qx.core.Object
+qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
     ,construct : function() {
         this.__pl=new Array();
     }
@@ -105,8 +105,8 @@ qx.Class.define("soapdemo.soap.parameters", { extend : qx.core.Object
                     }
                 }
                 else { // Object or custom function
-                    for(var p in o.simple_object) {
-                        s += "<" + p + ">" + this.__serialize(o.simple_object[p]) + "</" + p + ">";
+                    for(var c in o.simple_object) {
+                        s += "<" + c + ">" + this.__serialize(o.simple_object[c]) + "</" + c + ">";
                     }
                 }
                 break;

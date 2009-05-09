@@ -26,17 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-qx.Class.define("soapdemo.SOAPRequest", { extend : qx.core.Object
-    ,construct : function() { 
-		this.simple_object = new Object();
-	}
+qx.Class.define("soapdemo.scr.Main", { extend : qx.core.Object
     ,properties : {
-         firstrow : { check : "Integer", init: 0,  apply: "apply_firstrow" }
-		,lastrow  : { check : "Integer", init: 50, apply: "apply_lastrow" }
+        widget : { check : "Object" }
     }
-    ,members : {
-		 simple_object  : null
-        ,apply_firstrow : function (value,old) { this.simple_object.firstrow = value; }
-        ,apply_lastrow  : function (value,old) { this.simple_object.lastrow  = value; }
+    ,construct : function() {
+        self=this;
+
+        var lvMain = new qx.ui.container.Composite(new qx.ui.layout.VBox());
+        this.setWidget(lvMain);
+
+        var toolBar = new qx.ui.toolbar.ToolBar();
+        lvMain.add(toolBar);
+
+        var lhToolbar = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+        toolBar.add(lhToolbar);
+
+        var lbl = new qx.ui.basic.Label(null);
+        lbl.setLabel('<b>SOAP Demo</b>');
+        lhToolbar.add(lbl,{flex:1});
+
+        var lbBottom = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+        lvMain.add(lbBottom,{flex:1});
+				
+        var btnSimple = new qx.ui.toolbar.Button(this.tr("Simple"));
+        btnSimple.addEventListener("execute", function(e) {
+            lbBottom.removeAll();
+            var w = new soapdemo.scr.basic.Simple();
+            lbBottom.add(w.getWidget());
+        }, this);
+        lhToolbar.add(btnSimple);
+
+        var btnTable = new qx.ui.toolbar.Button(this.tr("Table"));
+        btnTable.addEventListener("execute", function(e) {
+            lbBottom.removeAll();
+            var w = new soapdemo.scr.basic.Table();
+            lbBottom.add(w.getWidget());
+        }, this);
+        lhToolbar.add(btnTable);
     }
 });

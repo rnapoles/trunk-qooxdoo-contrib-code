@@ -11,8 +11,8 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
     ,properties : {
          rowCountMethodName: { check: "String", nullable: false}
         ,rowDataMethodName:  { check: "String", nullable: false}
-        ,serviceInstance:    { check: "arskom.soap.client", nullable: false }
-        ,serviceArguments:   { check: "arskom.soap.parameters", nullable: false }
+        ,serviceInstance:    { check: "soapdemo.soap.client", nullable: false }
+        ,serviceArguments:   { check: "soapdemo.soap.parameters", nullable: false }
         ,sessionId:          { check: "String", nullable: false}
     }
     ,members : {
@@ -20,8 +20,8 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
             var ctx = this;
 
             var params = this.getServiceArguments();
-            var req = new arskom.soap.Request();
-            
+            var req = new soapdemo.soap.Request();
+
             req.setWho(this.getSessionId());
             params.add("req",req);
 
@@ -42,7 +42,7 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
             var ctx=this;
 
             var params = ctx.getServiceArguments();
-            var req = new arskom.soap.Request();
+            var req = new soapdemo.soap.Request();
             req.setStartRow(firstRow);
             req.setWho(this.getSessionId());
             params.add("req",req);

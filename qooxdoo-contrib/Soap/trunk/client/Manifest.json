@@ -1,17 +1,27 @@
 {
-   "name"        : "Soap"
-  ,"summary"     : "Soap Module"
-  ,"description" : "This application contains the soap module, a demo application, and a python backend."
+    "info": {
+         "name"        : "Soap"
+        ,"summary"     : "Soap Module"
+        ,"description" : "This application contains the soap module, a demo application, and a python backend."
   
-  ,"keywords" : ["soap"]
-  ,"homepage" : "http://qooxdoo.org/documentation/contrib"
+        ,"keywords" : ["soap"]
+        ,"homepage" : "http://qooxdoo.org/documentation/contrib"
 
-  ,"license" : "LGPL/EPL, BSD and CC"
-  ,"authors" : [
-    {"name" : "Burak Arslan", "email" : "burak.arslan-qx@arskom.com.tr"}
-  ]
+        ,"license" : "LGPL/EPL, BSD and CC"
+        ,"authors" : [
+            {"name" : "Burak Arslan", "email" : "burak.arslan-qx@arskom.com.tr"}
+        ]
 
-  ,"namespace" : "soap"
-  ,"version"   : "trunk"
-  ,"qooxdoo-versions" : ["0.8"]
+        ,"version"   : "trunk"
+        ,"qooxdoo-versions" : ["0.8"]
+    }
+
+    ,"provides" : {
+         "namespace"   : "soapdemo"
+        ,"encoding"    : "utf-8"
+        ,"class"       : "source/class"
+        ,"resource"    : "source/resource"
+        ,"translation" : "source/translation"
+        ,"type"        : "application"
+    }
 }

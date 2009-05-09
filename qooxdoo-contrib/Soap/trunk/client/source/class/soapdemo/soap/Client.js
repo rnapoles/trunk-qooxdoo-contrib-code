@@ -7,10 +7,10 @@
  */
 
 /*
- * Qooxdoo integration by Burak Arslan (burak.arslan-qx@arskom.com.tr)
+ * Qooxdoo integration by Burak Arslan (burak.arslan-qx@soapdemo.com.tr)
  */
 
-qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
+qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     ,construct : function(url) {
         this.base(arguments);
 
@@ -102,6 +102,8 @@ qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
             }
             var isarray = parentType.toLowerCase().indexOf("arrayof") != -1;
 
+            var i;
+
             // object node
             if (! isarray) {
                 var obj = null;
@@ -110,7 +112,7 @@ qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
                     obj = new Object();
                 }
 
-                for(var i = 0; i < node.childNodes.length; i++) {
+                for(i = 0; i < node.childNodes.length; i++) {
                     var p = this.__node2object(node.childNodes[i], wsdlTypes, parentType);
                     obj[node.childNodes[i].nodeName] = p;
                 }
@@ -120,7 +122,7 @@ qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
             else { // list node
                 var l = new Array(); // create node ref
 
-                for(var i = 0; i < node.childNodes.length; i++) {
+                for(i = 0; i < node.childNodes.length; i++) {
                     l[l.length] = this.__node2object(node.childNodes[i], wsdlTypes, parentType);
                 }
 
@@ -132,17 +134,17 @@ qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
         ,__extractValue : function(node, wsdlTypes) {
             var value = node.nodeValue;
             switch(this.__getTypeFromWsdl(node.parentNode.nodeName, wsdlTypes).toLowerCase()) {
-            case arskom.soap.client.DEFAULT_PREFIX+"boolean":
+            case soapdemo.soap.client.DEFAULT_PREFIX+"boolean":
                 return value + "" == "true";
 
-            case arskom.soap.client.DEFAULT_PREFIX+"int":
-            case arskom.soap.client.DEFAULT_PREFIX+"long":
+            case soapdemo.soap.client.DEFAULT_PREFIX+"int":
+            case soapdemo.soap.client.DEFAULT_PREFIX+"long":
                 return (value != null) ? parseInt(value + "", 10) : 0;
 
-            case arskom.soap.client.DEFAULT_PREFIX+"double":
+            case soapdemo.soap.client.DEFAULT_PREFIX+"double":
                 return (value != null) ? parseFloat(value + "") : 0;
 
-            case arskom.soap.client.DEFAULT_PREFIX+"datetime":
+            case soapdemo.soap.client.DEFAULT_PREFIX+"datetime":
                 if(value == null) {
                     return null;
                 }
@@ -156,7 +158,7 @@ qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
                     return d;
                 }
             default:
-            case arskom.soap.client.DEFAULT_PREFIX+"string":
+            case soapdemo.soap.client.DEFAULT_PREFIX+"string":
                 return (value != null) ? value + "" : "";
             }
         }
@@ -170,7 +172,7 @@ qx.Class.define("soapdemo.soap.client", { extend : qx.core.Object
             var wsdlTypes = new Array();
 
             // IE
-            var ell = wsdl.getElementsByTagName(arskom.soap.client.DEFAULT_PREFIX+"element");
+            var ell = wsdl.getElementsByTagName(soapdemo.soap.client.DEFAULT_PREFIX+"element");
             var useNamedItem = true;
 
             // MOZ
