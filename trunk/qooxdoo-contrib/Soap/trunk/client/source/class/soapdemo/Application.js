@@ -42,7 +42,7 @@ qx.Class.define("soapdemo.Application", { extend : qx.application.Standalone
 
             var ctx=this;
             soapdemo.Application.cliSvc.callAsync("name", new soapdemo.soap.Parameters(), function(r) { 
-                alert(r);
+//                 alert(r);
             });
 
             var cli_doc = this.getRoot();

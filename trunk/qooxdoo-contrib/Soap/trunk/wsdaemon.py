@@ -39,7 +39,7 @@ soaplib.wsgi_soap.log_debug(True)
 
 import SimpleHTTPServer, SocketServer, BaseHTTPServer, urlparse, sys
 
-staticFolder='/static/'
+staticFolder='/client/'
 class BasicWebServiceDaemon:
     from cherrypy.wsgiserver import CherryPyWSGIServer
 
@@ -175,12 +175,13 @@ class BasicWebServiceDaemon:
     
 class SOAPRequest(ClassSerializer):
     class types:
-        firstrow = Integer
-        lastrow = Integer
+        startrow = Integer
+        startid = Integer
+        who = String
 
-    def __init__(self, startrow=0, endrow=50):
+    def __init__(self, startrow=0):
         self.startrow = startrow
-        self.endrow = endrow
+        self.endrow = startrow+50
 
 class ReturnObject(ClassSerializer):
     class types:
@@ -210,17 +211,11 @@ class HelloWorldService1(SimpleWSGISoapApp):
             raise Exception('invalid request: request object is null')
 
         else:
-            if req.firstrow >= req.lastrow:
-                raise Exception('invalid request: firstrow >= lastrow')
-
-            elif req.firstrow < 0:
-                raise Exception('invalid request: firstrow < 0')
-
-            elif req.lastrow < 0:
-                raise Exception('invalid request: lastrow < 0')
+            if req.startrow < 0:
+                raise Exception('invalid request: startrow < 0')
 
         retval=[]
-        for i in range(req.firstrow, req.lastrow):
+        for i in range(req.startrow, req.endrow):
             retelt=ReturnObject()
             retelt.byone   = i
             retelt.bytwo   = i*2
