@@ -38,15 +38,15 @@ qx.Class.define("soapdemo.Application", { extend : qx.application.Standalone
         main : function() {
             this.base(arguments);
 
-            soapdemo.Application.cliSvc = new soapdemo.soap.client("http://"+document.location.host+"/svc/");
+            soapdemo.Application.cliSvc = new soapdemo.soap.Client("http://"+document.location.host+"/svc/");
 
             var ctx=this;
-            soapdemo.Application.cliSvc.callAsync("name", new soap.parameters(), function(r) { 
-                alert(r);  
+            soapdemo.Application.cliSvc.callAsync("name", new soapdemo.soap.Parameters(), function(r) { 
+                alert(r);
             });
 
             var cli_doc = this.getRoot();
-            scr_demo=new soapdemo.scr.main();
+            var scr_demo=new soapdemo.scr.Main();
             cli_doc.add(scr_demo.getWidget(),{edge:0});
         }
     }
