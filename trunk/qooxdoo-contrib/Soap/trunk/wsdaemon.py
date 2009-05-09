@@ -241,8 +241,8 @@ class HelloWorldService1(SimpleWSGISoapApp):
         return self.__class__.__name__
 
 if __name__=='__main__':
-    l=[ ('/svc/', HelloWorldService1())       # some soap clients prefer to request urls like this
-       ,('/svc.wsdl', HelloWorldService1())   # supporting both does not hurt :)
+    l=[ ('/svc/', HelloWorldService1()),
+        ('/svc.wsdl', HelloWorldService1()) ]
     
     print 'cwd is %s' % os.getcwd()
     if os.getcwd() != sys.path[0]:

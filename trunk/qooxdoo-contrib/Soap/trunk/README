@@ -4,39 +4,20 @@ http://www.codeplex.com/JavaScriptSoapClient/ and integrated it
 (as best as i could) to qooxdoo (qooxdoo.org). There is still some work to 
 be done, but it seems to work as it is. 
 
-Tested with CherryPy 3.1 and soaplib from svn (r39) patched with given diff,
-on Python 2.5.2, and with Qooxdoo 0.7.3
+Tested with CherryPy 3.1 and soaplib-lxml from http://github.com/plq/soaplib-lxml/tree/master
+on Python 2.5.2, and with Qooxdoo 0.8.2.
 
-To install and patch soaplib, do the following as root:
+Run:
 
-	svn co https://svn.optio.webfactional.com/soaplib/trunk/soaplib /usr/lib/python2.5/site-packages/soaplib
-	cp backend/soaplib_r39.diff /usr/lib/python2.5/site-packages/soaplib
-	cd /usr/lib/python2.5/site-packages/soaplib
-	patch -p0 < soaplib_r39.diff
-
-See http://groups.google.com/group/soapliboptio/browse_thread/thread/888a24d7b4f07263
-
-You may have a version of Python other than 2.5.x installed. If 
-you're not sure, run:
-
-	python -V
-
-and change the python library path above according to the output.
-
-Install CherryPy as documented in its web site, cherrypy.org
-
-After doing all this, run:
-
-	make 
-	python backend/wsdaemon.py
+	python wsdaemon.py
 
 and wait for the 
 
 	http://0.0.0.0:7789/
 
-message to appear. Then navigate to
+line to appear. Then navigate to
 
-	http://localhost:7789/static/source/
+	http://localhost:7789/client/source/
 
 and you should see the main screen which is a toolbar with two buttons on the 
 right. 
