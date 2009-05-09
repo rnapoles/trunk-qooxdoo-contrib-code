@@ -6,14 +6,16 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
         this.setRowDataMethodName(row_data_method_name);
         this.setServiceInstance(service_instance);
         this.setServiceArguments(service_arguments);
-        this.setSessionId(session_id)
+        if (session_id + "" != "undefined") {
+            this.setSessionId(session_id)
+        }
     }
     ,properties : {
          rowCountMethodName: { check: "String", nullable: false}
         ,rowDataMethodName:  { check: "String", nullable: false}
-        ,serviceInstance:    { check: "soapdemo.soap.client", nullable: false }
-        ,serviceArguments:   { check: "soapdemo.soap.parameters", nullable: false }
-        ,sessionId:          { check: "String", nullable: false}
+        ,serviceInstance:    { check: "soapdemo.soap.Client", nullable: false }
+        ,serviceArguments:   { check: "soapdemo.soap.Parameters", nullable: false }
+        ,sessionId:          { check: "String", init: "", nullable: false}
     }
     ,members : {
         _loadRowCount : function() {
