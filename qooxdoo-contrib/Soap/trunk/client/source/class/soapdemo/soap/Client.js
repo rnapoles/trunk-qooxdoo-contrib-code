@@ -36,9 +36,10 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     }
 
     ,members : {
-         __cacheWsdl : undefined
+         __wsdlTypes : null
+        ,__wsdl : null
 
-        ,__onSendSoapRequest : function(method, async, callback, wsdl, req) {
+        ,__onSendSoapRequest : function(method, async, callback, req) {
             var o = null;
             if (req.responseXML == null) {
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
@@ -61,7 +62,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     }
                 }
                 else {
-                    o = this.__soapresult2object(nd[0], wsdl);
+                    o = this.__soapresult2object(nd[0]);
                 }
 
                 if(callback) {
@@ -73,9 +74,8 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
         }
 
-        ,__soapresult2object : function(node, wsdl) {
-            var wsdlTypes = this.__getTypesFromWsdl(wsdl);
-            return this.__node2object(node, wsdlTypes);
+        ,__soapresult2object : function(node) {
+            return this.__node2object(node, this.__wsdlTypes);
         }
 
         ,__node2object : function(node, wsdlTypes, pType) {
@@ -95,10 +95,10 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
 
             var key = node.parentNode.nodeName+":"+node.nodeName;
-            var parentType = this.__getTypeFromWsdl(key, wsdlTypes);
+            var parentType = this.__getTypeFromWsdl(key);
             if (parentType == "" && pType != null) {
                 key = pType.substring(pType.indexOf(":")+1) + ":" + node.nodeName;
-                parentType = this.__getTypeFromWsdl(key, wsdlTypes);
+                parentType = this.__getTypeFromWsdl(key);
             }
             var isarray = parentType.toLowerCase().indexOf("arrayof") != -1;
 
@@ -113,7 +113,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 }
 
                 for(i = 0; i < node.childNodes.length; i++) {
-                    var p = this.__node2object(node.childNodes[i], wsdlTypes, parentType);
+                    var p = this.__node2object(node.childNodes[i], parentType);
                     obj[node.childNodes[i].nodeName] = p;
                 }
 
@@ -123,7 +123,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 var l = new Array(); // create node ref
 
                 for(i = 0; i < node.childNodes.length; i++) {
-                    l[l.length] = this.__node2object(node.childNodes[i], wsdlTypes, parentType);
+                    l[l.length] = this.__node2object(node.childNodes[i], parentType);
                 }
 
                 return l;
@@ -131,9 +131,9 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             return null;
         }
 
-        ,__extractValue : function(node, wsdlTypes) {
+        ,__extractValue : function(node) {
             var value = node.nodeValue;
-            switch(this.__getTypeFromWsdl(node.parentNode.nodeName, wsdlTypes).toLowerCase()) {
+            switch(this.__getTypeFromWsdl(node.parentNode.nodeName).toLowerCase()) {
             case soapdemo.soap.Client.DEFAULT_PREFIX+"boolean":
                 return value + "" == "true";
 
@@ -163,39 +163,37 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
         }
 
-        ,__getTypeFromWsdl : function(elementname, wsdlTypes) {
-            var type = wsdlTypes[elementname] + "";
-            return (type == "undefined") ? "" : type;
+        ,__getTypeFromWsdl : function(elementname) {
+            var type_ = this.__wsdlTypes[elementname] + "";
+            return (type_ == "undefined") ? "" : type_;
         }
 
         ,__getTypesFromWsdl : function(wsdl) {
-            var wsdlTypes = new Array();
+            this.__wsdlTypes = new Array();
 
             // IE
-            var ell = wsdl.getElementsByTagName(soapdemo.soap.Client.DEFAULT_PREFIX+"element");
+            var ell = this.__wsdl.getElementsByTagName(soapdemo.soap.Client.DEFAULT_PREFIX+"element");
             var useNamedItem = true;
 
             // MOZ
             if(ell.length == 0) {
-                ell = wsdl.getElementsByTagName("xs:element");
+                ell = this.__wsdl.getElementsByTagName("xs:element");
                 useNamedItem = false;
             }
 
             for(var i = 0; i < ell.length; i++) {
                 if(useNamedItem) {
                     if(ell[i].attributes.getNamedItem("name") != null && ell[i].attributes.getNamedItem("type") != null) {
-                        wsdlTypes[ell[i].attributes.getNamedItem("name").nodeValue] = ell[i].attributes.getNamedItem("type").nodeValue;
+                        this.__wsdlTypes[ell[i].attributes.getNamedItem("name").nodeValue] = ell[i].attributes.getNamedItem("type").nodeValue;
                     }
                 }
                 else {
                     if(ell[i].attributes["name"] != null && ell[i].attributes["type"] != null) {
                         var key=ell[i].attributes["name"].value;
-                        wsdlTypes[key] = ell[i].attributes["type"].value;
+                        this.__wsdlTypes[key] = ell[i].attributes["type"].value;
                     }
                 }
             }
-
-            return wsdlTypes;
         }
 
         ,__getElementsByTagName : function(document, tagName) {
@@ -259,48 +257,47 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         // private: invoke async
         ,__loadWsdl : function(method, parameters, async, callback) {
             // load from cache?
-            var wsdl = this.__cacheWsdl;
-            if(wsdl + "" != "" && wsdl + "" != "undefined") {
-                return this.__sendSoapRequest(method, parameters, async, callback, wsdl);
-            }
-
-            // get wsdl
-            var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
-            xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
-            if(async) {
-                var self=this;
-                xmlHttp.onreadystatechange = function() {
-                    if(xmlHttp.readyState == 4) {
-                        self.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
+            if(this.__wsdlTypes == null) {
+                // get wsdl
+                var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
+                xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
+                if(async) {
+                    var self=this;
+                    xmlHttp.onreadystatechange = function() {
+                        if(xmlHttp.readyState == 4) {
+                            self.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
+                        }
                     }
                 }
+    
+                xmlHttp.send(null);
+                if (!async) {
+                    return this.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
+                }
             }
-
-            xmlHttp.send(null);
-            if (!async) {
-                return this.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
+            else {
+                return this.__sendSoapRequest(method, parameters, async, callback);
             }
         }
-
         ,__onLoadWsdl : function(method, parameters, async, callback, req) {
-            var wsdl = req.responseXML;
-            if (wsdl == null) {
+            this.__wsdl = req.responseXML;
+            if (this.__wsdl == null) {
                 this.dispatchEvent(new qx.io.remote.Response("wsdl_failed"));
                 return null;
             }
             else {
-                this.__cacheWsdl = wsdl;
-                return this.__sendSoapRequest(method, parameters, async, callback, wsdl);
+                this.__getTypesFromWsdl();
+                return this.__sendSoapRequest(method, parameters, async, callback);
             }
         }
 
-        ,__sendSoapRequest : function(method, parameters, async, callback, wsdl) {
+        ,__sendSoapRequest : function(method, parameters, async, callback) {
             var ns; // namespace
-            if (wsdl.documentElement.attributes["targetNamespace"] + "" == "undefined") {
-                ns = wsdl.documentElement.attributes.getNamedItem("targetNamespace").nodeValue;
+            if (this.__wsdl.documentElement.attributes["targetNamespace"] + "" == "undefined") {
+                ns = this.__wsdl.documentElement.attributes.getNamedItem("targetNamespace").nodeValue;
             }
             else {
-                ns = wsdl.documentElement.attributes["targetNamespace"].value;
+                ns = this.__wsdl.documentElement.attributes["targetNamespace"].value;
             }
 
             // build SOAP request
@@ -338,14 +335,14 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 var self = this;
                 xmlHttp.onreadystatechange = function() {
                     if(xmlHttp.readyState == 4) { /* FIXME: No magic numbers in the code */
-                        self.__onSendSoapRequest(method, async, callback, wsdl, xmlHttp);
+                        self.__onSendSoapRequest(method, async, callback, xmlHttp);
                     }
                 }
             }
 
             xmlHttp.send(sr);
             if (!async) {
-                return this.__onSendSoapRequest(method, async, callback, wsdl, xmlHttp);
+                return this.__onSendSoapRequest(method, async, callback, xmlHttp);
             }
         }
     }
