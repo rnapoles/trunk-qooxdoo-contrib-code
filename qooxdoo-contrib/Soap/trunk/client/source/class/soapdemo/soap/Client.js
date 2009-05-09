@@ -134,17 +134,17 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         ,__extractValue : function(node, wsdlTypes) {
             var value = node.nodeValue;
             switch(this.__getTypeFromWsdl(node.parentNode.nodeName, wsdlTypes).toLowerCase()) {
-            case soapdemo.soap.client.DEFAULT_PREFIX+"boolean":
+            case soapdemo.soap.Client.DEFAULT_PREFIX+"boolean":
                 return value + "" == "true";
 
-            case soapdemo.soap.client.DEFAULT_PREFIX+"int":
-            case soapdemo.soap.client.DEFAULT_PREFIX+"long":
+            case soapdemo.soap.Client.DEFAULT_PREFIX+"int":
+            case soapdemo.soap.Client.DEFAULT_PREFIX+"long":
                 return (value != null) ? parseInt(value + "", 10) : 0;
 
-            case soapdemo.soap.client.DEFAULT_PREFIX+"double":
+            case soapdemo.soap.Client.DEFAULT_PREFIX+"double":
                 return (value != null) ? parseFloat(value + "") : 0;
 
-            case soapdemo.soap.client.DEFAULT_PREFIX+"datetime":
+            case soapdemo.soap.Client.DEFAULT_PREFIX+"datetime":
                 if(value == null) {
                     return null;
                 }
@@ -158,7 +158,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     return d;
                 }
             default:
-            case soapdemo.soap.client.DEFAULT_PREFIX+"string":
+            case soapdemo.soap.Client.DEFAULT_PREFIX+"string":
                 return (value != null) ? value + "" : "";
             }
         }
@@ -172,7 +172,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             var wsdlTypes = new Array();
 
             // IE
-            var ell = wsdl.getElementsByTagName(soapdemo.soap.client.DEFAULT_PREFIX+"element");
+            var ell = wsdl.getElementsByTagName(soapdemo.soap.Client.DEFAULT_PREFIX+"element");
             var useNamedItem = true;
 
             // MOZ

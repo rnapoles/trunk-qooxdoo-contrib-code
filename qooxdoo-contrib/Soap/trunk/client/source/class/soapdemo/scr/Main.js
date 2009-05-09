@@ -42,23 +42,23 @@ qx.Class.define("soapdemo.scr.Main", { extend : qx.core.Object
         var lhToolbar = new qx.ui.container.Composite(new qx.ui.layout.HBox());
         toolBar.add(lhToolbar);
 
-        var lbl = new qx.ui.basic.Label(null);
-        lbl.setLabel('<b>SOAP Demo</b>');
+        var lbl = new qx.ui.basic.Label("<b>SOAP Demo</b>");
+        lbl.setRich(true);
         lhToolbar.add(lbl,{flex:1});
 
         var lbBottom = new qx.ui.container.Composite(new qx.ui.layout.HBox());
         lvMain.add(lbBottom,{flex:1});
 				
-        var btnSimple = new qx.ui.toolbar.Button(this.tr("Simple"));
-        btnSimple.addEventListener("execute", function(e) {
+        var btnSimple = new qx.ui.toolbar.Button("Simple");
+        btnSimple.addListener("execute", function(e) {
             lbBottom.removeAll();
             var w = new soapdemo.scr.basic.Simple();
             lbBottom.add(w.getWidget());
         }, this);
         lhToolbar.add(btnSimple);
 
-        var btnTable = new qx.ui.toolbar.Button(this.tr("Table"));
-        btnTable.addEventListener("execute", function(e) {
+        var btnTable = new qx.ui.toolbar.Button("Table");
+        btnTable.addListener("execute", function(e) {
             lbBottom.removeAll();
             var w = new soapdemo.scr.basic.Table();
             lbBottom.add(w.getWidget());
