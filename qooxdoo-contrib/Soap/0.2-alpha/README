@@ -1,0 +1,121 @@
+
+What you somehow managed to obtain is this: I got the soap client from 
+http://www.codeplex.com/JavaScriptSoapClient/ and integrated it 
+(as best as i could) to qooxdoo (qooxdoo.org). It's a work in progress,
+so far it works in the limited test environment created here.
+
+Tested with CherryPy 3.1 and soaplib-lxml from http://github.com/plq/soaplib-lxml/tree/master
+on Python 2.5.2, and with Qooxdoo 0.8.2.
+
+Preparing the client
+-----------------------
+
+Unpack a qooxdoo distribution into client/qooxdoo package. It has to be there so the browser 
+can find it via the included web server. Then run ./generate.py source in the client folder
+and generate the client loader script.
+
+Preparing the server
+-----------------------
+
+Chdir to the project directory (same as this README file) and run:
+
+        git pull git://github.com/plq/soaplib-lxml.git ~/soaplib-lxml
+        export PYTHONPATH=~/soaplib-lxml
+	python wsdaemon.py
+
+and wait for the 
+
+	http://0.0.0.0:7789/
+
+line to appear. Then navigate to:
+
+	http://localhost:7789/client/source/
+
+and you should see the main screen which is a toolbar with two buttons on the 
+right. 
+
+Known issues
+---------------
+
+- table widget makes lots of unnecessary requests before showing the data. 
+  see http://www.nabble.com/RmoteTable-fires-_loadRowCount%28%29-multiple-times-for-very-1st-request-td16628238.html#a16628238
+
+- objects get reconstructed as arrays.
+
+- array detection is a hack
+
+
+A note about the license
+---------------------------
+
+The work here is released under BSD license, except the  "soapdemo.soap.{Client,Parameters}"
+objects. The original soap client is licensed under the GPL. This is important, as GPL is not
+compatible with qooxdoo's licensing. Here's what the original author had to say:
+
+===============================================================
+
+From: <system@guru4.net>
+To: <burak-guru4@arskom.com.tr>
+Subject: JavaScript SOAP Client - License
+Date: Tue, 30 Sep 2008 15:02:10 +0200
+
+Dear Burak Arslan,
+
+the latest versions of JavaScript SOAP Client Library are NOT under CC but
+under GPL: http://www.codeplex.com/JavaScriptSoapClient/license
+
+However feel free to use it as you like; no problem for me! :-)  
+Enjoy it.
+
+Matteo
+
+
+-----Original Message-----
+FROM: Burak Arslan <burak-guru4@arskom.com.tr>
+
+Dear Matteo Casati,
+
+I've stumbled upon your Javascript SOAP Client, and thought it would make a
+fine addition to Qooxdoo, which is an open source javascript RIA library,
+licensed under LGPL/EPL. 
+
+The integration work is mostly done, but we just noticed that CC license
+that you use is not compatible with LGPL. [1] [2]
+
+In fact, if you look at the references I cited above, they strongly suggest
+not to use a CC license for software. 
+
+So, what are your opinions about this? Would you mind changing the licensing
+terms of your library so it is compatible with LGPL? If you prefer to save
+yourself from the hassle, you can exceptionally license the library under
+LGPL to the Qooxdoo community.
+
+If you contact me with your e-mail address, I can send you the work I've
+done as well, in case you want to take a look at it. It would actually help
+to have the original author review the code.
+
+Awaiting you feedback.
+
+With my best wishes,
+Burak Arslan
+
+ref:
+[1]: http://www.gnu.org/philosophy/license-list.html
+[2]: 
+http://www.dwheeler.com/essays/gpl-compatible.html
+
+===============================================================
+
+So, use at your own risk.
+
+Contact
+----------
+
+In case you got something to say to me, the following e-mail address should 
+be decipherable:
+
+	burak [dot] arslan [at] arskom [dot] com [dot] tr
+
+Take Care!
+Burak
+
