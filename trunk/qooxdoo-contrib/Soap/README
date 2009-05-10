@@ -4,6 +4,9 @@ This is a soap rpc module for qooxdoo. The original code comes from:
 
 http://www.codeplex.com/JavaScriptSoapClient/
 
+It's heavily modified because that code seems to be tested only against 
+.Net web services. 
+
 I've also added a sample remote table model for convenience.
 
 There is also a soap backend written in python, using a patched version
