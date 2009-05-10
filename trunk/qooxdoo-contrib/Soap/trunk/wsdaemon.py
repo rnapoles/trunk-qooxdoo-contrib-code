@@ -195,7 +195,7 @@ class ReturnObject(ClassSerializer):
 # Hello World example from http://trac.optio.webfactional.com/wiki/HelloWorld
 #
 
-class HelloWorldService1(SimpleWSGISoapApp):
+class HelloWorldService(SimpleWSGISoapApp):
     maxIntegerSize=5000 # adjust to your taste
 
     @soapmethod(String,Integer,_returns=Array(String))
@@ -236,8 +236,8 @@ class HelloWorldService1(SimpleWSGISoapApp):
         return self.__class__.__name__
 
 if __name__=='__main__':
-    l=[ ('/svc/', HelloWorldService1()),
-        ('/svc.wsdl', HelloWorldService1()) ]
+    l=[ ('/svc/', HelloWorldService()),
+        ('/svc.wsdl', HelloWorldService()) ]
     
     print 'cwd is %s' % os.getcwd()
     if os.getcwd() != sys.path[0]:
