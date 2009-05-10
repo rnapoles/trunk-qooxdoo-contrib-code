@@ -92,8 +92,16 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
             var i;
 
-            // object node
-            if (! isarray) {
+            if (isarray) { // object node
+                var l = new Array(); // create node ref
+
+                for(i = 0; i < node.childNodes.length; i++) {
+                    l[l.length] = this.__node2object(node.childNodes[i], parentType);
+                }
+
+                return l;
+            }
+            else { // list node
                 var obj = null;
 
                 if(node.hasChildNodes()) {
@@ -106,15 +114,6 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 }
 
                 return obj;
-            }
-            else { // list node
-                var l = new Array(); // create node ref
-
-                for(i = 0; i < node.childNodes.length; i++) {
-                    l[l.length] = this.__node2object(node.childNodes[i], parentType);
-                }
-
-                return l;
             }
  
            return null;
@@ -197,8 +196,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     }
                     else {
                         key = key.value;
-                    }
-                    this.__wsdlTypes[key] = value_.value;
+                    }                    this.__wsdlTypes[key] = value_.value;
                     console.log(key);
                 }
             }

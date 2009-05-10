@@ -214,8 +214,10 @@ class HelloWorldService(SimpleWSGISoapApp):
             if req.startrow < 0:
                 raise Exception('invalid request: startrow < 0')
 
+        print req.startrow
+        print req.endrow
         retval=[]
-        for i in range(req.startrow, req.endrow):
+        for i in range(req.startrow, req.startrow+50):
             retelt=ReturnObject()
             retelt.byone   = i
             retelt.bytwo   = i*2
