@@ -26,9 +26,6 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
          timeout :          { check : "Integer", nullable : true }
         ,crossDomain :      { check : "Boolean", init : false }
         ,url :              { check : "String",  nullable : true }
-        ,username :         { check : "String",  nullable : true }
-        ,password :         { check : "String",  nullable : true }
-        ,useBasicHttpAuth : { check : "Boolean", nullable : true }
     }
     
     ,statics : {
@@ -62,7 +59,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     }
                 }
                 else {
-                    o = this.__soapresult2object(nd[0]);
+                    o = this.__node2object(nd[0]);
                 }
 
                 if(callback) {
@@ -74,11 +71,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
         }
 
-        ,__soapresult2object : function(node) {
-            return this.__node2object(node, this.__wsdlTypes);
-        }
-
-        ,__node2object : function(node, wsdlTypes, pType) {
+        ,__node2object : function(node, pType) {
             if(node == null) { // null node
                 return null;
             }
@@ -86,20 +79,15 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             pType = (typeof pType == 'undefined') ? null : pType;
 
             if(node.nodeType == 3 || node.nodeType == 4) { // text node
-                return this.__extractValue(node, wsdlTypes);
+                return this.__extractValue(node);
             }
 
             if (node.childNodes.length == 1
                 && (node.childNodes[0].nodeType == 3 || node.childNodes[0].nodeType == 4)) { // leaf node
-                return this.__node2object(node.childNodes[0], wsdlTypes);
+                return this.__node2object(node.childNodes[0]);
             }
 
-            var key = node.parentNode.nodeName+":"+node.nodeName;
-            var parentType = this.__getTypeFromWsdl(key);
-            if (parentType == "" && pType != null) {
-                key = pType.substring(pType.indexOf(":")+1) + ":" + node.nodeName;
-                parentType = this.__getTypeFromWsdl(key);
-            }
+            var parentType = this.__getTypeFromWsdl(node);
             var isarray = parentType.toLowerCase().indexOf("arrayof") != -1;
 
             var i;
@@ -128,70 +116,90 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
                 return l;
             }
-            return null;
+ 
+           return null;
         }
 
         ,__extractValue : function(node) {
-            var value = node.nodeValue;
-            switch(this.__getTypeFromWsdl(node.parentNode.nodeName).toLowerCase()) {
+            var value_ = node.nodeValue;
+            switch(this.__getTypeFromWsdl(node).toLowerCase()) {
             case soapdemo.soap.Client.DEFAULT_PREFIX+"boolean":
-                return value + "" == "true";
+                return value_ + "" == "true";
 
             case soapdemo.soap.Client.DEFAULT_PREFIX+"int":
             case soapdemo.soap.Client.DEFAULT_PREFIX+"long":
-                return (value != null) ? parseInt(value + "", 10) : 0;
+                return (value_ != null) ? parseInt(value_ + "", 10) : 0;
 
             case soapdemo.soap.Client.DEFAULT_PREFIX+"double":
-                return (value != null) ? parseFloat(value + "") : 0;
+                return (value_ != null) ? parseFloat(value_ + "") : 0;
 
             case soapdemo.soap.Client.DEFAULT_PREFIX+"datetime":
-                if(value == null) {
+                if(value_ == null) {
                     return null;
                 }
                 else {
-                    value = value + "";
-                    value = value.substring(0, (value.lastIndexOf(".") == -1 ? value.length : value.lastIndexOf(".")));
-                    value = value.replace(/T/gi," ");
-                    value = value.replace(/-/gi,"/");
+                    value_ = value_ + "";
+                    value_ = value_.substring(0, (value_.lastIndexOf(".") == -1 ? value_.length : value_.lastIndexOf(".")));
+                    value_ = value_.replace(/T/gi," ");
+                    value_ = value_.replace(/-/gi,"/");
                     var d = new Date();
-                    d.setTime(Date.parse(value));
+                    d.setTime(Date.parse(value_));
                     return d;
                 }
             default:
             case soapdemo.soap.Client.DEFAULT_PREFIX+"string":
-                return (value != null) ? value + "" : "";
+                return (value_ != null) ? value_ + "" : "";
             }
         }
 
-        ,__getTypeFromWsdl : function(elementname) {
-            var type_ = this.__wsdlTypes[elementname] + "";
-            return (type_ == "undefined") ? "" : type_;
-        }
-
-        ,__getTypesFromWsdl : function(wsdl) {
-            this.__wsdlTypes = new Array();
-
-            // IE
-            var ell = this.__wsdl.getElementsByTagName(soapdemo.soap.Client.DEFAULT_PREFIX+"element");
-            var useNamedItem = true;
-
-            // MOZ
-            if(ell.length == 0) {
-                ell = this.__wsdl.getElementsByTagName("xs:element");
-                useNamedItem = false;
-            }
-
-            for(var i = 0; i < ell.length; i++) {
-                if(useNamedItem) {
-                    if(ell[i].attributes.getNamedItem("name") != null && ell[i].attributes.getNamedItem("type") != null) {
-                        this.__wsdlTypes[ell[i].attributes.getNamedItem("name").nodeValue] = ell[i].attributes.getNamedItem("type").nodeValue;
+        ,__getTypeFromWsdl : function(node) {
+            var key = node.parentNode.parentNode.parentNode.nodeName + ":" + node.parentNode.parentNode.nodeName;
+            var type_ = this.__wsdlTypes[key] + "";
+            if (type_ + "" == "undefined") {
+                key = node.parentNode.parentNode.nodeName + ":" + node.parentNode.nodeName;
+                type_ = this.__wsdlTypes[key] + "";
+                if (type_ == "undefined") {
+                    key = node.parentNode.nodeName + ":" + node.nodeName;
+                    type_ = this.__wsdlTypes[key] + "";
+                    if (type_ + "" == "undefined") {
+                        throw Error("'" + key + "' type not found!");
+                    }
+                    else {
+                        return type_;
                     }
                 }
                 else {
-                    if(ell[i].attributes["name"] != null && ell[i].attributes["type"] != null) {
-                        var key=ell[i].attributes["name"].value;
-                        this.__wsdlTypes[key] = ell[i].attributes["type"].value;
+                    return type_;
+                }
+            }
+            else {
+                return type_;
+            }
+        }
+
+        ,__getTypesFromWsdl : function() {
+            this.__wsdlTypes = new Array();
+
+            ell=qx.xml.Element.getElementsByTagNameNS(this.__wsdl, "http://www.w3.org/2001/XMLSchema", "element")
+            console.log(ell);
+            var key="";
+            var value_="";
+            for(var i=0; i < ell.length; ++i) {
+                key = qx.xml.Element.selectSingleNode(ell[i],"@name");
+                value_ = qx.xml.Element.selectSingleNode(ell[i],"@type|@xsi:type");
+                if (key == null || value_ == null) {
+                    throw Error("incomplete element tag!");
+                }
+                else {
+                    var prefix = qx.xml.Element.selectSingleNode(ell[i],"../../@name");
+                    if (prefix != null) {
+                        key = prefix.value + ":" + key.value;
                     }
+                    else {
+                        key = key.value;
+                    }
+                    this.__wsdlTypes[key] = value_.value;
+                    console.log(key);
                 }
             }
         }
@@ -231,7 +239,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 }
 
                 output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) +
-                keyStr.charAt(enc3) + keyStr.charAt(enc4);
+                Str.charAt(enc3) + keyStr.charAt(enc4);
             } while (i < input.length);
 
             return output;
@@ -256,9 +264,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
         // private: invoke async
         ,__loadWsdl : function(method, parameters, async, callback) {
-            // load from cache?
-            if(this.__wsdlTypes == null) {
-                // get wsdl
+            if(this.__wsdl == null) {
                 var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
                 xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
                 if(async) {
@@ -279,6 +285,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 return this.__sendSoapRequest(method, parameters, async, callback);
             }
         }
+
         ,__onLoadWsdl : function(method, parameters, async, callback, req) {
             this.__wsdl = req.responseXML;
             if (this.__wsdl == null) {
@@ -313,19 +320,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
             // send request
             var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
-
-            if (this.userName && this.password) {
-                xmlHttp.open("POST", this.getUrl(), async, this.userName, this.password);
-                /* Some WS implementations (i.e. BEA Webic Server 10.0 JAX-WS) do
-                 * not support Challenge/Response HTTP BASIC, so we send authorization
-                 * headers in the first request
-                 */
-                xmlHttp.setRequestHeader("Authorization",
-                    "Basic " + this.__toBase64(this.userName + ":" + this.password));
-            }
-            else {
-                xmlHttp.open("POST", this.getUrl(), async);
-            }
+            xmlHttp.open("POST", this.getUrl(), async);
 
             var soapaction = ((ns.lastIndexOf("/") != ns.length - 1) ? ns + "/" : ns) + method;
             xmlHttp.setRequestHeader("SOAPAction", soapaction);

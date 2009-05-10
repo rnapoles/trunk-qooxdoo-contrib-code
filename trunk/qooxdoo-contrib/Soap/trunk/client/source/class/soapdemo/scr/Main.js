@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2008, Burak Arslan (burak.arslan-qx@arskom.com.tr).
+ * Copyright (c) 2008-2009, Burak Arslan (burak.arslan-qx@arskom.com.tr).
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ qx.Class.define("soapdemo.scr.Main", { extend : qx.core.Object
 
         var lbBottom = new qx.ui.container.Composite(new qx.ui.layout.HBox());
         lvMain.add(lbBottom,{flex:1});
-				
+
         var btnSimple = new qx.ui.toolbar.Button("Simple");
         btnSimple.addListener("execute", function(e) {
             lbBottom.removeAll();
