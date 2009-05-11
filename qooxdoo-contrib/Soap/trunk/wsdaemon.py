@@ -29,7 +29,7 @@
 
 from soaplib.wsgi_soap import SimpleWSGISoapApp
 from soaplib.service import soapmethod
-from soaplib.serializers.primitive import String, Integer, Array
+from soaplib.serializers.primitive import String, Integer, Array, DateTime
 from soaplib.serializers.clazz import ClassSerializer
 
 import soaplib.wsgi_soap 
@@ -38,6 +38,8 @@ soaplib.wsgi_soap.log_exceptions(True)
 soaplib.wsgi_soap.log_debug(True)
 
 import SimpleHTTPServer, SocketServer, BaseHTTPServer, urlparse, sys
+
+from datetime import datetime
 
 staticFolder='/client/'
 class BasicWebServiceDaemon:
@@ -183,6 +185,7 @@ class SOAPRequest(ClassSerializer):
         self.startrow = startrow
         self.endrow = startrow+50
 
+
 class ReturnObject(ClassSerializer):
     class types:
         byone=Integer
@@ -190,6 +193,12 @@ class ReturnObject(ClassSerializer):
         bythree=Integer
         byfour=Integer
         byfive=Integer
+
+class NestedObject(ClassSerializer):
+    class types:
+        date_time = DateTime
+        ro = ReturnObject
+        arr = Array(String)
 
 #
 # Hello World example from http://trac.optio.webfactional.com/wiki/HelloWorld
@@ -236,6 +245,22 @@ class HelloWorldService(SimpleWSGISoapApp):
     @soapmethod(_returns=String)
     def name (self):
         return self.__class__.__name__
+
+    @soapmethod(ComplexObject, _returns=ComplexObject)
+    def get_nested(self,complex):
+        retval = NestedObject()
+        retval.date_time = datetime.now()
+
+        retval.ro=ReturnObject()
+        i=5
+        retval.ro.byone   = i
+        retval.ro.bytwo   = i*2
+        retval.ro.bythree = i*3
+        retval.ro.byfour  = i*4
+        retval.ro.byfive  = i*5
+        retval.arr = ['asd097n09a', 'askdj0n3t']
+
+        return retval
 
 if __name__=='__main__':
     l=[ ('/svc/', HelloWorldService()),
