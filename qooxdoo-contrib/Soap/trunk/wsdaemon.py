@@ -246,7 +246,7 @@ class HelloWorldService(SimpleWSGISoapApp):
     def name (self):
         return self.__class__.__name__
 
-    @soapmethod(ComplexObject, _returns=ComplexObject)
+    @soapmethod(NestedObject, _returns=NestedObject)
     def get_nested(self,complex):
         retval = NestedObject()
         retval.date_time = datetime.now()
