@@ -113,7 +113,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                             retval[retval.length] = this.__extract_simple(child.childNodes[0],elts[0]);
                         }
                         else {
-                            retval[retval.length] = this.__extract_complex(child,elts[0]);
+                            retval[retval.length] = this.__extract_complex(child);
                         }
                     }
                 }
@@ -141,20 +141,26 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             else return false;
         }
 
-        ,__extract_complex : function(node) {
+        ,__extract_complex : function(node,type_node) {
             var retval = null;
 
             if(node.hasChildNodes()) {
                 retval = new Object();
+                var type_node=qx.xml.Element.selectSingleNode(this.__wsdl
+                        ,"/a:definitions/a:types/x:schema/x:complexType[@name='"+node.nodeName+"']"
+                        , this.self(arguments).NAMESPACES);
                 for(var i = 0; i < node.childNodes.length; i++) {
                     var child = node.childNodes[i];
                     var child_type_name=child.getAttribute("xsi:type");
+                    var child_type_node=qx.xml.Element.selectSingleNode(type_node
+                        ,".//x:element[@name='"+node.childNodes[i].nodeName+"']"
+                        , this.self(arguments).NAMESPACES);
+
                     if (child_type_name != null) {
-                        child_type_name = child_type_name.split(":")[1];
-                        retval[node.childNodes[i].nodeName] = this.__extract_simple(child.childNodes[0],child_type_name);
+                        retval[node.childNodes[i].nodeName] = this.__extract_simple(child.childNodes[0],child_type_node);
                     }
                     else {
-                        retval[node.childNodes[i].nodeName] = this.__extract_complex(child,child_type_name);
+                        retval[node.childNodes[i].nodeName] = this.__extract_complex(child);
                     }
                 }
             }
