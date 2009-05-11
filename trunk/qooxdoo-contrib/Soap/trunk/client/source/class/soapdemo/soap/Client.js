@@ -1,13 +1,7 @@
 /*
  * Javascript "SOAP Client" library
  *
- * @version: 2.4 - 2007.12.21
- * @author: Matteo Casati - http://www.guru4.net/
- *
- */
-
-/*
- * Qooxdoo integration by Burak Arslan (burak.arslan-qx@soapdemo.com.tr)
+ * Burak Arslan (burak.arslan-qx@soapdemo.com.tr)
  */
 
 qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
@@ -41,7 +35,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     ,members : {
         __wsdl : null
 
-        ,__onSendSoapRequest : function(method_name, async, callback, req) {
+        ,__on_send_soap_request : function(method_name, async, callback, req) {
             var o = null;
             var nsmap = soapdemo.soap.Client.NAMESPACES;
             if (req.responseXML == null) {
@@ -167,6 +161,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
             return retval;
         }
+
         ,__extract_simple : function(node, type_node) {
             var value_ = node.nodeValue;
             var type_name = type_node.getAttribute("type");
@@ -214,15 +209,15 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
         ,__invoke : function(method, parameters, async, callback) {
             if(async) {
-                this.__loadWsdl(method, parameters, async, callback);
+                this.__load_wsdl(method, parameters, async, callback);
             }
             else {
-                return this.__loadWsdl(method, parameters, async, callback);
+                return this.__load_wsdl(method, parameters, async, callback);
             }
         }
 
         // private: invoke async
-        ,__loadWsdl : function(method_, parameters, async, callback) {
+        ,__load_wsdl : function(method_, parameters, async, callback) {
             if(this.__wsdl == null) {
                 var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
                 xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
@@ -230,33 +225,33 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     var self=this;
                     xmlHttp.onreadystatechange = function() {
                         if(xmlHttp.readyState == 4) {
-                            self.__onLoadWsdl(method_, parameters, async, callback, xmlHttp);
+                            self.__on_load_wsdl(method_, parameters, async, callback, xmlHttp);
                         }
                     }
                 }
     
                 xmlHttp.send(null);
                 if (!async) {
-                    return this.__onLoadWsdl(method_, parameters, async, callback, xmlHttp);
+                    return this.__on_load_wsdl(method_, parameters, async, callback, xmlHttp);
                 }
             }
             else {
-                return this.__sendSoapRequest(method_, parameters, async, callback);
+                return this.__send_soap_request(method_, parameters, async, callback);
             }
         }
 
-        ,__onLoadWsdl : function(method_, parameters, async, callback, req) {
+        ,__on_load_wsdl : function(method_, parameters, async, callback, req) {
             this.__wsdl = req.responseXML;
             if (this.__wsdl == null) {
                 this.dispatchEvent(new qx.io.remote.Response("wsdl_failed"));
                 return null;
             }
             else {
-                return this.__sendSoapRequest(method_, parameters, async, callback);
+                return this.__send_soap_request(method_, parameters, async, callback);
             }
         }
 
-        ,__sendSoapRequest : function(method_, parameters, async, callback) {
+        ,__send_soap_request : function(method_, parameters, async, callback) {
             var ns; // namespace
             if (this.__wsdl.documentElement.attributes["targetNamespace"] + "" == "undefined") {
                 ns = this.__wsdl.documentElement.attributes.getNamedItem("targetNamespace").nodeValue;
@@ -288,14 +283,14 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 var self = this;
                 xmlHttp.onreadystatechange = function() {
                     if(xmlHttp.readyState == 4) { /* FIXME: No magic numbers in the code */
-                        self.__onSendSoapRequest(method_, async, callback, xmlHttp);
+                        self.__on_send_soap_request(method_, async, callback, xmlHttp);
                     }
                 }
             }
 
             xmlHttp.send(sr);
             if (!async) {
-                return this.__onSendSoapRequest(method_, async, callback, xmlHttp);
+                return this.__on_send_soap_request(method_, async, callback, xmlHttp);
             }
         }
     }
