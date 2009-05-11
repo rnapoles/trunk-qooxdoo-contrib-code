@@ -1,7 +1,7 @@
 /*
  * Javascript "SOAP Client" library
  *
- * Burak Arslan (burak.arslan-qx@soapdemo.com.tr)
+ * Burak Arslan (burak.arslan-qx@arskom.com.tr)
  */
 
 qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
