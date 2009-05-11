@@ -29,25 +29,29 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     }
     
     ,statics : {
-    	DEFAULT_PREFIX: 'xs:'
+         DEFAULT_PREFIX: 'xs:'
+        ,NAMESPACES: {
+             "a"    : "http://schemas.xmlsoap.org/wsdl/"
+            ,"x"    : "http://www.w3.org/2001/XMLSchema"
+            ,"plnk" : "http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+            ,"soap" : "http://schemas.xmlsoap.org/wsdl/soap/"
+        }
     }
 
     ,members : {
         __wsdl : null
 
-        ,__onSendSoapRequest : function(method, async, callback, req) {
+        ,__onSendSoapRequest : function(method_name, async, callback, req) {
             var o = null;
+            var nsmap = soapdemo.soap.Client.NAMESPACES;
             if (req.responseXML == null) {
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
             }
             else {
-                var nd = req.responseXML.getElementsByTagName(method + "Result");
+                var tag_name = qx.xml.Element.selectSingleNode(this.__wsdl,"/a:definitions/a:binding/a:operation[@name='"+method_name+"']/a:output/@name",nsmap);
+                var nd = req.responseXML.getElementsByTagName(tag_name.nodeValue);
 
-                if(nd.length == 0) {
-                    nd = req.responseXML.getElementsByTagName("return"); // PHP web Service?
-                }
-
-                if(nd.length == 0) {
+                if(nd == null) {
                     if(req.responseXML.getElementsByTagName("faultcode").length > 0) {
                         if(async || callback) {
                             o = new Error(500, req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue);
@@ -58,84 +62,82 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     }
                 }
                 else {
-                    o = this.__node2object(nd[0]);
+                    o = this.__to_object(nd[0]);
                 }
 
                 if(callback) {
                     callback(o, req.responseXML);
                 }
+
             }
             if(!async) {
                 return null;
             }
         }
 
-        ,__node2object : function(node) {
+        ,__to_object : function(node) {
+            var ssn = qx.xml.Element.selectSingleNode;
+            var sn = qx.xml.Element.selectNodes;
+            var nsmap = soapdemo.soap.Client.NAMESPACES;
+
             var retval = null;
 
-            var type_node = null;
-            var type_name = "";
-            var type_definition = null;
+            // get return type from wsdl
+            var return_type_node = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:element[@name='"+node.nodeName+"']", nsmap);
+            var return_type_name = return_type_node.getAttribute("type");
+            return_type_name = return_type_name.split(":")[1];
 
-            var elts = qx.xml.Element.getElementsByTagNameNS(this.__wsdl, "http://www.w3.org/2001/XMLSchema", "element");
-            for (var i=0; i<elts.length; ++i) {
-                if (elts[i].getAttribute("name") == node.nodeName) {
-                    type_node = elts[i];
-                    type_name = type_node.getAttribute("type");
-                    break;
-                }
-            }
+            var return_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+return_type_name+"']", nsmap);
+            node = node.childNodes[0];
 
-            type_name=type_name.split(":")[1];
+            var retval_type_node = ssn(return_type_definition, ".//x:element",nsmap);
 
-            if (this.__is_primitive(type_name)) {
-                retval = this.__extract_simple(node.childNodes[0],type_name);
+            if (this.__is_primitive(retval_type_node)) {
+                retval = this.__extract_simple(node.childNodes[0],retval_type_node);
             }
             else {
-                elts = qx.xml.Element.getElementsByTagNameNS(this.__wsdl, "http://www.w3.org/2001/XMLSchema", "complexType");
-                for (var i=0; i<elts.length; ++i) {
-                    if (elts[i].getAttribute("name") == type_name) {
-                        type_definition = elts[i];
-                        break;
-                    }
-                }
-    
-                if (type_definition == null) { 
-                    throw Error("'" + type_name + "' not found.");
-                }
-                else {
-                    elts = qx.xml.Element.getElementsByTagNameNS(type_definition, "http://www.w3.org/2001/XMLSchema", "element");
-                    if (elts.length == 1 && elts[0].getAttribute("minOccurs") == "0" 
-                                         && elts[0].getAttribute("maxOccurs") == "unbounded") { // it's an array
-                        retval = new Array();
-                        for(var i = 0; i < node.childNodes.length; i++) {
-                            var child = node.childNodes[i];
-                            var child_type_name=child.getAttribute("xsi:type")
-                            if (child_type_name != null) {
-                                child_type_name = child_type_name.split(":")[1];
-                                retval[retval.length] = this.__extract_simple(child.childNodes[0],child_type_name);
-                            }
-                            else {
-                                retval[retval.length] = this.__extract_complex(child,child_type_name);
-                            }
+                var retval_type_name = retval_type_node.getAttribute("type");
+                retval_type_name = retval_type_name.split(":")[1];
+
+                var retval_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+retval_type_name+"']", nsmap);
+                var elts = sn(retval_type_definition, ".//x:element",nsmap);
+
+                if (elts.length == 1 && elts[0].getAttribute("minOccurs") != null
+                                     && elts[0].getAttribute("maxOccurs") != null) { // it's an array
+                    retval = new Array();
+                    for (var i=0; i < node.childNodes.length; i++) {
+                        var child = node.childNodes[i];
+                        var child_type_name=child.getAttribute("xsi:type")
+
+                        if (child_type_name != null) {
+                            retval[retval.length] = this.__extract_simple(child.childNodes[0],elts[0]);
+                        }
+                        else {
+                            retval[retval.length] = this.__extract_complex(child,elts[0]);
                         }
                     }
-                    else {
-                        retval = this.__extract_complex(node, type_name);
-                    }
+                }
+                else {
+                    retval = this.__extract_complex(node, retval_type_name);
                 }
             }
 
             return retval;
         }
 
-        ,__is_primitive : function(type_) {
-            if (    type_ == "boolean"
-                 || type_ == "int"
-                 || type_ == "long"
-                 || type_ == "double"
-                 || type_ == "datetime"
-                 || type_ == "string") return true;
+        ,__is_primitive : function(type_node) {
+            var type_name = type_node.getAttribute("type");
+            if (type_name == null) {
+                type_name = type_node.getAttribute("xsi:type");
+            }
+            type_name = type_name.split(":")[1];
+
+            if (    type_name == "boolean"
+                 || type_name == "int"
+                 || type_name == "long"
+                 || type_name == "double"
+                 || type_name == "datetime"
+                 || type_name == "string") return true;
             else return false;
         }
 
@@ -159,10 +161,15 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
             return retval;
         }
-        ,__extract_simple : function(node, type_) {
+        ,__extract_simple : function(node, type_node) {
             var value_ = node.nodeValue;
+            var type_name = type_node.getAttribute("type");
+            if (type_name == null) {
+                type_name = type_node.getAttribute("xsi:type");
+            }
+            type_name = type_name.split(":")[1];
 
-            switch(type_) {
+            switch(type_name) {
             case "boolean":
                 return value_ + "" == "true";
 
@@ -209,7 +216,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         }
 
         // private: invoke async
-        ,__loadWsdl : function(method, parameters, async, callback) {
+        ,__loadWsdl : function(method_, parameters, async, callback) {
             if(this.__wsdl == null) {
                 var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
                 xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
@@ -217,33 +224,33 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     var self=this;
                     xmlHttp.onreadystatechange = function() {
                         if(xmlHttp.readyState == 4) {
-                            self.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
+                            self.__onLoadWsdl(method_, parameters, async, callback, xmlHttp);
                         }
                     }
                 }
     
                 xmlHttp.send(null);
                 if (!async) {
-                    return this.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
+                    return this.__onLoadWsdl(method_, parameters, async, callback, xmlHttp);
                 }
             }
             else {
-                return this.__sendSoapRequest(method, parameters, async, callback);
+                return this.__sendSoapRequest(method_, parameters, async, callback);
             }
         }
 
-        ,__onLoadWsdl : function(method, parameters, async, callback, req) {
+        ,__onLoadWsdl : function(method_, parameters, async, callback, req) {
             this.__wsdl = req.responseXML;
             if (this.__wsdl == null) {
                 this.dispatchEvent(new qx.io.remote.Response("wsdl_failed"));
                 return null;
             }
             else {
-                return this.__sendSoapRequest(method, parameters, async, callback);
+                return this.__sendSoapRequest(method_, parameters, async, callback);
             }
         }
 
-        ,__sendSoapRequest : function(method, parameters, async, callback) {
+        ,__sendSoapRequest : function(method_, parameters, async, callback) {
             var ns; // namespace
             if (this.__wsdl.documentElement.attributes["targetNamespace"] + "" == "undefined") {
                 ns = this.__wsdl.documentElement.attributes.getNamedItem("targetNamespace").nodeValue;
@@ -259,15 +266,15 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                         "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
                         "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                     "<soap:Body>" +
-                    "<" + method + " xmlns=\"" + ns + "\">" +
+                    "<" + method_ + " xmlns=\"" + ns + "\">" +
                     parameters.toXml() +
-                    "</" + method + "></soap:Body></soap:Envelope>";
+                    "</" + method_ + "></soap:Body></soap:Envelope>";
 
             // send request
             var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
             xmlHttp.open("POST", this.getUrl(), async);
 
-            var soapaction = ((ns.lastIndexOf("/") != ns.length - 1) ? ns + "/" : ns) + method;
+            var soapaction = ((ns.lastIndexOf("/") != ns.length - 1) ? ns + "/" : ns) + method_;
             xmlHttp.setRequestHeader("SOAPAction", soapaction);
             xmlHttp.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
 
@@ -275,14 +282,14 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 var self = this;
                 xmlHttp.onreadystatechange = function() {
                     if(xmlHttp.readyState == 4) { /* FIXME: No magic numbers in the code */
-                        self.__onSendSoapRequest(method, async, callback, xmlHttp);
+                        self.__onSendSoapRequest(method_, async, callback, xmlHttp);
                     }
                 }
             }
 
             xmlHttp.send(sr);
             if (!async) {
-                return this.__onSendSoapRequest(method, async, callback, xmlHttp);
+                return this.__onSendSoapRequest(method_, async, callback, xmlHttp);
             }
         }
     }
