@@ -33,8 +33,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     }
 
     ,members : {
-         __wsdlTypes : null
-        ,__wsdl : null
+        __wsdl : null
 
         ,__onSendSoapRequest : function(method, async, callback, req) {
             var o = null;
@@ -42,10 +41,10 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
             }
             else {
-                var nd = this.__getElementsByTagName(req.responseXML, method + "Result");
+                var nd = req.responseXML.getElementsByTagName(method + "Result");
 
                 if(nd.length == 0) {
-                    nd = this.__getElementsByTagName(req.responseXML, "return"); // PHP web Service?
+                    nd = req.responseXML.getElementsByTagName("return"); // PHP web Service?
                 }
 
                 if(nd.length == 0) {
@@ -71,68 +70,110 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
         }
 
-        ,__node2object : function(node, pType) {
-            if(node == null) { // null node
-                return null;
-            }
+        ,__node2object : function(node) {
+            var retval = null;
 
-            pType = (typeof pType == 'undefined') ? null : pType;
+            var type_node = null;
+            var type_name = "";
+            var type_definition = null;
 
-            if(node.nodeType == 3 || node.nodeType == 4) { // text node
-                return this.__extractValue(node);
-            }
-
-            if (node.childNodes.length == 1
-                && (node.childNodes[0].nodeType == 3 || node.childNodes[0].nodeType == 4)) { // leaf node
-                return this.__node2object(node.childNodes[0]);
-            }
-
-            var parentType = this.__getTypeFromWsdl(node);
-            var isarray = parentType.toLowerCase().indexOf("arrayof") != -1;
-
-            var i;
-
-            if (isarray) { // object node
-                var l = new Array(); // create node ref
-
-                for(i = 0; i < node.childNodes.length; i++) {
-                    l[l.length] = this.__node2object(node.childNodes[i], parentType);
+            var elts = qx.xml.Element.getElementsByTagNameNS(this.__wsdl, "http://www.w3.org/2001/XMLSchema", "element");
+            for (var i=0; i<elts.length; ++i) {
+                if (elts[i].getAttribute("name") == node.nodeName) {
+                    type_node = elts[i];
+                    type_name = type_node.getAttribute("type");
+                    break;
                 }
-
-                return l;
             }
-            else { // list node
-                var obj = null;
 
-                if(node.hasChildNodes()) {
-                    obj = new Object();
-                }
+            type_name=type_name.split(":")[1];
 
-                for(i = 0; i < node.childNodes.length; i++) {
-                    var p = this.__node2object(node.childNodes[i], parentType);
-                    obj[node.childNodes[i].nodeName] = p;
-                }
-
-                return obj;
+            if (this.__is_primitive(type_name)) {
+                retval = this.__extract_simple(node.childNodes[0],type_name);
             }
- 
-           return null;
+            else {
+                elts = qx.xml.Element.getElementsByTagNameNS(this.__wsdl, "http://www.w3.org/2001/XMLSchema", "complexType");
+                for (var i=0; i<elts.length; ++i) {
+                    if (elts[i].getAttribute("name") == type_name) {
+                        type_definition = elts[i];
+                        break;
+                    }
+                }
+    
+                if (type_definition == null) { 
+                    throw Error("'" + type_name + "' not found.");
+                }
+                else {
+                    elts = qx.xml.Element.getElementsByTagNameNS(type_definition, "http://www.w3.org/2001/XMLSchema", "element");
+                    if (elts.length == 1 && elts[0].getAttribute("minOccurs") == "0" 
+                                         && elts[0].getAttribute("maxOccurs") == "unbounded") { // it's an array
+                        retval = new Array();
+                        for(var i = 0; i < node.childNodes.length; i++) {
+                            var child = node.childNodes[i];
+                            var child_type_name=child.getAttribute("xsi:type")
+                            if (child_type_name != null) {
+                                child_type_name = child_type_name.split(":")[1];
+                                retval[retval.length] = this.__extract_simple(child.childNodes[0],child_type_name);
+                            }
+                            else {
+                                retval[retval.length] = this.__extract_complex(child,child_type_name);
+                            }
+                        }
+                    }
+                    else {
+                        retval = this.__extract_complex(node, type_name);
+                    }
+                }
+            }
+
+            return retval;
         }
 
-        ,__extractValue : function(node) {
+        ,__is_primitive : function(type_) {
+            if (    type_ == "boolean"
+                 || type_ == "int"
+                 || type_ == "long"
+                 || type_ == "double"
+                 || type_ == "datetime"
+                 || type_ == "string") return true;
+            else return false;
+        }
+
+        ,__extract_complex : function(node) {
+            var retval = null;
+
+            if(node.hasChildNodes()) {
+                retval = new Object();
+                for(var i = 0; i < node.childNodes.length; i++) {
+                    var child = node.childNodes[i];
+                    var child_type_name=child.getAttribute("xsi:type");
+                    if (child_type_name != null) {
+                        child_type_name = child_type_name.split(":")[1];
+                        retval[node.childNodes[i].nodeName] = this.__extract_simple(child.childNodes[0],child_type_name);
+                    }
+                    else {
+                        retval[node.childNodes[i].nodeName] = this.__extract_complex(child,child_type_name);
+                    }
+                }
+            }
+
+            return retval;
+        }
+        ,__extract_simple : function(node, type_) {
             var value_ = node.nodeValue;
-            switch(this.__getTypeFromWsdl(node).toLowerCase()) {
-            case soapdemo.soap.Client.DEFAULT_PREFIX+"boolean":
+
+            switch(type_) {
+            case "boolean":
                 return value_ + "" == "true";
 
-            case soapdemo.soap.Client.DEFAULT_PREFIX+"int":
-            case soapdemo.soap.Client.DEFAULT_PREFIX+"long":
+            case "int":
+            case "long":
                 return (value_ != null) ? parseInt(value_ + "", 10) : 0;
 
-            case soapdemo.soap.Client.DEFAULT_PREFIX+"double":
+            case "double":
                 return (value_ != null) ? parseFloat(value_ + "") : 0;
 
-            case soapdemo.soap.Client.DEFAULT_PREFIX+"datetime":
+            case "datetime":
                 if(value_ == null) {
                     return null;
                 }
@@ -145,102 +186,9 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     d.setTime(Date.parse(value_));
                     return d;
                 }
-            default:
-            case soapdemo.soap.Client.DEFAULT_PREFIX+"string":
+            case "string":
                 return (value_ != null) ? value_ + "" : "";
             }
-        }
-
-        ,__getTypeFromWsdl : function(node) {
-            var key = node.parentNode.parentNode.parentNode.nodeName + ":" + node.parentNode.parentNode.nodeName;
-            var type_ = this.__wsdlTypes[key] + "";
-            if (type_ + "" == "undefined") {
-                key = node.parentNode.parentNode.nodeName + ":" + node.parentNode.nodeName;
-                type_ = this.__wsdlTypes[key] + "";
-                if (type_ == "undefined") {
-                    key = node.parentNode.nodeName + ":" + node.nodeName;
-                    type_ = this.__wsdlTypes[key] + "";
-                    if (type_ + "" == "undefined") {
-                        throw Error("'" + key + "' type not found!");
-                    }
-                    else {
-                        return type_;
-                    }
-                }
-                else {
-                    return type_;
-                }
-            }
-            else {
-                return type_;
-            }
-        }
-
-        ,__getTypesFromWsdl : function() {
-            this.__wsdlTypes = new Array();
-
-            ell=qx.xml.Element.getElementsByTagNameNS(this.__wsdl, "http://www.w3.org/2001/XMLSchema", "element")
-            console.log(ell);
-            var key="";
-            var value_="";
-            for(var i=0; i < ell.length; ++i) {
-                key = qx.xml.Element.selectSingleNode(ell[i],"@name");
-                value_ = qx.xml.Element.selectSingleNode(ell[i],"@type|@xsi:type");
-                if (key == null || value_ == null) {
-                    throw Error("incomplete element tag!");
-                }
-                else {
-                    var prefix = qx.xml.Element.selectSingleNode(ell[i],"../../@name");
-                    if (prefix != null) {
-                        key = prefix.value + ":" + key.value;
-                    }
-                    else {
-                        key = key.value;
-                    }                    this.__wsdlTypes[key] = value_.value;
-                    console.log(key);
-                }
-            }
-        }
-
-        ,__getElementsByTagName : function(document, tagName) {
-            try {
-                // trying to get node omitting any namespaces (latest versions of MSXML.XMLDocument)
-                return document.selectNodes(".//*[local-name()=\""+ tagName +"\"]");
-            }
-            catch (ex) {}
-            // old XML parser support
-            return document.getElementsByTagName(tagName);
-        }
-
-        ,__toBase64 : function(input) {
-            var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-            var output = "";
-            var chr1, chr2, chr3;
-            var enc1, enc2, enc3, enc4;
-            var i = 0;
-
-            do {
-                chr1 = input.charCodeAt(i++);
-                chr2 = input.charCodeAt(i++);
-                chr3 = input.charCodeAt(i++);
-
-                enc1 = chr1 >> 2;
-                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-                enc4 = chr3 & 63;
-
-                if (isNaN(chr2)) {
-                    enc3 = enc4 = 64;
-                }
-                else if (isNaN(chr3)) {
-                    enc4 = 64;
-                }
-
-                output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) +
-                Str.charAt(enc3) + keyStr.charAt(enc4);
-            } while (i < input.length);
-
-            return output;
         }
 
         ,callSync : function(methodName, args) {
@@ -291,7 +239,6 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 return null;
             }
             else {
-                this.__getTypesFromWsdl();
                 return this.__sendSoapRequest(method, parameters, async, callback);
             }
         }
