@@ -427,9 +427,14 @@ public class SvnNode extends Node {
     
     /** @return revision */
     public long changelog(long startRevision, String viewvc, StringBuilder result) throws SVNException {
+        return changelog(startRevision, root.getRepository().getLatestRevision(), viewvc, result);
+    }
+
+    /** @return revision of last change */
+    public long changelog(long startRevision, long endRevision, String viewvc, StringBuilder result) throws SVNException {
         Collection<SVNLogEntry> changeset;
         
-        changeset = queryChanges(startRevision);
+        changeset = queryChanges(startRevision, endRevision);
         report(viewvc, changeset, result);
         return getRevision(changeset);
     }
@@ -444,12 +449,10 @@ public class SvnNode extends Node {
         return revision;
     }
     
-    protected Collection<SVNLogEntry> queryChanges(long startRevision) throws SVNException {
-        long endRevision;
+    private Collection<SVNLogEntry> queryChanges(long startRevision, long endRevision) throws SVNException {
         SVNRepository repository;
         
         repository = root.getRepository();
-        endRevision = repository.getLatestRevision();
         if (startRevision > endRevision) {
             // empty log - might happen if "last deployed revision + 1" is passed to this function
             return new ArrayList<SVNLogEntry>();

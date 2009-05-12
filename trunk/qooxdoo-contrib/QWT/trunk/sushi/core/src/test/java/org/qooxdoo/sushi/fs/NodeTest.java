@@ -506,6 +506,14 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     }
 
     @Test(expected=MkdirException.class)
+    public void mkdirsOptOverFile() throws IOException {
+        Node file;
+        
+        file = work.join("file").writeBytes();
+        file.mkdirsOpt();
+    }
+
+    @Test(expected=MkdirException.class)
     public void mkdirToNonexistingDirectory() throws IOException {
         work.join("nosuchdir/file").mkdir();
     }
