@@ -6,7 +6,8 @@ var config = {
   selPort     : 4444,
   testBrowser : "*custom /usr/lib/firefox-3.0.6/firefox -no-remote -P selenium-3",
   autHost     : "http://172.17.12.142",
-  autPath     : "/~dwagner/workspace/qooxdoo.trunk/application/feedreader/source/"
+  autPath     : "/~dwagner/workspace/qooxdoo.trunk/application/feedreader/source/",
+  debug       : true
 };
 
 var stepSpeed  = "250"; // millisecs after each command
@@ -404,6 +405,7 @@ function runTests()
 // - Main --------------------------------------------------------------------
 
 print("Starting Feedreader session with browser " + config.testBrowser);
+browserLog("<h1>Feedreader results from " + currentDate.toLocaleString() + "</h1>");
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
 sel.start();
 sel.setTimeout(120000);
@@ -412,9 +414,8 @@ sel.setSpeed(stepSpeed);
 
 var agent = sel.getEval(usrAgent);
 var plat = sel.getEval(platform);
-var now = currentDate.toLocaleString();
 
-sel.getEval(browserLog("<h1>Feedreader results from " + now + "</h1>"));
+sel.getEval(browserLog("<h1>Feedreader results from " + currentDate.toLocaleString() + "</h1>"));
 sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
 sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
 sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
