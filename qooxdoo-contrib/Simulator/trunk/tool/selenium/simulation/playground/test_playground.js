@@ -248,14 +248,18 @@ function logTestDuration(elapsed)
 print("Starting Playground session with browser " + config.testBrowser);
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
 
+var init = 0;
 try {
-  sel.start();
   sel.setTimeout(120000);
-  sel.open(config.autHost + config.autPath);
+  init++;
   sel.setSpeed(stepSpeed);
+  init++;
+  sel.start();
+  init++;
+  sel.open(config.autHost + config.autPath);
 }
 catch(ex) {
-  logError("Error while initializing test",ex);
+  logError("Error while initializing test at step " + init,ex);
 }
 
 var agent = sel.getEval(usrAgent);
