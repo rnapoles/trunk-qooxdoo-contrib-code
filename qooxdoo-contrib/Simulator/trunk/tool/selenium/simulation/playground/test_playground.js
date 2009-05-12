@@ -250,13 +250,13 @@ var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,conf
 
 var init = 0;
 try {
-  sel.open(config.autHost + config.autPath);
+  sel.start();
   init++;
   sel.setTimeout(120000);
   init++;
   sel.setSpeed(stepSpeed);
-  init++;
-  sel.start();
+  init++;  
+  sel.open(config.autHost + config.autPath);
 }
 catch(ex) {
   logError("Error while initializing test at step " + init,ex);
