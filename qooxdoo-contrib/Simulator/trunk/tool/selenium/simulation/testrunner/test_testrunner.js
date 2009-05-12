@@ -41,6 +41,9 @@ packageFunc+= '  packStr += pack + ",";';
 packageFunc+= '}';
 packageFunc+= 'packStr;';
 
+var ignore = ["qx.test.Xml"];
+var include = [];
+
 // - Config End ----------------------------------------------------------------
 
 var currentDate = new Date();
@@ -170,16 +173,17 @@ function getTestDuration(startTime)
   return elapsed;
 }
 
-function logTestDuration(elapsed)
+function logTestDuration(elapsed, description)
 {
+  var desc = description || "Test run";
   elapsed = (elapsed / 1000);
   min = Math.floor(elapsed / 60);
   sec = Math.round(elapsed % 60);
   if (sec < 10) {
     sec = "0" + sec;
   }
-  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
-  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
+  print(desc + " finished in: " + min + " minutes " + sec + " seconds.");
+  sel.getEval(browserLog("<p>" + desc + " finished in: " + min + " minutes " + sec + " seconds.</p>"));
 }
 
 function logErrors(result)
@@ -286,10 +290,29 @@ function runTestsSteps()
 
   var packages = getPackageArray();
   print("TEST PACKAGES: " + packages);
+  
+  if (include.length > 0) {
+    packages = include;
+  }
+  else if (ignore.length > 0) {
+  
+    for (var x = 0; x < packages.length; x++) {
+      for (var j = 0; j < ignore.length; j++) {
+        if (packages[x] == ignore[j]) {
+          packages.splice(x, 1);
+        }
+      }
+    }
+    
+  }
+
+  print("TESTING PACKAGES: " + packages);
+
   var autUri = sel.getEval(selWin + '.document.getElementsByTagName("input")[0].value');
   autUri = autUri.substring(0,autUri.indexOf('=')+1);
     
   var elapsedTotal = 0;
+
   for (var i=0; i<packages.length; i++) {
     print("Loading package: " + packages[i]);
     sel.type("dom=document.getElementsByTagName('input')[0]", autUri + packages[i]);
@@ -307,16 +330,20 @@ function runTestsSteps()
     if (!isTestsDone()) {
       return;
     }
+    
+    var packageDuration = getTestDuration(startTime);    
   
-    elapsedTotal += getTestDuration(startTime); 
+    elapsedTotal += packageDuration; 
   
-    var result = getResultLog();
+    var result = getResultLog();    
     
     if (!result) {
       return;
     }
   
     logErrors(result);
+
+    logTestDuration(packageDuration, packages[i]);
 
   }  
   logTestDuration(elapsedTotal);
