@@ -366,6 +366,7 @@ var sel = false;
 
 (function() {
   print("Starting test session with browser " + config.testBrowser);
+  browserLog("<h1>Demobrowser results from " + currentDate.toLocaleString() + "</h1>");
   try {
     sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
     if (sel) {

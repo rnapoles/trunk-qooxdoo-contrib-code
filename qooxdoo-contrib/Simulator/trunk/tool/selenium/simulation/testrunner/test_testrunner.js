@@ -20,7 +20,7 @@ var testResultsLength = selWin + '.' + qxAppInst + '.f1.getContentElement().getD
 var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer) { qxReady = true; } } catch(e) {} qxReady;'; // check if testrunner instance exists
 var usrAgent = 'navigator.userAgent';
 var platform = 'navigator.platform';
-var logTestResults = 'function getResultArray() {  var resultArr = [];  var html = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer.f1.getContentElement().getDomElement().innerHTML;  var htmlLength = html.length;  var c = 0;  while (c < htmlLength) {    var chunk = html.substr(c, 500);    resultArr.push(chunk);    c += 500;  }  return resultArr;} var now = new Date(); var resArr = getResultArray(); for (var i=0,l=resArr.length; i<l;i++) {   LOG.error("qxSimulator_" + now.getTime() + ":" + resArr[i]); }';
+
 var packageFunc= 'function getPkg() {';
 packageFunc+= '  var temp = {};';
 packageFunc+= '  var iter = ' + selWin + '.' + qxAppInst + '.tests.handler.ttree.getIterator("depth");';
@@ -112,9 +112,8 @@ function logBrowserInfo()
 {
   var agent = sel.getEval(usrAgent);
   var plat = sel.getEval(platform);
-  var now = currentDate.toLocaleString();
 
-  sel.getEval(browserLog("<h1>Test Runner results from " + now + "</h1>"));
+  sel.getEval(browserLog("<h1>Test Runner results from " + currentDate.toLocaleString() + "</h1>"));
   sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
   sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
   sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
@@ -327,6 +326,7 @@ function runTestsSteps()
 // - Main --------------------------------------------------------------------
 
 print("Starting Test Runner session with browser " + config.testBrowser);
+browserLog("<h1>Test Runner results from " + currentDate.toLocaleString() + "</h1>");
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
 sel.start();
 sel.setTimeout(120000);

@@ -246,6 +246,7 @@ function logTestDuration(elapsed)
 // - Main --------------------------------------------------------------------
 
 print("Starting Playground session with browser " + config.testBrowser);
+browserLog("<h1>Playground results from " + currentDate.toLocaleString() + "</h1>");
 var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
 
 var init = 0;
