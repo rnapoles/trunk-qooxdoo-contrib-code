@@ -164,8 +164,8 @@ function sampleRunner(script)
       sel.getEval(browserLog("<DIV>ERROR while running script: " + ex + "</DIV>"));
     }
 
+    /*
     Packages.java.lang.Thread.sleep(2000);
-
     try {      
       killBoxes();
     }
@@ -173,6 +173,7 @@ function sampleRunner(script)
       //print("Error while trying to close dialog boxes: " + ex);
       sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
     }
+    */
     
     Packages.java.lang.Thread.sleep(2000);
     
