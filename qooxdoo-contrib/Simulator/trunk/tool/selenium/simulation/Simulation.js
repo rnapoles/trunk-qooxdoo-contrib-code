@@ -408,18 +408,7 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
     this.incrementTotalErrorsLogged();
   }
 
-  // The message might be a Java object, so cast it as a String just to be sure.
-  msg = String(msg);
-  msg = msg.replace(/\n/g,'<br/>');
-  msg = msg.replace(/\r/g,'<br/>');
-  msg = msg.replace(/'/g, '&quot;');
-  msg = msg.replace(/ä/g, '&auml;');
-  msg = msg.replace(/ö/g, '&ouml;');
-  msg = msg.replace(/ü/g, '&uuml;');
-  msg = msg.replace(/Ä/g, '&Auml;');
-  msg = msg.replace(/Ö/g, '&Ouml;');
-  msg = msg.replace(/Ü/g, '&Uuml;');
-  msg = msg.replace(/ß/g, '&szlig;');
+  msg = this.sanitize(msg);
 
   if (this.getConfigSetting("debug")) {
     print("Logging message: " + msg);
@@ -445,6 +434,29 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
     this.getEval(message, "Logging message to browser");
   }
 
+};
+
+/**
+ * Removes special and formatting characters from strings so they can be logged.
+ * 
+ * @param text {String} The string to be sanitized
+ * @return {String} The sanitized string
+ */
+simulation.Simulation.prototype.sanitize = function(text)
+{
+  // The message might be a Java object, so cast it as a String just to be sure.
+  text = String(text);
+  text = text.replace(/\n/g,'<br/>');
+  text = text.replace(/\r/g,'<br/>');
+  text = text.replace(/'/g, '&quot;');
+  text = text.replace(/ä/g, '&auml;');
+  text = text.replace(/ö/g, '&ouml;');
+  text = text.replace(/ü/g, '&uuml;');
+  text = text.replace(/Ä/g, '&Auml;');
+  text = text.replace(/Ö/g, '&Ouml;');
+  text = text.replace(/Ü/g, '&Uuml;');
+  text = text.replace(/ß/g, '&szlig;');
+  return text;
 };
 
 /**
