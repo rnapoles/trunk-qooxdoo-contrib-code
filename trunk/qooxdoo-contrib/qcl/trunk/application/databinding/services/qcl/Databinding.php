@@ -31,66 +31,83 @@ class class_Databinding
 
   function method_getNodeCount( $params )
   {
-    $_SESSION['nodeCount'] = 5430;
+    $_SESSION['nodeCount'] = rand(1000,9000);
     $_SESSION['counter'] = 0;
     return array(
-      'result' => $_SESSION['nodeCount']
-    )
+      'result' => array(
+          'nodeCount' => $_SESSION['nodeCount']
+      )
+    );
   }
   
   
   function method_getNodeData( $params )
   {
-    list( $datasource, $queue, $max ) = $params;  
+    list( $queue, $max ) = $params;  
+    
+    $queue = (array) $queue;
+    
+    $q = $queue;
     
     /*
      * create node array
      */
     $nodeArr = array();
+    $counter= 0;
     
-    while ( $parentId = array_shift( $queue ) )
+    while ( $counter++ < $max and 
+            is_numeric( $parentId = array_shift( $queue ) ) )
     {
       
       /*
        * abort when maximum number of nodes is reached
        */
-      if ( $_SESSION['counter']++ > $_SESSION['nodeCount'] )
+      if ( $_SESSION['counter'] > $_SESSION['nodeCount'] )
+      //if (false)
       {
         return array(
           'result' => array(
             'nodes'        => array(),   
             'queue'        => array()
           )
-        )
+        );
       }
       
-      /*
-       * create node datat
-       */
-      $nodeId         = rand()
-      $label          = "Node $nodeId";
-      $hasChildren    = (bool) rand(0,1);
-      $recordCount    = rand(0,100);
-      $isBranch       = (bool) rand(0,1);
-  
-      $node = array(
-        'parentNodeId'    => $parentId,  
-        'isBranch'        => $isBranch,
-        'label'           => $label,
-        'bOpened'         => ! $hasChildren,
-        'icon'            => null, // default
-        'iconSelected'    => null, // default
-        'bHideOpenClose'  => ! $hasChildren,
-        'data'            => array (),
-        'columnData'   => array( null, $recordCount )
-      );
-
-      if ( $hasChildren )
+      $childCount     = rand(1,10);
+      
+      for( $i=0; $i < $childCount; $i++ )
       {
-        array_push( $queue, $nodeId );
+        /*
+         * create node datat
+         */
+        $nodeId         = ++$_SESSION['counter'];
+        $isBranch       = (bool) rand(0,1);
+        
+        $label          = $isBranch ? "Branch $nodeId" : "Leaf $nodeId";
+        $hasChildren    = $isBranch ? (bool) rand(0,1) : false;
+        $recordCount    = $isBranch ? rand(0,100) :"";
+        
+    
+        $node = array(
+          'type'            => $isBranch ? 2 : 1,
+          'label'           => $label,
+          'bOpened'         => ! $hasChildren,
+          'icon'            => null, // default
+          'iconSelected'    => null, // default
+          'bHideOpenClose'  => ! $hasChildren,
+          'data'            => array (
+                                'id'        => $nodeId,
+                                'parentId'  => $parentId
+                               ),
+          'columnData'   => array( null, $recordCount )
+        );
+  
+        if ( $hasChildren )
+        {
+          array_push( $queue, $nodeId );
+        }
+        array_push( $nodeArr, $node );
       }
-      
-      array_push( $nodeArr );
     }
     
     return array(
@@ -98,7 +115,7 @@ class class_Databinding
         'nodes'        => $nodeArr,   
         'queue'        => $queue
       )
-    )
+    );
   }
 
 
