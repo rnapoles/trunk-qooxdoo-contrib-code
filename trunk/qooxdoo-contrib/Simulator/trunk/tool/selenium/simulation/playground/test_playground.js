@@ -1,301 +1,155 @@
-importClass(Packages.com.thoughtworks.selenium.QxSelenium);
-
-// - Config Section ------------------------------------------------------------
-var config = {
-  selServer   : "localhost",
-  selPort     : 4444,
-  testBrowser : "*custom /usr/lib/firefox-3.0.6/firefox -no-remote -P selenium-3",
-  autHost     : "http://172.17.12.142",
-  autPath     : "/~dwagner/workspace/qooxdoo.trunk/application/playground/source/"
+var baseConf = {
+  'autName' : 'Playground',
+  'globalTimeout' : 300000,
+  'stepSpeed' : '250',
+  'selServer' : 'localhost',
+  'selPort' : 4444,
+  'testBrowser' : '*custom /usr/lib/firefox-3.0.10/firefox -no-remote -P selenium-3',
+  'autHost' : 'http://localhost',
+  'autPath' : '/~dwagner/workspace/qooxdoo.trunk/application/playground/build/index.html',
+  'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator' 
 };
 
-var stepSpeed  = "250"; // millisecs after each command
-var testPause = 360000; // millisecs to wait for all tests to finish
-var selWin = "selenium.browserbot.getCurrentWindow()"; // get application iframe
-var qxApp = "qx.core.Init.getApplication()";
-var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().playarea) { qxReady = true; } } catch(e) {} qxReady;'; // check if testrunner instance exists
-var isLogVisible = selWin + "." + qxApp + ".stack.getVisibility() == 'visible'";
-var isLogExcluded = selWin + "." + qxApp + ".stack.getVisibility() == 'excluded'";
-var logHtml = selWin + "." + qxApp + ".logelem.innerHTML";
-var currentSample = selWin + "." + qxApp + ".playAreaCaption.getContent()";
-var sampleList = selWin + '.' + qxApp + '.widgets["toolbar.selectSampleButton"].getMenu().getChildren()';
-var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";
-var usrAgent = 'navigator.userAgent';
-var platform = 'navigator.platform';
-var errorPre = '<div class="qxappender"><div class="level-error">';
-var errorSuf = '</div></div>';
-var totalErrors = 0;
-
-// - Config End ----------------------------------------------------------------
-
-var currentDate = new Date();
-var errWarn = 0;
-
-// store command line parameters in config object
-for (i in arguments) {
-  if (arguments[i].indexOf("=") >0) {
-    var tempArr = arguments[i].split("=");
-    config[tempArr[0]] = tempArr[1];
+var args = arguments ? arguments : "";
+var simSvn = baseConf.simulatorSvn;
+for (var i=0; i<args.length; i++) {
+  if (args[i].indexOf('simulatorSvn') >= 0) {
+    simSvn = args[i].substr(args[i].indexOf('simulatorSvn=') + 13);
   }
 }
 
-/*
- * Open/create a log file and return the file object.
- */
-function getLogFile()
-{
-  var logFileName = config.logFile ? config.logFile :  "playground_" + currentDate.getTime() + ".log";
-  var fstream = new java.io.FileWriter(logFileName, true);
-  var out = new java.io.BufferedWriter(fstream);
-  return out;
-}
+load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
 
-/*
-*  Write a message to Selenium's browser side log and the local log file.
-*/
-function browserLog(msg)
-{
-  msg = msg ? msg : "";
-  msg = String(msg);
-  msg = msg.replace(/\n/g,'<br/>');
-  msg = msg.replace(/\r/g,'<br/>');
-  msg = msg.replace(/'/g, '&quot;');
-  msg = msg.replace(/ä/g, '&auml;');
-  msg = msg.replace(/ö/g, '&ouml;');
-  msg = msg.replace(/ü/g, '&uuml;');
-  msg = msg.replace(/Ä/g, '&Auml;');
-  msg = msg.replace(/Ö/g, '&Ouml;');
-  msg = msg.replace(/Ü/g, '&Uuml;');
-  msg = msg.replace(/ß/g, '&szlig;');
-  var prefix = 'qxSimulator_' + currentDate.getTime();
-  var logFile = getLogFile();
-  logFile.write(prefix + ': ' + msg);
-  logFile.newLine();
-  logFile.close();
-  return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
-}
+var mySim = new simulation.Simulation(baseConf,args);
 
-/*
-* Generated HTML elements are uppercase in IE
-*/
-function getLogArray(result)
+var selWin = simulation.Simulation.SELENIUMWINDOW;
+var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
+var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
+
+var getSampleNames = function()
 {
-  var logArray = [];
-  if (result.indexOf("</div>") >0 ) {
-    logArray = result.split("</div>");
-  } else if (result.indexOf("</DIV>") >0 ) {
-    logArray = result.split("</DIV>");
+  // TODO: Make this less horrible.
+  var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot().getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[1].getMenu().getChildren();  
+  var sampleNames = "";
+  for(var i=0,l=kids.length; i<l; i++) {  
+    sampleNames += kids[i].getLabel() + ",";
   }
-  return logArray;
-}
+  return sampleNames;
+};
 
-function isSampleLoaded(sample)
+simulation.Simulation.prototype.isSampleLoaded = function(sample)
 {
-  var sampleLoaded = false;
-  
-  print("Checking if " + sample + " was loaded.");
-  
+  var sampleLoaded = false;  
+  var log = "Checking if " + sample + " was loaded.";   
+  print(log);  
   var tmp = "Starting application '" + sample + "'";
   var check = logHtml + '.indexOf("' + tmp + '") > 0';
-  
-  var isLoaded = sel.getEval(check);  
+  var isLoaded = this.getEval(check, log);  
   if (isLoaded == "true") {
     sampleLoaded = true;
   }
   return sampleLoaded;
-}
+};
 
-function isSampleStarted(sample)
+simulation.Simulation.prototype.isSampleStarted = function(sample)
 {
   var sampleStarted = false;
-  print("Checking if sample " + sample + " was started successfully.");
+  var log = "Checking if sample " + sample + " was started successfully.";
+  print(log);
   var check = logHtml + ".indexOf('Successfully started') > 0";  
-  var isStarted = sel.getEval(check);  
+  var isStarted = this.getEval(check, log);  
   if (isStarted == "true") {
     sampleStarted = true;
   }
   return sampleStarted;
-}
+};
 
-function logError(info, ex)
+simulation.Simulation.prototype.runTest = function()
 {
-  totalErrors++;
-  var msg = String(ex);
-  msg = msg.replace(/\n/,'');
-  msg = msg.replace(/\r/,'');
-  msg = msg.replace(/'/, '\'');
-  
-  print(info + ": " + msg );
-  sel.getEval(browserLog(errorPre + info + ': ' + msg + errorSuf));
-}
-
-function runTests()
-{
-  var startTime = new Date();
-  
   // Make sure the locale is 'en' to simplify dealing with log messages.
-  try {   
-    sel.runScript(setLocale);
-  }
-  catch(ex) {
-    logError("Error shile setting locale", ex);
-  }
-  
-  try {
-    sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]');
-  }
-  catch(ex) {
-    logError("Pressing run button failed", ex);   
-  }
+  var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";
+  this.runScript(setLocale, "Setting application locale to EN");    
    
   // Open log pane
-  try {
-    print("Opening log.");
-    sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox');
-    sel.waitForCondition(isLogVisible, 10000); 
-  } 
-  catch(ex) {
-    logError("Opening log failed", ex);
-  }
- 
-  try {
-    print("Getting available samples.");
-    var sampleNames = sel.getEval(getSampleNames());
-    sampleNames = String(sampleNames);
-    var sampleArr = sampleNames.split(",");
-    print("Found " + sampleArr.length + " samples: " + sampleArr);
-  }
-  catch(ex) {
-    logError("Getting sample names failed", ex);
-  }
-    
-  for (var i=0; i<sampleArr.length; i++) {
-    if (sampleArr[i] != "") {
-      print("Selecting next sample: " + sampleArr[i]);
-      try {
-        sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton');
-        sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']');
-      } 
-      catch (ex) {
-        logError("Error while selecting sample " + sampleArr[i], ex);
-      }
+  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox', 'Opening log pane');
+  
+  // Load the first sample again to make sure we get the english log output.
+  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', 'Pressing Run button');
 
-      while (sel.isAlertPresent()) {
-        var al = String(sel.getAlert());
-        logError("Found alert box", al.substring(0,75) + "...");        
-      }
+  this.addOwnFunction("getSampleNames", getSampleNames);  
+  var sampleNames = this.getEval("selenium.browserbot.getCurrentWindow().qx.Simulation.getSampleNames();", "Getting sample names");
+  sampleNames = String(sampleNames);
+  var sampleArr = sampleNames.split(",");
+  print("Found " + sampleArr.length + " samples: " + sampleArr); 
+   
+  for (var i=0; i<sampleArr.length; i++) {
+    if (sampleArr[i] !== "") {
+      print("Selecting next sample: " + sampleArr[i]);
+      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton', 'Clicking menu button');
+      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']', 'Selecting sample ' + sampleArr[i]);      
+
+      var boxCont = this.killBoxes();
       
-      if (checkSample(sampleArr[i])) {
+      var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
+      var sampleStarted = this.isSampleStarted(sampleArr[i]);  
+  
+      if (sampleLoaded && sampleStarted) {
         print(sampleArr[i] + " loaded and started.");
-        sel.getEval(browserLog("<p>Sample " + sampleArr[i] + " started without errors.</p>"));
+        this.log("Sample " + sampleArr[i] + " started without errors.", "info");
       }
       else {
-        logError(sampleArr[i] + " did not load and/or start correctly.", "");        
+        this.errWarn++;
+        this.log(sampleArr[i] + " did not load and/or start correctly.", "error");        
       }
     }
   }
   
-  logTestDuration(getTestDuration(startTime));
+};
 
-  sel.getEval(browserLog("<p>Playground ended with warnings or errors: " + totalErrors + "</p>"));
-  
-}
-
-function getSampleNames()
-{
-  var func = 'function getNames() {';
-  func +=    'var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot().getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[1].getMenu().getChildren();';  
-  func +=    'var sampleNames = "";';
-  func +=    'for(var i=0,l=kids.length; i<l; i++) {';  
-  func +=    'sampleNames += kids[i].getLabel() + ",";';
-  func +=    '}';
-  func +=    'return sampleNames;';
-  func +=    '}';
-  func +=    'getNames();';
-  return func;
-}
-
-function checkSample(sampleName) {
-  // Check if sample started successfully
-  var sampleOk = false;
-  var sampleLoaded = false;
-  var sampleStarted = false;
-  try {
-    sampleLoaded = isSampleLoaded(sampleName);
-    sampleStarted = isSampleStarted(sampleName);    
-  }
-  catch(ex) {
-    logError("Error while checking " + sampleName, ex);
-  }
-  
-  if (sampleLoaded && sampleStarted) {
-    sampleOk = true;
-  }
-  
-  return sampleOk;
-}
-
-function getTestDuration(startTime)
-{
-  var stopTime = new Date();
-  var elapsed = stopTime.getTime() - startTime.getTime();
-  return elapsed;
-}
-
-function logTestDuration(elapsed)
-{
-  elapsed = (elapsed / 1000);
-  min = Math.floor(elapsed / 60);
-  sec = Math.round(elapsed % 60);
-  if (sec < 10) {
-    sec = "0" + sec;
-  }
-  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
-  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
-}
 
 // - Main --------------------------------------------------------------------
 
-print("Starting Playground session with browser " + config.testBrowser);
-browserLog("<h1>Playground results from " + currentDate.toLocaleString() + "</h1>");
-var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
+(function() { 
+  mySim.testFailed = false;
+  mySim.errWarn = 0;
 
-var init = 0;
-try {
-  sel.start();
-  init++;
-  sel.setTimeout(120000);
-  init++;
-  sel.setSpeed(stepSpeed);
-  init++;  
-  sel.open(config.autHost + config.autPath);
-}
-catch(ex) {
-  logError("Error while initializing test at step " + init,ex);
-}
-
-var agent = sel.getEval(usrAgent);
-var plat = sel.getEval(platform);
-
-sel.getEval(browserLog("<h1>Playground results from " + currentDate.toLocaleString() + "</h1>"));
-sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
-sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
-sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
+  var sessionStarted = mySim.startSession();
+  
+  if (!sessionStarted) {
+    return;
+  }
+  
+  mySim.logEnvironment();   
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+                                          "Waiting for qooxdoo application");
 
 
-try {
-  sel.waitForCondition(isQxReady, "60000");
-}
-catch(ex) {
-  logError("Error loading application",ex);
-}
+  if (!isAppReady) {
+    mySim.testFailed = true;
+    mySim.stop();
+    return;
+  }
 
-try {
-  runTests();  
-}
-catch(ex) {
-  logError("Unexpected error during test",ex);
-}
+  try {
+    mySim.runTest();
+  }
+  catch(ex) {
+    mySim.testFailed = true;
+    var msg = "Unexpected error while running test!";
+    if (mySim.debug) {
+      print(msg + "\n" + ex);
+    }
+    mySim.log(msg, "error");
+  }
 
-sel.stop();
-print("Test Runner session finished.");
+  if (!mySim.testFailed) {
+    if (mySim.debug) {
+      print("Test run finished successfully.");
+    }
+    mySim.log("Playground ended with warnings or errors: " + mySim.errWarn, "info");
+  }
+
+  mySim.logTestDuration();
+  mySim.stop();
+
+})();
