@@ -1,3 +1,4 @@
+
 /*
  * Javascript "SOAP Client" library
  *
@@ -23,8 +24,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     }
     
     ,statics : {
-         DEFAULT_PREFIX: 'xs:'
-        ,NAMESPACES: {
+        NAMESPACES: {
              "a"    : "http://schemas.xmlsoap.org/wsdl/"
             ,"x"    : "http://www.w3.org/2001/XMLSchema"
             ,"plnk" : "http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
@@ -37,7 +37,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
         ,__on_send_soap_request : function(method_name, async, callback, req) {
             var o = null;
-            var nsmap = soapdemo.soap.Client.NAMESPACES;
+            var nsmap = this.self(arguments).NAMESPACES;
             if (req.responseXML == null) {
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
             }
@@ -72,7 +72,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         ,__to_object : function(node) {
             var ssn = qx.xml.Element.selectSingleNode;
             var sn = qx.xml.Element.selectNodes;
-            var nsmap = soapdemo.soap.Client.NAMESPACES;
+            var nsmap = this.self(arguments).NAMESPACES;
 
             var retval = null;
 
@@ -82,121 +82,85 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             return_type_name = return_type_name.split(":")[1];
 
             var return_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+return_type_name+"']", nsmap);
-            node = node.childNodes[0];
-
             var retval_type_node = ssn(return_type_definition, ".//x:element",nsmap);
 
-            if (this.__is_primitive(retval_type_node)) {
-                retval = this.__extract_simple(node.childNodes[0],retval_type_node);
+            retval = this.__extract(node.childNodes[0],retval_type_node);
+
+            return retval;
+        }
+
+        ,__extract : function(node, type_node) {
+            var ssn = qx.xml.Element.selectSingleNode;
+            var sn = qx.xml.Element.selectNodes;
+            var nsmap = this.self(arguments).NAMESPACES;
+
+            var retval = null;
+            // get type name
+            var type_name = type_node.getAttribute("type");
+            if (type_name == null) {
+                type_name = type_node.getAttribute("xsi:type");
+            }
+            type_name = type_name.split(":")[1];
+            var type_name_lower = type_name.toLowerCase();
+            console.log(type_name);
+
+            var value_ = null;
+            if (node.hasChildNodes()) {
+                value_ = node.childNodes[0].nodeValue;
             }
             else {
-                var retval_type_name = retval_type_node.getAttribute("type");
-                retval_type_name = retval_type_name.split(":")[1];
-
-                var retval_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+retval_type_name+"']", nsmap);
-                var elts = sn(retval_type_definition, ".//x:element",nsmap);
-
-                if (elts.length == 1 && elts[0].getAttribute("minOccurs") != null
-                                     && elts[0].getAttribute("maxOccurs") != null) { // it's an array
-                    retval = new Array();
-                    for (var i=0; i < node.childNodes.length; i++) {
-                        var child = node.childNodes[i];
-                        var child_type_name=child.getAttribute("xsi:type")
-
-                        if (child_type_name != null) {
-                            retval[retval.length] = this.__extract_simple(child.childNodes[0],elts[0]);
-                        }
-                        else {
-                            retval[retval.length] = this.__extract_complex(child);
-                        }
-                    }
-                }
-                else {
-                    retval = this.__extract_complex(node, retval_type_name);
-                }
+                value_ = node.nodeValue;
             }
 
-            return retval;
-        }
-
-        ,__is_primitive : function(type_node) {
-            var type_name = type_node.getAttribute("type");
-            if (type_name == null) {
-                type_name = type_node.getAttribute("xsi:type");
+            // let's see...
+            if (type_name_lower == "boolean") {
+                retval = value_ + "" == "true";
             }
-            type_name = type_name.split(":")[1];
-
-            if (    type_name == "boolean"
-                 || type_name == "int"
-                 || type_name == "long"
-                 || type_name == "double"
-                 || type_name == "datetime"
-                 || type_name == "string") return true;
-            else return false;
-        }
-
-        ,__extract_complex : function(node,type_node) {
-            var retval = null;
-
-            if(node.hasChildNodes()) {
-                retval = new Object();
-                var type_node=qx.xml.Element.selectSingleNode(this.__wsdl
-                        ,"/a:definitions/a:types/x:schema/x:complexType[@name='"+node.nodeName+"']"
-                        , this.self(arguments).NAMESPACES);
-                for(var i = 0; i < node.childNodes.length; i++) {
-                    var child = node.childNodes[i];
-                    var child_type_name=child.getAttribute("xsi:type");
-                    var child_type_node=qx.xml.Element.selectSingleNode(type_node
-                        ,".//x:element[@name='"+node.childNodes[i].nodeName+"']"
-                        , this.self(arguments).NAMESPACES);
-
-                    if (child_type_name != null) {
-                        retval[node.childNodes[i].nodeName] = this.__extract_simple(child.childNodes[0],child_type_node);
-                    }
-                    else {
-                        retval[node.childNodes[i].nodeName] = this.__extract_complex(child);
-                    }
-                }
+            else if (type_name_lower == "int" || type_name == "long") {
+                retval = (value_ != null) ? parseInt(value_ + "", 10) : 0;
             }
 
-            return retval;
-        }
-
-        ,__extract_simple : function(node, type_node) {
-            var value_ = node.nodeValue;
-            var type_name = type_node.getAttribute("type");
-            if (type_name == null) {
-                type_name = type_node.getAttribute("xsi:type");
+            else if (type_name_lower == "double") {
+                retval = (value_ != null) ? parseFloat(value_ + "") : 0;
             }
-            type_name = type_name.split(":")[1];
-
-            switch(type_name) {
-            case "boolean":
-                return value_ + "" == "true";
-
-            case "int":
-            case "long":
-                return (value_ != null) ? parseInt(value_ + "", 10) : 0;
-
-            case "double":
-                return (value_ != null) ? parseFloat(value_ + "") : 0;
-
-            case "datetime":
-                if(value_ == null) {
-                    return null;
-                }
-                else {
+            else if (type_name_lower == "datetime") {
+                if(value_ != null) {
                     value_ = value_ + "";
                     value_ = value_.substring(0, (value_.lastIndexOf(".") == -1 ? value_.length : value_.lastIndexOf(".")));
                     value_ = value_.replace(/T/gi," ");
                     value_ = value_.replace(/-/gi,"/");
-                    var d = new Date();
-                    d.setTime(Date.parse(value_));
-                    return d;
+                    retval = new Date();
+                    retval.setTime(Date.parse(value_));
                 }
-            case "string":
-                return (value_ != null) ? value_ + "" : "";
             }
+            else if (type_name_lower == "string") {
+                retval = (value_ != null) ? value_ + "" : "";
+            }
+            else { // it's a complex type
+                var type_node = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+type_name+"']", nsmap);
+                var elts = sn(type_node, ".//x:element",nsmap);
+                if (elts.length == 1 && elts[0].getAttribute("minOccurs") != null
+                                     && elts[0].getAttribute("maxOccurs") != null) { // it's an array
+
+                    retval = new Array();
+                    for (var i=0; i < node.childNodes.length; i++) {
+                        retval[retval.length] = this.__extract(node.childNodes[i],elts[0]);
+                    }
+                }
+                else {
+                    if (node.hasChildNodes()){
+                        retval = new Object();
+    
+                        console.log(node);
+                        for (var i=0; i<elts.length; ++i) {
+                            var elt = ssn(type_node, ".//x:element[@name='"+node.childNodes[i].nodeName+"']",nsmap);
+                            retval[node.childNodes[i].nodeName] = this.__extract(node.childNodes[i],elt);
+                        }
+                    }
+                }
+            }
+
+            return retval;
         }
 
         ,callSync : function(methodName, args) {
