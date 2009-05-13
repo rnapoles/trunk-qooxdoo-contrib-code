@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.LocatorException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
@@ -45,6 +46,14 @@ public class SvnNodeFullTest extends NodeTest {
         super(false);
     }
     
+    public static void main(String[] args) throws Exception {
+        IO io;
+
+        io = new IO();
+        io.getFilesystem(SvnFilesystem.class).setCredentials("pfixpublisher", "pfixpublisher");
+        io.node("svn:https://svn.schlund.de/svn/PFX/pfixEntertainment/releases/09").mkdir();
+    }
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         Node repo;
@@ -146,17 +155,6 @@ public class SvnNodeFullTest extends NodeTest {
         assertEquals("baz", dir.join("sub1").readString());
     }
 
-    // TODO: application doesn't work ...
-    @Ignore
-    public void exportLongPath() throws IOException, SVNException {
-        Node dir;
-        SvnNode svn;
-        
-        dir = IO.getTemp().createTempDirectory();
-        svn = create("https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/branches/0.7.x");
-        svn.export(dir);
-    }
-    
     @Test
     public void svnurl() throws SVNException {
         assertEquals(URL + "/work/a", ((SvnNode) work.join("a")).getSvnurl().toString());
