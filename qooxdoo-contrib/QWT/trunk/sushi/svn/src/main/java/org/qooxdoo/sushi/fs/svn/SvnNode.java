@@ -36,6 +36,7 @@ import org.qooxdoo.sushi.fs.ExistsException;
 import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
+import org.qooxdoo.sushi.fs.LocatorException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.MoveException;
 import org.qooxdoo.sushi.fs.Node;
@@ -49,6 +50,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNFileRevision;
@@ -56,8 +58,6 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNInfo;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -574,13 +574,21 @@ public class SvnNode extends Node {
         return null;
     }
     
-    public static String getSvnUrl(FileNode workspace) throws IOException {
+    //--
+
+    public SVNURL getSvnurl() throws SVNException {
+        return root.getRepository().getLocation().appendPath(path, true);
+    }
+    
+    public static SvnNode fromWorkspace(FileNode workspace) throws LocatorException, IOException {
+        return (SvnNode) workspace.getIO().node("svn:" + getSvnUrl(workspace));
+    }
+
+    private static String getSvnUrl(FileNode workspace) throws IOException {
         String url;
 
-        if (!workspace.join(".svn").exists()) {
-            return null;
-        }
-        url = new Program((FileNode) workspace, "svn", "info").exec();
+        workspace.join(".svn").checkExists();
+        url = new Program(workspace, "svn", "info").exec();
         return extract(url, "URL:");
     }
 
