@@ -362,7 +362,6 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
       //this.info("Adding new node '" + newNode.label + "' client node #" + newNodeId + "/@" + nodeId );
       //if ( newNode.data && newNode.data.id !== undefined) this.info("Server node #" +newNode.data.id );
 
-
       /*
        * set the data for this node.
        */
@@ -434,7 +433,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
        * we try to find out the parent id. This requires that the parent node already
        * exists.
        */
-      else if ( parentNodeId === null )
+      else if ( parentNodeId === null || parentNodeId === undefined )
       {
         /*
          * get id from server node id?
@@ -446,13 +445,16 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
         }
          
         /*
-         * else, get id from the internal reference of the new data.
+         * Else, get id from the internal reference of the new data.
+         * this works only whithin one batch of data. Consecutive
+         * requests cannot refer to original ids this way.
          */
         else if ( node.parentNodeId !== undefined && node.parentNodeId !== null  )
         {
           try
           {
-            parentNodeId = data[ data[nodeId].parentNodeId ].__newId;
+            parentNodeId = data[ node.parentNodeId ].__newId;
+            console.log(parentNodeId);
           }
           catch(e)
           {
