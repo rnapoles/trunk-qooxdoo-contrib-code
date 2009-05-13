@@ -186,9 +186,9 @@ simulation.Simulation = function(baseConf, args)
   this.startDate = new Date();
   
   // Determine the name for the log file.
-  if (!("logFileName" in __config)) {
+  if (!("logFile" in __config)) {
     var fname = __config.autName + "_" + this.startDate.getTime() + ".log";
-    __config.logFileName = fname; 
+    __config.logFile = fname; 
   }
 
   // Create QxSelenium instance.
@@ -382,7 +382,7 @@ simulation.Simulation.prototype.type = function(locator, text)
  */
 simulation.Simulation.prototype.getLogFile = function()
 {
-  var fstream = new java.io.FileWriter(this.getConfigSetting("logFileName"), true);
+  var fstream = new java.io.FileWriter(this.getConfigSetting("logFile"), true);
   var out = new java.io.BufferedWriter(fstream);
   return out;
 };
