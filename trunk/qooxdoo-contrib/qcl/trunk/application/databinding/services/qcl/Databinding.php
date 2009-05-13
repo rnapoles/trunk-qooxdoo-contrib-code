@@ -5,7 +5,7 @@
  * http://qooxdoo.org
  *
  * Copyright:
- *   2008 Derrell Lipman
+ *   2009 Christian Boulanger
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -59,7 +59,7 @@ class class_Databinding
     
     
     /*
-     * while we haven't reache the maximum of parent nodes to return
+     * while we haven't reached the maximum of parent nodes to return
      * and there is still a parent id in the queue, get the parent's
      * children and add them to the node list.
      */
