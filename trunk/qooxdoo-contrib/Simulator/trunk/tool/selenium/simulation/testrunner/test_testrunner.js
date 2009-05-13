@@ -75,6 +75,17 @@ function getLogFile()
 function browserLog(msg)
 {
   msg = msg ? msg : "";
+  msg = String(msg);
+  msg = msg.replace(/\n/g,'<br/>');
+  msg = msg.replace(/\r/g,'<br/>');
+  msg = msg.replace(/'/g, '&quot;');
+  msg = msg.replace(/ä/g, '&auml;');
+  msg = msg.replace(/ö/g, '&ouml;');
+  msg = msg.replace(/ü/g, '&uuml;');
+  msg = msg.replace(/Ä/g, '&Auml;');
+  msg = msg.replace(/Ö/g, '&Ouml;');
+  msg = msg.replace(/Ü/g, '&Uuml;');
+  msg = msg.replace(/ß/g, '&szlig;');
   var prefix = 'qxSimulator_' + currentDate.getTime();
   var logFile = getLogFile();
   logFile.write(prefix + ': ' + msg);
