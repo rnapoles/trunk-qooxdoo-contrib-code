@@ -33,11 +33,13 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 public class SvnRoot implements Root {
     private final SvnFilesystem filesystem;
     private final SVNRepository repository;
+    private final SVNClientManager clientManager;
     private String comment;
     
     public SvnRoot(SvnFilesystem filesystem, SVNRepository repository) {
         this.filesystem = filesystem;
         this.repository = repository;
+        this.clientManager = SVNClientManager.newInstance(SVNWCUtil.createDefaultOptions(true), repository.getAuthenticationManager());
         this.comment = "sushi commit";
     }
     
@@ -57,15 +59,16 @@ public class SvnRoot implements Root {
         return repository.getLocation().toString() + "/";
     }
 
+    public SVNClientManager getClientMananger() {
+        return clientManager;
+    }
+
     public SVNRepository getRepository() {
         return repository;
     }
     
     public SVNInfo getInfo(FileNode node) throws SVNException {
-        SVNClientManager manager;
-        
-        manager = SVNClientManager.newInstance(SVNWCUtil.createDefaultOptions(true), repository.getAuthenticationManager());
-        return manager.getWCClient().doInfo(node.getFile(), SVNRevision.WORKING);
+        return clientManager.getWCClient().doInfo(node.getFile(), SVNRevision.WORKING);
     }
 
     public SvnNode node(String path) throws InstantiateException {

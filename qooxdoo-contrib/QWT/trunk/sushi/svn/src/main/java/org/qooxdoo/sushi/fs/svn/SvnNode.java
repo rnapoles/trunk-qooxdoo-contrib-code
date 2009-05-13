@@ -58,6 +58,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -102,7 +103,7 @@ public class SvnNode extends Node {
             result = new ArrayList<SvnNode>(lst.size());
             for (int i = 0; i < lst.size(); i++) {
                 entry = lst.get(i);
-                child = new SvnNode(root, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath()));
+                child = new SvnNode(root, entry.getKind() == SVNNodeKind.DIR, doJoin(path, entry.getRelativePath()));
                 child.setBase(getBase());
                 result.add(child);
             }
@@ -244,15 +245,11 @@ public class SvnNode extends Node {
 
     @Override
     public Node mkdir() throws MkdirException {
-        ISVNEditor editor;
+        SVNCommitClient client;
 
         try {
-            editor = root.getRepository().getCommitEditor("sushi delete", null);
-            editor.openRoot(-1);
-            editor.addDir(path, null, -1);
-            editor.closeDir();
-            editor.closeDir();
-            editor.closeEdit();
+            client = root.getClientMananger().getCommitClient();
+            client.doMkDir(new SVNURL[] { getSvnurl() }, root.getComment());
             return this;
         } catch (SVNException e) {
             throw new MkdirException(this, e);
@@ -381,7 +378,7 @@ public class SvnNode extends Node {
     //--
     
     // TODO
-    public String join(String left, String right) {
+    private String doJoin(String left, String right) {
         if (left.length() == 0) {
             return right;
         }
@@ -465,6 +462,9 @@ public class SvnNode extends Node {
         SVNLogEntryPath entryPath;
         String path;
         
+        if (viewvc.endsWith("/")) {
+            throw new IllegalArgumentException(viewvc);
+        }
         for (SVNLogEntry entry : entries) {
             dest.append(format.format(entry.getDate())).append(' ').append(entry.getAuthor()).append(' ').
                 append(entry.getRevision()).append("\n\n");
@@ -516,9 +516,6 @@ public class SvnNode extends Node {
         if (viewvc == null) {
             return path;
         } else {
-            if (viewvc.endsWith("/")) {
-                throw new IllegalArgumentException(path);
-            }
             return path + "\n" + "    " + viewvc + "/" + path + "?r1=" + (revision - 1) + "&r2=" + revision;
         }
     }
