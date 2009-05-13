@@ -11,8 +11,5 @@
 qx.Theme.define("databinding.theme.Color",
 {
   extend : qx.theme.modern.Color,
-
-  colors :
-  {
-  }
+  colors : {}
 });
