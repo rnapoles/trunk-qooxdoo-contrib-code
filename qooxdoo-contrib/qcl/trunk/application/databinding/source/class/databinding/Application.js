@@ -50,6 +50,9 @@ qx.Class.define("databinding.Application",
       }
 
 
+      /*
+       * Main layout
+       */
       var qxHsplit1 = new qx.ui.splitpane.Pane("horizontal");
 
       qxHsplit1.setOrientation("horizontal");
@@ -70,6 +73,9 @@ qx.Class.define("databinding.Application",
 
       qxHsplit1.add(_container1); 
 
+      /*
+       * Tree widget
+       */
       this.treeWidget = new qx.ui.treevirtual.TreeVirtual(
           [ 'Folders', '#' ], 
           { dataModel : new qcl.databinding.event.model.TreeVirtual() }
@@ -118,6 +124,9 @@ qx.Class.define("databinding.Application",
       this.treeWidget.getDataModel().setData();
      
       
+      /*
+       * Button pane
+       */
       this._container1.add(this.treeWidget);
 
       var qxVbox1 = new qx.ui.layout.VBox(10, null, null);
@@ -133,6 +142,9 @@ qx.Class.define("databinding.Application",
 
       qxVbox1.setSpacing(10);
 
+      /*
+       * text field
+       */
       this.textField = new qx.ui.form.TextField();
       _container2.add( this.textField );
 
@@ -148,7 +160,9 @@ qx.Class.define("databinding.Application",
         },this  
      );
 
-      // clear tree
+      /*
+       * Button to clear field
+       */
       this.buttonClear = new qx.ui.form.Button("Clear tree");
       _container2.add( this.buttonClear );
       this.buttonClear.addListener(
@@ -160,7 +174,9 @@ qx.Class.define("databinding.Application",
         }, this
       );       
       
-      // add child
+      /*
+       * Button to add a child folder
+       */
       this.buttonAdd = new qx.ui.form.Button("Add child node");
       this.buttonAdd.set({ enabled: false });
       _container2.add( this.buttonAdd );
@@ -175,7 +191,9 @@ qx.Class.define("databinding.Application",
         }, this
       ); 
       
-      // add sibling
+      /*
+       * Button to add a sibling folder
+       */
       this.buttonAddSibling = new qx.ui.form.Button("Add sibling node");
       _container2.add( this.buttonAddSibling );
       this.buttonAddSibling.setEnabled(false);
@@ -191,7 +209,9 @@ qx.Class.define("databinding.Application",
         }, this
       );       
       
-      // remove node 
+      /*
+       * Button to remove a node
+       */
       this.buttonRemove = new qx.ui.form.Button("Remove");
       this.buttonRemove.set({ enabled: false });
       _container2.add( this.buttonRemove);
@@ -244,7 +264,9 @@ qx.Class.define("databinding.Application",
         this.info( "Tree changeBubble: " + data.name + ":\n" + valueChange.join( "\n" ) );
       }, this);      
       
-      // add raw tree data
+      /*
+       * Button to add batch data
+       */
       this.buttonAddRaw = new qx.ui.form.Button("Add raw data structure");
       _container2.add( this.buttonAddRaw);
       this.buttonAddRaw.addListener(
@@ -268,7 +290,9 @@ qx.Class.define("databinding.Application",
         }, this
       );
       
-      // get from jsonrpc backend
+      /*
+       * Get data from JSON-RPC backend
+       */
       
       var store = new qcl.databinding.event.store.JsonRpc( 
           /* url */      "../services/index.php",
@@ -280,6 +304,9 @@ qx.Class.define("databinding.Application",
       var controller = new qcl.databinding.event.controller.TreeVirtual( null, this.treeWidget );
       store.bind("model",controller,"model");
       
+      /*
+       * Button to start request
+       */
       this.buttonAddJsonRpcData = new qx.ui.form.Button("Get data from jsonrpc");
       _container2.add( this.buttonAddJsonRpcData );
       this.buttonAddJsonRpcData.addListener(
@@ -291,10 +318,13 @@ qx.Class.define("databinding.Application",
            * first, we're getting the number of nodes to display
            */
           var tree = this.treeWidget;
+          var cancelButton = this.buttonCancelAddJsonRpcData;
+          var startButton  = this.buttonAddJsonRpcData;
           
           store.load("getNodeCount",[],function(data)
           {
-            var nodeCount = data.nodeCount ; 
+            var nodeCount = data.nodeCount; 
+            
             /*
              * now we are retrieving the tree in chunks of 10
              */
@@ -305,10 +335,12 @@ qx.Class.define("databinding.Application",
             {
               if ( data === true )
               {
-                tree.setAdditionalStatusBarText(" | Tree has" + nodeCount +  " nodes ...");
-                store.load("getNodeData",[0, 10 ], loadTree );
+                tree.setAdditionalStatusBarText(" | Tree has " + nodeCount +  " nodes ...");
+                cancelButton.setEnabled(true);
+                startButton.setEnabled(false);
+                store.load("getNodeData",[ 0, 10 ], loadTree );
               }
-              else if ( !abortJsonRpcLoad && data && typeof data == "object" && data.queue instanceof Array && data.queue.length )
+              else if ( ! abortJsonRpcLoad && data && typeof data == "object" && data.queue instanceof Array && data.queue.length )
               {
                 counter += data.nodes.length;
                 var parentNodeId = data.parentNodeId;
@@ -317,11 +349,15 @@ qx.Class.define("databinding.Application",
               }
               else if ( data === null )
               {
-                console.log("Error.")
+                tree.setAdditionalStatusBarText(" | *** An error occurred ***");
+                cancelButton.setEnabled(false);
+                startButton.setEnabled(true);
               }
               else
               {
-                console.log("Finished.")
+                tree.setAdditionalStatusBarText(" | Finished loading " + nodeCount + " nodes.");
+                cancelButton.setEnabled(false);
+                startButton.setEnabled(true);
               }
             })(true);
             
@@ -330,14 +366,20 @@ qx.Class.define("databinding.Application",
         }, this
       );      
 
+      /*
+       * Button to cancel the json-rpc requests
+       */
       this.buttonCancelAddJsonRpcData = new qx.ui.form.Button("Cancel jsonrpc tree loading");
       _container2.add( this.buttonCancelAddJsonRpcData );
+      this.buttonCancelAddJsonRpcData.setEnabled(false);
       this.buttonCancelAddJsonRpcData.addListener(
         "execute",
         function(e)
         {
           // set global flag to true which should be available in the closure further up.
           abortJsonRpcLoad = true;
+          this.buttonCancelAddJsonRpcData.setEnabled(false);
+          this.buttonAddJsonRpcData.setEnabled(true);
         }, this
       );      
       
@@ -385,5 +427,4 @@ qx.Class.define("databinding.Application",
                   }
                 ]
     }
-  }
 });

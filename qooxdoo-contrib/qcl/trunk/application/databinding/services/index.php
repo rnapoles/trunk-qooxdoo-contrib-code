@@ -273,7 +273,7 @@ function SendReply($reply, $scriptTransportId)
  * This class allows service methods to easily provide error information for
  * return via JSON-RPC.
  */
-class JsonRpcError extends Exception
+class JsonRpcError //extends Exception
 {
     var             $json;
     var             $data;
@@ -852,15 +852,15 @@ if (! method_exists($service, $method))
 $error->SetOrigin(JsonRpcError_Origin_Application);
 
 /* Call the requested method passing it the provided params */
-try
-{
+//try
+//{
     $output = $service->$method($jsonInput->params, $error);
-}
-catch (JsonRpcError $exception)
-{
-    $output = $exception;
-    $output->SetId($jsonInput->id);
-}
+//}
+//catch (JsonRpcError $exception)
+//{
+ //   $output = $exception;
+ //   $output->SetId($jsonInput->id);
+//}
 
 /* See if the result of the function was actually an error */
 if (get_class($output) == get_class($error))
