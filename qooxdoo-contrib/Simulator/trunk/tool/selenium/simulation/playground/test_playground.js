@@ -44,7 +44,7 @@ simulation.Simulation.prototype.isSampleLoaded = function(sample)
   print(log);  
   var tmp = "Starting application '" + sample + "'";
   var check = logHtml + '.indexOf("' + tmp + '") > 0';
-  var isLoaded = this.getEval(check, log);  
+  var isLoaded = this.getEval(check, log);
   if (isLoaded == "true") {
     sampleLoaded = true;
   }
@@ -56,12 +56,39 @@ simulation.Simulation.prototype.isSampleStarted = function(sample)
   var sampleStarted = false;
   var log = "Checking if sample " + sample + " was started successfully.";
   print(log);
-  var check = logHtml + ".indexOf('Successfully started') > 0";  
+  var check = logHtml + ".indexOf('Successfully started') > 0";
   var isStarted = this.getEval(check, log);  
   if (isStarted == "true") {
     sampleStarted = true;
   }
+  
+  var logMsgs = this.getEval(logHtml, "Getting log output from sample " + sample);
+  if (this.logSampleWarnings(logMsgs, sample)) {
+    sampleStarted = false;
+  }
+  
   return sampleStarted;
+};
+
+simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample) 
+{
+  var reg = /(<div class="level-(?:warn|error)">.*<\/div>)(?:<div class="level-info"?)/gi;
+  foundErrors = false;
+  logWarn = reg.exec(logCont);
+  try {
+    if (logWarn) {      
+      var level = "warn";
+      if (logWarn[0].indexOf("level-error") > 0 ) {
+        foundErrors = true;
+        level = error;
+      }
+      this.log("Found errors and/or warnings in sample " + sample, "warn");
+      this.log(logWarn[0], level);
+    }
+  }
+  catch(ex) {}
+  
+  return foundErrors;
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -139,7 +166,7 @@ simulation.Simulation.prototype.runTest = function()
     if (mySim.debug) {
       print(msg + "\n" + ex);
     }
-    mySim.log(msg, "error");
+    mySim.log(msg + "<br/>" + ex, "error");
   }
 
   if (!mySim.testFailed) {
