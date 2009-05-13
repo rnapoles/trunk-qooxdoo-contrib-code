@@ -1,451 +1,218 @@
-importClass(Packages.com.thoughtworks.selenium.QxSelenium);
-
-// - Config Section ------------------------------------------------------------
-var config = {
-  selServer   : "localhost",
-  selPort     : 4444,
-  testBrowser : "*custom /usr/lib/firefox-3.0.6/firefox -no-remote -P selenium-3",
-  autHost     : "http://172.17.12.142",
-  autPath     : "/~dwagner/workspace/qooxdoo.trunk/application/feedreader/source/",
-  debug       : true
+var baseConf = {
+  autName : 'Feedreader',
+  globalTimeout : 300000,
+  stepSpeed : '250',
+  selServer : 'localhost',
+  selPort : 4444,
+  testBrowser : '*opera',
+  autHost : 'http://localhost',
+  autPath : '/~dwagner/workspace/qooxdoo.trunk/application/feedreader/build/index.html',
+  simulatorSvn : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
+  debug : true 
 };
 
-var stepSpeed  = "250"; // millisecs after each command
-var testPause = 360000; // millisecs to wait for all tests to finish
-var selWin = "selenium.browserbot.getCurrentWindow()"; // get application iframe
-var qxApp = "qx.core.Init.getApplication()";
-var treeFunc = getObjectByClassnameSel("selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication()","qx.ui.tree.Tree");
-var listFunc = getObjectByClassnameSel("selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication()","feedreader.view.List");
-var prefWinFunc = getObjectByClassnameSel(selWin + "." + qxApp + ".getRoot()","feedreader.view.PreferenceWindow");
-var addFeedWinFunc = getObjectByClassnameSel(selWin + "." + qxApp + ".getRoot()","feedreader.view.AddFeedWindow");
-var treeReset = treeFunc + ".resetSelection()";
-var treeSelect = treeFunc + ".addToSelection(" + treeFunc + ".getItems()[1])"; // select qooxdoo news feed
-var staticFeedsLabel = treeFunc + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getContent().toString()";
-var addFeedWindowLabel = addFeedWinFunc + ".getCaption().toString()";
-var isPrefWindowVisible = prefWinFunc + ".getVisibility() == 'visible'";
-var isPrefWindowHidden = prefWinFunc + ".getVisibility() == 'hidden'";
-var isAddFeedWindowVisible = addFeedWinFunc + ".getVisibility() == 'visible'";
-var isAddFeedWindowHidden = addFeedWinFunc + ".getVisibility() == 'hidden'";
-var isQxReady = 'var qxReady = false; try { if (selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication()) { qxReady = true; } } catch(e) {} qxReady;'; // check if testrunner instance exists
-var usrAgent = 'navigator.userAgent';
-var platform = 'navigator.platform';
-var totalErrors = 0;
-
-// - Config End ----------------------------------------------------------------
-
-var currentDate = new Date();
-
-// store command line parameters in config object
-for (i in arguments) {
-  if (arguments[i].indexOf("=") >0) {
-    var tempArr = arguments[i].split("=");
-    config[tempArr[0]] = tempArr[1];
+var args = arguments ? arguments : "";
+var simSvn = baseConf.simulatorSvn;
+for (var i=0; i<args.length; i++) {
+  if (args[i].indexOf('simulatorSvn') >= 0) {
+    simSvn = args[i].substr(args[i].indexOf('simulatorSvn=') + 13);
   }
 }
 
-/*
- * Open/create a log file and return the file object.
- */
-function getLogFile()
-{
-  var logFileName = config.logFile ? config.logFile :  "feedreader_" + currentDate.getTime() + ".log";
-  var fstream = new java.io.FileWriter(logFileName, true);
-  var out = new java.io.BufferedWriter(fstream);
-  return out;
-}
+load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
 
-/*
-*  Write a message to Selenium's browser side log and the local log file.
-*/
-function browserLog(msg)
-{
-  msg = msg ? msg : "";
-  msg = String(msg);
-  msg = msg.replace(/\n/g,'<br/>');
-  msg = msg.replace(/\r/g,'<br/>');
-  msg = msg.replace(/'/g, '&quot;');
-  msg = msg.replace(/ä/g, '&auml;');
-  msg = msg.replace(/ö/g, '&ouml;');
-  msg = msg.replace(/ü/g, '&uuml;');
-  msg = msg.replace(/Ä/g, '&Auml;');
-  msg = msg.replace(/Ö/g, '&Ouml;');
-  msg = msg.replace(/Ü/g, '&Uuml;');
-  msg = msg.replace(/ß/g, '&szlig;');
-  var prefix = 'qxSimulator_' + currentDate.getTime();
-  var logFile = getLogFile();
-  logFile.write(prefix + ': ' + msg);
-  logFile.newLine();
-  logFile.close();
-  return 'LOG.error("' + prefix + ': " + \'' + msg + '\');';
-}
+var mySim = new simulation.Simulation(baseConf,args);
 
-/*
-* Generated HTML elements are uppercase in IE
-*/
-function getLogArray(result)
-{
-  var logArray = [];
-  if (result.indexOf("</div>") >0 ) {
-    logArray = result.split("</div>");
-  } else if (result.indexOf("</DIV>") >0 ) {
-    logArray = result.split("</DIV>");
-  }
-  return logArray;
-}
+var selWin = simulation.Simulation.SELENIUMWINDOW;
+var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
-function getVisibleFunc()
-{
-  var func = '';
-  func += 'function getPrefWinVisibility() {';
-  func += '  var visibility = "hidden";';
-  func += '  var app = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication();';
-  func += '  for (prop in app) {';
-  func += '    try {';
-  func += '      if (typeof app[prop] == "object") {';
-  func += '        if(app[prop].classname == "feedreader.view.PreferenceWindow") {';
-  func += '        visibility = app[prop].getVisibility();';
-  func += '      }';
-  func += '    }';
-  func += '    catch(ex) {}';
-  func += '  }';
-  func += '  return visibility;';
-  func += '}';
-  func += 'getPrefWinVisibility() == "visible";';
-  return func;  
-}
 
-function getObjectByClassnameSel(parent,classname)
+simulation.Simulation.prototype.checkArticle = function()
 {
-  var func = '';
-  func += '(function() {';
-  func += '  var parent = ' + parent + ';';  
-  func += '  var searchterm = "' + classname + '";';
-  func += '  var obj = null;';  
-  func += '  for (prop in parent) {';
-  func += '    var property = parent[prop];';
-  func += '    try {';
-  func += '      if (typeof property == "object") {';
-  func += '        if(property.classname == searchterm) {';
-  func += '          obj = property;';
-  func += '        }';
-  func += '      }';
-  func += '    }';
-  func += '    catch(ex) {}';
-  func += '  }';
-  func += '  return obj;';
-  func += '})()';
-
-  return func;  
-}
-
-function checkArticle()
-{
-  print("Checking for article");
-  var article = null;
-  try {
-    var tempFunc = getObjectByClassnameSel(selWin + "." + qxApp, "feedreader.view.Article");
-    tempFunc += ".getArticle()";
-    article = sel.getEval(tempFunc);
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while selecting article: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to select article: ' + ex + ' </div></div>'));    
-  }  
+  var articleScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
+  var article = this.getEval(articleScript, "Checking for article");
 
   if (article != "null") {
     print("Article found.");
   }
   else {
-    totalErrors ++;
-    print("ERROR: No Article found.");
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">No article found after selecting the first item of the first feed.</div></div>'));    
+    this.log("ERROR: No Article found.", "error");    
   }  
-}
+};
 
-function getTestDuration(startTime)
-{
-  var stopTime = new Date();
-  var elapsed = stopTime.getTime() - startTime.getTime();
-  return elapsed;
-}
-
-function logTestDuration(elapsed)
-{
-  elapsed = (elapsed / 1000);
-  min = Math.floor(elapsed / 60);
-  sec = Math.round(elapsed % 60);
-  if (sec < 10) {
-    sec = "0" + sec;
-  }
-  print("Test run finished in: " + min + " minutes " + sec + " seconds.");
-  sel.getEval(browserLog("<p>Test run finished in: " + min + " minutes " + sec + " seconds.</p>"));
-}
-
-function runTests()
-{
-
-  var startTime = new Date();
-
-  print("Waiting for feeds to load...");
+mySim.runTest = function()
+{  
+  //this.addOwnFunction("getObjectByClassname", getObjectByClassname);
+  this.addObjectGetter();
   
-  var lastFeedNum = sel.getEval(treeFunc + ".getItems().length - 1"); 
-   
-  var isLastFeedLoaded = treeFunc + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
-  
-  try {
-    sel.waitForCondition(isLastFeedLoaded, testPause);
-  }
-  catch(ex) {
-    print("Couldn't determine if all feeds loaded correctly.");
-    sel.getEval(browserLog("<DIV>ERROR: Unable to determine if all feeds loaded correctly.</DIV>"));
-    return;
-  }
-  
-  print("Getting last feed's label");
-  var getLastFeedLabel = treeFunc + ".getItems()[" + lastFeedNum + "].getLabel()";
-  var lastFeedLabel = sel.getEval(getLastFeedLabel); 
-  print("Last feed's label: " + lastFeedLabel);
- 
-  sel.setSpeed("1000");
-  
-  sel.getEval(treeReset);
+  var testPause = 360000;
 
-  print("Selecting first feed from list.");  
-  try {
-    sel.qxClick("qxh=app:qx.ui.tree.Tree/child[1]");  
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while selecting feed: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to select feed: ' + ex + ' </div></div>'));    
-  }
+  var tree = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
+  var lastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");
   
-  print("Selecting first feed item.");
+  var isLastFeedLoaded = tree + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";  
+  this.waitForCondition(isLastFeedLoaded, testPause, "Waiting for feeds to load");
   
-  try {
-    sel.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]');  
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while selecting article: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to select article: ' + ex + ' </div></div>'));    
-  }  
-
-  checkArticle();
+  var getLastFeedLabel = tree + ".getItems()[" + lastFeedNum + "].getLabel()";
+  var lastFeedLabel = this.getEval(getLastFeedLabel, "Getting last feed's label");
   
-  print("Getting initial 'Static Feeds' label.");
-  var oldLabel = null;
-  try {
-    oldLabel = sel.getEval(staticFeedsLabel);
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR getting 'Static Feeds' label: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to get Static Feeds label: ' + ex + ' </div></div>'));    
-  }
-
-  print("Initial label: " + oldLabel);
-
-  // Use the preferences window to change the application language
-  print("Clicking Preferences button.");  
-  try {    
-    sel.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]");
-    print("Waiting for Preferences window to open.");    
+  this.__sel.setSpeed("1000");
+  
+  this.getEval(tree + ".resetSelection()", "Resetting tree selection");
     
-    sel.waitForCondition(isPrefWindowVisible, 10000);    
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while opening language window: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to open language window: ' + ex + ' </div></div>'));    
-  }
+  this.qxClick("qxh=app:qx.ui.tree.Tree/child[1]", "Selecting first feed from list");  
   
+  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]', "Selecting first feed item.");
+  
+  this.checkArticle();
+  
+  var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getContent().toString()";
+  
+  var oldLabel = this.getEval(staticFeedsLabel, "Getting label of Static Feeds");
+
+  // Use the preferences window to change the application language  
+  // Click the preferences button, then check if the prefs window opened.  
+  this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "Clicking Preferences button.");
+  var prefWindowScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")';
+  var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
+  this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
   Packages.java.lang.Thread.sleep(2000);
-    
-  print("Selecting language.");
-  try {        
-    sel.qxClick('qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]');
+
+  // Click the "Italiano" radio button.
+  var radioItalian = 'qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]';
+  this.qxClick(radioItalian, "Selecting language");
+  Packages.java.lang.Thread.sleep(2000);
+  // Click again just to be sure (bug #2193).
+  this.qxClick(radioItalian, "Selecting language");
+  
+  // Click the "OK" button 
+  var buttonOk = 'qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]';  
+  this.qxClick(buttonOk, "Clicking OK.");    
+  Packages.java.lang.Thread.sleep(2000);
+  
+  // Check if the preferences window closed. Click "OK" again if it isn't.
+  var prefWinVis = this.getEval(isPrefWindowVisible, "Checking if preferences window is visible");
+  // getEval returns an object, not a boolean
+  if (String(prefWinVis) != "false") {
+    this.qxClick(buttonOk, "Clicking OK again.");
     Packages.java.lang.Thread.sleep(2000);
-    // click again just to be sure (bug #2193)
-    sel.qxClick('qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]');
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while selecting language: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to select language: ' + ex + ' </div></div>'));    
   }
   
-  print("Clicking OK.");
-  try {      
-    sel.qxClick('qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]');    
-    print("Waiting for Preferences window to close.");
-    Packages.java.lang.Thread.sleep(2000);
-    if (sel.getEval(isPrefWindowVisible) == "true") {
-      sel.qxClick('qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]');
-    }
-    sel.waitForCondition(isPrefWindowHidden, 10000);
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while clicking OK in Preferences window: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to click OK button in Preferences window: ' + ex + ' </div></div>'));    
-  }    
-    
-  print("Getting new 'Static Feeds' label.");
-  var newLabel = null;
-  try {
-    newLabel = sel.getEval(staticFeedsLabel);
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR getting 'Static Feeds' label: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to get Static Feeds label: ' + ex + ' </div></div>'));    
-  }
-  
-  print("New label: " + newLabel);
-  
+  var isPrefWindowHidden = prefWindowScript + ".getVisibility() == 'hidden'";
+  this.waitForCondition(isPrefWindowHidden, 10000, "Waiting for preferences window to close");
+
+  // Check if the label of the "Static Feeds" tree folder has changed
+  var newLabel = this.getEval(staticFeedsLabel, "Getting new 'Static Feeds' label.");
   if (oldLabel != newLabel) {
-    print("Language changed successfully.");
-  } 
+    this.log("Language changed successfully.", "info");
+  }
   else {
-    totalErrors ++;
-    print("ERROR: Unexpected Label: " + newLabel);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected Label "' + newLabel + '" . Language selection failed?</div></div>'));    
-  }  
+    this.log("ERROR: Language change failed.", "error");
+  }
   
-  // Add a feed
-  print("Adding new feed.");
-  try {
-    sel.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]');
-    print("Waiting for Add Feed window to open.");
-    sel.waitForCondition(isAddFeedWindowVisible, 10000);
-    Packages.java.lang.Thread.sleep(2000);    
-    var addLabel = sel.getEval(addFeedWindowLabel);
-    print("Add Feed window's label: " + addLabel);
-    if (addLabel.indexOf('Aggiungi') < 0 ) {
-      totalErrors ++;
-      print('ERROR: Feed window has unexpected title "' + addLabel + '". Possible translation problem.');
-      sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Feed window has unexpected title ' + addLabel + '. Possible translation problem.</div></div>'));
-    }
-    print("Entering new feed title.");
-    sel.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[1]', 'Golem');
-    print("Entering new feed URL.");
-    sel.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[3]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
-    print("Clicking 'Add'.");
-    sel.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button');
-    print("Waiting for Add Feed window to close.");
-    Packages.java.lang.Thread.sleep(2000);
-    var winVis = sel.getEval(isAddFeedWindowVisible);
-    if (winVis == "true") {
-      print("Window still visible, clicking again " + winVis);
-      sel.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button');
-    }
-    sel.waitForCondition(isAddFeedWindowHidden, 10000);
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while adding feed: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Error while adding feed: ' + ex + ' </div></div>'));    
-  }
-
-  print("Waiting for new feed to load.");
-  var newLastFeedNum = null;
-  try {
-    newLastFeedNum = sel.getEval(treeFunc + ".getItems().length - 1");  
-    var isNewLastFeedLoaded = treeFunc + ".getItems()[" + newLastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
-    sel.waitForCondition(isNewLastFeedLoaded, testPause);
-  }
-  catch(ex) {
-    totalErrors++;
-    print("ERROR: New feed did not load correctly. " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">New feed did not load correctly: ' + ex + ' </div></div>'));    
-  }
+  // Add a new feed
+  // Click "Add Feed"
+  this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "Clicking Add Feed button");
     
-  try {
-    var getNewLastFeedLabel = treeFunc + ".getItems()[" + newLastFeedNum + "].getLabel()";
-    var newLastFeedLabel = sel.getEval(getNewLastFeedLabel);
-    print("New Feed's label: " + newLastFeedLabel);
-  }
-  catch(ex) {
-    totalErrors++;
-    print("ERROR: Unable to get new feed label: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unable to get new feed label: ' + ex + ' </div></div>'));    
+  var feedWindowScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")';
+  var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
+  this.waitForCondition(isFeedWindowVisible, 10000, "Waiting for Add Feed window to open.");
+  Packages.java.lang.Thread.sleep(2000);  
+  
+  // Check if the Add Feed window's caption was translated.
+  var addFeedWindowLabel = feedWindowScript + ".getCaption().toString()";
+  var addLabel = this.getEval(addFeedWindowLabel, "Getting Add Feed window's caption");
+  print("Add Feed window's label: " + addLabel);
+  if (addLabel.indexOf('Aggiungi') < 0 ) {
+    this.log('ERROR: Feed window has unexpected title "' + addLabel + '". Possible translation problem.', "error");
   }
   
-  if (newLastFeedLabel == "Golem") {
-    print("New feed entry in list.");
+  // Enter new feed details
+  this.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[1]', 'Golem');    
+  this.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[3]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
+  this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "Clicking 'Add'.");
+  Packages.java.lang.Thread.sleep(2000);
+  
+  // Check if the Add Feed Window closed.
+  var feedWinVis = this.getEval(isFeedWindowVisible, "Waiting for Add Feed window to close.");
+  if (String(feedWinVis) == "true") {
+    print("Add Feed Window still visible, clicking again.");
+    this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "Clicking 'Add'.");
+  }
+
+  var isFeedWindowHidden = feedWindowScript + ".getVisibility() == 'hidden'";  
+  this.waitForCondition(isFeedWindowHidden, 10000, "Checking if Add Feed window is closed");
+  
+  // Check if the new feed loaded.
+  var newLastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");  
+  var isNewLastFeedLoaded = tree + ".getItems()[" + newLastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
+  this.waitForCondition(isNewLastFeedLoaded, testPause, "Waiting for new feed to load.");
+    
+  var getNewLastFeedLabel = tree + ".getItems()[" + newLastFeedNum + "].getLabel()";
+  var newLastFeedLabel = this.getEval(getNewLastFeedLabel, "Getting new feed's label");
+  
+  if (newLastFeedLabel != lastFeedLabel) {
+    this.log("New feed loaded correctly.", "info");
   }
   else {
-    totalErrors++;
-    print("ERROR: Unexpected feed Label.");
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unexpected label. New feed not added?</div></div>'));
+    this.log("ERROR: New feed has unexpected label: " + newLastFeedLabel, "error");
   }
   
-  print("Selecting new feed.");
-  try {
-    var treeLastSelect = treeFunc + ".addToSelection(" + treeFunc + ".getItems()[" + newLastFeedNum + "])";
-    sel.getEval(treeLastSelect);    
-  }
-  catch(ex) {
-    totalErrors++;
-    print("ERROR: Unable to select new feed: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Unable to select new feed: ' + ex + '</div></div>'));    
-  }
+  // Select the new feed
+  var treeLastSelect = tree + ".addToSelection(" + tree + ".getItems()[" + newLastFeedNum + "])";
+  this.getEval(treeLastSelect, "Selecting new feed.");      
   
-  print("Selecting first item from new feed.");
+  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]', "Selecting first item from new feed.");  
   
-  try {
-    sel.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]');  
-  }
-  catch(ex) {
-    totalErrors ++;
-    print("ERROR while selecting article from new feed: " + ex);
-    sel.getEval(browserLog('<div class="qxappender"><div class="level-error">Failed to select article from new feed: ' + ex + ' </div></div>'));    
-  }
-  
-  checkArticle();
-  
-  logTestDuration(getTestDuration(startTime));
+  this.checkArticle();
 
-  sel.getEval(browserLog("<p>Feedreader ended with warnings or errors: " + totalErrors + "</p>"));
+  //Packages.java.lang.Thread.sleep(360000);
   
-
-}
+};
 
 // - Main --------------------------------------------------------------------
 
-print("Starting Feedreader session with browser " + config.testBrowser);
-browserLog("<h1>Feedreader results from " + currentDate.toLocaleString() + "</h1>");
-var sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
-sel.start();
-sel.setTimeout(120000);
-sel.open(config.autHost + config.autPath);
-sel.setSpeed(stepSpeed);
+(function() { 
+  mySim.testFailed = false;
+  //mySim.errWarn = 0;
 
-var agent = sel.getEval(usrAgent);
-var plat = sel.getEval(platform);
+  var sessionStarted = mySim.startSession();
+  
+  if (!sessionStarted) {
+    return;
+  }
+   
+  mySim.logEnvironment();   
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+                                          "Waiting for qooxdoo application");
 
-sel.getEval(browserLog("<h1>Feedreader results from " + currentDate.toLocaleString() + "</h1>"));
-sel.getEval(browserLog("<p>Application under test: <a href=\"" + config.autHost + config.autPath + "\">" + config.autHost + config.autPath + "</a>"));
-sel.getEval(browserLog("<p>Platform: " + plat + "</p>"));
-sel.getEval(browserLog("<p>User agent: " + agent + "</p>"));
 
-try {
-  sel.waitForCondition(isQxReady, "60000");
-}
-catch(ex) {
-  print("Couldn't find qx instance in AUT window.");
-  sel.getEval(browserLog("<DIV>ERROR: Unable to find qx instance in AUT window.</DIV>"));
-}
+  if (!isAppReady) {
+    mySim.testFailed = true;
+    mySim.stop();
+    return;
+  }
 
-try {
-  runTests();
-}
-catch(ex) {
-  print("Unexpected error during test run: " + ex);
-  sel.getEval(browserLog("<DIV>ERROR: Unexpected error during test run: " + ex + "</DIV>"));
-}
+  try {
+    mySim.runTest();
+  }
+  catch(ex) {
+    mySim.testFailed = true;
+    var msg = "Unexpected error while running test!";
+    if (mySim.getConfigSetting("debug")) {
+      print(msg + "\n" + ex);
+    }
+    mySim.log(msg, "error");
+  }
 
-sel.stop();
-print("Test Runner session finished.");
+  if (!mySim.testFailed) {
+    if (mySim.getConfigSetting("debug")) {
+      print("Test run finished successfully.");
+    }
+    mySim.log("Feedreader ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
+  }
+
+  mySim.logTestDuration();
+  mySim.stop();
+
+})();
