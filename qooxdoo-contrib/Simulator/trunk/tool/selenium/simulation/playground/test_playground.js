@@ -72,23 +72,16 @@ simulation.Simulation.prototype.isSampleStarted = function(sample)
 
 simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample) 
 {
-  var reg = /(<div class="level-(?:warn|error)">.*<\/div>)(?:<div class="level-info"?)/gi;
-  foundErrors = false;
-  logWarn = reg.exec(logCont);
-  try {
-    if (logWarn) {      
-      var level = "warn";
-      if (logWarn[0].indexOf("level-error") > 0 ) {
-        foundErrors = true;
-        level = error;
-      }
-      this.log("Found errors and/or warnings in sample " + sample, "warn");
-      this.log(logWarn[0], level);
-    }
-  }
-  catch(ex) {}
-  
-  return foundErrors;
+  var warnings = logCont.indexOf("level-warn") > 0;
+  var errors = logCont.indexOf("level-error") > 0;
+
+  if (warnings || errors) {
+    var level = errors ? "error" : "warn";
+    this.log("Found errors and/or warnings in sample " + sample, level);
+    this.log(logCont, level);
+  }        
+
+  return errors;
 };
 
 simulation.Simulation.prototype.runTest = function()
