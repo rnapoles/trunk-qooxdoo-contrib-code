@@ -57,6 +57,12 @@ class class_Databinding
     $nodeArr = array();
     $counter= 0;
     
+    
+    /*
+     * while we haven't reache the maximum of parent nodes to return
+     * and there is still a parent id in the queue, get the parent's
+     * children and add them to the node list.
+     */
     while ( $counter++ <= $max and 
             is_numeric( $parentId = array_shift( $queue ) ) )
     {
@@ -110,14 +116,24 @@ class class_Databinding
           'columnData'   => array( null, $recordCount )
         );
   
+        /*
+         * add to parent id queue if node has children
+         */
         if ( $hasChildren )
         {
           array_push( $queue, $nodeId );
         }
+        
+        /*
+         * add node to node array
+         */
         array_push( $nodeArr, $node );
       }
     }
     
+    /*
+     * return data to client
+     */
     return array(
       'nodes'        => $nodeArr,   
       'queue'        => $queue

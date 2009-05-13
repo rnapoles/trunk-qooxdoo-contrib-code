@@ -281,7 +281,6 @@ qx.Class.define("databinding.Application",
       /*
        * Get data from JSON-RPC backend
        */
-
       var store = new qcl.databinding.event.store.JsonRpc(
         /* url */ "../services/index.php",
         /* service */ "qcl.Databinding",
@@ -295,19 +294,22 @@ qx.Class.define("databinding.Application",
       /*
        * Button to start request
        */
-
       this.buttonAddJsonRpcData = new qx.ui.form.Button("Get data from jsonrpc");
       _container2.add(this.buttonAddJsonRpcData);
 
       this.buttonAddJsonRpcData.addListener("execute", function(e)
       {
-        /*
-         * first, we're getting the number of nodes to display
+        /* 
+         * get some local variable references for the closure
          */
-
         var tree = this.treeWidget;
         var cancelButton = this.buttonCancelAddJsonRpcData;
         var startButton = this.buttonAddJsonRpcData;
+        
+        /*
+         * clear the tree
+         */
+        tree.getDataModel().clearData();
 
         /*
          * calling getNodeCount() method on server with no 
