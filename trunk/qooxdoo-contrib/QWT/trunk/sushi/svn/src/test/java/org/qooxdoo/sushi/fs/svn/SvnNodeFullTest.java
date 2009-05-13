@@ -69,6 +69,7 @@ public class SvnNodeFullTest extends NodeTest {
         assertEquals("svn:" + URL.toString() + "/work", work.getLocator());
     }
 
+
     @Test
     public void rootWithUrl() throws SVNException {
         assertEquals(URL.toString() + "/", work.getRoot().getId());
@@ -156,6 +157,11 @@ public class SvnNodeFullTest extends NodeTest {
         svn.export(dir);
     }
     
+    @Test
+    public void svnurl() throws SVNException {
+        assertEquals(URL + "/work/a", ((SvnNode) work.join("a")).getSvnurl().toString());
+    }
+
     //--
     
     private SvnNode create(String path) throws RootPathException {

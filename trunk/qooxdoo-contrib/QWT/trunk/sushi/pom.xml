@@ -3,14 +3,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <parent>
     <groupId>org.qooxdoo</groupId>
     <artifactId>qooxdoo</artifactId>
-    <version>3-SNAPSHOT</version>
+    <version>0.3.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.qooxdoo.sushi</groupId>
   <artifactId>sushi</artifactId>
   <name>Sushi</name>
-  <version>3-SNAPSHOT</version>
+  <version>1.3.11</version>
   <packaging>pom</packaging>
 
   <modules>
