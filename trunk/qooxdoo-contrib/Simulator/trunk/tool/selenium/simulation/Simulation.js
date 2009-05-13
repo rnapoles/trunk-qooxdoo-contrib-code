@@ -393,7 +393,7 @@ simulation.Simulation.prototype.getLogFile = function()
  * 
  * @param text {String} the message to be logged
  * @param level {String?"debug"} The message's error level. One of "debug", 
- *   "info", "warn", "error"
+ *   "info", "warn", "error", "none". "none" means no formatting is applied.
  * @param browserLog {String?"browser"} "browser" also logs to the server's 
  *   browser-side log, anything else logs only to the local log file
  * @return {void}
@@ -430,7 +430,9 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
     msg = "<p>" + msg + "</p>";   
   }
 
-  msg = '<div class="qxappender"><div class="level-' + lvl + '">' + msg + "</div></div>";
+  if (lvl != "none") {
+    msg = '<div class="qxappender"><div class="level-' + lvl + '">' + msg + "</div></div>";
+  }
 
   var prefix = 'qxSimulator_' + this.startDate.getTime();
   var logFile = this.getLogFile();
@@ -455,10 +457,10 @@ simulation.Simulation.prototype.logEnvironment = function()
   var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");
   var plat = this.getEval('navigator.platform', "Getting platform from browser");
 
-  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "info");
-  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "info");
-  this.log("Platform: " + plat, "info");
-  this.log("User agent: " + agent, "info");
+  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "none");
+  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none");
+  this.log("Platform: " + plat, "none");
+  this.log("User agent: " + agent, "none");
 };
 
 /**
