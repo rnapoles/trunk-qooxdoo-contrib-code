@@ -354,7 +354,7 @@ function runTestsSteps()
   
     logErrors(result);
 
-    logTestDuration(packageDuration, packages[i]);
+    //logTestDuration(packageDuration, packages[i]);
 
   }  
   logTestDuration(elapsedTotal);
