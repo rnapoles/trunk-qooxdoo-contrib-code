@@ -13,18 +13,9 @@
  *   See the LICENSE file in the project's top-level directory for details.
  *
  * Authors:
- *  * Derrell Lipman (derrell)
+ *  * Christian Boulanger (cboulanger)
  */
 
-/*
- * This is a very simple example of server-generated data for a table which
- * uses a Remote Table Model.
- *
- * In this simple example, we provide each of the years between 1900 and 2020
- * inclusive, along with a boolean indicator of whether the year is/was a leap
- * year.  Table row 0 contains the data for year 1900, row 1 has year 1901,
- * etc.
- */
 
 class class_Databinding
 {
@@ -34,20 +25,31 @@ class class_Databinding
     $_SESSION['nodeCount'] = rand(1000,9000);
     $_SESSION['counter'] = 0;
     return array(
-      'result' => array(
-          'nodeCount' => $_SESSION['nodeCount']
-      )
+      'nodeCount' => $_SESSION['nodeCount']
     );
   }
   
-  
+  /**
+   * get node data
+   * @param array $params
+   */
   function method_getNodeData( $params )
   {
-    list( $queue, $max ) = $params;  
-    
-    $queue = (array) $queue;
-    
-    $q = $queue;
+    /*
+     * parameters
+     */
+    if ( count($params ) == 2 )
+    {
+      list( $queue, $max ) = $params;
+    }
+    else
+    {
+      /*
+       * called with no arguments = get top nodes
+       */
+      $queue = array(0);
+      $max = 1;
+    }
     
     /*
      * create node array
@@ -55,7 +57,7 @@ class class_Databinding
     $nodeArr = array();
     $counter= 0;
     
-    while ( $counter++ < $max and 
+    while ( $counter++ <= $max and 
             is_numeric( $parentId = array_shift( $queue ) ) )
     {
       
@@ -63,7 +65,6 @@ class class_Databinding
        * abort when maximum number of nodes is reached
        */
       if ( $_SESSION['counter'] > $_SESSION['nodeCount'] )
-      //if (false)
       {
         return array(
           'result' => array(
@@ -95,6 +96,13 @@ class class_Databinding
           'icon'            => null, // default
           'iconSelected'    => null, // default
           'bHideOpenClose'  => ! $hasChildren,
+        
+          /*
+           * the data.id and data.parentId properties
+           * define the node structure that exists on
+           * the server. we cannot guarantee what node id
+           * this node will have on the client.
+           */
           'data'            => array (
                                 'id'        => $nodeId,
                                 'parentId'  => $parentId
@@ -111,103 +119,11 @@ class class_Databinding
     }
     
     return array(
-      'result' => array(
-        'nodes'        => $nodeArr,   
-        'queue'        => $queue
-      )
+      'nodes'        => $nodeArr,   
+      'queue'        => $queue
     );
   }
 
-
-  /**
-   * Get the row count of the table
-   *
-   * @param params
-   *   An array containing the parameters to this method.  None expected.
-   *
-   * @param error
-   *   An object of class JsonRpcError.
-   *
-   * @return
-   *   Success: The number of rows in the table
-   *   Failure: null
-   */
-  function method_getRowCount($params, $error)
-  {
-    if (count($params) != 0)
-    {
-      $error->SetError(JsonRpcError_ParameterMismatch,
-                             "Expected no parameters; got " . count($params));
-      return $error;
-    }
-
-    // Since we're handling years 1900-2020 inclusive, we have a fixed
-    // number of years, and thus a fixed row count.
-    return 121;
-  }
-
-  /**
-   * Get the row data, given a starting and ending row number.  In a "real"
-   * backend for the Remote table model, one would likely retrieve row data
-   * from a database or some other "massive" storage implementation.  In
-   * this simple example, we dynamically generate the data.
-   *
-   * @param params
-   *   An array containing the parameters to this method:
-   *    params[0] : firstRow
-   *    params[1] : lastRow
-   *
-   * @param error
-   *   An object of class JsonRpcError.
-   *
-   * @return
-   *   Success: The data model data for the requested rows.  The data is
-   *            returned as an array of row arrays.  Each row array contains
-   *            the year number as its first element and a boolean
-   *            indicating whether that year is a leap year as its second
-   *            element.
-   *   Failure: null
-   */
-  function method_getRowData($params, $error)
-  {
-    if (count($params) != 2)
-    {
-      $error->SetError(JsonRpcError_ParameterMismatch,
-                             "Expected 2 parameters; got " . count($params));
-      return $error;
-    }
-
-    // Create an array of rows
-    $rows = Array();
-
-    // For each requested row...
-    for ($row = $params[0],
-    $year = 1900 + $params[0];
-    $row <= $params[1];
-    $row++,
-    $year++)
-    {
-      // Create an array of data for this row
-      $rowData = Array();
-
-      // Get the data for this row.  In this example case, we calculate
-      // it, but we could as well be retrieving it from a database.
-      //
-      // Note that the associative array indexes (which become the
-      // property names in the JSON map) are the column id fields used
-      // by the data model.  These are strings that are not localized
-      // and so differ, possibly, from the column headings.
-      $rowData["year"] = $year;
-      $rowData["leap"] = (($year % 4 == 0 && $year % 100 != 0) ||
-      ($year %400 == 0));
-
-      // Add this row data to the result set
-      $rows[] = $rowData;
-    }
-
-    // Give 'em what they came for!
-    return $rows;
-  }
 }
 
 ?>
