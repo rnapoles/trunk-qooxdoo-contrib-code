@@ -309,39 +309,92 @@ qx.Class.define("databinding.Application",
         var cancelButton = this.buttonCancelAddJsonRpcData;
         var startButton = this.buttonAddJsonRpcData;
 
+        /*
+         * calling getNodeCount() method on server with no 
+         * parameters. it returns the number of nodes on the
+         * server.
+         */
         store.load("getNodeCount", [], function(data)
         {
           var nodeCount = data.nodeCount;
 
-          /*
-           * now we are retrieving the tree in chunks of 10
-           */
-
           var counter = 0;
           abortJsonRpcLoad = false;  // global flag
 
+          /*
+           * Create a function that can recursively call itself
+           * in order to load folder children, as long as there
+           * are some left on the server. 
+           */
           (function loadTree(data)
           {
+            
+            /*
+             * if the function is called with boolean 'true', this
+             * is interpreted as the start of the loading process. 
+             */
             if (data === true)
             {
+              
+              /*
+               * do some nice ui stuff
+               */
               tree.setAdditionalStatusBarText(" | Tree has " + nodeCount + " nodes ...");
               cancelButton.setEnabled(true);
               startButton.setEnabled(false);
-              store.load("getNodeData", [ 0, 10 ], loadTree);
+              
+              /*
+               * call the load method with no arguments which means that
+               * the top level nodes are requested.
+               */
+              store.load("getNodeData", [], loadTree);
             }
-            else if (!abortJsonRpcLoad && data && typeof data == "object" && data.queue instanceof Array && data.queue.length)
+            
+            /*  
+             * After the data has returned from the server, the function is
+             * called again, and the data passed to the function.
+             * We use a global flag to signal if the loading process should
+             * be aborted. The data passed from the server has a 'nodes' and a
+             * 'queue' property. The 'nodes' property will be used by the 
+             * controller to build the tree in the tree model. The 'queue' property
+             * is an array of child ids which still have to be retrieved. If this
+             * array is empty, we're done loading.
+             */
+            else if ( ! abortJsonRpcLoad && data && typeof data == "object" 
+                      && data.queue instanceof Array && data.queue.length )
             {
+              /*
+               * display loading progress
+               */
               counter += data.nodes.length;
               var parentNodeId = data.parentNodeId;
               tree.setAdditionalStatusBarText(" | Loaded " + counter + " of " + nodeCount + " nodes...");
-              store.load("getNodeData", [ data.queue, 10 ], loadTree);
+              
+              /*
+               * now call the load method of the store with the queue of node ids that
+               * still have to be retrieved. It will pull no more than
+               * 10 folders (plus children) at a time to avoid timeouts.
+               * You can play with the value of 10 to see whatever
+               * works best, given the bandwith and server speed. When
+               * done loading, call the loadTree function again with
+               * the result. 
+               */
+              store.load("getNodeData", [ data.queue, 10 ], loadTree );
             }
+             
+            /*
+             * if no data, an error occurred
+             */
             else if (data === null)
             {
               tree.setAdditionalStatusBarText(" | *** An error occurred ***");
               cancelButton.setEnabled(false);
               startButton.setEnabled(true);
             }
+             
+            /*
+             * else, we're done.
+             */
             else
             {
               tree.setAdditionalStatusBarText(" | Finished loading " + nodeCount + " nodes.");
@@ -356,21 +409,29 @@ qx.Class.define("databinding.Application",
       /*
        * Button to cancel the json-rpc requests
        */
-
       this.buttonCancelAddJsonRpcData = new qx.ui.form.Button("Cancel jsonrpc tree loading");
       _container2.add(this.buttonCancelAddJsonRpcData);
       this.buttonCancelAddJsonRpcData.setEnabled(false);
-
       this.buttonCancelAddJsonRpcData.addListener("execute", function(e)
       {
-        // set global flag to true which should be available in the closure further up.
+        /*
+         * set global flag to true which should be available in the closure further up.
+         */
         abortJsonRpcLoad = true;
+        
+        /*
+         * button stuff
+         */
         this.buttonCancelAddJsonRpcData.setEnabled(false);
         this.buttonAddJsonRpcData.setEnabled(true);
       },
       this);
     },
 
+    /**
+     * An example for tree data that is child-centric and not 
+     * parent-centric
+     */
     treeData : [ /* root node omitted */ null,
     {
       nodeId   : 1,

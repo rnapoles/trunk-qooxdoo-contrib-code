@@ -29,6 +29,63 @@
  * programmatically by the user through the add, prune, or move methods. 
  * In contrast, the ..data() methods are assumed to be used by the databinding 
  * controller.
+ * 
+ * The tree data passed by the server looks like so:
+ * 
+ * {
+ *   
+ *   // obligatory properties
+ *   type           : 1,   // 1 for a leaf, 2 for a branch,
+ *   label          : "My Documents",
+ *   
+ *   // optional properties concerning layout
+ *   bSelected      : true,  // true if node is selected; false otherwise.
+ *   bOpened        : true,  // true (-), false (+)
+ *   bHideOpenClose : false, // whether to hide the open/close button
+ *   icon           : "images/folder.gif",
+ *   iconSelected   : "images/folder_selected.gif",
+ *   cellStyle      : "background-color:cyan"
+ *   labelStyle     : "background-color:red;color:white"
+ *   
+ *   // optional properties concerning the tree structure 
+ *   nodeId         : 1,   // optional, see below 
+ *   parentNodeId   : 23,  // optional, see below
+ *   children       : [ 35, 46, 99 ], // optional, see below   
+ *
+ *   // optional column data
+ *   columnData     : [
+ *                      null, // null at index of tree column (typically 0)
+ *                      "text of column 1",
+ *                      "text of column 2"
+ *                    ],
+ *                    
+ *   // other optional data
+ *   data           : { 
+ *                      id : 1       // the id of the node as it is stored 
+ *                                   // on the server, see below
+ *                      parentId : 0 // the id of the parent node on the server
+ *                    },
+ * 
+ * The model supports two kind of tree structures, parent-centric trees and
+ * child-centric trees. 
+ * 
+ * a) parent-centric trees are those which consist of nodes that contain 
+ * a reference to their parent node. These refernces are stored either in
+ * the nodeId and parentNodeId property or in the data property. The former 
+ * can only be used if the whole tree data is provided at once, which is
+ * impractical when dealing with very large trees. The latter mirrors the way
+ * the tree is stored in the database on the server. The id and parent id are
+ * stored as properties of the "data" property map of the node. The nodeId
+ * and parentNodeId properties are determined by the client, and should not be 
+ * used when dealing with the tree. Instead, only the server node id is used and,
+ * if needed, translated on the fly by the getClientNodeId() method. 
+ * 
+ * b) child-centric trees are those which store the children ids similar to the
+ * way the tree data model is stored internally. This works only with small trees 
+ * that are loaded at once by the store. In this kind of tree data, each node 
+ * needs to contain a 'nodeId' property and a 'children' property containing an 
+ * array with the ids of the child nodes. 
+ * 
  */
 qx.Class.define("qcl.databinding.event.model.TreeVirtual",
 {
