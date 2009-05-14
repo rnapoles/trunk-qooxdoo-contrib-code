@@ -31,10 +31,14 @@ public class Diff {
     }
 
     public static String diff(String leftStr, String rightStr, boolean range, int context) {
-        return diff(Strings.lines(leftStr), Strings.lines(rightStr), range, context);
+        return diff(leftStr, rightStr, range, context, false);
     }
     
-    public static String diff(List<String> left, List<String> right, boolean range, int context) {
+    public static String diff(String leftStr, String rightStr, boolean range, int context, boolean escape) {
+        return diff(Strings.lines(leftStr), Strings.lines(rightStr), range, context, escape);
+    }
+    
+    public static String diff(List<String> left, List<String> right, boolean range, int context, boolean escape) {
         List<String> commons;
         List<Chunk> chunks;
         Chunk chunk;
@@ -57,12 +61,14 @@ public class Diff {
             }
             if (chunk.delete > 0) {
                 for (int i = chunk.left; i < chunk.left + chunk.delete; i++) {
-                    result.append("-" + left.get(i));
+                    result.append('-');
+                    appendEscaped(left.get(i), escape, result);
                 }
             }
             if (chunk.add.size() > 0) {
                 for (String line : chunk.add) {
-                    result.append("+").append(line);
+                    result.append("+");
+                    appendEscaped(line, escape, result);
                 }
             }
             ci = Math.min(chunk.common + context, c == chunks.size() - 1 ? commons.size() : chunks.get(c + 1).common - context);
@@ -73,7 +79,36 @@ public class Diff {
         }
         return result.toString();
     }
-    
+
+    public static void appendEscaped(String str, boolean escape, StringBuilder dest) {
+        int max;
+        char c;
+        if (escape) {
+            max = str.length();
+            for (int i = 0; i < max; i++) {
+                c = str.charAt(i);
+                switch (c) {
+                case '\t':
+                    dest.append("\\t");
+                    break;
+                case '\r':
+                    dest.append("\\r");
+                    break;
+                case '\n':
+                    dest.append("\\n");
+                    break;
+                default:
+                    if (c < ' ') {
+                        dest.append('[').append((int) c).append(']');
+                    } else {
+                        dest.append(c);
+                    }
+                }
+            }
+        } else {
+            dest.append(str);
+        }
+    }
     public static List<Chunk> diff(List<String> left, List<String> commons, List<String> right) {
         Chunk chunk;
         List<Chunk> result;
