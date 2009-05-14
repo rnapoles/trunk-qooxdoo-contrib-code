@@ -101,7 +101,7 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
        check : "qx.event.type.Data",
        nullable : true,
        event : "changeDataEvent",
-       apply : "_onChangeDataEvent"
+       apply : "_applyDataEvent"
      }    
    },
 
@@ -190,12 +190,12 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
        /*
         * propagate event
         */
-       //this.info( "Propagating target model event '" + event.getType() + "' from " + event.getTarget() + " to store." );
+       this.info( "Propagating target model event '" + event.getType() + "' from " + event.getTarget() + " to store." );
        this.setDataEvent(null);
        this.setDataEvent( event );
      },
      
-     _onChangeDataEvent : function( event, old )
+     _applyDataEvent : function( event, old )
      {
        var targetModel  = this.getTarget().getDataModel();
        
@@ -207,9 +207,8 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
        {
          if ( targetModel && event.getTarget() != targetModel )
          {
-           //this.info( "Propagating synchronized event '" + event.getType() + "' from " + event.getTarget() + " to " + targetModel );
+           this.info( "Propagating synchronized event '" + event.getType() + "' from " + event.getTarget() + " to " + targetModel );
            targetModel.dispatchEvent( event.clone() );
-          
          }
        } 
      }

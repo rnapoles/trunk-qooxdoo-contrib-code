@@ -199,7 +199,7 @@ qx.Class.define("databinding.Application",
       _container2.add( new qx.ui.basic.Label("2. Retrieve tree data (Stop whenever you have enough)") );
 
       /*
-       * Get data from JSON-RPC backend
+       * Configure the JSON-RPC connection
        */
       var store = new qcl.databinding.event.store.JsonRpc(
         /* url */ "../services/index.php",
@@ -230,7 +230,6 @@ qx.Class.define("databinding.Application",
           return " | " + text;
         }
       } );
-      
 
       
       /*
@@ -485,8 +484,6 @@ qx.Class.define("databinding.Application",
       },
       this);  
       
-
-
       /* 
        * event listeners
        */
@@ -522,7 +519,22 @@ qx.Class.define("databinding.Application",
       },
       this);
 
-
+   // ******************************************************
+ 
+      _container2.add( new qx.ui.basic.Label("4. Synchronize with other browser windows (works only with 3.,not with 2.)") );
+      var openNewWindowButton = new qx.ui.form.Button("Open new browser window.");
+      _container2.add( openNewWindowButton );
+      openNewWindowButton.addListener("execute",function(){
+        window.open(document.location);
+      });
+     
+      var serverSyncCheckBox = new qx.ui.form.ToggleButton( "Use message transport, polling in intervals of ... seconds:");
+      _container2.add(  serverSyncCheckBox );
+      serverSyncCheckBox.bind("checked",store,"useEventTransport");
+      
+      var spinner = new qx.ui.form.Spinner( 3,3,10);
+      _container2.add( spinner );
+      spinner.bind("value", store, "interval" );
     }
   }
 });

@@ -836,12 +836,13 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
       /*
        * don't do anything if this is the echo of a change to this object itself 
        */
-      if ( event.getTarget() == this ) return;
-      //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
+      if ( event.getTarget() === this ) return;
+      
+       //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
        
        var ed = event.getData();
        var target = event.getTarget();
-       
+
        /*
         * handle range
         */
@@ -853,15 +854,15 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
             * add a node
             */
            case "add":
-             var node = target.getData()[i];
-             this.addData( null,[node] );
+             var node = ed.isServerEvent ? ed.data[i-ed.start] : target.getData()[i];
+             this.addData( null, [node] );
              break;
            
            /*
             * remove a node
             */
            case "remove":
-             var serverNodeId = target.getServerNodeId(i);
+             var serverNodeId = ed.isServerEvent ? i : target.getServerNodeId(i);
              var nodeId = this.getClientNodeId( serverNodeId );
              this._removeNodeData( nodeId );
              break;
@@ -886,9 +887,9 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
       /* 
        * don't do anything if this is the echo of a change to this object itself 
        */
-      if ( event.getTarget() == this ) return;
+      if ( event.getTarget() === this ) return;
       
-      this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
+      //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
        
       /*
        * change data
@@ -896,8 +897,10 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
       var ed     = event.getData();
       var target = event.getTarget();
       var _this  = this;
-      var path   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
-        var serverNodeId = target.getServerNodeId( parseInt(sourceNodeId) ) ;
+      var path   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId)
+      {
+        var serverNodeId = ed.isServerEvent ? 
+            sourceNodeId : target.getServerNodeId( parseInt(sourceNodeId) ) ;
         var targetNodeId = _this.getClientNodeId( serverNodeId ); 
         return "getData()[" + targetNodeId + "]";
       });
