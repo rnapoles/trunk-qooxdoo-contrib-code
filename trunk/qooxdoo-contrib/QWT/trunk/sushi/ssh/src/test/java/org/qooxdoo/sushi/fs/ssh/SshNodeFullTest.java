@@ -30,7 +30,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
 
 import com.jcraft.jsch.JSchException;
