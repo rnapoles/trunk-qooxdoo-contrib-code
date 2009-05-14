@@ -107,6 +107,11 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      * create one JSON-RPC object
      */
      this.__rpc = new qx.io.remote.Rpc;
+     
+    /*
+     * create store id
+     */ 
+     this.setStoreId( this.uuid() );
 
   },
 
@@ -122,11 +127,22 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 
 
   properties : 
-  {  
+  {
+    
     /**
+     * The unique id of the store, used to identify itself on the server
+     */
+    storeId :
+    {
+      check : "String",
+      nullable : false
+    },
+    
+   /**
     * Property for holding the loaded model instance.
     */
-    model : {
+    model : 
+    {
       nullable: true,
       event: "changeModel"
     },
@@ -194,8 +210,25 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       check : "qx.event.type.Data",
       nullable : true,
       event : "changeDataEvent",
-      apply : "_onChangeDataEvent"
-    }    
+      apply : "_applyDataEvent"
+    },
+    
+    useEventTransport :
+    {
+      check : "Boolean",
+      init : false,
+      event : "changeUseEventTransport",
+      apply : "_applyUseEventTransport"
+    },
+    
+    /** 
+     * The polling frequency in ms
+     */
+    interval :
+    {
+      check : "Integer",
+      init : 2
+    }
 
 
   },
@@ -214,17 +247,21 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     __rpc : null,
 
 
-    /**
+    /** 
      * Loads the data from a service method asynchroneously. 
      * @param serviceMethod {String} Method to call
      * @param params {Array} Array of arguments passed to the service method
+     * @param finalCallback {function} The callback function that is called with
+     *   the result of the request
+     * @param context {Object} The context of the callback function     
      */
-    load : function( serviceMethod, params, finalCallback  )
+    load : function( serviceMethod, params, finalCallback, context  )
     {
       this._sendJsonRpcRequest( 
           serviceMethod||this.getServiceMethos(), 
           params,
-          finalCallback
+          finalCallback, 
+          context
       );
     },
 
@@ -260,12 +297,15 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     },
 
 
-    /** 
+    /**  
      * Send json-rpc request with arguments
      * @param serviceMethod {String} Method to call
      * @param params {Array} Array of arguments passed to the service method
+     * @param finalCallback {function} The callback function that is called with
+     *   the result of the request
+     * @param context {Object} The context of the callback function
      */
-    _sendJsonRpcRequest : function( serviceMethod, params, finalCallback )
+    _sendJsonRpcRequest : function( serviceMethod, params, finalCallback, context )
     {
 
       var rpc = this._configureRequest();
@@ -312,11 +352,11 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
            */
           if ( data.result )
           {
-            _this.__handleResponseData( data.result, finalCallback ); 
+            _this.__handleResponseData( data.result, finalCallback, context ); 
           }
           else
           {
-            _this.__handleResponseData( data, finalCallback );
+            _this.__handleResponseData( data, finalCallback, context );
           }
         } 
         else 
@@ -352,14 +392,17 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 
     },
 
-    /**
-     * handles events and messages received with server response
+    /** 
+     * Handles events and messages received with server response 
+     * @param obj {Object} Context
+     * @param data {Object} Data
+     * @return {Void}
      */
     __handleEventsAndMessages : function ( obj, data )
     {
       /*
-       * server messages
-       */
+      * server messages
+      */
       if( data.messages && data.messages instanceof Array )
       {
         data.messages.forEach( function(message){
@@ -371,17 +414,22 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       if( data.events && data.events instanceof Array )
       {
         data.events.forEach( function(event)
-            {
+        {
           obj.fireDataEvent( event.type, event.data ); 
-            });
+        });
       }       
+      return;
     },
 
-
-    /**
-     * Handles response data
+ 
+    /** 
+     * Handles response data 
+     * @param data {Object} The response data
+     * @param finalCallback {function} The callback function that is called with
+     *   the result of the request
+     * @param context {Object} The context of the callback function
      */
-    __handleResponseData : function( data, finalCallback ) 
+    __handleResponseData : function( data, finalCallback, context ) 
     {
       /*
        * create the class
@@ -403,7 +451,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
        */
       if ( typeof finalCallback == "function" )
       {
-        finalCallback.call(null, data);
+        finalCallback.call( context, data );
       }       
     },   
 
@@ -418,14 +466,258 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       }
     },
     
-    _onChangeDataEvent : function( event, old )
+    _applyDataEvent : function( event, old )
     {
       if ( event )
       {
-        //this.info( "Propagating received event '" + event.getType() + "' from " + event.getTarget() + " to bound controllers...");
+        if ( event.getTarget() !== this )
+        {
+          //this.info( "Propagating received event '" + event.getType() + "' from " + event.getTarget() + " to bound controllers...");
+          this.saveDataEvent( event );          
+        }
       }
-    }
+    },
     
+    __timerId : null,
+    
+    _applyUseEventTransport : function ( value, old )
+    {
+      /*
+       * remove the old timer, if exists
+       */
+      if ( this.__timerId  )      
+      {
+        qx.util.TimerManager.getInstance().stop( this.__timerId );
+        this.unregisterStore();
+      }
+      
+       if ( value )
+       {
+        /*
+         * start the timer
+         */    
+        this.__timerId = qx.util.TimerManager.getInstance().start(
+          this._poll,
+          this.getInterval() * 1000,
+          this
+        );
+        this.registerStore();
+       }
+    },
+    
+    /*
+     * register with server
+     */    
+    registerStore : function()
+    {
+       this.load("register",[this.getStoreId()],function(data){
+         this.info(data);
+       }, this );  
+    },
+    
+    /*
+     * unregister from server
+     */
+    unregisterStore : function()
+    {
+       this.load("unregister",[this.getStoreId()],function(data){
+         this.info(data);
+       }, this );   
+    },
+    
+    _poll : function()
+    {
+      this.load("getEvents",[this.getStoreId(),this.getDataEvents()],function(data){
+       this._handleServerEvents(data.events);
+      }, this );
+    },
+    
+    __dataEvents : [],
+    
+    getDataEvents : function()
+    {
+      var events = this.__dataEvents;
+      this.__dataEvents = [];
+      return events;
+    },
+    
+    saveDataEvent : function( event )
+    {
+      if ( ! event || ! this.getUseEventTransport() ) return;
+      
+      var ed = event.getData();
+      var type = event.getType();
+      
+      if ( !ed || ! type )
+      {
+        this.warn("Invalid event!");
+        return;
+      }
+      
+      ed.eventType = type;
+      ed.data = [];
+      var target = event.getTarget();
+      
+      switch ( type )
+      {
+       
+        case "change": 
+           /*
+            * handle range
+            */
+           for ( var i=ed.start; i<= ed.end; i++)
+           {
+             switch ( ed.type )
+             {
+               /* 
+                * add a node
+                */
+               case "add":
+                 ed.data.push( target.getData()[i]);
+                 break;
+                 
+              /*
+               * move a node
+               */
+               case "move":
+                 this.error("Not implmemented");
+             }
+           }  
+           break;
 
+        case "changeBubble":
+          
+          /*
+           * change data
+           */
+          var _this  = this;
+          var path   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
+            var serverNodeId = target.getServerNodeId( parseInt(sourceNodeId) ) ;
+            return "getData()[" + serverNodeId + "]";
+          });
+
+          break;
+       }
+      
+      /*
+       * save the event
+       */
+      this.__dataEvents.push( ed );
+    },
+    
+    /**
+     * Handles the events sent by the server
+     */
+    _handleServerEvents : function( events )
+    {
+      
+      for ( var i=0; i < events.length; i++)
+      {
+        var ed = events[i];
+        ed.isServerEvent = true;
+        var type = ed.eventType;
+        delete ed.eventType;
+        
+        var event = new qx.event.type.Data;
+        event.init(ed);
+        event.setType(type);
+        event.setTarget(this);
+        
+        this.setDataEvent(null);
+        this.setDataEvent(event);
+
+      }
+    },
+    
+    
+   /*
+     
+    Adapted from
+    
+    File: Math.uuid.js
+    Version: 1.3
+    Change History:
+      v1.0 - first release
+      v1.1 - less code and 2x performance boost (by minimizing calls to Math.random())
+      v1.2 - Add support for generating non-standard uuids of arbitrary length
+      v1.3 - Fixed IE7 bug (can't use []'s to access string chars.  Thanks, Brian R.)
+      v1.4 - Changed method to be "Math.uuid". Added support for radix argument.  Use module pattern for better encapsulation.
+
+    Latest version:   http://www.broofa.com/Tools/Math.uuid.js
+    Information:      http://www.broofa.com/blog/?p=151
+    Contact:          robert@broofa.com
+    ----
+    Copyright (c) 2008, Robert Kieffer
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+        * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+        * Neither the name of Robert Kieffer nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    */
+
+    /*
+     * Generate a random uuid.
+     *
+     * USAGE: Math.uuid(length, radix)
+     *   length - the desired number of characters
+     *   radix  - the number of allowable values for each character.
+     *
+     * EXAMPLES:
+     *   // No arguments  - returns RFC4122, version 4 ID
+     *   >>> Math.uuid()
+     *   "92329D39-6F5C-4520-ABFC-AAB64544E172"
+     * 
+     *   // One argument - returns ID of the specified length
+     *   >>> Math.uuid(15)     // 15 character ID (default base=62)
+     *   "VcydxgltxrVZSTV"
+     *
+     *   // Two arguments - returns ID of the specified length, and radix. (Radix must be <= 62)
+     *   >>> Math.uuid(8, 2)  // 8 character ID (base=2)
+     *   "01001010"
+     *   >>> Math.uuid(8, 10) // 8 character ID (base=10)
+     *   "47473046"
+     *   >>> Math.uuid(8, 16) // 8 character ID (base=16)
+     *   "098F4D35"
+     */
+    uuid : function (len, radix) 
+    {
+      var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');  
+      var chars = CHARS, uuid = [], rnd = Math.random;
+      radix = radix || chars.length;
+
+      if (len) {
+        // Compact form
+        for (var i = 0; i < len; i++) uuid[i] = chars[0 | rnd()*radix];
+      } else {
+        // rfc4122, version 4 form
+        var r;
+
+        // rfc4122 requires these characters
+        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+        uuid[14] = '4';
+
+        // Fill in random data.  At i==19 set the high bits of clock sequence as
+        // per rfc4122, sec. 4.1.5
+        for (var i = 0; i < 36; i++) {
+          if (!uuid[i]) {
+            r = 0 | rnd()*16;
+            uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+          }
+        }
+      }
+
+      return uuid.join('');
+    }
+  },
+  
+  destruct : function()
+  {
+    this.unregisterStore();
   }
 });
+
+
