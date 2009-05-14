@@ -39,8 +39,10 @@ public class Process {
         channel = root.createChannelExec();
         // tty=true propagates ctrl-c to the remote host:
         // (unfortunately, this causes ssh servers to send cr/lf, and I didn't find
-        // a way to stop this - I tried setPtyType and setTerminalMode
+        // a way to stop this - I tried setPtyType and setTerminalMode)
         channel.setPty(tty);
+        // TODO: http://tools.ietf.org/html/rfc4250
+        // TODO: channel.setTerminalMode(new byte[] { 70, 0, 0, 0, 0, /*71, 0, 0, 0, 0,*/ 0 });
         channel.setCommand(Strings.join(" ", command));
         channel.setInputStream(null);
         channel.setOutputStream(dest);
