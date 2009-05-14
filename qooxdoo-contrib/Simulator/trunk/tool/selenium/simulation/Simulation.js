@@ -449,13 +449,7 @@ simulation.Simulation.prototype.sanitize = function(text)
   text = text.replace(/\n/g,'<br/>');
   text = text.replace(/\r/g,'<br/>');
   text = text.replace(/'/g, '&quot;');
-  text = text.replace(/ä/g, '&auml;');
-  text = text.replace(/ö/g, '&ouml;');
-  text = text.replace(/ü/g, '&uuml;');
-  text = text.replace(/Ä/g, '&Auml;');
-  text = text.replace(/Ö/g, '&Ouml;');
-  text = text.replace(/Ü/g, '&Uuml;');
-  text = text.replace(/ß/g, '&szlig;');
+  text = text.replace(/[^\w\d\-_:;\.,\!\?\(\)\[\]$%&= \/\<\> ]?/gi, '');
   return text;
 };
 
