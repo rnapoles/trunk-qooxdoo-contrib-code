@@ -61,10 +61,11 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
       qx.Class.define("qx.data.model.TreeVirtual", {
         extend: qx.core.Object,
         properties : {
-          nodeCount :    { check: "Integer", init : null },
-          childCount :   { check: "Integer", init : null },
-          nodes :  { check : "Array", init : [] },
-          queue :  { check : "Array", init : []  }
+          nodeCount : { check: "Integer", init : null, event : "changeNodeCount" },
+          childCount : { check: "Integer", init : null, event : "changeChildCount" },
+          nodes : { check : "Array", init : [], event : "changeNodes" },
+          queue : { check : "Array", init : [], event : "changeQueue" },
+          statusText : { check: "String", init : "", event : "changeStatusText" }
         }
       });
     },

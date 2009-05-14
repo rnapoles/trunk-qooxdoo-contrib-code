@@ -626,7 +626,7 @@ qx.Class.define("qcl.databinding.event.model.SimpleTreeDataModel",
      *
      * @return {int} The id of the deleted node
      */
-    prune : function(nodeReference, bSelfAlso)
+    prune : function(nodeReference, bSelfAlso, isRecursive)
     {
       var node;
       var nodeId;
@@ -648,7 +648,7 @@ qx.Class.define("qcl.databinding.event.model.SimpleTreeDataModel",
       // First, recursively remove all children
       for (var i=this._nodeArr[nodeId].children.length-1; i>=0; i--)
       {
-        this.prune(this._nodeArr[nodeId].children[i], true);
+        this.prune(this._nodeArr[nodeId].children[i], true, true );
       }
 
       // Now remove ourself, if requested. (Don't try to remove the root node)
