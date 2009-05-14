@@ -25,7 +25,8 @@ class class_Databinding
     $_SESSION['nodeCount'] = rand(1000,9000);
     $_SESSION['counter'] = 0;
     return array(
-      'nodeCount' => $_SESSION['nodeCount']
+      'nodeCount'  => $_SESSION['nodeCount'],
+      'statusText' => "Loading {$_SESSION['nodeCount']} nodes."
     );
   }
   
@@ -56,6 +57,7 @@ class class_Databinding
      */
     $nodeArr = array();
     $counter= 0;
+    $firstFolder = true;
     
     
     /*
@@ -74,8 +76,9 @@ class class_Databinding
       {
         return array(
           'result' => array(
-            'nodes'        => array(),   
-            'queue'        => array()
+            'nodes'      => array(),   
+            'queue'      => array(),
+            'statusText' => "Loaded {$_SESSION['nodeCount']} nodes."
           )
         );
       }
@@ -85,15 +88,16 @@ class class_Databinding
       for( $i=0; $i < $childCount; $i++ )
       {
         /*
-         * create node datat
+         * create node data with at least one folder that has children
          */
         $nodeId         = ++$_SESSION['counter'];
-        $isBranch       = (bool) rand(0,1);
+
+        $isBranch       = $firstFolder ? true : (bool) rand(0,1); 
+        $hasChildren    = true; //$firstFolder ? true : ( $isBranch ? (bool) rand(0,1) : false );
+        $firstFolder    = false;
         
         $label          = $isBranch ? "Branch $nodeId" : "Leaf $nodeId";
-        $hasChildren    = $isBranch ? (bool) rand(0,1) : false;
-        $recordCount    = $isBranch ? rand(0,100) :"";
-        
+        $recordCount    = $isBranch ? rand(0,100) : "";
     
         $node = array(
           'type'            => $isBranch ? 2 : 1,
@@ -131,12 +135,15 @@ class class_Databinding
       }
     }
     
+    $statusText = "Loaded {$_SESSION['counter']} of {$_SESSION['nodeCount']} nodes.";
+    
     /*
      * return data to client
      */
     return array(
-      'nodes'        => $nodeArr,   
-      'queue'        => $queue
+      'nodes'      => $nodeArr,   
+      'queue'      => $queue,
+      'statusText' => $statusText
     );
   }
 

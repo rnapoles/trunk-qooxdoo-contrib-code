@@ -80,7 +80,7 @@ qx.Class.define("databinding.Application",
       this.treeWidget = new qx.ui.treevirtual.TreeVirtual([ 'Folders', '#' ], { dataModel : new qcl.databinding.event.model.TreeVirtual() });
       this.treeWidget.setSelectionMode(qx.ui.treevirtual.TreeVirtual.SelectionMode.SINGLE);
       this.treeWidget.setBackgroundColor("white");
-      this.treeWidget.setAlwaysShowOpenCloseSymbol(true);
+      this.treeWidget.setAlwaysShowOpenCloseSymbol(false);
       this.treeWidget.setStatusBarVisible(true);
       this.treeWidget.setShowCellFocusIndicator(true);
 
@@ -97,36 +97,12 @@ qx.Class.define("databinding.Application",
       });
 
       this._container1.add(this.treeWidget);
-
-      this.treeWidget.setSelectionMode(qx.ui.treevirtual.TreeVirtual.SelectionMode.SINGLE);
-      this.treeWidget.setBackgroundColor("white");
-      this.treeWidget.setAlwaysShowOpenCloseSymbol(true);
-      this.treeWidget.setStatusBarVisible(true);
-      this.treeWidget.setShowCellFocusIndicator(false);
-
-      this.treeWidget.getTableColumnModel().getBehavior().set(0,
-      {
-        width    : "10*",
-        minWidth : 200
-      });
-
-      this.treeWidget.getTableColumnModel().getBehavior().set(1,
-      {
-        width    : "1*",
-        minWidth : 70
-      });
-
-      this.treeWidget.getDataModel().addBranch(null, "Top Node", true);
-      this.treeWidget.getDataModel().setData();
-
+      
       /*
        * Button pane
        */
-
       this._container1.add(this.treeWidget);
-
       var qxVbox1 = new qx.ui.layout.VBox(10, null, null);
-
       var _container2 = new qx.ui.container.Composite();
       _container2.setLayout(qxVbox1);
       this._container2 = _container2;
@@ -137,6 +113,10 @@ qx.Class.define("databinding.Application",
       qxHsplit1.add(_container2);
 
       qxVbox1.setSpacing(10);
+      
+      
+      _container2.add( new qx.ui.basic.Label("TreeVirtual Databinding with a JSONRPC backend.") );
+      
 
       /*
        * text field with tree path
@@ -151,34 +131,274 @@ qx.Class.define("databinding.Application",
         this.buttonRemove.setEnabled(true);
         this.buttonAdd.setEnabled(true);
         this.buttonAddSibling.setEnabled(true);
+        this.buttonRename.setEnabled(true);
+      },
+      this);
+      
+      // ******************************************
+      
+     _container2.add( new qx.ui.basic.Label("1. Create one or more synchronized trees") );
+      
+      /*
+       * create a synchronized tree
+       */
+      this.buttonCreateSynchronizedTree = new qx.ui.form.Button("Create cloned and synchronized tree");
+      _container2.add( this.buttonCreateSynchronizedTree );
+      this.buttonCreateSynchronizedTree.addListener("execute", function(e)
+      {
+        
+        var w2 = new qx.ui.window.Window("Synchronized Tree");
+        w2.setLayout( new qx.ui.layout.Grow() );
+        w2.set( { width:300, height:300 } );
+        w2.moveTo( Math.floor(Math.random()*300), Math.floor( Math.random()*300) );
+        w2.open();
+
+        var tree2 = new qx.ui.treevirtual.TreeVirtual(
+            [ 'Folders'], 
+            { dataModel : new qcl.databinding.event.model.TreeVirtual() }
+        );
+        
+        tree2.setSelectionMode(qx.ui.treevirtual.TreeVirtual.SelectionMode.SINGLE);
+        tree2.setBackgroundColor("white");
+        tree2.setAlwaysShowOpenCloseSymbol(false);
+        tree2.setStatusBarVisible(true);
+        tree2.setShowCellFocusIndicator(false);
+        w2.add( tree2 );
+        
+        var controller2 = new qcl.databinding.event.controller.TreeVirtual( null, tree2 );
+        
+        /*
+         * we need to copy the initial data from the first tree by jsonfying it.
+         */
+        tree2.getDataModel().copyData( this.treeWidget.getDataModel().getData() );
+        
+        /*
+         * bind status text to window caption
+         */
+        store.bind( "model.statusText", w2, "caption" );
+        
+        /*
+         * bind store model to controller
+         */
+        store.bind( "model", controller2, "model" );
+        
+        /*
+         * bind the store's data events to the controller and
+         * vice versa
+         */
+        controller2.bind( "dataEvent", store, "dataEvent" );      
+        store.bind ("dataEvent", controller2, "dataEvent" );
+        
+
+      },
+      this);      
+      
+      
+      // ******************************************
+      
+      _container2.add( new qx.ui.basic.Label("2. Retrieve tree data (Stop whenever you have enough)") );
+
+      /*
+       * Get data from JSON-RPC backend
+       */
+      var store = new qcl.databinding.event.store.JsonRpc(
+        /* url */ "../services/index.php",
+        /* service */ "qcl.Databinding",
+        /* method */ null,
+        /* marshaler */ new qcl.databinding.event.marshal.TreeVirtual
+      );
+
+      var controller = new qcl.databinding.event.controller.TreeVirtual(null, this.treeWidget);
+      
+      /*
+       * bind the store's model to the controller's model
+       */
+      store.bind("model", controller, "model");
+      
+      /*
+       * bind the store's data events to the controller and
+       * vice versa
+       */
+      store.bind ("dataEvent", controller, "dataEvent" );
+      controller.bind( "dataEvent", store, "dataEvent" )
+      
+      /*
+       * bind the server-supplied status text to the tree's status bar.
+       */
+      store.bind("model.statusText", this.treeWidget, "additionalStatusBarText", {
+        converter : function( text ){
+          return " | " + text;
+        }
+      } );
+      
+
+      
+      /*
+       * Button to start request
+       */
+      this.buttonAddJsonRpcData = new qx.ui.form.Button("START");
+      _container2.add(this.buttonAddJsonRpcData);
+
+      this.buttonAddJsonRpcData.addListener("execute", function(e)
+      {
+       
+        /* 
+         * get some local variable references for the closure
+         */
+        var tree = this.treeWidget;
+        var cancelButton = this.buttonCancelAddJsonRpcData;
+        var startButton = this.buttonAddJsonRpcData;
+        
+        /*
+         * clear all bound trees
+         */
+        store.setModel(null);
+
+        /*
+         * calling getNodeCount() method on server with no 
+         * parameters. it returns the number of nodes on the
+         * server.
+         */
+        store.load("getNodeCount", [], function(data)
+        {
+          var nodeCount = data.nodeCount;
+          abortJsonRpcLoad = false;  // global flag
+
+          /*
+           * Create a function that can recursively call itself
+           * in order to load folder children, as long as there
+           * are some left on the server. 
+           */
+          (function loadTree(data)
+          {
+            
+            /*
+             * if the function is called with boolean 'true', this
+             * is interpreted as the start of the loading process. 
+             */
+            if (data === true)
+            {
+              
+              cancelButton.setEnabled(true);
+              startButton.setEnabled(false);
+              
+              /*
+               * call the load method with no arguments which means that
+               * the top level nodes are requested.
+               */
+              store.load("getNodeData", [], loadTree);
+            }
+            
+            /*  
+             * After the data has returned from the server, the function is
+             * called again, and the data passed to the function.
+             * We use a global flag to signal if the loading process should
+             * be aborted. The data passed from the server has a 'nodes' and a
+             * 'queue' property. The 'nodes' property will be used by the 
+             * controller to build the tree in the tree model. The 'queue' property
+             * is an array of child ids which still have to be retrieved. If this
+             * array is empty, we're done loading.
+             */
+            else if ( ! abortJsonRpcLoad && data && typeof data == "object" 
+                      && data.queue instanceof Array && data.queue.length )
+            {
+              
+              /*
+               * now call the load method of the store with the queue of node ids that
+               * still have to be retrieved. It will pull no more than
+               * 10 folders (plus children) at a time to avoid timeouts.
+               * You can play with the value of 10 to see whatever
+               * works best, given the bandwith and server speed. When
+               * done loading, call the loadTree function again with
+               * the result. 
+               */
+              store.load("getNodeData", [ data.queue, 10 ], loadTree );
+            }
+             
+            /*
+             * if no data, an error occurred
+             */
+            else if (data === null)
+            {
+              tree.setAdditionalStatusBarText(" | *** An error occurred ***");
+              cancelButton.setEnabled(false);
+              startButton.setEnabled(true);
+            }
+             
+            /*
+             * else, we're done.
+             */
+            else
+            {
+              cancelButton.setEnabled(false);
+              startButton.setEnabled(true);
+            }
+          })(true);
+        });
       },
       this);
 
       /*
-       * Button to clear field
+       * Button to cancel the json-rpc requests
        */
-      this.buttonClear = new qx.ui.form.Button("Clear tree");
-      _container2.add(this.buttonClear);
-
-      this.buttonClear.addListener("execute", function(e)
+      this.buttonCancelAddJsonRpcData = new qx.ui.form.Button("STOP");
+      _container2.add(this.buttonCancelAddJsonRpcData);
+      this.buttonCancelAddJsonRpcData.setEnabled(false);
+      this.buttonCancelAddJsonRpcData.addListener("execute", function(e)
       {
-        var dataModel = this.treeWidget.getDataModel();
-        dataModel.clearData();
+        /*
+         * set global flag to true which should be available in the closure further up.
+         */
+        abortJsonRpcLoad = true;
+        
+        /*
+         * button stuff
+         */
+        this.buttonCancelAddJsonRpcData.setEnabled(false);
+        this.buttonAddJsonRpcData.setEnabled(true);
       },
       this);
-
+      
+      
+      // ******************************************************
+ 
+      
+      _container2.add( new qx.ui.basic.Label("3. Manipulate the main tree to see the synchronization of changes") );
+      
       /*
        * Button to add a child folder
        */
       this.buttonAdd = new qx.ui.form.Button("Add child node");
-      this.buttonAdd.set({ enabled : false });
       _container2.add(this.buttonAdd);
 
       this.buttonAdd.addListener("execute", function(e)
       {
-        var selectedNode = this.treeWidget.getSelectedNodes()[0];
+        if ( this.treeWidget.getSelectedNodes().length )
+        {
+          var selectedNode = this.treeWidget.getSelectedNodes()[0];
+        }
+        else
+        {
+          var selectedNode = this.treeWidget.getDataModel().getData()[0];
+        }
+        
         var dataModel = this.treeWidget.getDataModel();
-        dataModel.addBranch(selectedNode.nodeId, "Child Node " + (selectedNode.children.length + 1), true);
+        
+        var nodeId = dataModel.addBranch(
+            selectedNode.nodeId, 
+            "Child Node " + (selectedNode.children.length + 1),
+            true
+        );
+
+        /*
+         * fake server node ids
+         */
+        var node = dataModel.getNode( nodeId );
+        dataModel.setServerNodeId( nodeId, nodeId );
+        dataModel.setServerParentNodeId( nodeId, node.parentNodeId );
+        dataModel.mapServerIdToClientId( nodeId, nodeId );
+        dataModel.mapServerIdToClientId( node.parentNodeId, node.parentNodeId );        
+        
         dataModel.setData();
       },
       this);
@@ -195,7 +415,20 @@ qx.Class.define("databinding.Application",
         var selectedNode = this.treeWidget.getSelectedNodes()[0];
         var dataModel = this.treeWidget.getDataModel();
         var parentNode = dataModel.getData()[selectedNode.parentNodeId] || 0;
-        dataModel.addBranch(parentNode.nodeId, "Sibling Node " + (parentNode.children.length + 1), true);
+        var nodeId = dataModel.addBranch(
+              parentNode.nodeId, 
+              "Sibling Node " + (parentNode.children.length + 1), 
+        true);
+        
+        /*
+         * fake server node ids
+         */
+        var node = dataModel.getNode( nodeId );
+        dataModel.setServerNodeId( nodeId, nodeId );
+        dataModel.setServerParentNodeId( nodeId, node.parentNodeId );
+        dataModel.mapServerIdToClientId( nodeId, nodeId );
+        dataModel.mapServerIdToClientId( node.parentNodeId, node.parentNodeId );
+        
         dataModel.setData();
       },
       this);
@@ -203,8 +436,7 @@ qx.Class.define("databinding.Application",
       /*
        * Button to remove a node
        */
-
-      this.buttonRemove = new qx.ui.form.Button("Remove");
+      this.buttonRemove = new qx.ui.form.Button("Prune node");
       this.buttonRemove.set({ enabled : false });
       _container2.add(this.buttonRemove);
 
@@ -221,6 +453,39 @@ qx.Class.define("databinding.Application",
         dataModel.setData();
       },
       this);
+      
+      /*
+       * Button to rename a node
+       */
+      this.buttonRename = new qx.ui.form.Button("Rename node");
+      this.buttonRename.set({ enabled : false });
+      _container2.add(this.buttonRename);
+
+      this.buttonRename.addListener("execute", function(e)
+      {
+        var node = this.treeWidget.getSelectedNodes()[0];
+        if ( ! node ) return;
+        var dataModel = this.treeWidget.getDataModel();
+        var name = prompt( "New name of the node", node.label );
+        dataModel.setState( node, { label : name } );
+        dataModel.setData();
+      },
+      this);      
+      
+      /*
+       * Button to prune tree
+       */
+      this.buttonPrune = new qx.ui.form.Button("Prune root node");
+      _container2.add(this.buttonPrune);
+
+      this.buttonPrune.addListener("execute", function(e)
+      {
+        this.treeWidget.getDataModel().prune(0);
+        this.treeWidget.getDataModel().setData();
+      },
+      this);  
+      
+
 
       /* 
        * event listeners
@@ -257,221 +522,7 @@ qx.Class.define("databinding.Application",
       },
       this);
 
-      /*
-       * Button to add batch data
-       */
-      this.buttonAddRaw = new qx.ui.form.Button("Add raw data structure");
-      _container2.add(this.buttonAddRaw);
 
-      this.buttonAddRaw.addListener("execute", function(e)
-      {
-        // clone the array
-        var treeData = [];
-        this.treeData.forEach(function(node) {
-          treeData.push(node ? qx.lang.Object.clone(node) : null);
-        });
-        var selectedNodes = this.treeWidget.getSelectedNodes();
-        this.treeWidget.getDataModel().addTreeData(
-            selectedNodes.length ? 
-                selectedNodes[0].nodeId : 0, treeData);
-        this.treeWidget.getDataModel().setData();
-      },
-      this);
-
-      /*
-       * Get data from JSON-RPC backend
-       */
-      var store = new qcl.databinding.event.store.JsonRpc(
-        /* url */ "../services/index.php",
-        /* service */ "qcl.Databinding",
-        /* method */ null,
-        /* marshaler */ new qcl.databinding.event.marshal.TreeVirtual
-      );
-
-      var controller = new qcl.databinding.event.controller.TreeVirtual(null, this.treeWidget);
-      store.bind("model", controller, "model");
-
-      /*
-       * Button to start request
-       */
-      this.buttonAddJsonRpcData = new qx.ui.form.Button("Get data from jsonrpc");
-      _container2.add(this.buttonAddJsonRpcData);
-
-      this.buttonAddJsonRpcData.addListener("execute", function(e)
-      {
-        /* 
-         * get some local variable references for the closure
-         */
-        var tree = this.treeWidget;
-        var cancelButton = this.buttonCancelAddJsonRpcData;
-        var startButton = this.buttonAddJsonRpcData;
-        
-        /*
-         * clear the tree
-         */
-        tree.getDataModel().clearData();
-
-        /*
-         * calling getNodeCount() method on server with no 
-         * parameters. it returns the number of nodes on the
-         * server.
-         */
-        store.load("getNodeCount", [], function(data)
-        {
-          var nodeCount = data.nodeCount;
-
-          var counter = 0;
-          abortJsonRpcLoad = false;  // global flag
-
-          /*
-           * Create a function that can recursively call itself
-           * in order to load folder children, as long as there
-           * are some left on the server. 
-           */
-          (function loadTree(data)
-          {
-            
-            /*
-             * if the function is called with boolean 'true', this
-             * is interpreted as the start of the loading process. 
-             */
-            if (data === true)
-            {
-              
-              /*
-               * do some nice ui stuff
-               */
-              tree.setAdditionalStatusBarText(" | Tree has " + nodeCount + " nodes ...");
-              cancelButton.setEnabled(true);
-              startButton.setEnabled(false);
-              
-              /*
-               * call the load method with no arguments which means that
-               * the top level nodes are requested.
-               */
-              store.load("getNodeData", [], loadTree);
-            }
-            
-            /*  
-             * After the data has returned from the server, the function is
-             * called again, and the data passed to the function.
-             * We use a global flag to signal if the loading process should
-             * be aborted. The data passed from the server has a 'nodes' and a
-             * 'queue' property. The 'nodes' property will be used by the 
-             * controller to build the tree in the tree model. The 'queue' property
-             * is an array of child ids which still have to be retrieved. If this
-             * array is empty, we're done loading.
-             */
-            else if ( ! abortJsonRpcLoad && data && typeof data == "object" 
-                      && data.queue instanceof Array && data.queue.length )
-            {
-              /*
-               * display loading progress
-               */
-              counter += data.nodes.length;
-              var parentNodeId = data.parentNodeId;
-              tree.setAdditionalStatusBarText(" | Loaded " + counter + " of " + nodeCount + " nodes...");
-              
-              /*
-               * now call the load method of the store with the queue of node ids that
-               * still have to be retrieved. It will pull no more than
-               * 10 folders (plus children) at a time to avoid timeouts.
-               * You can play with the value of 10 to see whatever
-               * works best, given the bandwith and server speed. When
-               * done loading, call the loadTree function again with
-               * the result. 
-               */
-              store.load("getNodeData", [ data.queue, 10 ], loadTree );
-            }
-             
-            /*
-             * if no data, an error occurred
-             */
-            else if (data === null)
-            {
-              tree.setAdditionalStatusBarText(" | *** An error occurred ***");
-              cancelButton.setEnabled(false);
-              startButton.setEnabled(true);
-            }
-             
-            /*
-             * else, we're done.
-             */
-            else
-            {
-              tree.setAdditionalStatusBarText(" | Finished loading " + nodeCount + " nodes.");
-              cancelButton.setEnabled(false);
-              startButton.setEnabled(true);
-            }
-          })(true);
-        });
-      },
-      this);
-
-      /*
-       * Button to cancel the json-rpc requests
-       */
-      this.buttonCancelAddJsonRpcData = new qx.ui.form.Button("Cancel jsonrpc tree loading");
-      _container2.add(this.buttonCancelAddJsonRpcData);
-      this.buttonCancelAddJsonRpcData.setEnabled(false);
-      this.buttonCancelAddJsonRpcData.addListener("execute", function(e)
-      {
-        /*
-         * set global flag to true which should be available in the closure further up.
-         */
-        abortJsonRpcLoad = true;
-        
-        /*
-         * button stuff
-         */
-        this.buttonCancelAddJsonRpcData.setEnabled(false);
-        this.buttonAddJsonRpcData.setEnabled(true);
-      },
-      this);
-    },
-
-    /**
-     * An example for tree data that is child-centric and not 
-     * parent-centric
-     */
-    treeData : [ /* root node omitted */ null,
-    {
-      nodeId   : 1,
-      label    : "Node (1)",
-      bOpened  : true,
-      children : [ 2, 3 ]
-    },
-    {
-      nodeId : 2,
-      label  : "Node (2)"
-    },
-    {
-      nodeId : 3,
-      label  : "Node (3)"
-    },
-    {
-      nodeId   : 4,
-      label    : "Node (4)",
-      children : [ 5 ]
-    },
-    {
-      nodeId   : 5,
-      bOpened  : true,
-      label    : "Node (5)",
-      children : [ 6 ]
-    },
-    {
-      nodeId   : 6,
-      label    : "Node (6)",
-      children : [ 7 ]
-    },
-    {
-      nodeId : 7,
-      label  : "Node (7)"
-    },
-    {
-      nodeId : 8,
-      label  : "Node (8)"
-    } ]
+    }
   }
 });
