@@ -25,7 +25,7 @@ public class IdTest {
         io = new IO();
         junit = io.locateClasspathItem(Test.class);
         junit.checkFile();
-        assertEquals(Id.fromString("junit:junit:4.4"), Id.fromNode(junit));
+        assertEquals(Id.fromString("junit:junit:4.5"), Id.fromNode(junit));
     }
 
     @Test
