@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2004-2009 1&1 Internet AG, Germany, http://www.1und1.de
+     2009 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -26,10 +26,6 @@
  * The loaded data will be parsed and saved in qooxdoo objects. Every value of
  * the loaded data will be stored in a qooxdoo property. The model classes for
  * the data will be created automatically.
- * 
- * For the fetching itself it uses the {@link qx.io.remote.Request} class and
- * for parsing the loaded javascript objects into qooxdoo objects, the
- * {@link qx.data.marshal.Json} class will be used.
  * 
  * Until qooxdoo includes a cometd-like service which allows low-latency server
  * push infrastructure, the databinding requests are used to transport events
@@ -59,15 +55,12 @@
  * The "events" and "messages" array elements will be dispatched as events on
  * the sending/receiving object or as public messages.
  * 
- * 
- * 
  */
 qx.Class.define("qcl.databinding.event.store.JsonRpc", 
-    {
+{
   extend : qx.core.Object,
 
-
-  /** 
+ /** 
   * @param url {String|null} The url of the jsonrpc service.
   * @param serviceName {String} The name of the service, i.e. "foo.bar"
   * @param serviceMethod  {String} The name of the method, i.e. "doStuff"   
@@ -111,13 +104,9 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     }
   
     /* 
-     * create object pool for rpc objects, doesn't work
+     * create one JSON-RPC object
      */
-    this.__pool = new qx.util.ObjectPool(10);
-    for ( var i=0; i<10; i++)
-    {
-      this.__pool.poolObject( new qx.io.remote.Rpc );
-    }
+     this.__rpc = new qx.io.remote.Rpc;
 
   },
 
@@ -193,7 +182,20 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     {
       check : "Boolean",
       init : false
-    }
+    },
+    
+    /**
+     * This property allows the synchronization of data through
+     * events. It has to exist in the controller and the store and
+     * be bound together
+     */
+    dataEvent : 
+    {
+      check : "qx.event.type.Data",
+      nullable : true,
+      event : "changeDataEvent",
+      apply : "_onChangeDataEvent"
+    }    
 
 
   },
@@ -209,6 +211,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     __opaqueCallRef : null,
     _responseData : null,
     _marshaler : null,
+    __rpc : null,
 
 
     /**
@@ -225,30 +228,17 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       );
     },
 
-    /**
-     * Reloads the data.
-     */
-    reload: function() 
-    {
-
-    },   
-
-
-
-
     /** 
-     * Creates and sends a GET request with the given url. Additionally two
-     * listeners will be added for the state and the completed event of the 
-     * request.
+     * Configures the request object
      * @return {qx.io.remote.Rpc}
      */
-    _createRequest: function() 
+    _configureRequest: function() 
     {
 
       /* 
-       * get new request object from pool and configure it
+       * configure request object
        */
-      var rpc = this.__pool.getObject( qx.io.remote.Rpc );
+      var rpc = this.__rpc;
       rpc.setTimeout( this.getTimeout() );
       rpc.setUrl( this.getUrl() );
       rpc.setServiceName( this.getServiceName() );
@@ -278,7 +268,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     _sendJsonRpcRequest : function( serviceMethod, params, finalCallback )
     {
 
-      var rpc = this._createRequest();
+      var rpc = this._configureRequest();
 
       /*
        * tag the current object instance for closures
@@ -292,23 +282,9 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       {
 
         /*
-         * discard request object
-         */
-        rpc.dispose();
-        delete rpc;
-
-        /*
          * save data for debugging etc.
          */
         _this._responseData = data;
-
-        /*
-         * notify of end of request @todo get rid of this after rewriting the
-         * qcl request queue manager
-         */
-        var m = new qx.event.message.Message("qcl.databinding.messages.rpc.end", (new Date).getTime() );
-        m.setSender( _this );
-        qx.event.message.Bus.dispatch( m );
 
         /*
          * show that no request is underway
@@ -345,7 +321,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         } 
         else 
         {
-          /* 
+         /* 
           * dispatch error message  
           * we're using a message and not an error message or event
           * so that all error messages can be dealt with in a central
@@ -407,15 +383,19 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      */
     __handleResponseData : function( data, finalCallback ) 
     {
-
-
-      // create the class
+      /*
+       * create the class
+       */
       this._marshaler.jsonToClass( data, true);
 
-      // set the initial data
+      /*
+       * set the initial data
+       */
       this.setModel( this._marshaler.jsonToModel(data) );
 
-      // fire complete event
+      /*
+       * fire complete event
+       */
       this.fireDataEvent( "loaded", this.getModel() );
 
       /*
@@ -425,7 +405,6 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       {
         finalCallback.call(null, data);
       }       
-
     },   
 
     /**
@@ -437,8 +416,16 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       {
         this.getCurrentRequest().abort( this.__opaqueCallRef );
       }
-
+    },
+    
+    _onChangeDataEvent : function( event, old )
+    {
+      if ( event )
+      {
+        //this.info( "Propagating received event '" + event.getType() + "' from " + event.getTarget() + " to bound controllers...");
+      }
     }
+    
 
   }
 });

@@ -38,23 +38,17 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
     * 
     * @param target {qx.ui.tree.Tree?null} The target widgets which should be a tree.
     * 
-    * @param childPath {String?null} The name of the property in the model, which 
-    *   holds the data array containing the children.
-    * 
-    * @param labelPath {String?null} The name of the property in the model, 
-    *   which holds the value to be displayed as the label of the tree items.
     */
-   construct : function(model, target, childPath, labelPath)  {
+   construct : function(model, target, childPath, labelPath)  
+   {
      this.base(arguments);
-     
-     // internal bindings reference
-     this.__bindings = {};
-     this.__boundProperties = [];
-
-     if (model != null) {
+    
+     if (model != null) 
+     {
        this.setModel(model);      
      }
-     if (target != null) {
+     if (target != null) 
+     {
        this.setTarget(target);
      }
    },
@@ -81,6 +75,7 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
      target : 
      {
        event: "changeTarget",
+       apply: "_applyTarget",
        init: null
      },
      
@@ -94,6 +89,19 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
        apply: "_applyDelegate",
        init: null,
        nullable: true
+     },
+     
+     /**
+      * This property allows the synchronization of data through
+      * events. It has to exist in the controller and the store and
+      * be bound together
+      */
+     dataEvent : 
+     {
+       check : "qx.event.type.Data",
+       nullable : true,
+       event : "changeDataEvent",
+       apply : "_onChangeDataEvent"
      }    
    },
 
@@ -119,29 +127,91 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
       * @param old {qx.core.Object|null} The old delegate.
       */
      _applyDelegate: function(value, old) {
-
+       //
      },
      
-     /**
+     _applyTarget : function( target, old )
+     {
+       if ( old )
+       {
+         // remove bindings
+       }
+       
+       var targetModel = target.getDataModel();
+       
+       targetModel.addListener("change", this._onTargetModelEvent, this);
+       targetModel.addListener("changeBubble", this._onTargetModelEvent, this);
+     },
+     
+     /** 
       * Apply-method which will be called after the model had been 
-      * changed. This method invoke a new building of the tree.
+      * changed. This adds the nodes contained in the model to the
+      * tree data model of the target
       * 
-      * @param value {qx.core.Object|null} The new tree.
-      * @param old {qx.core.Object|null} The old tree.
+      * @param value {qx.core.Object|null} The model contaning the new nodes.
+      * @param old {qx.core.Object|null} The old model, if any.
       */    
      _applyModel: function( model, old ) 
      {
-       var nodes = model.getNodes();       
+       var targetModel  = this.getTarget().getDataModel();
+        
+       /*
+        * clear the tree if the model is set to null
+        */
+       if ( model === null )
+       {
+         targetModel.clearData();
+         return;
+       }
+       
+       /*
+        * check if there are any nodes to add
+        */
+       var nodes = model.getNodes();   
        if ( ! nodes.length ) return;
        
        /*
         * add tree data to the model
         */
-       var targetModel  = this.getTarget().getDataModel();
-       targetModel.addTreeData( null, nodes );   
+       targetModel.addData( null, nodes );   
        targetModel.setData();         
 
-     }     
-
+     },
+     
+     _onTargetModelEvent : function( event )
+     {
+       
+       /*
+        * don't do anything if the event is not from the target model
+        * Otherwise this would cause an infinite loop
+        */
+       if ( event.getTarget() != this.getTarget().getDataModel() ) return;
+       
+       /*
+        * propagate event
+        */
+       //this.info( "Propagating target model event '" + event.getType() + "' from " + event.getTarget() + " to store." );
+       this.setDataEvent(null);
+       this.setDataEvent( event );
+     },
+     
+     _onChangeDataEvent : function( event, old )
+     {
+       var targetModel  = this.getTarget().getDataModel();
+       
+       /*
+        * dispatch a copy of the event if a target model exists and
+        * the target model is not the source of the event
+        */
+       if ( event )
+       {
+         if ( targetModel && event.getTarget() != targetModel )
+         {
+           //this.info( "Propagating synchronized event '" + event.getType() + "' from " + event.getTarget() + " to " + targetModel );
+           targetModel.dispatchEvent( event.clone() );
+          
+         }
+       } 
+     }
   }
 });
