@@ -20,7 +20,7 @@
 
 qx.Class.define("progressbar.ProgressBar",
 {
-  extend : qx.ui.layout.HorizontalBoxLayout,
+  extend : qx.ui.container.Composite,
 
 
 
@@ -30,61 +30,47 @@ qx.Class.define("progressbar.ProgressBar",
   *****************************************************************************
   */
 
-  construct : function()
+  construct : function(label)
   {
     this.base(arguments);
+	this.setLayout(new qx.ui.layout.HBox(10));
 
-    this.set(
-    {
-      width   : "auto",
-      spacing : 10
-    });
-
-    var label = arguments[0] || "Progress:";
+    var label = label || "Progress:";
 
     this.label = new qx.ui.basic.Label(label);
     this.add(this.label);
     this.setLabel(label);
 
-    this.hull = new qx.ui.layout.CanvasLayout();
-    this.add(this.hull);
+    this.hull = new qx.ui.container.Composite();
+	this.hull.setLayout(new qx.ui.layout.Canvas());
+	this.hull.set({ allowGrowY: true });
+    this.add(this.hull, { flex:1 });
 
     this.hull.set(
     {
-      height          : 20,
-      width           : 200,
-      backgroundColor : "#C1ECFF",
-      border          : "inset"
+      backgroundColor : "#C1ECFF"
     });
 
-    this.bar = new qx.ui.basic.Terminator();
-    this.hull.add(this.bar);
-
+    this.bar = new qx.ui.basic.Atom();
     this.bar.set(
     {
-      // height : 10,
-      height          : "100%",
-      width           : "0%",
-
-      // left   : 0,
-      backgroundColor : "#0000FF"
+      width: 1,
+	  allowGrowY: true,
+	  allowStretchY: true,
+      backgroundColor: "#0000FF"
     });
+    //this.bar.setStyleProperty("fontSize", 0);  // for IE
+    this.hull.add(this.bar);
 
-    this.bar.setStyleProperty("fontSize", 0);  // for IE
+    this._statusLabel = new qx.ui.basic.Label("(0/0 - 0%)");
+    if (!this.isShowStepStatus() || !this.isShowPcntStatus())
+      this._statusLabel.setVisibility("hidden");
+    this.add(this._statusLabel);
 
-    this.stepStatus = new qx.ui.basic.Label("(0/0)");
-    this.add(this.stepStatus);
-
-    if (!this.isShowStepStatus()) {
-      this.stepStatus.setDisplay(false);
-    }
-
-    this.pcntStatus = new qx.ui.basic.Label("(0%)");
-    this.add(this.pcntStatus);
-
-    if (!this.isShowPcntStatus()) {
-      this.pcntStatus.setDisplay(false);
-    }
+	this.hull.addListener("resize", function(e) {
+		if (this.getProportion())
+			this._update(this.getProportion(), e.getData().width);
+	}, this);
   },
 
 
@@ -119,13 +105,6 @@ qx.Class.define("progressbar.ProgressBar",
       apply : "_applyShowStepStatus"
     },
 
-    stepStatus :
-    {
-      check : "String",
-      init  : "",
-      apply : "_applyStepStatus"
-    },
-
     showPcntStatus :
     {
       check : "Boolean",
@@ -133,18 +112,18 @@ qx.Class.define("progressbar.ProgressBar",
       apply : "_applyShowPcntStatus"
     },
 
-    pcntStatus :
-    {
-      check : "String",
-      init  : "",
-      apply : "_applyPcntStatus"
-    },
-
     barColor :
     {
       check : "Color",
       apply : "_applyBarColor"
-    }
+    },
+	
+	proportion :
+	{
+		apply : "_applyProportion",
+		check : "String",
+		nullable: true
+	}
   },
 
 
@@ -158,6 +137,8 @@ qx.Class.define("progressbar.ProgressBar",
 
   members :
   {
+	_statusLabel : null,
+	
     /**
      * For future testing only.
      *
@@ -167,23 +148,15 @@ qx.Class.define("progressbar.ProgressBar",
      */
     showOff : function()
     {
-      this.debug("Entering showOff...");
-      var r = new qx.util.range.IntegerRange(0, 100, 5);
-      var i;
-
-      function delay()
-      {
-        for (var i=0; i<10000000; i++) {}
-      }
-
-      while ((i = r.next()) != null)
-      {
-        this.debug("Running i: " + i);
-        this.update(String(i) + "%");
-        delay();
-      }
-
-      this.debug("Leaving showOff...");
+		var timer = qx.util.TimerManager.getInstance();
+		timer.start(function(data, timerId) {
+			if (data.percent >= 100) {
+				timer.stop(timerId);
+				return;
+			}
+			data.percent++;
+			this.set({ proportion: data.percent + "%" });
+		}, 1000, this, { percent: 0 });
     },
 
     // update with increment
@@ -204,82 +177,137 @@ qx.Class.define("progressbar.ProgressBar",
      */
     reset : function()
     {
-      this.stepStatus.setText("");
-      this.pcntStatus.setText("");
-      this.bar.setWidth("0%");
+      this._statusLabel.setContent("");
+      this.bar.setWidth(0);
     },
 
-    /*
+    /**
+     * Updates the progress bar to show a different proportion complete
+     *
+     * @type member
      * @param val {String} val can be either a fraction ("5/12") specifying the degree
      *            of completeness with discrete values (like 5 of 12 items have
      *            been complete); or a percentage ("68%") of the degree of
      *            completeness.
+     * @return {boolean} true if it successfully changed the bar
+     * @throws Error if the val could not be interpretted
+	 * @deprecated use the proportion property instead
+	 * @see proportion property
      */
+    update : function(val) {
+		this._update(val);
+	},
 
     /**
-     * TODOC
+     * Updates the progress bar to show a different proportion complete
      *
      * @type member
-     * @param val {var} TODOC
-     * @return {boolean} TODOC
-     * @throws TODOC
+     * @param val {String} val can be either a fraction ("5/12") specifying the degree
+     *            of completeness with discrete values (like 5 of 12 items have
+     *            been complete); or a percentage ("68%") of the degree of
+     *            completeness.
+	 * @param hullWidth {Integer} passed during the resize event because it's not available directly
+     * @return {boolean} true if it successfully changed the bar
+     * @throws Error if the val could not be interpretted
+	 * @deprecated use the proportion property instead
+	 * @see proportion property
      */
-    update : function(val)
+    _update : function(val, hullWidth)
+	{
+		hullWidth = hullWidth || this.hull.getWidth();
+		if (!hullWidth) {
+			var bounds = this.hull.getBounds();
+			if (bounds)
+				hullWidth = bounds.width;
+		}
+		if (!hullWidth) {
+			this.debug("Cannot update progress bar because cannot find the width of the hull");
+			return;
+		}
+		var paramError = "Parameter to 'update' function must be a string representing a fraction or a percentage.";  // type error
+		var quotVal, pcntVal;
+
+		if (typeof (val) != 'string')
+			throw new Error(paramError);
+
+		var quotText = "0/1";
+		var pcnt = 0;
+	  
+		if (val.indexOf("/") > -1) {
+			// handle curr/total spec
+			var quot = val.split("/");
+
+			if ((quot.length != 2) || (isNaN(quot[0] = parseInt(quot[0]))) || (isNaN(quot[1] = parseInt(quot[1]))) || (quot[0] <= 0) || (quot[1] <= 0) || (quot[0] > quot[1]))
+				throw new Error(paramError);
+			pcnt = Math.round(quot[0] / quot[1] * 100);
+			quotText = val;
+		}
+
+		// alternative use properties, e.g. this.setPcntStatus(..)
+		else if (val[val.length - 1] = "%") {  // ends in '%'
+			// handle percent spec
+			pcnt = parseInt(val.slice(0, val.length - 1));
+
+			if (pcnt == NaN || (pcnt < 0 || pcnt > 100))
+				throw new Error(paramError);
+			quotText = pcnt + "/100";
+		} else
+
+			// throw invalid update spec exception
+			throw new Error(paramError);
+
+		var newWidth = Math.round(hullWidth / 100 * pcnt);
+		this.bar.setWidth(newWidth);
+		
+		var ss = this.isShowStepStatus();
+		var sp = this.isShowPcntStatus();
+		if (ss || sp) {
+			var statusText = "(";
+			if (ss) {
+				statusText += quotText;
+				if (sp)
+					statusText += " - ";
+			}
+			if (sp)
+				statusText += pcnt + "%";
+			statusText += ")";
+			
+			this._statusLabel.setContent(statusText);
+		}
+			
+		return true;
+	},
+	
+	/**
+	 * Called by the rendering engine to apply dimensions
+	 * @Override
+	 */
+	renderLayout : function(left, top, width, height) {
+		this.base(arguments, left, top, width, height);
+		this.bar.setHeight(height);
+	},
+
+	/**
+	 * Schedules an update of the bar to match the set proportion
+	 */
+	_scheduleUpdate : function() {
+		if (this.getProportion())
+			qx.util.DeferredCallManager.getInstance().schedule(new qx.util.DeferredCall(function() {
+				this.update(this.getProportion());
+			}, this));
+	},
+
+	/**
+	 * Implements the proportion property; can be either a fraction ("5/12") specifying the 
+	 * degree of completeness with discrete values (like 5 of 12 items have been complete); 
+	 * or a percentage ("68%") of the degree of completeness.
+	 */
+	_applyProportion : function(val)
     {
-      var paramError = "Parameter to 'update' function must be a string representing a fraction or a percentage.";  // type error
-      var quotVal, pcntVal;
+		this.update(val);
+    },
 
-      if (typeof (val) != 'string') {
-        throw new Error(paramError);
-      }
-
-      if (val.indexOf("/") > -1)
-      {
-        // handle curr/total spec
-        quot = val.split("/");
-
-        if ((quot.length != 2) || (isNaN(quot[0] = parseInt(quot[0]))) || (isNaN(quot[1] = parseInt(quot[1]))) || (quot[0] <= 0) || (quot[1] <= 0) || (quot[0] > quot[1])) {
-          throw new Error(paramError);
-        }
-        else
-        {
-          quotVal = Math.round(quot[0] / quot[1] * 100);
-          this.bar.setWidth(quotVal + "%");
-          qx.ui.core.Widget.flushGlobalQueues();
-          this.stepStatus.setText("(" + val + ")");
-          this.pcntStatus.setText("(" + quotVal + "%)");
-        }
-      }
-
-      // alternative use properties, e.g. this.setPcntStatus(..)
-      else if (val[val.length - 1] = "%")
-      {  // ends in '%'
-
-        // handle percent spec
-        var pcnt = parseInt(val.slice(0, val.length - 1));
-
-        if (pcnt == NaN || (pcnt < 0 || pcnt > 100)) {
-          throw new Error(paramError);
-        }
-        else
-        {
-          this.bar.setWidth(pcnt + "%");
-          qx.ui.core.Widget.flushGlobalQueues();
-          this.pcntStatus.setText("(" + pcnt + "%)");
-          quotVal = pcnt + "/100";
-          this.stepStatus.setText("(" + quotVal + ")");
-        }
-      }
-      else
-      {
-        // throw invalid update spec exception
-        throw new Error(paramError);
-      }
-
-      return true;
-    },  // update
-
-
+	
     /**
      * TODOC
      *
@@ -288,7 +316,7 @@ qx.Class.define("progressbar.ProgressBar",
      * @return {void}
      */
     _applyLabel : function(newLabel) {
-      this.label.setText(newLabel);
+      this.label.setContent(newLabel);
     },
 
 
@@ -313,25 +341,10 @@ qx.Class.define("progressbar.ProgressBar",
      */
     _applyShowStepStatus : function(newStatus)
     {
-      if (newStatus) {
-        this.stepStatus.setDisplay(true);
-      } else {
-        this.stepStatus.setDisplay(false);
-      }
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param newStatus {var} TODOC
-     * @return {void}
-     */
-    _applyStepStatus : function(newStatus)
-    {
-      if (this.isShowStepStatus()) {
-        this.stepStatus.setText(newStatus);
+      if (newStatus || this.isShowPcntStatus()) {
+        this._statusLabel.setVisibility("visible");
+      } else if (!newStatus && !this.isShowPcntStatus()) {
+        this._statusLabel.setVisibility("hidden");
       }
     },
 
@@ -345,27 +358,13 @@ qx.Class.define("progressbar.ProgressBar",
      */
     _applyShowPcntStatus : function(newStatus)
     {
-      if (newStatus) {
-        this.pcntStatus.setDisplay(true);
-      } else {
-        this.pcntStatus.setDisplay(false);
+      if (newStatus || this.isShowStepStatus()) {
+        this._statusLabel.setVisibility("visible");
+      } else if (!newStatus && !this.isShowStepStatus()) {
+        this._statusLabel.setVisibility("hidden");
       }
     },
 
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param newStatus {var} TODOC
-     * @return {void}
-     */
-    _applyPcntStatus : function(newStatus)
-    {
-      if (this.isShowPcntStatus()) {
-        this.pcntStatus.setText(newStatus);
-      }
-    },
 
 
     /**
@@ -387,8 +386,7 @@ qx.Class.define("progressbar.ProgressBar",
       "label",
       "hull",
       "bar",
-      "stepStatus",
-      "pcntStatus"
+	  "_statusLabel"
     );
   }
 
