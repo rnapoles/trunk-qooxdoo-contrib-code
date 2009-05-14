@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.qooxdoo.sushi</groupId>
     <artifactId>sushi</artifactId>
-    <version>3-SNAPSHOT</version>
+    <version>1.3.11-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.qooxdoo.sushi</groupId>
   <artifactId>core</artifactId>
-  <version>${sushi.version}</version>
+  <version>1.3.11-SNAPSHOT</version>
 
   <name>Sushi Core</name>
   <packaging>jar</packaging>
@@ -17,11 +17,6 @@
   <inceptionYear>2004</inceptionYear>
 
   <dependencies>
-    <dependency>
-<groupId>com.oneandone.voip</groupId>
-<artifactId>opstool-client</artifactId>
-<version>1.1</version>
-    </dependency>
     <dependency>
       <!-- sushi has a base64 codec, this is to test it: -->
       <groupId>commons-codec</groupId>

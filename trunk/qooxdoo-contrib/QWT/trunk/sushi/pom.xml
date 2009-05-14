@@ -10,7 +10,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <groupId>org.qooxdoo.sushi</groupId>
   <artifactId>sushi</artifactId>
   <name>Sushi</name>
-  <version>1.3.11</version>
+  <version>1.3.11-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
