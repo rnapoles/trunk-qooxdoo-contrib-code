@@ -44,7 +44,7 @@ qx.Class.define("progressbar.ProgressBar",
     this.hull = new qx.ui.container.Composite();
 	this.hull.setLayout(new qx.ui.layout.Canvas());
 	this.hull.set({ allowGrowY: true });
-    this.add(this.hull, { flex:1 });
+    this.add(this.hull, { width: "100%" });
 
     this.hull.set(
     {
