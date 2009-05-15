@@ -591,11 +591,10 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
            * change data
            */
           var _this  = this;
-          var path   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
+          ed.name   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
             var serverNodeId = target.getServerNodeId( parseInt(sourceNodeId) ) ;
             return "getData()[" + serverNodeId + "]";
           });
-
           break;
        }
       
