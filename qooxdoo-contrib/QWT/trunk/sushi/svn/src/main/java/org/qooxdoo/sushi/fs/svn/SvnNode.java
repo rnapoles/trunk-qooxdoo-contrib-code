@@ -227,14 +227,11 @@ public class SvnNode extends Node {
     
     /** @return revision */ 
     public long delete(String comment) throws SVNException {
-        ISVNEditor editor;
+        SVNCommitClient client;
         SVNCommitInfo info;
         
-        editor = root.getRepository().getCommitEditor(comment, null);
-        editor.openRoot(-1);
-        editor.deleteEntry(path, -1);
-        editor.closeDir();
-        info = editor.closeEdit();
+        client = root.getClientMananger().getCommitClient();
+        info = client.doDelete(new SVNURL[] { getSvnurl() }, comment);
         return info.getNewRevision();
     }
     
@@ -345,6 +342,7 @@ public class SvnNode extends Node {
     
     /** @return revision */ 
     public long save(InputStream content, String comment) throws SVNException {
+    	// does NOT use the CommitClient, because the commit client needs a physical file
         boolean exists;
         ISVNEditor editor;
         SVNCommitInfo info;
