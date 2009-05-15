@@ -904,7 +904,9 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
         var targetNodeId = _this.getClientNodeId( serverNodeId ); 
         return "getData()[" + targetNodeId + "]";
       });
-      eval( "this." + path + "= ed.value;" );
+      
+      // eval creates problem for build variable optimization
+      eval( "this." + path + "= arguments[0].getData().value;" );
       
       this.setData();
     }
