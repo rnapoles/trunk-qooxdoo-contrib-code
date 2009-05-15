@@ -47,8 +47,16 @@ public abstract class Cli {
     }
     
     public Cli(IO io) {
-        this.console = Console.create(io);
-        this.schema = new ReflectSchema(io);
+        this(Console.create(io)); 
+    }
+    
+    public Cli(Console console) {
+        this(console, new ReflectSchema(console.io)); 
+    }
+    
+    public Cli(Console console, Schema schema) {
+        this.console = console;
+        this.schema = schema;
     }
 
     public abstract void printHelp();
