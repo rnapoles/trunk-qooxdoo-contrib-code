@@ -19,7 +19,6 @@
 
 package org.qooxdoo.sushi.cli;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,6 +26,7 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.io.InputLogStream;
 import org.qooxdoo.sushi.io.MultiOutputStream;
 
 /**
@@ -40,30 +40,9 @@ public class Console {
 
     public static Console create(IO io, final OutputStream log) {
         return new Console(io, 
-                new PrintStream(MultiOutputStream.createTeeStream(System.out, log)), 
-                new PrintStream(MultiOutputStream.createTeeStream(System.err, log)), 
-                new FilterInputStream(System.in) {
-                    @Override
-                    public int read() throws IOException {
-                        int result;
-                        
-                        result = in.read();
-                        if (result != -1) {
-                            log.write((char) result);
-                        }
-                        return result;
-                    }
-                    @Override
-                    public int read(byte b[], int off, int len) throws IOException {
-                        int result;
-                        
-                        result = in.read(b, off, len);
-                        if (result != -1) {
-                            log.write(b, off, result);
-                        }
-                        return result;
-                    }
-        });
+                new PrintStream(MultiOutputStream.createTeeStream(System.out, log), true), 
+                new PrintStream(MultiOutputStream.createTeeStream(System.err, log), true), 
+                new InputLogStream(System.in, log));
     }
     
     public final IO io;
