@@ -40,7 +40,7 @@
  *   result : 
  *   {
  *     result : { (... result data ...) },
- *     events : [ { type : &quot;event1&quot;, data : ... }, { type : &quot;event2&quot;, data: ... }, ... ],
+ *     events : [ { type : "fooEvent", data : ... }, { type : "barEvent", data: ... }, ... ],
  *     messages : [ { name : &quot;appname.messages.foo&quot;, data : ... }, { name : &quot;appname.messages.bar&quot;, data: ... }, ... ]
  *   }
  *   // error property only exists if an error occurred 
@@ -60,7 +60,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 {
   extend : qx.core.Object,
 
- /** 
+ /**  
   * @param url {String|null} The url of the jsonrpc service.
   * @param serviceName {String} The name of the service, i.e. "foo.bar"
   * @param serviceMethod  {String} The name of the method, i.e. "doStuff"   
@@ -96,11 +96,11 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      */
     if ( ! marshaler )
     {
-      this._marshaler = new qx.data.marshal.Json(delegate);
+      this.setMarshaler( new qx.data.marshal.Json(delegate) );
     }
     else
     {
-      this._marshaler = marshaler;
+      this.setMarshaler( marshaler );
     }
   
     /* 
@@ -243,7 +243,6 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     __pool : null,
     __opaqueCallRef : null,
     _responseData : null,
-    _marshaler : null,
     __rpc : null,
 
 
@@ -434,12 +433,12 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       /*
        * create the class
        */
-      this._marshaler.jsonToClass( data, true);
+      this.getMarshaler().jsonToClass( data, true);
 
       /*
        * set the initial data
        */
-      this.setModel( this._marshaler.jsonToModel(data) );
+      this.setModel( this.getMarshaler().jsonToModel(data) );
 
       /*
        * fire complete event

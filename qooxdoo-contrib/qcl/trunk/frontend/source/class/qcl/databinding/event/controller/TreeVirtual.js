@@ -39,7 +39,7 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
     * @param target {qx.ui.tree.Tree?null} The target widgets which should be a tree.
     * 
     */
-   construct : function(model, target, childPath, labelPath)  
+   construct : function(model, target )  
    {
      this.base(arguments);
     
@@ -167,13 +167,13 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
        /*
         * check if there are any nodes to add
         */
-       var nodes = model.getNodes();   
-       if ( ! nodes.length ) return;
+       var nodeData = model.getNodeData();   
+       if ( ! nodeData.length ) return;
        
        /*
         * add tree data to the model
         */
-       targetModel.addData( null, nodes );   
+       targetModel.addData( null, nodeData );   
        targetModel.setData();         
 
      },
