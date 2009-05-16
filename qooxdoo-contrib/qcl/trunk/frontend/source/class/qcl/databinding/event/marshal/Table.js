@@ -33,45 +33,47 @@ qx.Class.define("qcl.databinding.event.marshal.Table",
     this.base(arguments);
     this.__delegate = delegate;
   },
+  
+  properties :
+  {
+    /**  
+    * Additional parameters passed to both "getRowCount" and "getRowData"
+    * methods.
+    */
+   queryParams :
+   {
+     check : "Array",
+     nullable : true,
+     init : []
+   },    
+
+   /** 
+    * name of the jsonrpc service method that determines row count
+    * defaults to "getRowCount"
+    */
+   methodGetRowCount :
+   {
+     check : "String",
+     nullable : false,
+     init : "getRowCount"
+   },
+
+   /** 
+    * Name of the jsonrpc service method that retrieves the row data
+    * defaults to "getRowData"
+    */
+   methodGetRowData :
+   {
+     check : "String",
+     nullable : false,
+     init : "getRowData"
+   }   
+  },
 
 
   members :
   {
     __delegate : null,
-
-
-    /**  
-     * Additional parameters passed to both "getRowCount" and "getRowData"
-     * methods.
-     */
-    queryParams :
-    {
-      check : "Array",
-      nullable : true,
-      init : []
-    },    
-
-    /** 
-     * name of the jsonrpc service method that determines row count
-     * defaults to "getRowCount"
-     */
-    methodGetRowCount :
-    {
-      check : "String",
-      nullable : false,
-      init : "getRowCount"
-    },
-
-    /** 
-     * Name of the jsonrpc service method that retrieves the row data
-     * defaults to "getRowData"
-     */
-    methodGetRowData :
-    {
-      check : "String",
-      nullable : false,
-      init : "getRowData"
-    },     
 
     /**
      * Creates for the given data the needed classes. 
@@ -96,7 +98,7 @@ qx.Class.define("qcl.databinding.event.marshal.Table",
         rowCount : { check: "Integer", init : null },
         rowData  : { check : "Array", init : null  },
         events : { check : "Array", init : [] },
-        statusText : { check: "String", init : ""  }
+        statusText : { check: "String", init : "", event: "changeStatusText"  }
       }
       });
     },

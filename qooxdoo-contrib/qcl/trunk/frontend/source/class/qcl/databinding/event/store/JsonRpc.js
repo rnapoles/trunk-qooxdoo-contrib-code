@@ -384,10 +384,8 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       /*
        * send request 
        */
-      params = params || [];
-      params.unshift( serviceMethod );
-      params.unshift( callbackFunc );
-      this.__opaqueCallRef = rpc.callAsync.apply( rpc, params );
+      params2 = [ callbackFunc, serviceMethod ].concat( params || [] );
+      this.__opaqueCallRef = rpc.callAsync.apply( rpc, params2 );
 
     },
 
@@ -554,7 +552,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       }
       
       ed.eventType = type;
-      ed.data = [];
+      ed.items = [];
       var target = event.getTarget();
       
       switch ( type )
@@ -572,7 +570,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
                 * add a node
                 */
                case "add":
-                 ed.data.push( target.getData()[i]);
+                 ed.items.push( target.getData()[i]);
                  break;
                  
               /*
@@ -587,13 +585,17 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         case "changeBubble":
           
           /*
-           * change data
+           * change data if tree node
+           * @todo rewrite this, shouldn't be here
            */
-          var _this  = this;
-          ed.name   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
-            var serverNodeId = target.getServerNodeId( parseInt(sourceNodeId) ) ;
-            return "getData()[" + serverNodeId + "]";
-          });
+          if ( target instanceof qcl.databinding.event.model.TreeVirtual )
+          {
+            var _this  = this;
+            ed.name   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
+              var serverNodeId = target.getServerNodeId( parseInt(sourceNodeId) ) ;
+              return "getData()[" + serverNodeId + "]";
+            });
+          }
           break;
        }
       

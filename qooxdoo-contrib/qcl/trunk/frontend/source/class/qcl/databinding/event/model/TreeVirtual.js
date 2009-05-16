@@ -854,7 +854,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
             * add a node
             */
            case "add":
-             var node = ed.isServerEvent ? ed.data[i-ed.start] : target.getData()[i];
+             var node = ed.isServerEvent ? ed.items[i-ed.start] : target.getData()[i];
              this.addData( null, [node] );
              break;
            

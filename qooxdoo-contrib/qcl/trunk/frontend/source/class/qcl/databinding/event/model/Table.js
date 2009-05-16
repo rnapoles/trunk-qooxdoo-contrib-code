@@ -39,6 +39,7 @@ qx.Class.define("qcl.databinding.event.model.Table",
   construct : function(serviceName)
   {
     this.base(arguments);
+    
   },
   
   /*
@@ -56,9 +57,16 @@ qx.Class.define("qcl.databinding.event.model.Table",
     controller :
     {
       check : "qcl.databinding.event.controller.Table",
-      nullabel : true
+      nullable : true
     }
   },
+  
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */  
+
 
   /*
   *****************************************************************************
@@ -75,9 +83,15 @@ qx.Class.define("qcl.databinding.event.model.Table",
      */
     getColumnIds : function ()
     {
-      return this._columnIdArr;
+      return this.__columnIdArr;
     },
    
+    /*
+    ---------------------------------------------------------------------------
+       METHODS CALLED BY THE PARENT CLASSS 
+    ---------------------------------------------------------------------------
+    */   
+    
     /** 
      * Initiates a data request, which is handled by
      * the controller and the connected data store. 
@@ -118,5 +132,11 @@ qx.Class.define("qcl.databinding.event.model.Table",
         this.getController()._loadRowData( firstRow, lastRow );
       } 
     }
+    /*
+    ---------------------------------------------------------------------------
+       EVENTS
+    ---------------------------------------------------------------------------
+    */   
+    
   }
 });
