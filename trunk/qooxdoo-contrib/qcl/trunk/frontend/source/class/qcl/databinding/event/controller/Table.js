@@ -118,6 +118,8 @@ qx.Class.define("qcl.databinding.event.controller.Table",
   
   members :
   {
+     __rowCountRequest : false,
+     __rowDataRequest : false,
 
      /*
      ---------------------------------------------------------------------------
@@ -144,8 +146,14 @@ qx.Class.define("qcl.databinding.event.controller.Table",
        if ( old )
        {
          old.getTableModel().setController(null);
-       }       
-       target.getTableModel().setController(this);
+         // @todo remove listener
+       }
+       if (target)
+       {
+         target.addListener("dataEdited", this._onDataEdited, this);
+         target.getTableModel().setController(this);
+       }
+       
      },
      
      /**
@@ -184,19 +192,23 @@ qx.Class.define("qcl.databinding.event.controller.Table",
        if ( model === null )
        {
          targetModel.clearCache();
+         this.__rowCountRequest = false;
+         this.__rowDataRequest = false;
          return;
        }
        
        /*
         * add received data to the target data model
         */
-       if ( model.getRowCount() !== null )
+       if ( model.getRowCount() !== null && this.__rowCountRequest )
        {
          targetModel._onRowCountLoaded( model.getRowCount() );
+         this.__rowCountRequest = false;
        }
-       else if ( model.getRowData() !== null )
+       else if ( model.getRowData() !== null && this.__rowDataRequest  )
        {
          targetModel._onRowDataLoaded( model.getRowData() );
+         this.__rowDataRequest = false;
        }
 
      },
@@ -212,18 +224,29 @@ qx.Class.define("qcl.databinding.event.controller.Table",
       */
      _applyDataEvent : function( event, old )
      {
-       var targetModel  = this.getTarget().getDataModel();
        
        /*
-        * dispatch a copy of the event if a target model exists and
-        * the target model is not the source of the event
+        * Operate on the controlled widget according to the event
+        * received
         */
        if ( event )
        {
-         if ( targetModel && event.getTarget() != targetModel )
+         var targetModel  = this.getTarget().getTableModel();
+         
+         if ( targetModel && event.getTarget() != this )
          {
-           this.info( "Propagating synchronized event '" + event.getType() + "' from " + event.getTarget() + " to " + targetModel );
-           targetModel.dispatchEvent( event.clone() );
+           this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
+           var data = event.getData();
+           
+           switch ( event.getType() )
+           {
+             /*
+              * value change in the table data
+              */
+             case "changeBubble":
+               targetModel.setValue( data.col, data.row, data.value );
+               break;
+           }
          }
        }
      },
@@ -242,12 +265,14 @@ qx.Class.define("qcl.databinding.event.controller.Table",
       */
      _loadRowCount : function()
      {
+       if ( this.__rowCountRequest ) return;
        var store = this.getStore();
        var marshaler = store.getMarshaler();
        var params = marshaler.getQueryParams();
+       this.__rowCountRequest = true;
        store.load( marshaler.getMethodGetRowCount(), params );
      },
-      
+     
      
     /**
      * Triggers the request for row data through the store. 
@@ -257,6 +282,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      */
      _loadRowData : function( firstRow, lastRow ) 
      {
+       if ( this.__rowDataRequest ) return;
        var store = this.getStore();
        var marshaler = store.getMarshaler();
        
@@ -264,13 +290,12 @@ qx.Class.define("qcl.databinding.event.controller.Table",
         * add firstRow, lastRow at the beginning of the 
         * parameters
         */
-       var params = marshaler.getQueryParams();
-       params.unshift( lastRow );
-       params.unshift( firstRow );
+       var params = [firstRow, lastRow].concat( marshaler.getQueryParams() );
        
        /*
         * load data
         */
+       this.__rowDataRequest = true;
        store.load( marshaler.getMethodGetRowData(), params );
      },
      
@@ -279,27 +304,28 @@ qx.Class.define("qcl.databinding.event.controller.Table",
         EVENT LISTENERS
      ---------------------------------------------------------------------------
      */        
-     
+    
+    
     /**
-     * Forwards a data change event from the controlled widget to the store
-     * @param event
-     * @return
+     * Called when the editor in the table flushes. Creates a 
+     * "changeBubble" event and propagates it to the connected
+     * datastore through the bound "dataEvent" property
      */
-    _onTargetModelEvent : function( event )
+    _onDataEdited : function( event )
     {
+      var data = event.getData();
+      var event = new qx.event.type.Data;
+      event.init({
+        value : data.value,
+        old : data.oldValue,
+        row : data.row,
+        col : data.col
+      });
+      event.setType("changeBubble");
+      event.setTarget(this);
       
-      /*
-       * don't do anything if the event is not from the target model
-       * Otherwise this would cause an infinite loop
-       */
-      if ( event.getTarget() != this.getTarget().getDataModel() ) return;
-      
-      /*
-       * propagate event
-       */
-      this.info( "Propagating target model event '" + event.getType() + "' from " + event.getTarget() + " to store." );
       this.setDataEvent( null );
       this.setDataEvent( event );
-    }     
+    }
   }
 });

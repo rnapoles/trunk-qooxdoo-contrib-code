@@ -113,7 +113,7 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
           nodeData : { check : "Array", init : [] },
           queue : { check : "Array", init : [] },
           events : { check : "Array", init : [] },
-          statusText : { check: "String", init : "" }
+          statusText : { check: "String", init : "", event: "changeStatusText" }
         }
       });
     },
