@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- NO Parent Pom - Sushi no longer depends on QWT -->
@@ -9,7 +8,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <packaging>pom</packaging>
 
   <name>Sushi</name>
-  <version>1.3.11-SNAPSHOT</version>
+  <version>1.3.11</version>
   <url>http://qooxdoo.org/contrib/project/qwt</url>
 
   <modules>
@@ -75,9 +74,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </contributors>
 
   <scm>
-    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/sushi</connection>
-    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/sushi</developerConnection>
-    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/sushi</url>
+    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.11</connection>
+    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.11</developerConnection>
+    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.11</url>
   </scm>
 
   <profiles>
@@ -135,12 +134,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
               <content><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <fileset-config file-format-version="1.2.0" simple-config="true">
     <local-check-config name="qooxdoo" location="${checkstyle.xml}" type="remote" description="">
-        <additional-data name="cache-file" value="true"/>
-        <additional-data name="cache-props-file-location" value="null_1207126772315_cache.properties"/>
-        <additional-data name="cache-file-location" value="null_1207126772315_cache.xml"/>
+        <additional-data name="cache-file" value="true" />
+        <additional-data name="cache-props-file-location" value="null_1207126772315_cache.properties" />
+        <additional-data name="cache-file-location" value="null_1207126772315_cache.xml" />
     </local-check-config>
     <fileset name="all" enabled="true" check-config-name="qooxdoo" local="true">
-        <file-match-pattern match-pattern="." include-pattern="true"/>
+        <file-match-pattern match-pattern="." include-pattern="true" />
     </fileset>
 </fileset-config>
 ]]></content>
