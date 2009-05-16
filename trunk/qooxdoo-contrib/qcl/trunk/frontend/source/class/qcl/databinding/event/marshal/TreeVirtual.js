@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Christian Boulanger (cboulanger)
+ * Christian Boulanger (cboulanger)
 
-************************************************************************ */
+ ************************************************************************ */
 
 /**
- * Marshaller for data for qx.ui.treevirtual.TreeVirtual
+ * Marshaler for data for qx.ui.treevirtual.TreeVirtual
  */
 qx.Class.define("qcl.databinding.event.marshal.TreeVirtual", 
 {
@@ -30,8 +30,7 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
    */
   construct : function(delegate)
   {
-    this.base(arguments);
-    
+    this.base(arguments);  
     this.__delegate = delegate;
   },
 
@@ -39,8 +38,54 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
   members :
   {
     __delegate : null,
-    
-    
+
+
+    /**  
+     * Additional parameters passed to both "getRowCount" and "getRowData"
+     * methods.
+     */
+    queryParams :
+    {
+      check : "Array",
+      nullable : true,
+      init : []
+    },    
+
+    /**
+     * The maximum number of queue elements processed in a query. There is
+     * no way to determine how many nodes will be retrieved with one
+     * queue element. You'll have to experiment what works best with
+     * the kind of tree structures you work with
+     */
+    maxQueueElementsPerQuery :
+    {
+      check : "Integer",
+      init: 10
+    },
+
+    /** 
+     * name of the jsonrpc service method that determines node count
+     * defaults to "getNodeCount"
+     */
+    methodGetNodeCount :
+    {
+      check : "String",
+      nullable : false,
+      init : "getNodeCount"
+    },
+
+    /** 
+     * Name of the jsonrpc service method that retrieves the node data
+     * defaults to "getNodeData"
+     */
+    methodGetNodeData :
+    {
+      check : "String",
+      nullable : false,
+      init : "getNodeData"
+    },     
+
+
     /**
      * Creates for the given data the needed classes. 
      * 
@@ -50,23 +95,25 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
      * @param includeBubbleEvents {Boolean} Whether the model should support
      *   the bubbling of change events or not.
      */
-    jsonToClass: function(data) {
-      
+    jsonToClass: function(data) 
+    {
+
       // class already exists
       if (qx.Class.isDefined("qx.data.model.TreeVirtual" )) {
         return;
       }
-      
+
       // define class
-      qx.Class.define("qx.data.model.TreeVirtual", {
+      qx.Class.define("qx.data.model.TreeVirtual", 
+      {
         extend: qx.core.Object,
         properties : {
-          nodeCount : { check: "Integer", init : null, event : "changeNodeCount" },
-          childCount : { check: "Integer", init : null, event : "changeChildCount" },
-          nodes : { check : "Array", init : [], event : "changeNodes" },
-          queue : { check : "Array", init : [], event : "changeQueue" },
-          events : { check : "Array", init : [], event : "changeEvents" },
-          statusText : { check: "String", init : "", event : "changeStatusText" }
+          nodeCount : { check: "Integer", init : null },
+          childCount : { check: "Integer", init : null },
+          nodeData : { check : "Array", init : [] },
+          queue : { check : "Array", init : [] },
+          events : { check : "Array", init : [] },
+          statusText : { check: "String", init : "" }
         }
       });
     },
@@ -84,9 +131,9 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
      */
     jsonToModel: function(data) 
     {   
-       var model = new qx.data.model.TreeVirtual;
-       model.set(data);
-       return model;
+      var model = new qx.data.model.TreeVirtual;
+      model.set(data);
+      return model;
     }    
   }
 });
