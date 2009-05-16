@@ -17,10 +17,8 @@
  */
 
 
-class class_Databinding
+class class_TreeData
 {
-  
- 
   
   function method_getNodeCount( $params )
   {
@@ -143,7 +141,7 @@ class class_Databinding
      * return data to client
      */
     return array(
-      'nodes'      => $nodeArr,   
+      'nodeData'   => $nodeArr,   
       'queue'      => $queue,
       'statusText' => $statusText
     );
