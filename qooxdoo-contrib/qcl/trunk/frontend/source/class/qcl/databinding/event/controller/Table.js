@@ -94,20 +94,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
        apply: "_applyDelegate",
        init: null,
        nullable: true
-     },
-     
-     /**
-      * This property allows the synchronization of data through
-      * events. It has to exist in the controller and the store and
-      * be bound together
-      */
-     dataEvent : 
-     {
-       check : "qx.event.type.Data",
-       nullable : true,
-       event : "changeDataEvent",
-       apply : "_applyDataEvent"
-     }    
+     }
    },
 
   /*
@@ -119,7 +106,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
   members :
   {
      __rowCountRequest : false,
-     __rowDataRequest : false,
+     __currentRequestIds : [],
 
      /*
      ---------------------------------------------------------------------------
@@ -148,9 +135,24 @@ qx.Class.define("qcl.databinding.event.controller.Table",
          old.getTableModel().setController(null);
          // @todo remove listener
        }
-       if (target)
+       
+       if ( target )
        {
-         target.addListener("dataEdited", this._onDataEdited, this);
+         /*
+          * catch the dataEdited event which is fired when the
+          * user has made a manual change to the data
+          */
+         target.addListener("dataEdited", this._targetOnDataEdited, this );
+         
+         /*
+          * catch events like add, remove, etc. 
+          */
+         target.getTableModel().addListener("change", this._targetOnChange, this );
+         
+         /*
+          * store a reference to controller in the model. This can be
+          * problematic if several Tables share a datasource.
+          */
          target.getTableModel().setController(this);
        }
        
@@ -163,14 +165,14 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      {
        if ( old )
        {
-         // @todo remove bindings
+         // @todo remove event listeners and bindings
        }       
        
        if ( store )
        {
          store.bind( "model", this, "model" );
-         store.bind( "dataEvent", this, "dataEvent" );
-         this.bind( "dataEvent", store, "dataEvent" );
+         store.addListener( "change", this._storeOnChange, this );
+         store.addListener( "changeBubble", this._storeOnChangeBubble, this );
        }
      },
      
@@ -193,61 +195,29 @@ qx.Class.define("qcl.databinding.event.controller.Table",
        {
          targetModel.clearCache();
          this.__rowCountRequest = false;
-         this.__rowDataRequest = false;
+         this.__currentRequestIds = [];
          return;
        }
        
+       var requestId = model.getRequestId();
+       
        /*
-        * add received data to the target data model
+        * was this a row count request?
         */
        if ( model.getRowCount() !== null && this.__rowCountRequest )
        {
          targetModel._onRowCountLoaded( model.getRowCount() );
          this.__rowCountRequest = false;
        }
-       else if ( model.getRowData() !== null && this.__rowDataRequest  )
-       {
-         targetModel._onRowDataLoaded( model.getRowData() );
-         this.__rowDataRequest = false;
-       }
-
-     },
-     
-
-     
-     /**
-      * Handles a change in a data event received from the store through
-      * binding between the store's and the controller's dataEvent property
-      * @param event {qx.event.type.Data?null}
-      * @param old {qx.event.type.Data?null}
-      * @return {void}
-      */
-     _applyDataEvent : function( event, old )
-     {
        
        /*
-        * Operate on the controlled widget according to the event
-        * received
+        * was this a row data request? if yes, does the requestId fit?
         */
-       if ( event )
+       else if ( model.getRowData() !== null 
+           && qx.lang.Array.contains( this.__currentRequestIds, requestId ) )
        {
-         var targetModel  = this.getTarget().getTableModel();
-         
-         if ( targetModel && event.getTarget() != this )
-         {
-           this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
-           var data = event.getData();
-           
-           switch ( event.getType() )
-           {
-             /*
-              * value change in the table data
-              */
-             case "changeBubble":
-               targetModel.setValue( data.col, data.row, data.value );
-               break;
-           }
-         }
+         targetModel._onRowDataLoaded( model.getRowData() );
+         qx.lang.Array.remove( this.__currentRequestIds, requestId );
        }
      },
      
@@ -282,20 +252,29 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      */
      _loadRowData : function( firstRow, lastRow ) 
      {
-       if ( this.__rowDataRequest ) return;
+       //if ( this.__rowDataRequest ) return;
+       this.info( "Requesting " + firstRow + " - " + lastRow );
+       
        var store = this.getStore();
        var marshaler = store.getMarshaler();
+
        
        /*
-        * add firstRow, lastRow at the beginning of the 
+        * store request id so that we can differentiate different
+        * tables connected to the same store
+        */
+       var requestId = store.getNextRequestId(); 
+       this.__currentRequestIds.push( requestId );
+       
+       /*
+        * add firstRow, lastRow, requestId at the beginning of the 
         * parameters
         */
-       var params = [firstRow, lastRow].concat( marshaler.getQueryParams() );
-       
+       var params = [firstRow, lastRow, requestId].concat( marshaler.getQueryParams() );
+         
        /*
         * load data
         */
-       this.__rowDataRequest = true;
        store.load( marshaler.getMethodGetRowData(), params );
      },
      
@@ -303,16 +282,16 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      ---------------------------------------------------------------------------
         EVENT LISTENERS
      ---------------------------------------------------------------------------
-     */        
-    
+     */
     
     /**
      * Called when the editor in the table flushes. Creates a 
      * "changeBubble" event and propagates it to the connected
      * datastore through the bound "dataEvent" property
      */
-    _onDataEdited : function( event )
+    _targetOnDataEdited : function( event )
     {
+      if ( ! this.getStore() ) return;
       var data = event.getData();
       var event = new qx.event.type.Data;
       event.init({
@@ -322,10 +301,71 @@ qx.Class.define("qcl.databinding.event.controller.Table",
         col : data.col
       });
       event.setType("changeBubble");
-      event.setTarget(this);
       
-      this.setDataEvent( null );
-      this.setDataEvent( event );
-    }
+      /*
+       * change event source 
+       */
+      event.setTarget( this );
+      this.getStore().saveDataEvent( event );
+    },
+    
+    /**
+     * Called when the target has dispatched a "change" event.
+     * Propagates it to the store.
+     * @param event {qx.event.type.Data}
+     * @return
+     */
+    _targetOnChange : function( event )
+    {
+       if ( ! this.getStore() ) return;
+       /*
+        * change event source 
+        */
+       event.setTarget( this );
+       this.getStore().saveDataEvent( event );
+    },
+    
+    /**
+     * Called when the store dispatches a 'change' event
+     * @param event {qx.event.type.Data?null}
+     * @return {void}
+     */
+    _storeOnChange : function( event )
+    {
+       if ( this.getTarget() )
+       {
+         var data = event.getData();
+         switch ( data.type )
+         {
+           /*
+            * remove row 
+            */
+           case "remove":
+             this.getTarget().getTableModel().removeRow( data.start, true );
+             break;
+             
+           /*
+            * reload some rows 
+            */  
+           case "relaod":
+             this.getTarget().getTableModel().reloadRows( data.start, data.end, true );
+         }         
+       }
+    },
+    
+    /**
+     * Called when the store dispatches a 'changeBubble' event
+     * @param event {qx.event.type.Data?null}
+     * @return {void}
+     */
+    _storeOnChangeBubble : function( event )
+    {
+      if ( this.getTarget() )
+      {
+        var data = event.getData();
+        this.getTarget().getTableModel().setValue( data.col, data.row, data.value );
+      }
+      
+    }    
   }
 });
