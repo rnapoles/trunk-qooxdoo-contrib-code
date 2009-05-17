@@ -115,16 +115,41 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 
   },
 
-
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */  
   events : 
   {
     /**
     * Data event fired after the model has been created. The data will be the 
     * created model.
     */
-    "loaded": "qx.event.type.Data"
+    "loaded": "qx.event.type.Data",
+    
+    /**
+    * The change event which will be fired if there is a change in the array.
+    * The data contains a map with three key value pairs:
+    * <li>start: The start index of the change.</li>
+    * <li>end: The end index of the change.</li>
+    * <li>type: The type of the change as a String. This can be 'add',  
+    * 'remove' or 'order'</li>
+    * <li>items: The items which has been changed (as a JavaScript array).</li>
+    */
+   "change" : "qx.event.type.Data",
+   
+   /**
+    * Event signaling that the model data has changed
+    */
+   "changeBubble" : "qx.event.type.Data"      
   },
 
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
 
   properties : 
   {
@@ -200,19 +225,6 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       init : false
     },
     
-    /**
-     * This property allows the synchronization of data through
-     * events. It has to exist in the controller and the store and
-     * be bound together
-     */
-    dataEvent : 
-    {
-      check : "qx.event.type.Data",
-      nullable : true,
-      event : "changeDataEvent",
-      apply : "_applyDataEvent"
-    },
-    
     useEventTransport :
     {
       check : "Boolean",
@@ -227,12 +239,17 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     interval :
     {
       check : "Integer",
-      init : 2
+      init : 3
     }
 
 
   },
 
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
 
   members :
   {
@@ -244,7 +261,16 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     __opaqueCallRef : null,
     _responseData : null,
     __rpc : null,
-
+    __requestId : 0,
+    
+    /**
+     * Returns a incrementing number to distinguish requests
+     * dispatched by this store
+     */
+    getNextRequestId : function()
+    {
+      return this.__requestId++;
+    },
 
     /** 
      * Loads the data from a service method asynchroneously. 
@@ -257,12 +283,32 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     load : function( serviceMethod, params, finalCallback, context  )
     {
       this._sendJsonRpcRequest( 
-          serviceMethod||this.getServiceMethos(), 
+          serviceMethod||this.getServiceMethod(), 
           params,
           finalCallback, 
-          context
+          context,
+          true
       );
     },
+    
+   /** 
+    * Executes a service method without loading model data in response. 
+    * @param serviceMethod {String} Method to call
+    * @param params {Array} Array of arguments passed to the service method
+    * @param finalCallback {function} The callback function that is called with
+    *   the result of the request
+    * @param context {Object} The context of the callback function     
+    */
+   execute : function( serviceMethod, params, finalCallback, context )
+   {
+     this._sendJsonRpcRequest( 
+         serviceMethod||this.getServiceMethod(), 
+         params,
+         finalCallback, 
+         context,
+         false
+     );
+   },    
 
     /** 
      * Configures the request object
@@ -303,8 +349,9 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      * @param finalCallback {function} The callback function that is called with
      *   the result of the request
      * @param context {Object} The context of the callback function
+     * @param createModel {Boolean}
      */
-    _sendJsonRpcRequest : function( serviceMethod, params, finalCallback, context )
+    _sendJsonRpcRequest : function( serviceMethod, params, finalCallback, context, createModel )
     {
 
       var rpc = this._configureRequest();
@@ -351,12 +398,39 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
            */
           if ( data.result )
           {
-            _this.__handleResponseData( data.result, finalCallback, context ); 
+            data = data.result; 
           }
-          else
-          {
-            _this.__handleResponseData( data, finalCallback, context );
-          }
+          
+          /* 
+           * create the model if requested
+           */
+           if ( createModel )
+           {
+             /*
+              * create the class
+              */
+             _this.getMarshaler().jsonToClass( data, true);
+       
+             /*
+              * set the initial data
+              */
+             _this.setModel( _this.getMarshaler().jsonToModel(data) );
+             
+           }
+           
+           /*
+            * fire complete event
+            */
+            _this.fireDataEvent( "loaded", _this.getModel() );
+            
+            /*
+             * final callback, only sent if request was successful
+             */
+            if ( typeof finalCallback == "function" )
+            {
+              finalCallback.call( context, data );
+            }            
+     
         } 
         else 
         {
@@ -418,40 +492,6 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       return;
     },
 
- 
-    /** 
-     * Handles response data 
-     * @param data {Object} The response data
-     * @param finalCallback {function} The callback function that is called with
-     *   the result of the request
-     * @param context {Object} The context of the callback function
-     */
-    __handleResponseData : function( data, finalCallback, context ) 
-    {
-      /*
-       * create the class
-       */
-      this.getMarshaler().jsonToClass( data, true);
-
-      /*
-       * set the initial data
-       */
-      this.setModel( this.getMarshaler().jsonToModel(data) );
-
-      /*
-       * fire complete event
-       */
-      this.fireDataEvent( "loaded", this.getModel() );
-
-      /*
-       * final callback
-       */
-      if ( typeof finalCallback == "function" )
-      {
-        finalCallback.call( context, data );
-      }       
-    },   
-
     /**
      * Aborts the current request
      */
@@ -463,17 +503,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       }
     },
     
-    _applyDataEvent : function( event, old )
-    {
-      if ( event )
-      {
-        if ( event.getTarget() !== this )
-        {
-          //this.info( "Propagating received event '" + event.getType() + "' from " + event.getTarget() + " to bound controllers...");
-          this.saveDataEvent( event );          
-        }
-      }
-    },
+
     
     __timerId : null,
     
@@ -531,6 +561,10 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     
     __dataEvents : [],
     
+    /**
+     * Returns the current event queue and empties it.
+     * @return {Array}
+     */
     getDataEvents : function()
     {
       var events = this.__dataEvents;
@@ -538,6 +572,12 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       return events;
     },
     
+    /**
+     * Save an event to the event queue that is transported to
+     * the server upon the next connection
+     * @param event {qx.event.type.Data}
+     * @return {Void}
+     */
     saveDataEvent : function( event )
     {
       if ( ! event || ! this.getUseEventTransport() ) return;
@@ -623,8 +663,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         event.setType(type);
         event.setTarget(this);
         
-        this.setDataEvent(null);
-        this.setDataEvent(event);
+        this.dispatchEvent( event );
 
       }
     },
