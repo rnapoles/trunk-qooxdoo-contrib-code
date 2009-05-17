@@ -18,7 +18,7 @@
 
 require "qcl/AbstractStore.php";
 
-class class_TableData
+class class_TableData extends AbstractStore
 {
 
   function method_resetRowCount( $params )
@@ -49,7 +49,7 @@ class class_TableData
   function method_getRowData( $params )
   {
 
-    list( $firstRow, $lastRow, $rowIds ) = $params;
+    list( $firstRow, $lastRow, $requestId, $rowIds ) = $params;
     
     $rowData = array();
     for ( $i= $firstRow; $i<= $lastRow; $i++ )
@@ -89,10 +89,20 @@ class class_TableData
      * return data to client
      */
     return array(
+      'requestId'  => $requestId,
       'rowData'    => $rowData,   
       'statusText' => $statusText
     );
   }
+  
+  function method_addRow( )
+  {
+    $_SESSION['rowCount']++;
+    return array(
+      'statusText' => "Row added."
+    );    
+  }
+  
 
 }
 ?>
