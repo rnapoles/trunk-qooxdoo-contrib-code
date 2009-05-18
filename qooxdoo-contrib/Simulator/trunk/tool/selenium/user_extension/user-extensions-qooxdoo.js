@@ -867,11 +867,11 @@ PageBot.prototype._searchQxObjectByQxUserData = function(obj, userDataSearchStri
     return null;
   }
 
-  if (!obj._getChildren) {
+  if (!obj.getChildren) {
     return;
   }
 
-  var children = obj._getChildren();
+  var children = obj.getChildren();
 
   if (!children || children.length === 0) {
     return;
@@ -1338,9 +1338,9 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   }
 
   // check widget children (built with w.add())
-  else if (node._getChildren) {
-    c = node._getChildren();
-    LOG.debug("getQxNodeDescendants: using _getChildren() to retrieve descendants");
+  else if (node.getChildren) {
+    c = node.getChildren();
+    LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants");
         // +" (got: "+ (c.length? c.length: 0)+")");
     descArr = descArr.concat(c);
   }
