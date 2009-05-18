@@ -72,6 +72,9 @@ public class SerializerTest {
         checkSerialize("<root/>" + LF, "<root/>", "/root");
         checkSerialize("<a/>" + LF, "<root><a/></root>", "/root/a");
         checkSerialize("mhm", "<root>mhm</root>", "/root/text()");
+        checkSerialize("<root>white space</root>" + LF, "<root>white space</root>", "/");
+        checkSerialize("<root>white  space</root>" + LF, "<root>white  space</root>", "/");
+        checkSerialize("<root>white space </root>" + LF, "<root>white space </root>", "/");
     }
 
     @Test
