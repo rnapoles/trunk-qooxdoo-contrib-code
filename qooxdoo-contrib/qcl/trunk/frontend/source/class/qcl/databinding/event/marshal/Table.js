@@ -24,15 +24,28 @@ qx.Class.define("qcl.databinding.event.marshal.Table",
 {
   extend : qx.core.Object,
 
-  /**
-  * @param delegate {Object} An object containing one of the methods described 
-  *   in {@link qx.data.store.IStoreDelegate}.
+  
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
   */
+  
+  /**
+   * @param delegate {Object} An object containing one of the methods described 
+   *   in {@link qx.data.store.IStoreDelegate}.
+   */
   construct : function(delegate)
   {
     this.base(arguments);
     this.__delegate = delegate;
   },
+  
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */  
   
   properties :
   {
@@ -70,7 +83,12 @@ qx.Class.define("qcl.databinding.event.marshal.Table",
    }   
   },
 
-
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+  
   members :
   {
     __delegate : null,

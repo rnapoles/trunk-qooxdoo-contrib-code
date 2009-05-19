@@ -40,12 +40,12 @@ qx.Class.define("qcl.databinding.event.controller.Table",
    {
      this.base(arguments);
      
-     if (target != null) 
+     if( target != null ) 
      {
        this.setTarget( target );
      }
      
-     if (target != null) 
+     if( store != null ) 
      {
        this.setStore( store );
      }     
@@ -86,7 +86,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      },
      
      /**
-      * Delegation object, which can have one ore more functionf defined by the
+      * Delegation object, which can have one ore more function defined by the
       * {@link #IControllerDelegate} Interface.  
       */
      delegate : 
@@ -105,6 +105,11 @@ qx.Class.define("qcl.databinding.event.controller.Table",
   
   members :
   {
+     /*
+     ---------------------------------------------------------------------------
+        PRIVATE MEMBERS
+     ---------------------------------------------------------------------------
+     */          
      __rowCountRequest : false,
      __currentRequestIds : [],
 
@@ -132,8 +137,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      {
        if ( old )
        {
-         old.getTableModel().setController(null);
-         // @todo remove listener
+         // @todo remove listeners
        }
        
        if ( target )
@@ -158,8 +162,9 @@ qx.Class.define("qcl.databinding.event.controller.Table",
        
      },
      
+     
      /**
-      * Set a new store 
+      * Set a new store and adds event listeners
       */
      _applyStore : function ( store, old )
      {
@@ -253,7 +258,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      _loadRowData : function( firstRow, lastRow ) 
      {
        //if ( this.__rowDataRequest ) return;
-       this.info( "Requesting " + firstRow + " - " + lastRow );
+       //this.info( "Requesting " + firstRow + " - " + lastRow );
        
        var store = this.getStore();
        var marshaler = store.getMarshaler();
@@ -303,10 +308,11 @@ qx.Class.define("qcl.databinding.event.controller.Table",
       event.setType("changeBubble");
       
       /*
-       * change event source 
+       * store hash code of event target
        */
-      event.setTarget( this );
-      this.getStore().saveDataEvent( event );
+      event.getData().hashCode = this.getTarget().toHashCode();       
+      
+      this.getStore().addToEventQueue( event );
     },
     
     /**
@@ -318,11 +324,13 @@ qx.Class.define("qcl.databinding.event.controller.Table",
     _targetOnChange : function( event )
     {
        if ( ! this.getStore() ) return;
+       
        /*
-        * change event source 
+        * store hash code of event target
         */
-       event.setTarget( this );
-       this.getStore().saveDataEvent( event );
+       event.getData().hashCode = this.getTarget().toHashCode(); 
+       
+       this.getStore().addToEventQueue( event );
     },
     
     /**
@@ -332,24 +340,31 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      */
     _storeOnChange : function( event )
     {
-       if ( this.getTarget() )
+       /*
+        * no action if no target or the event source is the the target tree
+        */
+       if ( ! this.getTarget()  
+           || event.getData().hashCode == this.getTarget().toHashCode() ) return;
+   
+       var data = event.getData();
+       var target = this.getTarget();
+       var targetModel = target.getTableModel();
+       
+       switch ( data.type )
        {
-         var data = event.getData();
-         switch ( data.type )
-         {
-           /*
-            * remove row 
-            */
-           case "remove":
-             this.getTarget().getTableModel().removeRow( data.start, true );
-             break;
-             
-           /*
-            * reload some rows 
-            */  
-           case "relaod":
-             this.getTarget().getTableModel().reloadRows( data.start, data.end, true );
-         }         
+         /*
+          * remove row 
+          */
+         case "remove":
+           targetModel.removeRow( data.start, true );
+           break;
+           
+         /*
+          * reload some rows 
+          */  
+         case "relaod":
+           targetModel.reloadRows( data.start, data.end, true );
+            
        }
     },
     
@@ -360,11 +375,17 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      */
     _storeOnChangeBubble : function( event )
     {
-      if ( this.getTarget() )
-      {
-        var data = event.getData();
-        this.getTarget().getTableModel().setValue( data.col, data.row, data.value );
-      }
+       /*
+        * no action if no target or the event source is the the target tree
+        */
+       if ( ! this.getTarget()  
+           || event.getData().hashCode == this.getTarget().toHashCode() ) return;
+      
+       /*
+        * set the value in the target data model
+        */
+       var data = event.getData();
+       this.getTarget().getTableModel().setValue( data.col, data.row, data.value );
       
     }    
   }
