@@ -52,6 +52,7 @@ class class_TableData extends AbstractStore
     list( $firstRow, $lastRow, $requestId, $rowIds ) = $params;
     
     $rowData = array();
+    $rowIds = array( "id", "number", "date", "boolean","text" );
     for ( $i= $firstRow; $i<= $lastRow; $i++ )
     {
       $row = array();
