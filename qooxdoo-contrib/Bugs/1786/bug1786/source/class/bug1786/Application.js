@@ -81,10 +81,31 @@ qx.Class.define("bug1786.Application",
       label2.setSelectable(true);
       box.add(label2);
 
+      var outerBox = new qx.ui.container.Composite(new qx.ui.layout.Grow);
+      outerBox.setDecorator("pane");
+      outerBox.setSelectable(false);
+
+      var innerBox = new qx.ui.container.Composite(new qx.ui.layout.VBox);
+      innerBox.setDecorator("main");
+      innerBox.setSelectable(true);
+      
+      outerBox.add(innerBox);
+
+      var htmllabel2 = new qx.ui.embed.Html("<i>rich label</i>");
+      htmllabel2.setSelectable(false);
+      innerBox.add(htmllabel2);
+
+      var label3 = new qx.ui.basic.Label("label");
+      label3.setSelectable(false);
+      innerBox.add(label3);
+
+
+
 			
       doc.add(label, {left: 100, top: 50});
       doc.add(htmlembed, {left: 100, top: 150});
       doc.add(box, {left: 300, top: 50});
+      doc.add(outerBox, {left: 300, top: 150});
       
     }
   }
