@@ -15,14 +15,14 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require "qcl/AbstractStore.php";
 
-
-class class_TreeData
+class class_TreeData extends AbstractStore
 {
   
   function method_getNodeCount( $params )
   {
-    $_SESSION['nodeCount'] = rand(1000,9000);
+    $_SESSION['nodeCount'] = rand(100,2000);
     $_SESSION['counter'] = 0;
     return array(
       'nodeCount'  => $_SESSION['nodeCount'],
@@ -39,18 +39,26 @@ class class_TreeData
     /*
      * parameters
      */
-    if ( count($params ) == 2 )
+    if ( count($params ) == 3 )
     {
-      list( $queue, $max ) = $params;
+      list( $storeId, $queue, $max ) = $params;
     }
     else
     {
-      /*
-       * called with no arguments = get top nodes
-       */
-      $queue = array(0);
-      $max = 1;
+      trigger_error("Wrong parameter count!");
     }
+    
+    /*
+     * prune all connected trees if it is the first
+     */
+    if ( $queue[0] == 0 )
+    $this->saveEvent( $storeId, array(
+      'eventType' => "change",
+      'type'      => "remove",
+      'start'     => 0,
+      'end'       => 0
+    ) );
+    
     
     /*
      * create node array
@@ -91,6 +99,15 @@ class class_TreeData
          * create node data with at least one folder that has children
          */
         $nodeId         = ++$_SESSION['counter'];
+        
+        /*
+         * set start and end indexes
+         */
+        if( ! isset( $start ) )
+        {
+          $start = $nodeId;
+        }
+        $end = $nodeId;
 
         $isBranch       = $firstFolder ? true : (bool) rand(0,1); 
         $hasChildren    = true; //$firstFolder ? true : ( $isBranch ? (bool) rand(0,1) : false );
@@ -138,6 +155,17 @@ class class_TreeData
     $statusText = "Loaded {$_SESSION['counter']} of {$_SESSION['nodeCount']} nodes.";
     
     /*
+     * dispatch an event to all connected stores
+     */
+    $this->saveEvent( $storeId, array(
+      'eventType' => "change",
+      'type'      => "add",
+      'start'     => $start,
+      'end'       => $end,
+      'items'     => $nodeArr
+    ) );
+        
+    /*
      * return data to client
      */
     return array(
@@ -146,105 +174,6 @@ class class_TreeData
       'statusText' => $statusText
     );
   }
-  
- function method_register( $params )
-  {
-    list( $storeId ) = $params;
-    if ( ! isset( $_SESSION['storeIds'] ) )
-    {
-      $_SESSION['storeIds'] = array();
-    }
-    if ( ! in_array( $storeId, $_SESSION['storeIds'] ) )
-    {
-      /*
-       * register the store and create an event queue
-       * In a real application, this would be saved in the database
-       */
-      $_SESSION['storeIds'][] = $storeId;
-      $_SESSION['events'][$storeId] = array();
-    }
-    
-    return array(
-      'statusText' => "Store registered."
-    );    
-  }
-
-  function method_unregister( $params )
-  {
-    list( $storeId ) = $params;
-    
-    if ( in_array( $storeId, $_SESSION['storeIds'] ) )
-    {
-      /*
-       * unregister the store 
-       */
-      array_splice( $_SESSION['storeIds'], array_search( $storeId, $_SESSION['storeIds'], 1 ) );
-      unset( $_SESSION['events'][$storeId] );
-    }
-    return array(
-      'statusText' => "Store unregistered."
-    );
-  }  
-  
-  
-  function method_getEvents( $params )
-  {
-    list( $storeId, $events ) = $params;
-
-    /*
-     * save client events
-     */
-    if ( count( $events ) )
-    {
-      foreach( $events as $event )
-      {
-        $this->saveEvent( $storeId, $event );
-      }
-    }        
-    
-    /*
-     * retrieve events from queue and empty queue
-     */
-    if ( isset( $_SESSION['events'][$storeId] ) )
-    {
-      $events = $_SESSION['events'][$storeId];
-      $_SESSION['events'][$storeId] = array();
-    }
-    else
-    {
-      $events = array();
-    }
-    
-    return array(
-      'events' => $events,
-    );
-  }
-
-  function method_saveEvents( $params )
-  {
-    list( $storeId, $events ) = $params;
-    foreach( $events as $event )
-    {
-      $this->saveEvent( $storeId, $event );
-    }
-    return array();
-  }
-  
-  function saveEvent( $storeId, $event )
-  {
-    /*
-     * for each connected store except the requesting one,
-     * save an event in the event queue
-     */
-    foreach( $_SESSION['storeIds'] as $id )
-    {
-      if ( $id != $storeId )
-      { 
-        $_SESSION['events'][$id][] = $event;
-      }
-    }
-  }    
-
 }
 
 ?>

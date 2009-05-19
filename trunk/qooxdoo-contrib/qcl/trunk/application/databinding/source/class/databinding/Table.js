@@ -32,22 +32,23 @@ qx.Class.define("databinding.Table",
   {
     
     /**
-     * Create  page with databound table
+     * Create a pane with a Table
      * @return {qx.ui.tabview.Page}
      */
-    createPage : function()
+    createPane : function()
     {
 
-     /*
-      * create a new page for the tabview
-      */
-      var page = new qx.ui.tabview.Page("Table");
-      page.setLayout(new qx.ui.layout.VBox());
+       /*
+        * pane container
+        */
+       var container = new qx.ui.container.Composite(
+           new qx.ui.layout.VBox()
+       );
 
       /*
        * create the table
        */
-      this._mainTable = this.createTable();
+      var table = this._mainTable = this.createTable();
 
       /*
        * the marshaler prepares requests in the store and transforms
@@ -64,43 +65,47 @@ qx.Class.define("databinding.Table",
       /*
        *  setup the store that retrieves the data from the backend
        */       
-      this._tableStore = new qcl.databinding.event.store.JsonRpc(
+      var store = this._tableStore = new qcl.databinding.event.store.JsonRpc(
           /* url */ "../services/index.php",
           /* service */ "qcl.TableData",
-          /* default method @todo remove this parameter */ null,
           marshaler 
       );      
+      
+      this.info( "Hash code of table store is: " + store.toHashCode() );
       
       /*
        * the controller propagates data changes between table and store. note
        * that you don't have to setup the bindings manually
        */
-      var controller = new qcl.databinding.event.controller.Table( 
-          this._mainTable, this._tableStore 
-      );
+      var controller = new qcl.databinding.event.controller.Table( table, store );
 
       /*
        * bind the server-supplied status text to the table's status bar.
        */
-      this._tableStore.bind( "model.statusText", this._mainTable, "additionalStatusBarText", {
+      store.bind( "model.statusText", table, "additionalStatusBarText", {
         converter : function( text ){
           return " | " + text;
         }
-      } );           
+      } );   
+      
+      /*
+       * turn event transport on
+       */
+      store.setUseEventTransport(true);
    
       
       /*
        * create controls that interact with the main table
        */
-      var controls = this.createControls();
+      var controls = this.createControls( table );
       
       /*
        * add to layout
        */
-      page.add( controls, {flex: 1});
-      page.add( this._mainTable, {flex: 1});
+      container.add( controls );
+      container.add( table, {flex: 1} );
 
-      return page;
+      return container;
       
     },
     
@@ -156,47 +161,11 @@ qx.Class.define("databinding.Table",
       return table;
     },
     
-
-    
-    createControls : function( )
+    createControls : function( table )
     {
       var bar = new qx.ui.toolbar.ToolBar();
       var button, part, checkBox;
 
-      part = new qx.ui.toolbar.Part();
-      bar.add(part);
-
-      /*
-       * create a window with a synchronized table
-       */
-      button = new qx.ui.toolbar.Button("Create synchronized table");
-      button.addListener("execute", function(evt) 
-      {
-
-        /*
-         * create a new table that shares the table model with the 
-         * main table
-         */
-        var table = this.createTable( this._mainTable.getTableModel() );        
-
-        /*
-         * create window
-         */
-        var win = new qx.ui.window.Window("Synchronized Table");
-        win.setLayout( new qx.ui.layout.Grow() );
-        win.moveTo( Math.floor(Math.random()*300), Math.floor( Math.random()*300) );        
-        win.add( table );
-        win.open();
-        
-        /*
-         * bind the server-supplied status text to the window's caption.
-         */
-        this._tableStore.bind( "model.statusText", win, "caption");          
-
-      }, this);
-      
-      part.add(button);
-      
       part = new qx.ui.toolbar.Part();
       bar.add(part);      
       
@@ -210,22 +179,22 @@ qx.Class.define("databinding.Table",
           /*
            * the index of the new node
            */
-          var newRowIndex = this._mainTable.getTableModel().getRowCount();
+          var newRowIndex = table.getTableModel().getRowCount();
 
           /*
            * reload the data
            */
-          this._mainTable.getTableModel().reloadRows(newRowIndex,newRowIndex);                     
+          table.getTableModel().reloadRows(newRowIndex,newRowIndex);                     
           
           /*
            * scroll down the table
            */
-          this._mainTable.scrollCellVisible(0, newRowIndex );
+          table.scrollCellVisible(0, newRowIndex );
                    
           /*
            * select the last row
            */
-          this._mainTable.getSelectionModel().setSelectionInterval(newRowIndex,newRowIndex);
+          table.getSelectionModel().setSelectionInterval(newRowIndex,newRowIndex);
 
         },this);
 
@@ -237,22 +206,48 @@ qx.Class.define("databinding.Table",
        */
       button = new qx.ui.toolbar.Button("Remove rows");
       button.addListener("execute", function(evt) {
-        this._mainTable.getSelectionModel().iterateSelection( function( rowIndex ){
-          this._mainTable.getTableModel().removeRow( rowIndex );
+        table.getSelectionModel().iterateSelection( function( rowIndex ){
+          table.getTableModel().removeRow( rowIndex );
         }, this );
       }, this);
       part.add(button);
       
       part = new qx.ui.toolbar.Part();
-      bar.add(part);  
-     
+      bar.add(part);
+
       /*
-       * turn event transport on for table
+       * create a window with a synchronized table
        */
-      button = new qx.ui.toolbar.CheckBox( "Event transport");
-      button.setChecked(true);
-      part.add( button );
-      button.bind("checked",this._tableStore, "useEventTransport" );
+      button = new qx.ui.toolbar.Button("Clone table");
+      button.addListener("execute", function(evt) 
+      {
+
+        /*
+         * create a new table that shares the table model with the 
+         * main table
+         */
+        var table = this.createTable( this._mainTable.getTableModel() );        
+
+        /*
+         * create window
+         */
+        var win = new qx.ui.window.Window("Synchronized Table");
+        win.setLayout( new qx.ui.layout.VBox() );
+        win.moveTo( Math.floor(Math.random()*300), Math.floor( Math.random()*300) );        
+        win.add( this.createControls( table ) );
+        win.add( table );
+        win.open();
+        
+        /*
+         * bind the server-supplied status text to the window's caption.
+         */
+        this._tableStore.bind( "model.statusText", win, "caption");          
+
+      }, this);
+      
+      part.add(button);
+      
+
       
       return bar;
     }

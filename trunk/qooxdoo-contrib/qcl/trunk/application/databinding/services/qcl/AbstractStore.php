@@ -17,54 +17,73 @@
  */
 
 
+/**
+ * Abstract class for jsonrpc data stores that handles event propagation.
+ * This is a very simple implementation not meant for production. We simply
+ * store the event data in the $_SESSION variable, separated by the 
+ * class name of the extending class, so that events of differnt widget
+ * types do not get mixed up. 
+ */
 class AbstractStore
 {
-  
-  
- function method_register( $params )
+
+  function method_register( $params )
   {
     list( $storeId ) = $params;
-    if ( ! isset( $_SESSION['storeIds'] ) )
+    
+    if ( ! isset( $_SESSION[get_class($this)]['storeIds'] ) )
     {
-      $_SESSION['storeIds'] = array();
+      $_SESSION[get_class($this)]['storeIds'] = array();
     }
-    if ( ! in_array( $storeId, $_SESSION['storeIds'] ) )
+    if ( ! in_array( $storeId, $_SESSION[get_class($this)]['storeIds'] ) )
     {
       /*
        * register the store and create an event queue
        * In a real application, this would be saved in the database
        */
-      $_SESSION['storeIds'][] = $storeId;
-      $_SESSION['events'][$storeId] = array();
+      $_SESSION[get_class($this)]['storeIds'][] = $storeId;
+      $_SESSION[get_class($this)]['events'][$storeId] = array();
     }
-    
+
     return array(
       'statusText' => "Store registered."
-    );    
+      );
   }
 
   function method_unregister( $params )
   {
     list( $storeId ) = $params;
-    
-    if ( in_array( $storeId, $_SESSION['storeIds'] ) )
+
+    if ( in_array( $storeId, $_SESSION[get_class($this)]['storeIds'] ) )
     {
       /*
-       * unregister the store 
+       * unregister the store
        */
-      array_splice( $_SESSION['storeIds'], array_search( $storeId, $_SESSION['storeIds'], 1 ) );
-      unset( $_SESSION['events'][$storeId] );
+      array_splice( $_SESSION[get_class($this)]['storeIds'], array_search( $storeId, $_SESSION['storeIds'], 1 ) );
+      unset( $_SESSION[get_class($this)]['events'][$storeId] );
     }
     return array(
       'statusText' => "Store unregistered."
+      );
+  }
+
+  
+  function method_unregisterAll()
+  {
+    $_SESSION[get_class($this)]['storeIds'] = array();
+    $_SESSION[get_class($this)]['events'] = array();
+    return array(
+      'statusText' => "All stores unregistered."
     );
-  }  
-  
-  
+  }
+
   function method_getEvents( $params )
   {
-    list( $storeId, $events ) = $params;
 
+    list( $storeId, $events ) = $params;
+    
+    //echo "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/";
+    
     /*
      * save client events
      */
@@ -74,21 +93,21 @@ class AbstractStore
       {
         $this->saveEvent( $storeId, $event );
       }
-    }        
-    
+    }
+
     /*
      * retrieve events from queue and empty queue
      */
-    if ( isset( $_SESSION['events'][$storeId] ) )
+    if ( isset( $_SESSION[get_class($this)]['events'][$storeId] ) )
     {
-      $events = $_SESSION['events'][$storeId];
-      $_SESSION['events'][$storeId] = array();
+      $events = $_SESSION[get_class($this)]['events'][$storeId];
+      $_SESSION[get_class($this)]['events'][$storeId] = array();
     }
     else
     {
       $events = array();
     }
-    
+
     return array(
       'events' => $events,
     );
@@ -103,21 +122,25 @@ class AbstractStore
     }
     return array();
   }
-  
+
   function saveEvent( $storeId, $event )
   {
+    
     /*
      * for each connected store except the requesting one,
      * save an event in the event queue
      */
-    foreach( $_SESSION['storeIds'] as $id )
+    foreach( $_SESSION[get_class($this)]['storeIds'] as $id )
     {
       if ( $id != $storeId )
-      { 
-        $_SESSION['events'][$id][] = $event;
+      {
+        $_SESSION[get_class($this)]['events'][$id][] = $event;
       }
     }
-  }    
+    
+    //echo "/* Store #$storeId: Saving event " . print_r( $event, true) . "\nServer event queue: " . print_r( $_SESSION, true ) . "*/";
+    
+  }
 
 }
 

@@ -63,7 +63,7 @@ class class_TableData extends AbstractStore
             $value = (int) $i;
             break;
           case "number": 
-            $value = rand(1,9999);
+            $value = $_SESSION['rowCount']-$i;
             break;
           case "date":
             $day = rand(1,30);
@@ -72,7 +72,7 @@ class class_TableData extends AbstractStore
             $value = "$day.$month.$year";
             break;
           case "boolean":
-            $value = (bool) rand(0,1);
+            $value = (bool) ($i % 2);
             break;
           case "text":
             $value = "Row $i";
