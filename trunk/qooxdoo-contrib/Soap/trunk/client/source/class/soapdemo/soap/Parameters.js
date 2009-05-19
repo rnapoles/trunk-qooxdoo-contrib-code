@@ -11,7 +11,6 @@
  * Qooxdoo integration by Burak Arslan (burak.arslan-qx@arskom.com.tr)
  */
 
-
 qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
     ,construct : function() {
         this.__pl={};
