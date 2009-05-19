@@ -60,7 +60,7 @@ qx.Class.define("databinding.Table",
        * The setQueryParams method allows to pass additional information to 
        * the server. Here, we pass the column ids.
        */
-      marshaler.setQueryParams( [ this._mainTable.getTableModel().getColumnIds() ] );        
+      marshaler.setQueryParams( [ table.getTableModel().getColumnIds() ] );        
 
       /*
        *  setup the store that retrieves the data from the backend
@@ -70,9 +70,7 @@ qx.Class.define("databinding.Table",
           /* service */ "qcl.TableData",
           marshaler 
       );      
-      
-      this.info( "Hash code of table store is: " + store.toHashCode() );
-      
+       
       /*
        * the controller propagates data changes between table and store. note
        * that you don't have to setup the bindings manually
