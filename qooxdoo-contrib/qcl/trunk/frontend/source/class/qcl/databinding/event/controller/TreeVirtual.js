@@ -394,7 +394,7 @@ qx.Class.define("qcl.databinding.event.controller.TreeVirtual",
         });
         
         // eval creates problem for build variable optimization
-        eval( "targetModel." + path + "= arguments[0].getData().value;" );
+        eval( "this.getTarget().getDataModel()." + path + "= arguments[0].getData().value;" );
         
         targetModel.setData();
       }     
