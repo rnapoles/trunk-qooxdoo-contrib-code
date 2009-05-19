@@ -55,6 +55,9 @@ qx.Class.define("bug1786.Application",
       -------------------------------------------------------------------------
       */
 
+      // Document is the application root
+      var doc = this.getRoot();
+
       // Create a button
       var label = new qx.ui.basic.Label("foobar?");
       label.setSelectable(true);
@@ -64,12 +67,24 @@ qx.Class.define("bug1786.Application",
       htmlembed.setSelectable(true);
 
 
-      // Document is the application root
-      var doc = this.getRoot();
+      var box = new qx.ui.container.Composite(new qx.ui.layout.VBox);
+      box.set({
+        selectable : false,
+        decorator : "main"
+      });
+      
+      var htmllabel = new qx.ui.embed.Html("<i>rich label</i>");
+      htmllabel.setSelectable(true);
+      box.add(htmllabel);
+
+      var label2 = new qx.ui.basic.Label("label");
+      label2.setSelectable(true);
+      box.add(label2);
+
 			
-      // Add button to document at fixed coordinates
       doc.add(label, {left: 100, top: 50});
       doc.add(htmlembed, {left: 100, top: 150});
+      doc.add(box, {left: 300, top: 50});
       
     }
   }
