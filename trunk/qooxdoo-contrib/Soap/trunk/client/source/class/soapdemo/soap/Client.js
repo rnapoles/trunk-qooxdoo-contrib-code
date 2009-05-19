@@ -43,7 +43,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         ,crossDomain :      { check : "Boolean", init : false }
         ,url :              { check : "String",  nullable : true }
     }
-    
+
     ,statics : {
         NAMESPACES: {
              "a"    : "http://schemas.xmlsoap.org/wsdl/"
@@ -63,10 +63,18 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
             }
             else {
-                var tag_name = qx.xml.Element.selectSingleNode(this.__wsdl,"/a:definitions/a:binding/a:operation[@name='"+method_name+"']/a:output/@name",nsmap);
-                var nd = req.responseXML.getElementsByTagName(tag_name.nodeValue);
+                var tag_name = qx.xml.Element.selectSingleNode(this.__wsdl,"/a:definitions/a:portType/a:operation[@name='"+method_name+"']/a:output/@name",nsmap);
 
-                if(nd == null) {
+                var nd=null;
+                var tns = this.__wsdl.documentElement.getAttribute("targetNamespace");
+                if (tns != null) {
+                    nd = qx.xml.Element.getElementsByTagNameNS(req.responseXML, tns, tag_name.nodeValue);
+                }
+                else {
+                    nd = req.responseXML.getElementsByTagName(tag_name.nodeValue);
+                }
+
+                if(nd == null || nd.length == 0) {
                     if(req.responseXML.getElementsByTagName("faultcode").length > 0) {
                         if(async || callback) {
                             o = new Error(500, req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue);
@@ -74,6 +82,9 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                         else {
                             throw new Error(500, req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue);
                         }
+                    }
+                    else { // FIXME: need to create an Error for this too
+
                     }
                 }
                 else {
@@ -83,7 +94,6 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 if(callback) {
                     callback(o, req.responseXML);
                 }
-
             }
             if(!async) {
                 return null;
@@ -97,15 +107,20 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
             var retval = null;
 
-            // get return type from wsdl
-            var return_type_node = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:element[@name='"+node.nodeName+"']", nsmap);
-            var return_type_name = return_type_node.getAttribute("type");
-            return_type_name = return_type_name.split(":")[1];
+            if(ssn(this.__wsdl,"/a:definitions/a:types", nsmap) != null) { // get return type from wsdl
+                var return_type_node = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:element[@name='"+node.nodeName+"']", nsmap);
+                var return_type_name = return_type_node.getAttribute("type");
+                return_type_name = return_type_name.split(":")[1];
 
-            var return_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+return_type_name+"']", nsmap);
-            var retval_type_node = ssn(return_type_definition, ".//x:element",nsmap);
+                var return_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+return_type_name+"']", nsmap);
+                var retval_type_node = ssn(return_type_definition, ".//x:element",nsmap);
 
-            retval = this.__extract(node.childNodes[0],retval_type_node);
+                retval = this.__extract(node.childNodes[0],retval_type_node);
+            }
+            else { // no types section so get the type directly from the message part node
+                var part_node = ssn(this.__wsdl,"/a:definitions/a:message[@name='"+node.baseName+"']/a:part[1]", nsmap);
+                retval = this.__extract(node.childNodes[0],part_node);
+            }
 
             return retval;
         }
@@ -116,6 +131,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             var nsmap = this.self(arguments).NAMESPACES;
 
             var retval = null;
+
             // get type name
             var type_name = type_node.getAttribute("type");
             if (type_name == null) {
@@ -123,8 +139,12 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
             type_name = type_name.split(":")[1];
             var type_name_lower = type_name.toLowerCase();
-            console.log(type_name);
 
+            qx.log.Logger.debug(this, type_name);
+
+            // in case this is a primitive value, (we don't know yet)
+            // get the value as well. do it here instead of doing it
+            // inside every primitive case.
             var value_ = null;
             if (node.hasChildNodes()) {
                 value_ = node.childNodes[0].nodeValue;
@@ -140,7 +160,6 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             else if (type_name_lower == "int" || type_name == "long") {
                 retval = (value_ != null) ? parseInt(value_ + "", 10) : 0;
             }
-
             else if (type_name_lower == "double") {
                 retval = (value_ != null) ? parseFloat(value_ + "") : 0;
             }
@@ -171,8 +190,9 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 else {
                     if (node.hasChildNodes()){
                         retval = new Object();
-    
-                        console.log(node);
+
+                        qx.log.Logger.debug(this, node);
+
                         for (var i=0; i<elts.length; ++i) {
                             var elt = ssn(type_node, ".//x:element[@name='"+node.childNodes[i].nodeName+"']",nsmap);
                             retval[node.childNodes[i].nodeName] = this.__extract(node.childNodes[i],elt);
@@ -214,7 +234,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                         }
                     }
                 }
-    
+
                 xmlHttp.send(null);
                 if (!async) {
                     return this.__on_load_wsdl(method_, parameters, async, callback, xmlHttp);

@@ -14,7 +14,7 @@
 
 qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
     ,construct : function() {
-        this.__pl=new Array();
+        this.__pl={};
     }
 
     ,members : {
