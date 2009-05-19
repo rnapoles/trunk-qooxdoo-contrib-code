@@ -62,16 +62,17 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 
  /**  
   * @param url {String|null} The url of the jsonrpc service.
-  * @param serviceName {String} The name of the service, i.e. "foo.bar"
-  * @param serviceMethod  {String} The name of the method, i.e. "doStuff"   
+  * @param serviceName {String} The name of the service, i.e. "foo.bar"   
   * @param marshaler {Object|null} The marshaler to be used to create a model 
   *   from the data. If not provided, {@link qx.data.marshal.Json} is used and
   *   instantiated with the 'delegate' parameter as contstructor argument.
   * @param delegate {Object|null} The delegate containing one of the methods 
   *   specified in {@link qx.data.store.IStoreDelegate}. Ignored if a 
   *   custom marshaler is provided
+  * @param rpc {qx.io.remote.Rpc|undefined} Optional qx.io.remote.Rpc object 
+  *   that can be shared between stores
   */
-  construct : function( url, serviceName, serviceMethod, marshaler, delegate )
+  construct : function( url, serviceName, marshaler, delegate, rpc )
   {
     this.base(arguments);
   
@@ -86,10 +87,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     {
       this.setServiceName( serviceName );
     }
-    if (serviceMethod != null) 
-    {
-      this.setServiceMethod( serviceMethod );
-    }    
+
   
     /* 
      * store the marshaler
@@ -104,9 +102,9 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     }
   
     /* 
-     * create one JSON-RPC object
+     * use or create JSON-RPC object
      */
-     this.__rpc = new qx.io.remote.Rpc;
+     this.__rpc = rpc || new qx.io.remote.Rpc;
      
     /*
      * create store id
@@ -186,18 +184,10 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      */
     serviceName :
     {
-      check : "String"
-    },
-  
-    /**   
-     * The service name on the server to pull the data from
-     * defaults to "updateStore".
-     */
-    serviceMethod :
-    {
       check : "String",
-      init: "updateStore"
-    },    
+      nullable: false
+    },
+ 
   
     /**
      * The marshaler used to create models from the json data
@@ -254,15 +244,61 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
   members :
   {
     /*
-    * private members
-    */
+    ---------------------------------------------------------------------------
+       PRIVATE MEMBERS
+    ---------------------------------------------------------------------------
+    */  
     __request : null,
     __pool : null,
     __opaqueCallRef : null,
     _responseData : null,
     __rpc : null,
     __requestId : 0,
+    __timerId : null,
+    __dataEvents : [],
     
+    /*
+    ---------------------------------------------------------------------------
+       APPLY METHODS
+    ---------------------------------------------------------------------------
+    */ 
+    
+    /**
+    * Turn event transport on or off
+    * @param value
+    * @param old
+    * @return
+    */
+   _applyUseEventTransport : function ( value, old )
+   {
+     /*
+      * remove the old timer, if exists
+      */
+     if ( this.__timerId  )      
+     {
+       qx.util.TimerManager.getInstance().stop( this.__timerId );
+       this.unregisterStore();
+     }
+     
+      if ( value )
+      {
+       /*
+        * start the timer
+        */    
+       this.__timerId = qx.util.TimerManager.getInstance().start(
+         this._poll,
+         this.getInterval() * 1000,
+         this
+       );
+       this.registerStore();
+      }
+   },
+    
+   /*
+   ---------------------------------------------------------------------------
+      API METHODS
+   ---------------------------------------------------------------------------
+   */     
     /**
      * Returns a incrementing number to distinguish requests
      * dispatched by this store
@@ -309,6 +345,100 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
          false
      );
    },    
+   
+   /**
+    * Aborts the current request
+    */
+   abort : function()
+   {
+     if ( this.__opaqueCallRef )
+     {
+       this.getCurrentRequest().abort( this.__opaqueCallRef );
+     }
+   },
+    
+    /*
+     * register with server
+     */    
+    registerStore : function()
+    {
+       this.load("register",[this.getStoreId()],function(data){
+         //this.info(data);
+       }, this );  
+    },
+    
+    /*
+     * unregister from server
+     */
+    unregisterStore : function()
+    {
+       this.load("unregister",[this.getStoreId()],function(data){
+         //this.info(data);
+       }, this );   
+    },
+    
+    /**
+     * Returns the current event queue and empties it.
+     * @return {Array}
+     */
+    getDataEvents : function()
+    {
+      var events = this.__dataEvents;
+      this.__dataEvents = [];
+      return events;
+    },
+    
+    /**
+     * Adds an event to the event queue that is transported to
+     * the server upon the next connection
+     * @param event {qx.event.type.Data}
+     * @return {Void}
+     */
+    addToEventQueue : function( event )
+    {
+       if ( ! event  ) return;
+            
+       /*
+        * dispatch a copy for listening controllers
+        */
+       this.dispatchEvent( event.clone() );
+       
+       /*
+        * abort if no event transport
+        */
+       if ( ! this.getUseEventTransport() ) return;
+      
+       /*
+        * convert the event for propagation to the server
+        */
+      var data = event.getData();
+      var type = event.getType();
+      
+      if ( ! data || ! type )
+      {
+        this.warn("Invalid event!");
+        return;
+      }
+      
+      /*
+       * delete event target hash code in event data since we should not get
+       * our own events back anyways
+       */
+      delete data.hashCode;
+     
+      data.eventType = type;
+
+      /*
+       * save the event
+       */
+      this.__dataEvents.push( data );
+    },    
+    
+    /*
+    ---------------------------------------------------------------------------
+       PRIVATE METHODS
+    ---------------------------------------------------------------------------
+    */     
 
     /** 
      * Configures the request object
@@ -492,157 +622,21 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       return;
     },
 
-    /**
-     * Aborts the current request
-     */
-    abort : function()
-    {
-      if ( this.__opaqueCallRef )
-      {
-        this.getCurrentRequest().abort( this.__opaqueCallRef );
-      }
-    },
-    
-
-    
-    __timerId : null,
-    
-    _applyUseEventTransport : function ( value, old )
-    {
-      /*
-       * remove the old timer, if exists
-       */
-      if ( this.__timerId  )      
-      {
-        qx.util.TimerManager.getInstance().stop( this.__timerId );
-        this.unregisterStore();
-      }
-      
-       if ( value )
-       {
-        /*
-         * start the timer
-         */    
-        this.__timerId = qx.util.TimerManager.getInstance().start(
-          this._poll,
-          this.getInterval() * 1000,
-          this
-        );
-        this.registerStore();
-       }
-    },
-    
-    /*
-     * register with server
-     */    
-    registerStore : function()
-    {
-       this.load("register",[this.getStoreId()],function(data){
-         this.info(data);
-       }, this );  
-    },
-    
-    /*
-     * unregister from server
-     */
-    unregisterStore : function()
-    {
-       this.load("unregister",[this.getStoreId()],function(data){
-         this.info(data);
-       }, this );   
-    },
-    
-    _poll : function()
-    {
-      this.load("getEvents",[this.getStoreId(),this.getDataEvents()],function(data){
-       this._handleServerEvents(data.events);
-      }, this );
-    },
-    
-    __dataEvents : [],
     
     /**
-     * Returns the current event queue and empties it.
-     * @return {Array}
-     */
-    getDataEvents : function()
-    {
-      var events = this.__dataEvents;
-      this.__dataEvents = [];
-      return events;
-    },
-    
-    /**
-     * Save an event to the event queue that is transported to
-     * the server upon the next connection
-     * @param event {qx.event.type.Data}
+     * Polls the server, passing the events in the queue#
+     * and retrieving the events on the server
      * @return {Void}
      */
-    saveDataEvent : function( event )
+    _poll : function()
     {
-      if ( ! event || ! this.getUseEventTransport() ) return;
-      
-      var ed = event.getData();
-      var type = event.getType();
-      
-      if ( !ed || ! type )
-      {
-        this.warn("Invalid event!");
-        return;
-      }
-      
-      ed.eventType = type;
-      ed.items = [];
-      var target = event.getTarget();
-      
-      switch ( type )
-      {
-       
-        case "change": 
-           /*
-            * handle range
-            */
-           for ( var i=ed.start; i<= ed.end; i++)
-           {
-             switch ( ed.type )
-             {
-               /* 
-                * add a node
-                */
-               case "add":
-                 ed.items.push( target.getData()[i]);
-                 break;
-                 
-              /*
-               * move a node
-               */
-               case "move":
-                 this.error("Not implmemented");
-             }
-           }  
-           break;
-
-        case "changeBubble":
-          
-          /*
-           * change data if tree node
-           * @todo rewrite this, shouldn't be here
-           */
-          if ( target instanceof qcl.databinding.event.model.TreeVirtual )
-          {
-            var _this  = this;
-            ed.name   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
-              var serverNodeId = target.getServerNodeId( parseInt(sourceNodeId) ) ;
-              return "getData()[" + serverNodeId + "]";
-            });
-          }
-          break;
-       }
-      
-      /*
-       * save the event
-       */
-      this.__dataEvents.push( ed );
+      this.load("getEvents",
+        [ this.getStoreId(), this.getDataEvents() ],
+        function(data){
+          this._handleServerEvents(data.events);
+        }, 
+        this 
+      );
     },
     
     /**
@@ -751,11 +745,6 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 
       return uuid.join('');
     }
-  },
-  
-  destruct : function()
-  {
-    this.unregisterStore();
   }
 });
 

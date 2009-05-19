@@ -24,6 +24,13 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
 {
   extend : qx.core.Object,
 
+  
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */
+  
   /**
    * @param delegate {Object} An object containing one of the mehtods described 
    *   in {@link qx.data.store.IStoreDelegate}.
@@ -34,12 +41,14 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
     this.__delegate = delegate;
   },
 
-
-  members :
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+  
+  properties :
   {
-    __delegate : null,
-
-
     /**  
      * Additional parameters passed to both "getRowCount" and "getRowData"
      * methods.
@@ -83,7 +92,18 @@ qx.Class.define("qcl.databinding.event.marshal.TreeVirtual",
       check : "String",
       nullable : false,
       init : "getNodeData"
-    },     
+    }
+  },
+
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+  
+  members :
+  {
+    __delegate : null,    
 
 
     /**

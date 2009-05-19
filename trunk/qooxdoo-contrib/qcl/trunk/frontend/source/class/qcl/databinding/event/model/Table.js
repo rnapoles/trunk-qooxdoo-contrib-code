@@ -40,7 +40,6 @@ qx.Class.define("qcl.databinding.event.model.Table",
   construct : function(serviceName)
   {
     this.base(arguments);
-    
   },
   
   /*

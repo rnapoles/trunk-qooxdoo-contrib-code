@@ -29,7 +29,7 @@
  * similar to qx.data.Array. The events are only fired if the tree is modified
  * programmatically by the user through the add, prune, or move methods. 
  * In contrast, the ..data() methods are assumed to be used by the databinding 
- * controller.
+ * controller and thus don't fire change events.
  * 
  * The tree data passed by the server looks like so:
  * 
@@ -107,14 +107,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
   construct : function()
   {
     this.base(arguments);
-    
-    /*
-     * add listeners
-     */
-    this.addListener("change",this._onChange,this);
-    this.addListener("changeBubble",this._onChangeBubble,this);
   },
-  
   
   /*
   *****************************************************************************
@@ -133,7 +126,16 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
       check : "Array",
       nullable: false,
       init : ["label","icon","iconSelected","columnData","data"]
-    }
+    },
+    
+   /**
+    * The controller object of this model
+    */
+   controller :
+   {
+     check : "qcl.databinding.event.controller.TreeVirtual",
+     nullable : true
+   }    
   },
   
   
@@ -171,9 +173,19 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
 
   members :
   {
-    // private members
+    /*
+    ---------------------------------------------------------------------------
+       PRIVATE MEMBERS
+    ---------------------------------------------------------------------------
+    */         
     __nodeIdMap : [],
     __dontFireEvents : false,
+    
+    /*
+    ---------------------------------------------------------------------------
+       ADDED METHODS
+    ---------------------------------------------------------------------------
+    */             
     
     /**
      * Returns the node with the given id
@@ -315,10 +327,14 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
           //this.info( "Adding Child (" + childNodeId + ") to node '" + node.label + "' #" + newNodeId + "(" + nodeId + ")");
           var childNodeIds = this.__addNodeData( newNodeId, data, childNodeId );
                   
-          // mark node as already added
+          /*
+           * mark node as already added
+           */
           data[childNodeId].__isAdded = this.toHashCode();
           
-          // add ids to list
+          /*
+           * add ids to list
+           */
           nodeIds.concat( childNodeIds );
         };
         
@@ -388,7 +404,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
      },
      
      
-     /** 
+    /** 
      * Adds raw tree data without firing events.
      * No data check is performed, so be sure that the data is valid. The nodeId
      * and parentNodeId properties of each node will be reassigned so they do not
@@ -402,7 +418,9 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
      {
        var nodeIds = [];
 
-       // add new data
+       /*
+        * add new data
+        */
        for ( var i=0; i< treeData.length; i++ )
        {
          node = treeData[i];
@@ -432,69 +450,105 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
        this.addData( null, data );
        this.setData();
      },
-       
 
-    
- 
+     /**
+      * Removes a whole node and children from the internal data without
+      * dispatching events. 
+      * @param nodeId {Int}
+      * @return {Void} 
+      */
+     _removeNodeData : function( nodeId )
+     {
+        this.__dontFireEvents = true;
+        this.prune( nodeId, ( nodeId > 0 ) );
+        this.__dontFireEvents = false;
+     },
+     
+     /**
+      * Returns the server-side node id, given its client-side id
+      * @param clientNodeId {Integer}
+      * @return {Integer}
+      */
+     getServerNodeId : function( clientNodeId )
+     {
+       if ( ! clientNodeId ) return 0;
+       try
+       {
+         var serverNodeId =  this.getData()[ clientNodeId ].data.id;
+       }
+       catch(e)
+       {
+         this.error("No server node id for client node #" + clientNodeId );
+       }
+       return serverNodeId;
+     },
+     
+     /**
+      * Sets the server node id of a given client node id
+      * @param clientNodeId {Integer}
+      * @param serverNodeId {Integer}
+      * @return {Void}
+      */
+     setServerNodeId : function ( clientNodeId, serverNodeId )
+     {
+        if ( ! clientNodeId ) return;
+        var node = this.getNode(clientNodeId);
+        if ( ! node.data ) node.data = {};
+        node.data.id = serverNodeId;
+     },
+
+    /**
+     * Sets the server parent node id of a given client node id
+     * @param clientNodeId {Integer}
+     * @param serverParentNodeId {Integer}
+     * @return {Void}
+     */
+     setServerParentNodeId : function ( clientNodeId, serverParentNodeId )
+     {
+       if ( ! clientNodeId ) return;
+       var node = this.getNode(clientNodeId);
+       if ( ! node.data ) node.data = {};
+       node.data.parentId = serverParentNodeId;
+     },    
+     
+     /**
+      * Returns the client-side node id, given its server-side  id
+      * @param serverNodeId {Integer}
+      * @return {Integer}
+      */
+     getClientNodeId : function( serverNodeId )
+     {
+       if ( ! serverNodeId ) return 0;
+       var clientNodeId = this.__nodeIdMap[serverNodeId];
+       
+       if ( clientNodeId == undefined )
+       {
+         this.error("No client node id for server node #" + serverNodeId );
+       }
+       return clientNodeId;
+     },
+     
+     /**
+      * Maps the client node id to a server node id
+      * @param serverNodeId {Integer}
+      * @param clientNodeId {Integer}
+      * @return {Void}
+      */
+     mapServerIdToClientId : function ( serverNodeId, clientNodeId )
+     {
+       this.__nodeIdMap[serverNodeId] = clientNodeId;
+     },       
+          
+     
+     /*
+     ---------------------------------------------------------------------------
+        OVERRIDDEN METHODS
+     ---------------------------------------------------------------------------
+     */  
+     
     /**
      * Add a node to the tree.
-     *
-     * NOTE: This method is for <b>internal use</b> and should not be called by
-     *       users of this class.  Instead, call {@link #addBranch} or {@link
-     *       #addLeaf}.  There is no guarantee that the interface to this
-     *       method will remain unchanged over time.
-     *
-     * @param parentNodeId {Integer}
-     *   The node id of the parent of the node being added
-     *
-     * @param label {String}
-     *   The string to display as the label for this node
-     *
-     * @param bOpened {Integer}
-     *   <i>true</i> if the tree should be rendered in its opened state;
-     *   <i>false</i> otherwise.
-     *
-     * @param bHideOpenCloseButton {Boolean}
-     *   <i>true</i> if the open/close button should be hidden (not displayed);
-     *   </i>false</i> to display the open/close button for this node.
-     *
-     * @param type {Integer}
-     *   The type of node being added.  The type determines whether children
-     *   may be added, and determines the default icons to use.  This
-     *   parameter must be one of the following values:
-     *   <dl>
-     *     <dt>qx.ui.treevirtual.SimpleTreeDataModel.Type.BRANCH</dt>
-     *     <dd>
-     *       This node is a branch.  A branch node may have children.
-     *     </dd>
-     *     <dt>qx.ui.treevirtual.SimpleTreeDataModel.Type.LEAF</dt>
-     *     <dd>
-     *       This node is a leaf, and may not have children
-     *     </dd>
-     *   </dl>
-     *
-     * @param icon {String}
-     *   The relative (subject to alias expansion) or full path of the icon to
-     *   display for this node when it is not a selected node.
-     *
-     * @param iconSelected {String}
-     *   The relative (subject to alias expansion) or full path of the icon to
-     *   display for this node when it is a selected node.
-     *   <p>
-     *   NOTE: As of 13 Mar 2009, this feature is disabled by default, by
-     *         virtue of the fact that the tree's "alwaysUpdateCells" property
-     *         has a setting of 'false' now instead of 'true'. Setting this
-     *         property to true allows the icon to change upon selection, but
-     *         causes problems such as single clicks not always selecting a
-     *         row, and, in IE, double click operations failing
-     *         completely. (For more information, see bugs 605 and 2021.) To
-     *         re-enable the option to have a unique icon that is displayed
-     *         when the node is selected, issue
-     *         <code>tree.setAlwaysUpdateCells(true);</code>
-     *
-     * @return {Integer} The node id of the newly-added node.
-     *
-     * @throws TODOC
+     * See overridden method for details.
      */
     _addNode : function(parentNodeId,
                         label,
@@ -524,7 +578,6 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
           "end"      : nodeId,
           "type"     : "add"
        });
-     
       
       return nodeId;       
     },
@@ -533,14 +586,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
      * Prune the tree by removing, recursively, all of a node's children.  If
      * requested, also remove the node itself.
      *
-     * @param nodeReference {Object | Integer}
-     *   The node to be pruned from the tree.  The node can be represented
-     *   either by the node object, or the node id (as would have been
-     *   returned by addBranch(), addLeaf(), etc.)
-     *
-     * @param bSelfAlso {Boolean}
-     *   If <i>true</i> then remove the node identified by <i>nodeId</i> as
-     *   well as all of the children.
+     * see overridden method for details
      *
      */
     prune : function( nodeReference, bSelfAlso, isRecursive )
@@ -563,34 +609,12 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
        
        this.base(arguments, nodeReference, bSelfAlso);
     },
+    
 
-    
-    /**
-     * Removes a whole node and children from the internal data without
-     * dispatching events. 
-     * @param nodeId {Int}
-     * @return {Void} 
-     */
-    _removeNodeData : function( nodeId )
-    {
-       this.__dontFireEvents = true;
-       this.prune( nodeId, ( nodeId > 0 ) );
-       this.__dontFireEvents = false;
-    },     
-    
     /**
      * Move a node in the tree.
      *
-     * @param moveNodeReference {Object | Integer}
-     *   The node to be moved.  The node can be represented
-     *   either by the node object, or the node id (as would have been
-     *   returned by addBranch(), addLeaf(), etc.)
-     *
-     * @param parentNodeReference {Object | Integer}
-     *   The new parent node, which must not be a LEAF.  The node can be
-     *   represented either by the node object, or the node id (as would have
-     *   been returned by addBranch(), addLeaf(), etc.)
-     *
+     * See overridden method for details.
      */
     move : function(moveNodeReference, parentNodeReference)
     {
@@ -615,11 +639,8 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
     },
     
     /**
-     * Sets a value
-     * @param columnIndex
-     * @param rowIndex
-     * @param value
-     * @return
+     * Sets a value.
+     * See overridden method for details
      */
     setValue : function(columnIndex, rowIndex, value)
     {
@@ -676,18 +697,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
     /**
      * Set state attributes of a node.
      *
-     * @param nodeReference {Object | Integer}
-     *   The node to have its attributes set.  The node can be represented
-     *   either by the node object, or the node id (as would have been
-     *   returned by addBranch(), addLeaf(), etc.)
-     *
-     * @param attributes {Map}
-     *   Each property name in the map may correspond to the property names of
-     *   a node which are specified as <i>USER-PROVIDED ATTRIBUTES</i> in
-     *   {@link #SimpleTreeDataModel}.  Each property value will be assigned
-     *   to the corresponding property of the node specified by nodeId.
-     *
-     * @return {Void}
+     * see overridden method for details.
      */
     setState : function( nodeReference, attributes )
     {
@@ -718,198 +728,25 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
        this.base(arguments, nodeReference, attributes);        
     },
     
-   /**
-    * Add data to an additional column (a column other than the tree column)
-    * of the tree.
-    *
-    * @param nodeId {Integer}
-    *   A node identifier, as previously returned by {@link #addBranch} or
-    *   {@link addLeaf}.
-    *
-    * @param columnIndex {Integer}
-    *   The column number to which the provided data applies
-    *
-    * @param data {var}
-    *   The cell data for the specified column
-    *
-    * @return {void}
-    */
-   setColumnData : function( nodeId, columnIndex, data)
-   {
-     var old = this.getData()[nodeId].columnData[columnIndex];
-     this.getData()[nodeId].columnData[columnIndex] = data;
-     
-     /*
-      * event for databinding listeners
-      */
-     this.fireDataEvent("changeBubble", {
-       "value"    : value,
-       "name"     : "data[" + nodeId + "].columnData[" + columnIndex + "]",
-       "old"      : oldValue
-     });
-   },    
-    
-    
     /**
-     * Returns the server-side node id, given its client-side id
-     * @param clientNodeId {Integer}
-     * @return {Integer}
+     * Add data to an additional column (a column other than the tree column)
+     * of the tree.
+     *
+     * See overridden method for details
      */
-    getServerNodeId : function( clientNodeId )
+    setColumnData : function( nodeId, columnIndex, data)
     {
-      if ( ! clientNodeId ) return 0;
-      try
-      {
-        var serverNodeId =  this.getData()[ clientNodeId ].data.id;
-      }
-      catch(e)
-      {
-        this.error("No server node id for client node #" + clientNodeId );
-      }
-      return serverNodeId;
-    },
-    
-    /**
-     * Sets the server node id of a given client node id
-     * @param clientNodeId {Integer}
-     * @param serverNodeId {Integer}
-     * @return {Void}
-     */
-    setServerNodeId : function ( clientNodeId, serverNodeId )
-    {
-       if ( ! clientNodeId ) return;
-       var node = this.getNode(clientNodeId);
-       if ( ! node.data ) node.data = {};
-       node.data.id = serverNodeId;
-    },
+      var old = this.getData()[nodeId].columnData[columnIndex];
+      this.getData()[nodeId].columnData[columnIndex] = data;
 
-   /**
-    * Sets the server parent node id of a given client node id
-    * @param clientNodeId {Integer}
-    * @param serverParentNodeId {Integer}
-    * @return {Void}
-    */
-    setServerParentNodeId : function ( clientNodeId, serverParentNodeId )
-    {
-      if ( ! clientNodeId ) return;
-      var node = this.getNode(clientNodeId);
-      if ( ! node.data ) node.data = {};
-      node.data.parentId = serverParentNodeId;
-    },    
-    
-    /**
-     * Returns the client-side node id, given its server-side  id
-     * @param serverNodeId {Integer}
-     * @return {Integer}
-     */
-    getClientNodeId : function( serverNodeId )
-    {
-      if ( ! serverNodeId ) return 0;
-      var clientNodeId = this.__nodeIdMap[serverNodeId];
-      
-      if ( clientNodeId == undefined )
-      {
-        this.error("No client node id for server node #" + serverNodeId );
-      }
-      return clientNodeId;
-    },
-    
-    /**
-     * Maps the client node id to a server node id
-     * @param serverNodeId {Integer}
-     * @param clientNodeId {Integer}
-     * @return {Void}
-     */
-    mapServerIdToClientId : function ( serverNodeId, clientNodeId )
-    {
-      this.__nodeIdMap[serverNodeId] = clientNodeId;
-    },    
-    
-    /**
-    * Called when a "change" event is fired on the object
-    * @param event {qx.event.type.Data}
-    * @return {void}
-    */
-    _onChange : function( event )
-    {
-     
       /*
-       * don't do anything if this is the echo of a change to this object itself 
+       * event for databinding listeners
        */
-      if ( event.getTarget() === this ) return;
-      
-       //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
-       
-       var ed = event.getData();
-       var target = event.getTarget();
-
-       /*
-        * handle range
-        */
-       for ( var i=ed.start; i<= ed.end; i++)
-       {
-         switch ( ed.type )
-         {
-           /* 
-            * add a node
-            */
-           case "add":
-             var node = ed.isServerEvent ? ed.items[i-ed.start] : target.getData()[i];
-             this.addData( null, [node] );
-             break;
-           
-           /*
-            * remove a node
-            */
-           case "remove":
-             var serverNodeId = ed.isServerEvent ? i : target.getServerNodeId(i);
-             var nodeId = this.getClientNodeId( serverNodeId );
-             this._removeNodeData( nodeId );
-             break;
-             
-          /*
-           * move a node
-           */
-           case "move":
-             this.error("Not implmemented");
-         }
-       }  
-       this.setData();
-    },
-    
-    /**
-     * Called when a "changeBubble" event is fired on the object
-     * @param event {qx.event.type.Data}
-     * @return {void}
-     */
-    _onChangeBubble : function( event )
-    {
-      /* 
-       * don't do anything if this is the echo of a change to this object itself 
-       */
-      if ( event.getTarget() === this ) return;
-      
-      //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
-       
-      /*
-       * change data
-       */
-      var ed     = event.getData();
-      var target = event.getTarget();
-      var _this  = this;
-      var path   = ed.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId)
-      {
-        var serverNodeId = ed.isServerEvent ? 
-            sourceNodeId : target.getServerNodeId( parseInt(sourceNodeId) ) ;
-        var targetNodeId = _this.getClientNodeId( serverNodeId ); 
-        return "getData()[" + targetNodeId + "]";
+      this.fireDataEvent("changeBubble", {
+        "value"    : value,
+        "name"     : "data[" + nodeId + "].columnData[" + columnIndex + "]",
+        "old"      : oldValue
       });
-      
-      // eval creates problem for build variable optimization
-      eval( "this." + path + "= arguments[0].getData().value;" );
-      
-      this.setData();
-    }
-    
+    }    
   }
 });
