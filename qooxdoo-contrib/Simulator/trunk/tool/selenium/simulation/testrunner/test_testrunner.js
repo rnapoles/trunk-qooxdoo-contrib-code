@@ -41,7 +41,7 @@ packageFunc+= '  packStr += pack + ",";';
 packageFunc+= '}';
 packageFunc+= 'packStr;';
 
-var ignore = [];
+var ignore = ["qx.test.Xml"];
 var include = [];
 
 // - Config End ----------------------------------------------------------------
