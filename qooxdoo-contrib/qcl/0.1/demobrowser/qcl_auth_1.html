@@ -1,0 +1,374 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>qooxdoo &raquo; Demo Browser</title>
+  <script type="text/javascript" src="../../script/demo.js"></script>
+  <script type="text/javascript" src="../util.js"></script>
+</head>
+<body>  
+  <div id="description">
+    <p>Shows the power of the qcl.auth package including Permissions, Role and User class. </p>
+  </div>
+
+  <script type="text/javascript">
+    qx.core.Init.getInstance().defineMain(function()
+    {
+	    
+			// the following code has largely been generated with QxTransformer 
+			
+	    var clientDoc = qx.ui.core.ClientDocument.getInstance();
+
+			//#require(qcl.auth.permission.Permission) etc. in the Manager class files 
+			// will make the generator script fail with a recursion error
+			// need to manually include the classes here 
+			// todo: file a bugzilla bug about this
+			var dummy = new qcl.auth.permission.Permission("foo");
+			dummy = new qcl.auth.role.Role("foo");
+			dummy = new qcl.auth.user.User("foo");
+		
+			// security directives
+			var pmgr = qcl.auth.permission.Manager.getInstance();
+			var p1 = pmgr.create("test.edit.copy");
+			var p2 = pmgr.create("test.permissions.edit.copy");
+			
+			// permission with an attached condition and automatic update
+			var p3 = pmgr.create("test.permissions.edit.paste");
+			qx.event.message.Bus.subscribe("test.messages.clipboard.changeData",function(m){p3.update()}); 
+			pmgr.getByName("test.permissions.edit.paste").addCondition(function(){
+				return (test.clipboard.getData() == true);
+			});
+			var p4 = pmgr.create("test.permissions.edit.undo");
+			var p5 = pmgr.create("test.permissions.edit.redo");
+			var p6 = pmgr.create("test.permissions.edit.edit");
+			var p7 = pmgr.create("test.permissions.edit.cut");
+			var p8 = pmgr.create("test.permissions.edit.delete");
+			var p9 = pmgr.create("test.permissions.edit.new");
+			var p10 = pmgr.create("test.permissions.preferences.edit");
+			var p11 = pmgr.create("test.application.plugins.manage");
+			
+			
+			// the following shouldn't be done manually on the client. In a real scenario, 
+			// only one user exists and her/her roles and permissions are supplied by the 
+			// backend during authentication. We do this only for demonstration without
+			// a backend
+			
+			// roles
+			var role_manager	= qcl.auth.role.Manager.getInstance();
+			var r_user				= role_manager.create("test.roles.User");
+			var r_manager			= role_manager.create("test.roles.Manager");
+			var r_admin				= role_manager.create("test.roles.Admin");
+			
+			// determine permissions of roles
+			r_user.addPermission(
+				"test.permissions.edit.copy",
+				"test.permissions.edit.cut",
+				"test.permissions.edit.paste",
+				"test.permissions.edit.undo",
+				"test.permissions.edit.redo"
+			);
+			r_manager.addPermission(
+				"test.permissions.preferences.edit",
+				"test.permissions.edit.delete",
+				"test.permissions.edit.new"
+			);
+			r_admin.addPermission("*");
+			
+			// users 
+			var user_manager	= qcl.auth.user.Manager.getInstance();
+			var u_john				= user_manager.create("john");
+			var u_paul				= user_manager.create("paul");
+			var u_mary				= user_manager.create("mary");
+			
+			// assing roles to users
+			u_john.addRole(r_user); // this could also be u_john.addRole("test.roles.User");
+			u_paul.addRole(r_user,r_manager);
+			u_mary.addRole(r_admin);
+			
+			// create a bogus clipboard
+			qx.Class.define("test.clipboard",
+			{
+				extend : qx.core.Target,
+			  construct : function()
+			  {
+					this.base(arguments);
+			  },
+			  statics :
+			  {
+			    __data : null,
+			    getData : function ()
+			    {
+			    	return this.__data;
+			    },
+			    setData : function(data)
+			    {
+			    	if ( data != this.__data )
+			    	{
+			    		this.__data = data;
+			    		qx.event.message.Bus.dispatch( new qx.event.message.Message("test.messages.clipboard.changeData",data ) );
+			    	}
+			    }
+			  }
+			});
+						
+			var m = new qx.ui.layout.HorizontalBoxLayout();
+			m.setLocation(0 ,0);
+			m.setDimension("100%" ,"100%");
+			m.setSpacing(5);
+			m.setPadding(5);
+			clientDoc.add(m);
+			
+			var v1 = new qx.ui.layout.VerticalBoxLayout();
+			v1.setWidth("1*");
+			v1.setHeight("100%");
+			v1.setSpacing(5);
+			m.add(v1);
+			
+			var la1 = new qx.ui.basic.Label("Choose User to log in");
+			v1.add(la1);
+			
+			var li1 = new qx.ui.form.List();
+			li1.setDimension("100%" ,"1*");
+			v1.add(li1);
+			
+			li1.getManager().addEventListener("changeSelection",function(event){
+				var manager 	= qcl.auth.user.Manager.getInstance(); 
+				var userName	= event.getData()[0].getValue();
+				var userObj 	= manager.getObject(userName);
+				manager.setActiveUser(userObj); // log in user or log out if userObj is null
+				qx.event.message.Bus.dispatch( new qx.event.message.Message("test.changeActiveUser",userObj ) );
+			},li1);
+			
+			var i1 = new qx.ui.form.ListItem("John (simple user)",null,"john");
+			li1.add(i1);
+			
+			var i2 = new qx.ui.form.ListItem("Paul (manager)",null,"paul");
+			li1.add(i2);
+			
+			var i3 = new qx.ui.form.ListItem("Mary (system administrator)",null,"mary");
+			li1.add(i3);
+			
+			var i3 = new qx.ui.form.ListItem("Log off",null,"nouser");
+			li1.add(i3);
+			
+			var la2 = new qx.ui.basic.Label("This user has the following roles:");
+			v1.add(la2);
+			
+			var li2 = new qx.ui.form.List();
+			li2.setDimension("100%" ,"1*");
+			v1.add(li2);
+			
+			qx.event.message.Bus.subscribe("test.changeActiveUser",function(message){
+				this.removeAll();
+				var userObj 	= message.getData();
+				if (!userObj) return;
+				var roleNames	= userObj.getRoleNames();
+				roleNames.forEach(function(roleName){
+					this.add(new qx.ui.form.ListItem(roleName,null,roleName));
+				},this);
+			},li2);
+			
+			var i4 = new qx.ui.form.ListItem("--- Click on user first ---",null,null);
+			li2.add(i4);
+			
+			var la3 = new qx.ui.basic.Label("This user has the following permissions:");
+			v1.add(la3);
+			
+			var li3 = new qx.ui.form.List();
+			li3.setDimension("100%" ,"1*");
+			v1.add(li3);
+			
+			qx.event.message.Bus.subscribe("test.changeActiveUser",function(message){
+				this.removeAll();
+				var userObj 	= message.getData();
+				if (!userObj) return;
+				var permNames	= userObj.getPermissionNames();
+				permNames.forEach(function(permName){
+					this.add(new qx.ui.form.ListItem(permName,null,permName));
+				},this);
+			},li3);
+			
+			var i5 = new qx.ui.form.ListItem("--- Click on user first ---",null,null);
+			li3.add(i5);
+			
+			var v2 = new qx.ui.layout.VerticalBoxLayout();
+			v2.setWidth("2*");
+			v2.setHeight("100%");
+			v2.setBackgroundColor("white");
+			m.add(v2);
+			
+			var tb1 = new qx.ui.toolbar.ToolBar();
+			tb1.setWidth("100%");
+			v2.add(tb1);
+			
+			var tbmb1 = new qx.ui.toolbar.MenuButton("Edit");
+			tb1.add(tbmb1);
+			
+			var tm1 = new qx.ui.menu.Menu();
+			tbmb1.setMenu(tm1);
+			clientDoc.add(tm1);
+			
+			var tmb1 = new qx.ui.menu.Button("Undo","icon/16/actions/edit-undo.png");
+			tmb1.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.undo");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb1);
+			tm1.add(tmb1);
+			
+			var tmb2 = new qx.ui.menu.Button("Redo","icon/16/actions/edit-redo.png");
+			tmb2.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.redo");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb2);
+			tm1.add(tmb2);
+			
+			var qx_id4514909 = new qx.ui.menu.Separator();
+			tm1.add(qx_id4514909);
+			
+			var tmb3 = new qx.ui.menu.Button("Cut","icon/16/actions/edit-cut.png");
+			
+			tmb3.addEventListener("execute",function(event)
+			{
+				test.clipboard.setData(true)
+			},tmb3);
+			tmb3.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.cut");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb3);
+			tm1.add(tmb3);
+			
+			var tmb4 = new qx.ui.menu.Button("Copy","icon/16/actions/edit-copy.png");
+			
+			tmb4.addEventListener("execute",function(event)
+			{
+				test.clipboard.setData(true)
+			},tmb4);
+			tmb4.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.copy");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb4);
+			tm1.add(tmb4);
+			
+			var tmb5 = new qx.ui.menu.Button("Paste","icon/16/actions/edit-paste.png");
+			
+			tmb5.addEventListener("execute",function(event)
+			{
+				test.clipboard.setData(false)
+			},tmb5);
+			tmb5.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.paste");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb5);
+			tm1.add(tmb5);
+			
+			var tmb6 = new qx.ui.menu.Button("Delete","icon/16/actions/edit-delete.png");
+			tmb6.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.delete");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb6);
+			tm1.add(tmb6);
+			
+			var qx_id4514971 = new qx.ui.menu.Separator();
+			tm1.add(qx_id4514971);
+			
+			var tmb7 = new qx.ui.menu.Button("Select All",null);
+			tm1.add(tmb7);
+			
+			var tmb8 = new qx.ui.menu.Button("Find","icon/16/actions/edit-find.png");
+			tmb8.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.find");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb8);
+			tm1.add(tmb8);
+			
+			var tmb9 = new qx.ui.menu.Button("Find Again",null);
+			tmb9.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.findAgain");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb9);
+			tm1.add(tmb9);
+			
+			var tbmb2 = new qx.ui.toolbar.MenuButton("Options");
+			tb1.add(tbmb2);
+			
+			var tm2 = new qx.ui.menu.Menu();
+			tbmb2.setMenu(tm2);
+			clientDoc.add(tm2);
+			
+			var tmb10 = new qx.ui.menu.Button("Plug-Ins (Admin)",null);
+			tmb10.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.application.plugins.manage");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb10);
+			tm2.add(tmb10);
+			
+			var tmb11 = new qx.ui.menu.Button("Preferences","icon/16/apps/preferences.png");
+			tmb11.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.preferences.edit");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tmb11);
+			tm2.add(tmb11);
+			
+			var tb2 = new qx.ui.toolbar.ToolBar();
+			tb2.setWidth("auto");
+			tb2.setHeight("auto");
+			v2.add(tb2);
+			
+			var tbp1 = new qx.ui.toolbar.Part();
+			tb2.add(tbp1);
+			
+			var tbb1 = new qx.ui.toolbar.Button("New","icon/22/actions/document-new.png");
+			tbb1.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.new");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb1);
+			tbp1.add(tbb1);
+			
+			var tbb2 = new qx.ui.toolbar.Button("Delete","icon/22/actions/edit-delete.png");
+			tbb2.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.delete");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb2);
+			tbp1.add(tbb2);
+			
+			var qx_id4515072 = new qx.ui.toolbar.Separator();
+			tbp1.add(qx_id4515072);
+			
+			var tbb3 = new qx.ui.toolbar.Button("Copy","icon/22/actions/edit-copy.png");
+			
+			tbb3.addEventListener("execute",function(event)
+			{
+			test.clipboard.setData(true)
+			},tbb3);
+			tbb3.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.copy");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb3);
+			tbp1.add(tbb3);
+			
+			var tbb4 = new qx.ui.toolbar.Button("Cut","icon/22/actions/edit-cut.png");
+			
+			tbb4.addEventListener("execute",function(event)
+			{
+			test.clipboard.setData(true)
+			},tbb4);
+			tbb4.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.cut");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb4);
+			tbp1.add(tbb4);
+			
+			var tbb5 = new qx.ui.toolbar.Button("Paste","icon/22/actions/edit-paste.png");
+			
+			tbb5.addEventListener("execute",function(event)
+			{
+			test.clipboard.setData(false)
+			},tbb5);
+			tbb5.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.edit.paste");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb5);
+			tbp1.add(tbb5);
+			
+			var tbp2 = new qx.ui.toolbar.Part();
+			tb2.add(tbp2);
+			
+			var tbb20 = new qx.ui.toolbar.Button("Preferences","icon/22/apps/preferences.png");
+			tbb20.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.permissions.preferences.edit");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb20);
+			tbp2.add(tbb20);
+			
+			var tbb21 = new qx.ui.toolbar.Button("Manage Plug-Ins (Admin)",null);
+			tbb21.setEnabled(false);
+			var __p = qcl.auth.permission.Manager.getInstance().getByName("test.application.plugins.manage");
+			if(__p) __p.addEventListener("changeState",function(e){this.setEnabled(e.getData())},tbb21);
+			tbp2.add(tbb21);
+    });
+  </script>
+</body>
+</html>

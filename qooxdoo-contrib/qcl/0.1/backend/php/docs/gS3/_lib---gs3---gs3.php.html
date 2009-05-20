@@ -1,0 +1,221 @@
+<html>
+<head>
+<title>Docs for page gs3.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">gS3</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                            
+                                                  		  [ <a href="../classtrees_gS3.html" class="menu">class tree: gS3</a> ]
+		  [ <a href="../elementindex_gS3.html" class="menu">index: gS3</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../gS3/_lib---gs3---gs3.php.html">		gs3.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../gS3/gs3_IO.html">gs3_IO</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Procedural File: gs3.php</h1>
+Source Location: /lib/gs3/gs3.php<br /><br />
+
+<br>
+<br>
+
+<div class="contents">
+<h2>Classes:</h2>
+<dt><a href="../gS3/gs3_IO.html">gs3_IO</a></dt>
+	<dd>Simple Storage Service stream wrapper</dd>
+</div><br /><br />
+
+<h2>Page Details:</h2>
+Class that is a PHP Stream wrapper<br /><br /><p>This class register a stream wapper called &quot;s3&quot;.     With this you could write, read, delete files and also     create and delete directories (buckets) as you do with     your local filesytem.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Cesar D. Rodas &lt;<a href="mailto:saddor@gmail.com">saddor@gmail.com</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0</td>
+  </tr>
+  <tr>
+    <td><b>copyright:</b>&nbsp;&nbsp;</td><td>2007 Cesar D. Rodas</td>
+  </tr>
+  <tr>
+    <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://cesars.users.phpclasses.org/gs3">http://cesars.users.phpclasses.org/gs3</a></td>
+  </tr>
+  <tr>
+    <td><b>filesource:</b>&nbsp;&nbsp;</td><td><a href="../__filesource/fsource_gS3__libgs3gs3.php.html">Source Code for this file</a></td>
+  </tr>
+  <tr>
+    <td><b>license:</b>&nbsp;&nbsp;</td><td><a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+<h4>Includes:</h4>
+<div class="tags">
+require_once($include_dir."/http.php") [line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a22">22</a>]<br />
+require_once($include_dir."/hash.php") [line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a21">21</a>]<br />
+Class that is a PHP Stream wrapper<br /><br /><p>This class register a stream wapper called &quot;s3&quot;.     With this you could write, read, delete files and also     create and delete directories (buckets) as you do with     your local filesytem.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Cesar D. Rodas &lt;<a href="mailto:saddor@gmail.com">saddor@gmail.com</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>1.0</td>
+  </tr>
+  <tr>
+    <td><b>copyright:</b>&nbsp;&nbsp;</td><td>2007 Cesar D. Rodas</td>
+  </tr>
+  <tr>
+    <td><b>link:</b>&nbsp;&nbsp;</td><td><a href="http://cesars.users.phpclasses.org/gs3">http://cesars.users.phpclasses.org/gs3</a></td>
+  </tr>
+  <tr>
+    <td><b>license:</b>&nbsp;&nbsp;</td><td><a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a></td>
+  </tr>
+</table>
+</div>
+</div>
+<br /><br />
+<br /><br />
+  <hr />
+	<a name="defineREAD"></a>
+	<h3>READ <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a43">43</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>READ = 'r'</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    fopen: Read a file.<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineWRITE"></a>
+	<h3>WRITE <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a47">47</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>WRITE = 'w'</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    fopen: Write a file as private<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineWRITE_PUBLIC"></a>
+	<h3>WRITE_PUBLIC <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a51">51</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>WRITE_PUBLIC = 'w+r'</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    fopen: Write a file as Public read.<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineWRITE_PUBLIC_WRITE"></a>
+	<h3>WRITE_PUBLIC_WRITE <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a55">55</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>WRITE_PUBLIC_WRITE = 'w+w'</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    fopen: Write a file as Public write.<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="define_PRIVATE"></a>
+	<h3>_PRIVATE <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a27">27</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>_PRIVATE = 1</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    mkdir: Only the owner could have access<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="define_PUBLIC_READ"></a>
+	<h3>_PUBLIC_READ <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a33">33</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>_PUBLIC_READ = 2</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    mkdir: Only the owner could write, but every one could     read.<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="define_PUBLIC_WRITE"></a>
+	<h3>_PUBLIC_WRITE <span class="smalllinenumber">[line <a href="../__filesource/fsource_gS3__libgs3gs3.php.html#a38">38</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>_PUBLIC_WRITE = 3</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    mkdir: Any one could read or write<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+<br />
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:17:45 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

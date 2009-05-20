@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>File Source for substr_replace.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">utf8</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                                                
+                              		  [ <a href="../classtrees_utf8.html" class="menu">class tree: utf8</a> ]
+		  [ <a href="../elementindex_utf8.html" class="menu">index: utf8</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                  
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1 align="center">Source for file substr_replace.php</h1>
+<p>Documentation is available at <a href="../utf8/strings/_lib---punbb_utf8---substr_replace.php.html">substr_replace.php</a></p>
+<div class="src-code">
+<ol><li><div class="src-line"><a name="a1"></a><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line"><a name="a2"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a3"></a><span class="src-comm">*&nbsp;@version&nbsp;$Id:&nbsp;substr_replace.php,v&nbsp;1.1&nbsp;2006/02/25&nbsp;13:50:17&nbsp;harryf&nbsp;Exp&nbsp;$</span></div></li>
+<li><div class="src-line"><a name="a4"></a><span class="src-comm">*&nbsp;@package&nbsp;utf8</span></div></li>
+<li><div class="src-line"><a name="a5"></a><span class="src-comm">*&nbsp;@subpackage&nbsp;strings</span></div></li>
+<li><div class="src-line"><a name="a6"></a><span class="src-comm">*/</span></div></li>
+<li><div class="src-line"><a name="a7"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a8"></a><span class="src-comm">//---------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a9"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a10"></a><span class="src-comm">*&nbsp;UTF-8&nbsp;aware&nbsp;substr_replace.</span></div></li>
+<li><div class="src-line"><a name="a11"></a><span class="src-comm">*&nbsp;Note:&nbsp;requires&nbsp;utf8_substr&nbsp;to&nbsp;be&nbsp;loaded</span></div></li>
+<li><div class="src-line"><a name="a12"></a><span class="src-comm">*&nbsp;@see&nbsp;http://www.php.net/substr_replace</span></div></li>
+<li><div class="src-line"><a name="a13"></a><span class="src-comm">*&nbsp;@see&nbsp;utf8_strlen</span></div></li>
+<li><div class="src-line"><a name="a14"></a><span class="src-comm">*&nbsp;@see&nbsp;utf8_substr</span></div></li>
+<li><div class="src-line"><a name="a15"></a><span class="src-comm">*/</span></div></li>
+<li><div class="src-line"><a name="a16"></a><span class="src-key">function&nbsp;</span><a href="../utf8/strings/_lib---punbb_utf8---substr_replace.php.html#functionutf8_substr_replace">utf8_substr_replace</a><span class="src-sym">(</span><span class="src-var">$str</span><span class="src-sym">,&nbsp;</span><span class="src-var">$repl</span><span class="src-sym">,&nbsp;</span><span class="src-var">$start&nbsp;</span><span class="src-sym">,&nbsp;</span><span class="src-var">$length&nbsp;</span>=&nbsp;<span class="src-id">NULL&nbsp;</span><span class="src-sym">)&nbsp;</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a17"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/preg_match_all">preg_match_all</a><span class="src-sym">(</span><span class="src-str">'/./us'</span><span class="src-sym">,&nbsp;</span><span class="src-var">$str</span><span class="src-sym">,&nbsp;</span><span class="src-var">$ar</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a18"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/preg_match_all">preg_match_all</a><span class="src-sym">(</span><span class="src-str">'/./us'</span><span class="src-sym">,&nbsp;</span><span class="src-var">$repl</span><span class="src-sym">,&nbsp;</span><span class="src-var">$rar</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a19"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if</span><span class="src-sym">(&nbsp;</span><span class="src-var">$length&nbsp;</span>===&nbsp;<span class="src-id">NULL&nbsp;</span><span class="src-sym">)&nbsp;</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a20"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$length&nbsp;</span>=&nbsp;<a href="../utf8/strings/_lib---punbb_utf8---mbstring---core.php.html#functionutf8_strlen">utf8_strlen</a><span class="src-sym">(</span><span class="src-var">$str</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a21"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a22"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/array_splice">array_splice</a><span class="src-sym">(&nbsp;</span><span class="src-var">$ar</span><span class="src-sym">[</span><span class="src-num">0</span><span class="src-sym">]</span><span class="src-sym">,&nbsp;</span><span class="src-var">$start</span><span class="src-sym">,&nbsp;</span><span class="src-var">$length</span><span class="src-sym">,&nbsp;</span><span class="src-var">$rar</span><span class="src-sym">[</span><span class="src-num">0</span><span class="src-sym">]&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a23"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><a href="http://www.php.net/join">join</a><span class="src-sym">(</span><span class="src-str">''</span><span class="src-sym">,</span><span class="src-var">$ar</span><span class="src-sym">[</span><span class="src-num">0</span><span class="src-sym">]</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a24"></a><span class="src-sym">}</span></div></li>
+</ol>
+</div>
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:19:41 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
