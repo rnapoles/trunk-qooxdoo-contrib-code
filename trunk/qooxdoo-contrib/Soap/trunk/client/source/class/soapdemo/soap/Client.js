@@ -118,7 +118,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                 retval = this.__extract(node.childNodes[0],retval_type_node);
             }
             else { // no types section so get the type directly from the message part node
-                var part_node = ssn(this.__wsdl,"/a:definitions/a:message[@name='"+node.baseName+"']/a:part[1]", nsmap);
+                var part_node = ssn(this.__wsdl,"/a:definitions/a:message[@name='"+(node.localName || node.baseName)+"']/a:part[1]", nsmap);
                 retval = this.__extract(node.childNodes[0],part_node);
             }
 
