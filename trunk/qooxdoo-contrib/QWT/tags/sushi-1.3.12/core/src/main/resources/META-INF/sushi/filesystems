@@ -1,0 +1,6 @@
+org.qooxdoo.sushi.fs.console.ConsoleFilesystem
+org.qooxdoo.sushi.fs.file.FileFilesystem
+org.qooxdoo.sushi.fs.http.HttpFilesystem
+org.qooxdoo.sushi.fs.memory.MemoryFilesystem
+org.qooxdoo.sushi.fs.resource.ResourceFilesystem
+org.qooxdoo.sushi.fs.zip.ZipFilesystem
