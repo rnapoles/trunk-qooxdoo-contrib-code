@@ -1,0 +1,146 @@
+<html>
+<head>
+<title>File Source for ModelTableInfo.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                                                                                          		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                  
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1 align="center">Source for file ModelTableInfo.php</h1>
+<p>Documentation is available at <a href="../qcl/_db---ModelTableInfo.php.html">ModelTableInfo.php</a></p>
+<div class="src-code">
+<ol><li><div class="src-line"><a name="a1"></a><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line"><a name="a2"></a><span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a3"></a><span class="src-comm">&nbsp;*&nbsp;dependencies</span></div></li>
+<li><div class="src-line"><a name="a4"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a5"></a><span class="src-inc">require_once&nbsp;</span><span class="src-str">&quot;qcl/db/PersistentObject.php&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a6"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a7"></a><span class="src-key">class&nbsp;</span><a href="../qcl/qcl_db_ModelTableInfo.html">qcl_db_ModelTableInfo</a>&nbsp;<span class="src-key">extends&nbsp;</span><a href="../qcl/qcl_db_PersistentObject.html">qcl_db_PersistentObject</a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a8"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a9"></a>&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a10"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;data</span></div></li>
+<li><div class="src-line"><a name="a11"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;array</span></div></li>
+<li><div class="src-line"><a name="a12"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a13"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_db_ModelTableInfo.html#var$data">$data</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a14"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a15"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a16"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Constructor.&nbsp;Reconstructs&nbsp;object&nbsp;properties</span></div></li>
+<li><div class="src-line"><a name="a17"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;qcl_jsonrpc_controller&nbsp;$controller</span></div></li>
+<li><div class="src-line"><a name="a18"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a19"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_ModelTableInfo.html#method__construct">__construct</a><span class="src-sym">(&nbsp;</span><span class="src-var">$controller&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a20"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a21"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a22"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;call&nbsp;parent&nbsp;contructor</span></div></li>
+<li><div class="src-line"><a name="a23"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a24"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-id">parent</span><span class="src-sym">::</span><span class="src-id">__construct</span><span class="src-sym">(&nbsp;</span><span class="src-sym">&amp;</span><span class="src-var">$controller</span><span class="src-sym">,&nbsp;</span>__CLASS__&nbsp;<span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a25"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a26"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a27"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a28"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Register&nbsp;initialization&nbsp;timestamp&nbsp;for&nbsp;table&nbsp;and&nbsp;datasource</span></div></li>
+<li><div class="src-line"><a name="a29"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a30"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;qcl_datasource_type_db_Model&nbsp;$datasourceModel&nbsp;Datasource&nbsp;model&nbsp;object&nbsp;or&nbsp;null&nbsp;if&nbsp;not&nbsp;connected</span></div></li>
+<li><div class="src-line"><a name="a31"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$table</span></div></li>
+<li><div class="src-line"><a name="a32"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$class</span></div></li>
+<li><div class="src-line"><a name="a33"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;$timestamp</span></div></li>
+<li><div class="src-line"><a name="a34"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a35"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a36"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_ModelTableInfo.html#methodregisterInitialized">registerInitialized</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel</span><span class="src-sym">,&nbsp;</span><span class="src-var">$table</span><span class="src-sym">,&nbsp;</span><span class="src-var">$class</span><span class="src-sym">,&nbsp;</span><span class="src-var">$timestamp&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a37"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a38"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$datasource&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_ModelTableInfo.html#method_getDatasourceName">_getDatasourceName</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_ModelTableInfo.html#var$data">data</a><span class="src-sym">[</span><span class="src-var">$datasource</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$class</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$table</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-var">$timestamp</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a40"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentObject.html#methodsave">save</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a41"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a42"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a43"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_model.html#methodinfo">info</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">Registered</span>&nbsp;<span class="src-id">table</span>&nbsp;'<span class="src-var">$table</span>'&nbsp;<span class="src-id">for</span>&nbsp;<span class="src-id">class</span>&nbsp;'<span class="src-var">$class</span>'&nbsp;<span class="src-id">and</span>&nbsp;<span class="src-id">datasource</span>&nbsp;'<span class="src-var">$datasource</span>'&nbsp;<span class="src-id">as</span>&nbsp;<span class="src-id">initialized</span>&nbsp;(<span class="src-id">timestamp</span>&nbsp;<span class="src-var">$timestamp</span>).</span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a44"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a45"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a46"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a47"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_model.html#methodinfo">info</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">Registered</span>&nbsp;<span class="src-id">table</span>&nbsp;'<span class="src-var">$table</span>'&nbsp;<span class="src-id">class</span>&nbsp;'<span class="src-var">$class</span>'&nbsp;<span class="src-id">as</span>&nbsp;<span class="src-id">initialized</span>&nbsp;(<span class="src-id">timestamp</span>&nbsp;<span class="src-var">$timestamp</span>).</span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a48"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a49"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a50"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a51"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a52"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Checks&nbsp;if&nbsp;initialization&nbsp;of&nbsp;table&nbsp;and&nbsp;datasource</span></div></li>
+<li><div class="src-line"><a name="a53"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a54"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;qcl_datasource_type_db_Model&nbsp;$datasourceModel&nbsp;Datasource&nbsp;model&nbsp;object&nbsp;or&nbsp;null&nbsp;if&nbsp;not&nbsp;connected</span></div></li>
+<li><div class="src-line"><a name="a55"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$table</span></div></li>
+<li><div class="src-line"><a name="a56"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$class</span></div></li>
+<li><div class="src-line"><a name="a57"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$timestamp</span></div></li>
+<li><div class="src-line"><a name="a58"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;bool</span></div></li>
+<li><div class="src-line"><a name="a59"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a60"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_ModelTableInfo.html#methodisInitialized">isInitialized</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel</span><span class="src-sym">,&nbsp;</span><span class="src-var">$table</span><span class="src-sym">,&nbsp;</span><span class="src-var">$class</span><span class="src-sym">,&nbsp;</span><span class="src-var">$timestamp&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a61"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a62"></a>&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a63"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$datasource&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_ModelTableInfo.html#method_getDatasourceName">_getDatasourceName</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a64"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_ModelTableInfo.html#var$data">data</a><span class="src-sym">[</span><span class="src-var">$datasource</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$class</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$table</span><span class="src-sym">]&nbsp;</span>==&nbsp;<span class="src-var">$timestamp</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a65"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a66"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a67"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a68"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;string&nbsp;name&nbsp;of&nbsp;the&nbsp;datasource&nbsp;model&nbsp;object</span></div></li>
+<li><div class="src-line"><a name="a69"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;qcl_datasource_type_db_Model&nbsp;$datasourceModel&nbsp;Datasource&nbsp;model&nbsp;object&nbsp;or&nbsp;null&nbsp;if&nbsp;not&nbsp;connected</span></div></li>
+<li><div class="src-line"><a name="a70"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a71"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a72"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_ModelTableInfo.html#method_getDatasourceName">_getDatasourceName</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a73"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a74"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_null">is_null</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel&nbsp;</span><span class="src-sym">)&nbsp;&nbsp;)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a75"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a76"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-str">&quot;__NO_DATASOURCE&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a77"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a78"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">elseif&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_a">is_a</a><span class="src-sym">(&nbsp;</span><span class="src-var">$datasourceModel</span><span class="src-sym">,&nbsp;</span><span class="src-str">&quot;qcl_datasource_type_db_Model&quot;&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a79"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a80"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$datasourceModel</span><span class="src-sym">-&gt;</span><span class="src-id">getDatasourceName</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a81"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a82"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a83"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a84"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">Invalid</span>&nbsp;<span class="src-id">parameter</span>:&nbsp;<span class="src-var">$datasourceModel</span></span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a85"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a86"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a87"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a88"></a><span class="src-sym">}</span></div></li>
+</ol>
+</div>
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:18:34 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

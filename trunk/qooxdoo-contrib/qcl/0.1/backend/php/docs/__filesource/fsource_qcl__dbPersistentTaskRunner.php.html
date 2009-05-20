@@ -1,0 +1,222 @@
+<html>
+<head>
+<title>File Source for PersistentTaskRunner.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                                                                                          		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                  
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1 align="center">Source for file PersistentTaskRunner.php</h1>
+<p>Documentation is available at <a href="../qcl/_db---PersistentTaskRunner.php.html">PersistentTaskRunner.php</a></p>
+<div class="src-code">
+<ol><li><div class="src-line"><a name="a1"></a><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line"><a name="a2"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a3"></a><span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a4"></a><span class="src-comm">&nbsp;*&nbsp;dependencies</span></div></li>
+<li><div class="src-line"><a name="a5"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a6"></a><span class="src-inc">require_once&nbsp;</span><span class="src-str">&quot;qcl/db/PersistentObject.php&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a7"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a8"></a><span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a9"></a><span class="src-comm">&nbsp;*&nbsp;Class&nbsp;to&nbsp;run&nbsp;tasks&nbsp;that&nbsp;need&nbsp;to&nbsp;be&nbsp;distributed&nbsp;over&nbsp;a&nbsp;whole&nbsp;series&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a10"></a><span class="src-comm">&nbsp;*&nbsp;of&nbsp;requests.</span></div></li>
+<li><div class="src-line"><a name="a11"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a12"></a><span class="src-key">class&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html">qcl_db_PersistentTaskRunner</a>&nbsp;<span class="src-key">extends&nbsp;</span><a href="../qcl/qcl_db_PersistentObject.html">qcl_db_PersistentObject</a></div></li>
+<li><div class="src-line"><a name="a13"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a14"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a15"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a16"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Counter&nbsp;for&nbsp;the&nbsp;different&nbsp;tasks</span></div></li>
+<li><div class="src-line"><a name="a17"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;class&nbsp;has&nbsp;to&nbsp;perform</span></div></li>
+<li><div class="src-line"><a name="a18"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a19"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$taskNumber">$taskNumber</a>&nbsp;=&nbsp;<span class="src-num">0</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a20"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a21"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a22"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Flag&nbsp;indicating&nbsp;that&nbsp;sync&nbsp;has&nbsp;completed</span></div></li>
+<li><div class="src-line"><a name="a23"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;bool</span></div></li>
+<li><div class="src-line"><a name="a24"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a25"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$completed">$completed</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a26"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a27"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a28"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Maximum&nbsp;execution&nbsp;time&nbsp;for&nbsp;the&nbsp;task&nbsp;before</span></div></li>
+<li><div class="src-line"><a name="a29"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;returning&nbsp;control&nbsp;to&nbsp;the&nbsp;client</span></div></li>
+<li><div class="src-line"><a name="a30"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a31"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$maxExecTime">$maxExecTime</a>&nbsp;=&nbsp;<span class="src-num">3</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a32"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a33"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a34"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Timestamp&nbsp;for&nbsp;maximum&nbsp;execution&nbsp;time</span></div></li>
+<li><div class="src-line"><a name="a35"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;int</span></div></li>
+<li><div class="src-line"><a name="a36"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@access&nbsp;private</span></div></li>
+<li><div class="src-line"><a name="a37"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a38"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><span class="src-var">$_endTime</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a40"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a41"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Flag&nbsp;to&nbsp;indicate&nbsp;that&nbsp;process&nbsp;has&nbsp;been&nbsp;interrupted</span></div></li>
+<li><div class="src-line"><a name="a42"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;a&nbsp;different&nbsp;process.&nbsp;Not&nbsp;yet&nbsp;implemented</span></div></li>
+<li><div class="src-line"><a name="a43"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a44"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a45"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$interrupted">$interrupted</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a46"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a47"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a48"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a49"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Configures&nbsp;the&nbsp;persistent&nbsp;object</span></div></li>
+<li><div class="src-line"><a name="a50"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a51"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodconfigure">configure</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a52"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a53"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;Not&nbsp;implemented&nbsp;by&nbsp;class&nbsp;&quot;&nbsp;</span>.&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">getClassName</span><span class="src-sym">(</span><span class="src-sym">)&nbsp;)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a54"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a55"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a56"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a57"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Runs&nbsp;the&nbsp;current&nbsp;task&nbsp;according&nbsp;to&nbsp;the&nbsp;::taskNumber&nbsp;counter&nbsp;by&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a58"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;calling&nbsp;a&nbsp;&quot;::task_X()&quot;&nbsp;method,&nbsp;X&nbsp;being&nbsp;the&nbsp;current&nbsp;task&nbsp;number.</span></div></li>
+<li><div class="src-line"><a name="a59"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;êf&nbsp;the&nbsp;counter&nbsp;points&nbsp;to&nbsp;a&nbsp;non-existing&nbsp;task&nbsp;method,&nbsp;the&nbsp;tasks&nbsp;are&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a60"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;assumed&nbsp;to&nbsp;be&nbsp;finished&nbsp;and&nbsp;true&nbsp;is&nbsp;returned.</span></div></li>
+<li><div class="src-line"><a name="a61"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed&nbsp;True&nbsp;if&nbsp;all&nbsp;tasks&nbsp;are&nbsp;completed&nbsp;without&nbsp;error,</span></div></li>
+<li><div class="src-line"><a name="a62"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;false&nbsp;if&nbsp;an&nbsp;error&nbsp;occurred,&nbsp;and&nbsp;string&nbsp;if&nbsp;tasks&nbsp;are&nbsp;still&nbsp;running.</span></div></li>
+<li><div class="src-line"><a name="a63"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a64"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodrun">run</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a65"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a66"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a67"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;switch&nbsp;to&nbsp;first&nbsp;task</span></div></li>
+<li><div class="src-line"><a name="a68"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a69"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$taskNumber">taskNumber</a>&nbsp;<span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a70"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a71"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$taskNumber">taskNumber</a>&nbsp;=&nbsp;<span class="src-num">1</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a72"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a73"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a74"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a75"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@todo&nbsp;Check&nbsp;for&nbsp;interrupt</span></div></li>
+<li><div class="src-line"><a name="a76"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a77"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a78"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a79"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a80"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;max&nbsp;execution&nbsp;time</span></div></li>
+<li><div class="src-line"><a name="a81"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a82"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">_endTime&nbsp;</span>=&nbsp;<a href="http://www.php.net/time">time</a><span class="src-sym">(</span><span class="src-sym">)&nbsp;</span>+&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$maxExecTime">maxExecTime</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a83"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a84"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a85"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;execute&nbsp;task&nbsp;until&nbsp;maximum&nbsp;execution&nbsp;time&nbsp;is&nbsp;over</span></div></li>
+<li><div class="src-line"><a name="a86"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;or&nbsp;task&nbsp;exits&nbsp;with&nbsp;a&nbsp;boolean&nbsp;value&nbsp;(true:&nbsp;all&nbsp;completed,&nbsp;false:&nbsp;error)</span></div></li>
+<li><div class="src-line"><a name="a87"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a88"></a>&nbsp;&nbsp;&nbsp;&nbsp;do</div></li>
+<li><div class="src-line"><a name="a89"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a90"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a91"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;execute&nbsp;task&nbsp;method&nbsp;if&nbsp;it&nbsp;exists</span></div></li>
+<li><div class="src-line"><a name="a92"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a93"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$methodName&nbsp;</span>=&nbsp;<span class="src-str">&quot;task_&quot;&nbsp;</span>.&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$taskNumber">taskNumber</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a94"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//$this-&gt;info(&quot;Time&nbsp;:&quot;&nbsp;.&nbsp;time()&nbsp;.&nbsp;&quot;,&nbsp;End&nbsp;time&nbsp;$this-&gt;_endTime&quot;&nbsp;);</span></div></li>
+<li><div class="src-line"><a name="a95"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//$this-&gt;info(&quot;Running&nbsp;$methodName()&quot;);</span></div></li>
+<li><div class="src-line"><a name="a96"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_core_object.html#methodhasMethod">hasMethod</a><span class="src-sym">(</span><span class="src-var">$methodName</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a97"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a98"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$result&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">$methodName</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a99"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a100"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a101"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a102"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$completed">completed</a>&nbsp;=&nbsp;<span class="src-id">true</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a103"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">true</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a104"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a105"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a106"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">while&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_bool">is_bool</a><span class="src-sym">(</span><span class="src-var">$result</span><span class="src-sym">)&nbsp;</span><span class="src-key">or&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodtaskTimeout">taskTimeout</a><span class="src-sym">(</span><span class="src-sym">)&nbsp;)&nbsp;)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a107"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a108"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a109"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Return&nbsp;value&nbsp;is&nbsp;true&nbsp;if&nbsp;all&nbsp;tasks&nbsp;are&nbsp;completed&nbsp;without&nbsp;error,</span></div></li>
+<li><div class="src-line"><a name="a110"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;false&nbsp;if&nbsp;an&nbsp;error&nbsp;occurred,&nbsp;and&nbsp;string&nbsp;if&nbsp;tasks&nbsp;are&nbsp;still&nbsp;running.</span></div></li>
+<li><div class="src-line"><a name="a111"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;string&nbsp;is&nbsp;sent&nbsp;as&nbsp;a&nbsp;status&nbsp;message&nbsp;to&nbsp;the&nbsp;server.&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a112"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a113"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$result&nbsp;</span>===&nbsp;<span class="src-id">true&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a114"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a115"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$completed">completed</a>&nbsp;=&nbsp;<span class="src-id">true</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a116"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a117"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$result</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a118"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a119"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a120"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a121"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;true&nbsp;if&nbsp;the&nbsp;script&nbsp;has&nbsp;consumed&nbsp;more&nbsp;time&nbsp;than&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a122"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;maximum&nbsp;execution&nbsp;time</span></div></li>
+<li><div class="src-line"><a name="a123"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a124"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;bool</span></div></li>
+<li><div class="src-line"><a name="a125"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a126"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodtaskTimeout">taskTimeout</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a127"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a128"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><a href="http://www.php.net/time">time</a><span class="src-sym">(</span><span class="src-sym">)&nbsp;</span>&gt;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">_endTime</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a129"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a130"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a131"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a132"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Switch&nbsp;to&nbsp;next&nbsp;task&nbsp;on&nbsp;next&nbsp;request&nbsp;and&nbsp;return&nbsp;message&nbsp;to&nbsp;client</span></div></li>
+<li><div class="src-line"><a name="a133"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$message</span></div></li>
+<li><div class="src-line"><a name="a134"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a135"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a136"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodendTask">endTask</a><span class="src-sym">(</span><span class="src-var">$message</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a137"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a138"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//$this-&gt;info(&quot;End&nbsp;task&nbsp;with&nbsp;'$message'&quot;);</span></div></li>
+<li><div class="src-line"><a name="a139"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$taskNumber">taskNumber</a>++<span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a140"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$message</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a141"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a142"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a143"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a144"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Abort&nbsp;with&nbsp;error</span></div></li>
+<li><div class="src-line"><a name="a145"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$message</span></div></li>
+<li><div class="src-line"><a name="a146"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;boolean&nbsp;false</span></div></li>
+<li><div class="src-line"><a name="a147"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a148"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodabort">abort</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$message&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a149"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a150"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_core_object.html#methodsetError">setError</a><span class="src-sym">(&nbsp;</span><span class="src-var">$message&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a151"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">false</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a152"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a153"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a154"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a155"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;true&nbsp;if&nbsp;all&nbsp;tasks&nbsp;have&nbsp;completed.</span></div></li>
+<li><div class="src-line"><a name="a156"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;bool</span></div></li>
+<li><div class="src-line"><a name="a157"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a158"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#methodisCompleted">isCompleted</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a159"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a160"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_PersistentTaskRunner.html#var$completed">completed</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a161"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a162"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a163"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a164"></a><span class="src-php">?&gt;</span></div></li>
+</ol>
+</div>
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:18:58 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

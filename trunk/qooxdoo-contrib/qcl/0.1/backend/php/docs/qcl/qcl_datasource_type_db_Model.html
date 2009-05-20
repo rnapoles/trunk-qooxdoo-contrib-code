@@ -1,0 +1,2419 @@
+<html>
+<head>
+<title>Docs For Class qcl_datasource_type_db_Model</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                                                                                          		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../qcl/_plugin---abstract.php.html">		abstract.php
+		</a><br>
+			<a href="../qcl/_db---type---Abstract.php.html">		Abstract.php
+		</a><br>
+			<a href="../qcl/_lang---ArrayList.php.html">		ArrayList.php
+		</a><br>
+			<a href="../qcl/_application---Client.php.html">		Client.php
+		</a><br>
+			<a href="../qcl/_access---common.php.html">		common.php
+		</a><br>
+			<a href="../qcl/_config---config.php.html">		config.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_datasource---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_session---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_access---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_application---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_db---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_encoding---converter.php.html">		converter.php
+		</a><br>
+			<a href="../qcl/_lib---curl---curl.php4.html">		curl.php4
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---Datasource.php.html">		Datasource.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---Datasource.php.html">		Datasource.php
+		</a><br>
+			<a href="../qcl/_session---db.model.php.html">		db.model.php
+		</a><br>
+			<a href="../qcl/_message---db.model.php.html">		db.model.php
+		</a><br>
+			<a href="../qcl/_plugin---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_config---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---dispatcher.php.html">		dispatcher.php
+		</a><br>
+			<a href="../qcl/_lib---gs3---example.php.html">		example.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---File.php.html">		File.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---File.php.html">		File.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---Folder.php.html">		Folder.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---Folder.php.html">		Folder.php
+		</a><br>
+			<a href="../qcl/_core---functions.php.html">		functions.php
+		</a><br>
+			<a href="../qcl/_lib---gs3---http.php.html">		http.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---IFile.php.html">		IFile.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---IFolder.php.html">		IFolder.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---IResource.php.html">		IResource.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---JsonRpcError.php.html">		JsonRpcError.php
+		</a><br>
+			<a href="../qcl/_http---JsonRpcRequest.php.html">		JsonRpcRequest.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---json_wrapper.php.html">		json_wrapper.php
+		</a><br>
+			<a href="../qcl/_databinding---widgets---qx---ui---form---List.php.html">		List.php
+		</a><br>
+			<a href="../qcl/_log---Logger.php.html">		Logger.php
+		</a><br>
+			<a href="../qcl/_locale---manager.php.html">		manager.php
+		</a><br>
+			<a href="../qcl/_databinding---widgets---qx---ui---menu---Menu.php.html">		Menu.php
+		</a><br>
+			<a href="../qcl/_tool---migration.php.html">		migration.php
+		</a><br>
+			<a href="../qcl/_core---mixin.php.html">		mixin.php
+		</a><br>
+			<a href="../qcl/_db---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_datasource---type---z3950---Model.php.html">		Model.php
+		</a><br>
+			<a href="../qcl/_xml---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_datasource---type---db---Model.php.html">		Model.php
+		</a><br>
+			<a href="../qcl/_db---ModelTableInfo.php.html">		ModelTableInfo.php
+		</a><br>
+			<a href="../qcl/_locale---model_qooxdoo.php.html">		model_qooxdoo.php
+		</a><br>
+			<a href="../qcl/_db---type---Mysql.php.html">		Mysql.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_core---object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_registry---PageLoad.php.html">		PageLoad.php
+		</a><br>
+			<a href="../qcl/_xml---lib---parser_php4.php.html">		parser_php4.php
+		</a><br>
+			<a href="../qcl/_access---permission.php.html">		permission.php
+		</a><br>
+			<a href="../qcl/_db---PersistentModel.php.html">		PersistentModel.php
+		</a><br>
+			<a href="../qcl/_db---PersistentObject.php.html">		PersistentObject.php
+		</a><br>
+			<a href="../qcl/_core---PersistentObject.php.html">		PersistentObject.php
+		</a><br>
+			<a href="../qcl/_db---PersistentTaskRunner.php.html">		PersistentTaskRunner.php
+		</a><br>
+			<a href="../qcl/_core---PropertyModel.php.html">		PropertyModel.php
+		</a><br>
+			<a href="../qcl/_xml---reader.php.html">		reader.php
+		</a><br>
+			<a href="../qcl/_registry---Request.php.html">		Request.php
+		</a><br>
+			<a href="../qcl/_http---request.php.html">		request.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---Request.php.html">		Request.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---Resource.php.html">		Resource.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---Resource.php.html">		Resource.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---Resource.php.html">		Resource.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---Response.php.html">		Response.php
+		</a><br>
+			<a href="../qcl/_access---role.php.html">		role.php
+		</a><br>
+			<a href="../qcl/_datasource---SchemaManager.php.html">		SchemaManager.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---Server.php.html">		Server.php
+		</a><br>
+			<a href="../qcl/_access---services.php.html">		services.php
+		</a><br>
+			<a href="../qcl/_config---services.php.html">		services.php
+		</a><br>
+			<a href="../qcl/_databinding---Services.php.html">		Services.php
+		</a><br>
+			<a href="../qcl/_registry---Session.php.html">		Session.php
+		</a><br>
+			<a href="../qcl/_config---session.php.html">		session.php
+		</a><br>
+			<a href="../qcl/_system---shell.php.html">		shell.php
+		</a><br>
+			<a href="../qcl/_xml---simpleXML.php.html">		simpleXML.php
+		</a><br>
+			<a href="../qcl/_lang---String.php.html">		String.php
+		</a><br>
+			<a href="../qcl/_xml---transformer.php.html">		transformer.php
+		</a><br>
+			<a href="../qcl/_db---tree.php.html">		tree.php
+		</a><br>
+			<a href="../qcl/_databinding---tree_controller.php.html">		tree_controller.php
+		</a><br>
+			<a href="../qcl/_access---user.php.html">		user.php
+		</a><br>
+			<a href="../qcl/_lang---Utf8String.php.html">		Utf8String.php
+		</a><br>
+			<a href="../qcl/_application---utilities.php.html">		utilities.php
+		</a><br>
+			<a href="../qcl/_databinding---widgets---Widget.php.html">		Widget.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../qcl/ArrayList.html">ArrayList</a><br />
+	    		<a href="../qcl/class_qcl_tool_migration.html">class_qcl_tool_migration</a><br />
+	    		<a href="../qcl/Curl.html">Curl</a><br />
+	    		<a href="../qcl/CurlResponse.html">CurlResponse</a><br />
+	    		<a href="../qcl/http_class.html">http_class</a><br />
+	    		<a href="../qcl/JSON.html">JSON</a><br />
+	    		<a href="../qcl/JsonRpcError.html">JsonRpcError</a><br />
+	    		<a href="../qcl/qcl_access_common.html">qcl_access_common</a><br />
+	    		<a href="../qcl/qcl_access_controller.html">qcl_access_controller</a><br />
+	    		<a href="../qcl/qcl_access_permission.html">qcl_access_permission</a><br />
+	    		<a href="../qcl/qcl_access_role.html">qcl_access_role</a><br />
+	    		<a href="../qcl/qcl_access_services.html">qcl_access_services</a><br />
+	    		<a href="../qcl/qcl_access_user.html">qcl_access_user</a><br />
+	    		<a href="../qcl/qcl_application_Client.html">qcl_application_Client</a><br />
+	    		<a href="../qcl/qcl_application_controller.html">qcl_application_controller</a><br />
+	    		<a href="../qcl/qcl_application_utilities.html">qcl_application_utilities</a><br />
+	    		<a href="../qcl/qcl_config.html">qcl_config</a><br />
+	    		<a href="../qcl/qcl_config_db.html">qcl_config_db</a><br />
+	    		<a href="../qcl/qcl_config_services.html">qcl_config_services</a><br />
+	    		<a href="../qcl/qcl_config_session.html">qcl_config_session</a><br />
+	    		<a href="../qcl/qcl_core_mixin.html">qcl_core_mixin</a><br />
+	    		<a href="../qcl/qcl_core_object.html">qcl_core_object</a><br />
+	    		<a href="../qcl/qcl_core_PersistentObject.html">qcl_core_PersistentObject</a><br />
+	    		<a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a><br />
+	    		<a href="../qcl/qcl_databinding_Services.html">qcl_databinding_Services</a><br />
+	    		<a href="../qcl/qcl_databinding_tree_controller.html">qcl_databinding_tree_controller</a><br />
+	    		<a href="../qcl/qcl_databinding_widgets_qx_ui_form_List.html">qcl_databinding_widgets_qx_ui_form_List</a><br />
+	    		<a href="../qcl/qcl_databinding_widgets_qx_ui_menu_Menu.html">qcl_databinding_widgets_qx_ui_menu_Menu</a><br />
+	    		<a href="../qcl/qcl_databinding_widgets_Widget.html">qcl_databinding_widgets_Widget</a><br />
+	    		<a href="../qcl/qcl_datasource_controller.html">qcl_datasource_controller</a><br />
+	    		<a href="../qcl/qcl_datasource_SchemaManager.html">qcl_datasource_SchemaManager</a><br />
+	    		<a href="../qcl/qcl_datasource_type_db_Model.html">qcl_datasource_type_db_Model</a><br />
+	    		<a href="../qcl/qcl_datasource_type_z3950_Model.html">qcl_datasource_type_z3950_Model</a><br />
+	    		<a href="../qcl/qcl_db_controller.html">qcl_db_controller</a><br />
+	    		<a href="../qcl/qcl_db_model.html">qcl_db_model</a><br />
+	    		<a href="../qcl/qcl_db_ModelTableInfo.html">qcl_db_ModelTableInfo</a><br />
+	    		<a href="../qcl/qcl_db_PersistentModel.html">qcl_db_PersistentModel</a><br />
+	    		<a href="../qcl/qcl_db_PersistentObject.html">qcl_db_PersistentObject</a><br />
+	    		<a href="../qcl/qcl_db_PersistentTaskRunner.html">qcl_db_PersistentTaskRunner</a><br />
+	    		<a href="../qcl/qcl_db_tree.html">qcl_db_tree</a><br />
+	    		<a href="../qcl/qcl_db_type_Abstract.html">qcl_db_type_Abstract</a><br />
+	    		<a href="../qcl/qcl_db_type_Mysql.html">qcl_db_type_Mysql</a><br />
+	    		<a href="../qcl/qcl_encoding_converter.html">qcl_encoding_converter</a><br />
+	    		<a href="../qcl/qcl_http_JsonRpcRequest.html">qcl_http_JsonRpcRequest</a><br />
+	    		<a href="../qcl/qcl_http_Request.html">qcl_http_Request</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_IFile.html">qcl_io_filesystem_IFile</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_IFolder.html">qcl_io_filesystem_IFolder</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_IResource.html">qcl_io_filesystem_IResource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_Datasource.html">qcl_io_filesystem_local_Datasource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_File.html">qcl_io_filesystem_local_File</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_Folder.html">qcl_io_filesystem_local_Folder</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_Resource.html">qcl_io_filesystem_local_Resource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_Datasource.html">qcl_io_filesystem_remote_Datasource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_File.html">qcl_io_filesystem_remote_File</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_Folder.html">qcl_io_filesystem_remote_Folder</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_Resource.html">qcl_io_filesystem_remote_Resource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_Resource.html">qcl_io_filesystem_Resource</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_Request.html">qcl_jsonrpc_Request</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_Response.html">qcl_jsonrpc_Response</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_Server.html">qcl_jsonrpc_Server</a><br />
+	    		<a href="../qcl/qcl_locale_manager.html">qcl_locale_manager</a><br />
+	    		<a href="../qcl/qcl_locale_model_qooxdoo.html">qcl_locale_model_qooxdoo</a><br />
+	    		<a href="../qcl/qcl_log_Logger.html">qcl_log_Logger</a><br />
+	    		<a href="../qcl/qcl_message_db_model.html">qcl_message_db_model</a><br />
+	    		<a href="../qcl/qcl_plugin_abstract.html">qcl_plugin_abstract</a><br />
+	    		<a href="../qcl/qcl_plugin_db.html">qcl_plugin_db</a><br />
+	    		<a href="../qcl/qcl_registry_PageLoad.html">qcl_registry_PageLoad</a><br />
+	    		<a href="../qcl/qcl_registry_Request.html">qcl_registry_Request</a><br />
+	    		<a href="../qcl/qcl_registry_Session.html">qcl_registry_Session</a><br />
+	    		<a href="../qcl/qcl_session_controller.html">qcl_session_controller</a><br />
+	    		<a href="../qcl/qcl_session_db_model.html">qcl_session_db_model</a><br />
+	    		<a href="../qcl/qcl_system_shell.html">qcl_system_shell</a><br />
+	    		<a href="../qcl/qcl_xml_model.html">qcl_xml_model</a><br />
+	    		<a href="../qcl/qcl_xml_reader.html">qcl_xml_reader</a><br />
+	    		<a href="../qcl/qcl_xml_simpleXML.html">qcl_xml_simpleXML</a><br />
+	    		<a href="../qcl/qcl_xml_transformer.html">qcl_xml_transformer</a><br />
+	    		<a href="../qcl/SimpleXmlElement.html">SimpleXmlElement</a><br />
+	    		<a href="../qcl/String.html">String</a><br />
+	    		<a href="../qcl/Utf8String.html">Utf8String</a><br />
+	    		<a href="../qcl/XMLParser.html">XMLParser</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: qcl_datasource_type_db_Model</h1>
+Source Location: /datasource/type/db/Model.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre><a href="../qcl/qcl_core_object.html">qcl_core_object</a>
+   |
+   --<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a>
+      |
+      --<a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a>
+         |
+         --<a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a>
+            |
+            --<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+               |
+               --qcl_datasource_type_db_Model</pre><br />
+<div class="description">Class modeling datasource information that is stored in a</div><br /><br />
+
+
+
+
+
+
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#var$datasource">$datasource</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#var$datasourceConnectionObj">$datasourceConnectionObj</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#var$dsn">$dsn</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#var$models">$models</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#var$schemaName">$schemaName</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#var$schemaXmlPath">$schemaXmlPath</a></li>
+  </ul>
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodcreate">create</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetDatasourceConnection">getDatasourceConnection</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetDatasourceDsn">getDatasourceDsn</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetDatasourceName">getDatasourceName</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetModel">getModel</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetTablePrefix">getTablePrefix</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetUrl">getUrl</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodinitializeModels">initializeModels</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodisReadOnly">isReadOnly</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodschemaName">schemaName</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodsetModel">setModel</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#methodunusedFields">unusedFields</a></li>
+    <li><a href="../qcl/qcl_datasource_type_db_Model.html#method_checkCreate">_checkCreate</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+<td valign="top">
+<h3>Child classes:</h3>
+<div class="tags">
+<dl>
+<dt><a href="../qcl/qcl_datasource_type_z3950_Model.html">qcl_datasource_type_z3950_Model</a></dt>
+	<dd>Model for z3950 datasources</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_io_filesystem_local_Datasource.html">qcl_io_filesystem_local_Datasource</a></dt>
+	<dd>Class modeling a datasource containing files stored on the local computer.</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_io_filesystem_remote_Datasource.html">qcl_io_filesystem_remote_Datasource</a></dt>
+	<dd>Class modeling a datasource containing files stored on a remote computer.</dd>
+</dl>
+</div>
+</td>
+
+
+<td valign="top">
+<h3>Inherited Variables</h3>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_db_model.html">qcl_db_model</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_db_model.html#var$db">qcl_db_model::$db</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_db_model.html#var$linkNodes">qcl_db_model::$linkNodes</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_db_model.html#var$modelTableInfo">qcl_db_model::$modelTableInfo</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_db_model.html#var$table">qcl_db_model::$table</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$class">qcl_core_PropertyModel::$class</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$datasourceModel">qcl_core_PropertyModel::$datasourceModel</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$dataTimestamp">qcl_core_PropertyModel::$dataTimestamp</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$emptyRecord">qcl_core_PropertyModel::$emptyRecord</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$importDataPath">qcl_core_PropertyModel::$importDataPath</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$metaDataProperties">qcl_core_PropertyModel::$metaDataProperties</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$name">qcl_core_PropertyModel::$name</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$propertyNodes">qcl_core_PropertyModel::$propertyNodes</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$schemaTimestamp">qcl_core_PropertyModel::$schemaTimestamp</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$type">qcl_core_PropertyModel::$type</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$_isSearch">qcl_core_PropertyModel::$_isSearch</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_model.html#var$_controller">qcl_jsonrpc_model::$_controller</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_object.html#var$bin_path">qcl_jsonrpc_object::$bin_path</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_object.html#var$__event_db">qcl_jsonrpc_object::$__event_db</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_core_object.html">qcl_core_object</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$error">qcl_core_object::$error</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$implements">qcl_core_object::$implements</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$include">qcl_core_object::$include</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$isNew">qcl_core_object::$isNew</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$isPersistent">qcl_core_object::$isPersistent</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$_logger">qcl_core_object::$_logger</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$_mixinlookup">qcl_core_object::$_mixinlookup</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+</td>
+
+<td valign="top">
+<h3>Inherited Methods</h3>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_db_model.html">qcl_db_model</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodcolumnsToProperties">qcl_db_model::columnsToProperties()</a>
+  </dt>
+  <dd>
+    translates column to property names in the array keys
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodconnect">qcl_db_model::connect()</a>
+  </dt>
+  <dd>
+    Connects to database. if this model is connected to
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodcountRecords">qcl_db_model::countRecords()</a>
+  </dt>
+  <dd>
+    Returns number of records in the database
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodcreateIfNotExists">qcl_db_model::createIfNotExists()</a>
+  </dt>
+  <dd>
+    creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodcreateLink">qcl_db_model::createLink()</a>
+  </dt>
+  <dd>
+    Create a link between this model and a different model.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methoddb">qcl_db_model::db()</a>
+  </dt>
+  <dd>
+    Returns the database connection object for this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methoddelete">qcl_db_model::delete()</a>
+  </dt>
+  <dd>
+    Deletes the currently loaded record or one or more records in a table identified by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methoddeleteWhere">qcl_db_model::deleteWhere()</a>
+  </dt>
+  <dd>
+    deletes one or more records in a table matching a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodexportLinkData">qcl_db_model::exportLinkData()</a>
+  </dt>
+  <dd>
+    Exports model data to an xml file, creating an extra file with link information
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindBy">qcl_db_model::findBy()</a>
+  </dt>
+  <dd>
+    Returns a records by property value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindByForeignKey">qcl_db_model::findByForeignKey()</a>
+  </dt>
+  <dd>
+    Returns the record in this table that is referred to by
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindById">qcl_db_model::findById()</a>
+  </dt>
+  <dd>
+    Find database records by their primary key
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindByLinkedId">qcl_db_model::findByLinkedId()</a>
+  </dt>
+  <dd>
+    Finds all records that are linked to a record in the remote  model with the given id.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindByLinkedModel">qcl_db_model::findByLinkedModel()</a>
+  </dt>
+  <dd>
+    Finds all records that are linked to the given model in  its current state.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindByLinkedNamedId">qcl_db_model::findByLinkedNamedId()</a>
+  </dt>
+  <dd>
+    Finds all records that are linked to a record in the remote  model with the given namedId.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindByNamedId">qcl_db_model::findByNamedId()</a>
+  </dt>
+  <dd>
+    find database records by their named id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindLike">qcl_db_model::findLike()</a>
+  </dt>
+  <dd>
+    Returns a records that compare to a property value. This is like findBy, but using
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindValues">qcl_db_model::findValues()</a>
+  </dt>
+  <dd>
+    Returns all values of a model property that match a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodfindWhere">qcl_db_model::findWhere()</a>
+  </dt>
+  <dd>
+    Finds all database records or those that match a where condition.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetAllRecords">qcl_db_model::getAllRecords()</a>
+  </dt>
+  <dd>
+    gets all database records optionally sorted by field
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetByForeignKey">qcl_db_model::getByForeignKey()</a>
+  </dt>
+  <dd>
+    gets the record in this table that is referred to by the record from a different table (argument)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetById">qcl_db_model::getById()</a>
+  </dt>
+  <dd>
+    get and cache record by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetByName">qcl_db_model::getByName()</a>
+  </dt>
+  <dd>
+    get record by its unique string id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetByNamedId">qcl_db_model::getByNamedId()</a>
+  </dt>
+  <dd>
+    get record by its unique string id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetByRef">qcl_db_model::getByRef()</a>
+  </dt>
+  <dd>
+    get record by reference (string id or numeric id)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetColumnName">qcl_db_model::getColumnName()</a>
+  </dt>
+  <dd>
+    Returns the column name from a property name.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetColumnValue">qcl_db_model::getColumnValue()</a>
+  </dt>
+  <dd>
+    gets the value of a column in a record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetColumnValues">qcl_db_model::getColumnValues()</a>
+  </dt>
+  <dd>
+    gets values of database columns that match a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetForeignKey">qcl_db_model::getForeignKey()</a>
+  </dt>
+  <dd>
+    Gets the name of the local key joining the table
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetForeignKeyColumn">qcl_db_model::getForeignKeyColumn()</a>
+  </dt>
+  <dd>
+    gets the name of the column in other tables that contains a reference to a record in this table (foreign key)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetIdColumn">qcl_db_model::getIdColumn()</a>
+  </dt>
+  <dd>
+    gets the name of the column that holds the unique (numeric) id of this table
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetIdFromRef">qcl_db_model::getIdFromRef()</a>
+  </dt>
+  <dd>
+    Returns the record id from a reference which can be the id itself or an
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetInstance">qcl_db_model::getInstance()</a>
+  </dt>
+  <dd>
+    Return the singleton instance of this class (no parameter)  or a specific instance (identified by the numeric id).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetJoinedTable">qcl_db_model::getJoinedTable()</a>
+  </dt>
+  <dd>
+    Gets the name of the table that is joined to this table for the specific link name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLinkedModelClass">qcl_db_model::getLinkedModelClass()</a>
+  </dt>
+  <dd>
+    Gets the class of the model that is joined to this model for the specific link name.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLinkedModelInstance">qcl_db_model::getLinkedModelInstance()</a>
+  </dt>
+  <dd>
+    Gets an instance of the model that is joined to this model for the specific link name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLinkNode">qcl_db_model::getLinkNode()</a>
+  </dt>
+  <dd>
+    Return the schema xml node containing information on the given link name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLinkNodes">qcl_db_model::getLinkNodes()</a>
+  </dt>
+  <dd>
+    Returns an array of SimpleXmlElements that contain
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLinksByModel">qcl_db_model::getLinksByModel()</a>
+  </dt>
+  <dd>
+    Returns the name of the link in the schema xml, given a model instance.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLinkTable">qcl_db_model::getLinkTable()</a>
+  </dt>
+  <dd>
+    Gets the name of the table that joins this model to the  joined model for the specific link name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetLocalKey">qcl_db_model::getLocalKey()</a>
+  </dt>
+  <dd>
+    Gets the name of the local key joining the table
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetModificationList">qcl_db_model::getModificationList()</a>
+  </dt>
+  <dd>
+    Returns a hash map of ids the modification timestamp
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetOption">qcl_db_model::getOption()</a>
+  </dt>
+  <dd>
+    gets a single option value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetOptions">qcl_db_model::getOptions()</a>
+  </dt>
+  <dd>
+    get unserialized options from record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetPropertyValue">qcl_db_model::getPropertyValue()</a>
+  </dt>
+  <dd>
+    gets the value of the property of the current record or a record specified by the id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetRecordsWhere">qcl_db_model::getRecordsWhere()</a>
+  </dt>
+  <dd>
+    gets all database records or those that match a where condition.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetRowsById">qcl_db_model::getRowsById()</a>
+  </dt>
+  <dd>
+    gets database records by their primary key
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetSecondsSince">qcl_db_model::getSecondsSince()</a>
+  </dt>
+  <dd>
+    Calculates the number of seconds passed between the  timestamp value parameter. The difference is calculated  by the db engine, not by php.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetTableName">qcl_db_model::getTableName()</a>
+  </dt>
+  <dd>
+    Gets the name of the main data table
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetTablePrefix">qcl_db_model::getTablePrefix()</a>
+  </dt>
+  <dd>
+    returns the prefix for tables used by this
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodgetTimestamp">qcl_db_model::getTimestamp()</a>
+  </dt>
+  <dd>
+    gets the current timestamp from the database
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodimportLinkData">qcl_db_model::importLinkData()</a>
+  </dt>
+  <dd>
+    Imports initial link data for the model from an xml
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodinitialize">qcl_db_model::initialize()</a>
+  </dt>
+  <dd>
+    initializes the model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodinsert">qcl_db_model::insert()</a>
+  </dt>
+  <dd>
+    Inserts a record into a table and returns last_insert_id()
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodisLinkedWith">qcl_db_model::isLinkedWith()</a>
+  </dt>
+  <dd>
+    Checks whether models are linked
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodlinks">qcl_db_model::links()</a>
+  </dt>
+  <dd>
+    Return the names of all the links of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodlinkWith">qcl_db_model::linkWith()</a>
+  </dt>
+  <dd>
+    Link a variable number of models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodload">qcl_db_model::load()</a>
+  </dt>
+  <dd>
+    Loads a model record identified by id.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodmaxId">qcl_db_model::maxId()</a>
+  </dt>
+  <dd>
+    Returns the highest id number
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodminId">qcl_db_model::minId()</a>
+  </dt>
+  <dd>
+    Returns the lowest id number
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodpostSetupSchema">qcl_db_model::postSetupSchema()</a>
+  </dt>
+  <dd>
+    Model-dependent post-setup stuff. empty stub to be overridden by subclasses if necessary
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodpropertiesToColumns">qcl_db_model::propertiesToColumns()</a>
+  </dt>
+  <dd>
+    translates property to column names
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodremoveLink">qcl_db_model::removeLink()</a>
+  </dt>
+  <dd>
+    Removes a link between this model and a different model.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodsetColumnValue">qcl_db_model::setColumnValue()</a>
+  </dt>
+  <dd>
+    sets the value of a column in a record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodsetOption">qcl_db_model::setOption()</a>
+  </dt>
+  <dd>
+    sets a single option value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodsetOptions">qcl_db_model::setOptions()</a>
+  </dt>
+  <dd>
+    serializes option array and saves it to record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodsetPropertyValue">qcl_db_model::setPropertyValue()</a>
+  </dt>
+  <dd>
+    sets the value of the property of the current record or a record specified by the id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodsetupSchema">qcl_db_model::setupSchema()</a>
+  </dt>
+  <dd>
+    Parse xml schema file and, if it has changed, create or update
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodsetupTableLinks">qcl_db_model::setupTableLinks()</a>
+  </dt>
+  <dd>
+    Sets up the links to external models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodtoSql">qcl_db_model::toSql()</a>
+  </dt>
+  <dd>
+    Converts array data to a 'where' compliant sql string
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodunlinkFrom">qcl_db_model::unlinkFrom()</a>
+  </dt>
+  <dd>
+    Unlink a variable number of models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodunlinkFromAll">qcl_db_model::unlinkFromAll()</a>
+  </dt>
+  <dd>
+    Remove all links from the current model instance ta variable number of models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodupdate">qcl_db_model::update()</a>
+  </dt>
+  <dd>
+    updates a record in a table identified by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#methodupdateTimestamp">qcl_db_model::updateTimestamp()</a>
+  </dt>
+  <dd>
+    updates the modification date without changing the data
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#method_columnsToProperties">qcl_db_model::_columnsToProperties()</a>
+  </dt>
+  <dd>
+    translates column to property names in the array keys (implementation)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#method_modifyLink">qcl_db_model::_modifyLink()</a>
+  </dt>
+  <dd>
+    Create or delete a link a variable number of models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#method_nextRecord">qcl_db_model::_nextRecord()</a>
+  </dt>
+  <dd>
+    Function that needs to be implemented by model if the  result set is to be retrieved record by record after  calling a search...() method.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_db_model.html#method_propertiesToColumns">qcl_db_model::_propertiesToColumns()</a>
+  </dt>
+  <dd>
+    translates prperty to column names (implementation)
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method__construct">qcl_core_PropertyModel::__construct()</a>
+  </dt>
+  <dd>
+    Constructor
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcompareSharedProperties">qcl_core_PropertyModel::compareSharedProperties()</a>
+  </dt>
+  <dd>
+    Compares all properties that exists in both models.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcompareWith">qcl_core_PropertyModel::compareWith()</a>
+  </dt>
+  <dd>
+    Compare current record with array. This will only compare  the keys existing in the array or the fields that are  provided as second argument.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcopySharedProperties">qcl_core_PropertyModel::copySharedProperties()</a>
+  </dt>
+  <dd>
+    Copies all properties that exists in both models except the 'id' property.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcountRecords">qcl_core_PropertyModel::countRecords()</a>
+  </dt>
+  <dd>
+    Returns number of records in the database
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcreate">qcl_core_PropertyModel::create()</a>
+  </dt>
+  <dd>
+    Inserts a new empty record amd returns the id of the record,  if any.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcreateIfNotExists">qcl_core_PropertyModel::createIfNotExists()</a>
+  </dt>
+  <dd>
+    creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcreateOrFind">qcl_core_PropertyModel::createOrFind()</a>
+  </dt>
+  <dd>
+    Finds a record by its namedId or creates it if necessary
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methoddelete">qcl_core_PropertyModel::delete()</a>
+  </dt>
+  <dd>
+    deletes one or more records in a table identified by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodexport">qcl_core_PropertyModel::export()</a>
+  </dt>
+  <dd>
+    exports model data to an xml file
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindAll">qcl_core_PropertyModel::findAll()</a>
+  </dt>
+  <dd>
+    Returns all database records optionally sorted by property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindBy">qcl_core_PropertyModel::findBy()</a>
+  </dt>
+  <dd>
+    Returns records by property value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindById">qcl_core_PropertyModel::findById()</a>
+  </dt>
+  <dd>
+    Return database records by their primary key
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindByNamedId">qcl_core_PropertyModel::findByNamedId()</a>
+  </dt>
+  <dd>
+    Return database records by their named id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindDistinctValues">qcl_core_PropertyModel::findDistinctValues()</a>
+  </dt>
+  <dd>
+    Returns all distinct values of a model property that match a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindValues">qcl_core_PropertyModel::findValues()</a>
+  </dt>
+  <dd>
+    Returns all values of a model property that match a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindWhere">qcl_core_PropertyModel::findWhere()</a>
+  </dt>
+  <dd>
+    Returns all database records or those that match a  condition.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfoundNothing">qcl_core_PropertyModel::foundNothing()</a>
+  </dt>
+  <dd>
+    Whether the last query didn't find any records
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfoundSomething">qcl_core_PropertyModel::foundSomething()</a>
+  </dt>
+  <dd>
+    Whether the last query was successful
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodget">qcl_core_PropertyModel::get()</a>
+  </dt>
+  <dd>
+    Shortcut to get a property on the current record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetCreated">qcl_core_PropertyModel::getCreated()</a>
+  </dt>
+  <dd>
+    Gets the timestamp of the creation of the record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetDataPath">qcl_core_PropertyModel::getDataPath()</a>
+  </dt>
+  <dd>
+    gets the path of the file that contains the initial
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetDatasourceModel">qcl_core_PropertyModel::getDatasourceModel()</a>
+  </dt>
+  <dd>
+    Retrieves the datasource object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetIcon">qcl_core_PropertyModel::getIcon()</a>
+  </dt>
+  <dd>
+    Returns the default icon representing the class.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetId">qcl_core_PropertyModel::getId()</a>
+  </dt>
+  <dd>
+    Gets the id of the current record. Raises error if no record  is loaded.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetIdByNamedId">qcl_core_PropertyModel::getIdByNamedId()</a>
+  </dt>
+  <dd>
+    Returns numeric id by string id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetModified">qcl_core_PropertyModel::getModified()</a>
+  </dt>
+  <dd>
+    Gets the timestamp of the last modification
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetNamedId">qcl_core_PropertyModel::getNamedId()</a>
+  </dt>
+  <dd>
+    Returns the named id if it exists as property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetNamedIdById">qcl_core_PropertyModel::getNamedIdById()</a>
+  </dt>
+  <dd>
+    gets string id by numeric id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetProperties">qcl_core_PropertyModel::getProperties()</a>
+  </dt>
+  <dd>
+    Return the names of all properties of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetProperty">qcl_core_PropertyModel::getProperty()</a>
+  </dt>
+  <dd>
+    Gets a property from the current model recordset
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertyName">qcl_core_PropertyModel::getPropertyName()</a>
+  </dt>
+  <dd>
+    gets the property name corresponding to a column name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertyNode">qcl_core_PropertyModel::getPropertyNode()</a>
+  </dt>
+  <dd>
+    Gets the node in the schema xml that contains information on  the property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertySchemaName">qcl_core_PropertyModel::getPropertySchemaName()</a>
+  </dt>
+  <dd>
+    gets the name the property has in the model schema (i.e. either
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertyType">qcl_core_PropertyModel::getPropertyType()</a>
+  </dt>
+  <dd>
+    Gets the simple type of the model property (string, int, etc.)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetQueryOperatorNodes">qcl_core_PropertyModel::getQueryOperatorNodes()</a>
+  </dt>
+  <dd>
+    gets all nodes from the schema xml that contain  information on query operators for a certain  property type (string, int, etc.)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetRecord">qcl_core_PropertyModel::getRecord()</a>
+  </dt>
+  <dd>
+    Gets the data of the currently loaded record as an associative  array.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetRecordObject">qcl_core_PropertyModel::getRecordObject()</a>
+  </dt>
+  <dd>
+    Gets the data of the currently loaded record as a stdClass object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetResult">qcl_core_PropertyModel::getResult()</a>
+  </dt>
+  <dd>
+    Gets the data from the last find query
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetResultTree">qcl_core_PropertyModel::getResultTree()</a>
+  </dt>
+  <dd>
+    return query result as a an
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetSchemaXml">qcl_core_PropertyModel::getSchemaXml()</a>
+  </dt>
+  <dd>
+    get the model schema as an simpleXml object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetSchmemaXmlPath">qcl_core_PropertyModel::getSchmemaXmlPath()</a>
+  </dt>
+  <dd>
+    returns the absolute path of the xml file that
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetSharedPropertyValues">qcl_core_PropertyModel::getSharedPropertyValues()</a>
+  </dt>
+  <dd>
+    Returns all property values that exists in both models.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodhasAlias">qcl_core_PropertyModel::hasAlias()</a>
+  </dt>
+  <dd>
+    checks if a property has a local alias
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodhasProperty">qcl_core_PropertyModel::hasProperty()</a>
+  </dt>
+  <dd>
+    Checks if property exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodhasQueryOperators">qcl_core_PropertyModel::hasQueryOperators()</a>
+  </dt>
+  <dd>
+    Checks whether model supports query operators
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodid">qcl_core_PropertyModel::id()</a>
+  </dt>
+  <dd>
+    Alias of getId()
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodids">qcl_core_PropertyModel::ids()</a>
+  </dt>
+  <dd>
+    Returns the ids of all records in the database
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodimport">qcl_core_PropertyModel::import()</a>
+  </dt>
+  <dd>
+    imports initial data for the model from an xml
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodinitialize">qcl_core_PropertyModel::initialize()</a>
+  </dt>
+  <dd>
+    initializes the model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodinsert">qcl_core_PropertyModel::insert()</a>
+  </dt>
+  <dd>
+    Inserts a record into the model data
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodname">qcl_core_PropertyModel::name()</a>
+  </dt>
+  <dd>
+    Returns model name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodnamedIdExists">qcl_core_PropertyModel::namedIdExists()</a>
+  </dt>
+  <dd>
+    checks if record with $namedId exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodnextRecord">qcl_core_PropertyModel::nextRecord()</a>
+  </dt>
+  <dd>
+    If the last query has found more then one record, get the text one
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodparseXmlDataFile">qcl_core_PropertyModel::parseXmlDataFile()</a>
+  </dt>
+  <dd>
+    Parses an xml data file, processing includes
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodparseXmlSchemaFile">qcl_core_PropertyModel::parseXmlSchemaFile()</a>
+  </dt>
+  <dd>
+    Parses an xml schema file, processing includes
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodproperties">qcl_core_PropertyModel::properties()</a>
+  </dt>
+  <dd>
+    Return the names of all properties of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsave">qcl_core_PropertyModel::save()</a>
+  </dt>
+  <dd>
+    Alias for update() without parameters
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchAll">qcl_core_PropertyModel::searchAll()</a>
+  </dt>
+  <dd>
+    Prepares a search for all database records optionally sorted by property and
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchBy">qcl_core_PropertyModel::searchBy()</a>
+  </dt>
+  <dd>
+    Prepares a search of records by property value and returns the first record  found (if any).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchById">qcl_core_PropertyModel::searchById()</a>
+  </dt>
+  <dd>
+    Prepares a search for database records by their primary key and returns  the first record (if any).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchByNamedId">qcl_core_PropertyModel::searchByNamedId()</a>
+  </dt>
+  <dd>
+    Prepares a search for database records by their named id and returns  the first record (if any).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchWhere">qcl_core_PropertyModel::searchWhere()</a>
+  </dt>
+  <dd>
+    Prepares a search for all database records or those that match a  condition.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodset">qcl_core_PropertyModel::set()</a>
+  </dt>
+  <dd>
+    Sets a property in the current model recordset. Unless you provide an id,  you need to call the update() method to commit the property change to the database.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetDatasourceModel">qcl_core_PropertyModel::setDatasourceModel()</a>
+  </dt>
+  <dd>
+    Stores the name or object reference of the datasource that
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetNamedId">qcl_core_PropertyModel::setNamedId()</a>
+  </dt>
+  <dd>
+    Sets the named id if it exists as property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetProperty">qcl_core_PropertyModel::setProperty()</a>
+  </dt>
+  <dd>
+    Sets a property in the current model recordset. Unless you provide an id,  you need to call the update() method to commit the property change to the database.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetRecord">qcl_core_PropertyModel::setRecord()</a>
+  </dt>
+  <dd>
+    Sets the data of the currently loaded record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetResult">qcl_core_PropertyModel::setResult()</a>
+  </dt>
+  <dd>
+    Sets the data from the last find query
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetupProperties">qcl_core_PropertyModel::setupProperties()</a>
+  </dt>
+  <dd>
+    setup model properties
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodtypecast">qcl_core_PropertyModel::typecast()</a>
+  </dt>
+  <dd>
+    Cast the given value to the correct php type according to its  property type
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodunschematize">qcl_core_PropertyModel::unschematize()</a>
+  </dt>
+  <dd>
+    Converts property names to the local aliases
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodupdate">qcl_core_PropertyModel::update()</a>
+  </dt>
+  <dd>
+    updates a record in a table identified by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodvalues">qcl_core_PropertyModel::values()</a>
+  </dt>
+  <dd>
+    Returns the values of the first column in the result set  as an array.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method_checkHasNamedId">qcl_core_PropertyModel::_checkHasNamedId()</a>
+  </dt>
+  <dd>
+    Checks whether model has 'namedId' property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method_getArrayData">qcl_core_PropertyModel::_getArrayData()</a>
+  </dt>
+  <dd>
+    Gets the data as an associated array from the data provided
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method_nextRecord">qcl_core_PropertyModel::_nextRecord()</a>
+  </dt>
+  <dd>
+    Function that needs to be implemented by model if the  result set is to be retrieved record by record after  calling a search...() method.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method__call">qcl_core_PropertyModel::__call()</a>
+  </dt>
+  <dd>
+    method called when called method does not exist. This will check whether  method name is
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#method__construct">qcl_jsonrpc_model::__construct()</a>
+  </dt>
+  <dd>
+    constructor
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodgetController">qcl_jsonrpc_model::getController()</a>
+  </dt>
+  <dd>
+    Returns controller of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodinfo">qcl_jsonrpc_model::info()</a>
+  </dt>
+  <dd>
+    Redirects info method to controller's method.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodsetController">qcl_jsonrpc_model::setController()</a>
+  </dt>
+  <dd>
+    sets controller of this model to be able to link to other models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodtr">qcl_jsonrpc_model::tr()</a>
+  </dt>
+  <dd>
+    translates a message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodtrn">qcl_jsonrpc_model::trn()</a>
+  </dt>
+  <dd>
+    Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodwarn">qcl_jsonrpc_model::warn()</a>
+  </dt>
+  <dd>
+    Redirects warn method to controller's method.
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodaddEventListener">qcl_jsonrpc_object::addEventListener()</a>
+  </dt>
+  <dd>
+    Adds an event listener. Works only during runtime, i.e. event bindings are not  persisted.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodaddMessageSubscriber">qcl_jsonrpc_object::addMessageSubscriber()</a>
+  </dt>
+  <dd>
+    Adds a message subscriber. This works only for objects which have been
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodalert">qcl_jsonrpc_object::alert()</a>
+  </dt>
+  <dd>
+    alerts a message on the client
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddebugVarHtml">qcl_jsonrpc_object::debugVarHtml()</a>
+  </dt>
+  <dd>
+    debug a variable as html and exit
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddispatchEvent">qcl_jsonrpc_object::dispatchEvent()</a>
+  </dt>
+  <dd>
+    Dispatches a server event
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddispatchMessage">qcl_jsonrpc_object::dispatchMessage()</a>
+  </dt>
+  <dd>
+    Dispatches a message. Filtering not yet supported, i.e. message name must
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodfileChanged">qcl_jsonrpc_object::fileChanged()</a>
+  </dt>
+  <dd>
+    Tests if file has changed since last check
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetInstance">qcl_jsonrpc_object::getInstance()</a>
+  </dt>
+  <dd>
+    Gets singleton instance. If you want to use this method on a static class that extends this class,
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetLock">qcl_jsonrpc_object::getLock()</a>
+  </dt>
+  <dd>
+    tries to get the given lock for 5 seconds, if not successful, abort.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetOsBinDir">qcl_jsonrpc_object::getOsBinDir()</a>
+  </dt>
+  <dd>
+    Returns file path to binary executables depending on operating system
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetPersistentVar">qcl_jsonrpc_object::getPersistentVar()</a>
+  </dt>
+  <dd>
+    get a variable from the session  the variables are available on a class basis, the namespace of the  variables is the class name.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetSessionVar">qcl_jsonrpc_object::getSessionVar()</a>
+  </dt>
+  <dd>
+    get a variable from the session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodhasSessionVar">qcl_jsonrpc_object::hasSessionVar()</a>
+  </dt>
+  <dd>
+    checks if sesion variable exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodnotImplemented">qcl_jsonrpc_object::notImplemented()</a>
+  </dt>
+  <dd>
+    Raises an error about a missing method implementation
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">qcl_jsonrpc_object::raiseError()</a>
+  </dt>
+  <dd>
+    Raises a server error and exits
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodremoveLock">qcl_jsonrpc_object::removeLock()</a>
+  </dt>
+  <dd>
+    removes a lock
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodrunOncePerClassAndSession">qcl_jsonrpc_object::runOncePerClassAndSession()</a>
+  </dt>
+  <dd>
+    Run once for the given class during one session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodsetPersistentVar">qcl_jsonrpc_object::setPersistentVar()</a>
+  </dt>
+  <dd>
+    save a persistent variable
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodsetSessionVar">qcl_jsonrpc_object::setSessionVar()</a>
+  </dt>
+  <dd>
+    save a variable in the session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodtmpDir">qcl_jsonrpc_object::tmpDir()</a>
+  </dt>
+  <dd>
+    Returns the path to a directory where temporary data will be stored with
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoduserNotice">qcl_jsonrpc_object::userNotice()</a>
+  </dt>
+  <dd>
+    Exits the current service with a user notice. This
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_core_object.html">qcl_core_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#method__construct">qcl_core_object::__construct()</a>
+  </dt>
+  <dd>
+    Class constructor. If the mixin class property contains  array entries, these classes will be mixed in.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodqcl_core_object">qcl_core_object::qcl_core_object()</a>
+  </dt>
+  <dd>
+    PHP4 __construct() hack taken from cakephp  taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodbacktrace">qcl_core_object::backtrace()</a>
+  </dt>
+  <dd>
+    Returns the backtrace of invoked function calls
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckArray">qcl_core_object::checkArray()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckBool">qcl_core_object::checkBool()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckInt">qcl_core_object::checkInt()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckString">qcl_core_object::checkString()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckType">qcl_core_object::checkType()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodclassName">qcl_core_object::className()</a>
+  </dt>
+  <dd>
+    OO alias for get_class($this)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodclearError">qcl_core_object::clearError()</a>
+  </dt>
+  <dd>
+    Clears error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcloneObject">qcl_core_object::cloneObject()</a>
+  </dt>
+  <dd>
+    make a copy of this object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methoddebug">qcl_core_object::debug()</a>
+  </dt>
+  <dd>
+    Log a debug message. This method should be used only for  temporary debugging. Such method calls should be able to  be expunged completely by a global search/replace.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methoddumpObject">qcl_core_object::dumpObject()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methoderror">qcl_core_object::error()</a>
+  </dt>
+  <dd>
+    Logs a message with of level &quot;error&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetClassDir">qcl_core_object::getClassDir()</a>
+  </dt>
+  <dd>
+    returns the path to the directory containing the class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetClassPath">qcl_core_object::getClassPath()</a>
+  </dt>
+  <dd>
+    get include path for a class name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetError">qcl_core_object::getError()</a>
+  </dt>
+  <dd>
+    getter for error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetInstance">qcl_core_object::getInstance()</a>
+  </dt>
+  <dd>
+    Gets singleton instance. If you want to use this method on a static class that extends this class,
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetLogger">qcl_core_object::getLogger()</a>
+  </dt>
+  <dd>
+    Get logger object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetNew">qcl_core_object::getNew()</a>
+  </dt>
+  <dd>
+    Returns new instance of classname. If the calling object is a subclass
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetObjectById">qcl_core_object::getObjectById()</a>
+  </dt>
+  <dd>
+    Returns an object identified by its id.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetPersistentInstance">qcl_core_object::getPersistentInstance()</a>
+  </dt>
+  <dd>
+    get persistent object instance of this class. this will serialize  itself automatically at the end of the request.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetRegistryVar">qcl_core_object::getRegistryVar()</a>
+  </dt>
+  <dd>
+    Gets a registry value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetSingleton">qcl_core_object::getSingleton()</a>
+  </dt>
+  <dd>
+    get (non-persistent) singleton instance of class.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodhasMethod">qcl_core_object::hasMethod()</a>
+  </dt>
+  <dd>
+    OO alias for method_exists($this)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodincludeClassfile">qcl_core_object::includeClassfile()</a>
+  </dt>
+  <dd>
+    load file for class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodinfo">qcl_core_object::info()</a>
+  </dt>
+  <dd>
+    Logs a message with of level &quot;info&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodinstanceOf">qcl_core_object::instanceOf()</a>
+  </dt>
+  <dd>
+    similar to instanceOf javascript function. checks if object is an instance of the  class or of a subclass of this class. Use this for cross-version compatibility.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodlog">qcl_core_object::log()</a>
+  </dt>
+  <dd>
+    Logs a message if the filters are enabled
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodmethods">qcl_core_object::methods()</a>
+  </dt>
+  <dd>
+    OO alias for get_class_methods(get_class($this))
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodmixin">qcl_core_object::mixin()</a>
+  </dt>
+  <dd>
+    cross-version method to mixin methods from other classes.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodobjectId">qcl_core_object::objectId()</a>
+  </dt>
+  <dd>
+    Returns the (hopefully) globally unique object id and generates  it if necessary. Registers object id in a global database.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodraiseError">qcl_core_object::raiseError()</a>
+  </dt>
+  <dd>
+    Raises a server error and exits
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodremove">qcl_core_object::remove()</a>
+  </dt>
+  <dd>
+    remove stored object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodretrieve">qcl_core_object::retrieve()</a>
+  </dt>
+  <dd>
+    retrieve stored object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodrunOnce">qcl_core_object::runOnce()</a>
+  </dt>
+  <dd>
+    Run once for the given class per application installation
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsave">qcl_core_object::save()</a>
+  </dt>
+  <dd>
+    saves the object to a storage
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsetError">qcl_core_object::setError()</a>
+  </dt>
+  <dd>
+    setter for error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsetRegistryVar">qcl_core_object::setRegistryVar()</a>
+  </dt>
+  <dd>
+    Sets a registry value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsetupLogger">qcl_core_object::setupLogger()</a>
+  </dt>
+  <dd>
+    Setup logger object. This will get a reference to a global  logger object singleton and attach it to the object.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodstore">qcl_core_object::store()</a>
+  </dt>
+  <dd>
+    stores the object or arbitrary data in the filesystem.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodtrace">qcl_core_object::trace()</a>
+  </dt>
+  <dd>
+    Output the current filename and line number in order to be able to
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodwarn">qcl_core_object::warn()</a>
+  </dt>
+  <dd>
+    Logs a message with of level &quot;warn&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#method__call">qcl_core_object::__call()</a>
+  </dt>
+  <dd>
+    The __call magic method intercepts any method that does not exist  and falls back to one of the mixins if they define the method that is  being called.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#method__destruct">qcl_core_object::__destruct()</a>
+  </dt>
+  <dd>
+    class destructor.  This is the top-most __destruct method, currently
+  </dd>
+  </dl>
+</div>
+</td>
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a16">16</a>]<br />
+Class modeling datasource information that is stored in a<br /><br /><p>typical sql database. Note that this is not the datasource itself,  which can be of any type, but only the information ON the datasource  plus some methods to operate with this information. This is the normal  case, all other datasource models inherit from this. If you want to  use a different storage for your datasource information, you must write  custom child classes for the other datasource models.</p><br /></div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$datasource"></a>
+	<p></p>
+	<h4>$datasource = <span class="value"></span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a28">28</a>]</p>
+  Datasource name<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>string</td>
+    </tr>
+        <tr>
+      <td><b>Overrides:</b>&nbsp;&nbsp;</td>
+      <td>Array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$datasourceConnectionObj"></a>
+	<p></p>
+	<h4>$datasourceConnectionObj = <span class="value"></span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a52">52</a>]</p>
+  the database connection object of the currently loaded record<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td><a href="../qcl/qcl_db_type_Mysql.html">qcl_db_type_Mysql</a></td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$dsn"></a>
+	<p></p>
+	<h4>$dsn = <span class="value">&nbsp;null</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a40">40</a>]</p>
+  The current dsn as an array<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$models"></a>
+	<p></p>
+	<h4>$models = <span class="value">array()</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a34">34</a>]</p>
+  Models that are attached to this datasource<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$schemaName"></a>
+	<p></p>
+	<h4>$schemaName = <span class="value">&nbsp;&quot;qcl_db&quot;</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a22">22</a>]</p>
+  The name of the schema<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>mixed</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$schemaXmlPath"></a>
+	<p></p>
+	<h4>$schemaXmlPath = <span class="value">&nbsp;&quot;qcl/datasource/type/db/Model.xml&quot;</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a46">46</a>]</p>
+  The path to the model schema xml file<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>string</td>
+    </tr>
+        <tr>
+      <td><b>Overrides:</b>&nbsp;&nbsp;</td>
+      <td>Array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="methodcreate"></a>
+	<h3>method create <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a239">239</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void create(
+string
+$datasource, [array
+$options = array()])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Creates a new native sql datasource<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_io_filesystem_local_Datasource.html#methodcreate">qcl_io_filesystem_local_Datasource::create()</a></dt>
+		<dd>Creates a local filesystem datasource</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_io_filesystem_remote_Datasource.html#methodcreate">qcl_io_filesystem_remote_Datasource::create()</a></dt>
+		<dd>Creates a local filesystem datasource</dd>
+	</dl>
+	</p>
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodcreate">qcl_core_PropertyModel::create()</a> (Inserts a new empty record amd returns the id of the record,  if any.)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$datasource</b>&nbsp;&nbsp;</td>
+        <td>datasource name</td>
+      </tr>
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$options</b>&nbsp;&nbsp;</td>
+        <td>connection data etc.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetDatasourceConnection"></a>
+	<h3>method getDatasourceConnection <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a148">148</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code><a href="../qcl/qcl_db_type_Mysql.html">qcl_db_type_Mysql</a> &amp;getDatasourceConnection(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the database connection object of the currently<br /><br /><p>loaded datasource record</p><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetDatasourceDsn"></a>
+	<h3>method getDatasourceDsn <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a124">124</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getDatasourceDsn(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets dsn information as array from the currently loaded datasource record<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetDatasourceName"></a>
+	<h3>method getDatasourceName <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a80">80</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getDatasourceName(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetModel"></a>
+	<h3>method getModel <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a90">90</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code><a href="../qcl/qcl_datasource_type_db_Model.html">qcl_datasource_type_db_Model</a> &amp;getModel(
+string
+$name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets a stored model by name<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetTablePrefix"></a>
+	<h3>method getTablePrefix <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a179">179</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getTablePrefix(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	Overrides <a href="../qcl/qcl_db_model.html#methodgetTablePrefix">qcl_db_model::getTablePrefix()</a> (returns the prefix for tables used by this)<br /><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetUrl"></a>
+	<h3>method getUrl <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a110">110</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getUrl(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the url of the datasource, if any<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodinitializeModels"></a>
+	<h3>method initializeModels <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a70">70</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void initializeModels(
+string
+$datasource)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Initializes all models that belong to this datasource. It is recommended to  initialize only the models that are needed at every request and use getters  which instantiate the objects on demand for other models.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>abstract:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_datasource_type_z3950_Model.html#methodinitializeModels">qcl_datasource_type_z3950_Model::initializeModels()</a></dt>
+		<dd>overridden. initializes all models that belong to this datasource</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_io_filesystem_local_Datasource.html#methodinitializeModels">qcl_io_filesystem_local_Datasource::initializeModels()</a></dt>
+		<dd>initializes all models that belong to this datasource</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_io_filesystem_remote_Datasource.html#methodinitializeModels">qcl_io_filesystem_remote_Datasource::initializeModels()</a></dt>
+		<dd>initializes all models that belong to this datasource</dd>
+	</dl>
+	</p>
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$datasource</b>&nbsp;&nbsp;</td>
+        <td>Name of the datasource</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodisReadOnly"></a>
+	<h3>method isReadOnly <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a193">193</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool isReadOnly(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		checks if datasource is read-only<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>result</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodschemaName"></a>
+	<h3>method schemaName <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a57">57</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void schemaName(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the name of the datasource schema<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetModel"></a>
+	<h3>method setModel <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a101">101</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setModel(
+string
+$name, <a href="../qcl/qcl_datasource_type_db_Model.html">qcl_datasource_type_db_Model</a>
+$model)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Stores a model object by name<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type"><a href="../qcl/qcl_datasource_type_db_Model.html">qcl_datasource_type_db_Model</a>&nbsp;&nbsp;</td>
+        <td><b>$model</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodunusedFields"></a>
+	<h3>method unusedFields <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a202">202</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array unusedFields(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns a list of fields that should be disabled in a form<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_io_filesystem_local_Datasource.html#methodunusedFields">qcl_io_filesystem_local_Datasource::unusedFields()</a></dt>
+		<dd>Returns a list of fields that should be disabled in a form</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_io_filesystem_remote_Datasource.html#methodunusedFields">qcl_io_filesystem_remote_Datasource::unusedFields()</a></dt>
+		<dd>Returns a list of fields that should be disabled in a form</dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_checkCreate"></a>
+	<h3>method _checkCreate <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__datasourcetypedbModel.php.html#a210">210</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void _checkCreate(
+
+$datasource)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Checks a datasource name to be created<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$datasource</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:18:12 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

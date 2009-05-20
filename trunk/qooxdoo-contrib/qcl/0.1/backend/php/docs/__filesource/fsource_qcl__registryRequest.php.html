@@ -1,0 +1,127 @@
+<html>
+<head>
+<title>File Source for Request.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                                                                                          		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                  
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1 align="center">Source for file Request.php</h1>
+<p>Documentation is available at <a href="../qcl/_registry---Request.php.html">Request.php</a></p>
+<div class="src-code">
+<ol><li><div class="src-line"><a name="a1"></a><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line"><a name="a2"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a3"></a><span class="src-comm">&nbsp;*&nbsp;Class&nbsp;which&nbsp;maintains&nbsp;a&nbsp;registry&nbsp;which&nbsp;is&nbsp;valid&nbsp;during&nbsp;one&nbsp;request</span></div></li>
+<li><div class="src-line"><a name="a4"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a5"></a><span class="src-key">class&nbsp;</span><a href="../qcl/qcl_registry_Request.html">qcl_registry_Request</a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a6"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a7"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a8"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;key&nbsp;of&nbsp;variable&nbsp;container&nbsp;in&nbsp;$_SESSION</span></div></li>
+<li><div class="src-line"><a name="a9"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a10"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_registry_Request.html#var$_global_key">$_global_key</a>&nbsp;=&nbsp;<span class="src-str">&quot;qcl_request_registry&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a11"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a12"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a13"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;class&nbsp;singleton&nbsp;instance</span></div></li>
+<li><div class="src-line"><a name="a14"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@access&nbsp;static</span></div></li>
+<li><div class="src-line"><a name="a15"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;qcl_registry_PageLoad&nbsp;singleton&nbsp;instance</span></div></li>
+<li><div class="src-line"><a name="a16"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a17"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_registry_Request.html#methodgetInstance">getInstance</a><span class="src-sym">(&nbsp;</span><span class="src-var">$class</span>=__CLASS__&nbsp;<span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a18"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a19"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">parent</span><span class="src-sym">::</span><span class="src-id">getInstance</span><span class="src-sym">(&nbsp;</span><span class="src-var">$class&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a20"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a21"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a22"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a23"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;resets&nbsp;the&nbsp;page&nbsp;load&nbsp;registry.&nbsp;this&nbsp;needs&nbsp;to&nbsp;be</span></div></li>
+<li><div class="src-line"><a name="a24"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;called,&nbsp;for&nbsp;example,&nbsp;when&nbsp;a&nbsp;user&nbsp;logs&nbsp;out</span></div></li>
+<li><div class="src-line"><a name="a25"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a26"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_registry_Request.html#methodreset">reset</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a27"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a28"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$GLOBALS</span><span class="src-sym">[&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_registry_Request.html#var$_global_key">_global_key</a>&nbsp;<span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a29"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a30"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a31"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a32"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Sets&nbsp;the&nbsp;registry&nbsp;value</span></div></li>
+<li><div class="src-line"><a name="a33"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a34"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$key</span></div></li>
+<li><div class="src-line"><a name="a35"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$value</span></div></li>
+<li><div class="src-line"><a name="a36"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a37"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_registry_Request.html#methodset">set</a><span class="src-sym">(&nbsp;</span><span class="src-var">$key</span><span class="src-sym">,&nbsp;</span><span class="src-var">$value&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a38"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$GLOBALS</span><span class="src-sym">[&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_registry_Request.html#var$_global_key">_global_key</a>&nbsp;<span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$key</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-var">$value</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a40"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a41"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a42"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a43"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Gets&nbsp;the&nbsp;registry&nbsp;value</span></div></li>
+<li><div class="src-line"><a name="a44"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a45"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$key</span></div></li>
+<li><div class="src-line"><a name="a46"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed</span></div></li>
+<li><div class="src-line"><a name="a47"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a48"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_registry_Request.html#methodget">get</a><span class="src-sym">(&nbsp;</span><span class="src-var">$key&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a49"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a50"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$GLOBALS</span><span class="src-sym">[&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_registry_Request.html#var$_global_key">_global_key</a>&nbsp;<span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$key</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a51"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a52"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a53"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a54"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a55"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Check&nbsp;if&nbsp;registry&nbsp;value&nbsp;is&nbsp;set</span></div></li>
+<li><div class="src-line"><a name="a56"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a57"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$key</span></div></li>
+<li><div class="src-line"><a name="a58"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;mixed</span></div></li>
+<li><div class="src-line"><a name="a59"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a60"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_registry_Request.html#methodhas">has</a><span class="src-sym">(&nbsp;</span><span class="src-var">$key&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a61"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a62"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span>isset<span class="src-sym">(&nbsp;</span><span class="src-var">$GLOBALS</span><span class="src-sym">[&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_registry_Request.html#var$_global_key">_global_key</a>&nbsp;<span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$key</span><span class="src-sym">]&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a63"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a64"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a65"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a66"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a67"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a68"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a69"></a><span class="src-php">?&gt;</span></div></li>
+</ol>
+</div>
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:19:13 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

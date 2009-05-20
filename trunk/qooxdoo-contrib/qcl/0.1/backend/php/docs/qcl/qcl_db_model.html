@@ -1,0 +1,4445 @@
+<html>
+<head>
+<title>Docs For Class qcl_db_model</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                                                                                          		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../qcl/_plugin---abstract.php.html">		abstract.php
+		</a><br>
+			<a href="../qcl/_db---type---Abstract.php.html">		Abstract.php
+		</a><br>
+			<a href="../qcl/_lang---ArrayList.php.html">		ArrayList.php
+		</a><br>
+			<a href="../qcl/_application---Client.php.html">		Client.php
+		</a><br>
+			<a href="../qcl/_access---common.php.html">		common.php
+		</a><br>
+			<a href="../qcl/_config---config.php.html">		config.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_datasource---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_session---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_access---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_application---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_db---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_encoding---converter.php.html">		converter.php
+		</a><br>
+			<a href="../qcl/_lib---curl---curl.php4.html">		curl.php4
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---Datasource.php.html">		Datasource.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---Datasource.php.html">		Datasource.php
+		</a><br>
+			<a href="../qcl/_session---db.model.php.html">		db.model.php
+		</a><br>
+			<a href="../qcl/_message---db.model.php.html">		db.model.php
+		</a><br>
+			<a href="../qcl/_plugin---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_config---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---dispatcher.php.html">		dispatcher.php
+		</a><br>
+			<a href="../qcl/_lib---gs3---example.php.html">		example.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---File.php.html">		File.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---File.php.html">		File.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---Folder.php.html">		Folder.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---Folder.php.html">		Folder.php
+		</a><br>
+			<a href="../qcl/_core---functions.php.html">		functions.php
+		</a><br>
+			<a href="../qcl/_lib---gs3---http.php.html">		http.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---IFile.php.html">		IFile.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---IFolder.php.html">		IFolder.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---IResource.php.html">		IResource.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---JsonRpcError.php.html">		JsonRpcError.php
+		</a><br>
+			<a href="../qcl/_http---JsonRpcRequest.php.html">		JsonRpcRequest.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---json_wrapper.php.html">		json_wrapper.php
+		</a><br>
+			<a href="../qcl/_databinding---widgets---qx---ui---form---List.php.html">		List.php
+		</a><br>
+			<a href="../qcl/_log---Logger.php.html">		Logger.php
+		</a><br>
+			<a href="../qcl/_locale---manager.php.html">		manager.php
+		</a><br>
+			<a href="../qcl/_databinding---widgets---qx---ui---menu---Menu.php.html">		Menu.php
+		</a><br>
+			<a href="../qcl/_tool---migration.php.html">		migration.php
+		</a><br>
+			<a href="../qcl/_core---mixin.php.html">		mixin.php
+		</a><br>
+			<a href="../qcl/_db---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_datasource---type---z3950---Model.php.html">		Model.php
+		</a><br>
+			<a href="../qcl/_xml---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_datasource---type---db---Model.php.html">		Model.php
+		</a><br>
+			<a href="../qcl/_db---ModelTableInfo.php.html">		ModelTableInfo.php
+		</a><br>
+			<a href="../qcl/_locale---model_qooxdoo.php.html">		model_qooxdoo.php
+		</a><br>
+			<a href="../qcl/_db---type---Mysql.php.html">		Mysql.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_core---object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_registry---PageLoad.php.html">		PageLoad.php
+		</a><br>
+			<a href="../qcl/_xml---lib---parser_php4.php.html">		parser_php4.php
+		</a><br>
+			<a href="../qcl/_access---permission.php.html">		permission.php
+		</a><br>
+			<a href="../qcl/_db---PersistentModel.php.html">		PersistentModel.php
+		</a><br>
+			<a href="../qcl/_db---PersistentObject.php.html">		PersistentObject.php
+		</a><br>
+			<a href="../qcl/_core---PersistentObject.php.html">		PersistentObject.php
+		</a><br>
+			<a href="../qcl/_db---PersistentTaskRunner.php.html">		PersistentTaskRunner.php
+		</a><br>
+			<a href="../qcl/_core---PropertyModel.php.html">		PropertyModel.php
+		</a><br>
+			<a href="../qcl/_xml---reader.php.html">		reader.php
+		</a><br>
+			<a href="../qcl/_registry---Request.php.html">		Request.php
+		</a><br>
+			<a href="../qcl/_http---request.php.html">		request.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---Request.php.html">		Request.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---remote---Resource.php.html">		Resource.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---local---Resource.php.html">		Resource.php
+		</a><br>
+			<a href="../qcl/_io---filesystem---Resource.php.html">		Resource.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---Response.php.html">		Response.php
+		</a><br>
+			<a href="../qcl/_access---role.php.html">		role.php
+		</a><br>
+			<a href="../qcl/_datasource---SchemaManager.php.html">		SchemaManager.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---Server.php.html">		Server.php
+		</a><br>
+			<a href="../qcl/_access---services.php.html">		services.php
+		</a><br>
+			<a href="../qcl/_config---services.php.html">		services.php
+		</a><br>
+			<a href="../qcl/_databinding---Services.php.html">		Services.php
+		</a><br>
+			<a href="../qcl/_registry---Session.php.html">		Session.php
+		</a><br>
+			<a href="../qcl/_config---session.php.html">		session.php
+		</a><br>
+			<a href="../qcl/_system---shell.php.html">		shell.php
+		</a><br>
+			<a href="../qcl/_xml---simpleXML.php.html">		simpleXML.php
+		</a><br>
+			<a href="../qcl/_lang---String.php.html">		String.php
+		</a><br>
+			<a href="../qcl/_xml---transformer.php.html">		transformer.php
+		</a><br>
+			<a href="../qcl/_db---tree.php.html">		tree.php
+		</a><br>
+			<a href="../qcl/_databinding---tree_controller.php.html">		tree_controller.php
+		</a><br>
+			<a href="../qcl/_access---user.php.html">		user.php
+		</a><br>
+			<a href="../qcl/_lang---Utf8String.php.html">		Utf8String.php
+		</a><br>
+			<a href="../qcl/_application---utilities.php.html">		utilities.php
+		</a><br>
+			<a href="../qcl/_databinding---widgets---Widget.php.html">		Widget.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../qcl/ArrayList.html">ArrayList</a><br />
+	    		<a href="../qcl/class_qcl_tool_migration.html">class_qcl_tool_migration</a><br />
+	    		<a href="../qcl/Curl.html">Curl</a><br />
+	    		<a href="../qcl/CurlResponse.html">CurlResponse</a><br />
+	    		<a href="../qcl/http_class.html">http_class</a><br />
+	    		<a href="../qcl/JSON.html">JSON</a><br />
+	    		<a href="../qcl/JsonRpcError.html">JsonRpcError</a><br />
+	    		<a href="../qcl/qcl_access_common.html">qcl_access_common</a><br />
+	    		<a href="../qcl/qcl_access_controller.html">qcl_access_controller</a><br />
+	    		<a href="../qcl/qcl_access_permission.html">qcl_access_permission</a><br />
+	    		<a href="../qcl/qcl_access_role.html">qcl_access_role</a><br />
+	    		<a href="../qcl/qcl_access_services.html">qcl_access_services</a><br />
+	    		<a href="../qcl/qcl_access_user.html">qcl_access_user</a><br />
+	    		<a href="../qcl/qcl_application_Client.html">qcl_application_Client</a><br />
+	    		<a href="../qcl/qcl_application_controller.html">qcl_application_controller</a><br />
+	    		<a href="../qcl/qcl_application_utilities.html">qcl_application_utilities</a><br />
+	    		<a href="../qcl/qcl_config.html">qcl_config</a><br />
+	    		<a href="../qcl/qcl_config_db.html">qcl_config_db</a><br />
+	    		<a href="../qcl/qcl_config_services.html">qcl_config_services</a><br />
+	    		<a href="../qcl/qcl_config_session.html">qcl_config_session</a><br />
+	    		<a href="../qcl/qcl_core_mixin.html">qcl_core_mixin</a><br />
+	    		<a href="../qcl/qcl_core_object.html">qcl_core_object</a><br />
+	    		<a href="../qcl/qcl_core_PersistentObject.html">qcl_core_PersistentObject</a><br />
+	    		<a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a><br />
+	    		<a href="../qcl/qcl_databinding_Services.html">qcl_databinding_Services</a><br />
+	    		<a href="../qcl/qcl_databinding_tree_controller.html">qcl_databinding_tree_controller</a><br />
+	    		<a href="../qcl/qcl_databinding_widgets_qx_ui_form_List.html">qcl_databinding_widgets_qx_ui_form_List</a><br />
+	    		<a href="../qcl/qcl_databinding_widgets_qx_ui_menu_Menu.html">qcl_databinding_widgets_qx_ui_menu_Menu</a><br />
+	    		<a href="../qcl/qcl_databinding_widgets_Widget.html">qcl_databinding_widgets_Widget</a><br />
+	    		<a href="../qcl/qcl_datasource_controller.html">qcl_datasource_controller</a><br />
+	    		<a href="../qcl/qcl_datasource_SchemaManager.html">qcl_datasource_SchemaManager</a><br />
+	    		<a href="../qcl/qcl_datasource_type_db_Model.html">qcl_datasource_type_db_Model</a><br />
+	    		<a href="../qcl/qcl_datasource_type_z3950_Model.html">qcl_datasource_type_z3950_Model</a><br />
+	    		<a href="../qcl/qcl_db_controller.html">qcl_db_controller</a><br />
+	    		<a href="../qcl/qcl_db_model.html">qcl_db_model</a><br />
+	    		<a href="../qcl/qcl_db_ModelTableInfo.html">qcl_db_ModelTableInfo</a><br />
+	    		<a href="../qcl/qcl_db_PersistentModel.html">qcl_db_PersistentModel</a><br />
+	    		<a href="../qcl/qcl_db_PersistentObject.html">qcl_db_PersistentObject</a><br />
+	    		<a href="../qcl/qcl_db_PersistentTaskRunner.html">qcl_db_PersistentTaskRunner</a><br />
+	    		<a href="../qcl/qcl_db_tree.html">qcl_db_tree</a><br />
+	    		<a href="../qcl/qcl_db_type_Abstract.html">qcl_db_type_Abstract</a><br />
+	    		<a href="../qcl/qcl_db_type_Mysql.html">qcl_db_type_Mysql</a><br />
+	    		<a href="../qcl/qcl_encoding_converter.html">qcl_encoding_converter</a><br />
+	    		<a href="../qcl/qcl_http_JsonRpcRequest.html">qcl_http_JsonRpcRequest</a><br />
+	    		<a href="../qcl/qcl_http_Request.html">qcl_http_Request</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_IFile.html">qcl_io_filesystem_IFile</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_IFolder.html">qcl_io_filesystem_IFolder</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_IResource.html">qcl_io_filesystem_IResource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_Datasource.html">qcl_io_filesystem_local_Datasource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_File.html">qcl_io_filesystem_local_File</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_Folder.html">qcl_io_filesystem_local_Folder</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_local_Resource.html">qcl_io_filesystem_local_Resource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_Datasource.html">qcl_io_filesystem_remote_Datasource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_File.html">qcl_io_filesystem_remote_File</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_Folder.html">qcl_io_filesystem_remote_Folder</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_remote_Resource.html">qcl_io_filesystem_remote_Resource</a><br />
+	    		<a href="../qcl/qcl_io_filesystem_Resource.html">qcl_io_filesystem_Resource</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_Request.html">qcl_jsonrpc_Request</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_Response.html">qcl_jsonrpc_Response</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_Server.html">qcl_jsonrpc_Server</a><br />
+	    		<a href="../qcl/qcl_locale_manager.html">qcl_locale_manager</a><br />
+	    		<a href="../qcl/qcl_locale_model_qooxdoo.html">qcl_locale_model_qooxdoo</a><br />
+	    		<a href="../qcl/qcl_log_Logger.html">qcl_log_Logger</a><br />
+	    		<a href="../qcl/qcl_message_db_model.html">qcl_message_db_model</a><br />
+	    		<a href="../qcl/qcl_plugin_abstract.html">qcl_plugin_abstract</a><br />
+	    		<a href="../qcl/qcl_plugin_db.html">qcl_plugin_db</a><br />
+	    		<a href="../qcl/qcl_registry_PageLoad.html">qcl_registry_PageLoad</a><br />
+	    		<a href="../qcl/qcl_registry_Request.html">qcl_registry_Request</a><br />
+	    		<a href="../qcl/qcl_registry_Session.html">qcl_registry_Session</a><br />
+	    		<a href="../qcl/qcl_session_controller.html">qcl_session_controller</a><br />
+	    		<a href="../qcl/qcl_session_db_model.html">qcl_session_db_model</a><br />
+	    		<a href="../qcl/qcl_system_shell.html">qcl_system_shell</a><br />
+	    		<a href="../qcl/qcl_xml_model.html">qcl_xml_model</a><br />
+	    		<a href="../qcl/qcl_xml_reader.html">qcl_xml_reader</a><br />
+	    		<a href="../qcl/qcl_xml_simpleXML.html">qcl_xml_simpleXML</a><br />
+	    		<a href="../qcl/qcl_xml_transformer.html">qcl_xml_transformer</a><br />
+	    		<a href="../qcl/SimpleXmlElement.html">SimpleXmlElement</a><br />
+	    		<a href="../qcl/String.html">String</a><br />
+	    		<a href="../qcl/Utf8String.html">Utf8String</a><br />
+	    		<a href="../qcl/XMLParser.html">XMLParser</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: qcl_db_model</h1>
+Source Location: /db/model.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre><a href="../qcl/qcl_core_object.html">qcl_core_object</a>
+   |
+   --<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a>
+      |
+      --<a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a>
+         |
+         --<a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a>
+            |
+            --qcl_db_model</pre><br />
+<div class="description">Model base class for models based on a (mysql) database</div><br /><br />
+
+
+
+
+
+
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../qcl/qcl_db_model.html#var$db">$db</a></li>
+    <li><a href="../qcl/qcl_db_model.html#var$linkNodes">$linkNodes</a></li>
+    <li><a href="../qcl/qcl_db_model.html#var$modelTableInfo">$modelTableInfo</a></li>
+    <li><a href="../qcl/qcl_db_model.html#var$table">$table</a></li>
+  </ul>
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../qcl/qcl_db_model.html#methodcolumnsToProperties">columnsToProperties</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodconnect">connect</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodcountRecords">countRecords</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodcreateIfNotExists">createIfNotExists</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodcreateLink">createLink</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methoddb">db</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methoddelete">delete</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methoddeleteWhere">deleteWhere</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodexportLinkData">exportLinkData</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindBy">findBy</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindByForeignKey">findByForeignKey</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindById">findById</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindByLinkedId">findByLinkedId</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindByLinkedModel">findByLinkedModel</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindByLinkedNamedId">findByLinkedNamedId</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindByNamedId">findByNamedId</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindLike">findLike</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindValues">findValues</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodfindWhere">findWhere</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetAllRecords">getAllRecords</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetByForeignKey">getByForeignKey</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetById">getById</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetByName">getByName</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetByNamedId">getByNamedId</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetByRef">getByRef</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetColumnName">getColumnName</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetColumnValue">getColumnValue</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetColumnValues">getColumnValues</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetForeignKey">getForeignKey</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetForeignKeyColumn">getForeignKeyColumn</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetIdColumn">getIdColumn</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetIdFromRef">getIdFromRef</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetInstance">getInstance</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetJoinedTable">getJoinedTable</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLinkedModelClass">getLinkedModelClass</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLinkedModelInstance">getLinkedModelInstance</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLinkNode">getLinkNode</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLinkNodes">getLinkNodes</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLinksByModel">getLinksByModel</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLinkTable">getLinkTable</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetLocalKey">getLocalKey</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetModificationList">getModificationList</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetOption">getOption</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetOptions">getOptions</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetPropertyValue">getPropertyValue</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetRecordsWhere">getRecordsWhere</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetRowsById">getRowsById</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetSecondsSince">getSecondsSince</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetTableName">getTableName</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetTablePrefix">getTablePrefix</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodgetTimestamp">getTimestamp</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodimportLinkData">importLinkData</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodinitialize">initialize</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodinsert">insert</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodisLinkedWith">isLinkedWith</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodlinks">links</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodlinkWith">linkWith</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodload">load</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodmaxId">maxId</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodminId">minId</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodpostSetupSchema">postSetupSchema</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodpropertiesToColumns">propertiesToColumns</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodremoveLink">removeLink</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodsetColumnValue">setColumnValue</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodsetOption">setOption</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodsetOptions">setOptions</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodsetPropertyValue">setPropertyValue</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodsetupSchema">setupSchema</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodsetupTableLinks">setupTableLinks</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodtoSql">toSql</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodunlinkFrom">unlinkFrom</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodunlinkFromAll">unlinkFromAll</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodupdate">update</a></li>
+    <li><a href="../qcl/qcl_db_model.html#methodupdateTimestamp">updateTimestamp</a></li>
+    <li><a href="../qcl/qcl_db_model.html#method_columnsToProperties">_columnsToProperties</a></li>
+    <li><a href="../qcl/qcl_db_model.html#method_modifyLink">_modifyLink</a></li>
+    <li><a href="../qcl/qcl_db_model.html#method_nextRecord">_nextRecord</a></li>
+    <li><a href="../qcl/qcl_db_model.html#method_propertiesToColumns">_propertiesToColumns</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+<td valign="top">
+<h3>Child classes:</h3>
+<div class="tags">
+<dl>
+<dt><a href="../qcl/qcl_access_common.html">qcl_access_common</a></dt>
+	<dd>common base class for permission, role and user models</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_config_db.html">qcl_config_db</a></dt>
+	<dd>configuration management class, using a database backend</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_datasource_type_db_Model.html">qcl_datasource_type_db_Model</a></dt>
+	<dd>Class modeling datasource information that is stored in a</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_db_PersistentModel.html">qcl_db_PersistentModel</a></dt>
+	<dd>Model storing complete and arbitrarily structured  objects for easy object persistence.</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_message_db_model.html">qcl_message_db_model</a></dt>
+	<dd>model for messages stored in a database</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_plugin_db.html">qcl_plugin_db</a></dt>
+	<dd>plugin management class, using a database backend</dd>
+</dl>
+<dl>
+<dt><a href="../qcl/qcl_session_db_model.html">qcl_session_db_model</a></dt>
+	<dd>Model for session data bases on a mysql database model.</dd>
+</dl>
+</div>
+</td>
+
+
+<td valign="top">
+<h3>Inherited Variables</h3>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$class">qcl_core_PropertyModel::$class</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$datasource">qcl_core_PropertyModel::$datasource</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$datasourceModel">qcl_core_PropertyModel::$datasourceModel</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$dataTimestamp">qcl_core_PropertyModel::$dataTimestamp</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$emptyRecord">qcl_core_PropertyModel::$emptyRecord</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$importDataPath">qcl_core_PropertyModel::$importDataPath</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$metaDataProperties">qcl_core_PropertyModel::$metaDataProperties</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$name">qcl_core_PropertyModel::$name</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$propertyNodes">qcl_core_PropertyModel::$propertyNodes</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$schemaTimestamp">qcl_core_PropertyModel::$schemaTimestamp</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$schemaXmlPath">qcl_core_PropertyModel::$schemaXmlPath</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$type">qcl_core_PropertyModel::$type</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_PropertyModel.html#var$_isSearch">qcl_core_PropertyModel::$_isSearch</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_model.html#var$_controller">qcl_jsonrpc_model::$_controller</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_object.html#var$bin_path">qcl_jsonrpc_object::$bin_path</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_object.html#var$__event_db">qcl_jsonrpc_object::$__event_db</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_core_object.html">qcl_core_object</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$error">qcl_core_object::$error</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$implements">qcl_core_object::$implements</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$include">qcl_core_object::$include</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$isNew">qcl_core_object::$isNew</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$isPersistent">qcl_core_object::$isPersistent</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$_logger">qcl_core_object::$_logger</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_core_object.html#var$_mixinlookup">qcl_core_object::$_mixinlookup</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+</td>
+
+<td valign="top">
+<h3>Inherited Methods</h3>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method__construct">qcl_core_PropertyModel::__construct()</a>
+  </dt>
+  <dd>
+    Constructor
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcompareSharedProperties">qcl_core_PropertyModel::compareSharedProperties()</a>
+  </dt>
+  <dd>
+    Compares all properties that exists in both models.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcompareWith">qcl_core_PropertyModel::compareWith()</a>
+  </dt>
+  <dd>
+    Compare current record with array. This will only compare  the keys existing in the array or the fields that are  provided as second argument.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcopySharedProperties">qcl_core_PropertyModel::copySharedProperties()</a>
+  </dt>
+  <dd>
+    Copies all properties that exists in both models except the 'id' property.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcountRecords">qcl_core_PropertyModel::countRecords()</a>
+  </dt>
+  <dd>
+    Returns number of records in the database
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcreate">qcl_core_PropertyModel::create()</a>
+  </dt>
+  <dd>
+    Inserts a new empty record amd returns the id of the record,  if any.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcreateIfNotExists">qcl_core_PropertyModel::createIfNotExists()</a>
+  </dt>
+  <dd>
+    creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodcreateOrFind">qcl_core_PropertyModel::createOrFind()</a>
+  </dt>
+  <dd>
+    Finds a record by its namedId or creates it if necessary
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methoddelete">qcl_core_PropertyModel::delete()</a>
+  </dt>
+  <dd>
+    deletes one or more records in a table identified by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodexport">qcl_core_PropertyModel::export()</a>
+  </dt>
+  <dd>
+    exports model data to an xml file
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindAll">qcl_core_PropertyModel::findAll()</a>
+  </dt>
+  <dd>
+    Returns all database records optionally sorted by property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindBy">qcl_core_PropertyModel::findBy()</a>
+  </dt>
+  <dd>
+    Returns records by property value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindById">qcl_core_PropertyModel::findById()</a>
+  </dt>
+  <dd>
+    Return database records by their primary key
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindByNamedId">qcl_core_PropertyModel::findByNamedId()</a>
+  </dt>
+  <dd>
+    Return database records by their named id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindDistinctValues">qcl_core_PropertyModel::findDistinctValues()</a>
+  </dt>
+  <dd>
+    Returns all distinct values of a model property that match a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindValues">qcl_core_PropertyModel::findValues()</a>
+  </dt>
+  <dd>
+    Returns all values of a model property that match a where condition
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfindWhere">qcl_core_PropertyModel::findWhere()</a>
+  </dt>
+  <dd>
+    Returns all database records or those that match a  condition.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfoundNothing">qcl_core_PropertyModel::foundNothing()</a>
+  </dt>
+  <dd>
+    Whether the last query didn't find any records
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodfoundSomething">qcl_core_PropertyModel::foundSomething()</a>
+  </dt>
+  <dd>
+    Whether the last query was successful
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodget">qcl_core_PropertyModel::get()</a>
+  </dt>
+  <dd>
+    Shortcut to get a property on the current record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetCreated">qcl_core_PropertyModel::getCreated()</a>
+  </dt>
+  <dd>
+    Gets the timestamp of the creation of the record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetDataPath">qcl_core_PropertyModel::getDataPath()</a>
+  </dt>
+  <dd>
+    gets the path of the file that contains the initial
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetDatasourceModel">qcl_core_PropertyModel::getDatasourceModel()</a>
+  </dt>
+  <dd>
+    Retrieves the datasource object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetIcon">qcl_core_PropertyModel::getIcon()</a>
+  </dt>
+  <dd>
+    Returns the default icon representing the class.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetId">qcl_core_PropertyModel::getId()</a>
+  </dt>
+  <dd>
+    Gets the id of the current record. Raises error if no record  is loaded.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetIdByNamedId">qcl_core_PropertyModel::getIdByNamedId()</a>
+  </dt>
+  <dd>
+    Returns numeric id by string id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetModified">qcl_core_PropertyModel::getModified()</a>
+  </dt>
+  <dd>
+    Gets the timestamp of the last modification
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetNamedId">qcl_core_PropertyModel::getNamedId()</a>
+  </dt>
+  <dd>
+    Returns the named id if it exists as property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetNamedIdById">qcl_core_PropertyModel::getNamedIdById()</a>
+  </dt>
+  <dd>
+    gets string id by numeric id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetProperties">qcl_core_PropertyModel::getProperties()</a>
+  </dt>
+  <dd>
+    Return the names of all properties of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetProperty">qcl_core_PropertyModel::getProperty()</a>
+  </dt>
+  <dd>
+    Gets a property from the current model recordset
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertyName">qcl_core_PropertyModel::getPropertyName()</a>
+  </dt>
+  <dd>
+    gets the property name corresponding to a column name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertyNode">qcl_core_PropertyModel::getPropertyNode()</a>
+  </dt>
+  <dd>
+    Gets the node in the schema xml that contains information on  the property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertySchemaName">qcl_core_PropertyModel::getPropertySchemaName()</a>
+  </dt>
+  <dd>
+    gets the name the property has in the model schema (i.e. either
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetPropertyType">qcl_core_PropertyModel::getPropertyType()</a>
+  </dt>
+  <dd>
+    Gets the simple type of the model property (string, int, etc.)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetQueryOperatorNodes">qcl_core_PropertyModel::getQueryOperatorNodes()</a>
+  </dt>
+  <dd>
+    gets all nodes from the schema xml that contain  information on query operators for a certain  property type (string, int, etc.)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetRecord">qcl_core_PropertyModel::getRecord()</a>
+  </dt>
+  <dd>
+    Gets the data of the currently loaded record as an associative  array.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetRecordObject">qcl_core_PropertyModel::getRecordObject()</a>
+  </dt>
+  <dd>
+    Gets the data of the currently loaded record as a stdClass object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetResult">qcl_core_PropertyModel::getResult()</a>
+  </dt>
+  <dd>
+    Gets the data from the last find query
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetResultTree">qcl_core_PropertyModel::getResultTree()</a>
+  </dt>
+  <dd>
+    return query result as a an
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetSchemaXml">qcl_core_PropertyModel::getSchemaXml()</a>
+  </dt>
+  <dd>
+    get the model schema as an simpleXml object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetSchmemaXmlPath">qcl_core_PropertyModel::getSchmemaXmlPath()</a>
+  </dt>
+  <dd>
+    returns the absolute path of the xml file that
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodgetSharedPropertyValues">qcl_core_PropertyModel::getSharedPropertyValues()</a>
+  </dt>
+  <dd>
+    Returns all property values that exists in both models.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodhasAlias">qcl_core_PropertyModel::hasAlias()</a>
+  </dt>
+  <dd>
+    checks if a property has a local alias
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodhasProperty">qcl_core_PropertyModel::hasProperty()</a>
+  </dt>
+  <dd>
+    Checks if property exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodhasQueryOperators">qcl_core_PropertyModel::hasQueryOperators()</a>
+  </dt>
+  <dd>
+    Checks whether model supports query operators
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodid">qcl_core_PropertyModel::id()</a>
+  </dt>
+  <dd>
+    Alias of getId()
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodids">qcl_core_PropertyModel::ids()</a>
+  </dt>
+  <dd>
+    Returns the ids of all records in the database
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodimport">qcl_core_PropertyModel::import()</a>
+  </dt>
+  <dd>
+    imports initial data for the model from an xml
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodinitialize">qcl_core_PropertyModel::initialize()</a>
+  </dt>
+  <dd>
+    initializes the model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodinsert">qcl_core_PropertyModel::insert()</a>
+  </dt>
+  <dd>
+    Inserts a record into the model data
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodname">qcl_core_PropertyModel::name()</a>
+  </dt>
+  <dd>
+    Returns model name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodnamedIdExists">qcl_core_PropertyModel::namedIdExists()</a>
+  </dt>
+  <dd>
+    checks if record with $namedId exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodnextRecord">qcl_core_PropertyModel::nextRecord()</a>
+  </dt>
+  <dd>
+    If the last query has found more then one record, get the text one
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodparseXmlDataFile">qcl_core_PropertyModel::parseXmlDataFile()</a>
+  </dt>
+  <dd>
+    Parses an xml data file, processing includes
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodparseXmlSchemaFile">qcl_core_PropertyModel::parseXmlSchemaFile()</a>
+  </dt>
+  <dd>
+    Parses an xml schema file, processing includes
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodproperties">qcl_core_PropertyModel::properties()</a>
+  </dt>
+  <dd>
+    Return the names of all properties of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsave">qcl_core_PropertyModel::save()</a>
+  </dt>
+  <dd>
+    Alias for update() without parameters
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchAll">qcl_core_PropertyModel::searchAll()</a>
+  </dt>
+  <dd>
+    Prepares a search for all database records optionally sorted by property and
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchBy">qcl_core_PropertyModel::searchBy()</a>
+  </dt>
+  <dd>
+    Prepares a search of records by property value and returns the first record  found (if any).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchById">qcl_core_PropertyModel::searchById()</a>
+  </dt>
+  <dd>
+    Prepares a search for database records by their primary key and returns  the first record (if any).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchByNamedId">qcl_core_PropertyModel::searchByNamedId()</a>
+  </dt>
+  <dd>
+    Prepares a search for database records by their named id and returns  the first record (if any).
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsearchWhere">qcl_core_PropertyModel::searchWhere()</a>
+  </dt>
+  <dd>
+    Prepares a search for all database records or those that match a  condition.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodset">qcl_core_PropertyModel::set()</a>
+  </dt>
+  <dd>
+    Sets a property in the current model recordset. Unless you provide an id,  you need to call the update() method to commit the property change to the database.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetDatasourceModel">qcl_core_PropertyModel::setDatasourceModel()</a>
+  </dt>
+  <dd>
+    Stores the name or object reference of the datasource that
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetNamedId">qcl_core_PropertyModel::setNamedId()</a>
+  </dt>
+  <dd>
+    Sets the named id if it exists as property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetProperty">qcl_core_PropertyModel::setProperty()</a>
+  </dt>
+  <dd>
+    Sets a property in the current model recordset. Unless you provide an id,  you need to call the update() method to commit the property change to the database.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetRecord">qcl_core_PropertyModel::setRecord()</a>
+  </dt>
+  <dd>
+    Sets the data of the currently loaded record
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetResult">qcl_core_PropertyModel::setResult()</a>
+  </dt>
+  <dd>
+    Sets the data from the last find query
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodsetupProperties">qcl_core_PropertyModel::setupProperties()</a>
+  </dt>
+  <dd>
+    setup model properties
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodtypecast">qcl_core_PropertyModel::typecast()</a>
+  </dt>
+  <dd>
+    Cast the given value to the correct php type according to its  property type
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodunschematize">qcl_core_PropertyModel::unschematize()</a>
+  </dt>
+  <dd>
+    Converts property names to the local aliases
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodupdate">qcl_core_PropertyModel::update()</a>
+  </dt>
+  <dd>
+    updates a record in a table identified by id
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#methodvalues">qcl_core_PropertyModel::values()</a>
+  </dt>
+  <dd>
+    Returns the values of the first column in the result set  as an array.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method_checkHasNamedId">qcl_core_PropertyModel::_checkHasNamedId()</a>
+  </dt>
+  <dd>
+    Checks whether model has 'namedId' property
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method_getArrayData">qcl_core_PropertyModel::_getArrayData()</a>
+  </dt>
+  <dd>
+    Gets the data as an associated array from the data provided
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method_nextRecord">qcl_core_PropertyModel::_nextRecord()</a>
+  </dt>
+  <dd>
+    Function that needs to be implemented by model if the  result set is to be retrieved record by record after  calling a search...() method.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_PropertyModel.html#method__call">qcl_core_PropertyModel::__call()</a>
+  </dt>
+  <dd>
+    method called when called method does not exist. This will check whether  method name is
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#method__construct">qcl_jsonrpc_model::__construct()</a>
+  </dt>
+  <dd>
+    constructor
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodgetController">qcl_jsonrpc_model::getController()</a>
+  </dt>
+  <dd>
+    Returns controller of this model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodinfo">qcl_jsonrpc_model::info()</a>
+  </dt>
+  <dd>
+    Redirects info method to controller's method.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodsetController">qcl_jsonrpc_model::setController()</a>
+  </dt>
+  <dd>
+    sets controller of this model to be able to link to other models
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodtr">qcl_jsonrpc_model::tr()</a>
+  </dt>
+  <dd>
+    translates a message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodtrn">qcl_jsonrpc_model::trn()</a>
+  </dt>
+  <dd>
+    Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_model.html#methodwarn">qcl_jsonrpc_model::warn()</a>
+  </dt>
+  <dd>
+    Redirects warn method to controller's method.
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodaddEventListener">qcl_jsonrpc_object::addEventListener()</a>
+  </dt>
+  <dd>
+    Adds an event listener. Works only during runtime, i.e. event bindings are not  persisted.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodaddMessageSubscriber">qcl_jsonrpc_object::addMessageSubscriber()</a>
+  </dt>
+  <dd>
+    Adds a message subscriber. This works only for objects which have been
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodalert">qcl_jsonrpc_object::alert()</a>
+  </dt>
+  <dd>
+    alerts a message on the client
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddebugVarHtml">qcl_jsonrpc_object::debugVarHtml()</a>
+  </dt>
+  <dd>
+    debug a variable as html and exit
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddispatchEvent">qcl_jsonrpc_object::dispatchEvent()</a>
+  </dt>
+  <dd>
+    Dispatches a server event
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddispatchMessage">qcl_jsonrpc_object::dispatchMessage()</a>
+  </dt>
+  <dd>
+    Dispatches a message. Filtering not yet supported, i.e. message name must
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodfileChanged">qcl_jsonrpc_object::fileChanged()</a>
+  </dt>
+  <dd>
+    Tests if file has changed since last check
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetInstance">qcl_jsonrpc_object::getInstance()</a>
+  </dt>
+  <dd>
+    Gets singleton instance. If you want to use this method on a static class that extends this class,
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetLock">qcl_jsonrpc_object::getLock()</a>
+  </dt>
+  <dd>
+    tries to get the given lock for 5 seconds, if not successful, abort.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetOsBinDir">qcl_jsonrpc_object::getOsBinDir()</a>
+  </dt>
+  <dd>
+    Returns file path to binary executables depending on operating system
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetPersistentVar">qcl_jsonrpc_object::getPersistentVar()</a>
+  </dt>
+  <dd>
+    get a variable from the session  the variables are available on a class basis, the namespace of the  variables is the class name.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetSessionVar">qcl_jsonrpc_object::getSessionVar()</a>
+  </dt>
+  <dd>
+    get a variable from the session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodhasSessionVar">qcl_jsonrpc_object::hasSessionVar()</a>
+  </dt>
+  <dd>
+    checks if sesion variable exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodnotImplemented">qcl_jsonrpc_object::notImplemented()</a>
+  </dt>
+  <dd>
+    Raises an error about a missing method implementation
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">qcl_jsonrpc_object::raiseError()</a>
+  </dt>
+  <dd>
+    Raises a server error and exits
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodremoveLock">qcl_jsonrpc_object::removeLock()</a>
+  </dt>
+  <dd>
+    removes a lock
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodrunOncePerClassAndSession">qcl_jsonrpc_object::runOncePerClassAndSession()</a>
+  </dt>
+  <dd>
+    Run once for the given class during one session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodsetPersistentVar">qcl_jsonrpc_object::setPersistentVar()</a>
+  </dt>
+  <dd>
+    save a persistent variable
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodsetSessionVar">qcl_jsonrpc_object::setSessionVar()</a>
+  </dt>
+  <dd>
+    save a variable in the session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodtmpDir">qcl_jsonrpc_object::tmpDir()</a>
+  </dt>
+  <dd>
+    Returns the path to a directory where temporary data will be stored with
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoduserNotice">qcl_jsonrpc_object::userNotice()</a>
+  </dt>
+  <dd>
+    Exits the current service with a user notice. This
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_core_object.html">qcl_core_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#method__construct">qcl_core_object::__construct()</a>
+  </dt>
+  <dd>
+    Class constructor. If the mixin class property contains  array entries, these classes will be mixed in.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodqcl_core_object">qcl_core_object::qcl_core_object()</a>
+  </dt>
+  <dd>
+    PHP4 __construct() hack taken from cakephp  taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodbacktrace">qcl_core_object::backtrace()</a>
+  </dt>
+  <dd>
+    Returns the backtrace of invoked function calls
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckArray">qcl_core_object::checkArray()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckBool">qcl_core_object::checkBool()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckInt">qcl_core_object::checkInt()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckString">qcl_core_object::checkString()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcheckType">qcl_core_object::checkType()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodclassName">qcl_core_object::className()</a>
+  </dt>
+  <dd>
+    OO alias for get_class($this)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodclearError">qcl_core_object::clearError()</a>
+  </dt>
+  <dd>
+    Clears error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodcloneObject">qcl_core_object::cloneObject()</a>
+  </dt>
+  <dd>
+    make a copy of this object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methoddebug">qcl_core_object::debug()</a>
+  </dt>
+  <dd>
+    Log a debug message. This method should be used only for  temporary debugging. Such method calls should be able to  be expunged completely by a global search/replace.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methoddumpObject">qcl_core_object::dumpObject()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methoderror">qcl_core_object::error()</a>
+  </dt>
+  <dd>
+    Logs a message with of level &quot;error&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetClassDir">qcl_core_object::getClassDir()</a>
+  </dt>
+  <dd>
+    returns the path to the directory containing the class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetClassPath">qcl_core_object::getClassPath()</a>
+  </dt>
+  <dd>
+    get include path for a class name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetError">qcl_core_object::getError()</a>
+  </dt>
+  <dd>
+    getter for error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetInstance">qcl_core_object::getInstance()</a>
+  </dt>
+  <dd>
+    Gets singleton instance. If you want to use this method on a static class that extends this class,
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetLogger">qcl_core_object::getLogger()</a>
+  </dt>
+  <dd>
+    Get logger object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetNew">qcl_core_object::getNew()</a>
+  </dt>
+  <dd>
+    Returns new instance of classname. If the calling object is a subclass
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetObjectById">qcl_core_object::getObjectById()</a>
+  </dt>
+  <dd>
+    Returns an object identified by its id.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetPersistentInstance">qcl_core_object::getPersistentInstance()</a>
+  </dt>
+  <dd>
+    get persistent object instance of this class. this will serialize  itself automatically at the end of the request.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetRegistryVar">qcl_core_object::getRegistryVar()</a>
+  </dt>
+  <dd>
+    Gets a registry value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodgetSingleton">qcl_core_object::getSingleton()</a>
+  </dt>
+  <dd>
+    get (non-persistent) singleton instance of class.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodhasMethod">qcl_core_object::hasMethod()</a>
+  </dt>
+  <dd>
+    OO alias for method_exists($this)
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodincludeClassfile">qcl_core_object::includeClassfile()</a>
+  </dt>
+  <dd>
+    load file for class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodinfo">qcl_core_object::info()</a>
+  </dt>
+  <dd>
+    Logs a message with of level &quot;info&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodinstanceOf">qcl_core_object::instanceOf()</a>
+  </dt>
+  <dd>
+    similar to instanceOf javascript function. checks if object is an instance of the  class or of a subclass of this class. Use this for cross-version compatibility.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodlog">qcl_core_object::log()</a>
+  </dt>
+  <dd>
+    Logs a message if the filters are enabled
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodmethods">qcl_core_object::methods()</a>
+  </dt>
+  <dd>
+    OO alias for get_class_methods(get_class($this))
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodmixin">qcl_core_object::mixin()</a>
+  </dt>
+  <dd>
+    cross-version method to mixin methods from other classes.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodobjectId">qcl_core_object::objectId()</a>
+  </dt>
+  <dd>
+    Returns the (hopefully) globally unique object id and generates  it if necessary. Registers object id in a global database.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodraiseError">qcl_core_object::raiseError()</a>
+  </dt>
+  <dd>
+    Raises a server error and exits
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodremove">qcl_core_object::remove()</a>
+  </dt>
+  <dd>
+    remove stored object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodretrieve">qcl_core_object::retrieve()</a>
+  </dt>
+  <dd>
+    retrieve stored object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodrunOnce">qcl_core_object::runOnce()</a>
+  </dt>
+  <dd>
+    Run once for the given class per application installation
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsave">qcl_core_object::save()</a>
+  </dt>
+  <dd>
+    saves the object to a storage
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsetError">qcl_core_object::setError()</a>
+  </dt>
+  <dd>
+    setter for error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsetRegistryVar">qcl_core_object::setRegistryVar()</a>
+  </dt>
+  <dd>
+    Sets a registry value
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodsetupLogger">qcl_core_object::setupLogger()</a>
+  </dt>
+  <dd>
+    Setup logger object. This will get a reference to a global  logger object singleton and attach it to the object.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodstore">qcl_core_object::store()</a>
+  </dt>
+  <dd>
+    stores the object or arbitrary data in the filesystem.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodtrace">qcl_core_object::trace()</a>
+  </dt>
+  <dd>
+    Output the current filename and line number in order to be able to
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#methodwarn">qcl_core_object::warn()</a>
+  </dt>
+  <dd>
+    Logs a message with of level &quot;warn&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#method__call">qcl_core_object::__call()</a>
+  </dt>
+  <dd>
+    The __call magic method intercepts any method that does not exist  and falls back to one of the mixins if they define the method that is  being called.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_core_object.html#method__destruct">qcl_core_object::__destruct()</a>
+  </dt>
+  <dd>
+    class destructor.  This is the top-most __destruct method, currently
+  </dd>
+  </dl>
+</div>
+</td>
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a14">14</a>]<br />
+Model base class for models based on a (mysql) database<br /><br /></div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$db"></a>
+	<p></p>
+	<h4>$db = <span class="value"></span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a21">21</a>]</p>
+  the datasource object instance<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td><a href="../qcl/qcl_db_type_Mysql.html">qcl_db_type_Mysql</a></td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$linkNodes"></a>
+	<p></p>
+	<h4>$linkNodes = <span class="value">array()</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a34">34</a>]</p>
+  shortcuts to schema xml nodes with information on table links<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$modelTableInfo"></a>
+	<p></p>
+	<h4>$modelTableInfo = <span class="value">&nbsp;null</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a58">58</a>]</p>
+  The persistent model table info object<br /><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td><a href="../qcl/qcl_db_ModelTableInfo.html">qcl_db_ModelTableInfo</a></td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$table"></a>
+	<p></p>
+	<h4>$table = <span class="value"></span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a28">28</a>]</p>
+  the name of the table in the database that holds the<br /><br /><p>data of this model</p><br />
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>string</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="methodcolumnsToProperties"></a>
+	<h3>method columnsToProperties <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1322">1322</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array columnsToProperties(
+array
+$row)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		translates column to property names in the array keys<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$row</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodconnect"></a>
+	<h3>method connect <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a119">119</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool &amp;connect(
+[string|array|null
+$dsn = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Connects to database. if this model is connected to<br /><br /><p>a datasource model, reuse the datasource's database  handler</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Success</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|array|null&nbsp;&nbsp;</td>
+        <td><b>$dsn</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcountRecords"></a>
+	<h3>method countRecords <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a907">907</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int countRecords(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns number of records in the database<br /><br /><br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodcountRecords">qcl_core_PropertyModel::countRecords()</a> (Returns number of records in the database)<br /><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcreateIfNotExists"></a>
+	<h3>method createIfNotExists <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a759">759</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int createIfNotExists(
+string
+$namedId, [int
+$foreignId = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		creates a new record and optionally links it to a foreign table (must be implemented in ::create() )<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>the id of the inserted or existing row</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_access_common.html#methodcreateIfNotExists">qcl_access_common::createIfNotExists()</a></dt>
+		<dd>creates a new record if its named id doesn't already exist and optionally links it to a role.</dd>
+	</dl>
+	</p>
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodcreateIfNotExists">qcl_core_PropertyModel::createIfNotExists()</a> (creates a new record and optionally links it to a foreign table (must be implemented in ::create() ))<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$namedId</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$foreignId</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodcreateLink"></a>
+	<h3>method createLink <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2406">2406</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void createLink(
+string|object 
+$first, [int[optional]
+$linkedId = null], [int[optional]
+$localId = null], [
+$remove = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Create a link between this model and a different model.<br /><br /><p>This method is for links that connect two models only. For three or more models, use</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../qcl/qcl_db_model.html#methodunlinkFrom">qcl_db_model::unlinkFrom()</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|object &nbsp;&nbsp;</td>
+        <td><b>$first</b>&nbsp;&nbsp;</td>
+        <td>Either the object to link to or the name of the link in the schema xml</td>
+      </tr>
+          <tr>
+        <td class="type">int[optional]&nbsp;&nbsp;</td>
+        <td><b>$linkedId</b>&nbsp;&nbsp;</td>
+        <td>Id of the recordset in the remote model. if not given, the id  of the remote model passed as first argument is used.</td>
+      </tr>
+          <tr>
+        <td class="type">int[optional]&nbsp;&nbsp;</td>
+        <td><b>$localId</b>&nbsp;&nbsp;</td>
+        <td>The id of the local dataset. If not given as an argument,  the id of the currently loaded record is used.</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$remove</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddb"></a>
+	<h3>method db <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a104">104</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code><a href="../qcl/qcl_db_type_Abstract.html">qcl_db_type_Abstract</a> &amp;db(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the database connection object for this model<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddelete"></a>
+	<h3>method delete <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a864">864</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void delete(
+[mixed[optional]
+$ids = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Deletes the currently loaded record or one or more records in a table identified by id<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_config_db.html#methoddelete">qcl_config_db::delete()</a></dt>
+		<dd>deletes a config property completely or only its user variant  requires permission qcl.config.permissions.manage</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_config_session.html#methoddelete">qcl_config_session::delete()</a></dt>
+		<dd>overridden, because not allowed in this model</dd>
+	</dl>
+	</p>
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methoddelete">qcl_core_PropertyModel::delete()</a> (deletes one or more records in a table identified by id)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">mixed[optional]&nbsp;&nbsp;</td>
+        <td><b>$ids</b>&nbsp;&nbsp;</td>
+        <td>(array of) record id(s)</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddeleteWhere"></a>
+	<h3>method deleteWhere <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a894">894</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void deleteWhere(
+string
+$where)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		deletes one or more records in a table matching a where condition<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$where</b>&nbsp;&nbsp;</td>
+        <td>where condition</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodexportLinkData"></a>
+	<h3>method exportLinkData <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2741">2741</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void exportLinkData(
+[string
+$dir = null], [bool
+$isBackup = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Exports model data to an xml file, creating an extra file with link information<br /><br /><p>&lt;links model=&quot;qcl.foo.Model&quot;&gt;  &lt;!-- links that connect to only one other model --&gt;   &lt;link name=&quot;singlelink&quot; model=&quot;qcl.bar.Model&quot;&gt;     &lt;origin namedId=&quot;qcl.foo.Instance1&quot;&gt;       &lt;target namedId=&quot;qcl.bar.Instance1&quot; /&gt;       &lt;target namedId=&quot;qcl.bar.Instance2&quot; /&gt;     &lt;/origin&gt;   &lt;/link&gt;   &lt;!-- link that connects several models --&gt;   &lt;link name=&quot;multilink&quot;&gt;     &lt;origin namedId=&quot;qcl.foo.Instance1&quot;&gt;       &lt;target&gt;         &lt;model name=&quot;qcl.bar.Model&quot; namedId=&quot;qcl.bar.Instance123&quot; /&gt;         &lt;model name=&quot;qcl.boo.Model&quot; namedId=&quot;qcl.boo.Instance123&quot; /&gt;       &lt;/target&gt;     &lt;/origin&gt;   &lt;/link&gt;  &lt;/links&gt;</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../qcl/qcl_core_PropertyModel.html">qcl_core_PropertyModel</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$dir</b>&nbsp;&nbsp;</td>
+        <td>directory path where link data is to be put, defaults to the  directory containing the inital data file</td>
+      </tr>
+          <tr>
+        <td class="type">bool&nbsp;&nbsp;</td>
+        <td><b>$isBackup</b>&nbsp;&nbsp;</td>
+        <td>if true, prepend &quot;backup_&quot; before the filename</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindBy"></a>
+	<h3>method findBy <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a263">263</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array findBy(
+string
+$propName, string
+$value, [string|null[optional]
+$orderBy = null], [array|null[optional]
+$properties = null], [string[optional]
+$link = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns a records by property value<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>recordset</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodfindBy">qcl_core_PropertyModel::findBy()</a> (Returns records by property value)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$propName</b>&nbsp;&nbsp;</td>
+        <td>Name of property</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$value</b>&nbsp;&nbsp;</td>
+        <td>Value to find</td>
+      </tr>
+          <tr>
+        <td class="type">string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>Field to order by</td>
+      </tr>
+          <tr>
+        <td class="type">array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td>Array of properties to retrieve or null (default) if all  properties are to be retrieved</td>
+      </tr>
+          <tr>
+        <td class="type">string[optional]&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td>Name of the link in the schema xml. If provided, this will  automatically generate the necessary join query.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindByForeignKey"></a>
+	<h3>method findByForeignKey <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a703">703</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array findByForeignKey(
+Array
+$record, [Boolean
+$idOnly = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the record in this table that is referred to by<br /><br /><p>the record from a different table (argument)</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">Array&nbsp;&nbsp;</td>
+        <td><b>$record</b>&nbsp;&nbsp;</td>
+        <td>record from a different table that contains a key corresponding to the foreign id of this table</td>
+      </tr>
+          <tr>
+        <td class="type">Boolean&nbsp;&nbsp;</td>
+        <td><b>$idOnly</b>&nbsp;&nbsp;</td>
+        <td>if true, return only the value of the foreign key column</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindById"></a>
+	<h3>method findById <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a627">627</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array findById(
+array|int
+$ids, [string|null[optional]
+$orderBy = null], [array|null[optional]
+$properties = null], [string[optional]
+$link = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Find database records by their primary key<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of db record sets</td>
+  </tr>
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td>qcl_db_model::findeWhere() for details</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodfindById">qcl_core_PropertyModel::findById()</a> (Return database records by their primary key)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array|int&nbsp;&nbsp;</td>
+        <td><b>$ids</b>&nbsp;&nbsp;</td>
+        <td>Id or array of ids</td>
+      </tr>
+          <tr>
+        <td class="type">string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>Order by property</td>
+      </tr>
+          <tr>
+        <td class="type">array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td>Array of properties to retrieve or null (default) if all</td>
+      </tr>
+          <tr>
+        <td class="type">string[optional]&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td>Name of the link in the schema xml.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindByLinkedId"></a>
+	<h3>method findByLinkedId <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a546">546</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void findByLinkedId(
+int
+$id, string
+$link, [string
+$orderBy = null], [mixed
+$properties = &quot;*&quot;])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Finds all records that are linked to a record in the remote  model with the given id.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../qcl/qcl_db_model.html#methodfindWhere">qcl_db_model::findWhere()</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindByLinkedModel"></a>
+	<h3>method findByLinkedModel <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a577">577</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void findByLinkedModel(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model, [string
+$orderBy = null], [mixed
+$properties = &quot;*&quot;])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Finds all records that are linked to the given model in  its current state.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindByLinkedNamedId"></a>
+	<h3>method findByLinkedNamedId <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a562">562</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void findByLinkedNamedId(
+string
+$namedId, string
+$link, [string
+$orderBy = null], [mixed
+$properties = &quot;*&quot;])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Finds all records that are linked to a record in the remote  model with the given namedId.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../qcl/qcl_db_model.html#methodfindWhere">qcl_db_model::findWhere()</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$namedId</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindByNamedId"></a>
+	<h3>method findByNamedId <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a667">667</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array findByNamedId(
+array|string
+$ids, [string|null[optional]
+$orderBy = null], [array|null[optional]
+$properties = null], [string[optional]
+$link = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		find database records by their named id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of db record sets</td>
+  </tr>
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td>qcl_db_model::findeWhere() for details</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodfindByNamedId">qcl_core_PropertyModel::findByNamedId()</a> (Return database records by their named id)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array|string&nbsp;&nbsp;</td>
+        <td><b>$ids</b>&nbsp;&nbsp;</td>
+        <td>Id or array of ids</td>
+      </tr>
+          <tr>
+        <td class="type">string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>Order by property</td>
+      </tr>
+          <tr>
+        <td class="type">array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td>Array of properties to retrieve or null (default) if all</td>
+      </tr>
+          <tr>
+        <td class="type">string[optional]&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td>Name of the link in the schema xml.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindLike"></a>
+	<h3>method findLike <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a282">282</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array findLike(
+string
+$propName, string
+$value, [string|null[optional]
+$orderBy = null], [array|null[optional]
+$properties = null], [string[optional]
+$link = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns a records that compare to a property value. This is like findBy, but using<br /><br /><p>the &quot;LIKE&quot; operator. Works only with string values</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>recordset</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$propName</b>&nbsp;&nbsp;</td>
+        <td>Name of property</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$value</b>&nbsp;&nbsp;</td>
+        <td>Value to find</td>
+      </tr>
+          <tr>
+        <td class="type">string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>Field to order by</td>
+      </tr>
+          <tr>
+        <td class="type">array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td>Array of properties to retrieve or null (default) if all  properties are to be retrieved</td>
+      </tr>
+          <tr>
+        <td class="type">string[optional]&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td>Name of the link in the schema xml. If provided, this will  automatically generate the necessary join query.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindValues"></a>
+	<h3>method findValues <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a592">592</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array findValues(
+string
+$property, [string|null[optional]
+$where = null], [string|null[optional]
+$orderBy = null], [bool[optional,
+$distinct = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns all values of a model property that match a where condition<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of values</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodfindValues">qcl_core_PropertyModel::findValues()</a> (Returns all values of a model property that match a where condition)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$property</b>&nbsp;&nbsp;</td>
+        <td>Name of property</td>
+      </tr>
+          <tr>
+        <td class="type">string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$where</b>&nbsp;&nbsp;</td>
+        <td>Where condition to match, if null, get all</td>
+      </tr>
+          <tr>
+        <td class="type">string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>Property to order by</td>
+      </tr>
+          <tr>
+        <td class="type">bool[optional,&nbsp;&nbsp;</td>
+        <td><b>$distinct</b>&nbsp;&nbsp;</td>
+        <td>default false] If true, get only distinct values</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodfindWhere"></a>
+	<h3>method findWhere <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a309">309</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array findWhere(
+[string|array|null
+$where = null], [string|array|null[optional]
+$orderBy = null], [string|array|null[optional]
+$properties = null], [string[optional]
+$link = null], [
+$conditions = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Finds all database records or those that match a where condition.<br /><br /><p>in the &quot;where&quot; expression the table name is available as the alias &quot;t1&quot;, the joined tables as &quot;t2&quot;.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of db record sets. The array keys are already converted to the property names,  so you do not have to deal with column names at all.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodfindWhere">qcl_core_PropertyModel::findWhere()</a> (Returns all database records or those that match a  condition.)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|array|null&nbsp;&nbsp;</td>
+        <td><b>$where</b>&nbsp;&nbsp;</td>
+        <td>'Where' condition to match. If null, get all. if array,  match properties</td>
+      </tr>
+          <tr>
+        <td class="type">string|array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>Order by property/properties.  If an array is given, the last element of the array will be searched for &quot;ASC&quot; or &quot;DESC&quot; and  used as sort direction.</td>
+      </tr>
+          <tr>
+        <td class="type">string|array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$properties</b>&nbsp;&nbsp;</td>
+        <td>Array of properties to retrieve or null (default)  if all. When using joined tables, the parameter must be an array containing two arrays,  the first with the properties of the model table, and the second with the properties of the joined  table. Alternatively, you can use the syntax &quot;prop1,prop2,prop3&quot; for an unlinked, and  &quot;prop1,prop2,prop3|prop1,prop2,prop3&quot; for a linked model. It is also possible to use &quot;*&quot; or &quot;*|*&quot; to  get all properties from unlinked and linked models, respectively.</td>
+      </tr>
+          <tr>
+        <td class="type">string[optional]&nbsp;&nbsp;</td>
+        <td><b>$link</b>&nbsp;&nbsp;</td>
+        <td>Name of the link in the schema xml. If provided, this will  automatically generate the necessary join query.</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$conditions</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetAllRecords"></a>
+	<h3>method getAllRecords <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a953">953</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array getAllRecords(
+[string|null
+$orderBy = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets all database records optionally sorted by field<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of db record sets</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|null&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>(optional) order by field</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetByForeignKey"></a>
+	<h3>method getByForeignKey <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1168">1168</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getByForeignKey(
+Array
+$record, [Boolean
+$idOnly = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets the record in this table that is referred to by the record from a different table (argument)<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">Array&nbsp;&nbsp;</td>
+        <td><b>$record</b>&nbsp;&nbsp;</td>
+        <td>record from a different table that contains a key corresponding to the foreign id of this table</td>
+      </tr>
+          <tr>
+        <td class="type">Boolean&nbsp;&nbsp;</td>
+        <td><b>$idOnly</b>&nbsp;&nbsp;</td>
+        <td>if true, return only the value of the foreign key column</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetById"></a>
+	<h3>method getById <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1086">1086</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array getById(
+[mixed
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		get and cache record by id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Db record set</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetByName"></a>
+	<h3>method getByName <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1114">1114</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array getByName(
+
+$name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		get record by its unique string id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Db record set</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetByNamedId"></a>
+	<h3>method getByNamedId <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1123">1123</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array getByNamedId(
+
+$namedId)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		get record by its unique string id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Db record set</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods t</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$namedId</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetByRef"></a>
+	<h3>method getByRef <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1145">1145</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getByRef(
+mixed
+$ref)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		get record by reference (string id or numeric id)<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$ref</b>&nbsp;&nbsp;</td>
+        <td>numeric id or string name</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetColumnName"></a>
+	<h3>method getColumnName <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a195">195</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getColumnName(
+
+$name, string
+$property)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the column name from a property name.<br /><br /><p>Alias for qcl_db_model::getPropertySchemaName</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$property</b>&nbsp;&nbsp;</td>
+        <td>Property name</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetColumnValue"></a>
+	<h3>method getColumnValue <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1187">1187</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getColumnValue(
+string
+$column, [int|string|null[optional]
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets the value of a column in a record<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$column</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">int|string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>Numeric or named id. If omitted, use current record</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetColumnValues"></a>
+	<h3>method getColumnValues <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1058">1058</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getColumnValues(
+string|array
+$column, [string
+$where = null], [string|null
+$orderBy = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets values of database columns that match a where condition<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of values</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|array&nbsp;&nbsp;</td>
+        <td><b>$column</b>&nbsp;&nbsp;</td>
+        <td>name of column(s)</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$where</b>&nbsp;&nbsp;</td>
+        <td>where condition to match, if null, get all</td>
+      </tr>
+          <tr>
+        <td class="type">string|null&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>(optional) order by field</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetForeignKey"></a>
+	<h3>method getForeignKey <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2328">2328</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getForeignKey(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets the name of the local key joining the table<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Name of the local key</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetForeignKeyColumn"></a>
+	<h3>method getForeignKeyColumn <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a963">963</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getForeignKeyColumn(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets the name of the column in other tables that contains a reference to a record in this table (foreign key)<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>return string</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetIdColumn"></a>
+	<h3>method getIdColumn <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a942">942</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getIdColumn(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets the name of the column that holds the unique (numeric) id of this table<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetIdFromRef"></a>
+	<h3>method getIdFromRef <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a207">207</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>integer getIdFromRef(
+mixed
+$ref)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the record id from a reference which can be the id itself or an<br /><br /><p>identifiying (dot-separated) name</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>id</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$ref</b>&nbsp;&nbsp;</td>
+        <td>numeric id or string name</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetInstance"></a>
+	<h3>method getInstance <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a238">238</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code><a href="../qcl/qcl_db_model.html">qcl_db_model</a> &amp;getInstance(
+int[optional]
+$id)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the singleton instance of this class (no parameter)  or a specific instance (identified by the numeric id).<br /><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_access_permission.html#methodgetInstance">qcl_access_permission::getInstance()</a></dt>
+		<dd>Returns singleton instance.</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_access_role.html#methodgetInstance">qcl_access_role::getInstance()</a></dt>
+		<dd>Returns singleton instance.</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_access_user.html#methodgetInstance">qcl_access_user::getInstance()</a></dt>
+		<dd>Returns singleton instance.</dd>
+	</dl>
+		<dl>
+	<dt><a href="../qcl/qcl_config_db.html#methodgetInstance">qcl_config_db::getInstance()</a></dt>
+		<dd>Returns singleton instance.</dd>
+	</dl>
+	</p>
+	Overrides <a href="../qcl/qcl_jsonrpc_object.html#methodgetInstance">qcl_jsonrpc_object::getInstance()</a> (Gets singleton instance. If you want to use this method on a static class that extends this class,)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int[optional]&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetJoinedTable"></a>
+	<h3>method getJoinedTable <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2307">2307</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getJoinedTable(
+
+$name, string
+$Name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets the name of the table that is joined to this table for the specific link name<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Name of the joined table</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$Name</b>&nbsp;&nbsp;</td>
+        <td>of the link</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLinkedModelClass"></a>
+	<h3>method getLinkedModelClass <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2253">2253</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getLinkedModelClass(
+
+$name, string
+$Name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets the class of the model that is joined to this model for the specific link name.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Name of the joined model or false if no such name could be found</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$Name</b>&nbsp;&nbsp;</td>
+        <td>of the link</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLinkedModelInstance"></a>
+	<h3>method getLinkedModelInstance <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2278">2278</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code><a href="../qcl/qcl_db_model.html">qcl_db_model</a> &amp;getLinkedModelInstance(
+
+$name, string
+$Name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets an instance of the model that is joined to this model for the specific link name<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Model instance or false if no model could be found.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$Name</b>&nbsp;&nbsp;</td>
+        <td>of the link</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLinkNode"></a>
+	<h3>method getLinkNode <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2217">2217</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code><a href="../qcl/SimpleXmlElement.html">SimpleXmlElement</a> &amp;getLinkNode(
+[string
+$name = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the schema xml node containing information on the given link name<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLinkNodes"></a>
+	<h3>method getLinkNodes <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2203">2203</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array &amp;getLinkNodes(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns an array of SimpleXmlElements that contain<br /><br /><p>link information</p><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLinksByModel"></a>
+	<h3>method getLinksByModel <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2340">2340</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>mixed getLinksByModel(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the name of the link in the schema xml, given a model instance.<br /><br /><p>Throws an error if the model is not linked.</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array if link(s) ar found, false if not found</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLinkTable"></a>
+	<h3>method getLinkTable <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2240">2240</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getLinkTable(
+string
+$name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets the name of the table that joins this model to the  joined model for the specific link name<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Name of the link table</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td>Name of the link</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetLocalKey"></a>
+	<h3>method getLocalKey <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2318">2318</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getLocalKey(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets the name of the local key joining the table<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Name of the local key</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetModificationList"></a>
+	<h3>method getModificationList <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1435">1435</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getModificationList(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns a hash map of ids the modification timestamp<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetOption"></a>
+	<h3>method getOption <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1493">1493</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getOption(
+$name
+$name, [$id
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets a single option value<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">$name&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td>string</td>
+      </tr>
+          <tr>
+        <td class="type">$id&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>int/string[optional]</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetOptions"></a>
+	<h3>method getOptions <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1467">1467</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array getOptions(
+[$id
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		get unserialized options from record<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">$id&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>int[optional]</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetPropertyValue"></a>
+	<h3>method getPropertyValue <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1267">1267</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getPropertyValue(
+string
+$propName, [int|string
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets the value of the property of the current record or a record specified by the id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$propName</b>&nbsp;&nbsp;</td>
+        <td>Property name</td>
+      </tr>
+          <tr>
+        <td class="type">int|string&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>if omitted, modify current record cache without updating the database</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetRecordsWhere"></a>
+	<h3>method getRecordsWhere <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a978">978</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array getRecordsWhere(
+[string
+$where = null], [string|array|null[optional]
+$orderBy = null], [array|null[optional]
+$fields = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets all database records or those that match a where condition.<br /><br /><p>the table name is available as the alias &quot;r&quot; (for records)</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of db record sets</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$where</b>&nbsp;&nbsp;</td>
+        <td>where condition to match, if null, get all</td>
+      </tr>
+          <tr>
+        <td class="type">string|array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>(optional) order by field. if an array is provided,  the last element is can contain the sort direction (&quot;ASC&quot;/&quot;DESC&quot;)</td>
+      </tr>
+          <tr>
+        <td class="type">array|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$fields</b>&nbsp;&nbsp;</td>
+        <td>Array of fields to retrieve</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetRowsById"></a>
+	<h3>method getRowsById <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1037">1037</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Array getRowsById(
+array|int
+$ids, [string|null
+$orderBy = null], [array|null
+$fields = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets database records by their primary key<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Array of db record sets</td>
+  </tr>
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array|int&nbsp;&nbsp;</td>
+        <td><b>$ids</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">string|null&nbsp;&nbsp;</td>
+        <td><b>$orderBy</b>&nbsp;&nbsp;</td>
+        <td>(optional) order by field</td>
+      </tr>
+          <tr>
+        <td class="type">array|null&nbsp;&nbsp;</td>
+        <td><b>$fields</b>&nbsp;&nbsp;</td>
+        <td>(optional) Array of fields to retrieve</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetSecondsSince"></a>
+	<h3>method getSecondsSince <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1424">1424</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>float getSecondsSince(
+string
+$timestamp)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Calculates the number of seconds passed between the  timestamp value parameter. The difference is calculated  by the db engine, not by php.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>todo:</b>&nbsp;&nbsp;</td><td>Implement in db-class, not here</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$timestamp</b>&nbsp;&nbsp;</td>
+        <td>Timestamp value</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetTableName"></a>
+	<h3>method getTableName <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1517">1517</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getTableName(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Gets the name of the main data table<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetTablePrefix"></a>
+	<h3>method getTablePrefix <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1528">1528</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getTablePrefix(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		returns the prefix for tables used by this<br /><br /><p>model. defaults to the datasource name plus underscore  or an empty string if there is no datasource</p><br /><br /><br />
+
+	<p>Overridden in child classes as:<br />
+		<dl>
+	<dt><a href="../qcl/qcl_datasource_type_db_Model.html#methodgetTablePrefix">qcl_datasource_type_db_Model::getTablePrefix()</a></dt>
+		<dd></dd>
+	</dl>
+	</p>
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetTimestamp"></a>
+	<h3>method getTimestamp <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1410">1410</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getTimestamp(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		gets the current timestamp from the database<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodimportLinkData"></a>
+	<h3>method importLinkData <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2968">2968</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void importLinkData(
+[string
+$path = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Imports initial link data for the model from an xml<br /><br /><p>for the structure,</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../qcl/qcl_db_model.html#methodexportLinkData">qcl_db_model::exportLinkData()</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$path</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodinitialize"></a>
+	<h3>method initialize <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a66">66</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool initialize(
+[mixed
+$datasourceModel = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		initializes the model<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Success</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodinitialize">qcl_core_PropertyModel::initialize()</a> (initializes the model)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$datasourceModel</b>&nbsp;&nbsp;</td>
+        <td>Object reference to the datasource object,  or null if model is independent of a datasource</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodinsert"></a>
+	<h3>method insert <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a773">773</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int insert(
+array|stdClass
+$data)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Inserts a record into a table and returns last_insert_id()<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>the id of the inserted row or 0 if the insert was not successful</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodinsert">qcl_core_PropertyModel::insert()</a> (Inserts a record into the model data)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array|stdClass&nbsp;&nbsp;</td>
+        <td><b>$data</b>&nbsp;&nbsp;</td>
+        <td>associative array with the column names as keys and the column data as values</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodisLinkedWith"></a>
+	<h3>method isLinkedWith <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2557">2557</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void isLinkedWith(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model2, bool
+1)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Checks whether models are linked<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model2</b>&nbsp;&nbsp;</td>
+        <td>Model</td>
+      </tr>
+          <tr>
+        <td class="type">bool&nbsp;&nbsp;</td>
+        <td><b>1</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodlinks"></a>
+	<h3>method links <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2390">2390</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array links(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the names of all the links of this model<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodlinkWith"></a>
+	<h3>method linkWith <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2521">2521</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void linkWith(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model2)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Link a variable number of models<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model2</b>&nbsp;&nbsp;</td>
+        <td>Model</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodload"></a>
+	<h3>method load <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a652">652</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void load(
+int
+$id)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Loads a model record identified by id.<br /><br /><p>Alias of qcl_db_model::findById().</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodmaxId"></a>
+	<h3>method maxId <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a926">926</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int maxId(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the highest id number<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodminId"></a>
+	<h3>method minId <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a916">916</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int minId(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Returns the lowest id number<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpostSetupSchema"></a>
+	<h3>method postSetupSchema <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2161">2161</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool postSetupSchema(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Model-dependent post-setup stuff. empty stub to be overridden by subclasses if necessary<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>True if upgrade has been successful, false on error</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodpropertiesToColumns"></a>
+	<h3>method propertiesToColumns <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1357">1357</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array propertiesToColumns(
+[array
+$row = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		translates property to column names<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$row</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodremoveLink"></a>
+	<h3>method removeLink <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2512">2512</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void removeLink(
+string|object 
+$first, int[optional]
+$linkedId, [int[optional]
+$localId = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Removes a link between this model and a different model.<br /><br /><p>This method is for links that connect two models only. For three or more models, use</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="../qcl/qcl_db_model.html#methodunlinkFrom">qcl_db_model::unlinkFrom()</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|object &nbsp;&nbsp;</td>
+        <td><b>$first</b>&nbsp;&nbsp;</td>
+        <td>Either the object to unlink from or  the name of the link in the schema xml.</td>
+      </tr>
+          <tr>
+        <td class="type">int[optional]&nbsp;&nbsp;</td>
+        <td><b>$linkedId</b>&nbsp;&nbsp;</td>
+        <td>Id of the recordset in the remote model. if not given, the id  of the remote model passed as first argument is used.</td>
+      </tr>
+          <tr>
+        <td class="type">int[optional]&nbsp;&nbsp;</td>
+        <td><b>$localId</b>&nbsp;&nbsp;</td>
+        <td>The id of the local dataset. If not given as an argument,  the id of the currently loaded record is used.</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetColumnValue"></a>
+	<h3>method setColumnValue <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1236">1236</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setColumnValue(
+string
+$column, mixed
+$value, [int|string|null[optional]
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		sets the value of a column in a record<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new setter methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$column</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$value</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">int|string|null[optional]&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>Numeric or named id. If omitted, use current record</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetOption"></a>
+	<h3>method setOption <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1506">1506</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setOption(
+$name
+$name, $value
+$value, [$id
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		sets a single option value<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">$name&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td>string</td>
+      </tr>
+          <tr>
+        <td class="type">$value&nbsp;&nbsp;</td>
+        <td><b>$value</b>&nbsp;&nbsp;</td>
+        <td>mixed</td>
+      </tr>
+          <tr>
+        <td class="type">$id&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>int/string[optional]</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetOptions"></a>
+	<h3>method setOptions <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1478">1478</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setOptions(
+$options
+$options, [$id
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		serializes option array and saves it to record<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">$options&nbsp;&nbsp;</td>
+        <td><b>$options</b>&nbsp;&nbsp;</td>
+        <td>array</td>
+      </tr>
+          <tr>
+        <td class="type">$id&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>int[optional]</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetPropertyValue"></a>
+	<h3>method setPropertyValue <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1291">1291</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setPropertyValue(
+string
+$propName, mixed
+$value, [int|string
+$id = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		sets the value of the property of the current record or a record specified by the id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new setter methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$propName</b>&nbsp;&nbsp;</td>
+        <td>Property name</td>
+      </tr>
+          <tr>
+        <td class="type">mixed&nbsp;&nbsp;</td>
+        <td><b>$value</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">int|string&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>if omitted, modify current record cache without updating the database</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetupSchema"></a>
+	<h3>method setupSchema <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1547">1547</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool setupSchema(
+[bool
+$forceUpgrade = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Parse xml schema file and, if it has changed, create or update<br /><br /><p>all needed tables and columns. schema document will be available  as $this-&gt;schemaXml afterwards</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>True if tables have been upgraded, null if no upgrade has been attempted, false if there was an error</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">bool&nbsp;&nbsp;</td>
+        <td><b>$forceUpgrade</b>&nbsp;&nbsp;</td>
+        <td>If true, upgrade schema even if schema xml file hasn't changed</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetupTableLinks"></a>
+	<h3>method setupTableLinks <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2174">2174</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setupTableLinks(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Sets up the links to external models<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtoSql"></a>
+	<h3>method toSql <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a736">736</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void toSql(
+string|array
+$where)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Converts array data to a 'where' compliant sql string<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string|array&nbsp;&nbsp;</td>
+        <td><b>$where</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodunlinkFrom"></a>
+	<h3>method unlinkFrom <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2533">2533</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void unlinkFrom(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model2, bool
+1)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Unlink a variable number of models<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model2</b>&nbsp;&nbsp;</td>
+        <td>Model</td>
+      </tr>
+          <tr>
+        <td class="type">bool&nbsp;&nbsp;</td>
+        <td><b>1</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodunlinkFromAll"></a>
+	<h3>method unlinkFromAll <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2545">2545</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void unlinkFromAll(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model2, bool
+1)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Remove all links from the current model instance ta variable number of models<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model2</b>&nbsp;&nbsp;</td>
+        <td>Model</td>
+      </tr>
+          <tr>
+        <td class="type">bool&nbsp;&nbsp;</td>
+        <td><b>1</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodupdate"></a>
+	<h3>method update <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a826">826</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>boolean update(
+[array
+$data = null], [int|string
+$id = null], [bool
+$keepTimestamp = false])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		updates a record in a table identified by id<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>success</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#methodupdate">qcl_core_PropertyModel::update()</a> (updates a record in a table identified by id)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$data</b>&nbsp;&nbsp;</td>
+        <td>associative array with the column names as keys and the column data as values</td>
+      </tr>
+          <tr>
+        <td class="type">int|string&nbsp;&nbsp;</td>
+        <td><b>$id</b>&nbsp;&nbsp;</td>
+        <td>if the id key is not provided in the $data paramenter, provide it here (optional)</td>
+      </tr>
+          <tr>
+        <td class="type">bool&nbsp;&nbsp;</td>
+        <td><b>$keepTimestamp</b>&nbsp;&nbsp;</td>
+        <td>If true, do not overwrite the 'modified' timestamp</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodupdateTimestamp"></a>
+	<h3>method updateTimestamp <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1391">1391</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void updateTimestamp(
+int|array
+$ids)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		updates the modification date without changing the data<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int|array&nbsp;&nbsp;</td>
+        <td><b>$ids</b>&nbsp;&nbsp;</td>
+        <td>One or more record ids</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_columnsToProperties"></a>
+	<h3>method _columnsToProperties <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1333">1333</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array _columnsToProperties(
+array
+$row)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		translates column to property names in the array keys (implementation)<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$row</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_modifyLink"></a>
+	<h3>method _modifyLink <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a2589">2589</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void _modifyLink(
+<a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model2, <a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model3, <a href="../qcl/qcl_db_model.html">qcl_db_model</a>
+$model4)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Create or delete a link a variable number of models<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model2</b>&nbsp;&nbsp;</td>
+        <td>Model to link with</td>
+      </tr>
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model3</b>&nbsp;&nbsp;</td>
+        <td>Optional model to link with</td>
+      </tr>
+          <tr>
+        <td class="type"><a href="../qcl/qcl_db_model.html">qcl_db_model</a>&nbsp;&nbsp;</td>
+        <td><b>$model4</b>&nbsp;&nbsp;</td>
+        <td>Optional model to link with</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_nextRecord"></a>
+	<h3>method _nextRecord <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a722">722</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array _nextRecord(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Function that needs to be implemented by model if the  result set is to be retrieved record by record after  calling a search...() method.<br /><br /><br /><br />
+
+	Overrides <a href="../qcl/qcl_core_PropertyModel.html#method_nextRecord">qcl_core_PropertyModel::_nextRecord()</a> (Function that needs to be implemented by model if the  result set is to be retrieved record by record after  calling a search...() method.)<br /><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_propertiesToColumns"></a>
+	<h3>method _propertiesToColumns <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__dbmodel.php.html#a1368">1368</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array _propertiesToColumns(
+[array
+$row = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		translates prperty to column names (implementation)<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>deprecated:</b>&nbsp;&nbsp;</td><td>use new findX.. methods</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$row</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:18:27 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
