@@ -58,9 +58,10 @@ qx.Class.define("databinding.Table",
 
       /*
        * The setQueryParams method allows to pass additional information to 
-       * the server. Here, we pass the column ids.
+       * the server. Here, we pass the column ids and an object that will be set
+       * by the tree node selected, if the tree and table are bound. 
        */
-      marshaler.setQueryParams( [ table.getTableModel().getColumnIds() ] );        
+      marshaler.setQueryParams( [ table.getTableModel().getColumnIds(), {} ] );        
 
       /*
        *  setup the store that retrieves the data from the backend
@@ -75,7 +76,7 @@ qx.Class.define("databinding.Table",
        * the controller propagates data changes between table and store. note
        * that you don't have to setup the bindings manually
        */
-      var controller = new qcl.databinding.event.controller.Table( table, store );
+      this.tableController = new qcl.databinding.event.controller.Table( table, store );
 
       /*
        * bind the server-supplied status text to the table's status bar.
@@ -125,8 +126,8 @@ qx.Class.define("databinding.Table",
          * set column labels and id
          */
         tableModel.setColumns(
-            [ "ID", "A number", "A date", "Boolean","Some text" ],
-            [ "id", "number", "date", "boolean","text" ]
+            [ "ID", "Some text", " ", "A number", "A date" ],
+            [ "id", "text", "boolean", "number", "date" ]
         );
         
         /*
@@ -136,7 +137,7 @@ qx.Class.define("databinding.Table",
         tableModel.setColumnEditable(2, true);
         tableModel.setColumnEditable(3, true);
         tableModel.setColumnEditable(4, true);
-
+        
       }
       
       /*
@@ -148,13 +149,21 @@ qx.Class.define("databinding.Table",
        * Use special cell editors and cell renderers
        */
       var tcm = table.getTableColumnModel();
-      tcm.setDataCellRenderer(3, new qx.ui.table.cellrenderer.Boolean());
-      tcm.setCellEditorFactory(3, new qx.ui.table.celleditor.CheckBox());
+      tcm.setDataCellRenderer(2, new qx.ui.table.cellrenderer.Boolean());
+      tcm.setCellEditorFactory(2, new qx.ui.table.celleditor.CheckBox());
       
       /*
        * set selection mode
        */
       table.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION);
+      
+      /*
+       * set width of columns
+       */
+      table.getTableColumnModel().setColumnWidth(0,50);
+      table.getTableColumnModel().setColumnWidth(1,150);
+      table.getTableColumnModel().setColumnWidth(2,30);
+      table.getTableColumnModel().setColumnWidth(3,80);
       
       return table;
     },
