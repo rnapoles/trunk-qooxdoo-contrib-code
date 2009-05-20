@@ -64,12 +64,16 @@ qx.Class.define("databinding.Application",
        /*
         * tree demo
         */
-       splitpane.add( ( new databinding.TreeVirtual() ).createPane() );       
+       this.treeDemo = new databinding.TreeVirtual();
+       this.treeDemo.application = this;
+       splitpane.add( this.treeDemo.createPane() );       
        
        /*
         * table demo
         */
-       splitpane.add( ( new databinding.Table() ).createPane() );
+       this.tableDemo = new databinding.Table( this );
+       this.tableDemo.application = this;
+       splitpane.add( this.tableDemo.createPane() );
        
        /*
         * help text
@@ -81,12 +85,10 @@ qx.Class.define("databinding.Application",
        		"<li>Click on 'Start' to retrieve a randomly generated tree. Click 'Stop' whenever the tree is large enough for you. You can then create one or more clones of the tree with the 'Clone Tree' button. Switch to the other window to see that the exact same tree has been created in the other window through events propagated by the server. You can also just add nodes without generating tree data first.</li>" +
        		"<li>Then manipulate the tree by adding, removing or renaming tree nodes. As you can see, the changes are instantly applied to the cloned trees. Switch to the other window to see that the changes appear there, too, with a short delay.</li>" +
        		"<li>You can do similar things with the table. Clone it a few times and then manipulate the table data by adding or removing rows or editing the data by doubleclicking on on of the cells. As in the case of the tree, the changes will be propagated to the cloned instances and the table(s) in the other window.</li>" +
+       		"<li>Finally, you can trigger a reload of table data according to the selected tree node by checking 'Bind tree selection to table'." +
        		"</ol>" +
        		""
         )).set( {rich: true, padding: 10 } ) );
-       
-       
-
        
        /*
         * create independent native browser window to sync with
@@ -94,7 +96,7 @@ qx.Class.define("databinding.Application",
        if( window.location.hash != "#2ndWindow"  )
        {
          window.open(document.location + "#2ndWindow");
-         
+         window.focus();
        }
     }
   }

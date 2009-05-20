@@ -49,10 +49,10 @@ class class_TableData extends AbstractStore
   function method_getRowData( $params )
   {
 
-    list( $firstRow, $lastRow, $requestId, $rowIds ) = $params;
+    list( $firstRow, $lastRow, $requestId, $rowIds, $node ) = $params;
     
     $rowData = array();
-    $rowIds = array( "id", "number", "date", "boolean","text" );
+    $rowIds = array( "id", "text", "boolean", "number", "date" );
     for ( $i= $firstRow; $i<= $lastRow; $i++ )
     {
       $row = array();
@@ -63,20 +63,38 @@ class class_TableData extends AbstractStore
           case "id": 
             $value = (int) $i;
             break;
+            
           case "number": 
-            $value = $_SESSION['rowCount']-$i;
+            if ( $node and isset( $node->id ) )
+            {
+              $value = $node->id + $i; 
+            }
+            else
+            {
+              $value = $_SESSION['rowCount']-$i;
+            }
             break;
+            
           case "date":
             $day = rand(1,30);
             $month = rand(1,12);
             $year = rand(1970,2009);
             $value = "$day.$month.$year";
             break;
+            
           case "boolean":
             $value = (bool) ($i % 2);
             break;
+            
           case "text":
-            $value = "Row $i";
+            if ( $node and isset( $node->label ) )
+            {
+              $value = "{$node->label}, Row $i"; 
+            }
+            else
+            {
+              $value = "Row $i";  
+            }
             break;
         }
         $row[$rowId]=$value;

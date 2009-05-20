@@ -228,6 +228,25 @@ qx.Class.define("qcl.databinding.event.controller.Table",
      
      /*
      ---------------------------------------------------------------------------
+        API METHODS
+     ---------------------------------------------------------------------------
+     */       
+     
+     /**
+      * Reloads the data of the target model
+      * @return {Void}
+      */
+     reload : function()
+     {
+       if( this.getTarget() && this.getStore() )
+       {
+         this.getTarget().getDataModel().reloadData();
+       }
+     },
+     
+     
+     /*
+     ---------------------------------------------------------------------------
         METHODS CALLED BY THE CONTROLLED TABLE'S DATA MODEL
      ---------------------------------------------------------------------------
      */        
@@ -292,7 +311,7 @@ qx.Class.define("qcl.databinding.event.controller.Table",
     /**
      * Called when the editor in the table flushes. Creates a 
      * "changeBubble" event and propagates it to the connected
-     * datastore through the bound "dataEvent" property
+     * datastore 
      */
     _targetOnDataEdited : function( event )
     {

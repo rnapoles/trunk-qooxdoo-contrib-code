@@ -77,7 +77,7 @@ qx.Class.define("databinding.TreeVirtual",
       /*
        * Create a controller that connects tree data model and data store
        */
-      new qcl.databinding.event.controller.TreeVirtual(tree,store);
+      this.treeController = new qcl.databinding.event.controller.TreeVirtual(tree,store);
      
       /*
        * bind the server-supplied status text to the tree's status bar.
@@ -87,6 +87,7 @@ qx.Class.define("databinding.TreeVirtual",
           return " | " + text;
         }
       } ); 
+      
       
       /*
        * if this is the first window, empty event queue
@@ -111,7 +112,7 @@ qx.Class.define("databinding.TreeVirtual",
       tree.getDataModel().addListener("change", function(event)
       {
         var data = event.getData();
-        tree.setAdditionalStatusBarText(" | Tree change: " + data.type + ", start:" + data.start + ", end:" + data.end);
+        this.info(" | Tree change: " + data.type + ", start:" + data.start + ", end:" + data.end);
       },
       this);
 
@@ -134,9 +135,8 @@ qx.Class.define("databinding.TreeVirtual",
         {
           valueChange.push("Changed from '" + data.old + "' to '" + data.value + "'");
         }
-        tree.setAdditionalStatusBarText(" | Tree changeBubble: " + data.name + ":" + valueChange.join(","));
-      },
-      this);
+        this.info(" | Tree changeBubble: " + data.name + ":" + valueChange.join(","));
+      }, this);
       
       
       /*
@@ -400,7 +400,38 @@ qx.Class.define("databinding.TreeVirtual",
       },
       this);
     
-
+      /*
+       * Checkbox for binding tree selection to table
+       */
+      var checkbox = new qx.ui.form.CheckBox("Bind tree selection to table");
+      hbox.add( checkbox );
+      checkbox.addListener("changeValue", function(event)
+      {
+        if ( event.getData() && ! this.__selectionChangeEvent )
+        {
+          this.treeWidget.addListener("changeSelection", function(event)
+          {
+            var selection = event.getData();
+            if ( selection.length )
+            {
+              var tableController = this.application.tableDemo.tableController;
+              
+              /*
+               * set the second parameter passed to the getRowData function 
+               * to the node label
+               */
+              tableController.getStore().getMarshaler().getQueryParams()[1]= { label : selection[0].label, id : selection[0].id };
+              tableController.getTarget().getTableModel().reloadData();
+            }
+          }, this );
+          this.__selectionChangeEvent = true;
+        }
+        else
+        {
+          alert("Unbinding not implemented. Please reload the application");
+        }
+      },
+      this);
       
       return container;   
     },
