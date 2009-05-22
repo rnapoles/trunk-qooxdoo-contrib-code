@@ -88,9 +88,9 @@ qx.Class.define("databinding.Table",
       } );   
       
       /*
-       * turn event transport on
+       * use the tree store as an event proxy
        */
-      store.setUseEventTransport(true);
+      this.application.treeDemo.store.registerStore(store);
    
       
       /*

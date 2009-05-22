@@ -52,13 +52,14 @@ class class_TreeData extends AbstractStore
      * prune all connected trees if it is the first
      */
     if ( $queue[0] == 0 )
-    $this->saveEvent( $storeId, array(
-      'eventType' => "change",
-      'type'      => "remove",
-      'start'     => 0,
-      'end'       => 0
-    ) );
-    
+    {
+      $this->addToEventQueue( $storeId, array(
+        'eventType' => "change",
+        'type'      => "remove",
+        'start'     => 0,
+        'end'       => 0
+      ) );
+    }
     
     /*
      * create node array
@@ -84,7 +85,7 @@ class class_TreeData extends AbstractStore
       {
         return array(
           'result' => array(
-            'nodes'      => array(),   
+            'nodeData'   => array(),   
             'queue'      => array(),
             'statusText' => "Loaded {$_SESSION['nodeCount']} nodes."
           )
@@ -98,7 +99,7 @@ class class_TreeData extends AbstractStore
         /*
          * create node data with at least one folder that has children
          */
-        $nodeId         = ++$_SESSION['counter'];
+        $nodeId  = ++$_SESSION['counter'];
         
         /*
          * set start and end indexes
@@ -157,12 +158,12 @@ class class_TreeData extends AbstractStore
     /*
      * dispatch an event to all connected stores
      */
-    $this->saveEvent( $storeId, array(
-      'eventType' => "change",
-      'type'      => "add",
-      'start'     => $start,
-      'end'       => $end,
-      'items'     => $nodeArr
+    $this->addToEventQueue( $storeId, array(
+      'eventType'   => "change",
+      'type'        => "add",
+      'start'       => $start,
+      'end'         => $end,
+      'items'       => $nodeArr 
     ) );
         
     /*
