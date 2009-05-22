@@ -110,7 +110,11 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      * create store id
      */ 
      this.setStoreId( this.uuid() );
-
+     
+    /*
+     * store a reference to itself for polling
+     */
+     this.getProxiedStores().push(this);
   },
 
   /*
@@ -230,6 +234,27 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     {
       check : "Integer",
       init : 3
+    },
+    
+    /**
+     * If a central jsonrpc store takes care of event transport, 
+     * store a reference here. 
+     */
+    eventStore :
+    {
+      check : "qcl.databinding.event.store.JsonRpc",
+      nullable : true
+    },
+    
+    /**
+     * An array of qcl.databinding.event.store.JsonRpc object that this
+     * object serves as an event proxy for. Contains at least a reference
+     * to itself.
+     */
+    proxiedStores : 
+    {
+      check : "Array",
+      init : []
     }
 
 
@@ -357,25 +382,45 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      }
    },
     
-    /*
-     * register with server
-     */    
-    registerStore : function()
-    {
-       this.load("register",[this.getStoreId()],function(data){
-         //this.info(data);
-       }, this );  
-    },
-    
-    /*
-     * unregister from server
-     */
-    unregisterStore : function()
-    {
-       this.load("unregister",[this.getStoreId()],function(data){
-         //this.info(data);
-       }, this );   
-    },
+   /**
+    * Register store with server.
+    * @param store {qcl.databinding.event.store.JsonRpc|undefined} If not given, register
+    * myself.
+    */    
+   registerStore : function(store)
+   {
+     if( ! store )
+     {
+       store = this;
+     }
+     else
+     {
+       this.getProxiedStores().push(store);
+     }
+     this.load("register",[store.getStoreId()],function(data){
+       //this.info(data);
+     }, this );  
+   },
+
+   /**
+    * Unegister store with server.
+    * @param store {qcl.databinding.event.store.JsonRpc|undefined} If not given, unregister
+    * myself.
+    */    
+   unregisterStore : function(store)
+   {
+      if( ! store )
+      {
+        store = this;
+      }
+      else
+      {
+        qx.lang.Array.remove( this.getProxiedStores(), store );
+      }
+     this.load("unregister",[store.getStoreId()],function(data){
+       //this.info(data);
+     }, this );  
+   },
     
     /**
      * Returns the current event queue and empties it.
@@ -406,7 +451,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
        /*
         * abort if no event transport
         */
-       if ( ! this.getUseEventTransport() ) return;
+       if ( ! this.getUseEventTransport() && ! this.getProxyStore() ) return;
       
        /*
         * convert the event for propagation to the server
@@ -623,20 +668,29 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     },
 
     
-    /**
-     * Polls the server, passing the events in the queue#
-     * and retrieving the events on the server
-     * @return {Void}
-     */
+   /**
+    * Polls the server, passing the events in the queue
+    * and retrieving the events on the server to all stores
+    * that this object serves as proxy for, including itself.
+    * @return {Void}
+    */
     _poll : function()
     {
+      var events = {};
+      this.getProxiedStores().forEach(function(store){
+        var storeId = store.getStoreId();
+        events[storeId] = store.getDataEvents();
+      });
       this.load("getEvents",
-        [ this.getStoreId(), this.getDataEvents() ],
-        function(data){
-          this._handleServerEvents(data.events);
-        }, 
-        this 
-      );
+          [ events ],
+          function(data)
+          {
+            this.getProxiedStores().forEach(function(store){
+              store._handleServerEvents(data.events[store.getStoreId()]);
+            });
+          }, 
+          this 
+        );        
     },
     
     /**
