@@ -1,4 +1,19 @@
+/* ************************************************************************
 
+  qcl qooxdoo component library
+
+   Copyright:
+     2007-2009 Christian Boulanger
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Christian Boulanger (cboulanger)
+
+************************************************************************ */
 /**
  * Mixin for application providing asynchronous
  * equivalents for prompt, alert, confirm
@@ -11,7 +26,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * Displays an information message
      *
-     * @type member
      * @param msg {String} Message 
      * @param callback {Function} Callback function
      * @param context {Object} "this" object in callback function
@@ -42,7 +56,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * Displays an alert / warning
      *
-     * @type member
      * @param msg {String} Message 
      * @param callback {Function} Callback function
      * @param context {Object} "this" object in callback function
@@ -112,7 +125,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * Asks user to confirm something. The callback function receives a true or false value.
      *
-     * @type member
      * @param msg {String} Message 
      * @param yesMsg {String} Label for the "Yes" or "OK" button (Default: "OK")
      * @param noMsg {String} Label for the "No" or "Cancel" button (Default: "Cancel")
@@ -192,7 +204,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
      * function receives a integer (1 ... n) according to which
      * button the user clicks on 
      *
-     * @type member
      * @param msg {String} Message 
      * @param choices {Array} Array of labels for buttons
      * @param callback {Function} Callback function
@@ -271,7 +282,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * Prompts the user to enter a text.
      *
-     * @type member
      * @param msg {String} Message 
      * @param defaultAnswer {String} Default answer displayed in the text field
      * @param callback {Function} Callback function, argument is entered text
@@ -366,7 +376,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * Presents a form with multiple fields. So far implemented: TextField/TextArea and non-editable Combobox
      *
-     * @type member
      * @param msg {String} Message 
      * @param formData {Map} Map of form field information. 
      * <pre>
@@ -569,9 +578,10 @@ qx.Mixin.define("qcl.application.MUserInteraction",
       });
     },
     
-    /**
+    /** 
      * Handles 'qcl.commands.remote.presentForm' message. You need to add a message subscriber 
      * in the main method of your application like so:
+     * 
      * qx.event.message.Bus.subscribe("qcl.commands.remote.presentForm",this.handleRemotePresentForm,this);
      * @param message {qx.event.message.Message} Message object
      * @param target {qx.core.Target} Message receiver object 
@@ -596,12 +606,14 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     },    
     
     /**
-     * upload window. user can select a file on the local filesystem
+     * Upload window. user can select a file on the local filesystem. 
+     *
      * @param {String} msg
      * @param {String|null} url or null if the file is not to be uploaded 
      * @param {Function} callback, will be called with the path of the local file 
      * and the response string as arguments
      * @param {Object} context
+     * @return {Void}
      */
     upload : function (msg, url, callback, context, params )
     {
@@ -610,7 +622,8 @@ qx.Mixin.define("qcl.application.MUserInteraction",
        */
       if (! window.uploadwidget )
       {
-        return this.alert("Upload Widget is not available.");
+        this.alert("Upload Widget is not available.");
+        return;
       }
       
       /*
@@ -650,7 +663,7 @@ qx.Mixin.define("qcl.application.MUserInteraction",
       /*
        * parameters
        */
-      if ( typeof params != undefined )
+      if ( params !== undefined )
       {
         for ( var k in params )
         {
@@ -741,7 +754,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * checks if callback argument is a function
      *
-     * @type member
      * @param callback {Function} TODOC
      * @return {Boolean} 
      */
@@ -756,7 +768,6 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     /**
      * Creates the popup window
      *
-     * @type member
      * @param caption {String} Window caption
      * @param msg {String} Message
      * @param smallIcon {String} Resource string for icon in the window title bar
@@ -817,7 +828,8 @@ qx.Mixin.define("qcl.application.MUserInteraction",
     },
     
     /**
-     * wordwraps strings
+     * Wordwraps strings
+     *
      * @param str {String} string to be wrapped
      * @param int_width {Int} line length
      * @return {String} the formatted string, line breaks replaced by br tags
