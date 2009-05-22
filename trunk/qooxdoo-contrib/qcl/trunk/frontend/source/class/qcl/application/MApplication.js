@@ -10,7 +10,7 @@
     - a central clipboard
 
    Copyright:
-     2007 Christian Boulanger
+     2007-2009 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -23,17 +23,53 @@
 ************************************************************************ */
 
 /* ************************************************************************
-
-#module(qcl.application)
-
+#require(qcl.application.*)
+#require(qx.*)
 ************************************************************************ */
 
 /**
- * @todo move mixin providing .getApplication() method for each widget here.
+ * A mixin for an application instance that provides methods concerning 
+ * application state, a cross-window clipboard, history support.
+ *
  */
 qx.Mixin.define("qcl.application.MApplication",
 {
 
+  include : [ 
+    qcl.application.MApplicationState
+  ],
+  
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */  
+
+  construct : function()
+  {
+    /*
+     * cache for widget ids
+     */
+    this.__widgetById = {};
+    
+    /*
+     * Mixins
+     */
+    qx.Mixin.include( qx.core.Object, qcl.application.MGetApplication );
+    qx.Mixin.include( qx.core.Object, qcl.application.MWidgetId );
+    
+    /*
+     * session id
+     */
+    var sid =  this.getState("sessionId");
+    if ( sid )
+    {
+      this.setSessionId( sid );  
+    }    
+    
+    
+  },
+ 
   /*
   *****************************************************************************
      PROPERTIES
@@ -42,22 +78,93 @@ qx.Mixin.define("qcl.application.MApplication",
 
   properties : {
     
-    /** the backwards history **/
-    backHistoryStack :
+    /**
+     * The name of the application
+     */
+    applicationName : 
     {
-      check : "Array",
-      init : []
+      check : "String",
+      nullable : false,
+      init : "qooxdoo"
     },
     
-    /** the forward history **/
-    forwardHistoryStack :
+    /**
+     * Whether this is the main application window or a dependent
+     * child window
+     */
+    mainApplication : 
     {
-      check : "Array",
-      init : []
-    }
+      check : "Boolean",
+      init : true
+    },
+    
+    /** 
+     * The current session id, unique for each application, usually
+     * retrieved from the backend. Will be sent, for example, with
+     * rpc requests
+     */
+    sessionId :
+    {
+      check : "String",
+      nullable : true,
+      event : "changeSessionId",
+      apply : "_applySessionId"
+    },
+    
+    /**
+     * Whether the current user is anonymous, i.e. not logged in
+     */
+    authenticatedUser :
+    {
+      check : "Boolean",
+      init : false,
+      event : "changeAuthenticatedUser"
+    },
+    
+    /**
+     * The username of the currently authenticated user, or null
+     * if none
+     */
+    username : 
+    {
+      check : "String",
+      nullable : true,
+      event : "changeUsername"
+    },
+    
+     /**
+      * The URL of the backend
+      */
+     serverUrl :
+     {
+       check : "String",
+       nullable : true
+     },
+     
+     /**
+      * The RPC object that is shared by all methods that require access
+      * to the backend. Needs to be set by the parent constructor and must be
+      * a subclass of 
+      */
+     rpcObject : 
+     {
+       check : "qx.io.remote.Rpc",
+       nullable : true
+     },
+     
+     /**
+      * The JSONRPC service method that should be called when the application is
+      * closed
+      */
+     serviceMethodOnTerminate :
+     {
+       check : "String",
+       nullable : true
+     }
+     
 
   },
-
+  
   /*
   *****************************************************************************
      MEMBERS
@@ -66,587 +173,433 @@ qx.Mixin.define("qcl.application.MApplication",
   
   members :
   {
+
+    /*
+    ---------------------------------------------------------------------------
+       PRIVATE MEMBERS
+    ---------------------------------------------------------------------------
+    */         
+    
+    __rpc : null,
+    __widgetById : {},
+    __sessionId : null,
+    __eventStore: null,
+    
+    /*
+    ---------------------------------------------------------------------------
+       APPLY METHODS
+    ---------------------------------------------------------------------------
+    */          
+    
+    _applySessionId : function( sessionId, old )
+    {
+      this.setState( "sessionId", sessionId );
+    },
+    
     /**
-     * gets a reference to the main application
+     * Applying the server url will automatically create a rpc object if it 
+     * does not exist.
+     */
+    _applyServerUrl : function( url, old )
+    {
+      if ( ! this.getRpcObject() )
+      {
+        this.setRpcObject( new qx.io.remote.Rpc );
+      }
+      this.getRpcObject().setUrl(url);
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       WIDGET ID
+    ---------------------------------------------------------------------------
+    */             
+    
+    /**
+     * store a reference to a widget linked to its id
+     * @param id {String}
+     * @param widget {Object}
+     * @return void
+     */
+    setWidgetById : function(id,widget)
+    {
+      this.__widgetById[id] = widget;
+    },
+    
+    /**
+     * gets a reference to a widget by its id
+     * @param id {String}
+     * @return widget {Object}
+     */
+    getWidgetById : function(id)
+    {
+      return this.__widgetById[id];
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       STARTUP AND TERMINATION
+    ---------------------------------------------------------------------------
+    */     
+    
+    /**
+     * Called before the page is closed
+     * @return
+     */
+    close : function()
+    {
+      if ( this.isMainApplication() )
+      {  
+        return this.tr("Do you really want to quit %s?",  this.getApplicationName() );
+      }
+      return undefined;
+    },
+    
+    /**
+     * Called when the page is closed
+     */
+    terminate : function()
+    {
+      /*
+       * unregister stores
+       */
+      if( this.__eventStore )
+      {
+        this.__eventStore.unregister( this.__storeIds );
+      }
+      
+      /*
+       * execute terminate function on server
+       */
+      if ( this.getServiceMethodOnTerminate() && this.getRpcObject() )
+      {
+        this.executeService( this.getServiceMethodOnTerminate() );
+      }
+    },
+
+    
+    
+    /*
+    ---------------------------------------------------------------------------
+       SERVER COMMUNICATION
+    ---------------------------------------------------------------------------
+    */        
+    
+    /** 
+     * Converts jsonrpc request data into an Url that
+     * performs a GET request on the jsonrpc backend,
+     * @param {String} service
+     * @param {String} method
+     * @param {Object} params
+     */
+    convertToGetRequestUrl : function(service,method,params)
+    {
+      var url  = this.getServerUrl() + "?_ScriptTransport_id=1&_ScriptTransport_data=";
+      url += qx.io.Json.stringify( {
+        'service'     : service,
+        'method'      : method,
+        'params'      : params,
+        'server_data' : {
+          'sessionId' : this.getSessionId()  
+        }
+      })
+      return url;
+    },   
+    
+    
+    /** 
+     * Executes a jsonrpc service with the rpc object configured in the 
+     * main application's constructor
+     * @param serviceName {String}
+     * @param serviceMethod {String}
+     * @param params {Array} Parameters to send to the method
+     * @param callback {Function} Callback function that is called with the data returned from the server
+     * @param context {Object} The object context in which the callback function is executed
+     * @param serverData {Map} Additional data passed to the server
+     * @return {void}
+     */
+    executeService : function( serviceName, serviceMethod, params, callback, context, serverData )
+    {
+      if ( ! this.getRpcObject() )
+      {
+        this.error("No JsonRpc object configured.");
+      }
+      var rpc = this.getRpcObject();
+      rpc.setServiceName( serviceName );
+      var callbackFunc = function( data, ex, id ) 
+      {
+        if ( ex == null ) 
+        {  
+          if ( typeof callback == "function" )
+          {
+            callback.call( context, data );
+          }            
+        } 
+      }
+      if ( serverData )
+      {
+        rpc.setServerData( serverData );
+      }
+
+      rpc.callAsync.apply( rpc, params.unshift( serviceMethod ) );
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       EVENT TRANSPORT 
+    ---------------------------------------------------------------------------
+    */               
+   
+    /**
+     * Start a central mechanism for registered databinding controllers
+     * to transport their events to the server through period polling
+     * @param interval {Integer|false} If an positive integer, the interval
+     * for the polling 
+     */
+    startEventTransport : function( serviceName, serviceMethod, interval )
+    {
+      if ( ! interval || isNaN(parseInt(interval) ) )
+      {
+        this.error("Invalid interval value");
+      }
+      if ( this.__eventStore )
+      {
+        this.warn("Event transport is already running.");
+        return;
+      }
+      if ( ! this.getRpcObject() )
+      {
+        this.error("No rpc object defined");
+      }
+
+      var store = this.__eventStore;
+      
+      if( ! store )
+      {
+        store = this.__eventStore = new qcl.databinding.event.store.JsonRpc( 
+            this.getServerUrl(), serviceName, null, null, this.getRpcObject() 
+        );
+        store.register();        
+      }
+      store.setInterval( interval );
+      store.setUseEventTransport( true );
+    },
+    
+    /**
+     * Stop the event transport
+     * @return {Void}
+     */
+    stopEventTransport : function()
+    {
+      if ( ! this.__eventStore )
+      {
+        this.warn("Event transport is not running.");
+        return;
+      }
+      this.getEventStore().setUseEventTransport(false);
+    },
+
+    /**
+     * Returns the event store object
+     */
+    getEventStore : function()
+    {
+      return this.__eventStore;
+    },
+
+
+    /*
+    ---------------------------------------------------------------------------
+       CHILD WINDOWS
+    ---------------------------------------------------------------------------
+    */         
+    
+    /**
+     * Child windows opened by this application
+     */
+    __windows : {},
+    
+    
+    setWindowTitle : function( title )
+    {
+      document.title = title;
+      if ( window.menuButton )
+      {
+        window.menuButton.setLabel(title);
+      }
+      
+    },    
+    
+    /** 
+     * Start an application in a new window or bring the
+     * window to the front if it has already been opened
      *
-     * @type member
-     * @return {var} TODOC
+     * @param application {String} class name of application
+     * @param state {Map} application state
+     * @param width {Int} Width of window
+     * @param height {Int} Height of window     
+     * @return {qx.client.NativeWindow} 
+     */
+    startApplication : function( application, state, width, height )
+    {
+      /*
+       * add session id and access mode to the state
+       */
+      state.parentSessionId = this.getSessionId();
+      state.access = "continue";
+      
+      /*
+       * convert into string
+       */
+      var stateArr = [];
+      for ( var key in state )
+      {
+        stateArr.push( key + "=" + encodeURIComponent( state[key] ) )
+      }
+      var stateStr = "#" + stateArr.join("&");
+      var w = this.__windows[stateStr];
+      if ( w instanceof qx.client.NativeWindow ) 
+      {
+        w.focus();
+        return w;
+      }
+      
+      /*
+       * open new window
+       */
+      w = new qx.client.NativeWindow("?application=" + application + stateStr );      
+      w.setAllowScrollbars(false);
+      if (width && height) 
+      {
+        w.setDimension(width, height);
+      }
+      else
+      {
+         w.setDimension(800, 400);
+      }
+      w.open();
+
+      /*
+       * check if window has been blocked
+       */
+      if (! w.isOpen() )
+      {
+        alert("Cannot open popup window. Please disable your popup blocker.");
+        return null;
+      }
+
+      /*
+       * delete reference on close
+       */
+      w.addEventListener("close", function() {
+        delete this.__windows[stateStr];
+        delete w;
+      }, this);
+
+      /*
+       * save window in registry
+       */
+      this.__windows[stateStr] = w;
+      
+      return w;
+    },
+
+    
+   /** 
+    * Starts an application in a new window and creates a menu button connected with 
+    * this window. When the button is clicked, the window gets the focus. Returns a 
+    * qx.ui.menu.Button widget with the connected window reference attached as the 
+    * "window" property
+    *
+    * @param application {String} class name of application
+    * @param state {Map} application state
+    * @param width {Int} Width of window
+    * @param height {Int} Height of window
+    * @param label {String} Label of the menu button connected to the window
+    * @return {qx.ui.menu.Button} 
+    */
+   startApplicationWithMenuButton : function( application, state, width, height, label ) 
+   {
+     /*
+      * window
+      */
+     var win = this.startApplication( application, state, width, height );
+     
+     /*
+      * menu button
+      */
+     var menuButton = new qx.ui.menu.Button( label );
+     
+     /*
+      * attach reference to window as the "window" property
+      * and vice versa
+      */
+     console.log(menuButton.window);
+     menuButton.window = win;
+     win._window.menuButton = menuButton;
+     
+     /*
+      * when button is clicked, give the focus to the window
+      */
+     menuButton.addEventListener("execute", function() {
+       win.focus();
+     });
+     
+     /*
+      * when the window is closed, delete the button
+      */
+     win.addEventListener("close", function() {
+       menuButton.getParent().remove(menuButton);
+       menuButton.dispose();
+       menuButton.destroy();
+       win.dispose();
+       delete win;
+     });
+
+     return menuButton;
+   },    
+
+    /* 
+    ---------------------------------------------------------------------------
+      SHORTCUTS
+    ---------------------------------------------------------------------------
+    */             
+    
+    
+    /**
+     * Returns a reference to the main application
+     *
+     * @return {qx.application.Standalone}
      */
     getMainApplication : function()
     {
-      if (window.opener) {
-        return opener.qx.core.Init.getInstance().getApplication();
-      } else {
-        return qx.core.Init.getInstance().getApplication();
-      }
-    },
-
-
-    /**
-     * gets a reference to the global clipboard instance
-     *
-     * @type member
-     * @return {var} TODOC
-     */
-    getClipboard : function()
-    {
-      if (window.opener) {
-        return opener.qcl.clipboard.Manager.getInstance();
-      } else {
-        return qcl.clipboard.Manager.getInstance();
-      }
-    },
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @return {Map} TODOC
-     */
-    _analyzeSearchString : function()
-    {
-      var s = window.location.search;
-      var gP = window.location.parameters = {};
-
-      if (s)
-      {
-        var parts = s.substr(1).split("&");
-
-        for (var i=0; i<parts.length; i++)
-        {
-          var p = parts[i].split('=');
-          gP[p[0]] = typeof p[1] == "string" ? decodeURIComponent(p[1].replace(/\+/g, ' ')) : true;
-        }
-      }
-
-      return gP;
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param key {var} TODOC
-     * @return {String} TODOC
-     */
-    getGetParam : function(key)
-    {
-      var gP = this._analyzeSearchString();
-      return gP[key];
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @param first {var} TODOC
-     * @param second {var} TODOC
-     * @return {void} 
-     */
-    setGetParam : function(first, second)
-    {
-      var gP = this._analyzeSearchString();
-
-      if (typeof first == "object")
-      {
-        for (var key in first) 
-        {
-          gP[key] = first[key];
-        }
-      }
-      else
-      {
-        gP[first] = second;
-      }
-
-      var p = [];
-
-      for (var key in gP) 
-      {
-        p.push(key + "=" + encodeURIComponent(gP[key]));
-      }
-
-      window.location.search = p.join("&");
-
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @param string {String} optional string to analyze instead of location.hash
-     * @return {Map} TODOC
-     */
-    _analyzeHashString : function(string)
-    { 
-      var h  = string || location.hash || "";
-      /*
-       * Safari bug
-       */
-      while ( h.search(/%25/) != -1 )
-      {
-        h = h.replace(/%25/g,"%");
-      }      
-      
-      h = h.replace(/#/,"").replace(/%3D/g,"=").replace(/%26/g,"&"); 
-      var hP = {};
-      if (h)
-      {
-        var parts = h.split("&");
-
-        for (var i=0; i<parts.length; i++)
-        {
-          var p = parts[i].split('=');
-          hP[p[0]] = typeof p[1] == "string" ? decodeURIComponent(p[1].replace(/\+/g, ' ')) : true;
-        }
-      }
-      if ( ! string ) location.hashParams = hP;
-      return hP;
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param key {var} TODOC
-     * @return {var} TODOC
-     */
-    getHashParam : function(key)
-    {
-       var hP = this._analyzeHashString();
-       return hP[key];
-    },
-
-
-    /** 
-     * Sets an url hash parameter
-     *
-     * @type member
-     * @param first {Map|String} Either a map of key-value pairs or the key
-     * @param second {String|undefined} A value or undefined if first parameter is a Map
-     * @return {Map} 
-     */
-    setHashParam : function(first, second)
-    {
-      var hP = this._analyzeHashString();
-
-      if (typeof first == "object")
-      {
-        for (var key in first) 
-        {
-          hP[key] = first[key];
-        }
-      }
-      else
-      {
-        hP[first] = second;
-      }
-
-      var p = [];
-
-      for (var key in hP) 
-      {
-        p.push(key + "=" + encodeURIComponent(hP[key]));
-      }
-
-      window.location.hash = p.join("&");
-      
-      /*
-       * Safari bug
-       */      
-      while ( window.location.hash.search(/%25/) != -1 )
-      {
-        window.location.hash = window.location.hash.replace(/%25/g,"%");
-      }
-      
-      //console.log(window.location.hash);
-      return hP;
-    },
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param name {String} TODOC
-     * @return {Map}  
-     */
-    removeHashParam : function(name)
-    {
-      var hP = this._analyzeHashString();
-      
-      if ( typeof(hP[name]) != "undefined") 
-      {
-        delete hP[name];
-        
-        var p = [];
-        
-        for (var key in hP) 
-        {
-          p.push(key + "=" + encodeURIComponent( hP[key] ) );
-        }
-        
-        window.location.hash = p.join("&");
-        
-        /*
-         * Safari bug
-         */        
-        while ( window.location.hash.search(/%25/) != -1 )
-        {
-          window.location.hash = window.location.hash.replace(/%25/g,"%");
-        }
-        
-      }
-      //console.log(window.location.hash);
-      return hP;
-    },
-    
-    /**
-     * sets a state aspect of the application. the state is exclusively stored in the hash
-     * parameter of the url, thus it must always be a string. Each change of a state
-     * fires an event: this.getApplication().setState("foo", "bar") will 
-     * dispatch a data event "changeFoo" with the value "bar" on the application singleton.
-     * @param {String} name
-     * @param {String} value
-     * @param {String} optional description of the state that will appear in the title bar and the browser history
-     * @todo tie to property of application 
-     */
-    setState : function( name, value, description )
-    {
-      if ( typeof(name) != "string" )
-      {
-        this.error("Invalid parameters");
-      }
-			
-			/*
-			 * convert to string
-			 */
-			if ( typeof(value) != "string" )
-			{
-				value = new String(value);
-			}
-			
-			var oldValue = this.getState(name);
-			//console.log("New state for '" + name + "' :'" +value +"', old state :'" + oldValue +"'");
-			
-			/*
-			 * only dispatch events if value actually changes
-			 */
-      if ( value != oldValue )
-      {
-        /*
-         * this will also fire the changeState event
-         */
-        //console.log("Setting hash param '" + name + "' to " +value);
-        this.setHashParam( name, value );
-        
-        /*
-         * qooxdoo browser navigation button support
-         */
-        this.addToHistory(location.hash.substr(1),description);        
-      }
-    },
-    
-    /**
-     * Gets the string value of a state
-     * @param {String} name
-     * @return {String}
-     */
-    getState : function ( name )
-    {
-      var value = this.getHashParam( name );
-      switch (value)
-      {
-        case "null": return null;
-        case "false": return false;
-        case "true": return true; 
-        case "undefined": return undefined;
-        case "NaN" : return undefined;
-        default: return value;
-      }
-    },
-    
-    /**
-     * Returns a map with the complete application state
-     * @return {Map}
-     */
-    getStates : function()
-    {
-      return this._analyzeHashString();
-    },
-
-    /**
-     * Updates the current state, firing all change events even if 
-     * the state hasn't changed. If you don't supply any argument,
-     * all states will be updated. If you supply an array of strings
-     * or a variable number of string arguments, only the states 
-     * in the array or arguments will be updated.
-     * @param state {var} optional. a variable number of string arguments or an array
-     * @return {Map}
-     */
-    updateState : function()
-    {
-      var states = {};
-      var stateMap = this._analyzeHashString();
-      if ( arguments[0] instanceof Array )
-      {
-        arguments[0].forEach(function(name){
-         states[name] = true; 
-        }); 
-      }
-      else if ( arguments.length)
-      {
-        for (var i=0; i<arguments.length; i++)
-        {
-          states[arguments[i]] = true; 
-        }
-      }
-      else
-      {
-        states = null;
-      }
-      
-      for(var key in stateMap)
-      {
-         if ( states && ! states[key] ) continue;
-         this._fireStateEvent( key, stateMap[key] );
-      }
-      return stateMap;
-    },
-
-    /**
-     * Removes a state
-     * @param {String} name
-     * @return {Map}
-     */
-    removeState : function ( name )
-    {
-      this.removeHashParam( name );
-      this.addToHistory(location.hash.substr(1),null);
-    },
-    
-    /**
-     * Fires a "change state" event
-     * @param {String} name
-     * @param {String} data
-     * @return void
-     * @todo: either change event name or tie state to property
-     */
-    _fireStateEvent : function ( name, data )
-    {
-      var eventName = "change" + name.substr(0,1).toUpperCase() + name.substr(1);
-      //console.log("Firing Event '" + eventName + "' with data :" + data );
-      qx.core.Init.getInstance().getApplication().createDispatchDataEvent(eventName,data);
-    },
-    
-    
-    /**
-     * Support qooxdoo history manager 
-     * @param {Boolean} value
-     */
-    setHistorySupport : function (value)
-    {
-      if( value )
-      {        
-        var state = qx.client.History.getInstance().getState();
-        //console.log("Initial state: " + state);
-        this.__lastHash    = state; 
-        this.__hashParams  = this._analyzeHashString();
-        //console.log(this.__hashParams);
-        
-        /*
-         * setup event listener for history changes
-         */
-        qx.client.History.getInstance().addEventListener("request", function(e) 
-        {
-          var state = e.getData();
-          //console.log("'request' event received with hash'"+state+"'");
-          
-          /*
-           * application specific state update
-           */ 
-          var hP = this._analyzeHashString(state);
-          
-          /*
-           * check all hash keys
-           */
-          for ( var key in hP )
-          {
-            var value = hP[key]; 
-            //console.log("State param '"+key+"': new value '"+value+"', previous value '"+this.__hashParams[key]+"'.");
-                        
-            /*
-             * fire events
-             */
-            if ( value != this.__hashParams[key] )
-            {
-              this.__hashParams[key] = value;
-              this._fireStateEvent(key,value);
-            }
-          }
-        }, this);
-      }     
-    },
-	
-
-    
-    /**
-     * Wraps qx.client.History.getInstance().navigateBack();
-     */
-    navigateBack : function()
-    {
-      var bHist = this.getBackHistoryStack();
-      var fHist = this.getForwardHistoryStack();
-      //console.log("Trying to navigate backwards, stack length is "+ bHist.length);
-      if ( bHist.length )
-      {
-        var hash = bHist.shift(); // get from backward stack
-        fHist.unshift(hash); // and put on forward stack
-        
-        // for some reason, this has to be executed twice to trigger the back action
-        qx.client.History.getInstance().navigateBack();
-        qx.client.History.getInstance().navigateBack();
-
-        return true;
-      }
-      return false;
-    },
-    
-    /**
-     * wraps qx.client.History.getInstance().navigateForward()
-     */
-    navigateForward : function()
-    {
-      var fHist = this.getForwardHistoryStack();
-      var bHist = this.getBackHistoryStack();
-      //console.log("Trying to navigate forwards, stack length is "+ fHist.length);
-      if ( fHist.length )
-      {
-        var hash = fHist.shift(); // get from forward stack
-        bHist.unshift(hash); // and put on backward stack
-        
-        // for some reason, this has to be executed twice to trigger the forward action
-        qx.client.History.getInstance().navigateForward();
-        qx.client.History.getInstance().navigateForward();
-        return true;
-      }
-      return false;
-    },
-    
-    /**
-     * Wraps the qooxdoo history function
-     * @param hash {String}
-     * @param description {String|undefined}
-     */
-    addToHistory : function( hash, description )
-    {
-      // check if state has changed
-      if ( hash == this.__lastHash )
-      {
-        //console.log("Hash hasn't changed, not adding it to history...");
-        return;
-      }
-      this.__lastHash = hash;
-      var bHist = this.getBackHistoryStack();
-      bHist.unshift(hash);
-      qx.client.History.getInstance().addToHistory( hash, description );
-    },
-
-    canNavigateBack : function()
-    {
-      return ( this.getBackHistoryStack().length > 1 );
-    },
-    
-    canNavigateForward : function()
-    {
-      return ( this.getForwardHistoryStack().length > 1 );
-    },
-    
-    /**
-     * Returns the session id, which is either an application state in the
-     * browser url or cached as a property.
-     * @return {String|null}
-     */
-    getSessionId : function()
-    {
-      var sid =  this.getState("sessionId");
-      
-      if ( sid )
-      {
-        this.__sessionId = sid;  
-      }
-      
-      if ( this.__sessionId )
-      {
-        return this.__sessionId;
-      }
-      
-      return null;
-            
-    },
-    
-    /**
-     * Sets the session id and copies it to the application state
-     * @param sessionId {String}
-     * @return void
-     */
-    setSessionId : function( sessionId )
-    {
-      this.setState("sessionId", sessionId );
-      this.__sessionId = sessionId;            
-    },    
-    
-    /**  
-     * Sets up the default context menu behaviour: traverse the widget tree upwards until
-     * a context menu ist found, which is then displayed
-     * @return {void} 
-     */
-    setupContextMenu : function()
-    {
-
-      /*
-       * add contextmenu event handler to client document
-       */
-      qx.ui.core.ClientDocument.getInstance().addEventListener("contextmenu",function(e){
-                
-        var target = e.getOriginalTarget();
-        
-        while ( target && typeof target=="object" && target.getParent )
-        {
-          if ( target.getContextMenu && target.getContextMenu() )
-          {
-            var contextMenu = target.getContextMenu();
-            contextMenu.setLeft( e.getClientX() );
-            contextMenu.setTop( e.getClientY() );
-            contextMenu.setOpener( target );
-            contextMenu.show();
-            return true;
-          }
-          else
-          {
-            target = target.getParent();
-          }
-        } 
-      },this );  
+       if ( window.opener ) 
+       {
+         var app = opener.qx.core.Init.getApplication();
+       } 
+       else 
+       {
+         var app = this;
+       }
+       return app;
     },
     
     /**
      * Shorthand method to return active user
-     * @return {qcl.auth.user.User}
+     * @return {qcl.access.user.User}
      */
     getActiveUser : function()
     {
-      return qcl.auth.user.Manager.getInstance().getActiveUser();
+      return qcl.access.user.Manager.getInstance().getActiveUser();
     },
     
    /**
     * Shorthand method to return a permission object by name
-    * @return {qcl.auth.permission.Permission}
+    * @return {qcl.access.permission.Permission}
     */    
     getPermission : function( name )
     {
-      return qcl.auth.permission.Manager.getInstance().getObject( name );   
+      return qcl.access.permission.Manager.getInstance().getObject( name );   
     },
 
     /**
@@ -657,6 +610,21 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       this.getPermission( name ).update();
     },
+    
+   /**
+    * gets a reference to the global clipboard instance
+    *
+    * @type member
+    * @return {var} TODOC
+    */
+   getClipboard : function()
+   {
+     if (window.opener) {
+       return opener.qcl.clipboard.Manager.getInstance();
+     } else {
+       return qcl.clipboard.Manager.getInstance();
+     }
+   },   
 
     /**
      * Shorthand method to return a config key
@@ -677,5 +645,6 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       return qcl.config.Manager.getInstance().setKey( key, value );
     }
+
   }
 });
