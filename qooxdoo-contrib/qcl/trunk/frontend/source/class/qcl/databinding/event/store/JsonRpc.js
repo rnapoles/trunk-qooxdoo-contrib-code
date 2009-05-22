@@ -391,15 +391,15 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
    {
      if( ! store )
      {
-       store = this;
+       this.load("register",[ this.getStoreId() ],function(data){
+         //this.info(data);
+       }, this );  
      }
      else
      {
        this.getProxiedStores().push(store);
      }
-     this.load("register",[store.getStoreId()],function(data){
-       //this.info(data);
-     }, this );  
+
    },
 
    /**
@@ -411,15 +411,18 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
    {
       if( ! store )
       {
-        store = this;
+        this.load("unregister",[this.getProxiedStores()],function(data){
+          //this.info(data);
+        }, this );        
       }
       else
       {
         qx.lang.Array.remove( this.getProxiedStores(), store );
+        this.load("unregister",[[store.getStoredId()]],function(data){
+          //this.info(data);
+        }, this );                
       }
-     this.load("unregister",[store.getStoreId()],function(data){
-       //this.info(data);
-     }, this );  
+
    },
     
     /**
