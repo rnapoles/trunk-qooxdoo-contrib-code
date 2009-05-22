@@ -57,8 +57,8 @@ qx.Class.define("bug2361.Application",
       // Document is the application root
       var doc = this.getRoot();
 
-      var textarea = new bug2361.TextArea;
-      textarea.setMaxlength(10);
+      var textarea = new qx.ui.form.TextArea; //new bug2361.TextArea;
+      textarea.setMaxLength(10);
 			
       doc.add(textarea, {left: 100, top: 50});
 
