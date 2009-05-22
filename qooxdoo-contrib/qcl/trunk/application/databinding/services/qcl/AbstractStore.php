@@ -29,22 +29,23 @@ class AbstractStore
 
   function method_register( $params )
   {
-    list( $storeId ) = $params;
-    
-    if ( ! isset( $_SESSION[get_class($this)]['storeIds'] ) )
-    {
-      $_SESSION[get_class($this)]['storeIds'] = array();
-    }
-    if ( ! in_array( $storeId, $_SESSION[get_class($this)]['storeIds'] ) )
-    {
-      /*
-       * register the store and create an event queue
-       * In a real application, this would be saved in the database
-       */
-      $_SESSION[get_class($this)]['storeIds'][] = $storeId;
-      $_SESSION[get_class($this)]['events'][$storeId] = array();
-    }
+    list( $storeIds, $serviceName ) = $params;
 
+    if( ! isset( $_SESSION['storeService'] ) )
+    {
+      $_SESSION['storeService'] = array();
+    }
+    if( ! isset( $_SESSION['events'] ) )
+    {
+      $_SESSION['events'] = array();
+    }  
+    
+    foreach( (array) $storeIds as $storeId )
+    {
+      $_SESSION['events'][$storeId] = array(); 
+      $_SESSION['storeService'][$storeId] = $serviceName;
+    }
+    
     return array(
       'statusText' => "Store registered."
       );
@@ -52,26 +53,23 @@ class AbstractStore
 
   function method_unregister( $params )
   {
-    list( $storeId ) = $params;
+    list( $storeIds ) = $params;
 
-    if ( in_array( $storeId, $_SESSION[get_class($this)]['storeIds'] ) )
+    foreach( (array) $storeIds as $storeId )
     {
-      /*
-       * unregister the store
-       */
-      array_splice( $_SESSION[get_class($this)]['storeIds'], array_search( $storeId, $_SESSION['storeIds'], 1 ) );
-      unset( $_SESSION[get_class($this)]['events'][$storeId] );
+      unset( $_SESSION['events'][$storeId] ); 
     }
+    
     return array(
       'statusText' => "Store unregistered."
-      );
+    );
   }
 
   
   function method_unregisterAll()
   {
-    $_SESSION[get_class($this)]['storeIds'] = array();
-    $_SESSION[get_class($this)]['events'] = array();
+    $_SESSION['events'] = array();
+    $_SESSION['storeService'] = array();
     return array(
       'statusText' => "All stores unregistered."
     );
@@ -80,68 +78,77 @@ class AbstractStore
   function method_getEvents( $params )
   {
 
-    list( $storeId, $events ) = $params;
+    list( $map ) = $params;
     
     //echo "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/";
     
-    /*
-     * save client events
-     */
-    if ( count( $events ) )
+    $resultMap = array();
+    
+    foreach ( $map as $storeId => $events )
     {
-      foreach( $events as $event )
+      /*
+       * save client events
+       */
+      if ( $events )
       {
-        $this->saveEvent( $storeId, $event );
+        foreach( $events as $event )
+        {
+          $this->addToEventQueue( $storeId, $event );
+        }
+      }
+  
+      /*
+       * retrieve events from queue and empty queue
+       */
+      $events = $this->pullEventsFromQueue( $storeId );
+      if ( $events ) 
+      {
+        $resultMap[$storeId] = $events;
+      }
+      else
+      {
+        $resultMap[$storeId] = array();
       }
     }
-
-    /*
-     * retrieve events from queue and empty queue
-     */
-    if ( isset( $_SESSION[get_class($this)]['events'][$storeId] ) )
-    {
-      $events = $_SESSION[get_class($this)]['events'][$storeId];
-      $_SESSION[get_class($this)]['events'][$storeId] = array();
-    }
-    else
-    {
-      $events = array();
-    }
-
     return array(
-      'events' => $events,
+      'events' => $resultMap,
     );
   }
 
-  function method_saveEvents( $params )
-  {
-    list( $storeId, $events ) = $params;
-    foreach( $events as $event )
-    {
-      $this->saveEvent( $storeId, $event );
-    }
-    return array();
-  }
 
-  function saveEvent( $storeId, $event )
+  function addToEventQueue( $storeId, $event )
   {
     
     /*
      * for each connected store except the requesting one,
-     * save an event in the event queue
+     * save an event in the event queue if the stores have the same service name
      */
-    foreach( $_SESSION[get_class($this)]['storeIds'] as $id )
+    foreach( array_keys( $_SESSION['events'] ) as $id )
     {
-      if ( $id != $storeId )
+      if ( $id != $storeId and $_SESSION['storeService'][$storeId] == $_SESSION['storeService'][$id] )
       {
-        $_SESSION[get_class($this)]['events'][$id][] = $event;
+        $_SESSION['events'][$id][] = $event;
       }
     }
     
     //echo "/* Store #$storeId: Saving event " . print_r( $event, true) . "\nServer event queue: " . print_r( $_SESSION, true ) . "*/";
     
   }
+  
 
+  function pullEventsFromQueue( $storeId )
+  {
+    if ( isset($_SESSION['events'][$storeId]) )
+    {
+      $events = $_SESSION['events'][$storeId];
+      $_SESSION['events'][$storeId] = array();
+      return $events;
+    }
+    else
+    {
+      return array();
+    }
+  }
 }
 
 ?>
