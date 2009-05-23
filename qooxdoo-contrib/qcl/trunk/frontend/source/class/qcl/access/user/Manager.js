@@ -18,7 +18,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-#module(security.user)
+
 ************************************************************************ */
 
 /**
@@ -27,7 +27,7 @@
 qx.Class.define("qcl.access.user.Manager",
 {
   type : "singleton",
-	extend : qcl.access.Manager,
+	extend : qcl.access.AbstractManager,
 
   /*
   *****************************************************************************
@@ -57,10 +57,10 @@ qx.Class.define("qcl.access.user.Manager",
       check       : "Object",
 			event				: "changeActiveUser",
 			apply				: "_applyActiveUser",
-			nullable		: true,
-			init				: null
+			nullable		: true
     }	
   },
+  
 
   /*
   *****************************************************************************
@@ -146,14 +146,6 @@ qx.Class.define("qcl.access.user.Manager",
 				return;
 			}
 			
-			// check data
-			if (	! qx.util.Validation.isValidObject(data) ||
-						! qx.util.Validation.isValidObject(data.userdata) ||
-						! qx.util.Validation.isValidObject(data.roles) )
-			{
-				this.error("Invalid data for setSecurity");
-			} 
-			
 			// user
 			var userObj = this.create(data.userdata.username);
 			userObj.setData(data.userdata);
@@ -174,18 +166,6 @@ qx.Class.define("qcl.access.user.Manager",
 			// login user
 			this.setActiveUser(userObj);
 		}
-  },
-
-
-  /*
-  *****************************************************************************
-     DESTRUCTOR
-  *****************************************************************************
-  */
-
-  destruct : function()
-  {
-		
   }
 });
 

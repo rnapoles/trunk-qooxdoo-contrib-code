@@ -53,7 +53,7 @@
  */
 qx.Class.define("qcl.config.Manager",
 {
-	extend : qx.core.Target,
+	extend : qx.core.Object,
   type : "singleton",
 
   /*
@@ -65,15 +65,33 @@ qx.Class.define("qcl.config.Manager",
   construct : function()
   {
 		this.base(arguments);
-    this.setDataBinding(true);
-    this.__configMap = [];
-    
-    // subscribe to server message with change key events
-    qx.event.message.Bus.subscribe("qcl.config.messages.server.changeConfigKey",function(message){
-      var data = message.getData();
-      this.setData(data,true); // do not notify server since change originates on server
-    },this);
+
   },
+  
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+
+  properties :
+  {
+    
+    /*
+     * The config manager's data model which can be
+     * bound to a data store. It must be an qx.core.Object
+     * with two properties, "keys" and "values", which
+     * contain config keys and values, respectively and
+     * will be converted to qx.data.Array objects
+     */
+    model :
+    {
+      check : "qx.core.Object",
+      nullable : true,
+      event : "changeModel",
+      apply : "_applyModel"
+    }
+  },  
   
   /*
   *****************************************************************************
@@ -83,7 +101,11 @@ qx.Class.define("qcl.config.Manager",
  
   events :
   {
-    "changeConfigMap" : "qx.event.type.DataEvent"
+    /* 
+     * the change event is dispatched with the name of
+     * the changed config key
+     */
+    "change" : "qx.event.type.Data"
   },
   
   /*
@@ -94,113 +116,88 @@ qx.Class.define("qcl.config.Manager",
 
   members :
   {
-
+    /*
+    ---------------------------------------------------------------------------
+      PRIVATE MEMBERS
+    ---------------------------------------------------------------------------
+    */
+    _index : null,
     
-    /**
-     * sets all configuration keys at once and dispatches all change events
-     * @param configMap {Map} 
-     */
-    setConfigMap : function (configMap)
+    /*
+    ---------------------------------------------------------------------------
+      APPLY METHODS
+    ---------------------------------------------------------------------------
+    */
+    
+    _applyModel : function( model, old )
     {
-      if ( typeof configMap != "object" )
-      {
-        this.error ("Invalid parameter - configMap needs to be a hash map");
-      }
-      
-      this.__configMap = configMap;
-      
-      // dispatch events
-      for ( var key in configMap )
-      {
-        this.createDispatchDataEvent( "changeConfigKey." + key , configMap[key].value );
-      }
-      
-      return true;
+      /* 
+       * create index
+       */
+       this._index = {};
+       var keys = model.getKeys();
+       for( var i=0; i < keys.length; i++ )
+       {
+         this._index[ keys.getItem(i) ] = i;
+       }
+       
+       /*
+        * attach event listeners
+        */
+       model.addListener("changeBubble", function(event){
+         var key = event.getData().name;
+         console.log(name);
+         //this.fireDataEvent( "changeBubble",  );
+       },this);
     },
     
     /**
-     * returns hashmap of configuration keys
+     * Returns the numerical index for a config key 
+     * name
+     * @param key {String}
+     * @return {Integer}
      */
-    getConfigMap : function()
+    _getIndex : function( key )
     {
-      return this.__configMap;
+      var index = this._index[key];
+      if ( index == undefined )
+      {
+        this.error("Invalid config key '" + key + "'.");
+      }
+      return index;
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+      USER API
+    ---------------------------------------------------------------------------
+    */
+    
 
 		/**
-		 * gets a config value
+		 * Returns a config value
+		 * @param key {String}
+		 * @return {var}
 		 */
 		getKey : function ( key )
 		{
-			if ( this.getConfigMap()[key] )
-      {
-        return this.getConfigMap()[key].value;  
-      }
-      return null;
+      var index = this._getIndex(key);
+      return this.getModel().getValues().getItem( index );
 		},
     
     /**
-     * sets a config value
+     * Sets a config value. This should automatically update
+     * the server.
      * @param key {String}
      * @param value {Mixed} 
      */
     setKey : function (key, value)
     {
-      var data = {};
-      data[key] = value;
-      return this.setData(data);
-    },
+       var index = this._getIndex(key);
+       this.getModel().getValues().setItem( index, value );
+    }
     
-    /**
-		 * sets a config value
-		 * @param data {Map} key-value pairs with config data
-		 * @param noServerUpdate {Boolean}  If true, do not notify server of change
-		 * dispatches changeConfigMap data event
-		 */
-		setData : function ( data, noServerUpdate )
-		{
-			var configMap = this.getConfigMap(); 
-      
-      // set data
-      for ( key in data )
-      {
-        if ( ! configMap[key] )
-        {
-          configMap[key] = { value : null };
-        }
-        
-        // todo: check permission
-        
-        var configMapChanged = false;
-        
-        if ( configMap[key].value != data[key] )
-        {
-          configMap[key].oldValue = configMap[key].value; 
-          configMap[key].value = data[key];
-          
-          //dispatch event
-          this.createDispatchDataEvent( "changeConfigKey." + key , data[key] );   
-          configMapChanged = true;       
-        }
-      }
-      
-      // update server unless update is prevented
-      if ( configMapChanged && ! noServerUpdate )
-      {
-        this.updateServer( data );  
-      }
-      return true;
-		},
-    
-    /**
-     * create a special event listener that handles only changes of specific keys
-     * @param key {String} the config key to monitor
-     * @param callbackFunction {Function} the callback function to call when the key has changed
-     * @param context {Object} the object that serves as execution context
-     */ 
-     addConfigChangeEventListener : function (key,callbackFunc,context)
-     {
-       this.addEventListener( "changeConfigKey." + key, callbackFunc, context );
-     }   
+
   },
 
   /*
@@ -211,7 +208,6 @@ qx.Class.define("qcl.config.Manager",
 
   destruct : function()
   {
-    this._disposeFields("_index");		
+    this._disposeArray("_index");	
   }
 });
-

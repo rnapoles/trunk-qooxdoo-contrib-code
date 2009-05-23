@@ -18,19 +18,16 @@
 ************************************************************************ */
 
 /* ************************************************************************
-
+#require(qcl.access.*)
 ************************************************************************ */
 
 /**
  * This manager is not to be used directly, but is exended by the Permission, Role and 
  * User Manager singletons.
- * It inherits from qx.util.manager.Object but overrides its add and remove method in
- * order to provide an efficient look-up index for the "namedId" (a dot-separated
- * identifying name similar to a class name) of the managed object.
  */
-qx.Class.define("qcl.access.Manager",
+qx.Class.define("qcl.access.AbstractManager",
 {
-	extend : qx.util.manager.Object,
+	extend : qx.core.Object,
 
   /*
   *****************************************************************************
@@ -42,6 +39,7 @@ qx.Class.define("qcl.access.Manager",
   {
 		this.base(arguments);
 		this._index = {};
+    this._objects = {};
   },
 
 
@@ -53,10 +51,22 @@ qx.Class.define("qcl.access.Manager",
 
   members :
   {
+    /*
+    ---------------------------------------------------------------------------
+      PRIVATE MEMBERS
+    ---------------------------------------------------------------------------
+    */
+    _index : null,
+    _objects : null,
+    
+    /*
+    ---------------------------------------------------------------------------
+      USER API
+    ---------------------------------------------------------------------------
+    */    
     /**
      * adds managed object
      *
-     * @type member
      * @param vObject {var} TODOC
      * @return {void | Boolean} TODOC
      */
@@ -74,20 +84,50 @@ qx.Class.define("qcl.access.Manager",
     /**
      * removes managed object
      *
-     * @type member
      * @param vObject {var} TODOC
      * @return {void | Boolean} TODOC
      */
     remove : function(vObject)
     {
-      if (this.getDisposed()) {
+      if ( this.getDisposed() ) {
         return false;
       }
 			var hashCode = vObject.toHashCode();
       delete this._objects[hashCode];
 			delete this._index[vObject.getNamedId()];
+			return true;
     },
+    
+   /**
+    * TODOC
+    *
+    * @param vObject {var} TODOC
+    * @return {var} TODOC
+    */
+   has : function(vObject) {
+     return this._objects[vObject.toHashCode()] != null;
+   },    
 
+
+   /**
+    * TODOC
+    *
+    * @param vObject {var} TODOC
+    * @return {var} TODOC
+    */
+   get : function(vObject) {
+     return this._objects[vObject.toHashCode()];
+   },
+
+
+   /**
+    * TODOC
+    *
+    * @return {var} TODOC
+    */
+   getAll : function() {
+     return this._objects;
+   },
 
 		/**
 		 * get managed object by name or reference or return null if it does does not exist
@@ -117,15 +157,12 @@ qx.Class.define("qcl.access.Manager",
 		 */
 		getByName : function (ref)
 		{
-			if ( typeof ref == "string" )
-			{
-				var hashCode = this._index[ref];
-				return hashCode ? this.getAll()[hashCode] : null;
-			}
-			else
+			if ( typeof ref != "string" )
 			{
 				this.error ("getByName requires string argument!")
 			}
+      var hashCode = this._index[ref];
+      return hashCode ? this.getAll()[hashCode] : null;			
 		},
 
 		/**
@@ -189,15 +226,15 @@ qx.Class.define("qcl.access.Manager",
 			var obj = this.getObject(name); 
 			if ( ! obj )
 			{
-				// create new instance of the class that the manager manages
-				// type information is in this classes classname (qcl.access.**type**.Manager) 
+				/* 
+				 * create new instance of the class that the manager manages
+				 * type information is in this classes classname
+				 * (qcl.access.**type**.Manager) 
+				 */
 				var type = this.classname.substr(0,this.classname.lastIndexOf(".")); // chop of "Manager" part
 				var typeLower = type.substr(type.lastIndexOf(".")+1);
 				var typeUpper = typeLower.substr(0,1).toUpperCase() + typeLower.substr(1);
-				obj = new qcl.auth[typeLower][typeUpper](name); // this automatically adds the new object to the manager
-				
-        // tell the world about it
-        qx.event.message.Bus.dispatch("qcl.access.messages.object.created", [typeLower,name] );
+				obj = new qcl.a[typeLower][typeUpper](name); // this automatically adds the new object to the manage
 			}
 			return obj;
 		},
@@ -228,7 +265,8 @@ qx.Class.define("qcl.access.Manager",
 
   destruct : function()
   {
-    this._disposeFields("_index");		
+    this._disposeArray("_index");	
+    this._disposeMap("_objects");  
   }
 });
 

@@ -13,8 +13,8 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
- * Martin Wittemann (martinwittemann)
- * Christian Boulanger (cboulanger)
+   * Martin Wittemann (martinwittemann)
+   * Christian Boulanger (cboulanger)
 
  ************************************************************************ */
 
@@ -178,8 +178,10 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     /**
      * The url where the request should go to.
      */
-    url : {
-      check: "String"
+    url : 
+    {
+      check: "String",
+      nullable: true
     },
   
     /** 
@@ -192,6 +194,15 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       nullable: false
     },
  
+    /**
+     * The name of the service method that is called on the server when the load()
+     * method is called without arguments. Defaults to "load"
+     */
+    defaultLoadMethodName :
+    {
+      check : "String",
+      init : "load"
+    },
   
     /**
      * The marshaler used to create models from the json data
@@ -344,7 +355,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     load : function( serviceMethod, params, finalCallback, context  )
     {
       this._sendJsonRpcRequest( 
-          serviceMethod||this.getServiceMethod(), 
+          serviceMethod||this.getDefaultLoadMethodName(), 
           params,
           finalCallback, 
           context,
@@ -553,15 +564,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         /*
          * show that no request is underway
          */
-        _this.__opaqueCallRef = null ;
-
-        /*
-         * handle messages and events
-         */
-        if ( data && ( data.messages || data.events ) ) 
-        {
-          _this.__handleEventsAndMessages( _this, data );
-        }        
+        _this.__opaqueCallRef = null ;      
 
         /*
          * check for error
@@ -570,12 +573,19 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         {  
 
           /* 
-           * The result data is either
-           * in the 'result' property of the object (qcl) or the object
-           * itself.
+           * The result data is either in the 'result' property of the object (qcl) or the object
+           * itself. If we have a 'result' property, also check for 'messages' and 'events' 
+           * property.
            */
           if ( data.result )
           {
+            /*
+             * handle messages and events
+             */
+            if ( data.messages || data.events ) 
+            {
+              _this.__handleEventsAndMessages( _this, data );
+            }              
             data = data.result; 
           }
           
@@ -594,13 +604,12 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
               */
              _this.setModel( _this.getMarshaler().jsonToModel(data) );
              
+             /*
+              * fire 'loaded' event only if we creat a model
+              */
+             _this.fireDataEvent( "loaded", _this.getModel() );             
            }
            
-           /*
-            * fire complete event
-            */
-            _this.fireDataEvent( "loaded", _this.getModel() );
-            
             /*
              * final callback, only sent if request was successful
              */
