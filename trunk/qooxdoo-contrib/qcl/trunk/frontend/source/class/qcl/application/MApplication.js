@@ -1,13 +1,6 @@
 /* ************************************************************************
 
   qcl qooxdoo component library
-  
-  qcl.application.MApplication mixin
-  
-  provides 
-    - central state storage, 
-    - browser history support 
-    - a central clipboard
 
    Copyright:
      2007-2009 Christian Boulanger
@@ -55,8 +48,8 @@ qx.Mixin.define("qcl.application.MApplication",
     /*
      * Mixins
      */
-    qx.Mixin.include( qx.core.Object, qcl.application.MGetApplication );
-    qx.Mixin.include( qx.core.Object, qcl.application.MWidgetId );
+    qx.Class.include( qx.core.Object, qcl.application.MGetApplication );
+    qx.Class.include( qx.core.Object, qcl.application.MWidgetId );
     
     /*
      * session id
@@ -160,9 +153,45 @@ qx.Mixin.define("qcl.application.MApplication",
      {
        check : "String",
        nullable : true
-     }
+     },
      
+     /**
+      * The data store used for authentication
+      */
+     authStore :
+     {
+       check : "qcl.databinding.event.store.JsonRpc",
+       nullable : true
+     },
 
+     /**
+      * The user manager
+      * @todo create interface
+      */
+     userManager :
+     {
+       check : "qcl.access.user.Manager",
+       nullable : true
+     },     
+     
+     /**
+      * The data store used for configuration data
+      */
+     configStore :
+     {
+       check : "qcl.databinding.event.store.JsonRpc",
+       nullable : true
+     },
+     
+     /**
+     * The data store used for authentication
+     * @todo create interface
+     */
+    configManager :
+    {
+      check : "qcl.config.Manager",
+      nullable : true
+    }     
   },
   
   /*
@@ -346,6 +375,116 @@ qx.Mixin.define("qcl.application.MApplication",
     
     /*
     ---------------------------------------------------------------------------
+       AUTHENTICATION 
+    ---------------------------------------------------------------------------
+    */       
+    
+    /**
+     * Starts the authentication on the server, 
+     * using the given userManager object.
+     */
+    startAuthentication : function()
+    {
+       if ( this.__authenticationStarted )
+       {
+         this.error("Authentication already started");
+       }
+       this.__authenticationStarted = true;
+       
+       this.info("Starting authentication...");
+       
+       if ( ! this.getAuthStore() || ! this.getUserManager() )
+       {
+         this.error("You have to set an authentication store and the usermanager first.");
+       }
+       
+       /*
+        * bind the authentication stores data model to the user managers data model
+        */
+       this.getAuthStore().bind("model", this.getUserManager(), "model")
+       
+      /*
+       * start authentication
+       */
+      if ( this.getState("access") == "login" )
+      {
+        /* 
+         * log out a session so user can log in again
+         */
+         this.info("Preparing for login...");
+      }
+      else if (this.getState("access") == "continue")
+      {
+        /*
+         * keep an existing session
+         */
+        this.info("Continuing existing session...");
+      }
+      else
+      {
+        /*
+         * log in as a guest
+         */
+         this.info("Logging in as guest...");
+      }
+      
+      return null;
+    },    
+   
+    
+    /*
+    ---------------------------------------------------------------------------
+       CONFIGURATION
+    ---------------------------------------------------------------------------
+    */        
+    
+   /**
+    * Retrieves configuration values from the server and configures auto-update
+    * whenever the a value changes on the server. The config data has to be sent
+    * in the following format:
+    * <pre> 
+    * {
+    *   keys : [ ... array of the names of the configuration keys ],
+    *   values : [ ... array of the configuration values ... ]
+    * }
+    * </pre>
+    */
+   loadConfiguration : function()
+   {
+      if ( ! this.__authenticationStarted )
+      {
+        //this.error("Cannot load configuration, application has not started authentication");
+      }
+      
+      if ( ! this.getConfigStore() || ! this.getConfigManager() )
+      {
+        this.error("You have to set an configuration store and manager first.");
+      }
+      
+      /* 
+       * bind the configuration store's data model to the user manager's data model
+       */
+      this.getConfigStore().bind("model", this.getConfigManager(), "model");
+
+
+      /*
+       * whenever a config value changes, send it to server
+       */
+      this.getConfigManager().addListener("change",function(event){
+        var key = event.getData();
+        this.getConfigStore().execute("set",[ key, this.getConfigManager().getValue(key) ] );
+      },this);       
+
+       /*
+        * load the data
+        */
+       this.getConfigStore().load();
+       
+   },
+   
+   
+    /*
+    ---------------------------------------------------------------------------
        EVENT TRANSPORT 
     ---------------------------------------------------------------------------
     */               
@@ -438,7 +577,7 @@ qx.Mixin.define("qcl.application.MApplication",
      * @param state {Map} application state
      * @param width {Int} Width of window
      * @param height {Int} Height of window     
-     * @return {qx.client.NativeWindow} 
+     * @return {qx.bom.Window} 
      */
     startApplication : function( application, state, width, height )
     {
@@ -458,7 +597,7 @@ qx.Mixin.define("qcl.application.MApplication",
       }
       var stateStr = "#" + stateArr.join("&");
       var w = this.__windows[stateStr];
-      if ( w instanceof qx.client.NativeWindow ) 
+      if ( w instanceof qx.bom.Window ) 
       {
         w.focus();
         return w;
@@ -467,7 +606,7 @@ qx.Mixin.define("qcl.application.MApplication",
       /*
        * open new window
        */
-      w = new qx.client.NativeWindow("?application=" + application + stateStr );      
+      w = new qx.bom.Window("?application=" + application + stateStr );      
       w.setAllowScrollbars(false);
       if (width && height) 
       {
@@ -558,7 +697,14 @@ qx.Mixin.define("qcl.application.MApplication",
 
      return menuButton;
    },    
+   
+   /*
+   ---------------------------------------------------------------------------
+      OTHER UTILITY METHODS
+   ---------------------------------------------------------------------------
+   */          
 
+   
     /* 
     ---------------------------------------------------------------------------
       SHORTCUTS

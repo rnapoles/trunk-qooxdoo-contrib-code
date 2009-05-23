@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2007 Christian Boulanger
+     2007-2009 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -18,10 +18,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-
-#module(security.permission)
 #require(qcl.access.permission.Manager)
-
 ************************************************************************ */
 
 /**
@@ -34,7 +31,7 @@
  */
 qx.Class.define("qcl.access.permission.Permission",
 {
-  extend : qx.core.Target,
+  extend : qx.core.Object,
 
   /*
   *****************************************************************************
@@ -66,10 +63,8 @@ qx.Class.define("qcl.access.permission.Permission",
      */
     namedId :
     {
-      _fast       : true,
-      setOnlyOnce : true,
-      check       : "String",
-			nullable		: false
+      check:    "String",
+			nullable: false
     },
 
     /**
@@ -77,8 +72,8 @@ qx.Class.define("qcl.access.permission.Permission",
      */
     description :
     {
-      _fast       : true,
-      check       : "String"
+      check: "String",
+      nullable: true
     }
 	
   },
@@ -91,8 +86,8 @@ qx.Class.define("qcl.access.permission.Permission",
 
   events :
   {
-		"changeState" 	: "qx.event.type.DataEvent",
-		"changeGranted" : "qx.event.type.DataEvent"
+		"changeState" 	: "qx.event.type.Data",
+		"changeGranted" : "qx.event.type.Data"
 	},
 	
   /*
@@ -307,9 +302,8 @@ qx.Class.define("qcl.access.permission.Permission",
      DESTRUCTOR
   *****************************************************************************
   */
-
   destruct : function() {
-    this._disposeFields("__conditions");
+    this._disposeArray("__conditions");
 		this._manager.remove(this);
   }
 });

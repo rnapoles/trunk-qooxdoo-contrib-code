@@ -18,9 +18,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-
-#module(security.user)
-
+#require(qcl.access.user.Manager)
 ************************************************************************ */
 
 /**
@@ -28,7 +26,7 @@
  */
 qx.Class.define("qcl.access.user.User",
 {
-  extend : qx.core.Target,
+  extend : qx.core.Object,
 
   /*
   *****************************************************************************
@@ -58,8 +56,6 @@ qx.Class.define("qcl.access.user.User",
      */
     namedId :
     {
-      _fast       : true,
-      setOnlyOnce : true,
       check       : "String",
 			nullable		: false
     },
@@ -85,7 +81,7 @@ qx.Class.define("qcl.access.user.User",
   members :
   {
     /**
-     * get all role objects
+     * Returns all role objects connected to this user
      * @return {Map}
      */
 		getRoles : function()
@@ -139,7 +135,9 @@ qx.Class.define("qcl.access.user.User",
      */
     addRole : function(roleRef)
     {
-      // if there are multiple arguments, add others first
+      /*
+       * if there are multiple arguments, add others first
+       */
 			if ( arguments.length > 1)
 			{
 				for (var i=1; i < arguments.length; i++)
@@ -148,7 +146,9 @@ qx.Class.define("qcl.access.user.User",
 				}
 			}
 			
-			// check if role is registered with manager and this user
+			/*
+			 * check if role is registered with manager and this user
+			 */
 			var role_manager 	= qcl.access.role.Manager.getInstance();
 			var name					= role_manager.getNamedId(roleRef);
 			var object				= role_manager.getObject(roleRef);
@@ -288,7 +288,7 @@ qx.Class.define("qcl.access.user.User",
   */
 
   destruct : function() {
-    this._disposeFields("__roles");
+    this._disposeArray("__roles");
 		this._manager.remove(this);
   }
 });

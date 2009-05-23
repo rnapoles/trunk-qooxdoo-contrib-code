@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
   Copyright:
-     2007 Christian Boulanger
+     2007-2009 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -18,10 +18,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-
-#module(security.role)
 #require(qcl.access.role.Manager)
-
 ************************************************************************ */
 
 /**
@@ -29,7 +26,7 @@
  */
 qx.Class.define("qcl.access.role.Role",
 {
-  extend : qx.core.Target,
+  extend : qx.core.Object,
 
   /*
   *****************************************************************************
@@ -59,10 +56,8 @@ qx.Class.define("qcl.access.role.Role",
      */
     namedId :
     {
-      _fast       : true,
-      setOnlyOnce : true,
-      check       : "String",
-			nullable		: false
+      check : "String",
+			nullable : false
     },
 
     /**
@@ -70,8 +65,8 @@ qx.Class.define("qcl.access.role.Role",
      */
     description :
     {
-      _fast       : true,
-      check       : "String"
+      check : "String",
+      nullabel : true
     }
 			
   },
@@ -85,6 +80,9 @@ qx.Class.define("qcl.access.role.Role",
 
   members :
   {
+    __permissions : null,
+    
+    
     /**
      * get all permission objects as a map
      * @return {Map}
@@ -241,7 +239,7 @@ qx.Class.define("qcl.access.role.Role",
   */
 
   destruct : function() {
-    this._disposeFields("__permissions");
+    this._disposeMap("__permissions");
 		this._manager.remove(this);
   }
 });

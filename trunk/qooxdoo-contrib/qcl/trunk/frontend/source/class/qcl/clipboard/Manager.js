@@ -1,11 +1,11 @@
 /* ************************************************************************
 
-   qooxdoo component library 
-
-   http://qooxdoo.org
+   qooxdoo - the new era of web development
 
    Copyright:
      2007 Christian Boulanger
+
+   http://qooxdoo.org
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -13,23 +13,54 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Christian Boulanger, using the code from qx.event.handler.DragAndDropHandler
+     * Christian Boulanger (cboulanger)
 
 ************************************************************************ */
 
 /* ************************************************************************
 
-
 ************************************************************************ */
 
 /**
- * This clipboard manager (singleton) manages all clipboard operations of the application
+ * This singleton manages the configuration settings of an application. In 
+ * conjunction with a JsonRpc store, you can load the configuration data at 
+ * startup and synchronize the config values with the server.
+ * 
+ * <pre>   
+ * var myConfigStore = qcl.databinding.event.store.JsonRpc( 
+ *   "path/to/server/index.php", "myapp.Config" 
+ * ); 
+ * myConfigStore.bind("model", qcl.config.Manager.getInstance(), "model");
+ * myConfigStore.load();
+ * 
+ * The server must expose a "load"  method that returns the following response
+ * data:
+ * 
+ * <pre> 
+ * {
+ *   keys : [ ... array of the names of the configuration keys ],
+ *   values : [ ... array of the configuration values ... ]
+ * }
+ * </pre>
+ * 
+ * In order to send the changes back to the server, you can do the following
+ *       
+ * <pre>   
+ * var cm = qcl.config.Manager.getInstance();   
+ * cm.addListener("change",function(event){
+ *   var key = event.getData();
+ *   myConfigStore.execute("set",[ key, cm.getValue(key) ] );
+ * });  
+ * </pre>
+ * 
+ * This requires that the server exposess a "set" method with the parameters
+ * key, value that saves the config value back into the database.
+ * 
  */
-qx.Class.define("qcl.clipboard.Manager",
+qx.Class.define("qcl.config.Manager",
 {
+	extend : qx.core.Object,
   type : "singleton",
-  extend : qx.core.Target,
-
 
   /*
   *****************************************************************************
@@ -39,22 +70,10 @@ qx.Class.define("qcl.clipboard.Manager",
 
   construct : function()
   {
-    this.base(arguments);
-    this.__data = {};
-    this.__actions = {};
-    var vActions = [ "move", "copy", "alias", "nodrop" ];
-  },
+		this.base(arguments);
 
-  /*
-  *****************************************************************************
-     EVENTS
-  *****************************************************************************
-  */  
-  events :
-  {
-    "changeData" : "qx.event.type.Event"
   },
-
+  
   /*
   *****************************************************************************
      PROPERTIES
@@ -63,22 +82,44 @@ qx.Class.define("qcl.clipboard.Manager",
 
   properties :
   {
-    sourceWidget :
+    
+    /*
+     * The config manager's data model which can be
+     * bound to a data store. It must be an qx.core.Object
+     * with two properties, "keys" and "values", which
+     * contain config keys and values, respectively and
+     * will be converted to qx.data.Array objects
+     */
+    model :
     {
-      check : "qx.ui.core.Widget",
-      nullable : true
-    },
-
-    currentAction :
-    {
-      check : "String",
+      check : "qx.core.Object",
       nullable : true,
-      event : "changeCurrentAction"
+      event : "changeModel",
+      apply : "_applyModel"
     }
-
+  },  
+  
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */
+ 
+  events :
+  {
+    /* 
+     * the change event is dispatched when the configuration data is
+     * ready
+     */
+    "ready" : "qx.event.type.Event",
+    
+    /* 
+     * the change event is dispatched with the name of
+     * the changed config key
+     */
+    "change" : "qx.event.type.Data"
   },
-
-
+  
   /*
   *****************************************************************************
      MEMBERS
@@ -87,227 +128,117 @@ qx.Class.define("qcl.clipboard.Manager",
 
   members :
   {
- 
-
     /*
     ---------------------------------------------------------------------------
-      DATA HANDLING
+      PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */
-
-    /**
-     * Add data of mimetype.
-     *
-     * #param vMimeType[String]: A valid mimetype
-     * #param vData[Any]: Any value for the mimetype
-     *
-     * @type member
-     * @param vMimeType {var} mime type
-     * @param vData {var} data to be added
-     * @param doNotClear {Boolean} if set, add data to clipboard without replacing existing data
-     * @return {void}
-     */
-    addData : function(vMimeType, vData, doNotClear ) 
-    {
-      if ( ! doNotClear )
-      {
-        this.clearData();
-      }
-      
-      this.__data[vMimeType] = vData;
-      
-      // inform the event listeners
-      if (this.hasEventListeners("changeData"))
-      {
-         this.createDispatchEvent("changeData");
-      }
-      // and dispatch a message
-      qx.event.message.Bus.dispatch("qcl.clipboard.messages.data.changed");
-    },
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param vMimeType {var} TODOC
-     * @return {var} TODOC
-     */
-    getData : function(vMimeType) {
-      return this.__data[vMimeType];
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @return {void}
-     */
-    clearData : function() {
-      this.__data = {};
-      // inform the event listeners
-      if (this.hasEventListeners("changeData"))
-      {
-         this.createDispatchEvent("changeData");
-      }
-      // and dispatch a message
-      qx.event.message.Bus.dispatch("qcl.clipboard.messages.data.changed");
-    },
-
-
+    _index : null,
+    
     /*
     ---------------------------------------------------------------------------
-      ACTION HANDLING
+      APPLY METHODS
     ---------------------------------------------------------------------------
     */
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param vAction {var} TODOC
-     * @param vForce {var} TODOC
-     * @return {void}
-     */
-    addAction : function(vAction, vForce)
+    
+    _applyModel : function( model, old )
     {
-      this.__actions[vAction] = true;
-
-      // Defaults to first added action
-      if (vForce || this.getCurrentAction() == null) {
-        this.setCurrentAction(vAction);
-      }
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @return {void}
-     */
-    clearActions : function()
-    {
-      this.__actions = {};
-      this.setCurrentAction(null);
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param vAction {var} TODOC
-     * @return {void}
-     */
-    setAction : function(vAction)
-    {
-      if (vAction != null && !(vAction in this.__actions)) {
-        this.addAction(vAction, true);
-      } else {
-        this.setCurrentAction(vAction);
-      }
+      /* 
+       * create index
+       */
+       this._index = {};
+       
+       var keys = model.getKeys();
+       for( var i=0; i < keys.length; i++ )
+       {
+         var key = keys.getItem(i);
+         this._index[ key ] = i;
+         this.fireDataEvent( "change", key );
+       }
+       
+       /*
+        * attach event listener
+        */
+       model.getValues().addListener("changeBubble", function(event){
+         var data = event.getData();
+         var key = model.getKeys().getItem( data.name );
+         if ( data.value != data.old )
+         {
+           this.fireDataEvent( "change", key );
+         }
+       },this);
+        
+       /*
+        * inform the listeners that we're ready
+        */
+       this.fireEvent("ready"); 
     },
     
-		/**
-		 * tries to copy text to the clipboard of the underlying operating system
-		 * and alerts if not successful
-		 * @param {Object} text
-		 * @param {Object} flavor
-		 */
-		copyToSystemClipboard : function ( text, flavor )
-		{
-			try
-			{
-				this._copyToSystemClipboard( text, flavor );
-			} 
-			catch (e)
-			{
-				alert(e);
-			}
-		},
+    /**
+     * Returns the numerical index for a config key 
+     * name
+     * @param key {String}
+     * @return {Integer}
+     */
+    _getIndex : function( key )
+    {
+      if ( ! this._index )
+      {
+        this.error("Model has not yet finished loading.");
+      }
+      var index = this._index[key];
+      if ( index == undefined )
+      {
+        this.error("Invalid config key '" + key + "'.");
+      }
+      return index;
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      USER API
+    ---------------------------------------------------------------------------
+    */
+    
 
 		/**
-		 * tries to copy text to the clipboard of the underlying operating system
-		 * and returns false if not successful
-		 * @param {Object} text
-		 * @param {Object} flavor
+		 * Returns a config value
+		 * @param key {String}
+		 * @return {var}
 		 */
-		tryCopyToSystemClipboard : function ( text, flavor )
+		getValue : function ( key )
 		{
-			try
-			{
-				this._copyToSystemClipboard( text, flavor );
-        return true;
-			} 
-			catch (e)
-			{
-				return false;
-			}
+      var index = this._getIndex(key);
+      return this.getModel().getValues().getItem( index );
 		},
-		
+    
     /**
-     * copy text to the clipboard of the underlying operating system
-     * and throws an error if not successful
-     * sources: http://www.krikkit.net/howto_javascript_copy_clipboard.html
-     *          http://www.xulplanet.com/tutorials/xultu/clipboard.html
-     *          http://www.codebase.nl/index.php/command/viewcode/id/174
-     *          
-     * works only in Mozilla and Internet Explorer
-     * In Mozilla, add this line to your prefs.js file in your Mozilla user profile directory
-     *    user_pref("signed.applets.codebase_principal_support", true);
-     * or change the setting from within the browser with calling the "about:config" page
-     **/
-    _copyToSystemClipboard : function ( text, flavor )
+     * Sets a config value. This should automatically update
+     * the server.
+     * @param key {String}
+     * @param value {Mixed} 
+     */
+    setValue : function (key, value)
     {
-      if ( ! flavor )
-      {
-        // default
-        flavor = "text/unicode";
-      }
-      
-      if (window.clipboardData) 
-      {
-    	   // IE
-    	   window.clipboardData.setData("Text", text );
-      } 
-      else if (window.netscape) 
-      { 
-    	 	// Mozilla, Firefox etc.
-        try 
-        {
-    		  netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect"); 
-    		} 
-        catch(e) 
-        {
-    			throw new Error(
-    		   	"Because of tight security settings in Mozilla / Firefox you cannot copy "+
-    				"to the system clipboard at the moment. Please open the 'about:config' page "+
-    				"in your browser and change the preference 'signed.applets.codebase_principal_support' to 'true'."
-    				);
-    		}
-         // we could successfully enable the privilege
-    	   var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
-    	   if (!clip) return;
-    	   var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
-    	   if (!trans) return;
-    	   trans.addDataFlavor(flavor);
-    	   var str = new Object();
-    	   var len = new Object();
-    	   var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
-    	   var copytext=text;
-    	   str.data=copytext;
-    	   trans.setTransferData(flavor,str,copytext.length*2);
-    	   var clipid=Components.interfaces.nsIClipboard;
-    	   if (!clip) return false;
-    	   clip.setData(trans,null,clipid.kGlobalClipboard);
-    	   return true;
-       } 
-       else 
-       {
-    		throw new Error("Your browser does not support copying to the clipboard!");
-       }
+       var index = this._getIndex(key);
+       this.getModel().getValues().setItem( index, value );
+    },
+    
+    /**
+     * Binds a config value to a target widget property in both
+     * directions.
+     * @param key {String}
+     * @param targetObject {qx.core.Object}
+     * @param targetPath {String}
+     * @return
+     */
+    bindValue : function( key, targetObject, targetPath )
+    {
+      var index = this._getIndex( key );
+      this.bind( "model.values[" + index + "]", targetObject, targetPath );
+      targetObject.bind( targetPath, this, "model.values[" + index + "]" );
     }
+    
 
   },
 
@@ -319,8 +250,6 @@ qx.Class.define("qcl.clipboard.Manager",
 
   destruct : function()
   {
-    this._disposeObjectDeep("__cursors", 1);
-    this._disposeObjects("__feedbackWidget");
-    this._disposeFields("__dragCache", "__data", "__actions", "__lastDestinationEvent");
+    this._disposeArray("_index");	
   }
 });
