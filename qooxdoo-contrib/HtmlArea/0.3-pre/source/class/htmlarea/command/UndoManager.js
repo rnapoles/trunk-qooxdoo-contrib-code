@@ -752,7 +752,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         range.collapse(true);
       },
       
-      default : function() {}
+      "default" : function() {}
     }),
     
     
