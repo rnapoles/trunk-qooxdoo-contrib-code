@@ -131,16 +131,13 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     /**
      * Inserts a paragraph when hitting the "enter" key.
-     * Decorator method for commandManager instance.
+     * Delegates to the real command manager instance.
      *
      * @type member
      * @return {Boolean} whether the key event should be stopped or not
      */
     insertParagraphOnLinebreak : function()
     {
-      /* Use the internal collect method to add the command to the undo stack */
-      this.__collectUndoInfo("inserthtml", "insertParagraph", this.__commandManager.getCommandObject("inserthtml"));
-      
       return this.__commandManager.insertParagraphOnLinebreak();
     },
     
@@ -217,17 +214,14 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Public API method to add an undo step
      * 
-     * @param undoRedoObject {Object} object which contains all the info to undo/redo
-     *                    the given step. This object has to define
-     *                  at least the "actionType" key to work properly.
-     *                  This object is passed to the handler methods 
-     *                  defined in the @link{htmlarea.command.UndoManager.registerHandler} method.
+     * @param command {String} Command identifier
+     * @param value {String} value of command
+     * @param commandObject {Object} Info object about command
      *             
      * @return {void}
      */
-    addUndoStep : function(undoRedoObject)
-    {
-      this.__addToUndoStack(undoRedoObject);
+    addUndoStep : function(command, value, commandObject) {
+      this.__collectUndoInfo(command, value, commandObject);
     },
         
     
@@ -285,9 +279,7 @@ qx.Class.define("htmlarea.command.UndoManager",
        /* Check if any content changes occured */
        if (this.__startTyping)
        {
-         var undoObject = this.__getUndoRedoObject();
-         undoObject.actionType = "Content";
-         this.__addToUndoStack(undoObject);
+         this.__addAdditionalContentUndoStep();
        }
        
        /*
@@ -421,21 +413,63 @@ qx.Class.define("htmlarea.command.UndoManager",
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        /* If the undo step is a linebreak -> perform two undo steps */
-        if (undoInfo.command == "inserthtml" && undoInfo.value == htmlarea.HtmlArea.simpleLinebreak)
+        if (this.__checkForNextUndoStep("inserthtml", htmlarea.HtmlArea.simpleLinebreak)) {
+          this.__executeExtraUndoStep();
+        }
+      }
+      
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        if (undoInfo.command == "inserthtml" && 
+            undoInfo.value == htmlarea.HtmlArea.EMPTY_DIV && 
+            this.__checkForNextUndoStep("inserthtml", "insertParagraph"))
         {
-          this.__doc.execCommand("Undo", false, null);
-          
-          if (this.__undoStack.length > 0)
-          {
-            var nextUndoStep = this.__undoStack.pop();
-            this.__addToRedoStack(nextUndoStep);
-          }
+          this.__executeExtraUndoStep();
         }
       }
       
       /* Use the native undo command */
       return this.__doc.execCommand("Undo", false, null);
+    },
+    
+    
+    /**
+     * Checks the next undo step with specific conditions
+     * 
+     * @type member
+     * @param command {String} command name
+     * @param value {String} command value
+     * @return {Boolean} Whether a next undo step is available
+     */
+    __checkForNextUndoStep : function(command, value)
+    {
+      if (this.__undoStack.length > 0)
+      {
+        var nextUndoStep = this.__undoStack[this.__undoStack.length-1];
+        return (nextUndoStep.command == command && 
+                nextUndoStep.value == value);
+      }
+      
+      return false;
+    },
+    
+    
+    /**
+     * Sometimes it's necessary to perform two undo steps. Helper method to 
+     * to keep the stacks in correct state.
+     * 
+     * @type member
+     * @return {void}
+     */
+    __executeExtraUndoStep : function()
+    {
+      this.__doc.execCommand("Undo", false, null);
+      
+      if (this.__undoStack.length > 0)
+      {
+        var nextUndoStep = this.__undoStack.pop();
+        this.__addToRedoStack(nextUndoStep);
+      }
     },
     
     
@@ -468,33 +502,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         
         try
         {
-          /*
-           * IMPORTANT
-           * It *could* happen that 2 content changes occuring right after another in the undo-stack.
-           * Gecko is removing both of these 2 changes in *ONE* undo step. To keep the undo-stack in-sync
-           * we have also to remove the previous stack entry.
-           */
-          if (this.__undoStack.length > 1 && this.__undoStack[this.__undoStack.length-1].actionType == "Content")
-          {
-            this.__undoStack.pop();
-          }
-          
-          /* Use the native undo command */
-          var result = this.__doc.execCommand("Undo", false, null);
-          
-          /* Undo the insertion of a new paragraph together with the content */
-          if (this.__undoStack.length > 1)
-          {
-            var nextUndoStep = this.__undoStack[this.__undoStack.length-1];
-            if (nextUndoStep.actionType == "Command" && nextUndoStep.value == "insertParagraph")
-            {  
-              this.__addToRedoStack(nextUndoStep);
-              this.__undoStack.pop();
-              this.__doc.execCommand("Undo", false, null);
-            } 
-          }
-          
-          return result;
+          return this.__doc.execCommand("Undo", false, null);
         }
         catch(error)
         {
@@ -631,23 +639,121 @@ qx.Class.define("htmlarea.command.UndoManager",
       /* Update the undo history */
       this.__addToUndoStack(redoInfo);
       
+      var result = this.__doc.execCommand("Redo", false, null);
+      
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        /* If the redo step is a linebreak -> perform two redo steps */
-        if (redoInfo.command == "inserthtml" && redoInfo.value == htmlarea.HtmlArea.simpleLinebreak)
+        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlArea.simpleLinebreak)) {
+          this.__executeExtraRedoStep();
+        }
+      }
+      
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlArea.EMPTY_DIV))
         {
-          this.__doc.execCommand("Redo", false, null);
+          // we need to catch the focused paragraph before the extra redo step
+          var focusedParagraph = this.__getFocusedParagraph();
           
-          if (this.__redoStack.length > 0)
-          {
-            var nextRedoStep = this.__redoStack.pop();
-            this.__addToUndoStack(nextRedoStep);
+          this.__executeExtraRedoStep();
+          
+          if (focusedParagraph != null) {
+            this.__correctCaretPositionAfterRedo(focusedParagraph);
           }
         }
       }
       
-      return this.__doc.execCommand("Redo", false, null);
+      return result;
     },
+    
+    
+    /**
+     * Checks the next redo step with specific conditions
+     * 
+     * @type member
+     * @return {Boolean} Whether a next redo step is available
+     */
+    __checkForNextRedoStep : function(command, value)
+    {
+      if (this.__redoStack.length > 0)
+      {
+        var nextRedoStep = this.__redoStack[this.__redoStack.length-1];
+        return (nextRedoStep.command == command && 
+                nextRedoStep.value == value);
+      }
+      
+      return false;
+    },
+    
+    
+    /**
+     * Returns the current focused paragraph or null if the no paragraph
+     * is within the selection.
+     * 
+     * @return {Element?null} P element or null
+     */
+    __getFocusedParagraph : function()
+    {
+      var selection = this.__editorInstance.getSelection();
+      var focusNode = selection.focusNode;
+      
+      while (focusNode.nodeName.toLowerCase() != "p")
+      {
+        focusNode = focusNode.parentNode;
+        if (focusNode.nodeName.toLowerCase() == "body") {
+          return null;
+        }
+      }
+      
+      if (focusNode.nodeName.toLowerCase() == "p") {
+        return focusNode;
+      } else {
+        return null;
+      }
+    },
+    
+    
+    /**
+     * Sometimes it is necessary to perform two redo steps at once. Helper method.
+     * 
+     * @type member
+     * @return {void}
+     */
+    __executeExtraRedoStep : function()
+    {
+      var nextRedoStep = this.__redoStack.pop();
+      this.__addToUndoStack(nextRedoStep);
+      this.__doc.execCommand("Redo", false, null);
+    },
+    
+    
+    /**
+     * Gecko does position the caret at the wrong position after redo commands.
+     * Helper method to correct this wrong behaviour.
+     * 
+     * @return {void}
+     */
+    __correctCaretPositionAfterRedo : qx.core.Variant.select("qx.client", {
+      "gecko" : function(currentParagraph)
+      {
+        if (currentParagraph == this.__editorInstance.getContentBody().lastChild) {
+          return;
+        }
+        
+        var nodeToSelect = currentParagraph.firstChild;
+        while (nodeToSelect.firstChild) {
+          nodeToSelect = nodeToSelect.firstChild;
+        }
+        
+        var selection = this.__editorInstance.getSelection();
+        var range = this.__editorInstance.getRange();
+        range.selectNode(nodeToSelect);
+        selection.addRange(range);
+        range.collapse(true);
+      },
+      
+      default : function() {}
+    }),
     
     
     /**
@@ -675,25 +781,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       /* Add the redo step to the undoStack */
       this.__addToUndoStack(redoInfo);
-      
-      var result = this.__doc.execCommand("Redo", false, null);
-      
-      /* Redo the insertion of a new paragraph together with the content */
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
-      {
-        if (this.__redoStack.length > 0)
-        {
-          var nextRedoStep = this.__redoStack[this.__redoStack.length-1];
-          if (nextRedoStep.command == "inserthtml" && nextRedoStep.value == "insertParagraph")
-          {
-            this.__redoStack.pop();
-            this.__addToUndoStack(nextRedoStep);
-            this.__doc.execCommand("Redo", false, null);
-          }
-        }
-      }
-      
-      return result;
+      return this.__doc.execCommand("Redo", false, null);
     },    
     
     
@@ -748,7 +836,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __collectUndoInfo : function(command, value, commandObject)
     {
-      var undoObject           = this.__getUndoRedoObject();
+      var undoObject           = this.getUndoRedoObject();
       undoObject.commandObject = commandObject;
       undoObject.command       = command;
       undoObject.value         = value;
@@ -846,13 +934,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         */
        if (this.__startTyping)
        {
-         var undoObject = this.__getUndoRedoObject();
-         
-         /* Add it to the undoStack */
-         undoObject.actionType = "Content";
-         
-         this.__addToUndoStack(undoObject);
-         this.__startTyping = false;
+         this.__addAdditionalContentUndoStep();
        }
 
        /* Add the change to the undo history */
@@ -865,6 +947,24 @@ qx.Class.define("htmlarea.command.UndoManager",
        /* Fire an update event  */
        this.__updateUndoRedoState();
      },
+     
+     
+     /**
+      * Add additional "Content" undo step if the last is no "Content" undo step.
+      */
+     __addAdditionalContentUndoStep : function()
+     {
+       var lastUndoStep = this.__undoStack[this.__undoStack.length - 1];
+       if (lastUndoStep == null || lastUndoStep.actionType != "Content")
+       {
+         var undoObject = this.getUndoRedoObject();
+         undoObject.actionType = "Content";
+         
+         this.__addToUndoStack(undoObject);
+         
+         this.__startTyping = false;
+       }
+     },
 
 
      /**
@@ -872,7 +972,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       * 
       * @return {Object} undo object
       */
-     __getUndoRedoObject : function()
+     getUndoRedoObject : function()
      {
        return {
         actionType    : null,
@@ -1164,7 +1264,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __addInternalUndoStep : function()
     {
-      var undoStep = this.__getUndoRedoObject();
+      var undoStep = this.getUndoRedoObject();
       undoStep.actionType = "Internal";
             
       this.__addToUndoStack(undoStep);

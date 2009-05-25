@@ -49,7 +49,6 @@ qx.Class.define("htmlarea.command.Manager",
      * Possible values for the style property background-repeat
      */
     __backgroundRepeat : "repeat repeat-x repeat-y no-repeat"
-    
   },
 
   members :
@@ -742,50 +741,40 @@ qx.Class.define("htmlarea.command.Manager",
         // get the current styles as structure
         var helperStyleStructure = this.__getCurrentStylesGrouped();
         
-        // check for "text-align" -> this has to be applied at the paragraph
-        // element instead of the inner span elements
-        var textAlign = "";
-        if (helperStyleStructure.child["text-align"])
-        {
-          textAlign = ' style="text-align:' + helperStyleStructure.child["text-align"] + ';"';
-          delete helperStyleStructure.child["text-align"];
-        }
+        // check for styles to apply at the paragraph
+        var paragraphStyle = this.__generateParagraphStyle(helperStyleStructure);
+        
         // generate the span elements to preserve the styling
 				var helperStyle = this.generateHelperString(helperStyleStructure);
 				
-				/* Generate unique ids to find the elements later */
+				// Generate unique ids to find the elements later
 				var spanId = "__placeholder__" + Date.parse(new Date());
 				var paragraphId = "__paragraph__" + Date.parse(new Date());
 
+				// A paragraph will only be inserted, if the paragraph before it has content.
+				// Therefore we also insert a helper node, then the paragraph and the style
+				// nodes after it.
+				var htmlToInsert = '';
 				var helperString = '<span id="' + spanId + '"></span>';
-				var paragraphString = '<p id="' + paragraphId + '"' + textAlign + '>';
 				
-				var spanNode;
-				var paragraphNode;
-				var brNode;
+				htmlToInsert += helperString;
+				htmlToInsert += '<p id="' + paragraphId + '" ' + paragraphStyle + '>';
+				htmlToInsert += helperStyle + '</p>';
+				
+				this.__editorInstance.getCommandManager().addUndoStep("inserthtml", "insertParagraph", this.getCommandObject("inserthtml"));
+				
+				this.execute("inserthtml", htmlToInsert);
+				
+			  this.__hideSuperfluousParagraph();
+			  this.__doc.getElementById(spanId).removeAttribute("id");
 
-        /* 
-         * A paragraph will only be inserted, if the paragraph before it has content.
-         * Therefore we also insert a helper node, then the paragraph and the style
-         * nodes after it.
-         */
-        this.execute("inserthtml", helperString + paragraphString + helperStyle);
-
-        /* Fetch elements */
-        spanNode      = this.__doc.getElementById(spanId);
-        paragraphNode = this.__doc.getElementById(paragraphId);
-
-        /* We do net need to pollute the generated HTML with IDs */
-        paragraphNode.removeAttribute("id");
-
-        /*
-         * If the previous paragraph only contains the helperString, it was empty before.
-         * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
-         */
+        // If previous paragraph only contains helperString ->  it was empty.
+        // Empty paragraphs are problematic in Gecko -> not properly rendered.
+        var paragraphNode = this.__doc.getElementById(paragraphId);
         if(paragraphNode.previousSibling.innerHTML == helperString)
         {
           var helperNodeFragment = this.__generateHelperNodes();
-          brNode             = this.__doc.createElement("br");
+          var brNode = this.__doc.createElement("br");
 
           var mozDirty = this.__doc.createAttribute("_moz_dirty");
           mozDirty.nodeValue = "";
@@ -795,14 +784,10 @@ qx.Class.define("htmlarea.command.Manager",
           type.nodeValue = "_moz"; 
           brNode.setAttributeNode(type);
 
-          /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
+          // Insert a bogus node to set lineheight and style nodes to apply the styles.
           paragraphNode.previousSibling.appendChild(helperNodeFragment);
           paragraphNode.previousSibling.appendChild(brNode);
-
-          //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
         }
-        /* We do net need to pollute the generated HTML with IDs */
-        spanNode.removeAttribute("id");
 
         return true;
       },
@@ -837,6 +822,113 @@ qx.Class.define("htmlarea.command.Manager",
 
       "default" : function(){}
       }),
+      
+     
+     /**
+      * Apply style attributes which need to to applied at paragraph (block)
+      * elements instead of span (inline) elements. To avoid doubling the 
+      * styles this method does delete the style attribute from the data 
+      * structure if it can be applied at the paragraph element.
+      * 
+      * @param currentStylesGrouped {Map} Data structure with current styles
+      * @return {String} Style attributes for paragraph element
+      */
+      __generateParagraphStyle : qx.core.Variant.select("qx.client", 
+     {
+       "gecko" : function(currentStylesGrouped)
+       {
+         var paragraphStyle = 'style="';
+         var childElement = currentStylesGrouped.child;
+
+         if (childElement["text-align"])
+         {
+           paragraphStyle += 'text-align:' + childElement["text-align"] + ';';
+           delete currentStylesGrouped.child["text-align"];
+         }
+         
+         var paddingsToApply = {
+             "padding-top" : true,
+             "padding-bottom" : true,
+             "padding-left" : true,
+             "padding-right" : true
+         };
+         
+         var marginsToApply = {
+             "margin-top" : true,
+             "margin-bottom" : true,
+             "margin-left" : true,
+             "margin-right" : true
+         };
+         
+         for (var styleAttribute in childElement)
+         {
+           if (paddingsToApply[styleAttribute] || marginsToApply[styleAttribute])
+           {
+             paragraphStyle += styleAttribute + ':' + childElement[styleAttribute] + ';';
+             delete currentStylesGrouped.child[styleAttribute];
+           }
+         }
+         
+         paragraphStyle += '"';
+         
+         return paragraphStyle; 
+       },
+       
+       "default" : function() {
+         return "";
+       }      
+     }),
+     
+     
+     
+     /**
+      * Gecko inserts a superfluous paragraph despite our own paragraph 
+      * handling. If detected we remove this element
+      * 
+      * @return {void}
+      * @signature function()
+      */
+     __hideSuperfluousParagraph : qx.core.Variant.select("qx.client", {
+       "gecko" : function()
+       {
+         var sel = this.__editorInstance.__getSelection();
+         var focusNode = sel.focusNode;
+         var traversalNode = sel.focusNode;
+         
+         while (traversalNode.nodeName.toLowerCase() != "p") {
+           traversalNode = traversalNode.parentNode;
+         }
+         
+         while (focusNode.firstChild && 
+                qx.dom.Node.isElement(focusNode.firstChild)) {
+           focusNode = focusNode.firstChild;
+         }
+         
+         var prevSiblingId = traversalNode.previousSibling.id;
+         var nextSiblingId = traversalNode.nextSibling ? traversalNode.nextSibling.id : null;
+         if (qx.lang.String.startsWith(prevSiblingId, "__paragraph__") && 
+             prevSiblingId == nextSiblingId)
+         {
+           var nextParagraph = traversalNode.nextSibling;
+           var rng = this.__editorInstance.getRange();
+           rng.selectNode(nextParagraph);
+           sel.addRange(rng);
+           
+           var htmlToInsert = htmlarea.HtmlArea.EMPTY_DIV;
+           this.__editorInstance.getCommandManager().addUndoStep("inserthtml", htmlToInsert, this.getCommandObject("inserthtml"));
+           
+           this.execute("inserthtml", htmlToInsert);
+           
+           var secondRange = this.__editorInstance.getRange();
+           secondRange.selectNode(focusNode);
+           sel.addRange(secondRange);
+           secondRange.collapse(true);
+         }
+       },
+       
+       "default" : function() {}
+     }),
+     
 
 
      /**
@@ -1480,8 +1572,8 @@ qx.Class.define("htmlarea.command.Manager",
      
 
      /**
-      * Helper function which generates a string containing HTML which can be used to apply the
-      * current style to an element.
+      * Helper function which generates a string containing HTML which can be 
+      * used to apply the current style to an element.
       * 
       * *** ONLY IN USE FOR GECKO ***
       * 
@@ -1613,7 +1705,6 @@ qx.Class.define("htmlarea.command.Manager",
        /* Cycle over collected styles and generate output string */
        for(var attribute in collectedStyles)
        {
-         // "text-decoration" is special
          if (attribute != "text-decoration")
          {
            child[attribute] = collectedStyles[attribute];
@@ -1672,100 +1763,85 @@ qx.Class.define("htmlarea.command.Manager",
      {
        if (elem == null)
        {
-         /* Current selection */
+         // Current selection
          var sel = this.__editorInstance.__getSelection();
          
-         /* Check the focusNode - if not available return a empty map */
+         // Check the focusNode - if not available return a empty map
          if (!sel || sel.focusNode == null)
          {
            return {};
          }
          
-         /* Get HTML element on which the selection has ended */
+         // Get HTML element on which the selection has ended
          elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
        }
 
-       /*
-        * Name of styles, which apply on the element, will be saved here.
-        */
+       // Name of styles, which apply on the element, will be saved here.
        var usedStyles = {};
 
-       /* This map will be build to save the style settings over the <hr> element. */
+       // This map will be build to save the style settings over the <hr> element
        var styleSettings = {};
   
-       /* Retrieve element's computed style. */
+       // Retrieve element's computed style.
        var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
   
-       /* Get element's ancestors to fetch all style attributes, which apply on element. */
+       // Get element's ancestors to fetch all style attributes, which apply 
+       // on element.
        var parents = qx.dom.Hierarchy.getAncestors(elem);
 
-       /* List of parent elements plus the element itself. */
+       // List of parent elements plus the element itself.
        var elementAndParents = qx.lang.Array.insertBefore(parents, elem, parents[0]);
-
-       /* Helper vars */
+       
+       
        var styleAttribute;
        var styleValue;
        var i, j;
-
-       /* Read style attributes set on element and all parents */
+       var Style = qx.bom.element.Style; 
+       
+       // Read style attributes set on element and all parents
        for(i=0; i<elementAndParents.length; i++)
        {
          elem = elementAndParents[i];
-         /* Cycle though style properties */
+
+         // Cycle though style properties and collect the first style attribute
          for (j=0; j<elem.style.length; j++)
          {
            styleAttribute = elem.style[j];
-           if (styleAttribute.length > 0)
-           {
-             /* We only need the names of the attributes */
-             usedStyles[styleAttribute] = true;
+           if (styleAttribute.length > 0 && 
+               typeof usedStyles[styleAttribute] === "undefined") {
+             usedStyles[styleAttribute] = elem.style.getPropertyValue(styleAttribute);
            }
          }
 
-         /*
-          * We need to save the font size, which is set on font tags,
-          * separately.
-          */
-         if( (elem.tagName.toUpperCase() == "FONT") && (elem.size) )
+         // We need to save the font size, which is set on font tags, separately
+         if(elem.tagName.toUpperCase() == "FONT" && elem.size)
          {
            usedStyles["legacy-font-size"] = elem.size;
          }
 
        } // for
+       
+       if (usedStyles["legacy-font-size"] && usedStyles["font-size"]) {
+         delete usedStyles["font-size"];
+       }
 
-
-       /* Cycle through saved style names and fetch computed value for each of it. */
+       // Cycle through saved style names and fetch computed value for each of it
        for(var style in usedStyles)
        {
          styleValue = decoration.getPropertyValue(style);
 
-         /* 
-          * The attribute "background-color" is special, since it can have "transparent" as value.
-          * In this case, we have to retrieve the _real_ color value from a parent element
-          */
-         if( (style == "background-color") && (styleValue == "transparent") )
-         {
+         // "background-color" is special, it can have "transparent" as value.
+         // In this case, we have to retrieve the _real_ color value from a parent element
+         if( (style == "background-color") && (styleValue == "transparent") ) {
            styleSettings[style] = this.__getBackgroundColor(parents);
          }
-         /*
-          * The attribute "text-decoration" is even more special. ;-) __getTextDecorations() generates an
-          * array containing all text-decoration styles and colors, that are visible on element.
-          */
-         else if(style == "text-decoration")
-         {
+         // "text-decoration" is even more special. ;-) __getTextDecorations() 
+         // generates an array containing all text-decoration styles and colors, 
+         // that are visible on element.
+         else if(style == "text-decoration") {
            styleSettings[style] = this.__getTextDecorations(elementAndParents);
-         }
-         /*
-          * We need to treat font-size special ...
-          */
-         else if(style == "legacy-font-size")
-         {
+         } else {
            styleSettings[style] = usedStyles[style];
-         }
-         else
-         {
-           /* Store all other style values */
-           styleSettings[style] = styleValue;
          }
        }
 
