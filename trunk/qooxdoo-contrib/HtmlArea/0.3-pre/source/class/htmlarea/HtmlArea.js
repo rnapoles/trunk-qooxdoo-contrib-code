@@ -251,6 +251,8 @@ qx.Class.define("htmlarea.HtmlArea",
     /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
     simpleLinebreak : "<br>",
     
+    EMPTY_DIV : "<div></div>",
+
     /* regex to extract text content from innerHTML */
     GetWordsRegExp     : /([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g,
     CleanupWordsRegExp : /[\u0000-\u0040]/gi,
@@ -809,6 +811,15 @@ qx.Class.define("htmlarea.HtmlArea",
     getIframeObject : function()
     {
       return this.__iframe;
+    },
+    
+    /**
+     * Getter for command manager.
+     * 
+     * @return {htmlarea.manager.Manager?htmlarea.manager.UndoManager} manager instance
+     */
+    getCommandManager : function() {
+      return this.__commandManager;
     },
         
 

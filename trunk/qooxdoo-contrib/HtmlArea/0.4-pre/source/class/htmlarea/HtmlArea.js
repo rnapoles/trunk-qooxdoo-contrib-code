@@ -238,6 +238,8 @@ qx.Class.define("htmlarea.HtmlArea",
   {
     /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
     simpleLinebreak : "<br>",
+    
+    EMPTY_DIV : "<div></div>",
 
     /* regex to extract text content from innerHTML */
     GetWordsRegExp     : /([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g,
@@ -341,24 +343,19 @@ qx.Class.define("htmlarea.HtmlArea",
               {
                 if (qx.core.Client.getInstance().isMshtml())
                 {
-                  if (name == "id" && root.getAttribute("old_id"))
-                  {
+                  if (name == "id" && root.getAttribute("old_id")) {
                     value = root.getAttribute("old_id");
-                  }
+                  } 
                   else if (!isNaN(value))
                   {
                     // IE5: buggy on number values
                     // XXX: IE: String, Object, Number, Boolean, ... !!!
                     // XXX: Moz: String only
                     value = root.getAttribute(name);
-                  }
-                  else
-                  {
+                  } else {
                     value = a.nodeValue;
                   }
-                }
-                else
-                {
+                } else {
                   value = a.nodeValue; 
                 }
               }
@@ -376,8 +373,12 @@ qx.Class.define("htmlarea.HtmlArea",
                 continue;
               }
               
-              if (name == "old_id")
-              {
+              if (name == "old_id") {
+                continue;
+              }
+              
+              if (name == "id" && 
+                  qx.lang.String.startsWith(a.nodeValue, "__paragraph__")) {
                 continue;
               }
 
@@ -1284,6 +1285,17 @@ qx.Class.define("htmlarea.HtmlArea",
 
     },
 
+    
+    /**
+     * Returns the commandManager instance
+     * 
+     * @return {htmlarea.command.Manager ? htmlarea.command.UndoManager} manager
+     */
+    getCommandManager : function()
+    {
+      return this.__commandManager;
+    },
+    
 
     /**
      * Helper method to create an object which acts like
