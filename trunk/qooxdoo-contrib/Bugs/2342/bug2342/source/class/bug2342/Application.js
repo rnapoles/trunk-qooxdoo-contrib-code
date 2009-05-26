@@ -55,7 +55,7 @@ qx.Class.define("bug2342.Application",
       -------------------------------------------------------------------------
       */
 
-      var doc = new qx.ui.root.Inline(document.getElementById("qooxdoo_root"), true, true);
+      var doc = new qx.ui.root.Inline(document.getElementById("qooxdoo_root"), false, true);
       
       // Create a button
       var button1 = new qx.ui.form.Button("First Button", "bug2342/test.png");
