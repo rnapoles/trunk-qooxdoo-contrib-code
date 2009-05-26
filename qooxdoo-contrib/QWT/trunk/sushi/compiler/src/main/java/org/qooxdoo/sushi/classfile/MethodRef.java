@@ -93,7 +93,7 @@ public class MethodRef extends Reference {
         MethodDef method;
         
         method = def.lookupMethod(name, argumentTypes);
-        if (method != null) {
+        if (method != null && method.returnType.equals(returnType)) {
             return method;
         }
         
