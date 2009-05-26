@@ -18,5 +18,5 @@
   "namespace" : "htmlarea",
   
   "version" : "trunk",  
-  "qooxdoo-versions": ["0.7.x"]
+  "qooxdoo-versions": ["0.7.4"]
 }
