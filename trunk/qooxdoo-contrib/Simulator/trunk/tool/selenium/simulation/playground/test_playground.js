@@ -76,7 +76,8 @@ simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample)
   foundErrors = false;
   logWarn = reg.exec(logCont);
   try {
-    if (logWarn) {      
+    if (logWarn) {
+      this.errWarn++;
       var level = "warn";
       if (logWarn[1].indexOf("level-error") > 0 ) {
         foundErrors = true;
