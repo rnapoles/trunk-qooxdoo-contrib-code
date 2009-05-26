@@ -766,16 +766,21 @@ qx.Class.define("htmlarea.HtmlArea",
     __isLoaded : null,
     __handleFocusEvent : null,
     __handleBlurEvent : null,
-    __handleFocusOut : null,
+    __handleFocusOutEvent : null,
     __handleMouseEvent : null,
     __handleContextMenuEvent : null,
     __styleInformation : null,
     __contentWrap : null,
     
     
+    
+    /**
+     * Initial content which is written dynamically into the iframe's document
+     * 
+     * @return {void}
+     */
     __initContentWrap : function()
     {
-      /** Initial content which is written dynamically into the iframe's document */
       this.__contentWrap =
       {
         "xhtml" :
@@ -979,13 +984,12 @@ qx.Class.define("htmlarea.HtmlArea",
     
     
     /**
-     * TODOC
+     * Cleaning up a given word (removing HTML code) 
      * 
-     * @type member
-     * @param word {String}
+     * @param word {String} Word to clean
      * @return {String}
      */
-    _cleanupWord : function (word)
+    _cleanupWord : function(word)
     {
       if (!word)
       {
@@ -1012,6 +1016,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * *** IN DEVELOPMENT! ***
      * Helper method for returning all text nodes
      * 
+     * @param element {Element} element to retrieve all text nodes from
      * @return {Array} Text nodes
      */
     _fetchTextNodes : function(element)

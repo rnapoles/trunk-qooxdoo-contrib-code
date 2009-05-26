@@ -744,7 +744,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * TODOC
+     * Returns a map of words and their element node.
      * 
      * @type member
      * @return {Map}
@@ -798,15 +798,16 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return false;
     },
+    
 
     /**
-     * TODOC
+     * Scrubs off HTML code from the given word
      * 
      * @type member
-     * @param word {String}
+     * @param word {String} word to clean
      * @return {String}
      */
-    _cleanupWord : function (word)
+    _cleanupWord : function(word)
     {
       if (!word)
       {
@@ -818,7 +819,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * TODOC
+     * Returns an array of all text nodes 
      * 
      * @type member
      * @return {Node[]}
@@ -830,9 +831,10 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * TODOC
+     * Fetches all text nodes of the given element
      * 
      * @type member
+     * @param element {Node} element to fetch text nodes of
      * @return {Node[]}
      */
     _fetchTextNodes : function(element)
@@ -1923,7 +1925,7 @@ qx.Class.define("htmlarea.HtmlArea",
 		 * 
      * @param doc {Object} The document element of the htmlarea's iframe.
      * @return void
-		 * @signature function(isShiftPressed, e)
+		 * @signature function(doc)
 		 */
     __handleCtrlEnter  : qx.core.Variant.select("qx.client",
     {
@@ -2752,8 +2754,10 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
     /**
-     * TODOC
-     *
+     * Returns the information about the current context (focusNode). It's a
+     * map with information about "bold", "italic", "underline", etc.
+     * 
+     * @return {Map} formatting information about the focusNode
      */
     getContextInformation : function()
     {
