@@ -636,6 +636,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      * Checks the next redo step with specific conditions
      * 
      * @type member
+     * @param command {String} command name
+     * @param value {String} command value
      * @return {Boolean} Whether a next redo step is available
      */
     __checkForNextRedoStep : function(command, value)
@@ -717,7 +719,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         range.collapse(true);
       },
       
-      default : function() {}
+      "default" : function() {}
     }),
     
     

@@ -805,7 +805,7 @@ qx.Class.define("htmlarea.command.Manager",
       * as default. 
       * 
       * @type member
-      * @param attributes {Map} map with attributes which should be applied (e.g. "src", "border", "width" and "height")
+      * @param value {String} list value 
       * @param commandObject {Object} command object
       * @return {Boolean} Success of operation
       */
@@ -1439,8 +1439,7 @@ qx.Class.define("htmlarea.command.Manager",
        /* Helper vars */
        var styleAttribute;
        var styleValue;
-       var i, j;
-       var Style = qx.bom.element.Style; 
+       var i, j; 
 
        /* Read style attributes set on element and all parents */
        for(var i=0; i<elementAndParents.length; i++)
