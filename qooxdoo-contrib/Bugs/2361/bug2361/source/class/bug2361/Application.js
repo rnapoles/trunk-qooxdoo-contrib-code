@@ -59,8 +59,33 @@ qx.Class.define("bug2361.Application",
 
       var textarea = new qx.ui.form.TextArea; //new bug2361.TextArea;
       textarea.setMaxLength(10);
+      
+      textarea.addListener("changeValue", function(e){
+        console.info("TA changeValue: " + e.getData());
+      }, this)
+
+      textarea.addListener("input", function(e){
+        console.info("TA input: " + e.getData());
+      }, this)
 			
+
+
+      var textfield = new qx.ui.form.TextField; //new bug2361.TextArea;
+      textfield.setMaxLength(10);
+      
+      textfield.addListener("changeValue", function(e){
+        console.info("TF changeValue: " + e.getData());
+      }, this)
+
+      textfield.addListener("input", function(e){
+        console.info("TF input: " + e.getData());
+      }, this)
+			
+
+
+
       doc.add(textarea, {left: 100, top: 50});
+      doc.add(textfield, {left: 100, top: 250});
 
     }
   }
