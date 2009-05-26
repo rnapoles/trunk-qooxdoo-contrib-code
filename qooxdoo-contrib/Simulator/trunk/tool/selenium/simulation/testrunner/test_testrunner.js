@@ -137,7 +137,7 @@ function isAutReady()
 {
   print("Waiting for application to load...");
   try {
-    sel.waitForCondition(isStatusReady,"120000");
+    sel.waitForCondition(isStatusReady,"240000");
     return true;
   }
   catch(ex) {
@@ -151,7 +151,7 @@ function isAutReady()
 function isRunnerReady()
 {
   try {
-    sel.waitForCondition(isQxReady, "60000");
+    sel.waitForCondition(isQxReady, "240000");
     return true;
   }
   catch(ex) {
