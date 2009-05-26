@@ -12,7 +12,7 @@
   "let" :
   {
     "APPLICATION"  : "htmlarea",
-    "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8.2-sdk/framework",
+    "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8.2-sdk",
     "TEST_INCLUDE" : "${APPLICATION}.*",
     "CACHE"        : "${QOOXDOO_PATH}/cache",
     "ROOT"         : ".",
