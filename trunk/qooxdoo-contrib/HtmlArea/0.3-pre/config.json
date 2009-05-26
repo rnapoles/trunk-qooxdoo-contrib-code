@@ -5,17 +5,16 @@
   "include" :
   [
     {
-      "path" : "../../qooxdoo/qooxdoo-0.8-sdk/tool/data/config/application.json"
+      "path" : "../../qooxdoo/qooxdoo-0.8.2-sdk/tool/data/config/application.json"
     }
   ],
   
   "let" :
   {
     "APPLICATION"  : "htmlarea",
-    "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8-sdk/framework",
-    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
+    "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8.2-sdk/framework",
     "TEST_INCLUDE" : "${APPLICATION}.*",
-    "CACHE"        : "../../qooxdoo/qooxdoo-0.8-sdk/cache",
+    "CACHE"        : "${QOOXDOO_PATH}/cache",
     "ROOT"         : ".",
     "QXTHEME"      : "htmlarea.theme.HtmlArea"
   },
@@ -23,22 +22,6 @@
   
   "jobs" :
   {
-    "build-htmlarea" :
-    {
-      "extend" : [ "build" ],
-      
-      "compile-dist" :
-      {
-        "target"   : "${BUILD_PATH}",
-        "file"     : "${BUILD_PATH}/script/${APPLICATION}.js",
-        "uri"      : "script/${APPLICATION}.js",
-        "root"     : "${BUILD_PATH}",
-        "format"   : "on",
-        "locales"  : "${LOCALES}",
-        "optimize" : ["basecalls", "variables", "strings"]
-      }      
-    },
-    
     "api-light" :
     {
       "extend" : [ "api" ],
