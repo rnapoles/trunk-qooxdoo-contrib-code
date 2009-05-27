@@ -1075,7 +1075,7 @@ qx.Class.define("htmlarea.HtmlArea",
         if (this.__loadCounter > 5)
         {
           this.error('cant load HtmlArea. Document is not available. ' + doc);
-          this.createDispatchDataEvent("loadingError");
+          this.fireDataEvent("loadingError");
         }
         else
         {
@@ -1377,8 +1377,8 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         catch (e)
         {
-          this.error("cant open document on source '"+this.getSource()+"'", e);
-          this.createDispatchDataEvent("loadingError", e);
+          this.error("cant open document on source '"+this.__iframe.getSource()+"'", e);
+          this.fireDataEvent("loadingError", e);
         }
       }
     },
