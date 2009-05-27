@@ -373,7 +373,8 @@ sel.setSpeed(stepSpeed);
 
 if (isRunnerReady()) {
   logBrowserInfo();
-  runTestsSteps();
+  //runTestsSteps();
+  runTests();
 }
 
 if (!testFailed) {
