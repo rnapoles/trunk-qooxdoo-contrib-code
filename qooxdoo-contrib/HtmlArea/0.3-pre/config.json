@@ -31,6 +31,25 @@
         "API_INCLUDE"  : ["${APPLICATION}.*"],
         "API_EXCLUDE"  : ["qx.*"]
       }
+    },
+    
+    
+    "build-files" :
+    {
+      "desc"    : "adding the copy of the 'blank.html'",
+
+      "extend" : ["common"],
+
+      "copy-files" :
+      {
+        "files" :
+        [
+          "blank.html"
+        ],
+
+        "source" : "${ROOT}/source",
+        "target" : "${BUILD_PATH}"
+      }
     }
   }
 }
