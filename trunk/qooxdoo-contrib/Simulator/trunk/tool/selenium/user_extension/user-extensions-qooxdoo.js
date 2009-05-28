@@ -1334,32 +1334,37 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   var descArr = [];
   var c;
 
-  // check widget children (built with w.add())
-  try {
+  // check external widget children (built with w.add())
+  if (node.getChildren) {
     LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants of " + node);
     // +" (got: "+ (c.length? c.length: 0)+")");
     c = node.getChildren();
     descArr = descArr.concat(c);
-  }
-  catch(ex) {
-    try {
-      LOG.debug("getQxNodeDescendants: using _getChildren() to retrieve descendants of " + node);
-      c = node._getChildren();
-      descArr = descArr.concat(c);
+    if (node.getMenu) {
+      LOG.debug("Getting child menu");
+      descArr = descArr.push(node.getMenu());
     }
-    catch (ex) {
-      // check TreeFolder items: Only neccessary for qooxdoo versions < 0.8.3
-      try {
-        LOG.debug("getQxNodeDescendants: using getItems() to retrieve descendants");
-        descArr = descArr.concat(node.getItems());
-      }
-      catch (ex) {
-        // use JS object members
-        LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
-        for (var m in node) {
-          descArr.push(node[m]);
-        }
-      }
+  }
+  // check TreeFolder items: Only neccessary for qooxdoo versions < 0.8.3
+  else if (node.getItems) {
+    LOG.debug("getQxNodeDescendants: using getItems() to retrieve descendants");
+    descArr = descArr.concat(node.getItems());
+  }
+  // check internal children (e.g. child controls)
+  else if (node._getChildren) {
+    LOG.debug("getQxNodeDescendants: using _getChildren() to retrieve descendants of " + node);
+    c = node._getChildren();
+    descArr = descArr.concat(c);
+    if (node.getMenu) {
+      LOG.debug("Getting child menu " + node.getMenu());
+      descArr.push(node.getMenu());
+    }
+  }
+  else {
+    // use JS object members
+    LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
+    for (var m in node) {
+      descArr.push(node[m]);
     }
   }
 
