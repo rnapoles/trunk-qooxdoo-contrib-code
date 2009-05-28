@@ -465,6 +465,9 @@ Selenium.prototype.clickElementQx = function(element, eventParamString)
   triggerEvent(element, 'focus', false);
   Selenium.prototype.qx.triggerMouseEventQx('mouseover', element, additionalParamsForClick);
   Selenium.prototype.qx.triggerMouseEventQx('mousedown', element, additionalParamsForClick);
+  if (additionalParamsForClick.getParamValue("button", "left") == 2) {
+    Selenium.prototype.qx.triggerMouseEventQx('contextmenu', element, additionalParamsForClick);
+  }
   Selenium.prototype.qx.triggerMouseEventQx('mouseup', element, additionalParamsForClick);
   Selenium.prototype.qx.triggerMouseEventQx('click', element, additionalParamsForClick);
   // do not blur or mouseout as additional events won't be fired correctly
