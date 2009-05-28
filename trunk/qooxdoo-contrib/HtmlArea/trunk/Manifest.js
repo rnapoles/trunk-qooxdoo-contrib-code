@@ -12,6 +12,11 @@
       "name" : "Alexander Back",
       "user" : "aback",
       "email" : "alex DOT back AT 1und1 DOT de"
+    },
+    {
+      "name" : "Jonathan Weiß",
+      "user" : "jonathan_rass",
+      "email" : "jonathan DOT weiss AT 1und1 DOT de"
     }
   ],
 
