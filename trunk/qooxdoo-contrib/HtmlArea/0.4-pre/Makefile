@@ -34,7 +34,7 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = ../../../qooxdoo.legacy_0_7_x
+QOOXDOO_PATH = ../../../qooxdoo.release_0_7_4
 
 #
 # Namespace of your application e.g. custom
@@ -46,7 +46,7 @@ APPLICATION_NAMESPACE = htmlarea
 # Files that will be copied from the source directory into the build
 # directory (space separated list). The default list is empty.
 #
-APPLICATION_FILES = index.html
+APPLICATION_FILES = index.html blank.html
 
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 
