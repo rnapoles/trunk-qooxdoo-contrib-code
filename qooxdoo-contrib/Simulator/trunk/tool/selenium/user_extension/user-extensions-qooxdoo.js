@@ -1356,7 +1356,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     c = node._getChildren();
     descArr = descArr.concat(c);
     if (node.getMenu) {
-      LOG.debug("Getting child menu " + node.getMenu());
+      LOG.debug("Getting child menu");
       descArr.push(node.getMenu());
     }
   }
