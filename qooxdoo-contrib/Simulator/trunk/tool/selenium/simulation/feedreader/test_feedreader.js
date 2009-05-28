@@ -60,9 +60,9 @@ mySim.runTest = function()
   
   this.getEval(tree + ".resetSelection()", "Resetting tree selection");
     
-  this.qxClick("qxh=app:qx.ui.tree.Tree/child[1]", "Selecting first feed from list");  
+  this.qxClick("qxh=app:qx.ui.tree.Tree/child[0]/child[0]/child[0]", "Selecting first feed from list");  
   
-  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]', "Selecting first feed item.");
+  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "Selecting first feed item.");
   
   this.checkArticle();
   
@@ -162,7 +162,7 @@ mySim.runTest = function()
   var treeLastSelect = tree + ".addToSelection(" + tree + ".getItems()[" + newLastFeedNum + "])";
   this.getEval(treeLastSelect, "Selecting new feed.");      
   
-  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.form.List/child[0]', "Selecting first item from new feed.");  
+  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "Selecting first item from new feed.");  
   
   this.checkArticle();
 
@@ -181,6 +181,8 @@ mySim.runTest = function()
   if (!sessionStarted) {
     return;
   }
+  
+  //mySim.addMozillaConsoleListener();
    
   mySim.logEnvironment();   
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
