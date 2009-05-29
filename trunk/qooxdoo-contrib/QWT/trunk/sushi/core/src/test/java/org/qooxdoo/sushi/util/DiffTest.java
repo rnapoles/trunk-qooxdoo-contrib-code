@@ -99,7 +99,7 @@ public class DiffTest {
         io = new IO();
         dir = io.guessProjectHome(getClass()).join("src/test/resources/diff");
         for (Node left : dir.find("*.left")) {
-            right = dir.join(Strings.replaceEnd(left.getName(), ".left", ".right"));
+            right = dir.join(Strings.removeEnd(left.getName(), ".left") + ".right");
             try {
                 expected = new Program((FileNode) io.getHome(), "diff", "-u", left.getAbsolute(), right.getAbsolute()).exec();
             } catch (ExitCode e) {

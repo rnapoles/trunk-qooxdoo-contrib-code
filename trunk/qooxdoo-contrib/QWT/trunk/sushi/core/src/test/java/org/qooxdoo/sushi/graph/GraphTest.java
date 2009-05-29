@@ -94,6 +94,12 @@ public class GraphTest {
         g.addNode("b");
         sort("a", "b");
     }
+    @Test
+    public void sortIsolatedAgain() throws CyclicDependency {
+        g.addNode("z");
+        g.addNode("a");
+        sort("z", "a");
+    }
 
     @Test
     public void sortTransitive() throws CyclicDependency {

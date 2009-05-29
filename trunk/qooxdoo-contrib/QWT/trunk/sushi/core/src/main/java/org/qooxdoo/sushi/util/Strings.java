@@ -81,39 +81,43 @@ public class Strings {
         return result;
     }
     
-    public static String indent(String str, String space) {
-        StringBuilder builder;
+    public static String removeStart(String str, String start) {
+        String result;
         
-        builder = new StringBuilder();
-        for (String line : lines(str)) {
-            builder.append(space);
-            builder.append(line);
+        result = removeStartOpt(str, start);
+        if (result != str) {
+            return result;
+        } else {
+            throw new IllegalArgumentException("'" + str + "' does not start with '" + start + "'");
         }
-        return builder.toString();
     }
 
-    public static String replaceStart(String str, String old, String replaced) {
-        if (str.startsWith(old)) {
-            return replaced + str.substring(old.length());
+    public static String removeStartOpt(String str, String start) {
+        if (str.startsWith(start)) {
+            return str.substring(start.length());
         } else {
             return str;
         }
     }
-    public static String replaceEnd(String str, String old, String replaced) {
-        if (str.endsWith(old)) {
-            return str.substring(0, str.length() - old.length()) + replaced;
+
+    public static String removeEnd(String str, String end) {
+        String result;
+        
+        result = removeEndOpt(str, end);
+        if (result != str) {
+            return result;
+        } else {
+            throw new IllegalArgumentException("'" + str + "' does not end with '" + end + "'");
+        }
+    }
+
+    public static String removeEndOpt(String str, String end) {
+        if (str.endsWith(end)) {
+            return str.substring(0, str.length() - end.length());
         } else {
             return str;
         }
     }
-    
-    public static String removeSuffix(String str, String suffix) {
-        if (str.endsWith(suffix)) {
-            return str.substring(0, str.length() - suffix.length());
-        } else {
-            throw new IllegalArgumentException(str + " does not end with " + suffix);
-        }
-    }        
     
     public static String stripExtension(String f) {
         int dotP;
@@ -135,6 +139,17 @@ public class Strings {
         return f.substring(idx + 1);
     }
     
+    public static String indent(String str, String space) {
+        StringBuilder builder;
+        
+        builder = new StringBuilder();
+        for (String line : lines(str)) {
+            builder.append(space);
+            builder.append(line);
+        }
+        return builder.toString();
+    }
+
     public static String lfill(int count, String str) {
         return lfill(' ', count, str);
     }
