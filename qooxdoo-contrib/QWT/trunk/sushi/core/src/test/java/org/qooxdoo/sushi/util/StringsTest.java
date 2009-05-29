@@ -25,12 +25,14 @@ import static org.junit.Assert.*;
 public class StringsTest {
     @Test
     public void remove() {
-        assertEquals("start", Strings.removeEnd("startx", "x"));
-        assertEquals("start", Strings.removeEndOpt("startx", "x"));
-        assertEquals("startx", Strings.removeEndOpt("startx", "y"));
-        assertEquals("tartx", Strings.removeStart("startx", "s"));
-        assertEquals("tartx", Strings.removeStartOpt("startx", "s"));
-        assertEquals("startx", Strings.removeStartOpt("startx", "t"));
+        final String STARTX = "startx";
+        
+        assertEquals("start", Strings.removeEnd(STARTX, "x"));
+        assertEquals("start", Strings.removeEndOpt(STARTX, "x"));
+        assertEquals(STARTX, Strings.removeEndOpt(STARTX, "y"));
+        assertEquals("tartx", Strings.removeStart(STARTX, "s"));
+        assertEquals("tartx", Strings.removeStartOpt(STARTX, "s"));
+        assertSame(STARTX, Strings.removeStartOpt(STARTX, "t"));
     }
 
     @Test
