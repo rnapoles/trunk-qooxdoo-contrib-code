@@ -1,0 +1,59 @@
+# ************************************************************************
+#   
+#   qooxdoo - the new era of web development
+#   
+#   http://qooxdoo.org
+#   
+#   Copyright:
+#     2006-2008 1&1 Internet AG, Germany, http://www.1and1.org
+#   
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#   
+#   Authors:
+#     * Michael Hartmeier (mlhartme)
+#   
+# ************************************************************************
+
+[PARSER]
+
+Program             ::= "program" Block ;
+
+Declarations        ::= Variable* ;
+Variable            ::= Type id ";" ;
+Type                ::= IntType | StrType;
+IntType             ::= "int" ;
+StrType             ::= "String" ;
+
+Stmt                ::= Block | Assign | Print | Input | If | While ;
+
+Block               ::= "{" Declarations Stmt* "}" ;
+Assign              ::= LValue "=" Expr ";" ;
+Print               ::= "print" Expr ";" ;
+Input               ::= "input" LValue ";" ;
+If                  ::= "if" "(" Expr ")" Block ("else" Block)?;
+While               ::= "while" "(" Expr ")" Block ;
+
+Expr                ::= Compare ;
+Compare             ::= Sum | Sum ("==" | "!=" | "<" | "<=" | ">" | ">=") Sum ;
+Sum                 ::= Prod | Sum ("+"|"-") Prod ;
+Prod                ::= Atom | Prod ("*" | "/") Atom ;
+Atom                ::= LValue | str | num | "(" Expr ")" ;
+
+LValue              ::= VariableReference ;
+VariableReference   ::= id ;
+
+
+[SCANNER]
+    white = space, comment;
+
+str     ::= '"' '"'!* '"' ;
+id      ::= letter (letter | digit | '_')* ;
+num     ::= digit+ ;
+letter  ::= 'A'..'Z' | 'a'..'z' ;
+digit   ::= '0'..'9' ;
+
+space   ::= (' ' | '\b' | '\t' | '\n' | '\f' | '\r' )+ ;
+comment ::= "/*" ('*'! | '*' '/'!)* "*/" ;

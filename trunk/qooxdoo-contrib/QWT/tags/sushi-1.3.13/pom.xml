@@ -1,0 +1,242 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- NO Parent Pom - Sushi no longer depends on QWT -->
+
+  <groupId>org.qooxdoo.sushi</groupId>
+  <artifactId>sushi</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Sushi</name>
+  <version>1.3.13</version>
+  <url>http://qooxdoo.org/contrib/project/qwt</url>
+
+  <modules>
+    <module>core</module>
+    <module>ssh</module>
+    <module>svn</module>
+    <module>compiler</module>
+  </modules>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mavenrepo.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable</mavenrepo.releases>
+    <mavenrepo.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</mavenrepo.snapshots>
+   </properties>
+
+  <organization>
+    <name>1&amp;1</name>
+    <url>http://www.1und1.de</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Michael Hartmeier</name>
+      <id>mhm</id>
+      <email>michael.hartmeier@1und1.de</email>
+      <organization>1&amp;1</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/mlhartme/</url>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Martin Leidig</name>
+      <email>mleidig@schlund.de</email>
+      <organization>1&amp;1</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
+    <contributor>
+      <name>Tobias Fehrenbach</name>
+      <email>tobias.fehrenbach@schlund.de</email>
+      <organization>1&amp;1</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
+    <contributor>
+      <name>Michael Rütten</name>
+      <email>michael.ruetten@1und1.de</email>
+      <organization>1&amp;1</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
+  </contributors>
+
+  <scm>
+    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.13</connection>
+    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.13</developerConnection>
+    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.13</url>
+  </scm>
+
+  <profiles>
+    <profile>
+      <id>all</id>
+      <activation><property><name>full</name></property></activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/*ManualTest.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.5</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <defaultGoal>package</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <additionalConfig>
+            <file>
+              <name>.checkstyle</name>
+              <content><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<fileset-config file-format-version="1.2.0" simple-config="true">
+    <local-check-config name="qooxdoo" location="${checkstyle.xml}" type="remote" description="">
+        <additional-data name="cache-file" value="true" />
+        <additional-data name="cache-props-file-location" value="null_1207126772315_cache.properties" />
+        <additional-data name="cache-file-location" value="null_1207126772315_cache.xml" />
+    </local-check-config>
+    <fileset name="all" enabled="true" check-config-name="qooxdoo" local="true">
+        <file-match-pattern match-pattern="." include-pattern="true" />
+    </fileset>
+</fileset-config>
+]]></content>
+            </file>
+          </additionalConfig>
+          <downloadSources>true</downloadSources>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <!-- TODO: I didn't find predefind maven variables to add a machine name and the build date in mvn 2.0.8 -->
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- deploy source files -->
+            <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <useFile>false</useFile>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*FullTest.java</exclude>
+            <exclude>**/*ManualTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <!-- TODO: http://jira.codehaus.org/browse/MCHECKSTYLE-42 proxy settings ignored -->
+          <!-- configLocation>http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml</configLocation -->
+          <configLocation>http://billy.devel.schlund.de/sites/qooxdoo/checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changelog-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <distributionManagement>
+    <repository>
+      <id>1und1-releases</id>
+      <url>${mavenrepo.releases}</url>
+    </repository>
+    <snapshotRepository>
+      <id>1und1-snapshots</id>
+      <url>${mavenrepo.snapshots}</url>
+    </snapshotRepository>
+    <site>
+      <id>billy</id>
+      <url>scpexe://devel.schlund.de/home/billy/public_html/sites/qooxdoo/sushi</url>
+    </site>
+  </distributionManagement>
+
+</project>
