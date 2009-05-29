@@ -35,7 +35,7 @@ var lastSample = "last";
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','test:Flash','bom:Iframe', 'treevirtual:TreeVirtual Selections'];
+var ignore = ['progressive:ProgressiveLoader', 'data:Gears','showcase:Browser','widget:Iframe','test:Serialize','test:Flash','bom:Iframe', 'treevirtual:TreeVirtual Selections'];
 
 /*
  * List of demos to run. All others will be ignored.
