@@ -1,0 +1,37 @@
+# ************************************************************************
+#   
+#   qooxdoo - the new era of web development
+#   
+#   http://qooxdoo.org
+#   
+#   Copyright:
+#     2006-2008 1&1 Internet AG, Germany, http://www.1and1.org
+#   
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#   
+#   Authors:
+#     * Michael Hartmeier (mlhartme)
+#   
+# ************************************************************************
+
+[PARSER]
+
+Expr      ::= Sum ;
+Sum       ::= Add | Sub | Prod ;
+Add       ::= Sum "+" Prod ;
+Sub       ::= Sum "-" Prod ;
+Prod      ::= Mult | Div | Atom ;
+Mult      ::= Prod "*" Atom ;
+Div       ::= Prod "/" Atom ;
+Atom      ::= Num | "(" Sum ")" ;
+Num       ::= DIGITS ;
+
+[SCANNER]
+    white = SPACE, COMMENT;
+
+SPACE     ::= ('\u0020' | '\b' | '\t' | '\n' | '\f' | '\r' )+ ;
+COMMENT   ::= '#' '\u0020'..'\u007f'* ('\n'|'\r') ;
+DIGITS    ::= '0'..'9'+ ;
