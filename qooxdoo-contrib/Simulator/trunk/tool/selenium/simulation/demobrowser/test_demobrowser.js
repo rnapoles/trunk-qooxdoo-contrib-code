@@ -182,8 +182,14 @@ function sampleRunner(script)
       sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
     }
     */
-    
-    Packages.java.lang.Thread.sleep(2000);
+   
+    if (nextSampleCategory == "progressive" && nextSampleLabel == "ProgressiveLoader") {
+      print("Giving ProgressiveLoader some extra time.");
+      Packages.java.lang.Thread.sleep(12000);
+    }
+    else {
+      Packages.java.lang.Thread.sleep(2000);      
+    }
     
     var currentSample = "Unknown demo";
     var category = "Unknown category"; 
