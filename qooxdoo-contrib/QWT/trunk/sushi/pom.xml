@@ -192,7 +192,7 @@
         <configuration>
           <!-- TODO: http://jira.codehaus.org/browse/MCHECKSTYLE-42 proxy settings ignored -->
           <!-- configLocation>http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml</configLocation -->
-          <configLocation>http://billy.devel.schlund.de/sites/qooxdoo/checkstyle.xml</configLocation>
+          <configLocation>http://ivar.devel.schlund.de/sites/qooxdoo/checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
         </configuration>
       </plugin>
@@ -234,9 +234,8 @@
       <url>${mavenrepo.snapshots}</url>
     </snapshotRepository>
     <site>
-      <id>billy</id>
-      <url>scpexe://devel.schlund.de/home/billy/public_html/sites/qooxdoo/sushi</url>
+      <id>ivar</id>
+      <url>scp://ivar:ivar0815@devel.schlund.de/home/ivar/public_html</url>
     </site>
   </distributionManagement>
-
 </project>
