@@ -175,6 +175,7 @@ public class IO {
     }
     
     public FileNode file(String rootPath) {
+        rootPath = Strings.removeEnd(rootPath, fileFilesystem.getSeparator()); 
         return (FileNode) node(fileFilesystem, rootPath);
     }
     
