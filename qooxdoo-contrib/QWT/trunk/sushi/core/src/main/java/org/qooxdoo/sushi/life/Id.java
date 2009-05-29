@@ -20,7 +20,7 @@ public class Id {
         if (node.hasAnchestor(repo)) {
             return fromPath(node.getRelative(repo));
         } else {
-            name = Strings.removeSuffix(node.getName(), ".jar");
+            name = Strings.removeEnd(node.getName(), ".jar");
             return fromString(name, '+');
         }
     }

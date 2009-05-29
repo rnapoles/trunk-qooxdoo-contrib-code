@@ -24,6 +24,16 @@ import static org.junit.Assert.*;
 
 public class StringsTest {
     @Test
+    public void remove() {
+        assertEquals("start", Strings.removeEnd("startx", "x"));
+        assertEquals("start", Strings.removeEndOpt("startx", "x"));
+        assertEquals("startx", Strings.removeEndOpt("startx", "y"));
+        assertEquals("tartx", Strings.removeStart("startx", "s"));
+        assertEquals("tartx", Strings.removeStartOpt("startx", "s"));
+        assertEquals("startx", Strings.removeStartOpt("startx", "t"));
+    }
+
+    @Test
     public void stripExtension() {
         String f1 = "abc.xml";
         String f2 = ".xml";

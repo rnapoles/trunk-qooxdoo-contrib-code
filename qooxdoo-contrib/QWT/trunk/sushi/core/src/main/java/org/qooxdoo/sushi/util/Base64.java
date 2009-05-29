@@ -72,11 +72,15 @@ public class Base64 {
         return new String(run(str.getBytes(encoding)), encoding);
     }
     
-    public byte[] run(byte[] bytes) throws IOException {
+    public byte[] run(byte ... bytes) throws IOException {
+        return run(bytes, 0, bytes.length);
+    }
+    
+    public byte[] run(byte[] bytes, int ofs, int len) throws IOException {
         ByteArrayOutputStream dest;
         
         dest = new ByteArrayOutputStream();
-        run(new ByteArrayInputStream(bytes), dest);
+        run(new ByteArrayInputStream(bytes, ofs, len), dest);
         return dest.toByteArray();
     }
     
