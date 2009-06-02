@@ -563,7 +563,7 @@ simulation.Simulation.prototype.addOwnFunction = function(funcName, func)
     this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation = {};', 'Creating qx.Simulation namespace');
   }
   
-  if (typeof func == "function") {
+  if (typeof func != "string") {
     func = func.toString();    
   }
 
@@ -674,3 +674,55 @@ simulation.Simulation.prototype.stop = function()
   }
 };
 
+/**
+ * Create a Mozilla Console listener that logs JavaScript errors. 
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.addMozillaConsoleListener = function()
+{
+  var listenerObject =
+  {
+    observe:function( aMessage )
+    {
+      try {
+        netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+        if (aMessage.message.indexOf("JavaScript Error") >= 0) {
+          this.log(aMessage.message, "error");
+        }
+      }
+      catch(ex) {
+        alert("Unable to access Mozilla Console message:\n" + ex);
+      }
+    },
+  
+    QueryInterface: function (iid)
+    {
+      try {
+        netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+        if (!iid.equals(Components.interfaces.nsIConsoleListener) &&
+            !iid.equals(Components.interfaces.nsISupports)) {
+          throw Components.results.NS_ERROR_NO_INTERFACE;
+        }
+        return this;
+      }
+      catch(ex) {
+        alert("Unable to set up Mozilla Console listener:\n" + ex);
+      }
+    }
+  };
+  
+  try {
+    this.getEval("var listenerObject = " + listenerObject.toSource(), "Creating Mozilla Console listener object");
+    
+    this.getEval('netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");', 
+                  "Asking for UniversalXPConnect privileges");
+    this.getEval('var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);', 
+                  "Getting console service");
+    this.getEval('aConsoleService.registerListener(qx.Simulation.mozillaConsoleListener);', 
+                  "Registering console listener");
+  }
+  catch(ex) {
+    this.log(ex + "error");
+  }
+};
