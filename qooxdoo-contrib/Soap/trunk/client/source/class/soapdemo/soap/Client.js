@@ -14,16 +14,16 @@
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY Burak Arslan ''AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Burak Arslan BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+ * AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, 
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
@@ -54,50 +54,61 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     }
 
     ,members : {
-        __wsdl : null
+         __wsdl : null
+
+        ,__extract_fault : function(method_name, async, callback, req) {
+            var retval = null;
+            if(req.responseXML.getElementsByTagName("faultcode").length > 0) {
+                var fault_string  = req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue;
+                fault_string += "\nDetail:\n\n" + req.responseXML.getElementsByTagName("detail")[0].childNodes[0].nodeValue;
+                retval = new Error(500, fault_string);
+                if (!(async || callback)) {
+                    throw retval;
+                }
+            }
+            else {
+                retval = new Error("No fautstring was found!");
+                if (!(async || callback)) {
+                    throw retval;
+                }
+            }
+            return retval;
+        }
 
         ,__on_send_soap_request : function(method_name, async, callback, req) {
-            var o = null;
+            var retval = null;
             var nsmap = this.self(arguments).NAMESPACES;
+
             if (req.responseXML == null) {
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
             }
             else {
                 var tag_name = qx.xml.Element.selectSingleNode(this.__wsdl,"/a:definitions/a:portType/a:operation[@name='"+method_name+"']/a:output/@name",nsmap);
 
-                var nd=null;
-                var tns = this.__wsdl.documentElement.getAttribute("targetNamespace");
-                if (tns != null) {
-                    nd = qx.xml.Element.getElementsByTagNameNS(req.responseXML, tns, tag_name.nodeValue);
+                if(tag_name == null) {
+                    retval = this.__extract_fault(method_name, async, callback, req);
                 }
                 else {
-                    nd = req.responseXML.getElementsByTagName(tag_name.nodeValue);
-                }
-
-                if(nd == null || nd.length == 0) {
-                    if(req.responseXML.getElementsByTagName("faultcode").length > 0) {
-                        if(async || callback) {
-                            o = new Error(500, req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue);
-                        }
-                        else {
-                            throw new Error(500, req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue);
-                        }
+                    var nd = req.responseXML.getElementsByTagName(tag_name.nodeValue);
+                    if(nd == null || nd.length == 0) {
+                        var tns = this.__wsdl.documentElement.getAttribute("targetNamespace");
+                        nd = qx.xml.Element.getElementsByTagNameNS(req.responseXML, tns, tag_name.nodeValue);
                     }
-                    else { // FIXME: need to create an Error for this too
 
+                    if(nd == null || nd.length == 0) {
+                        retval = this.__extract_fault(method_name, async, callback, req);
                     }
-                }
-                else {
-                    o = this.__to_object(nd[0]);
+                    else {
+                        retval = this.__to_object(nd[0]);
+                    }
                 }
 
                 if(callback) {
-                    callback(o, req.responseXML);
+                    callback(retval, req.responseXML);
                 }
             }
-            if(!async) {
-                return null;
-            }
+
+            return retval;
         }
 
         ,__to_object : function(node) {
@@ -139,8 +150,6 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
             }
             type_name = type_name.split(":")[1];
             var type_name_lower = type_name.toLowerCase();
-
-            qx.log.Logger.debug(this, type_name);
 
             // in case this is a primitive value, (we don't know yet)
             // get the value as well. do it here instead of doing it
@@ -191,10 +200,12 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
                     if (node.hasChildNodes()){
                         retval = new Object();
 
-                        qx.log.Logger.debug(this, node);
-
                         for (var i=0; i<elts.length; ++i) {
-                            var elt = ssn(type_node, ".//x:element[@name='"+node.childNodes[i].nodeName+"']",nsmap);
+                            var nn = node.childNodes[i].nodeName;
+                            if (nn == null) {
+                                throw new Error("'"+nn+"' not found in the type node. This wsdl is invalid.");
+                            }
+                            var elt = ssn(type_node, ".//x:element[@name='"+nn+"']",nsmap);
                             retval[node.childNodes[i].nodeName] = this.__extract(node.childNodes[i],elt);
                         }
                     }
