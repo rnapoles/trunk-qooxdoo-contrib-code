@@ -1,0 +1,73 @@
+# ************************************************************************
+#   
+#   qooxdoo - the new era of web development
+#   
+#   http://qooxdoo.org
+#   
+#   Copyright:
+#     2006-2008 1&1 Internet AG, Germany, http://www.1and1.org
+#   
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#   
+#   Authors:
+#     * Michael Hartmeier (mlhartme)
+#   
+# ************************************************************************
+
+mapper org.qooxdoo.sushi.xml.DtdMapper;
+
+grm = "xml.grm";
+
+import org.qooxdoo.sushi.regexpr:
+    Sequence, Choice;
+import org.qooxdoo.sushi.xml:
+    Attribute, Stubs, XmlSyntax;
+import org.qooxdoo.sushi.semantics:
+    BuiltIn;
+import java.lang:
+    String;
+
+start         => XmlSyntax ;
+ :SymbolTable => Stubs.symbolTable:
+                  > start
+                  > //AttDef
+                  > //ElementName;
+
+elementdecl   => Stubs.rule;
+children      => Stubs.unary;
+cp            => Stubs.unary;
+choice        => Choice;
+seq           => Sequence;
+
+Mixed         => Stubs.mixed;
+
+AttDef        => Attribute;
+
+StringType    => BuiltIn.NULL;
+TokenizedType => BuiltIn.NULL; # TODO
+NotationType  => BuiltIn.NULL;
+Enumeration   => BuiltIn.NULL;
+
+ElementNameDef => String: > \\* > \\SymbolTable;
+ElementNameA   => String: > \\AttlistDecl//AttDef;
+ElementName    => Stubs.lookup;
+
+"EMPTY"        => Sequence;
+
+"?"            => Stubs.OPTION;
+"*"            => Stubs.STAR;
+"+"            => Stubs.PLUS;
+
+"#REQUIRED"    => Attribute.REQUIRED;
+"#IMPLIED"     => Attribute.IMPLIED;
+"#FIXED"       => Attribute.FIXED;
+None           => Attribute.NONE;
+
+Name           => [text]: >\ElementNameDef >\ElementNameA >\ElementName >\AttDef;
+AttValue       => [text]: >withoutQuotes;
+:withoutQuotes => Stubs.removeQuotes: > \\AttDef;
+Comment        => BuiltIn.NULL;
+PI             => BuiltIn.NULL;
