@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2008, Burak Arslan (burak.arslan-qx@arskom.com.tr).
+ * Copyright (c) 2008-2009, Burak Arslan (burak.arslan-qx@arskom.com.tr).
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,29 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
-#embed(qx.icontheme/22/actions/zoom.png)
-*/
-
-qx.Class.define("soapdemo.Application", { extend : qx.application.Standalone
-    ,statics : {
-         cliSvc : null
+qx.Class.define("soapdemo.scr.basic.Table", { extend : qx.core.Object
+    ,properties : {
+        widget : { check : "Object" }
     }
-    ,members : {
-        main : function() {
-            this.base(arguments);
+    ,construct : function(container) {
+        this.base(arguments);
+        var ctx=this;
 
-            soapdemo.Application.cliSvc = new soapdemo.soap.Client("http://"+document.location.host+"/svc/");
+        var lv = new qx.ui.container.Composite(new qx.ui.layout.VBox());
+        this.setWidget(lv);
+        
+        var params = new soapdemo.soap.Parameters();
+        var tableModel = new soapdemo.soap.RemoteImpl(soapdemo.Application.cliSvc, "get_integers_count", "get_integers", params);
+        tableModel.setColumns(  ["By One", "By Two", "By Three", "By Four", "By Five"]
+                               ,["byone", "bytwo", "bythree", "byfour", "byfive"]);
 
-            var ctx=this;
-            soapdemo.Application.cliSvc.callAsync("name", new soapdemo.soap.Parameters(), function(r) { 
-//                 alert(r);
-            });
+        var table = new qx.ui.table.Table(tableModel);
+        lv.add(table);
 
-            var cli_doc = this.getRoot();
-            var scr_demo=new soapdemo.scr.Main();
-            cli_doc.add(scr_demo.getWidget(),{edge:0});
-        }
     }
 });
-
