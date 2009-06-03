@@ -29,12 +29,13 @@
 
   "let" :
   {
-    "APPLICATION"  : "soapdemo",
-    "QOOXDOO_PATH" : "qooxdoo",
-    "QXTHEME"      : "soapdemo.theme.Theme",
-    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
-    "LOCALES"      : [ "en" ],
-    "ROOT"         : "."
+     "APPLICATION"  : "soapdemo"
+    ,"QOOXDOO_PATH" : "qooxdoo"
+    ,"QXTHEME"      : "soapdemo.theme.Theme"
+    ,"API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"]
+    ,"LOCALES"      : [ "en" ]
+    ,"ROOT"         : "."
+    ,"CACHE"        : "./cache"
   }
 
   // You only need to edit the remainder of this file, if you want to customize
