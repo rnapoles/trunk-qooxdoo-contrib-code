@@ -422,14 +422,14 @@ public class SvnNode extends Node {
     
     /** @return revision */
     public long changelog(long startRevision, String viewvc, StringBuilder result) throws SVNException {
-        return changelog(startRevision, root.getRepository().getLatestRevision(), viewvc, result);
+        return changelog(startRevision, root.getRepository().getLatestRevision(), false, viewvc, result);
     }
 
     /** @return revision of last change */
-    public long changelog(long startRevision, long endRevision, String viewvc, StringBuilder result) throws SVNException {
+    public long changelog(long startRevision, long endRevision, boolean strictNodes, String viewvc, StringBuilder result) throws SVNException {
         Collection<SVNLogEntry> changeset;
         
-        changeset = queryChanges(startRevision, endRevision);
+        changeset = queryChanges(startRevision, endRevision, strictNodes);
         report(viewvc, changeset, result);
         return getRevision(changeset);
     }
@@ -444,7 +444,7 @@ public class SvnNode extends Node {
         return revision;
     }
     
-    private Collection<SVNLogEntry> queryChanges(long startRevision, long endRevision) throws SVNException {
+    private Collection<SVNLogEntry> queryChanges(long startRevision, long endRevision, boolean strictNodes) throws SVNException {
         SVNRepository repository;
         
         repository = root.getRepository();
@@ -452,7 +452,7 @@ public class SvnNode extends Node {
             // empty log - might happen if "last deployed revision + 1" is passed to this function
             return new ArrayList<SVNLogEntry>();
         }
-        return (Collection<SVNLogEntry>) repository.log(new String[] { getPath() }, null, startRevision, endRevision, true, true);
+        return (Collection<SVNLogEntry>) repository.log(new String[] { getPath() }, null, startRevision, endRevision, true, strictNodes);
     }
 
     private void report(String viewvc, Collection<SVNLogEntry> entries, StringBuilder dest) {
