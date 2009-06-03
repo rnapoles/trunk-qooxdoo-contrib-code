@@ -235,7 +235,7 @@
     </snapshotRepository>
     <site>
       <id>ivar</id>
-      <url>scp://ivar:ivar0815@devel.schlund.de/home/ivar/public_html</url>
+      <url>scp://ivar:ivar0815@devel.schlund.de/home/ivar/public_html/qooxdoo/sushi</url>
     </site>
   </distributionManagement>
 </project>
