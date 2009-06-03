@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.LocatorException;
@@ -48,10 +47,12 @@ public class SvnNodeFullTest extends NodeTest {
     
     public static void main(String[] args) throws Exception {
         IO io;
-
+        SvnNode node;
+        
         io = new IO();
         io.getFilesystem(SvnFilesystem.class).setCredentials("pfixpublisher", "pfixpublisher");
-        io.node("svn:https://svn.schlund.de/svn/PFX/pfixEntertainment/releases/09").mkdir();
+        node = (SvnNode) io.node("svn:https://svn.schlund.de/svn/PFX/jasmin/tags/jasmin-2.1.1");
+        System.out.println("" + node.changelog(84000, "foo"));
     }
 
     @BeforeClass
