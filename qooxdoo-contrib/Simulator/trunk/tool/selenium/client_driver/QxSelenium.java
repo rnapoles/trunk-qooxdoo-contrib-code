@@ -14,6 +14,7 @@
 
    Authors:
      * Thomas Herchenroeder (thron7)
+     * Daniel Wagner (d_wagner)
 
 ************************************************************************ */
 
@@ -41,12 +42,46 @@ public class QxSelenium extends DefaultSelenium
     return this.commandProcessor.doCommand("qxClickAt", new String[] {locator, opts,});
   }
 
+  public String qxTableClick(String locator) {
+    return this.commandProcessor.doCommand("qxTableClick", 
+      new String[] {locator, });
+  }
+
+  public String qxTableClick(String locator, String opts) {
+    return this.commandProcessor.doCommand("qxTableClick", 
+      new String[] {locator, opts, });
+  }
+
   public String getViewport() {
     return this.commandProcessor.doCommand("getViewport", new String[] {});
   }
 
   public String captureScreenshot(String filename, String geometry) {
     return this.commandProcessor.doCommand("captureScreenshot", new String[] {filename, geometry});
+  }
+
+  public int qxTableGetRows(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableRows", 
+      new String[] {locator,});
+    return Integer.parseInt(ret);
+  }
+
+  public int qxTableGetCols(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableCols", 
+      new String[] {locator,});
+    return Integer.parseInt(ret);    
+  }
+
+  public String qxTableGetValue(String locator, String opts) {
+    String ret = this.commandProcessor.getString("getQxTableValue", 
+      new String[] {locator, opts, });
+    return ret;
+  }
+
+  public String qxObjectExecFunction(String locator, String functionName) {
+    String ret = this.commandProcessor.getString("getQxObjectFunction", 
+      new String[] {locator, functionName, });
+    return ret;
   }
 
 }

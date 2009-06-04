@@ -54,6 +54,21 @@
  *   - possible values: true, false
  *   - default value  : false
  *
+ * qxTableClick:
+ *  This commands simulates clicking on a specific cell of a qooxdoo table.
+ *  Supported options:
+ *  row: the row number of the cell to be clicked
+ *  col: the column number of the cell to be clicked
+ *  button: the mouse-button to be pressed
+ *   - possible values: left, right
+ *   - default value  : left
+ *  double: single or double click
+ *   - possible values: true, false
+ *   - default value  : left
+ * Example:
+ * +----------+-----------------------------+--------------------------+
+ * |qxClick   | <locator finding a table>   | row=42,col=4,double=true |
+ * +----------+-----------------------------+--------------------------+
  *
  * Special qooxdoo Locator:
  *  As qooxdoo HTML consists mainly of div-elements, it is mostly difficult to
@@ -96,6 +111,9 @@
  *
  * Based on the orginal Selenium user extension for qooxdoo (version: 0.3)
  * by Robert Zimmermann
+ * 
+ * getQxObjectFunction, qxTableClick and related methods contributed by Mr. 
+ * Hericus
  */
 
 // -- Config section ------------------------------------------------
@@ -132,7 +150,7 @@ Selenium.prototype.qx.MouseEventParameters = function (customParameters)
       this.customParameters[name] = value;
     }
   }
-}
+};
 
 Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_IE =
 {
@@ -315,7 +333,7 @@ Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventP
 
     element.fireEvent('on' + eventType, evt);
   }
-}
+};
 
 
 /**
@@ -401,7 +419,7 @@ Selenium.prototype.doGetViewport = function(locator, eventParams)
     storedVars['ViewportStr'] = geom;
     // de-register myself
     PageBot.prototype._removeEventListener(docelem, "click", eh);
-  };
+  }
 
   // register handler
   PageBot.prototype._addEventListener(docelem, "click", eh);
@@ -474,6 +492,7 @@ Selenium.prototype.clickElementQx = function(element, eventParamString)
 // FIXME: include original "click" functionality
 };
 
+
 /**
  * Check wheather an qooxdoo Element is enabled or not
  *
@@ -503,7 +522,7 @@ Selenium.prototype.isQxEnabled = function(locator)
     if (qxObject) {
       return qxObject.getEnabled();
     } else {
-      throw new SeleniumError("No such object: " + locator)
+      throw new SeleniumError("No such object: " + locator);
     }
   }
   else
@@ -511,6 +530,370 @@ Selenium.prototype.isQxEnabled = function(locator)
     throw new SeleniumError("Error: No qooxdoo-Locator given. This command only runs with qooxdoo-Locators");
   }
 };
+
+
+/** Returns the qx global object so that we can use qx functionality
+ *
+ */
+Selenium.prototype.getQxGlobalObject = function () 
+{
+  if (this.page()._globalQxObject) {
+    return this.page()._globalQxObject;
+  } 
+  else {
+    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
+  }
+};
+
+
+/**
+ * Utility function to do {object instanceof qxclass} comparisons.
+ * Since the qx. namespace is not directly available, we have to go through
+ * some extra steps.
+ * <p>
+ * Use quotes around qxclass when you pass it in.
+ *
+ * @param object {var} The object to check
+ * @parame qxclass {var} The string name of the qx class type to compare against
+ * @return returns true of object instanceof qxclass, false if not.
+ */
+Selenium.prototype.isQxInstanceOf = function (object, qxclass) {
+  var qx = this.getQxGlobalObject();
+  var myClass = qx.Class.getByName(qxclass);
+
+  LOG.debug("isQxInstanceOf checking (" + object.classname + ") against class (" + qxclass + ")");
+  try {
+    if (object instanceof myClass) {
+      return true;
+    }
+  } 
+  catch (e) {
+    if (object.classname === qxclass) {
+      return true;
+    }
+  }
+  return false;
+};
+
+
+/**
+ * Uses the standard qx locators to find a table, and then returns the number of
+ * rows from the table model.
+ *
+ * @type member
+ * @param locator {var} an element locator
+ * @return {var} The number of rows in the table.
+ */
+Selenium.prototype.getQxTableRows = function(locator)
+{
+  var element = this.page().findElement(locator);
+  if (!element) {
+    throw new SeleniumError("No such object: " + locator);
+  }
+  var qx = this.getQxGlobalObject();
+
+  // this.page().findElement() returns the html element.
+  // we also need the real object to work with.
+  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not a qx Table: " + locator);
+    }
+  } 
+  else {
+    throw new SeleniumError("Object is not a qx Table: " + locator);
+  }
+  return String(qxObject.getTableModel().getRowCount());
+};
+
+
+/**
+ * Uses the standard qx locators to find a table, and then returns the number of
+ * columns from the table model.
+ *
+ * @type member
+ * @param locator {var} an element locator
+ * @return {var} The number of columns in the table.
+ */
+Selenium.prototype.getQxTableCols = function(locator)
+{
+  var element = this.page().findElement(locator);
+  if (!element) {
+    throw new SeleniumError("No such object: " + locator);
+  }
+  var qx = this.getQxGlobalObject();
+
+  // this.page().findElement() returns the html element.
+  // we also need the real object to work with.
+  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not a qx Table: " + locator);
+    }
+  } 
+  else {
+    throw new SeleniumError("Object is not a qx Table: " + locator);
+  }
+  return String(qxObject.getTableModel().getColumnCount());
+};
+
+
+/**
+ * Uses the standard qx locators to find a qooxdoo object, and then executes
+ * the given function of that object.  If the object does not contain the 
+ * referenced function, then an exception will be thrown.
+ *
+ * @type member
+ * @param locator {var} an element locator
+ * @param functionName {var} A text string that should identify the function to 
+ * be executed.
+ * @return {var} The return value from the function.
+ */
+Selenium.prototype.getQxObjectFunction = function(locator, functionName)
+{
+  var element = this.page().findElement(locator);
+  if (!element) {
+    throw new SeleniumError("No such object: " + locator);
+  }
+  var qx = this.getQxGlobalObject();
+
+  // this.page().findElement() returns the html element.
+  // we also need the real object to work with.
+  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  if (qxObject) {
+    if (qxObject[functionName]) {
+      return qxObject[functionName]();
+    } 
+    else {
+      throw new SeleniumError("Object does not have function (" + functionName + "), " + locator);
+    }
+  } 
+  else {
+    throw new SeleniumError("Object is not a qooxdoo object: " + locator);
+  }
+};
+
+
+/**
+ * Uses the standard qx locators to find a table, and then returns the text
+ * found in the cell at row, column position.
+ *
+ * @type member
+ * @param locator {var} an element locator
+ * @param eventParams {var} A text string that should contain "row=Y,col=X"
+ * @return {var} The text found at the given table cell.
+ */
+Selenium.prototype.getQxTableValue = function(locator, eventParams)
+{
+  var element = this.page().findElement(locator);
+  if (!element) {
+    throw new SeleniumError("No such object: " + locator);
+  }
+  var qx = this.getQxGlobalObject();
+
+  // this.page().findElement() returns the html element.
+  // we also need the real object to work with.
+  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not a qx Table: " + locator);
+    }
+  } 
+  else {
+    throw new SeleniumError("Object is not a qx Table: " + locator);
+  }
+
+  var additionalParamsForClick = {};
+  if (eventParams && eventParams !== "") {
+    var paramPairs = eventParams.split(",");
+
+    for ( var i = 0; i < paramPairs.length; i++) {
+      var onePair = paramPairs[i];
+      var nameAndValue = onePair.split("=");
+
+      // rz: using String.trim from htmlutils.js of selenium to get rid of
+      // whitespace
+      var name = new String(nameAndValue[0]).trim();
+      var value = new String(nameAndValue[1]).trim();
+      additionalParamsForClick[name] = value;
+    }
+  }
+  var row = Number(additionalParamsForClick["row"]);
+  var col = Number(additionalParamsForClick["col"]);
+  LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
+
+  return String(qxObject.getTableModel().getValue(col, row));
+};
+
+
+/**
+ * Uses the standard qx locators to find a table, and then processes a click on 
+ * the table at the given row/column position.  Note, your locator should only 
+ * find the table itself, and not the clipper child of the table. We'll add the 
+ * extra Composite/Scroller/Clipper to the locator as required.
+ *
+ * <p>
+ * mousedown, mouseup will be fired instead of only click
+ * additionaly to doQxClick the x-/y-coordinates of located element will be 
+ * determined.
+ * TODO: implement it like doFooAt, where additional coordinates will be added 
+ * to the element-coords
+ * <p>
+ * eventParams example: button=left|right|middle, clientX=300, shiftKey=true
+ * for a full list of properties see "function 
+ * Selenium.prototype.qx.triggerMouseEventQx"
+ *
+ * @type member
+ * @param locator {var} an element locator
+ * @param row {var} table row to click
+ * @param col {var} table column to click
+ * @param eventParams {var} additional parameter for the mouse-event to set. 
+ * e.g. clientX.
+ * If no eventParams are set, defaults will be: left mousebutton, all keys false
+ * and all coordinates 0
+ * @return {void}
+ */
+Selenium.prototype.doQxTableClick = function(locator, eventParams)
+{
+  var element = this.page().findElement(locator);
+  if (!element) {
+      throw new SeleniumError("No such object: " + locator);
+  }
+  var qx = this.getQxGlobalObject();
+
+  // this.page().findElement() returns the html element.
+  // we also need the real object to work with.
+  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not a qx Table: " + locator);
+    }
+  } 
+  else {
+    throw new SeleniumError("Object is not a qx Table: " + locator);
+  }
+
+  // Now add the extra components to the locator to find the clipper itself.
+  // This is the real object that we want to click on.
+  element = this.page().findElement(locator + 
+    "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper"
+  );
+  if (!element) {
+    throw new SeleniumError("Could not find clipper child of the table");
+  }
+
+  // Get the coordinates of the table:
+  var coordsXY = getClientXY(element);
+  LOG.debug("computed coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
+
+  var additionalParamsForClick = {};
+  if (eventParams && eventParams !== "") {
+    var paramPairs = eventParams.split(",");
+
+    for (var i = 0; i < paramPairs.length; i++) {
+      var onePair = paramPairs[i];
+      var nameAndValue = onePair.split("=");
+
+      // rz: using String.trim from htmlutils.js of selenium to get rid of
+      // whitespace
+      var name = new String(nameAndValue[0]).trim();
+      var value = new String(nameAndValue[1]).trim();
+      additionalParamsForClick[name] = value;
+    }
+  }
+  var row = Number(additionalParamsForClick["row"]);
+  var col = Number(additionalParamsForClick["col"]);
+  LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
+
+  var doContextMenu = false;
+  var doDoubleClick = false;
+  if (additionalParamsForClick["button"] &&
+      additionalParamsForClick["button"] === "right") {
+    doContextMenu = true;
+  }
+  if (additionalParamsForClick["double"] &&
+      additionalParamsForClick["double"] === "true" ) {
+    doDoubleClick = true;
+  }
+
+  // Focus the table row/column so that it can receive the click events
+  //qxObject.setFocusedCell(col, row, true);
+
+  // Adjust our row number to match the rows that are currently visible:
+  var first_row = qxObject.getPaneScroller(0).getTablePane().getFirstVisibleRow();
+  var row_count = qxObject.getPaneScroller(0).getTablePane().getVisibleRowCount();
+  LOG.debug("qxTable firstVisibleRow(" + first_row + "), visibleRowCount(" 
+    + row_count + ")");
+
+  // If our target row is below or beyond the set of rows visible, then scroll
+  // it into view:
+  if( row < first_row || row >= (first_row + row_count)) {
+    qxObject.setFocusedCell(col, row, true); 
+    // now it should be in the viewport
+    first_row = qxObject.getPaneScroller(0).getTablePane().getFirstVisibleRow();
+    row_count = qxObject.getPaneScroller(0).getTablePane().getVisibleRowCount();
+    LOG.debug("qxTable firstVisibleRow(" + first_row + "), visibleRowCount(" 
+      + row_count + ")");
+  }
+
+  // Adjust our "row" coordinate to be relative to the viewport:
+  row = row - first_row;
+
+  // Add in table height plus row height to get to the right row:
+  LOG.debug("Table Header Height = " + qxObject.getHeaderCellHeight() );
+  LOG.debug("Table Row Height = " + qxObject.getRowHeight() );
+  coordsXY[1] = coordsXY[1] + ( row * qxObject.getRowHeight() );
+
+  // Add in the column widths for each column:
+  for (var i = 0; i < col; i++) {
+    LOG.debug("Column (" + i + ") Width = (" 
+      + qxObject.getTableColumnModel().getColumnWidth( i ) + ")" );
+    coordsXY[0] = coordsXY[0] + 
+      qxObject.getTableColumnModel().getColumnWidth( i );
+  }
+
+  LOG.debug("updated coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
+  coordsXY[0] = coordsXY[0] + 5;
+  coordsXY[1] = coordsXY[1] + 5;
+  LOG.debug("final coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
+
+  // TODO: very dirty no checking, maybe refactoring needed to get doQxClick
+  // and doQxClickAt to work smoothly together.
+  var newEventParamString = eventParams + ",clientX=" + coordsXY[0]
+    + ",clientY=" + coordsXY[1];
+  LOG.debug("newEventParamString=" + newEventParamString);
+
+  // Always do a standard click to focus the cell
+  this.clickElementQx(element, newEventParamString);
+
+  // If requested, also do a context menu request:
+  if (doContextMenu) {
+    // subtract out the original element position:
+    var origcoordsXY = getClientXY(element);
+    coordsXY[0] = coordsXY[0] - origcoordsXY[0];
+    coordsXY[1] = coordsXY[1] - origcoordsXY[1];
+
+    LOG.debug("Calling selenium doContextMenuAt with X,Y=" + coordsXY[0] 
+      + "," + coordsXY[1]);
+    this.doContextMenuAt(locator + "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper",
+      coordsXY[0] + "," + coordsXY[1] );
+  }
+
+  // If requested, also do a double-click request:
+  if (doDoubleClick) {
+    // subtract out the original element position:
+    var origcoordsXY = getClientXY(element);
+    coordsXY[0] = coordsXY[0] - origcoordsXY[0];
+    coordsXY[1] = coordsXY[1] - origcoordsXY[1];
+
+    LOG.debug("Calling selenium doDoubleClickAt with X,Y=" + coordsXY[0] + "," 
+      + coordsXY[1]);
+    this.doDoubleClickAt(locator + "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper",
+      coordsXY[0] + "," + coordsXY[1] );
+  }
+
+};
+
 
 // ****************************************
 // qooxdoo-locator (qx=) and special (qxx=)
@@ -967,7 +1350,6 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
         if (e.a instanceof Array)
         {
           // it's an exception thrown by myself - just continue search
-          ;
         }
         else 
         {
