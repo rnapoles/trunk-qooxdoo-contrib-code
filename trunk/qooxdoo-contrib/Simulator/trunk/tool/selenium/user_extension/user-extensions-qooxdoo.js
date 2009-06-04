@@ -1069,7 +1069,8 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
   {
     // basically we tail recurse, but catch exceptions
     try {
-      LOG.debug("Qxh Locator: tail-recursing with root: "+el+"(fixed step: '"+step+"'), path: "+npath.join('/'));
+      LOG.debug("Qxh Locator: found step (" + step + "), moving on to (" +
+                npath[0] + ")" ); 
       var res = this._searchQxObjectByQxHierarchy(el, npath);
     }
     catch(e)
@@ -1109,10 +1110,12 @@ PageBot.prototype._getQxElementFromStep1 = function(root, step)
   for (member in root)
   {
     if (member == step) {
+      LOG.debug("Qxh Locator: _getQxElementFromStep1 returning object");
       return root[member];
     }
   }
 
+  LOG.debug("Qxh Locator: _getQxElementFromStep1 returning null");
   return null;
 };
 
@@ -1380,7 +1383,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     }
   }
 
-  LOG.debug("getQxNodeDescendants: returning for node : "+node+" immediate children: "+descArr1.length);
+  LOG.debug("getQxNodeDescendants: returning for node immediate children: "+descArr1.length);
   return descArr1;
 };  // _getQxNodeDescendants()
 
