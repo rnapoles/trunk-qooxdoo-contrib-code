@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -315,6 +316,10 @@ public class SvnNode extends Node {
 
     @Override
     public long getLastModified() throws GetLastModifiedException {
+        return getLastModified(-1).getTime();
+    }
+
+    public Date getLastModified(long revision) throws GetLastModifiedException {
         try {
             if (!exists()) {
                 throw new GetLastModifiedException(this, null);
@@ -323,7 +328,7 @@ public class SvnNode extends Node {
             throw new GetLastModifiedException(this, e);
         }
         try {
-            return root.getRepository().info(path, -1).getDate().getTime();
+            return root.getRepository().info(path, revision).getDate();
         } catch (SVNException e) {
             throw new GetLastModifiedException(this, e);
         }
