@@ -1,0 +1,39 @@
+# ************************************************************************
+#   
+#   qooxdoo - the new era of web development
+#   
+#   http://qooxdoo.org
+#   
+#   Copyright:
+#     2006-2008 1&1 Internet AG, Germany, http://www.1and1.org
+#   
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#   
+#   Authors:
+#     * Michael Hartmeier (mlhartme)
+#   
+# ************************************************************************
+
+[PARSER]
+
+Command      ::= "command" String ":" String Declarations "{" Line "}" ;
+Declarations ::= Variable* ;
+Variable     ::= Identifier ":" String ";" ;
+Line         ::= "run" Expression ("+" Expression)* ";" ;
+Expression   ::= Constant | Reference;
+Constant     ::= String ;
+String       ::= Literal ;
+Reference    ::= Identifier ;
+
+[SCANNER]
+    white = Space, Comment ;
+
+Letter       ::= 'A'..'Z' | 'a'..'z';
+Digit        ::= '0'..'9';
+Space        ::= ('\u0020' | '\b' | '\t' | '\n' | '\f' | '\r' )+;
+Comment      ::= '#' '\u0020'..'\u007f'* ('\n'|'\r');
+Literal      ::= '"' ( ('\\' 0..65535) | ('\\' | '"' | '\n' | '\r')!)+ '"';
+Identifier   ::= Letter (Letter | Digit)* ;
