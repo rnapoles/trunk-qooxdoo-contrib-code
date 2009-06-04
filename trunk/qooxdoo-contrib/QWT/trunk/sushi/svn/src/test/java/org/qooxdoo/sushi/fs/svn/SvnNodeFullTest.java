@@ -51,8 +51,8 @@ public class SvnNodeFullTest extends NodeTest {
         
         io = new IO();
         io.getFilesystem(SvnFilesystem.class).setCredentials("pfixpublisher", "pfixpublisher");
-        node = (SvnNode) io.node("svn:https://svn.schlund.de/svn/PFX/jasmin/tags/jasmin-2.1.1");
-        System.out.println("" + node.changelog(84000, "foo"));
+        node = (SvnNode) io.node("svn:https://svn.schlund.de/svn/PFX/jasmin/trunk");
+        System.out.println("last modified: " + node.getLastModified(85214));
     }
 
     @BeforeClass
