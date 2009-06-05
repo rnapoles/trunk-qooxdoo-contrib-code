@@ -159,19 +159,19 @@ qx.Class.define("tileview.TileViewItem",
     // property apply
     _applyLabel : function(value)
     {
-      this.getChildControl("label").setContent(value);
+      this.getChildControl("label").setValue(value);
     },
 
     // property apply
     _applyDescription : function(value)
     {
-      this.getChildControl("description").setContent(value);
+      this.getChildControl("description").setValue(value);
     },
 
     // property apply
     _applyStatus : function(value)
     {
-      this.getChildControl("status").setContent(value);
+      this.getChildControl("status").setValue(value);
     }
 
   }  
