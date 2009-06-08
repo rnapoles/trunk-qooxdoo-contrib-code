@@ -35,7 +35,7 @@ var lastSample = "last";
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['progressive:ProgressiveLoader', 'data:Gears','showcase:Browser','widget:Iframe','test:Serialize','test:Flash','bom:Iframe', 'treevirtual:TreeVirtual Selections'];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe'];
 
 /*
  * List of demos to run. All others will be ignored.
@@ -171,8 +171,7 @@ function sampleRunner(script)
       //print("Error while running script: " + ex);
       sel.getEval(browserLog("<DIV>ERROR while running script: " + ex + "</DIV>"));
     }
-
-    /*
+    
     Packages.java.lang.Thread.sleep(2000);
     try {      
       killBoxes();
@@ -181,7 +180,6 @@ function sampleRunner(script)
       //print("Error while trying to close dialog boxes: " + ex);
       sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
     }
-    */
    
     if (nextSampleCategory == "progressive" && nextSampleLabel == "ProgressiveLoader") {
       print("Giving ProgressiveLoader some extra time.");
@@ -198,8 +196,13 @@ function sampleRunner(script)
       currentSample = sel.getEval(getSampleLabel);
       category = sel.getEval(getSampleCategory);
     } catch(ex) {
-      //print("ERROR: Unable to get determine current demo: " + ex);
-      sel.getEval(browserLog('<DIV>Unable to determine current demo: ' + ex + '</DIV>'));  
+      try {
+        currentSample = sel.getEval(getSampleLabel);
+        category = sel.getEval(getSampleCategory);
+      }
+      catch(ex) {
+        sel.getEval(browserLog('<DIV>Unable to determine current demo: ' + ex + '</DIV>')); 
+      }       
     }
   }
   
@@ -221,8 +224,12 @@ function sampleRunner(script)
     sampleLog = sel.getEval(qxLog);
   }
   catch(ex) {
-    //print("Unable to get log for demo " + category + ' - ' + currentSample);
-    sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
+    try {
+      sampleLog = sel.getEval(qxLog);  
+    }
+    catch(ex) {
+      sel.getEval(browserLog('<DIV>Unable to get log for demo: ' + category + ' - ' + currentSample + '</DIV>'));
+    }
   }
   
   sel.getEval(browserLog('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>'));
@@ -340,7 +347,7 @@ function runTest()
     while (currentSample != lastSample) {
       lastSample = currentSample;
       print("Done playing " + lastSample + ", starting next sample");
-
+      /*
       try {      
         killBoxes();
       }
@@ -348,7 +355,7 @@ function runTest()
         //print("Error while trying to close dialog boxes: " + ex);
         sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
       }
-
+      */
       currentSample = sampleRunner(runNextSample);
     }
   }
@@ -359,6 +366,7 @@ function runTest()
       var sam = include[j].substr(include[j].indexOf(':') + 1);
       var runIncluded = getDemoChooser(cat, sam);
       currentSample = sampleRunner(runIncluded);
+      /*
       try {      
         killBoxes();
       }
@@ -366,6 +374,7 @@ function runTest()
         //print("Error while trying to close dialog boxes: " + ex);
         sel.getEval(browserLog("<DIV>ERROR while trying to close dialog boxes: " + ex + "</DIV>"));
       }
+      */
     }
   }
 
@@ -385,7 +394,7 @@ var sel = false;
     sel = new QxSelenium(config.selServer,config.selPort,config.testBrowser,config.autHost);
     if (sel) {
       sel.start();
-      sel.setTimeout(300000);
+      sel.setTimeout(120000);
       sel.open(config.autHost + config.autPath);
       sel.setSpeed(stepSpeed);
     }
