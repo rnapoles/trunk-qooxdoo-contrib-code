@@ -60,9 +60,9 @@ mySim.runTest = function()
   
   this.getEval(tree + ".resetSelection()", "Resetting tree selection");
     
-  this.qxClick("qxh=app:qx.ui.tree.Tree/child[0]/child[0]/child[0]", "Selecting first feed from list");  
+  this.qxClick("qxh=app:qx.ui.tree.Tree/child[0]/child[0]/child[0]", "", "Selecting first feed from list");  
   
-  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "Selecting first feed item.");
+  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "", "Selecting first feed item.");
   
   this.checkArticle();
   
@@ -72,7 +72,7 @@ mySim.runTest = function()
 
   // Use the preferences window to change the application language  
   // Click the preferences button, then check if the prefs window opened.  
-  this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "Clicking Preferences button.");
+  this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "", "Clicking Preferences button.");
   var prefWindowScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")';
   var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
   this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
@@ -80,21 +80,21 @@ mySim.runTest = function()
 
   // Click the "Italiano" radio button.
   var radioItalian = 'qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]';
-  this.qxClick(radioItalian, "Selecting language");
+  this.qxClick(radioItalian, "", "Selecting language");
   Packages.java.lang.Thread.sleep(2000);
   // Click again just to be sure (bug #2193).
-  this.qxClick(radioItalian, "Selecting language");
+  this.qxClick(radioItalian, "", "Selecting language");
   
   // Click the "OK" button 
   var buttonOk = 'qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]';  
-  this.qxClick(buttonOk, "Clicking OK.");    
+  this.qxClick(buttonOk, "", "Clicking OK.");    
   Packages.java.lang.Thread.sleep(2000);
   
   // Check if the preferences window closed. Click "OK" again if it isn't.
   var prefWinVis = this.getEval(isPrefWindowVisible, "Checking if preferences window is visible");
   // getEval returns an object, not a boolean
   if (String(prefWinVis) != "false") {
-    this.qxClick(buttonOk, "Clicking OK again.");
+    this.qxClick(buttonOk, "", "Clicking OK again.");
     Packages.java.lang.Thread.sleep(2000);
   }
   
@@ -112,7 +112,7 @@ mySim.runTest = function()
   
   // Add a new feed
   // Click "Add Feed"
-  this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "Clicking Add Feed button");
+  this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "", "Clicking Add Feed button");
     
   var feedWindowScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")';
   var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
@@ -130,14 +130,14 @@ mySim.runTest = function()
   // Enter new feed details
   this.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[1]', 'Golem');    
   this.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[3]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
-  this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "Clicking 'Add'.");
+  this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "", "Clicking 'Add'.");
   Packages.java.lang.Thread.sleep(2000);
   
   // Check if the Add Feed Window closed.
   var feedWinVis = this.getEval(isFeedWindowVisible, "Waiting for Add Feed window to close.");
   if (String(feedWinVis) == "true") {
     print("Add Feed Window still visible, clicking again.");
-    this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "Clicking 'Add'.");
+    this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "", "Clicking 'Add'.");
   }
 
   var isFeedWindowHidden = feedWindowScript + ".getVisibility() == 'hidden'";  
@@ -162,7 +162,7 @@ mySim.runTest = function()
   var treeLastSelect = tree + ".addToSelection(" + tree + ".getItems()[" + newLastFeedNum + "])";
   this.getEval(treeLastSelect, "Selecting new feed.");      
   
-  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "Selecting first item from new feed.");  
+  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "", "Selecting first item from new feed.");  
   
   this.checkArticle();
 
@@ -181,13 +181,17 @@ mySim.runTest = function()
   if (!sessionStarted) {
     return;
   }
-  
-  //mySim.addMozillaConsoleListener();
    
   mySim.logEnvironment();   
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
                                           "Waiting for qooxdoo application");
 
+  /*
+  var product = mySim.getEval("navigator.product", "Getting browser product name");
+  if (product == "Gecko") {
+    mySim.addMozillaConsoleListener();
+  }
+  */
 
   if (!isAppReady) {
     mySim.testFailed = true;

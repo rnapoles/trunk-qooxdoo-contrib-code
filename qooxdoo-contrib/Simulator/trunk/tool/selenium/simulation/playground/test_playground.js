@@ -99,10 +99,10 @@ simulation.Simulation.prototype.runTest = function()
   this.runScript(setLocale, "Setting application locale to EN");    
    
   // Open log pane
-  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox', 'Opening log pane');
+  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox', "", 'Opening log pane');
   
   // Load the first sample again to make sure we get the english log output.
-  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', 'Pressing Run button');
+  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', '', 'Pressing Run button');
 
   this.addOwnFunction("getSampleNames", getSampleNames);  
   var sampleNames = this.getEval("selenium.browserbot.getCurrentWindow().qx.Simulation.getSampleNames();", "Getting sample names");
@@ -113,8 +113,8 @@ simulation.Simulation.prototype.runTest = function()
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
       print("Selecting next sample: " + sampleArr[i]);
-      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton', 'Clicking menu button');
-      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']', 'Selecting sample ' + sampleArr[i]);      
+      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton', '', 'Clicking menu button');
+      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);      
 
       var boxCont = this.killBoxes();
       
