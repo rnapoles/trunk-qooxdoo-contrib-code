@@ -35,18 +35,25 @@ simulation.Simulation.prototype.runTest = function()
   
   this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[1]", "", "Clicking search button");
   
-  this.type("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Window");
+  this.type("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
   // execute typeKeys once so all needed events are fired. 
-  this.typeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "x");
+  this.typeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "w");
+  
+  Packages.java.lang.Thread.sleep(2000);
   
   this.qxTableClick("qxh=app:viewer/[@_searchView]/qx.ui.table.Table","row=0");
+  
+  Packages.java.lang.Thread.sleep(5000);
 
   // Check if the HTML embed's content has changed.
   var classViewerHtmlScript = 'selenium.browserbot.getCurrentWindow().document.getElementById("ClassViewer").innerHTML';
   var classViewerHtml = this.getEval(classViewerHtmlScript);
   if (!(classViewerHtml.indexOf("qx.ui.window") > 0)) {
     this.log("Unexpected class viewer HTML content", "error");
-  } 
+  }
+  else {
+    this.log("Successfully opened search result", "info");
+  }
   
   // Select a specific class from the tree, expand properties, ...
   
