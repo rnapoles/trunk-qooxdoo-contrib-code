@@ -318,7 +318,7 @@ simulation.Simulation.prototype.runScript = function(code, description)
  * @throw an exception if no locator was specified
  * @return {void}
  */
-simulation.Simulation.prototype.qxClick = function(locator, description)
+simulation.Simulation.prototype.qxClick = function(locator, options, description)
 {
   if (!locator) {
     throw new Error("No locator specified for qxClick()");
@@ -331,7 +331,7 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
   }
 
   try {
-    this.__sel.qxClick(locator);
+    this.__sel.qxClick(locator, options);
   }
   catch(ex) {
     this.log("ERROR: " + desc + ": " + ex, "error");
@@ -348,10 +348,11 @@ simulation.Simulation.prototype.qxClick = function(locator, description)
  * @param locator {String} Selenium locator identifying the element that should
  *   receive the keydown/keyup/keypress events 
  * @param text {String} the text to be typed
+ * @param keys {Boolean} use Selenium's "typeKeys" instead of "type" if true
  * @throw an exception if no locator or text were specified
  * @return {void}
  */
-simulation.Simulation.prototype.type = function(locator, text)
+simulation.Simulation.prototype.type = function(locator, text, keys)
 {
   if (!locator) {
     throw new Error("No locator specified for type()");
@@ -364,15 +365,50 @@ simulation.Simulation.prototype.type = function(locator, text)
   if (this.getConfigSetting("debug")) {
     print("Typing: " + text);
   }
+  
+  var selCmd = keys ? "typeKeys" : "type"; 
 
   try {
-    this.__sel.type(locator, text);
+    var ret = this.__sel[selCmd](locator, text);
   }
   catch(ex) {
     print("ERROR: Unable to enter text: " + ex + " \nText:\n  " + text);
   }
 
   return;
+};
+
+/**
+ * Wrapper around Selenium's typeKeys() that catches and logs any exceptions so 
+ * they won't cause the entire test to fail.
+ * 
+ * @param locator {String} Selenium locator identifying the element that should
+ *   receive the keydown/keyup/keypress events 
+ * @param text {String} the text to be typed
+ * @throw an exception if no locator or text were specified
+ * @return {void}
+ */
+simulation.Simulation.prototype.typeKeys = function(locator, text)
+{
+  this.type(locator, text, true);
+};
+
+/**
+ * Wrapper around QxSelenium's qxTableClick() that catches and logs any 
+ * exceptions so they won't cause the entire test to fail.
+ * 
+ * @param locator {String} Selenium locator identifying a qooxdoo table object
+ * @param options {String} Options for the command, e.g 
+ *  "row=4,column=3,button=right"
+ * @throw an exception if no locator was specified
+ * @return {void}
+ */
+simulation.Simulation.prototype.qxTableClick = function(locator, options)
+{
+  if (!locator) {
+    throw new Error("No locator specified for type()");
+  }
+  this.__sel.qxTableClick(locator, options);
 };
 
 /**
