@@ -169,7 +169,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
       // try again
       sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
       if (!sampleTemp) {
-        this.log('Unable to determine current demo: ' + ex, "error");
+        this.log("Unable to determine current demo", "error");
       }
     }
     else {
@@ -182,7 +182,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
       // try again
       categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
       if (!categoryTemp) {
-        this.log('Unable to determine current category: ' + ex, "error");
+        this.log("Unable to determine current category", "error");
       }
     }
     else {
