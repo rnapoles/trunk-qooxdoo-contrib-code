@@ -10,8 +10,7 @@
 
 /* ************************************************************************
 
-#resource(image:image)
-#embed(skeletonwidget.image/*)
+#asset(skeletonwidget/*)
 
 ************************************************************************ */
 
@@ -31,7 +30,7 @@ qx.Class.define("skeletonwidget.SimpleButton",
 
   construct : function(text)
   {
-    this.base(arguments, text, qx.core.Setting.get("skeletonwidget.resourceUri") + "/image/test.png");
+    this.base(arguments, text, "skeletonwidget/image/test.png");
   },
   
   
