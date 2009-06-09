@@ -3,15 +3,15 @@
 /*
  * dependencies
  */
-require_once "qcl/datasource/controller.php";
 require_once "qcl/locale/model_qooxdoo.php";
+require_once "qcl/core/StaticClass.php";
 
 /**
- * manages locales and translations. uses a gettext model by default
+ * Manages locales and translations. uses a gettext model by default
  * extending controllers should set the "locale" model before calling the
  * parent constructor if they want to use a different locale model.
  */
-class qcl_locale_manager extends qcl_datasource_controller 
+class qcl_locale_manager  extends qcl_core_StaticClass  
 {
 
 	//-------------------------------------------------------------
@@ -37,22 +37,20 @@ class qcl_locale_manager extends qcl_datasource_controller
 	/**
  	* constructor
  	*/
-	function __construct( $server )
+	function __construct()
 	{
   	/*
   	 * initialize parent class
   	 */
-	  parent::__construct( &$server );
-
-
+	  parent::__construct();
 
   	/*
   	 * You can set a different locale model in an extending class 
   	 */
   	if ( ! $this->localeModel )
     {  
-      
-      $this->localeModel =& new qcl_locale_model_qooxdoo(&$this);
+      $controller =& qcl_server_Server::getController();
+      $this->localeModel =& new qcl_locale_model_qooxdoo( $controller );
     }
     
     /*
@@ -64,17 +62,10 @@ class qcl_locale_manager extends qcl_datasource_controller
 
 	/**
 	 * Static function to return singleton instance
-	 * @param qcl_jsonrpc_object $callingObject
 	 */
-  function &getInstance( $callingObject )
+  function &getInstance( $className = __CLASS__ )
   {
-    $className = __CLASS__;
-    if ( ! $GLOBALS[$className] )
-    {
-      $server =& $callingObject->server();
-      $GLOBALS[$className] =& new $className( &$server );
-    } 
-    return $GLOBALS[$className];
+    return parent::getInstance( $className );
   }
   
   /**
@@ -94,8 +85,15 @@ class qcl_locale_manager extends qcl_datasource_controller
    */
 	function setLocale($locale=null)
 	{
-		$localeModel =& $this->getLocaleModel();   
-    $localeModel->setLocale( either( $locale, $this->getUserLocale(), $this->default_locale ) );
+		$localeModel =& $this->getLocaleModel();  
+		$this->debug($localeModel->objectId()); 
+    $locale =  either( 
+      $locale, 
+      $this->getUserLocale(), 
+      $this->default_locale 
+    );
+    //$this->debug("Setting locale '$locale' (was: '". $localeModel->getLocale() . "')");
+    $localeModel->setLocale( $locale );
 	}
 
   /**
@@ -156,7 +154,7 @@ class qcl_locale_manager extends qcl_datasource_controller
   function tr ( $messageId, $varargs=array() )
   {
 		$localeModel =& $this->getLocaleModel();
-    $translation =  $localeModel->translate( $messageId );  
+    $translation =  either( $localeModel->translate( $messageId ), $messageId );  
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);    
   }
@@ -174,20 +172,19 @@ class qcl_locale_manager extends qcl_datasource_controller
   function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
     $localeModel =& $this->getLocaleModel();
-    $translation =  $localeModel->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
+    $translation =  either(
+      $localeModel->trn( $singularMessageId, $pluralMessageId, $count, $varargs ),
+      $count > 1 ? $pluralMessageId : $singularMessageId
+    );
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);     
   }
-
-	//-------------------------------------------------------------
-  // public rpc methods
-  //-------------------------------------------------------------
 
   /**
    * dumps information on the translation engine to the log
    * @return void
    */
-  function method_logLocaleInfo()
+  function logLocaleInfo()
   {
     // todo: check access
     $localeModel =& $this->getLocaleModel();
@@ -197,6 +194,7 @@ class qcl_locale_manager extends qcl_datasource_controller
     $this->info( "  Browser locales : " . $_SERVER["HTTP_ACCEPT_LANGUAGE"]  );
     $this->info( "  System locale : " . getenv("LANGUAGE") );
     $this->info( "  User locale: " . $this->getUserLocale() );
+    $this->info( "  Current locale: " . $localeModel->getLocale() );
   }  
 }
 

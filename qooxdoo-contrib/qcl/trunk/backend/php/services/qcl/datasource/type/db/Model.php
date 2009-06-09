@@ -12,6 +12,8 @@ require_once "qcl/db/XmlSchemaModel.php";
  * case, all other datasource models inherit from this. If you want to 
  * use a different storage for your datasource information, you must write
  * custom child classes for the other datasource models.
+ * 
+ * @todo rename to qcl_datasource_storage_Db
  */
 class qcl_datasource_type_db_Model extends qcl_db_XmlSchemaModel
 {
@@ -157,7 +159,7 @@ class qcl_datasource_type_db_Model extends qcl_db_XmlSchemaModel
       //$this->debug("Datasource model connecting to ");
       //$this->debug($dsn);
 
-      $db =& $this->createDbObject($dsn);
+      $db =& qcl_db_Manager::createAdapter( $dsn );
       
       $this->datasourceConnectionObj =& $db;
     }

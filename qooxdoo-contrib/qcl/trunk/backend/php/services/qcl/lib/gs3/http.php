@@ -195,7 +195,7 @@ class http_class
 			{
 				$length-=(($length>=2 && !strcmp(substr($line,$length-2,1),"\r")) ? 2 : 1);
 				$line=substr($line,0,$length);
-				if//$this->debug)
+				if($this->debug)
 					$this->OutputDebug("S $line");
 				return($line);
 			}
@@ -204,7 +204,7 @@ class http_class
 
 	Function PutLine($line)
 	{
-		if//$this->debug)
+		if($this->debug)
 			$this->OutputDebug("C $line");
 		if(!fputs($this->connection,$line."\r\n"))
 		{
@@ -218,7 +218,7 @@ class http_class
 	{
 		if(strlen($data))
 		{
-			if//$this->debug)
+			if($this->debug)
 				$this->OutputDebug('C '.$data);
 			if(!fputs($this->connection,$data))
 			{
@@ -243,26 +243,26 @@ class http_class
 	{
 		if($this->remaining_chunk==0)
 		{
-			$debug//$this->debug;
-			if(//$this->debug_response_body)
-			//$this->debug=0;
+			$debug=$this->debug;
+			if(!$this->debug_response_body)
+				$this->debug=0;
 			$line=$this->GetLine();
-		//$this->debug=$debug;
+			$this->debug=$debug;
 			if(GetType($line)!="string")
 				return($this->SetError("4 could not read chunk start: ".$this->error));
 			$this->remaining_chunk=hexdec($line);
 		}
 		return("");
 	}
-
+ 
 	Function ReadBytes($length)
 	{
 		if($this->use_curl)
 		{
 			$bytes=substr($this->response,$this->read_response,min($length,strlen($this->response)-$this->read_response));
 			$this->read_response+=strlen($bytes);
-			if//$this->debug
-			&&//$this->debug_response_body
+			if($this->debug
+			&& $this->debug_response_body
 			&& strlen($bytes))
 				$this->OutputDebug("S ".$bytes);
 		}
@@ -287,8 +287,8 @@ class http_class
 						$this->SetDataAccessError("it was not possible to read data chunk from the HTTP server");
 						return("");
 					}
-					if//$this->debug
-					&&//$this->debug_response_body)
+					if($this->debug
+					&& $this->debug_response_body)
 						$this->OutputDebug("S ".$chunk);
 					$bytes.=$chunk;
 					$this->remaining_chunk-=$read;
@@ -311,8 +311,8 @@ class http_class
 				$bytes=@fread($this->connection,$length);
 				if(strlen($bytes))
 				{
-					if//$this->debug
-					&&//$this->debug_response_body)
+					if($this->debug
+					&& $this->debug_response_body)
 						$this->OutputDebug("S ".$bytes);
 				}
 				else
@@ -337,7 +337,7 @@ class http_class
 			$ip=$domain;
 		else
 		{
-			if//$this->debug)
+			if($this->debug)
 				$this->OutputDebug('Resolving '.$server_type.' server domain "'.$domain.'"...');
 			if(!strcmp($ip=@gethostbyname($domain),$domain))
 				$ip="";
@@ -376,7 +376,7 @@ class http_class
 			if(strlen($error = $this->Resolve($this->socks_host_name, $ip, $server_type)))
 				return($error);
 		}
-		if//$this->debug)
+		if($this->debug)
 			$this->OutputDebug('Connecting to '.$server_type.' server IP '.$ip.' port '.$port.'...');
 		if($ssl)
 			$ip="ssl://".$ip;
@@ -405,7 +405,7 @@ class http_class
 				socket_set_timeout($this->connection,$this->data_timeout,0);
 			if(strlen($this->socks_host_name))
 			{
-				if//$this->debug)
+				if($this->debug)
 					$this->OutputDebug('Connected to the SOCKS server '.$this->socks_host_name);
 				$send_error = 'it was not possible to send data to the SOCKS server';
 				$receive_error = 'it was not possible to receive data from the SOCKS server';
@@ -436,7 +436,7 @@ class http_class
 						}
 						break;
 					case 5:
-						if//$this->debug)
+						if($this->debug)
 							$this->OutputDebug('Negotiating the authentication method ...');
 						$methods = 1;
 						$method = 0;
@@ -451,7 +451,7 @@ class http_class
 								$error = 'the SOCKS server requires an authentication method that is not yet supported';
 							else
 							{
-								if//$this->debug)
+								if($this->debug)
 									$this->OutputDebug('Connecting to '.$host_server_type.' server IP '.$host_ip.' port '.$host_port.'...');
 								$command = 1;
 								$address_type = 1;
@@ -494,7 +494,7 @@ class http_class
 					return($error);
 				}
 			}
-			if//$this->debug)
+			if($this->debug)
 				$this->OutputDebug("Connected to $host_name");
 			if(strlen($this->proxy_host_name)
 			&& !strcmp(strtolower($this->protocol), 'https'))
@@ -516,7 +516,7 @@ class http_class
 
 	Function Disconnect()
 	{
-		if//$this->debug)
+		if($this->debug)
 			$this->OutputDebug("Disconnected from ".$this->host_name);
 		if($this->use_curl)
 		{
@@ -632,7 +632,7 @@ class http_class
 		&& strlen($this->socks_host_name))
 			return($this->SetError('establishing SSL connections via a SOCKS server is not yet supported'));
 		$this->use_curl=($ssl && $this->prefer_curl && function_exists("curl_init"));
-		if//$this->debug)
+		if($this->debug)
 			$this->OutputDebug("Connecting to ".$this->host_name);
 		if($this->use_curl)
 		{
@@ -1282,7 +1282,7 @@ class http_class
 			curl_setopt($this->connection,CURLOPT_SSL_VERIFYHOST,0);
 			$request=$this->request."\r\n".implode("\r\n",$headers)."\r\n\r\n".$request_body;
 			curl_setopt($this->connection,CURLOPT_CUSTOMREQUEST,$request);
-			if//$this->debug)
+			if($this->debug)
 				$this->OutputDebug("C ".$request);
 			if(!($success=(strlen($this->response=curl_exec($this->connection))!=0)))
 			{

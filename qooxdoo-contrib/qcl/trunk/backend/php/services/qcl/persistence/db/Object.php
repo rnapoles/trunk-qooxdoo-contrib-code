@@ -52,7 +52,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
      * create the actual model object that will be used to store
      * the data
      */
-    $this->_dbModel =& new qcl_persistence_db_Model(&$controller);    
+    $this->_dbModel =& new qcl_persistence_db_Model( &$controller );    
   }
   
   /**
@@ -154,8 +154,6 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
       $this->raiseError("Cannot save " . $this->className()  . " [$this->instanceId]." . " because of write lock." );
       return; 
     }
-    
-
     
     /*
      * save object data

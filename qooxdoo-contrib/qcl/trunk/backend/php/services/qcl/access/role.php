@@ -1,5 +1,5 @@
 <?php
-require_once ("qcl/access/common.php");
+require_once "qcl/access/Common.php";
 
 /**
  * class providing data on roles
@@ -9,13 +9,9 @@ require_once ("qcl/access/common.php");
  * in your application service class folder
  */
 
-class qcl_access_role extends qcl_access_common
+class qcl_access_Role extends qcl_access_Common
 {    
 
-  /**
-   * Icon representing this object
-   */
-	var $icon 				  = "icon/16/apps/system-users.png";
 	
   /**
    * Node type for drag & drop support

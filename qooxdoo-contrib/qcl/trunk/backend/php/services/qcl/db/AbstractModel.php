@@ -19,16 +19,25 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    */
   function &getController()
   {
-    if ( ! is_a($this->_controller,"qcl_db_controller" ) )
+    if ( $this->_controller )
+    {
+      $controller =& $this->_controller;
+    }
+    else
+    {
+      $controller =& qcl_application_Application::getController();
+    }
+    if ( ! is_a($controller,"qcl_db_controller" ) )
     {
       $this->raiseError("A qcl_db_AbstractModel or subclass must have a qcl_db_controller as controller." );
     }
-    return $this->_controller;
+    return $controller;
   } 
 
   /**
    * The datasource object instance
    * @var qcl_db_type_Mysql 
+   * @todo should be a private property
    */
   var $db;
 
@@ -117,7 +126,6 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   function &connect( $dsn=null )
   {
     //$this->debug( $this->className() . " connecting to " . $dsn );
-    $controller =& $this->getController();
     
     /*
      * disconnect if connection exists
@@ -132,9 +140,10 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
      * try to get db handler from datasource object
      */
     $dsModel =& $this->getDatasourceModel();
-    if ( is_object($dsModel) and $dsModel->isInstanceOf( "qcl_datasource_type_db_Model" ) )
+    if ( is_object($dsModel) 
+          and $dsModel->isInstanceOf( "qcl_datasource_type_db_Model" ) )
     {
-      //$this->debug( get_class($this) . ": Getting db handler from datasource object...");
+      //$this->debug( get_class($this) . ": Getting db object from datasource object...");
       if ( ! $dsn or $dsn == $dsModel->getDatasourceDsn() )
       {
         $db =& $dsModel->getDatasourceConnection();
@@ -142,38 +151,20 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     }      
 
     /*
-     * try to connect to connection supplied by controller
+     * otherwise, get database object from framework
      */      
-    elseif ( is_object( $cdb =& $controller->getConnection() ) )
+    else
     {
-      //$this->debug( get_class($this) . ": getting connection object from controller " . get_class($controller));
-      if ( ! $dsn or $dsn == $cdb->getDsn() )
-      {      
-        $db =& $cdb;
-      } 
+      $db =& qcl_db_Manager::createAdapter( $dsn );
     }
     
     /*
-     * use custom dsn
+     * if no database object at this point, fatal error.
      */
-    if ( ! $db )
+    if (! $db )
     {
-      /*
-       * if no dsn at this point, fatal error.
-       */
-      if (! $dsn )
-      {
-        $this->raiseError("Cannot find a database connection object and no DSN provided");
-      }      
-      
-      /*
-       * create new database connection object 
-       */
-       //$this->debug("Connecting to custom dsn ...");
-      $db =& $this->createDbObject( $dsn );
-      
+      $this->raiseError("No database object!");
     }
-
     
     /*
      * store new connection
@@ -181,45 +172,6 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     $this->db =& $db;  
     
     return true;
-  }
-  
-  /**
-   * Creates and caches a database connection object.
-   * @todo unhardcode type mysql
-   * @param $dsn
-   * @return qcl_db_type_Mysql
-   */
-  function &createDbObject( $dsn )
-  {
-    /*
-     * pool connection objects
-     */
-    $controller =& $this->getController();
-    $cacheId = is_array($dsn) ? implode(",", array_values($dsn) ) : $dsn;
-    //$this->debug("Cache id '$cacheId'");
-    
-    global $__dbcache;
-    
-    if ( $__dbcache[$cacheId] )
-    {
-      //$this->debug("Using cached db object for $cacheId");
-      $db =& $__dbcache[$cacheId];
-    }
-    
-    /*
-     * else connect to new database 
-     */
-    else
-    {
-      require_once "qcl/db/type/Mysql.php" ; 
-      $db =& new qcl_db_type_Mysql($dsn, &$this); 
-      if ( $db->error )
-      {
-        $this->raiseError( $db->error );
-      } 
-      $__dbcache[$cacheId] =& $db;
-    }
-    return $db;
   }
   
   /**
@@ -287,56 +239,6 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     }
     return $this->db->values($sql);    
   }    
-  
-  /**
-   * Inserts a record into a table and returns last_insert_id()
-   * @param array|stdClass $data associative array with the column names as keys and the column data as values
-   * @return int the id of the inserted row or 0 if the insert was not successful 
-   */
-  function insert( $data )
-  {
-    /*
-     * check arguments
-     */
-    $data = $this->_getArrayData($data);
-    
-    /*
-     * convert property names to local aliases
-     */
-    $data = $this->unschematize($data);   
-    
-    /*
-     * created timestamp by setting it to null
-     * @todo is this compatible with all dbms?
-     */
-    $col_created = $this->getColumnName("created");
-    if ( $this->hasProperty("created") and ! isset ( $data[$col_created] ) ) 
-    {
-      $data[$col_created] = null;
-    }
-    
-    /*
-     * insert into database
-     */
-    //$this->debug($data);
-    $id = $this->db->insert( $this->table, $data );
-    
-    //$this->debug("Created new record #$id in {$this->table} with data: " . print_r($data,true) );
-     
-    /*
-     * retrive record data (which might contain additional values inserted by the database)
-     * if the model has an id column and a new id was returned
-     */
-    if ( $id ) 
-    {
-      $this->findById($id);
-    }
-    
-    /*
-     * return id or 0 if the insert was not successful 
-     */
-    return $id;
-  }
   
   /**
    * Returns a records by property value
@@ -825,6 +727,55 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     return $this->create( $namedId, $foreignId );
   }  
   
+/**
+   * Inserts a record into a table and returns last_insert_id()
+   * @param array|stdClass $data associative array with the column names as keys and the column data as values
+   * @return int the id of the inserted row or 0 if the insert was not successful 
+   */
+  function insert( $data )
+  {
+    /*
+     * check arguments
+     */
+    $data = $this->_getArrayData($data);
+    
+    /*
+     * convert property names to local aliases
+     */
+    $data = $this->unschematize($data);   
+    
+    /*
+     * created timestamp by setting it to null
+     * @todo is this compatible with all dbms?
+     */
+    $col_created = $this->getColumnName("created");
+    if ( $this->hasProperty("created") and ! isset ( $data[$col_created] ) ) 
+    {
+      $data[$col_created] = null;
+    }
+    
+    /*
+     * insert into database
+     */
+    //$this->debug($data);
+    $id = $this->db->insert( $this->table, $data );
+    
+    //$this->debug("Created new record #$id in {$this->table} with data: " . print_r($data,true) );
+     
+    /*
+     * retrive record data (which might contain additional values inserted by the database)
+     * if the model has an id column and a new id was returned
+     */
+    if ( $id ) 
+    {
+      $this->findById($id);
+    }
+    
+    /*
+     * return id or 0 if the insert was not successful 
+     */
+    return $id;
+  }  
   
   /**
    * updates a record in a table identified by id
@@ -890,6 +841,48 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   function exists( $where )
   {
     return $this->db->exists( $this->table(), $this->toSql($where) );
+  }
+  
+  /**
+   * If a row with a matching id/namedId exists, replace it. If not, insert data
+   * @param array $data
+   * @return int id of row
+   */
+  function replace( $data )
+  {
+    /*
+     * if the data has an 'id' property, simply update the data. This requires
+     * that such a row exists
+     */
+    if ( $data['id'] )
+    {
+      $this->load($id);
+      $this->update($data);
+    }
+    
+    /*
+     * if there is a 'named id' property, update or insert the row
+     */
+    elseif ( $data['namedId'] )
+    {
+      $this->findBy("namedId", $data['namedId'] );
+      if ( $this->foundNothing() )
+      {
+        $this->raiseError("Cannot replace row. Named id '{$data['namedId']}' does not exist.");
+      }
+      $this->set( $data );
+      $this->save();
+    }
+    
+    /*
+     * otherwise, a "replace" operation is not possible
+     */
+    else
+    {
+      $this->raiseError("Cannot replace a row without id or named id.");
+    }
+    
+    return $this->getId();
   }
   
   /**
@@ -962,6 +955,9 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     return $id;
   }  
   
+  
+  
+  
   /**
    * Deletes the currently loaded record or one or more records in a table identified by id
    * @param mixed[optional] $ids (array of) record id(s)
@@ -987,11 +983,21 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    * Deletes one or more records in a table matching a where condition.
    * This does not delete dependencies!
    * @param string  $where where condition
+   * @return void
    */
   function deleteWhere ( $where )
   {
     $this->db->deleteWhere ( $this->table, $this->toSql($where) );
-  }   
+  }
+  
+  /**
+   * Deletes all rows of a table
+   * @return void
+   */
+  function truncate()
+  {
+    $this->db->execute("TRUNCATE `{$this->table}`;");
+  }
   
   
   /**
@@ -1014,7 +1020,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    */
   function countRecords()
   {
-    return $this->db->getValue("SELECT COUNT(*)"); 
+    return (int) $this->db->getValue("SELECT COUNT(*) FROM {$this->table}"); 
   }
 
   /**
@@ -1033,7 +1039,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   function minId()
   {
     $idCol = $this->getColumnName('id');
-    return $this->db->getValue("SELECT MIN(`$idCol`)"); 
+    return $this->db->getValue("SELECT MIN(`$idCol`) FROM {$this->table}"); 
   }
   
   /**
@@ -1043,7 +1049,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   function maxId()
   {
     $idCol = $this->getColumnName('id');
-    return $this->db->getValue("SELECT MAX(`$idCol`)"); 
+    return $this->db->getValue("SELECT MAX(`$idCol`) FROM {$this->table}"); 
   }  
   
   //-------------------------------------------------------------

@@ -9,9 +9,7 @@ require_once "qcl/persistence/db/Object.php";
  */
 class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
 {
-	
-
-  
+	  
   /**
    * The current message catalogue
    * @var array
@@ -30,7 +28,7 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
   var $locale = null;
   
   /*
-   * 
+   * paths to files
    */
   var $locale_dir; 
   var $locale_js_dir;  
@@ -90,9 +88,9 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
    */	
 	function setLocale($locale)
 	{
-    if ( $this->locale != $locale )
-	  $this->locale = $locale;
-    $this->loadTranslations();
+    $this->locale = $locale;
+    $this->loadTranslations();      
+    $this->save();
 	}
 	
   /**
@@ -109,6 +107,9 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
    */
   function loadTranslations()
   {
+
+    //$this->debug("Loading translations for locale '$this->locale'");    
+    
     /*
      * check
      */
@@ -129,7 +130,7 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
     preg_match_all('/"(.+)": "(.+)",/',$file,$matches);
     for ( $i=0; $i<count($matches[0]); $i++)
     {
-      $catalogue[$matches[1][$i]] = $matches[2][$i];
+      $this->catalogue[$matches[1][$i]] = $matches[2][$i];
     }
   }
   

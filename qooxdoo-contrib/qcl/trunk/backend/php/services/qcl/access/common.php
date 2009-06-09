@@ -8,7 +8,7 @@ require_once "qcl/db/XmlSchemaModel.php";
 /**
  * common base class for permission, role and user models
  */
-class qcl_access_common extends qcl_db_XmlSchemaModel
+class qcl_access_Common extends qcl_db_XmlSchemaModel
 {
 
   //-------------------------------------------------------------

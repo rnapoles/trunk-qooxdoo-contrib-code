@@ -8,6 +8,7 @@ require_once "qcl/access/user.php";
 require_once "qcl/access/role.php";
 require_once "qcl/access/permission.php";
 require_once "qcl/config/db.php";
+require_once "qcl/access/IAccessControl.php"
 
 /*
  * constants
@@ -16,10 +17,12 @@ define('QCL_ACTIVE_USER_ID_VAR', "qcl_access_user_activeUserId");
 define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
 
 /**
- * Base class thathandles authentication, access control
+ * Accessibility behavior class thathandles authentication, access control
  * and configuration
  */
-class qcl_access_controller extends qcl_db_controller
+class qcl_access_controller 
+  extends qcl_db_controller 
+  implements qcl_access_IAccessControl
 {
   /**
    * user model singleton. 
@@ -94,34 +97,23 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * user model
      */
-    $this->userModel =& $this->getSingleton("qcl_access_user");
+    $this->userModel =& qcl_access_User::getInstance();
     
     /*
      * role model
      */
-    $this->roleModel =& $this->getSingleton("qcl_access_role");
+    $this->roleModel =& qcl_access_Role::getInstance();
     
     /*
      * permission model
      */
-    $this->permissionModel =& $this->getSingleton("qcl_access_permission");
+    $this->permissionModel =& qcl_access_Permission::getInstance();
 
     /*
      * configuration model
      */
-    $this->configModel =& $this->getSingleton("qcl_config_db");
-    
-    /*
-     * @todo
-     * PHP4 hack!!!! The controller object's reference is not correctly
-     * passed on to the model objects - somewhere there is a copy 
-     * passed for whatever reason.
-     */
-    $this->userModel->_controller =& $this;
-    $this->roleModel->_controller =& $this;
-    $this->permissionModel->_controller =& $this;
-    $this->configModel->_controller =& $this;
-    
+    $this->configModel =& qcl_config_db::getInstance();
+      
   }   
   
   /**
@@ -129,40 +121,30 @@ class qcl_access_controller extends qcl_db_controller
    * user session exists, and do nothing if this is so. If not, it checks whether 
    * guest access is enabled, and grant guest access if this is the case. 
    * Otherwise (no valid session and no guest access), it refuses access to
-   * the called function by aborting the request. 
+   * the called function by aborting the request. Additional checking of permissions
+   * is done inside the methods.
    */
-  function controlAccess()
+  function allowAccess( $method=null )
   {
+
     /*
-     * check for valid user session unless the requested method
-     * is an authentication or one requesting guest access 
-     */ 
-    if (  ! in_array( $this->request->getMethod(), array( "authenticate", "guestAccess" ) ) )
-    {
+     * initiate logut if no valid user session
+     */
+    if ( ! $this->isValidUserSession() )
+    { 
       /*
-       * initiate logut if no valid user session
+       * logout on server
        */
-      if ( ! $this->isValidUserSession() )
-      { 
-        /*
-         * logout on server
-         */
-        $this->logout();
-        
-        /*
-         * logout on client
-         */
-        $this->dispatchMessage("qcl.commands.logout");
-        $this->dispatchMessage("qcl.commands.setSessionId","");
-        
-        /*
-         * make sure that method call is not executed
-         */
-        $this->abortRequest();
-        
-        return;
-      }  
-    }      
+      $this->logout();
+      
+      /*
+       * logout on client
+       */
+      $this->dispatchMessage("qcl.commands.logout");
+
+      return false;
+    }
+    return true;
   }
   
   /**
@@ -173,16 +155,10 @@ class qcl_access_controller extends qcl_db_controller
    */
   function isValidUserSession()
   {
- 
-    /*
-     * @todo: authenticate with credentials
-     * sent by the request itself
-     */
     
     /*
      * models
      */
-    $configModel =& $this->getConfigModel();
     $activeUser  =& $this->getActiveUser();    
         
     /*
@@ -191,7 +167,7 @@ class qcl_access_controller extends qcl_db_controller
      */
     if ( ! $activeUser  )
     {
-      if ( $this->getIniValue("service.allow_guest_access") )
+      if ( qcl_application_Application::getIniValue("service.allow_guest_access") )
       {
         $this->grantGuestAccess();
       }
