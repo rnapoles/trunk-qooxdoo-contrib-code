@@ -4,6 +4,15 @@
  */
 require_once "qcl/core/object.php";
 
+
+/*
+ * show class name in log message
+ */
+if ( ! defined("QCL_LOG_SHOW_CLASS_NAME") )
+{
+  define ("QCL_LOG_SHOW_CLASS_NAME",false); 
+}
+
 /*
  * Default logger: logs to filesystem
  * @todo use persistent object instead of session

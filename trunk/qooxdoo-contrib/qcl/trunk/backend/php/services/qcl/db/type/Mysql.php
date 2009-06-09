@@ -15,7 +15,7 @@ require_once "DB.php"; // load pear DB library
 class qcl_db_type_Mysql extends qcl_db_type_Abstract
 {
 	/**
-	 * connects to database
+	 * Connects to database
 	 * @param string|array $dsn DSN connection parameter
 	 * @param bool $abortQuietly if true, do not throw an error if no connection can be made
 	 * @return mixed DB object on success, false on error
@@ -44,7 +44,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     }
 		else
     {
-      $this->raiseError("Invalid DSN $dsn");
+      $this->raiseError("Invalid DSN '$dsn'");
     }
     
     /*

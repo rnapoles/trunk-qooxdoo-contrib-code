@@ -70,7 +70,7 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
   
 	/**
 	 * constructor
-	 * 
+	 * @todo remove dependency on master
 	 */
 	function __construct( $dsn=null, $master=null )
 	{
@@ -78,15 +78,6 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 		 * initialize parent class
 		 */
 	  parent::__construct();
-
-    /*
-     * if first argument is master
-     */	  
-	  if ( is_a($dsn,"qcl_jsonrpc_controller") or is_a($dsn,"qcl_jsonrpc_controller") )
-	  {
-	    $master = $dsn; // cannot pass by reference here
-      $dsn = $this->notImplemented(__CLASS__);
-	  }
 	  
 	  /*
 	   * store master objects if given
@@ -441,8 +432,5 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
       $logger->registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false); 
     }
   }	
-	
 }
-
-
 ?>

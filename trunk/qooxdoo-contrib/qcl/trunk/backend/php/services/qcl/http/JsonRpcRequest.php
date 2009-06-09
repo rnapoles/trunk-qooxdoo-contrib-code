@@ -17,13 +17,20 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
   var $contentType ="application/json";
   
   /**
-   * Constructor. Automatically sets URL
-   * @param qcl_jsonrpc_controller $controlller 
+   * Constructor
+   * @param qcl_jsonrpc_controller|string $arg Either a controller object or a string URL 
    */
-  function __construct( $controller )
+  function __construct( $arg )
   {
-    parent::__construct( &$controller );
-    $this->setUrl( $controller->getServerUrl() );
+    if ( is_a( $arg, "qcl_jsonrpc_controller" ) )
+    {
+      parent::__construct( &$arg );
+      $this->setUrl( $arg->getServerUrl() );
+    }
+    elseif ( is_string( $arg ) )
+    {
+      $this->setUrl( $arg );
+    }
   }
   
   /**
@@ -40,24 +47,21 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
    * @param string $service
    * @param string $method
    * @param array  $params
+   * @param array $serverData 
    * return string Response content without header data
    */
-  function callService( $service, $method, $params )
+  function callService( $service, $method, $params, $serverData )
   {
     //$this->debug("Calling $service.$method with " .  count($params) . " parameter(s).");
     //$this->debug($this->getUrl());
-    $controller =& $this->getController();
     
     $this->setJsonData( array(
       'service'     => $service,
       'method'      => $method,
       'params'      => $params,
       'id'          => floor(((float) microtime() )*1000000),
-      // FIXME when checking for remote IP, server must accept localhost
-      'server_data' => array( "sessionId" => $controller->getSessionId() )
-    )); 
-    
-    //$this->debug($controller->getSessionId());
+      'server_data' => $serverData
+    ));
     
     $this->send();
     

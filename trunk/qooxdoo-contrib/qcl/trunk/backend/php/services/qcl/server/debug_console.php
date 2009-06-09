@@ -1,38 +1,32 @@
 <?php
 /**
- * page to test jsonrpc php backend
+ * Script to test qcl jsonrpc server backend
  * @author Christian Boulanger (cboulanger)
  */
 
 if ( $_POST )
 {
-  require_once "./global_settings.php";
-  require_once "qcl/server/server/JsonRpcServer.php";
-  require_once "qcl/registry/Session.php"; 
-  require_once "qcl/jsonrpc/controller.php";
-  require_once "qcl/server/server/lib/JsonWrapper.php";
+  require_once "qcl/server/JsonRpc.php";
+  require_once "qcl/server/Server.php";
   require_once "qcl/http/JsonRpcRequest.php";
+  require_once "qcl/log/FireCake.php";
   
-  class Debug_Controller extends qcl_jsonrpc_controller 
+  FireCake::enable();
+  
+  class Debug_Controller  
   {
-    function configureService(){}
-      
+    
     function sendRequest()
     {
-      /*
-       * session id
-       */
-      $sessionId = $_POST['sessionid'];
-      if ( $sessionId )
-      {
-        $this->setSessionId($sessionId);
-      }
-            
+      
+      $serverUrl = qcl_server_Server::getUrl();
+      
       /*
        * request object
        */
-      $request = new qcl_http_JsonRpcRequest( &$this );
-      
+      $request = new qcl_http_JsonRpcRequest( $serverUrl );
+            
+
       /*
        * timeout
        */
@@ -75,36 +69,51 @@ if ( $_POST )
       $method    = substr( $service, $methodPos+1 );
       
       /*
+       * session id
+       */
+      $sessionId = $_POST['sessionid'];
+      if ( ! $sessionId )
+      {
+        $sessionId = session_id();
+      }
+      
+      $serverData = array(
+        "sessionId" => $sessionId
+      );
+      
+      /*
        * send request and return result data
        */
-      $request->callService( $name, $method, $params );
+      $request->callService( $name, $method, $params, $serverData );
       $response = $request->getResponseContent();
       
       /*
        * if response contains session id, use this
        */
       $data = $json->decode($response);
+      
+      //firecake($data);
+      
       if( is_object($data) )
       {
         $data = object2array($data);
-        foreach ( (array) $data['result']['messages'] as $msg )
+
+        /*
+         * set session id in form
+         */
+        if ( isset( $data['result']['sessionId'] ) )
         {
-          
-          /*
-           * set session id in form
-           */
-          if ( $msg['name'] == "qcl.commands.setSessionId" )
-          {
-            $sessionId = $msg['data'];
-           //$this->debug("Setting Session Id to $sessionId ... ");
-            $this->setSessionId($sessionId);
-            $response .= "
-              <script>
-                 top.setSessionId('$sessionId');
-              </script>
-            ";
-          }
-          
+          $sessionId = $data['result']['sessionId'];
+         //$this->debug("Setting Session Id to $sessionId ... ");
+          $response .= "
+            <script>
+               top.setSessionId('$sessionId');
+            </script>
+          ";
+        }
+
+        if ( false )
+        {
            /*
             * automatically resubmit form
             */
@@ -117,6 +126,8 @@ if ( $_POST )
         }
       }
       $headers = $request->getHeaders();
+      
+      //firecake($headers);
       return array($response,$headers);
     }
   }

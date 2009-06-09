@@ -24,6 +24,12 @@ class qcl_jsonrpc_Response
    */  
   var $messages = array();
   
+  
+  function setResult( $data )
+  {
+    $this->result = $data;
+  }
+  
   /**
    * Set a part or the full response
    * @param mixed $first Can be any of the following: 

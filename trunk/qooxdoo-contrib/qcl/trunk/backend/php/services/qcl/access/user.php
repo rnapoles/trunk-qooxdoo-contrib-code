@@ -3,7 +3,7 @@
 /*
  * Dependencies
  */
-require_once "qcl/access/common.php";
+require_once "qcl/access/Common.php";
 
 /**
  * class providing data on users
@@ -13,13 +13,8 @@ require_once "qcl/access/common.php";
  * in your application service class folder
  * @todo separate user model class and active user class
  */
-class qcl_access_user extends qcl_access_common
+class qcl_access_User extends qcl_access_Common
 {
-
-  /**
-   * Icon representing this object
-   */
-  var $icon = "icon/16/apps/system-users.png";
 
   /**
    * Node type for drag & drop support
@@ -35,16 +30,6 @@ class qcl_access_user extends qcl_access_common
    * names that cannot be used as namedIS
    */
   var $reservedNames = array("default","admin","global");
-
-  /**
-   * name of anonymous user
-   */
-  var $anonymous_name = "guest";
-  
-  /**
-   * password of anonymous user
-   */
-  var $anonymous_password = "guest";  
   
   /**
    * Returns singleton instance.
