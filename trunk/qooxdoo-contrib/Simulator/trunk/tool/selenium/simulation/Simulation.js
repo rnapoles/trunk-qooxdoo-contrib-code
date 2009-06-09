@@ -290,7 +290,7 @@ simulation.Simulation.prototype.runScript = function(code, description)
     throw new Error("No code specified for runScript()");
   }
 
-  var desc = description ? description : "Unable to evaluate script";
+  var desc = description ? description : "Running script";
 
   if (this.getConfigSetting("debug")) {
     print(desc);
