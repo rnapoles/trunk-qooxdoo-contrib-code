@@ -7,7 +7,8 @@ var baseConf = {
   'testBrowser' : '*custom /usr/lib/firefox-3.0.10/firefox -no-remote -P selenium-3',
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/test/index.html',
-  'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator' 
+  'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
+  'debug' : true
 };
 
 var args = arguments ? arguments : "";
@@ -83,7 +84,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
     return;
   }
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print("TEST PACKAGES: " + packages);
   }
   
@@ -102,7 +103,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
     
   }
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print("TESTING PACKAGES: " + packages);
   }
 
@@ -112,7 +113,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
   var elapsedTotal = 0;
   for (var i=0; i<packages.length; i++) {
-    if (this.debug) {
+    if (this.getConfigSetting("debug")) {
       print("Loading package: " + packages[i]);
     }
     // Enter the test app URI with the current package's name after 'testclass='.
@@ -126,21 +127,21 @@ simulation.Simulation.prototype.runTestsSteps = function()
       return;
     }
 
-    if (this.debug) {
+    if (this.getConfigSetting("debug")) {
       print("Starting tests in package " + packages[i]);
     }
     var packageStartDate = new Date();    
 
     this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
-    var isPackageDone = mySim.waitForCondition(isStatusReady, 360000, 
+    var isPackageDone = mySim.waitForCondition(isStatusReady, 600000, 
                       "Waiting for test package " + packages[i] + " to finish");
 
     if (!isPackageDone) {
       return;
     }
 
-    if (this.debug) {
+    if (this.getConfigSetting("debug")) {
       this.logTestDuration(packageStartDate, "Test package " + packages[i]);
     } 
 
@@ -169,7 +170,7 @@ simulation.Simulation.prototype.logErrors = function(result)
     logArray = result.split("</DIV>");
   }
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print("Split result into " + logArray.length + " array entries.");
   }
 
@@ -223,14 +224,14 @@ simulation.Simulation.prototype.logErrors = function(result)
       }
 
       this.errWarn++;
-      if (this.debug) {
+      if (this.getConfigSetting("debug")) {
         print("Logging line " + line);
       }
       this.log(line);
     }
   }
 
-  if (this.debug) {
+  if (this.getConfigSetting("debug")) {
     print(this.errWarn + " lines logged");
   }
 
@@ -268,14 +269,14 @@ simulation.Simulation.prototype.logErrors = function(result)
   }
   catch(ex) {
     var msg = "Unexpected error while running tests!";
-    if (mySim.debug) {
+    if (mySim.getConfigSetting("debug")) {
       print(msg + "\n" + ex);
     }
     mySim.log(msg, "error");
   }
 
   if (!mySim.testFailed) {
-    if (mySim.debug) {
+    if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
     mySim.log("Tests with warnings or errors: " + mySim.errWarn, "info");
