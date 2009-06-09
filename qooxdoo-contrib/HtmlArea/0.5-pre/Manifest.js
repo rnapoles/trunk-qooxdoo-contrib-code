@@ -22,6 +22,6 @@
 
   "namespace" : "htmlarea",
   
-  "version" : "trunk",  
+  "version" : "0.5-pre",  
   "qooxdoo-versions": ["0.7.4"]
 }
