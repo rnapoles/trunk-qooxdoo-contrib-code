@@ -442,22 +442,20 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
 
   if (lvl == "error") {
     this.incrementTotalErrorsLogged();
-  }
-
-  msg = this.sanitize(msg);
+  }  
 
   if (this.getConfigSetting("debug")) {
     print("Logging message: " + msg);
   }
   
-  // Wrap the message in a paragraph tag if it doesn't look HTML formatted.
-  if (msg.substr(0,1) !== "<") {    
-    msg = "<p>" + msg + "</p>";   
-  }
-
-  if (lvl != "none") {
-    msg = '<div class="qxappender"><div class="level-' + lvl + '">' + msg + "</div></div>";
-  }
+  // Clean up/format non-HTML messages
+  if (msg.substr(0,1) !== "<") {
+    msg = this.sanitize(msg);    
+    msg = "<p>" + msg + "</p>";
+    if (lvl != "none") {
+      msg = '<div class="qxappender"><div class="level-' + lvl + '">' + msg + "</div></div>";
+    }   
+  }  
 
   var prefix = 'qxSimulator_' + this.startDate.getTime();
   var logFile = this.getLogFile();
