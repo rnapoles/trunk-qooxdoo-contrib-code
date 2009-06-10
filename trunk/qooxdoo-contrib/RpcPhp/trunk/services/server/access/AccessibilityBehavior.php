@@ -35,7 +35,11 @@ if ( ! defined("defaultAccessibility") )
 }
 
 /**
- * Class for checking the  accessibility of service object.
+ * Class for checking the  accessibility of service object. To change
+ * the behavior of the accessibility of RPC object, subclass this
+ * class and use AbstractServer::setAccessibilityBehavior() to configure
+ * the server with the subclass.
+ * 
  * @author Derrell Lipman
  * @author Christian Boulanger
  */
@@ -81,6 +85,7 @@ class AccessibilityBehavior
    * There is a global default which can be overridden by
    * each service for a specified method.
    * @param object $serviceObject
+   * @param string $method Method for which the accessibility should be checked
    * @return bool True if accessible, false if not.
    */
   function checkAccessibility( $serviceObject, $method )
