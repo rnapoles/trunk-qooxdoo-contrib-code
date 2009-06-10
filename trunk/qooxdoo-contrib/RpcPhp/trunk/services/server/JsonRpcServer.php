@@ -124,11 +124,6 @@ class JsonRpcServer extends AbstractServer
   {
     
     /*
-     * Start or join an existing session
-     */
-    session_start();
-    
-    /*
      * Create a new instance of the json and error object
      */
     $this->json  =& new JsonWrapper();
@@ -145,11 +140,14 @@ class JsonRpcServer extends AbstractServer
     $this->setScriptTransportId( ScriptTransport_NotInUse );   
     
     /*
-     * method accessibility behavior
+     * set method accessibility behavior if not already set
+     * 
      */
-    $accessibilityBehavior =& new AccessibilityBehavior( &$this );
-    $this->setAccessibilityBehavior( &$accessibilityBehavior );
-    
+    if ( ! $this->getAccessibilityBehavior() )
+    {
+      $accessibilityBehavior =& new AccessibilityBehavior( &$this );
+      $this->setAccessibilityBehavior( &$accessibilityBehavior );
+    }
     $this->debug("Server initialized.");
   }  
 
@@ -288,6 +286,7 @@ class JsonRpcServer extends AbstractServer
     }
     return $input;
   }  
+
   
   /**
    * Format the response string, given the service method output.
