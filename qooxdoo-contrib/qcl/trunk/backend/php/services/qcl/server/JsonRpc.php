@@ -5,7 +5,8 @@
  * The path to the RpcPhp project must be in the include_path
  */
 require_once "services/server/JsonRpcServer.php";
-require_once "qcl/access/AccessibilityBehavior.php";
+require_once "qcl/access/controller.php";
+
 
 /**
  * Upload path constant
@@ -32,13 +33,19 @@ if ( ! defined("QCL_UPLOAD_MAXFILESIZE") )
  */
 class qcl_server_JsonRpc extends JsonRpcServer
 {
-  
+
   /**
-   * The controller object
+   * The called controller object
    * @var qcl_jsonrpc_controller
    */
   var $_controller;
-  
+
+  /**
+   * The access controller object
+   * @var qcl_access_controller
+   */
+  var $_accessController;
+
   /**
    * Starts a singleton instance of the server. Must be called statically.
    */
@@ -46,7 +53,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
   {
     $_this =& qcl_server_JsonRpc::getInstance();
     $_this->start();
-  }  
+  }
 
   /**
    * Return singleton instance of the server
@@ -59,8 +66,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
       $GLOBALS[__CLASS__] =& new qcl_server_JsonRpc;
     }
     return $GLOBALS[__CLASS__];
-  } 
-  
+  }
+
   /**
    * Returns the current controller instance, if any.
    * @return qcl_jsonrpc_controller
@@ -69,7 +76,16 @@ class qcl_server_JsonRpc extends JsonRpcServer
   {
     return $this->_controller;
   }
-  
+
+  /**
+   * Returns the current access controller instance, if any.
+   * @return qcl_access_controller
+   */
+  function &getAccessController()
+  {
+    return $this->_accessController;
+  }
+
   /**
    * Constructor
    */
@@ -85,7 +101,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
       require "qcl/server/debug_console.php";
       exit;
     }
-    
+
     /*
      * output phpinfo
      * @todo allow this only from localhost!
@@ -95,15 +111,15 @@ class qcl_server_JsonRpc extends JsonRpcServer
       phpinfo();
       exit;
     }
-        
+
     /*
      * Initialize the server, including error
      * catching etc.
      */
     $this->initializeServer();
-  
+
   }
-  
+
   /**
    * Override start method.
    * @see JsonRpcServer::start()
@@ -117,7 +133,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $this->uploadFile();
       exit;
-    } 
+    }
 
     /*
      * if it is a download request, call download method and exit
@@ -127,14 +143,14 @@ class qcl_server_JsonRpc extends JsonRpcServer
       $this->downloadFile();
       exit;
     }
-    
+
     /*
      * Otherwise, start jsonrpc server
      */
-    parent::start();    
+    parent::start();
   }
-  
-  
+
+
   /**
    * @override
    * @see JsonRpcServer::getServiceObject()
@@ -145,11 +161,11 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * get service object from parent method
      */
     $serviceObject =& parent::getServiceObject( $className );
-    
+
     /*
      * Check if service has been aborted in the constructor.
      */
-    if ( method_exists( $serviceObject, "isAborted") 
+    if ( method_exists( $serviceObject, "isAborted")
         && $serviceObject->isAborted() )
     {
       /*
@@ -158,35 +174,35 @@ class qcl_server_JsonRpc extends JsonRpcServer
        */
       $this->warn("Aborted in the constructor...");
       $this->sendReply(
-        $this->formatOutput( $serviceObject->response() ), 
+        $this->formatOutput( $serviceObject->response() ),
         $this->scriptTransportId
       );
       exit;
     }
-        
+
     /*
-     * store service object 
+     * store service object
      */
     $this->_controller =& $serviceObject;
-    
+
     return $serviceObject;
   }
-  
+
   /**
    * This will not only check if the method exists, but also
-   * check 
+   * check
    */
   function checkServiceMethod( $serviceObject, $method )
   {
-    if ( phpversion() > 5 
+    if ( phpversion() > 5
       and method_exists( $serviceObject, "hasMixinMethod" )
       and $serviceObject->hasMixinMethod( $method ) )
     {
       return true;
     }
     return parent::checkServiceMethod( &$serviceObject, $method );
-  }  
-  
+  }
+
   /**
    * Check the accessibility of service object and service
    * method. Aborts request when Access is denied.
@@ -196,24 +212,27 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @return void
    */
   function checkAccessibility( $serviceObject, $method )
-  {  
-    if ( method_exists( $serviceObject, "allowAccess") )
+  {
+    $accessController = new qcl_access_controller( &$this );
+    $this->_accessController =& $accessController;
+
+    if ( ! $accessController->isValidUserSession()
+        or ( method_exists( $serviceObject, "allowAccess")
+          and ! $serviceObject->allowAccess( $method ) )
     {
-      if ( ! $serviceObject->allowAccess( $method ) )
-      {
-        /*
-         * abort request
-         */
-        $this->warn("Access was denied ...");
-        $this->sendReply(
-          $this->formatOutput( $serviceObject->response() ), 
-          $this->scriptTransportId
-        );
-        exit;
-      }
+      /*
+       * abort request
+       */
+      $this->warn("Access was denied ...");
+      $this->sendReply(
+        $this->formatOutput( $serviceObject->response() ),
+        $this->scriptTransportId
+      );
+      exit;
     }
+
   }
-  
+
   /**
    * Returns the user controller for authentication
    * @return qcl_session_controller
@@ -225,8 +244,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
     $userController = new qcl_session_controller( $this );
     return $userController;
   }
-  
-  
+
+
   /**
    * Uploads a single file to the temporary folder.
    * Authentication an be done in two different ways:
@@ -235,8 +254,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function uploadFile()
   {
-    $this->debug("Starting upload ...");    
-    
+    $this->debug("Starting upload ...");
+
     /*
      * check if upload directory is writeable
      */
@@ -244,14 +263,14 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $this->info("### Error: Upload path is not writeable.");
       $this->abort("Error on Server.");
-    }    
-    
+    }
+
     /*
      * authentication
-     */  
+     */
     $sessionId = $_REQUEST['sessionId'];
-    $userController =& $this->getUserController(); 
-    if ( ! $sessionId or 
+    $userController =& $this->getUserController();
+    if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {
       /*
@@ -259,7 +278,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
        */
       $username = $_SERVER['PHP_AUTH_USER'];
       $password = $_SERVER['PHP_AUTH_PW'];
-      if ( ! $username or 
+      if ( ! $username or
            ! $userController->authenticate( $username, $password ) )
       {
         header('WWW-Authenticate: Basic realm="Upload Area"');
@@ -267,7 +286,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
         exit;
       }
     }
-    
+
     /*
      * Check active user
      * @todo add config key to allow anonymous uploads
@@ -278,12 +297,12 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $this->abort( "Anonymous uploads are not permitted.");
     }
-    
+
     $this->info(
-      "Upload authorized for " . $activeUser->username() . 
+      "Upload authorized for " . $activeUser->username() .
       "(Session #" . $userController->getSessionId() . ")."
     );
-  
+
     /*
      * handle all received files
      */
@@ -296,13 +315,13 @@ class qcl_server_JsonRpc extends JsonRpcServer
       {
          $this->abort( "File '$fieldName' exceeds maximum filesize: " . QCL_UPLOAD_MAXFILESIZE . " kByte.");
       }
-      
+
       /*
        * get file info
        */
       $tmp_name  = $file['tmp_name'];
       $file_name = $file['name'];
-      
+
       /*
        * check file name for validity
        */
@@ -310,13 +329,13 @@ class qcl_server_JsonRpc extends JsonRpcServer
       {
         $this->abort( "Illegal filename." );
       }
-    
+
       /*
        * target path
-       */  
+       */
       $tgt_path  = QCL_UPLOAD_PATH . "/{$sessionId}_{$file_name}";
       $this->debug( "Moving uploaded file to $tgt_path ..." );
-      
+
       /*
        * check if file exists
        */
@@ -325,17 +344,17 @@ class qcl_server_JsonRpc extends JsonRpcServer
         $this->info( "File '$tgt_path' exists. Not uploading" );
         $this->abort( "File '$file_name' exists." );
       }
-      
+
       /*
        * move temporary file to target location and check for errors
        */
-      if ( ! move_uploaded_file( $tmp_name, $tgt_path ) or 
+      if ( ! move_uploaded_file( $tmp_name, $tgt_path ) or
            ! file_exists( $tgt_path ) )
       {
         $this->info( "Problem saving the file to '$tgt_path'." );
         $this->warn( "Problem saving file '$file_name'." );
       }
-      
+
       /*
        * report upload succes
        */
@@ -345,7 +364,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
         $this->info("Uploaded file to '$tgt_path'");
       }
     }
-    
+
     /*
      * end of script
      */
@@ -359,23 +378,23 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function downloadFile()
   {
 
-    //$this->debug("Starting download ..."); 
-        
+    //$this->debug("Starting download ...");
+
     $filename   = $_REQUEST['download'];
     $datasource = $_REQUEST['datasource'];
     $sessionId  = $_REQUEST['sessionId'];
-    
+
     if ( ! $filename or ! $datasource or ! $sessionId )
     {
       echo "Invalid parameters.";
-      exit; 
+      exit;
     }
-        
+
     /*
      * authentication
-     */  
-    $userController =& $this->getUserController(); 
-    if ( ! $sessionId or 
+     */
+    $userController =& $this->getUserController();
+    if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {
       /*
@@ -383,7 +402,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
        */
       $username = $_SERVER['PHP_AUTH_USER'];
       $password = $_SERVER['PHP_AUTH_PW'];
-      if ( ! $username or 
+      if ( ! $username or
            ! $userController->authenticate( $username, $password ) )
       {
         header('WWW-Authenticate: Basic realm="Download Area"');
@@ -391,7 +410,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
         exit;
       }
     }
-    
+
     /*
      * Check active user
      * @todo add config key to allow anonymous downloads
@@ -402,13 +421,13 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $this->abort( "Anonymous downloads are not permitted.");
     }
-    
+
     $this->info(
-      "Downlaod of '$filename' from '$datasource' authorized for " . 
-       $activeUser->username() . 
+      "Downlaod of '$filename' from '$datasource' authorized for " .
+       $activeUser->username() .
       " (Session #" . $userController->getSessionId() . ")."
     );
-    
+
     /*
      * get datasource model
      */
@@ -419,7 +438,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $this->abort( "'$datasource' is not a file storage!");
     }
-    
+
     /*
      * check access
      */
@@ -429,7 +448,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $this->abort( "Access to '$datasource' forbidden." );
     }
-    
+
     /*
      * get file
      */
@@ -439,16 +458,16 @@ class qcl_server_JsonRpc extends JsonRpcServer
       $this->abort( "File '$filename' does not exist in storage '$datasource'" );
     }
     $file =& $folder->get( $filename );
-    
+
     /*
      * send headers
      */
     header("Content-Type: application/octet-stream");
-    header("Content-Disposition: attachment; filename=\"$filename\"");    
-    
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+
     /*
      * stream file content to client
-     */    
+     */
     $file->open("r");
     while ( $data = $file->read(8*1024) )
     {
@@ -457,9 +476,9 @@ class qcl_server_JsonRpc extends JsonRpcServer
     $file->close();
     exit;
   }
-  
+
   /**
-   * @override 
+   * @override
    *
   function debug($str)
   {
@@ -468,7 +487,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
       @error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
     }
   }*/
-  
+
   /**
    * Hook for subclasses to locally log the error message
    * @param $msg
@@ -477,7 +496,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function logError( $msg )
   {
     @error_log( $msg . "\n" . debug_get_backtrace(3) . "\n",3,QCL_LOG_FILE);
-  }  
+  }
 
   /**
    * Logs an informational message
@@ -485,23 +504,23 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function info($str)
   {
     @error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
-  }  
+  }
 
   function reply ( $msg )
   {
     echo "<FONT COLOR=GREEN>$msg</FONT>";
   }
-  
+
   function warn ( $msg )
   {
     echo "<FONT COLOR=RED>$msg</FONT>";
   }
-  
+
   function abort ( $msg )
   {
     $this->warn( $msg );
     exit;
-  }  
-  
+  }
+
 }
 ?>
