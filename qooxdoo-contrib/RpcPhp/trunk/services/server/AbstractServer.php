@@ -59,7 +59,7 @@ require_once dirname(__FILE__) . "/access/AccessibilityBehavior.php";
 
 /**
  * The location of the service class directories.
- * (trailing slash required)
+ * (trailing slash required). 
  */
 if ( ! defined("servicePathPrefix") )
 {
@@ -135,9 +135,12 @@ class AbstractServer
 
 
   /**
-   * A prefix to the service path
+   * An array of paths to the services. This will be populated
+   * by the servicePathPrefix constant in the constructor, but 
+   * you can also manually populate it.
+   * @var array
    */
-  var $servicePathPrefix = servicePathPrefix;
+  var $servicePaths;
 
   /**
    * The accessibility behavior object
@@ -198,7 +201,18 @@ class AbstractServer
    * @var array
    */
   var $params;
-
+  
+  /**
+   * The server data sent with the request
+   * @var object
+   */
+  var $serverData;
+  
+  /**
+   * The php session id
+   */
+  var $sessionId;
+  
   /**
    * PHP4 constructor
    */
@@ -216,6 +230,11 @@ class AbstractServer
     {
       trigger_error("You must subclass AbstractServer in order to use it.");
     }
+    
+    /*
+     * Use servicePathPrefix constant for backwards compatibility
+     */
+    $this->servicePaths = array ( servicePathPrefix );
     
     /**
      * Hook for subclasses to do initialization stuff.
@@ -308,6 +327,52 @@ class AbstractServer
   {
     return $this->params;
   }  
+
+  
+  /**
+   * Setter for server data
+   * @param array $serverData
+   * @return void
+   */
+  function setServerData( $serverData )
+  {
+    $this->serverData = $serverData;
+  }  
+  
+  /**
+   * Getter for server data
+   * @return array
+   */
+  function getServerData()
+  {
+    return $this->serverData;
+  }    
+  
+  /**
+   * Setter for service paths
+   * @param array|string $servicePaths
+   */
+  function setServicePaths( $servicePaths )
+  {
+    $sp = array();
+    foreach ( (array) $servicePaths as $path )
+    {
+      if ( ! is_dir( $path ) )
+      {
+        trigger_error( "'$path' is not a directory." );
+      } 
+      $sp[] = $path;
+    }
+    $this->servicePaths = $sp;
+  }
+  
+  /**
+   * Getter for service paths
+   */
+  function getServicePaths()
+  {
+    return $this->servicePaths;
+  }
   
   /**
    * Setter for accessibility behavior object
@@ -394,10 +459,11 @@ class AbstractServer
     /*
      * request data
      */
-    $service = $input->service;
-    $method  = $input->method;
-    $params  = $input->params;
-    $id      = $input->id;
+    $service    = $input->service;
+    $method     = $input->method;
+    $params     = $input->params;
+    $id         = $input->id;
+    $serverData = (array) $input->server_data;
 
     /*
      * configure this service request properties
@@ -405,6 +471,7 @@ class AbstractServer
     $this->setService( $service );
     $this->setMethod( $method );
     $this->setParams( $params );
+    $this->setServerData( $serverData );
     
     /*
      * Ok, it looks like a valid request, so we'll return an
@@ -414,7 +481,8 @@ class AbstractServer
 
     $this->debug("Service request: $service.$method");
     $this->debug("Parameters: " . var_export($params,true) );
-
+    $this->debug("Server Data: " . var_export($serverData,true) );
+    
     /*
      * service components
      */
@@ -449,7 +517,12 @@ class AbstractServer
     {
       $this->sendErrorAndExit();
     }
-
+    
+    /*
+     * now, start php session
+     */
+    $this->startSession();
+   
     /*
      * instantiate service
      */
@@ -458,20 +531,9 @@ class AbstractServer
     $this->serviceObject =& $serviceObject;
 
     /*
-     * accessibility behavior
+     * check accessibility and abort if access is denied
      */
-    if ( $this->accessibilityBehavior )
-    {
-      $this->debug("Checking accessibility...");
-      if ( ! $this->accessibilityBehavior->checkAccessibility( &$serviceObject, $method ) )
-      {
-        $this->setError(
-          $this->accessibilityBehavior->getErrorNumber(),
-          $this->accessibilityBehavior->getErrorMessage()
-        );
-        $this->sendErrorAndExit();
-      }
-    }
+    $this->checkAccessibility( $serviceObject, $method );
 
     /*
      * Now that we've instantiated thes service, we should find the
@@ -522,9 +584,6 @@ class AbstractServer
     $this->debug("Sending response to client ...");
     $this->sendReply( $response, $this->scriptTransportId );
   }
-
-
-
 
   /**
    * Explode the service name into its dot-separated parts
@@ -600,7 +659,14 @@ class AbstractServer
    */
   function loadServiceClass( $service )
   {
-
+    /*
+     * check service paths
+     */
+    if ( ! is_array( $this->servicePaths ) )
+    {
+      trigger_error("servicePaths property must be set with an array of paths");
+    }
+    
     /*
      * Replace all dots with slashes in the service name so we can
      * locate the service script.
@@ -610,24 +676,25 @@ class AbstractServer
     /*
      * Try to load the requested service
      */
-    $classFile = $this->servicePathPrefix . $servicePath . ".php";
-    if ( file_exists( $classFile ) )
+    foreach( $this->servicePaths as $prefix )
     {
-      $this->debug("Loading class file '$classFile'...");
-      require_once $classFile;
+      $classFile = "$prefix/$servicePath.php";
+      if ( file_exists( $classFile ) )
+      {
+        $this->debug("Loading class file '$classFile'...");
+        require_once $classFile;
+        return $classFile;
+      }      
     }
-    else
-    {
-      /*
-       * Couldn't find the requested service
-       */
-      $this->SetError(
-        JsonRpcError_ServiceNotFound,
-        "Service `$servicePath` not found."
-      );
-      return false;
-    }
-    return $classFile;
+    
+    /*
+     * Couldn't find the requested service
+     */
+    $this->SetError(
+      JsonRpcError_ServiceNotFound,
+      "Service `$servicePath` not found."
+    );
+    return false;
   }
 
   /**
@@ -690,7 +757,28 @@ class AbstractServer
     );
     return false;
   }
-
+  
+  /**
+   * Starts or joins an existing php session. You can override
+   * the cookie-based PHP session id by providing a 'sessionId'
+   * key in the server_data.
+   */
+  function startSession()
+  {
+    $serverData = $this->getServerData();
+    if ( isset( $serverData->sessionId ) and $serverData->sessionId )
+    {
+      $this->debug( "Starting session '{$serverData->sessionId}' from server_data.");
+      session_id( $serverData->sessionId );   
+    }
+    else
+    {
+      $this->debug( "Starting normal PHP session " . session_id() . ".");
+    }
+    session_start();
+    $this->sessionId = session_id();
+  } 
+  
   /**
    * Returns the actual service object, based on the class name.
    * Instantiates
@@ -703,6 +791,29 @@ class AbstractServer
   {
     $serviceObject = new $className( &$this );
     return $serviceObject;
+  }
+  
+  /**
+   * Check the accessibility of service object and service
+   * method. Aborts request when Access is denied.
+   * @param $serviceObject
+   * @param $method
+   * @return void
+   */
+  function checkAccessibility( $serviceObject, $method )
+  {
+    if ( $this->accessibilityBehavior )
+    {
+      $this->debug("Checking accessibility...");
+      if ( ! $this->accessibilityBehavior->checkAccessibility( &$serviceObject, $method ) )
+      {
+        $this->setError(
+          $this->accessibilityBehavior->getErrorNumber(),
+          $this->accessibilityBehavior->getErrorMessage()
+        );
+        $this->sendErrorAndExit();
+      }
+    }
   }
 
   /**
@@ -811,7 +922,7 @@ class AbstractServer
   {
     if ( $this->debug )
     {
-      @error_log(  $str . "\n",3, JsonRpcDebugFile );
+      error_log(  $str . "\n",3, JsonRpcDebugFile );
     }
   }
 
