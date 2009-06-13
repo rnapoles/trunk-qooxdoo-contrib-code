@@ -16,21 +16,14 @@ require_once "qcl/access/Common.php";
 class qcl_access_User extends qcl_access_Common
 {
 
-  /**
-   * Node type for drag & drop support
-   */
-  var $nodeType = "qcl.auth.types.User";
-
-  /**
-   * Short name for type
-   */
-  var $shortName = "user";
+   var $schemaXmlPath  = "qcl/access/user.model.xml";
+   var $importDataPath = "qcl/access/user.data.xml";
 
   /**
    * names that cannot be used as namedIS
    */
   var $reservedNames = array("default","admin","global");
-  
+
   /**
    * Returns singleton instance.
    * @static
@@ -48,9 +41,9 @@ class qcl_access_User extends qcl_access_Common
    */
   function username()
   {
-    return $this->getNamedId();   
-  } 
-  
+    return $this->getNamedId();
+  }
+
   /**
    * Whether the given user name is the name of a guest (anonymous) user
    * @return bool True if user name is guest
@@ -59,13 +52,13 @@ class qcl_access_User extends qcl_access_Common
   function isAnonymous()
   {
     return ( substr( $this->getNamedId(), 0, strlen(QCL_ANONYMOUS_USER_PREFIX) ) == QCL_ANONYMOUS_USER_PREFIX );
-  }  
-  
+  }
+
   function isAdmin()
   {
     return ( $this->hasRole("qcl.roles.Administrator") );
   }
-  
+
   /**
    * Creates a new anonymous guest user
    * @return void
@@ -76,48 +69,50 @@ class qcl_access_User extends qcl_access_Common
      * purge inactive guests
      */
     $this->purgeInactiveGuestUsers();
-    
+
     /*
      * role model
      */
-    $controller =& $this->getController();
-    $roleModel  =& $controller->getRoleModel();
+    $roleModel  =& qcl_access_Role::getInstance();
     $roleModel->findByNamedId("qcl.roles.Guest");
     if ( $roleModel->foundNothing() )
     {
       $this->raiseError("No guest role available.");
     }
-    
+
     $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
     $this->create($username);
-    $this->linkWith(&$roleModel);      
+    $this->linkWith(&$roleModel);
   }
-  
+
   /**
    * Purge all anonymous guests that are inactive for more than
-   * one hour
+   * one hour. Can be called statically
    * @todo unhardcode timeout
    */
   function purgeInactiveGuestUsers()
   {
     $u = QCL_ANONYMOUS_USER_PREFIX;
     $l = strlen($u);
-    $this->findWhere("
+    $_this = qcl_access_User::getInstance();
+    $_this->findWhere("
       SUBSTR(`username`,1,$l) = '$u' AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
-        OR `lastAction` IS NULL ) 
+        OR `lastAction` IS NULL )
     ",null,"id");
-    $ids = $this->values();
-    
+    $ids = $_this->values();
+
     if ( count( $ids ) )
     {
-      $this->delete( $ids );  
+      $_this->delete( $ids );
     }
-  }   
-  
+  }
+
   /**
-   * Deletes the active user, also purging linked data
-   * @param array[optional] $ids If null (default), delete active record, otherwise delete given ids.
+   * Deletes the active user, also purging linked data. Can be called statically
+   * if an argument is provided
+   * @param array[optional] $ids If not given, delete active record, otherwise delete given ids.
+   *
    * @return void
    */
   function delete( $ids=null )
@@ -127,34 +122,27 @@ class qcl_access_User extends qcl_access_Common
      */
     if ( is_array( $ids) )
     {
+      $_this = qcl_access_User::getInstance();
       foreach($ids as $id )
       {
-        $this->load($id);
-        $this->delete();
+        $_this->load($id);
+        $_this->delete();
       }
       return;
     }
-    
+
     /*
-     * otherwise, delete active record
-     */    
-    $controller =& $this->getController();
-   
-    /*
-     * delete config data for real users
+     * delete config data
      */
-    if ( ! $this->isAnonymous() )
-    {
-      $configModel =& $controller->getConfigModel();
-      $configModel->deleteByUser( $this->getId() );
-    }
-    
+    $configModel =& qcl_application_Application::getConfigModel();
+    $configModel->deleteByUser( $this->getId() );
+
     /*
      * call parent method to delete data
      */
     parent::delete();
   }
-  
+
   /**
    * Checks if the current user has the given permission
    * respects wildcards, i.e. myapp.permissions.* covers
@@ -166,23 +154,22 @@ class qcl_access_User extends qcl_access_Common
     if ( ! $this->foundSomething() )
     {
       $this->raiseError("You can check permissions only on a initialized user. In most cases, this is the active user.");
-    }    
-    
+    }
+
     /*
      * models
      */
-    $controller  =& $this->getController();
-    $permModel   =& $controller->getPermissionModel();
-     
+    $permModel =& qcl_access_Permission::getInstance();
+
     /*
      * get all permissions of the user
      */
-    $permissions = $this->permissions('namedId');
+    $permissions = $this->getPermissions();
 
     /*
      * check if permission is granted
      */
-    foreach($permissions as $permission)
+    foreach( $permissions as $permission )
 		{
 		  if ( $permission == $requestedPermission )
 		  {
@@ -198,21 +185,9 @@ class qcl_access_User extends qcl_access_Common
 		  }
 		}
 
-		/*
-		 * Permission was not found
-		 */
-    $permModel->findByNamedId( $requestedPermission );
-		if ( $permModel->foundNothing() )
-		{
-		  /*
-		   * permission does not exist, create it
-		   */
-		  $permModel->create($requestedPermission);
-		  $this->info("Permission '$requestedPermission' created.");
-		}
 		return false;
   }
-  
+
   /**
    * Whether the user has the given role
    * @param string $role
@@ -229,119 +204,60 @@ class qcl_access_User extends qcl_access_Common
      while( $roleModel->nextRecord() );
      return false;
    }
-   
-   
-  /**
-   * Requires a specific permission. If current user does not have the permission,
-   * throw an error
-   */
-  function requirePermission($permission)
-  {
-    if ( $this->hasPermission( $permission ) )
-    {
-      return true;
-    }
-    else
-    {
-      $userName = $this->getNamedId();
-      $this->info("User '$userName' does not have required permission '$permission'. Access denied.");
-      $this->raiseError("Permission denied.");
-    }
-  }
-  
+
+
   /**
    * Returns a preconfigured role model, holding only the records
    * that are linked to the current user
    * @param string|array $properties
-   * @return qcl_access_role
+   * @return qcl_access_Role
    */
   function &linkedRoleModel($properties="*")
   {
-    $controller =& $this->getController();
-    $roleModel  =& $controller->getRoleModel();
-    $roleModel->findByLinkedId( $this->getId(), "user", null, $properties );
+    $roleModel  =& qcl_access_Role::getInstance();
+    $roleModel->findByLinkedModel( $this, null, $properties );
     return $roleModel;
-  } 
-  
+  }
+
   /**
    * Returns list of role that belong to a user
-   * @param string $prop Property to retrieve, defaults to "id"
+   * @param string $prop Property to retrieve, defaults to "namedId"
    * @return array Array of values
    */
-  function roles( $prop="id" )
+  function getRoles( $prop="namedId" )
   {
     $roleModel  =& $this->linkedRoleModel($prop);
     return $roleModel->values();
-  }   
-  
+  }
+
+  function getRoleIds()
+  {
+    return $this->getRoles("id");
+  }
+
   /**
    * Returns list of role that belong to a user
    * @param string $prop Property to retrieve, defaults to "id"
    * @return array Array of values
    */
-  function permissions( $prop="id" )
+  function getPermissions( $prop="namedId" )
   {
     $permissions =  array();
-    $roleModel =& $this->linkedRoleModel();
+    $roleModel =& $this->linkedRoleModel( $prop );
     if ( $roleModel->foundSomething() )
     {
       do
       {
-        $permissions = array_unique(array_merge( $permissions, $roleModel->permissions($prop) ) );
+        $permissions = array_unique(array_merge( $permissions, $roleModel->getPermissions( $prop ) ) );
       }
       while( $roleModel->nextRecord() );
     }
     return $permissions;
-  }   
-   
-  /**
-   * Returns userdata and security policies for the current user.
-   * @param string username
-   * @return array security policy and user data
-   */
-  function securityData()
-  {
-    /*
-     * models
-     */
-    $controller =& $this->getController();
-    $roleModel  =& $controller->getRoleModel();
+  }
 
-    /*
-     * get all roles and permissions
-     */
-    $roles = array();
-    $roleModel->findByLinkedId( $this->getId(), "user");
-    if ( $roleModel->foundSomething() )
-    {
-      do
-      {
-        $roleNamedId          = $roleModel->getNamedId();
-        $roleNames[]          = $roleModel->getName();
-        $roles[$roleNamedId]  = $roleModel->permissions('namedId');
-      }
-      while ( $roleModel->nextRecord() );   
-    }
-    
-    /*
-     * user data
-     */
-    $userdata = array(
-      'namedId'  => $this->getNamedId(),
-      'username' => $this->getNamedId(),
-      'name'     => $this->getName(),
-      'roles'    => implode(", ",$roleNames ),
-      'icon'     => $this->icon
-    );
-    
-    /*
-     * return data
-     */
-    $securityData = array(
-      'userdata'	=> $userdata,
-      'roles'		  => $roles
-    );
-    return $securityData;
+  function getPermissionIds()
+  {
+    return $this->getPermissions("id");
   }
 
 
@@ -356,10 +272,11 @@ class qcl_access_User extends qcl_access_Common
   }
 
   /**
-   * Returns number of seconds since resetLastAction() has been called 
+   * Returns number of seconds since resetLastAction() has been called
    * for the current user
    * for the current user or the specified user
    * @return int seconds
+   * @todo unhardcode sql
    */
   function getSecondsSinceLastAction()
   {
@@ -372,6 +289,6 @@ class qcl_access_User extends qcl_access_Common
     ");
     return $seconds;
   }
-  
+
 }
 ?>

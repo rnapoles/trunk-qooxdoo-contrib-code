@@ -4,53 +4,44 @@ require_once "qcl/access/Common.php";
 /**
  * class providing data on roles
  * providing a backend to the qcl.auth client package
- * 
- * Class cannot be used directly, you need to subclass it 
+ *
+ * Class cannot be used directly, you need to subclass it
  * in your application service class folder
  */
 
 class qcl_access_Role extends qcl_access_Common
-{    
+{
+   var $schemaXmlPath  = "qcl/access/role.model.xml";
+   var $importDataPath = "qcl/access/role.data.xml";
 
-	
-  /**
-   * Node type for drag & drop support
-   */	
-	var $nodeType			  = "qcl.auth.types.Role";
-	
-  /**
-   * Short name for type
-   */  	
-	var $shortName			= "role";
-	
   /**
    * Returns singleton instance.
-   * @static 
-   * @return qcl_access_role 
-   */  
+   * @static
+   * @return qcl_access_Role
+   */
   function &getInstance( $class=__CLASS__ )
   {
     return parent::getInstance( $class );
   }
-  
+
   /**
    * Return the permission model containing only those
    * permissions that are connected to the current role
-   * @return qcl_access_role
+   * @return qcl_access_Permission
    */
-  function &linkedPermissionModel()
+  function &linkedPermissionModel( $properties="*")
   {
-    $controller =& $this->getController();
-    $permModel  =& $controller->getPermissionModel();
-    $permModel->findByLinkedId( $this->getId(), "role" );
+    $permModel  =& qcl_access_Permission::getInstance();
+    $permModel->findByLinkedModel($this,null,$properties);
     return $permModel;
-  }   
-  
+  }
+
   /**
    * Returns a list of permissions connected to the current model.
-   * @param string property name, defaults to "id"
+   * @param string property name, defaults to "namedId"
+   * @return array
    */
-  function permissions( $prop="id" )
+  function getPermissions( $prop="namedId" )
   {
     $permissions = array();
     $permModel =& $this->linkedPermissionModel( $prop );
@@ -61,28 +52,34 @@ class qcl_access_Role extends qcl_access_Common
         $permissions[] = $permModel->getProperty( $prop );
       }
       while( $permModel->nextRecord() );
-    }  
+    }
     return $permissions;
   }
-  
+
+  function getPermissionIds()
+  {
+    return $this->getPermissions("id");
+  }
+
+
   /**
    * Return the user model containing only those
    * users that are connected to the current role
    * @return qcl_access_user
    */
-  function &linkedUserModel()
+  function &linkedUserModel( $properties="*")
   {
     $controller =& $this->getController();
     $userModel  =& $controller->getUserModel();
-    $userModel->findByLinkedId($this->getId(),"role");
+    $userModel->findByLinkedModel($this,null,$properties);
     return $userModel;
-  }     
-    
+  }
+
    /**
    * Returns a list of users connected to the current model.
-   * @param string property name, defaults to "id"
+   * @param string property name, defaults to "namedId"
    */
-  function users($prop="id")
+  function getUsers($prop="namedId")
   {
     $users = array();
     $userModel =& $this->linkedUserModel($prop);
@@ -93,9 +90,14 @@ class qcl_access_Role extends qcl_access_Common
         $users[] = $userModel->getProperty($prop);
       }
       while( $userModel->nextRecord() );
-    }  
+    }
     return $users;
   }
-  
+
+  function getUserIds()
+  {
+    return $this->getUses("id");
+  }
+
 }
 ?>

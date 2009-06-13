@@ -4,46 +4,24 @@
  * Dependencies
  */
 require_once "qcl/db/XmlSchemaModel.php";
+require_once "qcl/access/user.php";
+require_once "qcl/access/role.php";
+require_once "qcl/access/permission.php";
 
 /**
- * common base class for permission, role and user models
+ * Common base class for permission, role and user models
  */
 class qcl_access_Common extends qcl_db_XmlSchemaModel
 {
 
-  //-------------------------------------------------------------
-  // common class variables 
-  //-------------------------------------------------------------
 
   /**
-   * Array of names that canot be used as names for users, permissions and 
+   * Array of names that canot be used as names for users, permissions and
    * roles.
    * @var array
    */
   var $reservedNames = array();
 
-  /**
-   * table linking users and roles
-   * @deprecated Use new model linking through schema xml instead.
-   * @var string
-   */
-  var $table_link_user_roles = "link_user_roles";
-  
-  /**
-   * table linking roles and permissions
-   * @deprecated Use new model linking through schema xml instead.
-   * @var string
-   */
-  var $table_link_roles_permissions = "link_roles_permissions";
-  
-  /**
-   * Returns the default icon representing the class
-   * @return string
-   */
-  function getIcon()
-  {
-    return "icon/16/apps/system-users.png";
-  }
 
 	/**
 	 * Creates a new record and optionally links it to a role. Raises an error
@@ -51,7 +29,7 @@ class qcl_access_Common extends qcl_db_XmlSchemaModel
 	 * @todo rewrite
 	 * @override
 	 * @param string	$namedId
-	 * @return int the id of the inserted row 
+	 * @return int the id of the inserted row
 	 */
 	function create( $namedId )
   {
@@ -66,24 +44,24 @@ class qcl_access_Common extends qcl_db_XmlSchemaModel
  		{
  			$this->raiseError ( "'$namedId' already exists." );
  		}
-   		
+
    	/*
    	 * insert new empty record
    	 */
 	   $itemId = parent::create($namedId);
-   
+
     /*
      * return item id
      */
 		return $itemId;
-  } 
-  
+  }
+
 	/**
 	 * creates a new record if its named id doesn't already exist and optionally links it to a role.
 	 * returns false if record exists otherwise the id of the record
 	 * @param string	$namedId
 	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
-	 * @return int the id of the inserted row 
+	 * @return int the id of the inserted row
 	 */
 	function createIfNotExists( $namedId, $parentId=null )
   {
@@ -92,9 +70,9 @@ class qcl_access_Common extends qcl_db_XmlSchemaModel
  			return $id;
  		}
  		return $this->create( $namedId, $parentId );
-  }   
-  
-  
+  }
+
+
 }
 
 ?>

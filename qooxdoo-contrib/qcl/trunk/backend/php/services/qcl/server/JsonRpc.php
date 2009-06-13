@@ -5,7 +5,6 @@
  * The path to the RpcPhp project must be in the include_path
  */
 require_once "services/server/JsonRpcServer.php";
-require_once "qcl/access/controller.php";
 
 
 /**
@@ -41,12 +40,6 @@ class qcl_server_JsonRpc extends JsonRpcServer
   var $_controller;
 
   /**
-   * The access controller object
-   * @var qcl_access_controller
-   */
-  var $_accessController;
-
-  /**
    * Starts a singleton instance of the server. Must be called statically.
    */
   function run()
@@ -75,15 +68,6 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function &getController()
   {
     return $this->_controller;
-  }
-
-  /**
-   * Returns the current access controller instance, if any.
-   * @return qcl_access_controller
-   */
-  function &getAccessController()
-  {
-    return $this->_accessController;
   }
 
   /**
@@ -205,46 +189,14 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * Check the accessibility of service object and service
-   * method. Aborts request when Access is denied.
-   * @override
-   * @param $serviceObject
-   * @param $method
+   * method. Aborts request when access is denied.
+   * @see qcl_access_Manager::controlAccess()
    * @return void
    */
   function checkAccessibility( $serviceObject, $method )
   {
-    $accessController = new qcl_access_controller( &$this );
-    $this->_accessController =& $accessController;
-
-    if ( ! $accessController->isValidUserSession()
-        or ( method_exists( $serviceObject, "allowAccess")
-          and ! $serviceObject->allowAccess( $method ) )
-    {
-      /*
-       * abort request
-       */
-      $this->warn("Access was denied ...");
-      $this->sendReply(
-        $this->formatOutput( $serviceObject->response() ),
-        $this->scriptTransportId
-      );
-      exit;
-    }
-
+    qcl_access_Manager::controlAccess( $serviceObject, $method );
   }
-
-  /**
-   * Returns the user controller for authentication
-   * @return qcl_session_controller
-   */
-  function &getUserController()
-  {
-    require_once "qcl/session/controller.php";
-    require_once "qcl/persistence/db/Object.php"; // @todo fix this dependency
-    $userController = new qcl_session_controller( $this );
-    return $userController;
-  }
-
 
   /**
    * Uploads a single file to the temporary folder.
@@ -269,7 +221,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * authentication
      */
     $sessionId = $_REQUEST['sessionId'];
-    $userController =& $this->getUserController();
+    $userController =& qcl_access_Manager::getAccessController();
     if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {

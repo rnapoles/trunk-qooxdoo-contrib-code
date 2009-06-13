@@ -9,7 +9,7 @@ if ( ! defined("QCL_SERVICE_CONFIG_FILE") )
 }
 
 /*
- * Dependencies 
+ * Dependencies
  */
 require_once "qcl/__init__.php";
 require_once "qcl/core/StaticClass.php";
@@ -17,9 +17,9 @@ require_once "qcl/server/Server.php";
 
 /**
  * Application class. All public methods of this class and of its subclasses
- * should be statically callable and work with an sigleton instance of this 
- * class internally. 
- * 
+ * should be statically callable and work with an sigleton instance of this
+ * class internally.
+ *
  */
 class qcl_application_Application extends qcl_core_StaticClass
 {
@@ -28,13 +28,13 @@ class qcl_application_Application extends qcl_core_StaticClass
    * @var AbstractServer
    */
   var $_server;
-  
+
   /**
    * The intial configuration values, saved in the config.ini.php file
    * @var array
    */
   var $_ini = null;
-  
+
   /**
    * Returns the version of the Bibliograph installation. Can be called
    * statically
@@ -44,6 +44,7 @@ class qcl_application_Application extends qcl_core_StaticClass
   {
     return qcl_core_object::notImplemented();
   }
+
 
   /**
    * Return the application singleton instance. Extending classes
@@ -61,9 +62,9 @@ class qcl_application_Application extends qcl_core_StaticClass
       $GLOBALS['QCL_APPLICATION_INSTANCE'] =& new $class;
     }
     return $GLOBALS['QCL_APPLICATION_INSTANCE'];
-  } 
-  
-  
+  }
+
+
   /**
    * Start a server that handles the request type (JSONRPC, POST, ...).
    * Can be called statically.
@@ -82,7 +83,7 @@ class qcl_application_Application extends qcl_core_StaticClass
       require_once "services/server/PostRpcServer.php";
       $serverObj =& PostRpcServer::getInstance();
     }
-    
+
     /*
      * use qcl jsonrpc server extension
      */
@@ -91,12 +92,12 @@ class qcl_application_Application extends qcl_core_StaticClass
       require "qcl/server/JsonRpc.php";
       $serverObj =& qcl_server_JsonRpc::getInstance();
     }
-    
+
     /*
      * configure service paths
      */
     $serverObj->setServicePaths( $servicePaths );
-    
+
     /*
      * save and start server
      */
@@ -104,8 +105,8 @@ class qcl_application_Application extends qcl_core_StaticClass
     $server->serverObject =& $serverObj;
     $serverObj->start();
   }
-  
- 
+
+
   /**
    * Return the current server instance. Can be called statically.
    * @return AbstractServer
@@ -125,12 +126,15 @@ class qcl_application_Application extends qcl_core_StaticClass
     $server =& qcl_server_Server::getInstance();
     return $server->getController();
   }
-  
-  
+
+  //-------------------------------------------------------------
+  // ini values
+  //-------------------------------------------------------------
+
   /**
    * Reads initial configuration. looks for service.ini.php file in the
    * directory of the topmost including script. Can be called statically.
-   * @todo re-implement old behavior that services can ovverride individual 
+   * @todo re-implement old behavior that services can ovverride individual
    * settings by service directory
    **/
   function getIniConfig()
@@ -139,7 +143,7 @@ class qcl_application_Application extends qcl_core_StaticClass
      * get singleton instance
      */
     $_this =& qcl_application_Application::getInstance();
-    
+
     /*
      * return config array if already parsed
      */
@@ -147,7 +151,7 @@ class qcl_application_Application extends qcl_core_StaticClass
     {
       return $_this->_ini;
     }
-    
+
     /*
      * file containing intial configuration
      */
@@ -157,11 +161,11 @@ class qcl_application_Application extends qcl_core_StaticClass
       $_this->warn("Configuration file '$ini_path' not found for " . get_class($_this) . " ." );
       return array();
     }
-     
+
     $_this->_ini = parse_ini_file ( $ini_path, true );
     return $_this->_ini;
-  }  
-  
+  }
+
   /**
    * Returns a configuration value of the pattern "foo.bar.baz"
    * This retrieves the values set in the service.ini.php file.
@@ -176,11 +180,11 @@ class qcl_application_Application extends qcl_core_StaticClass
     {
       $path= $path[1];
     }
-    
+
     $_this =& qcl_application_Application::getInstance();
     $parts   = explode(".",$path);
     $value   = $_this->getIniConfig();
-    
+
     /*
      * traverse array
      */
@@ -188,7 +192,7 @@ class qcl_application_Application extends qcl_core_StaticClass
     {
       $value = $value[$part];
     }
-    
+
     /*
      * expand strings
      */
@@ -196,15 +200,31 @@ class qcl_application_Application extends qcl_core_StaticClass
     {
       $value = trim( preg_replace_callback(
         '/\$\{([^}]+)\}/',
-        array(&$_this,"getIniValue"), $value 
-      ) );  
+        array(&$_this,"getIniValue"), $value
+      ) );
     }
-    
+
     //$this->debug("Ini value '$path'= '$value'");
-    
+
     return $value;
   }
-  
+
+
+  /**
+   * Returns the config model singleton instance used by the application
+   * @return qcl_config_Db
+   */
+  function &getConfigModel()
+  {
+    return qcl_config_Db::getInstance();
+  }
+
+
+  //-------------------------------------------------------------
+  // logging
+  //-------------------------------------------------------------
+
+
   /**
    * Logs a message
    */
@@ -222,7 +242,7 @@ class qcl_application_Application extends qcl_core_StaticClass
   }
 
   /**
-   * Logs an info message 
+   * Logs an info message
    */
   function info( $msg )
   {
@@ -236,10 +256,10 @@ class qcl_application_Application extends qcl_core_StaticClass
       $_this->info( $msg, $filters );
     }
   }
-  
-  
+
+
   /**
-   * Logs a warning 
+   * Logs a warning
    */
   function warn( $msg )
   {
@@ -253,7 +273,7 @@ class qcl_application_Application extends qcl_core_StaticClass
       $_this->warn( $msg );
     }
   }
-  
+
   /**
    * Raises an error, qcl-style
    */
@@ -267,13 +287,13 @@ class qcl_application_Application extends qcl_core_StaticClass
     {
       $_this = qcl_application_Application::getInstance();
       $_this->raiseError( $msg );
-    } 
+    }
   }
-  
+
   //-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------
-  
+
   /**
    * gets the locale controller and sets the default locale. default is
    * a qcl_locale_manager (see there). if you want to use a different
@@ -285,11 +305,11 @@ class qcl_application_Application extends qcl_core_StaticClass
     require_once "qcl/locale/manager.php";
     return qcl_locale_manager::getInstance();
   }
-  
+
   /**
    * Translates a message. Can be called statically.
    * @return  String
-   * @param   String  $msgId    Message id of the string to be translated 
+   * @param   String  $msgId    Message id of the string to be translated
    * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
    * or as parameters
    */
@@ -302,8 +322,8 @@ class qcl_application_Application extends qcl_core_StaticClass
     }
     $manager =& qcl_application_Application::getLocaleManager();
     return $manager->tr($msgId, $varargs);
-  }  
-  
+  }
+
   /**
    * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
    * Can be called statically.
@@ -319,8 +339,7 @@ class qcl_application_Application extends qcl_core_StaticClass
     $manager =& qcl_application_Application::getLocaleManager();
     return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
   }
-  
- 
-  
+
+
 }
 ?>

@@ -7,13 +7,13 @@ require_once "qcl/core/StaticClass.php";
  */
 class qcl_server_Server extends qcl_core_StaticClass
 {
-  
+
   /**
    * The actual server object
    * @var AbstractServer
    */
   var $serverObject;
-  
+
   /**
    * Returns the singleton instance of this class
    * @return qcl_server_Server
@@ -26,7 +26,7 @@ class qcl_server_Server extends qcl_core_StaticClass
     }
     return $GLOBALS[__CLASS__];
   }
-  
+
   /**
    * Returns the current server object
    * @return qcl_server_JsonRpc
@@ -40,7 +40,7 @@ class qcl_server_Server extends qcl_core_StaticClass
     }
     return $_this->serverObject;
   }
-  
+
   /**
    * Returns the current controller object
    * @return unknown_type
@@ -50,7 +50,18 @@ class qcl_server_Server extends qcl_core_StaticClass
     $serverObj =& qcl_server_Server::getServerObject();
     return $serverObj->getController();
   }
-  
+
+  /**
+   * Returns the current server data sent by the client
+   * @param string $key If given, return only the value of the given key
+   * @return string
+   */
+  function getServerData( $key=null )
+  {
+    $serverObj =& qcl_server_Server::getServerObject();
+    return $serverObj->getServerData( $key );
+  }
+
   /**
    * Return the url of the server, which is the URL of the
    * top including script.
@@ -59,7 +70,20 @@ class qcl_server_Server extends qcl_core_StaticClass
   function getUrl()
   {
     return "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
-  }  
-  
+  }
+
+  /**
+   * Aborts the request with an error message
+   * @param $message
+   * @return unknown_type
+   */
+  function abort( $message )
+  {
+    $serverObj =& qcl_server_Server::getServerObject();
+    $serverObj->setError( null, $message );
+    $serverObj->sendErrorAndExit();
+    exit;
+  }
+
 }
 ?>
