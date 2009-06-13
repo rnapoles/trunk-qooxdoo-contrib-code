@@ -3,7 +3,7 @@
 require_once "qcl/jsonrpc/controller.php";
 require_once "qcl/lang/ArrayList.php";
 
-class class_qcl_tool_migration extends qcl_jsonrpc_controller
+class class_qcl_tool_migration extends qcl_mvc_Controller
 {
 
   /**

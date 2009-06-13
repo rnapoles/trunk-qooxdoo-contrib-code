@@ -2,29 +2,42 @@
 /*
  * dependencies
  */
-require_once "qcl/db/XmlSchemaModel.php";
+require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
  * Model for session data bases on a mysql database model.
  * 'Session' here means the connection established by a particular
- * browser instance. 
+ * browser instance.
  */
-class qcl_session_Session extends qcl_db_XmlSchemaModel 
+class qcl_session_Session
+  extends qcl_db_model_xml_XmlSchemaModel
 {
 
   /**
    * the path to the model schema xml file
-   * @see qcl_db_XmlSchemaModel::getSchmemaXmlPath()
+   * @see qcl_db_model_xml_XmlSchemaModel::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/session/Session.model.xml";  
-   
+  var $schemaXmlPath = "qcl/session/Session.model.xml";
+
+
+  /**
+   * Returns singleton instance.
+   * @static
+   * @return qcl_session_Session
+   */
+  function &getInstance( $class=__CLASS__ )
+  {
+    return parent::getInstance( $class );
+  }
+
+
 	//-------------------------------------------------------------
   // public methods
   //-------------------------------------------------------------
-	
+
 	/**
-	 * Registers a session. adds an entry with the current timestamp if the session 
+	 * Registers a session. adds an entry with the current timestamp if the session
 	 * doesn't exist, otherwise leaves the last action column alone.
 	 * @return void
 	 * @param string $sessionId The id of the current session
@@ -35,10 +48,10 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
   function registerSession( $sessionId, $userId, $ip )
   {
     $controller =& $this->getController();
-    
+
     /*
      * if session id is present but linked to a different IP
-     * there is a security breach, unless the request was originated 
+     * there is a security breach, unless the request was originated
      * on the local host
      */
     $localhost = ( $ip=="::1" or $ip=="127.0.0.1" );
@@ -49,7 +62,7 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
     }
 
     $this->cleanUp();
-    
+
     /*
      * insert new session data
      */
@@ -58,15 +71,15 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
       'userId'           => $userId,
       'ip'               => $ip
     ) );
-    
+
     return true;
-    
+
   }
-  
+
   /**
    * Cleanup sessions and messages,
    * @todo rewrite without raw sql
-   */  
+   */
   function cleanUp()
   {
     /*
@@ -76,21 +89,21 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
      */
     $controller =& $this->getController();
     $userModel =& $controller->getUserModel();
-    //$userTable =  $userModel->getTableName();    
+    //$userTable =  $userModel->getTableName();
     $this->deleteWhere("
-      markedDeleted = 1 
+      markedDeleted = 1
       OR userId NOT IN ( SELECT id FROM users )
-      OR TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600 
+      OR TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600
     ");
-    
+
     /*
      * Delete messages that have been deleted, or refer to non-existing sessions
-     */     
+     */
     $msgModel   =& $controller->getMessageModel();
     $msgModel->deleteWhere("
       markedDeleted = 1 OR
-      sessionId NOT IN ( SELECT sessionId FROM sessions ) 
-    ");      
+      sessionId NOT IN ( SELECT sessionId FROM sessions )
+    ");
 
   }
 
@@ -100,18 +113,18 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
   function isRegistered( $sessionId, $userId, $ip )
   {
     return $this->exists("
-      `sessionId` = '$sessionId' AND 
+      `sessionId` = '$sessionId' AND
       `userId`    = $userId AND
       `ip`        = '$ip'
     ");
   }
-  
+
 	/**
 	 * Unregisters a session. We cannot delete them right away since
 	 * the request has not completed yet, so we mark them to be deleted
 	 * when the next session is registered.
 	 * @return void
-	 * @param string $sessionId 
+	 * @param string $sessionId
 	 */
   function unregisterSession( $sessionId )
   {
@@ -119,7 +132,7 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
     {
       $this->raiseError("Invalid session id");
     }
-    
+
     //$this->debug($sessionId);
     /*
      * delete session
@@ -128,7 +141,7 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
       array('markedDeleted' => 1),
       "`sessionId`='$sessionId' OR `parentSessionId`='$sessionId'"
     );
-    
+
     /*
      * delete messages belonging to session
      */
@@ -143,7 +156,7 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
  /**
    * Unregisters all sessions for a user
    * @return void
-   * @param int $userId 
+   * @param int $userId
    */
   function unregisterAllSessions( $userId )
   {
@@ -152,13 +165,13 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
       SET `markedDeleted` = 1
       WHERE `userId`  = $userId
     ");
-  } 
-  
-  
+  }
+
+
   /**
    * Adds a message for all client
    * @return void
-   * @param string $message 
+   * @param string $message
    * @param mixed  $data
    * @todo base64encode and separate with CR
    */
@@ -166,33 +179,33 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
   {
     /*
      * get ids of sessions
-     */  
+     */
     $sessionIds = $this->findValues("sessionId");
-    
+
     $controller =& $this->getController();
     $msgModel =& $controller->getMessageModel();
-    
+
     foreach( $sessionIds as $sessionId )
     {
       $msgModel->create();
       $msgModel->setProperty("sessionId",$sessionId);
       $msgModel->setName($message);
       $msgModel->setData(addSlashes(serialize($data)));
-      $msgModel->update();      
+      $msgModel->update();
     }
-    
+
   }
-  
+
   /**
    * gets broadcasted messages for the connected client
    * @return array
-   * @param int $sessionId 
+   * @param int $sessionId
    */
   function getBroadcastedMessages( $sessionId )
   {
     $controller =& $this->getController();
     $msgModel   =& $controller->getMessageModel();
-    
+
     /*
      * get messages that have been stored for session id
      */
@@ -201,7 +214,7 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
       null,
       array('name','data')
     );
-    
+
     $messages = array();
     foreach ($rows as $row)
     {
@@ -210,16 +223,16 @@ class qcl_session_Session extends qcl_db_XmlSchemaModel
         'data'  => unserialize(stripslashes($row['data']))
       );
     }
-    
+
     /*
      * delete messages
      */
     $msgModel->deleteWhere("`sessionId`='$sessionId'");
-    
+
     /*
      * return message array
      */
     return $messages;
-  } 
+  }
 }
 ?>

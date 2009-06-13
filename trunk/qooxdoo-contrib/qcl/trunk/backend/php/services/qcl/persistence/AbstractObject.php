@@ -119,7 +119,7 @@ class qcl_persistence_AbstractObject extends qcl_mvc_AbstractModel
   
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @param string[optional] $id Optional id if several objects of
    * the same class are to be persisted. If you don't provide an id,
    * the UUID-style object id is used. This means that you need to retrieve

@@ -5,7 +5,7 @@
  * The path to the RpcPhp project must be in the include_path
  */
 require_once "services/server/JsonRpcServer.php";
-
+require_once "qcl/access/Manager.php";
 
 /**
  * Upload path constant
@@ -35,7 +35,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * The called controller object
-   * @var qcl_jsonrpc_controller
+   * @var qcl_mvc_Controller
    */
   var $_controller;
 
@@ -63,7 +63,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * Returns the current controller instance, if any.
-   * @return qcl_jsonrpc_controller
+   * @return qcl_mvc_Controller
    */
   function &getController()
   {
@@ -429,16 +429,6 @@ class qcl_server_JsonRpc extends JsonRpcServer
     exit;
   }
 
-  /**
-   * @override
-   *
-  function debug($str)
-  {
-    if ( $this->debug )
-    {
-      @error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
-    }
-  }*/
 
   /**
    * Hook for subclasses to locally log the error message
@@ -447,7 +437,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function logError( $msg )
   {
-    @error_log( $msg . "\n" . debug_get_backtrace(3) . "\n",3,QCL_LOG_FILE);
+    error_log( "\nqcl_jsonrpc_Server: ". $msg . "\n",3,QCL_LOG_FILE);
   }
 
   /**
@@ -455,7 +445,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function info($str)
   {
-    @error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
+    error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
   }
 
   function reply ( $msg )

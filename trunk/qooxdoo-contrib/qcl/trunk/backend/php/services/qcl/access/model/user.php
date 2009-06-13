@@ -3,7 +3,7 @@
 /*
  * Dependencies
  */
-require_once "qcl/access/Common.php";
+require_once "qcl/access/model/Common.php";
 
 /**
  * class providing data on users
@@ -13,11 +13,11 @@ require_once "qcl/access/Common.php";
  * in your application service class folder
  * @todo separate user model class and active user class
  */
-class qcl_access_User extends qcl_access_Common
+class qcl_access_model_User extends qcl_access_model_Common
 {
 
-   var $schemaXmlPath  = "qcl/access/user.model.xml";
-   var $importDataPath = "qcl/access/user.data.xml";
+   var $schemaXmlPath  = "qcl/access/model/user.model.xml";
+   var $importDataPath = "qcl/access/model/user.data.xml";
 
   /**
    * names that cannot be used as namedIS
@@ -73,7 +73,7 @@ class qcl_access_User extends qcl_access_Common
     /*
      * role model
      */
-    $roleModel  =& qcl_access_Role::getInstance();
+    $roleModel  =& qcl_access_model_Role::getInstance();
     $roleModel->findByNamedId("qcl.roles.Guest");
     if ( $roleModel->foundNothing() )
     {
@@ -94,7 +94,7 @@ class qcl_access_User extends qcl_access_Common
   {
     $u = QCL_ANONYMOUS_USER_PREFIX;
     $l = strlen($u);
-    $_this = qcl_access_User::getInstance();
+    $_this = qcl_access_model_User::getInstance();
     $_this->findWhere("
       SUBSTR(`username`,1,$l) = '$u' AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
@@ -122,7 +122,7 @@ class qcl_access_User extends qcl_access_Common
      */
     if ( is_array( $ids) )
     {
-      $_this = qcl_access_User::getInstance();
+      $_this = qcl_access_model_User::getInstance();
       foreach($ids as $id )
       {
         $_this->load($id);
@@ -159,7 +159,7 @@ class qcl_access_User extends qcl_access_Common
     /*
      * models
      */
-    $permModel =& qcl_access_Permission::getInstance();
+    $permModel =& qcl_access_model_Permission::getInstance();
 
     /*
      * get all permissions of the user
@@ -210,11 +210,11 @@ class qcl_access_User extends qcl_access_Common
    * Returns a preconfigured role model, holding only the records
    * that are linked to the current user
    * @param string|array $properties
-   * @return qcl_access_Role
+   * @return qcl_access_model_Role
    */
   function &linkedRoleModel($properties="*")
   {
-    $roleModel  =& qcl_access_Role::getInstance();
+    $roleModel  =& qcl_access_model_Role::getInstance();
     $roleModel->findByLinkedModel( $this, null, $properties );
     return $roleModel;
   }

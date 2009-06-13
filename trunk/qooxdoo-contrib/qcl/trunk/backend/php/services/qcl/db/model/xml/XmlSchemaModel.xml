@@ -5,7 +5,7 @@
     basic model stored in a database, containing 
     a numeric id, a modified and created column 
   -->
-  <model name="qcl.db.XmlSchemaModel">
+  <model name="qcl.db.model.xml.XmlSchemaModel">
     
     <definition>
 

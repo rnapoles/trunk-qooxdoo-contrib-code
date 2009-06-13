@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Behavior class providing methods to model a basic tree structure based on an 
+ * Behavior class providing methods to model a basic tree structure based on an
  * sql database table. Can only be used with a model that inherits from
- * qcl_db_XmlSchemaModel.
+ * qcl_db_model_xml_XmlSchemaModel.
  */
 
-class qcl_db_behavior_Tree 
+class qcl_db_behavior_Tree
 {
 
 
@@ -19,7 +19,7 @@ class qcl_db_behavior_Tree
 		$parentId = (int) $parentId;
 		return $this->findWhere("{$this->col_parentId} = $parentId", $this->col_position );
 	}
-	
+
 	/**
 	 * gets child node ids of a branch ordered by the order field
 	 * @param int $parentId
@@ -30,8 +30,8 @@ class qcl_db_behavior_Tree
     $orderBy     = either( $orderBy, "position" );
     $parentIdCol = $this->getColumnName("parentId");
 		return $this->findValues("id", "$parentIdCol=" . (int) $parentId, $orderBy );
-	}	
-	
+	}
+
 	/**
 	 * gets number of child nodes of a branch
 	 * @param int $parentId
@@ -40,13 +40,13 @@ class qcl_db_behavior_Tree
 	{
 		$parentId = (int) $parentId;
 		$count = $this->db->getValue("
-			SELECT COUNT(*) 
+			SELECT COUNT(*)
 			FROM `{$this->table}`
 			WHERE `{$this->col_parentId}` = $parentId
-		"); 
+		");
 		return (int) $count;
 	}
-	
+
 	/**
 	 * reorders childrens positions
 	 * @param int $parentId parent folder id
@@ -67,20 +67,20 @@ class qcl_db_behavior_Tree
 		}
 		return true;
 	}
-	
+
 	/**
 	 * whether tree model supports positioning
-	 */	
+	 */
 	function supportsPositioning()
 	{
 		return ( $this->col_position != null);
 	}
-	
+
    /**
     * change position within folder siblings
     * @param int 	$folderId	folder id
     * @param int	$parentId 	parent folder id
-    * @param int	$position	new position 
+    * @param int	$position	new position
    	*/
 	function changePosition ( $folderId, $parentId, $position )
 	{
@@ -95,7 +95,7 @@ class qcl_db_behavior_Tree
 		{
 			$data = array();
 			$data[$this->col_id] = $child[$this->col_id];
-			
+
 			if ( $child[$this->col_id] == $folderId )
 			{
 				$data[$this->col_position] = $position;
@@ -105,16 +105,16 @@ class qcl_db_behavior_Tree
 				if ( $index == $position ) $index++; // skip over target position
 				$data[$this->col_position] = $index++;
 			}
-			
+
 			$this->update($data);
 		}
-		return true;		
-	}	
+		return true;
+	}
 
    /**
     * change parent folder
     * @param int 	$folderId	  folder id
-    * @param int	$parentId 	new parent folder id 
+    * @param int	$parentId 	new parent folder id
     * @return int             old parent id
    	*/
 	function changeParent( $folderId, $parentFolderId )
@@ -123,26 +123,26 @@ class qcl_db_behavior_Tree
     $this->setProperty("parentId",$parentFolderId,$folderId);
     return $oldParentId;
 	}
-	
+
   /**
    * Returns the path of a folder in the folder hierarchy,
    * separated by the pipe character
-   * @return 
+   * @return
    */
   function getPath( $id=null )
   {
-    
+
     /*
      * return when top node has been reached
      */
     if ( $id === 0 )
     {
       return "";
-    }     
+    }
 
     /*
      * if not given, use current record
-     */    
+     */
     elseif ( $id === null )
     {
       $id = $this->getId();
@@ -150,10 +150,10 @@ class qcl_db_behavior_Tree
 
     /*
      * otherwise load data for current node
-     */  
+     */
     else
-    { 
-      $this->load( $id );  
+    {
+      $this->load( $id );
     }
 
     /*
@@ -169,7 +169,7 @@ class qcl_db_behavior_Tree
       {
         $this->__cachePath = $id;
       }
-    }         
+    }
 
 
     /*
@@ -177,7 +177,7 @@ class qcl_db_behavior_Tree
      */
     $label    =  trim( str_replace( "/", "\\/", $this->getLabel() ) );
     $parentId = $this->get("parentId");
-    
+
     if ( $parentId )
     {
       /*
@@ -185,7 +185,7 @@ class qcl_db_behavior_Tree
        */
       $parentPath = $this->getPath( $parentId );
       $path .= $parentPath . "|" . $label;
-      
+
       /*
        * cache path
        */
@@ -196,7 +196,7 @@ class qcl_db_behavior_Tree
           'path'  => $path
         ));
         $this->__cachePath = null;
-      }            
+      }
     }
     else
     {
@@ -205,7 +205,7 @@ class qcl_db_behavior_Tree
 
     return $path;
   }
-  
+
   /**
    * gets the ids in the path of a folder in the folder hierarchy,
    * starting from the top node to the node
@@ -220,40 +220,40 @@ class qcl_db_behavior_Tree
        */
       return array();
     }
-    $this->load($id);  
-    
+    $this->load($id);
+
     $parentId = $this->get("parentId");
     $hierarchyIds = $this->getNodeIdHierarchy( $parentId );
-    
+
     array_push($hierarchyIds,$id);
-    
+
     return $hierarchyIds;
   }
-  
+
   /**
    * gets the ids in the path of a folder in the folder hierarchy,
    * starting from the node to the top node. Deprecated, use
    * getNodeIdHierarchy instead.
-   * @deprecated 
+   * @deprecated
    * @return array
    */
   function getHierarchyIds( $id )
   {
     if ( $id !== null )
     {
-      $folder = $this->load($id);  
+      $folder = $this->load($id);
     }
     else
     {
       $id = $this->currentRecord[$this->col_id];
       $folder = $this->currentRecord;
     }
-    
+
     if ( ! $id )
     {
       return array();
     }
-    
+
     //if ( $this->__hasHierarchyFunc or $this->db->routineExists("{$this->table}_getHierarchyPath") )
     //{
     //  $this->__hasHierarchyFunc = true;
@@ -261,18 +261,18 @@ class qcl_db_behavior_Tree
     //}
     //else
     //{
-      
+
       $hierarchyIds = $this->getHierarchyIds( $folder[$this->col_parentId] );
       array_push($hierarchyIds,$id);
-      
+
     //}
     return $hierarchyIds;
   }
-  
+
   /**
    * gets the id of a folder given its label path
    * @todo to be implemented
-   * @return int 
+   * @return int
    * @param string $path
    */
   function getIdByPath ( $path )
@@ -285,11 +285,11 @@ class qcl_db_behavior_Tree
       $this->db->getValue("SELECT {}"); /// todo: implement
     }
   }
-  
+
   /**
-   * creates folders along the path 
+   * creates folders along the path
    * @todo to be implemented
-   * @return int 
+   * @return int
    * @param string $path
    */
   function createPath( $path )
@@ -302,8 +302,7 @@ class qcl_db_behavior_Tree
       // to do: implement
     }
   }
-  
-  
-}
 
+
+}
 ?>

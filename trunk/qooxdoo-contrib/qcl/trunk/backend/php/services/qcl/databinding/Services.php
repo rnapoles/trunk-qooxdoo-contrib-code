@@ -39,7 +39,7 @@ class qcl_databinding_Services extends qcl_core_mixin
     
     /*
      * get role data and add add it to list object 
-     * @var qcl_db_PropertyModel
+     * @var qcl_db_model_AbstractModel
      */
     $model =& $this->getModel($type);
 

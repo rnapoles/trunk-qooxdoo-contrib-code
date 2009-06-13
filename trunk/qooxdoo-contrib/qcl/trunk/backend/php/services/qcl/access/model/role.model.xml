@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <schema
-  include="qcl/db/XmlSchemaModel.xml">
+  include="qcl/db/model/xml/XmlSchemaModel.xml">
   
   <model 
     table="roles"
     type="qcl.types.Role"
-    name="qcl.access.Role"
-    extends="qcl.db.XmlSchemaModel">
+    name="qcl.access.model.Role"
+    extends="qcl.db.model.xml.XmlSchemaModel">
      
     <definition>
     
@@ -33,11 +33,11 @@
       <link 
         name="permission"
         jointable="link_roles_permissions"
-        model="qcl.access.Permission" />    
+        model="qcl.access.model.Permission" />    
       <link 
         name="user"
         jointable="link_user_roles" 
-        model="qcl.access.User" />
+        model="qcl.access.model.User" />
     </links>
   </model>
 </schema>

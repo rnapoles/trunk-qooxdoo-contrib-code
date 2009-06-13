@@ -8,7 +8,7 @@ require_once "qcl/jsonrpc/controller.php";
  * Abstract service class managing models that have a tree structure.
  * Can also be used as an interface
  */
-class qcl_databinding_tree_controller extends qcl_jsonrpc_controller
+class qcl_databinding_tree_controller extends qcl_mvc_Controller
 {
   //-------------------------------------------------------------
   // class variables

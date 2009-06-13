@@ -17,7 +17,7 @@ define ("QCL_DB_ADMIN_ACCESS", true);
 class qcl_db_Manager extends qcl_core_StaticClass
 {
 
-  
+
   /**
    * Returns singleton instance of the class. Must be called
    * statically
@@ -26,7 +26,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
   {
     return parent::getSingleton(__CLASS__);
   }
-  
+
   /**
    * Returns the type of the database. Can be called statically.
    * @return string
@@ -35,7 +35,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
   {
     return qcl_application_Application::getIniValue("database.type");
   }
-  
+
   /**
    * Returns the dsn information from the service.ini data.
    * By default, return user-level access to the admin database. Can be called
@@ -53,7 +53,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
       }
       else
       {
-        return qcl_application_Application::getIniValue("database.user_userdb");  
+        return qcl_application_Application::getIniValue("database.user_userdb");
       }
     }
     else
@@ -68,20 +68,20 @@ class qcl_db_Manager extends qcl_core_StaticClass
       }
     }
   }
-  
+
 
   /**
-   * Creates and caches a database connection object (adapter). Can 
+   * Creates and caches a database connection object (adapter). Can
    * be called statically.
-   * 
-   * @param mixed $first [optional] If string, treat as dsn. If boolean, whether 
-   * to use the userdata database (true) or the database containing 
+   *
+   * @param mixed $first [optional] If string, treat as dsn. If boolean, whether
+   * to use the userdata database (true) or the database containing
    * the application data tables (false, default)
-   * 
+   *
    * @param boolean $adminaccess [optional] whether
    * to use a dsn with admin-level access to create tables etc. (true) or
    * just user privileges (false, default). Is ignored if first argument is a string
-   * 
+   *
    * @return qcl_db_type_Abstract
    */
   function &createAdapter( $first=false, $adminaccess=false )
@@ -93,34 +93,37 @@ class qcl_db_Manager extends qcl_core_StaticClass
     if ( ! $first or is_bool( $first ) )
     {
       $dsn = qcl_db_Manager::getDefaultDsn( $first, $adminaccess );
-      
+    }
+    elseif ( is_string( $first ) or is_array( $first ) )
+    {
+      $dsn = $first;
     }
     else
     {
-      $dsn = $first;
+      $this->raiseError("Invalid parameters.");
     }
 
     if ( ! $dsn )
     {
       qcl_db_Manager::raiseError("No dsn information available.");
-    }    
-    
+    }
+
     /*
      * pool connection objects
      */
     $cacheId = is_array($dsn) ? implode(",", array_values($dsn) ) : $dsn;
     //$this->debug("Cache id '$cacheId'");
-    
+
     global $__dbcache;
-    
+
     if ( $__dbcache[$cacheId] )
     {
       //$this->debug("Using cached db object for $cacheId");
       $db =& $__dbcache[$cacheId];
     }
-    
+
     /*
-     * else connect to new database 
+     * else connect to new database
      */
     else
     {
@@ -128,8 +131,8 @@ class qcl_db_Manager extends qcl_core_StaticClass
        * type and class of database adapter
        */
       $type = qcl_db_Manager::getDbType();
-      $class = "qcl_db_type_" . strtoupper($type[0]) . substr( $type, 1 );
-      
+      $class = "qcl_db_adapters_" . strtoupper($type[0]) . substr( $type, 1 );
+
       /*
        * include class file
        */
@@ -139,15 +142,15 @@ class qcl_db_Manager extends qcl_core_StaticClass
        * create and save adapter
        */
       $controller =& qcl_application_Application::getController();
-      $db =& new $class( $dsn, &$controller ); 
+      $db =& new $class( $dsn, &$controller );
       //$this->debug("Created new $class adapter... for '$dsn'.");
       if ( $db->error )
       {
         qcl_db_Manager::raiseError( $db->error );
-      } 
+      }
       $__dbcache[$cacheId] =& $db;
     }
-    
+
     return $db;
   }
 }

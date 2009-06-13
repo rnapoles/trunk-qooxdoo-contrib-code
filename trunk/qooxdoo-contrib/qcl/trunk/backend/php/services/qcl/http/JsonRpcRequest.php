@@ -18,11 +18,11 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
   
   /**
    * Constructor
-   * @param qcl_jsonrpc_controller|string $arg Either a controller object or a string URL 
+   * @param qcl_mvc_Controller|string $arg Either a controller object or a string URL 
    */
   function __construct( $arg )
   {
-    if ( is_a( $arg, "qcl_jsonrpc_controller" ) )
+    if ( is_a( $arg, "qcl_mvc_Controller" ) )
     {
       parent::__construct( &$arg );
       $this->setUrl( $arg->getServerUrl() );

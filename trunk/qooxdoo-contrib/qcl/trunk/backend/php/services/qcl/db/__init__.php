@@ -4,13 +4,18 @@
  */
 
 /*
+ * dependencies
+ */
+require_once "qcl/db/Manager.php";
+
+/*
  * constants
  */
 define("QCL_LOG_PROPERTY_MODEL","propertyModel");
 
 /*
  * define property type constants. You can override the
- * values defined here 
+ * values defined here
  */
 if ( ! defined("QCL_DB_PROPERTY") )
 {

@@ -15,7 +15,7 @@ require_once "qcl/db/XmlSchemaModel.php";
  * 
  * @todo rename to qcl_datasource_storage_Db
  */
-class qcl_datasource_type_db_Model extends qcl_db_XmlSchemaModel
+class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
 {
   
   /**

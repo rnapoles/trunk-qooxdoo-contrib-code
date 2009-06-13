@@ -13,56 +13,14 @@ require_once "qcl/server/Server.php";
  * and dispatches or broadcasts messages. A "session" means the
  * connection established by a particular browser instance.
  */
-class qcl_session_controller extends qcl_access_controller
+class qcl_session_Controller extends qcl_access_Controller
 {
-
-  /**
-   * session model. Access with getSessionModel()
-   * @access private
-   * @var qcl_session_Session
-   */
-  var $_sessionModel;
-
-
-  /**
-   * session model. Access with getMessageModel()
-   * @access private
-   * @var qcl_session_Message
-   */
-  var $_messageModel;
 
   /**
    * The id of the active user, determined from the
    * session id
    */
   var $_activeUserId;
-
-  /**
-   * constructor
-   * registers session with a database-table-based session and user model.
-   * if you want to use your custom session model, set it before
-   * calling this parent constructor
-   */
-  function __construct( $server )
-  {
-
-    /*
-     * call parent constructor, this will initialize database
-     * connection and access/config models
-     */
-    parent::__construct( &$server );
-
-    /*
-     * session model
-     */
-    $this->_messageModel =& new qcl_session_Message(&$this);
-
-    /*
-     * session model
-     */
-    $this->_sessionModel =& new qcl_session_Session(&$this);
-
-  }
 
   /**
    * This overrides and extends the parent method by providing a way to determine
@@ -184,21 +142,21 @@ class qcl_session_controller extends qcl_access_controller
   }
 
   /**
-   * Returns the session model
+   * Returns the session model singleton instance
    * @return qcl_session_Session
    */
   function &getSessionModel()
   {
-    return $this->_sessionModel;
+    return qcl_session_Session::getInstance();
   }
 
   /**
-   * Returns the message model
+   * Returns the message model singleton instance
    * @return qcl_session_Message
    */
   function &getMessageModel()
   {
-    return $this->_messageModel;
+    return qcl_session_Message::getInstance();
   }
 
   /**
@@ -224,7 +182,6 @@ class qcl_session_controller extends qcl_access_controller
     /*
      * models
      */
-    $configModel  =& $this->getConfigModel();
     $activeUser   =& $this->getActiveUser();
     $sessionModel =& $this->getSessionModel();
 
@@ -438,6 +395,5 @@ class qcl_session_controller extends qcl_access_controller
       //$this->info($message);
     }
   }
-
 }
 ?>

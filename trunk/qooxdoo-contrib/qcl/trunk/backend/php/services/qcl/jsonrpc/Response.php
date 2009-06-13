@@ -2,38 +2,51 @@
 
 class qcl_jsonrpc_Response
 {
-  
+
   /**
    * The result data returned by the service method
    * @var mixed
    */
   var $result = array();
-  
+
   /**
    * An array of events dispatched on the server
    *
    * @var array
    */
   var $events = array();
-  
-  
+
+
   /**
    * An array of events dispatched on the server
    *
    * @var array
-   */  
+   */
   var $messages = array();
-  
-  
+
+  /**
+   * Returns a singleton instance of this class
+   * @return qcl_jsonrpc_Response
+   */
+  function &getInstance( )
+  {
+    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    {
+      $GLOBALS[__CLASS__] =& new qcl_jsonrpc_Response;
+    }
+    return $GLOBALS[__CLASS__];
+  }
+
+
   function setResult( $data )
   {
     $this->result = $data;
   }
-  
+
   /**
    * Set a part or the full response
-   * @param mixed $first Can be any of the following: 
-   * 1) The key of a key-value pair. The value is the second argument. 
+   * @param mixed $first Can be any of the following:
+   * 1) The key of a key-value pair. The value is the second argument.
    * 2) A hash map of key-value pairs. No second argument.
    * 3) A string response that is the complete response value. No second argument.
    * 4) A property model. If a second array argument is given, the properties in the array will be copies.
@@ -43,7 +56,7 @@ class qcl_jsonrpc_Response
    */
   function set( $first, $second=QCL_ARGUMENT_NOT_SET )
   {
-    if ( is_a( $first, "qcl_db_PropertyModel" ) )
+    if ( is_a( $first, "qcl_db_model_AbstractModel" ) )
     {
       if ( ! is_array($first->getRecord()) )
       {
@@ -69,7 +82,7 @@ class qcl_jsonrpc_Response
       $this->result[$first] = $second;
     }
     elseif ( is_string($first) and $second === QCL_ARGUMENT_NOT_SET )
-    { 
+    {
       $this->result = $first;
     }
     else
@@ -77,9 +90,9 @@ class qcl_jsonrpc_Response
       trigger_error("Invalid parameters");
     }
   }
-  
+
   /**
-   * Returns the value of a property of the response data 
+   * Returns the value of a property of the response data
    *
    * @param string $property
    */
@@ -91,7 +104,7 @@ class qcl_jsonrpc_Response
     }
     return $this->result[$property];
   }
-  
+
   /**
    * Returns the result data
    *
@@ -107,22 +120,22 @@ class qcl_jsonrpc_Response
    * @param string $message Message name
    * @param mixed[optional] $data Message Data
    * @return void
-   */  
+   */
   function addMessage( $message, $data )
   {
     if ( is_string ($message) )
     {
       $this->messages[] = array(
-        'name' => $message, 
+        'name' => $message,
         'data' => $data
       );
     }
     else
     {
       trigger_error ("Invalid message parameter");
-    }    
+    }
   }
-  
+
   /**
    * Returns the messages on the message stack
    * @return array
@@ -131,7 +144,7 @@ class qcl_jsonrpc_Response
   {
     return $this->messages;
   }
-  
+
   /**
    * Adds an event to the event stack
    * @param mixed $event Message Event type
@@ -142,7 +155,7 @@ class qcl_jsonrpc_Response
     if ( is_string ($event) )
     {
       $this->events[] = array(
-        'type' => $event, 
+        'type' => $event,
         'data' => $data
       );
     }
@@ -151,7 +164,7 @@ class qcl_jsonrpc_Response
       trigger_error ("Invalid event parameter");
     }
   }
-    
+
   /**
    * Returns the events on the event stack
    * @return array
@@ -159,7 +172,7 @@ class qcl_jsonrpc_Response
   function &getEvents()
   {
     return $this->events;
-  } 
+  }
 }
 
 

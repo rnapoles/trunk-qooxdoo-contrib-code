@@ -4,23 +4,25 @@
  */
 require_once "qcl/persistence/AbstractObject.php";
 require_once "qcl/persistence/db/Model.php";
+require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
  *  * @todo this can be removed once qcl_db_SimpleModel does
  * automatic table creation.
  */
-require_once "qcl/db/XmlSchemaModel.php";
-class qcl_persistence_db_Setup extends qcl_db_XmlSchemaModel 
+class qcl_persistence_db_Setup
+  extends qcl_db_model_xml_XmlSchemaModel
 {
   var $schemaXmlPath = "qcl/persistence/db/Model.xml";
 }
 
 /**
- * Abstract class that is persisted in the database
+ * Class that is persisted in the database
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
  */
-class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
+class qcl_persistence_db_Object
+  extends qcl_persistence_AbstractObject
 {
 
   /**
@@ -28,8 +30,8 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
    * @acces private
    * @var qcl_persistence_db_Model
    */
-  var $_dbModel;  
-  
+  var $_dbModel;
+
   /**
    * Initializes the object
    * @override
@@ -39,27 +41,27 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     $controller =& $this->getController();
 
     /*
-     * Initialize a dummy qcl_db_XmlSchemaModel object to create tables
+     * Initialize a dummy qcl_db_model_xml_XmlSchemaModel object to create tables
      * FIXME this can be removed once qcl_db_SimpleModel does
      * automatic table creation.
      */
     if ( ! class_exists( "qcl_persistence_db_Setup" ) )
     {
-      $dummy =& new qcl_persistence_db_Setup(&$controller);        
+      $dummy =& new qcl_persistence_db_Setup(&$controller);
     }
 
     /*
      * create the actual model object that will be used to store
      * the data
      */
-    $this->_dbModel =& new qcl_persistence_db_Model( &$controller );    
+    $this->_dbModel =& new qcl_persistence_db_Model( &$controller );
   }
-  
+
   /**
-   * Reconstructs the object from the model data. 
+   * Reconstructs the object from the model data.
    * @param string $id the id of the object
    * @return null|false|array If null, no model data exists. If false, model data doesn't
-   * exist or is invalid. If valid data exists, return array. 
+   * exist or is invalid. If valid data exists, return array.
    */
   function _load( $id )
   {
@@ -73,8 +75,8 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
       'instanceId' => $instanceId,
       'userId'     => $this->_userId,
       'sessionId'  => $this->_sessionId
-    ));         
-    
+    ));
+
     /*
      * Check if model data was found. If nul, return null
      */
@@ -90,7 +92,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     //$this->debug($objData);
     $data = unserialize( $objData );
     //$this->debug($data);
-    
+
     return $data;
   }
 
@@ -101,27 +103,27 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
   function create()
   {
     $instanceId = strlen($this->instanceId) > 100 ? md5($this->instanceId) : $this->instanceId;
-    
+
     /*
      * create new record in database
      */
     $this->_dbModel->create();
-    $this->_dbModel->set( array( 
+    $this->_dbModel->set( array(
       'class'      => $this->className(),
       'instanceId' => $instanceId,
       'userId'     => $this->_userId,
       'sessionId'  => $this->_sessionId
     ) );
-    
+
     $this->_dbModel->save();
-    
+
     /*
      * use the opportunity to clean up objects that refer
      * to non-existing users or sessions
      */
-    $this->cleanUp();    
+    $this->cleanUp();
   }
-  
+
   /*
    * clean up objects that refer to nonexisting users or sessions
    * FIXME disabled: this requires tables sessions and users created beforehand
@@ -131,47 +133,47 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     $this->_dbModel->deleteWhere("
       sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
       userId NOT IN ( SELECT id FROM users )
-    ");     
+    ");
   }
-  
-  
+
+
   /**
    * Saves the object to the storage
    */
   function save()
   {
     $this->log("Saving object data for '" . $this->className() . "' [$this->instanceId].","persistence");
-    
+
     if ( $this->_isDeleted )
     {
       $this->raiseError("Cannot save a deleted object.");
     }
-    
-    if ( $this->isLocked 
+
+    if ( $this->isLocked
          and $this->lockMode == $this->WRITE_LOCK
          and ! $this->_lockIsMine )
     {
       $this->raiseError("Cannot save " . $this->className()  . " [$this->instanceId]." . " because of write lock." );
-      return; 
+      return;
     }
-    
+
     /*
      * save object data
      */
     $data = array();
     $properties = $this->persistedProperties();
-    
+
     foreach( $properties as $property )
     {
       $data[$property] = $this->$property;
       //$this->debug(" Saving '$property' with value '$data[$property]'");
     }
     $this->_dbModel->setData( serialize( $data ) );
-    
+
     $this->_dbModel->save();
     $this->_hasChanged = false;
   }
-  
+
   /**
    * Deletes object properties and persistent data
    * @return void
@@ -184,8 +186,8 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     {
       $this->$key = null;
     }
-    
+
     $this->_isDeleted = true;
-  }  
+  }
 }
 ?>

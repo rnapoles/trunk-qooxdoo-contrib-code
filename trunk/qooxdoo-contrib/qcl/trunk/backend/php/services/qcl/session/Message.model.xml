@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema
- include="qcl/db/XmlSchemaModel.xml">
+ include="qcl/db/model/xml/XmlSchemaModel.xml">
 
   <!-- model for messages stored in the database -->
   
   <model
     name="qcl.session.Message"
     table="messages"
-    extends="qcl.db.XmlSchemaModel">  
+    extends="qcl.db.model.xml.XmlSchemaModel">  
     
     <definition>
       <properties>

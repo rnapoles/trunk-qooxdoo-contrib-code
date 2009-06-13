@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <schema
-  include="qcl/db/XmlSchemaModel.xml">
+  include="qcl/db/model/xml/XmlSchemaModel.xml">
 
   <model 
     table="users"
     type="qcl.types.User"
-    name="qcl.access.User"
-    extends="qcl.db.XmlSchemaModel"> 
+    name="qcl.access.model.User"
+    extends="qcl.db.model.xml.XmlSchemaModel"> 
      
     <!-- model definition -->
     <definition>
@@ -59,7 +59,8 @@
       <link 
         name="role"
         jointable="link_user_roles" 
-        model="qcl.access.Role" />  
+        model="qcl.access.model.Role" />  
+        
       <!-- link 
         name="datasource"
         type="n:n"

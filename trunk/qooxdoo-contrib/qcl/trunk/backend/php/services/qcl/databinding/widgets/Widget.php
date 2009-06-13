@@ -13,7 +13,7 @@ class qcl_databinding_widgets_Widget extends qcl_mvc_AbstractModel
   /**
    * qooxdoo class name, automatically resolved from
    * PHP class name
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @var string
    */
   var $qxClass;

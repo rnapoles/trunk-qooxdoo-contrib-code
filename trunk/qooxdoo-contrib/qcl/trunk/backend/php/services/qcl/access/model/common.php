@@ -3,17 +3,13 @@
 /*
  * Dependencies
  */
-require_once "qcl/db/XmlSchemaModel.php";
-require_once "qcl/access/user.php";
-require_once "qcl/access/role.php";
-require_once "qcl/access/permission.php";
+require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
  * Common base class for permission, role and user models
  */
-class qcl_access_Common extends qcl_db_XmlSchemaModel
+class qcl_access_model_Common extends qcl_db_model_xml_XmlSchemaModel
 {
-
 
   /**
    * Array of names that canot be used as names for users, permissions and
@@ -21,7 +17,6 @@ class qcl_access_Common extends qcl_db_XmlSchemaModel
    * @var array
    */
   var $reservedNames = array();
-
 
 	/**
 	 * Creates a new record and optionally links it to a role. Raises an error

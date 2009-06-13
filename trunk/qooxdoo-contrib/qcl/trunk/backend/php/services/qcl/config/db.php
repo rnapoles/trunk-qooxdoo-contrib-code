@@ -2,8 +2,9 @@
 /*
  * dependencies
  */
-require_once "qcl/db/XmlSchemaModel.php";
 require_once "qcl/access/Manager.php";
+require_once "qcl/db/model/xml/XmlSchemaModel.php";
+
 
 /**
  * configuration management class, using a database backend
@@ -14,7 +15,7 @@ require_once "qcl/access/Manager.php";
  * @todo use userId instead of username
  */
 
-class qcl_config_Db extends qcl_db_XmlSchemaModel
+class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 {
 
   /**
@@ -111,7 +112,7 @@ class qcl_config_Db extends qcl_db_XmlSchemaModel
 	 *
 	 * @return void
 	 */
-	function delete()
+	function delete( $ids=null )
 	{
 		$controller =& $this->getController();
     $userModel  =& $controller->getUserModel();
@@ -226,12 +227,12 @@ class qcl_config_Db extends qcl_db_XmlSchemaModel
   }
 
 	/**
-	 * Returns config data by id
+	 * Returns config data by id, but only if user has access rights
 	 * @param string $id The row id of the key
 	 * @return array row data
 	 * @override
 	 */
-	function findById( $id )
+	function findProtectedById( $id )
 	{
 		$controller  =& $this->getController();
     $userModel   =& $controller->getUserModel();
@@ -253,12 +254,14 @@ class qcl_config_Db extends qcl_db_XmlSchemaModel
 	}
 
 	/**
-	 * Returns the database record for the config entry and for the specific user
+	 * Returns the database record for the config entry and
+	 * FIXME
+	 * for the specific user
 	 * @param string $name
 	 * @param mixed $userRef
 	 * @return array|null
 	 */
-	function findByNamedId( $name, $username=null )
+	function findByUser( $name, $username=null )
 	{
 		$controller =& $this->getController();
     $activeUser =& $controller->getActiveUser();

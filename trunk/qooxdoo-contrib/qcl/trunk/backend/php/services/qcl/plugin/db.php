@@ -11,12 +11,12 @@ require_once "qcl/plugin/abstract.php";
  * The class cannot be used directly, you need to subclass it in your application
  */
 
-class qcl_plugin_db extends qcl_db_XmlSchemaModel
+class qcl_plugin_db extends qcl_db_model_xml_XmlSchemaModel
 {    
 
   /**
    * the path to the model schema xml file. ususally automatically resolved.
-   * @see qcl_db_XmlSchemaModel::getSchmemaXmlPath()
+   * @see qcl_db_model_xml_XmlSchemaModel::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = "qcl/plugin/db.model.xml";  

@@ -4,7 +4,7 @@
 /**
  * Persistent object storing and managing datasource information 
  */
-class qcl_datasource_SchemaModel extends qcl_db_XmlSchemaModel 
+class qcl_datasource_SchemaModel extends qcl_db_model_xml_XmlSchemaModel 
 {
   /**
    * The path of the xml schema definition
