@@ -64,37 +64,67 @@ class qcl_session_Controller extends qcl_access_Controller
        * get user from session. if session data is invalid,
        * do not authenticate
        */
-      $activeUser =& $this->getUserFromSession( $sessionId );
-      if ( $activeUser )
+      $userId =& $this->getUserIdFromSession( $sessionId );
+      if ( $userId )
       {
-        /*
-         * set active user
-         */
-        $this->setActiveUser( $activeUser );
+        $userModel =& $this->getUserModel( $userId );
+        $this->setActiveUser( $userModel );
+      }
+      else
+      {
+        return false;
       }
     }
 
-
     /*
-     * call parent method, which checks for a valid user session
-     * and creates guest access
+     * If we have an authenticated user, check for timeout etc.
      */
-    if ( ! parent::isValidUserSession() )
+    if ( ! $this->checkTimeout() )
     {
-      //$this->debug("qcl_access_controller::isValidUserSession() returns false");
+      /*
+       * force log out because of timeout
+       */
+      $this->setError( "Timeout.");
       return false;
     }
-
-    /*
-     * register the session
-     */
-   //$this->debug("registering session");
-    $this->registerSession();
 
     /*
      * sucess!!
      */
     return true;
+  }
+
+  /**
+   * Grant guest access
+   * @todo config data should be written to config table and deleted when guest user sessions are deleted.
+   * @return void
+   */
+  function grantGuestAccess()
+  {
+    /*
+     * parent method does all the work
+     */
+    parent::grantGuestAccess();
+
+    /*
+     * now register the new session
+     */
+    $this->registerSession();
+  }
+
+  /**
+   * Actively authenticate the user with username and password.
+   * Returns data for the authentication store.
+   *
+   * @param string $param[0] username
+   * @param string $param[1] (MD5-encoded) password
+   * @return qcl_jsonrpc_Response
+   */
+  function method_authenticate( $params )
+  {
+    $response = parent::method_authenticate( $params );
+    $this->registerSession();
+    return $response;
   }
 
   /**
@@ -121,25 +151,6 @@ class qcl_session_Controller extends qcl_access_Controller
   // session management
   //-------------------------------------------------------------
 
-  /**
-   * Returns the active user's id
-   * @override
-   * @return int
-   */
-  function getActiveUserId( )
-  {
-    return $this->_activeUserId;
-  }
-
-  /**
-   * Sets the active user's id
-   * @override
-   * @param int $id
-   */
-  function setActiveUserId( $id )
-  {
-    $this->_activeUserId = $id;
-  }
 
   /**
    * Returns the session model singleton instance
@@ -234,13 +245,13 @@ class qcl_session_Controller extends qcl_access_Controller
   }
 
   /**
-   * Set the active user from the session id
+   * Set the active user id from the session id
    * @param int $sessionId
-   * @return qcl_access_user|bool if this method returns false, the request should be
+   * @return int|bool if this method returns false, the request should be
    * aborted since the session data refers to a non-existing or expired
    * user.
    */
-  function getUserFromSession( $sessionId )
+  function getUserIdFromSession( $sessionId )
   {
 
     /*
@@ -257,22 +268,20 @@ class qcl_session_Controller extends qcl_access_Controller
       $activeUserId = $sessionModel->get("userId");
       if ( ! $activeUserId )
       {
-        $this->warn("Session $sessionId is not connected with a user id!");
+        $this->setError("Session $sessionId is not connected with a user id!");
         return false;
       }
       $userModel =& $this->getUserModel();
-      $userModel->load( $activeUserId );
-      if ( $userModel->foundNothing() )
+      if ( ! $userModel->exists( array("id" => $activeUserId ) ) )
       {
-        $this->warn("Session $sessionId refers to a non-existing user.");
+        $this->setError("Session $sessionId refers to a non-existing user.");
         return false;
       }
-      $this->setActiveUserId( $activeUserId );
-      return $userModel->cloneObject();
+      return $activeUserId;
     }
     else
     {
-      $this->warn("Session $sessionId does not exist.");
+      $this->setError("Session $sessionId does not exist.");
       return false;
     }
   }

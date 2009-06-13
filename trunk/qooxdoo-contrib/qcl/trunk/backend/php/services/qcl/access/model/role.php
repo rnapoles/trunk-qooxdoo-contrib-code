@@ -44,7 +44,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
   function getPermissions( $prop="namedId" )
   {
     $permissions = array();
-    $permModel =& $this->linkedPermissionModel( $prop );
+    $permModel =& $this->linkedPermissionModel();
     if ( $permModel->foundSomething() )
     {
       do

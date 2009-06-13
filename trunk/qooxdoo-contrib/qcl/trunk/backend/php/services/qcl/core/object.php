@@ -790,13 +790,23 @@ class qcl_core_object extends qcl_core_BaseClass
       $this->backtrace() .
       "\n"
     );
+    $this->userNotice( $message, $number );
+  }
 
+  /**
+   * Exits the current service with a user notice. This
+   * is an error, without backtrace
+   * @param string $message
+   * @return void
+   */
+  function userNotice ( $message, $number=null )
+  {
     /*
      * if this is a jsonrpc request, we have an $error object
      * that the error can be passed to.
      */
-    $server    =& qcl_server_Server::getServerObject();
-    $error =& $server->getErrorBehavior();
+    $server =& qcl_server_Server::getServerObject();
+    $error  =& $server->getErrorBehavior();
     if ( is_a( $error, "JsonRpcError" ) )
     {
       $error->setError( $number, htmlentities( stripslashes( $message ) ) );
@@ -809,17 +819,6 @@ class qcl_core_object extends qcl_core_BaseClass
      * otherwise trigger error
      */
     trigger_error($message);
-  }
-
-  /**
-   * Exits the current service with a user notice. This
-   * is technically an error, but has no backtrace
-   * @param string $message
-   * @return void
-   */
-  function userNotice ( $message )
-  {
-    trigger_error( $message );
   }
 
   /*
@@ -1169,7 +1168,7 @@ class qcl_core_object extends qcl_core_BaseClass
    */
   function tr( $msgId, $varargs=null )
   {
-    qcl_application_Application::tr( $msgId, $varargs );
+    return qcl_application_Application::tr( $msgId, $varargs );
   }
 
   /**
@@ -1183,7 +1182,7 @@ class qcl_core_object extends qcl_core_BaseClass
    */
   function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
-    qcl_application_Application::trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() );
+    return qcl_application_Application::trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() );
   }
 
 
