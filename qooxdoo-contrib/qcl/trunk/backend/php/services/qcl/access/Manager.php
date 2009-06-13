@@ -21,6 +21,11 @@ class qcl_access_Manager extends qcl_core_StaticClass
   var $_accessController;
 
   /**
+   * The current session id
+   */
+  var $_sessionId;
+
+  /**
    * Returns a singleton instance of this class
    * @return qcl_server_Server
    */
@@ -31,6 +36,25 @@ class qcl_access_Manager extends qcl_core_StaticClass
       $GLOBALS[__CLASS__] =& new qcl_access_Manager;
     }
     return $GLOBALS[__CLASS__];
+  }
+
+  /**
+   * Sets the session id. The session id must be set by the access controller
+   * @param $sessionId
+   * @return void
+   */
+  function setSessionId( $sessionId )
+  {
+    $this->_sessionId = $sessionId;
+  }
+
+  /**
+   * Returns the session id
+   * @return string
+   */
+  function getSessionId()
+  {
+    return $this->_sessionId;
   }
 
   /**
@@ -165,7 +189,7 @@ class qcl_access_Manager extends qcl_core_StaticClass
    * uses a hash map to pair permissions with their
    * local aliases. More elaborate implementations are certainly
    * possible.
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @param string $permission
    */
   function hasPermissionAlias( $controller, $permission )

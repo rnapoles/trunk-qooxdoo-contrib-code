@@ -20,18 +20,18 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
   /**
    * The supported / allowed protocols
    */
-  var $resourceTypes = array();  
-  
+  var $resourceTypes = array();
+
   /**
    * The currently used protocol
    */
-  var $resourceType;   
-  
+  var $resourceType;
+
 
 
   /**
    * Constructor
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
   function __construct ( $controller, $resourcePath )
@@ -40,7 +40,7 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
      * parent constructor takes care of controller
      */
     parent::__construct( &$controller );
-    
+
     /*
      * check resource path
      */
@@ -48,27 +48,38 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
     {
       $this->raiseError("'$resourcePath' is not a valid resource for " . $this->className() );
     }
-    
+
     /*
      * protocol
      */
-    $this->resourceType = $this->getResourceType( $resourcePath );    
-    
+    $this->resourceType = $this->getResourceType( $resourcePath );
+
     /*
      * save resource path
      */
+    $this->setResourcePath( $resourcePath );
+  }
+
+  /**
+   * Default setter for resource path
+   * @param string $resourcePath
+   * @return void
+   */
+  function setResourcePath( $resourcePath )
+  {
     $this->_resourcePath = $resourcePath;
   }
-  
+
   /**
-   * Factory method which returns the correct class type according to protocol.
+   * Factory method which returns the correct class type according to
+   * the protocol. Folder paths MUST end with a slash.
    * @static
    * @return qcl_io_filesystem_IResource
    */
   function createInstance( $controller, $resourcePath )
   {
     /*
-     * check resource path
+     * check resource path.
      */
     $resourceType = qcl_io_filesystem_Resource::getResourceType( $resourcePath );
     switch ( $resourceType )
@@ -82,11 +93,11 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
         else
         {
           require_once "qcl/io/filesystem/local/File.php";
-          return new qcl_io_filesystem_local_File( &$controller, $resourcePath );             
+          return new qcl_io_filesystem_local_File( &$controller, $resourcePath );
         }
         break;
-        
-      default: 
+
+      default:
         if ( substr($resourcePath,-1) == "/" )
         {
           require_once "qcl/io/filesystem/remote/Folder.php";
@@ -95,13 +106,13 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
         else
         {
           require_once "qcl/io/filesystem/remote/File.php";
-          return new qcl_io_filesystem_remote_File( &$controller, $resourcePath );             
+          return new qcl_io_filesystem_remote_File( &$controller, $resourcePath );
         }
         break;
     }
-    
+
   }
-  
+
   /**
    * Returns the prefix of the resource path as the protocol/ resource
    * type
@@ -110,36 +121,38 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
   {
     return substr( $resourcePath, 0, strpos($resourcePath,":") );
   }
-  
+
   /**
-   * Checks wether resource path is valid. Local files have to start 
+   * Checks wether resource path is valid. Local files have to start
    * with "file://", remote files with a valid protocol such as "ftp://"
    * @param string $resourcePath
    * @retrun boolean
    */
-  function checkResourcePath( $resourcePath ) 
+  function checkResourcePath( $resourcePath )
   {
     $pos = strpos($resourcePath,":");
-    return  in_array( substr($resourcePath, 0, $pos), $this->resourceTypes ) 
+    return  in_array( substr($resourcePath, 0, $pos), $this->resourceTypes )
             && substr($resourcePath,$pos,3) == "://";
   }
-  
+
   /**
    * Gets the file's resource path
    * @return string
    */
-  function resourcePath() 
+  function resourcePath()
   {
     return $this->_resourcePath;
-  }  
-  
+  }
+
   /**
    * Returns the file path withoug leading protocol "foo://"
+   * @param string[optional] $resourcePath The path to the resource, otherwise the one
+   * of the current resource object
    * @return string
    */
-  function filePath()
+  function filePath( $resourcePath=null )
   {
-    $rp = $this->resourcePath();
+    $rp = either( $resourcePath, $this->resourcePath() );
     return substr( $rp, strpos($rp,":") +3 );
   }
 
@@ -153,7 +166,7 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
     $rp  = either ( $resourcePath, $this->resourcePath() );
     return substr( $rp, 0, strrpos($rp, "/" ) );
   }
-  
+
   /**
    * Returns the name of the (given) resource path without the containing directory
    * @param string[optional] $resourcePath
@@ -173,7 +186,7 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
     }
     return $rp;
   }
-  
+
   /**
    * Returns the extension of the (given) resource path, if any.
    * @param string[optional] $resourcePath
@@ -186,11 +199,11 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
     $pos = strrpos( $bn, "." );
     if ( $pos !== false )
     {
-      return substr($bn,$pos+1);  
+      return substr($bn,$pos+1);
     }
     return "";
-  }    
-  
+  }
+
   /**
    * Casting as string, returns the resource path
    * @return string
@@ -199,7 +212,7 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
   {
     return $this->resourcePath();
   }
-  
+
 
 }
 

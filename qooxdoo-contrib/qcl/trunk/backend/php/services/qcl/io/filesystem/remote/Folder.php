@@ -16,7 +16,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
   /**
    * Constructor. Will create the folder if it doesn't exist and will
    * throw an error if that is not possible.
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    * @param int $mode File permissions, defaults to 0777 
    */

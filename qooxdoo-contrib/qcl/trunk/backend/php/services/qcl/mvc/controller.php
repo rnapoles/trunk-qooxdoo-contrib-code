@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/jsonrpc/object.php";
+require_once "qcl/core/object.php";
 require_once "qcl/jsonrpc/Request.php";
 require_once "qcl/jsonrpc/Response.php";
 
@@ -21,32 +21,16 @@ define("QCL_LOG_REQUEST", "request");
 define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
 
 /**
- * Simple controller-model architecture for jsonrpc
- * Common base class for controllers
+ * Common base class for controllers. Mainly contains convenience
+ * methods that proxy methods originating in other objects.
  */
-class qcl_mvc_controller extends qcl_jsonrpc_object
+class qcl_mvc_Controller extends qcl_core_object
 {
 
   /**
-   * The jsonrpc server
-   * @var JsonRpcServer
-   * @deprecated
+   * The server object
    */
-  var $server;
-
-  /**
-   * The request object
-   * @var qcl_jsonrpc_Request
-   * @deprecated
-   */
-  var $request;
-
-  /**
-   * The response object
-   * @var qcl_jsonrpc_Response
-   * @deprecated
-   */
-  var $response;
+  var $_server;
 
   /**
    * The id of the session, default to PHP session id
@@ -63,7 +47,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
   /**
    * constructor , configures the service
    */
-  function __construct( $server )
+  function __construct( $server=null )
   {
 
     /*
@@ -72,25 +56,22 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
     parent::__construct();
 
     /*
-     * set the server
-     * @todo Server should be a singleton
-     * $server =& Bibliograph::getServerInstance()
+     * set the server. This is a bit redundant, since we have
+     * a global server singleton available. Might be removed
+     * eventually.
      */
     if ( is_a( $server, "JsonRpcServer" ) )
     {
 
-      $this->server =& $server;
+      $this->_server =& $server;
 
       /*
        * request object, fetches information from current
        * request
        */
-      $this->request =& new qcl_jsonrpc_Request( &$server );
+      $request =& $this->requestObject();
+      $request->setServer( &$server );
 
-      /*
-       * response object
-       */
-      $this->response =& new qcl_jsonrpc_Response;
     }
 
     /*
@@ -123,7 +104,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function &requestObject()
   {
-    return $this->request;
+    return qcl_jsonrpc_Request::getInstance();
   }
 
   /**
@@ -132,87 +113,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function &responseObject()
   {
-    return $this->response;
-  }
-
-  /**
-   * Gets the raw json input object
-   * @todo get this from server
-   * @return JsonInput
-   */
-  function &getJsonInput()
-  {
-    return $this->request->getJsonInput();
-  }
-
-  /**
-   * Returns the full path of the current service
-   * @todo get this from server
-   * @return string
-   */
-  function getServicePath()
-  {
-    return $this->request->getService() . "." . $this->request->getMethod();
-  }
-
-  /**
-   * Returns the parameters of the current service request
-   * @todo get this from server
-   * @return array
-   */
-  function getParams()
-  {
-    return $this->request->getParams();
-  }
-
-
-  /**
-   * Returns the serverData part of the jsonrpc request
-   * @param string[optional] $key If provided, get only a key, otherwise return the map
-   * @return mixed Either the value of the given key, or the whole map
-   */
-  function getServerData( $key=null )
-  {
-    return qcl_server_Server::getServerData( $key );
-  }
-
-  /**
-   * Returns the current session id. Defaults to PHP session id.
-   * Override in parent classes for more sophisticated session handling
-   * @return string session id
-   */
-  function getSessionId()
-  {
-    if ( ! $this->_sessionId )
-    {
-      $this->_sessionId = session_id();
-    }
-    return $this->_sessionId;
-  }
-
-  /**
-   * Sets the session id
-   * @param string $sessionId
-   * @return void
-   */
-  function setSessionId( $sessionId )
-  {
-    $this->_sessionId = $sessionId;
-  }
-
-  /**
-   * Creates a new session id and passes it to the client
-   * @return string The session id
-   */
-  function createSessionId( )
-  {
-    /*
-     * create random session id
-     */
-    $sessionId = md5(microtime());
-    $this->_sessionId = $sessionId;
-
-    return $sessionId;
+    return qcl_jsonrpc_Response::getInstance();
   }
 
   /**
@@ -223,11 +124,9 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
   var $modelTypes = array( "user", "role", "permission", "config" );
 
   /**
-   * Configures the service
-   * @deprecated
+   * Configures the service. Stub to be overridden
    **/
   function configureService(){}
-
 
   /**
    * Returns a configuration value of the pattern "foo.bar.baz"
@@ -257,7 +156,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    * Generic getter for models. Methods exist that follow the
    * pattern getFooModel()
    * @param string $type
-   * @return qcl_db_PropertyModel
+   * @return qcl_db_model_AbstractModel
    */
   function &getModel($type)
   {
@@ -283,7 +182,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
      */
     $obj =& $this->$getter();
 
-    if ( ! is_a($obj,"qcl_db_PropertyModel" ) )
+    if ( ! is_a($obj,"qcl_db_model_AbstractModel" ) )
     {
       $this->raiseError(
         $this->className() .
@@ -308,12 +207,14 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
   {
-    $this->response->set( $first, $second );
+    $response =& $this->responseObject();
+    $response->set( $first, $second );
   }
 
   function setResult ( $data )
   {
-    $this->response->setResult( $data );
+    $response =& $this->responseObject();
+    $response->setResult( $data );
   }
 
   /**
@@ -323,8 +224,8 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function &get ( $key )
   {
-    $response =& $this->getResponseObj();
-    return $this->response->get($key);
+    $response =& $this->responseObject();
+    return $response->get($key);
   }
 
   /**
@@ -334,7 +235,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function &response()
   {
-    return $this->response;
+    return qcl_jsonrpc_Response::getInstance();
   }
 
   //-------------------------------------------------------------
@@ -349,7 +250,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function optionalErrorResponseData()
   {
-    $response =& $this->response; //responseObject();
+    $response =& $this->responseObject();
     return array(
       'result' => array(
         'messages' => $response->getMessages(),
@@ -385,14 +286,8 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function addMessage( $message, $data=null )
   {
-    $response =& $this->response;//$this->responseObject();
-    if ( ! is_object($response) )
-    {
-      $this->raiseError( gettype($response) );
-    }
-
+    $response =& $this->responseObject();
     $response->addMessage( $message, $data );
-
   }
 
   /**
@@ -401,7 +296,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function &getMessages()
   {
-    $response =& $this->response;  //responseObject();
+    $response =& $this->responseObject();
     return $response->getMessages();
   }
 
@@ -431,7 +326,7 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    */
   function addEvent ( $event, $data=null )
   {
-    $reponse =& $this->response; //responseObject();
+    $reponse =& $this->responseObject();
     $reponse->addEvent( $event, $data );
   }
 
@@ -439,274 +334,15 @@ class qcl_mvc_controller extends qcl_jsonrpc_object
    * Returns messages on message stack
    * @return array
    */
-  function &getEvents()
+  function getEvents()
   {
-    $reponse =& $this->response; //responseObject();
-    return $this->getEvents();
+    $reponse =& $this->responseObject();
+    return $reponse->getEvents();
   }
 
   //-------------------------------------------------------------
-  // request id & process management
+  // service introspection
   //-------------------------------------------------------------
-
-  /**
-   * Returns the unique id of the current request, if any
-   * @return string
-   */
-  function getRequestId()
-  {
-    return $this->request->getRequestId();
-  }
-
-  /**
-   * Rets the unique id of the current request
-   * @return
-   * @param $requestId Object
-   */
-  function setRequestId( $requestId )
-  {
-    $this->request->setRequestId($requestId);
-  }
-
-  /**
-   * Returns the server error object
-   * @return JsonRpcError
-   */
-  function &getServerErrorBehavior()
-  {
-    $serverObj =& qcl_server_Server::getServerObject();
-    return $serverObj->getErrorBehavior();
-  }
-
-  /**
-   * Raises a server error and exits
-   * @param string $message
-   * @param int    $number
-   * @param string $file
-   * @param int    $line
-   * @return void
-   */
-  function raiseError( $message, $number=null, $file=null, $line=null )
-  {
-    /*
-     * if error file and line have been specified
-     */
-    if ( $file and $line )
-    {
-      $message .= " in $file, line $line.";
-    }
-
-    /*
-     * write to server log
-     */
-    $this->error( $message . "\n" .
-      "Backtrace:\n" .
-      $this->backtrace(true)
-    );
-
-    /*
-     * if this is a jsonrpc request, we have a global $error object
-     * that the error can be passed to.
-     */
-    $error =& $this->getServerErrorBehavior();
-
-    if ( is_a( $error, "JsonRpcError" ) )
-    {
-      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
-      $error->SendAndExit( $this->optionalErrorResponseData() );
-      // never gets here
-      exit;
-    }
-
-    /*
-     * otherwise, it is an html request, print to output
-     */
-    echo $message;
-    exit;
-  }
-
-
-
-
-
-
-  /**
-   * Debugs the compe jsonrpc request and response
-   * as nicely formatted html to the client through the
-   * "qcl.messages.htmlDebug" message
-   */
-  function debugJsonRpcRequestAsHtml()
-  {
-
-    $request   =& $this->request;
-    $response  =& $this->response;
-    $config    =& $this->getConfigModel();
-
-
-    /*
-     * assemble debug array
-     */
-    $debugValue = array(
-      'Parameters'  => $request->getParams(),
-      'ServerData'  => $request->getServerData(),
-      'Result'      => $response->getData(),
-      'Events'      => $response->getEvents(),
-      'Messages'    => $response->getMessages()
-    );
-
-
-    /*
-     * skip if getMessages request should be ignored
-     */
-    if ( $request->getMethod() == "getMessages" and
-         $config->get("qcl.components.jsonrpc.MonitorWindow.skipGetMessagesRequest") )
-    {
-      return;
-    }
-    $divId = md5(microtime());
-
-    /*
-     * service and method
-     */
-    $html = "<div id='$divId' style='font-weight:bold'>" .
-            date('H:i:s') . ": " .
-            $request->getService() . "." .
-            $request->getMethod(). "(";
-
-    /*
-     * parameters
-     */
-    foreach ( $request->getParams() as $i =>  $p )
-    {
-      if ( is_string($p) ) $html .= "'$p'";
-      elseif ( is_null($p) ) $html .= "null";
-      elseif ( is_bool($p) ) $html .= $p ? "true" : "false";
-      else $html .= $p;
-      if ( $i < count($request->getParams()) -1 ) $html .= ",";
-    }
-
-    $html .= ")";
-
-    /*
-     * shorten debug output if no result data, message or event
-     */
-    $data     = $response->getData();
-    $messages = $response->getMessages();
-    $events   = $response->getEvents();
-
-    if ( count($data) == 0 and
-         count($messages) == 0 and
-         count($events) == 0 )
-    {
-      $html .= " [No content] </div>";
-    }
-    else
-    {
-      $html .= "</div>";
-      $id    = md5(microtime());
-      $html .= $this->_htmlizeValue($debugValue, $id);
-      $html .= "<script>compactMenu('$id',true,'');</script>";
-    }
-
-    /*
-     * auto-scroll
-     */
-    if ( $config->get("qcl.components.jsonrpc.MonitorWindow.autoScroll") )
-    {
-      $html .= "<script>document.getElementById('$divId').scrollIntoView();</script>";
-    }
-
-    /*
-     * dispatch message
-     */
-    $this->dispatchMessage("qcl.messages.htmlDebug",$html);
-  }
-
-  /**
-   * Outputs a data structure as HTML for debug
-   * @access private
-   * @return string
-   */
-  function _htmlizeValue ( $value, $id='' )
-  {
-    $type = gettype($value);
-    $html = "";
-    switch ( $type )
-    {
-      case "object":
-      case "array":
-        $array = (array) $value;
-        $count = count($array);
-        if ( $count > 0 )
-        {
-         $html .= "<ul class='maketree' id='$id'>";
-          foreach($array as $key => $value )
-          {
-
-            if ( is_array($value) or is_object($value) )
-            {
-              $type  = gettype($value);
-              $count = count( (array) $value );
-
-              if ( $count )
-              {
-                $html .= "<li class='maketree'>$key ($type, $count elements)";
-                $html .= " : " . $this->_htmlizeValue($value);
-              }
-              else
-              {
-                $html .= "<li class='maketree'>$key (empty $type)";
-              }
-              $html .= "</li>";
-            }
-            else
-            {
-              $html .= "<li class='maketree'>$key  : ";
-              $html .= $this->_htmlizeValue($value);
-              $html .= "</li>";
-            }
-          }
-          $html .= "</ul>";
-        }
-        else
-        {
-          $html .= "<li class='maketree'>$key ($type) : [empty]</li>";
-        }
-        break;
-
-      case "boolean":
-        $html = "(boolean) " . ( $value ? "true" : "false" );
-        break;
-
-      default:
-        $html = $value;
-        break;
-    }
-    return $html;
-  }
-
-  /**
-   * Overridden info method -> forwards info message to client
-   * @param string $msg
-   */
-  function info($msg)
-  {
-    parent::info($msg);
-    //$html = "<div style='color:green'>$msg</div>";
-    //$this->dispatchMessage("qcl.messages.htmlDebug",$html);
-  }
-
-
-  /**
-   * Overridden info method -> forwards info message to client
-   * @param string $msg
-   */
-  function warn($msg)
-  {
-    parent::warn($msg);
-    $html = "<div style='color:red'>WARN: $msg</div>";
-    $this->dispatchMessage("qcl.messages.htmlDebug",$html);
-  }
 
   /**
    * Checks whether a method name is a service method

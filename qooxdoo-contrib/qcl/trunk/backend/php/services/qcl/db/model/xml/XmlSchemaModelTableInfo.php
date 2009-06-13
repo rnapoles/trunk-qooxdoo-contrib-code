@@ -4,26 +4,27 @@
  */
 require_once "qcl/persistence/db/Object.php";
 
-class qcl_db_XmlSchemaModelTableInfo extends qcl_persistence_db_Object  
+class qcl_db_model_xml_XmlSchemaModelTableInfo
+  extends qcl_persistence_db_Object
 {
   /*
    * data
    * @var array
    */
   var $data;
-  
+
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_jsonrpc_controller $controller
-   */  
+   * @param qcl_mvc_Controller $controller
+   */
   function __construct( $controller )
   {
     /*
      * call parent contructor
      */
     parent::__construct( &$controller, __CLASS__ );
-  }  
-  
+  }
+
   /**
    * Register initialization timestamp for table and datasource
    *
@@ -40,14 +41,14 @@ class qcl_db_XmlSchemaModelTableInfo extends qcl_persistence_db_Object
     $this->save();
     if ( $datasourceModel )
     {
-      $this->info("Registered table '$table' for class '$class' and datasource '$datasource' as initialized (timestamp $timestamp).");  
+      $this->info("Registered table '$table' for class '$class' and datasource '$datasource' as initialized (timestamp $timestamp).");
     }
     else
     {
        $this->info("Registered table '$table' class '$class' as initialized (timestamp $timestamp).");
     }
   }
-  
+
   /**
    * Checks if initialization of table and datasource
    *
@@ -59,11 +60,11 @@ class qcl_db_XmlSchemaModelTableInfo extends qcl_persistence_db_Object
    */
   function isInitialized( $datasourceModel, $table, $class, $timestamp )
   {
-   
+
     $datasource = $this->_getDatasourceName( $datasourceModel );
     return $this->data[$datasource][$class][$table] == $timestamp;
   }
-  
+
   /**
    * Returns the string name of the datasource model object
    * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
@@ -71,7 +72,7 @@ class qcl_db_XmlSchemaModelTableInfo extends qcl_persistence_db_Object
    */
   function _getDatasourceName( $datasourceModel )
   {
-    if ( is_null( $datasourceModel )  ) 
+    if ( is_null( $datasourceModel )  )
     {
       return "__NO_DATASOURCE";
     }
@@ -84,5 +85,5 @@ class qcl_db_XmlSchemaModelTableInfo extends qcl_persistence_db_Object
       $this->raiseError("Invalid parameter: $datasourceModel");
     }
   }
-  
+
 }

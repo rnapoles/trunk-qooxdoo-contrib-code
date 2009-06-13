@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/jsonrpc/object.php";
+require_once "qcl/core/object.php";
 
 /**
  * Simple controller-model architecture for jsonrpc
@@ -10,16 +10,16 @@ require_once "qcl/jsonrpc/object.php";
  * @todo maybe merge with PropertyModel?
  */
 
-class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
+class qcl_mvc_AbstractModel extends qcl_core_object
 {
 
   /**
-   * The controller object. Every model MUST have a controller object from
-   * which it receives service and request information
+   * The controller object if a custom controller has been
+   * set. Usually, models use the currently active controller.
    *
-   * @var qcl_jsonrpc_controller or subclass
+   * @var qcl_mvc_Controller or subclass
    */
-  var $_controller = null;    
+  var $_controller = null;
 
 	/**
 	 * The current model record data
@@ -27,7 +27,7 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
 	 * @var array
 	 */
 	var $currentRecord = null;
-	
+
 	/**
 	 * The default record data that will be used when creating a new
 	 * model record. You can preset static data here.
@@ -36,25 +36,28 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
 
   /**
    * Constructor
-   * @param $controller
+   * @param $controller[optional] Specify a custom controller here if neccessary
    * @return unknown_type
    */
-  function __construct( $controller )
+  function __construct( $controller=null )
   {
     parent::__construct();
-    $this->setController( &$controller );
+    if ( $controller )
+    {
+      $this->setController( &$controller );
+    }
   }
-  
+
  	/**
  	 * sets controller of this model to be able to link to other models
  	 * connected to the controller
- 	 * @param qcl_jsonrpc_controller $controller Controller object. You can 
+ 	 * @param qcl_mvc_Controller $controller Controller object. You can
  	 * also provide a qcl_mvc_AbstractModel object
  	 * @todo rewrite this
  	 */
  	function setController ( $controller )
  	{
-		if ( is_a( $controller,"qcl_jsonrpc_controller" ) )
+		if ( is_a( $controller,"qcl_mvc_Controller" ) )
 		{
 			$this->_controller =& $controller;
 		}
@@ -65,18 +68,18 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
     else
     {
 			$this->raiseError (
-        "No valid controller object provided for " . $this->className() . ". Received a " . 
-          ( is_object($controller) ? 
-            ( get_class($controller) . " object." ) : 
+        "No valid controller object provided for " . $this->className() . ". Received a " .
+          ( is_object($controller) ?
+            ( get_class($controller) . " object." ) :
             ( gettype( $controller ) . "." ) )
       );
     }
  	}
- 	
+
  	/**
  	 * Returns the controller object
- 	 * @return qcl_jsonrpc_controller
- 	 * 
+ 	 * @return qcl_mvc_Controller
+ 	 *
  	 */
   function &getController()
   {
@@ -88,7 +91,7 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
     {
       $controller =& qcl_application_Application::getController();
     }
-    if ( ! is_a( $controller,"qcl_jsonrpc_controller" ) )
+    if ( ! is_a( $controller,"qcl_mvc_Controller" ) )
     {
       $this->raiseError("No controller available." );
     }
@@ -97,14 +100,14 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
 
   /**
    * Returns the controller object
-   * @return qcl_jsonrpc_controller
-   */  
+   * @return qcl_mvc_Controller
+   */
   function &controller()
   {
     return $this->getController();
   }
-  
-  
+
+
   /**
    * Returns the server object
    */
@@ -112,7 +115,7 @@ class qcl_mvc_AbstractModel extends qcl_jsonrpc_object
   {
     return qcl_server_Server::getServerObject();
   }
-   
-  
-}	
+
+
+}
 ?>

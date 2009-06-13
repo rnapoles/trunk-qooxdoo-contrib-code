@@ -1,5 +1,5 @@
 <?php
-require_once "qcl/access/Common.php";
+require_once "qcl/access/model/common.php";
 
 /**
  * class providing data on permissions
@@ -9,16 +9,16 @@ require_once "qcl/access/Common.php";
  * in your application service class folder
  */
 
-class qcl_access_Permission extends qcl_access_Common
+class qcl_access_model_Permission extends qcl_access_model_Common
 {
 
-   var $schemaXmlPath  = "qcl/access/permission.model.xml";
-   var $importDataPath = "qcl/access/permission.data.xml";
+   var $schemaXmlPath  = "qcl/access/model/permission.model.xml";
+   var $importDataPath = "qcl/access/model/permission.data.xml";
 
   /**
    * Returns singleton instance.
    * @static
-   * @return qcl_access_Permission
+   * @return qcl_access_model_Permission
    */
   function &getInstance( $class=__CLASS__ )
   {
@@ -35,7 +35,7 @@ class qcl_access_Permission extends qcl_access_Common
  	{
  	 	if ( ! $roleId )
  		{
-      $roleModel  =& qcl_access_Role::getInstance();
+      $roleModel  =& qcl_access_model_Role::getInstance();
    	  $roleId	    =  $roleModel->createIfNotExists("qcl.roles.Unassigned");
  		}
  		return parent::create( $namedId, $roleId );

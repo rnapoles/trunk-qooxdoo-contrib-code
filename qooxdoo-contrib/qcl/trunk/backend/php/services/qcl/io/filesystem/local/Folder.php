@@ -22,7 +22,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
   
   /**
    * Constructor
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
   function __construct ( $controller, $resourcePath )

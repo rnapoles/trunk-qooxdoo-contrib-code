@@ -10,22 +10,22 @@ if ( $_POST )
   require_once "qcl/server/Server.php";
   require_once "qcl/http/JsonRpcRequest.php";
   require_once "qcl/log/FireCake.php";
-  
+
   FireCake::enable();
-  
-  class Debug_Controller  
+
+  class Debug_Controller
   {
-    
+
     function sendRequest()
     {
-      
+
       $serverUrl = qcl_server_Server::getUrl();
-      
+
       /*
        * request object
        */
       $request = new qcl_http_JsonRpcRequest( $serverUrl );
-            
+
 
       /*
        * timeout
@@ -37,12 +37,12 @@ if ( $_POST )
         exit;
       }
       $request->setTimeout($timeout);
-      
+
       /*
        * forward headers from client
        */
       $request->addHeader("User-Agent: " . $_SERVER["HTTP_USER_AGENT"] );
-      
+
       /*
        * request parameters
        */
@@ -51,23 +51,23 @@ if ( $_POST )
       {
         echo "<p style='color:red'>Missing service name.</p>";
         exit;
-      }      
-      
+      }
+
       $json   = new JsonWrapper( &$this );
-      $params = $json->decode( "[" . stripslashes( $_POST['data'] ) . "]" ); 
+      $params = $json->decode( "[" . stripslashes( $_POST['data'] ) . "]" );
       if ( ! is_array($params) )
       {
         echo "<p style='color:red'>Invalid JSON data.</p>";
         exit;
       }
-      
+
       /*
        * request parameters
        */
       $methodPos = strrpos($service,".");
       $name      = substr( $service,0, $methodPos );
       $method    = substr( $service, $methodPos+1 );
-      
+
       /*
        * session id
        */
@@ -76,24 +76,24 @@ if ( $_POST )
       {
         $sessionId = session_id();
       }
-      
+
       $serverData = array(
         "sessionId" => $sessionId
       );
-      
+
       /*
        * send request and return result data
        */
       $request->callService( $name, $method, $params, $serverData );
       $response = $request->getResponseContent();
-      
+
       /*
        * if response contains session id, use this
        */
       $data = $json->decode($response);
-      
+
       //firecake($data);
-      
+
       if( is_object($data) )
       {
         $data = object2array($data);
@@ -101,9 +101,14 @@ if ( $_POST )
         /*
          * set session id in form
          */
-        if ( isset( $data['result']['sessionId'] ) )
+        $sessionId = isset( $data['result']['sessionId'] ) ?
+          $data['result']['sessionId'] :
+            isset( $data['result']['result']['sessionId'] ) ?
+              $data['result']['result']['sessionId'] : null ;
+
+        if ( $sessionId  )
         {
-          $sessionId = $data['result']['sessionId'];
+
          //$this->debug("Setting Session Id to $sessionId ... ");
           $response .= "
             <script>
@@ -126,12 +131,12 @@ if ( $_POST )
         }
       }
       $headers = $request->getHeaders();
-      
+
       //firecake($headers);
       return array($response,$headers);
     }
   }
-  
+
   /*
    * run debug controller
    */
@@ -155,10 +160,10 @@ if ( $_POST )
     {
       document.forms[0].sessionid.value = sessionId;
     }
-    
+
     function resubmit( msg )
     {
-      if ( document.forms[0].autoresubmit.checked ) 
+      if ( document.forms[0].autoresubmit.checked )
       {
         window.setTimeout(function(){
           document.forms[0].submit();
@@ -170,9 +175,9 @@ if ( $_POST )
 <body>
 
   <h1>qooxdoo JsonRpc Backend Debug Console</h1>
-  <form  target="responseIframe" 
+  <form  target="responseIframe"
       method="post">
-    
+
   <table width="100%">
     <tbody>
       <tr>
@@ -185,12 +190,12 @@ if ( $_POST )
         </td>
         <td>
           <input  type="text" name="timeout" value="3" />
-        </td>       
-      </tr>    
+        </td>
+      </tr>
       <tr>
         <td><b>JSON request parameters (in JSON format), separated by comma. <br />Remember to properly escape strings.</b></td>
         <td><b>Authentication</b></td>
-      </tr>  
+      </tr>
       <tr>
         <td >
         <textarea style="width:100%;height:100px" name="data" ></textarea>
@@ -227,16 +232,16 @@ if ( $_POST )
               </td>
             </tr>
           </table>
-        </td>  
+        </td>
       </tr>
     </tbody>
   </table>
-  
+
   <input type="submit" value="Submit"/>
-  
+
   </form>
-  
-  <iframe name="responseIframe" height="200" width="100%" scrolling="yes"/> 
+
+  <iframe name="responseIframe" height="200" width="100%" scrolling="yes"/>
 
 </body>
 </html>

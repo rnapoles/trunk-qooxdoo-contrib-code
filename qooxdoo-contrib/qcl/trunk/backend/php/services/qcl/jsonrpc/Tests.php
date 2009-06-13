@@ -38,7 +38,7 @@ class class_qcl_jsonrpc_Tests extends qcl_datasource_controller
   
   function method_testEventSystem()
   {
-    $obj1 = new qcl_jsonrpc_object;
+    $obj1 = new qcl_core_object;
     
     $obj1->addEventListener("foo",$this->objectId(),"onFoo" );
     $obj1->addEventListener("foo",$this->objectId(),"onFoo" );
@@ -56,7 +56,7 @@ class class_qcl_jsonrpc_Tests extends qcl_datasource_controller
   
   function method_testMessageSystem()
   {
-    $obj1 = new qcl_jsonrpc_object;
+    $obj1 = new qcl_core_object;
     
     $this->addMessageSubscriber("bar","onBar" );
     $this->addMessageSubscriber("bar","onBar" );

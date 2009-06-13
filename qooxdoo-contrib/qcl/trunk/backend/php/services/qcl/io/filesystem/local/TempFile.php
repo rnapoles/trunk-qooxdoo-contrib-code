@@ -13,7 +13,7 @@ class qcl_io_filesystem_local_TempFile extends qcl_io_filesystem_local_File
   /**
    * Constructor. Will create the file if it doesn't exist and will
    * throw an error if that is not possible.
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    */
   function __construct ( $controller )
   {

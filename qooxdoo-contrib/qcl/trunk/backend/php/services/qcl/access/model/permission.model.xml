@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<schema include="qcl/db/XmlSchemaModel.xml">
+<schema include="qcl/db/model/xml/XmlSchemaModel.xml">
   
   <model 
     table="permissions"
     type="qcl.types.Permission"
-    name="qcl.access.Permission"
-    extends="qcl.db.XmlSchemaModel">
+    name="qcl.access.model.Permission"
+    extends="qcl.db.model.xml.XmlSchemaModel">
     
     <definition>
     
@@ -29,7 +29,7 @@
       <link 
         name="role"
         jointable="link_roles_permissions"
-        model="qcl.access.Role"/>
+        model="qcl.access.model.Role"/>
     </links>
   </model>
   

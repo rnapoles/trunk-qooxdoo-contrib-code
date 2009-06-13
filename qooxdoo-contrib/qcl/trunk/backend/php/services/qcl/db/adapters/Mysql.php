@@ -3,24 +3,27 @@
 /*
  * dependencies
  */
-require_once "qcl/db/type/Abstract.php";
-require_once "DB.php"; // load pear DB library
+require_once "qcl/db/adapters/Abstract.php";
+require_once "qcl/db/IAdapter.php";
+require_once "DB.php"; // PEAR
 
 /**
- * Base class for rpc objects which do database queries
- * in a mysql database
+ * Adapter for mysql server
  * relying on PEAR::DB for database access
  * @todo remove PEAR:DB dependency, it is not really needed.
  */
-class qcl_db_type_Mysql extends qcl_db_type_Abstract
+class qcl_db_adapters_Mysql
+  extends qcl_db_adapters_Abstract
+  implements qcl_db_IAdapter
 {
+
 	/**
 	 * Connects to database
 	 * @param string|array $dsn DSN connection parameter
 	 * @param bool $abortQuietly if true, do not throw an error if no connection can be made
 	 * @return mixed DB object on success, false on error
 	 */
-	function &connect($dsn=null,$abortQuietly=false)
+	function &connect( $dsn=null )
 	{
 		/*
 		 * get or set dsn information
@@ -33,7 +36,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		{
 		  $this->setDsn($dsn);
 		}
-		
+
 		/*
 		 * connecting
 		 */
@@ -44,43 +47,38 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     }
 		else
     {
-      $this->raiseError("Invalid DSN '$dsn'");
+      $this->setError("Invalid parameter");
+      return false;
     }
-    
+
     /*
      * error
      */
     if ( PEAR::isError($db) )
 		{
 			$this->error = $db->getMessage() . ": " . $db->getUserInfo();
-			if ( $abortQuietly )
-			{
-			  return false;
-			}
-			else
-			{
-			 $this->raiseError( $this->error );  
-			}
+  		$this->setError( $this->error );
+  		return false;
 		}
-		
+
 		/*
 		 * fetch mode
 		 */
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 
 		/*
-		 * set encoding 
+		 * set encoding
 		 */
 		if ( $controller =& $this->getController() )
 		{
 			$encoding = $controller->getIniValue("database.encoding");
 		}
-		
+
 		if ( ! $encoding )
 		{
 			$encoding = "utf8";
 		}
-		
+
 		$db->query("SET NAMES $encoding");
 		$db->query("SET CHARACTER_SET $encoding");
 
@@ -89,7 +87,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		 */
 		$database = $this->getDatabase();
 		$db->query("USE $database;");
-		
+
 		/*
 		 * save database handler and return it
 		 */
@@ -104,18 +102,18 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	 * @param bool $abortOnError if true (default), raise a JSONRPC error and abort, else return false
 	 * @return PEAR_DB resultset
 	 */
-	function &query ( $sql, $abortOnError=true )
+	function query ( $sql, $abortOnError=true )
 	{
 		/*
 		 * ???
 		 */
 	  global $error;
-		
+
 		/*
 		 * log query
 		 */
 		$this->log("Executing sql query: $sql","db");
-		
+
 		/*
 		 * Execute sql query
 		 */
@@ -161,10 +159,10 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     }
 
     $this->log($sql,"db");
-		
+
     $res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
-		
-		if ( PEAR::isError ( $res ) ) 
+
+		if ( PEAR::isError ( $res ) )
 		{
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
 		}
@@ -190,13 +188,13 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	{
 		$rows = $this->getAllRecords( $sql, false );
 		$result= array();
-		foreach($rows as $row) 
+		foreach($rows as $row)
 		{
 		  $result[] = $row[0];
 		}
 		return $result;
 	}
-	
+
 	/**
 	 * Checks whether a certain where statement returns any
 	 * rows
@@ -204,12 +202,12 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	 * @param string $where Where statement
 	 * @return bool
 	 */
-	function exists($table, $where) 
+	function exists($table, $where)
 	{
 	   $count = $this->getValue("SELECT 1 FROM `$table` WHERE $where LIMIT 1");
 	   return $count > 0;
 	}
-	
+
 
 	/**
 	 * Returns full resultset
@@ -241,8 +239,8 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
     }
     return $res;
-  }	
-	
+  }
+
 	/**
 	 * inserts a record into a table and returns last_insert_id()
 	 * @param string $table table name
@@ -254,7 +252,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	{
 		/*
 		 * inserting several rows at once
-		 */ 
+		 */
     if ( is_array( $data[0] ) )
     {
       $ids = array();
@@ -292,7 +290,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 			{
 				$values[] = $value;
 			}
-			elseif ( is_null($value) ) 
+			elseif ( is_null($value) )
 			{
 			  $values[] = "NULL";
 			}
@@ -301,7 +299,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 				$values[] = "'" . $this->escape( $value ) . "'";
 			}
 		}
-		
+
 		/*
 		 * check result
 		 */
@@ -309,7 +307,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     {
       $this->raiseError("Nothing to insert.");
     }
-    
+
 		/*
 		 * create sql strings
 		 */
@@ -325,20 +323,20 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 				`$table` (`$columns`)
 			VALUES ($values)
 		";
-		
+
 		//$this->debug( $sql );
-		
+
 		/*
 		 * execute query
 		 */
 		$this->execute( $sql );
-		
+
 		/*
 		 * return last insert id
 		 */
 		$id = $this->getLastInsertId();
-    
-		return $id; 
+
+		return $id;
 	}
 
 	/**
@@ -375,13 +373,13 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 			SET $pairs
 			WHERE `$idColumn` = '$id'
 		");
-		
-		//$this->debug($sql); 
-		
+
+		//$this->debug($sql);
+
 		return $this->query($sql);
 	}
 
-	
+
   /**
    * Updates records in a table identified by a where condition
    * @param string $table table name
@@ -414,12 +412,12 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       SET $pairs
       WHERE $where
     ");
-    
-    //$this->Info($sql); 
-    
+
+    //$this->Info($sql);
+
     return $this->query($sql);
   }
-  
+
 	/**
 	 * deletes a record in a table identified by id
 	 * @param string $table table name
@@ -458,8 +456,8 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       FROM `$table`
       WHERE $where
     ");
-  }	
-	
+  }
+
 	/**
 	 * escapes strings for use in sql queries
 	 */
@@ -528,7 +526,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     {
       $this->raiseError("Model has no fulltext index '$indexName'");
     }
-    
+
     /*
      * construct sql query
      */
@@ -536,13 +534,13 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     $sql = "MATCH ($fullTextCols) AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
 
     return $sql;
-  }	
-	
-	
+  }
+
+
   //-------------------------------------------------------------
   // database introspection
   //-------------------------------------------------------------
-	
+
   /**
    * gets table structure as sql create statement
    * @param string $table table name
@@ -582,8 +580,8 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     }
     return $columns;
   }
-  
-  
+
+
   /**
    * retrieves information on the columns contained in a given table
    * in the currently selected database
@@ -682,20 +680,20 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   }
 
   /**
-   * Creates a table wit an numeric, unique, self-incrementing 'id' column, 
+   * Creates a table wit an numeric, unique, self-incrementing 'id' column,
    * which is also the primary key, with utf-8 as default character set
    */
   function createTable($table)
   {
     $this->execute("
-     CREATE TABLE IF NOT EXISTS `$table` ( 
+     CREATE TABLE IF NOT EXISTS `$table` (
       `id` INT(11) NOT NULL AUTO_INCREMENT,
-       PRIMARY KEY (id) 
+       PRIMARY KEY (id)
       ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     ");
   }
-  
-  
+
+
   /**
    * Deletes a table from the database
    * @param string|array $table Drop one or several tables
@@ -711,13 +709,13 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       return;
     }
     $this->execute("DROP TABLE `$table`");
-  }  
-    
+  }
+
   /**
    * checks if a column exists in the database
    * @param string $table
    * @param string $column
-   * @return boolean  
+   * @return boolean
    */
   function columnExists($table, $column)
   {
@@ -735,7 +733,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   }
 
   /**
-   * gets the definition of a column as in 
+   * gets the definition of a column as in
    * a column defintion in a CREATE TABLE statement
    * @param string $table
    * @param string $column
@@ -743,21 +741,21 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
    */
   function getColumnDefinition($table,$column)
   {
-    $database = $this->getDatabase(); 
+    $database = $this->getDatabase();
     $c = $this->getRow("
       SELECT
         COLUMN_DEFAULT as `default`,
         IS_NULLABLE    as `nullable`,
         COLUMN_TYPE    as `type`,
         EXTRA          as `extra`
-      FROM 
+      FROM
         INFORMATION_SCHEMA.COLUMNS
       WHERE
         TABLE_SCHEMA='$database' AND
         TABLE_NAME='$table' AND
         COLUMN_NAME='$column';
-    "); 
-    
+    ");
+
     /*
      * @todo Ternary stuff below needs a transparent rework!
      */
@@ -765,21 +763,21 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     {
       $definition = trim(str_replace("  "," ",implode(" ", array(
         $c['type'],
-        ( $c['nullable']=="YES" ? "NULL":"NOT NULL"), 
+        ( $c['nullable']=="YES" ? "NULL":"NOT NULL"),
         ( is_null($c['default']) ? "" :
-          "DEFAULT " . ( 
-            in_array($c['default'], array("CURRENT_TIMESTAMP") ) ? 
-              $c['default'] : "'" . addslashes($c['default']) . "'" 
+          "DEFAULT " . (
+            in_array($c['default'], array("CURRENT_TIMESTAMP") ) ?
+              $c['default'] : "'" . addslashes($c['default']) . "'"
            ) ),
         $c['extra']
-      ))));         
+      ))));
       return trim($definition);
     }
     return null;
   }
-  
+
   /**
-   * adds a column, issues a warning if column exists 
+   * adds a column, issues a warning if column exists
    * @param string $table
    * @param string $column
    * @param string $definition
@@ -791,59 +789,59 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     {
       $this->execute ("
         ALTER TABLE `$table` ADD COLUMN `$column` $definition $after;
-      ");    
+      ");
       $this->log("Added $table.$column with definition '$definition'.","tableMaintenance");
     }
     else
     {
-      $this->warn("Column $table.$column exists, not added.");   
+      $this->warn("Column $table.$column exists, not added.");
     }
-  }  
-  
+  }
+
   /**
-   * Modify a column 
+   * Modify a column
    * @param string $table
    * @param string $column
    * @param string $definition
    * @param string $after [optional] "FIRST|AFTER xxx|LAST"
-   */  
+   */
   function modifyColumn($table,$column,$definition,$after="")
   {
     $this->execute ("
       ALTER TABLE `$table` MODIFY COLUMN `$column` $definition $after;
     ");
     $oldDef = $this->getColumnDefinition($table,$column);
-    $this->log("Modified $table.$column from '$oldDef' to '$definition'.","tableMaintenance");    
-  }    
+    $this->log("Modified $table.$column from '$oldDef' to '$definition'.","tableMaintenance");
+  }
 
   /**
-   * rename a column 
+   * rename a column
    * @param string $table
    * @param string $oldColumn old column name
    * @param string $newColumn new column name
    * @param string $definition (required)
    * @param string $after [optional] "FIRST|AFTER xxx|LAST"
-   */    
+   */
   function renameColumn($table,$oldColumn,$newColumn,$definition,$after)
   {
    $this->execute ("
       ALTER TABLE `$table` CHANGE COLUMN `$oldColumn` `$newColumn` $definition $after
     ");
-    $this->log("Renamed $table.$oldColumn to $table.$newColumn.","tableMaintenance"); 
+    $this->log("Renamed $table.$oldColumn to $table.$newColumn.","tableMaintenance");
   }
-  
+
   /**
    * gets primary key from table
    * @param string $table table name
-   * @return array array of columns 
+   * @return array array of columns
    */
   function getPrimaryKey($table)
   {
-    $database = $this->getDatabase(); 
+    $database = $this->getDatabase();
     return $this->values("
       SELECT
         COLUMN_NAME
-      FROM 
+      FROM
         INFORMATION_SCHEMA.KEY_COLUMN_USAGE
       WHERE
         TABLE_SCHEMA='$database' AND
@@ -851,7 +849,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
         CONSTRAINT_NAME='PRIMARY'
     ");
   }
-  
+
   /**
    * set the primary key for the table
    * @param string $table table name
@@ -861,12 +859,12 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   {
     $columns = (array) $columns;
     $this->execute("
-      ALTER TABLE `$table` 
+      ALTER TABLE `$table`
       ADD PRIMARY KEY  (`" . implode("`,`", $columns) . "`);
     ");
     $this->log("Added primary key to table '$table'.","tableMaintenance" );
   }
-  
+
   /**
    * drops primary key of a table
    * @param string $table
@@ -875,10 +873,10 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   {
     $this->execute("
       ALTER TABLE `$table` DROP PRIMARY KEY;
-    ");   
-    $this->log("Removed primary key from table '$table'.","tableMaintenance" ); 
+    ");
+    $this->log("Removed primary key from table '$table'.","tableMaintenance" );
   }
-  
+
   /**
    * removes an index
    * @param string $table table name
@@ -887,7 +885,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
    */
   function dropIndex($table,$index)
   {
-    if ( count( $this->getIndexColumns($table, $index ) ) ) 
+    if ( count( $this->getIndexColumns($table, $index ) ) )
     {
       $this->execute ("
         ALTER TABLE `$table` DROP INDEX `$index`
@@ -895,11 +893,11 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
        $this->log("Removed index '$index' from table '$table'.","tableMaintenance" );
     }
   }
-  
+
   /**
    * Return the columns in index
    * @param string $table
-   * @param string $index 
+   * @param string $index
    * @return array Array of column names that belong to the index
    */
   function getIndexColumns($table, $index)
@@ -915,7 +913,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     }
     return $result;
   }
-  
+
   /**
    * Returns an array of index names defined in the table
    * @param $table
@@ -931,9 +929,9 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     {
       $result[] = $record['Key_name'];
     }
-    return $result;    
+    return $result;
   }
-  
+
   /**
    * Checks whether an index exists
    * @param $table
@@ -944,7 +942,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   {
     return count( $this->getIndexColumns( $table, $index ) ) > 0;
   }
-  
+
   /**
    * Adds a an index
    * @param string $type FULLTEXT|UNIQUE
@@ -954,7 +952,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
    */
   function addIndex( $type, $table, $index, $columns )
   {
-    if ( ! count( $this->getIndexColumns($table, $index ) ) ) 
+    if ( ! count( $this->getIndexColumns($table, $index ) ) )
     {
       $columns = (array) $columns;
       $this->execute ("
@@ -964,11 +962,11 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     }
     else
     {
-      $this->warn("Index $index already exists in table $table."); 
+      $this->warn("Index $index already exists in table $table.");
     }
   }
-  
-  
+
+
   /**
    * updates table structure to conform with sql create table statement passed
    * @deprecated Use new xml-based table creation / update
@@ -1059,16 +1057,16 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $after = "AFTER $columnName";
     }
 
-  }  
-  
+  }
+
   /**
-   * creates functions that help maintain a tree structure in the 
+   * creates functions that help maintain a tree structure in the
    * database:
-   * 
+   *
    * table_getHierarchyPath( int folderId ):
    * returns a slash-separated hierarchy path
    * table_getHierarchyIds( int folderId )
-   * 
+   *
    * Having these functions will significantly speed up tree
    * path lookup
    * @param string $table Table name
@@ -1081,7 +1079,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     /*
      * @todo check permissions
      */
-    
+
     /*
      * drop functions in case they are already defined
      */
@@ -1090,34 +1088,34 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     ");
     $this->execute("
       DROP FUNCTION IF EXISTS `{$this->table}_getHierarchyIds`
-    "); 
+    ");
 
     /*
      * create functions
      */
     $this->execute("
       CREATE FUNCTION `{$table}_getHierarchyPath`(folderId int)
-      RETURNS varchar(255) READS SQL DATA 
+      RETURNS varchar(255) READS SQL DATA
       begin
        declare path varchar(255);
        declare part varchar(50);
        declare parentId int(11);
        set path = '';
        while folderId > 0 do
-         select 
+         select
            `{$col_label}` into part
            from `{$table}`
            where `{$col_id}` = folderId;
          select
            `{$col_parentId}` into parentId
            from `{$table}`
-           where `{$col_id}` = folderId; 
-         if path != '' then  
+           where `{$col_id}` = folderId;
+         if path != '' then
            set path = concat(
              CAST('/' AS CHAR CHARACTER SET utf8 ),
              CAST(path AS CHAR CHARACTER SET utf8 )
            );
-         end if;      
+         end if;
          set path = concat(
            CAST(part AS CHAR CHARACTER SET utf8 ),
            CAST(path AS CHAR CHARACTER SET utf8 )
@@ -1127,9 +1125,9 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
        return path;
       end;
     ");
-    
+
     $this->execute("
-      CREATE FUNCTION `{$table}_getHierarchyIds`(folderId int) 
+      CREATE FUNCTION `{$table}_getHierarchyIds`(folderId int)
       RETURNS varchar(255) READS SQL DATA
       begin
        declare path varchar(255);
@@ -1140,7 +1138,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
            `{$col_parentId}` into parentId
          from `{$table}`
          where `{$col_parentId}` = folderId;
-         if path != '' then  
+         if path != '' then
            set path = concat(path,',');
          end if;
          set path = concat(path,folderId);
@@ -1150,9 +1148,9 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       end;
     ");
   }
-  
+
   /**
-   * creates a trigger that inserts a timestamp on 
+   * creates a trigger that inserts a timestamp on
    * each newly created record
    * @param string $table Name of table
    * @param string $col_created Name of column that gets the timestamp
@@ -1163,16 +1161,16 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
      * @todo check permissions
      */
     $this->execute("
-      DROP TRIGGER IF EXISTS `{$table}_create_timestamp` 
+      DROP TRIGGER IF EXISTS `{$table}_create_timestamp`
     ");
-    
+
     $this->execute("
-      CREATE TRIGGER `{$table}_create_timestamp` 
+      CREATE TRIGGER `{$table}_create_timestamp`
       BEFORE INSERT ON `$table`
       FOR EACH ROW SET NEW.`$col_created` = NOW();
-    ");      
+    ");
   }
-  
+
   /**
    * creates triggers that will automatically create
    * a md5 hash string over a set of columns
@@ -1187,30 +1185,30 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     ",false);
     $this->execute("
       DROP TRIGGER IF EXISTS `{$table}_update_create_hash`
-    ",false); 
-    
+    ",false);
+
     $col=array();
     for($i=0;$i<count($columns);$i++ )
     {
       $col[] = "NEW.`" . $columns[$i] . "`";
     }
-    
+
     $col_sql = implode(",",$col);
-        
+
     $this->execute("
       CREATE TRIGGER `{$table}_insert_create_hash`
       BEFORE INSERT ON `$table`
       FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
     ",false);
-    
+
     $this->execute("
       CREATE TRIGGER `{$table}_update_create_hash`
       BEFORE UPDATE ON `$table`
       FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
-    ",false); 
-    
+    ",false);
+
     $this->log("Created trigger to update hash over " . implode(",",$columns) . ".","tableMaintenance");
   }
-  
+
 }
 ?>

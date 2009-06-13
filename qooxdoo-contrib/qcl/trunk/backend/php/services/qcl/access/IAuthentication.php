@@ -23,15 +23,15 @@
  */
 interface qcl_access_IAuthentication
 {
- 
+
   /**
-   * Authenticate a user with a password (two parameters), 
-   * or a valid session id (one parameter). 
+   * Authenticate with username and password (two parameters),
+   * or a valid session id (one parameter).
    * If authenticated, return an array of the following structure
-   * 
+   *
    * array(
    *   "permissions" => array( "permission1","permission2" ....),
-   *   "sessionId"   => "a23j2h3i4h2l2..." 
+   *   "sessionId"   => "a23j2h3i4h2l2..."
    * );
    * @param array $params Array of parameters
    * @return array

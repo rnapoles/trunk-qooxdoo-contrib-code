@@ -8,24 +8,33 @@ require_once "qcl/io/filesystem/Resource.php";
 class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
 {
 
-  
-  
+  /**
+   * Setter for resource path. This will also find files that are on the
+   * include_path and on the PATH.
+   * @param string $resourcePath
+   * @return void
+   */
+  function setResourcePath( $resourcePath )
+  {
+    $this->_resourcePath = "file://" . real_file_path( $this->filePath( $resourcePath) );
+  }
+
   /**
    * The supported / allowed protocols
    */
-  var $resourceTypes = array("file");  
-    
-  
+  var $resourceTypes = array("file");
+
+
   /**
-   * Checks whether (given) resource path is a file 
+   * Checks whether (given) resource path is a file
    * @param string[optional] $resourcePath
    * @return bool
    */
   function isFile($resourcePath = null)
   {
-    return is_file( either($resourcePath,$this->filePath() ) );
+    return is_file( $this->filePath($resourcePath) );
   }
-  
+
   /**
    * Checks whether (given) resource path is a directory
    * @param string[optional] $resourcePath
@@ -33,24 +42,23 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
    */
   function isDir($resourcePath=null)
   {
-    return is_dir( either( $resourcePath, $this->filePath() ) );
-  }  
-  
-  
+    return is_dir( $this->filePath($resourcePath) );
+  }
+
   /**
    * Checks if file exists
    */
-  function exists() 
+  function exists()
   {
     return file_exists( $this->filePath() );
-  }  
-  
+  }
+
   /**
-   * Deletes the file/folder 
-   * @return booelean Result 
+   * Deletes the file/folder
+   * @return booelean Result
    * @todo implement seperately for folder
    */
-  function delete() 
+  function delete()
   {
     if ( ! @unlink( $this->filePath() ) )
     {
@@ -58,17 +66,17 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
       return false;
     }
     return true;
-  }  
-  
+  }
+
   /**
    * Renames the file/folder Fails if new name exists.
    * @param string $name New name
    * @return boolean Result
    */
-  function rename($name) 
+  function rename($name)
   {
     $newFileName = dirname( $this->filePath() ) . "/$name";
-    
+
     if ( file_exists($newFileName) )
     {
       $this->setError("Cannot rename '" . $this->resourcePath() . "' to '$name'. File exists.");
@@ -81,8 +89,8 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
     }
     $this->setError("Problem renaming '" . $this->resourcePath() . "' to '$name'.");
     return false;
-  }  
-  
+  }
+
   /**
    * Returns the last modification date
    */
@@ -90,6 +98,6 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
   {
     return filectime($this->filePath());
   }
-  
+
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once "qcl/access/Common.php";
+require_once "qcl/access/model/common.php";
 
 /**
  * class providing data on roles
@@ -9,15 +9,15 @@ require_once "qcl/access/Common.php";
  * in your application service class folder
  */
 
-class qcl_access_Role extends qcl_access_Common
+class qcl_access_model_Role extends qcl_access_model_Common
 {
-   var $schemaXmlPath  = "qcl/access/role.model.xml";
-   var $importDataPath = "qcl/access/role.data.xml";
+   var $schemaXmlPath  = "qcl/access/model/role.model.xml";
+   var $importDataPath = "qcl/access/model/role.data.xml";
 
   /**
    * Returns singleton instance.
    * @static
-   * @return qcl_access_Role
+   * @return qcl_access_model_Role
    */
   function &getInstance( $class=__CLASS__ )
   {
@@ -27,12 +27,12 @@ class qcl_access_Role extends qcl_access_Common
   /**
    * Return the permission model containing only those
    * permissions that are connected to the current role
-   * @return qcl_access_Permission
+   * @return qcl_access_model_Permission
    */
   function &linkedPermissionModel( $properties="*")
   {
-    $permModel  =& qcl_access_Permission::getInstance();
-    $permModel->findByLinkedModel($this,null,$properties);
+    $permModel =& qcl_access_model_Permission::getInstance();
+    $permModel->findByLinkedModel( &$this,null,$properties);
     return $permModel;
   }
 

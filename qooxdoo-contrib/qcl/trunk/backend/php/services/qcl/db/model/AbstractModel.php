@@ -2,50 +2,26 @@
 /*
  * dependencies
  */
-require_once "qcl/db/__init__.php";
 require_once "qcl/mvc/AbstractPropertyModel.php";
+require_once "qcl/db/__init__.php";
+
 
 /**
- * Abstrac class for models that are based on a relational 
- * database. 
+ * Abstrac class for models that are based on a relational
+ * database.
  * @todo define interface
  */
-class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
+class qcl_db_model_AbstractModel
+  extends qcl_mvc_AbstractPropertyModel
 {
 
   /**
-   * Returns controller of this model 
-   * @return qcl_db_controller 
-   */
-  function &getController()
-  {
-    if ( $this->_controller )
-    {
-      $controller =& $this->_controller;
-    }
-    else
-    {
-      $controller =& qcl_application_Application::getController();
-    }
-    if ( ! is_a($controller,"qcl_db_controller" ) )
-    {
-      $this->raiseError("A qcl_db_AbstractModel or subclass must have a qcl_db_controller as controller." );
-    }
-    return $controller;
-  } 
-
-  /**
    * The datasource object instance
-   * @var qcl_db_type_Mysql 
+   * @var qcl_db_type_Mysql
    * @todo should be a private property
    */
   var $db;
 
-  /**
-   * The schema xml path
-   */
-  //var $schemaXmlPath = "qcl/db/XmlSchemaModel.xml"; 
-    
   /**
    * the name of the table in the database that holds the
    * data of this model
@@ -59,21 +35,21 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    * @access private
    */
   var $localKey;
-  
+
   /**
    * The foreign key of this table in other tables that link to this model.
    * This MUST always be the same key, one model cannot have different foreign key names.
    * Access with ::getForeignKey()
-   * 
+   *
    * @access private
-   * @var string 
+   * @var string
    */
   var $foreignKey;
-  
-  
+
+
   /**
-   * Initializes the model. This is called from the constructor. 
-   * @param mixed $datasourceModel Object reference to the datasource object, 
+   * Initializes the model. This is called from the constructor.
+   * @param mixed $datasourceModel Object reference to the datasource object,
    * or null if model is independent of a datasource
    * @return bool Success
    */
@@ -87,15 +63,15 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       $this->setDatasourceModel( &$datasourceModel );
     }
-        
+
     /*
      * connect to datasource, if any
      */
-    $this->connect();     
+    $this->connect();
 
     return true;
   }
-  
+
   /**
    * Returns the database connection object for this model
    * @return qcl_db_type_Abstract
@@ -104,7 +80,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return $this->db;
   }
-  
+
   /**
    * Returns the name of the table
    * @return string
@@ -113,51 +89,35 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return $this->table;
   }
-  
+
   /**
-   * Connects to database. if this model is connected to 
+   * Connects to database. if this model is connected to
    * a datasource model, reuse the datasource's database
-   * handler
-   * @param string|array|null $dsn
-   * @todo don't throw error on failure but let calling
-   * function handle connection errors gracefully.
+   * handler. Otherwise, get connection data from framework
    * @return bool Success
    */
-  function &connect( $dsn=null )
+  function connect()
   {
-    //$this->debug( $this->className() . " connecting to " . $dsn );
-    
-    /*
-     * disconnect if connection exists
-     */
-    if ( is_object( $this->db ) )
-    {
-     $this->db->disconnect();
-     unset( $this->db ); 
-    }
-    
+
     /*
      * try to get db handler from datasource object
      */
     $dsModel =& $this->getDatasourceModel();
-    if ( is_object($dsModel) 
+    if ( is_object($dsModel)
           and $dsModel->isInstanceOf( "qcl_datasource_type_db_Model" ) )
     {
       //$this->debug( get_class($this) . ": Getting db object from datasource object...");
-      if ( ! $dsn or $dsn == $dsModel->getDatasourceDsn() )
-      {
-        $db =& $dsModel->getDatasourceConnection();
-      }
-    }      
+      $db =& $dsModel->getDatasourceConnection();
+    }
 
     /*
      * otherwise, get database object from framework
-     */      
+     */
     else
     {
-      $db =& qcl_db_Manager::createAdapter( $dsn );
+      $db =& qcl_db_Manager::createAdapter();
     }
-    
+
     /*
      * if no database object at this point, fatal error.
      */
@@ -165,15 +125,15 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       $this->raiseError("No database object!");
     }
-    
+
     /*
      * store new connection
      */
-    $this->db =& $db;  
-    
+    $this->db =& $db;
+
     return true;
   }
-  
+
   /**
    * Returns the name of the column that holds the unique (numeric) id of this table.
    * @return string
@@ -182,17 +142,17 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return "id";
   }
-  
+
   /**
-   * Returns the column name from a property name. 
+   * Returns the column name from a property name.
    * @return string
    * @param string $property Property name
    */
   function getColumnName ( $name )
   {
     $this->notImplemented(__CLASS__);
-  }      
-  
+  }
+
   //-------------------------------------------------------------
   // Record Retrieval (find... methods)
   //-------------------------------------------------------------
@@ -201,26 +161,26 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    * gets all database records optionally sorted by field
    * @param string|null     $orderBy  (optional) order by field
    * @return Array Array of db record sets
-   * @deprecated use new findX.. methods 
+   * @deprecated use new findX.. methods
    */
   function findAll($orderBy=null)
-  {  
+  {
     return $this->findWhere(null,$orderBy);
-  }  
-  
+  }
+
   /**
    * Returns all values of a model property that match a where condition
-   * @param string $property Name of property 
+   * @param string $property Name of property
    * @param string|null[optional] $where Where condition to match, if null, get all
-   * @param string|null[optional] $orderBy Property to order by 
+   * @param string|null[optional] $orderBy Property to order by
    * @param bool[optional, default false] If true, get only distinct values
    * @return array Array of values
    */
   function findValues( $property, $where=null, $orderBy=null, $distinct=false )
-  { 
+  {
     $column = $this->getColumnName($property);
     $sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
-    
+
     if ($where)
     {
       $sql .= "WHERE $where ";
@@ -234,12 +194,12 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       }
       else
       {
-        $this->raiseError("OrderBy argument must be a string.");    
+        $this->raiseError("OrderBy argument must be a string.");
       }
     }
-    return $this->db->values($sql);    
-  }    
-  
+    return $this->db->values($sql);
+  }
+
   /**
    * Returns a records by property value
    * @param string $propName Name of property
@@ -248,8 +208,8 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    * @param string|null[optional] $orderBy  Field to order by
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * properties are to be retrieved
-   * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
-   * automatically generate the necessary join query. 
+   * @param string[optional] $link Name of the link in the schema xml. If provided, this will
+   * automatically generate the necessary join query.
    * @return array recordset
    */
   function findBy( $propName, $value, $orderBy=null, $properties=null, $link=null  )
@@ -260,7 +220,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     foreach ( $values as $value )
     {
       $where[]  = "`$colName` = '$value'";
-    } 
+    }
     $where = implode (" OR ", $where );
     return $this->findWhere( $where, $orderBy, $properties, $link );
   }
@@ -273,8 +233,8 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
    * @param string|null[optional] $orderBy  Field to order by
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * properties are to be retrieved
-   * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
-   * automatically generate the necessary join query. 
+   * @param string[optional] $link Name of the link in the schema xml. If provided, this will
+   * automatically generate the necessary join query.
    * @return array recordset
    * @todo this should be automatic by resolving the type from the schema xml
    */
@@ -283,42 +243,41 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     $colName = $this->getColumnName( $propName );
     $value   = $this->db->escape($value);
     return $this->findWhere("`$colName` LIKE '$value'", $orderBy, $properties, $link );
-  }  
-  
+  }
+
   /**
-   * Finds all database records or those that match a where condition. 
+   * Finds all database records or those that match a where condition.
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
-   * 
-   * @param string|array|null  $where 'Where' condition to match. If null, get all. if array, 
+   *
+   * @param string|array|null  $where 'Where' condition to match. If null, get all. if array,
    * match all key -> value combinations
-   * @param string|array|null[optional] $orderBy Order by property/properties. 
-   * If an array is given, the last element of the array will be searched for "ASC" or "DESC" and 
+   * @param string|array|null[optional] $orderBy Order by property/properties.
+   * If an array is given, the last element of the array will be searched for "ASC" or "DESC" and
    * used as sort direction.
-   * @param string|array|null[optional]  $properties  Array of properties to retrieve or null (default) 
-   * if all. When using joined tables, the parameter must be an array containing two arrays, 
-   * the first with the properties of the model table, and the second with the properties of the joined 
-   * table. Alternatively, you can use the syntax "prop1,prop2,prop3" for an unlinked, and 
-   * "prop1,prop2,prop3|prop1,prop2,prop3" for a linked model. It is also possible to use "*" or "*|*" to 
+   * @param string|array|null[optional]  $properties  Array of properties to retrieve or null (default)
+   * if all. When using joined tables, the parameter must be an array containing two arrays,
+   * the first with the properties of the model table, and the second with the properties of the joined
+   * table. Alternatively, you can use the syntax "prop1,prop2,prop3" for an unlinked, and
+   * "prop1,prop2,prop3|prop1,prop2,prop3" for a linked model. It is also possible to use "*" or "*|*" to
    * get all properties from unlinked and linked models, respectively.
-   * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
+   * @param string[optional] $link Name of the link in the schema xml. If provided, this will
    * automatically generate the necessary join query.
    * @param bool $distinct Whether only distinct values should be returned
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $conditions=null, $distict=false )
+  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $conditions=null, $distict=false )
   {
-  
-    
+
     /*
      * columns to retrieve
      */
     $columns = "";
     if ( is_null( $properties ) )
     {
-      $properties = array_keys($this->properties);  
+      $properties = array_keys($this->properties);
     }
-    
+
     /*
      * split at the pipe and comma characters
      */
@@ -335,14 +294,14 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $properties = explode(",",$properties[0]);
       }
     }
-    
+
     elseif ( ! is_array($properties) )
     {
-      $this->raiseError("Invalid property parameter."); 
+      $this->raiseError("Invalid property parameter.");
     }
-    
+
     $cols = array();
-    
+
     /*
      * query involved linked tables
      */
@@ -350,18 +309,18 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       for ( $i=0; $i<2; $i++ )
       {
-        switch( $i ) 
+        switch( $i )
         {
-          case 0: 
-            $alias="t1"; 
-            $model = $this; 
+          case 0:
+            $alias="t1";
+            $model = $this;
             break;
-          case 1: 
-            $alias="t2"; 
-            $model =& $this->getLinkedModelInstance( $link ); 
+          case 1:
+            $alias="t2";
+            $model =& $this->getLinkedModelInstance( $link );
             break;
         }
-      
+
         /*
          * replace "*" with all properties
          */
@@ -369,7 +328,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         {
           $properties[$i] = $model->getProperties();
         }
-        
+
         /*
          * construct column query
          */
@@ -379,13 +338,13 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
           * skip empty parameters
           */
          if ( ! $property ) continue;
-         
+
          /*
           * get column name of given property
           */
          $col = $model->getColumnName($property);
          //$this->info( $model->className() . ": $property -> $col");
-         
+
          /*
           * table and column alias
           */
@@ -398,14 +357,14 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
            }
            else
            {
-            $str .= " AS '$property'";  
+            $str .= " AS '$property'";
            }
          }
-         $cols[] = $str; 
+         $cols[] = $str;
         }
       }
     }
-    
+
     /*
      * query involves only on unlinked table
      */
@@ -417,8 +376,8 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       if ( $properties == "*" )
       {
         $properties = $this->getProperties();
-      }      
-      
+      }
+
       foreach ( (array) $properties as $property )
       {
         $col = $this->getColumnName($property);
@@ -427,15 +386,15 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         {
           $str .= " AS '$property'";
         }
-         $cols[] = $str; 
+         $cols[] = $str;
       }
     }
-    
+
     $columns   = implode(",",  $cols );
     $thisTable = $this->getTableName();
-          
+
     /*
-     * select 
+     * select
      */
     $sql = "\n   SELECT ";
 
@@ -446,17 +405,17 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       $sql .= "DISTINCT ";
     }
-    
+
     /*
      * columns
      */
     $sql .= $columns;
-    
+
     /*
      * from
      */
     $sql .= "\n     FROM `$thisTable` AS t1 ";
-    
+
     /*
      * join
      */
@@ -467,8 +426,8 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
        */
       $linkTable   = $this->getLinkTable( $link );
       $localKey    = $this->getLocalKey();
-      $foreignKey  = $this->getForeignKey(); 
-      
+      $foreignKey  = $this->getForeignKey();
+
       /*
        * joined model
        */
@@ -476,8 +435,8 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       $joinedModel =& $this->getLinkedModelInstance( $link );
       $joinedLKey  =  $joinedModel->getLocalKey();
       $joinedFKey  =  $joinedModel->getForeignKey();
-      
-      
+
+
       if ( $linkTable != $joinedTable )
       {
         /*
@@ -491,31 +450,31 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $sql .= "\n     JOIN `$joinedTable` AS t2 ON ( t1.`$localKey` = t2.`$foreignKey` ) ";
       }
     }
-    
+
     /*
-     * where  
+     * where
      */
     if ( $where )
     {
       $where = $this->toSql($where);
       $sql .= "\n    WHERE $where ";
     }
-    
+
     /*
      * order by
      */
     if ($orderBy)
     {
-      
+
       $orderBy  = (array) $orderBy;
-      
+
       /*
-       * order direction 
+       * order direction
        */
       $lastElem = $orderBy[count($orderBy)-1];
-      $direction = in_array( strtolower($lastElem), array("asc","desc") ) ? 
+      $direction = in_array( strtolower($lastElem), array("asc","desc") ) ?
           array_pop($orderBy) : "";
-      
+
       /*
        * order columns
        */
@@ -526,32 +485,32 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       }
       $orderBy = implode("`,`", (array) $column );
       $sql .= "\nORDER BY `$orderBy` $direction";
-       
+
     }
-    
+
     /*
      * execute query
      */
     //$this->debug($sql);
     $result = $this->db->getAllRecords($sql);
-    
+
     /*
      * store and return result
      */
     $this->currentRecord = count($result) ? $result[0] : null;
-    $this->_lastResult   = $result;    
+    $this->_lastResult   = $result;
     return $result;
   }
 
-  
- 
+
+
   /**
    * Find database records by their primary key
    * @param array|int $ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
-   * @param string[optional] $link Name of the link in the schema xml. 
-   * @see qcl_db_XmlSchemaModel::findeWhere() for details
+   * @param string[optional] $link Name of the link in the schema xml.
+   * @see qcl_db_model_xml_XmlSchemaModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findById( $ids, $orderBy=null, $properties=null, $link=null )
@@ -564,34 +523,34 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     if ( ! empty($rowIds) )
     {
       $result = $this->findWhere(
-        array( 'id' => " IN ($rowIds)"), 
-        $orderBy, $properties, $link 
+        array( 'id' => " IN ($rowIds)"),
+        $orderBy, $properties, $link
       );
       return $result;
-    }  
+    }
     $this->raiseError("No id(s) provided.");
   }
-  
+
   /**
    * Loads a model record identified by id.
-   * Alias of qcl_db_XmlSchemaModel::findById().
-   * 
+   * Alias of qcl_db_model_xml_XmlSchemaModel::findById().
+   *
    * @param int $id
    * @return arrray()
    */
   function load( $id, $requestId=null )
   {
     $this->checkInt( $id ) ;
-    return $this->findById( $id );      
+    return $this->findById( $id );
   }
- 
+
   /**
    * find database records by their named id
    * @param array|string $ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_XmlSchemaModel::findeWhere() for details
+   * @see qcl_db_model_xml_XmlSchemaModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )
@@ -600,7 +559,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       $this->raiseError("Invalid parameter.");
     }
-    
+
     /*
      * assemble values for IN operator
      */
@@ -610,15 +569,15 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
        $inValues[] = "'" . $this->db->escape($id) . "'";
     }
     $inValues = implode(",", $inValues ) ;
-    
+
     /*
      * run query and return result
      */
-    $result = $this->findWhere( 
-      array( 'namedId' => " IN ($inValues)"), 
+    $result = $this->findWhere(
+      array( 'namedId' => " IN ($inValues)"),
       $orderBy, $properties, $link
     );
-    
+
     return $result;
   }
 
@@ -632,11 +591,11 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return $this->db->nextRecord();
   }
-  
+
   //-------------------------------------------------------------
   // Data creation and manipulation
-  //-------------------------------------------------------------     
-  
+  //-------------------------------------------------------------
+
   /**
    * Converts array data to a 'where' compliant sql string
    * @param string|array $where
@@ -651,86 +610,86 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       foreach ( $where as $property => $expr )
       {
         $i++;
-        
 
         /*
          * check if expression has an operator. if not,
          * use "="
          * FIXME this is a hack. rewrite this!!
          */
-        if ( is_null($expr) or ( 
+
+        if ( is_null($expr) or (
             ! in_array( substr( trim($expr),0,1 ), array( "=","!" ) )
              AND substr( trim($expr),0, 2 ) != "IN"
-             AND substr( trim($expr),0, 4 ) != "LIKE" )                      
+             AND substr( trim($expr),0, 4 ) != "LIKE" )
         ) {
           /*
            * expression is null
            */
-          if ( is_null($expr) ) 
+          if ( is_null($expr) )
           {
             $expr = "IS NULL";
           }
-          
+
           /*
            * else, sql depends on property type
            */
           else
-          {          
+          {
             switch( $this->getPropertyType( $property ) )
             {
               case "int":
                 $expr = " = $expr";
                 break;
-  
+
               case "string":
               default:
-                $expr = " = '" . addslashes($expr) . "'"; 
-                break;          
+                $expr = " = '" . addslashes($expr) . "'";
+                break;
             }
           }
-          
-          
+
+
           /*
            * add boolean operator
            */
           if ( $i < count($where) )
           {
-            $expr .= " AND ";   
+            $expr .= " AND ";
           }
-        } 
-                
+        }
+
         /*
          * add to sql
          */
-        $sql .= "`" . $this->getColumnName($property) . "` " . $expr. " ";  
+        $sql .= "`" . $this->getColumnName($property) . "` " . $expr. " ";
       }
-      return $sql; 
+      return $sql;
     }
     else
     {
       return $where;
     }
   }
-  
+
   /**
    * creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
    * @param string  $namedId
-   * @param int     $foreignId 
-   * @return int the id of the inserted or existing row 
+   * @param int     $foreignId
+   * @return int the id of the inserted or existing row
    */
   function createIfNotExists( $namedId, $foreignId=null )
   {
     if ( $this->namedIdExists( $namedId ) )
     {
       return $this->getIdByNamedId( $namedId );
-    } 
+    }
     return $this->create( $namedId, $foreignId );
-  }  
-  
+  }
+
 /**
    * Inserts a record into a table and returns last_insert_id()
    * @param array|stdClass $data associative array with the column names as keys and the column data as values
-   * @return int the id of the inserted row or 0 if the insert was not successful 
+   * @return int the id of the inserted row or 0 if the insert was not successful
    */
   function insert( $data )
   {
@@ -738,59 +697,59 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
      * check arguments
      */
     $data = $this->_getArrayData($data);
-    
+
     /*
      * convert property names to local aliases
      */
-    $data = $this->unschematize($data);   
-    
+    $data = $this->unschematize($data);
+
     /*
      * created timestamp by setting it to null
      * @todo is this compatible with all dbms?
      */
     $col_created = $this->getColumnName("created");
-    if ( $this->hasProperty("created") and ! isset ( $data[$col_created] ) ) 
+    if ( $this->hasProperty("created") and ! isset ( $data[$col_created] ) )
     {
       $data[$col_created] = null;
     }
-    
+
     /*
      * insert into database
      */
     //$this->debug($data);
     $id = $this->db->insert( $this->table, $data );
-    
+
     //$this->debug("Created new record #$id in {$this->table} with data: " . print_r($data,true) );
-     
+
     /*
      * retrive record data (which might contain additional values inserted by the database)
      * if the model has an id column and a new id was returned
      */
-    if ( $id ) 
+    if ( $id )
     {
       $this->findById($id);
     }
-    
+
     /*
-     * return id or 0 if the insert was not successful 
+     * return id or 0 if the insert was not successful
      */
     return $id;
-  }  
-  
+  }
+
   /**
    * updates a record in a table identified by id
    * @param array       $data   associative array with the column names as keys and the column data as values
    * @param int|string  $id   if the id key is not provided in the $data paramenter, provide it here (optional)
    * @param bool        $keepTimestamp If true, do not overwrite the 'modified' timestamp
-   * @return boolean success 
+   * @return boolean success
    */
-  function update ( $data=null, $id=null, $keepTimestamp= false )    
-  {    
+  function update ( $data=null, $id=null, $keepTimestamp= false )
+  {
     /*
      * use cached record data?
      */
     if ( $data === null )
-    { 
+    {
       $data = $this->currentRecord;
     }
     else
@@ -803,7 +762,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $data['id'] = $id;
       }
     }
-      
+
     /*
      * set modified timestamp to null to set it to the current database update time
      * unless requested (i.e. in sync operations)
@@ -811,15 +770,15 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     if ( ! $keepTimestamp and $this->hasProperty("modified") )
     {
       $data['modified'] = null;
-    }      
-   
+    }
+
     /*
      * convert property names to local aliases
      */
     $data = $this->unschematize($data);
-    
-    //$this->debug($data);    
-    
+
+    //$this->debug($data);
+
     return $this->db->update( $this->table, $data, $this->getColumnName("id") );
   }
 
@@ -833,16 +792,16 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return $this->db->updateWhere( $this->table, $data, $this->toSql($where) );
   }
-  
+
   /**
    * Checks wheter a record exists that matches a query
    * @param array|string $where Where query
-   */  
+   */
   function exists( $where )
   {
     return $this->db->exists( $this->table(), $this->toSql($where) );
   }
-  
+
   /**
    * If a row with a matching id/namedId exists, replace it. If not, insert data
    * @param array $data
@@ -859,7 +818,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       $this->load($id);
       $this->update($data);
     }
-    
+
     /*
      * if there is a 'named id' property, update or insert the row
      */
@@ -873,7 +832,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       $this->set( $data );
       $this->save();
     }
-    
+
     /*
      * otherwise, a "replace" operation is not possible
      */
@@ -881,13 +840,13 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       $this->raiseError("Cannot replace a row without id or named id.");
     }
-    
+
     return $this->getId();
   }
-  
+
   /**
-   * Inserts data or updates a record according to the following rules: 
-   * a) If id property is provided, look for the record with this primary key and 
+   * Inserts data or updates a record according to the following rules:
+   * a) If id property is provided, look for the record with this primary key and
    * update all the other values. If the record does not exist, throw an error.
    * b) If no id is provided, check if a record matching the
    * given key-value pairs exist. If yes, update its 'modified' property. If not,
@@ -915,7 +874,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $this->update( $data );
       }
     }
-    
+
     /*
      * if data does not contain an id,
      * look if a matching row exists
@@ -923,7 +882,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     else
     {
       $this->findWhere( $data );
-    
+
       /*
        * if nothing was found, insert data
        */
@@ -932,14 +891,14 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $id = $this->insert( $data );
         if ( $id )
         {
-          $this->load( $id );  
+          $this->load( $id );
         }
         else
         {
           $this->raiseError("Cannot insert data " . print_r($data,true) . "- might violate a table constraint.");
         }
       }
-      
+
       /*
        * else, update timestamp
        */
@@ -948,16 +907,16 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $this->updateTimestamp();
       }
     }
-    
+
     /*
      * return record id
      */
     return $id;
-  }  
-  
-  
-  
-  
+  }
+
+
+
+
   /**
    * Deletes the currently loaded record or one or more records in a table identified by id
    * @param mixed[optional] $ids (array of) record id(s)
@@ -972,13 +931,13 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
         $this->raiseError("No record loaded that could be deleted!");
       }
     }
-    
+
     /*
      * delete records
      */
     $this->db->delete ( $this->table, $ids );
-  }   
-  
+  }
+
   /**
    * Deletes one or more records in a table matching a where condition.
    * This does not delete dependencies!
@@ -989,7 +948,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     $this->db->deleteWhere ( $this->table, $this->toSql($where) );
   }
-  
+
   /**
    * Deletes all rows of a table
    * @return void
@@ -998,8 +957,8 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     $this->db->execute("TRUNCATE `{$this->table}`;");
   }
-  
-  
+
+
   /**
    * Counts records in a table matching a where condition.
    * @param string  $where where condition
@@ -1008,19 +967,19 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   function countWhere ( $where )
   {
     return (int) $this->db->countWhere ( $this->table, $this->toSql($where) );
-  }     
+  }
 
   //-----------------------------------------------------------------------
   // Information on records
   //-----------------------------------------------------------------------
- 
+
   /**
    * Returns number of records in the database
    * @return int
    */
   function countRecords()
   {
-    return (int) $this->db->getValue("SELECT COUNT(*) FROM {$this->table}"); 
+    return (int) $this->db->getValue("SELECT COUNT(*) FROM {$this->table}");
   }
 
   /**
@@ -1030,32 +989,32 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   function countResult()
   {
     return count( $this->getResult() );
-  }  
-  
+  }
+
   /**
-   * Returns the lowest id number 
+   * Returns the lowest id number
    * @return int
    */
   function minId()
   {
     $idCol = $this->getColumnName('id');
-    return $this->db->getValue("SELECT MIN(`$idCol`) FROM {$this->table}"); 
+    return $this->db->getValue("SELECT MIN(`$idCol`) FROM {$this->table}");
   }
-  
+
   /**
-   * Returns the highest id number 
+   * Returns the highest id number
    * @return int
    */
   function maxId()
   {
     $idCol = $this->getColumnName('id');
-    return $this->db->getValue("SELECT MAX(`$idCol`) FROM {$this->table}"); 
-  }  
-  
+    return $this->db->getValue("SELECT MAX(`$idCol`) FROM {$this->table}");
+  }
+
   //-------------------------------------------------------------
   // Timestamp management
-  //-------------------------------------------------------------  
-  
+  //-------------------------------------------------------------
+
   /**
    * updates the modification date without changing the data
    * @param int|array $ids One or more record ids
@@ -1068,22 +1027,22 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     {
       $ids = $this->getId();
     }
-    
+
     if (! is_numeric($ids) and ! is_array($ids)  )
     {
       $this->raiseError("Invalid argument");
     }
-    
+
     $ids = implode(",", (array) $ids);
     $modifiedCol = $this->getColumnName("modified");
     $idCol = $this->getIdColumn();
-    $this->db->execute(" 
-      UPDATE `{$this->table}` 
+    $this->db->execute("
+      UPDATE `{$this->table}`
       SET `$modifiedCol` = NOW()
       WHERE `$idCol` IN ($ids)
     ");
   }
-  
+
   /**
    * gets the current timestamp from the database
    * @return string
@@ -1092,23 +1051,23 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return $this->db->getValue("SELECT NOW()");
   }
-  
-  
+
+
   /**
    * Calculates the number of seconds passed between the
    * timestamp value parameter. The difference is calculated
    * by the db engine, not by php.
    * @todo Implement in db-class, not here
    * @param string $timestamp Timestamp value
-   * @return float 
+   * @return float
    */
   function getSecondsSince($timestamp)
   {
     return $this->db->getValue("
       SELECT TIME_TO_SEC(TIMEDIFF(NOW(),'$timestamp'));
-    ");  
+    ");
   }
-  
+
   /**
    * Returns a hash map of ids the modification timestamp
    * @todo rewrite withoug raw sql
@@ -1121,22 +1080,22 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       $this->raiseError("Table {$this->table} has no timestamp column");
     }
     $modifiedCol = $this->getColumnName("modified");
-    $idCol = $this->getIdColumn();    
-    
+    $idCol = $this->getIdColumn();
+
     $rows = $this->db->getAllRecords("
-      SELECT 
+      SELECT
         `$idCol` AS id,
         `$modifiedCol` AS timestamp
       FROM {$this->table}
-    ") ;  
+    ") ;
     $map = array();
     foreach ($rows as $row)
     {
       $map[$row['id']] = $row['timestamp'];
     }
     return $map;
-  }  
-    
+  }
+
   /**
    * Gets the name of the main data table
    * @return string
@@ -1145,9 +1104,9 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return $this->table;
   }
-  
+
   /**
-   * returns the prefix for tables used by this 
+   * returns the prefix for tables used by this
    * model. defaults to the datasource name plus underscore
    * or an empty string if there is no datasource
    * @return string
@@ -1161,9 +1120,9 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
       $prefix = $dsModel->getTablePrefix();
     }
     //$this->info("Prefix for {$this->name} is '$prefix'.");
-    return $prefix; 
+    return $prefix;
   }
-  
+
   /**
    * Whether the model has the given index
    * @param $index
@@ -1173,7 +1132,7 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
   {
     return in_array( $index, $this->indexes() );
   }
-  
+
   /**
    * Returns a list of index names of the table
    * which holds the records of this model
@@ -1184,6 +1143,6 @@ class qcl_db_AbstractModel extends qcl_mvc_AbstractPropertyModel
     $db = $this->db();
     return $db->indexes( $this->table() );
   }
-    
+
 }
 ?>

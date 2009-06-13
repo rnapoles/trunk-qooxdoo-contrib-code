@@ -8,7 +8,7 @@ require_once "qcl/mvc/AbstractModel.php";
 require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
-require_once "qcl/db/SimpleModel.php";
+require_once "qcl/db/model/SimpleModel.php";
 
 /*
  * If php4, use simplexml backport library, otherwise
@@ -20,7 +20,7 @@ if ( PHP_VERSION < 5 )
 }
 else
 {
-  require_once "qcl/xml/SimpleXMLElement.php";  
+  require_once "qcl/xml/SimpleXMLElement.php";
 }
 
 
@@ -29,7 +29,7 @@ else
 
 /**
  * Persistent class to cache xml object data.
- * 
+ *
  */
 class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
 {
@@ -38,7 +38,7 @@ class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
    * @var string
    */
   var $lastModified;
-  
+
   /*
    * the serialized xml document tree
    * @var string
@@ -47,104 +47,104 @@ class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
 }
 
 /**
- * Class providing a cross-version (php4/5) simple xml 
- * representation as a php object. This class also provides 
- * caching of the object that is parsed from the xml and 
- * persisted on a per-file, per-user, or per-session basis. 
+ * Class providing a cross-version (php4/5) simple xml
+ * representation as a php object. This class also provides
+ * caching of the object that is parsed from the xml and
+ * persisted on a per-file, per-user, or per-session basis.
  * That is, differently manipulated copies of the original xml data
- * file data can coexist. By default, the caching is done by 
+ * file data can coexist. By default, the caching is done by
  * the qcl_persistence_db_Object class, which ensures that
  * data by no longer existing users or sessions is automatically
- * deleted. 
+ * deleted.
  * @see qcl_xml_SimpleXmlStorage::getCacheObject() for details
- * 
+ *
  **/
 class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
 {
- 
+
   /**
    * file object if xml is in a file
    * @var qcl_io_filesystem_IFile
    */
-  var $file; 
+  var $file;
 
   /**
    * XML string if loaded from string
    */
   var $xml;
-  
+
   /**
    * PHP4-backport of simplexml API
    * @var XMLParser
    */
   var $__impl;
-  
+
   /**
    * tag names prohibited by the php4 backport
    * @var array
    */
   var $invalidTags = array();
-  
+
   /**
    * id that is used to identify file with cached xml object
    * @var string
    */
   var $cacheId;
-  
+
   /**
    * If a separate copy for a user should be kept, set
    * this property to the user id
    */
   var $userId = null;
-  
+
   /**
    * If a separate copy for a session should be kept, set
    * this property to the user id
    */
   var $sessionId = null;
-  
+
   /**
    * modification date of xml file, if parsed from file
    * @var string
    */
   var $lastModified;
-  
+
   /**
    * flag for indicating if the xml source for the document
    * has changed
    * @var bool
    */
   var $hasChanged = false;
-  
+
   /**
    * the document object
    * @var SimpleXmlElement or SimpleXmlTag object
    */
   var $doc;
-  
+
   /**
-   * Array of atrributes which will be indexed for fast access (PHP4 only) 
+   * Array of atrributes which will be indexed for fast access (PHP4 only)
    * @var array
    */
   var $indexedAttributes = array();
-  
+
   /**
    * The cache object
    * @var qcl_xml_simpleXmlCache
    */
   var $_cacheObj;
-   
+
   /**
    * Constructor
-   * @param qcl_jsonrpc_controller $controller instance
-   * @param qcl_io_filesystem_IFile|string $fileOrString Xml string, file name or object implementing 
-   * qcl_io_filesystem_IFile 
+   * @param qcl_mvc_Controller $controller instance
+   * @param qcl_io_filesystem_IFile|string $fileOrString Xml string, file name or object implementing
+   * qcl_io_filesystem_IFile
    * @param string $cacheId Id with which to cache xml data, if it is a string (file cache ids are overwritten
    * internally).
    * @param array $indexedAttributes (PHP4 only) Array of atrributes which will be indexed for fast access
    **/
   function __construct( $controller, $fileOrString=null, $cacheId=null, $indexedAttributes=array() )
-  { 
+  {
     /*
      * parent constructor
      */
@@ -162,13 +162,13 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
          * Yes, save it
          */
         $this->xml = $fileOrString;
-        
+
         /*
          * Cache id, if given
          */
-        $this->cacheId = $cacheId;    
+        $this->cacheId = $cacheId;
       }
-      
+
       /*
        * No, if string, convert string file name to qcl file object
        */
@@ -177,7 +177,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         $fileOrString =& qcl_io_filesystem_Resource::createInstance( &$controller, "file://" . $fileOrString );
       }
     }
-    
+
     /*
      * If file, save it and generate cache id.
      * We are adding the php version since the cache is different
@@ -186,23 +186,23 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     if ( ! $this->xml  )
     {
       if ( is_qcl_file( $fileOrString ) )
-      { 
-        $this->file =& $fileOrString;  
-        $this->cacheId = $this->file->resourcePath() . ( phpversion() <5 ? ".php4":""); 
+      {
+        $this->file =& $fileOrString;
+        $this->cacheId = $this->file->resourcePath() . ( phpversion() <5 ? ".php4":"");
       }
       else
       {
         $this->raiseError("Invalid xml data '" . get_var_type($fileOrString) .  "'");
       }
     }
-        
+
     /*
      * indexed arrays (PHP4 only)
      */
     $this->indexedAttributes = $indexedAttributes;
-    
+
   }
-  
+
   /**
    * Make the cached copy of the xml data specific to a user
    *
@@ -217,7 +217,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     $this->userId = $userId;
     $this->sessionId = null;
   }
-  
+
   /**
    * Make the cached copy of the xml data specific to a session
    *
@@ -231,8 +231,8 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     }
     $this->userId = null;
     $this->sessionId = $sessionId;
-  }  
-  
+  }
+
   /**
    * Creates a new file with optional content but only if it
    * doesn't exist already, then load document.
@@ -241,14 +241,14 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
   function createFile( $xml="" )
   {
     $controller =& $this->getController();
-    
+
     if ( ! is_object( $this->file ) )
     {
       $this->raiseError("No file object to create.");
     }
-    
+
     $path = $this->file->resourcePath();
-    if ( $this->file->exists() ) 
+    if ( $this->file->exists() )
     {
       $this->raiseError("File exists!");
     }
@@ -257,32 +257,32 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       $xml = '<?xml version="1.0" encoding="utf-8"?><root/>';
     }
-    
+
     /*
      * create file and save xml string
-     */    
+     */
     if ( $this->file->create() and $this->file->save( $xml ) )
     {
-      $this->log("Created root node in '$path'...","xml"); 
+      $this->log("Created root node in '$path'...","xml");
     }
-    else 
+    else
     {
-      $this->raiseError( $this->file->getError() );  
+      $this->raiseError( $this->file->getError() );
     }
 
     /*
      * delete cache
      */
     $this->delete();
-    
+
     /*
      * load document
      */
     $this->load();
-    
-    
+
+
   }
-  
+
   /**
    * Loads xml from  file
    * @return SimpleXmlElement
@@ -292,7 +292,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     $controller =& $this->getController();
     $file       =& $this->file;
     $cacheId     = $this->cacheId;
-    
+
     /*
      * xml document
      */
@@ -307,7 +307,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
      * last modification timestamp, if from file
      */
     $lastModified  = $isFile ? $file->lastModified() : null;
-        
+
     /*
      * get document from cache
      */
@@ -315,36 +315,36 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
 
       $this->log("Cache Id is: $cacheId","xml");
-      
+
       /*
        * get cached document
        */
       $cacheObj =& $this->getCacheObject( $cacheId );
-     
-    
+
+
       if ( ! $cacheObj->isNew() )
       {
-        
+
         /*
          * copy from persistent object
          */
         $doc = $cacheObj->doc;
-        
+
         /*
          * check modification date
          */
         if ( $lastModified )
-        { 
+        {
           $this->lastModified = $lastModified;
-          
+
           if ( $cacheObj->lastModified )
           {
             $this->log( "Cache file exists with timestamp " . $cacheObj->lastModified, "xml" );
-            
+
             if ( $this->lastModified == $cacheObj->lastModified )
             {
               $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
-              
+
               /*
                * PHP 4: load serialized object
                */
@@ -356,12 +356,12 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
                 if ( ! is_object( $doc ) )
                 {
                   $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
-                  $doc = null;   
-                } 
+                  $doc = null;
+                }
               }
-              
+
               /*
-               * PHP5: load 
+               * PHP5: load
                */
               else
               {
@@ -370,7 +370,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
                   $doc = simplexml_load_string( $doc );
                 }
               }
-              
+
               /*
                * return object if valid
                */
@@ -393,15 +393,15 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         }
       }
     }
-    
+
     $this->log("No cache available. Parsing document...","xml");
-    
+
     /*
      * object not cached, create it from xml file
      */
     $this->hasChanged = true;
-    
-    
+
+
     /*
      * PHP 4 implementation
      */
@@ -411,18 +411,18 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
        * use simplexml backport library
        */
       $this->__impl =& new XMLParser;
-      
+
       /*
        * prohibited tag names
        */
       $xmlTag =& new SimpleXMLElement('dummy');
       $this->invalidTags = $xmlTag->invalidTags;
-      
+
       /*
        * index attributes
        */
       $this->__impl->indexedAttributes = $indexedAttributes;
-      
+
       /*
        * parse xml from file or string
        */
@@ -443,7 +443,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         $this->raiseError("Cannot load xml data ");
       }
     }
-    
+
     /*
      * PHP 5 implementation
      */
@@ -463,7 +463,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       else
       {
         $this->raiseError("Cannot load xml data ");
-      }      
+      }
     }
 
     /*
@@ -472,11 +472,11 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     if ( $cacheId )
     {
       $this->save();
-    }      
-     
+    }
+
     return $this->doc;
   }
-  
+
   /**
    * Returns the timestamp of the original xml source, if any.
    * Timestamp format depends on the source.
@@ -486,13 +486,13 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
   {
     return $this->lastModified;
   }
-  
+
   /**
    * Returns the persistent object which caches the xml document. Override
    * this method if you want to implement a different caching mechanism.
-   * By default, and qcl_xml_simpleXmlCache instance, which subclasses 
+   * By default, and qcl_xml_simpleXmlCache instance, which subclasses
    * qcl_persistence_db_Object, is used. If you provide a user id or session
-   * id in the constructor, a separately cached copy will be kept for the user 
+   * id in the constructor, a separately cached copy will be kept for the user
    * or the session.
    * @return qcl_xml_simpleXmlCache
    */
@@ -502,36 +502,36 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       $this->raiseError("No cache id!");
     }
-    
+
     if ( ! $this->_cacheObj )
     {
       $controller =& $this->getController();
       $this->_cacheObj =& new qcl_xml_simpleXmlCache( &$controller, $cacheId, $this->userId, $this->sessionId );
     }
-    return $this->_cacheObj; 
+    return $this->_cacheObj;
   }
-  
-  
+
+
   function deleteCachedObject()
   {
-    $this->_cacheObj = null;  
+    $this->_cacheObj = null;
   }
-  
+
   /**
    * Saves parsed xml object tree to the caching storage
    */
   function save()
   {
     $cacheObj =& $this->getCacheObject( $this->cacheId );
-    
+
     /*
      * store modification date
-     */ 
+     */
     if ( $this->lastModified )
     {
       $cacheObj->lastModified = $this->lastModified;
     }
-    
+
     /*
      * PHP 4: copy xml document tree to cache object
      */
@@ -543,12 +543,12 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       $cacheObj->doc = $this->doc->asXML();
     }
-    
+
     $this->log("Saving xml document object to the cache...","xml");
-    
+
     $cacheObj->save();
   }
-  
+
   /**
    * Deletes the cached object
    */
@@ -558,7 +558,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     $cacheObj->delete();
     $this->deleteCachedObject();
   }
-  
+
   /**
    * get the root of the document alias for getDocument
    * return SimpleXmlElement
@@ -566,8 +566,8 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
   function &getRoot()
   {
     return $this->getDocument();
-  }  
-  
+  }
+
   /**
    * get document root node
    * @return SimpleXmlElement
@@ -592,7 +592,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       trigger_error("Not implemented");
     }
   }
-  
+
   /**
    * make sure node is the right datatype
    * method can be called statically.
@@ -603,41 +603,41 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
   {
     return ( is_a( $node, "SimpleXMLElement" ) );
   }
-  
+
   /**
    * Cross-version method to get to a node. If a valid node object is
    * passed, return it. If a string is passed, treat it as a path to the
-   * node. 
+   * node.
    * PHP4: Path is not real xpath expression (only tag names and tag[3], no queries)
    * Cannot be called statically.
-   * @param mixed $pathOrNode (string) simplified xpath or (object) node 
-   * @return object node object or NULL if path does not exist 
+   * @param mixed $pathOrNode (string) simplified xpath or (object) node
+   * @return object node object or NULL if path does not exist
    */
   function &getNode( $pathOrNode )
   {
 
     /*
-     * check if document has already been parsed 
+     * check if document has already been parsed
      */
     if ( ! is_object ($this->doc) )
     {
       $this->raiseError("No xml document available.");
-    } 
-    
+    }
+
     /*
      * if the passed var is a node, return it
      */
     if ( is_object( $pathOrNode ) )
     {
-      return $pathOrNode; 
+      return $pathOrNode;
     }
     elseif ( !is_string( $pathOrNode ) or ! $pathOrNode )
     {
-      $this->raiseError("Invalid parameter");  
+      $this->raiseError("Invalid parameter");
     }
-    
+
     $path = $pathOrNode;
-    
+
     /*
      * trim "/"
      */
@@ -645,33 +645,33 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       $path = substr($path,1);
     }
-   
+
     /*
      * traverse object tree along the path
-     * 
-     */    
+     *
+     */
     if ( phpversion() >= 5 )
-    { 
+    {
       $doc    = $this->getDocument();
       $result = $doc->xpath( $path );
       if ( is_array($result) )
       {
-        return $result[0];  
+        return $result[0];
       }
       return false;
     }
-    
+
     /*
      * PHP 4
-     */ 
+     */
     else
     {
-      $tmp =& $this->getDocument();      
+      $tmp =& $this->getDocument();
 
       $parts = explode("/", $path );
       foreach ( $parts as $part )
       {
-        
+
         /*
          * parse content in square brackets
          */
@@ -685,20 +685,20 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
           $part = (string) $matches[1];
           $n    = (int)    $matches[2];
         }
-        
+
         /*
          * get node object
          */
         $tmp =& $tmp->$part;
-        
+
         /*
          * result is nodeset
          */
         if ( is_array($tmp) )
         {
           $tmp =& $tmp[$n-1];
-        }      
-        
+        }
+
         /*
          * no result
          */
@@ -710,8 +710,8 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       }
     }
     return $tmp;
-  }  
-  
+  }
+
   /**
    * Cross-version method to get the number of child nodes.
    * Can be called statically
@@ -731,13 +731,13 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       return $count;
     }
   }
-  
-  
+
+
   /**
    * Cross-version method to get CDATA content of a node.
    * method can be called statically only if a valid node is passed
-   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
-   * @return CDATA content or NULL if path does not exist 
+   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node
+   * @return CDATA content or NULL if path does not exist
    * @todo rename to nodeGetData()
    */
   function getData($pathOrNode)
@@ -758,14 +758,14 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       qcl_xml_SimpleXmlStorage::raiseError("Invalid parameter.");
     }
-    
+
     /*
      * get node data cross-version
      */
     if ( phpversion() < 5 )
     {
       $cdata = $node->CDATA();
-      
+
     }
     else
     {
@@ -774,8 +774,8 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       //$this->debug("$pathOrNode : $cdata");
     return $cdata;
   }
-  
-  
+
+
   function nodeGetAttribute( $pathOrNode, $attribute )
   {
     if ( is_string( $pathOrNode ) )
@@ -794,31 +794,31 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       qcl_xml_SimpleXmlStorage::raiseError("Invalid parameter.");
     }
-    
+
     /*
      * get node data cross-version
      */
     return $node->getAttribute($attribute);
   }
-  
-  
-  
+
+
+
   /**
    * Cross-version method to set CDATA content of a node
-   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
+   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node
    * @return void
    * @todo rename to nodeSetData()
    */
   function setData($pathOrNode,$value)
   {
     $node =& $this->getNode(&$pathOrNode);
-    
+
     if ( ! $node )
     {
       $this->warn($this->error);
       return null;
     }
-    
+
     /*
      * get node data cross-version
      */
@@ -834,20 +834,20 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
 
   /**
    * Cross-version method to set an attribute of a node
-   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
+   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node
    * @return void
    *  @todo rename to nodeSetAttribute()
    */
   function setAttribute($pathOrNode,$name, $value)
   {
     $node =& $this->getNode($pathOrNode);
-    
+
     if ( ! $node )
     {
       $this->warn($this->error);
       return null;
     }
-    
+
     /*
      * get node data cross-version
      */
@@ -859,8 +859,8 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       eval('$node[$name] = $value'); // PHP4 throws an error otherwise
     }
-  }  
-  
+  }
+
   /**
    * gets the first child of a node that matches an attribute-value pair.
    * can be called statically
@@ -876,12 +876,12 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
     }
-    
+
     /*
      * iterate through children
      */
     $children =& $node->children();
-    
+
     /*
      * PHP4
      */
@@ -898,7 +898,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         }
       }
     }
-    
+
     /*
      * PHP 5
      * @todo use xpath
@@ -914,12 +914,12 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         {
           return $child;
         }
-      }      
-      
+      }
+
     }
     return null;
   }
-  
+
   /**
    * removes a child node that that matches an attribute-value pair
    * can be called statically
@@ -928,7 +928,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
    * @param string $value
    * @return boolean True if node was found and removed, false if not found
    * @todo: is this used anywhere? if not, remove, otherwise rename
-   * 
+   *
    */
   function removeChildNodeByAttribute($node,$name,$value)
   {
@@ -936,10 +936,10 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
     }
-   
+
     /*
      * remove target node
-     */      
+     */
     $found = false;
     foreach ( $node->children() as $i => $child )
     {
@@ -957,16 +957,16 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
           /*
            * there is no removeChild implementation
            * in SimpleXML
-           */                    
-          unset( $child );  
+           */
+          unset( $child );
         }
       }
     }
     return $found;
   }
-  
-  
-  
+
+
+
   /**
    * save current xml object tree and the cache
    */
@@ -976,34 +976,34 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     {
       $this->raiseError("No file object to save to.");
     }
-    
+
     $xml = $this->doc->asXML();
     $this->file->save( $xml );
     $this->lastModified = $this->file->lastModified();
     $this->save();
   }
-  
+
   function deleteFile()
   {
     if ( ! is_object( $this->file ) )
     {
       $this->raiseError("No file object to delete.");
-    }    
-    
+    }
+
     $this->file->delete();
     $this->lastModified = null;
     $this->delete();
   }
-  
+
   /**
-   * checks whether the xml document has changed 
+   * checks whether the xml document has changed
    */
   function hasChanged()
   {
-    return $this->hasChanged;  
+    return $this->hasChanged;
   }
-  
-  
+
+
   /**
    * checks whether a tag name is legal
    * @param string $tag
@@ -1016,26 +1016,26 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     }
     return true;
   }
-  
+
   /**
    * extends a simple xml object tree
    * @see qcl_xml_SimpleXmlStorage::_extend
-   * @param qcl_xml_SimpleXmlStorage 
+   * @param qcl_xml_SimpleXmlStorage
    */
   function extend($parentXml)
   {
     if ( is_a( $parentXml, "qcl_xml_SimpleXmlStorage" ) )
     {
       $doc       =& $this->getDocument();
-      $parentDoc =& $parentXml->getDocument();  
-      
+      $parentDoc =& $parentXml->getDocument();
+
       $this->log("Extending document ...","xml");
       ////$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
-      
+
       $this->_extend(&$doc, &$parentDoc);
-      
+
         //$this->debug("Result: \n\n". $this->asXml() );
-      
+
       if ( $parentXml->hasChanged )
       {
         $this->hasChanged = true;
@@ -1046,7 +1046,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       $this->raiseError("Argument must be a qcl_xml_simpleXml object.");
     }
   }
-  
+
   /**
    * compares the attributes of two nodes
    * @param SimpleXmlElement $node1
@@ -1057,27 +1057,27 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
   {
     if ( ! is_a( $node1,"SimpleXMLElement" ) or ! is_a( $node2,"SimpleXMLElement" ) )
     {
-      $this->raiseError("Invalid parameters: " . gettype($node1) . "," . gettype($node2) );  
+      $this->raiseError("Invalid parameters: " . gettype($node1) . "," . gettype($node2) );
     }
 
     $attrs1 = $node1->attributes();
     $attrs2 = $node2->attributes();
-    
+
     /*
      * if the number of attributes differ, they are not identical
-     */ 
+     */
     if ( count( $attrs1) != count( $attrs2 ) ) return false;
 
     /*
      * if both nodes have no attributes, they are identical
-     */ 
+     */
     if ( ! count( $attrs1) and ! count( $attrs2 ) ) return true;
 
     /*
      * if one of nodes has no attributes, they are not identical
-     */ 
+     */
     if ( ! count( $attrs1) or ! count( $attrs2 ) ) return false;
-    
+
     /*
      * check the attributes for differences
      */
@@ -1091,7 +1091,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     }
     return true;
   }
-  
+
   function serializeAttributes( $node )
   {
     $attrs = $node->attributes();
@@ -1099,10 +1099,10 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     foreach( $attrs as $key => $value )
     {
       $str .= $key . '="' . $value . '" ';
-    }    
+    }
     return $str;
   }
-  
+
   /**
    * extends one simple xml object tree with a second one
    * currently, all nodes from the source tree are appended to
@@ -1120,32 +1120,32 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
      */
     $sourceChildren = $source->children();
     $sourceTag      = $source->getName();
-    
+
       //$this->debug("*************");
       //$this->debug("Parent Node <$sourceTag " . $this->serializeAttributes($source) . ">" );
       //$this->debug(count($sourceChildren) . " children.");
-    
+
     for( $i=0; $i<count($sourceChildren); $i++ )
     {
-      
+
       /*
        * the current source child node to be
        * added to the parent
        */
       $sourceChild =& $sourceChildren[$i];
-      
+
       /*
        * PHP4 hack
        */
       if ( phpversion()  < 5 and  ! is_object($sourceChild) ) continue;
-      
+
       /*
        * the tag name of the source child node
        */
       $tag = $sourceChild->getName();
         //$this->debug("");
       //$this->debug("***** $i. source child node: <$tag " . $this->serializeAttributes($sourceChild) . "> ***" );
-           
+
       /*
        * source child attributes
        */
@@ -1169,7 +1169,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
          */
         $targetChildren =& $target->$tag;
         $tChildren = array();
-        
+
         /*
          * We need to create an array for PHP4
          */
@@ -1181,39 +1181,39 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         {
           $tChildren =& $targetChildren;
         }
-                
+
         /*
          * iterate over the target node's children
          */
         $copy = true;
         for ( $j=0; $j<count($tChildren); $j++ )
         {
-          
+
           $targetChild =& $tChildren[$j];
-          
+
             //$this->debug("*** $j. target child node <$tag " . $this->serializeAttributes($targetChild) . ">" );
           /*
            * get target attributes
            */
-          $tgtChildAttrs = $targetChild->attributes();    
-          
+          $tgtChildAttrs = $targetChild->attributes();
+
           /*
            * if there are attributes on both sides
-           */ 
+           */
           if ( count( $tgtChildAttrs ) and count( $srcChildAttrs ) )
           {
             /*
              * skip source child node if a target child node replaces it
              */
             $replace = (string) $tgtChildAttrs['replace'];
-            if ( $replace == $srcChildName ) 
+            if ( $replace == $srcChildName )
             {
                 //$this->debug("<$tag replace='$srcChildName' /> exists, not adding child node...");
               $copy=false; break;
             }
-            
+
             /*
-             * check if source 'extends' a 'name' attribute 
+             * check if source 'extends' a 'name' attribute
              */
             $extends = (string) $tgtChildAttrs['extends'];
             if ( $extends == $srcChildName )
@@ -1223,7 +1223,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
                */
                 //$this->debug("Extending <$tag extends='$extends'> with <$tag name='$srcChildName'>.");
               $this->_extend( &$targetChild, &$sourceChild );
-              
+
               /*
                * add missing attributes
                */
@@ -1237,7 +1237,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
               }
               $copy=false; break;
             }
-            
+
             /*
              * or the attributes are identical
              */
@@ -1250,18 +1250,18 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
               $this->_extend( &$targetChild, &$sourceChild );
               $copy = false; break ;
             }
-             
+
             /*
              * tags are not identical, copy node
              */
             else
             {
                 //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
-            }          
+            }
           }
-          
+
           /*
-           * or there are no attributes 
+           * or there are no attributes
            */
           elseif ( ! count($tgtChildAttrs) and ! count($srcChildAttrs) )
           {
@@ -1272,7 +1272,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
             $this->_extend( &$targetChild, &$sourceChild );
             $copy = false; break;
           }
-         
+
            /*
            * tags are not identical, copy node
            */
@@ -1280,32 +1280,32 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
           {
               //$this->debug("Tag <$tag /> exists in target and source but with different attributes");
           }
-  
-        } 
+
+        }
       }
-      
-      if ( $copy ) 
+
+      if ( $copy )
       {
         /*
          * end of iterating through target child nodes with the same tag.
          * we did not find a matching node, so we add our source child node
          * to the target parent
          */
-               
+
         /*
-         * add source child to target node 
+         * add source child to target node
          */
         $cdata = trim( $this->getData(&$sourceChild) );
         $newTargetChild =& $target->addChild( $tag, $cdata );
-        
+
           //$this->debug("Creating single node <$tag>$cdata</$tag>.");
-        
+
         foreach( $srcChildAttrs as $key => $value )
         {
             //$this->debug("Adding attribute '$key' with value '$value'.");
           $newTargetChild->addAttribute( $key, $value );
         }
-        
+
         /*
          * extend new node with possible source node children
          */
@@ -1316,17 +1316,17 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
         }
         else
         {
-            //$this->debug("Next source child node ...");  
+            //$this->debug("Next source child node ...");
         }
       }
     }
-    
+
 
       //$this->debug("End of child nodes of <$sourceTag " . $this->serializeAttributes($source) . ">" );
       //$this->debug("^^^^^^^^^^^^^^^^^^^^^");
   }
-  
-  
+
+
   /**
    * Returns the current document as (optionally pretty-printed) xml
    * @param bool $pretty Pretty-print result XML
@@ -1345,6 +1345,6 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     return $this->doc->asXML();
   }
 
-  
+
 }
 ?>

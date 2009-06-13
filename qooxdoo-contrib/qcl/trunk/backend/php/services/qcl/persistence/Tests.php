@@ -1,9 +1,11 @@
 <?php
-require_once "qcl/datasource/controller.php";
+
 require_once "qcl/persistence/db/Object.php";
 require_once "qcl/registry/session.php";
+require_once "qcl/access/Manager.php";
+require_once "qcl/mvc/Controller.php";
 
-class TestPersistence extends qcl_persistence_db_Object 
+class TestPersistence extends qcl_persistence_db_Object
 {
   var $foo = null;
   var $end;
@@ -13,23 +15,16 @@ class TestPersistence extends qcl_persistence_db_Object
 /**
  * Service class containing test methods
  */
-class class_qcl_persistence_Tests extends qcl_datasource_controller
+class class_qcl_persistence_Tests
+  extends qcl_mvc_Controller
 {
-  
-  /**
-   * constructor. we need to go through access control, otherwise we wont have
-   * a session id. 
-   */
-  function __construct( )
-  {
-    parent::__construct();
-    $this->controlAccess();
-  }  
-  
-  
+
+  var $skipAuthentication = false;
+
   function method_testPersistence()
-  { ;
-    $obj =& new TestPersistence(&$this, "TestPersistence", null, $this->getSessionId() );
+  {
+    $sessionId = qcl_access_Manager::getSessionId();
+    $obj =& new TestPersistence(&$this, "TestPersistence", null, $sessionId );
     $this->info('Initialized $obj->foo = ' . $obj->foo);
     $obj->foo = rand(0,100);
     $this->info('Changing $obj->foo = ' . $obj->foo);
@@ -41,23 +36,23 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
     $obj1 =& new TestPersistence(&$this,"TestPersistence");
     $obj1->getWriteLock();
     $obj2 =& new TestPersistence(&$this,"TestPersistence");
-    $obj2->getWriteLock(); 
+    $obj2->getWriteLock();
     return $this->response();
-  }  
+  }
 
   function method_testServerProcessStatus($params)
   {
     $id       = $params[0];
     $continue = $params[1];
-    
-    $test =& new TestPersistence(&$this,$id); 
-    
+
+    $test =& new TestPersistence(&$this,$id);
+
     /*
      * continue or abort?
      */
     if ( $continue )
     {
-  
+
       /*
        * initialize
        */
@@ -65,9 +60,9 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
       {
         $test->end     = rand(5,10);
         $test->counter = 0;
-        $this->info("Initializing object " . $test->instanceLabel() . " with " . $test->end . " runs." ); 
+        $this->info("Initializing object " . $test->instanceLabel() . " with " . $test->end . " runs." );
       }
-      
+
       /*
        * action or end?
        */
@@ -77,45 +72,45 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
          * fake some action
          */
         sleep(1);
-        
+
         /*
          * increment counter
          */
         $test->counter++;
         $this->info( $test->instanceLabel() . ": " . $html . " {$test->counter} / {$test->end} ... ");
-        $percent = floor(($test->counter/$test->end) * 100); 
+        $percent = floor(($test->counter/$test->end) * 100);
         $html    = "Progress $percent %";
-        
+
         /*
          * display message on client
          */
         $this->dispatchEvent("displayServerMessage",$html);
-        
+
         /*
-         * this resubmits the form when called from the debug 
+         * this resubmits the form when called from the debug
          * console
          */
         $this->dispatchMessage("qcl.commands.repeatLastRequest");
-   
+
       }
       else
       {
         $this->info("Action completed. Deleting " . $test->instanceLabel() );
-        $test->delete(); 
+        $test->delete();
         $this->dispatchEvent("endProcess");
       }
     }
     else
     {
       $this->info("Action aborted. Deleting " . $test->instanceLabel() );
-      $test->delete();    
+      $test->delete();
     }
-    
+
     /*
      * return response data
      */
     return $this->response();
-    
+
   }
 }
 

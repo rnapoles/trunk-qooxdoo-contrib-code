@@ -119,7 +119,7 @@ class qcl_application_Application extends qcl_core_StaticClass
 
   /**
    * Returns the current controller instance, if any. Can be called statically
-   * @return qcl_jsonrpc_controller
+   * @return qcl_mvc_Controller
    */
   function &getController()
   {
@@ -155,7 +155,7 @@ class qcl_application_Application extends qcl_core_StaticClass
     /*
      * file containing intial configuration
      */
-    $ini_path = dirname($_SERVER["PATH_TRANSLATED"]). "/" . QCL_SERVICE_CONFIG_FILE;
+    $ini_path = dirname( $_SERVER["SCRIPT_FILENAME"] ). "/" . QCL_SERVICE_CONFIG_FILE;
     if ( ! file_exists( $ini_path) )
     {
       $_this->warn("Configuration file '$ini_path' not found for " . get_class($_this) . " ." );
@@ -172,7 +172,6 @@ class qcl_application_Application extends qcl_core_StaticClass
    */
   function getIniValue($path)
   {
-
     /*
      * if called recursively
      */
@@ -242,7 +241,7 @@ class qcl_application_Application extends qcl_core_StaticClass
   }
 
   /**
-   * Logs an info message
+   * Logs an info message. Can be called statically
    */
   function info( $msg )
   {

@@ -17,7 +17,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
   /**
    * Constructor. Checks whether allow_url_fopen us enabled (necessary for
    * the class to work) and registers s3 streamwrapper if necessary
-   * @param qcl_jsonrpc_controller $controller
+   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
   function __construct ( $controller, $resourcePath )
