@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/controller.php";
+require_once "qcl/mvc/controller.php";
 require_once "qcl/access/user.php";
 require_once "qcl/access/role.php";
 require_once "qcl/access/permission.php";
@@ -12,13 +12,11 @@ require_once "qcl/config/db.php";
 /*
  * interfaces
  */
-require_once "qcl/access/IAccessControl.php"
 require_once "qcl/access/IAuthentication.php";
 
 /*
  * constants
  */
-define('QCL_ACTIVE_USER_ID_VAR', "qcl_access_user_activeUserId");
 define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
 
 /**
@@ -26,17 +24,9 @@ define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
  * and configuration
  */
 class qcl_access_controller
-  extends qcl_db_controller
-  implements qcl_access_IAccessControl, qcl_access_IAuthentication
+  extends qcl_mvc_controller
+  implements qcl_access_IAuthentication
 {
-  /**
-   * user model singleton.
-   * To access, use getUserModel()
-   * @access private
-   * @var qcl_access_user or subclass
-   */
-  var $userModel = null;
-
 
   /**
    * The currently active user, determined from request or
@@ -47,79 +37,38 @@ class qcl_access_controller
   var $_activeUser = null;
 
   /**
-   * role model singleton.
-   * To access, use getRoleModel()
-   * @access private
-   * @var qcl_access_role or subclass
-   */
-  var $roleModel = null;
-
-  /**
-   * permission model singleton.
-   * To access, use getPermissionModel()
-   * @access private
-   * @var qcl_access_permission or subclass
-   */
-  var $permissionModel = null;
-
-  /**
-   * configuration data model singleton.
-   * To access, use getConfigModel()
-   * @access private
-   * @var qcl_config or subclass
-   */
-  var $configModel = null;
-
-  /**
    * Map pairing permission names with local aliases
    * @var array
    */
   var $permisssionAliasMap;
 
-  /**
-   * Constructor. initializes access/config model
+ /**
+   * Gets the user data model
+   * @return qcl_access_user
    */
-  function __construct( $server=null )
+  function &getUserModel()
   {
-
-    parent::__construct( &$server );
-
-    /*
-     * initialize access and config models based on connection
-     */
-    $this->initializeModels();
-
+    return qcl_access_User::getInstance();
   }
 
   /**
-   * Initializes all the models needed for the controller. All models
-   * are database-based and are singletons.
-   * @return void
+   * Gets the permission data model
+   * @return qcl_access_permission
    */
-  function initializeModels()
+  function &getPermissionModel()
   {
-
-    /*
-     * user model
-     */
-    $this->userModel =& qcl_access_User::getInstance();
-
-    /*
-     * role model
-     */
-    $this->roleModel =& qcl_access_Role::getInstance();
-
-    /*
-     * permission model
-     */
-    $this->permissionModel =& qcl_access_Permission::getInstance();
-
-    /*
-     * configuration model
-     */
-    $this->configModel =& qcl_config_db::getInstance();
-
+    return qcl_access_Permission::getInstance();
   }
+
+  /**
+   * Gets the role data model
+   * @return qcl_access_role
+   */
+  function &getRoleModel()
+  {
+    return qcl_access_Role::getInstance();
+  }
+
 
   /**
    * Checks if the requesting client is an authenticated user.
@@ -206,8 +155,14 @@ class qcl_access_controller
     md5( $password ) === $savedPw or
     $password === md5 ( $savedPw ) )
     {
-      $activeUser = $userModel->cloneObject();
+      /*
+       * reset the timestamp of the user
+       */
       $activeUser->resetLastAction();
+
+      /*
+       * save it as active user
+       */
       $this->setActiveUser( $activeUser );
       return true;
     }
@@ -293,7 +248,7 @@ class qcl_access_controller
     $this->grantGuestAccess();
 
     /*
-     * return security data
+     * return permissions
      */
     return $this->method_authenticate();
   }
@@ -315,15 +270,9 @@ class qcl_access_controller
      */
     $userModel =& $this->getUserModel();
     $userModel->createGuestUser();
-    $this->setActiveUser( $userModel->cloneObject() );
+    $this->setActiveUser( $userModel );
     $userId = $userModel->getId();
     $sessionId = $this->getSessionId();
-    $this->dispatchMessage("qcl.commands.setSessionId",$sessionId);
-
-    /*
-     * change config model to read-only mode for guest access
-     */
-    $this->configModel =& $this->getSingleton("qcl_config_session");
 
     /*
      * log message
@@ -383,7 +332,9 @@ class qcl_access_controller
       if ( ! $isValidUserSession )
       {
         $this->warn("Guest access was denied.");
-        return $this->alert("Access denied");
+        return $this->alert(
+          $this->tr("Access denied")
+        );
       }
     }
 
@@ -417,8 +368,7 @@ class qcl_access_controller
          * authentication failed
          */
         $this->info("Login failed.");
-        $this->dispatchMessage(
-          "qcl.messages.login.failed",
+        return $this->alert(
           $this->tr("Wrong username or password.")
         );
         return $this->response();
@@ -516,44 +466,10 @@ class qcl_access_controller
   /**
    * Returns active user object
    * @return qcl_access_user
-   * @todo Active user should not be stored in user model, but in controller - is one copy of a user model!!!
    */
   function &getActiveUser()
   {
-    $activeUserId = $this->getActiveUserId();
-
-    /*
-     * no active user
-     */
-    if ( ! $activeUserId )
-    {
-      return null;
-    }
-
-    /*
-     * create a user model instance and load user data
-     */
-    if ( ! $this->_activeUser )
-    {
-      $userModel =& $this->getUserModel();
-      $this->_activeUser =& $userModel->cloneObject();
-      $this->_activeUser->load( $activeUserId );
-    }
-
-    /*
-     * return the existing or created instance
-     */
-    return $this->_activeUser;
-  }
-
-  /**
-   * Returns the active user's id for a simple session model
-   * based on a PHP session.
-   * @return int
-   */
-  function getActiveUserId( )
-  {
-    return $_SESSION[QCL_ACTIVE_USER_ID_VAR];
+    return qcl_access_Manager::getActiveUser();
   }
 
   /**
@@ -564,39 +480,7 @@ class qcl_access_controller
    */
   function setActiveUser( $userObject )
   {
-    $userModel =& $this->getUserModel();
-
-    /*
-     * set new active user
-     */
-    if ( is_null( $userObject ) or is_a( $userObject, $userModel->className() ) )
-    {
-      if ( $userObject )
-      {
-        $this->setActiveUserId( $userObject->getId() );
-        $this->_activeUser =& $userObject;
-      }
-      else
-      {
-        $this->setActiveUserId( null );
-        $this->_activeUser = null;
-      }
-    }
-    else
-    {
-      $this->raiseError("Active user object must be NULL or of class '". $userModel->className() . "', but is '" .
-       ( is_object($userObject) ? get_class($userObject) : gettype( $userObject) ) . "'.");
-    }
-  }
-
-  /**
-   * Sets the active user's id for a simple session model
-   * based on a PHP session.
-   * @param int $id
-   */
-  function setActiveUserId( $id )
-  {
-    $_SESSION[QCL_ACTIVE_USER_ID_VAR] = $id;
+    qcl_access_Manager::setActiveUser( $userObject );
   }
 
   /**
@@ -608,67 +492,6 @@ class qcl_access_controller
     $this->logout();
     return $this->response();
   }
-
-  /**
-   * Abort with error if active user doesn't have permission
-   * @return void
-   * @param $permission String
-   */
-  function requirePermission ( $permission )
-  {
-    if ( ! $this->hasPermission( $permission ) )
-    {
-      $activeUser =& $this->getActiveUser();
-      $userName  = $activeUser ? $activeUser->username() : "";
-      $this->warn("Not allowed. User '$userName' does not have permission '$permission'" );
-      $this->userNotice( $this->tr("Not allowed.") );
-    }
-  }
-
-  /**
-   * checks if active user doesn't has permission
-   * @return boolean
-   * @param $permission String
-   */
-  function hasPermission ( $permission )
-  {
-    /*
-     * check if this permission has a local alias
-     */
-    if ( $alias = $this->hasPermissionAlias($permission) )
-    {
-      $permission = $alias;
-    }
-
-    /*
-     * check if (active) user has permission
-     */
-    $activeUser =& $this->getActiveUser();
-    if ( $activeUser and $activeUser->hasPermission( $permission ) )
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  /**
-   * Checks if permission has an application-specific
-   * name. This allows to reuse a global permission for a
-   * specific service class without giving the user the same
-   * right in a different service class. Simple implementation
-   * uses a hash map to pair permissions with their
-   * local aliases. More elaborate implementations are certainly
-   * possible.
-   * @param string $permission
-   */
-  function hasPermissionAlias( $permission )
-  {
-    return $this->permisssionAliasMap[$permission];
-  }
-
 
 }
 ?>

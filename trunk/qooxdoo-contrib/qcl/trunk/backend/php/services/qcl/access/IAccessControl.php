@@ -24,10 +24,10 @@
  */
 interface qcl_access_IAccessControl
 {
- 
+
   /**
-   * Main interface method for controlling access.
-   * @param string $method 
+   * Main interface method for controlling access for single methods
+   * @param string $method
    * @return bool
    */
   function allowAccess( $method );
