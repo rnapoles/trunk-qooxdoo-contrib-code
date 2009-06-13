@@ -2,23 +2,26 @@
 /**
  * Class which maintains a registry which is valid during one request
  */
-class qcl_registry_Request 
+class qcl_registry_Request
 {
   /**
    * key of variable container in $_SESSION
    */
   var $_global_key = "qcl_request_registry";
-  
+
   /**
-   * Returns class singleton instance
-   * @access static
-   * @return qcl_registry_PageLoad singleton instance
+   * Returns a singleton instance of this class
+   * @return qcl_registry_Request
    */
-  function &getInstance( $class=__CLASS__ )
+  function &getInstance( )
   {
-    return parent::getInstance( $class );
-  }  
-  
+    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    {
+      $GLOBALS[__CLASS__] =& new qcl_registry_Request;
+    }
+    return $GLOBALS[__CLASS__];
+  }
+
   /**
    * resets the page load registry. this needs to be
    * called, for example, when a user logs out
@@ -27,7 +30,7 @@ class qcl_registry_Request
   {
     $GLOBALS[ $this->_global_key ] = array();
   }
-  
+
   /**
    * Sets the registry value
    *
@@ -48,9 +51,9 @@ class qcl_registry_Request
   function get( $key )
   {
     return $GLOBALS[ $this->_global_key ][$key];
-  }  
-  
-  
+  }
+
+
   /**
    * Check if registry value is set
    *
@@ -61,7 +64,7 @@ class qcl_registry_Request
   {
     return isset( $GLOBALS[ $this->_global_key ][$key] );
   }
-      
+
 }
 
 

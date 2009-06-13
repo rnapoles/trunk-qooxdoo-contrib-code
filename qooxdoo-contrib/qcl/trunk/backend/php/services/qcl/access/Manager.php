@@ -5,7 +5,8 @@
  * Static class containing methods that handle user management etc.
  * @author bibliograph
  */
-class qcl_access_Manager extends qcl_core_StaticClass
+class qcl_access_Manager
+  extends qcl_core_StaticClass
 {
 
   /**
@@ -76,8 +77,19 @@ class qcl_access_Manager extends qcl_core_StaticClass
    */
   function setActiveUser( $userObject )
   {
-    $_this =& qcl_access_Manager::getInstance();
-    $_this->_activeUser = $userObject->cloneObject();
+    if ( is_a( $userObject, "qcl_core_object" ) )
+    {
+      $_this =& qcl_access_Manager::getInstance();
+      $_this->_activeUser = $userObject->cloneObject();
+    }
+    elseif ( is_null ( $userObject ) )
+    {
+      $_this->_activeUser  = null;
+    }
+    else
+    {
+      $this->raiseError("Invalid parameters");
+    }
   }
 
 
@@ -125,6 +137,7 @@ class qcl_access_Manager extends qcl_core_StaticClass
       /*
        * abort request
        */
+      $this->warn( $accessController->getError() );
       qcl_server_Server::abort( qcl_application_Application::tr("Access was denied ...") );
       exit;
     }

@@ -9,13 +9,13 @@ require_once "qcl/persistence/db/Object.php";
  */
 class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
 {
-	  
+
   /**
    * The current message catalogue
    * @var array
    */
   var $catalogue = array();
-  
+
   /**
    * The default locale
    */
@@ -26,13 +26,13 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
    * @var string
    */
   var $locale = null;
-  
+
   /*
    * paths to files
    */
-  var $locale_dir; 
-  var $locale_js_dir;  
-  var $translation_js; 
+  var $locale_dir;
+  var $locale_js_dir;
+  var $translation_js;
 
   /**
    * Constuctor
@@ -42,38 +42,35 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
   function __construct( $manager )
   {
     parent::__construct( &$manager, __CLASS__ );
-    
-    $this->locale_dir     = "../../../frontend/source/translation"; 
-    $this->locale_js_dir  = "../../../frontend/source/class/bibliograph/translation";  // todo
-    $this->translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // todo
-    
+
+    $this->locale_dir     = "../source/translation";
   }
-  
+
   /**
    * does the actual lookup
-   * @return 
+   * @return
    * @param $messageId Object
    */
   function gettext($messageId)
-  {    
+  {
     if ( ! trim ( $messageId ) ) return "";
-    
+
     $locale = $this->getLocale();
-   
+
     // translation found?
     $translation = $this->catalogue[$messageId];
-    
+
     if ( $translation)
     {
       return $translation;
     }
-        
+
     if ( $locale != $default_locale )
     {
       $this->markForTranslation( $messageId );
     }
     return $messageId;
-    
+
   }
 
 
@@ -85,31 +82,32 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
    * sets the locale
    * @return void
    * @param $locale String
-   */	
+   */
 	function setLocale($locale)
 	{
     $this->locale = $locale;
-    $this->loadTranslations();      
+    $this->loadTranslations();
     $this->save();
 	}
-	
+
   /**
    * getter for locale
-   * @return 
+   * @return
    */
   function getLocale()
   {
     return $this->locale;
   }
-  
+
   /**
    * Loads the translation strings for the current locale
+   * FIXME Unfunctional
    */
   function loadTranslations()
   {
 
-    //$this->debug("Loading translations for locale '$this->locale'");    
-    
+    //$this->debug("Loading translations for locale '$this->locale'");
+
     /*
      * check
      */
@@ -117,23 +115,23 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
     {
       $this->raiseError("No locale set!");
     }
-    
+
     /*
      * clear translations
      */
     $this->catalogue = array();
-    
+
     /*
      * load file contents
      */
-    $file = file_get_contents( $this->locale_js_dir . "/{$this->locale}.js" );
-    preg_match_all('/"(.+)": "(.+)",/',$file,$matches);
-    for ( $i=0; $i<count($matches[0]); $i++)
-    {
-      $this->catalogue[$matches[1][$i]] = $matches[2][$i];
-    }
+//    $file = file_get_contents( $this->locale_js_dir . "/{$this->locale}.js" );
+//    preg_match_all('/"(.+)": "(.+)",/',$file,$matches);
+//    for ( $i=0; $i<count($matches[0]); $i++)
+//    {
+//      $this->catalogue[$matches[1][$i]] = $matches[2][$i];
+//    }
   }
-  
+
   /**
    * gets a list of available locales
    * @return array
@@ -152,8 +150,8 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
       }
     }
     return array_unique( $availableLocales );
-  }  
-  
+  }
+
   /**
    * checks if a locale is supported
    * @return Boolean
@@ -177,7 +175,7 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
 
   /**
    * Translate a plural message. Depending on the third argument the plural or the singular form is chosen.
-   * @param string   $singularMessageId Message id of the singular form 
+   * @param string   $singularMessageId Message id of the singular form
    * @param string   $pluralMessageId   Message id of the plural form
    * @param int      $count
    * @return string
@@ -191,21 +189,23 @@ class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
    * on-the-fly addition of untranslated
    * messages to a special file. This will also catch dynamically
    * generated message strings.
-   * @return 
+   * @return
    * @param $messageId String
+   * FIXME Unfunctional
    */
   function markForTranslation ( $messageId )
   {
-    if ( trim($messageId)  ) 
+    return;
+    if ( trim($messageId)  )
     {
-      $content   = @file_get_contents( $this->translation_js );
+      $content   = file_get_contents( $this->translation_js );
       $messageId = addslashes( $messageId );
-      
+
       if ( ! strstr( $content, $messageId ) )
       {
         $content .= "\n" . 'this.marktr("' . $messageId . '");';
         file_put_contents( $this->translation_js, $content );
-      }      
+      }
     }
   }
 }

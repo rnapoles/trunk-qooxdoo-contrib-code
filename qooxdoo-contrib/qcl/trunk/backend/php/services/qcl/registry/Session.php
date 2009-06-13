@@ -1,45 +1,38 @@
 <?php
-/**
- * Dependencies
- */
+
+
+define("QCL_REGISTRY_SESSION_KEY","qcl_session_registry" );
 
 /**
- * Class which maintains a registry which is valid during one 
+ * Class which maintains a registry which is valid during one
  * PHP session
  */
-class qcl_registry_Session 
+class qcl_registry_Session
 {
 
-  /**
-   * key of variable container in $_SESSION
-   */
-  var $_session_key = "qcl_session_registry";
- 
 
   /**
-   * Returns class singleton instance
-   * @access static
-   * @return qcl_registry_Session singleton instance
+   * Returns a singleton instance of this class
+   * @return qcl_registry_Session
    */
-  function &getInstance()
+  function &getInstance( )
   {
-    global $qcl_singletons;
-    if ( ! $qcl_singletons['qcl_registry_Session']  )
+    if ( ! is_object( $GLOBALS[__CLASS__] ) )
     {
-      $qcl_singletons['qcl_registry_Session'] = new qcl_registry_Session;
+      $GLOBALS[__CLASS__] =& new qcl_registry_Session;
     }
-    return $qcl_singletons['qcl_registry_Session'];
-  }  
-  
+    return $GLOBALS[__CLASS__];
+  }
+
   /**
    * resets the page load registry. this needs to be
    * called, for example, when a user logs out
    */
   function reset()
   {
-    $_SESSION[ $this->_session_key ] = array();
+    $_SESSION[ QCL_REGISTRY_SESSION_KEY ] = array();
   }
-  
+
   /**
    * Sets the registry value
    *
@@ -48,7 +41,7 @@ class qcl_registry_Session
    */
   function set( $key, $value )
   {
-    $_SESSION[ $this->_session_key ][$key] = $value;
+    $_SESSION[ QCL_REGISTRY_SESSION_KEY ][$key] = $value;
   }
 
   /**
@@ -59,10 +52,10 @@ class qcl_registry_Session
    */
   function get( $key )
   {
-    return $_SESSION[ $this->_session_key ][$key];
-  }  
-  
-  
+    return $_SESSION[ QCL_REGISTRY_SESSION_KEY ][$key];
+  }
+
+
   /**
    * Check if registry value is set
    *
@@ -71,10 +64,10 @@ class qcl_registry_Session
    */
   function has( $key )
   {
-    return isset( $_SESSION[ $this->_session_key ][$key] );
+    return isset( $_SESSION[ QCL_REGISTRY_SESSION_KEY ][$key] );
   }
 
-  
+
 }
 
 ?>

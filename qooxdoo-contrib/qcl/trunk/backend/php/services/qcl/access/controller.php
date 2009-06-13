@@ -6,6 +6,7 @@
 require_once "qcl/access/__index__.php";
 require_once "qcl/mvc/controller.php";
 require_once "qcl/config/db.php";
+require_once "qcl/registry/Session.php";
 
 /*
  * interfaces
@@ -42,31 +43,39 @@ class qcl_access_Controller
 
  /**
    * Gets the user data model
-   * @return qcl_access_user
+   * @param int[optional] $id Load record if given
+   * @return qcl_access_model_User
    */
-  function &getUserModel()
+  function &getUserModel( $id=null )
   {
-    return qcl_access_model_User::getInstance();
+    $userModel =& qcl_access_model_User::getInstance();
+    if ( $id ) $userModel->load( $id );
+    return $userModel;
   }
 
   /**
    * Gets the permission data model
-   * @return qcl_access_permission
+   * @param int[optional] $id Load record if given
+   * @return qcl_access_model_Permission
    */
-  function &getPermissionModel()
+  function &getPermissionModel( $id = null)
   {
-    return qcl_access_model_Permission::getInstance();
+    $permModel =& qcl_access_model_Permission::getInstance();
+    if ( $id ) $permModel->load( $id );
+    return $permModel;
   }
 
   /**
    * Gets the role data model
+   * @param int[optional] $id Load record if given
    * @return qcl_access_role
    */
-  function &getRoleModel()
+  function &getRoleModel( $id=null )
   {
-    return qcl_access_model_Role::getInstance();
+    $roleModel =& qcl_access_model_Role::getInstance();
+    if ( $id ) $roleModel->load( $id );
+    return $roleModel;
   }
-
 
   /**
    * Gets the role data model
@@ -85,40 +94,51 @@ class qcl_access_Controller
    * @param $sessionId[optional] If not given, get from request
    * @return bool success
    */
-  function isValidUserSession( $sessionId = null)
+  function isValidUserSession( $sessionId = null )
   {
 
     /*
      * check if given session id is valid. This simply checks
      * if the session corresponds to the existing session id
      */
+    if ( ! $sessionId )
+    {
+      $sessionId = qcl_server_Server::getServerData("sessionId");
+    }
+
     if ( $sessionId )
     {
+
+      /*
+       * invalid session id, log out
+       */
       if ( $sessionId != $this->getSessionId() )
       {
         $this->logout();
         $this->userNotice("Invalid session id");
       }
+
+      /*
+       * we have a valid session id, get the active user from the
+       * session
+       */
+      else
+      {
+        $userId = qcl_registry_Session::get("activeUserId");
+        $userModel =& $this->getUserModel( $userId );
+        $this->setActiveUser( $userModel );
+      }
     }
-
-    /*
-     * models
-     */
-    $activeUser =& $this->getActiveUser();
-
-    /*
-     * if we don't have an active user yet, grant guest access if
-     * allowed
-     */
-    if ( ! $activeUser  )
+    else
     {
-      $this->userNotice("No Access. You need to authenticate first.");
+      $this->setError("No valid session.");
+      return false;
     }
 
     /*
      * If we have an authenticated user, check for timeout etc.
      */
-    elseif ( ! $this->checkTimeout() )
+    if ( ! $this->checkTimeout() )
     {
       /*
        * force log out because of timeout
@@ -140,7 +160,7 @@ class qcl_access_Controller
    * to make sure a login has taken place.
    * @param string $username or null
    * @param string $password (MD5-encoded) password or null
-   * @return boolean success
+   * @return int|false The id of the user or false if authentication failed
    */
   function authenticate ( $username=null, $password=null )
   {
@@ -155,7 +175,7 @@ class qcl_access_Controller
     $userModel->findByNamedId( $username );
     if ( $userModel->foundNothing() )
     {
-      $this->setError( $this->tr("Unknown user name.") );
+      $this->setError( "Unknown user name: $username" );
       return false;
     }
 
@@ -165,24 +185,15 @@ class qcl_access_Controller
     $savedPw = $userModel->getPassword();
 
     if ( ! $savedPw or
-    $password === $savedPw or
-    md5( $password ) === $savedPw or
-    $password === md5 ( $savedPw ) )
+      $password === $savedPw or
+      md5( $password ) === $savedPw or
+      $password === md5 ( $savedPw ) )
     {
-      /*
-       * reset the timestamp of the user
-       */
-      $activeUser->resetLastAction();
-
-      /*
-       * save it as active user
-       */
-      $this->setActiveUser( $activeUser );
-      return true;
+      return $userModel->getId();
     }
     else
     {
-      $this->setError($this->tr( "Wrong Password" ) );
+      $this->setError( "Wrong password for: $username" );
       return false;
     }
   }
@@ -300,6 +311,7 @@ class qcl_access_Controller
     $userModel =& $this->getUserModel();
     $userModel->createGuestUser();
     $this->setActiveUser( $userModel );
+
     $userId = $userModel->getId();
     $sessionId = $this->getSessionId();
 
@@ -311,16 +323,20 @@ class qcl_access_Controller
 
 
   /**
-   * Actively authenticate the user with username and password. This is different
-   * from the (passive) authenticate() method, which normally checks for a already
-   * authenticated user.
-   * @see qcl_access_controller::authenticate()
+   * Actively authenticate the user with username and password.
+   * Returns data for the authentication store.
+   *
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
-   * @return qcl_jsonrpc_Response Data for qcl.auth.user.Manager.setSecurity()
+   * @return qcl_jsonrpc_Response
    */
   function method_authenticate( $params )
   {
+
+    /*
+     * check for valid user session
+     */
+    $validUserSession = $this->isValidUserSession();
 
     /*
      * authentication with
@@ -335,42 +351,77 @@ class qcl_access_Controller
       $password   = utf8_decode($params[1]);
 
       /*
-       * if password-authentication is successful ...
+       * username-password-authentication
        */
-      if ( $this->authenticate( $username, $password ) )
+      $userId = $this->authenticate( $username, $password );
+      if ( $userId )
       {
-
         /*
-         * if a username has been provided and an active
-         * user exists, log out the active user
+         * check if user is already logged in
          */
-        if ( $this->getActiveUser() )
+        $activeUser =& $this->getActiveUser();
+
+        if ( $activeUser and $activeUser->getId() == $userId )
         {
-          $this->logout();
+          /*
+           * log message
+           */
+          $username  = $activeUser->username();
+          $sessionId = $this->getSessionId();
+          $logMsg = "$username already logged in. Continuing session #$sessionId.";
+        }
+
+        else
+        {
+          /*
+           * if a username has been provided and an active
+           * user exists, log out the active user
+           */
+          if ( $activeUser )
+          {
+            $this->logout();
+          }
+
+          /*
+           * ... create new session
+           */
+          $this->createSessionId();
+
+          /*
+           * save a copy of the current user model as
+           * the new active user
+           */
+          $userModel =& $this->getUserModel( $userId );
+          qcl_registry_Session::set("activeUserId", $userId );
+          $this->setActiveUser( $userModel );
+          $activeUser =& $this->getActiveUser();
+
+          /*
+           * log message
+           */
+          $sessionId = $this->getSessionId();
+          $logMsg = "Login successful. New session: $username ($sessionId)";
         }
 
         /*
-         * ... create new session
+         * reset the timestamp of the user
          */
-        $this->createSessionId();
-        $this->registerSession();
-        $sessionId = $this->getSessionId();
-        $logMsg = "Login successful. New session: $username ($sessionId)";
+        $activeUser->resetLastAction();
       }
 
       /*
-       * else, abort request
+       * authentication failed, abort request
        */
       else
       {
         /*
-         * authentication failed
+         * log message
          */
-        $this->info("Login failed.");
-        return $this->alert(
+        $this->info( $this->getError() );
+
+        return $this->userNotice(
           $this->tr("Wrong username or password.")
         );
-        return $this->response();
       }
     }
 
@@ -379,25 +430,8 @@ class qcl_access_Controller
      */
     elseif ( count( $params ) == 1 )
     {
+
       $sessionId = $params[0];
-
-      /*
-       * requesting guest access
-       */
-      if ( is_string( $sessionId ) )
-      {
-
-        if ( $this->isValidUserSession( $sessionId ) )
-        {
-          $activeUser =& $this->getActiveUser();
-          $username = $activeUser->username();
-          $logMsg = "Continuing session: $username ($sessionId).";
-        }
-        else
-        {
-          $this->raiseError("Invalid session id.");
-        }
-      }
 
       /*
        * guest acces
@@ -413,6 +447,25 @@ class qcl_access_Controller
           $this->userNotice("Guest access denied.");
         }
       }
+
+      /*
+       * requesting guest access
+       */
+      elseif ( is_string( $sessionId ) )
+      {
+
+        if ( $this->isValidUserSession( $sessionId ) )
+        {
+          $activeUser =& $this->getActiveUser();
+          $username = $activeUser->username();
+          $logMsg = "Continuing session: $username ($sessionId).";
+        }
+        else
+        {
+          $this->raiseError("Invalid session id.");
+        }
+      }
+
 
       /*
        * error
@@ -436,7 +489,7 @@ class qcl_access_Controller
      * @todo rename security -> access
      */
     $activeUser =& $this->getActiveUser();
-    //$permissions = $activeUser->getPermissions();
+    $permissions = $activeUser->getPermissions();
     $this->set( "permissions", $permissions );
 
     /*

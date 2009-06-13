@@ -243,12 +243,14 @@ class qcl_access_model_User extends qcl_access_model_Common
   function getPermissions( $prop="namedId" )
   {
     $permissions =  array();
-    $roleModel =& $this->linkedRoleModel( $prop );
+    $roleModel =& $this->linkedRoleModel();
     if ( $roleModel->foundSomething() )
     {
       do
       {
-        $permissions = array_unique(array_merge( $permissions, $roleModel->getPermissions( $prop ) ) );
+        $permissions = array_unique( array_merge(
+          $permissions, $roleModel->getPermissions( $prop )
+        ) );
       }
       while( $roleModel->nextRecord() );
     }
