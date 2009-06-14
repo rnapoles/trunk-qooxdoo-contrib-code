@@ -5,7 +5,6 @@
 require_once "qcl/access/Manager.php";
 require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
-
 /**
  * configuration management class, using a database backend
  *
@@ -15,7 +14,8 @@ require_once "qcl/db/model/xml/XmlSchemaModel.php";
  * @todo use userId instead of username
  */
 
-class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
+class qcl_config_Db
+  extends qcl_db_model_xml_XmlSchemaModel
 {
 
   /**
@@ -25,9 +25,15 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
   var $types = array("string","number","boolean","list");
 
   /**
+   * Results are cached for faster access
+   * @var array
+   */
+  var $_cache = array();
+
+  /**
    * Returns singleton instance.
    * @static
-   * @return qcl_config_db
+   * @return qcl_config_Db
    */
   function &getInstance( $class=__CLASS__ )
   {
@@ -38,7 +44,7 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 	 * creates a config property, overwriting any previous entry
 	 * requires permission "qcl.config.permissions.manage"
 	 *
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
+	 * @param string $nameId The name of the property (i.e., myapplication.config.locale)
 	 * @param string $type The type of the property (string|number|object|boolean)
 	 * @param string $permissionRead The permission name that is needed to access
 	 * 		  and read this property (optional)
@@ -48,10 +54,9 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 	 * 		  own variant of the configuration setting
 	 * @return id of created config entry
 	 */
-	function create(
-	   $name,
+	function createKey(
+	   $namedId,
 	   $type,
-	   $permissionRead=null,
 	   $permissionWrite=null,
 	   $allowUserVariants=false
 	) {
@@ -63,60 +68,99 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 
     //$activeUser->requirePermission("qcl.config.permissions.manage");
 
-		// todo: check if key already exists, if yes, abort
 
-		// check type
+		/*
+		 * Check type
+		 */
 		if ( ! in_array( $type, $this->types ) )
 		{
-			$this->raiseError("cql_config_db::create : invalid type '$type'");
+			$this->raiseError("Invalid type '$type'");
 		}
 
-		$permissionRead  = $permissionRead ? "'$permissionRead'" : "null";
-		$permissionWrite = $permissionWrite ? "'$permissionWrite'" : "null";
+    /*
+     * check if key exists
+     */
+    if ( $this->has( $namedId ) )
+    {
+      $this->userNotice("Config key '$namedId' already exists.");
+      // never gets here
+    }
 
-		// delete all previous entries
-		$this->db->execute("
-			DELETE FROM `{$this->table}`
-			WHERE  `{$this->col_namedId}` = '$name'
-		");
+		/*
+		 * The user id is 0 for default valus and null for global
+		 * values which cannot have a user variant
+		 */
+		$userId = $allowUserVariants ? 0 : null;
 
-		// create new entry
-		$user = $allowUserVariants ? "default" : "global";
-
-		$this->db->execute("
-			INSERT INTO `{$this->table}`
-				(`{$this->col_namedId}`,`{$this->col_type}`,
-				`{$this->col_permissionRead}`,`{$this->col_permissionWrite}`,
-				`{$this->col_user}`)
-			VALUES
-				('$name','$type',$permissionRead,$permissionWrite,'$user')
-		");
-
-		return $this->db->getLastInsertId();
+		return $this->insert( array(
+		  'namedId'         => $namedId,
+		  'type'            => $type,
+		  'userId'          => $userId,
+		  'permissionWrite' => $permissionWrite,
+		  'userId'          => $userId
+		));
 	}
 
 	/**
-	 * Checks if config property exists
-	 * @todo rename, conflicts with qcl_model::exists()
-	 * @param string $key
-	 * @return boolean
+	 * Create a config key if it doesn't exist already
+	 * @see qcl_config_Db::create()
+	 * @param $namedId
+	 * @param $type
+	 * @param $permissionWrite
+	 * @param $allowUserVariants
+	 * @return int|bool  Returns the id of the newly created record, or false if
+	 * key was not created.
 	 */
-	function exists( $key )
-	{
-		$value = $this->get( $key );
-		return ! empty( $value );
-	}
+	function createKeyIfNotExists(
+     $namedId,
+     $type,
+     $permissionWrite=null,
+     $allowUserVariants=false
+  ) {
+    if ( ! $this->has( $namedId ) )
+    {
+      return $this->createKey(
+       $namedId,
+       $type,
+       $permissionWrite,
+       $allowUserVariants
+      );
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
+   * Gets the user data model
+   * @param int[optional] $id Load record if given
+   * @return qcl_access_model_User
+   */
+  function &getUserModel( $id=null )
+  {
+    $userModel =& qcl_access_model_User::getInstance();
+    if ( $id ) $userModel->load( $id );
+    return $userModel;
+  }
+
+  /**
+   * Returns active user object instance
+   * @return qcl_access_model_User
+   */
+  function &getActiveUser()
+  {
+    return qcl_access_Manager::getActiveUser();
+  }
 
 	/**
 	 * Deletes a config key dependent on permissions
-	 *
+	 * @todo call statically with id parameters
 	 * @return void
 	 */
 	function delete( $ids=null )
 	{
-		$controller =& $this->getController();
-    $userModel  =& $controller->getUserModel();
-    $activeUser =& $controller->getActiveUser();
+    $activeUser =& qcl_access_Manager::getActiveUser();
 
     /*
      * get key name
@@ -130,7 +174,7 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
           or $this->getUser() == $activeUser->getNamedId() )
     {
       parent::delete();
-      $this->log("Deleted config record '$namedId' (#$id)", "config" );
+      $this->info("Deleted config record '$namedId' (#$id)" );
     }
 
     /*
@@ -138,67 +182,119 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
      */
 		else
 		{
-		  $this->raiseError("Current user doesn't have permission to delete '$namedId'");
+		  $this->userNotice("Current user doesn't have permission to delete '$namedId'");
 		}
 	}
 
 	/**
-	 * Delete all records that belong to a user
-	 * @param string $user
+	 * Delete all records that belong to a userId
+	 * @param int $userId
 	 * @return void
 	 */
-	function deleteByUser( $user )
+	function deleteByUserId( $userId )
 	{
-	  $this->findByUser( $user );
-	  if ( $this->foundSomething() )
-	  {
-	    do
-      {
-        $this->delete();
-      }
-      while( $this->nextRecord() );
-	  }
-	  else
-	  {
-	    $this->log("User $user does not have any config entries","config");
-	  }
-
+	  $this->deleteWhere(array(
+	   'userId' => $userId
+	  ));
 	}
 
 	/**
-	 * Returns config property value
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @return value of property or null if value does not exist.
+	 * Returns config property value. Raises an error if key does not exist.
+	 * @param string $namedId The name of the property (i.e., myapplication.config.locale)
+	 * @param int|null[optional] $userId Optional user id. If not given, get the config
+	 * key for the current user.
+ 	 * @return value of property.
 	 */
-	function get( $name )
+	function get( $namedId, $userId=false )
 	{
-		$row = $this->findByNamedId($name);
-    return $this->getValue($row);
+
+	  /*
+     * use active user if no user Id
+     */
+	  if ( $userId === false )
+	  {
+      $userModel =& $this->getActiveUser();
+      $userId = $userModel->getId();
+
+	  }
+
+    /*
+     * user id given, this is usually only the
+     * case if a manager edits the configuration
+     */
+	  else
+	  {
+	    $userModel =& $this->getUserModel( $userId );
+	  }
+
+	  /*
+	   * @todo cache results
+	   */
+
+    /*
+     * find config key for given user id
+     */
+	  $this->findWhere( array(
+      'namedId' => $namedId,
+      'userId'  => $userId
+    ));
+
+    /*
+     * raise error if no entry exists for the user
+     */
+    if ( $this->foundNothing() )
+    {
+      if ( is_null( $userId ) )
+      {
+        $this->raiseError("No global value exists for '$namedId'.");
+      }
+      elseif ( $userId === 0)
+      {
+        $this->raiseError("No default value exists for '$namedId'.");
+      }
+      else
+      {
+        /*
+         * no entry for user id, try default or global value
+         */
+        $this->findWhere("
+          `namedId` = '$namedId' AND ( `userId` IS NULL OR `userId` = 0 )
+        ");
+
+        /*
+         * raise error if no config value exists for the key
+         */
+        if ( $this->foundNothing() )
+        {
+          $username = $userModel->username();
+          $this->raiseError("'$namedId' does not exist for user '$username' (get)");
+        }
+      }
+    }
+
+    /*
+     * return value
+     */
+    return $this->getValue();
 	}
 
-
   /**
-   * Return config property type
-   * @param string $name The name of the property (i.e., myapplication.config.locale)
-   * @return type of property or null if value does not exist.
+   * Returns the type of the current config record
+   * @return string
    */
-  function getType( $name )
+  function getType()
   {
-    $row  = $this->findByNamedId($name);
-    return $row[$this->col_type];
+    return $this->getProperty("type");
   }
 
   /**
-   * gets the value in the correct type
-   * @todo rewrite this
+   * Returns the value of the current record in the correct variable type
    * @return mixed $value
-   * @param array|null[optional,default null] $row If null, use current record
    */
-  function getValue ( $row=null )
+  function getValue()
   {
-    $row    = either( $row, $this->currentRecord );
-    $value  = $row['value'];
-    $type   = $row['type'];
+    $value = $this->getProperty("value");
+    $type  = $this->getType();
 
     /*
      * return value as correct type
@@ -217,137 +313,207 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
   }
 
 	/**
-	 * checks if the config entry exists (optional: for a specific user)
+	 * Checks if the config entry exists (optional: for a specific user)
 	 * @param string $name
-	 * @param mixed $userRef
+	 * @param int $userId
 	 */
-	function has( $name, $user=null )
+	function has( $nameId, $userId=null )
   {
-    return ( count( $this->findByNamedId( $name, $user ) ) > 0 );
+    if ( $userId )
+    {
+      return ( $this->exists( array(
+        'namedId' => $nameId,
+        'userId'  => $userId
+      ) ) );
+    }
+    else
+    {
+      return ( $this->exists( array(
+        'namedId' => $nameId
+      ) ) );
+    }
   }
 
-	/**
-	 * Returns config data by id, but only if user has access rights
-	 * @param string $id The row id of the key
-	 * @return array row data
-	 * @override
-	 */
-	function findProtectedById( $id )
-	{
-		$controller  =& $this->getController();
-    $userModel   =& $controller->getUserModel();
-
-		/*
-		 * find record
-		 */
-	  parent::findById( $id );
+  /**
+   * Sets config property
+   * @param string $namedId The name of the property (i.e., myapplication.config.locale)
+   * @param string $value The value of the property.
+   * @param int|boolean $userId[optional] If 0, set the default value
+   * @return true if success or false if there was an error
+   */
+  function set( $namedId, $value, $userId=false)
+  {
+    /*
+     * check if key exists
+     */
+    if ( ! $this->has( $namedId ) )
+    {
+      $this->raiseError("Config key '$namedId' does not exist.");
+    }
 
     /*
-     * check for read permission
+     * user model
      */
-		if ( $permission = $this->getProperty("permissionRead") )
-		{
-			$userModel->requirePermission($permission);
-		}
-
-    return $this->getRecord();
-	}
-
-	/**
-	 * Returns the database record for the config entry and
-	 * FIXME
-	 * for the specific user
-	 * @param string $name
-	 * @param mixed $userRef
-	 * @return array|null
-	 */
-	function findByUser( $name, $username=null )
-	{
-		$controller =& $this->getController();
-    $activeUser =& $controller->getActiveUser();
+    if( $userId )
+    {
+      $userModel =& $this->getUserModel( $id );
+    }
+    elseif ( $userId === false )
+    {
+      $userModel =& $this->getActiveUser();
+      $userId = $userModel->getId();
+    }
+    else
+    {
+      $userModel =& $this->getActiveUser();
+    }
+    $username = $userModel->username();
 
     /*
-     * user reference given, this is usually only the
-     * case if a manager edits the configuration
+     * find config key
      */
-    if ( $username !== null )
-		{
+    $this->findWhere(array(
+      'namedId' => $namedId,
+      'userId'  => $userId
+    ));
 
-			$this->findWhere( "namedId = '$name' AND user = '$username' ");
-
-			/*
-			 * return null if no entry exists for the user
-			 */
-			if ( $this->foundNothing() )
-			{
-			  return null;
-			}
-
-			/*
-			 *  check user status
-			 */
-			if ( $username == "default" and $activeUser->hasPermission ("qcl.config.permissions.manage") )
-			{
-				/*
-				 *  admins can read default value
-				 */
-        return $this->getRecord();
-			}
-
-      /*
-       * active user is allowed to acces their own data
-       */
-			elseif ( $this->getUser() == $user )
-			{
-        return $this->getRecord();
-			}
-
-      /*
-       * if the value is protected by a read permission,
-       * check permission and abort if not granted
-       */
-      $permissionRead = $this->getProperty("permissionRead");
-			if( $permissionRead )
-			{
-				$activeUser->requirePermisson($permissionRead);
-			}
-		}
-
-
-    /*
-     *  no user reference given, assume active user
+     /*
+     * raise error if no entry exists for the user
      */
-		else
-		{
-			if ( $activeUser )
-			{
-			  $username =  $activeUser->username();
+    if ( $this->foundNothing() )
+    {
+      if ( is_null( $userId ) )
+      {
+        $this->raiseError("No global value exists for '$namedId'.");
+      }
+      elseif ( $userId === 0)
+      {
+        $this->raiseError("No default value exists for '$namedId'.");
+      }
+      else
+      {
         /*
-         * get row containing key name
+         * no entry for user id, try default or global value
          */
-        $this->findWhere( "namedId = '$name' AND user = '$username' ");
-			}
-			else
-			{
-			  $this->setRecord(null);
-			}
+        $this->findWhere("
+          `namedId` = '$namedId' AND ( `userId` IS NULL OR `userId` = 0 )
+        ");
 
-			/*
-			 * if no record has been found for the active user
-			 * or nobody is logged in, find default or global
-			 * value
-			 */
-			if ( $this->foundNothing() )
-			{
-			  $this->findWhere("namedId = '$name' AND  ( `user` = 'default' OR `user` = 'global' )");
-			}
-		}
+        /*
+         * create new entry config value exists for the key
+         */
+        if ( $this->foundNothing() )
+        {
+          $username = $userModel->username();
+          $this->raiseError("'$namedId' has no default or global value! (set)");
+        }
+      }
+    }
 
     /*
-     * return result
+     * check if we're allowed to set that key
      */
-    return $this->getRecord();
-	}
+    $configUserId = $this->getRawProperty("userId");
+
+    /*
+     * global value
+     */
+    if ( is_null( $userId ) )
+    {
+      if ( ! is_null( $configUserId ) )
+      {
+        $this->raiseError("You cannot set a global value for the non-global key '$namedId'.");
+      }
+    }
+
+    /*
+     * default value
+     */
+    elseif ( $userId === 0)
+    {
+      if ( is_null( $configUserId ) )
+      {
+        $this->raiseError("You cannot set a default value for the global key '$namedId'.");
+      }
+    }
+
+    /*
+     * create new user variant for non-global values
+     */
+    elseif ( ! is_null( $configUserId ) )
+    {
+      $id = $this->insert(array(
+        'namedId' => $namedId,
+        'type'    => $this->getType(),
+        'permissionWrite' => $this->getProperty("permissionWrite"),
+        'userId'  => $userId
+      ) );
+      $this->load( $id );
+    }
+
+
+    /*
+     * if the value is protected by a write permission,
+     * check permission and abort if not granted, unless
+     * the config entry belongs to the user itself
+     */
+    $permissionWrite = $this->getProperty("permissionWrite");
+    if( $permissionWrite )
+    {
+      if( ! $userModel->hasPermisson($permissionWrite) )
+      {
+        $this->userNotice("User '$username' has no permission to change config key '$namedId'");
+      }
+    }
+
+    /*
+     * type checking
+     */
+    if ( is_bool ( $value) )
+    {
+      $type = "boolean";
+    }
+    elseif ( is_numeric( $value ) )
+    {
+      $type = "number";
+    }
+    elseif ( is_array( $value ) )
+    {
+      $type = "list";
+      $value = implode(",",$value );
+    }
+    else
+    {
+      $type = "string";
+    }
+    $keyType = $this->getType();
+
+    if ( $type != $keyType )
+    {
+      $this->raiseError("Wrong type. Config key requires '$keyType', got '$type'.");
+    }
+
+    /*
+     * now we're finally ready to set that key.
+     */
+    $this->setProperty("value", $value );
+    $this->save();
+
+    $this->log("'$name' set to '$value' for user '$owner'.", "config");
+
+    return true;
+  }
+
+  /**
+   * Sets a default value for a config key
+   * @param $namedId
+   * @param $value
+   * @return unknown_type
+   */
+  function setDefault( $namedId, $value )
+  {
+    $this->set( $namedId, $value, 0 );
+  }
 
 
 	/**
@@ -355,19 +521,17 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 	 * @param string $mask return only a subset of entries that start with $mask
 	 * @return array Array
 	 */
-	function accessibleKeys( $mask=null )
+	function getAccessibleKeys( $mask=null )
 	{
-		$controller     =& $this->getController();
-    $activeUser     =& $controller->getActiveUser();
+    $activeUser     =& qcl_access_Manager::getActiveUser();
 
     /*
      * no accessible keys if no active user
      */
     if ( ! $activeUser ) return array();
-
-
-    $username        = $activeUser->username();
-		$isConfigManager = $activeUser->hasPermission("bibliograph.config.permissions.manage");
+    $username = $activeUser->username();
+    $userId = $activeUser->getId();
+		$isConfigManager = $activeUser->hasPermission("qcl.permissions.config.manage");
 
 		/*
 		 * find records
@@ -377,8 +541,7 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 			/*
 			 * get all rows containing mask
 			 */
-      $this->findWhere("namedId LIKE '$mask%'", "namedId");
-
+      $this->findWhere("`namedId` LIKE '$mask%'",/* order by */"namedId");
 		}
 		else
 		{
@@ -391,284 +554,62 @@ class qcl_config_Db extends qcl_db_model_xml_XmlSchemaModel
 		do
 		{
       /*
-       * admin read do everything
+       * global, default or user variant according to user id
        */
-      if ( $isConfigManager )
+      $configUserId = $this->getProperty("userId");
+
+      /*
+       * a global value has no user variants
+       */
+      if ( is_null( $configUserId ) )
       {
         $result[] = $this->getRecord();
         continue;
       }
 
       /*
-       * global, default or user value
+       * for each non-global key, we need to get either an existing user
+       * variant or the default value, if no user variant is set
        */
-      $user = $this->getUser();
-
-      if ( $user )
+      else
       {
-        /*
-         * get key if owned by active user or if global
-         */
-        if ( $user != $username and $user != "global" )
+        if ( $configUserId === 0 )
         {
           /*
-           * if default value look for a config entry for the user. if exists,
-           * do not return default value
-           * @todo rewrite this more elegantly
+           * look for user variants
            */
-          if ( $user == "default" )
+          $found     = false;
+          foreach ( $this->getResult() as $r )
           {
-            $found     = false;
-            foreach ( $this->getResult() as $r )
+            if ( $r['namedId'] == $row['namedId']
+                 and $r['userId'] == $userId )
             {
-              if ( $r['namedId'] == $row['namedId'] and $r['user'] == $username )
-              {
-                $found = true;
-                break;
-              }
-            }
-            if ( $found )
-            {
-               continue;
+              $found = true;
+              break;
             }
           }
-          else
+
+          /*
+           * if not found, add default value
+           */
+          if ( ! $found )
           {
-            continue;
+            $result[] = $this->getRecord();
           }
         }
+
+        /*
+         * this is a user variant, use it if it matches the user id
+         */
+        elseif ( $configUserId == $userId )
+        {
+          $result[] = $this->getRecord();
+        }
       }
-
-      /*
-       * read permission ?
-       */
-      $permissionRead = $this->getProperty('permissionRead');
-			if ( ! $permissionRead or $activeUser->hasPermission($permissionRead) )
-			{
-				$result[] = $this->getRecord();
-			}
-
 		}
 		while( $this->nextRecord() );
 
 		return $result;
-	}
-
-	/**
-	 * Sets config property
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @param string $value The value of the property.
-	 * @param boolean $defaultValue If true, set the key's default value for keys that allow
-	 *  	user variants. This is necessary so that the admin can change the defaults instead
-	 * 		of editing her/his own variant.
-	 * @return true if success or false if there was an error
-	 */
-	function set( $name, $value, $defaultValue=false)
-	{
-		$controller =& $this->getController();
-    $activeUser =& $controller->getActiveUser();
-    $username   =  $activeUser->username();
-
-		if ( $defaultValue )
-		{
-			// if we set the default, we need to retrieve the row containing the default value
-      $row = $this->findByNamedId($name,"default");
-		}
-		else
-		{
-			// otherwise, retrieve the user value or the global value
-      $row = $this->findByNamedId($name);
-		}
-
-		// create if key doesn't exist - todo: this is a security problem!
-		if ( ! count($row) )
-		{
-      /*
-       * type
-       */
-
-      if ( is_bool ( $value) )
-      {
-        $type = "boolean";
-      }
-      elseif ( is_numeric( $value ) )
-      {
-        $type = "number";
-      }
-		  elseif ( is_array( $value ) )
-      {
-        $type = "list";
-      }
-      else
-      {
-        $type = "string";
-      }
-
-      $this->info("qcl_config::set : creating non-existing key '$name', type '$type'.");
-
-      $this->create($name, $type, null, null, true );
-      return $this->set ( $name, $value );
-		}
-
-		$id				       = $row[$this->col_id];
-		$type			       = $row[$this->col_type];
-		$permissionWrite = $row[$this->col_permissionWrite];
-		$owner		       = $row[$this->col_user];
-
-		// type checking
-		$type_error = false;
-		switch ( $row[$this->col_type] )
-		{
-			case "string":
-			 if ( ! is_string($value) )
-			 {
-			   $type_error = true;
-			 }
-			 break;
-
-			case "number":
-  			if ( ! is_numeric($value) )
-  			{
-  			   $type_error = true;
-  			}
-  			break;
-
-			case "boolean":
-			 if ( ! is_bool($value) )
-			 {
-			   $type_error = true;
-			 }
-			 break;
-
-			case "list":
-			  if ( is_array( $value ) )
-			  {
-			    $value = implode(",",$value);
-			  }
-			  break;
-		}
-		if ( $type_error )
-		{
-			$this->raiseError("cql_config::set : Invalid type for '$name' (type '$type').");
-		}
-
-		// users can set their own entry variant with no further checking
-		if ( $owner != $username )
-		{
-			// but others need to check permission
-			if ( $permissionWrite )
-      {
-        $activeUser->requirePermission( $permissionWrite );
-      }
-
-			if ( $owner == "default" )
-      {
-  			if ( $defaultValue )
-  			{
-  				// change default value only if user has permission to do so
-          $activeUser->requirePermission("qcl.config.permissions.manage");
-  			}
-  			else
-  			{
-          // create user variant
-          unset($row[$this->col_id]);
-  				$row[$this->col_user] = $username;
-  				$id = $this->insert($row);
-  				$row[$this->col_id] = $id;
-  			}
-      }
-		}
-
-		/*
-		 *  all checks have been passed, set value
-		 */
-    $data = array();
-    $data['id']    = $row[$this->col_id];
-    $data['value'] = $value;
-
-		$this->update($data);
-
-		$this->log("'$name' set to '$value' for user '$owner'.");
-
-		return true;
-	}
-
-	/**
-	 * updates a config record
-	 * @return void
-	 * @param $id int
-	 * @param $key string
-	 * @param $value string
-	 */
-	function updateById($id,$key,$value)
-	{
-		$row = $this->load($id);
-		$controller =& $this->getController();
-    $activeUser =& $controller->getActiveUser();
-    $activeUser->requirePermission("qcl.config.permissions.manage");
-    $row[$key]= $value;
-    $this->update($row);
-	}
-
-	/**
-	 * resets a property user variant to its original value
-	 * raise an error if the active user does not have write permission for this property
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @return true if success or false if there was an error
-	 */
-	function reset($name)
-	{
-		$this->raiseError("qcl_config_db::reset : not implemented!");
-	}
-
-	/**
-	 * gets required permission name for read access to config property
-	 * @param string $name name of configuration key
-	 * @deprecated
-	 */
-	function getPermissionRead($name)
-	{
-		$row = $this->findByNamedId($name);
-		return $row[$this->col_permissionRead];
-	}
-
-	/**
-	 * gets required permission name for write access to config property
-	 * @param string $name name of configuration key
-	 * @deprecated
-	 */
-	function getPermissionWrite($name)
-	{
-		$row = $this->findByNamedId($name);
-		return $row[$this->col_permissionWrite];
-	}
-
-	/**
-	 * checks if current user has the right to access the configuration
-	 * property with read priviledges
-	 * @param string $name name of configuration key
-	 */
-	function hasReadAccess($name)
-	{
-		$controller  =& $this->getController();
-    $activeUser  =& $controller->getActiveUser();
-    $permission  =  $this->getPermissionRead($name);
-
-    return $activeUser->hasPermission($permission);
-	}
-
-  /**
-   * checks if current user has the right to access the configuration
-   * property with write priviledges
-   * @param string $name name of configuration key
-   */
-  function hasWriteAccess($name)
-  {
-  	$controller  =& $this->getController();
-    $activeUser  =& $controller->getActiveUser();
-    $permission  =  $this->getPermissionWrite($name);
-
-    return $activeUser->hasPermission($permission);
 	}
 }
 

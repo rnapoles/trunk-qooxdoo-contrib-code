@@ -156,7 +156,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
        * do not execute any method but skip to response
        * immediately
        */
-      $this->warn("Aborted in the constructor...");
+      $this->info("Aborted in the constructor...");
       $this->sendReply(
         $this->formatOutput( $serviceObject->response() ),
         $this->scriptTransportId
@@ -304,7 +304,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
            ! file_exists( $tgt_path ) )
       {
         $this->info( "Problem saving the file to '$tgt_path'." );
-        $this->warn( "Problem saving file '$file_name'." );
+        $this->echoWarning( "Problem saving file '$file_name'." );
       }
 
       /*
@@ -312,7 +312,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
        */
       else
       {
-        $this->reply( "Upload of '$file_name' successful." );
+        $this->echoReply( "Upload of '$file_name' successful." );
         $this->info("Uploaded file to '$tgt_path'");
       }
     }
@@ -429,6 +429,53 @@ class qcl_server_JsonRpc extends JsonRpcServer
     exit;
   }
 
+  /**
+   * Echo a HTML reply
+   * @param $msg
+   * @return void
+   */
+  function echoReply ( $msg )
+  {
+    echo "<FONT COLOR=GREEN>$msg</FONT>";
+  }
+
+  /**
+   * Echo a HTML warning
+   * @param $msg
+   * @return unknown_type
+   */
+  function echoWarning ( $msg )
+  {
+   echo "<FONT COLOR=RED>$msg</FONT>";
+  }
+
+  /**
+   * Echo a HTML warning and exit
+   * @param $msg
+   * @return unknown_type
+   */
+  function abort ( $msg )
+  {
+    $this->warn( $msg );
+    exit;
+  }
+
+
+  /**
+   * Logs an informational message
+   */
+  function info($str)
+  {
+    error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3, QCL_LOG_FILE);
+  }
+
+  /**
+   * Logs an informational message
+   */
+  function warn($str)
+  {
+    error_log( "qcl_jsonrpc_Server: *** WARN: ".  $str . "\n",3, QCL_LOG_FILE);
+  }
 
   /**
    * Hook for subclasses to locally log the error message
@@ -437,32 +484,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function logError( $msg )
   {
-    error_log( "\nqcl_jsonrpc_Server: ". $msg . "\n",3,QCL_LOG_FILE);
+    error_log( "\nqcl_jsonrpc_Server: *** ERROR: ". $msg . "\n",3, QCL_LOG_FILE);
   }
-
-  /**
-   * Logs an informational message
-   */
-  function info($str)
-  {
-    error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3,QCL_LOG_FILE);
-  }
-
-  function reply ( $msg )
-  {
-    echo "<FONT COLOR=GREEN>$msg</FONT>";
-  }
-
-  function warn ( $msg )
-  {
-    echo "<FONT COLOR=RED>$msg</FONT>";
-  }
-
-  function abort ( $msg )
-  {
-    $this->warn( $msg );
-    exit;
-  }
-
 }
 ?>

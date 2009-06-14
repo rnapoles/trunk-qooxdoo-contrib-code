@@ -135,7 +135,7 @@ class qcl_access_model_User extends qcl_access_model_Common
      * delete config data
      */
     $configModel =& qcl_application_Application::getConfigModel();
-    $configModel->deleteByUser( $this->getId() );
+    $configModel->deleteByUserId( $this->getId() );
 
     /*
      * call parent method to delete data
