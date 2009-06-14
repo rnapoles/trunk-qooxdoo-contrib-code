@@ -13,13 +13,13 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Christian Boulanger (cboulanger)
+ * Christian Boulanger (cboulanger)
 
-************************************************************************ */
+ ************************************************************************ */
 
 /* ************************************************************************
 #require(qcl.access.user.Manager)
-************************************************************************ */
+ ************************************************************************ */
 
 /**
  * A user object
@@ -30,7 +30,7 @@ qx.Class.define("qcl.access.user.User",
 
   /*
   *****************************************************************************
-     CONSTRUCTOR
+  CONSTRUCTOR
   *****************************************************************************
   */
 
@@ -38,14 +38,15 @@ qx.Class.define("qcl.access.user.User",
   {
     this.base(arguments);
     this.setNamedId(vName);
-		this.__roles = {};
-		this._manager = qcl.access.user.Manager.getInstance();
-		this._manager.add(this);
+    this._manager = qcl.access.user.Manager.getInstance();
+    this._manager.add(this);
+  
+    this.setPermissions([]);
   },
 
   /*
   *****************************************************************************
-     PROPERTIES
+  PROPERTIES
   *****************************************************************************
   */
 
@@ -56,8 +57,8 @@ qx.Class.define("qcl.access.user.User",
      */
     namedId :
     {
-      check       : "String",
-			nullable		: false
+      check    : "String",
+      nullable : false
     },
 
     /**
@@ -65,230 +66,112 @@ qx.Class.define("qcl.access.user.User",
      */
     data :
     {
-      check       : "Object",
-			event				: "changeData"
+      check : "Map",
+      event	: "changeData"
+    },
+
+    /**
+     * An array of permission objects
+     */
+    permissions :
+    {
+      check : "Array",
+      nullable : false,
+      event : "changePermissions"
     }
-			
+
   },
 
 
   /*
   *****************************************************************************
-     MEMBERS
+  MEMBERS
   *****************************************************************************
   */
 
   members :
   {
-    /**
-     * Returns all role objects connected to this user
-     * @return {Map}
-     */
-		getRoles : function()
-		{
-			return this.__roles;
-		},
-		
-		/**
-		 * get all role names
-		 * @return {Array} 
-		 */
-		getRoleNames : function()
-		{
-			var roles = this.getRoles();
-			var names = [];
-			for (var name in roles)
-			{
-				names.push(name);
-			}
-			return names;
-		},
-	
-		/**
-     * set list of roles
-     * @param permissions {Array} Array of role names or objects
-     * @return {Array} Array of role objects
-     */
-		setRoles : function(roles)
-		{
-			if ( ! qx.util.Validation.isValidArray(roles) )
-			{
-				this.error("Argument must be an array of string values or qcl.access.role.Role objects.");
-			}
-			
-			// clear permissions list
-			this.__roles = {};
-			
-			// add permissions
-			roles.forEach(function(ref){
-				this.addRole(ref);
-			},this);
-			
-			return this.getRoles();
-		},
-		
-		/**
-     * adds a role for the user
-     *
-     * @param roleRef {String|qcl.access.role.Role} name of role object or object reference
-     * @return {Boolean} Success
-     */
-    addRole : function(roleRef)
-    {
-      /*
-       * if there are multiple arguments, add others first
-       */
-			if ( arguments.length > 1)
-			{
-				for (var i=1; i < arguments.length; i++)
-				{
-					this.addRole(arguments[i]);
-				}
-			}
-			
-			/*
-			 * check if role is registered with manager and this user
-			 */
-			var role_manager 	= qcl.access.role.Manager.getInstance();
-			var name					= role_manager.getNamedId(roleRef);
-			var object				= role_manager.getObject(roleRef);
-			var roles 				= this.getRoles();
-			
-			if ( name && roles[name] )
-      {
-        this.info("Role " + name +  " has already been added.");
-        return false;
-      }
-			else if ( name )
-      {
-        // add a role
-        roles[name] = object;
-				// todo: dispatch event
-        return true;
-      }
-			else
-			{
-				this.error("Invalid role: " + roleRef );	
-			}
-			return true;
-    },
 
     /**
-     * checks if role has already been added      
-     * 
-     * @param roleRef {String|qcl.access.role.Role} name of role object or object reference
-     * @return {Boolean} Whether role has been added
-     */
-    hasRole : function(roleRef)
-    {
-			var name 	= this._manager.getNamedId(roleRef); 
-      var roles = this.getRoles();
-			return ( typeof roles[name] == "object" );
-    },
-
-
-    /**
-     * remove a role
-     *
-     * @param roleRef {String|qcl.access.role.Role} name of role object or object reference
-     * @return {Boolean} Whether role was removed or not
-     */
-    removeRole : function(roleRef)
-    {
-			var name = qcl.access.role.Manager.getInstance().getNamedId(roleRef); 
-      if ( ! name ) return false;
-			var roles = this.getRoles();
-			delete roles[name];
-			return true;
-		},
-
-    /**
-     * has permission through an attached role
-     *
+     * Check if user has the given permission
      * @param permissionRef {String|qcl.access.permission.Permission} name of permission object or object reference
      * @return {Boolean} Whether user has permission
      */
-    hasPermission : function(permissionRef)
+    hasPermission : function( permissionRef )
     {
-			var roles = this.getRoles();
-			for ( var role in roles )
-			{
-				if ( roles[role].hasPermission(permissionRef) )
-				{
-					return true;
-				}	
-			}
-			return false;
-		},
+      var hasPermission = false;
+      var perms = this.getPermissions();
+      for ( var i=0; i<perms.length; i++ )
+      {
+        var permission = perms[i];
+        if ( permissionRef instanceof qcl.access.permission.Permission 
+            && permissionRef === permission ) return true;
+        else if ( permissionRef == permission.getNamedId() ) return true;
+      };
+      return false;
+    },
 
-		/**
-		 * gets name of permissions
-		 * @return {Map} Hashmap of qcl.access.permission.Permission objects, key is name
-		 */
-		getPermissions : function()
-		{
-			var roles = this.getRoles();
-			var perms = {};
-			for ( var role in roles )
-			{
-				var rolePerms = roles[role].getPermissions();
-				for ( var rp in rolePerms )
-				{
-					perms[rp] = rolePerms[rp];	
-				}
-			}
-			return perms;
-		},
-		
-		/**
-		 * gets name of permissions
-		 * @return {Array} Array of permission names
-		 */
-		getPermissionNames : function()
-		{
-			var roles = this.getRoles();
-			var perms = [];
-			for ( var role in roles )
-			{
-				perms = perms.concat(roles[role].getPermissionNames());	
-			}
-			return perms;
-		},
-		
-		/**
-		 * broadcasts user permissions through message bus
-		 */
-		broadcastPermissions : function()
-		{
-			var perms = this.getPermissions();
-			for (var name in perms)
-			{
-				perms[name].setGranted(true);
-			}
-		},
-		
-		/**
-		 * revokes user permissions through message bus
-		 */
-		revokePermissions : function()
-		{
-			var perms = this.getPermissions();
-			for (var name in perms)
-			{
-				perms[name].setGranted(false);
-			}
-		}
-		
+    /**
+     * gets name of permissions
+     * @return {Array} Array of permission names
+     */
+    getPermissionNames : function()
+    {
+      var names = [];
+      var perms = this.getPermissions();
+      for ( var i=0; i<perms.length; i++ )
+      {
+        names.push( perms[i].getNamedId() );
+      }
+    },
+    
+    /**
+     * Adds a permission identified by its id, creating it if
+     * it doesn't already exist.
+     * @param names {Array} Array of strings
+     * @return
+     */
+    addPermissionsByName : function( names )
+    {
+      names.forEach( function(name) {
+        this.getPermissions().push( qcl.access.permission.Manager.getInstance().create( name ) );
+      },this );
+      this.fireDataEvent("changePermissions",this.getPermissions());
+    },
+
+    /**
+     * Broadcasts user permissions through message bus
+     */
+    broadcastPermissions : function()
+    {
+      var perms = this.getPermissions();
+      for (var name in perms)
+      {
+        perms[name].setGranted(true);
+      }
+    },
+
+    /**
+     * revokes user permissions through message bus
+     */
+    revokePermissions : function()
+    {
+      var perms = this.getPermissions();
+      for (var name in perms)
+      {
+        perms[name].setGranted(false);
+      }
+    }
+
   },
 
   /*
   *****************************************************************************
-     DESTRUCTOR
+  DESTRUCTOR
   *****************************************************************************
   */
 
   destruct : function() {
-    this._disposeArray("__roles");
-		this._manager.remove(this);
+    this._manager.remove(this);
   }
 });

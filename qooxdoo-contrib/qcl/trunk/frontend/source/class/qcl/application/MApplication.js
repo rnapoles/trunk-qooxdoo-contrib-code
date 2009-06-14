@@ -279,7 +279,7 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       if ( this.isMainApplication() )
       {  
-        return this.tr("Do you really want to quit %s?",  this.getApplicationName() );
+        return this.tr("Do you really want to quit %1?",  this.getApplicationName() );
       }
       return undefined;
     },
@@ -401,34 +401,14 @@ qx.Mixin.define("qcl.application.MApplication",
        /*
         * bind the authentication stores data model to the user managers data model
         */
-       this.getAuthStore().bind("model", this.getUserManager(), "model")
+       this.getAuthStore().bind("model", this.getUserManager(), "model");
        
-      /*
-       * start authentication
-       */
-      if ( this.getState("access") == "login" )
-      {
-        /* 
-         * log out a session so user can log in again
-         */
-         this.info("Preparing for login...");
-      }
-      else if (this.getState("access") == "continue")
-      {
-        /*
-         * keep an existing session
-         */
-        this.info("Continuing existing session...");
-      }
-      else
-      {
-        /*
-         * log in as a guest
-         */
-         this.info("Logging in as guest...");
-      }
-      
-      return null;
+
+       /*
+        * authenticate with session id, if any
+        */
+        this.getAuthStore().load("authenticate",[ this.getSessionId() ] );
+        
     },    
    
     

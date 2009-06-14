@@ -130,7 +130,7 @@ qx.Class.define("qcl.access.AbstractManager",
    },
 
 		/**
-		 * get managed object by name or reference or return null if it does does not exist
+		 * Get managed object by name or reference or return null if it does does not exist
 		 * @param ref {String|Object} name of object or object reference
 		 * @return {Object|Null}
 		 */
@@ -192,7 +192,7 @@ qx.Class.define("qcl.access.AbstractManager",
 		},
 		
 		/**
-		 * creates a managed object or retrieves it if an object with the same name already
+		 * Creates a managed object or retrieves it if an object with the same name already
 		 * exists. Can take multiple arguments or an array argument
 		 * @param name {String|Array} (array of) element name(s)
 		 * @return {Object|Array} (array of) reference(s) to created or existing object(s)

@@ -21,27 +21,29 @@
 /**
  * 
  * The jsonrpc data store is responsible for fetching data from a json-rpc
- * server backend.
+ * server backend. The data will be parsed by the marshaler that you supply as
+ * third parameter in the constructor. If you don't supply one, the default
+ * qx.data.marshal.Json will be used. 
  * 
- * The loaded data will be parsed and saved in qooxdoo objects. Every value of
- * the loaded data will be stored in a qooxdoo property. The model classes for
- * the data will be created automatically.
+ * The store also takes care of transport ...
  * 
- * Until qooxdoo includes a cometd-like service which allows low-latency server
- * push infrastructure, the databinding requests are used to transport events
- * and message between server and client, which "piggyback" on the transport in
- * both directions. Therefore, in the result sent from the server there is an
- * additional data layer. The response has to be a hash map of the following
- * structure.:
+ * The databinding requests can be used to transport events and message between 
+ * server and client in yet another way by "piggybacking" on the transport in both 
+ * directions. If you want to use this feature, the result sent from the server 
+ * needs to contain an additional data layer. The response has the to be a hash map 
+ * of the following structure.:
  * 
  * <pre>
  * {
- *   // result property should always be provided in order to allow events and messages to be transported
+ *   // result property should always be provided in order to allow events and 
+ *   // messages to be transported
  *   result : 
  *   {
  *     result : { (... result data ...) },
- *     events : [ { type : "fooEvent", data : ... }, { type : "barEvent", data: ... }, ... ],
- *     messages : [ { name : &quot;appname.messages.foo&quot;, data : ... }, { name : &quot;appname.messages.bar&quot;, data: ... }, ... ]
+ *     events : [ { type : "fooEvent", data : ... }, 
+ *                { type : "barEvent", data: ... }, ... ],
+ *     messages : [ { name : "appname.messages.foo", data : ... }, 
+ *                  { name : "appname.messages.bar", data: ... }, ... ]
  *   }
  *   // error property only exists if an error occurred 
  *   error : 
@@ -53,7 +55,8 @@
  * </pre>
  * 
  * The "events" and "messages" array elements will be dispatched as events on
- * the sending/receiving object or as public messages.
+ * the sending/receiving object or as public messages.This is entirely optional, though
+ * and not an integral part of the databinding.
  * 
  */
 qx.Class.define("qcl.databinding.event.store.JsonRpc", 
