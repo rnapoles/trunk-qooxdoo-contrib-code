@@ -20,17 +20,18 @@
 /**
  * Abstract class for jsonrpc data stores that handles event propagation.
  * This is a very simple implementation not meant for production. We simply
- * store the event data in the $_SESSION variable, separated by the 
+ * store the event data in the $_SESSION variable, separated by the
  * class name of the extending class, so that events of differnt widget
- * types do not get mixed up. 
+ * types do not get mixed up.
  */
 class AbstractStore
 {
+  var $skipAuthentication = true;
 
   function method_register( $params )
   {
     list( $storeId ) = $params;
-    
+
     if ( ! isset( $_SESSION[get_class($this)]['storeIds'] ) )
     {
       $_SESSION[get_class($this)]['storeIds'] = array();
@@ -67,7 +68,7 @@ class AbstractStore
       );
   }
 
-  
+
   function method_unregisterAll()
   {
     $_SESSION[get_class($this)]['storeIds'] = array();
@@ -81,9 +82,9 @@ class AbstractStore
   {
 
     list( $storeId, $events ) = $params;
-    
+
     //echo "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/";
-    
+
     /*
      * save client events
      */
@@ -125,7 +126,7 @@ class AbstractStore
 
   function saveEvent( $storeId, $event )
   {
-    
+
     /*
      * for each connected store except the requesting one,
      * save an event in the event queue
@@ -137,9 +138,9 @@ class AbstractStore
         $_SESSION[get_class($this)]['events'][$id][] = $event;
       }
     }
-    
+
     //echo "/* Store #$storeId: Saving event " . print_r( $event, true) . "\nServer event queue: " . print_r( $_SESSION, true ) . "*/";
-    
+
   }
 
 }
