@@ -42,7 +42,6 @@ qx.Class.define("qcl.access.AbstractManager",
     this._objects = {};
   },
 
-
   /*
   *****************************************************************************
      MEMBERS
@@ -65,33 +64,26 @@ qx.Class.define("qcl.access.AbstractManager",
     ---------------------------------------------------------------------------
     */    
     /**
-     * adds managed object
+     * Adds managed object
      *
      * @param vObject {var} TODOC
      * @return {void | Boolean} TODOC
      */
     add : function(vObject)
     {
-      if (this.getDisposed()) {
-        return;
-      }
 			var hashCode = vObject.toHashCode(); 
       this._objects[hashCode] = vObject;
 			this._index[vObject.getNamedId()] = hashCode;
     },
 
-
     /**
-     * removes managed object
+     * Removes managed object
      *
      * @param vObject {var} TODOC
      * @return {void | Boolean} TODOC
      */
     remove : function(vObject)
     {
-      if ( this.getDisposed() ) {
-        return false;
-      }
 			var hashCode = vObject.toHashCode();
       delete this._objects[hashCode];
 			delete this._index[vObject.getNamedId()];
@@ -99,26 +91,13 @@ qx.Class.define("qcl.access.AbstractManager",
     },
     
    /**
-    * TODOC
-    *
+    * Checks if object is already managed
     * @param vObject {var} TODOC
     * @return {var} TODOC
     */
    has : function(vObject) {
      return this._objects[vObject.toHashCode()] != null;
-   },    
-
-
-   /**
-    * TODOC
-    *
-    * @param vObject {var} TODOC
-    * @return {var} TODOC
-    */
-   get : function(vObject) {
-     return this._objects[vObject.toHashCode()];
-   },
-
+   },  
 
    /**
     * TODOC
@@ -234,7 +213,7 @@ qx.Class.define("qcl.access.AbstractManager",
 				var type = this.classname.substr(0,this.classname.lastIndexOf(".")); // chop of "Manager" part
 				var typeLower = type.substr(type.lastIndexOf(".")+1);
 				var typeUpper = typeLower.substr(0,1).toUpperCase() + typeLower.substr(1);
-				obj = new qcl.a[typeLower][typeUpper](name); // this automatically adds the new object to the manage
+				obj = new qcl.access[typeLower][typeUpper](name); // this automatically adds the new object to the manage
 			}
 			return obj;
 		},

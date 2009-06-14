@@ -58,7 +58,14 @@ qx.Class.define("qcl.access.user.Manager",
 			event				: "changeActiveUser",
 			apply				: "_applyActiveUser",
 			nullable		: true
-    }	
+    },
+    
+    model : 
+    {
+      check : "Object",
+      init : null,
+      apply : "_applyModel"
+    }
   },
   
 
@@ -72,31 +79,52 @@ qx.Class.define("qcl.access.user.Manager",
   {
 		/**
 		 * get user object by login name
-		 * @param loginName {String}
+		 * @param username {String}
 		 * @return {qcl.access.user.User}
 		 */
-		getByLoginName : function (loginName)
+		getByUsername : function ( username )
 		{
-			return this.getObject(loginName);
+			return this.getObject( username );
 		},
 		
-		
 		/**
+		 * apply the data model containing userdata
+		 */
+		_applyModel : function ( model, old )
+		{
+		  if ( model )
+		  {
+		    /*
+		     * create user
+		     */
+		    var user = qcl.access.user.Manager.getInstance().create( model.getUsername() );
+		    
+		    /*
+		     * set user data
+		     */
+		    user.setFullname( model.getFullname() );
+		    user.addPermissionsByName( model.getPermissions() );
+		    
+		    /*
+		     * set user as active user
+		     */
+		    this.setActiveUser( user ); 
+		  }
+		},
+		
+		/** 
 		 * sets the currently active/logged-in user
 		 */
 		_applyActiveUser : function ( userObj, oldUserObj )
 		{
 			if ( oldUserObj )
 			{
-				// log out the previous user
 				oldUserObj.revokePermissions();
-				qx.event.message.Bus.dispatch("qcl.access.messages.logout");
 			}
 			
 			if ( userObj instanceof qcl.access.user.User )
 			{
 				userObj.broadcastPermissions();
-				qx.event.message.Bus.dispatch("qcl.access.messages.changeActiveUser",userObj );
 			}
 			else if( userObj !== null )
 			{
@@ -109,64 +137,8 @@ qx.Class.define("qcl.access.user.Manager",
 		 */
 		logout : function()
 		{
-			this.setActiveUser(null);
-			qcl.access.permission.Manager.getInstance().deleteAll();
-			qcl.access.role.Manager.getInstance().deleteAll();
-			qcl.access.user.Manager.getInstance().deleteAll();
+		  this.setActiveUser(null);
 			qx.event.message.Bus.dispatch("qcl.access.messages.logout");
-		},
-		
-		/**
-		 * sets users, roles and permissions from data supplied by backend. 
-		 * during authentication, only one user is sent
-		 * 
-		 * @param data {Map} hash map of the following format:
-		 * {
-		 * 	"userdata" : 
-		 * 	{
-		 *  	"username" : johndoe, 
-		 *  	"fullName" : "John Doe",
-		 *  	"email" : "johndoe@example.com",
-		 *  	... (other userdata)
-		 *  },
-		 *  "roles" : 
-		 *  {
-		 *  	"role1" : ["permission3", "permission12" , ... ],
-		 *  	"role2" : ["permission1", "permission5", ... ],
-		 *  	...
-		 *  }
-		 * }
-		 *  
-		 */
-		setSecurity : function (data)
-		{
-			if (data===null) 
-			{
-				this.logout();
-				return;
-			}
-			
-			// user
-			var userObj = this.create(data.userdata.username);
-			userObj.setData(data.userdata);
-			
-			// roles and permissions
-			var permManager = qcl.access.permission.Manager.getInstance(); 
-			var roleManager = qcl.access.role.Manager.getInstance();
-		
-			for ( var roleName in data.roles )
-			{
-				// create roles and permissions
-				var roleObj = roleManager.create(roleName);
-				roleObj.setPermissions( data.roles[roleName] );
-				// add them to active user
-				userObj.addRole(roleObj);
-			}
-			
-			// login user
-			this.setActiveUser(userObj);
 		}
   }
 });
-
-

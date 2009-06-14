@@ -382,36 +382,51 @@ qx.Mixin.define("qcl.application.MApplication",
     /**
      * Starts the authentication on the server, 
      * using the given userManager object.
+     * @param authStore {qcl.databinding.event.store.JsonRpc}
      */
-    startAuthentication : function()
+    startAuthentication : function( service )
     {
-       if ( this.__authenticationStarted )
-       {
-         this.error("Authentication already started");
-       }
-       this.__authenticationStarted = true;
-       
-       this.info("Starting authentication...");
-       
-       if ( ! this.getAuthStore() || ! this.getUserManager() )
-       {
-         this.error("You have to set an authentication store and the usermanager first.");
-       }
-       
-       /*
-        * bind the authentication stores data model to the user managers data model
-        */
-       this.getAuthStore().bind("model", this.getUserManager(), "model");
-       
+      if ( ! this.getUserManager() )
+      {
+        this.setUserManager( qcl.access.user.Manager.getInstance() );
+      }
+      
+      if ( ! this.getAuthStore() )
+      {
+        this.setAuthStore(       
+          new qcl.databinding.event.store.JsonRpc( 
+            this.getServerUrl(), service, null, null, this.getRpcObject() 
+          ) 
+        );
+      }
+      
+      if ( this.__authenticationStarted )
+      {
+        this.error("Authentication already started");
+      }
+      this.__authenticationStarted = true;
 
-       /*
-        * authenticate with session id, if any
-        */
-        this.getAuthStore().load("authenticate",[ this.getSessionId() ] );
-        
+      this.info("Starting authentication...");
+
+      /*
+       * bind the authentication stores data model to the user managers data model
+       */
+      this.getAuthStore().bind("model", this.getUserManager(), "model");
+
+      /*
+       * bind the session id propery of the auth store to the session
+       * id of this application
+       */
+      this.getAuthStore().bind("model.sessionId", this, "sessionId" );      
+      
+      /*
+       * authenticate with session id, if any, otherwise null to get
+       * guest access
+       */
+      this.getAuthStore().load("authenticate",[ this.getSessionId() || null ] );
+      
     },    
-   
-    
+       
     /*
     ---------------------------------------------------------------------------
        CONFIGURATION
@@ -429,17 +444,28 @@ qx.Mixin.define("qcl.application.MApplication",
     * }
     * </pre>
     */
-   loadConfiguration : function()
+   loadConfiguration : function( service )
    {
+      if ( ! this.getConfigManager() )
+      {
+        this.setConfigManager( qcl.config.Manager.getInstance() );
+      }
+      
+      if ( ! this.getConfigStore() )
+      {
+        this.setConfigStore(
+          new qcl.databinding.event.store.JsonRpc( 
+            this.getServerUrl(), service, null, null, this.getRpcObject() 
+          )       
+        );        
+      }
+
       if ( ! this.__authenticationStarted )
       {
         //this.error("Cannot load configuration, application has not started authentication");
       }
       
-      if ( ! this.getConfigStore() || ! this.getConfigManager() )
-      {
-        this.error("You have to set an configuration store and manager first.");
-      }
+      this.info("Loading configuration...");
       
       /* 
        * bind the configuration store's data model to the user manager's data model
