@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:application 
+  xmlns:qx="http://www.qxtransformer.org/qooxdoo/0.8"
+  xmlns:qxt="http://www.qxtransformer.org/extension/0.4"
+  xmlns:qcl="http://www.qooxdoo.org/contrib/qcl/trunk"
+  xmlns:components="access.components.*" 
+  className="access.Application"
+  author="Christian Boulanger"
+  extend="access.Main">
+
+  <!-- main layout -->
+  <qx:composite qxt:edge="0">
+  
+  
+    <qx:vbox>
+      
+      <!-- toolbar -->
+      <components:mainToolBar/>
+      
+    </qx:vbox>
+  </qx:composite>
+</qx:application>
