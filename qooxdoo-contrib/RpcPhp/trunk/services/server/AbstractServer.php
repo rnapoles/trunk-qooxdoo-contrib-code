@@ -59,7 +59,7 @@ require_once dirname(__FILE__) . "/access/AccessibilityBehavior.php";
 
 /**
  * The location of the service class directories.
- * (trailing slash required). 
+ * (trailing slash required).
  */
 if ( ! defined("servicePathPrefix") )
 {
@@ -102,6 +102,21 @@ if (! defined("JsonRpcDebugFile"))
 }
 
 /**
+ * Whether the server should include a package index file before instantiating
+ * a service class file. By default, if a file named "__index__.php" (similar to
+ * python) exists in the same directory as the service class script file, it is
+ * included before the service class file is included. This is useful, for example,
+ * to sort out complex include dependencies before a class is instantiated.
+ * If you don't want this behavior, set the JsonRpcPackageIndexFile constant
+ * to null in your global_settings.php file.
+ */
+if (! defined("JsonRpcPackageIndexFile") )
+{
+  define("JsonRpcPackageIndexFile", "__index__.php" );
+}
+
+
+/**
  * Abstract server class, needs to be subclassed in
  * order to be used.
  * @author Derrell Lipman
@@ -136,7 +151,7 @@ class AbstractServer
 
   /**
    * An array of paths to the services. This will be populated
-   * by the servicePathPrefix constant in the constructor, but 
+   * by the servicePathPrefix constant in the constructor, but
    * you can also manually populate it.
    * @var array
    */
@@ -153,13 +168,13 @@ class AbstractServer
    * @var int
    */
   var $id;
-  
+
   /**
    * The input data from the request
    * @var object
    */
   var $input;
-  
+
   /**
    * The full service path
    * @var string
@@ -201,18 +216,18 @@ class AbstractServer
    * @var array
    */
   var $params;
-  
+
   /**
    * The server data sent with the request
    * @var object
    */
   var $serverData;
-  
+
   /**
    * The php session id
    */
   var $sessionId;
-  
+
   /**
    * PHP4 constructor
    */
@@ -230,18 +245,18 @@ class AbstractServer
     {
       trigger_error("You must subclass AbstractServer in order to use it.");
     }
-    
+
     /*
      * Use servicePathPrefix constant for backwards compatibility
      */
     $this->servicePaths = array ( servicePathPrefix );
-    
+
     /**
      * Hook for subclasses to do initialization stuff.
      */
     $this->initializeServer();
   }
-  
+
   /**
    * Initialize the server. This serves as a hook for subclassing
    * servers.
@@ -260,8 +275,8 @@ class AbstractServer
   function setId( $id )
   {
     $this->id = $id;
-  }  
-  
+  }
+
   /**
    * Getter for request id
    * @return int
@@ -270,7 +285,7 @@ class AbstractServer
   {
     return $this->id;
   }
-  
+
   /**
    * Setter for service name
    * @param string $service
@@ -279,8 +294,8 @@ class AbstractServer
   function setService( $service )
   {
     $this->service = $service;
-  }  
-  
+  }
+
   /**
    * Getter for service name
    * @return string
@@ -298,8 +313,8 @@ class AbstractServer
   function setMethod( $method )
   {
     $this->method = $method;
-  }  
-  
+  }
+
   /**
    * Getter for method name
    * @return string
@@ -308,7 +323,7 @@ class AbstractServer
   {
     return $this->method;
   }
-  
+
   /**
    * Setter for service parameters
    * @param array $params
@@ -317,8 +332,8 @@ class AbstractServer
   function setParams( $params )
   {
     $this->params = $params;
-  }  
-  
+  }
+
   /**
    * Getter for service parameters
    * @return string
@@ -326,9 +341,9 @@ class AbstractServer
   function getParams()
   {
     return $this->params;
-  }  
+  }
 
-  
+
   /**
    * Setter for server data
    * @param array $serverData
@@ -337,17 +352,26 @@ class AbstractServer
   function setServerData( $serverData )
   {
     $this->serverData = $serverData;
-  }  
-  
+  }
+
   /**
-   * Getter for server data
-   * @return array
+   * Returns the client-sent server data.
+   * @param string[optional] $key If provided, get only a key, otherwise return the map
+   * @return mixed Either the value of the given key, or the whole map
    */
-  function getServerData()
+  function getServerData( $key=null )
   {
-    return $this->serverData;
-  }    
-  
+    if ( is_null($key) )
+    {
+      return $this->serverData;
+    }
+    elseif ( is_object( $this->serverData ) )
+    {
+      return $this->serverData->$key;
+    }
+    trigger_error("Invalid parameter.");
+  }
+
   /**
    * Setter for service paths
    * @param array|string $servicePaths
@@ -360,12 +384,12 @@ class AbstractServer
       if ( ! is_dir( $path ) )
       {
         trigger_error( "'$path' is not a directory." );
-      } 
+      }
       $sp[] = $path;
     }
     $this->servicePaths = $sp;
   }
-  
+
   /**
    * Getter for service paths
    */
@@ -373,7 +397,7 @@ class AbstractServer
   {
     return $this->servicePaths;
   }
-  
+
   /**
    * Setter for accessibility behavior object
    * @param AccessibilityBehavior $object
@@ -396,8 +420,8 @@ class AbstractServer
   {
     return $this->accessibilityBehavior;
   }
-  
-  
+
+
   /**
    * Setter for error behavior object
    * @param AbstractErrorBehavior $object
@@ -435,7 +459,7 @@ class AbstractServer
     {
       trigger_error("No error behavior!");
     }
-    
+
     /**
      * accessibility behavior
      */
@@ -443,8 +467,8 @@ class AbstractServer
     if ( ! $accessibilityBehavior )
     {
       trigger_error("No accessibility behavior!");
-    }    
-    
+    }
+
     /*
      * Check request and content type and get the
      * input data. If no data, abort with error.
@@ -468,11 +492,12 @@ class AbstractServer
     /*
      * configure this service request properties
      */
+    $this->setId( $id );
     $this->setService( $service );
     $this->setMethod( $method );
     $this->setParams( $params );
     $this->setServerData( $serverData );
-    
+
     /*
      * Ok, it looks like a valid request, so we'll return an
      * error object if we encounter errors from here on out.
@@ -482,7 +507,7 @@ class AbstractServer
     $this->debug("Service request: $service.$method");
     $this->debug("Parameters: " . var_export($params,true) );
     $this->debug("Server Data: " . var_export($serverData,true) );
-    
+
     /*
      * service components
      */
@@ -497,7 +522,7 @@ class AbstractServer
     {
       $this->sendErrorAndExit();
     }
-     
+
     /*
      * load service class file
      */
@@ -517,12 +542,12 @@ class AbstractServer
     {
       $this->sendErrorAndExit();
     }
-    
+
     /*
      * now, start php session
      */
     $this->startSession();
-   
+
     /*
      * instantiate service
      */
@@ -666,33 +691,52 @@ class AbstractServer
     {
       trigger_error("servicePaths property must be set with an array of paths");
     }
-    
+
     /*
      * Replace all dots with slashes in the service name so we can
      * locate the service script.
      */
-    $servicePath = implode( "/", $this->getServiceComponents( $service ) );
+    $serviceComponents = $this->getServiceComponents( $service );
+    $path = implode( "/", $serviceComponents );
+    $packagePath = implode( "/", array_slice( $serviceComponents, 0, -1 ) );
 
     /*
      * Try to load the requested service
      */
     foreach( $this->servicePaths as $prefix )
     {
-      $classFile = "$prefix/$servicePath.php";
+      $classFile = "$prefix/$path.php";
       if ( file_exists( $classFile ) )
       {
+
+        /*
+         * if package index file exists, which loads package
+         * dependencies (usually '__index__.php', load this first
+         */
+        if ( JsonRpcPackageIndexFile )
+        {
+          $packageIndexFile = "$prefix/$packagePath/" . JsonRpcPackageIndexFile;
+          if ( file_exists( $packageIndexFile ) )
+          {
+            $this->debug("Loading package index file '$packageIndexFile'...");
+            require_once $packageIndexFile;
+          }
+        }
+
         $this->debug("Loading class file '$classFile'...");
         require_once $classFile;
         return $classFile;
-      }      
+      }
     }
-    
+
     /*
      * Couldn't find the requested service
      */
+
+    $serviceName = implode( ".", $serviceComponents );
     $this->SetError(
       JsonRpcError_ServiceNotFound,
-      "Service `$servicePath` not found."
+      "Service `$serviceName` not found."
     );
     return false;
   }
@@ -757,7 +801,7 @@ class AbstractServer
     );
     return false;
   }
-  
+
   /**
    * Starts or joins an existing php session. You can override
    * the cookie-based PHP session id by providing a 'sessionId'
@@ -769,7 +813,7 @@ class AbstractServer
     if ( isset( $serverData->sessionId ) and $serverData->sessionId )
     {
       $this->debug( "Starting session '{$serverData->sessionId}' from server_data.");
-      session_id( $serverData->sessionId );   
+      session_id( $serverData->sessionId );
     }
     else
     {
@@ -777,8 +821,8 @@ class AbstractServer
     }
     session_start();
     $this->sessionId = session_id();
-  } 
-  
+  }
+
   /**
    * Returns the actual service object, based on the class name.
    * Instantiates
@@ -792,7 +836,7 @@ class AbstractServer
     $serviceObject = new $className( &$this );
     return $serviceObject;
   }
-  
+
   /**
    * Check the accessibility of service object and service
    * method. Aborts request when Access is denied.
@@ -873,7 +917,7 @@ class AbstractServer
     $errorBehavior =& $this->getErrorBehavior();
     $errorBehavior->SetOrigin( $origin );
   }
-  
+
   /**
    * Configures the jsonrpc error with error code
    * and error message
@@ -888,27 +932,22 @@ class AbstractServer
   }
 
   /**
-   * Called when a jsonrpc error has been set. Will send the 
+   * Called when a jsonrpc error has been set. Will send the
    * the last configured error to the client and exit the script
-   * @param string[optional] $error
    * @return void
    */
-  function sendErrorAndExit( $error=null, $code=null )
+  function sendErrorAndExit()
   {
     $errorBehavior =& $this->getErrorBehavior();
     if ( $errorBehavior )
     {
-      if ( $error )
-      {
-        $errorBehavior->SetError( $code, $message );
-      }
       $this->debug("Error: " . $errorBehavior->GetErrorMessage() );
-      $this->errorBehavior->SendAndExit();      
+      $this->errorBehavior->SendAndExit();
     }
     else
     {
-      echo $error;
-      exit;      
+      echo "An unknown error occurred.";
+      exit;
     }
 
   }
@@ -947,7 +986,7 @@ class AbstractServer
     }
     else
     {
-      /* 
+      /*
        * Otherwise, we need to add a call to a qooxdoo-specific function
        */
       $reply =
@@ -962,7 +1001,7 @@ class AbstractServer
      */
     exit;
   }
-  
+
   /**
    * Returns the url of the server
    * @return string
@@ -970,7 +1009,7 @@ class AbstractServer
   function getUrl()
   {
     return "http://" . getenv ( HTTP_HOST ) . $_SERVER['PHP_SELF'];
-  }    
+  }
 
 }
 ?>
