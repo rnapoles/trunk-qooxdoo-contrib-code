@@ -6,12 +6,8 @@ require_once "qcl/access/Manager.php";
 require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
- * configuration management class, using a database backend
+ * Configuration management class, using a database backend
  *
- * Class cannot be used directly, you need to subclass it in
- * your application service class folder
- * @todo use qcl_model methods instead of custom sql
- * @todo use userId instead of username
  */
 
 class qcl_config_Db
@@ -354,7 +350,7 @@ class qcl_config_Db
     /*
      * user model
      */
-    if( $userId )
+    if ( $userId )
     {
       $userModel =& $this->getUserModel( $id );
     }
@@ -377,16 +373,20 @@ class qcl_config_Db
       'userId'  => $userId
     ));
 
-     /*
+    $foundUserVariant = $this->foundSomething();
+    $trySetGlobal = is_null( $userId );
+    $trySetDefault = ($userId === 0);
+
+    /*
      * raise error if no entry exists for the user
      */
-    if ( $this->foundNothing() )
+    if ( ! $foundUserVariant  )
     {
-      if ( is_null( $userId ) )
+      if ( $trySetGlobal )
       {
         $this->raiseError("No global value exists for '$namedId'.");
       }
-      elseif ( $userId === 0)
+      elseif ( $trySetDefault )
       {
         $this->raiseError("No default value exists for '$namedId'.");
       }
@@ -414,33 +414,35 @@ class qcl_config_Db
      * check if we're allowed to set that key
      */
     $configUserId = $this->getRawProperty("userId");
+    $isGlobalKey  = is_null( $configUserId );
 
     /*
-     * global value
+     * trying to set global value
      */
-    if ( is_null( $userId ) )
+    if ( $trySetGlobal )
     {
-      if ( ! is_null( $configUserId ) )
+      if ( ! $isGlobalKey )
       {
         $this->raiseError("You cannot set a global value for the non-global key '$namedId'.");
       }
     }
 
     /*
-     * default value
+     * trying to set default value
      */
-    elseif ( $userId === 0)
+    elseif ( $trySetDefault )
     {
-      if ( is_null( $configUserId ) )
+      if ( $isGlobalKey )
       {
         $this->raiseError("You cannot set a default value for the global key '$namedId'.");
       }
     }
 
     /*
-     * create new user variant for non-global values
+     * create new user variant for non-global values if no matching
+     * user variant has been found
      */
-    elseif ( ! is_null( $configUserId ) )
+    elseif ( ! $foundUserVariant and ! $isGlobalKey  )
     {
       $id = $this->insert(array(
         'namedId' => $namedId,
@@ -508,13 +510,32 @@ class qcl_config_Db
    * Sets a default value for a config key
    * @param $namedId
    * @param $value
-   * @return unknown_type
+   * @return void
    */
   function setDefault( $namedId, $value )
   {
     $this->set( $namedId, $value, 0 );
   }
 
+  /**
+   * Gets the default value for a config key
+   * @param $namedId
+   * @return mixed
+   */
+  function getDefault( $namedId )
+  {
+    return $this->get( $namedId, 0 );
+  }
+
+  /**
+   * Resets the user variant of a config value to the default value.
+   * @param $namedId
+   * @return void
+   */
+  function reset( $namedId )
+  {
+    $this->set( $namedId, $this->getDefault( $namedId ) );
+  }
 
 	/**
 	 * Returns all config property value that are readable by the active user
@@ -523,7 +544,7 @@ class qcl_config_Db
 	 */
 	function getAccessibleKeys( $mask=null )
 	{
-    $activeUser     =& qcl_access_Manager::getActiveUser();
+    $activeUser =& qcl_access_Manager::getActiveUser();
 
     /*
      * no accessible keys if no active user
@@ -531,85 +552,35 @@ class qcl_config_Db
     if ( ! $activeUser ) return array();
     $username = $activeUser->username();
     $userId = $activeUser->getId();
-		$isConfigManager = $activeUser->hasPermission("qcl.permissions.config.manage");
 
 		/*
-		 * find records
+		 * where condition
 		 */
-		if ( $mask )
+    $where = "";
+
+    if ( $mask )
 		{
 			/*
 			 * get all rows containing mask
 			 */
-      $this->findWhere("`namedId` LIKE '$mask%'",/* order by */"namedId");
-		}
-		else
-		{
-			/*
-			 * get all rows
-			 */
-			$this->findAll(/* order by */"namedId");
+      $where .= "`namedId` LIKE '$mask%' AND " ;
 		}
 
-		do
-		{
-      /*
-       * global, default or user variant according to user id
-       */
-      $configUserId = $this->getProperty("userId");
+		$where .= "
+		  ( `userId`=$userId OR `userId` IS NULL
+		  OR (`userId`=0 AND NOT EXISTS (
+		    SELECT * FROM `config` WHERE `userId` = $userId
+		  ) ) )
+		";
 
-      /*
-       * a global value has no user variants
-       */
-      if ( is_null( $configUserId ) )
-      {
-        $result[] = $this->getRecord();
-        continue;
-      }
-
-      /*
-       * for each non-global key, we need to get either an existing user
-       * variant or the default value, if no user variant is set
-       */
-      else
-      {
-        if ( $configUserId === 0 )
-        {
-          /*
-           * look for user variants
-           */
-          $found     = false;
-          foreach ( $this->getResult() as $r )
-          {
-            if ( $r['namedId'] == $row['namedId']
-                 and $r['userId'] == $userId )
-            {
-              $found = true;
-              break;
-            }
-          }
-
-          /*
-           * if not found, add default value
-           */
-          if ( ! $found )
-          {
-            $result[] = $this->getRecord();
-          }
-        }
-
-        /*
-         * this is a user variant, use it if it matches the user id
-         */
-        elseif ( $configUserId == $userId )
-        {
-          $result[] = $this->getRecord();
-        }
-      }
-		}
+		$this->findWhere( $where, "namedId", "namedId,type,value" );
+    $result = array();
+    do
+    {
+      $result[$this->getNamedId()] = $this->getValue();
+    }
 		while( $this->nextRecord() );
-
 		return $result;
 	}
 }
-
+?>
