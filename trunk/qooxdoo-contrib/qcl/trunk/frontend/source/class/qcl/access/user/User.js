@@ -64,10 +64,9 @@ qx.Class.define("qcl.access.user.User",
     /**
      * A hash map of user data
      */
-    data :
+    fullname :
     {
-      check : "Map",
-      event	: "changeData"
+      check : "String"
     },
 
     /**
@@ -133,9 +132,12 @@ qx.Class.define("qcl.access.user.User",
      */
     addPermissionsByName : function( names )
     {
-      names.forEach( function(name) {
-        this.getPermissions().push( qcl.access.permission.Manager.getInstance().create( name ) );
-      },this );
+      for( var i=0; i < names.length; i++)
+      {
+        this.getPermissions().push(
+          qcl.access.permission.Manager.getInstance().create( names[i] ) 
+        );
+      }
       this.fireDataEvent("changePermissions",this.getPermissions());
     },
 
