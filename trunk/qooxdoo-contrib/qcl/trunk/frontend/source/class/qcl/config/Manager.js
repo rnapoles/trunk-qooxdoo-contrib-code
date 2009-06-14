@@ -22,34 +22,40 @@
 ************************************************************************ */
 
 /**
- * This singleton manages the configuration settings of an application. It loads
- * the configuration keys at startup and can then be queried. If the active user
- * changes a configuration, the change is sent to the backend configuration manager.
- * If a different user is logged in at the same time and changes a configuration value,
- * the backend notifies this manager and it updates accordingly.
- * A single configuration setting has the following properties:
- * <ul>
- * <li>a key (a dot-separated name similar to a classname)</li>
- * <li>a type, which can be "string", "number" and "Boolean"</li>
- * <li>a value, which must conform to the type</li>
- * <li>a read permission, i.e. unless null, the active user must have this permissions
- * to be able to read the configuration setting at all. this is especially useful for
- * configuration that is only needed on the server.</li>
- * <li>a corresponding write permission</li>
- * <li>a user id/status, which, however, only matters on the backend. It
- * mandates that the value is unique (null) or a default value that can have
- * user variants (0). Each user variant then has the user id as value for this property.
- * In this fashion, it is possible that each user, if allowed, can have his or her
- * own preference setting.</li>
- * </ul>
+ * This singleton manages the configuration settings of an application. In 
+ * conjunction with a JsonRpc store, you can load the configuration data at 
+ * startup and synchronize the config values with the server.
  * 
- * Requires the qcl.databinding.simple.MDataManager mixin applied to qx.core.Target.
+ * <pre>   
+ * var myConfigStore = qcl.databinding.event.store.JsonRpc( 
+ *   "path/to/server/index.php", "myapp.Config" 
+ * ); 
+ * myConfigStore.bind("model", qcl.config.Manager.getInstance(), "model");
+ * myConfigStore.load();
  * 
- * The singleton must call updateClient() and won't answer any any individual "get" or 
- * "set" requests before the server response has arrived. If you want to retrieve
- * configurations settings during startup, you need to attach a "changeConfigMap" 
- * event listener to this singleton and work with the config values in the event
- * handling function. 
+ * The server must expose a "load"  method that returns the following response
+ * data:
+ * 
+ * <pre> 
+ * {
+ *   keys : [ ... array of the names of the configuration keys ],
+ *   values : [ ... array of the configuration values ... ]
+ * }
+ * </pre>
+ * 
+ * In order to send the changes back to the server, you can do the following
+ *       
+ * <pre>   
+ * var cm = qcl.config.Manager.getInstance();   
+ * cm.addListener("change",function(event){
+ *   var key = event.getData();
+ *   myConfigStore.execute("set",[ key, cm.getValue(key) ] );
+ * });  
+ * </pre>
+ * 
+ * This requires that the server exposess a "set" method with the parameters
+ * key, value that saves the config value back into the database.
+ * 
  */
 qx.Class.define("qcl.config.Manager",
 {
@@ -102,6 +108,12 @@ qx.Class.define("qcl.config.Manager",
   events :
   {
     /* 
+     * the change event is dispatched when the configuration data is
+     * ready
+     */
+    "ready" : "qx.event.type.Event",
+    
+    /* 
      * the change event is dispatched with the name of
      * the changed config key
      */
@@ -135,20 +147,31 @@ qx.Class.define("qcl.config.Manager",
        * create index
        */
        this._index = {};
+       
        var keys = model.getKeys();
        for( var i=0; i < keys.length; i++ )
        {
-         this._index[ keys.getItem(i) ] = i;
+         var key = keys.getItem(i);
+         this._index[ key ] = i;
+         this.fireDataEvent( "change", key );
        }
        
        /*
-        * attach event listeners
+        * attach event listener
         */
-       model.addListener("changeBubble", function(event){
-         var key = event.getData().name;
-         console.log(name);
-         //this.fireDataEvent( "changeBubble",  );
+       model.getValues().addListener("changeBubble", function(event){
+         var data = event.getData();
+         var key = model.getKeys().getItem( data.name );
+         if ( data.value != data.old )
+         {
+           this.fireDataEvent( "change", key );
+         }
        },this);
+        
+       /*
+        * inform the listeners that we're ready
+        */
+       this.fireEvent("ready"); 
     },
     
     /**
@@ -159,6 +182,10 @@ qx.Class.define("qcl.config.Manager",
      */
     _getIndex : function( key )
     {
+      if ( ! this._index )
+      {
+        this.error("Model has not yet finished loading.");
+      }
       var index = this._index[key];
       if ( index == undefined )
       {
@@ -179,7 +206,7 @@ qx.Class.define("qcl.config.Manager",
 		 * @param key {String}
 		 * @return {var}
 		 */
-		getKey : function ( key )
+		getValue : function ( key )
 		{
       var index = this._getIndex(key);
       return this.getModel().getValues().getItem( index );
@@ -191,10 +218,25 @@ qx.Class.define("qcl.config.Manager",
      * @param key {String}
      * @param value {Mixed} 
      */
-    setKey : function (key, value)
+    setValue : function (key, value)
     {
        var index = this._getIndex(key);
        this.getModel().getValues().setItem( index, value );
+    },
+    
+    /**
+     * Binds a config value to a target widget property in both
+     * directions.
+     * @param key {String}
+     * @param targetObject {qx.core.Object}
+     * @param targetPath {String}
+     * @return
+     */
+    bindValue : function( key, targetObject, targetPath )
+    {
+      var index = this._getIndex( key );
+      this.bind( "model.values[" + index + "]", targetObject, targetPath );
+      targetObject.bind( targetPath, this, "model.values[" + index + "]" );
     }
     
 

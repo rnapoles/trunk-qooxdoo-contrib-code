@@ -115,7 +115,7 @@ qx.Class.define("qcl.databinding.event.marshal.Table",
         properties : {
         rowCount : { check: "Integer", init : null },
         rowData  : { check : "Array", init : null  },
-        events : { check : "Map", init : [] },
+        events : { check : "Array", init : [] },
         requestId : { check: "Integer", init : null },
         statusText : { check: "String", init : "", event: "changeStatusText"  }
       }
