@@ -32,12 +32,20 @@ class qcl_session_Controller extends qcl_access_Controller
    */
   function isValidUserSession( $sessionId=null )
   {
+
+    if ( ! $sessionId )
+    {
+      /*
+       * on-the-fly authentication
+       */
+      $sessionId = $this->checkServerDataAuthentication();
+    }
+
     /*
      * Does the request contain a session id?
      */
     if ( ! $sessionId )
     {
-      $sessionId       = qcl_server_Server::getServerData("sessionId");
       $parentSessionId = qcl_server_Server::getServerData("parentSessionId");
 
       /*
@@ -65,26 +73,42 @@ class qcl_session_Controller extends qcl_access_Controller
        * do not authenticate
        */
       $userId =& $this->getUserIdFromSession( $sessionId );
+
       if ( $userId )
       {
         $userModel =& $this->getUserModel( $userId );
         $this->setActiveUser( $userModel );
+
+        /*
+         * If we have an authenticated user, check for timeout etc.
+         */
+        if ( ! $this->checkTimeout() )
+        {
+          /*
+           * force log out because of timeout
+           */
+          $this->forceLogout();
+          $this->setError( "Timeout.");
+          return false;
+        }
       }
+
+      /*
+       * error
+       */
       else
       {
+        $this->raiseError("No valid user id from session.");
         return false;
       }
     }
 
     /*
-     * If we have an authenticated user, check for timeout etc.
+     * we have no valid session
      */
-    if ( ! $this->checkTimeout() )
+    else
     {
-      /*
-       * force log out because of timeout
-       */
-      $this->setError( "Timeout.");
+      $this->setError("No valid session.");
       return false;
     }
 
@@ -124,6 +148,7 @@ class qcl_session_Controller extends qcl_access_Controller
   {
     $response = parent::method_authenticate( $params );
     $this->registerSession();
+    $this->cleanUp();
     return $response;
   }
 
@@ -142,6 +167,11 @@ class qcl_session_Controller extends qcl_access_Controller
     }
 
     /*
+     * remove other stale sessions as well
+     */
+    $this->cleanUp();
+
+    /*
      * logout
      */
     return parent::logout();
@@ -150,7 +180,6 @@ class qcl_session_Controller extends qcl_access_Controller
   //-------------------------------------------------------------
   // session management
   //-------------------------------------------------------------
-
 
   /**
    * Returns the session model singleton instance
@@ -223,6 +252,16 @@ class qcl_session_Controller extends qcl_access_Controller
     $sessionId = $this->getSessionId();
     $sessionModel =& $this->getSessionModel();
     $sessionModel->unregisterSession( $sessionId );
+  }
+
+
+  /**
+   * Removes stale and invalid sessions
+   */
+  function cleanUp()
+  {
+    $sessionModel =& $this->getSessionModel();
+    $sessionModel->cleanUp();
   }
 
   /**

@@ -806,6 +806,15 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
     return $value;
   }
 
+  function getRawProperty( $name )
+  {
+    if ( ! $this->hasProperty($name) )
+    {
+      $this->raiseError("Model does not have property '$name'");
+    }
+    return $this->currentRecord[$name];
+  }
+
   /**
    * Returns a list of properties
    * @param $prop1

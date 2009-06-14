@@ -97,13 +97,12 @@ class qcl_access_Controller
   function isValidUserSession( $sessionId = null )
   {
 
-    /*
-     * check if given session id is valid. This simply checks
-     * if the session corresponds to the existing session id
-     */
     if ( ! $sessionId )
     {
-      $sessionId = qcl_server_Server::getServerData("sessionId");
+      /*
+       * on-the-fly authentication
+       */
+      $sessionId = $this->checkServerDataAuthentication();
     }
 
     if ( $sessionId )
@@ -114,8 +113,9 @@ class qcl_access_Controller
        */
       if ( $sessionId != $this->getSessionId() )
       {
-        $this->logout();
-        $this->userNotice("Invalid session id");
+        $this->forceLogout();
+        $this->setError("Invalid session id");
+        return false;
       }
 
       /*
@@ -127,6 +127,19 @@ class qcl_access_Controller
         $userId = qcl_registry_Session::get("activeUserId");
         $userModel =& $this->getUserModel( $userId );
         $this->setActiveUser( $userModel );
+
+        /*
+         * If we have an authenticated user, check for timeout
+         */
+        if ( ! $this->checkTimeout() )
+        {
+          /*
+           * force log out because of timeout
+           */
+          $this->forceLogout();
+          $this->setError( "Timeout.");
+          return false;
+        }
       }
     }
     else
@@ -135,22 +148,65 @@ class qcl_access_Controller
       return false;
     }
 
-    /*
-     * If we have an authenticated user, check for timeout etc.
-     */
-    if ( ! $this->checkTimeout() )
-    {
-      /*
-       * force log out because of timeout
-       */
-      $this->warn( "Timeout.");
-      return false;
-    }
 
     /*
      * success!!
      */
     return true;
+  }
+
+  /**
+   * Authenticates with data in the server data
+   * @param $sessionId
+   * @return string New Session Id
+   * FIXME This is not functional yet
+   */
+  function checkServerDataAuthentication()
+  {
+    $username  = qcl_server_Server::getServerData("username");
+    $password  = qcl_server_Server::getServerData("password");
+    $sessionId = qcl_server_Server::getServerData("sessionId");
+
+    if ( $username  )
+    {
+      $userId = $this->authenticate( $username,$password );
+      if ( $userId )
+      {
+        $logMsg = $this->setActiveUserById( $userId );
+        $this->info( $logMsg );
+      }
+    }
+
+    /**
+     * grant guest access if allowed
+     */
+    elseif ( is_null( $sessionId) and $this->guestAccessAllowed() )
+    {
+      $this->grantGuestAccess();
+    }
+
+    /*
+     * otherwise, no serverdata authentication
+     */
+    else
+    {
+      return $sessionId;
+    }
+
+    /*
+     * session id
+     */
+    $sessionId = $this->getSessionId();
+
+    /*
+     * dispatch a message to set the new session id
+     */
+    $this->dispatchMessage("qcl.commands.setSessionId", $sessionId);
+
+    /*
+     * return the new session id
+     */
+    return $sessionId;
   }
 
   /**
@@ -210,16 +266,26 @@ class qcl_access_Controller
   }
 
   /**
+   * Forces a logout on client and server
+   * @return unknown_type
+   */
+  function forceLogout()
+  {
+    /*
+     * send command to client to force a logout
+     */
+    $this->dispatchMessage("qcl.commands.logout");
+
+    $this->logout();
+  }
+
+  /**
    * Logs out the the active user. If the user is anonymous, delete its record
    * in the user table.
    * @return bool success
    */
   function logout()
   {
-    /*
-     * send command to client to force a logout
-     */
-    $this->dispatchMessage("qcl.commands.logout");
 
     /*
      * check whether anyone is logged in
@@ -356,56 +422,12 @@ class qcl_access_Controller
       $userId = $this->authenticate( $username, $password );
       if ( $userId )
       {
-        /*
-         * check if user is already logged in
-         */
-        $activeUser =& $this->getActiveUser();
-
-        if ( $activeUser and $activeUser->getId() == $userId )
-        {
-          /*
-           * log message
-           */
-          $username  = $activeUser->username();
-          $sessionId = $this->getSessionId();
-          $logMsg = "$username already logged in. Continuing session #$sessionId.";
-        }
-
-        else
-        {
-          /*
-           * if a username has been provided and an active
-           * user exists, log out the active user
-           */
-          if ( $activeUser )
-          {
-            $this->logout();
-          }
-
-          /*
-           * ... create new session
-           */
-          $this->createSessionId();
-
-          /*
-           * save a copy of the current user model as
-           * the new active user
-           */
-          $userModel =& $this->getUserModel( $userId );
-          qcl_registry_Session::set("activeUserId", $userId );
-          $this->setActiveUser( $userModel );
-          $activeUser =& $this->getActiveUser();
-
-          /*
-           * log message
-           */
-          $sessionId = $this->getSessionId();
-          $logMsg = "Login successful. New session: $username ($sessionId)";
-        }
+        $logMsg = $this->setActiveUserById( $userId );
 
         /*
          * reset the timestamp of the user
          */
+        $activeUser =& $this->getActiveUser();
         $activeUser->resetLastAction();
       }
 
@@ -466,7 +488,6 @@ class qcl_access_Controller
         }
       }
 
-
       /*
        * error
        */
@@ -515,6 +536,72 @@ class qcl_access_Controller
     return $this->response();
   }
 
+  /**
+   * Sets the active user by a given user id
+   * @param $userId
+   * @return string log message
+   */
+  function setActiveUserById( $userId )
+  {
+    /*
+     * check if user is already logged in
+     */
+    $activeUser =& $this->getActiveUser();
+
+    /*
+     * user is already logged in
+     */
+    if ( $activeUser and $activeUser->getId() == $userId )
+    {
+      /*
+       * log message
+       */
+      $username  = $activeUser->username();
+      $sessionId = $this->getSessionId();
+      $logMsg = "$username already logged in. Continuing session #$sessionId.";
+    }
+
+
+    /*
+     * user is different from user that owns the session
+     */
+    else
+    {
+      /*
+       * if an active user exists, log out
+       */
+      if ( $activeUser )
+      {
+        $this->logout();
+      }
+
+      /*
+       * ... create new session
+       */
+      $this->createSessionId();
+
+      /*
+       * save a copy of the current user model as
+       * the new active user
+       */
+      $userModel =& $this->getUserModel( $userId );
+      $this->setActiveUser( $userModel );
+      $activeUser =& $this->getActiveUser();
+
+      /*
+       * save the user id in the session
+       */
+      qcl_registry_Session::set("activeUserId", $userId );
+
+      /*
+       * log message
+       */
+      $sessionId = $this->getSessionId();
+      $logMsg = "Login successful. New session: $username ($sessionId)";
+    }
+
+    return $logMsg;
+  }
 
   /**
    * Checks whether a timeout has occurred for a given user
@@ -535,8 +622,8 @@ class qcl_access_Controller
     $timeout = (int) either( /*$configModel->get("qcl.session.timeout")*/null, 30*60 ); // timeout in seconds, defaults to 30 minutes
     $seconds = (int) $activeUser->getSecondsSinceLastAction();
 
-    //$this->debug("bibliograph_controller::authenticate: User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
-    $activeUser->resetLastAction();
+    //$this->debug("User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
+
 
     /*
      * logout if timeout has occurred
@@ -545,18 +632,13 @@ class qcl_access_Controller
     {
       $userName = $activeUser->username();
       $this->info( "$userName : $seconds seconds after last activity (Timeout $timeout seconds)." );
-
-      /*
-       * force logout on client
-       */
-      $this->dispatchMessage( "qcl.commands.logout" );
-
       return false;
     }
 
     /*
-     * no timeout
+     * reset the timestamp
      */
+    $activeUser->resetLastAction();
     return true;
   }
 
@@ -630,6 +712,5 @@ class qcl_access_Controller
     $this->logout();
     return $this->response();
   }
-
 }
 ?>

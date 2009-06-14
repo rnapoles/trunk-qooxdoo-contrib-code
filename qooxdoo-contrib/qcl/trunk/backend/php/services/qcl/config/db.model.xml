@@ -21,22 +21,20 @@
         <property name="value" type="string">
           <sql>tinytext NOT NULL</sql>
         </property>
-        <property name="permissionRead" type="string">
-          <sql>varchar(50) NULL</sql>
-        </property>
+        <property name="userId" type="int">
+          <sql>int(11) NULL</sql>
+        </property>        
         <property name="permissionWrite" type="string">
           <sql>varchar(50) NULL</sql>
         </property>
-        <property name="user" type="string">
-          <sql>varchar(255) NOT NULL</sql>
-        </property>
+        
       </properties>
       
       <!-- metadata -->
       <propertyGroups>
         <propertyGroup name="metaData">
           <property name="namedId"/>
-          <property name="user"/>
+          <property name="userId"/>
         </propertyGroup>
       </propertyGroups>      
 

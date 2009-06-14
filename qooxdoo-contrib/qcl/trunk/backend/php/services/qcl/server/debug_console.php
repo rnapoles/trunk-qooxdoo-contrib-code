@@ -69,6 +69,11 @@ if ( $_POST )
       $method    = substr( $service, $methodPos+1 );
 
       /*
+       * server data
+       */
+      $serverData = array();
+
+      /*
        * session id
        */
       $sessionId = $_POST['sessionid'];
@@ -76,10 +81,28 @@ if ( $_POST )
       {
         $sessionId = session_id();
       }
+      else
+      {
+        if ( strtolower( $sessionId ) == "null")
+        {
+          $sessionId = null;
+        }
+      }
 
-      $serverData = array(
-        "sessionId" => $sessionId
-      );
+      $serverData ["sessionId"] = $sessionId;
+
+      if ( $_POST['username'] )
+      {
+        $serverData ["username"] = $_POST['username'];
+      }
+
+      if ( $_POST['password'] )
+      {
+        $serverData ["password"] = $_POST['password'];
+      }
+
+
+
 
       /*
        * send request and return result data
@@ -207,7 +230,7 @@ if ( $_POST )
                 <label for="username"><b>Username</b></label>
               </td>
               <td>
-                <input id="username" disabled="true" name="username" />
+                <input id="username" name="username" />
               </td>
             </tr>
             <tr>
@@ -215,7 +238,7 @@ if ( $_POST )
                 <label for="password"><b>Password</b></label>
               </td>
               <td>
-                <input id="password" disabled="true" name="password" />
+                <input id="password"  name="password" />
               </td>
              </tr>
              <tr>
