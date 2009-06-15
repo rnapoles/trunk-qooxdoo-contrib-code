@@ -14,9 +14,6 @@ qx.Class.define("bug730.Menu",
   {
     this.base(arguments);
 
-    this.__menuLayout = new qx.ui.menu.Layout;
-    this.setLayout(this.__menuLayout);
-
     // Automatically add to application's root
     this.getApplicationRoot().add(this);
 
@@ -214,11 +211,6 @@ qx.Class.define("bug730.Menu",
     ---------------------------------------------------------------------------
     */
 
-    getChildrenContainer : function()
-    {
-      return this.__slideBar;
-    },
-
     _createChildControlImpl : function(id)
     {
       var control;
@@ -227,7 +219,7 @@ qx.Class.define("bug730.Menu",
       {
 
         case "content":
-          control = new qx.ui.container.Composite(new qx.ui.menu.Layout);
+          control = new qx.ui.menu.Menu();
 
           /*
            * Gecko does not update the scroll position after removing an

@@ -1,5 +1,5 @@
 {
-  "name"    : "bug730",
+  "name"    : "2467",
 
   "include" :
   [
@@ -29,11 +29,12 @@
 
   "let" :
   {
-    "APPLICATION"  : "bug730",
-    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
-    "QXTHEME"      : "bug730.theme.Theme",
+    "APPLICATION"  : "custom",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QXTHEME"      : "custom.theme.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   }
 
