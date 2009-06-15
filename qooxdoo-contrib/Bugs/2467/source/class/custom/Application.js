@@ -55,19 +55,24 @@ qx.Class.define("custom.Application",
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
-
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
+      var __MCont = new qx.ui.container.Composite(new qx.ui.layout.VBox(5)).set({
+        padding : 10,
+        backgroundColor : "white"
       });
+      this.getRoot().add(__MCont, {edge : 0});
+
+      var __lay = new qx.ui.layout.Grid();
+      __lay.setRowFlex(0, 1);
+      
+      var group1 = new qx.ui.groupbox.GroupBox("test");
+      group1.setLayout(__lay);
+      
+      __MCont.add(group1);
+      var pg_scont = new qx.ui.form.CheckBox(this.tr("Allow backup.<br>\
+      <font color=‘#888’>This is a test with a lot of words in order to test the display and to see the bug with the allowGrowX property.</font>")).set({rich:true, allowGrowX: true});
+      group1.add(pg_scont, {row: 0, column : 0});
+
+      
     }
   }
 });
