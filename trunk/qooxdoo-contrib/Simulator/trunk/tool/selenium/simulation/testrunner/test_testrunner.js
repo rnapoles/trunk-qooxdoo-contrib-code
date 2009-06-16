@@ -134,7 +134,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
     this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
-    var isPackageDone = mySim.waitForCondition(isStatusReady, 600000, 
+    var isPackageDone = mySim.waitForCondition(isStatusReady, 1200000, 
                       "Waiting for test package " + packages[i] + " to finish");
 
     if (!isPackageDone) {
