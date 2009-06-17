@@ -483,7 +483,7 @@ simulation.Simulation.prototype.sanitize = function(text)
   text = text.replace(/\n/g,'<br/>');
   text = text.replace(/\r/g,'<br/>');
   text = text.replace(/'/g, '&quot;');
-  text = text.replace(/[^\w\d\-_:;\.,\!\?\(\)\[\]$%&= \/\<\> ]?/gi, '');
+  text = text.replace(/[^\w\d\-_:;\.,\!\?\(\)\[\]#$%&= \/\<\> ]?/gi, '');
   return text;
 };
 
