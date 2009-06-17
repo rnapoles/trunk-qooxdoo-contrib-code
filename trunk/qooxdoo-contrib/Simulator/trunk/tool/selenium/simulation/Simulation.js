@@ -494,13 +494,16 @@ simulation.Simulation.prototype.sanitize = function(text)
  */
 simulation.Simulation.prototype.logEnvironment = function()
 {
-  var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");
-  var plat = this.getEval('navigator.platform', "Getting platform from browser");
-
   this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "none");
   this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none");
-  this.log("Platform: " + plat, "none");
+  this.log("Platform: " + environment["os.name"], "none");
+  
+  var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");  
   this.log("User agent: " + agent, "none");
+  /*
+  var plat = this.getEval('navigator.platform', "Getting platform from browser");  
+  this.log("Platform: " + plat, "none");
+  */
 };
 
 /**
