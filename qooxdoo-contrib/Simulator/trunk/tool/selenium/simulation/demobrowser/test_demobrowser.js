@@ -43,7 +43,7 @@ mySim.lastSample = "last";
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe','virtual:List','progressive:*'];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe','virtual:List','virtual:Cells','virtual:ListBinding','virtual:Messenger','progressive:*'];
 
 /*
  * List of demos to run. All others will be ignored.
@@ -115,6 +115,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
       // so look at the first sample inside.
       if (nextSampleCategory == "Demos") {
         this.runScript(selectNextSample, "Selecting next sample from tree");
+        this.runScript(qxAppInst + '.tree.getSelection()[0].setOpen(true)', "Opening category");
         nextSampleCategory = this.getEval(getNextSampleCategory, "Getting category of next sample");
         nextSampleLabel = this.getEval(getNextSampleLabel, "Getting label of next sample");
       }
@@ -142,7 +143,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   if (skip) {
     //print("Skipping sample: " + nextSampleCategory + ' - ' + nextSampleLabel);
     this.log('SKIPPED ' + nextSampleCategory + ' - ' + nextSampleLabel, "info");
-    return nextSampleLabel;
+    return [nextSampleCategory,nextSampleLabel];
   }
   else {
     // run the sample
@@ -195,11 +196,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   print(category + " - " + currentSample + ": Processing log");
 
-  var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);
-
-  if (!sampleLog) {
-    return;
-  }
+  var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);  
 
   this.log('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>', "info");
 
@@ -229,7 +226,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
     this.__sel.setSpeed(stepSpeed);  
   }
-  return currentSample;
+  return [category,currentSample];
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -239,14 +236,32 @@ simulation.Simulation.prototype.runTest = function()
   if (include.length === 0) {
     this.runScript(treeSelect(2), "Selecting first category");
     this.runScript(qxAppInst + '.tree.getSelection()[0].setOpen(true)', "Opening first category");
-    this.currentSample = this.sampleRunner(runSample);
+    var finalSampleScript = selWin + '.' + qxAppInst + '.tree.getItems()[' + selWin + '.' + qxAppInst + '.tree.getItems().length - 1].getLabel()';
+    var finalSample = this.getEval(finalSampleScript, "Getting final sample name");
+    var finalCategoryScript = selWin + '.' + qxAppInst + '.tree.getItems()[' + selWin + '.' + qxAppInst + '.tree.getItems().length - 1].getParent().getLabel()';
+    var finalCategory = this.getEval(finalCategoryScript, "Getting final category name");
+    print("Final demo: " + finalCategory + ":" + finalSample);
+    var currentCatSam = this.sampleRunner(runSample);
+    this.currentCategory = currentCatSam[0];
+    this.currentSample = currentCatSam[1];
+    
     while (this.currentSample != this.lastSample) {
-      this.lastSample = this.currentSample;
-      print("Done playing " + this.lastSample + ", starting next sample");
-   
-      this.killBoxes();
-      var runNextSample = qxAppInst + '.playNext()';
-      this.currentSample = this.sampleRunner(runNextSample);
+      print("currentCat " + this.currentCategory + " currentSam " + this.currentSample);
+      if (this.currentCategory != finalCategory || (this.currentCategory == finalCategory && this.currentSample != finalSample) ) {
+        this.lastCategory = this.currentCategory;
+        this.lastSample = this.currentSample;        
+        print("Done playing " + this.lastSample + ", starting next sample");
+        
+        this.killBoxes();
+        var runNextSample = qxAppInst + '.playNext()';
+        var currentCatSam = this.sampleRunner(runNextSample);
+        this.currentCategory = currentCatSam[0];
+        this.currentSample = currentCatSam[1];
+      }
+      else {
+        this.currentCategory = this.lastCategory;
+        this.currentSample = this.lastSample;
+      }
     }
   }
   else {
@@ -256,7 +271,9 @@ simulation.Simulation.prototype.runTest = function()
       var cat = include[j].substring(0, include[j].indexOf(':'));
       var sam = include[j].substr(include[j].indexOf(':') + 1);
       var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";      
-      this.currentSample = this.sampleRunner(runIncluded);
+      var currentCatSam = this.sampleRunner(runIncluded);
+      this.currentCategory = currentCatSam[0];
+      this.currentSample = currentCatSam[1];
       this.killBoxes();
     }
   }
@@ -298,7 +315,7 @@ simulation.Simulation.prototype.runTest = function()
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
-    mySim.log("Demos with warnings or errors: " + mySim.errWarn, "error");
+    mySim.log("Demos with warnings or errors: " + mySim.errWarn, "info");
   }
 
   mySim.logTestDuration();
