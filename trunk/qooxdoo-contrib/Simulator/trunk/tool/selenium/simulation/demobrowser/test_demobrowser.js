@@ -43,7 +43,7 @@ mySim.lastSample = "last";
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe'];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe','virtual:List','progressive:*'];
 
 /*
  * List of demos to run. All others will be ignored.
@@ -124,7 +124,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
         var ignoreCategory = ignore[i].substring(0, ignore[i].indexOf(':'));
         if (nextSampleCategory == ignoreCategory) {
           var ignoreSample = ignore[i].substr(ignore[i].indexOf(':') + 1);
-          if (nextSampleLabel == ignoreSample) {
+          if (nextSampleLabel == ignoreSample || ignoreSample == "*") {
             this.runScript(selectNextSample, "Selecting next sample from tree");
             skip = true;
           }
