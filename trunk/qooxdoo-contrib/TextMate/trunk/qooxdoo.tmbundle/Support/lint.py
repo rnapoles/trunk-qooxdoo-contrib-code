@@ -30,7 +30,7 @@ def lint(file, popup):
         lint = ecmalint.Lint(file, logger)
         lint.checkMaps()
         lint.checkUnusedVariables()
-        lint.checkUndefinedVariables(["qx"])
+        lint.checkUndefinedVariables(["qx", "qui"])
         lint.checkRequiredBlocks()
         lint.checkFields()
         lint.checkReferenceFields()
