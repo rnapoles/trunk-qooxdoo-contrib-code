@@ -88,11 +88,13 @@ simulation.Simulation.prototype.logDocErrors = function()
   var filteredArray = docArray.filter(filterArr);
   
   if (filteredArray.length > 0) {
+    var baseUrl = this.getConfigSetting("autHost") + this.getConfigSetting("autPath");
     this.log("Classes with documentation errors (Excluded: " 
              + ignoreDocErrors.join() + ")", "info");
     for (var i=0;i<filteredArray.length; i++) {
       this.errWarn++;
-      this.log(filteredArray[i], "warn");
+      var apiLink = ' <a href="' + baseUrl + '#' + filteredArray[i] + '">' + filteredArray[i] + '</a>';      
+      this.log(apiLink, "warn");
     }    
   }
   
