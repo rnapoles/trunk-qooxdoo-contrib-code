@@ -230,13 +230,24 @@ qx.Class.define("qcl.config.Manager",
      * @param key {String}
      * @param targetObject {qx.core.Object}
      * @param targetPath {String}
+     * @param updateSelfAlso {Boolean} Optional, default undefined
      * @return
      */
-    bindValue : function( key, targetObject, targetPath )
+    bindValue : function( key, targetObject, targetPath, updateSelfAlso )
     {
       var index = this._getIndex( key );
-      this.bind( "model.values[" + index + "]", targetObject, targetPath );
+      /*
+       * update the target widget property when config value changes
+       */
       targetObject.bind( targetPath, this, "model.values[" + index + "]" );
+      
+      /*
+       * update config value if target widget property changes
+       */
+      if ( updateSelfAlso )
+      {
+        this.bind( "model.values[" + index + "]", targetObject, targetPath );
+      }
     }
     
 
