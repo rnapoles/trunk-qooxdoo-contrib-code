@@ -93,8 +93,8 @@ symbolic links as shown here:
 
 <code>
   cd /opt/workspace/qooxdoo-contrib/qooxdoo
-  ln -s 0.8.2 /opt/workspace/qooxdoo-0.8.2-sdk
-  ln -s trunk /opt/workspace/qooxdoo.trunk
+  ln -s /opt/workspace/qooxdoo-0.8.2-sdk 0.8.2
+  ln -s /opt/workspace/qooxdoo.trunk trunk
 </code>
 
 To remove an existing link to a directory:
