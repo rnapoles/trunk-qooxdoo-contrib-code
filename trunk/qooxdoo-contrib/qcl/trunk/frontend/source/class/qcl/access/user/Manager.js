@@ -103,7 +103,7 @@ qx.Class.define("qcl.access.user.Manager",
 		     * set user data
 		     */
 		    user.setFullname( model.getFullname() );
-		    user.addPermissionsByName( model.getPermissions() );
+		    user.addPermissionsByName( model.getPermissions().toArray() );
 		    
 		    /*
 		     * set user as active user

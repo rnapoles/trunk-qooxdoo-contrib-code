@@ -176,30 +176,31 @@ qx.Class.define("qcl.access.AbstractManager",
 		 * @param name {String|Array} (array of) element name(s)
 		 * @return {Object|Array} (array of) reference(s) to created or existing object(s)
 		 */
-		create : function (name)
+		create : function ( name )
 		{
 			if ( name instanceof Array )
 			{
 				var list=[];
-				name.forEach(function(name){
-					list.push(this.create(name));
+				name.forEach(function( n ){
+					list.push( this.create( n ) );
 				},this);
 				return list;
 			}
 			
-			if (arguments.length > 1 )
+			if ( arguments.length > 1 )
 			{
 				var list=[];
 				for (var i=0; i<arguments.length; i++)
 				{
-					list.push(this.create(arguments[i]));		
+				  list.push( this.create( arguments[i] ) );		
 				}
 				return list;
 			}
       
 			if ( typeof name != "string" )
 			{
-				this.error ("Argument for create method must be a string!");
+				this.warn ("Argument for create method must be a string, got '" + name + "'.");
+				return;
 			}
 			
 			var obj = this.getObject(name); 
