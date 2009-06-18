@@ -41,7 +41,15 @@
  * Dependencies
  */
 require_once dirname(__FILE__) . "/AbstractServer.php";
-require_once dirname(__FILE__) . "/error/JsonRpcError.php";
+
+/*
+ * include JsonRpcError class. If you want to use your own class, include a
+ * custom implementation beforehand or use AbstractServer::setErrorBehavior()
+ */
+if ( ! class_exists("JsonRpcError") )
+{
+  require_once dirname(__FILE__) . "/error/JsonRpcError.php";
+}
 
 /**
  * Constant to indicate whether script transport is used.
@@ -58,6 +66,36 @@ if (! defined("JsonRpcErrorHandling"))
 {
   define("JsonRpcErrorHandling", "on");
 }
+
+/*
+ * Whether to encode and decode Date objects the "qooxdoo way"
+ *
+ * JSON does not handle dates in any standard way.  For qooxdoo, we have
+ * defined a format for encoding and decoding Date objects such that they can
+ * be passed reliably from the client to the server and back again,
+ * unaltered.  Doing this necessitates custom changes to the encoder and
+ * decoder functions, which means that the standard (as of PHP 5.2.2)
+ * json_encode() and json_decode() functions can not be used.  Instead we just
+ * use the encoder and decoder written in PHP which is, of course, much
+ * slower.
+ *
+ * We here provide the option for an application to specify whether Dates
+ * should be handled in the qooxdoo way.  If not, and the functions
+ * json_encode() and json_decode() are available, we will use them.  Otherwise
+ * we'll use the traditional, PHP, slower but complete for qooxdoo
+ * implementation.
+ *
+ * (This is really broken.  It's not possible to determine, on a system-wide
+ * basis, whether Dates will be used.  This should be settable as a pragma on
+ * the request so we know whether we can use the built-in decoder, and we
+ * provide some way to should keep track of whether any Dates are included in
+ * the response, so we can decide whether to use the built-in encoder.)
+ */
+if ( ! defined("handleQooxdooDates") )
+{
+  define( "handleQooxdooDates", true );
+}
+
 
 /**
  * JSON RPC server
@@ -131,7 +169,7 @@ class JsonRpcServer extends AbstractServer
     /*
      * set error behavior
      */
-    $errorBehavior =& new JsonRpcError( &$this );
+    $errorBehavior =& new JsonRpcError;
     $this->setErrorBehavior( &$errorBehavior );
 
     /*

@@ -20,15 +20,15 @@
 
 
 /*
- * include json class, either a wrapper around a php extension/php-only implementation
- * (php4) or built-in functions (php5)
+ * Include json class, either a wrapper around a php extension/php-only implementation
+ * (php4) or built-in functions (php4 with json-extension/php5). If you want to use
+ * a custom json encoder/decoder, write a custom JsonWrapper class and include it
+ * before you include this script.
  */
-require_once dirname(__FILE__) . "/lib/JsonWrapper.php";
-
-/*
- * include JsonRpcError class
- */
-require_once dirname(__FILE__) . "/error/JsonRpcError.php";
+if ( ! class_exists("JsonWrapper") )
+{
+  require_once dirname(__FILE__) . "/lib/JsonWrapper.php";
+}
 
 /*
  * There may be cases where all services need use of some libraries or
@@ -43,7 +43,7 @@ require_once dirname(__FILE__) . "/error/JsonRpcError.php";
  *   defaultAccessibility
  *
  */
-if (file_exists("global_settings.php"))
+if ( file_exists("global_settings.php") )
 {
   require_once "global_settings.php";
 }
@@ -115,7 +115,6 @@ if (! defined("JsonRpcPackageIndexFile") )
   define("JsonRpcPackageIndexFile", "__index__.php" );
 }
 
-
 /**
  * Abstract server class, needs to be subclassed in
  * order to be used.
@@ -144,10 +143,9 @@ class AbstractServer
 
   /**
    * Error behavior object
-   * @var JsonRpcError
+   * @var AbstractError
    */
   var $errorBehavior;
-
 
   /**
    * An array of paths to the services. This will be populated
@@ -429,7 +427,7 @@ class AbstractServer
    */
   function setErrorBehavior( $object )
   {
-    if ( ! is_a( $object, "AbstractErrorBehavior") )
+    if ( ! is_a( $object, "AbstractError") )
     {
       trigger_error("The error behavior object must subclass AbstractErrorBehvior");
     }
@@ -438,7 +436,7 @@ class AbstractServer
 
   /**
    * Getter for error behavior object
-   * @return AbstractErrorBehavior
+   * @return AbstractError
    */
   function &getErrorBehavior()
   {

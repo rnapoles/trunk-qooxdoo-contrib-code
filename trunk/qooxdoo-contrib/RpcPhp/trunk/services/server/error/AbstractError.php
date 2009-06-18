@@ -17,6 +17,13 @@
  *  * Derrell Lipman (derrell)
  */
 
+/*
+ * PHP4-Compatibility
+ */
+if( phpversion() < 5 )
+{
+  require dirname(__FILE__) . "/Exception.php4";
+}
 
 /**
  * JSON-RPC error origins
@@ -116,7 +123,7 @@ define("JsonRpcError_PermissionDenied",    6);
  * This is the base class for all error behaviors that are used in the
  * server classes
  */
-class AbstractErrorBehavior
+class AbstractError extends Exception
 {
   /**
    * The error data
@@ -134,9 +141,11 @@ class AbstractErrorBehavior
    * PHP4 constructor
    * @param AbstractServer $server
    */
-  function AbstractErrorBehavior( $server, $data )
+  function AbstractError( $code = JsonRpcError_Unknown,
+                          $message = "Unspecified error",
+                          $origin = JsonRpcError_Origin_Application )
   {
-    $this->__construct( &$server, $data );
+    $this->__construct( $code, $message, $origin );
   }
 
   /**
@@ -144,13 +153,10 @@ class AbstractErrorBehavior
    * @param AbstractServer $server
    * @return unknown_type
    */
-  function __construct( $server, $data )
+  function __construct( $code = JsonRpcError_Unknown,
+                        $message = "Unspecified error",
+                        $origin = JsonRpcError_Origin_Application )
   {
-    /*
-     * save server object
-     */
-    $this->server =& $server;
-    
     /*
      * save error data
      */
@@ -217,8 +223,7 @@ class AbstractErrorBehavior
    */
   function SendAndExit()
   {
-    echo "Error " . $this->data['code'] . ": " . $data['message'];
-    exit;
+    trigger_error("Not implemented.");
   }
 }
 ?>

@@ -5,7 +5,7 @@
  * http://qooxdoo.org
  *
  * Copyright:
- *   2006-2007 Derrell Lipman
+ *   2006-2009 Derrell Lipman
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -20,7 +20,7 @@
 /*
  * Base class
  */
-require dirname(__FILE__) . "/AbstractErrorBehavior.php";
+require dirname(__FILE__) . "/AbstractError.php";
 
 
 /*
@@ -29,14 +29,8 @@ require dirname(__FILE__) . "/AbstractErrorBehavior.php";
  * This class allows service methods to easily provide error information for
  * return via JSON-RPC.
  */
-class JsonRpcError extends AbstractErrorBehavior
+class JsonRpcError extends AbstractError
 {
-
-  /**
-   * The json wrapper object
-   * @var JsonWrapper
-   */
-  var $json;
 
   /**
    * The id of the request
@@ -47,77 +41,7 @@ class JsonRpcError extends AbstractErrorBehavior
   /**
    * The id of the request if script transport is used
    */
-  var $scriptTransportId;
-
-
-  /**
-   * PHP4 constructor
-   * @param JsonWrapper|JsonServer $first
-   * @param int $origin
-   * @param int $code
-   * @param string $message
-   * @param JsonServer[optional] $server
-   * @return void
-   */
-  function JsonRpcError(
-    $first,
-    $origin = JsonRpcError_Origin_Server,
-    $code = JsonRpcError_Unknown,
-    $message = "Unknown error",
-    $server=null )
-  {
-    $this->__construct( &$first, $origin, $code, &$server);
-  }
-
-  /**
-   * PHP 5 constructor
-   * @param JsonWrapper|JsonServer $first
-   * @param int $origin
-   * @param int $code
-   * @param string $message
-   * @param JsonServer[optional] $server
-   * @return void
-   */
-  function __construct(
-    $first,
-    $origin = JsonRpcError_Origin_Server,
-    $code = JsonRpcError_Unknown,
-    $message = "Unknown error",
-    $server=null )
-  {
-
-    /*
-     * first argument can be json wrapper object or the server
-     */
-    if ( is_a( $first, "JsonWrapper" ) )
-    {
-      $this->json =& $first;
-    }
-    elseif ( is_a( $first, "JsonRpcServer" ) )
-    {
-      $server =& $first;
-      $this->json =& $server->json;
-    }
-
-
-    /*
-     * pass server object to parent constructor
-     */
-    if ( $server and ! is_a( $server, "JsonRpcServer") )
-    {
-      trigger_error( "JsonRpcError can only be used with a JsonRpcServer." );
-    }
-
-    /*
-     * call parent constructor with error data
-     */
-    parent::__construct(&$server, $data);
-
-    /*
-     * Assume we're not using ScriptTransporrt
-     */
-    $this->scriptTransportId = ScriptTransport_NotInUse;
-  }
+  var $scriptTransportId = ScriptTransport_NotInUse;
 
   function SetScriptTransportId($id)
   {
@@ -138,13 +62,44 @@ class JsonRpcError extends AbstractErrorBehavior
       ),
       $optional_data
     );
-    $this->server->sendReply(
-      $this->json->encode($ret),
-      $this->scriptTransportId
-    );
+
+    $json = new JsonWrapper;
+
+    if ( handleQooxdooDates )
+    {
+      $json->useJsonClass();
+      $this->SendReply($json->encode($ret), $this->scriptTransportId);
+    }
+    else
+    {
+      $this->SendReply($json->encode($ret), $this->scriptTransportId);
+    }
     exit;
   }
+
+  /**
+   * Sends text to the client
+   * @param $reply
+   * @param $scriptTransportId
+   * @return unknown_type
+   */
+  function SendReply($reply, $scriptTransportId)
+  {
+    /* If not using ScriptTransport... */
+    if ($scriptTransportId == ScriptTransport_NotInUse)
+    {
+        /* ... then just output the reply. */
+        print $reply;
+    }
+    else
+    {
+        /* Otherwise, we need to add a call to a qooxdoo-specific function */
+        $reply =
+            "qx.io.remote.transport.Script._requestFinished(" .
+            $scriptTransportId . ", " . $reply .
+            ");";
+        print $reply;
+    }
+  }
 }
-
-
 ?>
