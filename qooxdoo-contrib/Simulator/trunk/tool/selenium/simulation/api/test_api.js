@@ -4,7 +4,8 @@ var baseConf = {
   'stepSpeed' : '250',
   'selServer' : 'localhost',
   'selPort' : 4444,
-  'testBrowser' : '*custom /usr/lib/firefox-3.0.10/firefox -no-remote -P selenium-3',
+  'testBrowser' : '*custom /usr/lib/firefox-3.0.11/firefox -no-remote -P selenium-3',
+  'browserId' : 'Firefox 3.0.11',
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/api/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
@@ -110,8 +111,7 @@ simulation.Simulation.prototype.logDocErrors = function()
   if (!sessionStarted) {
     return;
   }
-  
-  mySim.logEnvironment();   
+
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
                                           "Waiting for qooxdoo application");
 
