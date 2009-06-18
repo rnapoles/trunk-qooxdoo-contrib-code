@@ -286,8 +286,12 @@ simulation.Simulation.prototype.runTest = function()
   mySim.testFailed = false;
   mySim.errWarn = 0;
 
-  mySim.startSession();    
-  mySim.logEnvironment();   
+  var sessionStarted = mySim.startSession();
+  
+  if (!sessionStarted) {
+    return;
+  }
+
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 10000, 
                                           "Waiting for qooxdoo application");
 

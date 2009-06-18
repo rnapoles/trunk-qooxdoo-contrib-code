@@ -70,8 +70,7 @@ simulation.Simulation.prototype.runTest = function()
   if (!sessionStarted) {
     return;
   }
-  
-  mySim.logEnvironment();   
+
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
                                           "Waiting for qooxdoo application");
 
