@@ -230,8 +230,12 @@ simulation.Simulation.prototype.startSession = function()
     this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));    
     this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
+    this.logEnvironment();
+    this.logUserAgent();
   }
   catch (ex) {
+    this.logEnvironment("file");
+    this.log("User agent: " + this.getConfigSetting("browserId"), "none", "file");
     var msg = "ERROR: Unable to start test session: " + ex;
     print(msg);
     this.log(msg, "error", "file");
@@ -489,21 +493,28 @@ simulation.Simulation.prototype.sanitize = function(text)
 
 /**
  * Logs information about the test environment.
+ *
+ * @param logTo {String} How to log the information. "browser" writes to 
+ * Selenium's browser side log and the test log file, anything else writes only
+ * to the test log file.
+ * @return {void}
+ */
+simulation.Simulation.prototype.logEnvironment = function(logTo)
+{
+  log = logTo ? logTo : "browser";
+  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "none", logTo);
+  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none", logTo);
+  this.log("Platform: " + environment["os.name"], "none", logTo);
+};
+
+/**
+ * Logs the test browser's user agent string.
  * 
  * @return {void}
  */
-simulation.Simulation.prototype.logEnvironment = function()
-{
-  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "none");
-  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none");
-  this.log("Platform: " + environment["os.name"], "none");
-  
-  var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");  
+simulation.Simulation.prototype.logUserAgent = function(){
+  var agent = this.getEval('navigator.userAgent', "Getting user agent from browser");
   this.log("User agent: " + agent, "none");
-  /*
-  var plat = this.getEval('navigator.platform', "Getting platform from browser");  
-  this.log("Platform: " + plat, "none");
-  */
 };
 
 /**
