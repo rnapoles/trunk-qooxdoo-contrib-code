@@ -1,5 +1,5 @@
 var baseConf = {
-  'autName' : 'APIViewer',
+  'autName' : 'API',
   'globalTimeout' : 300000,
   'stepSpeed' : '250',
   'selServer' : 'localhost',
@@ -26,7 +26,6 @@ var mySim = new simulation.Simulation(baseConf,args);
 
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
-var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
 
 var ignoreDocErrors = ["qx.ui.virtual"];
 
@@ -139,7 +138,7 @@ simulation.Simulation.prototype.logDocErrors = function()
       print("Test run finished successfully.");
     }
     var errors = mySim.getTotalErrorsLogged() + mySim.errWarn;
-    mySim.log("APIViewer ended with warnings or errors: " + errors, "info");
+    mySim.log("API ended with warnings or errors: " + errors, "info");
   }
 
   mySim.logTestDuration();
