@@ -42,7 +42,7 @@ class class_test
      *
      * @param bDefaultScriptTransportAllowed (not yet implemented)
      *   Boolean specifying the default value for allowing requests via
-     *   ScriptTransport. 
+     *   ScriptTransport.
      *
      * @return
      *   One of these values:
@@ -93,7 +93,7 @@ class class_test
         }
         return "Client said: [" . $params[0] . "]";
     }
-    
+
     /**
      * Sink all data and never return.
      *
@@ -111,7 +111,7 @@ class class_test
         /* We're never supposed to return.  Just sleep for a very long time. */
         sleep(240);
     }
-    
+
     /**
      * Sleep for the number of seconds specified by the parameter.
      *
@@ -133,11 +133,11 @@ class class_test
                              "Expected 1 parameter; got " . count($params));
             return $error;
         }
-        
+
         sleep(intval($params[0]));
         return $params[0];
     }
-    
+
 
     /*************************************************************************/
 
@@ -150,47 +150,47 @@ class class_test
     {
         return 1;
     }
-    
+
     function method_getFloat($params, $error)
     {
         return 1/3;
     }
-    
+
     function method_getString($params, $error)
     {
         return "Hello world";
     }
-    
+
     function method_getBadString($params, $error)
     {
         return "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">";
     }
-    
+
     function method_getArrayInteger($params, $error)
     {
         return array(1, 2, 3, 4);
     }
-    
+
     function method_getArrayString($params, $error)
     {
         return array("one", "two", "three", "four");
     }
-    
+
     function method_getObject($params, $error)
     {
         return new JSON(); // some arbitrary object
     }
-    
+
     function method_getTrue($params, $error)
     {
         return true;
     }
-    
+
     function method_getFalse($params, $error)
     {
         return false;
     }
-    
+
     function method_getNull($params, $error)
     {
         return null;
@@ -200,47 +200,47 @@ class class_test
     {
         return is_int($params[0]);
     }
-    
+
     function method_isFloat($params, $error)
     {
         return is_float($params[0]);
     }
-    
+
     function method_isString($params, $error)
     {
         return is_string($params[0]);
     }
-    
+
     function method_isBoolean($params, $error)
     {
         return is_bool($params[0]);
     }
-    
+
     function method_isArray($params, $error)
     {
         return is_array($params[0]);
     }
-    
+
     function method_isObject($params, $error)
     {
         return is_object($params[0]);
     }
-    
+
     function method_isNull($params, $error)
     {
         return is_null($params[0]);
     }
-    
+
     function method_getParams($params, $error)
     {
         return $params;
-    }	
-    
+    }
+
     function method_getParam($params, $error)
     {
         return $params[0];
-    }	
-    
+    }
+
     function method_getCurrentTimestamp()
     {
         $now = time();
@@ -257,7 +257,10 @@ class class_test
         // Instead, we throw a new error. This could be done from any depth
         // of recursion or function call graph without having to pass around
         // the $error object.
-        throw new JsonRpcError(23, "This is an application-provided error");
+        // CB: using eval here to make it PHP4-compatible
+        eval('
+          throw new JsonRpcError(1000, "This is an application-provided error");
+        ');
     }
 
     // utility function used by method_getError()
@@ -280,7 +283,7 @@ class class_test
 
     function method_getError($params, $error)
     {
-        if (count($params) > 0 && $params[0])
+        if ( count($params) > 0 && $params[0] and phpversion() >= 5 )
         {
             return $this->getErrorThrown($params);
         }

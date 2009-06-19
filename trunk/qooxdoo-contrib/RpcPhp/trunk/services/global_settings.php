@@ -1,9 +1,9 @@
 <?php
 
 /**
- * global settings 
+ * global settings
  */
- 
+
 /*
  * set error level
  */
@@ -14,8 +14,8 @@ error_reporting( E_ALL ^ E_NOTICE /* ^ E_WARNING */ );
  */
 //define( "defaultAccessibility", "public" );
 
-/* 
- * if the service classes are not in the impl/ folder,
+/*
+ * if the service classes are not in the class/ folder,
  * customize the service path prefix here (trailing slash required)
  */
 //define( "servicePathPrefix", "/your/custom/location/" );
