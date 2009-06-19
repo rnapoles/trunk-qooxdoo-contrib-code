@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) ."/JSON.phps";
+
 /**
  * Wrapper around php json-extension to provide a unified interface
  * for a JSON encoder/decoder. This allows to use different implementations
@@ -29,7 +31,6 @@ class JsonWrapper
 	 */
 	function useJsonClass()
 	{
-    require_once dirname(__FILE__) ."/JSON.phps";
     $this->_json = new JSON;
 	}
 

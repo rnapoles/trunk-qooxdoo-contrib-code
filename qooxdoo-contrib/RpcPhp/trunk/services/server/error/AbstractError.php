@@ -199,6 +199,15 @@ class AbstractError extends Exception
   }
 
   /**
+   * Getter for error data
+   * @return array
+   */
+  function GetError()
+  {
+      return $this->data;
+  }
+
+  /**
    * Getter for error code
    * @return int
    */

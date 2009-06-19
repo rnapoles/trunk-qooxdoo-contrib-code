@@ -59,11 +59,11 @@ require_once dirname(__FILE__) . "/access/AccessibilityBehavior.php";
 
 /**
  * The location of the service class directories.
- * (trailing slash required).
+ * (trailing slash required). Defaults to "class"
  */
 if ( ! defined("servicePathPrefix") )
 {
-  define( "servicePathPrefix", "impl/" );
+  define( "servicePathPrefix", "class/" );
 }
 
 /**
@@ -882,7 +882,9 @@ class AbstractServer
   /**
    * Call the requested method passing it the provided params
    * plus the error object plus a reference to the server
-   * instance. Override this method for a different behavior
+   * instance. Override this method for a different behavior,
+   * in particular if you want to catch errors thrown in the
+   * called method.
    * @param object $serviceObject
    * @param string $method
    * @param array $params
@@ -890,7 +892,13 @@ class AbstractServer
    */
   function callServiceMethod( $serviceObject, $method, $params )
   {
-    return $serviceObject->$method( $params, &$this->errorBehavior, &$this );
+    $errorBehavior =& $this->getErrorBehavior();
+    $result = $serviceObject->$method(
+      $params,        /* parameters */
+      $errorBehavior, /* the error object */
+      &$this          /* the server object */
+    );
+    return $result;
   }
 
   /**
