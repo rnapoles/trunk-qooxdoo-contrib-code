@@ -4,30 +4,141 @@
   author="Christian Boulanger" className="access.components.Body"
   tagName="body">
 
-  <qx:vbox>
-  
-  <qcl:access>
-  
-    <qcl:permission name="bar">
-      <qcl:condition>
-        <![CDATA[
-          return true;
-        ]]>
-      </qcl:condition>
-    </qcl:permission>
-    <qcl:permission name="foo">
-      <qcl:dependency permission="viewRecord" />
-      <qcl:condition target="{js}this.getApplication()" property="foo" value="bar" />
-      <qcl:updater applicationEvent="changeFoo" />
-    </qcl:permission>  
-  </qcl:access>
+  <qx:composite>
+    <qx:vbox>
 
-    <qx:toolBarCheckBox widgetId="fooButton" label="Foo Button">
-      <qcl:bind property="value" config="test.checked" />
-    </qx:toolBarCheckBox>
-    <qx:checkBox widgetId="fooCheckBox" label="Foo 2">
-      <qcl:bind property="value" config="test.checked" />
-    </qx:checkBox>
-  </qx:vbox>
+      <qx:composite margin="30">
+        <qx:hbox spacing="10" qxt:flex="1">
+
+          <qx:groupBox qxt:flex="1" legend="User Data">
+            <qx:vbox spacing="5">
+            
+              <qx:label rich="true" qxt:flex="1">
+                <qxt:property name="value">
+                  &lt;h4&gt;Login data &lt;/h4&gt;
+                   &lt;ul&gt;
+                    &lt;li&gt;User1: user1/user1&lt;/li&gt;
+                    &lt;li&gt;User2: user2/user2&lt;/li&gt;
+                    &lt;li&gt;Manager: user3/user3&lt;/li&gt;
+                    &lt;li&gt;Administrator: admin/admin&lt;/li&gt;
+                   &lt;/ul&gt;
+                   &lt;p&gt;Click on "Login" to log in as one of these users.&lt;/p&gt;
+                   &lt;p&gt;Also note that you can reload the page and still be logged in with
+                   the same user.&lt;/p&gt;
+                </qxt:property>
+              </qx:label>
+              
+              <qx:composite>
+              <qx:grid spacing="5">
+                <qx:column minWidth="100" />
+                <qx:column flex="2"/>
+                
+                <qx:label value="Username" qxt:row="0" qxt:column="0"/>
+                <qx:textField qxt:row="0" qxt:column="1">
+                  <qxt:observe 
+                    property="value" 
+                    source="this.getApplication().getUserManager()" 
+                    sourceProp="activeUser.username" />
+                </qx:textField>
+                
+                <qx:label value="Full name" qxt:row="1" qxt:column="0"/>
+                <qx:textField qxt:row="1" qxt:column="1">
+                  <qxt:observe 
+                    property="value" 
+                    source="this.getApplication().getUserManager()" 
+                    sourceProp="activeUser.fullname" />                
+                </qx:textField>
+                
+                <qx:label value="Permissions" qxt:row="2" qxt:column="0"/>
+                <qx:textField qxt:row="2" qxt:column="1">
+                  <qxt:observe 
+                    property="value" 
+                    source="this.getApplication().getUserManager()" 
+                    sourceProp="activeUser"
+                    converter="function(activeUser){return activeUser ? activeUser.getPermissionNames().join(',') : ''}" />                
+                </qx:textField>
+                
+              </qx:grid>
+              </qx:composite>
+            </qx:vbox>  
+          </qx:groupBox>
+
+          <qx:groupBox qxt:flex="1" legend="Permission binding">
+            <qx:vbox spacing="5">
+            
+              <qx:button label="Permission 'viewRecord' (All)" >
+                <qcl:observe property="enabled" permission="viewRecord" />
+              </qx:button>
+            
+              <qx:button label="Permission 'createRecord' (User only)" >
+                <qcl:observe property="enabled" permission="createRecord" />
+              </qx:button>
+              
+              <qx:button label="Permission 'deleteRecord' (Manager only)" >
+                <qcl:observe property="enabled" permission="deleteRecord" />
+              </qx:button>
+              
+              <qx:button label="Permission 'manageUsers' (Admin only)" >
+                <qcl:observe property="enabled" permission="manageUsers" />
+              </qx:button>
+              
+              <qx:checkBox id="condition1CheckBox" label="Condition 1" />
+              <qx:checkBox id="condition2CheckBox" label="Condition 2" />
+              <qx:checkBox id="condition3CheckBox" label="Condition 3" />
+              
+              <qcl:access>
+                <qcl:permission name="createRecordCondition1" granted="true">
+                  <qcl:dependency permission="createRecord" />
+                  <qcl:updater target="condition1CheckBox" event="changeValue" />
+                  <qcl:condition>
+                    return condition1CheckBox.getValue()==true;
+                  </qcl:condition>
+                </qcl:permission>
+                
+                <qcl:permission name="createRecordCondition2" granted="true">
+                  <qcl:dependency permission="createRecordCondition1" />
+                  <qcl:updater target="condition2CheckBox" event="changeValue" />
+                  <qcl:condition>
+                    return condition2CheckBox.getValue()==true;
+                  </qcl:condition>
+                </qcl:permission>
+                
+                <qcl:permission name="createRecordCondition3" granted="true">
+                  <qcl:dependency permission="createRecordCondition2" />
+                  <qcl:updater target="condition3CheckBox" event="changeValue" />
+                  <qcl:condition>
+                    return condition3CheckBox.getValue()==true;
+                  </qcl:condition>
+                </qcl:permission>                                
+              </qcl:access>
+              
+              <qx:button label="Permission 'createRecord' and condition 1" >
+                <qcl:observe property="enabled" permission="createRecordCondition1" />
+              </qx:button>           
+
+              <qx:button label="Permission 'createRecord' and condition 1,2" >
+                <qcl:observe property="enabled" permission="createRecordCondition2" />
+              </qx:button>         
+              
+              <qx:button label="Permission 'createRecord' and condition 1,2,3" >
+                <qcl:observe property="enabled" permission="createRecordCondition3" />
+              </qx:button>                                     
+              
+            </qx:vbox>
+          
+
+
+          </qx:groupBox>
+
+          <qx:groupBox qxt:flex="1" legend="Configuration">
+
+
+          </qx:groupBox>
+
+        </qx:hbox>
+      </qx:composite>
+
+    </qx:vbox>
+  </qx:composite>
 
 </qxt:component>

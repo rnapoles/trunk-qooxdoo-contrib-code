@@ -41,7 +41,6 @@
           
         <qxt:listener type="execute">
           this.getApplication().logout();
-          qcl.components.login.Popup.getInstance().show();
         </qxt:listener>
         
       </qx:toolBarButton>
