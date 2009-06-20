@@ -21,18 +21,23 @@ require "qcl/test/AbstractStore.php";
 class class_Config extends AbstractStore
 {
 
-  function method_load( $params )
-  {
-    if ( ! isset( $_SESSION['config'] ) )
-    {
-      $_SESSION['config'] = array(
+  var $config = array(
         'application.name' => "Sample Application",
         'application.author' => "Christian Boulanger",
         'test.checked' => true,
         'test.value' => "Foo"
       );
-    }    
-    
+
+  function method_load( $params )
+  {
+    foreach( $this->config as $key => $value )
+    {
+      if ( ! isset( $_SESSION['config'][$key] ) )
+      {
+        $_SESSION['config'][$key] = $value;
+      }
+    }
+
     return array(
       'keys'    => array_keys( $_SESSION['config'] ),
       'values'  => array_values( $_SESSION['config'] )
@@ -44,17 +49,18 @@ class class_Config extends AbstractStore
     list( $key ) = $params;
     return array(
       'value'  => $_SESSION['config'][$key]
-    );    
-  }  
-  
+    );
+  }
+
   function method_set( $params )
   {
     list( $key, $value ) = $params;
     $_SESSION['config'][$key] = $value;
     return array(
       'result'  => true
-    );    
+    );
   }
+
 
 }
 ?>
