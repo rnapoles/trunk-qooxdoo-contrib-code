@@ -31,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.util.ExitCode;
 
 import com.jcraft.jsch.JSchException;
@@ -38,6 +39,11 @@ import com.jcraft.jsch.JSchException;
 public class ConnectionFullTest {
     private static final IO IO_OBJ = new IO();
     
+    public static void main(String[] args) throws Exception {
+        Node node = IO_OBJ.node("ssh://pfxui@corelog.dlan.cinetic.de/export/corelog/lv1/pfxui");
+        System.out.println("ls: " + node.list());
+    }
+
     public static SshRoot open() throws JSchException, IOException {
         String host;
         String user;
