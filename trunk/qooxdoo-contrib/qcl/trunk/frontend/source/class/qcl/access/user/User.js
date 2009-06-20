@@ -181,6 +181,7 @@ qx.Class.define("qcl.access.user.User",
       {
         perms[name].setGranted(false);
       }
+      this.setPermissions([]);
     }
 
   },
