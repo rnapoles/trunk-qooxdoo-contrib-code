@@ -47,12 +47,15 @@ public class SvnNodeFullTest extends NodeTest {
     
     public static void main(String[] args) throws Exception {
         IO io;
-        SvnNode node;
+        Node node;
         
         io = new IO();
         io.getFilesystem(SvnFilesystem.class).setCredentials("pfixpublisher", "pfixpublisher");
-        node = (SvnNode) io.node("svn:https://svn.schlund.de/svn/PFX/jasmin/trunk");
-        System.out.println("last modified: " + node.getLastModified(85214));
+        node = (SvnNode) io.node("svn:https://svn.schlund.de/svn/PFXUI/branches/before-0.13");
+        node = node.getParent();
+        System.out.println("node: " + node + " " + node.getName());
+        node = node.getParent();
+        System.out.println("node: " + node + " " + node.getName());
     }
 
     @BeforeClass
