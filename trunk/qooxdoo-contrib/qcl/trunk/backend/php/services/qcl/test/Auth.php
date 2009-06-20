@@ -50,7 +50,10 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
         }
         else
         {
-          trigger_error("Wrong session id!");
+          return array(
+            'error' => "Invalid session id",
+            'sessionId' => null
+          );
         }
       }
       else
@@ -73,11 +76,13 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
     {
       list( $username, $password ) = $params;
 
-         $userId = $this->getUserId( $username );
+      $userId = $this->getUserId( $username );
+      $sessionId = session_id();
       if ( $userId === false )
       {
         return array(
-          'error' => "Unknown user $username"
+          'error' => "Unknown user $username",
+          'sessionId' => $sessionId
         );
       }
 
@@ -91,7 +96,8 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
       else
       {
         return array(
-          'error' => "Wrong password!"
+          'error' => "Wrong password!",
+          'sessionId' => $sessionId
         );
       }
     }
@@ -124,7 +130,8 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
       "username"    => $username,
       "fullname"    => $this->userdata['users'][$userId]['fullname'],
       "permissions" => $this->getPermissions( $userId ),
-      "sessionId"   => $sessionId
+      "sessionId"   => $sessionId,
+      "error"       => false
     );
   }
 
@@ -182,7 +189,7 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
       ),
       1 => array(
         'username' => "user2",
-      'fullname'   => "User 2",
+        'fullname' => "User 2",
         'password' => "user2"
       ),
       2 => array(
@@ -209,9 +216,10 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
     ),
 
     'permissions' => array(
-      0 => 'createRecord',
-      1 => 'deleteRecord',
-      2 => 'manageUsers'
+      0 => 'viewRecord',
+      1 => 'createRecord',
+      2 => 'deleteRecord',
+      3 => 'manageUsers'
     ),
 
     'users_roles' => array(
@@ -223,10 +231,10 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
     ),
 
     'roles_permissions' => array(
-      0 => array(), /* guest has no permissions */
-      1 => array( 0 ),
-      2 => array( 1 ),
-      3 => array( 2 )
+      0 => array( 0 ),
+      1 => array( 0, 1 ),
+      2 => array( 2 ),
+      3 => array( 3 )
     )
   );
 }
