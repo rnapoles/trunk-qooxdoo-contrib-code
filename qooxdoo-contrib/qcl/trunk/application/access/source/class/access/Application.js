@@ -38,7 +38,7 @@ this.getRoot().add(qxComposite1, {edge:0});
 
             
 
-    var componentsMainToolBar1 = new access.components.MainToolBar();
+    var componentsToolBar1 = new access.components.ToolBar();
     
 
 
@@ -47,7 +47,7 @@ this.getRoot().add(qxComposite1, {edge:0});
 
     
 
-qxComposite1.add(componentsMainToolBar1 );
+qxComposite1.add(componentsToolBar1 );
 
     
 

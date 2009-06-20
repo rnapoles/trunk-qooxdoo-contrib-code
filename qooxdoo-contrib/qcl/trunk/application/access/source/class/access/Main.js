@@ -1,6 +1,7 @@
 
 /* ************************************************************************
 #asset(access/*)
+#require(qcl.components.login.Popup)
 ************************************************************************ */
 
 /**
@@ -13,7 +14,12 @@ qx.Class.define("access.Main",
   
   properties : 
   {
- 
+    foo :
+    {
+      check : "String",
+      apply : "_applyFoo",
+      event : "changeFoo"
+    }
   },
 
   members :
@@ -43,8 +49,7 @@ qx.Class.define("access.Main",
        * the URL of the jsonrpc server
        */ 
       this.setServerUrl("../services/index.php");
-      
-       this.info("Starting Application..."); 
+      this.info("Starting Application..."); 
        
       /*
        * Starting the authentication
@@ -56,6 +61,58 @@ qx.Class.define("access.Main",
        */
       this.loadConfiguration("qcl.test.Config");
       
+      /*
+       * login popup
+       */
+      var loginPopup = qcl.components.login.Popup.getInstance();
+      loginPopup.setCallback(this.checkLogin);
+      loginPopup.setImage("/Bibliograph/qooxdoo-contrib/qcl/trunk/application/access/source/resource/access/qooxdoo-logo.gif");
+      loginPopup.setText("<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations:</p>");
+      
+      loginPopup.addListener("loginSuccess", function(){
+        //
+      },this);
+      
+      loginPopup.addListener("loginFail", function(event){
+        // alert(event.getData());
+      },this);
+    },
+    
+    /** 
+     * Callback function that takes the username, password and
+     * another callback function with its context as parameters. 
+     * The passed function is called with a boolean value 
+     * (true=authenticated, false=authentication failed) and an 
+     * optional string value which can contain an error message :
+     * callback.call( context, {Boolean} result, {String} message);
+     * @param username {String}
+     * @param password {String}
+     * @param callback {Function} The callback function
+     * @param context {Object} The execution context of the callback
+     */    
+    checkLogin : function( username, password, callback, context )
+    {
+       qx.core.Init.getApplication().authenticate( username, password, function( data )
+       {
+         if ( data.error )
+         {
+           callback.call( context, false,  data.error  );
+         }
+         else
+         {
+           callback.call( context, true );
+         }         
+       });
+    },
+    
+    condition1 : function()
+    {
+      return true;
+    },
+    
+    _applyFoo : function ( value, old )
+    {
+      this.setState("foo", value );
     },
     
     finalize : function()

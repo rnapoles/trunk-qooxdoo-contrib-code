@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:component xmlns:qx="http://www.qxtransformer.org/qooxdoo/0.8"
+  xmlns:qxt="http://www.qxtransformer.org/extension/0.4" xmlns:qcl="http://www.qooxdoo.org/contrib/qcl/trunk"
+  author="Christian Boulanger" className="access.components.Body"
+  tagName="body">
+
+  <qx:vbox>
+  
+  <qcl:access>
+  
+    <qcl:permission name="bar">
+      <qcl:condition>
+        <![CDATA[
+          return true;
+        ]]>
+      </qcl:condition>
+    </qcl:permission>
+    <qcl:permission name="foo">
+      <qcl:dependency permission="viewRecord" />
+      <qcl:condition target="{js}this.getApplication()" property="foo" value="bar" />
+      <qcl:updater applicationEvent="changeFoo" />
+    </qcl:permission>  
+  </qcl:access>
+
+    <qx:toolBarCheckBox widgetId="fooButton" label="Foo Button">
+      <qcl:bind property="value" config="test.checked" />
+    </qx:toolBarCheckBox>
+    <qx:checkBox widgetId="fooCheckBox" label="Foo 2">
+      <qcl:bind property="value" config="test.checked" />
+    </qx:checkBox>
+  </qx:vbox>
+
+</qxt:component>
