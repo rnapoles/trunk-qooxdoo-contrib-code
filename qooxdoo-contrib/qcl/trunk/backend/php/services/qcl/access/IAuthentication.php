@@ -30,9 +30,18 @@ interface qcl_access_IAuthentication
    * If authenticated, return an array of the following structure
    *
    * array(
+   *   "error"       => false,
    *   "permissions" => array( "permission1","permission2" ....),
-   *   "sessionId"   => "a23j2h3i4h2l2..."
+   *   "sessionId"   => "a23j2h3i4h2l2...",
+   *   "username"    => "jondoe",
+   *   ... < Any more userdata that you want to send to client >
    * );
+   *
+   * If authentication fails, you must return
+   * array(
+   *    "error"     => "Error message",
+   *    "sessionId" => <session id or null if no session>
+   * )
    * @param array $params Array of parameters
    * @return array
    */
