@@ -16,6 +16,7 @@
       <components:toolBar/>
       
       <!-- application body -->
+      <components:body/>
       
     </qx:vbox>
   </qx:composite>
