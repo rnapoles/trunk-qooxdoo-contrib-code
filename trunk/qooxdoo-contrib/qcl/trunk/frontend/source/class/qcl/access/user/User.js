@@ -139,6 +139,7 @@ qx.Class.define("qcl.access.user.User",
       {
         names.push( perms[i].getNamedId() );
       }
+      return names;
     },
     
     /**

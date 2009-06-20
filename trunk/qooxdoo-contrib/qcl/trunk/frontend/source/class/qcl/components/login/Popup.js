@@ -221,11 +221,12 @@ qx.Class.define("qcl.components.login.Popup",
      * Group box with login fields  
      */
     var gridContainer = new qx.ui.container.Composite;
-    var layout = new qx.ui.layout.Grid(9, 5);
-    layout.setColumnAlign(0, "right", "top");
-    layout.setColumnAlign(2, "right", "top");
-    gridContainer.setLayout(layout);
-    gridContainer.setAllowStretchX(true);
+    var gridLayout = new qx.ui.layout.Grid(9, 5);
+    gridLayout.setColumnAlign(0, "right", "top");
+    gridLayout.setColumnAlign(2, "right", "top");
+    gridLayout.setColumnMinWidth(0, 50);
+    gridLayout.setColumnFlex(1, 2);
+    gridContainer.setLayout(gridLayout);
     groupboxContainer.add( gridContainer );
     
     /* 
@@ -431,6 +432,8 @@ qx.Class.define("qcl.components.login.Popup",
     
     hide : function()
     {
+      this.__password.setValue("");
+      this.setMessage(null);
       this.setVisibility("hidden");
     },
     
