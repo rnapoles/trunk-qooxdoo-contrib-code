@@ -59,7 +59,21 @@
  */
 qx.Mixin.define("qcl.application.MApplicationState",
 {
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */  
 
+  construct : function()
+  {
+    
+    /*
+     * initialize history stacks
+     */
+    this.__backHistoryStack = [];
+    this.__forwardHistoryStack = [];
+  },  
 
   /*
   *****************************************************************************
@@ -70,7 +84,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
   members :
   {
   
-  
+ 
     /*
     ---------------------------------------------------------------------------
        PRIVATE MEMBERS
@@ -78,6 +92,8 @@ qx.Mixin.define("qcl.application.MApplicationState",
     */   
     __lastHash : null, 
     __hashParams  : null,
+    __backHistoryStack : null,
+    __forwardHistoryStack : null,
     
     /*
     ---------------------------------------------------------------------------
@@ -513,8 +529,8 @@ qx.Mixin.define("qcl.application.MApplicationState",
      */
     navigateBack : function()
     {
-      var bHist = this.getBackHistoryStack();
-      var fHist = this.getForwardHistoryStack();
+      var bHist = this.__backHistoryStack;
+      var fHist = this.__forwardHistoryStack;
       //console.log("Trying to navigate backwards, stack length is "+ bHist.length);
       if ( bHist.length )
       {
@@ -537,8 +553,8 @@ qx.Mixin.define("qcl.application.MApplicationState",
      */
     navigateForward : function()
     {
-      var fHist = this.getForwardHistoryStack();
-      var bHist = this.getBackHistoryStack();
+      var fHist = this.__forwardHistoryStack;
+      var bHist = this.__backHistoryStack;
       //console.log("Trying to navigate forwards, stack length is "+ fHist.length);
       if ( fHist.length )
       {
@@ -571,7 +587,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
         return;
       }
       this.__lastHash = hash;
-      var bHist = this.getBackHistoryStack();
+      var bHist = this.__backHistoryStack;
       bHist.unshift(hash);
       qx.bom.History.getInstance().addToHistory( hash, description );
     },
@@ -582,7 +598,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
      */
     canNavigateBack : function()
     {
-      return ( this.getBackHistoryStack().length > 1 );
+      return ( this.__backHistoryStack.length > 1 );
     },
 
    /**
@@ -591,7 +607,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     */    
     canNavigateForward : function()
     {
-      return ( this.getForwardHistoryStack().length > 1 );
+      return ( this.__forwardHistoryStack.length > 1 );
     }
   }
 });

@@ -214,7 +214,8 @@ qx.Class.define("qcl.access.AbstractManager",
 				var type = this.classname.substr(0,this.classname.lastIndexOf(".")); // chop of "Manager" part
 				var typeLower = type.substr(type.lastIndexOf(".")+1);
 				var typeUpper = typeLower.substr(0,1).toUpperCase() + typeLower.substr(1);
-				obj = new qcl.access[typeLower][typeUpper](name); // this automatically adds the new object to the manage
+				var clazz = qcl.access[typeLower][typeUpper];
+				obj = new clazz(name); // this automatically adds the new object to the manage
 			}
 			return obj;
 		},

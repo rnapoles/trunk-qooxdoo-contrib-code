@@ -147,7 +147,12 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
    /**
     * Event signaling that the model data has changed
     */
-   "changeBubble" : "qx.event.type.Data"      
+   "changeBubble" : "qx.event.type.Data",
+   
+   /**
+    * Error event
+    */
+   "error" : "qx.event.type.Data"
   },
 
   /*
@@ -295,6 +300,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     __requestId : 0,
     __timerId : null,
     __dataEvents : [],
+    __requestCounter : 0,
     
     /*
     ---------------------------------------------------------------------------
@@ -547,7 +553,15 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     {
 
       var rpc = this._configureRequest();
-
+      
+      /*
+       * display a global cursor as long as a request is
+       * underway
+       * @todo replace this with a more sophistaced system
+       */
+      qx.core.Init.getApplication().getRoot().setGlobalCursor("wait");
+      this.__requestCounter++;
+      
       /*
        * tag the current object instance for closures
        */
@@ -557,8 +571,15 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
        * create callback function
        */
       var callbackFunc = function( data, ex, id ) 
-      {
-
+      { 
+       /*
+         * decrement counter and reset cursor
+         */
+        if ( --_this.__requestCounter < 1)
+        {
+          qx.core.Init.getApplication().getRoot().setGlobalCursor("default");
+        }
+        
         /*
          * save data for debugging etc.
          */
@@ -624,18 +645,16 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         } 
         else 
         {
-         /* 
-          * dispatch error message  
-          * we're using a message and not an error message or event
-          * so that all error messages can be dealt with in a central
-          * location
-          */
-          qx.event.message.Bus.dispatch( 
-              "qcl.databinding.messages.rpc.error",
-              ex.message
-          );
-          _this.warn ( "Async exception (#" + id + "): " + ex.message );
-
+          /* 
+           * dispatch error event  
+           */
+          _this.fireDataEvent( "error", ex );
+          
+          /*
+           * handle event
+           */
+          _this._handleError( ex, id );
+          
           /*
            * notify that data has been received but failed
            */
@@ -681,14 +700,33 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       }       
       return;
     },
-
     
-   /**
-    * Polls the server, passing the events in the queue
-    * and retrieving the events on the server to all stores
-    * that this object serves as proxy for, including itself.
-    * @return {Void}
-    */
+    /**
+     * Handles an error returned by the rpc object. Override
+     * this method if you want to have a different error behavior.
+     * @param ex {Object} Exception object
+     * @param id {Integer} Request id
+     */
+    _handleError : function( ex, id )
+    {
+      /*
+       * log warning to client log
+       */
+      this.warn ( "Async exception (#" + id + "): " + ex.message );
+      
+      /*
+       * simply alert error
+       */
+      alert(ex.message); 
+      
+    },
+    
+    /**
+     * Polls the server, passing the events in the queue
+     * and retrieving the events on the server to all stores
+     * that this object serves as proxy for, including itself.
+     * @return {Void}
+     */
     _poll : function()
     {
       var events = {};
