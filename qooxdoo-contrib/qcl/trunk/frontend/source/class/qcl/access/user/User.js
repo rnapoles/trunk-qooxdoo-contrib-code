@@ -58,15 +58,27 @@ qx.Class.define("qcl.access.user.User",
     namedId :
     {
       check    : "String",
-      nullable : false
+      nullable : false,
+      apply : "_applyNamedId"
     },
 
+    /**
+     * Alias for namedId which can be bound
+     */
+    username :
+    {
+      check : "String",
+      nullable : false,
+      event : "changeUsername"
+    },
+    
     /**
      * A hash map of user data
      */
     fullname :
     {
-      check : "String"
+      check : "String",
+      event : "changeFullname"
     },
 
     /**
@@ -91,6 +103,11 @@ qx.Class.define("qcl.access.user.User",
   members :
   {
 
+    _applyNamedId : function( value, old )
+    {
+      this.setUsername( value );
+    },
+    
     /**
      * Check if user has the given permission
      * @param permissionRef {String|qcl.access.permission.Permission} name of permission object or object reference

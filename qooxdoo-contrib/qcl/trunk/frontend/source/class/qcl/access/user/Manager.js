@@ -64,7 +64,8 @@ qx.Class.define("qcl.access.user.Manager",
     {
       check : "Object",
       init : null,
-      apply : "_applyModel"
+      apply : "_applyModel",
+      event : "changeModel"
     }
   },
   

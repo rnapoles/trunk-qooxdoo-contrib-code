@@ -103,26 +103,6 @@ qx.Mixin.define("qcl.application.MApplication",
       apply : "_applySessionId"
     },
     
-    /**
-     * Whether the current user is anonymous, i.e. not logged in
-     */
-    authenticatedUser :
-    {
-      check : "Boolean",
-      init : false,
-      event : "changeAuthenticatedUser"
-    },
-    
-    /**
-     * The username of the currently authenticated user, or null
-     * if none
-     */
-    username : 
-    {
-      check : "String",
-      nullable : true,
-      event : "changeUsername"
-    },
     
      /**
       * The URL of the backend
@@ -448,6 +428,15 @@ qx.Mixin.define("qcl.application.MApplication",
        this.getAuthStore().load("authenticate",[ username, password ], callback, context );
     },
        
+    /**
+     * Log out current user on the server
+     * @return
+     */
+    logout : function()
+    {
+      this.getAuthStore().load("authenticate",[ null ] );
+    },
+    
     /*
     ---------------------------------------------------------------------------
        CONFIGURATION
@@ -772,8 +761,17 @@ qx.Mixin.define("qcl.application.MApplication",
     */    
     getPermission : function( name )
     {
-      return qcl.access.permission.Manager.getInstance().getObject( name );   
+      return qcl.access.permission.Manager.getInstance().create( name );   
     },
+    
+    /**
+     * Shorthand method to return a permission state
+     * @return {Boolean}
+     */    
+     getPermissionState : function( name )
+     {
+       return qcl.access.permission.Manager.getInstance().create( name ).getState();   
+     },    
 
     /**
      * Shorthand method to update a permission
