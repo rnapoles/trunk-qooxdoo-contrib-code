@@ -40,6 +40,7 @@ qx.Mixin.define("qcl.application.MApplication",
 
   construct : function()
   {
+    
     /*
      * cache for widget ids
      */
@@ -58,9 +59,7 @@ qx.Mixin.define("qcl.application.MApplication",
     if ( sid )
     {
       this.setSessionId( sid );  
-    }    
-    
-    
+    }
   },
  
   /*
@@ -222,7 +221,14 @@ qx.Mixin.define("qcl.application.MApplication",
     
     _applySessionId : function( sessionId, old )
     {
-      this.setState( "sessionId", sessionId );
+      if ( sessionId )
+      {
+        this.setState( "sessionId", sessionId );
+      }
+      else
+      {
+        this.removeState("sessionId");
+      }
     },
     
     /**
@@ -425,7 +431,22 @@ qx.Mixin.define("qcl.application.MApplication",
        */
       this.getAuthStore().load("authenticate",[ this.getSessionId() || null ] );
       
-    },    
+    },  
+    
+    /**
+     * Authenticates a user with the given password. Since this is done
+     * asynchroneously, the method has no return value but uses a callback 
+     * instead.
+     * @param username {String}
+     * @param password {String}
+     * @param callback {Function}
+     * @param context {Object} The context in which the callback is executed
+     * @return {void}
+     */
+    authenticate : function( username, password, callback, context )
+    {
+       this.getAuthStore().load("authenticate",[ username, password ], callback, context );
+    },
        
     /*
     ---------------------------------------------------------------------------

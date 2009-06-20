@@ -92,7 +92,7 @@ qx.Class.define("qcl.access.user.Manager",
 		 */
 		_applyModel : function ( model, old )
 		{
-		  if ( model )
+		  if ( model && ! model.getError() )
 		  {
 		    /*
 		     * create user
