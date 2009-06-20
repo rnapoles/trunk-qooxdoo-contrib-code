@@ -1,0 +1,59 @@
+{
+  "name"    : "access",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    },
+    {
+      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation",
+    "transform"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "access",
+    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
+    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${QOOXDOO_PATH}/cache",
+    "ROOT"         : ".",
+    "PYTHON"       : "/opt/local/bin/python2.5",
+    "QXTRANSFORMER_PATH": "../../../qooxdoo/qxtransformer/toolkit",
+    "QXT_VERBOSE"  : "main:INFO;dev:INFO;"
+  },
+  
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [
+        {
+          "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
+        }
+      ]
+    }
+  }
+}
