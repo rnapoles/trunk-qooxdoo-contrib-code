@@ -10,12 +10,12 @@
 
   <!-- main layout -->
   <qx:composite qxt:edge="0">
-  
-  
     <qx:vbox>
       
       <!-- toolbar -->
-      <components:mainToolBar/>
+      <components:toolBar/>
+      
+      <!-- application body -->
       
     </qx:vbox>
   </qx:composite>
