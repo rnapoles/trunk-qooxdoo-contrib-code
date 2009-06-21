@@ -3,7 +3,7 @@
    qooxdoo - the new era of web development
 
    Copyright:
-     2007 Christian Boulanger
+     2007-2009 Christian Boulanger
 
    http://qooxdoo.org
 
@@ -55,6 +55,9 @@
  * 
  * This requires that the server exposess a "set" method with the parameters
  * key, value that saves the config value back into the database.
+ * 
+ * You can bind any property of an object to a config value by using
+ * the {@link #bindValue} method.
  * 
  */
 qx.Class.define("qcl.config.Manager",
@@ -108,16 +111,22 @@ qx.Class.define("qcl.config.Manager",
   events :
   {
     /* 
-     * the change event is dispatched when the configuration data is
-     * ready
+     * Dispatched when the configuration data is ready
      */
     "ready" : "qx.event.type.Event",
     
     /* 
-     * the change event is dispatched with the name of
-     * the changed config key
+     * Dispatched with the name of the changed config key when
+     * the config value changes, regardless of whether the change
+     * was caused be the client or server.
      */
-    "change" : "qx.event.type.Data"
+    "change" : "qx.event.type.Data",
+    
+    /* 
+     * Dispatched with the name of the changed config key when
+     * the config value changes on the client
+     */
+    "clientChange" : "qx.event.type.Data"    
   },
   
   /*
@@ -222,35 +231,99 @@ qx.Class.define("qcl.config.Manager",
     {
        var index = this._getIndex(key);
        this.getModel().getValues().setItem( index, value );
+       this.fireDataEvent("clientChange", key);
     },
     
     /**
-     * Binds a config value to a target widget property in both
+     * Binds a config value to a target widget property, optionally in both
      * directions.
      * @param key {String}
      * @param targetObject {qx.core.Object}
      * @param targetPath {String}
-     * @param updateSelfAlso {Boolean} Optional, default undefined
+     * @param updateSelfAlso {Boolean} Optional, default undefined. If true,
+     *  change the config value if the target property changes
      * @return
      */
     bindValue : function( key, targetObject, targetPath, updateSelfAlso )
     {
-      var index = this._getIndex( key );
-      /*
-       * update the target widget property when config value changes
-       */
-      targetObject.bind( targetPath, this, "model.values[" + index + "]" );
+      if ( ! this.getModel() )
+      {
+        this.error("You cannot bind a config key before config values have been loaded!");
+      }
       
       /*
-       * update config value if target widget property changes
+       * if the target path is a property and not a property chain,
+       * use event listeners. This also solves a problem with a bug
+       * in the SigleValueBinding implementation, 
+       * see http://www.nabble.com/Databinding-td24099676.html
        */
-      if ( updateSelfAlso )
+      if ( targetPath.indexOf(".") == -1 )
       {
-        this.bind( "model.values[" + index + "]", targetObject, targetPath );
+        /*
+         * set the initial value
+         */
+        //try{
+        targetObject.set( targetPath, this.getValue(key) );
+        //}catch(e){alert(e);}
+        
+        /*
+         * add a listener to update the target widget property when 
+         * config value changes
+         * @todo: add converter
+         */
+        this.addListener( "change", function(e){       
+          var changeKey = e.getData();
+          if( changeKey == key )
+          {
+            //console.warn("Updating property "+targetPath+" from config key "+key+":"+this.getValue(key));
+            targetObject.set(targetPath,this.getValue(key));
+          }
+        },this);
+
+        /*
+         * update config value if target widget property changes
+         */
+        if ( updateSelfAlso )
+        {
+          targetObject.addListener(
+            "change" + targetPath.substr(0,1).toUpperCase() + targetPath.substr(1),
+            function(e)
+            {
+              var value= e.getData();
+              //console.warn("Updating config key "+key+" with "+value);
+              this.setValue(key,value);
+            },
+            this
+          );
+        }
+      }
+      
+      /*
+       * use SigleValueBinding, this requires patching the core qooxdoo
+       * code currently, see link above
+       * @todo: add converter
+       */
+      else
+      {
+        /*
+         * get index of config key
+         */
+        var index = this._getIndex( key );        
+        
+        /*
+         * update the target widget property when config value changes
+         */
+        targetObject.bind( targetPath, this, "model.values[" + index + "]" );
+        
+        /*
+         * update config value if target widget property changes
+         */
+        if ( updateSelfAlso )
+        {
+          this.bind( "model.values[" + index + "]", targetObject, targetPath );
+        }
       }
     }
-    
-
   },
 
   /*
