@@ -35,15 +35,15 @@ qx.Class.define("timechooser.spinner.TimeValue",
     this.base(arguments);
 
     // Assume minutes or seconds.  User can set 12 or 24 hour format if needed
-    this.setMin(0);
-    this.setMax(59);
+    this.setMinimum(0);
+    this.setMaximum(59);
 
     // Allow wrapping by default
     this.setWrap(true);
 
     // Set an appropriate width for a two-digit time component
     var textField = this.getChildControl("textfield");
-    textField.setWidth(20);
+    textField.setWidth(26);
   },
 
   members :

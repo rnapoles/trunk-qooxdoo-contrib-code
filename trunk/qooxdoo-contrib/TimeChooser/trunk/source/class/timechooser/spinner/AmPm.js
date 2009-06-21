@@ -47,7 +47,7 @@ qx.Class.define("timechooser.spinner.AmPm",
 
     // The text field needn't be quite so wide as our superclass'
     var textField = this.getChildControl("textfield");
-    textField.setWidth(24);
+    textField.setWidth(30);
 
     // Allow wrapping by default
     this.setWrap(true);

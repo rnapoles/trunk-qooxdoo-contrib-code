@@ -36,7 +36,7 @@ qx.Class.define("timechooser.TimeChooser",
 
     // Add the hour spinner.  TimeValue's default max is 59, so adjust.
     this.__hours = new timechooser.spinner.TimeValue();
-    this.__hours.setMax(23);
+    this.__hours.setMaximum(23);
     this.__hours.addListener("changeValue", this._onChange, this);
     this.add(this.__hours);
 
@@ -376,20 +376,20 @@ qx.Class.define("timechooser.TimeChooser",
       {
       case "12ampm":
         this.__ampm.show();
-        this.__hours.setMin(1);
-        this.__hours.setMax(12);
+        this.__hours.setMinimum(1);
+        this.__hours.setMaximum(12);
         break;
 
       case "12":
         this.__ampm.hide();
-        this.__hours.setMin(1);
-        this.__hours.setMax(12);
+        this.__hours.setMinimum(1);
+        this.__hours.setMaximum(12);
         break;
 
       case "24":
         this.__ampm.hide();
-        this.__hours.setMin(0);
-        this.__hours.setMax(23);
+        this.__hours.setMinimum(0);
+        this.__hours.setMaximum(23);
         break;
       }
 

@@ -95,11 +95,11 @@ qx.Class.define("timechooser.spinner.Spinner",
 
     // INITIALIZATION
     if (min != null) {
-      this.setMin(min);
+      this.setMinimum(min);
     }
 
     if (max != null) {
-      this.setMax(max);
+      this.setMaximum(max);
     }
 
     if (value != null) {
@@ -315,7 +315,7 @@ qx.Class.define("timechooser.spinner.Spinner",
     _applyMin : function(value, old)
     {
       if (this.getMax() < value) {
-        this.setMax(value);
+        this.setMaximum(value);
       }
 
       if (this.getValue() < value) {
@@ -336,7 +336,7 @@ qx.Class.define("timechooser.spinner.Spinner",
     _applyMax : function(value, old)
     {
       if (this.getMin() > value) {
-        this.setMin(value);
+        this.setMinimum(value);
       }
 
       if (this.getValue() > value) {
