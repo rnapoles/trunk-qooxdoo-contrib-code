@@ -16,9 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once dirname(__FILE__) ."/AbstractStore.php";
-
-class class_Config extends AbstractStore
+class class_Config
 {
 
   var $config = array(

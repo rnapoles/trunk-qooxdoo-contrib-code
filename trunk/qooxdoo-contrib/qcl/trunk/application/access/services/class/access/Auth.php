@@ -15,14 +15,13 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once dirname(__FILE__) ."/AbstractStore.php";
 
 /**
  * Class providing a backend for mock authentication
  * @author bibliograph
  *
  */
-class class_Auth extends AbstractStore
+class class_Auth
 {
 
   /**
