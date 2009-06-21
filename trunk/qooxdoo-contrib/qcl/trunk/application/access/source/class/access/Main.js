@@ -21,44 +21,49 @@ qx.Class.define("access.Main",
     main : function()
     {
       /*
-       * call parent class' main method
-       */
+                   * call parent class' main method
+                   */
+
       this.base(arguments);
 
       /*
-       * logging
-       */
+                   * logging
+                   */
+
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
 
       /*
-       * the URL of the jsonrpc server
-       */
+                   * the URL of the jsonrpc server
+                   */
+
       this.setServerUrl("../services/index.php");
       this.info("Starting Application...");
 
       /*
-       * Starting the authentication
-       */
-      this.startAuthentication("qcl.test.Auth");
+                   * Starting the authentication
+                   */
+
+      this.startAuthentication("access.Auth");
 
       /*
-       * configuration
-       */
-      this.loadConfiguration("qcl.test.Config");
+                   * configuration
+                   */
+
+      this.loadConfiguration("access.Config");
 
       /*
-       * login popup
-       */
+                   * login popup
+                   */
 
       var loginPopup = qcl.components.login.Popup.getInstance();
       loginPopup.setCallback(this.checkLogin);
-      loginPopup.setImage("/Bibliograph/qooxdoo-contrib/qcl/trunk/application/access/source/resource/access/qooxdoo-logo.gif");
+      loginPopup.setImage("access/qooxdoo-logo.gif");
       loginPopup.setText("<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations <br/>from the first group box.</p>");
 
       loginPopup.addListener("loginFail", function(event) {
-          loginPopup.setMessage(event.getData());
+        loginPopup.setMessage(event.getData());
       }, this);
     },
 
@@ -81,39 +86,13 @@ qx.Class.define("access.Main",
     {
       qx.core.Init.getApplication().authenticate(username, password, function(data)
       {
-        if ( data.error ) {
+        if (data.error) {
           callback.call(context, false, data.error);
         } else {
           callback.call(context, true);
         }
-      },this);
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @param value {var} TODOC
-     * @param old {var} TODOC
-     * @return {void} 
-     */
-    _applyFoo : function(value, old) {
-      this.setState("foo", value);
-    },
-
-
-    /**
-     * TODOC
-     *
-     * @return {void} 
-     */
-    finalize : function() {
-      this.info("Finalizing..");
+      },
+      this);
     }
   }
 });
-
-/*
-       * turn on browser history support
-       */
-// this.setHistorySupport(true);

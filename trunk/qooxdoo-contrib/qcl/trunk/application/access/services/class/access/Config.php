@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require "qcl/test/AbstractStore.php";
+require_once dirname(__FILE__) ."/AbstractStore.php";
 
 class class_Config extends AbstractStore
 {

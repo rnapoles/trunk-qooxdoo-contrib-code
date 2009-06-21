@@ -15,16 +15,14 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-
-require_once "qcl/test/AbstractStore.php";
-require_once "qcl/access/IAuthentication.php";
+require_once dirname(__FILE__) ."/AbstractStore.php";
 
 /**
  * Class providing a backend for mock authentication
  * @author bibliograph
  *
  */
-class class_Auth extends AbstractStore implements qcl_access_IAuthentication
+class class_Auth extends AbstractStore
 {
 
   /**
@@ -111,11 +109,12 @@ class class_Auth extends AbstractStore implements qcl_access_IAuthentication
     }
 
     /*
-     * create new session
+     * create new session, this only works with
+     * the qcl_server_JsonRpc server
      */
-    session_destroy();
-    session_id( $sessionId );
-    session_start();
+    //session_destroy();
+    //session_id( $sessionId );
+    //session_start();
 
     /*
      * permissions

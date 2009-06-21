@@ -56,27 +56,36 @@
       
       </qx:atom>
     </qx:toolBarPart>
-    <!-- 
+    
     <qx:toolBarPart>
 
-      <qx:toolBarButton  label="See JS source" >
-       
-        <qxt:listener type="execute">
-        
-        </qxt:listener>
-        
-      </qx:toolBarButton>
-
-      <qx:toolBarButton label="See XML source" >
-                 
-        <qxt:listener type="execute">
-
-        </qxt:listener>
-        
-      </qx:toolBarButton>
+      <qx:toolBarMenuButton label="Server" >
+        <qcl:observe property="enabled" permission="manageUsers" />
+        <qx:menu>
+           <qx:radioGroup>
+            <qx:menuRadioButton label="Use RpcPhp 1.0" value="true">
+              <qxt:listener event="changeValue">
+                if(e.getData())
+                {
+                  this.getApplication().setServerUrl("../services/index.php");
+                  this.info("Server: changed to 1.0 version.");
+                }
+              </qxt:listener>
+            </qx:menuRadioButton>
+            <qx:menuRadioButton label="Use RpcPhp trunk" enabled="false">
+              <qxt:listener event="changeValue" arg="event">
+                if(event.getData())
+                {
+                  this.getApplication().setServerUrl("../services/server.php");
+                  this.info("Server: changed to trunk version.");
+                }
+              </qxt:listener>
+            </qx:menuRadioButton>
+          </qx:radioGroup>
+        </qx:menu>
+      </qx:toolBarMenuButton>
       
-   </qx:toolBarPart>
-     -->
+   </qx:toolBarPart>  
   </qx:toolBar>
   
 </qxt:component>

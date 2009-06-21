@@ -4,10 +4,10 @@
   author="Christian Boulanger" className="access.components.Body"
   tagName="body">
 
-  <qx:composite>
+  <qx:composite margin="30">
     <qx:vbox>
 
-      <qx:composite margin="30">
+      <qx:composite >
         <qx:hbox spacing="10" qxt:flex="1">
 
           <qx:groupBox qxt:flex="1" legend="User Data">
@@ -209,6 +209,37 @@
 
         </qx:hbox>
       </qx:composite>
+      
+      <!-- source code -->
+      <qx:groupBox legend="Source">
+        <qx:hbox spacing="5">
+           <qx:button label="Application JS source">
+            <qxt:listener event="execute">
+              window.open("../source/class/access/Main.js");
+            </qxt:listener>            
+           </qx:button>          
+           <qx:button label="Toolbar XML source">
+            <qxt:listener event="execute">
+              window.open("../source/class/access/components/ToolBar.xml");
+            </qxt:listener>
+           </qx:button>
+           <qx:button label="Toolbar Js source">
+            <qxt:listener event="execute">
+              window.open("../source/class/access/components/ToolBar.js");
+            </qxt:listener>
+           </qx:button>           
+           <qx:button label="Body XML source">
+            <qxt:listener event="execute">
+              window.open("../source/class/access/components/Body.xml");
+            </qxt:listener>
+           </qx:button>
+           <qx:button label="Body JS source">
+            <qxt:listener event="execute">
+              window.open("../source/class/access/components/Body.js");
+            </qxt:listener>            
+           </qx:button>        
+        </qx:hbox>
+      </qx:groupBox>
 
     </qx:vbox>
   </qx:composite>
