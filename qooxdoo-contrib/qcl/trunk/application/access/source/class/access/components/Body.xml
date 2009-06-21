@@ -12,8 +12,8 @@
 
           <qx:groupBox qxt:flex="1" legend="User Data">
             <qx:vbox spacing="5">
-            
-              <qx:label rich="true" qxt:flex="1">
+
+              <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
                 <qxt:property name="value">
                   &lt;h4&gt;Login data &lt;/h4&gt;
                    &lt;ul&gt;
@@ -33,30 +33,30 @@
                 <qx:column minWidth="100" />
                 <qx:column flex="2"/>
                 
-                <qx:label value="Username" qxt:row="0" qxt:column="0"/>
-                <qx:textField qxt:row="0" qxt:column="1">
+                <qx:label value="Username:" qxt:row="0" qxt:column="0"/>
+                <qx:label qxt:row="0" qxt:column="1">
                   <qxt:observe 
                     property="value" 
                     source="this.getApplication().getUserManager()" 
                     sourceProp="activeUser.username" />
-                </qx:textField>
+                </qx:label >
                 
-                <qx:label value="Full name" qxt:row="1" qxt:column="0"/>
-                <qx:textField qxt:row="1" qxt:column="1">
+                <qx:label value="Full name:" qxt:row="1" qxt:column="0"/>
+                <qx:label qxt:row="1" qxt:column="1">
                   <qxt:observe 
                     property="value" 
                     source="this.getApplication().getUserManager()" 
                     sourceProp="activeUser.fullname" />                
-                </qx:textField>
+                </qx:label >
                 
-                <qx:label value="Permissions" qxt:row="2" qxt:column="0"/>
-                <qx:textField qxt:row="2" qxt:column="1">
+                <qx:label value="Permissions:" qxt:row="2" qxt:column="0"/>
+                <qx:label qxt:row="2" qxt:column="1" rich="true">
                   <qxt:observe 
                     property="value" 
                     source="this.getApplication().getUserManager()" 
                     sourceProp="activeUser"
-                    converter="function(activeUser){return activeUser ? activeUser.getPermissionNames().join(',') : ''}" />                
-                </qx:textField>
+                    converter="function(activeUser){return activeUser ? activeUser.getPermissionNames().join('&lt;br /&gt;') : ''}" />                
+                </qx:label>
                 
               </qx:grid>
               </qx:composite>
@@ -66,11 +66,15 @@
           <qx:groupBox qxt:flex="1" legend="Permission binding">
             <qx:vbox spacing="5">
             
-              <qx:button label="Permission 'viewRecord' (All)" >
+              <qx:button label="Permission 'viewRecord' (Anyone)" >
                 <qcl:observe property="enabled" permission="viewRecord" />
               </qx:button>
             
-              <qx:button label="Permission 'createRecord' (User only)" >
+              <qx:button label="Permission 'createRecord' (All authenticated)" >
+                <qcl:observe property="enabled" permission="createRecord" />
+              </qx:button>
+              
+              <qx:button label="Permission 'manageConfig' (All authenticated))" >
                 <qcl:observe property="enabled" permission="createRecord" />
               </qx:button>
               
@@ -82,33 +86,33 @@
                 <qcl:observe property="enabled" permission="manageUsers" />
               </qx:button>
               
-              <qx:checkBox id="condition1CheckBox" label="Condition 1" />
-              <qx:checkBox id="condition2CheckBox" label="Condition 2" />
-              <qx:checkBox id="condition3CheckBox" label="Condition 3" />
+              <qx:checkBox id="condition1CheckBox" label="Condition 1">
+                <qxt:listener event="changeValue" dispatchEvent="conditionsHaveChanged" />
+              </qx:checkBox>
+              <qx:checkBox id="condition2CheckBox" label="Condition 2">
+                <qxt:listener event="changeValue" dispatchEvent="conditionsHaveChanged" />
+              </qx:checkBox>
+              <qx:checkBox id="condition3CheckBox" label="Condition 3" >
+                <qxt:listener event="changeValue" dispatchEvent="conditionsHaveChanged" />
+              </qx:checkBox>
               
               <qcl:access>
                 <qcl:permission name="createRecordCondition1" granted="true">
                   <qcl:dependency permission="createRecord" />
-                  <qcl:updater target="condition1CheckBox" event="changeValue" />
-                  <qcl:condition>
-                    return condition1CheckBox.getValue()==true;
-                  </qcl:condition>
+                  <qcl:updater event="conditionsHaveChanged" />
+                  <qcl:condition>return condition1CheckBox.getValue()==true;</qcl:condition>
                 </qcl:permission>
                 
                 <qcl:permission name="createRecordCondition2" granted="true">
                   <qcl:dependency permission="createRecordCondition1" />
-                  <qcl:updater target="condition2CheckBox" event="changeValue" />
-                  <qcl:condition>
-                    return condition2CheckBox.getValue()==true;
-                  </qcl:condition>
+                  <qcl:updater event="conditionsHaveChanged" />
+                  <qcl:condition>return condition2CheckBox.getValue()==true;</qcl:condition>
                 </qcl:permission>
                 
                 <qcl:permission name="createRecordCondition3" granted="true">
                   <qcl:dependency permission="createRecordCondition2" />
-                  <qcl:updater target="condition3CheckBox" event="changeValue" />
-                  <qcl:condition>
-                    return condition3CheckBox.getValue()==true;
-                  </qcl:condition>
+                  <qcl:updater event="conditionsHaveChanged" />
+                  <qcl:condition>return condition3CheckBox.getValue()==true;</qcl:condition>
                 </qcl:permission>                                
               </qcl:access>
               
@@ -126,13 +130,81 @@
               
             </qx:vbox>
           
-
-
           </qx:groupBox>
 
           <qx:groupBox qxt:flex="1" legend="Configuration">
+          
+            <qx:vbox spacing="5">
+            
+              <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
+                <qxt:property name="value">
+                   &lt;p&gt;Users can change configuration values according to their permissions.&lt;/p&gt;
+                   &lt;p&gt;Note that changes are sent to the server and persist through page reloads.&lt;/p&gt;
+                </qxt:property>
+              </qx:label>          
 
+              <qx:composite>
+              <qx:grid spacing="5">
+                <qx:column minWidth="100" />
+                <qx:column flex="2"/>
+                
+                <qx:label value="application.name" qxt:row="0" qxt:column="0">
+                  <qcl:observe property="enabled" permission="manageUsers" />
+                </qx:label>
+                <qx:textField qxt:row="0" qxt:column="1">
+                  <qcl:observe property="enabled" permission="manageUsers" />
+                  <qcl:bind property="value" config="application.name"  />
+                </qx:textField>
+                
+                <qx:label value="application.author" qxt:row="1" qxt:column="0">
+                  <qcl:observe property="enabled" permission="manageUsers" />
+                </qx:label>
+                <qx:textField qxt:row="1" qxt:column="1">
+                  <qcl:observe property="enabled" permission="manageUsers" />
+                  <qcl:bind property="value" config="application.author"  />              
+                </qx:textField>
+                
+                <qx:label value="test.checked" qxt:row="2" qxt:column="0">
+                  <qcl:observe property="enabled" permission="manageConfig"/>
+                </qx:label>
+                <qx:checkBox qxt:row="2" qxt:column="1">
+                  <qcl:observe property="enabled" permission="manageConfig"/>
+                  <qcl:bind property="value" config="test.checked"  />
+                </qx:checkBox>
+                
+                <qx:label value="test.value" qxt:row="3" qxt:column="0">
+                  <qcl:observe property="enabled" permission="manageConfig"/>
+                </qx:label>
+                <qx:textField qxt:row="3" qxt:column="1">
+                  <qcl:observe property="enabled" permission="manageConfig"/>
+                  <qcl:bind property="value" config="test.value"  />              
+                </qx:textField>                
+                
+              </qx:grid>
+              </qx:composite>
+              
+              <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
+                <qxt:property name="value">
+                   &lt;p&gt;The following config value is deliberately unprotected 
+                   by permissions so that an anonymous user can change it  
+                   on the client. However, when the change is sent to the 
+                   server, it will refuse to update it.&lt;/p&gt;
+                </qxt:property>
+              </qx:label>    
+              
+            <qx:composite>
+              <qx:grid spacing="5">
+                <qx:column minWidth="100" />
+                <qx:column flex="2"/>                
+                <qx:label value="test.value" qxt:row="0" qxt:column="0"/>
+                <qx:textField qxt:row="0" qxt:column="1">
+                  <qcl:bind property="value" config="test.value"  />              
+                </qx:textField>                
+                
+              </qx:grid>
+              </qx:composite>
 
+            </qx:vbox>
           </qx:groupBox>
 
         </qx:hbox>
