@@ -214,7 +214,9 @@ qx.Class.define("qcl.components.login.Popup",
      */
     this.__text = new qx.ui.basic.Label();
     this.__text.setRich(true);
+    this.__text.setAllowStretchX(true);
     this.__text.setVisibility("excluded");
+    
     groupboxContainer.add( this.__text );
     
     /* 
@@ -261,6 +263,7 @@ qx.Class.define("qcl.components.login.Popup",
      */
     this.__message = new qx.ui.basic.Label();
     this.__message.setRich(true);
+    this.__message.setAllowStretchX(true);
     this.__message.setVisibility("excluded");
     groupboxContainer.add( this.__message );    
     
