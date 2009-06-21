@@ -25,4 +25,8 @@ define("JsonRpcDebug", false );
  */
 define( "JsonRpcDebugFile", "log/server.log" );
 
+/*
+ * Service path prefix (RpcPhp 1.0)
+ */
+define("servicePathPrefix", "class/");
 ?>
