@@ -147,7 +147,7 @@ qx.Class.define("rpcexample.Application",
 
         // Add the description to the page
         var label = new qx.ui.basic.Label().set({
-          content   : test.desc,
+          value   : test.desc,
           decorator : "main",
           rich      : true,
           padding   : 10,
@@ -217,9 +217,9 @@ qx.Class.define("rpcexample.Application",
         // Allow the user to reset the URL and Service on each call
         rpc.setUrl(url.getValue());
         rpc.setServiceName(service.getValue());
-        rpc.setCrossDomain(crossDomain.isChecked());
+        rpc.setCrossDomain(crossDomain.getValue());
 
-        if (async.isChecked()) {
+        if (async.getValue()) {
           send.setEnabled(false);
           abort.setEnabled(true);
           mycall = rpc.callAsync(function(result, ex, id) {
@@ -308,13 +308,13 @@ qx.Class.define("rpcexample.Application",
       start.addListener("execute", function() {
         t0 = new Date().getTime();
 
-        rpc.setCrossDomain(crossDomain.isChecked());
+        rpc.setCrossDomain(crossDomain.getValue());
 
         rpc.setUrl(url.getValue());
         rpc.setServiceName(service.getValue());
 
         var seqnum;
-        for (i=(tooMany.isChecked() ? 10 : 4); i > 0; i-=2) {
+        for (i=(tooMany.getValue() ? 10 : 4); i > 0; i-=2) {
           /*
            * Always issue an asynchronous request!  Issuing a synchronous
            * request can lock up the entire browser until a response is
@@ -1055,7 +1055,7 @@ qx.Class.define("rpcexample.Application",
         // Determine which transport to use
         rpc = new qx.io.remote.Rpc(url.getValue(), service.getValue());
         rpc.setTimeout(10000);
-        rpc.setCrossDomain(crossDomain.isChecked());
+        rpc.setCrossDomain(crossDomain.getValue());
 
         // start the first test
         testNum = 0;
