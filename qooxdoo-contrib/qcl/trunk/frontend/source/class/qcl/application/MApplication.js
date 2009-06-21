@@ -484,9 +484,9 @@ qx.Mixin.define("qcl.application.MApplication",
 
 
       /*
-       * whenever a config value changes, send it to server
+       * whenever a config value changes on the server, send it to server
        */
-      this.getConfigManager().addListener("change",function(event){
+      this.getConfigManager().addListener("clientChange",function(event){
         var key = event.getData();
         this.getConfigStore().execute("set",[ key, this.getConfigManager().getValue(key) ] );
       },this);       
