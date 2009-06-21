@@ -64,7 +64,8 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
   extend : qx.core.Object,
 
  /**  
-  * @param url {String|null} The url of the jsonrpc service.
+  * @param url {String|null} The url of the jsonrpc service. If no url is
+  *   given, the serverUrl property of the main applicaiton is used.
   * @param serviceName {String} The name of the service, i.e. "foo.bar"   
   * @param marshaler {Object|null} The marshaler to be used to create a model 
   *   from the data. If not provided, {@link qx.data.marshal.Json} is used and
@@ -80,7 +81,8 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     this.base(arguments);
   
     /*
-     * set url, name and method of the service
+     * set url, name and method of the service. If URL is null,
+     * the server url is used
      */
     if (url != null) 
     {
@@ -520,7 +522,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
        */
       var rpc = this.__rpc;
       rpc.setTimeout( this.getTimeout() );
-      rpc.setUrl( this.getUrl() );
+      rpc.setUrl( this.getUrl() || this.getApplication().getServerUrl() );
       rpc.setServiceName( this.getServiceName() );
       rpc.setCrossDomain( this.getAllowCrossDomainRequests() );
 

@@ -381,7 +381,7 @@ qx.Mixin.define("qcl.application.MApplication",
       {
         this.setAuthStore(       
           new qcl.databinding.event.store.JsonRpc( 
-            this.getServerUrl(), service, null, null, this.getRpcObject() 
+            null, service, null, null, this.getRpcObject() 
           ) 
         );
       }
@@ -465,7 +465,7 @@ qx.Mixin.define("qcl.application.MApplication",
       {
         this.setConfigStore(
           new qcl.databinding.event.store.JsonRpc( 
-            this.getServerUrl(), service, null, null, this.getRpcObject() 
+            null, service, null, null, this.getRpcObject() 
           )       
         );        
       }
