@@ -56,7 +56,27 @@
       
       </qx:atom>
     </qx:toolBarPart>
+    <!-- 
+    <qx:toolBarPart>
 
+      <qx:toolBarButton  label="See JS source" >
+       
+        <qxt:listener type="execute">
+        
+        </qxt:listener>
+        
+      </qx:toolBarButton>
+
+      <qx:toolBarButton label="See XML source" >
+                 
+        <qxt:listener type="execute">
+
+        </qxt:listener>
+        
+      </qx:toolBarButton>
+      
+   </qx:toolBarPart>
+     -->
   </qx:toolBar>
   
 </qxt:component>
