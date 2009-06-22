@@ -12,7 +12,6 @@ require_once "qcl/mvc/AbstractModel.php";
  * @todo rename methods "getX()" into "x()" if they refer to
  * the whole model or all records. "getFoo" should only be used for
  * model data.
- * FIXME merge qcl_db_AbstractModel and qcl_db_model_AbstractModel
  */
 class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 {
