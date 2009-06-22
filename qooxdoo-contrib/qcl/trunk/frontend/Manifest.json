@@ -3,7 +3,7 @@
   {
     "name" : "qcl-js",
     "summary" : "qooxdoo component library - javascript classes",
-    "description" : "A couple of interoperating extensions that are useful for web application development
+    "description" : "A couple of interoperating extensions that are useful for web application development",
     "keywords" : [ "access control", "authentication", "clipboard", "databinding" ],
     "homepage" : "http://qooxdoo.org/contrib/project/qcl",
   
