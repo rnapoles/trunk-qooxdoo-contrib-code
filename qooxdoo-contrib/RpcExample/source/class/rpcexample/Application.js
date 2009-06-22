@@ -1,7 +1,7 @@
 /*
  *
  * Copyright:
- *   (c) 2008 by Derrell Lipman
+ *   (c) 2008-2009 by Derrell Lipman
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -18,10 +18,15 @@ qx.Class.define("rpcexample.Application",
 
   members :
   {
+    __url : null,
+
     main : function()
     {
       // Call super class
       this.base(arguments);
+
+      // Allocate a URL object to track the global URL state
+      this.__url = new rpcexample.Url();
 
       // Enable logging in debug variant
       if (qx.core.Variant.isSet("qx.debug", "on"))
@@ -158,7 +163,7 @@ qx.Class.define("rpcexample.Application",
         
 
         // Call the function to generate this page
-        test.func(page, test.desc);
+        test.func.call(this, page, test.desc);
       }
     },
 
@@ -178,6 +183,22 @@ qx.Class.define("rpcexample.Application",
         defaultURL = "/services/";
       }
       var url = new qx.ui.form.TextField(defaultURL);
+
+      // If the global URL changes, reset our text field
+      this.__url.addListener("changeUrl",
+                             function(e)
+                             {
+                               url.setValue(e.getData());
+                             });
+
+      // If our text field changes, reset the global URL
+      url.addListener("changeValue",
+                      function(e)
+                      {
+                        this.__url.setUrl(url.getValue());
+                      },
+                      this);
+
       page.add(url);
 
       page.add(new qx.ui.basic.Label("Service:"));
@@ -276,6 +297,22 @@ qx.Class.define("rpcexample.Application",
         defaultURL = "/services/";
       }
       var url = new qx.ui.form.TextField(defaultURL);
+
+      // If the global URL changes, reset our text field
+      this.__url.addListener("changeUrl",
+                             function(e)
+                             {
+                               url.setValue(e.getData());
+                             });
+
+      // If our text field changes, reset the global URL
+      url.addListener("changeValue",
+                      function(e)
+                      {
+                        this.__url.setUrl(url.getValue());
+                      },
+                      this);
+
       page.add(url);
 
       page.add(new qx.ui.basic.Label("Service:"));
@@ -360,6 +397,22 @@ qx.Class.define("rpcexample.Application",
         defaultURL = "/services/";
       }
       var url = new qx.ui.form.TextField(defaultURL);
+
+      // If the global URL changes, reset our text field
+      this.__url.addListener("changeUrl",
+                             function(e)
+                             {
+                               url.setValue(e.getData());
+                             });
+
+      // If our text field changes, reset the global URL
+      url.addListener("changeValue",
+                      function(e)
+                      {
+                        this.__url.setUrl(url.getValue());
+                      },
+                      this);
+
       page.add(url);
 
       page.add(new qx.ui.basic.Label("Service path:"));
@@ -595,6 +648,22 @@ qx.Class.define("rpcexample.Application",
         defaultURL = "/services/";
       }
       var url = new qx.ui.form.TextField(defaultURL);
+
+      // If the global URL changes, reset our text field
+      this.__url.addListener("changeUrl",
+                             function(e)
+                             {
+                               url.setValue(e.getData());
+                             });
+
+      // If our text field changes, reset the global URL
+      url.addListener("changeValue",
+                      function(e)
+                      {
+                        this.__url.setUrl(url.getValue());
+                      },
+                      this);
+
       page.add(url);
 
       page.add(new qx.ui.basic.Label("Service path:"));
