@@ -23,9 +23,5 @@
     "version" : "trunk",
     "qooxdoo-versions": ["0.8"]
   },
-  "provides" : 
-  {
-    "namespace"   : "qcl",
-    "type"        : "library"
-  }  
+  "provides" : {}  
 }
