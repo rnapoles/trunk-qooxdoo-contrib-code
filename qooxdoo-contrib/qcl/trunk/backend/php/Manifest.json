@@ -1,0 +1,32 @@
+{
+  "info" :
+  {
+    "name" : "qcl-php",
+  
+    "summary" : "qooxdoo component library, php backend",
+    "description" : "A couple of interoperating extensions that are useful for web application development.",
+    
+    "keywords" : [ "acces control", "authentication", "databinding" ],
+    "homepage" : "http://qooxdoo.org/contrib/project/qcl",
+  
+    "license" : "LGPL/EPL",
+    "authors" : [
+      {
+        "name" : "Christian Boulanger",
+        "user" : "cboulanger",
+        "email" : "c DOT boulanger AT qxtransformer DOT org"
+      }
+    ],
+  
+    "namespace" : "qcl",
+    
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "qcl",
+    "type"        : "library"
+  }  
+}
