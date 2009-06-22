@@ -91,10 +91,10 @@ class qcl_mvc_AbstractModel extends qcl_core_object
     {
       $controller =& qcl_application_Application::getController();
     }
-    if ( ! is_a( $controller,"qcl_mvc_Controller" ) )
-    {
-      $this->raiseError("No controller available." );
-    }
+//    if ( ! is_a( $controller,"qcl_mvc_Controller" ) )
+//    {
+//      $this->raiseError("No controller available." );
+//    }
     return $controller;
   }
 

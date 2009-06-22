@@ -1,8 +1,8 @@
 <?php
 /**
- * In this file, basic configuration settings and constants are 
+ * In this file, basic configuration settings and constants are
  * defined. This file MUST be included before including any other
- * qcl library file. You can override individual values by defining 
+ * qcl library file. You can override individual values by defining
  * them before incuding this file
  * @todo implement overriding, rework, rename constants
  */
@@ -23,7 +23,7 @@ set_time_limit(120);
  */
 if ( ! defined( "SERVICE_PATH") )
 {
-  define( "SERVICE_PATH", str_replace("\\","/", dirname( dirname(__FILE__) ). "/" ) );  
+  define( "SERVICE_PATH", str_replace("\\","/", dirname( dirname(__FILE__) ). "/" ) );
 }
 
 /**
@@ -31,7 +31,7 @@ if ( ! defined( "SERVICE_PATH") )
  */
 if ( ! defined( "QCL_TMP_PATH" ) )
 {
-  define( "QCL_TMP_PATH", realpath( SERVICE_PATH  . "../var/tmp/" ) ."/" );  
+  define( "QCL_TMP_PATH", sys_get_temp_dir() ."/" );
 }
 
 /*
@@ -39,7 +39,7 @@ if ( ! defined( "QCL_TMP_PATH" ) )
  */
 if ( ! defined("QCL_LOG_PATH") )
 {
-  define ( "QCL_LOG_PATH", realpath( SERVICE_PATH  . "../var/log" ) ."/" );
+  define ( "QCL_LOG_PATH", "./log/" );
 }
 
 /*
@@ -55,9 +55,9 @@ if ( ! defined("QCL_LOG_FILE_NAME") )
  */
 if ( ! defined("QCL_LOG_FILE") )
 {
-  define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . QCL_LOG_FILE_NAME );  
+  define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . QCL_LOG_FILE_NAME );
 }
-  
+
 /*
  * the path where files are uploaded to / downloaded from
  */
