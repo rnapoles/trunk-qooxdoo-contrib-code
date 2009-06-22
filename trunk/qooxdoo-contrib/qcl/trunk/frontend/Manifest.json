@@ -1,36 +1,21 @@
 {
   "info" :
   {
-    "name" : "qcl",
-  
-    "summary" : "qooxdoo component library",
-    "description" : "A couple of interoperating extensions that are useful for web application development (authentication, clipboard, databinding) currently with a PHP/MySQL backend.",
-    
-    "keywords" : [ "authentication", "clipboard", "databinding" ],
-    "homepage" : "http://contrib.qooxdoo.org",
+    "name" : "qcl-js",
+    "summary" : "qooxdoo component library - javascript classes",
+    "description" : "A couple of interoperating extensions that are useful for web application development
+    "keywords" : [ "access control", "authentication", "clipboard", "databinding" ],
+    "homepage" : "http://qooxdoo.org/contrib/project/qcl",
   
     "license" : "LGPL/EPL",
     "authors" : [
       {
         "name" : "Christian Boulanger",
         "user" : "cboulanger",
-        "email" : "info AT bibliograph DOT org"
+        "email" : "c DOT boulanger AT qxtransformer DOT org"
       }
     ],
-  
-    "namespace" : "qcl",
-    
     "version" : "trunk",
     "qooxdoo-versions": ["0.8"]
-  },
-  
-  "provides" : 
-  {
-    "namespace"   : "qcl",
-    "encoding"    : "utf-8",
-    "class"       : "source/class",
-    "resource"    : "source/resource",
-    "translation" : "source/translation",
-    "type"        : "library"
-  }  
+  }
 }
