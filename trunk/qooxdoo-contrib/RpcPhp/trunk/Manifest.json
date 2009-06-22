@@ -25,5 +25,13 @@
     "version" : "trunk",
     "qooxdoo-versions": ["0.7", "0.8" ]
   },
-  "provides" : {}  
+  "provides" : {
+    "namespace"   : "qcl",
+    "encoding"    : "utf-8",
+    "class"       : "",
+    "resource"    : "",
+    "translation" : "",
+    "type"        : "library"  
+  
+  }  
 }

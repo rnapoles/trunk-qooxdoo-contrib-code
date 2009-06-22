@@ -23,5 +23,12 @@
     "version" : "trunk",
     "qooxdoo-versions": ["0.8"]
   },
-  "provides" : {}  
+  "provides" : {
+    "namespace"   : "RpcPhp",
+    "encoding"    : "utf-8",
+    "class"       : "",
+    "resource"    : "",
+    "translation" : "",
+    "type"        : "library"    
+  }  
 }
