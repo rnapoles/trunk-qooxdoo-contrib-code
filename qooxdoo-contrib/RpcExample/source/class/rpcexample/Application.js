@@ -16,17 +16,21 @@ qx.Class.define("rpcexample.Application",
 {
   extend : qx.application.Standalone,
 
+  properties :
+  {
+    url :
+    {
+      init : "/services",
+      event : "changeUrl"
+    }
+  },
+
   members :
   {
-    __url : null,
-
     main : function()
     {
       // Call super class
       this.base(arguments);
-
-      // Allocate a URL object to track the global URL state
-      this.__url = new rpcexample.Url();
 
       // Enable logging in debug variant
       if (qx.core.Variant.isSet("qx.debug", "on"))
@@ -185,17 +189,17 @@ qx.Class.define("rpcexample.Application",
       var url = new qx.ui.form.TextField(defaultURL);
 
       // If the global URL changes, reset our text field
-      this.__url.addListener("changeUrl",
-                             function(e)
-                             {
-                               url.setValue(e.getData());
-                             });
+      this.addListener("changeUrl",
+                       function(e)
+                       {
+                         url.setValue(e.getData());
+                       });
 
       // If our text field changes, reset the global URL
       url.addListener("changeValue",
                       function(e)
                       {
-                        this.__url.setUrl(url.getValue());
+                        this.setUrl(url.getValue());
                       },
                       this);
 
@@ -299,17 +303,17 @@ qx.Class.define("rpcexample.Application",
       var url = new qx.ui.form.TextField(defaultURL);
 
       // If the global URL changes, reset our text field
-      this.__url.addListener("changeUrl",
-                             function(e)
-                             {
-                               url.setValue(e.getData());
-                             });
+      this.addListener("changeUrl",
+                       function(e)
+                       {
+                         url.setValue(e.getData());
+                       });
 
       // If our text field changes, reset the global URL
       url.addListener("changeValue",
                       function(e)
                       {
-                        this.__url.setUrl(url.getValue());
+                        this.setUrl(url.getValue());
                       },
                       this);
 
@@ -399,17 +403,17 @@ qx.Class.define("rpcexample.Application",
       var url = new qx.ui.form.TextField(defaultURL);
 
       // If the global URL changes, reset our text field
-      this.__url.addListener("changeUrl",
-                             function(e)
-                             {
-                               url.setValue(e.getData());
-                             });
+      this.addListener("changeUrl",
+                       function(e)
+                       {
+                         url.setValue(e.getData());
+                       });
 
       // If our text field changes, reset the global URL
       url.addListener("changeValue",
                       function(e)
                       {
-                        this.__url.setUrl(url.getValue());
+                        this.setUrl(url.getValue());
                       },
                       this);
 
@@ -650,17 +654,17 @@ qx.Class.define("rpcexample.Application",
       var url = new qx.ui.form.TextField(defaultURL);
 
       // If the global URL changes, reset our text field
-      this.__url.addListener("changeUrl",
-                             function(e)
-                             {
-                               url.setValue(e.getData());
-                             });
+      this.addListener("changeUrl",
+                       function(e)
+                       {
+                         url.setValue(e.getData());
+                       });
 
       // If our text field changes, reset the global URL
       url.addListener("changeValue",
                       function(e)
                       {
-                        this.__url.setUrl(url.getValue());
+                        this.setUrl(url.getValue());
                       },
                       this);
 
