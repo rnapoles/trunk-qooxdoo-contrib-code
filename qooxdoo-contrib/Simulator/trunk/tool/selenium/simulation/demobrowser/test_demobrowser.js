@@ -8,7 +8,8 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/application/demobrowser/build/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  'debug' : true
+  'debug' : true,
+  'logAll' : true
 };
 
 var args = arguments ? arguments : "";
@@ -34,7 +35,7 @@ var getSampleLabel = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getLabe
 var getNextSampleCategory = selWin + '.' + qxAppInst + '.tree.getNextSiblingOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getParent().getLabel()';
 var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextSiblingOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getLabel()';
 var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
-
+var shutdownSample = selWin + '.' + qxAppInst + '.infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
 mySim.lastSample = "last";
 
@@ -194,6 +195,11 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   // wait for the sample to finish loading, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
 
+  // Shut down the sample application
+  this.getEval(shutdownSample, "Shutting down sample application");
+
+  Packages.java.lang.Thread.sleep(2000);
+
   print(category + " - " + currentSample + ": Processing log");
 
   var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);  
@@ -201,8 +207,14 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   this.log('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>', "info");
 
   // we're only interested in logs containing warnings or errors
+  var isErrWarn = false;
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
-    this.errWarn++;
+    isErrWarn = true;
+  }
+  if (isErrWarn || this.getConfigSetting("logAll")) {
+    if (isErrWarn) {
+      this.errWarn++;
+    }
 
     /* Selenium uses http get requests to pass messages to the server log.
     * If the log message is too long, the server throws an http exception.
@@ -215,16 +227,28 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     for (var j=0, l=logArray.length; j<l; j++) {
       var line = logArray[j] + '</DIV>';
       // only log relevant lines
-      if (line.indexOf('level-debug') < 0 && line.indexOf('level-info') < 0) {
+      if ( (line.indexOf('level-debug') < 0 && line.indexOf('level-info') < 0) 
+          || this.getConfigSetting("logAll")) {
         print("Warning or Error found");
         line = line.replace(/\'/g, "\\'");
         line = line.replace(/\n/g, "<br/>");
         line = line.replace(/\r/g, "<br/>");
-        this.log(line, "error");
+        if (line.indexOf('level-error')) {
+          this.log(line, "error");
+        }
+        else if (line.indexOf('level-warn')) {
+          this.log(line, "warn");
+        }
+        else if (line.indexOf('level-info')) {
+          this.log(line, "info");
+        }
+        else {
+          this.log(line, "debug");
+        }
       }
     }
 
-    this.__sel.setSpeed(stepSpeed);  
+    this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));  
   }
   return [category,currentSample];
 };
