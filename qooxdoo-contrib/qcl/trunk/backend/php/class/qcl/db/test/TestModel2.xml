@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema include="qcl/db/model/xml/XmlSchemaModel.xml">
+
+  <model 
+    table="model2" 
+    name="qcl.db.TestModel2" 
+    extends="qcl.db.model.xml.XmlSchemaModel">
+
+    <!-- model definition -->
+    <definition>
+ 
+      <!-- model properties -->
+      <properties>
+        <property name="namedId" type="string" index="yes">
+          <sql>varchar(50) NOT NULL</sql>
+        </property>
+
+      </properties>
+
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="namedId" />
+        </index>
+      </indexes>
+        
+    </definition>
+
+    <!-- Associations -->
+    <links
+      localKey="id"
+      foreignKey="model2id" />
+
+  </model>
+</schema>

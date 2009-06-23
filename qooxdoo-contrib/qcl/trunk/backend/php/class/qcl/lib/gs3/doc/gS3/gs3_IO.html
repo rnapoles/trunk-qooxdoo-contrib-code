@@ -1,0 +1,1361 @@
+<html>
+<head>
+<title>Docs For Class gs3_IO</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">gS3</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                              		  [ <a href="../classtrees_gS3.html" class="menu">class tree: gS3</a> ]
+		  [ <a href="../elementindex_gS3.html" class="menu">index: gS3</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+      <b>Packages:</b><br />
+              <a href="../li_gS3.html">gS3</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../gS3/_gs3.php.html">		gs3.php
+		</a><br>
+	  </div><br />
+
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../gS3/gs3_IO.html">gs3_IO</a><br />
+	  </div>
+
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: gs3_IO</h1>
+Source Location: /gs3.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre></pre><br />
+<div class="description">Simple Storage Service stream wrapper</div><br /><br />
+<h4>Author(s):</h4>
+<ul>
+          <li>Cesar D. Rodas &lt;<a href="mailto:saddor@gmail.com">saddor@gmail.com</a>&gt;</li>
+                        </ul>
+
+
+
+
+          
+          
+
+<h4>Copyright:</h4>
+<ul>
+  <li>2007 Cesar D. Rodas</li>
+</ul>
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../gS3/gs3_IO.html#var$actualDir">$actualDir</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$actualTag">$actualTag</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$bufActSize">$bufActSize</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$buffer">$buffer</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$bufSize">$bufSize</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$contructed">$contructed</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$dirList">$dirList</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$http">$http</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$isEOF">$isEOF</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$path">$path</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$position">$position</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$stat">$stat</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$tAcl">$tAcl</a></li>
+    <li><a href="../gS3/gs3_IO.html#var$tOpen">$tOpen</a></li>
+  </ul>
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../gS3/gs3_IO.html#methodgs3_IO">gs3_IO</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodaccessId2String">accessId2String</a></li>
+    <li><a href="../gS3/gs3_IO.html#methoddir_closedir">dir_closedir</a></li>
+    <li><a href="../gS3/gs3_IO.html#methoddir_opendir">dir_opendir</a></li>
+    <li><a href="../gS3/gs3_IO.html#methoddir_readdir">dir_readdir</a></li>
+    <li><a href="../gS3/gs3_IO.html#methoddir_rewinddir">dir_rewinddir</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodgetMimeOfFileType">getMimeOfFileType</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodgetPathNumberOfComponents">getPathNumberOfComponents</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodgetS3AuthCode">getS3AuthCode</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodhex2b64">hex2b64</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodinitialize">initialize</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodmkdir">mkdir</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodProcess">Process</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodrmdir">rmdir</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_close">stream_close</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_eof">stream_eof</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_open">stream_open</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_read">stream_read</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_seek">stream_seek</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_tell">stream_tell</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodstream_write">stream_write</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodunlink">unlink</a></li>
+    <li><a href="../gS3/gs3_IO.html#methodurl_stat">url_stat</a></li>
+    <li><a href="../gS3/gs3_IO.html#method_dirData">_dirData</a></li>
+    <li><a href="../gS3/gs3_IO.html#method_dirEnd">_dirEnd</a></li>
+    <li><a href="../gS3/gs3_IO.html#method_dirStart">_dirStart</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+
+
+
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line 78]<br />
+Simple Storage Service stream wrapper<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Cesar D. Rodas &lt;<a href="mailto:saddor@gmail.com">saddor@gmail.com</a>&gt;</td>
+  </tr>
+  <tr>
+    <td><b>copyright:</b>&nbsp;&nbsp;</td><td>2007 Cesar D. Rodas</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+  <tr>
+    <td><b>license:</b>&nbsp;&nbsp;</td><td><a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a></td>
+  </tr>
+</table>
+</div>
+</div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$actualDir"></a>
+	<p></p>
+	<h4>$actualDir = <span class="value"></span></h4>
+	<p>[line 153]</p>
+  Actual file in the directory<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>int</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$actualTag"></a>
+	<p></p>
+	<h4>$actualTag = <span class="value"></span></h4>
+	<p>[line 160]</p>
+  Actual tag, used in XML parse<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>string</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$bufActSize"></a>
+	<p></p>
+	<h4>$bufActSize = <span class="value"></span></h4>
+	<p>[line 139]</p>
+  Buffer Max Size<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>int</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$buffer"></a>
+	<p></p>
+	<h4>$buffer = <span class="value"></span></h4>
+	<p>[line 125]</p>
+  In memory file buffer.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>string</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$bufSize"></a>
+	<p></p>
+	<h4>$bufSize = <span class="value"></span></h4>
+	<p>[line 132]</p>
+  Buffer actual size<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>int</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$contructed"></a>
+	<p></p>
+	<h4>$contructed = <span class="value"></span></h4>
+	<p>[line 92]</p>
+  True if this class was contructed<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>bool</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$dirList"></a>
+	<p></p>
+	<h4>$dirList = <span class="value"></span></h4>
+	<p>[line 146]</p>
+  Array with list of files<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$http"></a>
+	<p></p>
+	<h4>$http = <span class="value"></span></h4>
+	<p>[line 84]</p>
+  HTTP Connection class<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>object</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$isEOF"></a>
+	<p></p>
+	<h4>$isEOF = <span class="value"></span></h4>
+	<p>[line 174]</p>
+  Flag for End Of file<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>bool</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$path"></a>
+	<p></p>
+	<h4>$path = <span class="value"></span></h4>
+	<p>[line 99]</p>
+  The opened URL<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>string</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$position"></a>
+	<p></p>
+	<h4>$position = <span class="value"></span></h4>
+	<p>[line 118]</p>
+  Actual position of the file<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>int</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$stat"></a>
+	<p></p>
+	<h4>$stat = <span class="value"></span></h4>
+	<p>[line 167]</p>
+  Stats Variable<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>array</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$tAcl"></a>
+	<p></p>
+	<h4>$tAcl = <span class="value"></span></h4>
+	<p>[line 112]</p>
+  Type of ACL of a opened file for write<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>int</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+	<a name="var$tOpen"></a>
+	<p></p>
+	<h4>$tOpen = <span class="value"></span></h4>
+	<p>[line 105]</p>
+  Type of open.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>var:</b>&nbsp;&nbsp;</td><td>True for write, false only for read</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>bool</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="methodgs3_IO"></a>
+	<h3>constructor gs3_IO <span class="smalllinenumber">[line 175]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>gs3_IO gs3_IO(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodaccessId2String"></a>
+	<h3>method accessId2String <span class="smalllinenumber">[line 631]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string accessId2String(
+int
+$access)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the string of the access<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>The string of access</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$access</b>&nbsp;&nbsp;</td>
+        <td>Type of access</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddir_closedir"></a>
+	<h3>method dir_closedir <span class="smalllinenumber">[line 503]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void dir_closedir(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		close dir<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddir_opendir"></a>
+	<h3>method dir_opendir <span class="smalllinenumber">[line 447]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void dir_opendir(
+
+$path, 
+$options)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Implementing opendir()<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$path</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$options</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddir_readdir"></a>
+	<h3>method dir_readdir <span class="smalllinenumber">[line 487]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void dir_readdir(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Readdir<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methoddir_rewinddir"></a>
+	<h3>method dir_rewinddir <span class="smalllinenumber">[line 495]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void dir_rewinddir(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Rewind dir<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetMimeOfFileType"></a>
+	<h3>method getMimeOfFileType <span class="smalllinenumber">[line 667]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string getMimeOfFileType(
+string
+$name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the &quot;content/type&quot; of a file based on the file name<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>mime type</td>
+  </tr>
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td>File name</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetPathNumberOfComponents"></a>
+	<h3>method getPathNumberOfComponents <span class="smalllinenumber">[line 821]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int getPathNumberOfComponents(
+string
+$path)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Get the number of components of a path<br /><br /><p>Example:     s3://path/cesar = 2     s3://path/      = 1</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$path</b>&nbsp;&nbsp;</td>
+        <td>Path</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetS3AuthCode"></a>
+	<h3>method getS3AuthCode <span class="smalllinenumber">[line 602]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getS3AuthCode(
+string
+$ReqMethod, 
+&$args, array
+$args)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the Authentication code<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$ReqMethod</b>&nbsp;&nbsp;</td>
+        <td>the kind of Request method (PUT, DELETE, GET, POST)</td>
+      </tr>
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$args</b>&nbsp;&nbsp;</td>
+        <td>The httpclient arguments</td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$args</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodhex2b64"></a>
+	<h3>method hex2b64 <span class="smalllinenumber">[line 652]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string hex2b64(
+string
+$str)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Encode a field for amazon auth<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$str</b>&nbsp;&nbsp;</td>
+        <td>String to encode</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodinitialize"></a>
+	<h3>method initialize <span class="smalllinenumber">[line 539]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void initialize(
+string
+$name, string
+$rmethod, string
+&$url)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Initialize a the httpclient<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td>file name</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$rmethod</b>&nbsp;&nbsp;</td>
+        <td>What to do.. PUT, GET, DELETE...</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>&$url</b>&nbsp;&nbsp;</td>
+        <td>By reference function with get the URL</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodmkdir"></a>
+	<h3>method mkdir <span class="smalllinenumber">[line 383]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool mkdir(
+string
+$name, [int
+$mode = _PRIVATE])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Create a Directory or Bucket<br /><br /><p>Example of usage:</p><p><ol><li><div class="src-line"><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-inc">include</span><span class="src-sym">(</span><span class="src-str">&quot;gs3.php&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line">&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/define">define</a><span class="src-sym">(</span><span class="src-str">'S3_KEY'</span><span class="src-sym">,&nbsp;</span><span class="src-str">'059d545s4d6554'</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span><span class="src-comm">//fake-code</span></div></li>
+<li><div class="src-line">&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/define">define</a><span class="src-sym">(</span><span class="src-str">'S3_PRIVATE'</span><span class="src-sym">,</span><span class="src-str">'dsadsadshajkdhas'</span><span class="src-sym">)&nbsp;</span><span class="src-comm">//fake-code</span></div></li>
+<li><div class="src-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$e</span>=<span class="src-id">mkdir</span><span class="src-sym">(</span><span class="src-str">&quot;s3://foldername&quot;</span><span class="src-sym">,</span><span class="src-id">_PRIVATE</span>||<span class="src-id">_PUBLIC_READ</span>||<span class="src-id">_PUBLIC_WRITE</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(</span><span class="src-var">$e</span><span class="src-sym">)&nbsp;</span>echo&nbsp;<span class="src-str">&quot;Done&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else&nbsp;</span>echo&nbsp;<span class="src-str">&quot;Error!&nbsp;Amazon&nbsp;said:&nbsp;&quot;</span>.<span class="src-var">$amazonResponse</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><span class="src-php">?&gt;</span></div></li>
+</ol><p>    Nested folders could not be done!, that is a Amazon S3 Limitation</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>true if success</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td>Bucket name</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$mode</b>&nbsp;&nbsp;</td>
+        <td>Permision of the bucket</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodProcess"></a>
+	<h3>method Process <span class="smalllinenumber">[line 566]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void Process(
+array
+$arguments, array
+&$gHeaders)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Open connection and ask something<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>access:</b>&nbsp;&nbsp;</td><td>private</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>$arguments</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">array&nbsp;&nbsp;</td>
+        <td><b>&$gHeaders</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodrmdir"></a>
+	<h3>method rmdir <span class="smalllinenumber">[line 429]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void rmdir(
+
+$name, 
+$options)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Implements the unlink referece<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$options</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_close"></a>
+	<h3>method stream_close <span class="smalllinenumber">[line 322]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>bool stream_close(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Close the Connection<br /><br /><p>Close the connecting, and if the file was opened for write     the file is sended to the S3 server.</p><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_eof"></a>
+	<h3>method stream_eof <span class="smalllinenumber">[line 310]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void stream_eof(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		EOF<br /><br /><p>implements the eof()</p><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_open"></a>
+	<h3>method stream_open <span class="smalllinenumber">[line 199]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void stream_open(
+
+$path, 
+$mode, 
+$options, 
+&$opened_path)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Open<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$path</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$mode</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$options</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$opened_path</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_read"></a>
+	<h3>method stream_read <span class="smalllinenumber">[line 291]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string stream_read(
+
+$count)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Read a data from the S3 object<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$count</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_seek"></a>
+	<h3>method stream_seek <span class="smalllinenumber">[line 258]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int|bool stream_seek(
+int
+$offset, int
+$whence)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Set a new position.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>The new position or false.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$offset</b>&nbsp;&nbsp;</td>
+        <td>Number of bits to move</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$whence</b>&nbsp;&nbsp;</td>
+        <td>SEEK_SET, SEEK_CUR or SEEK_END</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_tell"></a>
+	<h3>method stream_tell <span class="smalllinenumber">[line 248]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int stream_tell(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the actual pointer position<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodstream_write"></a>
+	<h3>method stream_write <span class="smalllinenumber">[line 277]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int|bool stream_write(
+
+$data)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Write a $data into the buffer.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>Numbe of bytes written or false.</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$data</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodunlink"></a>
+	<h3>method unlink <span class="smalllinenumber">[line 410]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void unlink(
+
+$name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Implements the unlink referece<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodurl_stat"></a>
+	<h3>method url_stat <span class="smalllinenumber">[line 343]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>array url_stat(
+
+$path, 
+$flags)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Implements the Stats<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$path</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$flags</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_dirData"></a>
+	<h3>method _dirData <span class="smalllinenumber">[line 527]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void _dirData(
+
+&$parser, 
+&$data)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Handle data of XML tags<br /><br /><p>Save in an array when TAG == &quot;KEY&quot;</p><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$parser</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$data</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_dirEnd"></a>
+	<h3>method _dirEnd <span class="smalllinenumber">[line 519]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void _dirEnd(
+
+&$parser, 
+&$name)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Handle end of XML tags<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$parser</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="method_dirStart"></a>
+	<h3>method _dirStart <span class="smalllinenumber">[line 512]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void _dirStart(
+
+&$parser, 
+&$name, 
+&$attribs)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Handle start of XML tags<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$parser</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$name</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+          <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>&$attribs</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Sun, 23 Sep 2007 05:12:42 -0300 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0a2</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

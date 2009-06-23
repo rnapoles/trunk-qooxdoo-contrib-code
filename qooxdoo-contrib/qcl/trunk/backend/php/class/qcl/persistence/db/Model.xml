@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/db/model/xml/XmlSchemaModel.xml">
+ 
+  <!-- 
+    model that stores serialized objects in the database 
+  -->
+  <model 
+    name="qcl.persistence.Model"
+    table="persistentObjects" 
+    extends="qcl.db.model.xml.XmlSchemaModel">
+    
+    <definition>
+
+      <!-- model properties -->
+      <properties> 
+        <property name="class" type="string" index="yes">
+          <sql>varchar(100) NOT NULL</sql>
+        </property>
+        <property name="instanceId" type="string" index="yes">
+          <sql>varchar(100) NULL</sql>
+        </property>
+        <property name="userId" type="int">
+          <sql>int(11) NULL</sql>
+        </property>
+        <property name="sessionId" type="string">
+          <sql>varchar(32) NULL</sql>
+        </property>
+        <property name="data" type="string">
+          <sql>longblob</sql>
+        </property>      
+      </properties> 
+ 
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="class" />
+          <property name="instanceId" />
+        </index>
+      </indexes>      
+
+    </definition>
+    
+  </model>
+</schema>
