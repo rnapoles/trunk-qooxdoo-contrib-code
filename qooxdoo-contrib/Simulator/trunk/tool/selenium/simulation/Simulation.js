@@ -738,6 +738,35 @@ simulation.Simulation.prototype.addObjectGetter = function()
 };
 
 /**
+ * Adds a function <code>qx.Simulation.sanitize</code> to the AUT's 
+ * window, which will strip most special characters from a given string. 
+ * It's more reliable to do this in this in the browser since some
+ * characters will be fubared on the way from the browser to the test
+ * script.
+ * 
+ * The function should be executed through getEval like this:
+ * <code>this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';</code>
+ * 
+ * TODO: Return an array of *all* objects that are instances of the wanted class
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.addSanitizer = function()
+{
+  var sanitize = function(text)
+  {    
+    text = text.replace(/\n/g,'<br/>');
+    text = text.replace(/\r/g,'<br/>');
+    text = text.replace(/'/g, '&quot;');
+    text = text.replace(/[^\w\d\-_:;\.,\!\?\(\)\[\]#$%&= \/\<\> ]?/gi, ''); 
+    return text;
+  };
+  
+  this.addOwnFunction("sanitize", sanitize);
+  
+};
+
+/**
  * Call Selenium's stop method, which *should* also close the browser. This 
  * won't work in older versions of Firefox (<=2.0.0).
  * 
