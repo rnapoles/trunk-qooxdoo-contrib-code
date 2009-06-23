@@ -65,7 +65,7 @@ simulation.Simulation = function(baseConf, args)
    * Frequently used Javascript code snippets meant to be run in the tested 
    * application's context through the getEval() method. 
    */
-  simulation.Simulation.SELENIUMWINDOW = 'selenium.browserbot.getCurrentWindow()';
+  simulation.Simulation.SELENIUMWINDOW = 'selenium.qxStoredVars["autWindow"]';
   simulation.Simulation.QXAPPINSTANCE = 'qx.core.Init.getApplication()';
   simulation.Simulation.ISQXAPPREADY = 'var qxReady = false; try { if (' 
     + simulation.Simulation.SELENIUMWINDOW + '.' 
@@ -230,6 +230,8 @@ simulation.Simulation.prototype.startSession = function()
     this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));    
     this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
+    this.__sel.getEval('selenium.qxStoredVars = {}');
+    this.storeEval('selenium.browserbot.getCurrentWindow()', 'autWindow');
     this.logEnvironment();
     this.logUserAgent();
   }
@@ -446,7 +448,9 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
 
   if (lvl == "error") {
     this.incrementTotalErrorsLogged();
-  }  
+  }
+  
+  msg = this.sanitize(msg);
 
   if (this.getConfigSetting("debug")) {
     print("Logging message: " + msg);
@@ -454,7 +458,6 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
   
   // Clean up/format non-HTML messages
   if (msg.substr(0,1) !== "<") {
-    msg = this.sanitize(msg);    
     msg = "<p>" + msg + "</p>";
     if (lvl != "none") {
       msg = '<div class="qxappender"><div class="level-' + lvl + '">' + msg + "</div></div>";
@@ -585,6 +588,25 @@ simulation.Simulation.prototype.logTestDuration = function(sDate, desc)
   }
 
   this.log(description + " finished in: " + min + " minutes " + sec + " seconds.", "info");
+};
+
+/**
+ * Evaluates a JavaScript snippet and stores the result in the global selenium
+ * object's qxStoredVars property. Stored variables can be retrieved through
+ * getEval: <code>getEval('selenium.qxStoredVars["varName"]')</code> 
+ *
+ * @param code {String} JavaScript snippet to be evaluated
+ * @param varName {String} The name for the property the eval result will be 
+ * stored in
+ * @return {void}
+ */
+simulation.Simulation.prototype.storeEval = function(code, varName)
+{
+  if (!code) {
+    throw new Error("No code specified for storeEval()");
+  }
+
+  this.__sel.getEval('selenium.qxStoredVars["' + varName + '"] = ' + code);
 };
 
 /**
