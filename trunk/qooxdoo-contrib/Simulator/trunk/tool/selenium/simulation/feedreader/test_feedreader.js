@@ -29,7 +29,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 simulation.Simulation.prototype.checkArticle = function()
 {
-  var articleScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
+  var articleScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
   var article = this.getEval(articleScript, "Checking for article");
 
   if (article != "null") {
@@ -47,7 +47,7 @@ mySim.runTest = function()
   
   var testPause = 360000;
 
-  var tree = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
+  var tree = selWin + '.qx.Simulation.getObjectByClassname(' + selWin +'.qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
   var lastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");
   
   var isLastFeedLoaded = tree + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";  
@@ -73,7 +73,7 @@ mySim.runTest = function()
   // Use the preferences window to change the application language  
   // Click the preferences button, then check if the prefs window opened.  
   this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "", "Clicking Preferences button.");
-  var prefWindowScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")';
+  var prefWindowScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")';
   var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
   this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
   Packages.java.lang.Thread.sleep(2000);
@@ -114,7 +114,7 @@ mySim.runTest = function()
   // Click "Add Feed"
   this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "", "Clicking Add Feed button");
     
-  var feedWindowScript = 'selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")';
+  var feedWindowScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")';
   var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
   this.waitForCondition(isFeedWindowVisible, 10000, "Waiting for Add Feed window to open.");
   Packages.java.lang.Thread.sleep(2000);  

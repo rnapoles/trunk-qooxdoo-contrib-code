@@ -105,7 +105,7 @@ simulation.Simulation.prototype.runTest = function()
   this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', '', 'Pressing Run button');
 
   this.addOwnFunction("getSampleNames", getSampleNames);  
-  var sampleNames = this.getEval("selenium.browserbot.getCurrentWindow().qx.Simulation.getSampleNames();", "Getting sample names");
+  var sampleNames = this.getEval(selWin + ".qx.Simulation.getSampleNames();", "Getting sample names");
   sampleNames = String(sampleNames);
   var sampleArr = sampleNames.split(",");
   print("Found " + sampleArr.length + " samples: " + sampleArr); 
