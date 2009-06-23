@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+ include="qcl/db/model/xml/XmlSchemaModel.xml">
+
+  <!-- model for messages stored in the database -->
+  
+  <model
+    name="qcl.session.Message"
+    table="messages"
+    extends="qcl.db.model.xml.XmlSchemaModel">  
+    
+    <definition>
+      <properties>
+      
+        <property name="sessionId" type="string">
+          <sql>varchar(50) NOT NULL</sql>
+        </property>  
+        <property name="name" type="string">
+          <sql>varchar(100) NOT NULL</sql>
+        </property>         
+        <property name="data" type="string">
+          <sql>blob NOT NULL</sql>
+        </property>           
+        <property name="markedDeleted" type="bool">
+          <sql>int(1) DEFAULT 0</sql>
+        </property>      
+      </properties>
+    </definition>
+  </model>
+</schema>

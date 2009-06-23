@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data>
+    <records>
+      <record>
+        <property name="namedId">qcl.roles.Administrator</property>
+        <property name="name">Administrator</property>
+        <property name="active">1</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.roles.Unassigned</property>
+        <property name="name">Unassigned</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.roles.Guest</property>
+        <property name="name">Anonmymous guest user</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.roles.User</property>
+        <property name="name">Authenticated User</property>
+      </record>
+    </records>
+  </data>
+</root>

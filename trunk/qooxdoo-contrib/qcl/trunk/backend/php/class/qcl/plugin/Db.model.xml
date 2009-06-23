@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugin model schema -->
+<schema include="qcl/db/model/xml/XmlSchemaModel.xml">
+  <model 
+    table="plugins"
+    name="qcl.plugins.db.Model"
+    extends="qcl.db.model.xml.XmlSchemaModel">
+
+   <!-- model definition -->
+    <definition>
+    
+      <!-- properties -->
+      <properties>
+        <property name="namedId" type="string"> 
+          <sql>varchar(50) NOT NULL</sql>
+        </property>
+        <property name="type" type="string">
+          <sql>varchar(20) NOT NULL</sql>
+        </property>
+        <property name="active" type="boolean"> 
+          <sql>int(1) NOT NULL DEFAULT '0'</sql>
+        </property>
+        <property name="status" type="string">
+          <sql>varchar(50) NULL</sql>
+        </property>
+        <property name="permission" type="string">
+          <sql>varchar(50) NULL</sql>
+        </property>
+        <property name="author" type="string">
+          <sql>varchar(100) NULL</sql>
+        </property>
+        <property name="description" type="string">
+          <sql>varchar(255) NULL</sql>
+        </property>        
+      </properties>
+
+      <!-- unique index namedId/theme -->
+      <indexes>
+        <index type="unique">
+          <property name="namedId" />
+        </index>        
+      </indexes>
+
+      <!-- property groups -->
+      <propertyGroups>
+      
+        <!-- metadata -->
+        <propertyGroup name="metaData">
+          <property name="namedId"/>
+        </propertyGroup>
+      
+      </propertyGroups>
+                
+    </definition>
+  </model>
+</schema>
