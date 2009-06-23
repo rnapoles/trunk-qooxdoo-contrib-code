@@ -30,7 +30,8 @@ var qxStatusText = '.widgets["statuspane.systeminfo"].getContent().toString()';
 // Check if a test run has finished
 var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' + selWin + '.' + qxAppInst + qxStatusText + ' == "Enabled auto-reload"';
 // HTML content of the result iframe
-var testResults = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
+var testResultHTML = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
+var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
 
 var ignore = [];
 var include = [];
@@ -269,6 +270,7 @@ simulation.Simulation.prototype.logErrors = function(result)
   }
 
   try {
+    mySim.addSanitizer();
     mySim.runTestsSteps();
   }
   catch(ex) {
