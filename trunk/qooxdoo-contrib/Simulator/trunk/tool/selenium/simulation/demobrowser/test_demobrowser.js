@@ -48,7 +48,7 @@ var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','
 
 /*
  * List of demos to run. All others will be ignored.
- * var include = ['ui:Font','progressive:ProgressiveTable','widget:SelectBox'];
+ * var include = ['ui:Font','progressive:*','widget:SelectBox'];
  */
 var include = [];
 
@@ -95,6 +95,25 @@ var chooseDemo = function(category, sample)
       }
     }
   }
+};
+
+/*
+ * This function is added to the AUT's context using the Simulation.addOwnFunction()
+ * method. It returns an array containing the names of all demos in a given
+ * category.
+ */
+var getDemosByCategory = function(category)
+{
+  var viewer = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer;
+  var tree = viewer.tree; 
+  items = tree.getItems();
+  var samples = [];
+  for (var i=1; i<items.length; i++) {
+    if (items[i].getParent().getLabel() == category) {
+      samples.push(items[i].getLabel());
+    }
+  }
+  return samples;
 };
 
 /*
@@ -289,16 +308,32 @@ simulation.Simulation.prototype.runTest = function()
     }
   }
   else {
-    this.log("Selective run: " + include.length + " demos selected.", "error");
+    this.log("Selective run: " + include.length + " demos/categories selected.", "info");
     this.addOwnFunction("chooseDemo", chooseDemo);
+    this.addOwnFunction("getDemosByCategory", getDemosByCategory);
     for (var j=0; j<include.length; j++) {
       var cat = include[j].substring(0, include[j].indexOf(':'));
       var sam = include[j].substr(include[j].indexOf(':') + 1);
-      var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";      
-      var currentCatSam = this.sampleRunner(runIncluded);
-      this.currentCategory = currentCatSam[0];
-      this.currentSample = currentCatSam[1];
-      this.killBoxes();
+      // If the demo name is a wildcard, run all demos from the category 
+      if (sam == "*") {
+        var getDemos = selWin + ".qx.Simulation.getDemosByCategory('" + cat + "');";
+        var categoryDemos = this.getEval(getDemos, "Getting demos in category " + cat);
+        var categoryDemoArr = categoryDemos.split(",");
+        for (var k=0; k<categoryDemoArr.length; k++) {
+          var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + categoryDemoArr[k] + "');";
+          var currentCatSam = this.sampleRunner(runIncluded);
+          this.currentCategory = currentCatSam[0];
+          this.currentSample = currentCatSam[1];
+          this.killBoxes();
+        }
+      }
+      else {
+        var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";
+        var currentCatSam = this.sampleRunner(runIncluded);
+        this.currentCategory = currentCatSam[0];
+        this.currentSample = currentCatSam[1];
+        this.killBoxes();
+      }
     }
   }
 
