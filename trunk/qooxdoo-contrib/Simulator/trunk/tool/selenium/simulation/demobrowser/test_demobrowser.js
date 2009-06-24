@@ -215,9 +215,8 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   Packages.java.lang.Thread.sleep(logPause);
 
   // Shut down the sample application
-  this.getEval(shutdownSample, "Shutting down sample application");
-
-  Packages.java.lang.Thread.sleep(2000);
+  //this.getEval(shutdownSample, "Shutting down sample application");
+  //Packages.java.lang.Thread.sleep(2000);
 
   print(category + " - " + currentSample + ": Processing log");
 
