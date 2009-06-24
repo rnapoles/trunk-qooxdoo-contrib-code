@@ -37,7 +37,6 @@ class qcl_db_model_xmlSchema_Registry
      * call parent contructor
      */
     parent::__construct( &$controller, __CLASS__ );
-    $this->debug("you should see this only once! ",__CLASS__,__LINE__);
   }
 
   /**
@@ -79,7 +78,7 @@ class qcl_db_model_xmlSchema_Registry
   {
     $_this =& qcl_db_model_xmlSchema_Registry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
-    return $timestamp and $class ?
+    return ( $timestamp and $class ) ?
       ( $_this->data[$datasource][$table][$class] == $timestamp) :
       isset( $_this->data[$datasource][$table] );
   }

@@ -55,7 +55,7 @@ class qcl_access_model_Common extends qcl_db_model_xmlSchema_Model
 	 * creates a new record if its named id doesn't already exist and optionally links it to a role.
 	 * returns false if record exists otherwise the id of the record
 	 * @param string	$namedId
-	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
+	 * @param int		$parentId 	id of role (unused if class is qcl_access_model_Role)
 	 * @return int the id of the inserted row
 	 */
 	function createIfNotExists( $namedId, $parentId=null )

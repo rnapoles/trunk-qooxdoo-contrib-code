@@ -11,7 +11,7 @@ class qcl_access_Manager
 
   /**
    * The currently active user or null
-   * @var qcl_access_user
+   * @var qcl_access_model_User
    */
   var $_activeUser;
 
@@ -60,7 +60,7 @@ class qcl_access_Manager
 
   /**
    * Returns active user object
-   * @return qcl_access_user
+   * @return qcl_access_model_User
    */
   function &getActiveUser()
   {
@@ -72,7 +72,7 @@ class qcl_access_Manager
   /**
    * Sets the active user. This will copy the user id into the
    * session variable, in case the client doesn't provide a session id.
-   * @param qcl_access_user $userObject A user object or null to logout.
+   * @param qcl_access_model_User $userObject A user object or null to logout.
    * @return void
    */
   function setActiveUser( $userObject )

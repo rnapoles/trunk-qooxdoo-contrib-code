@@ -65,7 +65,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
   /**
    * Return the user model containing only those
    * users that are connected to the current role
-   * @return qcl_access_user
+   * @return qcl_access_model_User
    */
   function &linkedUserModel( $properties="*")
   {

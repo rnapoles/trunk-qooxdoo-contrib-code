@@ -4,7 +4,7 @@
  * @author Christian Boulanger (cboulanger)
  */
 
-if ( $_POST )
+if ( count( $_POST ) )
 {
   require_once "qcl/server/JsonRpc.php";
   require_once "qcl/server/Server.php";
@@ -19,7 +19,10 @@ if ( $_POST )
     function sendRequest()
     {
 
-      $serverUrl = qcl_server_Server::getUrl();
+      $serverUrl =
+        "http://" . $_SERVER["HTTP_HOST"] .
+         dirname ($_SERVER["SCRIPT_NAME"]) .
+         "/server.php";
 
       /*
        * request object
@@ -163,7 +166,7 @@ if ( $_POST )
   /*
    * run debug controller
    */
-  $debugController = new Debug_Controller( new JsonRpcServer );
+  $debugController = new Debug_Controller();
   list($response,$headers) = $debugController->sendRequest();
   foreach($headers as $header )
   {
@@ -198,7 +201,8 @@ if ( $_POST )
 <body>
 
   <h1>qooxdoo JsonRpc Backend Debug Console</h1>
-  <form  target="responseIframe"
+  <form
+      target="responseIframe"
       method="post">
 
   <table width="100%">

@@ -13,6 +13,11 @@ require_once "qcl/db/model/xmlSchema/Model.php";
 class qcl_config_Db
   extends qcl_db_model_xmlSchema_Model
 {
+  /**
+   * Path to the xml file containing the model schema
+   * @var strign
+   */
+  var $schemaXmlPath  = "qcl/config/Db.model.xml";
 
   /**
    * types that config values may have

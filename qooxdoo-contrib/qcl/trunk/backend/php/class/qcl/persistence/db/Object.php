@@ -95,16 +95,10 @@ class qcl_persistence_db_Object
     ) );
 
     $this->_dbModel->save();
-
-    /*
-     * use the opportunity to clean up objects that refer
-     * to non-existing users or sessions
-     */
-    $this->cleanUp();
   }
 
   /*
-   * clean up objects that refer to nonexisting users or sessions
+   * clean up objects that refer to nonexisting users or sessions, but only once
    */
   function cleanUp()
   {
@@ -113,8 +107,9 @@ class qcl_persistence_db_Object
          and qcl_db_model_xmlSchema_Registry::isInitialized( null, "users" ) )
     {
       $this->_dbModel->deleteWhere("
-        sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
-        userId NOT IN ( SELECT id FROM users )
+        ( sessionId IS NOT NULL AND sessionId NOT IN ( SELECT sessionId FROM sessions ) )
+          OR
+        ( userId IS NOT NULL AND userId NOT IN ( SELECT id FROM users ) )
       ");
     }
   }
@@ -129,14 +124,15 @@ class qcl_persistence_db_Object
 
     if ( $this->_isDeleted )
     {
-      $this->raiseError("Cannot save a deleted object.");
+      $this->warn("Cannot save a deleted object.");
+      return;
     }
 
     if ( $this->isLocked
          and $this->lockMode == $this->WRITE_LOCK
          and ! $this->_lockIsMine )
     {
-      $this->raiseError("Cannot save " . $this->className()  . " [$this->instanceId]." . " because of write lock." );
+      $this->warn("Cannot save " . $this->className()  . " [$this->instanceId]." . " because of write lock." );
       return;
     }
 

@@ -27,7 +27,7 @@ class qcl_access_model_User extends qcl_access_model_Common
   /**
    * Returns singleton instance.
    * @static
-   * @return qcl_access_user
+   * @return qcl_access_model_User
    */
   function &getInstance( $class=__CLASS__ )
   {
@@ -74,7 +74,7 @@ class qcl_access_model_User extends qcl_access_model_Common
      * role model
      */
     $roleModel  =& qcl_access_model_Role::getInstance();
-    $roleModel->findByNamedId("qcl.roles.Anonymous");
+    $roleModel->findByNamedId("qcl.access.role.Anonymous");
     if ( $roleModel->foundNothing() )
     {
       $this->raiseError("No guest role available.");
@@ -83,6 +83,8 @@ class qcl_access_model_User extends qcl_access_model_Common
     $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
     $this->create($username);
     $this->linkWith(&$roleModel);
+    $this->set("name",$this->tr("Anonymous User"));
+    $this->save();
   }
 
   /**

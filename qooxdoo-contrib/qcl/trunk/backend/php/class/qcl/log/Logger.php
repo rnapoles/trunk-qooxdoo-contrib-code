@@ -146,7 +146,14 @@ class qcl_log_Logger extends qcl_core_Object
    */
   function writeLog( $message )
   {
-    error_log($message,3,QCL_LOG_FILE);
+    if( ! QCL_LOG_FILE or ! file_exists(QCL_LOG_FILE) or ! is_writable( QCL_LOG_FILE ) )
+    {
+      error_log( $message );
+    }
+    else
+    {
+      error_log( $message, 3, QCL_LOG_FILE );
+    }
   }
 
 }

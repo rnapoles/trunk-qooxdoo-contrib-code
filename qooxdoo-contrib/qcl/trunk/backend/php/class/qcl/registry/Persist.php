@@ -5,7 +5,7 @@ require_once "qcl/persistence/db/Object.php";
  * Class which maintains a registry which is
  * persiste in the database.
  */
-class qcl_registry_Request
+class qcl_registry_Persist
   extends qcl_persistence_db_Object
 {
 
@@ -15,13 +15,9 @@ class qcl_registry_Request
    * Returns a singleton instance of this class
    * @return qcl_registry_Request
    */
-  function &getInstance( )
+  function &getInstance()
   {
-    if ( ! is_object( $GLOBALS[__CLASS__] ) )
-    {
-      $GLOBALS[__CLASS__] =& new qcl_registry_Request;
-    }
-    return $GLOBALS[__CLASS__];
+    return parent::getInstance(__CLASS__);
   }
 
   /**
@@ -29,7 +25,7 @@ class qcl_registry_Request
    */
   function __construct()
   {
-    parent::construct(null,__CLASS__);
+    parent::__construct(null,__CLASS__);
   }
 
   /**
@@ -39,8 +35,9 @@ class qcl_registry_Request
    */
   function reset()
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_registry_Persist::getInstance();
     $_this->registry = array();
+    $_this->save();
   }
 
   /**
@@ -51,8 +48,9 @@ class qcl_registry_Request
    */
   function set( $key, $value )
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_registry_Persist::getInstance();
     $_this->registry[$key] = $value;
+    $_this->save();
   }
 
   /**
@@ -63,7 +61,7 @@ class qcl_registry_Request
    */
   function get( $key )
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_registry_Persist::getInstance();
     return $_this->registry[$key];
   }
 
@@ -76,7 +74,7 @@ class qcl_registry_Request
    */
   function has( $key )
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_registry_Persist::getInstance();
     return isset( $_this->registry[$key] );
   }
 }

@@ -14,6 +14,7 @@ if ( ! defined("QCL_SERVICE_CONFIG_FILE") )
 require_once "qcl/__init__.php";
 require_once "qcl/core/StaticClass.php";
 require_once "qcl/server/Server.php";
+require_once "qcl/config/Manager.php";
 
 /**
  * Application class. All public methods of this class and of its subclasses
@@ -78,6 +79,7 @@ class qcl_application_Application
   /**
    * Returns the current controller instance, if any. Can be called statically
    * @return qcl_mvc_Controller
+   * @deprecated Get directly from server
    */
   function &getController()
   {
@@ -107,9 +109,16 @@ class qcl_application_Application
      */
      require_once "qcl/persistence/db/Setup.php";
      qcl_persistence_db_Setup::setup();
+
+     /*
+      * set the default config model
+      */
+     if ( ! qcl_config_Manager::getModel() )
+     {
+       require_once "qcl/config/Db.php";
+       qcl_config_Manager::setModel( qcl_config_Db::getInstance() );
+     }
   }
-
-
 
   //-------------------------------------------------------------
   // ini values

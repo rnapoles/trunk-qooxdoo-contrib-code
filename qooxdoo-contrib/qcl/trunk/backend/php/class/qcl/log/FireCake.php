@@ -2,7 +2,7 @@
 
 /**
  * The following code is a slightly modified version of:
- * 
+ *
  * FirePHP Class for CakePHP
  *
  * Provides most of the functionality offered by FirePHPCore
@@ -32,17 +32,16 @@
  * @license         http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 //require_once "qcl/log/Debugger.php";
-require_once "qcl/core/Object.php";
 
-if (!function_exists('firecake')) 
+if (!function_exists('firecake'))
 {
-  function firecake($message, $label = null) 
+  function firecake($message, $label = null)
   {
     FireCake::fb($message, $label, 'log');
   }
 }
 
-class FireCake extends qcl_core_Object 
+class FireCake
 {
   /**
    * Options for FireCake.
@@ -64,7 +63,7 @@ class FireCake extends qcl_core_Object
     'useNativeJsonEncode' => true,
     'includeLineNumbers' => true,
   );
-  
+
   /**
    * Message Levels for messages sent via FirePHP
    *
@@ -122,7 +121,7 @@ class FireCake extends qcl_core_Object
    * @static
    * @return void
    */
-  function &getInstance($class = null) 
+  function &getInstance($class = null)
   {
     static $instance = array();
     if (!empty($class)) {
@@ -137,7 +136,7 @@ class FireCake extends qcl_core_Object
     }
     return $instance[0];
   }
-  
+
   /**
    * setOptions
    *
@@ -146,7 +145,7 @@ class FireCake extends qcl_core_Object
    * @static
    * @return void
    */
-  function setOptions($options = array()) 
+  function setOptions($options = array())
   {
     $_this = FireCake::getInstance();
     if (empty($_this->options)) {
@@ -155,14 +154,14 @@ class FireCake extends qcl_core_Object
       $_this->options = array_merge($_this->options, $options);
     }
   }
-  
+
   /**
    * Return boolean based on presence of FirePHP extension
    *
    * @access public
    * @return boolean
    **/
-  function detectClientExtension() 
+  function detectClientExtension()
   {
     $ua = FireCake::getUserAgent();
     if (!preg_match('/\sFirePHP\/([\.|\d]*)\s?/si', $ua, $match) || !version_compare($match[1], '0.0.6', '>=')) {
@@ -170,7 +169,7 @@ class FireCake extends qcl_core_Object
     }
     return true;
   }
-  
+
   /**
    * Get the Current UserAgent
    *
@@ -178,11 +177,11 @@ class FireCake extends qcl_core_Object
    * @static
    * @return string UserAgent string of active client connection
    **/
-  function getUserAgent() 
+  function getUserAgent()
   {
     return $_SERVER['HTTP_USER_AGENT'];
   }
-  
+
   /**
    * Disable FireCake output
    * All subsequent output calls will not be run.
@@ -193,7 +192,7 @@ class FireCake extends qcl_core_Object
     $_this = FireCake::getInstance();
     $_this->_enabled = false;
   }
-  
+
   /**
    * Enable FireCake output
    *
@@ -203,7 +202,7 @@ class FireCake extends qcl_core_Object
     $_this = FireCake::getInstance();
     $_this->_enabled = true;
   }
-  
+
   /**
    * Convenience wrapper for LOG messages
    *
@@ -216,7 +215,7 @@ class FireCake extends qcl_core_Object
   function log($message, $label = null) {
     FireCake::fb($message, $label, 'log');
   }
-  
+
   /**
    * Convenience wrapper for WARN messages
    *
@@ -229,7 +228,7 @@ class FireCake extends qcl_core_Object
   function warn($message, $label = null) {
     FireCake::fb($message, $label, 'warn');
   }
-  
+
   /**
    * Convenience wrapper for INFO messages
    *
@@ -242,7 +241,7 @@ class FireCake extends qcl_core_Object
   function info($message, $label = null) {
     FireCake::fb($message, $label, 'info');
   }
-  
+
   /**
    * Convenience wrapper for ERROR messages
    *
@@ -255,7 +254,7 @@ class FireCake extends qcl_core_Object
   function error($message, $label = null) {
     FireCake::fb($message, $label, 'error');
   }
-  
+
   /**
    * Convenience wrapper for TABLE messages
    *
@@ -280,8 +279,8 @@ class FireCake extends qcl_core_Object
   function dump($label, $message) {
     FireCake::fb($message, $label, 'dump');
   }
-  
-  
+
+
   /**
    * Convenience wrapper for TRACE messages
    *
@@ -292,7 +291,7 @@ class FireCake extends qcl_core_Object
   function trace($label)  {
     FireCake::fb($label, 'trace');
   }
-  
+
   /**
    * Convenience wrapper for GROUP messages
    * Messages following the group call will be nested in a group block
@@ -304,7 +303,7 @@ class FireCake extends qcl_core_Object
   function group($label)  {
     FireCake::fb(null, $label, 'groupStart');
   }
-  
+
   /**
    * Convenience wrapper for GROUPEND messages
    * Closes a group block
@@ -316,7 +315,7 @@ class FireCake extends qcl_core_Object
   function groupEnd()  {
     FireCake::fb(null, null, 'groupEnd');
   }
-  
+
   /**
    * fb - Send messages with FireCake to FirePHP
    *
@@ -333,7 +332,9 @@ class FireCake extends qcl_core_Object
     $_this = FireCake::getInstance();
 
     if (headers_sent($filename, $linenum)) {
-      trigger_error(sprintf(__('Headers already sent in %s on line %s. Cannot send log data to FirePHP.', true), $filename, $linenum), E_USER_WARNING);
+      trigger_error(sprintf((
+        'Headers already sent in %s on line %s. Cannot send log data to FirePHP.'
+      ), $filename, $linenum), E_USER_WARNING);
       return false;
     }
     if (!$_this->_enabled || !$_this->detectClientExtension()) {
@@ -354,7 +355,7 @@ class FireCake extends qcl_core_Object
         $label = $args[1];
         break;
       default:
-        trigger_error(__('Incorrect parameter count for FireCake::fb()', true), E_USER_WARNING);
+        trigger_error(('Incorrect parameter count for FireCake::fb()'), E_USER_WARNING);
         return false;
     }
     if (isset($_this->_levels[$type])) {
@@ -427,13 +428,13 @@ class FireCake extends qcl_core_Object
       }
       $_this->_messageIndex++;
       if ($_this->_messageIndex > 99999) {
-        trigger_error(__('Maximum number (99,999) of messages reached!', true), E_USER_WARNING);
+        trigger_error(('Maximum number (99,999) of messages reached!'), E_USER_WARNING);
       }
     }
     $_this->_sendHeader('X-Wf-1-Index', $_this->_messageIndex - 1);
     return true;
   }
-  
+
   /**
    * Parse a debug backtrace
    *
@@ -462,8 +463,8 @@ class FireCake extends qcl_core_Object
     }
     return $message;
   }
-  
-  
+
+
   /**
    * Fix a trace for use in output
    *
@@ -483,7 +484,7 @@ class FireCake extends qcl_core_Object
     }
     return $trace;
   }
-  
+
   /**
    * Encode non string objects to string.
    * Filter out recursion, so no errors are raised by json_encode or $javascript->object()
@@ -531,7 +532,7 @@ class FireCake extends qcl_core_Object
     }
     return $return;
   }
-  
+
   /**
    * Encode an object into JSON
    *
@@ -553,7 +554,7 @@ class FireCake extends qcl_core_Object
       return FireCake::_jsonEncode($object);
     }
   }
-  
+
   /**
    * jsonEncode Helper method for PHP4 compatibility
    *
@@ -565,7 +566,7 @@ class FireCake extends qcl_core_Object
   function _jsonEncode($object) {
     trigger_error("Not implemented for PHP4 without jsonrpc extension.");
   }
-  
+
   /**
    * Send Headers - write headers.
    *

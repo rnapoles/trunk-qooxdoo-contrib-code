@@ -3,26 +3,26 @@
   <data>
     <records>
       <record>
-        <property name="namedId">qcl.roles.Unassigned</property>
+        <property name="namedId">qcl.access.role.Unassigned</property>
         <property name="name">Unassigned</property>
       </record>
       <record>
-        <property name="namedId">qcl.roles.Anonymous</property>
+        <property name="namedId">qcl.access.role.Anonymous</property>
         <property name="name">Anonmymous guest user</property>
         <property name="active">1</property>        
       </record>
       <record>
-        <property name="namedId">qcl.roles.User</property>
+        <property name="namedId">qcl.access.role.User</property>
         <property name="name">Authenticated User</property>
         <property name="active">1</property>        
       </record>
       <record>
-        <property name="namedId">qcl.roles.Manager</property>
+        <property name="namedId">qcl.access.role.Manager</property>
         <property name="name">Manager</property>
         <property name="active">1</property>
       </record>     
       <record>
-        <property name="namedId">qcl.roles.Administrator</property>
+        <property name="namedId">qcl.access.role.Administrator</property>
         <property name="name">Administrator</property>
         <property name="active">1</property>
       </record>      
