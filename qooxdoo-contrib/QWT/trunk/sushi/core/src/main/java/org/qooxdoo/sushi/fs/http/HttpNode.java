@@ -103,6 +103,11 @@ public class HttpNode extends Node {
     }
 
     @Override
+    public String getPath() {
+        return getPath(url);
+    }
+
+    @Override
     public Node delete() throws DeleteException {
         throw new DeleteException(this);
     }
@@ -161,24 +166,9 @@ public class HttpNode extends Node {
         return connection.getOutputStream();
     }
 
-    private InputStream inputStream() throws IOException {
-        URLConnection connection;
-        
-        connection = url.openConnection();
-        connection.setConnectTimeout(getRoot().getConnectTimeout());
-        connection.setReadTimeout(getRoot().getReadTimeout());
-        connection.connect();
-        return connection.getInputStream();
-    }
-
     @Override
     public List<HttpNode> list() {
         return null;
-    }
-
-    @Override
-    public String getPath() {
-        return getPath(url);
     }
 
     public static String getPath(URL url) {
@@ -190,5 +180,15 @@ public class HttpNode extends Node {
         } else {
             return result;
         }
+    }
+
+    private InputStream inputStream() throws IOException {
+        URLConnection connection;
+        
+        connection = url.openConnection();
+        connection.setConnectTimeout(getRoot().getConnectTimeout());
+        connection.setReadTimeout(getRoot().getReadTimeout());
+        connection.connect();
+        return connection.getInputStream();
     }
 }
