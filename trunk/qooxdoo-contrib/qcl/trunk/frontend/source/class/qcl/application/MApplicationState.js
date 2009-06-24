@@ -275,7 +275,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     {
       var hashParams = this._analyzeHashString();
       
-      if ( typeof(hashParams[name]) != "undefined") 
+      if ( hashParams[name] != undefined ) 
       {
         delete hashParams[name];
         var p = [];
@@ -283,7 +283,17 @@ qx.Mixin.define("qcl.application.MApplicationState",
         {
           p.push(key + "=" + encodeURIComponent( hashParams[key] ) );
         }
-        window.location.hash = p.join("&");
+        if ( p.length )
+        {
+          window.location.hash = p.join("&");
+        }
+        else
+        {
+          /*
+           * placeholder to avoid page reload
+           */
+          window.location.hash = "qcl=1";
+        }
         
         /*
          * Safari bug
