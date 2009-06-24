@@ -230,10 +230,17 @@ simulation.Simulation.prototype.startSession = function()
     this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));    
     this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
-    this.__sel.getEval('selenium.qxStoredVars = {}');
+    /* 
+     * Store the AUT window object to avoid calling 
+     * selenium.browserbot.getCurrentWindow() repeatedly.
+     */
+    this.__sel.getEval('selenium.qxStoredVars = {}');    
     this.storeEval('selenium.browserbot.getCurrentWindow()', 'autWindow');
+
+    this.prepareNameSpace();
+    this.addSanitizer();
     this.logEnvironment();
-    this.logUserAgent();
+    this.logUserAgent();    
   }
   catch (ex) {
     this.logEnvironment("file");
@@ -244,6 +251,20 @@ simulation.Simulation.prototype.startSession = function()
     return false;
   }
   return true;
+};
+
+/**
+ * Attaches a "Simulation" namespace object to the AUT window's qx object.
+ * This will be used to store custom methods added by addOwnFunction.
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.prepareNameSpace = function()
+{
+  var ns = String(this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation', 'Checking for qx.Simulation namespace'));
+  if (ns == "null" || ns == "undefined") {
+    this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation = {};', 'Creating qx.Simulation namespace');
+  }
 };
 
 /**
@@ -635,11 +656,6 @@ simulation.Simulation.prototype.addOwnFunction = function(funcName, func)
     throw new Error("No function specified.");
   }
   
-  var ns = String(this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation', 'Checking for qx.Simulation namespace'));
-  if (ns == "null" || ns == "undefined") {
-    this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation = {};', 'Creating qx.Simulation namespace');
-  }
-  
   if (typeof func != "string") {
     func = func.toString();    
   }
@@ -779,54 +795,63 @@ simulation.Simulation.prototype.stop = function()
 };
 
 /**
- * Create a Mozilla Console listener that logs JavaScript errors. 
+ * Creates a global error handler that stores JavaScript exceptions. Global 
+ * Error Handling must be enabled in the AUT.
+ * Also adds a simple getter function that returns the contents of the exception
+ * store as a string separated by pipe characters ("|");
  * 
  * @return {void}
  */
-simulation.Simulation.prototype.addMozillaConsoleListener = function()
+simulation.Simulation.prototype.addGlobalErrorHandler = function()
 {
-  var listenerObject =
-  {
-    observe:function( aMessage )
-    {
-      try {
-        netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-        if (aMessage.message.indexOf("JavaScript Error") >= 0) {
-          this.log(aMessage.message, "error");
-        }
-      }
-      catch(ex) {
-        alert("Unable to access Mozilla Console message:\n" + ex);
-      }
-    },
+  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore = [];", "Adding errorStore");
   
-    QueryInterface: function (iid)
-    {
-      try {
-        netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-        if (!iid.equals(Components.interfaces.nsIConsoleListener) &&
-            !iid.equals(Components.interfaces.nsISupports)) {
-          throw Components.results.NS_ERROR_NO_INTERFACE;
-        }
-        return this;
+  var addHandler = function()
+  {
+    selenium.browserbot.getCurrentWindow().qx.event.GlobalError.setErrorHandler(function(ex) {
+      //selenium.browserbot.getCurrentWindow().console.log(ex);
+      var exString = ex.name + ": " + ex.message;
+      if (ex.fileName) {
+        exString += " in file " + ex.fileName;
       }
-      catch(ex) {
-        alert("Unable to set up Mozilla Console listener:\n" + ex);
+      if (ex.lineNumber) {
+        exString += " line " + ex.lineNumber;
+      }      
+      if (ex.description) {
+        exString += " Description: " + ex.description;
       }
-    }
+      var sanitizedEx = selenium.browserbot.getCurrentWindow().qx.Simulation.sanitize(exString);
+      //sanitizedEx = sanitizedEx.replace(/\n/g,"<br/>");
+      //sanitizedEx = sanitizedEx.replace(/\r/g,"<br/>");
+
+      selenium.browserbot.getCurrentWindow().qx.Simulation.errorStore.push(sanitizedEx);     
+    });
   };
   
-  try {
-    this.getEval("var listenerObject = " + listenerObject.toSource(), "Creating Mozilla Console listener object");
-    
-    this.getEval('netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");', 
-                  "Asking for UniversalXPConnect privileges");
-    this.getEval('var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);', 
-                  "Getting console service");
-    this.getEval('aConsoleService.registerListener(qx.Simulation.mozillaConsoleListener);', 
-                  "Registering console listener");
-  }
-  catch(ex) {
-    this.log(ex + "error");
+  this.addOwnFunction("addGlobalErrorHandler", addHandler);
+  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.addGlobalErrorHandler();", "Adding error handler");
+  
+  globalErr = function()
+  {
+     var exceptions = selenium.browserbot.getCurrentWindow().qx.Simulation.errorStore;
+     var exString = exceptions.join("|");
+     return exString;     
+  };
+  this.addOwnFunction("getGlobalErrors", globalErr);
+  
+};
+
+/**
+ * Logs the contents of the global exception store.
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.logGlobalErrors = function()
+{
+  var exceptions = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getGlobalErrors()", "Retrieving global error store");
+  var exArr = String(exceptions).split("|");
+
+  for (var i=0; i<exArr.length; i++) {
+    this.log(exArr[i], "error");
   }
 };
