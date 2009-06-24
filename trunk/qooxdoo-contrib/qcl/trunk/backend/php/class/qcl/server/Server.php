@@ -20,7 +20,7 @@ class qcl_server_Server extends qcl_core_StaticClass
    */
   function &getInstance( )
   {
-    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    if ( ! isset( $GLOBALS[__CLASS__] ) )
     {
       $GLOBALS[__CLASS__] =& new qcl_server_Server;
     }
@@ -28,16 +28,54 @@ class qcl_server_Server extends qcl_core_StaticClass
   }
 
   /**
+   * Start a server that handles the request type (JSONRPC, POST, ...).
+   * Can be called statically.
+   * @param array $servicePaths An array of paths to the services used
+   * by the server
+   * @return void
+   */
+  function start( $servicePaths )
+  {
+
+    /*
+     * if POST request, use post request server extension
+     */
+    if ( isset( $_REQUEST['service'] )  )
+    {
+      require_once "services/server/PostRpcServer.php";
+      $serverObj =& PostRpcServer::getInstance();
+    }
+
+    /*
+     * use qcl jsonrpc server extension
+     */
+    else
+    {
+      require "qcl/server/JsonRpc.php";
+      $serverObj =& qcl_server_JsonRpc::getInstance();
+    }
+
+    /*
+     * configure service paths
+     */
+    $serverObj->setServicePaths( $servicePaths );
+
+    /*
+     * save and start server
+     */
+    $server =& qcl_server_Server::getInstance();
+    $server->serverObject =& $serverObj;
+    $serverObj->start();
+  }
+
+
+  /**
    * Returns the current server object
-   * @return qcl_server_JsonRpc
+   * @return qcl_server_JsonRpc|null
    */
   function &getServerObject()
   {
     $_this =& qcl_server_Server::getInstance();
-    if ( ! is_a( $_this->serverObject, "AbstractServer") )
-    {
-      trigger_error("No server object set.");
-    }
     return $_this->serverObject;
   }
 

@@ -7,16 +7,6 @@ require_once "qcl/persistence/db/Model.php";
 require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
- *  * @todo this can be removed once qcl_db_SimpleModel does
- * automatic table creation.
- */
-class qcl_persistence_db_Setup
-  extends qcl_db_model_xml_XmlSchemaModel
-{
-  var $schemaXmlPath = "qcl/persistence/db/Model.xml";
-}
-
-/**
  * Class that is persisted in the database
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
@@ -33,28 +23,17 @@ class qcl_persistence_db_Object
   var $_dbModel;
 
   /**
-   * Initializes the object
+   * Initializes the object. Can be called statically to
+   * initialize the persistence system
    * @override
    */
   function initialize()
   {
-    $controller =& $this->getController();
-
-    /*
-     * Initialize a dummy qcl_db_model_xml_XmlSchemaModel object to create tables
-     * FIXME this can be removed once qcl_db_SimpleModel does
-     * automatic table creation.
-     */
-    if ( ! class_exists( "qcl_persistence_db_Setup" ) )
-    {
-      $dummy =& new qcl_persistence_db_Setup(&$controller);
-    }
-
     /*
      * create the actual model object that will be used to store
      * the data
      */
-    $this->_dbModel =& new qcl_persistence_db_Model( &$controller );
+    $this->_dbModel =& new qcl_persistence_db_Model;
   }
 
   /**
@@ -126,14 +105,18 @@ class qcl_persistence_db_Object
 
   /*
    * clean up objects that refer to nonexisting users or sessions
-   * FIXME disabled: this requires tables sessions and users created beforehand
    */
   function cleanUp()
   {
-    $this->_dbModel->deleteWhere("
-      sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
-      userId NOT IN ( SELECT id FROM users )
-    ");
+    require_once "qcl/db/model/xml/XmlSchemaModelTableInfo.php";
+    if ( qcl_db_model_xml_XmlSchemaModelTableInfo::isInitialized( null, "sessions" )
+         and qcl_db_model_xml_XmlSchemaModelTableInfo::isInitialized( null, "users" ) )
+    {
+      $this->_dbModel->deleteWhere("
+        sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
+        userId NOT IN ( SELECT id FROM users )
+      ");
+    }
   }
 
 

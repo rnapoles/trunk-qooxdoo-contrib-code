@@ -27,14 +27,11 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
    */
   var $resourceType;
 
-
-
   /**
    * Constructor
-   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
-  function __construct ( $controller, $resourcePath )
+  function __construct ( $resourcePath )
   {
     /*
      * parent constructor takes care of controller
@@ -74,9 +71,10 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
    * Factory method which returns the correct class type according to
    * the protocol. Folder paths MUST end with a slash.
    * @static
+   * @param string $resourcePath
    * @return qcl_io_filesystem_IResource
    */
-  function createInstance( $controller, $resourcePath )
+  function createInstance( $resourcePath )
   {
     /*
      * check resource path.
@@ -88,12 +86,12 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
         if ( substr($resourcePath,-1) == "/" )
         {
           require_once "qcl/io/filesystem/local/Folder.php";
-          return new qcl_io_filesystem_local_Folder( &$controller, $resourcePath );
+          return new qcl_io_filesystem_local_Folder( $resourcePath );
         }
         else
         {
           require_once "qcl/io/filesystem/local/File.php";
-          return new qcl_io_filesystem_local_File( &$controller, $resourcePath );
+          return new qcl_io_filesystem_local_File( $resourcePath );
         }
         break;
 
@@ -101,12 +99,12 @@ class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
         if ( substr($resourcePath,-1) == "/" )
         {
           require_once "qcl/io/filesystem/remote/Folder.php";
-          return new qcl_io_filesystem_remote_Folder( &$controller, $resourcePath );
+          return new qcl_io_filesystem_remote_Folder( $resourcePath );
         }
         else
         {
           require_once "qcl/io/filesystem/remote/File.php";
-          return new qcl_io_filesystem_remote_File( &$controller, $resourcePath );
+          return new qcl_io_filesystem_remote_File( $resourcePath );
         }
         break;
     }

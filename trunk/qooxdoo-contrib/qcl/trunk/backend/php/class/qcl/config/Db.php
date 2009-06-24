@@ -575,7 +575,7 @@ class qcl_config_Db
 
 		$this->findWhere( $where, "namedId", "namedId,type,value" );
     $result = array();
-    do
+    if ($this->foundSomething() ) do
     {
       $result[$this->getNamedId()] = $this->getValue();
     }

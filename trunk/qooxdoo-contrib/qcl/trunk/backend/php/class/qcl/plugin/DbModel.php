@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/XmlSchemaModel.php";
+require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
  * Model that stores the available Plugins in a database table

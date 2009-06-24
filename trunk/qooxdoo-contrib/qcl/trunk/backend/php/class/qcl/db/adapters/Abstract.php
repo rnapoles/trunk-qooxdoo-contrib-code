@@ -70,7 +70,7 @@ class qcl_db_adapters_Abstract
   var $_controller = null;
 
 	/**
-	 * constructor
+	 * Constructor
 	 * @todo remove dependency on master
 	 */
 	function __construct( $dsn=null, $master=null )
@@ -86,7 +86,7 @@ class qcl_db_adapters_Abstract
     if ( is_a( $master,"qcl_mvc_AbstractModel" ) )
     {
       $this->_model  =& $master;
-      $this->_controller   =& $master->getController();
+      $this->_controller =& $master->getController();
     }
 	  elseif ( is_a( $master,"qcl_mvc_Controller" ) )
     {

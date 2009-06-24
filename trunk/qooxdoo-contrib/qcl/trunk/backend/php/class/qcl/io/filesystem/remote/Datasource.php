@@ -19,21 +19,21 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
    * @var qcl_io_filesystem_remote_Folder
    */
   var $folderObj = null;
-  
+
   /**
    * The name of the schema
    */
   var $schemaName = "remoteFiles";
-  
+
   /**
    * If the datasource is a file storage. True for this datasource
    * @return bool
    */
   function isFileStorage()
   {
-    return true; 
-  }  
-    
+    return true;
+  }
+
   /**
    * initializes all models that belong to this datasource
    * @abstract
@@ -46,10 +46,10 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
       $resourcePath = $this->getType() . "://" . $this->getResourcePath();
       define("S3_KEY",     $this->getUsername() );
       define('S3_PRIVATE', $this->getPassword() );
-      $this->folderObj =& new qcl_io_filesystem_remote_Folder(&$this,$resourcePath);
+      $this->folderObj =& new qcl_io_filesystem_remote_Folder( $resourcePath);
     }
   }
- 
+
   /**
    * Returns the file object to do read and write operations with.
    * @param string $filename
@@ -59,11 +59,11 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
   {
     if ( $this->folderObj )
     {
-      return $this->folderObj->get($filename);  
+      return $this->folderObj->get($filename);
     }
     $this->raiseError("Datasource not initialized.");
   }
-  
+
   /**
    * Returns the folder object of the datasource
    */
@@ -71,11 +71,11 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
   {
     if ( $this->folderObj )
     {
-      return $this->folderObj;  
+      return $this->folderObj;
     }
     $this->raiseError("Datasource not initialized.");
   }
-  
+
   /**
    * Returns a list of fields that should be disabled in a form
    * @override
@@ -89,7 +89,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
     }
     return array( "database", "prefix" );
   }
-  
+
   /**
    * Creates a local filesystem datasource
    * @return void
@@ -102,7 +102,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
      * check datasource name
      */
     if ( ! $this->_checkCreate($datasource) ) return false;
-    
+
     /*
      * create entry
      */
@@ -117,17 +117,17 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
       "host"         => either($options['host'],""),
       "port"         => either($options['port'],""),
       "username"     => either($options['username'],""),
-      "password"     => either($options['password'],""),      
+      "password"     => either($options['password'],""),
       "resourcepath" => either($options['resourcepath'],""),
       "description"  => either($options['description'],""),
       "owner"        => either($options['owner'],""),
-      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,  
+      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,
     ));
 
     return true;
-  }  
+  }
 
-  
+
 }
 
 ?>

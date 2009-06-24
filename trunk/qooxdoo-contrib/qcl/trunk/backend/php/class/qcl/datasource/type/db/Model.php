@@ -2,39 +2,39 @@
 /*
  * dependencies
  */
-require_once "qcl/db/XmlSchemaModel.php";
+require_once "qcl/db/model/xml/XmlSchemaModel.php";
 
 /**
- * Class modeling datasource information that is stored in a 
+ * Class modeling datasource information that is stored in a
  * typical sql database. Note that this is not the datasource itself,
  * which can be of any type, but only the information ON the datasource
  * plus some methods to operate with this information. This is the normal
- * case, all other datasource models inherit from this. If you want to 
+ * case, all other datasource models inherit from this. If you want to
  * use a different storage for your datasource information, you must write
  * custom child classes for the other datasource models.
- * 
+ *
  * @todo rename to qcl_datasource_storage_Db
  */
 class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
 {
-  
+
   /**
    * The name of the schema
    */
   var $schemaName = "qcl_db";
-  
+
   /**
    * Datasource name
    * @var string
    */
   var $datasource;
-  
+
   /**
    * Models that are attached to this datasource
    * @var array
    */
   var $models = array();
-  
+
   /**
    * The current dsn as an array
    * @var array
@@ -52,7 +52,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
    * @var qcl_db_type_Mysql
    */
   var $datasourceConnectionObj;
-  
+
   /**
    * Returns the name of the datasource schema
    */
@@ -60,41 +60,41 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
   {
     return $this->schemaName;
   }
-  
+
   /**
    * Initializes all models that belong to this datasource. It is recommended to
    * initialize only the models that are needed at every request and use getters
    * which instantiate the objects on demand for other models.
-   * 
+   *
    * @abstract
    * @param string $datasource Name of the datasource
    */
   function initializeModels( $datasource )
   {
     $this->notImplemented();
-    
+
     /* Example:
     $this->_fooModel =& new my_custom_FooModel( &$this );
     $this->_barModel =& new my_custom_BarModel( &$this );
      */
   }
-  
+
   function getDatasourceName()
   {
     return $this->datasource;
   }
-  
+
   /**
    * Gets a stored model by name
    * @param string $name
-   * @return qcl_datasource_type_db_Model   
+   * @return qcl_datasource_type_db_Model
    */
   function &getModel ( $name )
   {
     return $this->models[$name];
   }
-  
-  /** 
+
+  /**
    * Stores a model object by name
    * @param string $name
    * @param qcl_datasource_type_db_Model
@@ -114,11 +114,11 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
     $url = $this->getType() . "://" . $this->getHost();
     if ( $port = $this->getPort() )
     {
-      $url .= ":$port"; 
+      $url .= ":$port";
     }
     return $url;
   }
-  
+
   /**
    * gets dsn information as array from the currently loaded datasource record
    * @return array
@@ -127,23 +127,23 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
   {
     if ( ! $this->dsn )
     {
-      $this->dsn = array( 
-         'phptype'  => either($this->getType(),'mysql'), 
-         'dbsyntax' => false, 
-         'username' => $this->getUsername(), 
-         'password' => $this->getPassword(), 
-         'protocol' => "tcp", 
-         'hostspec' => $this->getHost(), 
-         'port'     => either( $this->getPort(), false), 
-         'socket'   => false, 
-         'database' => $this->getDatabase(), 
+      $this->dsn = array(
+         'phptype'  => either($this->getType(),'mysql'),
+         'dbsyntax' => false,
+         'username' => $this->getUsername(),
+         'password' => $this->getPassword(),
+         'protocol' => "tcp",
+         'hostspec' => $this->getHost(),
+         'port'     => either( $this->getPort(), false),
+         'socket'   => false,
+         'database' => $this->getDatabase(),
       );
     }
     return $this->dsn;
   }
-  
+
   /**
-   * Returns the database connection object of the currently 
+   * Returns the database connection object of the currently
    * loaded datasource record
    * @todo unhardcode type mysql
    * @return qcl_db_type_Mysql
@@ -153,19 +153,19 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
     if ( ! $this->datasourceConnectionObj )
     {
       //$this->debug("Connecting current datasource ...");
-      
+
       $dsn = $this->getDatasourceDsn();
-      
+
       //$this->debug("Datasource model connecting to ");
       //$this->debug($dsn);
 
       $db =& qcl_db_Manager::createAdapter( $dsn );
-      
+
       $this->datasourceConnectionObj =& $db;
     }
     return $this->datasourceConnectionObj;
   }
- 
+
   /*
    * get table prefix for datasource tables.
    * this get the value of the column "prefix" or, if empty, the named id of the
@@ -180,17 +180,17 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
     }
     return "";
   }
-  
+
   function isActive()
   {
     return (bool) $this->getProperty("active");
   }
-  
+
   function isHidden()
   {
     return (bool) $this->getProperty("hidden");
-  }  
-  
+  }
+
   /**
    * checks if datasource is read-only
    * @return bool result
@@ -198,7 +198,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
   function isReadOnly ()
   {
     return (boolean) $this->getReadonly();
-  }   
+  }
 
   /**
    * Returns a list of fields that should be disabled in a form
@@ -206,34 +206,34 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
    */
   function unusedFields()
   {
-    return array("resourcepath"); 
-  }  
-  
+    return array("resourcepath");
+  }
+
   /**
    * Checks a datasource name to be created
    */
   function _checkCreate( $datasource )
   {
-    
+
     if ( ! $datasource )
     {
       $this->setError ("No datasource name given.");
       return false;
     }
-    
+
     /*
      * check if datasource name exists
      */
     $this->findByNamedId( $datasource );
     if ( $this->foundSomething() )
     {
-       $this->setError( $this->tr( "A datasource with this name already exists." ) ); 
+       $this->setError( $this->tr( "A datasource with this name already exists." ) );
        return false;
-    }    
+    }
     return true;
   }
-  
-  
+
+
   /**
    * Creates a new native sql datasource
    * @todo implement external dsn
@@ -247,7 +247,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
      * check datasource name
      */
     if ( ! $this->_checkCreate($datasource) ) return false;
-    
+
     /*
      * get database connection information
      */
@@ -260,7 +260,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
     {
       $db = $this->db;
     }
-    
+
     /*
      * create entry
      */
@@ -280,22 +280,22 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
       "encoding"     => either($options['encoding'],"utf8"),
       "description"  => (string) $options['description'],
       "owner"        => either($options['owner'],""),
-      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,  
+      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,
     ));
 
    return true;
   }
-  
+
   /**
-   * If the datasource is a file storage. Defaults to false in normal 
+   * If the datasource is a file storage. Defaults to false in normal
    * datasources
    * @return bool
    */
   function isFileStorage()
   {
-    return false; 
-  }  
-  
+    return false;
+  }
+
 
 }
 

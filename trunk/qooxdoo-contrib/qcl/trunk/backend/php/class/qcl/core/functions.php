@@ -92,42 +92,44 @@ function real_file_path($file)
 }
 
 /**
- * checks if passed string var is a valid file.
+ * Checks if passed string var is a valid file.
  * assumes that strings over the length of 512 characters are not a filename
  * @param string $arg
  */
-function is_valid_file($arg)
+function is_valid_file( $file )
 {
   /*
    * qcl file object?
    */
-  if ( is_qcl_file($arg) )
+  if ( is_qcl_file($file) )
   {
-    return $arg->exists();
+    return $file->exists();
   }
+
+  /*
+   * get real file path
+   */
+  $file = real_file_path($file);
 
   /*
    * the following checks work on string arguments
    */
-  if ( ! is_string($arg) ) return false;
-  if ( strlen($arg) > 512 ) return false;
-  if ( ! file_exists($arg) ) return false;
-  if ( ! is_readable( $arg ) ) return false;
-  if ( ! @is_file( $arg ) ) return false;
-  if ( ! @file_exists( $arg ) ) return false;
+  if ( ! is_string($file) ) return false;
+  if ( strlen($file) > 512 ) return false;
+  if ( ! @file_exists( $file ) ) return false;
+  if ( ! is_readable( $file ) ) return false;
+  if ( ! is_file( $file ) ) return false;
   return true;
 }
 
 /**
  * checks if argument is a qcl_io_filesystem_IFile object
  * @return bool
+ * @todo PHP5
  */
 function is_qcl_file( $arg )
 {
-  return
-  is_a( $arg,"qcl_core_Object" ) and
-  is_array( $arg->implements ) and
-  in_array( "qcl_io_filesystem_IFile", $arg->implements );
+  return is_a( $arg,"qcl_io_filesystem_Resource" );
 }
 
 function get_var_type( $var )
@@ -368,7 +370,7 @@ function debug_get_backtrace( $skip=1, $returnAsArray=false )
    * Location of document root in file system
    * (will be stripped in output)
    */
-  $path = realpath( SERVICE_PATH );
+  $strip = $_SERVER["DOCUMENT_ROOT"];
 
   /*
    * Iterate backtrace
@@ -378,11 +380,11 @@ function debug_get_backtrace( $skip=1, $returnAsArray=false )
   foreach ( $backtrace as $i => $call )
   {
     $location = ( isset( $call['file'] ) and isset($call['line'] ) ) ?
-         "called at\n--> " . ( str_replace( $path, "", $call['file'] ) . ':' . $call['line'] ) :
+         " -->  " . ( str_replace( $strip, "", $call['file'] ) . ':' . $call['line'] ) :
          "";
 
     $function = isset( $call['class'] ) ?
-    $call['class'] . '.' . $call['function'] :
+    $call['class'] . '->' . $call['function'] :
     $call['function'];
 
     $params = ( isset( $call['args'] ) and is_array( $call['args'] ) ) ?

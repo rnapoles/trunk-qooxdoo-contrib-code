@@ -74,7 +74,7 @@ class qcl_access_model_User extends qcl_access_model_Common
      * role model
      */
     $roleModel  =& qcl_access_model_Role::getInstance();
-    $roleModel->findByNamedId("qcl.roles.Guest");
+    $roleModel->findByNamedId("qcl.roles.Anonymous");
     if ( $roleModel->foundNothing() )
     {
       $this->raiseError("No guest role available.");

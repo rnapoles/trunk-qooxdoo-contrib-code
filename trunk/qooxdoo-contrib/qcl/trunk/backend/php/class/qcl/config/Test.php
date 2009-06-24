@@ -35,7 +35,10 @@ class class_qcl_config_Test extends qcl_session_Controller
   {
     $mask = either( $params[0], null );
     $configModel =& qcl_config_Db::getInstance();
-    return $configModel->getAccessibleKeys( $mask );
+    $this->set( array(
+      "config" =>  $configModel->getAccessibleKeys( $mask )
+    ) );
+    return $this->response();
   }
 
 

@@ -1,13 +1,12 @@
 <?php
+
 /**
  * Class which maintains a registry which is valid during one request
  */
 class qcl_registry_Request
 {
-  /**
-   * key of variable container in $_SESSION
-   */
-  var $_global_key = "qcl_request_registry";
+
+  var $registry = array();
 
   /**
    * Returns a singleton instance of this class
@@ -23,50 +22,51 @@ class qcl_registry_Request
   }
 
   /**
-   * resets the page load registry. this needs to be
-   * called, for example, when a user logs out
+   * Resets the page load registry. this needs to be
+   * called, for example, when a user logs out, Can
+   * be called statically
    */
   function reset()
   {
-    $GLOBALS[ $this->_global_key ] = array();
+    $_this =& qcl_registry_Request::getInstance();
+    $_this->registry = array();
   }
 
   /**
-   * Sets the registry value
+   * Sets the registry value. Can be called statically
    *
    * @param string $key
    * @param mixed $value
    */
   function set( $key, $value )
   {
-    $GLOBALS[ $this->_global_key ][$key] = $value;
+    $_this =& qcl_registry_Request::getInstance();
+    $_this->registry[$key] = $value;
   }
 
   /**
-   * Gets the registry value
+   * Gets the registry value. Can be called statically
    *
    * @param string $key
    * @return mixed
    */
   function get( $key )
   {
-    return $GLOBALS[ $this->_global_key ][$key];
+    $_this =& qcl_registry_Request::getInstance();
+    return $_this->registry[$key];
   }
 
 
   /**
-   * Check if registry value is set
+   * Check if registry value is set. Can be called statically
    *
    * @param string $key
    * @return mixed
    */
   function has( $key )
   {
-    return isset( $GLOBALS[ $this->_global_key ][$key] );
+    $_this =& qcl_registry_Request::getInstance();
+    return isset( $_this->registry[$key] );
   }
-
 }
-
-
-
 ?>

@@ -19,12 +19,12 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
    * @var qcl_io_filesystem_local_Folder
    */
   var $folderObj = null;
-  
+
   /**
    * The name of the schema
    */
   var $schemaName = "localFiles";
-  
+
   /**
    * initializes all models that belong to this datasource
    * @abstract
@@ -33,9 +33,9 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
   function initializeModels( $datasource )
   {
     $resourcePath = $this->getType() . "://" . $this->getResourcePath();
-    $this->folderObj =& new qcl_io_filesystem_local_Folder( &$this, $resourcePath );
+    $this->folderObj =& new qcl_io_filesystem_local_Folder( $resourcePath );
   }
- 
+
   /**
    * Returns the file object to do read and write operations with.
    * @param string $filename
@@ -45,16 +45,16 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
   {
     return $this->folderObj->get($filename);
   }
-  
+
   /**
-   * Returns the folder object 
+   * Returns the folder object
    * @var qcl_io_filesystem_local_Folder
    */
   function &getFolderObject()
   {
     return $this->folderObj;
-  }  
-  
+  }
+
   /**
    * Returns a list of fields that should be disabled in a form
    * @override
@@ -64,7 +64,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
   {
     return array( "host", "port", "username", "password", "database", "prefix");
   }
-  
+
   /**
    * Creates a local filesystem datasource
    * @return void
@@ -77,7 +77,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
      * check datasource name
      */
     if ( ! $this->_checkCreate($datasource) ) return false;
-    
+
     /*
      * create entry
      */
@@ -92,16 +92,16 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
       "resourcepath" => either($options['resourcepath'],QCL_UPLOAD_PATH),
       "description"  => either($options['description'],""),
       "owner"        => either($options['owner'],""),
-      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,  
+      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,
     ));
 
     return true;
-  }  
-  
+  }
+
   function isFileStorage()
   {
-    return true; 
-  }    
+    return true;
+  }
 
 }
 

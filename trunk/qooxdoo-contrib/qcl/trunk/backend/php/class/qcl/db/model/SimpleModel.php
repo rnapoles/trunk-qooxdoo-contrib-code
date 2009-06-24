@@ -12,15 +12,14 @@ require_once "qcl/db/IModel.php";
  * setup and maintenance of tables (at least for now). This system is
  * probably a bit faster than the other.
  * @todo change inheritance order: this class should have all methods from
- * qcl_db_model_xml_XmlSchemaModel that do not rely on the xml schema system, and qcl_db_model_xml_XmlSchemaModel
- * should inherit from it.
+ * qcl_db_model_xml_XmlSchemaModel that do not rely on the xml schema system,
+ * and qcl_db_model_xml_XmlSchemaModel should inherit from it.
  * Caution: you cannot access the object properties directly, but need to
  * use getter and setter methods (for now).
  *
  * The simple model will be completely rewritten using a qooxdoo-class-like
  * property system, so don't use it.
  *
- * @deprecated
  * @todo is SimpleModel the right name?
  * @todo Implement automatic getter and setter access to properties that
  * are saved in the database

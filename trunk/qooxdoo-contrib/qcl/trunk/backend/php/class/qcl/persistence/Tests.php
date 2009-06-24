@@ -19,11 +19,11 @@ class class_qcl_persistence_Tests
   extends qcl_mvc_Controller
 {
 
-  var $skipAuthentication = false;
+  var $skipAuthentication = true;
 
   function method_testPersistence()
   {
-    $sessionId = qcl_access_Manager::getSessionId();
+    $sessionId = $this->skipAuthentication ? null : qcl_access_Manager::getSessionId();
     $obj =& new TestPersistence(&$this, "TestPersistence", null, $sessionId );
     $this->info('Initialized $obj->foo = ' . $obj->foo);
     $obj->foo = rand(0,100);

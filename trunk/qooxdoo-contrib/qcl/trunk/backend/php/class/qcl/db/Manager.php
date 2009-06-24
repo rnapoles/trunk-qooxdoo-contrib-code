@@ -141,8 +141,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
       /*
        * create and save adapter
        */
-      $controller =& qcl_application_Application::getController();
-      $db =& new $class( $dsn, &$controller );
+      $db =& new $class( $dsn );
       //$this->debug("Created new $class adapter... for '$dsn'.");
       if ( $db->error )
       {

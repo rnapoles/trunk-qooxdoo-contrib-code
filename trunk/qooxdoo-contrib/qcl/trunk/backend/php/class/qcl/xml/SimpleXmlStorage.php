@@ -135,21 +135,24 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
   var $_cacheObj;
 
   /**
+   * Flag to prevent caching
+   */
+  var $doNotCache = false;
+
+  /**
    * Constructor
-   * @param qcl_mvc_Controller $controller instance
    * @param qcl_io_filesystem_IFile|string $fileOrString Xml string, file name or object implementing
    * qcl_io_filesystem_IFile
    * @param string $cacheId Id with which to cache xml data, if it is a string (file cache ids are overwritten
    * internally).
    * @param array $indexedAttributes (PHP4 only) Array of atrributes which will be indexed for fast access
    **/
-  function __construct( $controller, $fileOrString=null, $cacheId=null, $indexedAttributes=array() )
+  function __construct( $fileOrString=null, $cacheId=null, $indexedAttributes=array() )
   {
     /*
      * parent constructor
      */
-    parent::__construct( &$controller );
-
+    parent::__construct();
 
     /*
      * Do we have an xml string?
@@ -174,7 +177,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
        */
       else
       {
-        $fileOrString =& qcl_io_filesystem_Resource::createInstance( &$controller, "file://" . $fileOrString );
+        $fileOrString =& qcl_io_filesystem_Resource::createInstance( "file://" . $fileOrString );
       }
     }
 
@@ -240,7 +243,6 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
    */
   function createFile( $xml="" )
   {
-    $controller =& $this->getController();
 
     if ( ! is_object( $this->file ) )
     {
@@ -289,7 +291,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
    **/
   function &load()
   {
-    $controller =& $this->getController();
+
     $file       =& $this->file;
     $cacheId     = $this->cacheId;
 
@@ -319,81 +321,83 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
       /*
        * get cached document
        */
-      $cacheObj =& $this->getCacheObject( $cacheId );
-
-
-      if ( ! $cacheObj->isNew() )
+      if ( ! $this->doNotCache )
       {
+        $cacheObj =& $this->getCacheObject( $cacheId );
 
-        /*
-         * copy from persistent object
-         */
-        $doc = $cacheObj->doc;
 
-        /*
-         * check modification date
-         */
-        if ( $lastModified )
+        if ( ! $cacheObj->isNew() )
         {
-          $this->lastModified = $lastModified;
 
-          if ( $cacheObj->lastModified )
+          /*
+           * copy from persistent object
+           */
+          $doc = $cacheObj->doc;
+
+          /*
+           * check modification date
+           */
+          if ( $lastModified )
           {
-            $this->log( "Cache file exists with timestamp " . $cacheObj->lastModified, "xml" );
+            $this->lastModified = $lastModified;
 
-            if ( $this->lastModified == $cacheObj->lastModified )
+            if ( $cacheObj->lastModified )
             {
-              $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
+              $this->log( "Cache file exists with timestamp " . $cacheObj->lastModified, "xml" );
 
-              /*
-               * PHP 4: load serialized object
-               */
-              if ( phpversion() < 5 )
+              if ( $this->lastModified == $cacheObj->lastModified )
               {
+                $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
+
                 /*
-                 * check if document is valid
+                 * PHP 4: load serialized object
                  */
-                if ( ! is_object( $doc ) )
+                if ( phpversion() < 5 )
                 {
-                  $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
-                  $doc = null;
+                  /*
+                   * check if document is valid
+                   */
+                  if ( ! is_object( $doc ) )
+                  {
+                    $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
+                    $doc = null;
+                  }
+                }
+
+                /*
+                 * PHP5: load
+                 */
+                else
+                {
+                  if ( strlen($doc) )
+                  {
+                    $doc = simplexml_load_string( $doc );
+                  }
+                }
+
+                /*
+                 * return object if valid
+                 */
+                if ( is_object( $doc ) )
+                {
+                  $this->hasChanged = false;
+                  $this->doc =& $doc;
+                  return $doc;
                 }
               }
-
-              /*
-               * PHP5: load
-               */
               else
               {
-                if ( strlen($doc) )
-                {
-                  $doc = simplexml_load_string( $doc );
-                }
-              }
-
-              /*
-               * return object if valid
-               */
-              if ( is_object( $doc ) )
-              {
-                $this->hasChanged = false;
-                $this->doc =& $doc;
-                return $doc;
+                $this->log("Timestamp doesn't match: Document: {$lastModified}, Cache: {$cacheObj->lastModified}.", "xml" );
               }
             }
             else
             {
-              $this->log("Timestamp doesn't match: Document: {$lastModified}, Cache: {$cacheObj->lastModified}.", "xml" );
+              $this->log( "Cache doesn't have a timestamp.", "xml" );
             }
-          }
-          else
-          {
-            $this->log( "Cache doesn't have a timestamp.", "xml" );
           }
         }
       }
     }
-
     $this->log("No cache available. Parsing document...","xml");
 
     /*
@@ -469,7 +473,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     /*
      * cache document object
      */
-    if ( $cacheId )
+    if ( $cacheId and ! $this->doNotCache )
     {
       $this->save();
     }
@@ -505,8 +509,7 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
 
     if ( ! $this->_cacheObj )
     {
-      $controller =& $this->getController();
-      $this->_cacheObj =& new qcl_xml_simpleXmlCache( &$controller, $cacheId, $this->userId, $this->sessionId );
+      $this->_cacheObj =& new qcl_xml_simpleXmlCache( null, $cacheId, $this->userId, $this->sessionId );
     }
     return $this->_cacheObj;
   }
@@ -1344,7 +1347,5 @@ class qcl_xml_simpleXmlStorage extends qcl_mvc_AbstractModel
     }
     return $this->doc->asXML();
   }
-
-
 }
 ?>

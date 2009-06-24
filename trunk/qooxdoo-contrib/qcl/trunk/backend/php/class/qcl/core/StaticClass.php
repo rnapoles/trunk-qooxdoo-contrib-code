@@ -4,7 +4,7 @@ require "qcl/core/Object.php";
 
 class qcl_core_StaticClass extends qcl_core_Object
 {
-    
+
   /**
    * If the static class is used as a singleton,
    * it needs to implement its own getInstance()
@@ -18,6 +18,5 @@ class qcl_core_StaticClass extends qcl_core_Object
     }
     return parent::getInstance($class);
   }
-  
 }
 ?>

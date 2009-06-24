@@ -92,7 +92,13 @@ class qcl_db_model_xml_XmlSchemaModel
   var $importDataPath;
 
   /**
-   * initializes the model
+   * Flag to prevent caching
+   */
+  var $doNotCache = false;
+
+
+  /**
+   * Initializes the model.
    * @param mixed $datasourceModel Object reference to
    * the datasource object, or null if model is independent of a datasource
    * @return void
@@ -109,7 +115,6 @@ class qcl_db_model_xml_XmlSchemaModel
     /*
      * parent method establishes database connection
      */
-    $controller =& $this->getController();
     parent::initialize( &$datasourceModel );
 
 
@@ -581,71 +586,6 @@ class qcl_db_model_xml_XmlSchemaModel
   }
 
   /**
-   * Switches the current database access to administrative rights
-   * Works only for the user database and admin database specified
-   * in the service.ini.php file
-   * @todo catch errors
-   * @return void
-   */
-  function dbAdminAccess()
-  {
-
-    // FIXME disabled
-
-    return;
-
-    if ( $this->_isAdminAccess )
-    {
-      return true;
-    }
-
-    $controller =& $this->getController();
-    $db         =& $this->db();
-
-    $database   = $db->getDatabase();
-    $user       = $db->getUser();
-
-    /*
-     * admin access exists
-     */
-    if ( $user == $controller->getIniValue("database.adminname") )
-    {
-      $this->_isAdminAccess = true;
-      return true;
-    }
-
-    /*
-     * get admin access for user db
-     */
-    if ( $database == $controller->getIniValue("database.userdb") )
-    {
-      //$this->debug("Getting admin access to user database");
-      $this->connect( $controller->getIniValue("database.admin_userdb") );
-    }
-
-    /*
-     * get admin access for admin db
-     */
-    else if ( $database == $controller->getIniValue("database.admindb") )
-    {
-      //$this->debug("Getting admin access to admin database");
-      $this->connect( $controller->getIniValue("database.admin_userdb") );
-    }
-    else
-    {
-      $this->raiseError("Cannot get admin access for table " . $this->table() . ", DSN:" . $db->getDsn() );
-    }
-
-    /*
-     * success
-     */
-
-     $this->_isAdminAccess = true;
-     return true;
-  }
-
-
-  /**
    * Parse xml schema file and, if it has changed, create or update
    * all needed tables and columns. schema document will be available
    * as $this->schemaXml afterwards
@@ -656,8 +596,6 @@ class qcl_db_model_xml_XmlSchemaModel
   {
 
     //$this->debug("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
-
-    $controller =& $this->getController();
 
     /*
      * the schema xml object and document
@@ -743,7 +681,7 @@ class qcl_db_model_xml_XmlSchemaModel
     $this->table = $prefix . (string) $modelAttrs['table'];
 
     /*
-     * Wheter the table for this model exists already
+     * Whether the table for this model exists already
      */
     $tableExists  = $db->tableExists( $this->table );
     //$this->debug("Table {$this->table} (" . $this->className(). ")" . ($tableExists ? " exists." : " does not exist." ) );
@@ -773,13 +711,7 @@ class qcl_db_model_xml_XmlSchemaModel
       if ( ! $this->modelTableInfo )
       {
         require_once "qcl/db/model/xml/XmlSchemaModelTableInfo.php";
-        global $qclDbModelTableInfo;
-        if ( ! $qclDbModelTableInfo )
-        {
-          // pass by reference doesn't work, so two objects will always exist
-          $qclDbModelTableInfo = new qcl_db_model_xml_XmlSchemaModelTableInfo( $this );
-        }
-        $this->modelTableInfo =& $qclDbModelTableInfo;
+        $this->modelTableInfo =& qcl_db_model_xml_XmlSchemaModelTableInfo::getInstance();
       }
       $datasourceModel =& $this->getDatasourceModel();
       $isInitialized   = $this->modelTableInfo->isInitialized(
@@ -810,8 +742,8 @@ class qcl_db_model_xml_XmlSchemaModel
 
     /*
      * Get admin access
+     * FIXME
      */
-    $this->dbAdminAccess();
     $db =& $this->db();
 
     /*
@@ -1391,7 +1323,7 @@ class qcl_db_model_xml_XmlSchemaModel
      * Import initial data if necessary
      */
     $path = $this->getDataPath();
-    if ( ! $tableExists and file_exists($path) )
+    if ( ! $tableExists and real_file_path($path) )
     {
       $this->log("Importing data ...","propertyModel");
       $this->import($path);
@@ -1401,7 +1333,7 @@ class qcl_db_model_xml_XmlSchemaModel
     }
     else
     {
-      $this->log("No data to import.","propertyModel");
+      $this->info("No data to import.","propertyModel");
     }
 
     /*
@@ -1686,8 +1618,8 @@ class qcl_db_model_xml_XmlSchemaModel
   {
     /*
      * admin access
+     * FIXME
      */
-    $this->dbAdminAccess();
 
     /*
      * database connection
@@ -1897,8 +1829,8 @@ class qcl_db_model_xml_XmlSchemaModel
   {
     /*
      * admin access
+     * FIXME
      */
-    $this->dbAdminAccess();
 
     /*
      * database connection
@@ -2099,8 +2031,7 @@ class qcl_db_model_xml_XmlSchemaModel
       /*
        * create new xml file
        */
-      $controller =& $this->getController();
-      $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller );
+      $dataXml =& new qcl_xml_simpleXmlStorage();
       $dataXml->createIfNotExists($path);
       $dataXml->load($path);
 
@@ -2704,8 +2635,8 @@ class qcl_db_model_xml_XmlSchemaModel
      * load model schema xml file
      */
     $this->log("Parsing model schema file '$file'...","propertyModel");
-    $controller =& $this->getController();
-    $modelXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $modelXml =& new qcl_xml_SimpleXmlStorage( $file );
+    $modelXml->doNotCache = $this->doNotCache;
     $modelXml->load();
 
     /*
@@ -2763,8 +2694,7 @@ class qcl_db_model_xml_XmlSchemaModel
      * load model schema xml file
      */
     $this->log("Parsing model data file '$file'...","propertyModel");
-    $controller =& $this->getController();
-    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $dataXml =& new qcl_xml_SimpleXmlStorage( $file );
     $dataXml->load();
 
     /*
@@ -2808,7 +2738,6 @@ class qcl_db_model_xml_XmlSchemaModel
    */
   function &export($path=null)
   {
-    $controller =& $this->getController();
 
     /*
      * schema document
@@ -2830,7 +2759,7 @@ class qcl_db_model_xml_XmlSchemaModel
     /*
      * create new xml file
      */
-    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $path );
+    $dataXml =& new qcl_xml_SimpleXmlStorage( $path );
     $dataXml->createFile();
 
     /*
@@ -2962,7 +2891,7 @@ class qcl_db_model_xml_XmlSchemaModel
     /*
      * check file
      */
-    if ( !is_valid_file($path) )
+    if ( ! is_valid_file($path) )
     {
       $this->raiseError("qcl_db_model_xml_XmlSchemaModel::import: '$path' is not a valid file.");
     }
@@ -3024,8 +2953,7 @@ class qcl_db_model_xml_XmlSchemaModel
       $data = array();
       foreach( $properties as $propName => $propData )
       {
-        $colName = $this->getColumnName($propName);
-        $data[$colName] = xml_entity_decode($propData);
+        $data[$propName] = xml_entity_decode($propData);
       }
 
       /*

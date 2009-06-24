@@ -4,6 +4,10 @@
  */
 require_once "qcl/persistence/db/Object.php";
 
+/*
+ * Persistent object that registers information on the state
+ * of the database tables.
+ */
 class qcl_db_model_xml_XmlSchemaModelTableInfo
   extends qcl_persistence_db_Object
 {
@@ -14,19 +18,31 @@ class qcl_db_model_xml_XmlSchemaModelTableInfo
   var $data;
 
   /**
+   * Returns singleton instance of this class
+   * @return qcl_db_model_xml_XmlSchemaModelTableInfo
+   * @see class/qcl/core/qcl_core_Object#getInstance($class)
+   */
+  function &getInstance()
+  {
+    return parent::getInstance(__CLASS__);
+  }
+
+  /**
    * Constructor. Reconstructs object properties
    * @param qcl_mvc_Controller $controller
    */
-  function __construct( $controller )
+  function __construct( $controller=null )
   {
     /*
      * call parent contructor
      */
     parent::__construct( &$controller, __CLASS__ );
+    $this->debug("you should see this only once! ",__CLASS__,__LINE__);
   }
 
   /**
-   * Register initialization timestamp for table and datasource
+   * Register initialization timestamp for table and datasource.
+   * Can be called statically.
    *
    * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
@@ -36,37 +52,40 @@ class qcl_db_model_xml_XmlSchemaModelTableInfo
    */
   function registerInitialized( $datasourceModel, $table, $class, $timestamp )
   {
-    $datasource = $this->_getDatasourceName( $datasourceModel );
-    $this->data[$datasource][$class][$table] = $timestamp;
-    $this->save();
+    $_this =& qcl_db_model_xml_XmlSchemaModelTableInfo::getInstance();
+    $datasource = $_this->_getDatasourceName( $datasourceModel );
+    $_this->data[$datasource][$table][$class] = $timestamp;
+    $_this->save();
     if ( $datasourceModel )
     {
-      $this->info("Registered table '$table' for class '$class' and datasource '$datasource' as initialized (timestamp $timestamp).");
+      $_this->info("Registered table '$table' for class '$class' and datasource '$datasource' as initialized (timestamp $timestamp).");
     }
     else
     {
-       $this->info("Registered table '$table' class '$class' as initialized (timestamp $timestamp).");
+       $_this->info("Registered table '$table' class '$class' as initialized (timestamp $timestamp).");
     }
   }
 
   /**
-   * Checks if initialization of table and datasource
+   * Checks if initialization of table and datasource. Can be called statically.
    *
    * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
    * @param string $class
-   * @param string $timestamp
+   * @param string $timestamp Optional timpstamp value to check
    * @return bool
    */
-  function isInitialized( $datasourceModel, $table, $class, $timestamp )
+  function isInitialized( $datasourceModel, $table, $class=null, $timestamp=null )
   {
-
-    $datasource = $this->_getDatasourceName( $datasourceModel );
-    return $this->data[$datasource][$class][$table] == $timestamp;
+    $_this =& qcl_db_model_xml_XmlSchemaModelTableInfo::getInstance();
+    $datasource = $_this->_getDatasourceName( $datasourceModel );
+    return $timestamp and $class ?
+      ( $_this->data[$datasource][$table][$class] == $timestamp) :
+      isset( $_this->data[$datasource][$table] );
   }
 
   /**
-   * Returns the string name of the datasource model object
+   * Returns the string name of the datasource model object.
    * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @return string
    */
