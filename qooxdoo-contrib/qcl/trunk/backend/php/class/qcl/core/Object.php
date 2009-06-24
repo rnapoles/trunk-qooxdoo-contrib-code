@@ -523,7 +523,14 @@ class qcl_core_Object extends qcl_core_BaseClass
   {
      if ( ! $GLOBALS[$class] )
      {
-       $GLOBALS[$class] =& new $class;
+       if (phpversion()<5)
+       {
+         $GLOBALS[$class] =& new $class;
+       }
+       else
+       {
+         $GLOBALS[$class] = new $class;
+       }
      }
      return $GLOBALS[$class];
   }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema
-  include="qcl/db/model/xml/XmlSchemaModel.xml">
+  include="qcl/db/model/xmlSchema/Model.xml">
   
   <model 
     name="qcl.config.Db"
-    extends="qcl.db.model.xml.XmlSchemaModel"
+    extends="qcl.db.model.xmlSchema.Model"
     table="config">
  
     <!-- model definition -->

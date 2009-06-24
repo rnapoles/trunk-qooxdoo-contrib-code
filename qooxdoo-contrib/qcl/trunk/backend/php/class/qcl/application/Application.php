@@ -101,7 +101,7 @@ class qcl_application_Application
   {
 
     /*
-     * Initialize a dummy qcl_db_model_xml_XmlSchemaModel object to create tables
+     * Initialize a dummy qcl_db_model_xmlSchema_Model object to create tables
      * FIXME this can be removed once qcl_db_SimpleModel does
      * automatic table creation.
      */

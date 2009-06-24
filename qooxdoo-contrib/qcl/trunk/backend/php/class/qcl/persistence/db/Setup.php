@@ -55,8 +55,5 @@ class qcl_persistence_db_Setup
       qcl_registry_Request::set("qcl_persistence_db_Setup",true);
     }
   }
-
-
 }
-
 ?>

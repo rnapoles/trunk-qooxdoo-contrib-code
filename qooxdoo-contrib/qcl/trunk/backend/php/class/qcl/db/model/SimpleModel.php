@@ -6,14 +6,14 @@ require_once "qcl/db/model/AbstractModel.php";
 require_once "qcl/db/IModel.php";
 
 /**
- * Simpler ORM Mmechanism than the qcl_db_model_xml_XmlSchemaModel way that uses xml
+ * Simpler ORM Mmechanism than the qcl_db_model_xmlSchema_Model way that uses xml
  * documents for a schema. In this model type, declare public properties
  * with QCL_DB_PROPERTY_* constants. However, there is be no automatic
  * setup and maintenance of tables (at least for now). This system is
  * probably a bit faster than the other.
  * @todo change inheritance order: this class should have all methods from
- * qcl_db_model_xml_XmlSchemaModel that do not rely on the xml schema system,
- * and qcl_db_model_xml_XmlSchemaModel should inherit from it.
+ * qcl_db_model_xmlSchema_Model that do not rely on the xml schema system,
+ * and qcl_db_model_xmlSchema_Model should inherit from it.
  * Caution: you cannot access the object properties directly, but need to
  * use getter and setter methods (for now).
  *
