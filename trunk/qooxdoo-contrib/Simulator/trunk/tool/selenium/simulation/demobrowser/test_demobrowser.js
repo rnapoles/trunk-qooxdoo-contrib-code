@@ -9,7 +9,7 @@ var baseConf = {
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/application/demobrowser/build/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
-  'logAll' : true
+  'logAll' : false
 };
 
 var args = arguments ? arguments : "";
