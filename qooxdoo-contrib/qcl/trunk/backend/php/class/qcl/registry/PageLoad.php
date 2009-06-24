@@ -1,38 +1,67 @@
 <?php
 require_once "qcl/registry/Session.php";
 
+define("QCL_REGISTRY_PAGELOAD_KEY","qcl_registry_pageload_key" );
+
 /**
  * Class which maintains a registry which is valid during one page load
  */
-class qcl_registry_PageLoad extends qcl_registry_Session
+class qcl_registry_PageLoad
 {
   /**
-   * key of variable container in $_SESSION
+   * Returns a singleton instance of this class
+   * @return qcl_registry_PageLoad
    */
-  var $_session_key = "qcl_page_load_registry";
-  
-  /**
-   * Returns class singleton instance
-   * @access static
-   * @return qcl_registry_PageLoad singleton instance
-   */
-  function &getInstance( $class=__CLASS__ )
+  function &getInstance( )
   {
-    return parent::getInstance( $class );
-  }  
-  
+    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    {
+      $GLOBALS[__CLASS__] =& new qcl_registry_PageLoad;
+    }
+    return $GLOBALS[__CLASS__];
+  }
+
   /**
-   * resets the page load registry. this needs to be
+   * Resets the page load registry. this needs to be
    * called in a service that is executed once during
-   * each page load. 
+   * each page load.
    */
   function reset()
   {
-    parent::reset();
+    $_SESSION[QCL_REGISTRY_SESSION_KEY][QCL_REGISTRY_PAGELOAD_KEY] = array();
   }
-      
+
+  /**
+   * Sets the registry value. Can be called statically
+   *
+   * @param string $key
+   * @param mixed $value
+   */
+  function set( $key, $value )
+  {
+    $_SESSION[QCL_REGISTRY_SESSION_KEY][QCL_REGISTRY_PAGELOAD_KEY][$key] = $value;
+  }
+
+  /**
+   * Gets the registry value. Can be called statically
+   *
+   * @param string $key
+   * @return mixed
+   */
+  function get( $key )
+  {
+    return $_SESSION[QCL_REGISTRY_SESSION_KEY][QCL_REGISTRY_PAGELOAD_KEY][$key];
+  }
+
+  /**
+   * Check if registry value is set. Can be called statically
+   *
+   * @param string $key
+   * @return mixed
+   */
+  function has( $key )
+  {
+    return isset( $_SESSION[QCL_REGISTRY_SESSION_KEY][QCL_REGISTRY_PAGELOAD_KEY][$key] );
+  }
 }
-
-
-
 ?>
