@@ -189,14 +189,13 @@ public class MemoryNode extends Node {
 
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
-        if (append) {
-            throw unsupported("createOutputStream(true)");
-        }
+        ByteArrayOutputStream out;
+        
         if (type == Type.DIRECTORY) {
             throw new IOException("cannot write file over directory: " + path);
         }
         getParent().checkDirectory();
-        return new ByteArrayOutputStream() {
+        out = new ByteArrayOutputStream() {
             @Override
             public void close() throws IOException {
                 type = Type.FILE;
@@ -205,6 +204,10 @@ public class MemoryNode extends Node {
                 lastModified = System.currentTimeMillis();
             }
         };
+        if (append && isFile()) {
+            out.write(readBytes());
+        }
+        return out;
     }
 
     @Override
