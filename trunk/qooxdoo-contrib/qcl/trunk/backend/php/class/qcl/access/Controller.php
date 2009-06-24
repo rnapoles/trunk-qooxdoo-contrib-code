@@ -5,7 +5,7 @@
  */
 require_once "qcl/access/__index__.php";
 require_once "qcl/mvc/controller.php";
-require_once "qcl/config/db.php";
+require_once "qcl/config/Manager.php";
 require_once "qcl/registry/Session.php";
 
 /*
@@ -31,7 +31,7 @@ class qcl_access_Controller
    * The currently active user, determined from request or
    * from session variable. Is a user model instance
    * @access private
-   * @var qcl_access_user
+   * @var qcl_access_model_User
    */
   var $_activeUser = null;
 
@@ -68,7 +68,7 @@ class qcl_access_Controller
   /**
    * Gets the role data model
    * @param int[optional] $id Load record if given
-   * @return qcl_access_role
+   * @return qcl_access_model_Role
    */
   function &getRoleModel( $id=null )
   {
@@ -79,11 +79,11 @@ class qcl_access_Controller
 
   /**
    * Gets the role data model
-   * @return qcl_access_role
+   * @return qcl_access_model_Role
    */
   function &getConfigModel()
   {
-    return qcl_config_Db::getInstance();
+    return qcl_config_Manager::getModel();
   }
 
 
@@ -275,7 +275,6 @@ class qcl_access_Controller
      * send command to client to force a logout
      */
     $this->dispatchMessage("qcl.commands.logout");
-
     $this->logout();
   }
 
@@ -520,10 +519,11 @@ class qcl_access_Controller
     $this->set( "sessionId",$sessionId);
 
     /*
-     * message to indicate login success
+     * user data
      */
-    $this->set( "username", $username );
-   // $this->set( "fullname", $activUser-> );
+    $this->set( "userId", $activeUser->getId() );
+    $this->set( "username", "anonymous" );
+    $this->set( "fullname", $activeUser->get("name") );
 
     /*
      * log message
@@ -685,7 +685,7 @@ class qcl_access_Controller
 
   /**
    * Returns active user object
-   * @return qcl_access_user
+   * @return qcl_access_model_User
    */
   function &getActiveUser()
   {
@@ -695,7 +695,7 @@ class qcl_access_Controller
   /**
    * Sets the active user. This will copy the user id into the
    * session variable, in case the client doesn't provide a session id.
-   * @param qcl_access_user $userObject A user object or null to logout.
+   * @param qcl_access_model_User $userObject A user object or null to logout.
    * @return void
    */
   function setActiveUser( $userObject )

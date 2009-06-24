@@ -98,7 +98,8 @@ class qcl_session_Controller extends qcl_access_Controller
        */
       else
       {
-        $this->raiseError("No valid user id from session.");
+        $this->forceLogout();
+        $this->setError("No valid user id from session.");
         return false;
       }
     }
@@ -277,7 +278,7 @@ class qcl_session_Controller extends qcl_access_Controller
     $sessionId = $this->getSessionId();
     $username  = $activeUser->username();
 
-    $this->info("Session #$sessionId ($username) wird beendet.");
+    $this->info("Session #$sessionId ($username) will be terminated.");
     $sessionModel->unregisterSession( $sessionId );
 
     return $this->response();

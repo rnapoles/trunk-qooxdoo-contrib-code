@@ -159,51 +159,6 @@ class qcl_core_Object extends qcl_core_BaseClass
     }
 
     /*
-     * PHP4/PHP5: check if interfaces are implemented. This
-     * will be removed and real interfaces be used when qcl moves
-     * to PHP5-only
-     */
-    foreach ( $this->implements as $interface )
-    {
-      /*
-       * do not check again
-       */
-      if ( $this->getRegistryVar( "qcl.interfaces.checked.{$this->_class}.$interface" ) )
-      {
-        continue;
-      }
-
-      //$this->info("Checking interface implementation for '$interface'");
-
-      /*
-       * check interface methods
-       */
-      $methods = (array) get_class_methods( $interface ) ;
-      foreach( $methods as $method )
-      {
-        if ( ! method_exists( $this, $method ) )
-        {
-          $this->raiseError("Class {$this->_class} has no implementation of method '$method' as required by interface '$interface'");
-        }
-      }
-      /*
-       * check interface properties
-       */
-      foreach( (array)  get_class_vars( $interface ) as $var )
-      {
-        if ( !  isset( $this, $var ) )
-        {
-          $this->raiseError("Class {$this->_class} has no property '$var' as required by interface '$interface'");
-        }
-      }
-
-      /*
-       * set flag that this was checked
-       */
-      $this->setRegistryVar( "qcl.interfaces.checked.{$this->_class}.$interface", true );
-    }
-
-    /*
      * setup the logger for this object, except for a
      * logger object itself
      */

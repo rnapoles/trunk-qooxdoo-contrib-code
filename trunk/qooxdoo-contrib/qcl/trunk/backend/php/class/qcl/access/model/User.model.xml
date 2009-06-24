@@ -5,7 +5,7 @@
 
   <model 
     table="users"
-    type="qcl.types.User"
+    type="qcl.type.User"
     name="qcl.access.model.User"
     extends="qcl.db.model.xmlSchema.Model"> 
      

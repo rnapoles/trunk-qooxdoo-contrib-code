@@ -3,7 +3,7 @@
   
   <model 
     table="permissions"
-    type="qcl.types.Permission"
+    type="qcl.type.Permission"
     name="qcl.access.model.Permission"
     extends="qcl.db.model.xmlSchema.Model">
     

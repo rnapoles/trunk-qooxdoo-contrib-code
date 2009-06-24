@@ -4,6 +4,7 @@
  */
 require_once "qcl/mvc/AbstractModel.php";
 require_once "qcl/persistence/__init__.php";
+require_once "qcl/log/FireCake.php";
 
 /*
  * constants
@@ -133,7 +134,7 @@ class qcl_persistence_AbstractObject
    * @param string $sessionId If given, create/retrieve a persistent object that belongs
    * to the session. It will be deleted when the session expires or is deleted.
    */
-  function __construct( $controller, $id=null, $userId=null, $sessionId=null )
+  function __construct( $controller=null, $id=null, $userId=null, $sessionId=null )
   {
     /*
      * call parent contructor
@@ -514,7 +515,5 @@ class qcl_persistence_AbstractObject
       }
     }
   }
-
-
 }
 ?>

@@ -16,15 +16,14 @@ define ("QCL_DB_ADMIN_ACCESS", true);
  */
 class qcl_db_Manager extends qcl_core_StaticClass
 {
-
-
   /**
    * Returns singleton instance of the class. Must be called
-   * statically
+   * statically.
+   * @return qcl_db_Manager
    */
   function &getInstance()
   {
-    return parent::getSingleton(__CLASS__);
+    return parent::getInstance(__CLASS__);
   }
 
   /**

@@ -77,26 +77,6 @@ class qcl_server_JsonRpc extends JsonRpcServer
   {
 
     /*
-     * call backend debug console
-     * @todo secure this
-     */
-    if ( isset( $_GET['test'] ) )
-    {
-      require "qcl/server/debug_console.php";
-      exit;
-    }
-
-    /*
-     * output phpinfo
-     * @todo allow this only from localhost!
-     */
-    if ( isset( $_GET['phpinfo'] ) )
-    {
-      phpinfo();
-      exit;
-    }
-
-    /*
      * Initialize the server, including error
      * catching etc.
      */

@@ -1332,10 +1332,7 @@ class qcl_db_model_xmlSchema_Model
     $path = $this->getDataPath();
     if ( ! $tableExists and real_file_path($path) )
     {
-      $this->log("Importing data ...","propertyModel");
       $this->import($path);
-
-      $this->log("Importing link data ...","propertyModel");
       $this->importLinkData();
     }
     else
@@ -2227,13 +2224,8 @@ class qcl_db_model_xmlSchema_Model
    * @see qcl_db_model_xmlSchema_Model::exportLinkData()
    * @param string $path
    */
-  function importLinkData($path=null)
+  function importLinkData( $path=null )
   {
-    /*
-     * controller
-     */
-    $controller =& $this->getController();
-
     /*
      * links in model schema
      */
@@ -2261,14 +2253,18 @@ class qcl_db_model_xmlSchema_Model
       /*
        * get file path
        */
-      $path = dirname(either($path,$this->getDataPath() ) ) . "/$table.data.xml";
+      $path = real_file_path ( either(
+          $path,
+          dirname( $this->getDataPath() ) . "/$table.data.xml"
+      ) );
+
       if ( ! file_exists($path) )
       {
-        $this->log("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
+        $this->info("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
         continue;
       }
 
-      $this->log("Importing link data for link '$linkName' of model '{$this->name}'...","propertyModel");
+      $this->info("Importing link data for link '$linkName' of model '{$this->name}'...","propertyModel");
 
       /*
        * parse xml file
@@ -2311,7 +2307,8 @@ class qcl_db_model_xmlSchema_Model
           /*
            * @todo check if model name fits with schema xml
            */
-          $targetModel =& $controller->getNew( $tModel );
+          $clazz = str_replace(".","_",$tModel);
+          $targetModel =& new $clazz();
         }
         else
         {
@@ -2898,7 +2895,7 @@ class qcl_db_model_xmlSchema_Model
     /*
      * check file
      */
-    if ( ! is_valid_file($path) )
+    if ( ! is_valid_file( $path ) )
     {
       $this->raiseError("qcl_db_model_xmlSchema_Model::import: '$path' is not a valid file.");
     }
@@ -2909,7 +2906,7 @@ class qcl_db_model_xmlSchema_Model
     $schemaXml    =& $this->getSchemaXml();
     $schemaXmlDoc =& $this->schemaXml->getDocument();
 
-    $this->log("Importing data from '$path' into {$this->name}...", "propertyModel" );
+    $this->info("Importing data from '$path' into {$this->name}...", "propertyModel" );
 
     /*
      * open xml data file and get record node

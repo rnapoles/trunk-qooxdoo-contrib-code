@@ -5,7 +5,7 @@
   
   <model 
     table="roles"
-    type="qcl.types.Role"
+    type="qcl.type.Role"
     name="qcl.access.model.Role"
     extends="qcl.db.model.xmlSchema.Model">
      

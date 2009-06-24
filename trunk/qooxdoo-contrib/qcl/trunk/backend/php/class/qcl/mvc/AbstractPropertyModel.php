@@ -1192,7 +1192,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
   }
 
   /**
-   * updates a record in a table identified by id
+   * Updates a record in a table identified by id
    * @param array       $data   associative array with the column names as keys and the column data as values
    * @param int|string  $id   if the id key is not provided in the $data paramenter, provide it here (optional)
    * @param bool        $keepTimestamp If true, do not overwrite the 'modified' timestamp
