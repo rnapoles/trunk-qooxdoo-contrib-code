@@ -8,7 +8,7 @@ require_once "qcl/persistence/db/Object.php";
  * Persistent object that registers information on the state
  * of the database tables.
  */
-class qcl_db_model_xml_XmlSchemaModelTableInfo
+class qcl_db_model_xmlSchema_Registry
   extends qcl_persistence_db_Object
 {
   /*
@@ -19,7 +19,7 @@ class qcl_db_model_xml_XmlSchemaModelTableInfo
 
   /**
    * Returns singleton instance of this class
-   * @return qcl_db_model_xml_XmlSchemaModelTableInfo
+   * @return qcl_db_model_xmlSchema_Registry
    * @see class/qcl/core/qcl_core_Object#getInstance($class)
    */
   function &getInstance()
@@ -52,7 +52,7 @@ class qcl_db_model_xml_XmlSchemaModelTableInfo
    */
   function registerInitialized( $datasourceModel, $table, $class, $timestamp )
   {
-    $_this =& qcl_db_model_xml_XmlSchemaModelTableInfo::getInstance();
+    $_this =& qcl_db_model_xmlSchema_Registry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
     $_this->data[$datasource][$table][$class] = $timestamp;
     $_this->save();
@@ -77,7 +77,7 @@ class qcl_db_model_xml_XmlSchemaModelTableInfo
    */
   function isInitialized( $datasourceModel, $table, $class=null, $timestamp=null )
   {
-    $_this =& qcl_db_model_xml_XmlSchemaModelTableInfo::getInstance();
+    $_this =& qcl_db_model_xmlSchema_Registry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
     return $timestamp and $class ?
       ( $_this->data[$datasource][$table][$class] == $timestamp) :

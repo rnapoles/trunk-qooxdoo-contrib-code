@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema
-  include="qcl/db/model/xml/XmlSchemaModel.xml">
+  include="qcl/db/model/xmlSchema/Model.xml">
    
   <!-- 
     A model representing schemas    
@@ -8,7 +8,7 @@
   <model 
     table="schemas"
     name="qcl.datasource.SchemaModel"
-    extends="qcl.db.model.xml.XmlSchemaModel">
+    extends="qcl.db.model.xmlSchema.Model">
     <definition>
       <properties>
          <property name="name" type="string" unique="true"> 

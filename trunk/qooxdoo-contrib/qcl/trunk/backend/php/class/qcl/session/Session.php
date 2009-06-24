@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model/xml/XmlSchemaModel.php";
+require_once "qcl/db/model/xmlSchema/Model.php";
 
 /**
  * Model for session data bases on a mysql database model.
@@ -10,12 +10,12 @@ require_once "qcl/db/model/xml/XmlSchemaModel.php";
  * browser instance.
  */
 class qcl_session_Session
-  extends qcl_db_model_xml_XmlSchemaModel
+  extends qcl_db_model_xmlSchema_Model
 {
 
   /**
    * the path to the model schema xml file
-   * @see qcl_db_model_xml_XmlSchemaModel::getSchmemaXmlPath()
+   * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = "qcl/session/Session.model.xml";

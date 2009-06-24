@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model/xml/XmlSchemaModel.php";
+require_once "qcl/db/model/xmlSchema/Model.php";
 
 /**
  * Class modeling datasource information that is stored in a
@@ -15,7 +15,7 @@ require_once "qcl/db/model/xml/XmlSchemaModel.php";
  *
  * @todo rename to qcl_datasource_storage_Db
  */
-class qcl_datasource_type_db_Model extends qcl_db_model_xml_XmlSchemaModel
+class qcl_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
 {
 
   /**

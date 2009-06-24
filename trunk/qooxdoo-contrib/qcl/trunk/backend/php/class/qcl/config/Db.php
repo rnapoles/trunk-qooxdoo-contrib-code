@@ -3,7 +3,7 @@
  * dependencies
  */
 require_once "qcl/access/Manager.php";
-require_once "qcl/db/model/xml/XmlSchemaModel.php";
+require_once "qcl/db/model/xmlSchema/Model.php";
 
 /**
  * Configuration management class, using a database backend
@@ -11,7 +11,7 @@ require_once "qcl/db/model/xml/XmlSchemaModel.php";
  */
 
 class qcl_config_Db
-  extends qcl_db_model_xml_XmlSchemaModel
+  extends qcl_db_model_xmlSchema_Model
 {
 
   /**

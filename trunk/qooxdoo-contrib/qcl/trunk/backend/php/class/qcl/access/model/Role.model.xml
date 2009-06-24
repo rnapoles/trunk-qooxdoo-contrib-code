@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <schema
-  include="qcl/db/model/xml/XmlSchemaModel.xml">
+  include="qcl/db/model/xmlSchema/Model.xml">
   
   <model 
     table="roles"
     type="qcl.types.Role"
     name="qcl.access.model.Role"
-    extends="qcl.db.model.xml.XmlSchemaModel">
+    extends="qcl.db.model.xmlSchema.Model">
      
     <definition>
     

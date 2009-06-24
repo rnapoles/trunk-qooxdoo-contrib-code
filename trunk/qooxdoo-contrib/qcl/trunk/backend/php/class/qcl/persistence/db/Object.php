@@ -4,7 +4,7 @@
  */
 require_once "qcl/persistence/AbstractObject.php";
 require_once "qcl/persistence/db/Model.php";
-require_once "qcl/db/model/xml/XmlSchemaModel.php";
+require_once "qcl/db/model/xmlSchema/Model.php";
 
 /**
  * Class that is persisted in the database
@@ -108,9 +108,9 @@ class qcl_persistence_db_Object
    */
   function cleanUp()
   {
-    require_once "qcl/db/model/xml/XmlSchemaModelTableInfo.php";
-    if ( qcl_db_model_xml_XmlSchemaModelTableInfo::isInitialized( null, "sessions" )
-         and qcl_db_model_xml_XmlSchemaModelTableInfo::isInitialized( null, "users" ) )
+    require_once "qcl/db/model/xmlSchema/Registry.php";
+    if ( qcl_db_model_xmlSchema_Registry::isInitialized( null, "sessions" )
+         and qcl_db_model_xmlSchema_Registry::isInitialized( null, "users" ) )
     {
       $this->_dbModel->deleteWhere("
         sessionId NOT IN ( SELECT sessionId FROM sessions ) OR

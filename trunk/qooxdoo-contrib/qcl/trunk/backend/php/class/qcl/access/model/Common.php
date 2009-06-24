@@ -3,12 +3,12 @@
 /*
  * Dependencies
  */
-require_once "qcl/db/model/xml/XmlSchemaModel.php";
+require_once "qcl/db/model/xmlSchema/Model.php";
 
 /**
  * Common base class for permission, role and user models
  */
-class qcl_access_model_Common extends qcl_db_model_xml_XmlSchemaModel
+class qcl_access_model_Common extends qcl_db_model_xmlSchema_Model
 {
 
   /**

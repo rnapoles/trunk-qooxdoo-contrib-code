@@ -509,7 +509,7 @@ class qcl_db_model_AbstractModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model_xml_XmlSchemaModel::findeWhere() for details
+   * @see qcl_db_model_xmlSchema_Model::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findById( $ids, $orderBy=null, $properties=null, $link=null )
@@ -532,7 +532,7 @@ class qcl_db_model_AbstractModel
 
   /**
    * Loads a model record identified by id.
-   * Alias of qcl_db_model_xml_XmlSchemaModel::findById().
+   * Alias of qcl_db_model_xmlSchema_Model::findById().
    *
    * @param int $id
    * @return arrray()
@@ -549,7 +549,7 @@ class qcl_db_model_AbstractModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model_xml_XmlSchemaModel::findeWhere() for details
+   * @see qcl_db_model_xmlSchema_Model::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )

@@ -75,7 +75,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
   /**
    * An associated array having the names of all properties (including linked tables) as
    * keys and the same names OR a local alias as value. To get a list of properties, use
-   * qcl_db_model_xml_XmlSchemaModel::getProperties();
+   * qcl_db_model_xmlSchema_Model::getProperties();
    * @access private
    * @var array
    */
@@ -543,7 +543,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
   /**
    * Gets the data as an associated array from the data provided
-   * @param array|stdClass|qcl_db_model_xml_XmlSchemaModel $data
+   * @param array|stdClass|qcl_db_model_xmlSchema_Model $data
    * @return array
    */
   function _getArrayData( $data )
@@ -884,9 +884,9 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
       }
       return true;
     }
-    elseif ( is_a( $first, "qcl_db_model_xml_XmlSchemaModel" ) )
+    elseif ( is_a( $first, "qcl_db_model_xmlSchema_Model" ) )
     {
-      $this->raiseError("Passing a qcl_db_model_xml_XmlSchemaModel as argument is deprecated for ::set(). Use copySharedProperties() instead.");
+      $this->raiseError("Passing a qcl_db_model_xmlSchema_Model as argument is deprecated for ::set(). Use copySharedProperties() instead.");
       return $this->set( $first->getRecord() );
     }
     elseif ( is_string( $first ) )
@@ -902,7 +902,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
   /**
    * Returns all property values that exists in both models.
-   * @param qcl_db_model_xml_XmlSchemaModel $model
+   * @param qcl_db_model_xmlSchema_Model $model
    * @return array
    */
   function getSharedPropertyValues ( $model )
@@ -922,7 +922,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
   /**
    * Copies all properties that exists in both models except the 'id' property.
-   * @param qcl_db_model_xml_XmlSchemaModel $model
+   * @param qcl_db_model_xmlSchema_Model $model
    * @return void
    */
   function copySharedProperties ( $model, $exclude=array() )
@@ -942,7 +942,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
   /**
    * Compares all properties that exists in both models.
-   * @param qcl_db_model_xml_XmlSchemaModel $that Other model
+   * @param qcl_db_model_xmlSchema_Model $that Other model
    * @param array[optional] $diff Array that needs to be passed by reference that will contain a list of parameters that differ
    * @return bool True if all property values are identical, false if not
    */
