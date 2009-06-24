@@ -497,7 +497,7 @@ simulation.Simulation.prototype.sanitize = function(text)
   text = text.replace(/Ö/g, '&Ouml;');
   text = text.replace(/Ü/g, '&Uuml;');
   text = text.replace(/ß/g, '&szlig;');
-  text = text.replace(/[^\w\d\-_:;\.,\!\?\(\)\[\]#$%&= \/\<\> ]?/gi, '');
+  text = text.replace(/[^\w\d\-_:;\.,\"\!\?\(\)\[\]#$%&= \/\<\> ]?/gi, '');
   return text;
 };
 
