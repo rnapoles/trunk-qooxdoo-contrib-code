@@ -172,7 +172,7 @@ class qcl_access_Services extends qcl_core_Mixin
     }
     elseif ( ! $data[$model->col_id] )
     {
-      $this->raiseError("qcl_access_controller::method_updateItem : no id given!");
+      $this->raiseError("qcl_access_Controller::method_updateItem : no id given!");
     }
     
     /*

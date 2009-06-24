@@ -5,7 +5,7 @@ require_once "qcl/persistence/db/Object.php";
 /**
  * Service class containing test methods
  */
-class class_qcl_access_Tests extends qcl_access_controller
+class class_qcl_access_Tests extends qcl_access_Controller
 {
   
   function method_dummy()

@@ -21,7 +21,8 @@ require_once "qcl/server/Server.php";
  * class internally.
  *
  */
-class qcl_application_Application extends qcl_core_StaticClass
+class qcl_application_Application
+  extends qcl_core_StaticClass
 {
   /**
    * The server instance
@@ -64,49 +65,6 @@ class qcl_application_Application extends qcl_core_StaticClass
     return $GLOBALS['QCL_APPLICATION_INSTANCE'];
   }
 
-
-  /**
-   * Start a server that handles the request type (JSONRPC, POST, ...).
-   * Can be called statically.
-   * @param array $servicePaths An array of paths to the services used
-   * by the server
-   * @return void
-   */
-  function startServer( $servicePaths )
-  {
-
-    /*
-     * if POST request, use post request server extension
-     */
-    if ( isset( $_REQUEST['service'] )  )
-    {
-      require_once "services/server/PostRpcServer.php";
-      $serverObj =& PostRpcServer::getInstance();
-    }
-
-    /*
-     * use qcl jsonrpc server extension
-     */
-    else
-    {
-      require "qcl/server/JsonRpc.php";
-      $serverObj =& qcl_server_JsonRpc::getInstance();
-    }
-
-    /*
-     * configure service paths
-     */
-    $serverObj->setServicePaths( $servicePaths );
-
-    /*
-     * save and start server
-     */
-    $server =& qcl_server_Server::getInstance();
-    $server->serverObject =& $serverObj;
-    $serverObj->start();
-  }
-
-
   /**
    * Return the current server instance. Can be called statically.
    * @return AbstractServer
@@ -126,6 +84,32 @@ class qcl_application_Application extends qcl_core_StaticClass
     $server =& qcl_server_Server::getInstance();
     return $server->getController();
   }
+
+
+  //-------------------------------------------------------------
+  // startup methods
+  //-------------------------------------------------------------
+
+  /**
+   * Start the application. You MUST override this method in your
+   * application class. In the overriding class, call getInstance()
+   * to instantiate the application object, and then call this
+   * method with 'parent::start()'.
+   * @return unknown_type
+   */
+  function start()
+  {
+
+    /*
+     * Initialize a dummy qcl_db_model_xml_XmlSchemaModel object to create tables
+     * FIXME this can be removed once qcl_db_SimpleModel does
+     * automatic table creation.
+     */
+     require_once "qcl/persistence/db/Setup.php";
+     qcl_persistence_db_Setup::setup();
+  }
+
+
 
   //-------------------------------------------------------------
   // ini values

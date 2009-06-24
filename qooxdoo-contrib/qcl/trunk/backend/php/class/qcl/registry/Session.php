@@ -1,7 +1,7 @@
 <?php
 
 
-define("QCL_REGISTRY_SESSION_KEY","qcl_session_registry" );
+define("QCL_REGISTRY_SESSION_KEY","qcl_registry_session_key" );
 
 /**
  * Class which maintains a registry which is valid during one
@@ -26,7 +26,8 @@ class qcl_registry_Session
 
   /**
    * resets the page load registry. this needs to be
-   * called, for example, when a user logs out
+   * called, for example, when a user logs out. Can
+   * be called statically.
    */
   function reset()
   {
@@ -34,7 +35,7 @@ class qcl_registry_Session
   }
 
   /**
-   * Sets the registry value
+   * Sets the registry value. Can be called statically
    *
    * @param string $key
    * @param mixed $value
@@ -45,7 +46,7 @@ class qcl_registry_Session
   }
 
   /**
-   * Gets the registry value
+   * Gets the registry value. Can be called statically
    *
    * @param string $key
    * @return mixed
@@ -57,7 +58,7 @@ class qcl_registry_Session
 
 
   /**
-   * Check if registry value is set
+   * Check if registry value is set. Can be called statically
    *
    * @param string $key
    * @return mixed

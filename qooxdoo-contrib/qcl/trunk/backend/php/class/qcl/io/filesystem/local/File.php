@@ -5,13 +5,13 @@ require_once "qcl/io/filesystem/IFile.php";
 /**
  * PHP4/PHP5 Interface for file-like resources
  */
-class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource 
+class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
 {
 
   /**
    * php 4 interface implementaion
    */
-  var $implements = array("qcl_io_filesystem_IFile");  
+  var $implements = array("qcl_io_filesystem_IFile");
 
   /**
    * A php file pointer
@@ -22,21 +22,20 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
 
   /**
    * Constructor
-   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
-  function __construct ( $controller, $resourcePath )
+  function __construct ( $resourcePath )
   {
     /*
-     * parent constructor takes care of controller and resource path
+     * parent constructor takes care of  resource path
      */
-    parent::__construct( &$controller, $resourcePath );
-    
+    parent::__construct( $resourcePath );
+
   }
-  
+
   /**
    * Create a file
-   * @param int $mode File permissions, defaults to 0666  
+   * @param int $mode File permissions, defaults to 0666
    * @return bool if file could be created
    */
   function create( $mode=0666 )
@@ -47,7 +46,7 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
     $filePath = $this->filePath();
     $dirname  = dirname( $filePath );
     $basename = basename( $filePath );
-    
+
     if ( ! file_exists( $filePath ) )
     {
       if ( is_writable( dirname( $dirname ) ) )
@@ -61,30 +60,30 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
         $this->setError("File '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
         return false;
       }
-    }    
+    }
     else
     {
       $this->setError("File '$basename' exist." );
       return false;
     }
   }
-  
-  
+
+
   /**
    * Load the whole file resource into memory
    * @return mixed string content or false if file could not be loaded
    */
-  function load() 
+  function load()
   {
-    return file_get_contents($this->filePath());  
+    return file_get_contents($this->filePath());
   }
-  
+
   /**
    * save a string of data back into the file resource
    * @param string $data
    * @return void
    */
-  function save( $data ) 
+  function save( $data )
   {
     if ( file_put_contents( $this->filePath(), $data ) )
     {
@@ -102,7 +101,7 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
    * @param string $mode r(ead)|w(rite)|a(append)
    * @param boolean Result
    */
-  function open($mode="r") 
+  function open($mode="r")
   {
     $fp = fopen( $this->filePath(), $mode );
     if ( ! $fp )
@@ -113,13 +112,13 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
     $this->_fp = $fp;
     return true;
   }
-    
+
   /**
    * Reads a variable number of bytes from the resource
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function read( $bytes ) 
+  function read( $bytes )
   {
     if ( feof( $this->_fp) )
     {
@@ -133,13 +132,13 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
     }
     return $result;
   }
-  
+
   /**
    * Reads one line from the resource
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function readLine() 
+  function readLine()
   {
     if ( feof( $this->_fp) )
     {
@@ -152,13 +151,13 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
       return false;
     }
     return $result;
-  }  
-  
+  }
+
   /**
    * Writes to the file resource a variable number of bytes
    * @param string $data
    */
-  function write( $data ) 
+  function write( $data )
   {
     if ( ! fputs($this->_fp,$data ) )
     {
@@ -167,12 +166,12 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
     }
     return true;
   }
-  
+
   /**
    * Closes the file resource
    * @return booelean Result
    */
-  function close() 
+  function close()
   {
     if ( ! fclose($this->_fp) )
     {
@@ -181,7 +180,7 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
     }
     return true;
   }
-  
+
   /**
    * Stores data in the file. Shortcut for open("w"), write, close.
    * @param string $data
@@ -202,12 +201,12 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
     $this->open("a");
     $this->write($data);
     $this->close();
-  }  
-  
-  
+  }
+
+
   /**
    * Returns an associative array containing information about path.
-   * The following associative array elements are returned: 
+   * The following associative array elements are returned:
    * dirname, basename extension (if any), and filename.
    * @return array
    **/

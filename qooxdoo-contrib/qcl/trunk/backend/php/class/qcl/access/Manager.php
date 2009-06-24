@@ -1,5 +1,5 @@
 <?php
-require "qcl/core/StaticClass.php";
+require_once "qcl/core/StaticClass.php";
 
 /**
  * Static class containing methods that handle user management etc.
@@ -17,7 +17,7 @@ class qcl_access_Manager
 
   /**
    * The access controller object
-   * @var qcl_access_controller
+   * @var qcl_access_Controller
    */
   var $_accessController;
 

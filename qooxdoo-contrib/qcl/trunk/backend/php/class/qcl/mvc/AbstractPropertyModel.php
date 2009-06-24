@@ -109,7 +109,6 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
      * we can use this as datasource and get the
      * controller from it
      */
-    $controller =& $this->getController();
     if ( is_null( $datasourceModel ) and is_a( $controller, "qcl_datasource_type_db_Model" ) )
     {
       $datasourceModel =& $controller;
@@ -1169,7 +1168,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
        * to copy the property value to the column key and delete the
        * property key
        */
-      elseif ( isset( $this->properties[$key] ) )
+      elseif ( $this->hasProperty($key) )
       {
         $columnName = $this->getPropertySchemaName($key);
         $data[ $columnName ] = $value;

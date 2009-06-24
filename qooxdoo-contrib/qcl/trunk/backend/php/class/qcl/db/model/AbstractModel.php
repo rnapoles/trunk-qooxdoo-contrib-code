@@ -55,7 +55,6 @@ class qcl_db_model_AbstractModel
    */
   function initialize( $datasourceModel=null )
   {
-
     /*
      * datasource model
      */

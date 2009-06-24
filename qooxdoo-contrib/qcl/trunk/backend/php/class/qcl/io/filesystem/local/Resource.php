@@ -16,7 +16,7 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
    */
   function setResourcePath( $resourcePath )
   {
-    $this->_resourcePath = "file://" . real_file_path( $this->filePath( $resourcePath) );
+    $this->_resourcePath = "file://" . real_file_path( $this->filePath( $resourcePath ) );
   }
 
   /**

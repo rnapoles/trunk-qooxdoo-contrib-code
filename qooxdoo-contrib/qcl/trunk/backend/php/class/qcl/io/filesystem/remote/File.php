@@ -6,13 +6,13 @@ require_once "qcl/io/filesystem/IFile.php";
  * PHP4/PHP5 Interface for file-like resources stored on a remote computer
  * Supports all protocols/wrappers supported by PHP
  */
-class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource 
+class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
 {
 
   /**
    * php 4 interface implementaion
    */
-  var $implements = array("qcl_io_filesystem_IFile");  
+  var $implements = array("qcl_io_filesystem_IFile");
 
   /**
    * A php file pointer
@@ -27,34 +27,34 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
-  function __construct ( $controller, $resourcePath )
+  function __construct ( $resourcePath )
   {
     /*
      * parent constructor takes care of controller and resource path
      */
-    parent::__construct( &$controller, $resourcePath );
-    
-  }     
+    parent::__construct($resourcePath );
+
+  }
 
   /**
    * Checks if file exists
    * @return bool
    */
-  function exists() 
+  function exists()
   {
     if ( $this->open("r") )
     {
       $this->close();
       return true;
     }
-    return false;    
+    return false;
   }
-  
+
   /**
    * Creates the file
    * @return void
    */
-  function create() 
+  function create()
   {
     if ( $this->open("w") )
     {
@@ -62,13 +62,13 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
       $this->close();
     }
     $this->setError("Problem creating file " . $this->resourcePath() );
-  }    
-  
+  }
+
   /**
    * Load the whole file resource into memory
    * @return mixed string content or false if file could not be loaded
    */
-  function load() 
+  function load()
   {
     if ( $this->open("r") )
     {
@@ -82,13 +82,13 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
     }
     return false;
   }
-  
+
   /**
    * save a string of data back into the file resource
    * @param string $data
    * @return void
    */
-  function save($data) 
+  function save($data)
   {
     if ( $this->open("w") )
     {
@@ -104,7 +104,7 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    * @param string $mode r(ead)|w(rite)|a(append)
    * @param boolean Result
    */
-  function open($mode="r") 
+  function open($mode="r")
   {
     $fp = fopen( $this->resourcePath(), $mode );
     if ( ! $fp )
@@ -115,13 +115,13 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
     $this->_fp = $fp;
     return true;
   }
-    
+
   /**
    * Reads a variable number of bytes from the resource
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function read( $bytes ) 
+  function read( $bytes )
   {
     if ( ! $this->_fp )
     {
@@ -139,13 +139,13 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
     }
     return $result;
   }
-  
+
   /**
    * Reads one line from the resource
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function readLine() 
+  function readLine()
   {
     if ( feof( $this->_fp) )
     {
@@ -158,13 +158,13 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
       return false;
     }
     return $result;
-  }  
-  
+  }
+
   /**
    * Writes to the file resource a variable number of bytes
    * @param string $data
    */
-  function write( $data ) 
+  function write( $data )
   {
     if ( ! fputs($this->_fp,$data ) )
     {
@@ -173,12 +173,12 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
     }
     return true;
   }
-  
+
   /**
    * Closes the file resource
    * @return booelean Result
    */
-  function close() 
+  function close()
   {
     if ( ! fclose($this->_fp) )
     {
@@ -187,10 +187,10 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
     }
     return true;
   }
-  
+
   /**
    * Returns an associative array containing information about path.
-   * The following associative array elements are returned: 
+   * The following associative array elements are returned:
    * dirname, basename extension (if any), and filename.
    * @return array
    **/

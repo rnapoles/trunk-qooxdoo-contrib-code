@@ -17,16 +17,15 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
   /**
    * Constructor. Checks whether allow_url_fopen us enabled (necessary for
    * the class to work) and registers s3 streamwrapper if necessary
-   * @param qcl_mvc_Controller $controller
    * @param string $resourcePath
    */
-  function __construct ( $controller, $resourcePath )
+  function __construct ( $resourcePath )
   {
     /*
-     * parent constructor takes care of controller and resource path
+     * parent constructor takes care of resource path
      */
-    parent::__construct( &$controller, $resourcePath );
-    
+    parent::__construct( $resourcePath );
+
     /*
      * s3 wrapper
      */
@@ -42,7 +41,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
       }
       require_once "qcl/lib/gs3/gs3.php";
     }
-    
+
     /*
      * check for allow_url_fopen
      */
@@ -50,7 +49,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     {
       $this->raiseError("You need to enable 'allow_url_fopen' in the php.ini file for this to work.");
     }
-  }  
+  }
 
   /**
    * Checks whether (given) resource path is a file. This is not a real check,
@@ -65,7 +64,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     $ext = $this->extension( $this->basename($rp ) );
     return $ext != "";
   }
-  
+
   /**
    * Checks whether (given) resource path is a directory.This is not a real check,
    * the path is analyzed whether there is a file extension.
@@ -80,7 +79,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     $ext = $this->extension( $this->basename($rp ) );
     return $ext == "";
   }
-  
+
   /**
    * Checks if file or folder exists
    */
@@ -93,13 +92,13 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     }
     return false;
   }
-  
+
   /**
    * Deletes the file/folder. Not implemented
    * @todo implement, if possible at all
-   * @return booelean Result 
+   * @return booelean Result
    */
-  function delete() 
+  function delete()
   {
     if ( ! unlink( $this->resourcePath() ) )
     {
@@ -107,27 +106,27 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
       return false;
     }
     return true;
-  }  
-  
+  }
+
   /**
    * Renames the file/folder Fails if new name exists. Not implemented
    * @todo Implement where possible
    * @param string $name New name
    * @return boolean Result
    */
-  function rename($name) 
+  function rename($name)
   {
     $this->raiseError("Renaming remote Files/Folders not implemented.");
-  }  
-  
+  }
+
   /**
    * Returns the last modification date
    */
   function lastModified()
   {
     $this->notImplemented(__CLASS__);
-  }  
+  }
 
- 
+
 }
 ?>

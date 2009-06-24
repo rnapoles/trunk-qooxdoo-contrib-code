@@ -27,7 +27,7 @@ class qcl_session_Controller extends qcl_access_Controller
    * the user by a given session id in the request.
    * @param string[optional] optional session id, if not provided, try to
    * get it from the server data
-   * @see qcl_access_controller::isValidUserSession()
+   * @see qcl_access_Controller::isValidUserSession()
    * @override
    */
   function isValidUserSession( $sessionId=null )
@@ -154,7 +154,7 @@ class qcl_session_Controller extends qcl_access_Controller
 
   /**
    * @override
-   * @see qcl_access_controller::logout()
+   * @see qcl_access_Controller::logout()
    */
   function logout()
   {

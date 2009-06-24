@@ -670,12 +670,16 @@ class qcl_core_Object extends qcl_core_BaseClass
    * be expunged completely by a global search/replace.
    * @return void
    * @param mixed $msg
+   * @param string $class Optional class name
+   * @param int $line Optional line number
    */
-  function debug($msg)
+  function debug($msg,$class=null,$line=null)
   {
     if ( ! is_scalar($msg) ) $msg = print_r($msg,true);
-    $msg = ">>> DEBUG <<< " . $msg;
-    $this->log ( $msg, "info" );
+    $m = ">>> DEBUG <<< ";
+    if ($class and $line) $m .= "$class:$line: ";
+    $m .= $msg;
+    $this->log ( $m, "info" );
   }
 
   /**
@@ -806,10 +810,20 @@ class qcl_core_Object extends qcl_core_BaseClass
      * that the error can be passed to.
      */
     $server =& qcl_server_Server::getServerObject();
-    $error  =& $server->getErrorBehavior();
+    if ( $server )
+    {
+      $error  =& $server->getErrorBehavior();
+      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
+    }
+    else
+    {
+      require RPCPHP_SERVER_PATH . "services/server/error/JsonRpcError.php";
+      require RPCPHP_SERVER_PATH . "services/server/lib/JsonWrapper.php";
+      $error = new JsonRpcError( $message, $number );
+    }
+
     if ( is_a( $error, "JsonRpcError" ) )
     {
-      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
       $error->SendAndExit( $this->optionalErrorResponseData() );
       // never gets here
       exit;
