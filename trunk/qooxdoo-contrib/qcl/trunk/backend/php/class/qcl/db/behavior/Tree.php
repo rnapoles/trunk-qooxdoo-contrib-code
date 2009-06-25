@@ -39,10 +39,12 @@ class qcl_db_behavior_Tree
 	function getChildCount ( $parentId )
 	{
 		$parentId = (int) $parentId;
+		$table = $this->table();
+		$parentIdCol = $this->getColumnName("parentId");
 		$count = $this->db->getValue("
 			SELECT COUNT(*)
-			FROM `{$this->table}`
-			WHERE `{$this->col_parentId}` = $parentId
+			FROM `{$table}`
+			WHERE `{$parentIdCol}` = $parentId
 		");
 		return (int) $count;
 	}

@@ -90,9 +90,10 @@ class qcl_session_Session
     $controller =& $this->getController();
     $userModel =& $controller->getUserModel();
     //$userTable =  $userModel->getTableName();
+    $prefix = $this->getTablePrefix();
     $this->deleteWhere("
       markedDeleted = 1
-      OR userId NOT IN ( SELECT id FROM users )
+      OR userId NOT IN ( SELECT id FROM {$prefix}users )
       OR TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600
     ");
 
@@ -102,7 +103,7 @@ class qcl_session_Session
     $msgModel   =& $controller->getMessageModel();
     $msgModel->deleteWhere("
       markedDeleted = 1 OR
-      sessionId NOT IN ( SELECT sessionId FROM sessions )
+      sessionId NOT IN ( SELECT sessionId FROM {$prefix}sessions )
     ");
 
   }
@@ -160,8 +161,9 @@ class qcl_session_Session
    */
   function unregisterAllSessions( $userId )
   {
+    $table = $this->table();
     $this->db->execute("
-      UPDATE {$this->table}
+      UPDATE `$table`
       SET `markedDeleted` = 1
       WHERE `userId`  = $userId
     ");

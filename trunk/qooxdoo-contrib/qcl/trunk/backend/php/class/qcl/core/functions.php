@@ -68,7 +68,7 @@ function object2array( $var )
  * include_path or system PATH
  * @param string $file
  */
-function real_file_path($file)
+function real_file_path( $file )
 {
   if ( file_exists( $file ) )
   {

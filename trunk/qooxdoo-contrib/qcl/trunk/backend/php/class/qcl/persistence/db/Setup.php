@@ -34,9 +34,10 @@ class qcl_persistence_db_Setup
     if ( ! qcl_registry_Request::has("qcl_persistence_db_Setup") )
     {
       require_once "qcl/db/Manager.php";
+      $prefix = qcl_application_Application::getIniValue("database.tableprefix");
       $db =& qcl_db_Manager::createAdapter();
       $db->execute("
-        CREATE TABLE IF NOT EXISTS `persistentObjects` (
+        CREATE TABLE IF NOT EXISTS `{$prefix}persistentObjects` (
           `id` int(11) NOT NULL auto_increment,
           `class` varchar(100) NOT NULL,
           `data` longblob,

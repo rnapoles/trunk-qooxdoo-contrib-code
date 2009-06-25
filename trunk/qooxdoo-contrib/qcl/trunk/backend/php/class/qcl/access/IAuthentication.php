@@ -30,10 +30,11 @@ interface qcl_access_IAuthentication
    * If authenticated, return an array of the following structure
    *
    * array(
-   *   "error"       => false,
+   *   "error"       => false,  // must be part of the array
    *   "permissions" => array( "permission1","permission2" ....),
    *   "sessionId"   => "a23j2h3i4h2l2...",
    *   "username"    => "jondoe",
+   *   "anonymous"   => false,   // or true if unauthenticated
    *   ... < Any more userdata that you want to send to client >
    * );
    *

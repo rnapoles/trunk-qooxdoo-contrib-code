@@ -741,7 +741,7 @@ class qcl_core_Object extends qcl_core_BaseClass
 
   /**
    * Exits the current service with a user notice. This
-   * is an error, without backtrace
+   * is an error, without the backtrace
    * @param string $message
    * @return void
    */
@@ -761,7 +761,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     {
       require RPCPHP_SERVER_PATH . "services/server/error/JsonRpcError.php";
       require RPCPHP_SERVER_PATH . "services/server/lib/JsonWrapper.php";
-      $error = new JsonRpcError( $message, $number );
+      $error = new JsonRpcError( $number, $message );
     }
 
     if ( is_a( $error, "JsonRpcError" ) )

@@ -178,7 +178,8 @@ class qcl_db_model_AbstractModel
   function findValues( $property, $where=null, $orderBy=null, $distinct=false )
   {
     $column = $this->getColumnName($property);
-    $sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
+    $table = $this->table();
+    $sql = "SELECT DISTINCT `$column` FROM {$table} \n";
 
     if ($where)
     {
@@ -716,9 +717,10 @@ class qcl_db_model_AbstractModel
      * insert into database
      */
     //$this->debug($data);
-    $id = $this->db->insert( $this->table, $data );
+    $table = $this->table();
+    $id = $this->db->insert( $table, $data );
 
-    //$this->debug("Created new record #$id in {$this->table} with data: " . print_r($data,true) );
+    //$this->debug("Created new record #$id in {$table} with data: " . print_r($data,true) );
 
     /*
      * retrive record data (which might contain additional values inserted by the database)
@@ -778,7 +780,7 @@ class qcl_db_model_AbstractModel
 
     //$this->debug($data);
 
-    return $this->db->update( $this->table, $data, $this->getColumnName("id") );
+    return $this->db->update( $this->table(), $data, $this->getColumnName("id") );
   }
 
   /**
@@ -789,7 +791,7 @@ class qcl_db_model_AbstractModel
    */
   function updateWhere( $data, $where )
   {
-    return $this->db->updateWhere( $this->table, $data, $this->toSql($where) );
+    return $this->db->updateWhere( $this->table(), $data, $this->toSql($where) );
   }
 
   /**
@@ -934,7 +936,7 @@ class qcl_db_model_AbstractModel
     /*
      * delete records
      */
-    $this->db->delete ( $this->table, $ids );
+    $this->db->delete ( $this->table(), $ids );
   }
 
   /**
@@ -945,7 +947,7 @@ class qcl_db_model_AbstractModel
    */
   function deleteWhere ( $where )
   {
-    $this->db->deleteWhere ( $this->table, $this->toSql($where) );
+    $this->db->deleteWhere ( $this->table(), $this->toSql($where) );
   }
 
   /**
@@ -954,7 +956,8 @@ class qcl_db_model_AbstractModel
    */
   function truncate()
   {
-    $this->db->execute("TRUNCATE `{$this->table}`;");
+    $table = $this->table();
+    $this->db->execute("TRUNCATE `{$table}`;");
   }
 
 
@@ -965,7 +968,7 @@ class qcl_db_model_AbstractModel
    */
   function countWhere ( $where )
   {
-    return (int) $this->db->countWhere ( $this->table, $this->toSql($where) );
+    return (int) $this->db->countWhere ( $this->table(), $this->toSql($where) );
   }
 
   //-----------------------------------------------------------------------
@@ -978,7 +981,8 @@ class qcl_db_model_AbstractModel
    */
   function countRecords()
   {
-    return (int) $this->db->getValue("SELECT COUNT(*) FROM {$this->table}");
+    $table = $this->table();
+    return (int) $this->db->getValue("SELECT COUNT(*) FROM `$table`");
   }
 
   /**
@@ -997,7 +1001,8 @@ class qcl_db_model_AbstractModel
   function minId()
   {
     $idCol = $this->getColumnName('id');
-    return $this->db->getValue("SELECT MIN(`$idCol`) FROM {$this->table}");
+    $table = $this->table();
+    return $this->db->getValue("SELECT MIN(`$idCol`) FROM `$this->table`");
   }
 
   /**
@@ -1007,7 +1012,8 @@ class qcl_db_model_AbstractModel
   function maxId()
   {
     $idCol = $this->getColumnName('id');
-    return $this->db->getValue("SELECT MAX(`$idCol`) FROM {$this->table}");
+    $table = $this->table();
+    return $this->db->getValue("SELECT MAX(`$idCol`) FROM `$this->table`");
   }
 
   //-------------------------------------------------------------
@@ -1035,8 +1041,9 @@ class qcl_db_model_AbstractModel
     $ids = implode(",", (array) $ids);
     $modifiedCol = $this->getColumnName("modified");
     $idCol = $this->getIdColumn();
+    $table = $this->table();
     $this->db->execute("
-      UPDATE `{$this->table}`
+      UPDATE `$table`
       SET `$modifiedCol` = NOW()
       WHERE `$idCol` IN ($ids)
     ");
@@ -1074,9 +1081,10 @@ class qcl_db_model_AbstractModel
    */
   function getModificationList()
   {
+    $table = $this->table();
     if ( ! $this->hasProperty("modified") )
     {
-      $this->raiseError("Table {$this->table} has no timestamp column");
+      $this->raiseError("Table `$table` has no timestamp column");
     }
     $modifiedCol = $this->getColumnName("modified");
     $idCol = $this->getIdColumn();
@@ -1085,7 +1093,7 @@ class qcl_db_model_AbstractModel
       SELECT
         `$idCol` AS id,
         `$modifiedCol` AS timestamp
-      FROM {$this->table}
+      FROM `$table`
     ") ;
     $map = array();
     foreach ($rows as $row)
@@ -1112,7 +1120,7 @@ class qcl_db_model_AbstractModel
    */
   function getTablePrefix()
   {
-    $prefix = "";
+    $prefix = qcl_application_Application::getIniValue("database.tableprefix");
     $dsModel =& $this->getDatasourceModel();
     if ( $dsModel )
     {

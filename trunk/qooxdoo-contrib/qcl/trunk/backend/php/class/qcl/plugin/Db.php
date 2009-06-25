@@ -38,7 +38,8 @@ class qcl_plugin_Db extends qcl_db_model_xmlSchema_Model
 
     // repopulate plugins table
     // @todo
-    $this->db->execute("TRUNCATE {$this->table};" );
+    $table = $this->table();
+    $this->db->execute("TRUNCATE `$table`;" );
 
     foreach ( scandir($plugin_path) as $dir )
     {

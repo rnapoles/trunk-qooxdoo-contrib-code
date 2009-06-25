@@ -36,7 +36,7 @@
         model="qcl.access.model.Permission" />    
       <link 
         name="user"
-        jointable="link_user_roles" 
+        jointable="link_roles_users" 
         model="qcl.access.model.User" />
     </links>
   </model>
