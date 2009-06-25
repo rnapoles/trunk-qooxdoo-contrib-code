@@ -1,5 +1,7 @@
 <?php
 
+require_once "qcl/log/Logger.php";
+
 /*
  * For constant definition for which a simple integer is sufficient,
  * use global variable $constId like so:
@@ -159,13 +161,9 @@ class qcl_core_Object extends qcl_core_BaseClass
     }
 
     /*
-     * setup the logger for this object, except for a
-     * logger object itself
+     * setup logger object
      */
-    if ( ! is_a($this, "qcl_log_Logger" ) )
-    {
-      $this->setUpLogger();
-    }
+    $this->setupLogger();
   }
 
 
@@ -585,21 +583,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function setupLogger()
   {
-    require_once "qcl/log/Logger.php";
-    $logger =& qcl_log_Logger::getInstance();
-    $this->_logger =& $logger;
-
-    if ( ! $logger->isRegistered("debug") )
-    {
-      $logger->registerFilter("debug",     "Verbose debugging");
-      $logger->registerFilter("info",      "Important messages");
-      $logger->registerFilter("warn",      "Warnings");
-      $logger->registerFilter("error",     "Non-fatal errors");
-      $logger->registerFilter("framework", "Framework-related debugging");
-
-      $logger->setFilterEnabled("debug",false);
-      $logger->setFilterEnabled("framework",false);
-    }
+    $this->_logger =& qcl_log_Logger::getInstance();
   }
 
   /**
@@ -619,10 +603,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function log ( $msg, $filters="debug" )
   {
-    if ( ! $this->_logger )
-    {
-      $this->raiseError("No logger object exists.");
-    }
     $this->_logger->log( $msg, $filters );
   }
 
@@ -1028,48 +1008,6 @@ class qcl_core_Object extends qcl_core_BaseClass
       $object =& $this->getObjectById( $objectId );
       $object->$method($data);
     }
-  }
-
-  //-------------------------------------------------------------
-  // session variables
-  //-------------------------------------------------------------
-
-  /**
-   * save a variable in the session
-   * @param string  $name name of the variable
-   * @param mixed   $data data to be saved
-   * @depreated Use qcl_registry_Session instead
-   */
-  function setSessionVar ( $name, $data )
-  {
-    $reg =& qcl_registry_Session::getInstance();
-    $reg->set($name,$data);
-  }
-
-  /**
-   * get a variable from the session
-   * @param string  $name name of the variable
-   * @return reference a  reference to the session variable
-   * @depreated Use qcl_registry_Session instead
-   */
-  function getSessionVar ( $name )
-  {
-    require_once "qcl/registry/Session.php";
-    $reg =& qcl_registry_Session::getInstance();
-    return $reg->get($name);
-  }
-
-  /**
-   * checks if sesion variable exists
-   * @param string  $name name of the variable
-   * @return Boolean
-   * @depreated Use qcl_registry_Session instead
-   */
-  function hasSessionVar ( $name )
-  {
-    require_once "qcl/registry/Session.php";
-    $reg =& qcl_registry_Session::getInstance();
-    return $reg->has($name);
   }
 
 /**

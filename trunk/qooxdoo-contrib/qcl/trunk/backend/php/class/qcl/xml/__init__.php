@@ -3,11 +3,6 @@
 /*
  * debugging
  */
-$logger =& qcl_get_logger();
-if ( ! $logger->isRegistered("xml") )
-{
-  $logger->registerFilter("xml","XML-related debugging.");
-}  
-$logger->setFilterEnabled("xml",false);
-
+require_once "qcl/log/Logger.php";
+qcl_log_Logger::registerFilter("xml","XML-related debugging.",false);
 ?>
