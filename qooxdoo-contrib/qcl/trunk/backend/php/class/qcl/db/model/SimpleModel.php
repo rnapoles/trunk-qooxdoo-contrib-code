@@ -57,6 +57,20 @@ class qcl_db_model_SimpleModel
    */
   var $modified = QCL_DB_PROPERTY_TIMESTAMP;
 
+  /**
+   * Constructor. Automatically configures the table name
+   * @return void
+   */
+  function __construct($controller=null)
+  {
+    if ( ! $this->table )
+    {
+      $this->raiseError("No table name!");
+    }
+    $this->table = $this->getTablePrefix() . $this->table;
+
+    parent::__construct(&$controller);
+  }
 
   /**
    * simplyfied method that does not rely on the property system
@@ -83,7 +97,8 @@ class qcl_db_model_SimpleModel
   {
 
     if ( is_null($properties) ) $properties = "*";
-    $sql = "SELECT $properties FROM {$this->table} WHERE " . $this->toSql($where);
+    $table = $this->table();
+    $sql = "SELECT $properties FROM `$table` WHERE " . $this->toSql($where);
     if ( $orderBy ) $sql .= " ORDER BY `$orderBy`";
 
     /*

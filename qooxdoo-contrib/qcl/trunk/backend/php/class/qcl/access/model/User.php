@@ -51,7 +51,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   function isAnonymous()
   {
-    return ( substr( $this->getNamedId(), 0, strlen(QCL_ANONYMOUS_USER_PREFIX) ) == QCL_ANONYMOUS_USER_PREFIX );
+    return $this->get("anonymous")==true;
   }
 
   function isAdmin()
@@ -83,6 +83,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
     $this->create($username);
     $this->linkWith(&$roleModel);
+    $this->set("anonymous",true);
     $this->set("name",$this->tr("Anonymous User"));
     $this->save();
   }
@@ -285,10 +286,11 @@ class qcl_access_model_User extends qcl_access_model_Common
   function getSecondsSinceLastAction()
   {
     $userId = $this->getId();
+    $table = $this->table();
     $lastActionCol = $this->getColumnName("lastAction");
     $seconds = $this->db->getValue("
       SELECT TIME_TO_SEC( TIMEDIFF( NOW(), `$lastActionCol` ) )
-        FROM `{$this->table}`
+        FROM `$table`
        WHERE `id` = $userId;
     ");
     return $seconds;

@@ -1083,11 +1083,12 @@ class qcl_db_adapters_Mysql
     /*
      * drop functions in case they are already defined
      */
+    $table = $this->table();
     $this->execute("
-      DROP FUNCTION IF EXISTS `{$this->table}_getHierarchyPath`
+      DROP FUNCTION IF EXISTS `{$table}_getHierarchyPath`
     ");
     $this->execute("
-      DROP FUNCTION IF EXISTS `{$this->table}_getHierarchyIds`
+      DROP FUNCTION IF EXISTS `{$table}_getHierarchyIds`
     ");
 
     /*

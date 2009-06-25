@@ -106,10 +106,11 @@ class qcl_persistence_db_Object
     if ( qcl_db_model_xmlSchema_Registry::isInitialized( null, "sessions" )
          and qcl_db_model_xmlSchema_Registry::isInitialized( null, "users" ) )
     {
+      $prefix = $this->_dbModel->getTablePrefix();
       $this->_dbModel->deleteWhere("
-        ( sessionId IS NOT NULL AND sessionId NOT IN ( SELECT sessionId FROM sessions ) )
+        ( sessionId IS NOT NULL AND sessionId NOT IN ( SELECT sessionId FROM {$prefix}sessions ) )
           OR
-        ( userId IS NOT NULL AND userId NOT IN ( SELECT id FROM users ) )
+        ( userId IS NOT NULL AND userId NOT IN ( SELECT id FROM {$prefix}users ) )
       ");
     }
   }

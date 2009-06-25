@@ -1,5 +1,5 @@
 <?php
-require_once "qcl/access/model/user.php";
-require_once "qcl/access/model/role.php";
-require_once "qcl/access/model/permission.php";
+require_once "qcl/access/model/User.php";
+require_once "qcl/access/model/Role.php";
+require_once "qcl/access/model/Permission.php";
 ?>

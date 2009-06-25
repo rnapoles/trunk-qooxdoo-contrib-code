@@ -522,8 +522,14 @@ class qcl_access_Controller
      * user data
      */
     $this->set( "userId", $activeUser->getId() );
-    $this->set( "username", "anonymous" );
+    $this->set( "anonymous", $activeUser->isAnonymous() );
+    $this->set( "username", $activeUser->username() );
     $this->set( "fullname", $activeUser->get("name") );
+
+    /*
+     * no error
+     */
+    $this->set( "error", false );
 
     /*
      * log message

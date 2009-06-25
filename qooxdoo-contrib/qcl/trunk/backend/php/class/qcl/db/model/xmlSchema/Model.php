@@ -427,7 +427,7 @@ class qcl_db_model_xmlSchema_Model
     /*
      * delete records
      */
-    $this->db->delete ( $this->table, $ids );
+    $this->db->delete ( $this->table(), $ids );
   }
 
   //-----------------------------------------------------------------------
@@ -723,7 +723,7 @@ class qcl_db_model_xmlSchema_Model
       $datasourceModel =& $this->getDatasourceModel();
       $isInitialized   = $this->modelTableInfo->isInitialized(
         &$datasourceModel,
-        $this->table,
+        $this->table(),
         $this->class,
         $this->schemaTimestamp
       );
@@ -756,7 +756,7 @@ class qcl_db_model_xmlSchema_Model
     /*
      * create main data table if necessary
      */
-    $table = $this->table;
+    $table = $this->table();
     if ( ! $db->tableExists($table) )
     {
       $db->createTable($table);
@@ -1329,8 +1329,9 @@ class qcl_db_model_xmlSchema_Model
     /*
      * Import initial data if necessary
      */
-    $path = $this->getDataPath();
-    if ( ! $tableExists and real_file_path($path) )
+    $path = real_file_path( $this->getDataPath() );
+    //$this->debug("Datapath '$path', table '$table' ".  ( $tableExists ? "exists" : "doesn't exist" ),__CLASS__,__LINE__);
+    if ( ! $tableExists and $path )
     {
       $this->import($path);
       $this->importLinkData();
@@ -1347,7 +1348,7 @@ class qcl_db_model_xmlSchema_Model
     {
       $this->modelTableInfo->registerInitialized(
         &$datasourceModel,
-        $this->table,
+        $this->table(),
         $this->class,
         $this->schemaTimestamp
       );
@@ -2248,23 +2249,23 @@ class qcl_db_model_xmlSchema_Model
     {
       $attrs     = $linkNode->attributes();
       $linkName  = (string) $attrs['name'];
-      $table     = (string) $attrs['table'];
+      $joinTable = (string) $attrs['jointable'];
 
       /*
        * get file path
        */
-      $path = real_file_path ( either(
-          $path,
-          dirname( $this->getDataPath() ) . "/$table.data.xml"
-      ) );
-
+      $path = either(
+        $path,
+        dirname( $this->getDataPath() ) . "/$joinTable.data.xml"
+      );
+      $path = real_file_path ($path);
       if ( ! file_exists($path) )
       {
-        $this->info("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
+        $this->log("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
         continue;
       }
 
-      $this->info("Importing link data for link '$linkName' of model '{$this->name}'...","propertyModel");
+      $this->log("Importing link data for link '$linkName' of model '{$this->name}' from '$path'...","propertyModel");
 
       /*
        * parse xml file
@@ -2278,9 +2279,13 @@ class qcl_db_model_xmlSchema_Model
       $linksNode =& $dataDoc->links or $this->raiseError("No links node available.");
       $attrs = $linksNode->attributes();
       $mdl   =  (string) $attrs['model'];
+
+      /*
+       * the link data doesn't originate from this model, ignore
+       */
       if ( $mdl != $this->name() )
       {
-        $this->log( "Origin model in xml ('$mdl') does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
+        $this->warn( "Origin model in xml ('$mdl') does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
         return;
       }
 

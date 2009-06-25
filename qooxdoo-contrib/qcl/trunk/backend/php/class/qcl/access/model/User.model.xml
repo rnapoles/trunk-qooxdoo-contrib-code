@@ -19,7 +19,7 @@
         </property>
         <property name="namedId" type="string" index="yes">
           <sql>varchar(50) NOT NULL</sql>
-        </property>
+        </property> 
         <property name="password" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>
@@ -29,6 +29,9 @@
         <property name="note" type="string">
           <sql>mediumtext NULL</sql>
         </property>
+        <property name="anonymous" type="bool">
+          <sql>tinyint(1) default 0</sql>
+        </property>        
         <property name="active" type="bool">
           <sql>tinyint(1) default 0</sql>
         </property>           
@@ -58,7 +61,8 @@
         foreignKey="userId">
       <link 
         name="role"
-        jointable="link_user_roles" 
+        type="n:n"
+        jointable="link_roles_users" 
         model="qcl.access.model.Role" />  
         
       <!-- link 
