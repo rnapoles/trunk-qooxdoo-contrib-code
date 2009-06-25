@@ -21,41 +21,41 @@ qx.Class.define("access.Main",
     main : function()
     {
       /*
-                   * call parent class' main method
-                   */
+             * call parent class' main method
+             */
 
       this.base(arguments);
 
       /*
-                   * logging
-                   */
+             * logging
+             */
 
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
 
       /*
-                   * the URL of the jsonrpc server
-                   */
+             * the URL of the jsonrpc server
+             */
 
       this.setServerUrl("../services/index.php");
       this.info("Starting Application...");
 
       /*
-                   * Starting the authentication
-                   */
+             * Starting the authentication
+             */
 
-      this.startAuthentication("access.Auth");
-
-      /*
-                   * configuration
-                   */
-
-      this.loadConfiguration("access.Config");
+      this.startAuthentication("access.SimpleAuthController");
 
       /*
-                   * login popup
-                   */
+             * configuration
+             */
+
+      this.loadConfiguration("access.SimpleConfigController");
+
+      /*
+             * login popup
+             */
 
       var loginPopup = qcl.components.login.Popup.getInstance();
       loginPopup.setCallback(this.checkLogin);
@@ -93,6 +93,36 @@ qx.Class.define("access.Main",
         }
       },
       this);
+    },
+
+
+    /**
+     * TODOC
+     *
+     * @param version {var} TODOC
+     * @return {void} 
+     */
+    useServer : function(version)
+    {
+      switch(version)
+      {
+        case "1.0":
+          this.setServerUrl("../services/index.php");
+          this.getAuthStore().setServiceName("Access.SimpleAuthController");
+          this.getConfigStore().setServiceName("Access.SimpleConfigController");
+          this.info("Server: changed to 1.0 version.");
+          break;
+
+        case "qcl":
+          this.setServerUrl("../services/server.php");
+          this.getAuthStore().setServiceName("Access.AuthController");
+          this.getConfigStore().setServiceName("Access.ConfigController");
+          this.info("Server: changed to trunk version.");
+          break;
+      }
+
+      this.removeState("sessionId");
+      this.logout();
     }
   }
 });

@@ -21,7 +21,7 @@
  * @author bibliograph
  *
  */
-class class_Auth
+class class_SimpleAuthController
 {
 
   /**
@@ -39,35 +39,22 @@ class class_Auth
     {
       list( $sessionId ) = $params;
 
-      if ( $sessionId )
+      /*
+       * if we have a valid session id, get user id from it
+       */
+      if ( $sessionId and $_SESSION['usersession']['sessionId'] == $sessionId )
       {
-        if ( $_SESSION['usersession']['sessionId'] == $sessionId )
-        {
-          $userId = $_SESSION['usersession']['userId'];
-        }
-        else
-        {
-          /*
-           * an error occurred, delete the usersession
-           */
-          unset($_SESSION['usersession']);
-          return array(
-            'error' => "Invalid session id",
-            'sessionId' => null
-          );
-        }
+        $userId = $_SESSION['usersession']['userId'];
       }
+      /*
+       * else, start new anonymous session
+       */
       else
       {
-        /*
-         * start anonymous session
-         */
         $userId = 4; /* anonymous */
-        $sessionId = md5( rand(1,10000) );
+        $sessionId = session_id();
       }
-
       $username = $this->userdata['users'][$userId]['username'];
-
     }
 
     /*
@@ -92,7 +79,7 @@ class class_Auth
         /*
          * start new user session
          */
-        $sessionId = md5( rand(1,10000) );
+        $sessionId = session_id();
       }
       else
       {
@@ -107,13 +94,6 @@ class class_Auth
       trigger_error( "Wrong parameter count");
     }
 
-    /*
-     * create new session, this only works with
-     * the qcl_server_JsonRpc server
-     */
-    //session_destroy();
-    //session_id( $sessionId );
-    //session_start();
 
     /*
      * permissions
@@ -129,7 +109,8 @@ class class_Auth
       "fullname"    => $this->userdata['users'][$userId]['fullname'],
       "permissions" => $permissions,
       "sessionId"   => $sessionId,
-      "error"       => false
+      "error"       => false,
+      "anonymous"   => ($userId == 4)
     );
 
     /*

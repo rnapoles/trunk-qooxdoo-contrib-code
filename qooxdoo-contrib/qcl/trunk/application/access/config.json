@@ -28,7 +28,13 @@
     "test",
     "test-source",
     "translation",
-    "transform"
+    
+    /*
+     * QxTransformer
+     */
+    "transform",
+    "transform-source",
+    "transform-pretty-source"    
   ],
 
   "let" :
@@ -38,11 +44,15 @@
     "QXTHEME"      : "access.theme.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${QOOXDOO_PATH}/cache",
+    "CACHE"        : "cache",
     "ROOT"         : ".",
+    
+    /*
+     * QxTransformer
+     */
     "PYTHON"       : "/opt/local/bin/python2.5",
-    "QXTRANSFORMER_PATH": "../../../../qooxdoo/qxtransformer/toolkit",
-    "QXT_VERBOSE"  : "main:INFO;dev:INFO;"
+    "QXTRANSFORMER_PATH": "../../../../qooxdoo/qxtransformer/toolkit"
+    
   },
   
   "jobs" :
@@ -51,10 +61,32 @@
     {
       "library" :
       [
+        /*
+         * qcl-js
+         */
         {
           "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
-        }
+        },
+        /*
+         * qcl-php
+         */
+        {
+          "manifest" : "contrib://qcl/trunk/backend/php/Manifest.json"
+        },
+        /*
+         * json-rpc server
+         */
+        {
+          "manifest" : "contrib://RpcPhp/trunk/Manifest.json"
+        }          
       ]
-    }
+    },
+    "common" :
+    {
+      "settings" :
+      {
+        "jsonrpc.backend" : "RpcPhp"
+      }
+    } 
   }
 }

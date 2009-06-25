@@ -12,15 +12,17 @@
     <qx:toolBarPart>
 
       <qx:toolBarButton 
+        id="loginButton"      
         label="Login" icon="icon/16/status/dialog-password.png"
         visibility="excluded">
         
         <!-- show button only when user is not logged in -->
         <qcl:observe 
+
           property="visibility" 
           source="this.getApplication().getUserManager()"
-          sourceProp="activeUser.username"
-          converter="function(username){ return username=='anonymous' ? 'visible' : 'excluded' }" />
+          sourceProp="activeUser"
+          converter="function(activeUser){ return ( ! activeUser || activeUser.isAnonymous() ) ? 'visible' : 'excluded' }" />
           
         <qxt:listener type="execute">
           qcl.components.login.Popup.getInstance().show();
@@ -29,15 +31,16 @@
       </qx:toolBarButton>
 
       <qx:toolBarButton 
+        id="logoutButton"
         label="Logout" icon="icon/16/actions/application-exit.png"
         visibility="excluded">
         
         <!-- show button only when user is logged in -->
         <qcl:observe 
           property="visibility" 
-          source="this.getApplication().getUserManager()"
-          sourceProp="activeUser.username"
-          converter="function(username){ return username!='anonymous' ? 'visible' : 'excluded' }" />
+          source="loginButton"
+          sourceProp="visibility"
+          converter="function(visibility){ return ( visibility == 'visible' ) ? 'excluded' : 'visible' }" />
           
         <qxt:listener type="execute">
           this.getApplication().logout();
@@ -60,24 +63,21 @@
     <qx:toolBarPart>
 
       <qx:toolBarMenuButton label="Server" >
-        <qcl:observe property="enabled" permission="manageUsers" />
         <qx:menu>
            <qx:radioGroup>
             <qx:menuRadioButton label="Use RpcPhp 1.0" value="true">
               <qxt:listener event="changeValue">
                 if(e.getData())
                 {
-                  this.getApplication().setServerUrl("../services/index.php");
-                  this.info("Server: changed to 1.0 version.");
+                  this.getApplication().useServer("1.0");
                 }
               </qxt:listener>
             </qx:menuRadioButton>
-            <qx:menuRadioButton label="Use RpcPhp trunk" enabled="false">
+            <qx:menuRadioButton label="Use qcl server" >
               <qxt:listener event="changeValue" arg="event">
                 if(event.getData())
                 {
-                  this.getApplication().setServerUrl("../services/server.php");
-                  this.info("Server: changed to trunk version.");
+                  this.getApplication().useServer("qcl");
                 }
               </qxt:listener>
             </qx:menuRadioButton>

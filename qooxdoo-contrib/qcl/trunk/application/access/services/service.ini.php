@@ -51,6 +51,12 @@ userdb = test
 ;; but it is recommended to keep a separate database for this.
 admindb = test
 
+;; database.tableprefix
+;; A global prefix for all tables that are created, which makes
+;; it possible to keep the data of several applications in one
+;; database
+tableprefix = access_
+
 ;; Expanded variables
 ;; dont't touch this
 user_userdb   = "${database.type}://${database.username}:${database.userpassw}@${database.host}:${database.port}/${database.userdb}"
