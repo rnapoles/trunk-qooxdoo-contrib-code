@@ -800,15 +800,18 @@ simulation.Simulation.prototype.stop = function()
  * Also adds a simple getter function that returns the contents of the exception
  * store as a string separated by pipe characters ("|");
  * 
+ * @param win {String} The window object to attach the global error handler to
  * @return {void}
  */
-simulation.Simulation.prototype.addGlobalErrorHandler = function()
+simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
 {
+  var qxWin = win || "selenium.qxStoredVars['autWindow']";
   this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore = [];", "Adding errorStore");
   
-  var addHandler = function()
+  var addHandler = function(win)
   {
-    selenium.browserbot.getCurrentWindow().qx.event.GlobalError.setErrorHandler(function(ex) {
+    var qxWin = win || selenium.qxStoredVars['autWindow']; 
+    qxWin.qx.event.GlobalError.setErrorHandler(function(ex) {
       //selenium.browserbot.getCurrentWindow().console.log(ex);
       var exString = ex.name + ": " + ex.message;
       if (ex.fileName) {
@@ -820,16 +823,16 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function()
       if (ex.description) {
         exString += " Description: " + ex.description;
       }
-      var sanitizedEx = selenium.browserbot.getCurrentWindow().qx.Simulation.sanitize(exString);
+      var sanitizedEx = selenium.qxStoredVars['autWindow'].qx.Simulation.sanitize(exString);
       //sanitizedEx = sanitizedEx.replace(/\n/g,"<br/>");
       //sanitizedEx = sanitizedEx.replace(/\r/g,"<br/>");
 
-      selenium.browserbot.getCurrentWindow().qx.Simulation.errorStore.push(sanitizedEx);     
+      selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore.push(sanitizedEx);     
     });
   };
   
   this.addOwnFunction("addGlobalErrorHandler", addHandler);
-  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.addGlobalErrorHandler();", "Adding error handler");
+  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.addGlobalErrorHandler(" + qxWin + ");", "Adding error handler");
   
   globalErr = function()
   {
