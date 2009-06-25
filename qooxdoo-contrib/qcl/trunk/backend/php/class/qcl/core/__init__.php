@@ -2,11 +2,7 @@
 /*
  * create filter
  */
-$logger =& qcl_get_logger();
-if ( ! $logger->isRegistered("propertyModel") )
-{
-  $logger->registerFilter("propertyModel","Log messages concerning the setup and initializing of model properties.");
-}
-$logger->setFilterEnabled("propertyModel",false);
+require_once "qcl/log/Logger.php";
+qcl_log_Logger::registerFilter("propertyModel","Log messages concerning the setup and initializing of model properties.",false);
 
 ?>
