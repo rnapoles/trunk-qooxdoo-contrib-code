@@ -25,6 +25,8 @@
                    &lt;p&gt;Click on "Login" to log in as one of these users.&lt;/p&gt;
                    &lt;p&gt;Also note that you can reload the page and still be logged in with
                    the same user.&lt;/p&gt;
+                   
+                   &lt;h4&gt;Current user&lt;/h4&gt;
                 </qxt:property>
               </qx:label>
               
@@ -48,6 +50,7 @@
                     source="this.getApplication().getUserManager()" 
                     sourceProp="activeUser.fullname" />                
                 </qx:label >
+
                 
                 <qx:label value="Permissions:" qxt:row="2" qxt:column="0"/>
                 <qx:label qxt:row="2" qxt:column="1" rich="true">

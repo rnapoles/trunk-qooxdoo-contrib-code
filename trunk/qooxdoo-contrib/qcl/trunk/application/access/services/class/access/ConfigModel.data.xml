@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data>
+    <records>
+      <record>
+        <property name="namedId">application.name</property>
+        <property name="type">string</property>
+        <property name="value">Sample Application</property>
+      </record>
+      <record>
+        <property name="namedId">application.author</property>
+        <property name="type">string</property>
+        <property name="value">John Doe</property>
+      </record>
+      <record>
+        <property name="namedId">test.checked</property>
+        <property name="type">boolean</property>
+        <property name="value">1</property>
+        <property name="userId">0</property> 
+      </record>
+      <record>
+        <property name="namedId">test.value</property>
+        <property name="type">string</property>
+        <property name="value">Foo</property>
+        <property name="userId">0</property> 
+      </record>
+    </records>
+  </data>
+</root>

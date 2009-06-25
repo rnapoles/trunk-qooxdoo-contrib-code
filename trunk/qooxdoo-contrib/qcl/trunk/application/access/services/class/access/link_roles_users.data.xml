@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <links model="qcl.access.model.Role">
+    <link name="user" model="qcl.access.model.User">
+      <origin namedId="qcl.access.role.User">
+        <target namedId="user1" />
+        <target namedId="user2" />   
+        <target namedId="user3" />   
+        <target namedId="admin" />     
+      </origin>
+      <origin namedId="qcl.access.role.Manager">
+        <target namedId="user3" />       
+        <target namedId="admin" /> 
+      </origin>
+      <origin namedId="qcl.access.role.Administrator">
+        <target namedId="admin" />
+      </origin>
+    </link>
+  </links>
+</root>
