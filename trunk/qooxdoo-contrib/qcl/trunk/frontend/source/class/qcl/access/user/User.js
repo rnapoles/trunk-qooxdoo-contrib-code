@@ -82,6 +82,15 @@ qx.Class.define("qcl.access.user.User",
     },
 
     /**
+     * Whether user is an unauthenticated guest user
+     */
+    anonymous :
+    {
+      check : "Boolean",
+      init : true
+    },
+    
+    /**
      * An array of permission objects
      */
     permissions :
