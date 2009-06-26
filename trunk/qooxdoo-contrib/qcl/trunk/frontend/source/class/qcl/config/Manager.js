@@ -123,8 +123,8 @@ qx.Class.define("qcl.config.Manager",
     "change" : "qx.event.type.Data",
     
     /* 
-     * Dispatched with the name of the changed config key when
-     * the config value changes on the client
+     * Dispatched  when the config value changes on the client.
+     * The evend data is a map with the keys 'key','value','old' 
      */
     "clientChange" : "qx.event.type.Data"    
   },
@@ -222,16 +222,24 @@ qx.Class.define("qcl.config.Manager",
 		},
     
     /**
-     * Sets a config value. This should automatically update
-     * the server.
+     * Sets a config value and fire a 'clientChange' event.
      * @param key {String}
      * @param value {Mixed} 
      */
     setValue : function (key, value)
     {
-       var index = this._getIndex(key);
-       this.getModel().getValues().setItem( index, value );
-       this.fireDataEvent("clientChange", key);
+		   var index = this._getIndex(key);
+		   var old = this.getModel().getValues().getItem( index );
+		   if ( value != old )
+		   {
+         this.getModel().getValues().setItem( index, value );
+         this.fireDataEvent("clientChange", {
+           'key' : key, 
+           'value' : value,
+           'old' : old 
+          });
+		   }
+      
     },
     
     /**

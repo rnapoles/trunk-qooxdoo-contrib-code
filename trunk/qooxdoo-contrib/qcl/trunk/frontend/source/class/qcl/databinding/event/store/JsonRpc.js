@@ -39,7 +39,7 @@
  *   // messages to be transported
  *   result : 
  *   {
- *     result : { (... result data ...) },
+ *     data   : { (... result data ...) },
  *     events : [ { type : "fooEvent", data : ... }, 
  *                { type : "barEvent", data: ... }, ... ],
  *     messages : [ { name : "appname.messages.foo", data : ... }, 
@@ -572,7 +572,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
       /*
        * create callback function
        */
-      var callbackFunc = function( data, ex, id ) 
+      var callbackFunc = function( result, ex, id ) 
       { 
        /*
          * decrement counter and reset cursor
@@ -585,7 +585,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         /*
          * save data for debugging etc.
          */
-        _this._responseData = data;
+        _this._responseData = result;
 
         /*
          * show that no request is underway
@@ -599,51 +599,55 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
         {  
 
           /* 
-           * The result data is either in the 'result' property of the object (qcl) or the object
-           * itself. If we have a 'result' property, also check for 'messages' and 'events' 
+           * The result data is either in the 'data' property of the object (qcl) or the object
+           * itself. If we have a 'data' property, also check for 'messages' and 'events' 
            * property.
            */
-          if ( data.result )
+          var data;
+          if ( result.data )
           {
             /*
              * handle messages and events
              */
-            if ( data.messages || data.events ) 
+            if ( result.messages || result.events ) 
             {
-              _this.__handleEventsAndMessages( _this, data );
+              _this.__handleEventsAndMessages( _this, result );
             }              
-            data = data.result; 
+            data = result.data; 
+          }
+          else
+          {
+            data = result;
           }
           
           /* 
            * create the model if requested
            */
-           if ( createModel )
-           {
-             /*
-              * create the class
-              */
-             _this.getMarshaler().jsonToClass( data, true);
-       
-             /*
-              * set the initial data
-              */
-             _this.setModel( _this.getMarshaler().jsonToModel(data) );
-             
-             /*
-              * fire 'loaded' event only if we creat a model
-              */
-             _this.fireDataEvent( "loaded", _this.getModel() );             
-           }
-           
+          if ( createModel )
+          {
             /*
-             * final callback, only sent if request was successful
+             * create the class
              */
-            if ( typeof finalCallback == "function" )
-            {
-              finalCallback.call( context, data );
-            }            
-     
+            _this.getMarshaler().jsonToClass( data, true);
+       
+            /*
+             * set the initial data
+             */
+            _this.setModel( _this.getMarshaler().jsonToModel(data) );
+             
+            /*
+             * fire 'loaded' event only if we creat a model
+             */
+            _this.fireDataEvent( "loaded", _this.getModel() );             
+          }
+           
+          /*
+           * final callback, only sent if request was successful
+           */
+          if ( typeof finalCallback == "function" )
+          {
+            finalCallback.call( context, data );
+          }            
         } 
         else 
         {
