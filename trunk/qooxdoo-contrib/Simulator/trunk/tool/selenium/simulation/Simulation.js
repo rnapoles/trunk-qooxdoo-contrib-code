@@ -810,23 +810,27 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
   
   var addHandler = function(win)
   {
-    var qxWin = win || selenium.qxStoredVars['autWindow']; 
-    qxWin.qx.event.GlobalError.setErrorHandler(function(ex) {
+    var targetWin = win || selenium.qxStoredVars['autWindow']; 
+    targetWin.qx.event.GlobalError.setErrorHandler(function(ex) {
       //selenium.browserbot.getCurrentWindow().console.log(ex);
-      var exString = ex.name + ": " + ex.message;
-      if (ex.fileName) {
-        exString += " in file " + ex.fileName;
+      if (ex instanceof win.qx.core.WindowError) {
+        var exString = ex.toString() + " in " + ex.getUri() + " line " + ex.getLineNumber();
       }
-      if (ex.lineNumber) {
-        exString += " line " + ex.lineNumber;
-      }      
-      if (ex.description) {
-        exString += " Description: " + ex.description;
+      else {
+        var exString = ex.name + ": " + ex.message;
+        if (ex.fileName) {
+          exString += " in file " + ex.fileName;
+        }
+        if (ex.lineNumber) {
+          exString += " line " + ex.lineNumber;
+        }
+        if (ex.description) {
+          exString += " Description: " + ex.description;
+        }
       }
       var sanitizedEx = selenium.qxStoredVars['autWindow'].qx.Simulation.sanitize(exString);
       //sanitizedEx = sanitizedEx.replace(/\n/g,"<br/>");
-      //sanitizedEx = sanitizedEx.replace(/\r/g,"<br/>");
-
+      //sanitizedEx = sanitizedEx.replace(/\r/g,"<br/>");      
       selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore.push(sanitizedEx);     
     });
   };
@@ -852,9 +856,11 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
 simulation.Simulation.prototype.logGlobalErrors = function()
 {
   var exceptions = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getGlobalErrors()", "Retrieving global error store");
-  var exArr = String(exceptions).split("|");
-
-  for (var i=0; i<exArr.length; i++) {
-    this.log(exArr[i], "error");
+  var ex = String(exceptions);
+  if (ex.length > 0) {
+    var exArr = ex.split("|");   
+    for (var i = 0; i < exArr.length; i++) {
+      this.log("Global Error Handler caught exception: " + exArr[i], "error");
+    }
   }
 };
