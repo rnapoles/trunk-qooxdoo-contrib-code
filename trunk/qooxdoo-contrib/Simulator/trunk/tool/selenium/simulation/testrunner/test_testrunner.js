@@ -125,6 +125,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
                                            "Waiting for test package to load");
 
     if (!isAutReady) {
+      this.testFailed = true;
       return;
     }
 
@@ -135,7 +136,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
     this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
-    var isPackageDone = mySim.waitForCondition(isStatusReady, 1200000, 
+    var isPackageDone = mySim.waitForCondition(isStatusReady, 2400000, 
                       "Waiting for test package " + packages[i] + " to finish");
 
     if (!isPackageDone) {
