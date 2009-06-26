@@ -49,8 +49,35 @@ qx.Class.define("custom.Application",
       // Define alias for custom resource path
       qx.io.Alias.getInstance().add("custom", qx.core.Setting.get("custom.resourceUri"));
 
+
+      var container = new qx.ui.layout.CanvasLayout().set({
+        border: "black",
+        width: 200,
+        height: 100,
+        left: 300,
+        top: 10,
+        overflow: "hidden"
+      });
+      
+      var input1 = new qx.ui.form.TextField().set({
+        left: 10,
+        top: 10,
+        width: 100
+      });      
+      container.add(input1);
+
+      var input2 = new qx.ui.form.TextField().set({
+        left: 250,
+        top: 10,
+        width: 100
+      });      
+      container.add(input2);
+      
+      container.addToDocument();
+
+
       // Create button
-      var button1 = new qx.ui.form.Button("First Button", "custom/image/test.png");
+      var button1 = new qx.ui.form.Button("block");
 
       // Set button location
       button1.setTop(50);
@@ -59,12 +86,9 @@ qx.Class.define("custom.Application",
       // Add button to document
       button1.addToDocument();
 
-      // Attach a tooltip
-      button1.setToolTip(new qx.ui.popup.ToolTip("A nice tooltip", "icon/32/status/dialog-information.png"));
-
       // Add an event listener
       button1.addEventListener("execute", function(e) {
-        alert("Hello World!");
+        qx.ui.core.Widget.disableScrolling(container);
       });
     },
 
