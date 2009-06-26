@@ -199,7 +199,8 @@ mySim.runTest = function()
   }
 
   try {
-    mySim.runTest();
+    mySim.addGlobalErrorHandler();
+    mySim.runTest();    
   }
   catch(ex) {
     mySim.testFailed = true;
@@ -209,6 +210,8 @@ mySim.runTest = function()
     }
     mySim.log(msg, "error");
   }
+
+  mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
     if (mySim.getConfigSetting("debug")) {
