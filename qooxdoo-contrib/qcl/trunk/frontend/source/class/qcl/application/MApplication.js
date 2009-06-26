@@ -299,27 +299,7 @@ qx.Mixin.define("qcl.application.MApplication",
        SERVER COMMUNICATION
     ---------------------------------------------------------------------------
     */        
-    
-    /** 
-     * Converts jsonrpc request data into an Url that
-     * performs a GET request on the jsonrpc backend,
-     * @param {String} service
-     * @param {String} method
-     * @param {Object} params
-     */
-    convertToGetRequestUrl : function(service,method,params)
-    {
-      var url  = this.getServerUrl() + "?_ScriptTransport_id=1&_ScriptTransport_data=";
-      url += qx.io.Json.stringify( {
-        'service'     : service,
-        'method'      : method,
-        'params'      : params,
-        'server_data' : {
-          'sessionId' : this.getSessionId()  
-        }
-      })
-      return url;
-    },   
+     
     
     
     /** 
@@ -454,7 +434,7 @@ qx.Mixin.define("qcl.application.MApplication",
     * }
     * </pre>
     */
-   loadConfiguration : function( service )
+   setupConfig : function( service )
    {
       if ( ! this.getConfigManager() )
       {
@@ -487,17 +467,18 @@ qx.Mixin.define("qcl.application.MApplication",
        * whenever a config value changes on the server, send it to server
        */
       this.getConfigManager().addListener("clientChange",function(event){
-        var key = event.getData();
-        this.getConfigStore().execute("set",[ key, this.getConfigManager().getValue(key) ] );
+        var data = event.getData();
+        this.getConfigStore().execute("set",[ data.key, data.value ] );
       },this);       
-
-       /*
-        * load the data
-        */
-       this.getConfigStore().load();
-       
    },
    
+   /**
+    * Load config data
+    */
+   loadConfig : function()
+   {
+     this.getConfigStore().load();
+   },
    
     /*
     ---------------------------------------------------------------------------
