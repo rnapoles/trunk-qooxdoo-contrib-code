@@ -257,7 +257,7 @@ class qcl_access_Controller
   /**
    * Service method to log out the active user. Automatically creates guest
    * access. Override this method if this is not what you want.
-   * @return qcl_jsonrpc_Response
+   * @return qcl_mvc_Response
    */
   function method_logout()
   {
@@ -374,7 +374,7 @@ class qcl_access_Controller
      * create a new guest user
      */
     $userModel =& $this->getUserModel();
-    $userModel->createGuestUser();
+    $userModel->createAnonymous();
     $this->setActiveUser( $userModel );
 
     $userId = $userModel->getId();
@@ -393,10 +393,15 @@ class qcl_access_Controller
    *
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
-   * @return qcl_jsonrpc_Response
+   * @return qcl_mvc_Response
    */
   function method_authenticate( $params )
   {
+
+    /*
+     * set data object
+     */
+    $this->setResponseDataClass("qcl_access_AuthenticationResponse");
 
     /*
      * check for valid user session
@@ -521,7 +526,7 @@ class qcl_access_Controller
     /*
      * user data
      */
-    $this->set( "userId", $activeUser->getId() );
+    $this->set( "userId", (int) $activeUser->getId() );
     $this->set( "anonymous", $activeUser->isAnonymous() );
     $this->set( "username", $activeUser->username() );
     $this->set( "fullname", $activeUser->get("name") );

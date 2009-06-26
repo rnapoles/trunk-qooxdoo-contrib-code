@@ -234,6 +234,22 @@ class qcl_application_Application
   }
 
   /**
+   * Logs a debug message, which will always be printed.
+   */
+  function debug( $msg, $class, $line )
+  {
+    if ( is_a($this,"qcl_application_Application") )
+    {
+      parent::debug( $msg, $class, $line );
+    }
+    else
+    {
+      $_this = qcl_application_Application::getInstance();
+      $_this->debug( $msg, $class, $line );
+    }
+  }
+
+  /**
    * Logs an info message. Can be called statically
    */
   function info( $msg )
@@ -267,7 +283,7 @@ class qcl_application_Application
   }
 
   /**
-   * Raises an error, qcl-style
+   * Raises an error, qcl-style. Can be called statically.
    */
   function raiseError( $msg )
   {

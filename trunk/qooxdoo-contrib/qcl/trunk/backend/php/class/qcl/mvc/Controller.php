@@ -3,8 +3,8 @@
  * dependencies
  */
 require_once "qcl/core/Object.php";
-require_once "qcl/jsonrpc/Request.php";
-require_once "qcl/jsonrpc/Response.php";
+require_once "qcl/mvc/Response.php";
+require_once "qcl/mvc/ResponseDataObject.php";
 
 /*
  * constants
@@ -47,7 +47,7 @@ class qcl_mvc_Controller extends qcl_core_Object
   /**
    * constructor , configures the service
    */
-  function __construct( $server=null )
+  function __construct()
   {
 
     /*
@@ -56,37 +56,10 @@ class qcl_mvc_Controller extends qcl_core_Object
     parent::__construct();
 
     /*
-     * set the server. This is a bit redundant, since we have
-     * a global server singleton available. Might be removed
-     * eventually.
-     */
-    if ( is_a( $server, "JsonRpcServer" ) )
-    {
-
-      $this->_server =& $server;
-
-      /*
-       * request object, fetches information from current
-       * request
-       */
-      $request =& $this->requestObject();
-      $request->setServer( &$server );
-
-    }
-
-    /*
      * configure service
      */
     $this->configureService();
-  }
 
-  /**
-   * Returns the server object
-   * @return qcl_server_Server
-   */
-  function &server()
-  {
-    return $this->server;
   }
 
   /**
@@ -95,25 +68,7 @@ class qcl_mvc_Controller extends qcl_core_Object
    */
   function &getServer()
   {
-    return $this->server;
-  }
-
-  /**
-   * Returns the current request object
-   * @return qcl_jsonrpc_Request
-   */
-  function &requestObject()
-  {
-    return qcl_jsonrpc_Request::getInstance();
-  }
-
-  /**
-   * Returns the current response object
-   * @return qcl_jsonrpc_Response
-   */
-  function &responseObject()
-  {
-    return qcl_jsonrpc_Response::getInstance();
+    return qcl_server_Server::getInstance();
   }
 
   /**
@@ -200,42 +155,79 @@ class qcl_mvc_Controller extends qcl_core_Object
   //-------------------------------------------------------------
 
   /**
-   * Set a part or the full response
-   * @see qcl_jsonrpc_response::set()
-   * @todo rename to setResponseData()
-   *
+   * Shorthand method to create the response data object from the
+   * given class.
+   * @param string $clazz
+   * @return void
    */
-  function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
+  function setResponseDataClass( $clazz )
   {
-    $response =& $this->responseObject();
-    $response->set( $first, $second );
-  }
-
-  function setResult ( $data )
-  {
-    $response =& $this->responseObject();
-    $response->setResult( $data );
+    $path = str_replace("_", "/", $clazz ) . ".php";
+    require_once $path;
+    $this->setDataObject( new $clazz );
   }
 
   /**
-   * Returns value for particular response key
-   * @param string $key
-   * @todo rename to getResponseData
+   * Shorthand method to set the data object of the response object
+   * @param qcl_mvc_ResponseDataObject $dataObject
+   * @return void
    */
-  function &get ( $key )
+  function setDataObject( $dataObject )
+  {
+    $responseObj =& $this->responseObject();
+    $responseObj->setDataObject( &$dataObject );
+  }
+
+  /**
+   * Set a part or the full response.
+   * Shorthand method for $this->responseObject()->set()
+   * @see qcl_mvc_response::set()
+   */
+  function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
+  {
+    $responseObj =& $this->responseObject();
+    $responseObj->set( $first, $second );
+  }
+
+  /**
+   * Shorthand method for $this->responseObject()->setData()
+   * @param $data
+   * @see qcl_mvc_response::setData()
+   */
+  function setData ( $data )
   {
     $response =& $this->responseObject();
-    return $response->get($key);
+    $response->setData( $data );
   }
 
   /**
    * Returns response object for return to the client.
-   * Can be overridden by child classes
-   * @return qcl_jsonrpc_Response
+   * @return qcl_mvc_Response
    */
   function &response()
   {
-    return qcl_jsonrpc_Response::getInstance();
+    $responseObject =& qcl_mvc_Response::getInstance();
+
+    /*
+     * convert the data object into an associative array of
+     * public properties
+     */
+    $dataObject =& $responseObject->getDataObject();
+    if ( is_object( $dataObject ) )
+    {
+      $responseObject->setData( get_object_vars( $dataObject ) );
+    }
+
+    return $responseObject;
+  }
+
+  /**
+   * Returns the current response object
+   * @return qcl_mvc_Response
+   */
+  function &responseObject()
+  {
+    return qcl_mvc_Response::getInstance();
   }
 
   //-------------------------------------------------------------
@@ -355,9 +347,9 @@ class qcl_mvc_Controller extends qcl_core_Object
   }
 
   /**
-   * Returns a list of all service methods that this class provides
+   * Returns a list of all service methods that this class provides. Doesn't work.
    * @todo Save result so that access can be regulated by source code introspection
-   * @return qcl_jsonrpc_Response
+   * @return qcl_mvc_Response
    */
   function method_services()
   {

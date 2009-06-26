@@ -123,5 +123,15 @@ class qcl_server_Server extends qcl_core_StaticClass
     exit;
   }
 
+  /**
+   * Returns the ip of the requesting client. Can be called
+   * statically.
+   * @return string
+   */
+  function getRemoteIp()
+  {
+    return $_SERVER['REMOTE_ADDR'];
+  }
+
 }
 ?>

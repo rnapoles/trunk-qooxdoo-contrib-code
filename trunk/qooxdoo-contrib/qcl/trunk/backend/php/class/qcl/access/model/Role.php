@@ -12,7 +12,6 @@ require_once "qcl/access/model/Common.php";
 class qcl_access_model_Role extends qcl_access_model_Common
 {
    var $schemaXmlPath  = "qcl/access/model/Role.model.xml";
-   var $importDataPath = "qcl/access/model/Role.data.xml";
 
   /**
    * Returns singleton instance.

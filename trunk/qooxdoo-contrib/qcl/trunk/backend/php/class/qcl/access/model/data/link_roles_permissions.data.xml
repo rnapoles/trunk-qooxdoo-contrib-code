@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <links model="qcl.access.model.Role">
+    <link name="permission" model="qcl.access.model.Permission">
+      <origin namedId="administrator">
+        <target namedId="manageUsers" />
+      </origin>
+      <origin namedId="manager">
+        <target namedId="deleteRecord" />
+      </origin>
+      <origin namedId="user">
+        <target namedId="createRecord" />
+        <target namedId="viewRecord" />
+      </origin>
+      <origin namedId="anonymous">
+        <target namedId="viewRecord" />
+      </origin>      
+    </link>
+  </links>
+</root>

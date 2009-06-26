@@ -74,11 +74,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   var $include = array();
 
-  /**
-   * PHP4/PHP5 interface implementation.
-   * @var array
-   */
-  var $implements = array();
 
   /**
    * If this object produces a recoverable error, the error message will be stored here

@@ -13,7 +13,7 @@ class qcl_access_model_Permission extends qcl_access_model_Common
 {
 
    var $schemaXmlPath  = "qcl/access/model/Permission.model.xml";
-   var $importDataPath = "qcl/access/model/Permission.data.xml";
+
 
   /**
    * Returns singleton instance.

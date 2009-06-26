@@ -1,13 +1,46 @@
 <?php
+//require_once "qcl/mvc/IResponse.php";
 
-class qcl_jsonrpc_Response
+/**
+ * The response is the "view" part of the mvc Architecture in qcl.
+ * It models the jsonrpc response. It differs from the "normal" jsonrpc
+ * response on which the different jsonrpc backends and the databinding
+ * feature of qooxdoo in that an additional data layer is added, which
+ * transports events and messages between server and client.
+ *
+ * {
+ *   // result property should always be provided in order to allow events and
+ *   // messages to be transported
+ *   result :
+ *   {
+ *     data       :  (... result data ...) ,
+ *     events : [ { type : "fooEvent", data : ... },
+ *                { type : "barEvent", data: ... }, ... ],
+ *     messages : [ { name : "appname.messages.foo", data : ... },
+ *                  { name : "appname.messages.bar", data: ... }, ... ]
+ *   }
+ *   // error property only exists if an error occurred
+ *   error :
+ *   {
+ *     (... error data ...)
+ *   }
+ *   id : (int id of rpc request)
+ * }
+ *
+ * The result.result element can be of any type, however, usually
+ * it is an object, which allows to enforce a specific interface and,
+ * thus, to enforce a signature for response data. You can use the co
+ *
+ */
+class qcl_mvc_Response
+//  implements qcl_mvc_IResponse
 {
 
   /**
    * The result data returned by the service method
    * @var mixed
    */
-  var $result = array();
+  var $data = null;
 
   /**
    * An array of events dispatched on the server
@@ -26,22 +59,64 @@ class qcl_jsonrpc_Response
 
   /**
    * Returns a singleton instance of this class
-   * @return qcl_jsonrpc_Response
+   * @return qcl_mvc_Response
    */
   function &getInstance( )
   {
-    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    $clazz = __CLASS__;
+    if ( ! is_object( $GLOBALS[ $clazz ] ) )
     {
-      $GLOBALS[__CLASS__] =& new qcl_jsonrpc_Response;
+      $GLOBALS[ $clazz ] =& new $clazz ;
     }
-    return $GLOBALS[__CLASS__];
+    return $GLOBALS[ $clazz ];
   }
 
-
-  function setResult( $data )
+  /**
+   * Returns the result data.
+   * @return mixed
+   */
+  function &getData()
   {
-    $this->result = $data;
+    return $this->data;
   }
+
+  /**
+   * Sets the response data
+   * @param $data
+   * @return void
+   */
+  function setData( $data )
+  {
+    if ( is_object( $data ) )
+    {
+      qcl_application_Application::raiseError("Invalid data. Must be a scalar value or an array. Use setDataObject() for objects.");
+    }
+    $this->data = $data;
+  }
+
+  /**
+   * Sets the response data object.
+   * @param qcl_mvc_ResponseDataObject $dataObject
+   * @return void
+   */
+  function setDataObject( $dataObject )
+  {
+    if ( ! is_a( $dataObject, "qcl_mvc_ResponseDataObject") )
+    {
+      qcl_application_Application::raiseError("Invalid response data object. Must be a qcl_mvc_ResponseDataObject or a subclass of it.");
+    }
+    $this->data =& $dataObject;
+  }
+
+  /**
+   * Returns the response data object.
+   * @return qcl_mvc_ResponseDataObject
+   */
+  function &getDataObject()
+  {
+    return $this->data;
+  }
+
 
   /**
    * Set a part or the full response
@@ -56,6 +131,7 @@ class qcl_jsonrpc_Response
    */
   function set( $first, $second=QCL_ARGUMENT_NOT_SET )
   {
+
     if ( is_a( $first, "qcl_db_model_AbstractModel" ) )
     {
       if ( ! is_array($first->getRecord()) )
@@ -79,11 +155,15 @@ class qcl_jsonrpc_Response
     }
     elseif ( is_string($first) and $second !== QCL_ARGUMENT_NOT_SET )
     {
-      $this->result[$first] = $second;
+      if ( ! is_a( $this->data, "qcl_mvc_responseDataObject" ) )
+      {
+        qcl_application_Application::raiseError("No valid response data object, must be a qcl_mvc_responseDataObject or subclass.");
+      }
+      $this->data->set( $first, $second );
     }
     elseif ( is_string($first) and $second === QCL_ARGUMENT_NOT_SET )
     {
-      $this->result = $first;
+      $this->data = $first;
     }
     else
     {
@@ -105,15 +185,7 @@ class qcl_jsonrpc_Response
     return $this->result[$property];
   }
 
-  /**
-   * Returns the result data
-   *
-   * @return unknown
-   */
-  function &getData()
-  {
-    return $this->result;
-  }
+
 
   /**
    * adds a message to the message stack

@@ -2,17 +2,17 @@
 <root>
   <links model="qcl.access.model.Role">
     <link name="user" model="qcl.access.model.User">
-      <origin namedId="qcl.access.role.User">
+      <origin namedId="user">
         <target namedId="user1" />
         <target namedId="user2" />   
         <target namedId="user3" />   
         <target namedId="admin" />     
       </origin>
-      <origin namedId="qcl.access.role.Manager">
+      <origin namedId="manager">
         <target namedId="user3" />       
         <target namedId="admin" /> 
       </origin>
-      <origin namedId="qcl.access.role.Administrator">
+      <origin namedId="administrator">
         <target namedId="admin" />
       </origin>
     </link>

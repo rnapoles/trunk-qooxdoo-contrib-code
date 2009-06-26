@@ -446,7 +446,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function info($str)
   {
-    error_log( "qcl_jsonrpc_Server: ".  $str . "\n",3, QCL_LOG_FILE);
+    error_log( "\qcl_server_JsonRpc: ".  $str . "\n",3, QCL_LOG_FILE);
   }
 
   /**
@@ -454,7 +454,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function warn($str)
   {
-    error_log( "qcl_jsonrpc_Server: *** WARN: ".  $str . "\n",3, QCL_LOG_FILE);
+    error_log( "\nqcl_server_JsonRpc: *** WARN: ".  $str . "\n",3, QCL_LOG_FILE);
   }
 
   /**
@@ -464,7 +464,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function logError( $msg )
   {
-    error_log( "\nqcl_jsonrpc_Server: *** ERROR: ". $msg . "\n",3, QCL_LOG_FILE);
+    $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg . "\n" . debug_get_backtrace();
+    error_log( $msg, 3, QCL_LOG_FILE);
   }
 }
 ?>
