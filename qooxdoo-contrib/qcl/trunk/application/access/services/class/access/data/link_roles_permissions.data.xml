@@ -2,17 +2,18 @@
 <root>
   <links model="qcl.access.model.Role">
     <link name="permission" model="qcl.access.model.Permission">
-      <origin namedId="qcl.access.role.Administrator">
+      <origin namedId="administrator">
         <target namedId="manageUsers" />
       </origin>
-      <origin namedId="qcl.access.role.Manager">
+      <origin namedId="manager">
         <target namedId="deleteRecord" />
       </origin>
-      <origin namedId="qcl.access.role.User">
-        <target namedId="createRecord" />
+      <origin namedId="user">
         <target namedId="viewRecord" />
+        <target namedId="createRecord" />
+        <target namedId="manageConfig" />
       </origin>
-      <origin namedId="qcl.access.role.Anonymous">
+      <origin namedId="anonymous">
         <target namedId="viewRecord" />
       </origin>      
     </link>

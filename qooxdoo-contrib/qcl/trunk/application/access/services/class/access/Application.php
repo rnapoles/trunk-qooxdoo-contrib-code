@@ -42,18 +42,41 @@ class access_Application
     parent::start();
 
     /*
-     * Load custom data into models. The rest of the data is
-     * automatically
+     * Load initial data into models.
      */
     if ( ! qcl_registry_Persist::has("dataImported") )
     {
-      qcl_log_Logger::info("*** Importing custom data...");
+      qcl_application_Application::info("*** Importing initial data...");
 
+      /*
+       * load permission data
+       */
       $permissionModel =& qcl_access_model_Permission::getInstance();
-      $permissionModel->import( "access/PermissionModel.data.xml" );
+      $permissionModel->import( "access/data/Permission.data.xml" );
+
+      /*
+       * load user data
+       */
+      $userModel =& qcl_access_model_User::getInstance();
+      $userModel->import( "access/data/User.data.xml");
+
+      /*
+       * load role data and link it to permissions and users
+       */
       $roleModel =& qcl_access_model_Role::getInstance();
-      $roleModel->importLinkData( "access/link_roles_permissions.data.xml" );
-      $roleModel->importLinkData( "access/link_roles_users.data.xml" );
+      $roleModel->import( "access/data/Role.data.xml");
+      $roleModel->importLinkData( "access/data/link_roles_permissions.data.xml" );
+      $roleModel->importLinkData( "access/data/link_roles_users.data.xml" );
+
+      /*
+       * load config data
+       */
+      $configModel =& qcl_config_Db::getInstance();
+      $configModel->import( "access/data/Config.data.xml" );
+
+      /*
+       * set flag that data has been imported
+       */
       qcl_registry_Persist::set("dataImported",true);
     }
   }

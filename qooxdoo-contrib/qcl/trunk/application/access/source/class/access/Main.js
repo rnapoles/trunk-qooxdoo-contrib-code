@@ -48,10 +48,11 @@ qx.Class.define("access.Main",
       this.startAuthentication("access.SimpleAuthController");
 
       /*
-             * configuration
+             * setup and load configuration
              */
 
-      this.loadConfiguration("access.SimpleConfigController");
+      this.setupConfig("access.SimpleConfigController");
+      this.loadConfig();
 
       /*
              * login popup
@@ -89,15 +90,37 @@ qx.Class.define("access.Main",
         if (data.error) {
           callback.call(context, false, data.error);
         } else {
+          
+          /*
+           * login was successful
+           */
           callback.call(context, true);
+          
+          /*
+           * load configuration data for this user
+           */
+          qx.core.Init.getApplication().loadConfig();
         }
       },
       this);
     },
+    
+    logoutUser : function()
+    {
+      /*
+       * call parent method to log out
+       */
+      this.logout();
+      
+      /*
+       * load configuration data for anonymous
+       */
+      this.loadConfig();      
+    },
 
 
     /**
-     * TODOC
+     * Changes the backend
      *
      * @param version {var} TODOC
      * @return {void} 
@@ -122,7 +145,7 @@ qx.Class.define("access.Main",
       }
 
       this.removeState("sessionId");
-      this.logout();
+      this.logoutUser();
     }
   }
 });
