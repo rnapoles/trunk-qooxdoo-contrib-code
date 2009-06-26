@@ -6,17 +6,17 @@
 
 require_once "qcl/mvc/AbstractModel.php";
 
-class qcl_encoding_Converter extends qcl_mvc_AbstractModel 
+class qcl_util_encoding_Converter extends qcl_mvc_AbstractModel
 {
-  var $converter_cmd = "";  
-  
+  var $converter_cmd = "";
+
 	//-------------------------------------------------------------
   // API methods
   //-------------------------------------------------------------
-  
+
   /**
    * converts from one encoding to another one, using available
-   * php function 
+   * php function
    * @todo extend to allow usage of external libraries
    * @param string $src_encoding
    * @param string $tgt_encoding
@@ -35,9 +35,9 @@ class qcl_encoding_Converter extends qcl_mvc_AbstractModel
     }
     else
     {
-      $this->raiseError("No character conversion library found in your PHP installation. Please upgrade.");  
+      $this->raiseError("No character conversion library found in your PHP installation. Please upgrade.");
     }
 	}
-	
+
 }
 ?>

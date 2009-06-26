@@ -8,11 +8,6 @@
  */
 class qcl_core_BaseClass
 {
-  /**
-   * internal cache for classes that have been mixed in.
-   * Only needed if aggregate_info function does not exist
-   */
-  var $_mixinlookup = array();
 
   /**
    * PHP4 __construct()
@@ -38,6 +33,13 @@ class qcl_core_BaseClass
     {
       call_user_func_array(array(&$this, '__construct'), $args);
     }
+
+    /**
+     * internal cache for classes that have been mixed in.
+     * Only needed if aggregate_info function does not exist. Is not
+     * declared as class variable so it doesn't show up when serialized
+     */
+    $this->_mixinlookup = array();
 
     /*
      * turn on overloading
@@ -102,7 +104,7 @@ class qcl_core_BaseClass
      */
     if ( ! $accessorMethodExists )
     {
-      $this->raiseError("Overload error: Unknown method " . get_class($this) . "::$method().");
+      trigger_error("Overload error: Unknown method " . get_class($this) . "::$method().");
     }
 
     /*

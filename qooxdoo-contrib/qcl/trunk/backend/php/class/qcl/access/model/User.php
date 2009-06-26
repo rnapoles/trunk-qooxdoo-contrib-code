@@ -17,7 +17,6 @@ class qcl_access_model_User extends qcl_access_model_Common
 {
 
    var $schemaXmlPath  = "qcl/access/model/User.model.xml";
-   var $importDataPath = "qcl/access/model/User.data.xml";
 
   /**
    * names that cannot be used as namedIS
@@ -63,7 +62,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    * Creates a new anonymous guest user
    * @return void
    */
-  function createGuestUser()
+  function createAnonymous()
   {
     /*
      * purge inactive guests
@@ -74,10 +73,10 @@ class qcl_access_model_User extends qcl_access_model_Common
      * role model
      */
     $roleModel  =& qcl_access_model_Role::getInstance();
-    $roleModel->findByNamedId("qcl.access.role.Anonymous");
+    $roleModel->load(1); // the anonymous role is ALWAYS the first role defined
     if ( $roleModel->foundNothing() )
     {
-      $this->raiseError("No guest role available.");
+      $this->raiseError("You need to have at least one role, the first one being the anonymous role.");
     }
 
     $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;

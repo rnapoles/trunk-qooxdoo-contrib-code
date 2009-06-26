@@ -104,9 +104,6 @@ if ( count( $_POST ) )
         $serverData ["password"] = $_POST['password'];
       }
 
-
-
-
       /*
        * send request and return result data
        */
@@ -127,10 +124,10 @@ if ( count( $_POST ) )
         /*
          * set session id in form
          */
-        $sessionId = isset( $data['result']['sessionId'] ) ?
-          $data['result']['sessionId'] :
-            isset( $data['result']['result']['sessionId'] ) ?
-              $data['result']['result']['sessionId'] : null ;
+        $sessionId = isset( $data['data']['sessionId'] ) ?
+          $data['data']['sessionId'] :
+            isset( $data['result']['data']['sessionId'] ) ?
+              $data['result']['data']['sessionId'] : null ;
 
         if ( $sessionId  )
         {

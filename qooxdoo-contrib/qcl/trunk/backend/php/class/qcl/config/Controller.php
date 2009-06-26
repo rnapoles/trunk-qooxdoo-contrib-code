@@ -1,12 +1,13 @@
 <?php
-require_once "qcl/mvc/Controller.php";
+require_once "qcl/session/Controller.php";
 require_once "qcl/config/Db.php";
 
 /**
  * Service class providing methods to get or set configuration
  * values
  */
-class qcl_config_Services extends qcl_mvc_Controller
+class qcl_config_Controller
+  extends qcl_session_Controller
 {
 
   //-------------------------------------------------------------
@@ -15,39 +16,47 @@ class qcl_config_Services extends qcl_mvc_Controller
 
  function method_load( $params )
   {
+    /*
+     * arguments
+     */
+    list( $mask ) = $params;
+
+    /*
+     * response data class
+     */
+    $this->setResponseDataClass("qcl_config_LoadResponse");
 
     $configModel = qcl_config_Db::getInstance();
+    $configMap   = $configModel->getAccessibleKeys( $mask );
 
-    return array(
-      'keys'    => array_keys( $configMap ),
-      'values'  => array_values( $configMap )
-    );
-  }
+    /*
+     * response data
+     */
+    $this->set( 'keys',   array_keys( $configMap ) );
+    $this->set( 'values', array_values( $configMap ) );
 
-  function method_get( $params )
-  {
-    list( $key ) = $params;
-    return array(
-      'value'  => $_SESSION['config'][$key]
-    );
+    return $this->response();
   }
 
   function method_set( $params )
   {
-    if ( ! isset( $_SESSION['usersession'] ) )
-    {
-      trigger_error("No usersession!");
-    }
-    if ( ! in_array( "manageConfig", $_SESSION['usersession']['permissions'] ) )
-    {
-      trigger_error("You don't have permission to change the configuration!");
-    }
 
+
+    /*
+     * arguments
+     */
     list( $key, $value ) = $params;
-    $_SESSION['config'][$key] = $value;
-    return array(
-      'result'  => true
-    );
+
+    /*
+     * set key
+     */
+    $configModel = qcl_config_Db::getInstance();
+    $configModel->set( $key, $value );
+
+    /*
+     * result
+     */
+    return true;
   }
 
 

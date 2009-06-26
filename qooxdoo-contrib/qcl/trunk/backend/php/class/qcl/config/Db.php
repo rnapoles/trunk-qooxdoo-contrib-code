@@ -571,11 +571,14 @@ class qcl_config_Db
       $where .= "`namedId` LIKE '$mask%' AND " ;
 		}
 
+		$table = $this->table();
 		$where .= "
-		  ( `userId`=$userId OR `userId` IS NULL
-		  OR (`userId`=0 AND NOT EXISTS (
-		    SELECT * FROM `config` WHERE `userId` = $userId
-		  ) ) )
+		   `userId`=$userId OR `userId` IS NULL
+  		  OR ( `userId`=0 AND NOT EXISTS (
+      		    SELECT * FROM `$table` t2
+      		    WHERE t2.`userId` = $userId
+      		    AND   t2.`namedId` = t2.`namedId` )
+      		)
 		";
 
 		$this->findWhere( $where, "namedId", "namedId,type,value" );
