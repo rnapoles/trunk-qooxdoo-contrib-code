@@ -191,7 +191,7 @@
                    &lt;p&gt;The following config value is deliberately unprotected 
                    by permissions so that an anonymous user can change it  
                    on the client. However, when the change is sent to the 
-                   server, it will refuse to update it.&lt;/p&gt;
+                   server, the server should throw an error.&lt;/p&gt;
                 </qxt:property>
               </qx:label>    
               

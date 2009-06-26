@@ -42,14 +42,6 @@ class class_SimpleConfigController
     );
   }
 
-  function method_get( $params )
-  {
-    list( $key ) = $params;
-    return array(
-      'value'  => $_SESSION['config'][$key]
-    );
-  }
-
   function method_set( $params )
   {
     if ( ! isset( $_SESSION['usersession'] ) )
@@ -63,6 +55,9 @@ class class_SimpleConfigController
 
     list( $key, $value ) = $params;
     $_SESSION['config'][$key] = $value;
+
+    return true;
+
     return array(
       'result'  => true
     );
