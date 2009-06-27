@@ -40,7 +40,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
   /**
    * The datasource model object, if any
-   * @var qcl_datasource_model
+   * @var qcl_data_datasource_model
    */
   var $datasourceModel = null;
 
@@ -109,7 +109,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
      * we can use this as datasource and get the
      * controller from it
      */
-    if ( is_null( $datasourceModel ) and is_a( $controller, "qcl_datasource_type_db_Model" ) )
+    if ( is_null( $datasourceModel ) and is_a( $controller, "qcl_data_datasource_type_db_Model" ) )
     {
       $datasourceModel =& $controller;
     }
@@ -159,19 +159,19 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
    */
   function setDatasourceModel( $datasource )
   {
-    if ( is_object ( $datasource ) and is_a( $datasource, "qcl_datasource_type_db_Model") )
+    if ( is_object ( $datasource ) and is_a( $datasource, "qcl_data_datasource_type_db_Model") )
     {
       $this->datasourceModel =& $datasource;
     }
     else
     {
-      $this->raiseError("Argument must be a qcl_datasource_type_db_Model object");
+      $this->raiseError("Argument must be a qcl_data_datasource_type_db_Model object");
     }
   }
 
   /**
    * Retrieves the datasource object
-   * @return qcl_datasource_type_db_Model
+   * @return qcl_data_datasource_type_db_Model
    */
   function &getDatasourceModel()
   {

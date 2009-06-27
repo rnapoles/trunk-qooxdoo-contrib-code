@@ -577,7 +577,7 @@ class qcl_config_Db
   		  OR ( `userId`=0 AND NOT EXISTS (
       		    SELECT * FROM `$table` t2
       		    WHERE t2.`userId` = $userId
-      		    AND   t2.`namedId` = t2.`namedId` )
+      		    AND   t2.`namedId` = t1.`namedId` )
       		)
 		";
 

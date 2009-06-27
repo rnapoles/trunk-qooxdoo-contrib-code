@@ -3,11 +3,11 @@
   include="qcl/db/model/xmlSchema/Model.xml">
    
   <!-- 
-    A model representing schemas    
+    A model that registers the link between classes and schemas    
    -->
   <model 
     table="schemas"
-    name="qcl.datasource.SchemaModel"
+    name="qcl.data.datasource.registry.Model"
     extends="qcl.db.model.xmlSchema.Model">
     <definition>
       <properties>

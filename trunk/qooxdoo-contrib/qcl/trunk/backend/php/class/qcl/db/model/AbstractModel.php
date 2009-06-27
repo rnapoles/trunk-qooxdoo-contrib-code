@@ -103,7 +103,7 @@ class qcl_db_model_AbstractModel
      */
     $dsModel =& $this->getDatasourceModel();
     if ( is_object($dsModel)
-          and $dsModel->isInstanceOf( "qcl_datasource_type_db_Model" ) )
+          and $dsModel->isInstanceOf( "qcl_data_datasource_type_db_Model" ) )
     {
       //$this->debug( get_class($this) . ": Getting db object from datasource object...");
       $db =& $dsModel->getDatasourceConnection();
