@@ -5,10 +5,10 @@
 require_once "qcl/mvc/AbstractModel.php";
 
 /**
- * http request model
- * @todo rename into qcl_net_httpRequest
+ * HTTP request model
  */
-class qcl_http_Request extends qcl_mvc_AbstractModel
+class qcl_io_remote_HttpRequest
+  extends qcl_mvc_AbstractModel
 {
 
   /**
@@ -255,8 +255,8 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     array_shift( $headers ); // remove http response code
     array_pop( $headers ); // remove empty line at the end
     return $headers;
-  }  
-  
+  }
+
   /**
    * Returns a map of headers
    * @return array
@@ -271,7 +271,7 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
       $key = substr( $header, 0, $splitPos );
       $value = trim( substr( $header, $splitPos+1 ) );
       if ($key) $map[$key] = $value;
-    }    
+    }
     return $map;
   }
 
@@ -355,11 +355,11 @@ class qcl_http_Request extends qcl_mvc_AbstractModel
     stream_set_blocking ( $fp, 0 );
     $clt = "Content-Length:"; $cll = strlen($clt); $len = 0;
     while ( ! feof( $fp )  and ( time() - $time <  $timeout ) )
-    { 
+    {
       if ( $r = fgets( $fp, 1024*8 ) )
       {
         $response .= $r;
-        if ( ! strncmp( $r, $clt, $cll ) ) 
+        if ( ! strncmp( $r, $clt, $cll ) )
         {
           $len = ( (int) substr( $r, $cll ) ) + strlen( $response );
         }

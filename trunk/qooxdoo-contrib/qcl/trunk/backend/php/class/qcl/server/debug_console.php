@@ -8,7 +8,7 @@ if ( count( $_POST ) )
 {
   require_once "qcl/server/JsonRpc.php";
   require_once "qcl/server/Server.php";
-  require_once "qcl/http/JsonRpcRequest.php";
+  require_once "qcl/io/remote/JsonRpc.php";
   require_once "qcl/log/FireCake.php";
 
   FireCake::enable();
@@ -27,7 +27,7 @@ if ( count( $_POST ) )
       /*
        * request object
        */
-      $request = new qcl_http_JsonRpcRequest( $serverUrl );
+      $request = new qcl_io_remote_JsonRpc( $serverUrl );
 
 
       /*
