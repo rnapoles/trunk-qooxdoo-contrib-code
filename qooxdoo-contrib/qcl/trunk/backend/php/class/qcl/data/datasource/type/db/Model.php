@@ -13,9 +13,9 @@ require_once "qcl/db/model/xmlSchema/Model.php";
  * use a different storage for your datasource information, you must write
  * custom child classes for the other datasource models.
  *
- * @todo rename to qcl_datasource_storage_Db
+ * @todo rename to qcl_data_datasource_storage_Db
  */
-class qcl_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
+class qcl_data_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
 {
 
   /**
@@ -45,7 +45,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
    * The path to the model schema xml file
    * @var string
    */
-  var $schemaXmlPath = "qcl/datasource/type/db/Model.xml";
+  var $schemaXmlPath = "qcl/data/datasource/type/db/Model.xml";
 
   /**
    * the database connection object of the currently loaded record
@@ -87,7 +87,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
   /**
    * Gets a stored model by name
    * @param string $name
-   * @return qcl_datasource_type_db_Model
+   * @return qcl_data_datasource_type_db_Model
    */
   function &getModel ( $name )
   {
@@ -97,7 +97,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
   /**
    * Stores a model object by name
    * @param string $name
-   * @param qcl_datasource_type_db_Model
+   * @param qcl_data_datasource_type_db_Model
    * @return void
    */
   function setModel ( $name, $model )

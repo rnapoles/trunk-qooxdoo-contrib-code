@@ -1,16 +1,16 @@
 <?php
 
-require_once "qcl/datasource/Controller.php";
+require_once "qcl/data/datasource/Controller.php";
 require_once "qcl/application/Client.php";
 
 /**
  * QCL Application Controller
  * provides methods that are typically required in an application controller.
  * The main class of your application should extend this. For the moment,
- * this just wraps qcl_datasource_Controller.
+ * this just wraps qcl_data_datasource_Controller.
  *
  */
-class qcl_application_Controller extends qcl_datasource_Controller
+class qcl_application_Controller extends qcl_data_datasource_Controller
 {
   
   //-------------------------------------------------------------

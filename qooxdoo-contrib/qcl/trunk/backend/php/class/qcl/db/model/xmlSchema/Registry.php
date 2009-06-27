@@ -43,7 +43,7 @@ class qcl_db_model_xmlSchema_Registry
    * Register initialization timestamp for table and datasource.
    * Can be called statically.
    *
-   * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
+   * @param qcl_data_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
    * @param string $class
    * @param int $timestamp
@@ -68,7 +68,7 @@ class qcl_db_model_xmlSchema_Registry
   /**
    * Checks if initialization of table and datasource. Can be called statically.
    *
-   * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
+   * @param qcl_data_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
    * @param string $class
    * @param string $timestamp Optional timpstamp value to check
@@ -85,7 +85,7 @@ class qcl_db_model_xmlSchema_Registry
 
   /**
    * Returns the string name of the datasource model object.
-   * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
+   * @param qcl_data_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @return string
    */
   function _getDatasourceName( $datasourceModel )
@@ -94,7 +94,7 @@ class qcl_db_model_xmlSchema_Registry
     {
       return "__NO_DATASOURCE";
     }
-    elseif ( is_a( $datasourceModel, "qcl_datasource_type_db_Model" ) )
+    elseif ( is_a( $datasourceModel, "qcl_data_datasource_type_db_Model" ) )
     {
       return $datasourceModel->getDatasourceName();
     }

@@ -363,8 +363,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * get datasource model
      */
-    require_once "qcl/datasource/Controller.php";
-    $dsController =& new qcl_datasource_Controller( &$this );
+    require_once "qcl/data/datasource/Controller.php";
+    $dsController =& new qcl_data_datasource_Controller( &$this );
     $dsModel      =& $dsController->getDatasourceModel( $datasource );
     if ( ! $dsModel->isFileStorage() )
     {
