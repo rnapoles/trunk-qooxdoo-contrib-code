@@ -119,6 +119,22 @@ class class_SimpleAuthController
     return $_SESSION['usersession'];
   }
 
+  /**
+   * Logout current user
+   */
+  function method_logout()
+  {
+    return $this->method_authenticate( array( null ) );
+  }
+
+  /**
+   * Terminate a session completely
+   */
+  function method_terminate()
+  {
+    session_destroy();
+    return true;
+  }
 
   /**
    * Returns the id of the user name or false if username does not exist
@@ -204,7 +220,8 @@ class class_SimpleAuthController
       1 => 'createRecord',
       2 => 'deleteRecord',
       3 => 'manageUsers',
-      4 => 'manageConfig'
+      4 => 'changeConfig',
+      5 => 'changeAdminValue'
     ),
 
     'users_roles' => array(
@@ -219,7 +236,7 @@ class class_SimpleAuthController
       0 => array( 0 ),
       1 => array( 0, 1, 4 ),
       2 => array( 2 ),
-      3 => array( 3 )
+      3 => array( 3, 5 )
     )
   );
 }

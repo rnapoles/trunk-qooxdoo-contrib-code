@@ -32,9 +32,7 @@
     /*
      * QxTransformer
      */
-    "transform",
-    "transform-source",
-    "transform-pretty-source"    
+    "transform"
   ],
 
   "let" :

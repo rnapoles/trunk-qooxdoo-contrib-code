@@ -4,6 +4,7 @@
     <link name="permission" model="qcl.access.model.Permission">
       <origin namedId="administrator">
         <target namedId="manageUsers" />
+        <target namedId="changeAdminValue" />
       </origin>
       <origin namedId="manager">
         <target namedId="deleteRecord" />
@@ -11,7 +12,7 @@
       <origin namedId="user">
         <target namedId="viewRecord" />
         <target namedId="createRecord" />
-        <target namedId="manageConfig" />
+        <target namedId="changeConfig" />
       </origin>
       <origin namedId="anonymous">
         <target namedId="viewRecord" />
