@@ -63,7 +63,7 @@ interface qcl_db_IAdapter
   function getPort();
 
   /**
-   * getter for database name
+   * Returns current database name
    * @return string
    */
   function getDatabase();
@@ -164,10 +164,225 @@ interface qcl_db_IAdapter
   function disconnect();
 
   /**
+   * Format a table name for use in the sql query.
+   * @param string $table Table name
+   * @return string
+   */
+  function formatTableName( $table );
+
+  /**
+   * Creates a table wit an numeric, unique, self-incrementing 'id' column,
+   * which is also the primary key, with utf-8 as default character set
+   * @param string $table
+   */
+  function createTable($table);
+
+  /**
+   * creates a temporary table and fills it with data
+   * @return array of citekeys
+   * @param string    $name     name of the table
+   * @param array     $columns  map: column name => column definition
+   * @param array     $data     map: column name => column value
+   */
+  function createTemporaryTable ( $name, $columnData, $data );
+
+
+
+  /**
    * Deletes a table from the database
    * @param string $table
    */
   function dropTable( $table );
 
+  /**
+   * gets the sql to do a fulltext search. Uses boolean mode
+   * @return string
+   * @param string $table
+   * @param string $indexName
+   * @param string $expr
+   */
+  function getFullTextSql( $table, $indexName, $expr );
+
+  //-------------------------------------------------------------
+  // database introspection
+  //-------------------------------------------------------------
+
+  /**
+   * Returns table structure as sql create statement
+   * @param string $table table name
+   * @return string
+   */
+  function getCreateTableSql($table);
+
+
+
+  /**
+   * Returns information on the columns contained in a given table
+   * in the currently selected database
+   * @param string $table
+   * @return array Associated array with the keys name, default, nullable, type and key.
+   */
+  function getColumnMetaData($table);
+
+
+  /**
+   * checks if table exists
+   * @return boolean
+   * @param $table string
+   */
+  function tableExists($table);
+
+  /**
+   * checks if a function or stored procedure of this name exists in the database
+   * @return
+   * @param $routine
+   */
+  function routineExists($routine);
+
+
+  /**
+   * checks if a column exists in the database
+   * @param string $table
+   * @param string $column
+   * @return boolean
+   */
+  function hasColumn($table, $column);
+
+  /**
+   * gets the definition of a column as in
+   * a column defintion in a CREATE TABLE statement
+   * @param string $table
+   * @param string $column
+   * @return mixed string defintion or null if column does not exist
+   */
+  function getColumnDefinition($table,$column);
+
+  /**
+   * Adds a column, issues a warning if column exists
+   * @param string $table
+   * @param string $column
+   * @param string $definition
+   * @param string $after [optional] "FIRST|AFTER xxx|LAST"
+   */
+  function addColumn($table,$column,$definition,$after="");
+
+  /**
+   * Modify a column
+   * @param string $table
+   * @param string $column
+   * @param string $definition
+   * @param string $after [optional] "FIRST|AFTER xxx|LAST"
+   */
+  function modifyColumn($table,$column,$definition,$after="");
+
+  /**
+   * rename a column
+   * @param string $table
+   * @param string $oldColumn old column name
+   * @param string $newColumn new column name
+   * @param string $definition (required)
+   * @param string $after [optional] "FIRST|AFTER xxx|LAST"
+   */
+  function renameColumn($table,$oldColumn,$newColumn,$definition,$after);
+
+  /**
+   * Returns name(s) of primary key(s) from table
+   * @param string $table table name
+   * @return array array of columns
+   */
+  function getPrimaryKey($table);
+
+  /**
+   * Add primary key(s) for the table
+   * @param string $table table name
+   * @param string|array $columns column(s) for the primary key
+   */
+  function addPrimaryKey($table,$columns);
+
+  /**
+   * Drops primary key of a table
+   * @param string $table
+   */
+  function dropPrimaryKey($table);
+
+  /**
+   * Removes an index
+   * @param string $table table name
+   * @param string $index index name
+   * @return void
+   */
+  function dropIndex($table,$index);
+
+  /**
+   * Return the columns in index
+   * @param string $table
+   * @param string $index
+   * @return array Array of column names that belong to the index
+   */
+  function getIndexColumns($table, $index);
+
+  /**
+   * Returns an array of index names defined in the table
+   * @param $table
+   * @return array
+   */
+  function indexes( $table );
+
+  /**
+   * Checks whether an index exists
+   * @param $table
+   * @param $index
+   * @return boolean
+   */
+  function hasIndex( $table, $index );
+
+  /**
+   * Adds a an index
+   * @param string $type FULLTEXT|UNIQUE
+   * @param string $table
+   * @param string $index index name
+   * @param string|array  $columns name(s) of column(s) in the index
+   */
+  function addIndex( $type, $table, $index, $columns );
+
+  /**
+   * updates table structure to conform with sql create table statement passed
+   * @deprecated Use new xml-based table creation / update
+   * @return void
+   * @param string $table table name
+   * @param string $sql   sql create table statement
+   */
+  function updateTableStructure($table,$sql);
+
+  /**
+   * creates functions that help maintain a tree structure in the
+   * database:
+   *
+   * table_getHierarchyPath( int folderId ):
+   * returns a slash-separated hierarchy path
+   * table_getHierarchyIds( int folderId )
+   *
+   * Having these functions will significantly speed up tree
+   * path lookup
+   * @param string $table Table name
+   * @param string $col_id Name of id column
+   * @param string $col_parentId Name of parent id column
+   * @param string $col_label Name of node label/name
+   */
+  function createHierarchyFunctions($table, $col_id, $col_parentId, $col_label);
+
+  /**
+   * creates a trigger that inserts a timestamp on
+   * each newly created record
+   * @param string $table Name of table
+   * @param string $col_created Name of column that gets the timestamp
+   */
+  function createTimestampTrigger( $table, $col_created );
+
+  /**
+   * creates triggers that will automatically create
+   * a md5 hash string over a set of columns
+   */
+  function createHashTriggers ( $table, $columns);
 }
 ?>

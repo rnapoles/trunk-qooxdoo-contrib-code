@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/adapters/Abstract.php";
+require_once "qcl/db/adapter/Abstract.php";
 require_once "qcl/db/IAdapter.php";
 require_once "DB.php"; // PEAR
 
@@ -12,8 +12,8 @@ require_once "DB.php"; // PEAR
  * relying on PEAR::DB for database access
  * @todo remove PEAR:DB dependency, it is not really needed.
  */
-class qcl_db_adapters_Mysql
-  extends qcl_db_adapters_Abstract
+class qcl_db_adapter_Mysql
+  extends qcl_db_adapter_Abstract
   implements qcl_db_IAdapter
 {
 
@@ -202,9 +202,10 @@ class qcl_db_adapters_Mysql
 	 * @param string $where Where statement
 	 * @return bool
 	 */
-	function exists($table, $where)
+	function exists( $table, $where )
 	{
-	   $count = $this->getValue("SELECT 1 FROM `$table` WHERE $where LIMIT 1");
+	   $table = $this->formatTableName($table);
+	   $count = $this->getValue("SELECT 1 FROM $table WHERE $where LIMIT 1");
 	   return $count > 0;
 	}
 
@@ -712,23 +713,30 @@ class qcl_db_adapters_Mysql
   }
 
   /**
+   * Format a table name for use in the sql query. This will
+   * add backslashes for MySql tables
+   * @param string $table Table name
+   * @return string
+   */
+  function formatTableName( $table )
+  {
+    $parts = explode(".", $table);
+    return "`" . implode("`.`", $parts ) . "`";
+  }
+
+  /**
    * checks if a column exists in the database
    * @param string $table
    * @param string $column
    * @return boolean
    */
-  function columnExists($table, $column)
+  function hasColumn( $table, $column )
   {
     $database = $this->getDatabase();
-    return (bool) $this->getValue("
-      SELECT
-        count(*)
-      FROM
-        INFORMATION_SCHEMA.COLUMNS
-      WHERE
-        TABLE_SCHEMA='$database' AND
-        TABLE_NAME='$table' AND
-        COLUMN_NAME='$column';
+    return $this->exists( "INFORMATION_SCHEMA.COLUMNS","
+      TABLE_SCHEMA='$database' AND
+      TABLE_NAME='$table' AND
+      COLUMN_NAME='$column'
     ");
   }
 
@@ -785,7 +793,7 @@ class qcl_db_adapters_Mysql
    */
   function addColumn($table,$column,$definition,$after="")
   {
-    if ( ! $this->columnExists($table,$column) )
+    if ( ! $this->hasColumn( $table, $column ) )
     {
       $this->execute ("
         ALTER TABLE `$table` ADD COLUMN `$column` $definition $after;

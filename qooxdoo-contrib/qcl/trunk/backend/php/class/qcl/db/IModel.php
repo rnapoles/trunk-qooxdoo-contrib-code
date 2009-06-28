@@ -16,7 +16,7 @@ interface qcl_db_IModel
 
   /**
    * Returns the database adapter object for this model
-   * @return qcl_db_type_Abstract
+   * @return qcl_db_IAdapter
    */
   function &db();
 

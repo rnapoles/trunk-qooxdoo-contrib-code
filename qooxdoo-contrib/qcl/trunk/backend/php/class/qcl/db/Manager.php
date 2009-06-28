@@ -130,7 +130,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
        * type and class of database adapter
        */
       $type = qcl_db_Manager::getDbType();
-      $class = "qcl_db_adapters_" . strtoupper($type[0]) . substr( $type, 1 );
+      $class = "qcl_db_adapter_" . strtoupper($type[0]) . substr( $type, 1 );
 
       /*
        * include class file

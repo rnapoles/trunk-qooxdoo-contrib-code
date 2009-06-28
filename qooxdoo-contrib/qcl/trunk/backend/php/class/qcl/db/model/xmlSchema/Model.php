@@ -876,7 +876,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * If column does not exist, add it
        */
-      if ( ! $descriptiveDef )
+      if ( ! $descriptiveDef && ! $db->hasColumn( $table, $colName ) )
       {
         $db->addColumn( $table, $colName, $normativeDef );
       }
@@ -2351,7 +2351,8 @@ class qcl_db_model_xmlSchema_Model
            */
           if ( $this->foundNothing() )
           {
-            $this->raiseError("Origin record '$oNamedId/$oId' does not exist for model '{$this->name}'");
+            $this->warn("Origin record ('$oNamedId') does not exist for model '{$this->name}'. Skipping it...");
+            continue;
           }
 
           foreach ( $originNode->children() as $targetNode )

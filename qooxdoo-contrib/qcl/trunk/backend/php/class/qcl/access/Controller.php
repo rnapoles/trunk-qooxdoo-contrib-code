@@ -262,7 +262,36 @@ class qcl_access_Controller
   function method_logout()
   {
     $this->logout();
+    /*
+     * create guest access if allowed.
+     */
+    return $this->method_authenticate(array(null));
+  }
+
+  /**
+   * Service method to terminate a session (remove session and user data).
+   * Useful for example when browser window is closed.
+   * @return qcl_mvc_Response
+   */
+  function method_terminate()
+  {
+    $this->terminate();
+
+    /*
+     * return an empty instance
+     */
+    $this->setResponseDataClass("qcl_access_AuthenticationResponse");
     return $this->response();
+  }
+
+  /**
+   * Terminates and destroys the active session
+   * @return unknown_type
+   */
+  function terminate()
+  {
+    $this->logout();
+    session_destroy();
   }
 
   /**
@@ -327,36 +356,6 @@ class qcl_access_Controller
     return $this->getIniValue("service.allow_guest_access");
   }
 
-
-  /**
-   * Provide guest access to backend services
-   * @todo Rework this
-   */
-  function method_guestAccess()
-  {
-    /*
-     * Check if guest access is allowed at all
-     */
-    if ( ! $this->guestAccessAllowed() )
-    {
-      return $this->userNotice( $this->tr("Guest access denied.") );
-    }
-
-    /*
-     * logout any previous user
-     */
-    $this->logout();
-
-    /*
-     * create new guest user
-     */
-    $this->grantGuestAccess();
-
-    /*
-     * return permissions
-     */
-    return $this->method_authenticate(null);
-  }
 
   /**
    * Grant guest access
@@ -712,16 +711,6 @@ class qcl_access_Controller
   function setActiveUser( $userObject )
   {
     qcl_access_Manager::setActiveUser( $userObject );
-  }
-
-  /**
-   * Terminates a session. This logs out the current user.
-   * @override
-   */
-  function method_terminate()
-  {
-    $this->logout();
-    return $this->response();
   }
 }
 ?>

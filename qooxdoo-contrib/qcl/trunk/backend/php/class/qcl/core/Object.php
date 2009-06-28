@@ -223,33 +223,6 @@ class qcl_core_Object extends qcl_core_BaseClass
     return true;
   }
 
-  //-------------------------------------------------------------
-  // Registry during request. This is deprecated, use
-  // qcl_registry_Session instead
-  //-------------------------------------------------------------
-
-  /**
-   * Gets a registry value
-   * @param string $name
-   * @deprecated, use qcl_registry_Session
-   * @return mixed
-   */
-  function &getRegistryVar( $name )
-  {
-    return $GLOBALS['qcl_registry'][$name];
-  }
-
-  /**
-   * Sets a registry value
-   * @param string $name
-   * @param string $value
-   * @deprecated, use qcl_registry_Session
-   * @return void
-   */
-  function setRegistryVar( $name, $value )
-  {
-    $GLOBALS['qcl_registry'][$name] =& $value;
-  }
 
   /**
    * make a copy of this object
@@ -393,8 +366,6 @@ class qcl_core_Object extends qcl_core_BaseClass
 
   }
 
-
-
   //-------------------------------------------------------------
   // Object and class introspection
   //-------------------------------------------------------------
@@ -483,40 +454,6 @@ class qcl_core_Object extends qcl_core_BaseClass
      return $GLOBALS[$class];
   }
 
-  /**
-   * set (non-persistent) singleton instance of a class
-   * @access private
-   * @param object $instance reference to be set as singleton
-   * @return void
-   * @deprecated
-   */
-  function &setSingleton( $instance )
-  {
-    $classname = get_class ( $instance );
-    $GLOBALS[$classname] =& $instance;
-    return $instance;
-  }
-
-  /**
-   * get (non-persistent) singleton instance of class.
-   * if singleton already exists, return instance, otherwise
-   * automatically load class file, create new instance and, if object is a controller,
-   * pass a reference to the instantiating object or, in other cases, an optional
-   * parameter to the constructor.
-   *
-   * @param string      $classname
-   * @param object reference  $controller   (optional) controller object to be passed
-   *                      to the singleton constructor
-   * @return object reference to singleton instance
-   */
-  function &getSingleton( $classname, $controller = null )
-  {
-    if ( ! $GLOBALS[$classname] )
-    {
-      $GLOBALS[$classname] =& $this->getNew( $classname, &$controller );
-    }
-    return $GLOBALS[$classname];
-  }
 
   /**
    * Returns new instance of classname. If the calling object is a subclass
@@ -526,6 +463,8 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param qcl_mvc_Controller[optional] $controller (optional) controller object
    * to be passed to the singleton constructor
    * @return qcl_core_Object
+   * @deprecated Use native php code to instantiate classes, this will
+   * be removed.
    */
   function &getNew( $classname, $controller = null )
   {
