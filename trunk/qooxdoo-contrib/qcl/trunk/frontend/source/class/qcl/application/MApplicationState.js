@@ -448,7 +448,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
       for(var key in stateMap)
       {
          if ( states && ! states[key] ) continue;
-         this._fireStateEvent( key, stateMap[key] );
+         this._handleStateChange( key, stateMap[key] );
       }
       return stateMap;
     },
@@ -465,17 +465,20 @@ qx.Mixin.define("qcl.application.MApplicationState",
     },
     
     /**
-     * Fires a "change state" event
-     * @param {String} name
-     * @param {String} data
+     * Handles the change or update of a state: sets an existing
+     * property of that name.
+     * @param name {String} Name of state
+     * @param data {String} State data
      * @return void
-     * @todo: either change event name or tie state to property
+     * @todo check if property exists
      */
-    _fireStateEvent : function ( name, data )
+    _handleStateChange : function ( name, data )
     {
-      var eventName = "change" + name.substr(0,1).toUpperCase() + name.substr(1);
-      //console.log("Firing Event '" + eventName + "' with data :" + data );
-      this.createDispatchDataEvent(eventName,data);
+      try
+      {
+        this.set(name,data);
+      }
+      catch(e){}
     },
     
     /*
@@ -527,7 +530,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
             {
               this.__hashParams[key] = value;
               this.set( key, value );
-              this._fireStateEvent(key,value);
+              this._handleStateChange(key,value);
             }
           }
         }, this);
