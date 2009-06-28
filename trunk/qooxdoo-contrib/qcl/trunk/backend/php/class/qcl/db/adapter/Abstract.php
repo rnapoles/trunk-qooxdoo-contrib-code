@@ -14,7 +14,7 @@ define("QCL_LOG_TABLE_MAINTENANCE","tableMaintenance");
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_db_adapters_Abstract
+class qcl_db_adapter_Abstract
   extends qcl_core_Object
 {
 

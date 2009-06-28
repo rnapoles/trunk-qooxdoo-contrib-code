@@ -345,10 +345,12 @@ class qcl_io_remote_HttpRequest
     $time = time();
 
     /*
-     * Get response. Badly behaving servers might not maintain or close the stream properly,
-     * we need to check for a timeout if the server doesn't send
-     * anything. At the same time, there is a bug in php that prevents the
-     * correct setting of feof when a stream is opened with fsockopen()
+     * Get response. Badly behaving servers might not maintain or close
+     * the stream properly, we need to check for a timeout if the server
+     * doesn't send anything. At the same time, there is a bug in php that
+     * prevents the correct setting of feof when a stream is opened with
+     * fsockopen().
+     *
      * @todo rewrite this using the curl library or native stream functions
      * when upgrading to php5
      */

@@ -266,21 +266,18 @@ class qcl_session_Controller extends qcl_access_Controller
 
   /**
    * Terminates a session
+   * @return void
    * @override
    */
-  function method_terminate()
+  function terminate()
   {
 
     $sessionModel =& $this->getSessionModel();
     $activeUser   =& $this->getActiveUser();
-
     $sessionId = $this->getSessionId();
     $username  = $activeUser->username();
-
-    $this->info("Session #$sessionId ($username) will be terminated.");
-    $sessionModel->unregisterSession( $sessionId );
-
-    return $this->response();
+    $this->info("Session #$sessionId ($username) is terminated.");
+    $this->logout();
   }
 
   /**

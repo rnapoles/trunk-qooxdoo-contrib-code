@@ -16,8 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-
-
 /**
  * Interface for classes that provide authentication
  */
@@ -48,5 +46,19 @@ interface qcl_access_IAuthentication
    */
   function method_authenticate( $params );
 
+  /**
+   * Service method to log out the active user. Automatically creates guest
+   * access, if allowed
+   * @return qcl_mvc_Response
+   */
+  function method_logout();
+
+
+  /**
+   * Service method to terminate a session (remove session and user data).
+   * Useful for example when browser window is closed.
+   * @return qcl_mvc_Response
+   */
+  function method_terminate();
 }
 ?>
