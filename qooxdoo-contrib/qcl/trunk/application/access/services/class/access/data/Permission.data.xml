@@ -12,10 +12,13 @@
         <property name="namedId">deleteRecord</property>
       </record>
       <record>
+        <property name="namedId">changeAdminValue</property>
+      </record>
+      <record>
         <property name="namedId">manageUsers</property>
       </record>
       <record>
-        <property name="namedId">manageConfig</property>
+        <property name="namedId">changeConfig</property>
       </record>
     </records>
   </data>

@@ -49,6 +49,12 @@ class access_Application
       qcl_application_Application::info("*** Importing initial data...");
 
       /*
+       * load config data, this has to be done first
+       */
+      $configModel =& qcl_config_Db::getInstance();
+      $configModel->import( "access/data/Config.data.xml" );
+
+      /*
        * load permission data
        */
       $permissionModel =& qcl_access_model_Permission::getInstance();
@@ -68,11 +74,6 @@ class access_Application
       $roleModel->importLinkData( "access/data/link_roles_permissions.data.xml" );
       $roleModel->importLinkData( "access/data/link_roles_users.data.xml" );
 
-      /*
-       * load config data
-       */
-      $configModel =& qcl_config_Db::getInstance();
-      $configModel->import( "access/data/Config.data.xml" );
 
       /*
        * set flag that data has been imported

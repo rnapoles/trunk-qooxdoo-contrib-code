@@ -15,18 +15,20 @@
 
               <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
                 <qxt:property name="value">
-                  &lt;h4&gt;Login data &lt;/h4&gt;
-                   &lt;ul&gt;
-                    &lt;li&gt;User1: user1/user1&lt;/li&gt;
-                    &lt;li&gt;User2: user2/user2&lt;/li&gt;
-                    &lt;li&gt;Manager: user3/user3&lt;/li&gt;
-                    &lt;li&gt;Administrator: admin/admin&lt;/li&gt;
-                   &lt;/ul&gt;
-                   &lt;p&gt;Click on "Login" to log in as one of these users.&lt;/p&gt;
-                   &lt;p&gt;Also note that you can reload the page and still be logged in with
-                   the same user.&lt;/p&gt;
+                  <![CDATA[
+                  <h4>Login data </h4>
+                   <ul>
+                    <li>User1: user1/user1</li>
+                    <li>User2: user2/user2</li>
+                    <li>Manager: user3/user3</li>
+                    <li>Administrator: admin/admin</li>
+                   </ul>
+                   <p>Click on "Login" to log in as one of these users.</p>
+                   <p>Also note that you can reload the page and still be logged in with
+                   the same user.</p>
                    
-                   &lt;h4&gt;Current user&lt;/h4&gt;
+                   <h4>Current user</h4>
+                   ]]>
                 </qxt:property>
               </qx:label>
               
@@ -141,8 +143,13 @@
             
               <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
                 <qxt:property name="value">
-                   &lt;p&gt;Users can change configuration values according to their permissions.&lt;/p&gt;
-                   &lt;p&gt;Note that changes are sent to the server and persist through page reloads.&lt;/p&gt;
+                  <![CDATA[
+                   <p>Users can change configuration values according to their permissions.
+                   Changes are sent to the server and persist through page reloads.</p>
+                   <p>If you use the qcl backend, configuration values can be configured to
+                   have user variants, i.e. all non-global values will be specifig to the 
+                   current user.</p> 
+                   ]]>
                 </qxt:property>
               </qx:label>          
 
@@ -151,62 +158,55 @@
                 <qx:column minWidth="100" />
                 <qx:column flex="2"/>
                 
-                <qx:label value="application.name" qxt:row="0" qxt:column="0">
-                  <qcl:observe property="enabled" permission="manageUsers" />
+                 <!-- 
+                  global config key 'adminValue', the form field is protected
+                  by the permission 'changeAdminValue', which is given to the
+                  administrator only.
+                 -->
+                <qx:label value="adminValue" qxt:row="0" qxt:column="0">
+                  <qcl:observe property="enabled" permission="changeAdminValue" />
                 </qx:label>
                 <qx:textField qxt:row="0" qxt:column="1">
-                  <qcl:observe property="enabled" permission="manageUsers" />
-                  <qcl:bind property="value" config="application.name"  />
+                  <qcl:observe property="enabled" permission="changeAdminValue" />
+                  <qcl:bind property="value" config="adminValue"  />
                 </qx:textField>
                 
-                <qx:label value="application.author" qxt:row="1" qxt:column="0">
-                  <qcl:observe property="enabled" permission="manageUsers" />
+                <!-- 
+                  All other config keys are user values. The following are protected
+                  by the 'changeConfig' permission
+                 -->
+                
+                <!-- text value -->
+                <qx:label value="userValue" qxt:row="1" qxt:column="0">
+                  <qcl:observe property="enabled" permission="changeConfig" />
                 </qx:label>
                 <qx:textField qxt:row="1" qxt:column="1">
-                  <qcl:observe property="enabled" permission="manageUsers" />
-                  <qcl:bind property="value" config="application.author"  />              
+                  <qcl:observe property="enabled" permission="changeConfig" />
+                  <qcl:bind property="value" config="userValue"  />              
                 </qx:textField>
                 
-                <qx:label value="test.checked" qxt:row="2" qxt:column="0">
-                  <qcl:observe property="enabled" permission="manageConfig"/>
+                <!-- boolean value -->
+                <qx:label value="boolValue" qxt:row="2" qxt:column="0">
+                  <qcl:observe property="enabled" permission="changeConfig"/>
                 </qx:label>
+                
                 <qx:checkBox qxt:row="2" qxt:column="1">
-                  <qcl:observe property="enabled" permission="manageConfig"/>
-                  <qcl:bind property="value" config="test.checked"  />
+                  <qcl:observe property="enabled" permission="changeConfig"/>
+                  <qcl:bind property="value" config="boolValue"  />
                 </qx:checkBox>
                 
-                <qx:label value="test.value" qxt:row="3" qxt:column="0">
-                  <qcl:observe property="enabled" permission="manageConfig"/>
+                <!-- integer value  -->
+                <qx:label value="intValue" qxt:row="3" qxt:column="0">
+                  <qcl:observe property="enabled" permission="changeConfig"/>
                 </qx:label>
-                <qx:textField qxt:row="3" qxt:column="1">
-                  <qcl:observe property="enabled" permission="manageConfig"/>
-                  <qcl:bind property="value" config="test.value"  />              
-                </qx:textField>                
-                
-              </qx:grid>
-              </qx:composite>
-              
-              <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
-                <qxt:property name="value">
-                   &lt;p&gt;The following config value is deliberately unprotected 
-                   by permissions so that an anonymous user can change it  
-                   on the client. However, when the change is sent to the 
-                   server, the server should throw an error.&lt;/p&gt;
-                </qxt:property>
-              </qx:label>    
-              
-            <qx:composite>
-              <qx:grid spacing="5">
-                <qx:column minWidth="100" />
-                <qx:column flex="2"/>                
-                <qx:label value="test.value" qxt:row="0" qxt:column="0"/>
-                <qx:textField qxt:row="0" qxt:column="1">
-                  <qcl:bind property="value" config="test.value"  />              
-                </qx:textField>                
-                
-              </qx:grid>
-              </qx:composite>
+                <qx:slider orientation="horizontal" minimum="0" maximum="10" value="0"
+                   qxt:row="3" qxt:column="1"> 
+                   <qcl:bind property="value" config="intValue" />
+                </qx:slider>
 
+              </qx:grid>
+              </qx:composite>
+              
             </qx:vbox>
           </qx:groupBox>
 

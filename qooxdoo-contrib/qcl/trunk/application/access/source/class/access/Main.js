@@ -10,6 +10,16 @@ qx.Class.define("access.Main",
 {
   extend : qx.application.Standalone,
   include : [ qcl.application.MApplication ],
+  
+  properties :
+  {
+    server :
+    {
+      check : "String",
+      nullable : false,
+      apply : "_applyServer"
+    }
+  },
 
   members :
   {
@@ -20,54 +30,58 @@ qx.Class.define("access.Main",
      */
     main : function()
     {
-      /*
-             * call parent class' main method
-             */
 
       this.base(arguments);
 
       /*
-             * logging
-             */
+                   * logging
+                   */
 
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
 
       /*
-             * the URL of the jsonrpc server
-             */
-
-      this.setServerUrl("../services/index.php");
+       * the URL of the jsonrpc server
+       */
       this.info("Starting Application...");
 
       /*
-             * Starting the authentication
-             */
-
-      this.startAuthentication("access.SimpleAuthController");
-
-      /*
-             * setup and load configuration
-             */
-
-      this.setupConfig("access.SimpleConfigController");
-      this.loadConfig();
+       * Setup authentication and config without
+       * setting the service methods
+       */
+      this.setupAuthentication();
+      this.setupConfig();
 
       /*
-             * login popup
-             */
-
+       * setup server state, this will configure
+       * the service methods and start auth/config
+       */
+      if ( ! this.getState( "server" ) )
+      {
+        this.setServer( "1.0" );
+      }
+      else
+      {
+        this.updateState("server");
+      }
+      
+      /*
+       * configure login popup
+       */
       var loginPopup = qcl.components.login.Popup.getInstance();
       loginPopup.setCallback(this.checkLogin);
       loginPopup.setImage("access/qooxdoo-logo.gif");
       loginPopup.setText("<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations <br/>from the first group box.</p>");
-
+      
+      /*
+       * what to do when authentication fails: display message
+       * in popup. 
+       */
       loginPopup.addListener("loginFail", function(event) {
         loginPopup.setMessage(event.getData());
       }, this);
     },
-
 
     /**
      * Callback function that takes the username, password and
@@ -89,33 +103,43 @@ qx.Class.define("access.Main",
       {
         if (data.error) {
           callback.call(context, false, data.error);
-        } else {
-          
+        }
+        else
+        {
           /*
-           * login was successful
-           */
+                     * login was successful
+                     */
+
           callback.call(context, true);
-          
+
           /*
-           * load configuration data for this user
-           */
+                     * load configuration data for this user
+                     */
+
           qx.core.Init.getApplication().loadConfig();
         }
       },
       this);
     },
-    
+
+
+    /**
+     * TODOC
+     *
+     * @return {void} 
+     */
     logoutUser : function()
     {
       /*
        * call parent method to log out
        */
-      this.logout();
-      
-      /*
-       * load configuration data for anonymous
-       */
-      this.loadConfig();      
+      this.logout(function(){
+        /*
+         * load configuration data for anonymous
+         */
+        this.loadConfig();                
+      }, this);
+
     },
 
 
@@ -125,8 +149,24 @@ qx.Class.define("access.Main",
      * @param version {var} TODOC
      * @return {void} 
      */
-    useServer : function(version)
+    _applyServer : function( version, old )
     {
+      /*
+       * remove the session of the other server if exists
+       */
+      if( old )
+      {
+        this.removeState('sessionId');  
+      }
+      
+      /*
+       * set the state
+       */
+      this.setState("server", version );
+      
+      /*
+       * set the new values according to server version
+       */
       switch(version)
       {
         case "1.0":
@@ -142,10 +182,17 @@ qx.Class.define("access.Main",
           this.getConfigStore().setServiceName("Access.ConfigController");
           this.info("Server: changed to trunk version.");
           break;
+          
+        default:
+          this.alert("Invalid server version");
       }
-
-      this.removeState("sessionId");
-      this.logoutUser();
+      
+      /*
+       * re-authenticate and load new config values
+       */
+      this.startAuthentication(function(){
+        this.loadConfig();
+      },this);
     }
   }
 });

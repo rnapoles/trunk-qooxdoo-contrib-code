@@ -20,14 +20,16 @@ class class_SimpleConfigController
 {
 
   var $config = array(
-        'application.name' => "Sample Application",
-        'application.author' => "Jon Doe",
-        'test.checked' => true,
-        'test.value' => "Foo",
+        'adminValue' => "A global value (administrator only)",
+        'userValue' => "A value that is particular to each user",
+        'intValue'    => 0,
+        'boolValue'   => false,
+        'listValue'   => array("one,two,three,four")
       );
 
   function method_load( $params )
   {
+
     foreach( $this->config as $key => $value )
     {
       if ( ! isset( $_SESSION['config'][$key] ) )
@@ -47,10 +49,6 @@ class class_SimpleConfigController
     if ( ! isset( $_SESSION['usersession'] ) )
     {
       trigger_error("No usersession!");
-    }
-    if ( ! in_array( "manageConfig", $_SESSION['usersession']['permissions'] ) )
-    {
-      trigger_error("You don't have permission to change the configuration!");
     }
 
     list( $key, $value ) = $params;
