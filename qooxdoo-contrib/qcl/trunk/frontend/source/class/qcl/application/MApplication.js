@@ -346,11 +346,10 @@ qx.Mixin.define("qcl.application.MApplication",
     */       
     
     /**
-     * Starts the authentication on the server, 
-     * using the given userManager object.
+     * Setup the authentication mechanism.
      * @param authStore {qcl.databinding.event.store.JsonRpc}
      */
-    startAuthentication : function( service )
+    setupAuthentication : function( service )
     {
       if ( ! this.getUserManager() )
       {
@@ -366,13 +365,11 @@ qx.Mixin.define("qcl.application.MApplication",
         );
       }
       
-      if ( this.__authenticationStarted )
+      if ( this.__authenticationSetup )
       {
-        this.error("Authentication already started");
+        this.error("Authentication already set up");
       }
-      this.__authenticationStarted = true;
-
-      this.info("Starting authentication...");
+      this.__authenticationSetup = true;
 
       /*
        * bind the authentication stores data model to the user managers data model
@@ -384,14 +381,21 @@ qx.Mixin.define("qcl.application.MApplication",
        * id of this application
        */
       this.getAuthStore().bind("model.sessionId", this, "sessionId" );      
-      
-      /*
-       * authenticate with session id, if any, otherwise null to get
-       * guest access
-       */
-      this.getAuthStore().load("authenticate",[ this.getSessionId() || null ] );
-      
-    },  
+            
+    }, 
+
+    /**
+     * Authenticate with session id, if any, otherwise with null to get
+     * guest access, if allowed.
+     * @param callback {function|undefined} optional callback that is called
+     * when logout request returns from server.
+     * @param context {object|undefined} Optional context for callback function
+     */    
+    startAuthentication : function(callback,context)
+    {
+      this.info("Starting authentication...");
+      this.getAuthStore().load("authenticate",[ this.getSessionId() || null ], callback, context );
+    },
     
     /**
      * Authenticates a user with the given password. Since this is done
@@ -410,12 +414,16 @@ qx.Mixin.define("qcl.application.MApplication",
        
     /**
      * Log out current user on the server
-     * @return
+     * @param callback {function|undefined} optional callback that is called
+     * when logout request returns from server.
+     * @param context {object|undefined} Optional context for callback function
+     * @return {void}
      */
-    logout : function()
+    logout : function( callback, context )
     {
-      this.getAuthStore().load("authenticate",[ null ] );
+      this.getAuthStore().load("logout", null, callback, context );
     },
+   
     
     /*
     ---------------------------------------------------------------------------
@@ -436,11 +444,27 @@ qx.Mixin.define("qcl.application.MApplication",
     */
    setupConfig : function( service )
    {
+      
+      /*
+       * avoid duplicate bindings
+       */
+      if ( this.__configSetup )
+      {
+        this.error("Configuration already set up");
+      }
+      this.__configSetup = true;
+      
+      /*
+       * set default config manager
+       */
       if ( ! this.getConfigManager() )
       {
         this.setConfigManager( qcl.config.Manager.getInstance() );
       }
       
+      /*
+       * set default config store
+       */
       if ( ! this.getConfigStore() )
       {
         this.setConfigStore(
@@ -449,19 +473,11 @@ qx.Mixin.define("qcl.application.MApplication",
           )       
         );        
       }
-
-      if ( ! this.__authenticationStarted )
-      {
-        //this.error("Cannot load configuration, application has not started authentication");
-      }
-      
-      this.info("Loading configuration...");
-      
+           
       /* 
        * bind the configuration store's data model to the user manager's data model
        */
       this.getConfigStore().bind("model", this.getConfigManager(), "model");
-
 
       /*
        * whenever a config value changes on the server, send it to server
@@ -477,6 +493,7 @@ qx.Mixin.define("qcl.application.MApplication",
     */
    loadConfig : function()
    {
+     this.info("Loading configuration...");
      this.getConfigStore().load();
    },
    

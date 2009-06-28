@@ -604,7 +604,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
            * property.
            */
           var data;
-          if ( result.data )
+          if ( result && result.data )
           {
             /*
              * handle messages and events
