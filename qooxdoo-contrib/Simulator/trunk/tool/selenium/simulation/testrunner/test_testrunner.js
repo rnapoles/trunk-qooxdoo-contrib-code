@@ -33,7 +33,7 @@ var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' 
 var testResultHTML = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
 var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
 
-var ignore = [];
+var ignore = ["qx.test.Xml"];
 var include = [];
 
 /**
