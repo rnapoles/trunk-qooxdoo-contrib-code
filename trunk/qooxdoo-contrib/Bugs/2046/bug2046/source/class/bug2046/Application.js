@@ -33,16 +33,26 @@ qx.Class.define("bug2046.Application",
         qx.log.appender.Console;
       }
 
+      var doc = this.getRoot();
+      doc.add(this.createComboBox("arbitrary value"), {left: 100, top: 50});
+      doc.add(this.createComboBox(), {left: 300, top: 50});
+      
+      
+    },
+    
+    createComboBox : function(initValue)
+    {
       var comboBox = new qx.ui.form.ComboBox();
-      //comboBox.setSelectFirstItem(false);
-	  
-      for (var i = 0; i < 10; i++)
-      {
+      
+      if (initValue) {
+        comboBox.setValue(initValue);
+      }
+      
+      for (var i = 0; i < 10; i++) {
         comboBox.add(new qx.ui.form.ListItem("Item " + i));
       }
-
-      var doc = this.getRoot();
-      doc.add(comboBox, {left: 100, top: 50});
+      
+      return comboBox;
     }
   }
 });
