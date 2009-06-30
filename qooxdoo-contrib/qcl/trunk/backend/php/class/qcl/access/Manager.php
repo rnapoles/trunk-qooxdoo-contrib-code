@@ -202,7 +202,7 @@ class qcl_access_Manager
    * uses a hash map to pair permissions with their
    * local aliases. More elaborate implementations are certainly
    * possible.
-   * @param qcl_mvc_Controller $controller
+   * @param qcl_data_Controller $controller
    * @param string $permission
    */
   function hasPermissionAlias( $controller, $permission )

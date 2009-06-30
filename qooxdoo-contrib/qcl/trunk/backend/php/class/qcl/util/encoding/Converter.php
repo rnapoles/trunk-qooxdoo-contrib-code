@@ -4,9 +4,9 @@
  * class to convert from one text encoding to another
  */
 
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 
-class qcl_util_encoding_Converter extends qcl_mvc_AbstractModel
+class qcl_util_encoding_Converter extends qcl_data_AbstractModel
 {
   var $converter_cmd = "";
 

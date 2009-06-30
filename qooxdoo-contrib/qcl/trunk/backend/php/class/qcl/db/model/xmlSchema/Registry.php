@@ -29,7 +29,7 @@ class qcl_db_model_xmlSchema_Registry
 
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_mvc_Controller $controller
+   * @param qcl_data_Controller $controller
    */
   function __construct( $controller=null )
   {

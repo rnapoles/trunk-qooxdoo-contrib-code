@@ -1,12 +1,12 @@
 <?php
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 
 /**
  * abstract class for classes that implement a plugin
  *
  */
 
-class qcl_plugin_Abstract extends qcl_mvc_AbstractModel
+class qcl_plugin_Abstract extends qcl_data_AbstractModel
 {
 	//-------------------------------------------------------------
   // properties

@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 require_once "qcl/persistence/__init__.php";
 require_once "qcl/log/FireCake.php";
 
@@ -33,7 +33,7 @@ define("QCL_PERSISTENCE_READ_LOCK", 2);
  * properties that do not start with an underscore).
  */
 class qcl_persistence_AbstractObject
-  extends qcl_mvc_AbstractModel
+  extends qcl_data_AbstractModel
 {
 
   /**
@@ -121,7 +121,7 @@ class qcl_persistence_AbstractObject
 
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_mvc_Controller $controller
+   * @param qcl_data_Controller $controller
    * @param string[optional] $id Optional id if several objects of
    * the same class are to be persisted. If you don't provide an id,
    * the UUID-style object id is used. This means that you need to retrieve

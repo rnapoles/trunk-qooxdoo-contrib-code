@@ -4,7 +4,7 @@
  * dependencies
  */
 require_once "qcl/access/__index__.php";
-require_once "qcl/mvc/controller.php";
+require_once "qcl/data/controller.php";
 require_once "qcl/config/Manager.php";
 require_once "qcl/registry/Session.php";
 
@@ -23,7 +23,7 @@ define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
  * and configuration
  */
 class qcl_access_Controller
-  extends qcl_mvc_Controller
+  extends qcl_data_Controller
   implements qcl_access_IAuthentication
 {
 
@@ -257,7 +257,7 @@ class qcl_access_Controller
   /**
    * Service method to log out the active user. Automatically creates guest
    * access. Override this method if this is not what you want.
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_logout()
   {
@@ -271,7 +271,7 @@ class qcl_access_Controller
   /**
    * Service method to terminate a session (remove session and user data).
    * Useful for example when browser window is closed.
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_terminate()
   {
@@ -392,7 +392,7 @@ class qcl_access_Controller
    *
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_authenticate( $params )
   {

@@ -65,7 +65,7 @@ class qcl_db_adapter_Abstract
    * contains a reference to the controller if called from a model
    * or controller
    * @access private
-   * @var qcl_mvc_Controller
+   * @var qcl_data_Controller
    */
   var $_controller = null;
 
@@ -83,12 +83,12 @@ class qcl_db_adapter_Abstract
 	  /*
 	   * store master objects if given
 	   */
-    if ( is_a( $master,"qcl_mvc_AbstractModel" ) )
+    if ( is_a( $master,"qcl_data_AbstractModel" ) )
     {
       $this->_model  =& $master;
       $this->_controller =& $master->getController();
     }
-	  elseif ( is_a( $master,"qcl_mvc_Controller" ) )
+	  elseif ( is_a( $master,"qcl_data_Controller" ) )
     {
       $this->_controller =& $master;
     }
@@ -114,7 +114,7 @@ class qcl_db_adapter_Abstract
 
   /**
    * Getter for controller
-   * @return qcl_mvc_Controller
+   * @return qcl_data_Controller
    */
   function &getController()
   {

@@ -4,7 +4,7 @@ require_once "qcl/jsonrpc/controller.php";
 /**
  * Service class containing test methods
  */
-class class_qcl_lang_Tests extends qcl_mvc_Controller
+class class_qcl_lang_Tests extends qcl_data_Controller
 {
   
   function method_testUtf8( $params )

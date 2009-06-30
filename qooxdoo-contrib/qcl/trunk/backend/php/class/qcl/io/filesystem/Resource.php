@@ -2,12 +2,12 @@
 /*
  * dependencies
  */
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 
 /**
  * Methods common to all filesystem resources
  */
-class qcl_io_filesystem_Resource extends qcl_mvc_AbstractModel
+class qcl_io_filesystem_Resource extends qcl_data_AbstractModel
 {
   /**
    * The file resource path

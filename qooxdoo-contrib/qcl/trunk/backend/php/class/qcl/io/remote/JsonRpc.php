@@ -18,11 +18,11 @@ class qcl_io_remote_JsonRpc
 
   /**
    * Constructor
-   * @param qcl_mvc_Controller|string $arg Either a controller object or a string URL
+   * @param qcl_data_Controller|string $arg Either a controller object or a string URL
    */
   function __construct( $arg )
   {
-    if ( is_a( $arg, "qcl_mvc_Controller" ) )
+    if ( is_a( $arg, "qcl_data_Controller" ) )
     {
       parent::__construct( &$arg );
       $this->setUrl( $arg->getServerUrl() );

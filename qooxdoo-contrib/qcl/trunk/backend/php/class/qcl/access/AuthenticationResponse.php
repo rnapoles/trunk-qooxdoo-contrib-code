@@ -1,8 +1,8 @@
 <?php
-require_once "qcl/mvc/ResponseDataObject.php";
+require_once "qcl/data/ResponseDataObject.php";
 
 class qcl_access_AuthenticationResponse
-  extends qcl_mvc_ResponseDataObject
+  extends qcl_data_ResponseDataObject
 {
    /**
     * Authentication error, if any

@@ -143,7 +143,7 @@ class qcl_session_Controller extends qcl_access_Controller
    *
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_authenticate( $params )
   {
@@ -374,7 +374,7 @@ class qcl_session_Controller extends qcl_access_Controller
    * Broadcasts a message to all connected clients
    * @param mixed $messages Message name or hash map of messages
    * @param mixed $data Data dispatched with message
-   * @todo use into qcl_mvc_Response object
+   * @todo use into qcl_data_Response object
    */
   function broadcastMessage ( $message, $data=true )
   {
@@ -397,7 +397,7 @@ class qcl_session_Controller extends qcl_access_Controller
   /**
    * Dummy method called simply to forwards messages to client
    * and send logout message when timeout.
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_getMessages($params)
   {
@@ -414,7 +414,7 @@ class qcl_session_Controller extends qcl_access_Controller
    * overriding parent method to include message broadcasts
    * @override
    * @return array
-   * @todo use into qcl_mvc_Response object
+   * @todo use into qcl_data_Response object
    */
   function &response()
   {

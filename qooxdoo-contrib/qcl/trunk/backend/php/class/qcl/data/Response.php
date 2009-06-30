@@ -1,5 +1,5 @@
 <?php
-//require_once "qcl/mvc/IResponse.php";
+//require_once "qcl/data/IResponse.php";
 
 /**
  * The response is the "view" part of the mvc Architecture in qcl.
@@ -32,8 +32,8 @@
  * thus, to enforce a signature for response data. You can use the co
  *
  */
-class qcl_mvc_Response
-//  implements qcl_mvc_IResponse
+class qcl_data_Response
+//  implements qcl_data_IResponse
 {
 
   /**
@@ -59,7 +59,7 @@ class qcl_mvc_Response
 
   /**
    * Returns a singleton instance of this class
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function &getInstance( )
   {
@@ -96,21 +96,21 @@ class qcl_mvc_Response
 
   /**
    * Sets the response data object.
-   * @param qcl_mvc_ResponseDataObject $dataObject
+   * @param qcl_data_ResponseDataObject $dataObject
    * @return void
    */
   function setDataObject( $dataObject )
   {
-    if ( ! is_a( $dataObject, "qcl_mvc_ResponseDataObject") )
+    if ( ! is_a( $dataObject, "qcl_data_ResponseDataObject") )
     {
-      qcl_application_Application::raiseError("Invalid response data object. Must be a qcl_mvc_ResponseDataObject or a subclass of it.");
+      qcl_application_Application::raiseError("Invalid response data object. Must be a qcl_data_ResponseDataObject or a subclass of it.");
     }
     $this->data =& $dataObject;
   }
 
   /**
    * Returns the response data object.
-   * @return qcl_mvc_ResponseDataObject
+   * @return qcl_data_ResponseDataObject
    */
   function &getDataObject()
   {
@@ -155,9 +155,9 @@ class qcl_mvc_Response
     }
     elseif ( is_string($first) and $second !== QCL_ARGUMENT_NOT_SET )
     {
-      if ( ! is_a( $this->data, "qcl_mvc_responseDataObject" ) )
+      if ( ! is_a( $this->data, "qcl_data_responseDataObject" ) )
       {
-        qcl_application_Application::raiseError("No valid response data object, must be a qcl_mvc_responseDataObject or subclass.");
+        qcl_application_Application::raiseError("No valid response data object, must be a qcl_data_responseDataObject or subclass.");
       }
       $this->data->set( $first, $second );
     }

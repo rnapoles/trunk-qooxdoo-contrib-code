@@ -3,8 +3,8 @@
  * dependencies
  */
 require_once "qcl/core/Object.php";
-require_once "qcl/mvc/Response.php";
-require_once "qcl/mvc/ResponseDataObject.php";
+require_once "qcl/data/Response.php";
+require_once "qcl/data/ResponseDataObject.php";
 
 /*
  * constants
@@ -24,7 +24,7 @@ define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
  * Common base class for controllers. Mainly contains convenience
  * methods that proxy methods originating in other objects.
  */
-class qcl_mvc_Controller extends qcl_core_Object
+class qcl_data_Controller extends qcl_core_Object
 {
 
   /**
@@ -169,7 +169,7 @@ class qcl_mvc_Controller extends qcl_core_Object
 
   /**
    * Shorthand method to set the data object of the response object
-   * @param qcl_mvc_ResponseDataObject $dataObject
+   * @param qcl_data_ResponseDataObject $dataObject
    * @return void
    */
   function setDataObject( $dataObject )
@@ -181,7 +181,7 @@ class qcl_mvc_Controller extends qcl_core_Object
   /**
    * Set a part or the full response.
    * Shorthand method for $this->responseObject()->set()
-   * @see qcl_mvc_response::set()
+   * @see qcl_data_response::set()
    */
   function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
   {
@@ -192,7 +192,7 @@ class qcl_mvc_Controller extends qcl_core_Object
   /**
    * Shorthand method for $this->responseObject()->setData()
    * @param $data
-   * @see qcl_mvc_response::setData()
+   * @see qcl_data_response::setData()
    */
   function setData ( $data )
   {
@@ -202,11 +202,11 @@ class qcl_mvc_Controller extends qcl_core_Object
 
   /**
    * Returns response object for return to the client.
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function &response()
   {
-    $responseObject =& qcl_mvc_Response::getInstance();
+    $responseObject =& qcl_data_Response::getInstance();
 
     /*
      * convert the data object into an associative array of
@@ -223,11 +223,11 @@ class qcl_mvc_Controller extends qcl_core_Object
 
   /**
    * Returns the current response object
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function &responseObject()
   {
-    return qcl_mvc_Response::getInstance();
+    return qcl_data_Response::getInstance();
   }
 
   //-------------------------------------------------------------
@@ -349,7 +349,7 @@ class qcl_mvc_Controller extends qcl_core_Object
   /**
    * Returns a list of all service methods that this class provides. Doesn't work.
    * @todo Save result so that access can be regulated by source code introspection
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_services()
   {

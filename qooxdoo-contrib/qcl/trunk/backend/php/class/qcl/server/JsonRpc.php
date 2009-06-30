@@ -35,7 +35,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * The called controller object
-   * @var qcl_mvc_Controller
+   * @var qcl_data_Controller
    */
   var $_controller;
 
@@ -63,7 +63,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * Returns the current controller instance, if any.
-   * @return qcl_mvc_Controller
+   * @return qcl_data_Controller
    */
   function &getController()
   {
