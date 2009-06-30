@@ -465,7 +465,7 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
 {
   var msg = text ? text : "";
   var lvl = level ? level : "debug";
-  var browser = browserLog ? browserLog : "browser";
+  var browser = browserLog || "";
 
   if (lvl == "error") {
     this.incrementTotalErrorsLogged();
@@ -532,10 +532,10 @@ simulation.Simulation.prototype.sanitize = function(text)
  */
 simulation.Simulation.prototype.logEnvironment = function(logTo)
 {
-  log = logTo ? logTo : "browser";
+  var log = logTo || "";
   this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "none", logTo);
   this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none", logTo);
-  this.log("Platform: " + environment["os.name"], "none", logTo);
+  this.log("Platform: " + environment["os.name"], "none", log);
 };
 
 /**
@@ -812,12 +812,12 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
   {
     var targetWin = win || selenium.qxStoredVars['autWindow']; 
     targetWin.qx.event.GlobalError.setErrorHandler(function(ex) {
-      //selenium.browserbot.getCurrentWindow().console.log(ex);
+      var exString = "";
       if (ex instanceof win.qx.core.WindowError) {
-        var exString = ex.toString() + " in " + ex.getUri() + " line " + ex.getLineNumber();
+        exString = ex.toString() + " in " + ex.getUri() + " line " + ex.getLineNumber();
       }
       else {
-        var exString = ex.name + ": " + ex.message;
+        exString = ex.name + ": " + ex.message;
         if (ex.fileName) {
           exString += " in file " + ex.fileName;
         }
