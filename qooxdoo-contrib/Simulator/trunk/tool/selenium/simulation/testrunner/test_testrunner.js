@@ -73,7 +73,7 @@ simulation.Simulation.prototype.getPackageArray = function()
 };
 
 /*
- * Main test method.
+ * Prepare the list of test packages to be run. 
  */
 simulation.Simulation.prototype.runTestsSteps = function()
 {
@@ -109,54 +109,61 @@ simulation.Simulation.prototype.runTestsSteps = function()
   }
 
   // Get the current test application's URI from the input field.
-  var autUri = this.getEval(selWin + '.document.getElementsByTagName("input")[0].value', 'Getting AUT URI');
-  autUri = autUri.substring(0,autUri.indexOf('=')+1);
+  this.autUri = this.getEval(selWin + '.document.getElementsByTagName("input")[0].value', 'Getting AUT URI');
+  this.autUri = this.autUri.substring(0, this.autUri.indexOf('=')+1);
 
   var elapsedTotal = 0;
   for (var i=0; i<packages.length; i++) {
-    if (this.getConfigSetting("debug")) {
-      print("Loading package: " + packages[i]);
-    }
-    // Enter the test app URI with the current package's name after 'testclass='.
-    this.type("dom=document.getElementsByTagName('input')[0]", autUri + packages[i]);
-    this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");        
-    
-    var isAutReady = this.waitForCondition(isStatusReady, 120000, 
-                                           "Waiting for test package to load");
-
-    if (!isAutReady) {
-      this.testFailed = true;
-      return;
-    }
-
-    if (this.getConfigSetting("debug")) {
-      print("Starting tests in package " + packages[i]);
-    }
-    var packageStartDate = new Date();    
-
-    this.runScript(qxAppInst + '.runTest();', "Calling runTest");
-
-    var isPackageDone = mySim.waitForCondition(isStatusReady, 2400000, 
-                      "Waiting for test package " + packages[i] + " to finish");
-
-    if (!isPackageDone) {
-      return;
-    }
-
-    if (this.getConfigSetting("debug")) {
-      this.logTestDuration(packageStartDate, "Test package " + packages[i]);
-    } 
-
-    var result = this.getEval(testResults, 'Getting result HTML');
-
-    if (!result) {
-      return;
-    }
-
-    this.logErrors(result);
-
+    this.processPackage(packages[i]);
   }
 
+};
+
+/*
+ * Run a test package and log the results.
+ */
+simulation.Simulation.prototype.processPackage = function(packageName)
+{
+  if (this.getConfigSetting("debug")) {
+    print("Loading package: " + packageName);
+  }
+  // Enter the test app URI with the current package's name after 'testclass='.
+  this.type("dom=document.getElementsByTagName('input')[0]", this.autUri + packageName);
+  this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");        
+  
+  var isAutReady = this.waitForCondition(isStatusReady, 120000, 
+                   "Waiting for test package " + packageName + " to load");
+
+  if (!isAutReady) {
+    this.testFailed = true;
+    return;
+  }
+
+  if (this.getConfigSetting("debug")) {
+    print("Starting tests in package " + packageName);
+  }
+  var packageStartDate = new Date();    
+
+  this.runScript(qxAppInst + '.runTest();', "Calling runTest");
+
+  var isPackageDone = mySim.waitForCondition(isStatusReady, 2400000, 
+                    "Waiting for test package " + packageName + " to finish");
+
+  if (!isPackageDone) {
+    this.testFailed = true;
+    return;
+  }
+  
+  if (this.getConfigSetting("debug")) {
+    this.logTestDuration(packageStartDate, "Test package " + packageName);
+  }
+  
+  var result = this.getEval(testResults, 'Getting result HTML');
+  
+  if (result) {
+    this.logErrors(result);
+  }
+  
 };
 
 /*
@@ -286,7 +293,8 @@ simulation.Simulation.prototype.logErrors = function(result)
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
-    mySim.log("Tests with warnings or errors: " + mySim.errWarn, "info");
+    var totalErrors = mySim.errWarn + mySim.getTotalErrorsLogged();
+    mySim.log("Tests with warnings or errors: " + totalErrors, "info");
   }
 
   mySim.logTestDuration();
