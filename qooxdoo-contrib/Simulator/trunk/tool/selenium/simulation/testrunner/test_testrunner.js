@@ -236,7 +236,7 @@ simulation.Simulation.prototype.logErrors = function(result)
       if (this.getConfigSetting("debug")) {
         print("Logging line " + line);
       }
-      this.log(line);
+      this.log(line, "error");
     }
   }
 
@@ -278,7 +278,6 @@ simulation.Simulation.prototype.logErrors = function(result)
   }
 
   try {
-    mySim.addSanitizer();
     mySim.runTestsSteps();
   }
   catch(ex) {
