@@ -1,20 +1,17 @@
 <?php
-
-
 // dependencies
-require_once ("qcl/data/AbstractModel.php");
+require_once "qcl/core/Object.php";
 
 /**
  * class to run binaries through the shell from php
  **/
-
-class qcl_system_shell extends qcl_core_Object
+class qcl_util_system_Shell extends qcl_core_Object
 {
   /**
    * error message
    */
   var $error;
-   
+
   /**
    * warning
    */
@@ -69,7 +66,7 @@ class qcl_system_shell extends qcl_core_Object
  	  {
  	    return true;
  	  }
- 	   
+
  	  // if not, why not?
  	  $this->error="Cannot access the shell: ";
 
@@ -102,7 +99,7 @@ class qcl_system_shell extends qcl_core_Object
  	   * command
  	   */
     $this->command  = $command;
-     
+
     /*
      * streams and pipes
      */
@@ -166,46 +163,46 @@ class qcl_system_shell extends qcl_core_Object
  	  1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
  	  2 => array("pipe", "w") // stderr is a file to write to
  	  );
- 	   
+
  	  $pipes= array();
  	  $process = proc_open($cmd, $descriptorspec, $pipes);
- 	   
+
  	  $output= "";
- 	   
+
  	  if (!is_resource($process)) return false;
- 	   
+
  	  #close child's input imidiately
  	  fclose($pipes[0]);
- 	   
+
  	  stream_set_blocking($pipes[1],false);
  	  stream_set_blocking($pipes[2],false);
- 	   
+
  	  $todo= array($pipes[1],$pipes[2]);
- 	   
+
  	  while( true ) {
  	    $read= array();
  	    if( !feof($pipes[1]) ) $read[]= $pipes[1];
  	    if( !feof($pipes[2]) ) $read[]= $pipes[2];
- 	     
+
  	    if (!$read) break;
- 	     
+
  	    $ready= stream_select($read, $write=NULL, $ex= NULL, 2);
- 	     
+
  	    if ($ready === false) {
  	      break; #should never happen - something died
  	    }
- 	     
+
  	    foreach ($read as $r) {
  	      $s= fread($r,1024);
  	      $output.= $s;
  	    }
  	  }
- 	   
+
  	  fclose($pipes[1]);
  	  fclose($pipes[2]);
- 	   
+
  	  $code= proc_close($process);
- 	   
+
  	  return $output;
  	}
 
@@ -219,7 +216,7 @@ class qcl_system_shell extends qcl_core_Object
       2 => array("file", $errfile, "w")
     );
     $proc = proc_open($cmd, $descriptorspec, $pipes);
-     
+
     if (!is_resource($proc)) return 255;
 
     fclose($pipes[0]);    //Don't really want to give any input
