@@ -78,7 +78,17 @@ public class IOTest {
         node = io.node("mem://1/foo");
         assertTrue(node instanceof MemoryNode);
     }
-
+    
+    @Test
+    public void file() throws IOException {
+        IO io;
+        
+        io = new IO();
+        assertEquals("/foo", io.file("/foo").getFile().getPath());
+        assertEquals("/foo", io.file("/foo/").getFile().getPath());
+        assertEquals("/", io.file("/").getFile().getPath());
+    }
+    
     @Test
     public void nodeForUrl() throws IOException {
         URL url;

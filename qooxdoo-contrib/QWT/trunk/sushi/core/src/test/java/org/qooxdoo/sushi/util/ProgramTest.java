@@ -81,6 +81,16 @@ public class ProgramTest {
         assertEquals("foo", p("echo", "foo").exec().trim());
     }
     
+    @Test
+    public void chains() throws IOException {
+        assertEquals("foo\nbar", p("bash", "-c", "echo foo && echo bar").exec().trim());
+    }
+
+    @Test
+    public void noChains() throws IOException {
+        assertEquals("foo && echo bar", p("echo", "foo", "&&", "echo", "bar").exec().trim());
+    }
+    
     private String environ() {
         if (OS.CURRENT == OS.WINDOWS) {
             return "set";
