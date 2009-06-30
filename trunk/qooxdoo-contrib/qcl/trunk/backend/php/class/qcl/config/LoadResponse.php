@@ -1,8 +1,8 @@
 <?php
-require_once "qcl/mvc/ResponseDataObject.php";
+require_once "qcl/data/ResponseDataObject.php";
 
 class qcl_config_LoadResponse
-  extends qcl_mvc_ResponseDataObject
+  extends qcl_data_ResponseDataObject
 {
    /**
     * The config keys

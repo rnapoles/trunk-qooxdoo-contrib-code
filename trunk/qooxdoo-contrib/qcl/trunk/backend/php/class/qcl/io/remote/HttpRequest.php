@@ -2,13 +2,13 @@
 /*
  * depemdencies
  */
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 
 /**
  * HTTP request model
  */
 class qcl_io_remote_HttpRequest
-  extends qcl_mvc_AbstractModel
+  extends qcl_data_AbstractModel
 {
 
   /**

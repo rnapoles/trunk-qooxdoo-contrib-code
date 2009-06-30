@@ -78,7 +78,7 @@ class qcl_application_Application
 
   /**
    * Returns the current controller instance, if any. Can be called statically
-   * @return qcl_mvc_Controller
+   * @return qcl_data_Controller
    * @deprecated Get directly from server
    */
   function &getController()

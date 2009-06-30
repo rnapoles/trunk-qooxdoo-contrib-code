@@ -2,7 +2,7 @@
 
 
 // dependencies
-require_once ("qcl/mvc/AbstractModel.php");
+require_once ("qcl/data/AbstractModel.php");
 
 /**
  * class to run binaries through the shell from php

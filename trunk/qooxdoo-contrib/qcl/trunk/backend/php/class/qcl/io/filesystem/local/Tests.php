@@ -7,7 +7,7 @@ require_once "qcl/io/filesystem/local/Folder.php";
 /**
  * Service class containing test methods
  */
-class class_qcl_io_filesystem_local_Tests extends qcl_mvc_Controller
+class class_qcl_io_filesystem_local_Tests extends qcl_data_Controller
 {
 
   function method_testCreate()

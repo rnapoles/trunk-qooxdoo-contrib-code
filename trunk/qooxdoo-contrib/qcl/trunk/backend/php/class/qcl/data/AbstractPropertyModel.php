@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 
 /**
  * Model that has a set of properties which optionally can be connected
@@ -13,7 +13,7 @@ require_once "qcl/mvc/AbstractModel.php";
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
-class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
+class qcl_data_AbstractPropertyModel extends qcl_data_AbstractModel
 {
 
  /**
@@ -92,7 +92,7 @@ class qcl_mvc_AbstractPropertyModel extends qcl_mvc_AbstractModel
 
   /**
    * Constructor
-   * @param qcl_mvc_Controller|qcl_mvc_AbstractModel  $controller You can also pass a qcl_mvc_AbstractModel object here,
+   * @param qcl_data_Controller|qcl_data_AbstractModel  $controller You can also pass a qcl_data_AbstractModel object here,
    * since the controller can be retrieved from them model.
    * @param mixed $datasource Datasource model object or null if no datasource
    */

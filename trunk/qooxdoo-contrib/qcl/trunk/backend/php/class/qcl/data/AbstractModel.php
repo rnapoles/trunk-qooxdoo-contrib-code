@@ -10,14 +10,14 @@ require_once "qcl/core/Object.php";
  * @todo maybe merge with PropertyModel?
  */
 
-class qcl_mvc_AbstractModel extends qcl_core_Object
+class qcl_data_AbstractModel extends qcl_core_Object
 {
 
   /**
    * The controller object if a custom controller has been
    * set. Usually, models use the currently active controller.
    *
-   * @var qcl_mvc_Controller or subclass
+   * @var qcl_data_Controller or subclass
    */
   var $_controller = null;
 
@@ -51,17 +51,17 @@ class qcl_mvc_AbstractModel extends qcl_core_Object
  	/**
  	 * sets controller of this model to be able to link to other models
  	 * connected to the controller
- 	 * @param qcl_mvc_Controller $controller Controller object. You can
- 	 * also provide a qcl_mvc_AbstractModel object
+ 	 * @param qcl_data_Controller $controller Controller object. You can
+ 	 * also provide a qcl_data_AbstractModel object
  	 * @todo rewrite this
  	 */
  	function setController ( $controller )
  	{
-		if ( is_a( $controller,"qcl_mvc_Controller" ) )
+		if ( is_a( $controller,"qcl_data_Controller" ) )
 		{
 			$this->_controller =& $controller;
 		}
-		elseif ( is_a( $controller,"qcl_mvc_AbstractModel" ) )
+		elseif ( is_a( $controller,"qcl_data_AbstractModel" ) )
 		{
 		  $this->_controller =& $controller->getController();
 		}
@@ -78,7 +78,7 @@ class qcl_mvc_AbstractModel extends qcl_core_Object
 
  	/**
  	 * Returns the controller object
- 	 * @return qcl_mvc_Controller
+ 	 * @return qcl_data_Controller
  	 *
  	 */
   function &getController()
@@ -91,7 +91,7 @@ class qcl_mvc_AbstractModel extends qcl_core_Object
     {
       $controller =& qcl_application_Application::getController();
     }
-//    if ( ! is_a( $controller,"qcl_mvc_Controller" ) )
+//    if ( ! is_a( $controller,"qcl_data_Controller" ) )
 //    {
 //      $this->raiseError("No controller available." );
 //    }
@@ -100,7 +100,7 @@ class qcl_mvc_AbstractModel extends qcl_core_Object
 
   /**
    * Returns the controller object
-   * @return qcl_mvc_Controller
+   * @return qcl_data_Controller
    */
   function &controller()
   {

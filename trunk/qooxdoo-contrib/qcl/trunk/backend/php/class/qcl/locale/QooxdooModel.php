@@ -1,6 +1,6 @@
 <?php
 
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 require_once "qcl/persistence/db/Object.php";
 
 /**

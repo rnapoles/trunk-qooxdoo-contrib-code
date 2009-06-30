@@ -195,7 +195,7 @@ class qcl_data_datasource_Controller extends qcl_session_Controller
   /**
    * Returns data for a combobox containing all datasource schemas
    * @param string|array $params[0] If given, return only these schemata
-   * @return qcl_mvc_Response
+   * @return qcl_data_Response
    */
   function method_getSchemaComboBoxData( $params )
   {

@@ -3,7 +3,7 @@
 require_once "qcl/persistence/db/Object.php";
 require_once "qcl/registry/session.php";
 require_once "qcl/access/Manager.php";
-require_once "qcl/mvc/Controller.php";
+require_once "qcl/data/Controller.php";
 
 class TestPersistence extends qcl_persistence_db_Object
 {
@@ -16,7 +16,7 @@ class TestPersistence extends qcl_persistence_db_Object
  * Service class containing test methods
  */
 class class_qcl_persistence_Tests
-  extends qcl_mvc_Controller
+  extends qcl_data_Controller
 {
 
   var $skipAuthentication = true;

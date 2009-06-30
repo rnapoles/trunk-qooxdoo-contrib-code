@@ -460,7 +460,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * of qx_jsonrpc_controller, pass the object as constructor to the model class,
    * otherwise pass optional parameter
    * @param string $classname PHP class name or dot-separated class name
-   * @param qcl_mvc_Controller[optional] $controller (optional) controller object
+   * @param qcl_data_Controller[optional] $controller (optional) controller object
    * to be passed to the singleton constructor
    * @return qcl_core_Object
    * @deprecated Use native php code to instantiate classes, this will
@@ -495,7 +495,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     /*
      * Provide the controller if given
      */
-    if ( ! $controller and is_a ( $this, "qcl_mvc_Controller" ) )
+    if ( ! $controller and is_a ( $this, "qcl_data_Controller" ) )
     {
       $instance =& new $classname(&$this);
     }

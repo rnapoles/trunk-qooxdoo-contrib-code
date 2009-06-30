@@ -1,12 +1,12 @@
 <?php
 
-require_once "qcl/mvc/AbstractModel.php";
+require_once "qcl/data/AbstractModel.php";
 
 /**
  * Model class representing
  * client. 
  */
-class qcl_application_Client extends qcl_mvc_AbstractModel
+class qcl_application_Client extends qcl_data_AbstractModel
 {
   
   //-------------------------------------------------------------

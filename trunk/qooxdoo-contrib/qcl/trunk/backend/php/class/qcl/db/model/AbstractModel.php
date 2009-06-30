@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/mvc/AbstractPropertyModel.php";
+require_once "qcl/data/AbstractPropertyModel.php";
 require_once "qcl/db/__init__.php";
 
 
@@ -12,7 +12,7 @@ require_once "qcl/db/__init__.php";
  * @todo define interface
  */
 class qcl_db_model_AbstractModel
-  extends qcl_mvc_AbstractPropertyModel
+  extends qcl_data_AbstractPropertyModel
 {
 
   /**

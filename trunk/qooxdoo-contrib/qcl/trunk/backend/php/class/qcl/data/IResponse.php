@@ -27,7 +27,7 @@
  * }
  *
  */
-interface qcl_mvc_IResponse
+interface qcl_data_IResponse
 {
 
   /**
@@ -53,7 +53,7 @@ interface qcl_mvc_IResponse
 
   /**
    * Returns a singleton instance of this class
-   * @return qcl_mvc_IResponse
+   * @return qcl_data_IResponse
    */
   function &getInstance();
 
@@ -72,14 +72,14 @@ interface qcl_mvc_IResponse
 
   /**
    * Sets the response data object.
-   * @param qcl_mvc_ResponseDataObject $dataObject
+   * @param qcl_data_ResponseDataObject $dataObject
    * @return void
    */
   function setDataObject( $dataObject );
 
   /**
    * Returns the response data object.
-   * @return qcl_mvc_ResponseDataObject
+   * @return qcl_data_ResponseDataObject
    */
   function &getDataObject();
 
