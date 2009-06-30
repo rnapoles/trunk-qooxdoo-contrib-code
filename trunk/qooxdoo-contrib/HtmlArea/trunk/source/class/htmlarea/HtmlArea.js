@@ -3132,30 +3132,33 @@ qx.Class.define("htmlarea.HtmlArea",
    */
   destruct : function()
   {
-    /* TODO: complete disposing */
-    var doc = this.__iframe.getDocument();
-    
-    // ************************************************************************
-    //   WIDGET KEY EVENTS
-    // ************************************************************************
-    qx.event.Registration.removeListener(doc.body, "keydown",  this._handleKeyPress, this);
-    qx.event.Registration.removeListener(doc.body, "keyup",    this._handleKeyPress, this);
-    qx.event.Registration.removeListener(doc.body, "keypress", this._handleKeyPress, this);
-    
-    // ************************************************************************
-    //   WIDGET FOCUS/BLUR EVENTS
-    // ************************************************************************
-    var focusBlurTarget = qx.bom.client.Engine.WEBKIT ? this.__iframe.getWindow() : doc.body;
-    qx.event.Registration.removeListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-    qx.event.Registration.removeListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
-    qx.event.Registration.removeListener(doc, "focusout", this.__handleFocusOutEvent);
-    
-
-    // ************************************************************************
-    //   WIDGET MOUSE EVENTS
-    // ************************************************************************
-    qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
-    qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
+    try
+    {
+      /* TODO: complete disposing */
+      var doc = this.__iframe.getDocument();
+      
+      // ************************************************************************
+      //   WIDGET KEY EVENTS
+      // ************************************************************************
+      qx.event.Registration.removeListener(doc.body, "keydown",  this._handleKeyPress, this);
+      qx.event.Registration.removeListener(doc.body, "keyup",    this._handleKeyPress, this);
+      qx.event.Registration.removeListener(doc.body, "keypress", this._handleKeyPress, this);
+      
+      // ************************************************************************
+      //   WIDGET FOCUS/BLUR EVENTS
+      // ************************************************************************
+      var focusBlurTarget = qx.bom.client.Engine.WEBKIT ? this.__iframe.getWindow() : doc.body;
+      qx.event.Registration.removeListener(focusBlurTarget, "focus", this.__handleFocusEvent);
+      qx.event.Registration.removeListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
+      qx.event.Registration.removeListener(doc, "focusout", this.__handleFocusOutEvent);
+      
+  
+      // ************************************************************************
+      //   WIDGET MOUSE EVENTS
+      // ************************************************************************
+      qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
+      qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
+    } catch (ex) {};
     
 
     this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent", "handleFocusOut", "handleMouseEvent", "__contentWrap");
