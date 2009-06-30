@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -175,7 +174,9 @@ public class IO {
     }
     
     public FileNode file(String rootPath) {
-        rootPath = Strings.removeEndOpt(rootPath, fileFilesystem.getSeparator()); 
+        if (rootPath.length() > 1 || !rootPath.equals(fileFilesystem.getSeparator())) {
+            rootPath = Strings.removeEndOpt(rootPath, fileFilesystem.getSeparator()); 
+        }
         return (FileNode) node(fileFilesystem, rootPath);
     }
     
@@ -446,7 +447,6 @@ org.qooxdoo.sushi.fs.LocatorException: file:\DOKUME~1\matw\LOKALE~1\Temp: no wor
         FileNode file;
         String protocol;
         int idx;
-        JarURLConnection c;
         
         if (!resourcename.startsWith("/")) {
             throw new IllegalArgumentException("absolute resourcename expected: " + resourcename);
