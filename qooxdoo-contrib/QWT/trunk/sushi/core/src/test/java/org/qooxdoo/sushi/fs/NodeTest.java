@@ -651,6 +651,9 @@ public abstract class NodeTest extends NodeReadOnlyTest {
 
     @Test(expected=IOException.class)
     public void moveToSame() throws IOException {
+    	if (!canmove) {
+    		throw new IOException();
+    	}
         Node node;
         
         node = work.join("old").mkdir();
