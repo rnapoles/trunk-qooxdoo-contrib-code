@@ -39,7 +39,7 @@ var include = [];
 /**
  * Runs a function in the AUT context that reads the available test packages
  * from the tree.
- * 
+ *
  * @returns {Array} an array of test package names
  */
 simulation.Simulation.prototype.getPackageArray = function()
@@ -53,7 +53,7 @@ simulation.Simulation.prototype.getPackageArray = function()
       if (path[3]) {
         var pack = path[1] + "." + path[2] + "." + path[3];
         packObj[pack] = "";
-      }    
+      }
     }
     var packStr = "";
     for (pack in packObj) {
@@ -73,7 +73,7 @@ simulation.Simulation.prototype.getPackageArray = function()
 };
 
 /*
- * Prepare the list of test packages to be run. 
+ * Prepare the list of test packages to be run.
  */
 simulation.Simulation.prototype.runTestsSteps = function()
 {
@@ -88,7 +88,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
   if (this.getConfigSetting("debug")) {
     print("TEST PACKAGES: " + packages);
   }
-  
+
   if (include.length > 0) {
     packages = include;
   }
@@ -101,8 +101,19 @@ simulation.Simulation.prototype.runTestsSteps = function()
         }
       }
     }
-    
+
   }
+
+  function entryAt(array, entry) {
+    for (var i=0;i<array.length;i++) {
+      if (array[i] === entry) {
+        return i;
+      }
+    }
+  }
+
+  var temp = packages.splice(entryAt(packages, "qx.test.ui"), 1);
+  packages = packages.concat(temp);
 
   if (this.getConfigSetting("debug")) {
     print("TESTING PACKAGES: " + packages);
@@ -129,9 +140,9 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   }
   // Enter the test app URI with the current package's name after 'testclass='.
   this.type("dom=document.getElementsByTagName('input')[0]", this.autUri + packageName);
-  this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");        
-  
-  var isAutReady = this.waitForCondition(isStatusReady, 120000, 
+  this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");
+
+  var isAutReady = this.waitForCondition(isStatusReady, 120000,
                    "Waiting for test package " + packageName + " to load");
 
   if (!isAutReady) {
@@ -142,36 +153,41 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   if (this.getConfigSetting("debug")) {
     print("Starting tests in package " + packageName);
   }
-  var packageStartDate = new Date();    
+  var packageStartDate = new Date();
 
   this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
-  var isPackageDone = mySim.waitForCondition(isStatusReady, 2400000, 
+  var isPackageDone = mySim.waitForCondition(isStatusReady, 300000,
                     "Waiting for test package " + packageName + " to finish");
+
+  if (!isPackageDone) {
+    isPackageDone = mySim.waitForCondition(isStatusReady, 300000,
+                    "Waiting for test package " + packageName + " to finish");
+  }
 
   if (!isPackageDone) {
     this.testFailed = true;
     return;
   }
-  
+
   if (this.getConfigSetting("debug")) {
     this.logTestDuration(packageStartDate, "Test package " + packageName);
   }
-  
+
   var result = this.getEval(testResults, 'Getting result HTML');
-  
+
   if (result) {
     this.logErrors(result);
   }
-  
+
 };
 
 /*
- * Takes HTML content from the result iframe, splits it up into individual test 
- * results, removes successful results and logs the rest. 
+ * Takes HTML content from the result iframe, splits it up into individual test
+ * results, removes successful results and logs the rest.
  */
 simulation.Simulation.prototype.logErrors = function(result)
-{  
+{
   var logArray = [];
   if (result.indexOf("</div>") >0 ) {
     logArray = result.split("</div>");
@@ -248,17 +264,17 @@ simulation.Simulation.prototype.logErrors = function(result)
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
   mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 240000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 240000,
                                           "Waiting for qooxdoo application");
 
 
@@ -266,9 +282,9 @@ simulation.Simulation.prototype.logErrors = function(result)
     mySim.testFailed = true;
     mySim.stop();
     return;
-  }  
+  }
 
-  var isSuiteReady = mySim.waitForCondition(isStatusReady, 240000, 
+  var isSuiteReady = mySim.waitForCondition(isStatusReady, 240000,
                                             "Waiting for test suite to load");
 
   if (!isSuiteReady) {
