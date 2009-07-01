@@ -28,6 +28,12 @@ class qcl_access_Controller
 {
 
   /**
+   * Methods in this controller are not checked for prior
+   * authentication
+   */
+  var $skipAuthentication = true;
+
+  /**
    * The currently active user, determined from request or
    * from session variable. Is a user model instance
    * @access private
@@ -41,7 +47,7 @@ class qcl_access_Controller
    */
   var $permisssionAliasMap;
 
- /**
+  /**
    * Gets the user data model
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_User
@@ -180,9 +186,9 @@ class qcl_access_Controller
     /**
      * grant guest access if allowed
      */
-    elseif ( is_null( $sessionId) and $this->guestAccessAllowed() )
+    elseif ( is_null( $sessionId) and $this->isAnonymousAccessAllowed() )
     {
-      $this->grantGuestAccess();
+      $this->grantAnonymousAccess();
     }
 
     /*
@@ -201,7 +207,7 @@ class qcl_access_Controller
     /*
      * dispatch a message to set the new session id
      */
-    $this->dispatchMessage("qcl.commands.setSessionId", $sessionId);
+    $this->fireServerDataEvent("changeSessionId", $sessionId);
 
     /*
      * return the new session id
@@ -257,7 +263,7 @@ class qcl_access_Controller
   /**
    * Service method to log out the active user. Automatically creates guest
    * access. Override this method if this is not what you want.
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_logout()
   {
@@ -271,7 +277,7 @@ class qcl_access_Controller
   /**
    * Service method to terminate a session (remove session and user data).
    * Useful for example when browser window is closed.
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_terminate()
   {
@@ -280,8 +286,8 @@ class qcl_access_Controller
     /*
      * return an empty instance
      */
-    $this->setResponseDataClass("qcl_access_AuthenticationResponse");
-    return $this->response();
+    $this->setResultClass("qcl_access_AuthenticationResult");
+    return $this->result();
   }
 
   /**
@@ -303,7 +309,7 @@ class qcl_access_Controller
     /*
      * send command to client to force a logout
      */
-    $this->dispatchMessage("qcl.commands.logout");
+    $this->fireServerEvent("logout");
     $this->logout();
   }
 
@@ -351,9 +357,9 @@ class qcl_access_Controller
    * Whether guest access to the service classes is allowed
    * @return unknown_type
    */
-  function guestAccessAllowed()
+  function isAnonymousAccessAllowed()
   {
-    return $this->getIniValue("service.allow_guest_access");
+    return $this->getIniValue("service.allow_anonymous_access");
   }
 
 
@@ -362,7 +368,7 @@ class qcl_access_Controller
    * @todo config data should be written to config table and deleted when guest user sessions are deleted.
    * @return void
    */
-  function grantGuestAccess()
+  function grantAnonymousAccess()
   {
     /*
      * create a new session
@@ -382,7 +388,7 @@ class qcl_access_Controller
     /*
      * log message
      */
-    $this->info ("Granting guest access (user id #$userId, session id #$sessionId ).");
+    $this->info ("Granting anonymous access (user id #$userId, session id #$sessionId ).");
   }
 
 
@@ -392,7 +398,7 @@ class qcl_access_Controller
    *
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
-   * @return qcl_data_Response
+   * @return qcl_access_AuthenticationResult
    */
   function method_authenticate( $params )
   {
@@ -400,7 +406,8 @@ class qcl_access_Controller
     /*
      * set data object
      */
-    $this->setResponseDataClass("qcl_access_AuthenticationResponse");
+    $this->setResultClass("qcl_access_AuthenticationResult");
+
 
     /*
      * check for valid user session
@@ -463,13 +470,14 @@ class qcl_access_Controller
        */
       if ( is_null( $sessionId ) )
       {
-        if ( $this->guestAccessAllowed() )
+        if ( $this->isAnonymousAccessAllowed() )
         {
-          $this->grantGuestAccess();
+          $this->grantAnonymousAccess();
         }
         else
         {
-          $this->userNotice("Guest access denied.");
+          $this->setResult("error","Anonymous access denied.");
+          return $this->result();
         }
       }
 
@@ -487,7 +495,15 @@ class qcl_access_Controller
         }
         else
         {
-          $this->raiseError("Invalid session id.");
+          if ( $this->isAnonymousAccessAllowed() )
+          {
+            $this->grantAnonymousAccess();
+          }
+          else
+          {
+            $this->setResult("error","Invalid session id.");
+            return $this->result();
+          }
         }
       }
 
@@ -514,26 +530,26 @@ class qcl_access_Controller
      */
     $activeUser =& $this->getActiveUser();
     $permissions = $activeUser->getPermissions();
-    $this->set( "permissions", $permissions );
+    $this->setResult( "permissions", $permissions );
 
     /*
      * session id
      */
     $sessionId  = $this->getSessionId();
-    $this->set( "sessionId",$sessionId);
+    $this->setResult( "sessionId",$sessionId);
 
     /*
      * user data
      */
-    $this->set( "userId", (int) $activeUser->getId() );
-    $this->set( "anonymous", $activeUser->isAnonymous() );
-    $this->set( "username", $activeUser->username() );
-    $this->set( "fullname", $activeUser->get("name") );
+    $this->setResult( "userId", (int) $activeUser->getId() );
+    $this->setResult( "anonymous", $activeUser->isAnonymous() );
+    $this->setResult( "username", $activeUser->username() );
+    $this->setResult( "fullname", $activeUser->get("name") );
 
     /*
      * no error
      */
-    $this->set( "error", false );
+    $this->setResult( "error", false );
 
     /*
      * log message
@@ -543,7 +559,7 @@ class qcl_access_Controller
     /*
      * return data to client
      */
-    return $this->response();
+    return $this->result();
   }
 
   /**
@@ -688,7 +704,7 @@ class qcl_access_Controller
     /*
      * create random session id
      */
-    $sessionId = md5(microtime());
+    $sessionId = md5( microtime() );
     $this->setSessionId( $sessionId );
     return $sessionId;
   }
@@ -711,6 +727,29 @@ class qcl_access_Controller
   function setActiveUser( $userObject )
   {
     qcl_access_Manager::setActiveUser( $userObject );
+  }
+
+  /**
+   * Fires a server event which will be transported to the client
+   * and dispatched by the jsonrpc data store.
+   * @param string $type Message Event type
+   */
+  function fireServerEvent ( $type )
+  {
+    require_once "qcl/event/Dispatcher.php";
+    qcl_event_Dispatcher::fireServerEvent( &$this, $type, $data );
+  }
+
+  /**
+   * Fires a server data event which will be transported to the client
+   * and dispatched by the jsonrpc data store.
+   * @param mixed $event Message Event type
+   * @param mixed $data Data dispatched with event
+   */
+  function fireServerDataEvent ( $type, $data )
+  {
+    require_once "qcl/event/Dispatcher.php";
+    qcl_event_Dispatcher::fireServerDataEvent( &$this, $type, $data );
   }
 }
 ?>

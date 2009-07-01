@@ -9,7 +9,7 @@ require_once "qcl/db/model/xmlSchema/Model.php";
  * 'Session' here means the connection established by a particular
  * browser instance.
  */
-class qcl_session_Session
+class qcl_access_model_Session
   extends qcl_db_model_xmlSchema_Model
 {
 
@@ -18,13 +18,13 @@ class qcl_session_Session
    * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/session/Session.model.xml";
+  var $schemaXmlPath = "qcl/access/model/Session.model.xml";
 
 
   /**
    * Returns singleton instance.
    * @static
-   * @return qcl_session_Session
+   * @return qcl_access_model_Session
    */
   function &getInstance( $class=__CLASS__ )
   {
@@ -86,26 +86,32 @@ class qcl_session_Session
      * Delete sessions that have been deleted, refer to non-existing users, or
      * to the same user with a different session id.
      * @todo unhardcode timeout
+     * @todo build this into the model code
      */
-    $controller =& $this->getController();
-    $userModel =& $controller->getUserModel();
-    //$userTable =  $userModel->getTableName();
-    $prefix = $this->getTablePrefix();
+    $activeUser =& qcl_access_Manager::getActiveUser();
+    if( ! $activeUser ) return;
+    $userTable =  $activeUser->getTableName();
     $this->deleteWhere("
       markedDeleted = 1
-      OR userId NOT IN ( SELECT id FROM {$prefix}users )
+      OR userId NOT IN ( SELECT id FROM `$userTable` )
       OR TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600
     ");
 
     /*
      * Delete messages that have been deleted, or refer to non-existing sessions
+     * @todo this should all be done automatically through association
+     * management
      */
-    $msgModel   =& $controller->getMessageModel();
-    $msgModel->deleteWhere("
-      markedDeleted = 1 OR
-      sessionId NOT IN ( SELECT sessionId FROM {$prefix}sessions )
-    ");
-
+    require_once "qcl/event/message/Bus.php";
+    $msgModel   =& qcl_event_message_Bus::getModel();
+    if ( $msgModel )
+    {
+      $sessTable  =& $this->getTableName();
+      $msgModel->deleteWhere("
+        markedDeleted = 1 OR
+        sessionId NOT IN ( SELECT sessionId FROM `$sessTable` )
+      ");
+    }
   }
 
   /**
@@ -146,8 +152,7 @@ class qcl_session_Session
     /*
      * delete messages belonging to session
      */
-    $controller =& $this->getController();
-    $msgModel   =& $controller->getMessageModel();
+    $msgModel   =& qcl_event_message_Bus::getModel();
     $msgModel->updateWhere(
       array('markedDeleted' => 1),
       array('sessionId' => $sessionId)
@@ -167,74 +172,6 @@ class qcl_session_Session
       SET `markedDeleted` = 1
       WHERE `userId`  = $userId
     ");
-  }
-
-
-  /**
-   * Adds a message for all client
-   * @return void
-   * @param string $message
-   * @param mixed  $data
-   * @todo base64encode and separate with CR
-   */
-  function addMessageBroadcast( $message, $data )
-  {
-    /*
-     * get ids of sessions
-     */
-    $sessionIds = $this->findValues("sessionId");
-
-    $controller =& $this->getController();
-    $msgModel =& $controller->getMessageModel();
-
-    foreach( $sessionIds as $sessionId )
-    {
-      $msgModel->create();
-      $msgModel->setProperty("sessionId",$sessionId);
-      $msgModel->setName($message);
-      $msgModel->setData(addSlashes(serialize($data)));
-      $msgModel->update();
-    }
-
-  }
-
-  /**
-   * gets broadcasted messages for the connected client
-   * @return array
-   * @param int $sessionId
-   */
-  function getBroadcastedMessages( $sessionId )
-  {
-    $controller =& $this->getController();
-    $msgModel   =& $controller->getMessageModel();
-
-    /*
-     * get messages that have been stored for session id
-     */
-    $rows = $msgModel->findWhere(
-      "`sessionId`='$sessionId'",
-      null,
-      array('name','data')
-    );
-
-    $messages = array();
-    foreach ($rows as $row)
-    {
-      $messages[] = array(
-        'name'  => $row['name'],
-        'data'  => unserialize(stripslashes($row['data']))
-      );
-    }
-
-    /*
-     * delete messages
-     */
-    $msgModel->deleteWhere("`sessionId`='$sessionId'");
-
-    /*
-     * return message array
-     */
-    return $messages;
   }
 }
 ?>

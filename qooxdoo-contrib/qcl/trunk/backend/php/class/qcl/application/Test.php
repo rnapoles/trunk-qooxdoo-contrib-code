@@ -1,8 +1,8 @@
 <?php
 
- require_once "qcl/session/Controller.php";
+ require_once "qcl/access/SessionController.php";
 
-class class_Test extends qcl_session_Controller
+class class_Test extends qcl_access_SessionController
 {
   function method_getIniValue($params)
   {

@@ -1,19 +1,13 @@
 <?php
-
-/*
- * dependencies
- */
 require_once "qcl/access/Controller.php";
-require_once "qcl/session/Session.php";
-require_once "qcl/session/Message.php";
-require_once "qcl/server/Server.php";
+require_once "qcl/access/model/Session.php";
 
 /**
  * Base class that keeps track of connected clients
  * and dispatches or broadcasts messages. A "session" means the
  * connection established by a particular browser instance.
  */
-class qcl_session_Controller extends qcl_access_Controller
+class qcl_access_SessionController extends qcl_access_Controller
 {
 
   /**
@@ -124,12 +118,12 @@ class qcl_session_Controller extends qcl_access_Controller
    * @todo config data should be written to config table and deleted when guest user sessions are deleted.
    * @return void
    */
-  function grantGuestAccess()
+  function grantAnonymousAccess()
   {
     /*
      * parent method does all the work
      */
-    parent::grantGuestAccess();
+    parent::grantAnonymousAccess();
 
     /*
      * now register the new session
@@ -143,7 +137,7 @@ class qcl_session_Controller extends qcl_access_Controller
    *
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_authenticate( $params )
   {
@@ -184,21 +178,13 @@ class qcl_session_Controller extends qcl_access_Controller
 
   /**
    * Returns the session model singleton instance
-   * @return qcl_session_Session
+   * @return qcl_access_model_Session
    */
   function &getSessionModel()
   {
-    return qcl_session_Session::getInstance();
+    return qcl_access_Manager::getSessionModel();
   }
 
-  /**
-   * Returns the message model singleton instance
-   * @return qcl_session_Message
-   */
-  function &getMessageModel()
-  {
-    return qcl_session_Message::getInstance();
-  }
 
   /**
    * Checks if a session with the given id exists
@@ -364,80 +350,6 @@ class qcl_session_Controller extends qcl_access_Controller
     ));
 
     return $sessionId;
-  }
-
-  //-------------------------------------------------------------
-  // messages and events
-  //-------------------------------------------------------------
-
-  /**
-   * Broadcasts a message to all connected clients
-   * @param mixed $messages Message name or hash map of messages
-   * @param mixed $data Data dispatched with message
-   * @todo use into qcl_data_Response object
-   */
-  function broadcastMessage ( $message, $data=true )
-  {
-    //$this->info("Broadcast $message");
-
-    if ( is_string ($message) )
-    {
-      $sessionModel =& $this->getSessionModel();
-      $sessionModel->addMessageBroadcast(
-        $message,
-        $data
-      );
-    }
-    else
-    {
-      trigger_error ("Invalid broadcast parameter");
-    }
-  }
-
-  /**
-   * Dummy method called simply to forwards messages to client
-   * and send logout message when timeout.
-   * @return qcl_data_Response
-   */
-  function method_getMessages($params)
-  {
-    return $this->response();
-  }
-
-  //-------------------------------------------------------------
-  // Response
-  //-------------------------------------------------------------
-
-
-  /**
-   * gets result for json response inclusing result data, events, and messages
-   * overriding parent method to include message broadcasts
-   * @override
-   * @return array
-   * @todo use into qcl_data_Response object
-   */
-  function &response()
-  {
-    $this->addBroadcastMessagesToResponse();
-    return parent::response();
-  }
-
-  /**
-   * adds the messages from the broadcast to the response message queue
-   * @return void
-   */
-  function addBroadcastMessagesToResponse()
-  {
-    $sessModel =& $this->getSessionModel();
-    $messages  =  $sessModel->getBroadcastedMessages($this->getSessionId());
-
-    //$this->info(count($messages) . " broadcasted messages.");
-
-    foreach( $messages as $message )
-    {
-      $this->addMessage($message['name'],$message['data']);
-      //$this->info($message);
-    }
   }
 }
 ?>

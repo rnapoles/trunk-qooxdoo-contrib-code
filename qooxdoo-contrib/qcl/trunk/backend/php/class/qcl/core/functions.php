@@ -356,7 +356,7 @@ function debug_get_backtrace( $skip=1, $returnAsArray=false )
   /*
    * Get backtrace
    */
-  $backtrace = debug_backtrace();
+  $backtrace = array_reverse( debug_backtrace() );
 
   /*
    * Skip entries
@@ -396,7 +396,6 @@ function debug_get_backtrace( $skip=1, $returnAsArray=false )
     $params,
     $location);
   }
-
   return $returnAsArray ? $calls : implode("\n", $calls);
 }
 

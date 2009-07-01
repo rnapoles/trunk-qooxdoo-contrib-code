@@ -97,7 +97,7 @@ class qcl_access_Services extends qcl_core_Mixin
      * return client data
      */
     $this->set( "tabledatamodel", $data );    
-    return $this->response();
+    return $this->result();
   }
     
   /**
@@ -139,7 +139,7 @@ class qcl_access_Services extends qcl_core_Mixin
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }
   
   /**
@@ -191,7 +191,7 @@ class qcl_access_Services extends qcl_core_Mixin
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }    
   
   /**
@@ -247,7 +247,7 @@ class qcl_access_Services extends qcl_core_Mixin
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }    
 
   /**
@@ -287,7 +287,7 @@ class qcl_access_Services extends qcl_core_Mixin
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }
    
   /**
@@ -309,7 +309,7 @@ class qcl_access_Services extends qcl_core_Mixin
 
     // success
     $this->dispatchMessage("qcl.auth.messages.user.roleRemoved",$userRefs); 
-    return $this->response();
+    return $this->result();
   }
   
   /**
@@ -348,7 +348,7 @@ class qcl_access_Services extends qcl_core_Mixin
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }
    
   /**
@@ -387,7 +387,7 @@ class qcl_access_Services extends qcl_core_Mixin
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }
 
   //-------------------------------------------------------------
@@ -474,7 +474,7 @@ class qcl_access_Services extends qcl_core_Mixin
 
     // return data
     $this->set( 'treedatamodel', $result );
-    return $this->response();
+    return $this->result();
   }
 
   /**
@@ -622,7 +622,7 @@ class qcl_access_Services extends qcl_core_Mixin
      * return client data
      */
     $this->set( 'treedatamodel', $result );
-    return $this->response();    
+    return $this->result();    
   }
     
   /**
@@ -674,7 +674,7 @@ class qcl_access_Services extends qcl_core_Mixin
      * return client data
      */
     $this->set( 'treedatamodel', $result );
-    return $this->response();
+    return $this->result();
   }
 
   /**
@@ -723,7 +723,7 @@ class qcl_access_Services extends qcl_core_Mixin
     );
 
     $this->set( 'treedatamodel', $result );
-    return $this->response();
+    return $this->result();
   }
  
   /**
@@ -744,7 +744,7 @@ class qcl_access_Services extends qcl_core_Mixin
     $db =& $roleModel->db();
     $db->dropTable( array("roles","permissions","link_roles_permissions") );
 
-    return $this->response();    
+    return $this->result();    
   }  
   
   /**
@@ -772,7 +772,7 @@ class qcl_access_Services extends qcl_core_Mixin
     $logger->setFilterEnabled(QCL_LOG_TABLE_MAINTENANCE, false );
     $logger->setFilterEnabled(QCL_LOG_PROPERTY_MODEL, false );       
 
-    return $this->response();
+    return $this->result();
   }      
 }
 ?>

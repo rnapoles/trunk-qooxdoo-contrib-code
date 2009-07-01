@@ -76,13 +76,13 @@ class class_qcl_xml_Tests extends qcl_db_controller
     $logger->setFilterEnabled("xml",false);
     $logger->setFilterEnabled("persistence",false);
 
-    return $this->response();
+    return $this->result();
   }
 
   function method_testCache()
   {
     //$this->debug("Not implemented");
-    return $this->response();
+    return $this->result();
   }
 
 }

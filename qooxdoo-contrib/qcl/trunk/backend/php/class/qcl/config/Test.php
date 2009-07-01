@@ -1,9 +1,9 @@
 <?php
 
-require_once "qcl/session/Controller.php";
+require_once "qcl/access/SessionController.php";
 require_once "qcl/config/db.php";
 
-class class_qcl_config_Test extends qcl_session_Controller
+class class_qcl_config_Test extends qcl_access_SessionController
 {
 
   function method_test()
@@ -28,7 +28,7 @@ class class_qcl_config_Test extends qcl_session_Controller
 
     //$this->set("qcl.test.foo(reset)",$configModel->get("qcl.test.foo"));
 
-    return $this->response();
+    return $this->result();
   }
 
   function method_testAccessibleKeys( $params )
@@ -38,7 +38,7 @@ class class_qcl_config_Test extends qcl_session_Controller
     $this->set( array(
       "config" =>  $configModel->getAccessibleKeys( $mask )
     ) );
-    return $this->response();
+    return $this->result();
   }
 
 

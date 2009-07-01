@@ -1,5 +1,4 @@
 <?php
-
 require_once "qcl/log/Logger.php";
 
 /*
@@ -115,13 +114,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   var $_timestamp;
 
-   /**
-   * database for event listeners registered on this object
-   * @todo mover everything related to events and messages to event package
-   * @var array
-   */
-  var $__event_db = array();
-
   /**
    * Class constructor. If the mixin class property contains
    * array entries, these classes will be mixed in.
@@ -209,20 +201,6 @@ class qcl_core_Object extends qcl_core_BaseClass
   // Object initialization
   //-------------------------------------------------------------
 
-  /**
-   * Run once for the given class per application installation
-   * This can be reset by clearing the php/var/tmp folder. Implementing method
-   * must call parent method before executing action like so:
-   * if ( parent::runOnce() ) { execute run-once action  }
-   */
-  function runOnce()
-  {
-    $path = QCL_TMP_PATH . get_class($this) . ".runonce";
-    if ( file_exists( $path) ) return false;
-    touch($path);
-    return true;
-  }
-
 
   /**
    * make a copy of this object
@@ -233,45 +211,8 @@ class qcl_core_Object extends qcl_core_BaseClass
   }
 
   /**
-   * getter for error message
+   * Return include path for a class name
    * @return string
-   */
-  function getError()
-  {
-    return $this->error;
-  }
-
-  /**
-   * setter for error message
-   * @return string
-   */
-  function setError( $error )
-  {
-    $this->error = $error;
-  }
-
-  /**
-   * Clears error message
-   */
-   function clearError()
-   {
-     $this->error = null;
-   }
-
-  /**
-   * Raises an error about a missing method implementation
-   * @param string class name
-   * @todo get class and method name from backtrace.
-   */
-  function notImplemented( $class = __CLASS__ )
-  {
-    $this->raiseError( "Method (see backtrace) not implemented for class $class. You may have to subclass this class in order to use it." );
-  }
-
-  /**
-   * get include path for a class name
-   * @return
-   * FIXME PHP5 is case-sensitive!
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
    */
@@ -555,7 +496,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     $m = ">>> DEBUG <<< ";
     if ($class and $line) $m .= "$class:$line: ";
     $m .= $msg;
-    $this->log ( $m, "info" );
+    $this->info ( $m, "info" );
   }
 
   /**
@@ -647,6 +588,60 @@ class qcl_core_Object extends qcl_core_BaseClass
     return $backtrace;
   }
 
+
+  //-------------------------------------------------------------
+  // Error
+  //-------------------------------------------------------------
+
+
+  /**
+   * getter for error message
+   * @return string
+   */
+  function getError()
+  {
+    return $this->error;
+  }
+
+  /**
+   * setter for error message
+   * @return string
+   */
+  function setError( $error )
+  {
+    $this->error = $error;
+  }
+
+  /**
+   * Clears error message
+   */
+   function clearError()
+   {
+     $this->error = null;
+   }
+
+  /**
+   * Hook to return optional error response data. By default, return an
+   * empty array. Override this method if you want to provide
+   * addition data to be passed with the error response.
+   * @return array
+   */
+  function optionalErrorResponseData()
+  {
+    return array();
+  }
+
+  /**
+   * Raises an error about a missing method implementation
+   * @param string class name
+   * @todo get class and method name from backtrace.
+   */
+  function notImplemented( $class = __CLASS__ )
+  {
+    $this->raiseError( "Method (see backtrace) not implemented for class $class. You may have to subclass this class in order to use it." );
+  }
+
+
   /**
    * Raises a server error and exits
    * @param string $message
@@ -711,9 +706,192 @@ class qcl_core_Object extends qcl_core_BaseClass
     trigger_error($message);
   }
 
-  /*
-   * @todo: the following methods really should be functions
+  //-------------------------------------------------------------
+  // Timeer
+  //-------------------------------------------------------------
+
+  /**
+   * Records a timestamp for this object
+   * @return unknown_type
    */
+  function startTimer()
+  {
+    $this->_timestamp = microtime_float();
+  }
+
+  /**
+   * Returns the time since startTimer() was called in seconds
+   * @param $debugmsg
+   * @return unknown_type
+   */
+  function timerAsSeconds($debugmsg=null)
+  {
+    $time_end = microtime_float();
+    $seconds = round($time_end - $this->_timestamp,5);
+    if ( $debugmsg )
+    {
+      //$this->debug( $debugmsg . ": $seconds seconds since timer started." );
+    }
+    return $seconds;
+  }
+
+  //-------------------------------------------------------------
+  // Messages and events
+  //-------------------------------------------------------------
+
+  /**
+   * Adds a message subscriber. This works only for objects which have been
+   * initialized during runtime. Filtering not yet supported, i.e. message name must
+   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * @todo move to external class
+   * @param string $filter
+   * @param string $method Callback method of the current object
+   */
+  function addSubscriber( $filter, $method )
+  {
+    require_once "qcl/event/message/Bus.php";
+    qcl_event_message_Bus::addSubscriber( $filter, &$this, $method );
+  }
+
+  /**
+   * Dispatches a message. Filtering not yet supported, i.e. message name must
+   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * @param string $name Message name
+   * @param mixed $data Data dispatched with message
+   * @todo move to external class
+   */
+  function dispatchServerMessage ( $name, $data )
+  {
+    require_once "qcl/event/message/Bus.php";
+    qcl_event_message_Bus::dispatchServerMessage( &$this, $name, $data );
+  }
+
+  /**
+   * Broadcasts a message to all connected clients
+   * @param string $name Message name
+   * @param mixed $data Data dispatched with message
+   * @todo move to external class
+   */
+  function broadcastServerMessage ( $name, $data  )
+  {
+    require_once "qcl/event/message/Bus.php";
+    qcl_event_message_Bus::broadcastServerMessage( &$this, $name, $data );
+  }
+
+  /**
+   * Adds an event listener. Works only during runtime, i.e. event bindings are not
+   * persisted.
+   * @todo rewrite using event objects and support persisted event bindings
+   * @param string $type The name of the event
+   * @param string|qcl_core_Object $object The object or the object id retrieved by '$this->objectId()'
+   * @param string $method callback method of the object
+   * @todo move to external class
+   */
+  function addListener( $type, $object, $method )
+  {
+    require_once "qcl/event/Dispatcher.php";
+    qcl_event_Dispatcher::addListener( &$this, $type, &$object, $method );
+  }
+
+  /**
+   * Dispatches a server event. Can be called statically.
+   * @param qcl_core_Object $target
+   * @param qcl_event_type_Event $event
+   * @return bool Whether the event was dispatched or not.
+   */
+  function dispatchEvent ( $event )
+  {
+    require_once "qcl/event/Dispatcher.php";
+    qcl_event_Dispatcher::dispatchEvent( &$this, &$event );
+  }
+
+  /**
+   * Fires an event
+   * @param string $type Message Event type
+   */
+  function fireEvent ( $type )
+  {
+    require_once "qcl/event/Dispatcher.php";
+    qcl_event_Dispatcher::fireDataEvent( &$this, $type, $data );
+  }
+
+  /**
+   * Fires a data event
+   * @param mixed $event Message Event type
+   * @param mixed $data Data dispatched with event
+   */
+  function fireDataEvent ( $type, $data )
+  {
+    require_once "qcl/event/Dispatcher.php";
+    qcl_event_Dispatcher::fireDataEvent( &$this, $type, $data );
+  }
+
+  //-------------------------------------------------------------
+  // Translation
+  //-------------------------------------------------------------
+
+  /**
+   * translates a message
+   * @return  String
+   * @param   String  $msgId    Message id of the string to be translated
+   * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
+   * or as parameters
+   */
+  function tr( $msgId, $varargs=null )
+  {
+    return qcl_application_Application::tr( $msgId, $varargs );
+  }
+
+  /**
+   * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+   *
+   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
+   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
+   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
+   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
+   * @return string
+   */
+  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  {
+    return qcl_application_Application::trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() );
+  }
+
+  //-------------------------------------------------------------
+  // Serialization
+  //-------------------------------------------------------------
+
+
+  /**
+   * Returns a string representation of the object that has purely informational
+   * value
+   * @return string
+   */
+  function toString()
+  {
+    return "[" . $this->className() . " instance #" . $this->objectId() . "]";
+  }
+
+  /**
+   * Serializes the object to a string that can be deserialized
+   * @return string
+   */
+  function serialize()
+  {
+    return serialize( $this );
+  }
+
+  /**
+   * Dumps a variable to a string representation
+   */
+  function dump()
+  {
+    return var_export( $this, true );
+  }
+
+  //-------------------------------------------------------------
+  // Type checkign @todo move into qcl_util_Type class
+  //-------------------------------------------------------------
+
   function checkType( $type, $var )
   {
     $ntype = gettype($var);
@@ -744,296 +922,6 @@ class qcl_core_Object extends qcl_core_BaseClass
   {
     return $this->checkType("array",$var);
   }
-
-
-  function startTimer()
-  {
-    $this->_timestamp = microtime_float();
-  }
-
-  function timerAsSeconds($debugmsg=null)
-  {
-    $time_end = microtime_float();
-    $seconds = round($time_end - $this->_timestamp,5);
-    if ( $debugmsg )
-    {
-      //$this->debug( $debugmsg . ": $seconds seconds since timer started." );
-    }
-    return $seconds;
-  }
-
-
-  //-------------------------------------------------------------
-  // Simple programmatic message and event system
-  // This might later be rewritten more oo-style with event and
-  // message objects.
-  //-------------------------------------------------------------
-
-  /**
-   * Adds a message subscriber. This works only for objects which have been
-   * initialized during runtime. Filtering not yet supported, i.e. message name must
-   * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * @todo move to external class
-   * @param string $filter
-   * @param string $method Callback method of the current object
-   */
-  function addMessageSubscriber( $filter, $method )
-  {
-    global $message_db;
-    if ( ! $message_db )
-    {
-      $message_db = array(
-        'filters'  => array(),
-        'data'     => array()
-      );
-    }
-
-    /*
-     * object id
-     */
-    $objectId = $this->objectId();
-
-    /*
-     * search if we already have an entry for the filter
-     */
-    $index = array_search( $filter, $message_db['filters'] );
-    if ( $index === false )
-    {
-      /*
-       * filter not found, create new filter and data
-       */
-      $message_db['filters'][] = $filter;
-      $index = count($message_db['filters']) -1;
-      $message_db['data'][$index] = array( array( $objectId, $method ) );
-    }
-    else
-    {
-      /*
-       * filter found, add data
-       */
-      $message_db['data'][$index][] = array( $objectId, $method );
-    }
-
-  }
-
-  /**
-   * Dispatches a message. Filtering not yet supported, i.e. message name must
-   * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * @param string $message Message name
-   * @param mixed $data Data dispatched with message
-   * @todo move to external class
-   */
-  function dispatchMessage ( $message, $data=true )
-  {
-    $this->log("Message $message");
-
-    /*
-     * search message database
-     */
-    global $message_db;
-    $index = array_search ( $message, (array) $message_db['filters'] );
-
-    /*
-     * abort if no subcriber for this message registered
-     */
-    if ( $index === false ) return;
-
-    /*
-     * call object methods
-     */
-    foreach ( $message_db['data'][$index] as $target )
-    {
-      list( $objectId, $method ) = $target;
-      $object =& $this->getObjectById( $objectId );
-      $object->$method($data);
-    }
-
-  }
-
-  /**
-   * Adds an event listener. Works only during runtime, i.e. event bindings are not
-   * persisted.
-   * @todo rewrite using event objects and support persisted event bindings
-   * @param string $type The name of the event
-   * @param string|qcl_core_Object $object The object or the object id retrieved by '$this->objectId()'
-   * @param string $method callback method of the object
-   * @todo move to external class
-   */
-  function addEventListener( $type, $object, $method )
-  {
-    /*
-     * object id
-     */
-    if ( is_a( $object,"qcl_core_Object" ) )
-    {
-      $objectId = $object->objectId();
-    }
-    elseif ( is_string($object) and ! empty( $object ) )
-    {
-      $objectId = $object;
-    }
-    else
-    {
-      $this->raiseError("Invalid object or object id");
-    }
-
-    /*
-     * event database
-     */
-    $event_db =& $this->__event_db;
-    if ( ! $event_db )
-    {
-      $event_db = array(
-        'types'  => array(),
-        'data'     => array()
-      );
-    }
-
-    /*
-     * search if we already have an entry for the event type
-     */
-    $index = array_search( $type, $event_db['types'] );
-    if ( $index === false )
-    {
-      /*
-       * filter not found, create new filter and data
-       */
-      $event_db['types'][] = $type;
-      $index = count($event_db['types']) -1;
-      $event_db['data'][$index] = array( array( $objectId, $method ) );
-    }
-    else
-    {
-      /*
-       * filter found, add data
-       */
-      $event_db['data'][$index][] = array( $objectId, $method );
-    }
-
-  }
-
-  /**
-   * Dispatches a server event
-   * @param mixed $event Message Event type
-   * @param mixed $data Data dispatched with event
-   * @todo move to external class
-   */
-  function dispatchEvent ( $event, $data=true )
-  {
-    $this->log("Event $event","event");
-
-    /*
-     * search message database
-     */
-    $event_db =& $this->__event_db;
-    $index = array_search ( $event, (array) $event_db['types'] );
-
-    /*
-     * abort if no event listener for this message has been registered
-     */
-    if ( $index === false ) return;
-
-    /*
-     * call object methods
-     */
-    foreach ( $event_db['data'][$index] as $target )
-    {
-      list( $objectId, $method ) = $target;
-      $object =& $this->getObjectById( $objectId );
-      $object->$method($data);
-    }
-  }
-
-/**
-   * the path to the directory containing binary executables, relative to the SERVICE_PATH
-   * @deprecated
-   * @todo move everything related to execution of binaries to a separate class
-   */
-  var $bin_path    = "../../bin/";
-
-
-  /**
-   * Run once for the given class during one session
-   * Implementing method must call parent method before executing action like so:
-   * if ( ! parent::runOncePerClassAndSession() ) return;
-   * @todo rewrite using external class
-   * @return bool
-   */
-  function runOncePerClassAndSession()
-  {
-    $flag = get_class($this) . ".runOnceInSession";
-    if ( $this->getSessionVar($flag) ) return false;
-    $this->setSessionVar($flag,true);
-    return true;
-  }
-
-  /**
-   * Returns file path to binary executables depending on operating system
-   * @return string
-   * @deprecated
-   * @todo move to external class
-   */
-  function getOsBinDir()
-  {
-    $path = SERVICE_PATH . $this->bin_path;
-    switch ( strtolower ( PHP_OS ) )
-    {
-      case "darwin":  $path .= "Darwin/"; break;
-      case "WINNT":   $path .= "win32/";   break;
-      default:        $path .= "i386linux/";
-    }
-    return $path;
-  }
-
-  /**
-   * Returns the path to a directory where temporary data will be stored with
-   * a trailing slash
-   * @deprecated
-   * @todo move to external system class
-   */
-  function tmpDir()
-  {
-    return realpath(QCL_TMP_PATH) . "/";
-  }
-
-  /**
-   * Hook to return optional error response data. By default, return an
-   * empty array. Override this method if you want to provide
-   * addition data to be passed with the error response.
-   * @return array
-   */
-  function optionalErrorResponseData()
-  {
-    return array();
-  }
-
-  /**
-   * translates a message
-   * @return  String
-   * @param   String  $msgId    Message id of the string to be translated
-   * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
-   * or as parameters
-   */
-  function tr( $msgId, $varargs=null )
-  {
-    return qcl_application_Application::tr( $msgId, $varargs );
-  }
-
-  /**
-   * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
-   *
-   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
-   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
-   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
-   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
-   * @return string
-   */
-  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
-  {
-    return qcl_application_Application::trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() );
-  }
-
-
 }
 
 /*

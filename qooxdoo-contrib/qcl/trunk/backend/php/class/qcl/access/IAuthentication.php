@@ -49,7 +49,7 @@ interface qcl_access_IAuthentication
   /**
    * Service method to log out the active user. Automatically creates guest
    * access, if allowed
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_logout();
 
@@ -57,7 +57,7 @@ interface qcl_access_IAuthentication
   /**
    * Service method to terminate a session (remove session and user data).
    * Useful for example when browser window is closed.
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_terminate();
 }

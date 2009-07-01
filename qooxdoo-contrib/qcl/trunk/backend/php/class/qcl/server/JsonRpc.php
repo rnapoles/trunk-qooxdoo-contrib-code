@@ -6,6 +6,9 @@
  */
 require_once "services/server/JsonRpcServer.php";
 require_once "qcl/access/Manager.php";
+require_once "qcl/event/Dispatcher.php";
+require_once "qcl/event/message/Bus.php";
+require_once "qcl/server/Response.php";
 
 /**
  * Upload path constant
@@ -138,7 +141,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
        */
       $this->info("Aborted in the constructor...");
       $this->sendReply(
-        $this->formatOutput( $serviceObject->response() ),
+        $this->formatOutput( $serviceObject->result() ),
         $this->scriptTransportId
       );
       exit;
@@ -179,6 +182,31 @@ class qcl_server_JsonRpc extends JsonRpcServer
   }
 
   /**
+   * Format the response string, given the service method output.
+   * By default, wrap it in a result map and encode it in json.
+   * @param mixded $output
+   * @return string
+   */
+  function formatOutput( $data )
+  {
+    $requestId = $this->getId();
+    $sessionId = qcl_access_Manager::getSessionId();
+    $events    = qcl_event_Dispatcher::getServerEvents();
+    $messages  = qcl_event_message_Bus::getServerMessages( $sessionId );
+
+    $response =& qcl_server_Response::getInstance();
+    $response->setId( $requestId );
+    $response->setEvents( $events );
+    $response->setMessages( $messages );
+    if( is_a( $data, "qcl_data_Result" ) )
+    {
+      $data = $data->toArray();
+    }
+    $response->setData( $data );
+    return $this->json->encode( $response->toArray() );
+  }
+
+  /**
    * Uploads a single file to the temporary folder.
    * Authentication an be done in two different ways:
    * 1) The calling client provides a valid session id in the URL ("?sessionId=a8dab9das...")
@@ -186,7 +214,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function uploadFile()
   {
-    $this->debug("Starting upload ...");
+    $this->info("Starting upload ...");
 
     /*
      * check if upload directory is writeable
@@ -266,7 +294,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
        * target path
        */
       $tgt_path  = QCL_UPLOAD_PATH . "/{$sessionId}_{$file_name}";
-      $this->debug( "Moving uploaded file to $tgt_path ..." );
+      //$this->debug( "Moving uploaded file to $tgt_path ..." );
 
       /*
        * check if file exists

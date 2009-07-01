@@ -26,7 +26,7 @@ class qcl_application_Client extends qcl_data_AbstractModel
     $this->info($message);
     $controller =& $this->getController();
     $controller->dispatchMessage("qcl.commands.remote.alert", $message);
-    return $controller->response();  
+    return $controller->result();  
   }
   
   /**
@@ -57,7 +57,7 @@ class qcl_application_Client extends qcl_data_AbstractModel
       'service'  => $service,
       'params'   => $params
     ) );
-   return $controller->response();  
+   return $controller->result();  
   }
   
   /**
@@ -90,7 +90,7 @@ class qcl_application_Client extends qcl_data_AbstractModel
       'service'       => $service,
       'params'        => $params
     ) );
-   return $controller->response();  
+   return $controller->result();  
   }
 
   /**
@@ -146,7 +146,7 @@ class qcl_application_Client extends qcl_data_AbstractModel
       'service'       => $service,
       'params'        => $params
     ) );
-   return $controller->response();  
+   return $controller->result();  
   }  
   
 }

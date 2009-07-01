@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/session/Controller.php";
+require_once "qcl/access/SessionController.php";
 require_once "qcl/data/datasource/type/db/Model.php";
 require_once "qcl/persistence/db/Object.php";
 
@@ -18,7 +18,7 @@ if ( defined("QCL_LOG_DATASOURCE") )
  * Datasource controller class. Can also be used as a mixin for controllers
  * that are not bound to a database.
  */
-class qcl_data_datasource_Controller extends qcl_session_Controller
+class qcl_data_datasource_Controller extends qcl_access_SessionController
 {
 
   /**
@@ -195,7 +195,7 @@ class qcl_data_datasource_Controller extends qcl_session_Controller
   /**
    * Returns data for a combobox containing all datasource schemas
    * @param string|array $params[0] If given, return only these schemata
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_getSchemaComboBoxData( $params )
   {
@@ -217,7 +217,6 @@ class qcl_data_datasource_Controller extends qcl_session_Controller
     $listItems = array ();
     foreach ( $manager->schemaList() as $schema )
     {
-      $this->debug($schema);
 
       /*
        * filter
@@ -239,18 +238,18 @@ class qcl_data_datasource_Controller extends qcl_session_Controller
       );
     }
 
-    $this->set("children",$listItems);
+    $this->setResult("children",$listItems);
 
     if ( $selected )
     {
-      $this->set("selected", $selected );
+      $this->setResult("selected", $selected );
     }
 
 
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }
 
   /**
@@ -294,24 +293,24 @@ class qcl_data_datasource_Controller extends qcl_session_Controller
         'label'   => $datasource['name'] . " (" . $datasource['namedId'] . ")",
       );
     }
-    $this->set("children",$listItems);
+    $this->setResult("children",$listItems);
 
     /*
      * selected list item
      */
     if ( $selected )
     {
-      $this->set("selected",$selected);
+      $this->setResult("selected",$selected);
     }
     else
     {
-      $this->set("selected",$listItems[0]['value']);
+      $this->setResult("selected",$listItems[0]['value']);
     }
 
     /*
      * return client data
      */
-    return $this->response();
+    return $this->result();
   }
 }
 ?>

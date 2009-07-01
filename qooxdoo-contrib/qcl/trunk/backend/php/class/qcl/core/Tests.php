@@ -11,7 +11,7 @@ class class_qcl_core_Tests extends qcl_data_Controller
   {
     $this->info("Test!");
     $this->set("foo","bar");
-    return $this->response();
+    return $this->result();
   }
   
   function method_testMixin()

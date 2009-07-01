@@ -11,7 +11,7 @@ class class_qcl_access_Tests extends qcl_access_Controller
   function method_dummy()
   {
 
-    return $this->response();  
+    return $this->result();  
     
   }
   

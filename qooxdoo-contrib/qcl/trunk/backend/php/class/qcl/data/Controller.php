@@ -3,8 +3,8 @@
  * dependencies
  */
 require_once "qcl/core/Object.php";
-require_once "qcl/data/Response.php";
-require_once "qcl/data/ResponseDataObject.php";
+require_once "qcl/server/Response.php";
+require_once "qcl/data/Result.php";
 
 /*
  * constants
@@ -45,6 +45,12 @@ class qcl_data_Controller extends qcl_core_Object
   var $_isAborted = false;
 
   /**
+   * The response data object
+   * @var qcl_data_Result
+   */
+  var $_resultObject;
+
+  /**
    * constructor , configures the service
    */
   function __construct()
@@ -71,12 +77,6 @@ class qcl_data_Controller extends qcl_core_Object
     return qcl_server_Server::getInstance();
   }
 
-  /**
-   * The object types that are used by this
-   * controller
-   * @var array
-   */
-  var $modelTypes = array( "user", "role", "permission", "config" );
 
   /**
    * Configures the service. Stub to be overridden
@@ -103,52 +103,6 @@ class qcl_data_Controller extends qcl_core_Object
     return $this->_isAborted;
   }
 
-  //-------------------------------------------------------------
-  // models
-  //-------------------------------------------------------------
-
-  /**
-   * Generic getter for models. Methods exist that follow the
-   * pattern getFooModel()
-   * @param string $type
-   * @return qcl_db_model_AbstractModel
-   */
-  function &getModel($type)
-  {
-    /*
-     * check type
-     */
-    if ( ! in_array( $type, $this->modelTypes ) )
-    {
-      $this->raiseError("'$type' is not a valid model type.");
-    }
-
-    /*
-     * getter method
-     */
-    $getter = "get" . strtoupper($type[0]) . substr( $type, 1 ) . "Model";
-    if ( ! $this->hasMethod( $getter ) )
-    {
-      $this->raiseError("Class has no model getter '$getter'.");
-    }
-
-    /*
-     * get, check and return object
-     */
-    $obj =& $this->$getter();
-
-    if ( ! is_a($obj,"qcl_db_model_AbstractModel" ) )
-    {
-      $this->raiseError(
-        $this->className() .
-        "::$getter() does not return a model object but a " .
-        ( is_object($obj) ? get_class($obj) : gettype($obj) )
-      );
-    }
-
-    return $obj;
-  }
-
 
   //-------------------------------------------------------------
   // response data
@@ -160,177 +114,44 @@ class qcl_data_Controller extends qcl_core_Object
    * @param string $clazz
    * @return void
    */
-  function setResponseDataClass( $clazz )
+  function setResultClass( $clazz )
   {
     $path = str_replace("_", "/", $clazz ) . ".php";
     require_once $path;
-    $this->setDataObject( new $clazz );
+    $this->setResultObject( new $clazz );
   }
 
   /**
    * Shorthand method to set the data object of the response object
-   * @param qcl_data_ResponseDataObject $dataObject
+   * @param qcl_data_Result $resultObject
    * @return void
    */
-  function setDataObject( $dataObject )
+  function setResultObject( $resultObject )
   {
-    $responseObj =& $this->responseObject();
-    $responseObj->setDataObject( &$dataObject );
+    $this->_resultObject =& $resultObject;
   }
 
   /**
-   * Set a part or the full response.
-   * Shorthand method for $this->responseObject()->set()
-   * @see qcl_data_response::set()
+   * Shorthand method to set a property of the result
+   * data object
+   * @param string $key
+   * @param mixed $value
    */
-  function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
+  function setResult ( $key, $value )
   {
-    $responseObj =& $this->responseObject();
-    $responseObj->set( $first, $second );
+    $this->_resultObject->set( $key, $value );
   }
 
   /**
-   * Shorthand method for $this->responseObject()->setData()
-   * @param $data
-   * @see qcl_data_response::setData()
+   * Returns all puplic properties of the result data object
+   * @return qcl_data_Result
    */
-  function setData ( $data )
+  function &result()
   {
-    $response =& $this->responseObject();
-    $response->setData( $data );
+    return $this->_resultObject;
   }
 
-  /**
-   * Returns response object for return to the client.
-   * @return qcl_data_Response
-   */
-  function &response()
-  {
-    $responseObject =& qcl_data_Response::getInstance();
 
-    /*
-     * convert the data object into an associative array of
-     * public properties
-     */
-    $dataObject =& $responseObject->getDataObject();
-    if ( is_object( $dataObject ) )
-    {
-      $responseObject->setData( get_object_vars( $dataObject ) );
-    }
-
-    return $responseObject;
-  }
-
-  /**
-   * Returns the current response object
-   * @return qcl_data_Response
-   */
-  function &responseObject()
-  {
-    return qcl_data_Response::getInstance();
-  }
-
-  //-------------------------------------------------------------
-  // Extend message and event system to the client
-  //-------------------------------------------------------------
-
-  /**
-   * Hook to return optional error response data. Returns event and message
-   * data
-   * @override
-   * @return array
-   */
-  function optionalErrorResponseData()
-  {
-    $response =& $this->responseObject();
-    return array(
-      'result' => array(
-        'messages' => $response->getMessages(),
-        'events'   => $response->getEvents()
-      )
-    );
-  }
-
-  /**
-   * dispatches a server message
-   * @param string $message Message name
-   * @param mixed $data Data dispatched with message
-   * @override
-   */
-  function dispatchMessage ( $message, $data=true )
-  {
-    /*
-     * call parent method
-     */
-    parent::dispatchMessage( $message, $data );
-
-    /*
-     * add to resonse data
-     */
-    $this->addMessage( $message, $data );
-  }
-
-  /**
-   * Adds a message to the message stack
-   * @param string $message Message name
-   * @param mixed[optional] $data Message Data
-   * @return void
-   */
-  function addMessage( $message, $data=null )
-  {
-    $response =& $this->responseObject();
-    $response->addMessage( $message, $data );
-  }
-
-  /**
-   * Returns messages on message stack
-   * @return array
-   */
-  function &getMessages()
-  {
-    $response =& $this->responseObject();
-    return $response->getMessages();
-  }
-
-  /**
-   * dispatches a server event
-   * @param mixed $event Message Event type
-   * @param mixed $data Data dispatched with event
-   * @override
-   */
-  function dispatchEvent ( $event, $data=true )
-  {
-    /*
-     * call parent method
-     */
-    parent::dispatchEvent ( $event, $data );
-
-    /*
-     * add to response data
-     */
-    $this->addEvent( $event, $data );
-  }
-
-  /**
-   * Adds an event to the event stack
-   * @param mixed $event Message Event type
-   * @param mixed[optional] $data Data dispatched with event
-   */
-  function addEvent ( $event, $data=null )
-  {
-    $reponse =& $this->responseObject();
-    $reponse->addEvent( $event, $data );
-  }
-
-  /**
-   * Returns messages on message stack
-   * @return array
-   */
-  function getEvents()
-  {
-    $reponse =& $this->responseObject();
-    return $reponse->getEvents();
-  }
 
   //-------------------------------------------------------------
   // service introspection
@@ -349,7 +170,7 @@ class qcl_data_Controller extends qcl_core_Object
   /**
    * Returns a list of all service methods that this class provides. Doesn't work.
    * @todo Save result so that access can be regulated by source code introspection
-   * @return qcl_data_Response
+   * @return qcl_data_Result
    */
   function method_services()
   {
@@ -451,8 +272,8 @@ class qcl_data_Controller extends qcl_core_Object
       }
     }
     //$this->info($methodInfo);
-    $this->set("services",$methodInfo);
-    return $this->response();
+    $this->setResult("services",$methodInfo);
+    return $this->result();
   }
 
 }

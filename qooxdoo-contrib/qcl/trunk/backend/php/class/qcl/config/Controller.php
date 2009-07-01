@@ -1,5 +1,5 @@
 <?php
-require_once "qcl/session/Controller.php";
+require_once "qcl/access/SessionController.php";
 require_once "qcl/config/Db.php";
 
 /**
@@ -7,7 +7,7 @@ require_once "qcl/config/Db.php";
  * values
  */
 class qcl_config_Controller
-  extends qcl_session_Controller
+  extends qcl_data_Controller
 {
 
   //-------------------------------------------------------------
@@ -24,7 +24,7 @@ class qcl_config_Controller
     /*
      * response data class
      */
-    $this->setResponseDataClass("qcl_config_LoadResponse");
+    $this->setResultClass("qcl_config_LoadResponse");
 
     $configModel = qcl_config_Db::getInstance();
     $configMap   = $configModel->getAccessibleKeys( $mask );
@@ -32,10 +32,10 @@ class qcl_config_Controller
     /*
      * response data
      */
-    $this->set( 'keys',   array_keys( $configMap ) );
-    $this->set( 'values', array_values( $configMap ) );
+    $this->setResult( 'keys',   array_keys( $configMap ) );
+    $this->setResult( 'values', array_values( $configMap ) );
 
-    return $this->response();
+    return $this->result();
   }
 
   function method_set( $params )
@@ -104,8 +104,8 @@ class qcl_config_Controller
 
   function method_logFileSize()
   {
-    $this->set("text", "Log file size: " . byteConvert( filesize( QCL_LOG_FILE) ) );
-    return $this->response();
+    $this->setResult("text", "Log file size: " . byteConvert( filesize( QCL_LOG_FILE) ) );
+    return $this->result();
   }
 
   function method_deleteLogFile()

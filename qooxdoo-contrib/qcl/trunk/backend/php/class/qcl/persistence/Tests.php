@@ -28,7 +28,7 @@ class class_qcl_persistence_Tests
     $this->info('Initialized $obj->foo = ' . $obj->foo);
     $obj->foo = rand(0,100);
     $this->info('Changing $obj->foo = ' . $obj->foo);
-    return $this->response();
+    return $this->result();
   }
 
   function method_testPersistenceLocking()
@@ -37,7 +37,7 @@ class class_qcl_persistence_Tests
     $obj1->getWriteLock();
     $obj2 =& new TestPersistence(&$this,"TestPersistence");
     $obj2->getWriteLock();
-    return $this->response();
+    return $this->result();
   }
 
   function method_testServerProcessStatus($params)
@@ -109,7 +109,7 @@ class class_qcl_persistence_Tests
     /*
      * return response data
      */
-    return $this->response();
+    return $this->result();
 
   }
 }

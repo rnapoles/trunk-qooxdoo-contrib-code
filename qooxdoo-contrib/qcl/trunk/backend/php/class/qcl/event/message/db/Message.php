@@ -1,5 +1,4 @@
 <?php
-
 /*
  * dependencies
  */
@@ -8,7 +7,7 @@ require_once "qcl/db/model/xmlSchema/Model.php";
 /**
  * model for messages stored in a database
  */
-class qcl_session_Message
+class qcl_event_message_db_Message
   extends qcl_db_model_xmlSchema_Model
 {
   /**
@@ -16,17 +15,17 @@ class qcl_session_Message
    * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/session/Message.model.xml";
+  var $schemaXmlPath = "qcl/event/message/db/Message.model.xml";
+
 
   /**
    * Returns singleton instance.
    * @static
-   * @return qcl_session_Message
+   * @return qcl_event_message_db_Message
    */
   function &getInstance( $class=__CLASS__ )
   {
     return parent::getInstance( $class );
   }
 }
-
 ?>

@@ -97,16 +97,16 @@ class qcl_core_BaseClass
     $accessor = strtolower( substr( $method, 0, 3 ) );
     $property = strtolower( substr( $method, 3 ) );
 
-    if ( $accessor == "set" and method_exists( $this,"setProperty" ) )
+    if ( $accessor == "set" and method_exists( $this,"set" ) )
     {
       array_unshift( $arguments, $property);
-      $result = call_user_func_array(array($this, "setProperty" ), $arguments);
+      $result = call_user_func_array(array($this, "set" ), $arguments);
       $accessorMethodExists = true;
     }
-    elseif ( $accessor == "get" and method_exists( $this,"getProperty" ))
+    elseif ( $accessor == "get" and method_exists( $this,"get" ))
     {
       array_unshift( $arguments, $property);
-      $result = call_user_func_array(array($this, "getProperty" ), $arguments);
+      $result = call_user_func_array(array($this, "get" ), $arguments);
       $accessorMethodExists = true;
     }
 
@@ -198,7 +198,19 @@ class qcl_core_BaseClass
     return isset( $this->_mixinlookup[strtolower($method)] );
   }
 
-
-
+  /**
+   * Serializes the object to an array
+   * @return array
+   * @todo deep serialization, i.e. convert objects in member variables
+   */
+  function toArray()
+  {
+    return qcl_getPublicObjectVars( $this );
+  }
 }
+
+function qcl_getPublicObjectVars($obj) {
+  return get_object_vars($obj);
+}
+
 ?>
