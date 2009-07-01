@@ -56,10 +56,10 @@ class qcl_xml_simpleXmlCache extends qcl_data_persistence_db_Object
  * the qcl_data_persistence_db_Object class, which ensures that
  * data by no longer existing users or sessions is automatically
  * deleted.
- * @see qcl_xml_SimpleXmlStorage::getCacheObject() for details
+ * @see qcl_xml_Storage::getCacheObject() for details
  *
  **/
-class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
+class qcl_xml_Storage extends qcl_data_AbstractModel
 {
 
   /**
@@ -753,13 +753,13 @@ class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
         return null;
       }
     }
-    elseif ( qcl_xml_SimpleXmlStorage::isNode($pathOrNode) )
+    elseif ( qcl_xml_Storage::isNode($pathOrNode) )
     {
       $node =& $pathOrNode;
     }
     else
     {
-      qcl_xml_SimpleXmlStorage::raiseError("Invalid parameter.");
+      qcl_xml_Storage::raiseError("Invalid parameter.");
     }
 
     /*
@@ -789,13 +789,13 @@ class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
         return null;
       }
     }
-    elseif ( qcl_xml_SimpleXmlStorage::isNode( $pathOrNode ) )
+    elseif ( qcl_xml_Storage::isNode( $pathOrNode ) )
     {
       $node =& $pathOrNode;
     }
     else
     {
-      qcl_xml_SimpleXmlStorage::raiseError("Invalid parameter.");
+      qcl_xml_Storage::raiseError("Invalid parameter.");
     }
 
     /*
@@ -875,9 +875,9 @@ class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
    */
   function &getChildNodeByAttribute( $node, $name, $value )
   {
-    if ( ! qcl_xml_SimpleXmlStorage::isNode($node) )
+    if ( ! qcl_xml_Storage::isNode($node) )
     {
-      qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
+      qcl_xml_Storage::raiseError("Invalid node.");
     }
 
     /*
@@ -935,9 +935,9 @@ class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
    */
   function removeChildNodeByAttribute($node,$name,$value)
   {
-    if ( ! qcl_xml_SimpleXmlStorage::isNode($node) )
+    if ( ! qcl_xml_Storage::isNode($node) )
     {
-      qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
+      qcl_xml_Storage::raiseError("Invalid node.");
     }
 
     /*
@@ -1022,12 +1022,12 @@ class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
 
   /**
    * extends a simple xml object tree
-   * @see qcl_xml_SimpleXmlStorage::_extend
-   * @param qcl_xml_SimpleXmlStorage
+   * @see qcl_xml_Storage::_extend
+   * @param qcl_xml_Storage
    */
   function extend($parentXml)
   {
-    if ( is_a( $parentXml, "qcl_xml_SimpleXmlStorage" ) )
+    if ( is_a( $parentXml, "qcl_xml_Storage" ) )
     {
       $doc       =& $this->getDocument();
       $parentDoc =& $parentXml->getDocument();

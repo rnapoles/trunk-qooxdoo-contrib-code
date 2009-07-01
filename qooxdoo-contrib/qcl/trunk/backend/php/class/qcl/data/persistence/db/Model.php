@@ -8,7 +8,7 @@ require_once "qcl/db/model/SimpleModel.php";
  * Model storing complete and arbitrarily structured
  * objects for easy object persistence. We need to use
  * the qcl_db_SimpleModel instead of qcl_db_model_xmlSchema_Model because the extending class
- * might be used in the property system (like qcl_xml_SimpleXmlStorage)
+ * might be used in the property system (like qcl_xml_Storage)
  * which would cause a recursion error.
  */
 class qcl_data_persistence_db_Model

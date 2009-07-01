@@ -800,7 +800,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * skip if no column definition available
        */
-      if ( qcl_xml_simpleXmlStorage::nodeGetChildCount($property) == 0)
+      if ( qcl_xml_Storage::nodeGetChildCount($property) == 0)
       {
         continue;
       }
@@ -1013,10 +1013,10 @@ class qcl_db_model_xmlSchema_Model
 
     $this->log( "Model has " .
       ( is_object( $links ) ?
-        qcl_xml_simpleXmlStorage::nodeGetChildCount( $links ) : "no" ) .
+        qcl_xml_Storage::nodeGetChildCount( $links ) : "no" ) .
       " links.", "propertyModel" );
 
-    if ( is_object( $links ) and qcl_xml_simpleXmlStorage::nodeGetChildCount( $links ) )
+    if ( is_object( $links ) and qcl_xml_Storage::nodeGetChildCount( $links ) )
     {
       $linksChildren = $links->children();
       $this->log("Creating or updating linked tables...","propertyModel");
@@ -1127,7 +1127,7 @@ class qcl_db_model_xmlSchema_Model
           /*
            * further linked models
            */
-          if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $link ) )
+          if ( qcl_xml_Storage::nodeGetChildCount( $link ) )
           {
 
             /*
@@ -1584,7 +1584,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * or is it a model which is a secondary link ?
        */
-      if ( qcl_xml_simpleXmlStorage::nodeGetChildCount( $linkNode ) )
+      if ( qcl_xml_Storage::nodeGetChildCount( $linkNode ) )
       {
         foreach ( $linkNode->children() as $linkedModelNode )
         {
@@ -2036,7 +2036,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * create new xml file
        */
-      $dataXml =& new qcl_xml_simpleXmlStorage();
+      $dataXml =& new qcl_xml_Storage();
       $dataXml->createIfNotExists($path);
       $dataXml->load($path);
 
@@ -2511,7 +2511,7 @@ class qcl_db_model_xmlSchema_Model
          */
         $attrs    = $alias->attributes();
         $propName = (string) $attrs['for'];
-        $column   = qcl_xml_SimpleXmlStorage::getData(&$alias);
+        $column   = qcl_xml_Storage::getData(&$alias);
 
         /*
          * store in alias map
@@ -2546,7 +2546,7 @@ class qcl_db_model_xmlSchema_Model
     $propGroups =& $definition->propertyGroups;
     if ( $propGroups )
     {
-      $metaDataNode =& qcl_xml_SimpleXmlStorage::getChildNodeByAttribute($propGroups,"name","metaData");
+      $metaDataNode =& qcl_xml_Storage::getChildNodeByAttribute($propGroups,"name","metaData");
       if ( $metaDataNode )
       {
         foreach ( $metaDataNode->children() as $metaDataPropNode )
@@ -2586,7 +2586,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * get the model schema as an simpleXml object
    * @param string $path path of schema xml file or null if default file is used
-   * @return qcl_xml_SimpleXmlStorage
+   * @return qcl_xml_Storage
    */
   function &getSchemaXml($path=null)
   {
@@ -2630,7 +2630,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Parses an xml schema file, processing includes
    * @param string $file
-   * @return qcl_xml_SimpleXmlStorage
+   * @return qcl_xml_Storage
    */
   function &parseXmlSchemaFile($file)
   {
@@ -2639,13 +2639,13 @@ class qcl_db_model_xmlSchema_Model
      * include simple xml library (cannot do that in header without
      * creating include order problems)
      */
-    require_once "qcl/xml/SimpleXmlStorage.php";
+    require_once "qcl/xml/Storage.php";
 
     /*
      * load model schema xml file
      */
     $this->log("Parsing model schema file '$file'...","propertyModel");
-    $modelXml =& new qcl_xml_SimpleXmlStorage( $file );
+    $modelXml =& new qcl_xml_Storage( $file );
     $modelXml->doNotCache = $this->doNotCache;
     $modelXml->load();
 
@@ -2689,7 +2689,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Parses an xml data file, processing includes
    * @param string $file
-   * @return qcl_xml_SimpleXmlStorage
+   * @return qcl_xml_Storage
    */
   function &parseXmlDataFile( $file )
   {
@@ -2698,13 +2698,13 @@ class qcl_db_model_xmlSchema_Model
      * include simple xml library (cannot do that in header without
      * creating include order problems
      */
-    require_once "qcl/xml/SimpleXmlStorage.php";
+    require_once "qcl/xml/Storage.php";
 
     /*
      * load model schema xml file
      */
     $this->log("Parsing model data file '$file'...","propertyModel");
-    $dataXml =& new qcl_xml_SimpleXmlStorage( $file );
+    $dataXml =& new qcl_xml_Storage( $file );
     $dataXml->load();
 
     /*
@@ -2744,7 +2744,7 @@ class qcl_db_model_xmlSchema_Model
    * exports model data to an xml file
    *
    * @param string $path file path, defaults to the location of the inital data file
-   * @return qcl_xml_SimpleXmlStorage The xml document object
+   * @return qcl_xml_Storage The xml document object
    */
   function &export($path=null)
   {
@@ -2769,7 +2769,7 @@ class qcl_db_model_xmlSchema_Model
     /*
      * create new xml file
      */
-    $dataXml =& new qcl_xml_SimpleXmlStorage( $path );
+    $dataXml =& new qcl_xml_Storage( $path );
     $dataXml->createFile();
 
     /*
@@ -3135,7 +3135,7 @@ class qcl_db_model_xmlSchema_Model
     $node =& $this->getFieldNode( $name );
     if ( is_object ($node->label ) )
     {
-      return qcl_xml_SimpleXmlStorage::getData( $node->label );
+      return qcl_xml_Storage::getData( $node->label );
     }
     elseif ( is_array ( $node->label) )
     {
@@ -3146,11 +3146,11 @@ class qcl_db_model_xmlSchema_Model
         $type  = (string) $attrs['type'];
         if ( $type )
         {
-          $labels[$type] = qcl_xml_SimpleXmlStorage::getData( $labelNode );
+          $labels[$type] = qcl_xml_Storage::getData( $labelNode );
         }
         else
         {
-          $defaultLabel = qcl_xml_SimpleXmlStorage::getData( $labelNode );
+          $defaultLabel = qcl_xml_Storage::getData( $labelNode );
         }
       }
       return either ( $labels[$reftype], $defaultLabel, "*** Error ***" );
