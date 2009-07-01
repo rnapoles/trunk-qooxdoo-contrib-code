@@ -23,7 +23,8 @@ require_once "qcl/data/model/Abstract.php";
  *
  */
 
-class qcl_plugin_Abstract extends qcl_data_model_Abstract
+class qcl_application_plugin_Abstract
+  extends qcl_data_model_Abstract
 {
 	//-------------------------------------------------------------
   // properties

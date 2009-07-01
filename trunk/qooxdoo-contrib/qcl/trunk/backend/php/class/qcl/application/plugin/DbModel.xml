@@ -3,7 +3,7 @@
 <schema include="qcl/data/model/xmlSchema/DbModel.xml">
   <model 
     table="plugins"
-    name="qcl.plugins.db.Model"
+    name="qcl.application.plugins.DbModel"
     extends="qcl.model.xmlSchema.DbModel">
 
    <!-- model definition -->
@@ -12,6 +12,9 @@
       <!-- properties -->
       <properties>
         <property name="namedId" type="string"> 
+          <sql>varchar(50) NOT NULL</sql>
+        </property>
+        <property name="named" type="string"> 
           <sql>varchar(50) NOT NULL</sql>
         </property>
         <property name="type" type="string">

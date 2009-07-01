@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/plugin/Abstract.php";
+require_once "qcl/application/plugin/Abstract.php";
 
 /**
  * Plugin management class, using a database backend
@@ -23,7 +23,7 @@ require_once "qcl/plugin/Abstract.php";
  * The class cannot be used directly, you need to subclass it in your application
  */
 
-class qcl_plugin_Db extends qcl_data_model_xmlSchema_DbModel
+class qcl_application_plugin_Db extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
@@ -31,7 +31,7 @@ class qcl_plugin_Db extends qcl_data_model_xmlSchema_DbModel
    * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/plugin/Db.model.xml";
+  var $schemaXmlPath = "qcl/application/plugin/Db.model.xml";
 
 	//-------------------------------------------------------------
   // public methods

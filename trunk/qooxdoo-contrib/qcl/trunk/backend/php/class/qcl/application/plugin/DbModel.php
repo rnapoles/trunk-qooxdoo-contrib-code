@@ -20,7 +20,7 @@ require_once "qcl/data/model/xmlSchema/DbModel.php";
 /**
  * Model that stores the available Plugins in a database table
  */
-class qcl_plugin_DbModel extends qcl_data_model_xmlSchema_DbModel
+class qcl_application_plugin_DbModel extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
@@ -28,7 +28,7 @@ class qcl_plugin_DbModel extends qcl_data_model_xmlSchema_DbModel
    * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/plugin/DbModel.xml";
+  var $schemaXmlPath = "qcl/application/plugin/DbModel.xml";
 
 }
 ?>
