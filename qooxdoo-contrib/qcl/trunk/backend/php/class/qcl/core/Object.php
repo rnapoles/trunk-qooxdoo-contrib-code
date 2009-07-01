@@ -48,7 +48,7 @@ define("QCL_ARGUMENT_NOT_SET", "QCL_ARGUMENT_NOT_SET");
 
 /**
  * global reqistry that is maintained during one request
- * @todo deprecated, use qcl_registry_Request instead
+ * @todo deprecated, use qcl_util_registry_Request instead
  * @var array
  */
 $qcl_registry = array();

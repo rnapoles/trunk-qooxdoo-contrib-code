@@ -1,6 +1,6 @@
 <?php
 require_once "qcl/jsonrpc/controller.php";
-require_once "qcl/registry/session.php"; // @todo
+require_once "qcl/util/registry/session.php"; // @todo
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/io/filesystem/local/Folder.php";
 

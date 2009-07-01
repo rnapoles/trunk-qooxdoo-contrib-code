@@ -1,25 +1,25 @@
 <?php
 
 
-define("QCL_REGISTRY_SESSION_KEY","qcl_registry_session_key" );
+define("qcl_util_registry_SESSION_KEY","qcl_util_registry_session_key" );
 
 /**
  * Class which maintains a registry which is valid during one
  * PHP session
  */
-class qcl_registry_Session
+class qcl_util_registry_Session
 {
 
 
   /**
    * Returns a singleton instance of this class
-   * @return qcl_registry_Session
+   * @return qcl_util_registry_Session
    */
   function &getInstance( )
   {
     if ( ! is_object( $GLOBALS[__CLASS__] ) )
     {
-      $GLOBALS[__CLASS__] =& new qcl_registry_Session;
+      $GLOBALS[__CLASS__] =& new qcl_util_registry_Session;
     }
     return $GLOBALS[__CLASS__];
   }
@@ -31,7 +31,7 @@ class qcl_registry_Session
    */
   function reset()
   {
-    $_SESSION[ QCL_REGISTRY_SESSION_KEY ] = array();
+    $_SESSION[ qcl_util_registry_SESSION_KEY ] = array();
   }
 
   /**
@@ -42,7 +42,7 @@ class qcl_registry_Session
    */
   function set( $key, $value )
   {
-    $_SESSION[ QCL_REGISTRY_SESSION_KEY ][$key] = $value;
+    $_SESSION[ qcl_util_registry_SESSION_KEY ][$key] = $value;
   }
 
   /**
@@ -53,7 +53,7 @@ class qcl_registry_Session
    */
   function get( $key )
   {
-    return $_SESSION[ QCL_REGISTRY_SESSION_KEY ][$key];
+    return $_SESSION[ qcl_util_registry_SESSION_KEY ][$key];
   }
 
 
@@ -65,7 +65,7 @@ class qcl_registry_Session
    */
   function has( $key )
   {
-    return isset( $_SESSION[ QCL_REGISTRY_SESSION_KEY ][$key] );
+    return isset( $_SESSION[ qcl_util_registry_SESSION_KEY ][$key] );
   }
 
 
