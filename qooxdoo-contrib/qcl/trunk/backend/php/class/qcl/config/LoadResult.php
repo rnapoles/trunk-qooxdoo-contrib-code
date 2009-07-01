@@ -21,7 +21,7 @@ require_once "qcl/data/Result.php";
  * @todo rename to qcl_config_LoadResult
  *
  */
-class qcl_config_LoadResponse
+class qcl_config_LoadResult
   extends qcl_data_Result
 {
    /**

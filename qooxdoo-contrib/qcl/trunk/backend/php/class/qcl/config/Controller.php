@@ -30,20 +30,25 @@ class qcl_config_Controller
   // public rpc methods
   //-------------------------------------------------------------
 
+ /**
+  * Service method to load config data
+  * @param string|null $params[0] Filter
+  * @return qcl_config_LoadResult
+  */
  function method_load( $params )
   {
     /*
      * arguments
      */
-    list( $mask ) = $params;
+    list( $filter ) = $params;
 
     /*
      * response data class
      */
-    $this->setResultClass("qcl_config_LoadResponse");
+    $this->setResultClass("qcl_config_LoadResult");
 
     $configModel = qcl_config_Db::getInstance();
-    $configMap   = $configModel->getAccessibleKeys( $mask );
+    $configMap   = $configModel->getAccessibleKeys( $filter );
 
     /*
      * response data
@@ -54,6 +59,12 @@ class qcl_config_Controller
     return $this->result();
   }
 
+  /**
+   * Service method to set a config value
+   * @param string $params[0] Key
+   * @param mixed  $params[1] Value
+   * @return bool
+   */
   function method_set( $params )
   {
 
