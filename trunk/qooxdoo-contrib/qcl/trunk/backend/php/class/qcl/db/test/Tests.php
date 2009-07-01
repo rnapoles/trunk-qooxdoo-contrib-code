@@ -35,7 +35,7 @@ class class_qcl_db_test_Tests extends qcl_data_datasource_Controller
     $logger->setFilterEnabled("propertyModel",false);
     
     $this->dispatchMessage("infoMessage","See log file for results.");
-    return $this->response();
+    return $this->result();
   }
   
   

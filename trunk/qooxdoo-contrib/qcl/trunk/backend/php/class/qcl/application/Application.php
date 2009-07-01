@@ -15,6 +15,7 @@ require_once "qcl/__init__.php";
 require_once "qcl/core/StaticClass.php";
 require_once "qcl/server/Server.php";
 require_once "qcl/config/Manager.php";
+require_once "qcl/event/message/Bus.php";
 
 /**
  * Application class. All public methods of this class and of its subclasses
@@ -111,12 +112,23 @@ class qcl_application_Application
      qcl_persistence_db_Setup::setup();
 
      /*
-      * set the default config model
+      * set the default models for config, session and messages. If you
+      * want to use different models, set them before calling this method
       */
      if ( ! qcl_config_Manager::getModel() )
      {
        require_once "qcl/config/Db.php";
        qcl_config_Manager::setModel( qcl_config_Db::getInstance() );
+     }
+     if ( ! qcl_access_Manager::getSessionModel() )
+     {
+       require_once "qcl/access/model/Session.php";
+       qcl_access_Manager::setSessionModel( qcl_access_model_Session::getInstance() );
+     }
+     if ( ! qcl_event_message_Bus::getModel() )
+     {
+       require_once "qcl/event/message/db/Message.php";
+       qcl_event_message_Bus::setModel( qcl_event_message_db_Message::getInstance() );
      }
   }
 

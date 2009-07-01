@@ -1,11 +1,11 @@
 <?php
 
-require_once "qcl/core/StaticClass.php";
+require_once "qcl/core/Object.php";
 
 /**
  * Static class for convenient and global access to actual server singleton object
  */
-class qcl_server_Server extends qcl_core_StaticClass
+class qcl_server_Server extends qcl_core_Object
 {
 
   /**
@@ -81,7 +81,7 @@ class qcl_server_Server extends qcl_core_StaticClass
 
   /**
    * Returns the current controller object
-   * @return unknown_type
+   * @return qcl_data_Controller
    */
   function &getController()
   {
@@ -92,7 +92,7 @@ class qcl_server_Server extends qcl_core_StaticClass
   /**
    * Returns the current server data sent by the client
    * @param string $key If given, return only the value of the given key
-   * @return string
+   * @return string|array
    */
   function getServerData( $key=null )
   {

@@ -54,6 +54,53 @@ class qcl_core_BaseClass
   function __destruct() {}
 
   /**
+   * Checks if class has this property
+   * @param $property
+   * @return unknown_type
+   */
+  function has( $property )
+  {
+    return in_array( $property, array_keys( get_object_vars( $this ) ) );
+  }
+
+  /**
+   * Checks if property exists and throws an error if not
+   * @param $property
+   * @return unknown_type
+   */
+  function check( $property )
+  {
+    if ( ! $this->has( $property) )
+    {
+      trigger_error("Class " . get_class($this) . " has no property '$property'" );
+    }
+  }
+
+  /**
+   * Generic getter for properties
+   * @param $property
+   * @return unknown_type
+   */
+  function get( $property )
+  {
+    $this->check( $property );
+    return $this->$property;
+  }
+
+  /**
+   * Generic getter for properties
+   * @param string $property
+   * @param mixed $value
+   * @return unknown_type
+   * @todo type check
+   */
+  function set( $property, $value )
+  {
+    $this->check( $property );
+    $this->$property = $value;
+  }
+
+  /**
    * Method called when called method does not exist. (PHP4)
    * This will check whether method name is
    *
@@ -73,16 +120,16 @@ class qcl_core_BaseClass
     $accessor = strtolower( substr( $method, 0, 3 ) );
     $property = strtolower( substr( $method, 3 ) );
 
-    if ( $accessor == "set" and method_exists( $this,"setProperty" ) )
+    if ( $accessor == "set" and method_exists( $this,"set" ) )
     {
       array_unshift( $arguments, $property);
-      $result = call_user_func_array(array(&$this, "setProperty" ), $arguments);
+      $result = call_user_func_array(array(&$this, "set" ), $arguments);
       $accessorMethodExists = true;
     }
-    elseif ( $accessor == "get" and method_exists( $this,"getProperty" ))
+    elseif ( $accessor == "get" and method_exists( $this,"get" ))
     {
       array_unshift( $arguments, $property);
-      $result = call_user_func_array(array(&$this, "getProperty" ), $arguments);
+      $result = call_user_func_array(array(&$this, "get" ), $arguments);
       $accessorMethodExists = true;
     }
 
@@ -340,6 +387,25 @@ if (!function_exists('get_headers'))
           return $headers;
       }
       return false;
+  }
+
+
+  /**
+   * Serializes the object to an array
+   * @return array
+   * @todo deep serialization, i.e. convert objects in member variables
+   */
+  function toArray()
+  {
+    $result = array();
+    foreach( get_object_vars( $this ) as $property => $value )
+    {
+      if ( $property[0] != "_" )
+      {
+        $result[$property] = $value;
+      }
+    }
+    return $result;
   }
 }
 

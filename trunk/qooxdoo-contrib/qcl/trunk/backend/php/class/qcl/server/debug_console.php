@@ -120,14 +120,21 @@ if ( count( $_POST ) )
       if( is_object($data) )
       {
         $data = object2array($data);
+        $sessionId = null;
 
         /*
          * set session id in form
          */
-        $sessionId = isset( $data['data']['sessionId'] ) ?
-          $data['data']['sessionId'] :
-            isset( $data['result']['data']['sessionId'] ) ?
-              $data['result']['data']['sessionId'] : null ;
+        if ( isset( $data['result']['data']['sessionId'] ) )
+        {
+          $sessionId = $data['result']['data']['sessionId'];
+        }
+        elseif ( isset( $data['result']['events'][0] )
+          and $data['result']['events'][0]['type'] == "changeSessionId"
+          )
+        {
+          $sessionId = $data['result']['events'][0]['data'];
+        }
 
         if ( $sessionId  )
         {
