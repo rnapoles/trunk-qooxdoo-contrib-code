@@ -8,7 +8,7 @@ require_once "qcl/io/filesystem/remote/s3_keys.php";
 /**
  * Service class containing test methods
  */
-class class_qcl_io_filesystem_remote_Tests extends qcl_data_Controller
+class class_qcl_io_filesystem_remote_Tests extends qcl_data_controller_Controller
 {
 
     function method_testCreate()

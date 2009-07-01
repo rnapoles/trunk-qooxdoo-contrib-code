@@ -20,7 +20,7 @@
  * Class extending both PHP4 and PHP5 version of SimpleXMLElement,
  * adding helper methods.
  */
-class qcl_xml_SimpleXMLElement extends SimpleXMLElement
+class qcl_data_xml_SimpleXMLElement extends SimpleXMLElement
 {
 
   function getAttribute($name, $default='')

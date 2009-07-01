@@ -40,7 +40,7 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
   /**
    * Constructor. Will create the file if it doesn't exist and will
    * throw an error if that is not possible.
-   * @param qcl_data_Controller $controller
+   * @param qcl_data_controller_Controller $controller
    * @param string $resourcePath
    */
   function __construct ( $resourcePath )

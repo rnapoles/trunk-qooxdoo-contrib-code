@@ -15,8 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/adapter/Abstract.php";
-require_once "qcl/db/IAdapter.php";
+require_once "qcl/data/db/adapter/Abstract.php";
+require_once "qcl/data/db/IAdapter.php";
 require_once "DB.php"; // PEAR
 
 /**
@@ -24,9 +24,9 @@ require_once "DB.php"; // PEAR
  * relying on PEAR::DB for database access
  * @todo remove PEAR:DB dependency, it is not really needed.
  */
-class qcl_db_adapter_Mysql
-  extends qcl_db_adapter_Abstract
-  implements qcl_db_IAdapter
+class qcl_data_db_adapter_Mysql
+  extends qcl_data_db_adapter_Abstract
+  implements qcl_data_db_IAdapter
 {
 
 	/**

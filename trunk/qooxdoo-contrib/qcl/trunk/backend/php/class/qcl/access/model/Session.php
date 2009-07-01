@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Model for session data bases on a mysql database model.
@@ -23,12 +23,12 @@ require_once "qcl/db/model/xmlSchema/Model.php";
  * browser instance.
  */
 class qcl_access_model_Session
-  extends qcl_db_model_xmlSchema_Model
+  extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
    * the path to the model schema xml file
-   * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
+   * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = "qcl/access/model/Session.model.xml";

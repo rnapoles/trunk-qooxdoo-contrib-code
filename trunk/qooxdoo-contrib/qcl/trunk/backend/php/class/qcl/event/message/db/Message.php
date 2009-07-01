@@ -15,17 +15,17 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * model for messages stored in a database
  */
 class qcl_event_message_db_Message
-  extends qcl_db_model_xmlSchema_Model
+  extends qcl_data_model_xmlSchema_DbModel
 {
   /**
    * the path to the model schema xml file
-   * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
+   * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = "qcl/event/message/db/Message.model.xml";

@@ -5,13 +5,13 @@ require_once "qcl/data/datasource/Controller.php";
 /**
  * Service class containing test methods
  */
-class class_qcl_db_test_Tests extends qcl_data_datasource_Controller
+class class_qcl_data_db_test_Tests extends qcl_data_datasource_Controller
 {
   
   function method_runTests()
   {
-    require_once "qcl/db/test/TestModel1.php";
-    require_once "qcl/db/test/TestModel2.php";
+    require_once "qcl/data/db/test/TestModel1.php";
+    require_once "qcl/data/db/test/TestModel2.php";
     
     $logger =& $this->getLogger();
     $logger->setFilterEnabled("propertyModel",true);

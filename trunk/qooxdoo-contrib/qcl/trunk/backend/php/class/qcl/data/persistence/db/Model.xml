@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema
-  include="qcl/db/model/xmlSchema/Model.xml">
+  include="qcl/data/model/xmlSchema/DbModel.xml">
  
   <!-- 
     model that stores serialized objects in the database 
@@ -8,7 +8,7 @@
   <model 
     name="qcl.data.persistence.db.Model"
     table="persistentObjects" 
-    extends="qcl.db.model.xmlSchema.Model">
+    extends="qcl.model.xmlSchema.DbModel">
     
     <definition>
 

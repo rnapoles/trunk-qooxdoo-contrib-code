@@ -213,7 +213,7 @@ class qcl_log_Logger
      */
     else
     {
-      error_log( $message );
+      error_log( "qcl: " . $message );
     }
   }
 

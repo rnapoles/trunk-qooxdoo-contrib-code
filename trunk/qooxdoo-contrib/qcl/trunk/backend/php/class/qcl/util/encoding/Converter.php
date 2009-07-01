@@ -15,12 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/data/model/Abstract.php";
 
 /**
  * class to convert from one text encoding to another
  */
-class qcl_util_encoding_Converter extends qcl_data_AbstractModel
+class qcl_util_encoding_Converter extends qcl_data_model_Abstract
 {
   var $converter_cmd = "";
 

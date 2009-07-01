@@ -15,12 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Common base class for permission, role and user models
  */
-class qcl_access_model_Common extends qcl_db_model_xmlSchema_Model
+class qcl_access_model_Common extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**

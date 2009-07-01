@@ -1,11 +1,11 @@
 <?php
 require_once "qcl/application/controller.php";
-require_once "qcl/xml/Storage.php";
+require_once "qcl/data/xml/Storage.php";
 
 /**
  * Service class containing test methods
  */
-class class_qcl_xml_Tests extends qcl_db_controller
+class class_qcl_data_xml_Tests extends qcl_data_db_controller
 {
   /*
   function __construct()
@@ -26,7 +26,7 @@ class class_qcl_xml_Tests extends qcl_db_controller
 
     $testfile = realpath("../var/tmp/test.xml");
 
-    $parser =& new qcl_xml_Storage( $testfile );
+    $parser =& new qcl_data_xml_Storage( $testfile );
     //$parser->setOwnedBySessionId( $this->getSessionId() );
 
     //$this->debug("Deleting original xml file...");
@@ -66,7 +66,7 @@ class class_qcl_xml_Tests extends qcl_db_controller
     $parser->saveToFile();
 
     //$this->debug("Retrieving stored document from cache ...");
-    $parser2 =& new qcl_xml_Storage( $testfile );
+    $parser2 =& new qcl_data_xml_Storage( $testfile );
     //$parser2->setOwnedBySessionId( $this->getSessionId() );
     $parser2->load();
 

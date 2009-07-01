@@ -205,7 +205,7 @@ class qcl_core_Object extends qcl_core_BaseClass
 
   /**
    * Returns an object identified by its id.
-   * return object
+   * @return qcl_core_Object
    */
   function &getObjectById($objectId)
   {
@@ -275,10 +275,10 @@ class qcl_core_Object extends qcl_core_BaseClass
      * return path name
      * @todo bad hack to deal with case-sensitive file system. fix this!
      */
-    $path = SERVICE_PATH . implode( "/", $patharray ) . ".php";
+    $path = QCL_SERVICE_PATH . implode( "/", $patharray ) . ".php";
     if ( file_exists($path) ) return $path;
     $patharray[count($patharray)-1] = strtolower($patharray[count($patharray)-1]);
-    return SERVICE_PATH . implode( "/", $patharray ) . ".php";
+    return QCL_SERVICE_PATH . implode( "/", $patharray ) . ".php";
   }
 
   /**
@@ -417,7 +417,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * of qx_jsonrpc_controller, pass the object as constructor to the model class,
    * otherwise pass optional parameter
    * @param string $classname PHP class name or dot-separated class name
-   * @param qcl_data_Controller[optional] $controller (optional) controller object
+   * @param qcl_data_controller_Controller[optional] $controller (optional) controller object
    * to be passed to the singleton constructor
    * @return qcl_core_Object
    * @deprecated Use native php code to instantiate classes, this will
@@ -452,7 +452,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     /*
      * Provide the controller if given
      */
-    if ( ! $controller and is_a ( $this, "qcl_data_Controller" ) )
+    if ( ! $controller and is_a ( $this, "qcl_data_controller_Controller" ) )
     {
       $instance =& new $classname(&$this);
     }
@@ -572,7 +572,7 @@ class qcl_core_Object extends qcl_core_BaseClass
      * Location of document root in file system
      * (will be stripped in output)
      */
-    $path = realpath( SERVICE_PATH ) . "/" ;
+    $path = realpath( QCL_SERVICE_PATH ) . "/" ;
 
     /*
      * Analyse previous call

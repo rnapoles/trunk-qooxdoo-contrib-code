@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema
-  include="qcl/db/model/xmlSchema/Model.xml">
+  include="qcl/data/model/xmlSchema/DbModel.xml">
   
   <model 
     table="sessions"
     name="qcl.access.model.Session"
-    extends="qcl.db.model.xmlSchema.Model">
+    extends="qcl.model.xmlSchema.DbModel">
     
     <definition>
     

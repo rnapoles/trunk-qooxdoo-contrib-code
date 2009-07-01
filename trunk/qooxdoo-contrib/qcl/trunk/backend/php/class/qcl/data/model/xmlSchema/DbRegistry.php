@@ -21,7 +21,7 @@ require_once "qcl/data/persistence/db/Object.php";
  * Persistent object that registers information on the state
  * of the database tables.
  */
-class qcl_db_model_xmlSchema_Registry
+class qcl_data_model_xmlSchema_DbRegistry
   extends qcl_data_persistence_db_Object
 {
   /*
@@ -32,7 +32,7 @@ class qcl_db_model_xmlSchema_Registry
 
   /**
    * Returns singleton instance of this class
-   * @return qcl_db_model_xmlSchema_Registry
+   * @return qcl_data_model_xmlSchema_DbRegistry
    * @see class/qcl/core/qcl_core_Object#getInstance($class)
    */
   function &getInstance()
@@ -42,7 +42,7 @@ class qcl_db_model_xmlSchema_Registry
 
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_data_Controller $controller
+   * @param qcl_data_controller_Controller $controller
    */
   function __construct( $controller=null )
   {
@@ -64,7 +64,7 @@ class qcl_db_model_xmlSchema_Registry
    */
   function registerInitialized( $datasourceModel, $table, $class, $timestamp )
   {
-    $_this =& qcl_db_model_xmlSchema_Registry::getInstance();
+    $_this =& qcl_data_model_xmlSchema_DbRegistry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
     $_this->data[$datasource][$table][$class] = $timestamp;
     $_this->save();
@@ -89,7 +89,7 @@ class qcl_db_model_xmlSchema_Registry
    */
   function isInitialized( $datasourceModel, $table, $class=null, $timestamp=null )
   {
-    $_this =& qcl_db_model_xmlSchema_Registry::getInstance();
+    $_this =& qcl_data_model_xmlSchema_DbRegistry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
     return ( $timestamp and $class ) ?
       ( $_this->data[$datasource][$table][$class] == $timestamp) :

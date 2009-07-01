@@ -15,17 +15,17 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Model that stores the available Plugins in a database table
  */
-class qcl_plugin_DbModel extends qcl_db_model_xmlSchema_Model
+class qcl_plugin_DbModel extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
    * the path to the model schema xml file. ususally automatically resolved.
-   * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
+   * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = "qcl/plugin/DbModel.xml";

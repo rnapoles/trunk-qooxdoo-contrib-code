@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<schema include="qcl/db/model/xmlSchema/Model.xml">
+<schema include="qcl/data/model/xmlSchema/DbModel.xml">
 
   <model 
     table="model1" 
     name="qcl.db.TestModel1" 
-    extends="qcl.db.model.xmlSchema.Model">
+    extends="qcl.model.xmlSchema.DbModel">
 
     <!-- model definition -->
     <definition>
@@ -45,7 +45,7 @@
         name="model2" 
         type="n:n">
         <linkedModel
-          path="qcl/db/test/TestModel2.php" 
+          path="qcl/data/db/test/TestModel2.php" 
           class="TestModel2" />
       </link>  
     

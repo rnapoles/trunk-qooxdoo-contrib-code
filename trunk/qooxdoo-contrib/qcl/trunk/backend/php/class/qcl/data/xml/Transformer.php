@@ -15,12 +15,13 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/core/Object.php";
 
 /**
  * Model to do XSLT - Transformations in PHP4 and PHP5
  **/
-class qcl_xml_Transformer extends qcl_data_AbstractModel
+class qcl_data_xml_Transformer
+  extends qcl_core_Object
 {
     var $error;
 

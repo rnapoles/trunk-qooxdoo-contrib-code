@@ -20,21 +20,21 @@ require_once "qcl/core/StaticClass.php";
 /*
  * constants for getDefaultDsn method
  */
-define ("QCL_DB_USER_TABLE", true);
-define ("QCL_DB_ADMIN_TABLE", false);
-define ("QCL_DB_USER_ACCESS", false);
-define ("QCL_DB_ADMIN_ACCESS", true);
+define ("qcl_data_db_USER_TABLE", true);
+define ("qcl_data_db_ADMIN_TABLE", false);
+define ("qcl_data_db_USER_ACCESS", false);
+define ("qcl_data_db_ADMIN_ACCESS", true);
 
 /**
  * Database manager singleton, providing global access to a database object
  * with a unified API
  */
-class qcl_db_Manager extends qcl_core_StaticClass
+class qcl_data_db_Manager extends qcl_core_StaticClass
 {
   /**
    * Returns singleton instance of the class. Must be called
    * statically.
-   * @return qcl_db_Manager
+   * @return qcl_data_db_Manager
    */
   function &getInstance()
   {
@@ -54,7 +54,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
    * Returns the dsn information from the service.ini data.
    * By default, return user-level access to the admin database. Can be called
    * statically.
-   * @see qcl_db_Manager::connect()
+   * @see qcl_data_db_Manager::connect()
    * @return string
    */
   function getDefaultDsn( $userdata=false, $adminaccess=false )
@@ -96,7 +96,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
    * to use a dsn with admin-level access to create tables etc. (true) or
    * just user privileges (false, default). Is ignored if first argument is a string
    *
-   * @return qcl_db_type_Abstract
+   * @return qcl_data_db_type_Abstract
    */
   function &createAdapter( $first=false, $adminaccess=false )
   {
@@ -106,7 +106,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
      */
     if ( ! $first or is_bool( $first ) )
     {
-      $dsn = qcl_db_Manager::getDefaultDsn( $first, $adminaccess );
+      $dsn = qcl_data_db_Manager::getDefaultDsn( $first, $adminaccess );
     }
     elseif ( is_string( $first ) or is_array( $first ) )
     {
@@ -119,7 +119,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
 
     if ( ! $dsn )
     {
-      qcl_db_Manager::raiseError("No dsn information available.");
+      qcl_data_db_Manager::raiseError("No dsn information available.");
     }
 
     /*
@@ -144,8 +144,8 @@ class qcl_db_Manager extends qcl_core_StaticClass
       /*
        * type and class of database adapter
        */
-      $type = qcl_db_Manager::getDbType();
-      $class = "qcl_db_adapter_" . strtoupper($type[0]) . substr( $type, 1 );
+      $type = qcl_data_db_Manager::getDbType();
+      $class = "qcl_data_db_adapter_" . strtoupper($type[0]) . substr( $type, 1 );
 
       /*
        * include class file
@@ -159,7 +159,7 @@ class qcl_db_Manager extends qcl_core_StaticClass
       //$this->debug("Created new $class adapter... for '$dsn'.");
       if ( $db->error )
       {
-        qcl_db_Manager::raiseError( $db->error );
+        qcl_data_db_Manager::raiseError( $db->error );
       }
       $__dbcache[$cacheId] =& $db;
     }

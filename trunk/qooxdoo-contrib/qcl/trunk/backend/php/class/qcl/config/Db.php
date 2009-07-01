@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/access/Manager.php";
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Configuration management class, using a database backend
@@ -24,7 +24,7 @@ require_once "qcl/db/model/xmlSchema/Model.php";
  */
 
 class qcl_config_Db
-  extends qcl_db_model_xmlSchema_Model
+  extends qcl_data_model_xmlSchema_DbModel
 {
   /**
    * Path to the xml file containing the model schema

@@ -20,7 +20,7 @@ require_once "qcl/util/registry/Request.php";
 
 /**
  * Needed to create an initial table for persistent
- * object. This can be removed once qcl_db_SimpleModel does
+ * object. This can be removed once qcl_data_db_SimpleModel does
  * automatic table creation.
  */
 class qcl_data_persistence_db_Setup
@@ -48,9 +48,9 @@ class qcl_data_persistence_db_Setup
      */
     if ( ! qcl_util_registry_Request::has("qcl_data_persistence_db_Setup") )
     {
-      require_once "qcl/db/Manager.php";
+      require_once "qcl/data/db/Manager.php";
       $prefix = qcl_application_Application::getIniValue("database.tableprefix");
-      $db =& qcl_db_Manager::createAdapter();
+      $db =& qcl_data_db_Manager::createAdapter();
       $db->execute("
         CREATE TABLE IF NOT EXISTS `{$prefix}persistentObjects` (
           `id` int(11) NOT NULL auto_increment,

@@ -15,8 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/AbstractModel.php";
-require_once "qcl/db/IModel.php";
+require_once "qcl/data/model/db/Abstract.php";
+require_once "qcl/data/db/IModel.php";
 
 /**
  * Model base class for models based on a (mysql) database
@@ -24,24 +24,23 @@ require_once "qcl/db/IModel.php";
  * @todo rename methods "getX()" into "x()" if they refer to
  * the whole model or all records. "getFoo" should only be used for
  * model data.
- * @todo rename to qcl_db_models_xml_Model
  */
-class qcl_db_model_xmlSchema_Model
-  extends qcl_db_model_AbstractModel
-  implements qcl_db_IModel
+class qcl_data_model_xmlSchema_DbModel
+  extends qcl_data_model_db_Abstract
+  implements qcl_data_db_IModel
 {
 
   /**
    * The schema as an simpleXml object, containing all
-   * included xml files. Acces with qcl_db_model_xmlSchema_Model::getSchemaXml();
+   * included xml files. Acces with qcl_data_model_xmlSchema_DbModel::getSchemaXml();
    * @access private
-   * @var qcl_xml_SimpleXml
+   * @var qcl_data_xml_SimpleXml
    */
   var $schemaXml;
 
   /**
    * The path to the model schema xml file. ususally automatically resolved.
-   * @see qcl_db_model_xmlSchema_Model::getSchmemaXmlPath()
+   * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
   var $schemaXmlPath = null;
@@ -59,7 +58,7 @@ class qcl_db_model_xmlSchema_Model
   var $dataTimestamp = array();
 
   /**
-   * Shortcuts to property nodes in schema xml. Access with qcl_db_model_xmlSchema_Model::getPropertyNode($name)
+   * Shortcuts to property nodes in schema xml. Access with qcl_data_model_xmlSchema_DbModel::getPropertyNode($name)
    * @array array of object references
    */
   var $propertyNodes =array();
@@ -93,7 +92,7 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * The persistent model table info object
-   * @var qcl_db_model_xmlSchema_Registry
+   * @var qcl_data_model_xmlSchema_DbRegistry
    */
   var $modelTableInfo = null;
 
@@ -186,7 +185,7 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * Returns the column name from a property name.
-   * Alias for qcl_db_model_xmlSchema_Model::getPropertySchemaName
+   * Alias for qcl_data_model_xmlSchema_DbModel::getPropertySchemaName
    * @return string
    * @param string $property Property name
    */
@@ -338,7 +337,7 @@ class qcl_db_model_xmlSchema_Model
    * @param string $link
    * @param string $orderBy
    * @param mixed $properties
-   * @see qcl_db_model_xmlSchema_Model::findWhere()
+   * @see qcl_data_model_xmlSchema_DbModel::findWhere()
    *
    */
   function findByLinkedId( $id, $link, $orderBy=null, $properties="*" )
@@ -354,7 +353,7 @@ class qcl_db_model_xmlSchema_Model
    * @param string $link
    * @param string $orderBy
    * @param mixed $properties
-   * @see qcl_db_model_xmlSchema_Model::findWhere()
+   * @see qcl_data_model_xmlSchema_DbModel::findWhere()
    *
    */
   function findByLinkedNamedId( $namedId, $link, $orderBy=null, $properties="*" )
@@ -368,7 +367,7 @@ class qcl_db_model_xmlSchema_Model
    * Finds all records that are linked to the given model in
    * its current state.
    *
-   * @param qcl_db_model_xmlSchema_Model $model
+   * @param qcl_data_model_xmlSchema_DbModel $model
    * @param string $orderBy
    * @param mixed $properties
    * @param bool $distinct
@@ -703,7 +702,7 @@ class qcl_db_model_xmlSchema_Model
      * Get the persistent registry object to look up if this
      * table has been initialized already. To avoid an indefinitive
      * loop, the qcl_data_persistence_db_Model used by
-     * qcl_db_model_xmlSchema_Registry must be especially treated.
+     * qcl_data_model_xmlSchema_DbRegistry must be especially treated.
      * You can upgrade its schema only be deleting the table.
      */
     $modelTableInfo = null;
@@ -723,14 +722,14 @@ class qcl_db_model_xmlSchema_Model
        */
       if ( ! $this->modelTableInfo )
       {
-        require_once "qcl/db/model/xmlSchema/Registry.php";
+        require_once "qcl/data/model/xmlSchema/DbRegistry.php";
         if ( phpversion()<5 )
         {
-          $this->modelTableInfo =& qcl_db_model_xmlSchema_Registry::getInstance();
+          $this->modelTableInfo =& qcl_data_model_xmlSchema_DbRegistry::getInstance();
         }
         else
         {
-          $this->modelTableInfo = qcl_db_model_xmlSchema_Registry::getInstance();
+          $this->modelTableInfo = qcl_data_model_xmlSchema_DbRegistry::getInstance();
         }
       }
       $datasourceModel =& $this->getDatasourceModel();
@@ -813,7 +812,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * skip if no column definition available
        */
-      if ( qcl_xml_Storage::nodeGetChildCount($property) == 0)
+      if ( qcl_data_xml_Storage::nodeGetChildCount($property) == 0)
       {
         continue;
       }
@@ -1026,10 +1025,10 @@ class qcl_db_model_xmlSchema_Model
 
     $this->log( "Model has " .
       ( is_object( $links ) ?
-        qcl_xml_Storage::nodeGetChildCount( $links ) : "no" ) .
+        qcl_data_xml_Storage::nodeGetChildCount( $links ) : "no" ) .
       " links.", "propertyModel" );
 
-    if ( is_object( $links ) and qcl_xml_Storage::nodeGetChildCount( $links ) )
+    if ( is_object( $links ) and qcl_data_xml_Storage::nodeGetChildCount( $links ) )
     {
       $linksChildren = $links->children();
       $this->log("Creating or updating linked tables...","propertyModel");
@@ -1140,7 +1139,7 @@ class qcl_db_model_xmlSchema_Model
           /*
            * further linked models
            */
-          if ( qcl_xml_Storage::nodeGetChildCount( $link ) )
+          if ( qcl_data_xml_Storage::nodeGetChildCount( $link ) )
           {
 
             /*
@@ -1502,7 +1501,7 @@ class qcl_db_model_xmlSchema_Model
    * Gets an instance of the model that is joined to this model for the specific link name
    *
    * @param string $Name of the link
-   * @return qcl_db_model_xmlSchema_Model Model instance or false if no model could be found.
+   * @return qcl_data_model_xmlSchema_DbModel Model instance or false if no model could be found.
    */
   function &getLinkedModelInstance( $name )
   {
@@ -1563,7 +1562,7 @@ class qcl_db_model_xmlSchema_Model
    * Returns the name of the link in the schema xml, given a model instance.
    * Throws an error if the model is not linked.
    *
-   * @param qcl_db_model_xmlSchema_Model $model
+   * @param qcl_data_model_xmlSchema_DbModel $model
    * @return mixed Array if link(s) ar found, false if not found
    */
   function getLinksByModel( $model )
@@ -1575,9 +1574,9 @@ class qcl_db_model_xmlSchema_Model
       $this->raiseError("Model has no links.");
     }
 
-    if ( ! is_a( $model, "qcl_db_model_xmlSchema_Model" ) )
+    if ( ! is_a( $model, "qcl_data_model_xmlSchema_DbModel" ) )
     {
-      $this->raiseError("Argument needs to be a qcl_db_model_xmlSchema_Model or subclass.");
+      $this->raiseError("Argument needs to be a qcl_data_model_xmlSchema_DbModel or subclass.");
     }
 
     $links = array();
@@ -1597,7 +1596,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * or is it a model which is a secondary link ?
        */
-      if ( qcl_xml_Storage::nodeGetChildCount( $linkNode ) )
+      if ( qcl_data_xml_Storage::nodeGetChildCount( $linkNode ) )
       {
         foreach ( $linkNode->children() as $linkedModelNode )
         {
@@ -1624,7 +1623,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Create a link between this model and a different model.
    * This method is for links that connect two models only. For three or more models, use
-   * @see qcl_db_model_xmlSchema_Model::unlinkFrom()
+   * @see qcl_data_model_xmlSchema_DbModel::unlinkFrom()
    *
    * @param string|object $first Either the object to link to or the name of the link in the schema xml
    * @param int[optional] $linkedId Id of the recordset in the remote model. if not given, the id
@@ -1647,7 +1646,7 @@ class qcl_db_model_xmlSchema_Model
     /*
      * context data
      */
-    if ( is_a( $first,"qcl_db_model_xmlSchema_Model" ) )
+    if ( is_a( $first,"qcl_data_model_xmlSchema_DbModel" ) )
     {
       $links = $this->getLinksByModel( &$first );
     }
@@ -1661,7 +1660,7 @@ class qcl_db_model_xmlSchema_Model
      */
     if ( ! $linkedId )
     {
-      if ( is_object( $first ) and $first->isInstanceOf("qcl_db_model_xmlSchema_Model") )
+      if ( is_object( $first ) and $first->isInstanceOf("qcl_data_model_xmlSchema_DbModel") )
       {
         $linkedId = $first->getId();
       }
@@ -1739,7 +1738,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Removes a link between this model and a different model.
    * This method is for links that connect two models only. For three or more models, use
-   * @see qcl_db_model_xmlSchema_Model::unlinkFrom()
+   * @see qcl_data_model_xmlSchema_DbModel::unlinkFrom()
    *
    * @param string|object $first Either the object to unlink from or
    * the name of the link in the schema xml.
@@ -1755,7 +1754,7 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * Link a variable number of models
-   * @param qcl_db_model_xmlSchema_Model $model2 Model
+   * @param qcl_data_model_xmlSchema_DbModel $model2 Model
    */
   function linkWith()
   {
@@ -1766,7 +1765,7 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * Unlink a variable number of models
-   * @param qcl_db_model_xmlSchema_Model $model2 Model
+   * @param qcl_data_model_xmlSchema_DbModel $model2 Model
    * @param bool
    */
   function unlinkFrom()
@@ -1778,7 +1777,7 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * Remove all links from the current model instance ta variable number of models
-   * @param qcl_db_model_xmlSchema_Model $model2 Model
+   * @param qcl_data_model_xmlSchema_DbModel $model2 Model
    * @param bool
    */
   function unlinkFromAll()
@@ -1790,7 +1789,7 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * Checks whether models are linked
-   * @param qcl_db_model_xmlSchema_Model $model2 Model
+   * @param qcl_data_model_xmlSchema_DbModel $model2 Model
    * @param bool
    */
   function isLinkedWith()
@@ -1839,9 +1838,9 @@ class qcl_db_model_xmlSchema_Model
 
   /**
    * Create or delete a link a variable number of models
-   * @param qcl_db_model_xmlSchema_Model $model2 Model to link with
-   * @param qcl_db_model_xmlSchema_Model $model3 Optional model to link with
-   * @param qcl_db_model_xmlSchema_Model $model4 Optional model to link with
+   * @param qcl_data_model_xmlSchema_DbModel $model2 Model to link with
+   * @param qcl_data_model_xmlSchema_DbModel $model3 Optional model to link with
+   * @param qcl_data_model_xmlSchema_DbModel $model4 Optional model to link with
    */
   function _modifyLink()
   {
@@ -2001,7 +2000,7 @@ class qcl_db_model_xmlSchema_Model
    *    </origin>
    *  </link>
    * </links>
-   * @see qcl_db_model_AbstractModel
+   * @see qcl_data_model_db_Abstract
    * @param string $dir directory path where link data is to be put, defaults to the
    * directory containing the inital data file
    * @param bool $isBackup if true, prepend "backup_" before the filename
@@ -2049,7 +2048,7 @@ class qcl_db_model_xmlSchema_Model
       /*
        * create new xml file
        */
-      $dataXml =& new qcl_xml_Storage();
+      $dataXml =& new qcl_data_xml_Storage();
       $dataXml->createIfNotExists($path);
       $dataXml->load($path);
 
@@ -2235,7 +2234,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Imports initial link data for the model from an xml
    * for the structure,
-   * @see qcl_db_model_xmlSchema_Model::exportLinkData()
+   * @see qcl_data_model_xmlSchema_DbModel::exportLinkData()
    * @param string $path
    */
   function importLinkData( $path=null )
@@ -2524,7 +2523,7 @@ class qcl_db_model_xmlSchema_Model
          */
         $attrs    = $alias->attributes();
         $propName = (string) $attrs['for'];
-        $column   = qcl_xml_Storage::getData(&$alias);
+        $column   = qcl_data_xml_Storage::getData(&$alias);
 
         /*
          * store in alias map
@@ -2559,7 +2558,7 @@ class qcl_db_model_xmlSchema_Model
     $propGroups =& $definition->propertyGroups;
     if ( $propGroups )
     {
-      $metaDataNode =& qcl_xml_Storage::getChildNodeByAttribute($propGroups,"name","metaData");
+      $metaDataNode =& qcl_data_xml_Storage::getChildNodeByAttribute($propGroups,"name","metaData");
       if ( $metaDataNode )
       {
         foreach ( $metaDataNode->children() as $metaDataPropNode )
@@ -2599,7 +2598,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * get the model schema as an simpleXml object
    * @param string $path path of schema xml file or null if default file is used
-   * @return qcl_xml_Storage
+   * @return qcl_data_xml_Storage
    */
   function &getSchemaXml($path=null)
   {
@@ -2643,7 +2642,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Parses an xml schema file, processing includes
    * @param string $file
-   * @return qcl_xml_Storage
+   * @return qcl_data_xml_Storage
    */
   function &parseXmlSchemaFile($file)
   {
@@ -2652,13 +2651,13 @@ class qcl_db_model_xmlSchema_Model
      * include simple xml library (cannot do that in header without
      * creating include order problems)
      */
-    require_once "qcl/xml/Storage.php";
+    require_once "qcl/data/xml/Storage.php";
 
     /*
      * load model schema xml file
      */
     $this->log("Parsing model schema file '$file'...","propertyModel");
-    $modelXml =& new qcl_xml_Storage( $file );
+    $modelXml =& new qcl_data_xml_Storage( $file );
     $modelXml->doNotCache = $this->doNotCache;
     $modelXml->load();
 
@@ -2702,7 +2701,7 @@ class qcl_db_model_xmlSchema_Model
   /**
    * Parses an xml data file, processing includes
    * @param string $file
-   * @return qcl_xml_Storage
+   * @return qcl_data_xml_Storage
    */
   function &parseXmlDataFile( $file )
   {
@@ -2711,13 +2710,13 @@ class qcl_db_model_xmlSchema_Model
      * include simple xml library (cannot do that in header without
      * creating include order problems
      */
-    require_once "qcl/xml/Storage.php";
+    require_once "qcl/data/xml/Storage.php";
 
     /*
      * load model schema xml file
      */
     $this->log("Parsing model data file '$file'...","propertyModel");
-    $dataXml =& new qcl_xml_Storage( $file );
+    $dataXml =& new qcl_data_xml_Storage( $file );
     $dataXml->load();
 
     /*
@@ -2757,7 +2756,7 @@ class qcl_db_model_xmlSchema_Model
    * exports model data to an xml file
    *
    * @param string $path file path, defaults to the location of the inital data file
-   * @return qcl_xml_Storage The xml document object
+   * @return qcl_data_xml_Storage The xml document object
    */
   function &export($path=null)
   {
@@ -2782,7 +2781,7 @@ class qcl_db_model_xmlSchema_Model
     /*
      * create new xml file
      */
-    $dataXml =& new qcl_xml_Storage( $path );
+    $dataXml =& new qcl_data_xml_Storage( $path );
     $dataXml->createFile();
 
     /*
@@ -2916,7 +2915,7 @@ class qcl_db_model_xmlSchema_Model
      */
     if ( ! is_valid_file( $path ) )
     {
-      $this->raiseError("qcl_db_model_xmlSchema_Model::import: '$path' is not a valid file.");
+      $this->raiseError("qcl_data_model_xmlSchema_DbModel::import: '$path' is not a valid file.");
     }
 
     /*
@@ -3148,7 +3147,7 @@ class qcl_db_model_xmlSchema_Model
     $node =& $this->getFieldNode( $name );
     if ( is_object ($node->label ) )
     {
-      return qcl_xml_Storage::getData( $node->label );
+      return qcl_data_xml_Storage::getData( $node->label );
     }
     elseif ( is_array ( $node->label) )
     {
@@ -3159,11 +3158,11 @@ class qcl_db_model_xmlSchema_Model
         $type  = (string) $attrs['type'];
         if ( $type )
         {
-          $labels[$type] = qcl_xml_Storage::getData( $labelNode );
+          $labels[$type] = qcl_data_xml_Storage::getData( $labelNode );
         }
         else
         {
-          $defaultLabel = qcl_xml_Storage::getData( $labelNode );
+          $defaultLabel = qcl_data_xml_Storage::getData( $labelNode );
         }
       }
       return either ( $labels[$reftype], $defaultLabel, "*** Error ***" );

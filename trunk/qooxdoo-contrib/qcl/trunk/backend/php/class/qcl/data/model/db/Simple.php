@@ -15,18 +15,18 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/AbstractModel.php";
-require_once "qcl/db/IModel.php";
+require_once "qcl/data/model/db/Abstract.php";
+require_once "qcl/data/db/IModel.php";
 
 /**
- * Simpler ORM Mmechanism than the qcl_db_model_xmlSchema_Model way that uses xml
+ * Simpler ORM Mmechanism than the qcl_data_model_xmlSchema_DbModel way that uses xml
  * documents for a schema. In this model type, declare public properties
- * with QCL_DB_PROPERTY_* constants. However, there is be no automatic
+ * with qcl_data_db_PROPERTY_* constants. However, there is be no automatic
  * setup and maintenance of tables (at least for now). This system is
  * probably a bit faster than the other.
  * @todo change inheritance order: this class should have all methods from
- * qcl_db_model_xmlSchema_Model that do not rely on the xml schema system,
- * and qcl_db_model_xmlSchema_Model should inherit from it.
+ * qcl_data_model_xmlSchema_DbModel that do not rely on the xml schema system,
+ * and qcl_data_model_xmlSchema_DbModel should inherit from it.
  * Caution: you cannot access the object properties directly, but need to
  * use getter and setter methods (for now).
  *
@@ -37,9 +37,9 @@ require_once "qcl/db/IModel.php";
  * @todo Implement automatic getter and setter access to properties that
  * are saved in the database
  */
-class qcl_db_model_SimpleModel
-  extends qcl_db_model_AbstractModel
-  implements qcl_db_IModel
+class qcl_data_model_db_Simple
+  extends qcl_data_model_db_Abstract
+  implements qcl_data_db_IModel
 {
   /**
    * This model does not have a schema xml document but
@@ -47,7 +47,7 @@ class qcl_db_model_SimpleModel
    * @todo property definition should be like
    * $properties = array(
    *  'foo' => array(
-   *    'type'     => "qcl_db_property_varchar32",
+   *    'type'     => "qcl_data_db_property_varchar32",
    *    'nullable' => true,
    *    'init'     => 'foo'
    *  )
@@ -58,17 +58,17 @@ class qcl_db_model_SimpleModel
   /**
    * The id column
    */
-  var $id = QCL_DB_PROPERTY_INT;
+  var $id = qcl_data_db_PROPERTY_INT;
 
   /**
    * The created column
    */
-  var $created = QCL_DB_PROPERTY_TIMESTAMP;
+  var $created = qcl_data_db_PROPERTY_TIMESTAMP;
 
   /**
    * The modified column
    */
-  var $modified = QCL_DB_PROPERTY_TIMESTAMP;
+  var $modified = qcl_data_db_PROPERTY_TIMESTAMP;
 
   /**
    * Constructor. Automatically configures the table name
@@ -137,8 +137,8 @@ class qcl_db_model_SimpleModel
 
     switch ( $this->$property )
     {
-      case QCL_DB_PROPERTY_INT: return "int";
-      case QCL_DB_PROPERTY_BOOLEAN: return "bool";
+      case qcl_data_db_PROPERTY_INT: return "int";
+      case qcl_data_db_PROPERTY_BOOLEAN: return "bool";
       default: return "string";
     }
   }
@@ -160,7 +160,7 @@ class qcl_db_model_SimpleModel
       $this->raiseError("Invalid property '$property'.");
     }
     return (
-      substr($this->$property,0,strlen(QCL_DB_PROPERTY)) == QCL_DB_PROPERTY
+      substr($this->$property,0,strlen(qcl_data_db_PROPERTY)) == qcl_data_db_PROPERTY
     );
   }
 

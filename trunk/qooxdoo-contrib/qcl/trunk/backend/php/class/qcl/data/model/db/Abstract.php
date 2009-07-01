@@ -15,8 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/AbstractPropertyModel.php";
-require_once "qcl/db/__init__.php";
+require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/db/__init__.php";
 
 
 /**
@@ -24,13 +24,13 @@ require_once "qcl/db/__init__.php";
  * database.
  * @todo define interface
  */
-class qcl_db_model_AbstractModel
-  extends qcl_data_AbstractPropertyModel
+class qcl_data_model_db_Abstract
+  extends qcl_data_model_Abstract
 {
 
   /**
    * The datasource object instance
-   * @var qcl_db_type_Mysql
+   * @var qcl_data_db_type_Mysql
    * @todo should be a private property
    */
   var $db;
@@ -86,7 +86,7 @@ class qcl_db_model_AbstractModel
 
   /**
    * Returns the database connection object for this model
-   * @return qcl_db_type_Abstract
+   * @return qcl_data_db_type_Abstract
    */
   function &db()
   {
@@ -127,7 +127,7 @@ class qcl_db_model_AbstractModel
      */
     else
     {
-      $db =& qcl_db_Manager::createAdapter();
+      $db =& qcl_data_db_Manager::createAdapter();
     }
 
     /*
@@ -523,7 +523,7 @@ class qcl_db_model_AbstractModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model_xmlSchema_Model::findeWhere() for details
+   * @see qcl_data_model_xmlSchema_DbModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findById( $ids, $orderBy=null, $properties=null, $link=null )
@@ -546,7 +546,7 @@ class qcl_db_model_AbstractModel
 
   /**
    * Loads a model record identified by id.
-   * Alias of qcl_db_model_xmlSchema_Model::findById().
+   * Alias of qcl_data_model_xmlSchema_DbModel::findById().
    *
    * @param int $id
    * @return arrray()
@@ -563,7 +563,7 @@ class qcl_db_model_AbstractModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model_xmlSchema_Model::findeWhere() for details
+   * @see qcl_data_model_xmlSchema_DbModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )
