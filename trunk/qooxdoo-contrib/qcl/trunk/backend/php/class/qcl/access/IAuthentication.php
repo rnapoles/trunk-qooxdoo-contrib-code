@@ -1,11 +1,11 @@
 <?php
 /*
- * qooxdoo - the new era of web development
+ * qcl - the qooxdoo component library
  *
- * http://qooxdoo.org
+ * http://qooxdoo.org/contrib/project/qcl/
  *
  * Copyright:
- *   2009 Christian Boulanger
+ *   2007-2009 Christian Boulanger
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html

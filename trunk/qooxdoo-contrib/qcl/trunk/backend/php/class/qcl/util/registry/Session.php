@@ -1,7 +1,22 @@
 <?php
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
 
-
-define("qcl_util_registry_SESSION_KEY","qcl_util_registry_session_key" );
+define("QCL_UTIL_REGISTRY_SESSION_KEY","QCL_UTIL_REGISTRY_SESSION_KEY" );
 
 /**
  * Class which maintains a registry which is valid during one
@@ -31,7 +46,7 @@ class qcl_util_registry_Session
    */
   function reset()
   {
-    $_SESSION[ qcl_util_registry_SESSION_KEY ] = array();
+    $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ] = array();
   }
 
   /**
@@ -42,7 +57,7 @@ class qcl_util_registry_Session
    */
   function set( $key, $value )
   {
-    $_SESSION[ qcl_util_registry_SESSION_KEY ][$key] = $value;
+    $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ][$key] = $value;
   }
 
   /**
@@ -53,7 +68,7 @@ class qcl_util_registry_Session
    */
   function get( $key )
   {
-    return $_SESSION[ qcl_util_registry_SESSION_KEY ][$key];
+    return $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ][$key];
   }
 
 
@@ -65,7 +80,7 @@ class qcl_util_registry_Session
    */
   function has( $key )
   {
-    return isset( $_SESSION[ qcl_util_registry_SESSION_KEY ][$key] );
+    return isset( $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ][$key] );
   }
 
 

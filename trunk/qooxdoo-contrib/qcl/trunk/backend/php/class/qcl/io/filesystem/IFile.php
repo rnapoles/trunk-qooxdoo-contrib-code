@@ -1,5 +1,20 @@
 <?php
-
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
 require_once "qcl/io/filesystem/IResource.php";
 
 /**
@@ -8,13 +23,13 @@ require_once "qcl/io/filesystem/IResource.php";
  */
 class qcl_io_filesystem_IFile extends qcl_io_filesystem_IResource
 {
-  
+
   /**
    * Load the whole file resource into memory
    * @return bool false if file could not be loaded
    */
   function load() {}
-  
+
   /**
    * save a string of data back into the file resource
    * @param string $data
@@ -26,7 +41,7 @@ class qcl_io_filesystem_IFile extends qcl_io_filesystem_IResource
    * @param string $mode r(ead)|w(rite)|a(append)
    */
   function open($mode) {}
-    
+
   /**
    * Reads a variable number of bytes from the resource
    * @param int $bytes
@@ -39,19 +54,19 @@ class qcl_io_filesystem_IFile extends qcl_io_filesystem_IResource
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function readLine($bytes) {}  
-  
+  function readLine($bytes) {}
+
   /**
    * Writes to the file resource a variable number of bytes
    * @param string $data
    */
   function write($data) {}
-  
+
   /**
    * Closes the file resource
    */
   function close() {}
-  
-  
+
+
 }
 ?>
