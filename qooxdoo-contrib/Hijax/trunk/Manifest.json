@@ -1,0 +1,42 @@
+{
+  "info" : 
+  {
+    "name" : "Hijax",
+
+    "summary" : "Library to 'ajaxify' traditional web sites.",
+    "description" : "Library to 'ajaxify' traditional web sites.",
+    
+    "homepage" : "http://contrib.qooxdoo.org/project/Hijax",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Daniel Wagner (d_wagner)",
+        "email" : "daniel.wagner@1und1.de"
+      },
+      {
+        "name" : "Stefan Kloiber (skloiber)",
+        "email" : "n.a."
+      },
+      {
+        "name" : "Andreas Ecker (ecker)",
+        "email" : "andreas.ecker@1und1.de"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8.3-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "hjx",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}
+

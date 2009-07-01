@@ -1,0 +1,106 @@
+html {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: Verdana, Arial, Helvetica;
+  font-size: 62.5%;
+  padding: 0;
+  margin: 0;
+}
+
+#nav {
+  height: 50px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  background-color: black;
+  border-bottom: 2px solid #FF8B07;  
+}
+
+#nav li {
+  float: left;
+}
+
+#nav li a {
+  display: block;
+  padding: 0 15px;
+  font-size: 1.2em;
+  color: #FF8B07;
+  text-decoration: none;
+  font-weight: bold;
+  height: 50px;
+  line-height: 50px;
+}
+
+#nav li a:hover {
+  text-decoration: underline;
+}
+
+#nav li a.active {
+  background-color: #FF8B07;
+  color: #000;
+}
+
+#nav .active:hover {
+  text-decoration: none;
+}
+
+#content {  
+  clear: both;
+  margin: 10px 10px 20px 10px;
+  font-size: 1.2em;
+}
+
+.error {
+  border: 1px solid #FF0000;
+}
+
+h1 {
+  float: left;
+  font-size: 2em;
+  color: #FF8B07;
+  padding: 0 20px;
+  margin: 0;
+  line-height: 50px;
+}
+
+h2 {
+  margin: 5px;
+  padding: 5px;
+}
+
+#content p,
+#contact_form {
+  margin: 5px;
+  padding: 5px;
+}
+
+#contact_form label {
+  display: block;
+  float: left;
+  width: 150px;
+  padding-top: 10px;
+}
+
+#contact_form input,
+#contact_form textarea {
+  margin-top: 10px;
+  width: 250px;
+  border: 1px solid #000;
+  padding: 2px;
+}
+
+#contact_form textarea {
+  height: 120px;
+}
+
+#contact_form #button_submit {
+  width: 120px;
+  padding: 5px 10px;
+  margin: 20px 0 0 150px;
+  border: 1px solid #000;
+  background-color: #FF8B07;
+  font-weight: bold;
+}
