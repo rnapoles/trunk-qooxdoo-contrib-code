@@ -1,7 +1,23 @@
 <?php
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
 
 /**
- * UTF8-String manipulation class 
+ * UTF8-String manipulation class
  * Relies heavily on functions from the source code of PunBB
  *
  */
@@ -16,7 +32,7 @@ class Utf8String
    */
   var $_value = '';
 
-  
+
   /**
    * Constructor
    * @param string $str Ut8-encoded string
@@ -25,8 +41,8 @@ class Utf8String
   {
     $this->set( (string) $str );
   }
-  
-  
+
+
   /**
    * imports from a non-utf8 string
    * @param string $str
@@ -35,7 +51,7 @@ class Utf8String
   {
     $this->set( utf8_encode($str) );
   }
-  
+
   /**
    * Returns the character (Unicode code point) at the specified index.
    *
@@ -55,7 +71,7 @@ class Utf8String
   {
     return is_a( $elem, "String") ? $elem->get() : (string) $elem;
   }
-  
+
   /**
    * Compares two strings lexicographically.
    *
@@ -65,7 +81,7 @@ class Utf8String
    */
   function compareTo( $str, $caseSensitive = true )
   {
-    $anotherString = $this->_getStringValue(); 
+    $anotherString = $this->_getStringValue();
     $function = $caseSensitive ? 'strcmp' : 'strcasecmp';
     return $function( $this->_value, $anotherString );
   }
@@ -81,7 +97,7 @@ class Utf8String
     $this->_value .= $str;
   }
 
-  
+
   /**
    * Returns the index of the first occurrence of the argument
    * @param string $str
@@ -91,7 +107,7 @@ class Utf8String
   {
     return strpos($this->_value,$str);
   }
-  
+
   /**
    * Returns the index of the last occurrence of the argument
    * @param string $str
@@ -101,7 +117,7 @@ class Utf8String
   {
     return strrpos($this->_value,$str);
   }
-  
+
   /**
    * Returns true if and only if this string contains the specified sequence
    * of char values.
@@ -120,7 +136,7 @@ class Utf8String
    */
   function copyValueOf( &$data )
   {
-    if ( is_a($data, 'String') ) 
+    if ( is_a($data, 'String') )
     {
       $this->_copyValueOfString( &$data );
     }
@@ -264,11 +280,11 @@ class Utf8String
   {
     if ( ! is_null($count) )
     {
-      return substr($this->_value,$first,$count);  
+      return substr($this->_value,$first,$count);
     }
     return substr($this->_value,$first);
   }
-  
+
   /**
    * Returns a part of the string
    * @param int $first Index of first character to fetch
@@ -278,7 +294,7 @@ class Utf8String
   {
     return $this->substr($first,$last-$first);
   }
-  
+
   /**
    * Returns the string value of the object
    * @return string
@@ -287,10 +303,10 @@ class Utf8String
   {
     return $this->_value;
   }
-  
+
   /**
    * Returns an array of parts of the string split at the given seperator instances
-   * @param string $separator A regular expression 
+   * @param string $separator A regular expression
    * @return array
    */
    function split($separator)
@@ -298,7 +314,7 @@ class Utf8String
      $parts = preg_split($separator,$this->_value);
      return $parts;
    }
-   
+
    /**
     * Returns a string that is the result of a regular
     * expression replace operation
@@ -308,7 +324,7 @@ class Utf8String
     {
       return new Utf8String(preg_replace($search,$replace,$this->_value));
     }
-    
+
     /**
      * Whether the current string is empty
      * @return bool
@@ -317,12 +333,12 @@ class Utf8String
     {
       return empty($this->_value);
     }
-    
+
     function toAscii()
     {
       require_once "qcl/lib/punbb_utf8/utils/ascii.php";
       return ( utf8_accents_to_ascii( $this->_value) );
     }
-    
+
 }
 ?>

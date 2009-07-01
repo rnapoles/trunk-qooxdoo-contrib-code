@@ -1,9 +1,26 @@
 <?php
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+
 /**
  * Abstract class for classes that implement a plugin
  */
 interface qcl_plugin_IPlugin
-{    
+{
 
   /**
    * Checks if the plugin works and installs it
@@ -14,13 +31,13 @@ interface qcl_plugin_IPlugin
    * Uninstalls the plugin
    */
   function uninstall() {}
-	
+
   /**
    * Returns the name/title of the plugin
    * @return string
    */
   function getName(){}
-  
+
   /**
    * Returns the unique namedId of the plugin
    * @return string
@@ -49,7 +66,7 @@ interface qcl_plugin_IPlugin
    * Returns the permission that is needed to run the plugin
    * @return string
    */
-  function getPermission(){}	
-  
+  function getPermission(){}
+
 }
 

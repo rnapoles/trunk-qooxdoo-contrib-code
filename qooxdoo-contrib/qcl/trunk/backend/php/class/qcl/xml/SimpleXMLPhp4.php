@@ -1,4 +1,10 @@
 <?php
+/*
+ * FIXME: clear licencense issue.
+ *
+ */
+
+
 /**
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -257,7 +263,7 @@ class XMLParser
 
       //Add the child
       eval('
-              $parentNode =& $this->'.$parent.'; 
+              $parentNode =& $this->'.$parent.';
               $child =& $parentNode->_AddChild($name, $attrs, '.count($this->stack).', $this->cleanTagNames);
             ');
 
@@ -291,7 +297,7 @@ class XMLParser
 
       //Update the stack
       eval('
-              $count = count($this->'.$parent.'->'.$name.'); 
+              $count = count($this->'.$parent.'->'.$name.');
               $this->stack[] = $count > 1 ? $name.\'[\'.($count-1).\']\' : $name;
             ');
     }
@@ -613,7 +619,7 @@ class SimpleXMLElement
     {
       $this->$name =& $child;
     }
-     
+
     //Changed: if it exists, check if it is an array
     else
     {
@@ -664,7 +670,7 @@ class SimpleXMLElement
     if ( count($attributes) ) $result['__attributes'] = $attributes;
     $cdata = $this->CDATA();
     if ( $cdata ) $result['__cdata'] = $cdata;
-     
+
     $members = get_object_vars($this);
     foreach ( $members as $index => $member )
     {
@@ -838,30 +844,30 @@ class SimpleXMLElement
    * executes an xpath (1.0) query on the current document
    * @return XPathObject
    */
-  function xpath( $expr ) 
+  function xpath( $expr )
   {
     /*
      * create a dom xml document from the stringyfied xml
      */
     $dom = domxml_open_mem(
-      $this->asXML(), 
-      DOMXML_LOAD_RECOVERING, 
-      &$error 
+      $this->asXML(),
+      DOMXML_LOAD_RECOVERING,
+      &$error
     );
-    
-    if ( ! $dom ) 
+
+    if ( ! $dom )
     {
       $this->error = "Error while parsing the document:" . print_r( $error, true );
       return false;
-    } 
-    
+    }
+
     /*
      * create new context and evaluate the xpath expression
      */
     $xpCxt =& $this->dom->xpath_new_context();
     $xpObj =& $xpCxt->xpath_eval_expression( $expr );
     if ( ! $xpObj ) return null;
-    
+
     /*
      * for each node found, create a SimpleXMLElement
      */
@@ -873,12 +879,12 @@ class SimpleXMLElement
       $xmlString = $doc->dump_mem( 2,"utf-8");
       $parser = new XMLParser($xmlString);
       $parser->Parse();
-      $nodeSetArray[] =& $parser->document; 
+      $nodeSetArray[] =& $parser->document;
     }
     return $nodeSetArray;
   }
- 
-  
-  
+
+
+
 }
 ?>
