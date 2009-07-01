@@ -44,7 +44,7 @@ mySim.lastSample = "last";
  * i.e. spaces instead of underscores.
  * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
  */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe','virtual:List','virtual:Cells','virtual:ListBinding','virtual:Messenger','progressive:*'];
+var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe','virtual:List','virtual:Cells','virtual:ListBinding','virtual:Messenger','progressive:*', 'legacy:*'];
 
 /*
  * List of demos to run. All others will be ignored.
@@ -168,7 +168,8 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   else {
     // run the sample
     this.runScript(scriptCode, "Running sample");
-    Packages.java.lang.Thread.sleep(2000);
+    
+    //this.addErrorHandlerToDemo();
     
     //this.killBoxes();
     //Packages.java.lang.Thread.sleep(2000);
@@ -213,7 +214,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   // wait for the sample to finish loading, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
-
+  
   // Shut down the sample application
   //this.getEval(shutdownSample, "Shutting down sample application");
   //Packages.java.lang.Thread.sleep(2000);
@@ -223,6 +224,19 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);  
 
   this.log('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>', "info");
+  
+  /*
+  var errorsBefore = this.getTotalErrorsLogged(); 
+  
+  if (isGlobalEventReady) {
+    this.logGlobalErrors();
+  }
+
+  var errorsAfter = this.getTotalErrorsLogged();
+  
+  */
+  
+  //Packages.java.lang.Thread.sleep(120000);
 
   // we're only interested in logs containing warnings or errors
   var isErrWarn = false;
@@ -269,6 +283,27 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));  
   }
   return [category,currentSample];
+};
+
+simulation.Simulation.prototype.addErrorHandlerToDemo = function()
+{
+  var sampleQxReady = selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow().qx";
+  
+  mySim.waitForCondition(sampleQxReady, 10000, 
+                         "Waiting for sample's qx");
+                         
+  var sampleQxEventReady = selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow().qx.event";
+  
+  mySim.waitForCondition(sampleQxEventReady, 10000, 
+                         "Waiting for sample's qx.Event");                           
+  
+  var globalEventReady = selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow().qx.event.GlobalError";
+  
+  var isGlobalEventReady = mySim.waitForCondition(globalEventReady, 10000, 
+                                        "Waiting for qx.event.GlobalError");
+  if (isGlobalEventReady) {
+    this.addGlobalErrorHandler(selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow()");
+  }   
 };
 
 simulation.Simulation.prototype.runTest = function()
