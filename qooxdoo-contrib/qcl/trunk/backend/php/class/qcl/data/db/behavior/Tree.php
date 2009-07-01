@@ -19,10 +19,10 @@
 /**
  * Behavior class providing methods to model a basic tree structure based on an
  * sql database table. Can only be used with a model that inherits from
- * qcl_db_model_xmlSchema_Model.
+ * qcl_data_model_xmlSchema_DbModel.
  */
 
-class qcl_db_behavior_Tree
+class qcl_data_db_behavior_Tree
 {
 
 

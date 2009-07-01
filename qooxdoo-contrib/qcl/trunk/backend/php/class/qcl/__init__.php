@@ -36,11 +36,10 @@ set_time_limit(120);
 
 /**
  * Directory containing the service classes with trailing slash
- * @todo rename to QCL_SERVICE_PATH or remove
  */
-if ( ! defined( "SERVICE_PATH") )
+if ( ! defined( "QCL_SERVICE_PATH") )
 {
-  define( "SERVICE_PATH", str_replace("\\","/", dirname( dirname(__FILE__) ). "/" ) );
+  define( "QCL_SERVICE_PATH", str_replace("\\","/", dirname( dirname(__FILE__) ). "/" ) );
 }
 
 /**
@@ -80,6 +79,6 @@ if ( ! defined("QCL_LOG_FILE") )
  */
 if ( ! defined("QCL_UPLOAD_PATH") )
 {
-  define( "QCL_UPLOAD_PATH", realpath ( SERVICE_PATH . "../../var/upload") );
+  define( "QCL_UPLOAD_PATH", realpath ( QCL_SERVICE_PATH . "../../var/upload") );
 }
 ?>

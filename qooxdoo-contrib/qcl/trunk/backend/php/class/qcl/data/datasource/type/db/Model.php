@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Class modeling datasource information that is stored in a
@@ -28,7 +28,7 @@ require_once "qcl/db/model/xmlSchema/Model.php";
  *
  * @todo rename to qcl_data_datasource_storage_Db
  */
-class qcl_data_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
+class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
@@ -62,7 +62,7 @@ class qcl_data_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
 
   /**
    * the database connection object of the currently loaded record
-   * @var qcl_db_type_Mysql
+   * @var qcl_data_db_type_Mysql
    */
   var $datasourceConnectionObj;
 
@@ -159,7 +159,7 @@ class qcl_data_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
    * Returns the database connection object of the currently
    * loaded datasource record
    * @todo unhardcode type mysql
-   * @return qcl_db_type_Mysql
+   * @return qcl_data_db_type_Mysql
    */
   function &getDatasourceConnection()
   {
@@ -172,7 +172,7 @@ class qcl_data_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
       //$this->debug("Datasource model connecting to ");
       //$this->debug($dsn);
 
-      $db =& qcl_db_Manager::createAdapter( $dsn );
+      $db =& qcl_data_db_Manager::createAdapter( $dsn );
 
       $this->datasourceConnectionObj =& $db;
     }
@@ -266,7 +266,7 @@ class qcl_data_datasource_type_db_Model extends qcl_db_model_xmlSchema_Model
      */
     if ( $options['dsn'] )
     {
-      $db = new qcl_db_type_Mysql( $options['dsn'], &$this );
+      $db = new qcl_data_db_type_Mysql( $options['dsn'], &$this );
       //$this->info("Using custom dsn:" . print_r($options,true) );
     }
     else

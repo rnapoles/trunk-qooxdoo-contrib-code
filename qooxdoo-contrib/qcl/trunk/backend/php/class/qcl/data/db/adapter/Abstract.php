@@ -27,7 +27,7 @@ define("QCL_LOG_TABLE_MAINTENANCE","tableMaintenance");
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_db_adapter_Abstract
+class qcl_data_db_adapter_Abstract
   extends qcl_core_Object
 {
 
@@ -70,7 +70,7 @@ class qcl_db_adapter_Abstract
   /**
    * Contains a reference to a model if called from a model
    * @access private
-   * @var qcl_db_IModel
+   * @var qcl_data_db_IModel
    */
   var $_model = null;
 
@@ -78,7 +78,7 @@ class qcl_db_adapter_Abstract
    * contains a reference to the controller if called from a model
    * or controller
    * @access private
-   * @var qcl_data_Controller
+   * @var qcl_data_controller_Controller
    */
   var $_controller = null;
 
@@ -96,12 +96,12 @@ class qcl_db_adapter_Abstract
 	  /*
 	   * store master objects if given
 	   */
-    if ( is_a( $master,"qcl_data_AbstractModel" ) )
+    if ( is_a( $master,"qcl_data_model_Abstract" ) )
     {
       $this->_model  =& $master;
       $this->_controller =& $master->getController();
     }
-	  elseif ( is_a( $master,"qcl_data_Controller" ) )
+	  elseif ( is_a( $master,"qcl_data_controller_Controller" ) )
     {
       $this->_controller =& $master;
     }
@@ -118,7 +118,7 @@ class qcl_db_adapter_Abstract
 
   /**
    * Getter for model
-   * @return qcl_db_IModel
+   * @return qcl_data_db_IModel
    */
   function &getModel()
   {
@@ -127,7 +127,7 @@ class qcl_db_adapter_Abstract
 
   /**
    * Getter for controller
-   * @return qcl_data_Controller
+   * @return qcl_data_controller_Controller
    */
   function &getController()
   {

@@ -19,7 +19,7 @@
 /**
  * Interface for database adapter
  */
-interface qcl_db_IAdapter
+interface qcl_data_db_IAdapter
 {
 
   /**
@@ -86,7 +86,7 @@ interface qcl_db_IAdapter
   /**
    * Creates connection
    * @param array|string[optional] $dsn Connects with given dsn or, if not
-   * argument provided, with the dsn set by qcl_db_IAdapter::setDsn()
+   * argument provided, with the dsn set by qcl_data_db_IAdapter::setDsn()
    * @return object Adapter object or false if no connection was possible
    */
   function &connect( $dsn=null );

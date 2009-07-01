@@ -15,14 +15,14 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Model that registers the relationship between datasource names
  * and class names
  */
 class qcl_data_datasource_registry_Model
-  extends qcl_db_model_xmlSchema_Model
+  extends qcl_data_model_xmlSchema_DbModel
 {
   /**
    * The path of the xml schema definition

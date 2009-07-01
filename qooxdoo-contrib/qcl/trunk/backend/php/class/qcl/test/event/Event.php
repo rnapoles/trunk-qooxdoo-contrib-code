@@ -1,8 +1,8 @@
 <?php
-require_once "qcl/data/Controller.php";
+require_once "qcl/data/controller/Controller.php";
 
 class class_qcl_test_event_Event
-  extends qcl_data_Controller
+  extends qcl_data_controller_Controller
 {
   var $skipAuthentication = true;
 

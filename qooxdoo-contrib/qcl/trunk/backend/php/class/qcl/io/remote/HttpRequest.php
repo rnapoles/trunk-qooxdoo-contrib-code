@@ -15,13 +15,13 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/data/model/Abstract.php";
 
 /**
  * HTTP request model
  */
 class qcl_io_remote_HttpRequest
-  extends qcl_data_AbstractModel
+  extends qcl_data_model_Abstract
 {
 
   /**

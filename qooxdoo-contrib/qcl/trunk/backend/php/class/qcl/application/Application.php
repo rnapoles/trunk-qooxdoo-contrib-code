@@ -95,7 +95,7 @@ class qcl_application_Application
 
   /**
    * Returns the current controller instance, if any. Can be called statically
-   * @return qcl_data_Controller
+   * @return qcl_data_controller_Controller
    * @deprecated Get directly from server
    */
   function &getController()
@@ -120,8 +120,8 @@ class qcl_application_Application
   {
 
     /*
-     * Initialize a dummy qcl_db_model_xmlSchema_Model object to create tables
-     * FIXME this can be removed once qcl_db_SimpleModel does
+     * Initialize a dummy qcl_data_model_xmlSchema_DbModel object to create tables
+     * FIXME this can be removed once qcl_data_db_SimpleModel does
      * automatic table creation.
      */
      require_once "qcl/data/persistence/db/Setup.php";

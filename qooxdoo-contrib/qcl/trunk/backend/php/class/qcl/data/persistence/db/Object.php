@@ -17,7 +17,7 @@
  */
 require_once "qcl/data/persistence/AbstractObject.php";
 require_once "qcl/data/persistence/db/Model.php";
-require_once "qcl/db/model/xmlSchema/Model.php";
+require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Class that is persisted in the database
@@ -115,9 +115,9 @@ class qcl_data_persistence_db_Object
    */
   function cleanUp()
   {
-    require_once "qcl/db/model/xmlSchema/Registry.php";
-    if ( qcl_db_model_xmlSchema_Registry::isInitialized( null, "sessions" )
-         and qcl_db_model_xmlSchema_Registry::isInitialized( null, "users" ) )
+    require_once "qcl/data/model/xmlSchema/DbRegistry.php";
+    if ( qcl_data_model_xmlSchema_DbRegistry::isInitialized( null, "sessions" )
+         and qcl_data_model_xmlSchema_DbRegistry::isInitialized( null, "users" ) )
     {
       $prefix = $this->_dbModel->getTablePrefix();
       $this->_dbModel->deleteWhere("

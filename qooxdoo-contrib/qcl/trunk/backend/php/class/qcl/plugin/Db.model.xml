@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- plugin model schema -->
-<schema include="qcl/db/model/xmlSchema/Model.xml">
+<schema include="qcl/data/model/xmlSchema/DbModel.xml">
   <model 
     table="plugins"
     name="qcl.plugins.db.Model"
-    extends="qcl.db.model.xmlSchema.Model">
+    extends="qcl.model.xmlSchema.DbModel">
 
    <!-- model definition -->
     <definition>

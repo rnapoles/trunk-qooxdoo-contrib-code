@@ -37,7 +37,7 @@ define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
  * Common base class for controllers. Mainly contains convenience
  * methods that proxy methods originating in other objects.
  */
-class qcl_data_Controller extends qcl_core_Object
+class qcl_data_controller_Controller extends qcl_core_Object
 {
 
   /**

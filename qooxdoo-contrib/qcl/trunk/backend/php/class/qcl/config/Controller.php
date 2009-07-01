@@ -23,7 +23,7 @@ require_once "qcl/config/Db.php";
  * values
  */
 class qcl_config_Controller
-  extends qcl_data_Controller
+  extends qcl_data_controller_Controller
 {
 
   //-------------------------------------------------------------
@@ -86,11 +86,11 @@ class qcl_config_Controller
      */
     $configModel =& $this->getConfigModel();
 
-    require_once("qcl/xml/model.php");
+    require_once("qcl/data/xml/model.php");
     $path = "../var/tmp/config.xml";
     unlink($path);
 
-    $xmlModel = new qcl_xml_model($this);
+    $xmlModel = new qcl_data_xml_model($this);
     $xmlModel->load($path);
     $doc =& $xmlModel->getDocument();
 

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<schema include="qcl/db/model/xmlSchema/Model.xml">
+<schema include="qcl/data/model/xmlSchema/DbModel.xml">
   
   <model 
     table="permissions"
     type="qcl.type.Permission"
     name="qcl.access.model.Permission"
-    extends="qcl.db.model.xmlSchema.Model">
+    extends="qcl.model.xmlSchema.DbModel">
     
     <definition>
     

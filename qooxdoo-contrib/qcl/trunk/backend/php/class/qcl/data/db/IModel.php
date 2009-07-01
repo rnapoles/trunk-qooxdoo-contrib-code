@@ -19,7 +19,7 @@
 /**
  * Interface for a database-based model
  */
-interface qcl_db_IModel
+interface qcl_data_db_IModel
 {
 
   /**
@@ -32,7 +32,7 @@ interface qcl_db_IModel
 
   /**
    * Returns the database adapter object for this model
-   * @return qcl_db_IAdapter
+   * @return qcl_data_db_IAdapter
    */
   function &db();
 
@@ -151,14 +151,14 @@ interface qcl_db_IModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model_xmlSchema_Model::findeWhere() for details
+   * @see qcl_data_model_xmlSchema_DbModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findById( $ids, $orderBy=null, $properties=null, $link=null );
 
   /**
    * Loads a model record identified by id.
-   * Alias of qcl_db_model_xmlSchema_Model::findById().
+   * Alias of qcl_data_model_xmlSchema_DbModel::findById().
    *
    * @param int $id
    * @return arrray()
@@ -171,7 +171,7 @@ interface qcl_db_IModel
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @param string[optional] $link Name of the link in the schema xml.
-   * @see qcl_db_model_xmlSchema_Model::findeWhere() for details
+   * @see qcl_data_model_xmlSchema_DbModel::findeWhere() for details
    * @return Array Array of db record sets
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null );

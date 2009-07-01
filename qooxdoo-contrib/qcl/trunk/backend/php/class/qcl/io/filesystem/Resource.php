@@ -15,12 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/data/model/Abstract.php";
 
 /**
  * Methods common to all filesystem resources
  */
-class qcl_io_filesystem_Resource extends qcl_data_AbstractModel
+class qcl_io_filesystem_Resource extends qcl_data_model_Abstract
 {
   /**
    * The file resource path

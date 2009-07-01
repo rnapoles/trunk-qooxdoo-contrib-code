@@ -16,14 +16,14 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/data/model/Abstract.php";
 
 /**
  * abstract class for classes that implement a plugin
  *
  */
 
-class qcl_plugin_Abstract extends qcl_data_AbstractModel
+class qcl_plugin_Abstract extends qcl_data_model_Abstract
 {
 	//-------------------------------------------------------------
   // properties

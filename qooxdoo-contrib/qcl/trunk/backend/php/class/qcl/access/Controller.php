@@ -17,7 +17,7 @@
  */
 
 require_once "qcl/access/__index__.php";
-require_once "qcl/data/controller.php";
+require_once "qcl/data/controller/Controller.php";
 require_once "qcl/config/Manager.php";
 require_once "qcl/util/registry/Session.php";
 require_once "qcl/access/IAuthentication.php";
@@ -32,7 +32,7 @@ define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
  * and configuration
  */
 class qcl_access_Controller
-  extends qcl_data_Controller
+  extends qcl_data_controller_Controller
   implements qcl_access_IAuthentication
 {
 

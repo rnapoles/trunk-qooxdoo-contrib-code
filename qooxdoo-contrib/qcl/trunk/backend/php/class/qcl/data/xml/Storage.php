@@ -15,12 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/xml/__init__.php";
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/data/xml/__init__.php";
+require_once "qcl/data/model/Abstract.php";
 require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
-require_once "qcl/db/model/SimpleModel.php";
+require_once "qcl/data/model/db/Simple.php";
 
 /*
  * If php4, use simplexml backport library, otherwise
@@ -28,14 +28,12 @@ require_once "qcl/db/model/SimpleModel.php";
  */
 if ( PHP_VERSION < 5 )
 {
-  require_once 'qcl/xml/SimpleXMLPhp4.php';
+  require_once 'qcl/data/xml/SimpleXMLPhp4.php';
 }
 else
 {
-  require_once "qcl/xml/SimpleXMLElement.php";
+  require_once "qcl/data/xml/SimpleXMLElement.php";
 }
-
-
 
 // FIXME do not require_once "qcl/data/persistence/db/Object.php"; this results in a deadlock
 
@@ -43,7 +41,8 @@ else
  * Persistent class to cache xml object data.
  *
  */
-class qcl_xml_simpleXmlCache extends qcl_data_persistence_db_Object
+class qcl_data_xml_Cache
+  extends qcl_data_persistence_db_Object
 {
   /*
    * file modification timestamp
@@ -68,10 +67,10 @@ class qcl_xml_simpleXmlCache extends qcl_data_persistence_db_Object
  * the qcl_data_persistence_db_Object class, which ensures that
  * data by no longer existing users or sessions is automatically
  * deleted.
- * @see qcl_xml_Storage::getCacheObject() for details
+ * @see qcl_data_xml_Storage::getCacheObject() for details
  *
  **/
-class qcl_xml_Storage extends qcl_data_AbstractModel
+class qcl_data_xml_Storage extends qcl_data_model_Abstract
 {
 
   /**
@@ -142,7 +141,7 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
 
   /**
    * The cache object
-   * @var qcl_xml_simpleXmlCache
+   * @var qcl_data_xml_Cache
    */
   var $_cacheObj;
 
@@ -469,12 +468,12 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
       {
         $path = $file->filePath();
         $this->log("Loading document from file $path...","xml");
-        $this->doc = simplexml_load_file( $path, "qcl_xml_SimpleXMLElement" );
+        $this->doc = simplexml_load_file( $path, "qcl_data_xml_SimpleXMLElement" );
       }
       elseif ( is_string ( $this->xml ) )
       {
         $this->log("Loading document from string...","xml");
-        $this->doc = simplexml_load_string( $this->xml, "qcl_xml_SimpleXMLElement" );
+        $this->doc = simplexml_load_string( $this->xml, "qcl_data_xml_SimpleXMLElement" );
       }
       else
       {
@@ -506,11 +505,11 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
   /**
    * Returns the persistent object which caches the xml document. Override
    * this method if you want to implement a different caching mechanism.
-   * By default, and qcl_xml_simpleXmlCache instance, which subclasses
+   * By default, and qcl_data_xml_Cache instance, which subclasses
    * qcl_data_persistence_db_Object, is used. If you provide a user id or session
    * id in the constructor, a separately cached copy will be kept for the user
    * or the session.
-   * @return qcl_xml_simpleXmlCache
+   * @return qcl_data_xml_Cache
    */
   function &getCacheObject( $cacheId )
   {
@@ -521,7 +520,7 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
 
     if ( ! $this->_cacheObj )
     {
-      $this->_cacheObj =& new qcl_xml_simpleXmlCache( null, $cacheId, $this->userId, $this->sessionId );
+      $this->_cacheObj =& new qcl_data_xml_Cache( null, $cacheId, $this->userId, $this->sessionId );
     }
     return $this->_cacheObj;
   }
@@ -765,13 +764,13 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
         return null;
       }
     }
-    elseif ( qcl_xml_Storage::isNode($pathOrNode) )
+    elseif ( qcl_data_xml_Storage::isNode($pathOrNode) )
     {
       $node =& $pathOrNode;
     }
     else
     {
-      qcl_xml_Storage::raiseError("Invalid parameter.");
+      qcl_data_xml_Storage::raiseError("Invalid parameter.");
     }
 
     /*
@@ -801,13 +800,13 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
         return null;
       }
     }
-    elseif ( qcl_xml_Storage::isNode( $pathOrNode ) )
+    elseif ( qcl_data_xml_Storage::isNode( $pathOrNode ) )
     {
       $node =& $pathOrNode;
     }
     else
     {
-      qcl_xml_Storage::raiseError("Invalid parameter.");
+      qcl_data_xml_Storage::raiseError("Invalid parameter.");
     }
 
     /*
@@ -887,9 +886,9 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
    */
   function &getChildNodeByAttribute( $node, $name, $value )
   {
-    if ( ! qcl_xml_Storage::isNode($node) )
+    if ( ! qcl_data_xml_Storage::isNode($node) )
     {
-      qcl_xml_Storage::raiseError("Invalid node.");
+      qcl_data_xml_Storage::raiseError("Invalid node.");
     }
 
     /*
@@ -947,9 +946,9 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
    */
   function removeChildNodeByAttribute($node,$name,$value)
   {
-    if ( ! qcl_xml_Storage::isNode($node) )
+    if ( ! qcl_data_xml_Storage::isNode($node) )
     {
-      qcl_xml_Storage::raiseError("Invalid node.");
+      qcl_data_xml_Storage::raiseError("Invalid node.");
     }
 
     /*
@@ -1034,12 +1033,12 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
 
   /**
    * extends a simple xml object tree
-   * @see qcl_xml_Storage::_extend
-   * @param qcl_xml_Storage
+   * @see qcl_data_xml_Storage::_extend
+   * @param qcl_data_xml_Storage
    */
   function extend($parentXml)
   {
-    if ( is_a( $parentXml, "qcl_xml_Storage" ) )
+    if ( is_a( $parentXml, "qcl_data_xml_Storage" ) )
     {
       $doc       =& $this->getDocument();
       $parentDoc =& $parentXml->getDocument();
@@ -1058,7 +1057,7 @@ class qcl_xml_Storage extends qcl_data_AbstractModel
     }
     else
     {
-      $this->raiseError("Argument must be a qcl_xml_simpleXml object.");
+      $this->raiseError("Argument must be a qcl_data_xml_simpleXml object.");
     }
   }
 

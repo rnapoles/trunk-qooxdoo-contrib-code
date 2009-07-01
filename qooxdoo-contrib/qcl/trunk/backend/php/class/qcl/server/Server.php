@@ -96,7 +96,7 @@ class qcl_server_Server extends qcl_core_Object
 
   /**
    * Returns the current controller object
-   * @return qcl_data_Controller
+   * @return qcl_data_controller_Controller
    */
   function &getController()
   {

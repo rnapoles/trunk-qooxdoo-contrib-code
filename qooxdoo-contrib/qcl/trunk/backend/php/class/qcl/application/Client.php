@@ -18,13 +18,13 @@
 
 trigger_error("Class qcl_application_Client is not functional yet.");
 
-require_once "qcl/data/AbstractModel.php";
+require_once "qcl/data/model/Abstract.php";
 
 /**
  * Model class representing
  * client.
  */
-class qcl_application_Client extends qcl_data_AbstractModel
+class qcl_application_Client extends qcl_data_model_Abstract
 {
 
   //-------------------------------------------------------------
