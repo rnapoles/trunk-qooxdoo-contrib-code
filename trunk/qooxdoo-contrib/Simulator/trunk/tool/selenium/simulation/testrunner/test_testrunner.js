@@ -161,13 +161,12 @@ simulation.Simulation.prototype.processPackage = function(packageName)
                     "Waiting for test package " + packageName + " to finish");
 
   if (!isPackageDone) {
-    isPackageDone = mySim.waitForCondition(isStatusReady, 300000,
+    isPackageDone = mySim.waitForCondition(isStatusReady, 500000,
                     "Waiting for test package " + packageName + " to finish");
   }
 
   if (!isPackageDone) {
     this.testFailed = true;
-    return;
   }
 
   if (this.getConfigSetting("debug")) {
@@ -308,8 +307,8 @@ simulation.Simulation.prototype.logErrors = function(result)
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
-    var totalErrors = mySim.errWarn + mySim.getTotalErrorsLogged();
-    mySim.log("Tests with warnings or errors: " + totalErrors, "info");
+
+    mySim.log("Tests with warnings or errors: " + mySim.errWarn, "info");
   }
 
   mySim.logTestDuration();
