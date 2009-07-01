@@ -19,7 +19,7 @@
 /**
  * Abstract class for classes that implement a plugin
  */
-interface qcl_plugin_IPlugin
+interface qcl_application_plugin_IPlugin
 {
 
   /**
