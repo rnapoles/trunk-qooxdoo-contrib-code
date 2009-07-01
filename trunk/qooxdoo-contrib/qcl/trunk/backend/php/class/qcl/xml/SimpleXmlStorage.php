@@ -25,13 +25,13 @@ else
 
 
 
-// FIXME do not require_once "qcl/persistence/db/Object.php"; this results in a deadlock
+// FIXME do not require_once "qcl/data/persistence/db/Object.php"; this results in a deadlock
 
 /**
  * Persistent class to cache xml object data.
  *
  */
-class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
+class qcl_xml_simpleXmlCache extends qcl_data_persistence_db_Object
 {
   /*
    * file modification timestamp
@@ -53,7 +53,7 @@ class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
  * persisted on a per-file, per-user, or per-session basis.
  * That is, differently manipulated copies of the original xml data
  * file data can coexist. By default, the caching is done by
- * the qcl_persistence_db_Object class, which ensures that
+ * the qcl_data_persistence_db_Object class, which ensures that
  * data by no longer existing users or sessions is automatically
  * deleted.
  * @see qcl_xml_SimpleXmlStorage::getCacheObject() for details
@@ -495,7 +495,7 @@ class qcl_xml_simpleXmlStorage extends qcl_data_AbstractModel
    * Returns the persistent object which caches the xml document. Override
    * this method if you want to implement a different caching mechanism.
    * By default, and qcl_xml_simpleXmlCache instance, which subclasses
-   * qcl_persistence_db_Object, is used. If you provide a user id or session
+   * qcl_data_persistence_db_Object, is used. If you provide a user id or session
    * id in the constructor, a separately cached copy will be kept for the user
    * or the session.
    * @return qcl_xml_simpleXmlCache

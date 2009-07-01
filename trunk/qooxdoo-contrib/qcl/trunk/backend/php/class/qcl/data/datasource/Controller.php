@@ -4,7 +4,7 @@
  */
 require_once "qcl/access/SessionController.php";
 require_once "qcl/data/datasource/type/db/Model.php";
-require_once "qcl/persistence/db/Object.php";
+require_once "qcl/data/persistence/db/Object.php";
 
 // Don't use require_once "qcl/data/datasource/registry/Model.php";
 

@@ -2,14 +2,14 @@
 /*
  * dependencies
  */
-require_once "qcl/persistence/db/Object.php";
+require_once "qcl/data/persistence/db/Object.php";
 
 /*
  * Persistent object that registers information on the state
  * of the database tables.
  */
 class qcl_db_model_xmlSchema_Registry
-  extends qcl_persistence_db_Object
+  extends qcl_data_persistence_db_Object
 {
   /*
    * data

@@ -108,8 +108,8 @@ class qcl_application_Application
      * FIXME this can be removed once qcl_db_SimpleModel does
      * automatic table creation.
      */
-     require_once "qcl/persistence/db/Setup.php";
-     qcl_persistence_db_Setup::setup();
+     require_once "qcl/data/persistence/db/Setup.php";
+     qcl_data_persistence_db_Setup::setup();
 
      /*
       * set the default models for config, session and messages. If you

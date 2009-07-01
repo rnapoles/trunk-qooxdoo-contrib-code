@@ -1,12 +1,12 @@
 <?php
-require_once "qcl/persistence/db/Object.php";
+require_once "qcl/data/persistence/db/Object.php";
 
 /**
  * Class which maintains a registry which is
  * persiste in the database.
  */
 class qcl_registry_Persist
-  extends qcl_persistence_db_Object
+  extends qcl_data_persistence_db_Object
 {
 
   var $registry = array();
