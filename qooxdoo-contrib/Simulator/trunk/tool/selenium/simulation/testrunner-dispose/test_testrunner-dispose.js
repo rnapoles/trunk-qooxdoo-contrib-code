@@ -80,7 +80,7 @@ simulation.Simulation.prototype.getTestClasses = function()
       if (curr.type == "class") {
         var fullname = curr.pwd();
         fullname.shift();         
-        classes.push(fullname.join("."));
+        classes.push(fullname.join(".") + "." + curr.label);
       }
     }
     return classes.join("|");
@@ -242,10 +242,6 @@ simulation.Simulation.prototype.logErrors = function(result)
       }
       this.log(line, "error");
     }
-  }
-
-  if (this.getConfigSetting("debug")) {
-    print(this.errWarn + " lines logged");
   }
 
 };
