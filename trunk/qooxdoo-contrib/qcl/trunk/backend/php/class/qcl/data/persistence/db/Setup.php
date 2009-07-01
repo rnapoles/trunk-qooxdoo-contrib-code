@@ -1,7 +1,7 @@
 <?php
 
 require_once "qcl/core/Object.php";
-require_once "qcl/registry/Request.php";
+require_once "qcl/util/registry/Request.php";
 
 /**
  * Needed to create an initial table for persistent
@@ -31,7 +31,7 @@ class qcl_data_persistence_db_Setup
     /*
      * check once per request if table has been setup.
      */
-    if ( ! qcl_registry_Request::has("qcl_data_persistence_db_Setup") )
+    if ( ! qcl_util_registry_Request::has("qcl_data_persistence_db_Setup") )
     {
       require_once "qcl/db/Manager.php";
       $prefix = qcl_application_Application::getIniValue("database.tableprefix");
@@ -53,7 +53,7 @@ class qcl_data_persistence_db_Setup
           KEY `instanceId` (`instanceId`)
         )
       ");
-      qcl_registry_Request::set("qcl_data_persistence_db_Setup",true);
+      qcl_util_registry_Request::set("qcl_data_persistence_db_Setup",true);
     }
   }
 }

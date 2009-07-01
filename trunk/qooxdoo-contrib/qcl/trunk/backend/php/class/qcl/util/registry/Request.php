@@ -3,20 +3,20 @@
 /**
  * Class which maintains a registry which is valid during one request
  */
-class qcl_registry_Request
+class qcl_util_registry_Request
 {
 
   var $registry = array();
 
   /**
    * Returns a singleton instance of this class
-   * @return qcl_registry_Request
+   * @return qcl_util_registry_Request
    */
   function &getInstance( )
   {
     if ( ! is_object( $GLOBALS[__CLASS__] ) )
     {
-      $GLOBALS[__CLASS__] =& new qcl_registry_Request;
+      $GLOBALS[__CLASS__] =& new qcl_util_registry_Request;
     }
     return $GLOBALS[__CLASS__];
   }
@@ -28,7 +28,7 @@ class qcl_registry_Request
    */
   function reset()
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_util_registry_Request::getInstance();
     $_this->registry = array();
   }
 
@@ -40,7 +40,7 @@ class qcl_registry_Request
    */
   function set( $key, $value )
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_util_registry_Request::getInstance();
     $_this->registry[$key] = $value;
   }
 
@@ -52,7 +52,7 @@ class qcl_registry_Request
    */
   function get( $key )
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_util_registry_Request::getInstance();
     return $_this->registry[$key];
   }
 
@@ -65,7 +65,7 @@ class qcl_registry_Request
    */
   function has( $key )
   {
-    $_this =& qcl_registry_Request::getInstance();
+    $_this =& qcl_util_registry_Request::getInstance();
     return isset( $_this->registry[$key] );
   }
 }

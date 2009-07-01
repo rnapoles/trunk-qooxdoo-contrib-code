@@ -6,7 +6,7 @@
 require_once "qcl/access/__index__.php";
 require_once "qcl/data/controller.php";
 require_once "qcl/config/Manager.php";
-require_once "qcl/registry/Session.php";
+require_once "qcl/util/registry/Session.php";
 
 /*
  * interfaces
@@ -130,7 +130,7 @@ class qcl_access_Controller
        */
       else
       {
-        $userId = qcl_registry_Session::get("activeUserId");
+        $userId = qcl_util_registry_Session::get("activeUserId");
         $userModel =& $this->getUserModel( $userId );
         $this->setActiveUser( $userModel );
 
@@ -617,7 +617,7 @@ class qcl_access_Controller
       /*
        * save the user id in the session
        */
-      qcl_registry_Session::set("activeUserId", $userId );
+      qcl_util_registry_Session::set("activeUserId", $userId );
 
       /*
        * log message

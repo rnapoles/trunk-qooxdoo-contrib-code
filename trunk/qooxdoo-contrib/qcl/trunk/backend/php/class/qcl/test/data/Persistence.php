@@ -1,7 +1,7 @@
 <?php
 
 require_once "qcl/data/persistence/db/Object.php";
-require_once "qcl/registry/session.php";
+require_once "qcl/util/registry/session.php";
 require_once "qcl/access/Manager.php";
 require_once "qcl/data/Controller.php";
 
