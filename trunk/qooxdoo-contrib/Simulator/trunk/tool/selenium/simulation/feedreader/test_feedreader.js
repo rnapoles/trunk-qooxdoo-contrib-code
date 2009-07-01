@@ -127,9 +127,15 @@ mySim.runTest = function()
     this.log('ERROR: Feed window has unexpected title "' + addLabel + '". Possible translation problem.', "error");
   }
   
-  // Enter new feed details
-  this.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[1]', 'Golem');    
-  this.type('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[3]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');
+  // Enter new feed details  
+  //this.typeKeys('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[1]', 'Golem');
+  var setFeedTitle = feedWindowScript + ".getChildren()[0].getChildren()[1].setValue('Golem')";  
+  this.getEval(setFeedTitle, "Setting feed title");
+
+  //this.typeKeys('qxh=app:[@caption=".*feed.*"]/qx.ui.groupbox.GroupBox/child[3]', 'http://rss.golem.de/rss.php?feed=ATOM1.0');  
+  var setFeedUrl = feedWindowScript + ".getChildren()[0].getChildren()[3].setValue('http://rss.golem.de/rss.php?feed=ATOM1.0')";  
+  this.getEval(setFeedUrl, "Setting feed URL");
+
   this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "", "Clicking 'Add'.");
   Packages.java.lang.Thread.sleep(2000);
   
