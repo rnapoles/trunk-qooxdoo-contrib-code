@@ -2,8 +2,8 @@
 /*
  * dependencies
  */
-require_once "qcl/persistence/AbstractObject.php";
-require_once "qcl/persistence/db/Model.php";
+require_once "qcl/data/persistence/AbstractObject.php";
+require_once "qcl/data/persistence/db/Model.php";
 require_once "qcl/db/model/xmlSchema/Model.php";
 
 /**
@@ -11,14 +11,14 @@ require_once "qcl/db/model/xmlSchema/Model.php";
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
  */
-class qcl_persistence_db_Object
-  extends qcl_persistence_AbstractObject
+class qcl_data_persistence_db_Object
+  extends qcl_data_persistence_AbstractObject
 {
 
   /**
    * model object
    * @acces private
-   * @var qcl_persistence_db_Model
+   * @var qcl_data_persistence_db_Model
    */
   var $_dbModel;
 
@@ -33,7 +33,7 @@ class qcl_persistence_db_Object
      * create the actual model object that will be used to store
      * the data
      */
-    $this->_dbModel =& new qcl_persistence_db_Model;
+    $this->_dbModel =& new qcl_data_persistence_db_Model;
   }
 
   /**

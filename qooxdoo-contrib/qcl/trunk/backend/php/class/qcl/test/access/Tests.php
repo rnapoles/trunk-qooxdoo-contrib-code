@@ -1,6 +1,6 @@
 <?php
 require_once "qcl/access/Controller.php";
-require_once "qcl/persistence/db/Object.php";
+require_once "qcl/data/persistence/db/Object.php";
 
 /**
  * Service class containing test methods

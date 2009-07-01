@@ -3,7 +3,7 @@
  * dependencies
  */
 require_once "qcl/data/AbstractModel.php";
-require_once "qcl/persistence/__init__.php";
+require_once "qcl/data/persistence/__init__.php";
 require_once "qcl/log/FireCake.php";
 
 /*
@@ -13,26 +13,26 @@ require_once "qcl/log/FireCake.php";
 /**
  * Lock mode constant: no lock (default)
  */
-define("QCL_PERSISTENCE_NO_LOCK", 0);
+define("qcl_data_persistence_NO_LOCK", 0);
 
 /**
  * Lock mode constant: other objects can read the object, but
  * cannot change it
  */
-define("QCL_PERSISTENCE_WRITE_LOCK", 1);
+define("qcl_data_persistence_WRITE_LOCK", 1);
 
 /**
  * Lock mode constant: other objects cannot read or change the object
  * until the lock is released
  */
-define("QCL_PERSISTENCE_READ_LOCK", 2);
+define("qcl_data_persistence_READ_LOCK", 2);
 
 /**
  * Abstract sub class for persistent objects
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
  */
-class qcl_persistence_AbstractObject
+class qcl_data_persistence_AbstractObject
   extends qcl_data_AbstractModel
 {
 
@@ -338,7 +338,7 @@ class qcl_persistence_AbstractObject
      * Check for lock
      */
     $timestamp = time();
-    while ( $this->isLocked && $this->lockMode == QCL_PERSISTENCE_WRITE_LOCK )
+    while ( $this->isLocked && $this->lockMode == qcl_data_persistence_WRITE_LOCK )
     {
       /*
        * sleep a bit and try again if timeout hasn't
@@ -353,7 +353,7 @@ class qcl_persistence_AbstractObject
     }
     $this->_lockIsMine = true;
     $this->isLocked = true;
-    $this->lockMode = QCL_PERSISTENCE_WRITE_LOCK;
+    $this->lockMode = qcl_data_persistence_WRITE_LOCK;
     $this->save();
   }
 
@@ -363,7 +363,7 @@ class qcl_persistence_AbstractObject
   function removeLock()
   {
     $this->isLocked = false;
-    $this->lockMode = QCL_PERSISTENCE_NO_LOCK;
+    $this->lockMode = qcl_data_persistence_NO_LOCK;
     $this->save();
   }
 

@@ -11,7 +11,7 @@ require_once "qcl/db/model/SimpleModel.php";
  * might be used in the property system (like qcl_xml_SimpleXmlStorage)
  * which would cause a recursion error.
  */
-class qcl_persistence_db_Model
+class qcl_data_persistence_db_Model
   extends qcl_db_model_SimpleModel
 {
   /**

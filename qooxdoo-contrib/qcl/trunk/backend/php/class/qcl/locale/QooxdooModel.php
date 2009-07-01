@@ -1,13 +1,13 @@
 <?php
 
 require_once "qcl/data/AbstractModel.php";
-require_once "qcl/persistence/db/Object.php";
+require_once "qcl/data/persistence/db/Object.php";
 
 /**
  * locale model using the  the qooxdoo translation system.
  * @todo externally set paths
  */
-class qcl_locale_QooxdooModel extends qcl_persistence_db_Object
+class qcl_locale_QooxdooModel extends qcl_data_persistence_db_Object
 {
 
   /**

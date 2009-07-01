@@ -8,13 +8,13 @@ require_once "qcl/registry/Request.php";
  * object. This can be removed once qcl_db_SimpleModel does
  * automatic table creation.
  */
-class qcl_persistence_db_Setup
+class qcl_data_persistence_db_Setup
   extends qcl_core_Object
 {
   /**
    * File with model schema
    */
-  var $schemaXmlPath = "qcl/persistence/db/Model.xml";
+  var $schemaXmlPath = "qcl/data/persistence/db/Model.xml";
 
   /**
    * Flag to prevent caching
@@ -31,7 +31,7 @@ class qcl_persistence_db_Setup
     /*
      * check once per request if table has been setup.
      */
-    if ( ! qcl_registry_Request::has("qcl_persistence_db_Setup") )
+    if ( ! qcl_registry_Request::has("qcl_data_persistence_db_Setup") )
     {
       require_once "qcl/db/Manager.php";
       $prefix = qcl_application_Application::getIniValue("database.tableprefix");
@@ -53,7 +53,7 @@ class qcl_persistence_db_Setup
           KEY `instanceId` (`instanceId`)
         )
       ");
-      qcl_registry_Request::set("qcl_persistence_db_Setup",true);
+      qcl_registry_Request::set("qcl_data_persistence_db_Setup",true);
     }
   }
 }

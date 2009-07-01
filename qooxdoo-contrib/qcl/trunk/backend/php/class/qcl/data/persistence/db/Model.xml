@@ -6,7 +6,7 @@
     model that stores serialized objects in the database 
   -->
   <model 
-    name="qcl.persistence.Model"
+    name="qcl.data.persistence.db.Model"
     table="persistentObjects" 
     extends="qcl.db.model.xmlSchema.Model">
     

@@ -689,12 +689,12 @@ class qcl_db_model_xmlSchema_Model
     /*
      * Get the persistent registry object to look up if this
      * table has been initialized already. To avoid an indefinitive
-     * loop, the qcl_persistence_db_Model used by
+     * loop, the qcl_data_persistence_db_Model used by
      * qcl_db_model_xmlSchema_Registry must be especially treated.
      * You can upgrade its schema only be deleting the table.
      */
     $modelTableInfo = null;
-    if ( $this->isInstanceOf("qcl_persistence_db_Model") )
+    if ( $this->isInstanceOf("qcl_data_persistence_db_Model") )
     {
       if ( $tableExists )
       {

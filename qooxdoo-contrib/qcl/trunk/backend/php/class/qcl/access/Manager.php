@@ -135,7 +135,7 @@ class qcl_access_Manager
     if ( ! $_this->_accessController )
     {
       require_once "qcl/access/SessionController.php";
-      require_once "qcl/persistence/db/Object.php"; // @todo fix this dependency
+      require_once "qcl/data/persistence/db/Object.php"; // @todo fix this dependency
       $_this->_accessController =& new qcl_access_SessionController( &$this );
     }
     return $_this->_accessController;
