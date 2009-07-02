@@ -1,11 +1,11 @@
 /* ************************************************************************
 
-   qooxdoo - the new era of web development
-
-   http://qooxdoo.org
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
 
    Copyright:
-     2004-2009 1&1 Internet AG, Germany, http://www.1und1.de
+     2009 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html

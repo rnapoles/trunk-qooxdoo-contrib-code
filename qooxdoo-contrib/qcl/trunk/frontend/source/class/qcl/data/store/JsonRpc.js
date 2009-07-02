@@ -1,8 +1,8 @@
 /* ************************************************************************
 
-   qooxdoo - the new era of web development
-
-   http://qooxdoo.org
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
 
    Copyright:
      2009 Christian Boulanger
@@ -13,7 +13,6 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-   * Martin Wittemann (martinwittemann)
    * Christian Boulanger (cboulanger)
 
  ************************************************************************ */
