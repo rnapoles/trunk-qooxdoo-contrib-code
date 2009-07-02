@@ -1,20 +1,20 @@
 /* ************************************************************************
 
-   qooxdoo - the new era of web development
-
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
+  
    Copyright:
      2007-2009 Christian Boulanger
-
-   http://qooxdoo.org
-
+  
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
-
+  
    Authors:
-     * Christian Boulanger (cboulanger)
-
+   *  Christian Boulanger (cboulanger)
+  
 ************************************************************************ */
 
 /* ************************************************************************
@@ -306,10 +306,9 @@ qx.Class.define("qcl.config.Manager",
         }
       }
       
-      /*
-       * use SigleValueBinding, this requires patching the core qooxdoo
-       * code currently, see link above
-       * @todo: add converter
+      /* 
+       * use SigleValueBinding, was not working last time I checked.
+       * FIXME needs testing to find out why
        */
       else
       {

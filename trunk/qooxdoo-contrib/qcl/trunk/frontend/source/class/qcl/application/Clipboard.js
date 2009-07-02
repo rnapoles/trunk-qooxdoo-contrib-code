@@ -1,20 +1,20 @@
 /* ************************************************************************
 
-   qooxdoo component library 
-
-   http://qooxdoo.org
-
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
+  
    Copyright:
-     2007 Christian Boulanger
-
+     2007-2009 Christian Boulanger
+  
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
-
+  
    Authors:
-     * Christian Boulanger, using the code from qx.event.handler.DragAndDropHandler
-
+   *  Christian Boulanger (cboulanger)
+  
 ************************************************************************ */
 
 /* ************************************************************************
@@ -23,9 +23,9 @@
 ************************************************************************ */
 
 /**
- * This clipboard manager (singleton) manages all clipboard operations of the application
+ * This clipboard singleton manages all clipboard operations of the application
  */
-qx.Class.define("qcl.clipboard.Manager",
+qx.Class.define("qcl.application.Clipboard",
 {
   type : "singleton",
   extend : qx.core.Object,
@@ -101,7 +101,7 @@ qx.Class.define("qcl.clipboard.Manager",
      * #param vMimeType[String]: A valid mimetype
      * #param vData[Any]: Any value for the mimetype
      *
-     * @type member
+     *   
      * @param vMimeType {var} mime type
      * @param vData {var} data to be added
      * @param doNotClear {Boolean} if set, add data to clipboard without replacing existing data
@@ -128,7 +128,7 @@ qx.Class.define("qcl.clipboard.Manager",
     /**
      * TODOC
      *
-     * @type member
+     *   
      * @param vMimeType {var} TODOC
      * @return {var} TODOC
      */
@@ -140,7 +140,7 @@ qx.Class.define("qcl.clipboard.Manager",
     /**
      * TODOC
      *
-     * @type member
+     *   
      * @return {void}
      */
     clearData : function() {
@@ -164,7 +164,7 @@ qx.Class.define("qcl.clipboard.Manager",
     /**
      * TODOC
      *
-     * @type member
+     *   
      * @param vAction {var} TODOC
      * @param vForce {var} TODOC
      * @return {void}
@@ -183,7 +183,7 @@ qx.Class.define("qcl.clipboard.Manager",
     /**
      * TODOC
      *
-     * @type member
+     *   
      * @return {void}
      */
     clearActions : function()
@@ -196,7 +196,7 @@ qx.Class.define("qcl.clipboard.Manager",
     /**
      * TODOC
      *
-     * @type member
+     *   
      * @param vAction {var} TODOC
      * @return {void}
      */
