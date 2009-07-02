@@ -41,11 +41,12 @@ define("qcl_data_persistence_WRITE_LOCK", 1);
 define("qcl_data_persistence_READ_LOCK", 2);
 
 /**
- * Abstract sub class for persistent objects
+ * Abstract parent class for persistent objects
  * By default, all public properties are saved (PHP4: all
- * properties that do not start with an underscore).
+ * properties that do not start with an underscore). You need
+ * to subclass this class in order to use it
  */
-class qcl_data_persistence_AbstractObject
+class qcl_data_persistence_Abstract
   extends qcl_data_model_Abstract
 {
 

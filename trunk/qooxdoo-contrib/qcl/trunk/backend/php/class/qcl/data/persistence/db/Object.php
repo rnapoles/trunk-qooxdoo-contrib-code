@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/persistence/AbstractObject.php";
+require_once "qcl/data/persistence/Abstract.php";
 require_once "qcl/data/persistence/db/Model.php";
 require_once "qcl/data/model/xmlSchema/DbModel.php";
 
@@ -25,7 +25,7 @@ require_once "qcl/data/model/xmlSchema/DbModel.php";
  * properties that do not start with an underscore).
  */
 class qcl_data_persistence_db_Object
-  extends qcl_data_persistence_AbstractObject
+  extends qcl_data_persistence_Abstract
 {
 
   /**
