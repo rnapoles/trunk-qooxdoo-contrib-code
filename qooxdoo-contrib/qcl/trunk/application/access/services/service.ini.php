@@ -4,7 +4,7 @@
 
 [service]
 control_access = yes
-allow_guest_access = yes
+allow_anonymous_access = yes
 
 [database]
 

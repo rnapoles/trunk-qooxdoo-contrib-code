@@ -3,7 +3,7 @@
  * dependencies
  */
 require_once "qcl/application/Application.php";
-require_once "qcl/registry/Persist.php";
+require_once "qcl/util/registry/Persist.php";
 require_once "qcl/access/model/User.php";
 require_once "qcl/access/model/Role.php";
 require_once "qcl/access/model/Permission.php";
@@ -44,7 +44,7 @@ class access_Application
     /*
      * Load initial data into models.
      */
-    if ( ! qcl_registry_Persist::has("dataImported") )
+    if ( ! qcl_util_registry_Persist::has("dataImported") )
     {
       qcl_application_Application::info("*** Importing initial data...");
 
@@ -78,7 +78,7 @@ class access_Application
       /*
        * set flag that data has been imported
        */
-      qcl_registry_Persist::set("dataImported",true);
+      qcl_util_registry_Persist::set("dataImported",true);
     }
   }
 }
