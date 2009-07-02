@@ -26,7 +26,7 @@
 /**
  * A template class for cell renderers, which display links.
  */
-qx.Class.define("qcl.ui.LinkCellRenderer",
+qx.Class.define("qcl.ui.table.cellrenderer.Link",
 {
   extend : qx.ui.table.cellrenderer.Abstract,
 
