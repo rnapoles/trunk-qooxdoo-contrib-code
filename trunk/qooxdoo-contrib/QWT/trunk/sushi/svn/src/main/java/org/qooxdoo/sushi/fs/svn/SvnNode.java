@@ -417,6 +417,7 @@ public class SvnNode extends Node {
     
     // --
 
+    /** @param viewvc may be null */
     public String changelog(long startRevision, String viewvc) throws SVNException {
         StringBuilder result;
         
@@ -425,12 +426,18 @@ public class SvnNode extends Node {
         return result.toString();
     }
     
-    /** @return revision */
+    /**
+     *  @param viewvc may be null
+     *  @return revision 
+     */
     public long changelog(long startRevision, String viewvc, StringBuilder result) throws SVNException {
         return changelog(startRevision, root.getRepository().getLatestRevision(), false, viewvc, result);
     }
 
-    /** @return revision of last change */
+    /**
+     * @param viewvc may be null
+     * @return revision of last change 
+     */
     public long changelog(long startRevision, long endRevision, boolean strictNodes, String viewvc, StringBuilder result) throws SVNException {
         Collection<SVNLogEntry> changeset;
         
@@ -460,12 +467,13 @@ public class SvnNode extends Node {
         return (Collection<SVNLogEntry>) repository.log(new String[] { getPath() }, null, startRevision, endRevision, true, strictNodes);
     }
 
+    /** @param viewvc may be null */
     private void report(String viewvc, Collection<SVNLogEntry> entries, StringBuilder dest) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SVNLogEntryPath entryPath;
         String path;
         
-        if (viewvc.endsWith("/")) {
+        if (viewvc != null && viewvc.endsWith("/")) {
             throw new IllegalArgumentException(viewvc);
         }
         for (SVNLogEntry entry : entries) {
@@ -512,6 +520,7 @@ public class SvnNode extends Node {
         return result;
     }
     
+    /** @param viewvc may be null */
     private String toDiff(String viewvc, String path, long revision) {
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
