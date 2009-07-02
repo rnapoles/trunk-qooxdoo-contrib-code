@@ -24,10 +24,10 @@
 
 /**
  * An implementation of the abstract class qx.ui.table.model.Remote that uses
- * qcl.databinding.event package. Requests to load data are delegated to
+ * qcl.data package. Requests to load data are delegated to
  * the data store through the controller.
  */
-qx.Class.define("qcl.databinding.event.model.Table",
+qx.Class.define("qcl.data.model.Table",
 {
   extend : qx.ui.table.model.Remote,
 
@@ -56,7 +56,7 @@ qx.Class.define("qcl.databinding.event.model.Table",
      */
     controller :
     {
-      check : "qcl.databinding.event.controller.Table",
+      check : "qcl.data.controller.Table",
       nullable : true
     }
   },

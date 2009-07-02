@@ -95,7 +95,7 @@
  * }
  * </pre>
  */
-qx.Class.define("qcl.databinding.event.model.SimpleTreeDataModel",
+qx.Class.define("qcl.data.model.SimpleTreeDataModel",
 {
 //  extend : qx.ui.table.model.Simple,
   extend : qx.ui.table.model.Abstract,

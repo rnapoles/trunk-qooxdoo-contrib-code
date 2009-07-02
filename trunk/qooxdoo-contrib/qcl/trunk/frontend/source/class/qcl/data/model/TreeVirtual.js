@@ -92,10 +92,10 @@
  * 
  * 
  */
-qx.Class.define("qcl.databinding.event.model.TreeVirtual",
+qx.Class.define("qcl.data.model.TreeVirtual",
 {
 
-  extend : qcl.databinding.event.model.SimpleTreeDataModel,
+  extend : qcl.data.model.SimpleTreeDataModel,
 
 
   /*
@@ -133,7 +133,7 @@ qx.Class.define("qcl.databinding.event.model.TreeVirtual",
     */
    controller :
    {
-     check : "qcl.databinding.event.controller.TreeVirtual",
+     check : "qcl.data.controller.TreeVirtual",
      nullable : true
    }    
   },
