@@ -20,7 +20,7 @@
 /**
  * Marshaler for data for qx.ui.treevirtual.Table
  */
-qx.Class.define("qcl.databinding.event.marshal.Table", 
+qx.Class.define("qcl.data.marshal.Table", 
 {
   extend : qx.core.Object,
 

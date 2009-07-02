@@ -59,7 +59,7 @@
  * and not an integral part of the databinding.
  * 
  */
-qx.Class.define("qcl.databinding.event.store.JsonRpc", 
+qx.Class.define("qcl.data.store.JsonRpc", 
 {
   extend : qx.core.Object,
 
@@ -263,12 +263,12 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
      */
     eventStore :
     {
-      check : "qcl.databinding.event.store.JsonRpc",
+      check : "qcl.data.store.JsonRpc",
       nullable : true
     },
     
     /**
-     * An array of qcl.databinding.event.store.JsonRpc object that this
+     * An array of qcl.data.store.JsonRpc object that this
      * object serves as an event proxy for. Contains at least a reference
      * to itself.
      */
@@ -406,7 +406,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
     
    /**
     * Register store with server.
-    * @param store {qcl.databinding.event.store.JsonRpc|undefined} If not given, register
+    * @param store {qcl.data.store.JsonRpc|undefined} If not given, register
     * myself.
     */    
    registerStore : function(store)
@@ -426,7 +426,7 @@ qx.Class.define("qcl.databinding.event.store.JsonRpc",
 
    /**
     * Unegister store with server.
-    * @param store {qcl.databinding.event.store.JsonRpc|undefined} If not given, unregister
+    * @param store {qcl.data.store.JsonRpc|undefined} If not given, unregister
     * myself.
     */    
    unregisterStore : function(store)

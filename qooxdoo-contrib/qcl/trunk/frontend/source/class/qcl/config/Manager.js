@@ -27,7 +27,7 @@
  * startup and synchronize the config values with the server.
  * 
  * <pre>   
- * var myConfigStore = qcl.databinding.event.store.JsonRpc( 
+ * var myConfigStore = qcl.data.store.JsonRpc( 
  *   "path/to/server/index.php", "myapp.Config" 
  * ); 
  * myConfigStore.bind("model", qcl.config.Manager.getInstance(), "model");

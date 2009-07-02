@@ -139,7 +139,7 @@ qx.Mixin.define("qcl.application.MApplication",
       */
      authStore :
      {
-       check : "qcl.databinding.event.store.JsonRpc",
+       check : "qcl.data.store.JsonRpc",
        nullable : true
      },
 
@@ -158,7 +158,7 @@ qx.Mixin.define("qcl.application.MApplication",
       */
      configStore :
      {
-       check : "qcl.databinding.event.store.JsonRpc",
+       check : "qcl.data.store.JsonRpc",
        nullable : true
      },
      
@@ -347,7 +347,7 @@ qx.Mixin.define("qcl.application.MApplication",
     
     /**
      * Setup the authentication mechanism.
-     * @param authStore {qcl.databinding.event.store.JsonRpc}
+     * @param authStore {qcl.data.store.JsonRpc}
      */
     setupAuthentication : function( service )
     {
@@ -359,7 +359,7 @@ qx.Mixin.define("qcl.application.MApplication",
       if ( ! this.getAuthStore() )
       {
         this.setAuthStore(       
-          new qcl.databinding.event.store.JsonRpc( 
+          new qcl.data.store.JsonRpc( 
             null, service, null, null, this.getRpcObject() 
           ) 
         );
@@ -468,7 +468,7 @@ qx.Mixin.define("qcl.application.MApplication",
       if ( ! this.getConfigStore() )
       {
         this.setConfigStore(
-          new qcl.databinding.event.store.JsonRpc( 
+          new qcl.data.store.JsonRpc( 
             null, service, null, null, this.getRpcObject() 
           )       
         );        
@@ -529,7 +529,7 @@ qx.Mixin.define("qcl.application.MApplication",
       
       if( ! store )
       {
-        store = this.__eventStore = new qcl.databinding.event.store.JsonRpc( 
+        store = this.__eventStore = new qcl.data.store.JsonRpc( 
             this.getServerUrl(), serviceName, null, null, this.getRpcObject() 
         );
         store.register();        

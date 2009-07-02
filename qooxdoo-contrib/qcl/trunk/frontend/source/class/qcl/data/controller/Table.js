@@ -21,7 +21,7 @@
 /**
  * Controller for Table widget
  */
-qx.Class.define("qcl.databinding.event.controller.Table", 
+qx.Class.define("qcl.data.controller.Table", 
 {
   extend : qx.core.Object,
   include: qx.data.controller.MSelection,
