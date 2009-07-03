@@ -46,7 +46,7 @@ simulation.Simulation.prototype.runTest = function()
   Packages.java.lang.Thread.sleep(4000);
 
   // Check if the HTML embed's content has changed.
-  var classViewerHtmlScript = 'selenium.browserbot.getCurrentWindow().document.getElementById("ClassViewer").innerHTML';
+  var classViewerHtmlScript = selWin + '.document.getElementById("ClassViewer").innerHTML';
   var classViewerHtml = this.getEval(classViewerHtmlScript);
   if (!(classViewerHtml.indexOf("qx.ui.window") > 0)) {
     this.log("Unexpected class viewer HTML content", "error");
@@ -102,6 +102,6 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   mySim.logTestDuration();
-  //mySim.stop();
+  mySim.stop();
 
 })();
