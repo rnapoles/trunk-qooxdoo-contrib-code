@@ -55,24 +55,52 @@ qx.Class.define("custom.Application",
       -------------------------------------------------------------------------
       */
 
+      var win = new qx.ui.window.Window();
+      win.setLayout(new qx.ui.layout.Grow());
+      win.set({
+        width: 500
+      })
+      win.open();
+      
+      var tabview = new qx.ui.tabview.TabView();
+      win.add(tabview);
+      
+      var page = new qx.ui.tabview.Page("General");
+      page.setLayout(new qx.ui.layout.Grow());
+      tabview.add(page);
+
       var __MCont = new qx.ui.container.Composite(new qx.ui.layout.VBox(5)).set({
         padding : 10,
         backgroundColor : "white"
-      });
-      this.getRoot().add(__MCont, {edge : 0});
+      });      
+      page.add(__MCont);
+      
+      this.widgets = [];
 
       var __lay = new qx.ui.layout.Grid();
       __lay.setRowFlex(0, 1);
-      
-      var group1 = new qx.ui.groupbox.GroupBox("test");
+      var group1 = new qx.ui.groupbox.GroupBox("Saving");
       group1.setLayout(__lay);
-      
       __MCont.add(group1);
-      var pg_scont = new qx.ui.form.CheckBox(this.tr("Allow backup.<br>\
-      <font color=‘#888’>This is a test with a lot of words in order to test the display and to see the bug with the allowGrowX property.</font>")).set({rich:true, allowGrowX: true});
-      group1.add(pg_scont, {row: 0, column : 0});
+      this.widgets['pg_scont'] = new qx.ui.form.CheckBox(this.tr("Allow contacts backup.<br>\
+      <font color='#888'>Use this option you do not have to retype contacts at each report.</font>")).set({rich:true, allowGrowX : true});
+      group1.add(this.widgets['pg_scont'], {row: 0, column : 0});
 
-      
+
+      var __lay2 = new qx.ui.layout.Grid();
+      __lay2.setRowFlex(0, 1);
+      var group2 = new qx.ui.groupbox.GroupBox("Publishing");
+      group2.setLayout(__lay2);
+      __MCont.add(group2);
+
+      var __lbl_1 = new qx.ui.basic.Label(this.tr("Published offset (in min) : ")).set({rich:true, allowGrowX : true});
+      group2.add(__lbl_1, {row: 0, column : 0});
+
+      this.widgets['pg_spub'] = new qx.ui.form.Spinner(0, 30, 60).set({singleStep: 10, margin:[0,0,0,0]}) ;
+      group2.add(this.widgets['pg_spub'], {row: 0, column : 1});
+
+      var __lbl_2 = new qx.ui.basic.Label("<font color='#888'>" + this.tr("Use this option to shift the time of publication by x min.") + "</font>").set({rich:true, allowGrowX : true});
+      group2.add(__lbl_2, {row: 0, column : 2});  
     }
   }
 });
