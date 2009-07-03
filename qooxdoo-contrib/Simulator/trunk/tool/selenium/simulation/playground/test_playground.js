@@ -76,8 +76,7 @@ simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample)
   foundErrors = false;
   logWarn = reg.exec(logCont);
   try {
-    if (logWarn) {
-      this.errWarn++;
+    if (logWarn) {      
       var level = "warn";
       if (logWarn[1].indexOf("level-error") > 0 ) {
         foundErrors = true;
@@ -126,7 +125,6 @@ simulation.Simulation.prototype.runTest = function()
         this.log("Sample " + sampleArr[i] + " started without errors.", "info");
       }
       else {
-        this.errWarn++;
         this.log(sampleArr[i] + " did not load and/or start correctly.", "error");        
       }
     }
@@ -139,7 +137,6 @@ simulation.Simulation.prototype.runTest = function()
 
 (function() { 
   mySim.testFailed = false;
-  mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
   
@@ -176,7 +173,7 @@ simulation.Simulation.prototype.runTest = function()
     if (mySim.debug) {
       print("Test run finished successfully.");
     }
-    mySim.log("Playground ended with warnings or errors: " + mySim.errWarn, "info");
+    mySim.log("Playground ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
   }
 
   mySim.logTestDuration();
