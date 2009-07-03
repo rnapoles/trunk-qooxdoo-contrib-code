@@ -43,9 +43,13 @@ public class Input implements Constants {
         ClassDef result;
 
         file = node.createInputStream();
-        input = new Input(file);
-        result = new ClassDef(input);
-        input.close();
+        try {
+            input = new Input(file);
+            result = new ClassDef(input);
+            input.close();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(node + ": " + e.getMessage(), e);
+        }
         return result;
     }
 
