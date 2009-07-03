@@ -35,18 +35,18 @@ public class Pool implements Constants {
      * Public representation of constant pool entries.
      * List of Objects. Corresponds to the bytes field.
      */
-    private List objects;
+    private List<Object> objects;
 
     /**
      * Private representation of constant pool entries. Same decoding
      * as used in the class file. List of byte[].
      */
-    private List bytes;
+    private List<byte[]> bytes;
 
 
     public Pool() {
-        bytes = new ArrayList();
-        objects = new ArrayList();
+        bytes = new ArrayList<byte[]>();
+        objects = new ArrayList<Object>();
         // idx 0 is reserved:
         bytes.add(null);
         objects.add(null);
