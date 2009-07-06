@@ -3,17 +3,17 @@
   {
     "name" : "databinding",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "qcl databinding demo",
+    "description" : "This is an application which demonstrates the databinding feature of the qcl library",
     
-    "homepage" : "http://some.homepage.url/",
+    "homepage" : "http://qooxdoo.org/contrib/project/qcl",
 
     "license" : "SomeLicense",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "c.boulanger@qxtransformer.org"
       }
     ],
 

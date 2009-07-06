@@ -68,15 +68,48 @@
             </qx:vbox>  
           </qx:groupBox>
 
-          <qx:groupBox qxt:flex="1" legend="Permission binding">
+          <qx:groupBox qxt:flex="1" legend="Permission binding - with dialog demo (press the buttons)">
             <qx:vbox spacing="5">
             
               <qx:button label="Permission 'viewRecord' (Anyone)" >
                 <qcl:observe property="enabled" permission="viewRecord" />
+                <qxt:listener event="execute">
+                  access.components.dialog.Dialog.show("alert",{
+                    message  : "View record",
+                    callback : function(){
+                      access.components.dialog.Dialog.show("confirm",{
+                        message  : "Do you really want to view the record?",
+                        callback : function(result){
+                          access.components.dialog.Dialog.show("alert",{
+                            message  : result ? 
+                              "I tell you a secret: There is no record." :
+                              "That's better."
+                          });                             
+                        }
+                      })   
+                    }
+                  });                  
+                </qxt:listener>
               </qx:button>
             
               <qx:button label="Permission 'createRecord' (All authenticated)" >
                 <qcl:observe property="enabled" permission="createRecord" />
+                <qxt:listener event="execute">
+                  access.components.dialog.Dialog.show("select",{
+                    message : "Select the type of record to create:",
+                    options : [
+                      { label:"Database record", value:"database" },
+                      { label:"World record", value:"world" },
+                      { label:"Pop record", value:"pop" }
+                    ],
+                    allowCancel : true,
+                    callback : function(result){
+                      access.components.dialog.Dialog.show("alert",{
+                        message  : "You selected: '" + result + "'"
+                      });
+                    }
+                  });
+                </qxt:listener>                  
               </qx:button>
               
               <qx:button label="Permission 'manageConfig' (All authenticated))" >
@@ -85,6 +118,16 @@
               
               <qx:button label="Permission 'deleteRecord' (Manager only)" >
                 <qcl:observe property="enabled" permission="deleteRecord" />
+                <qxt:listener event="execute">
+                  access.components.dialog.Dialog.show("confirm",{
+                    message  : "Do you really want to delete the record?",
+                    callback : function(result){
+                      access.components.dialog.Dialog.show("alert",{
+                        message  : result ? "Record will be deleted" : "Record won't be deleted"
+                      });
+                    }                   
+                  });
+                </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'manageUsers' (Admin only)" >

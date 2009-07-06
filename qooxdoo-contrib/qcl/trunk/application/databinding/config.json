@@ -31,10 +31,11 @@
   {
     "APPLICATION"  : "databinding",
     "QOOXDOO_PATH" : "../../../../../qooxdoo-trunk",
-    "QXTHEME"      : "databinding.theme.Theme",
+    "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en","de" ],
-    "ROOT"         : "."
+    "ROOT"         : ".",
+    "CACHE"        : "cache"
   },
 
   "jobs" :

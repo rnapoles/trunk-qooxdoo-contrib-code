@@ -54,7 +54,7 @@ qx.Class.define("databinding.Table",
        * the marshaler prepares requests in the store and transforms
        * the received data into a model 
        */
-      var marshaler = new qcl.databinding.event.marshal.Table();
+      var marshaler = new qcl.data.marshal.Table();
 
       /*
        * The setQueryParams method allows to pass additional information to 
@@ -66,7 +66,7 @@ qx.Class.define("databinding.Table",
       /*
        *  setup the store that retrieves the data from the backend
        */       
-      var store = this._tableStore = new qcl.databinding.event.store.JsonRpc(
+      var store = this._tableStore = new qcl.data.store.JsonRpc(
           /* url */ "../services/index.php",
           /* service */ "qcl.TableData",
           marshaler 
@@ -76,7 +76,7 @@ qx.Class.define("databinding.Table",
        * the controller propagates data changes between table and store. note
        * that you don't have to setup the bindings manually
        */
-      this.tableController = new qcl.databinding.event.controller.Table( table, store );
+      this.tableController = new qcl.data.controller.Table( table, store );
 
       /*
        * bind the server-supplied status text to the table's status bar.
@@ -120,7 +120,7 @@ qx.Class.define("databinding.Table",
       if ( ! tableModel )
       {
 
-        tableModel = new qcl.databinding.event.model.Table();
+        tableModel = new qcl.data.model.Table();
         
         /*
          * set column labels and id

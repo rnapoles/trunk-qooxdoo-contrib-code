@@ -3,17 +3,17 @@
   {
     "name" : "access",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "qcl access control demo",
+    "description" : "This is an application which demonstrates the access control features of the qcl library and is written with QxTransformer",
     
-    "homepage" : "http://some.homepage.url/",
+    "homepage" : "http://qooxdoo.org/contrib/project/qcl",
 
     "license" : "SomeLicense",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "c.boulanger@qxtransformer.org"
       }
     ],
 
