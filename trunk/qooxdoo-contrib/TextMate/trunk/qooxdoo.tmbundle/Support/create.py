@@ -27,7 +27,7 @@ def create(template, filename):
     
     template = Template(open(template).read())
     print template.substitute({
-        "ns": ns,
+        "ns": ns.replace("/", "."),
         "class": cls
     })
     
