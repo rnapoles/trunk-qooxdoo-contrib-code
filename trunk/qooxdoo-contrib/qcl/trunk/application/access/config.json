@@ -39,7 +39,7 @@
   {
     "APPLICATION"  : "access",
     "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
-    "QXTHEME"      : "access.theme.Theme",
+    "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "cache",

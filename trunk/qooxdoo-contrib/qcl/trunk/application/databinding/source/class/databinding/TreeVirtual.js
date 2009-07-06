@@ -55,7 +55,7 @@ qx.Class.define("databinding.TreeVirtual",
        * the marshaler prepares requests in the store and transforms
        * the received data into a model 
        */
-      var marshaler = new qcl.databinding.event.marshal.TreeVirtual();
+      var marshaler = new qcl.data.marshal.TreeVirtual();
 
       /*
        * The setQueryParams method allows to pass additional information to 
@@ -67,7 +67,7 @@ qx.Class.define("databinding.TreeVirtual",
       /*
        * Configure jsonpc-store
        */
-      var store = this.store = new qcl.databinding.event.store.JsonRpc(
+      var store = this.store = new qcl.data.store.JsonRpc(
         /* url */ "../services/index.php",
         /* service */ "qcl.TreeData",
         marshaler
@@ -77,7 +77,7 @@ qx.Class.define("databinding.TreeVirtual",
       /*
        * Create a controller that connects tree data model and data store
        */
-      this.treeController = new qcl.databinding.event.controller.TreeVirtual(tree,store);
+      this.treeController = new qcl.data.controller.TreeVirtual(tree,store);
      
       /*
        * bind the server-supplied status text to the tree's status bar.
@@ -154,7 +154,7 @@ qx.Class.define("databinding.TreeVirtual",
 
       var tree = new qx.ui.treevirtual.TreeVirtual(
           [ 'Folders', '#' ], 
-          { dataModel : new qcl.databinding.event.model.TreeVirtual() }
+          { dataModel : new qcl.data.model.TreeVirtual() }
       );
       tree.setSelectionMode(qx.ui.treevirtual.TreeVirtual.SelectionMode.SINGLE);
       tree.setBackgroundColor("white");
@@ -303,7 +303,7 @@ qx.Class.define("databinding.TreeVirtual",
         /*
          * create controller
          */
-        new qcl.databinding.event.controller.TreeVirtual( tree, this.store );
+        new qcl.data.controller.TreeVirtual( tree, this.store );
         
         /*
          * we need to copy the initial data from the first tree.

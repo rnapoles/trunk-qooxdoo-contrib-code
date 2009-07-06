@@ -1,6 +1,11 @@
 /* ************************************************************************
 #asset(access/*)
-#require(qcl.components.login.Popup)
+#asset(qx/*)
+#require(access.components.dialog.Alert)
+#require(access.components.dialog.Confirm)
+#require(access.components.dialog.Login)
+#require(access.components.dialog.Form)
+#require(access.components.dialog.Select)
 ************************************************************************ */
 
 /**
@@ -30,9 +35,13 @@ qx.Class.define("access.Main",
      */
     main : function()
     {
+       this.base(arguments);
+      
+      
+ 
 
-      this.base(arguments);
-
+      
+      
       /*
                    * logging
                    */
@@ -67,12 +76,15 @@ qx.Class.define("access.Main",
       }
       
       /*
-       * configure login popup
+       * pre-configure login popup
        */
-      var loginPopup = qcl.components.login.Popup.getInstance();
-      loginPopup.setCallback(this.checkLogin);
-      loginPopup.setImage("access/qooxdoo-logo.gif");
-      loginPopup.setText("<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations <br/>from the first group box.</p>");
+      var loginPopup = access.components.dialog.Dialog.getInstanceByType("login");
+      loginPopup.set({
+        callback    : this.checkLogin,
+        allowCancel : true,
+        image       : "access/qooxdoo-logo.gif",
+        text        : "<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations <br/>from the first group box.</p>"
+      });
       
       /*
        * what to do when authentication fails: display message
@@ -107,14 +119,14 @@ qx.Class.define("access.Main",
         else
         {
           /*
-                     * login was successful
-                     */
+           * login was successful
+           */
 
           callback.call(context, true);
 
           /*
-                     * load configuration data for this user
-                     */
+           * load configuration data for this user
+           */
 
           qx.core.Init.getApplication().loadConfig();
         }
