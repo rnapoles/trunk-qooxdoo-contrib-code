@@ -86,7 +86,6 @@ qx.Mixin.define("qcl.application.MApplicationState",
   members :
   {
   
- 
     /*
     ---------------------------------------------------------------------------
        PRIVATE MEMBERS
@@ -128,7 +127,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     /**
      * Returns a specific GET parameter
      *
-     * @param key {var} The parameter name
+     * @param key {String} The parameter name
      * @return {String}
      */
     getGetParam : function(key)
@@ -320,7 +319,9 @@ qx.Mixin.define("qcl.application.MApplicationState",
      * 
      * @param name {String} 
      * @param value {String} 
-     * @param description {String} Optional description of the state that will appear in the title bar and the browser history
+     * @param description {String} Optional description of the state that 
+     *   will appear in the title bar and the browser history
+     * @return {void}
      */
     setState : function( name, value, description )
     {
@@ -390,7 +391,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     
     /**
      * Gets the string value of a state
-     * @param {String} name
+     * @param name {String} 
      * @return {String}
      */
     getState : function ( name )
@@ -457,7 +458,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
 
     /**
      * Removes a state
-     * @param {String} name
+     * @param name {String}
      * @return {Map}
      */
     removeState : function ( name )
@@ -472,7 +473,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
      * @param name {String} Name of state
      * @param data {String} State data
      * @return void
-     * @todo check if property exists
+     * //todo check if property exists
      */
     _handleStateChange : function ( name, data )
     {
@@ -491,7 +492,8 @@ qx.Mixin.define("qcl.application.MApplicationState",
     
     /**
      * Support qooxdoo history manager 
-     * @param {Boolean} value
+     * @param value {Boolean}
+     * @return {void}
      */
     setHistorySupport : function (value)
     {

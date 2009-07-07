@@ -98,10 +98,7 @@ qx.Class.define("qcl.application.Clipboard",
     /**
      * Add data of mimetype.
      *
-     * #param vMimeType[String]: A valid mimetype
-     * #param vData[Any]: Any value for the mimetype
-     *
-     *   
+
      * @param vMimeType {var} mime type
      * @param vData {var} data to be added
      * @param doNotClear {Boolean} if set, add data to clipboard without replacing existing data
@@ -181,9 +178,7 @@ qx.Class.define("qcl.application.Clipboard",
 
 
     /**
-     * TODOC
-     *
-     *   
+     * Clear actions
      * @return {void}
      */
     clearActions : function()
@@ -194,9 +189,7 @@ qx.Class.define("qcl.application.Clipboard",
 
 
     /**
-     * TODOC
-     *
-     *   
+     * Set the current action
      * @param vAction {var} TODOC
      * @return {void}
      */
@@ -212,8 +205,8 @@ qx.Class.define("qcl.application.Clipboard",
 		/**
 		 * tries to copy text to the clipboard of the underlying operating system
 		 * and alerts if not successful
-		 * @param {Object} text
-		 * @param {Object} flavor
+		 * @param text {String}
+		 * @param flavor {String}
 		 */
 		copyToSystemClipboard : function ( text, flavor )
 		{
@@ -230,8 +223,8 @@ qx.Class.define("qcl.application.Clipboard",
 		/**
 		 * tries to copy text to the clipboard of the underlying operating system
 		 * and returns false if not successful
-		 * @param {Object} text
-		 * @param {Object} flavor
+     * @param text {String}
+     * @param flavor {String}
 		 */
 		tryCopyToSystemClipboard : function ( text, flavor )
 		{
@@ -247,7 +240,7 @@ qx.Class.define("qcl.application.Clipboard",
 		},
 		
     /**
-     * copy text to the clipboard of the underlying operating system
+     * Copy text to the clipboard of the underlying operating system
      * and throws an error if not successful
      * sources: http://www.krikkit.net/howto_javascript_copy_clipboard.html
      *          http://www.xulplanet.com/tutorials/xultu/clipboard.html

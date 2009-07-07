@@ -65,7 +65,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
  /**  
   * @param url {String|null} The url of the jsonrpc service. If no url is
   *   given, the serverUrl property of the main applicaiton is used.
-  * @param serviceName {String} The name of the service, i.e. "foo.bar"   
+  * @param serviceName {String|null} The name of the service, i.e. "foo.bar"   
   * @param marshaler {Object|null} The marshaler to be used to create a model 
   *   from the data. If not provided, {@link qx.data.marshal.Json} is used and
   *   instantiated with the 'delegate' parameter as contstructor argument.

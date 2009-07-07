@@ -93,9 +93,8 @@ qx.Mixin.define("qcl.application.MApplication",
     },
     
     /** 
-     * The current session id, unique for each application, usually
-     * retrieved from the backend. Will be sent, for example, with
-     * rpc requests
+     * The current session id, unique for each browser window in which an application
+     * instance exists.
      */
     sessionId :
     {
@@ -104,7 +103,6 @@ qx.Mixin.define("qcl.application.MApplication",
       event : "changeSessionId",
       apply : "_applySessionId"
     },
-    
     
      /**
       * The URL of the backend
@@ -233,7 +231,7 @@ qx.Mixin.define("qcl.application.MApplication",
     */             
     
     /**
-     * store a reference to a widget linked to its id
+     * Store a reference to a widget linked to its id.
      * @param id {String}
      * @param widget {Object}
      * @return void
@@ -294,16 +292,14 @@ qx.Mixin.define("qcl.application.MApplication",
       }
     },
 
-    
-    
     /*
     ---------------------------------------------------------------------------
        SERVER COMMUNICATION
     ---------------------------------------------------------------------------
-    */        
+    */
+   
+    __appStore : null,
      
-    
-    
     /** 
      * Executes a jsonrpc service with the rpc object configured in the 
      * main application's constructor
@@ -312,33 +308,23 @@ qx.Mixin.define("qcl.application.MApplication",
      * @param params {Array} Parameters to send to the method
      * @param callback {Function} Callback function that is called with the data returned from the server
      * @param context {Object} The object context in which the callback function is executed
-     * @param serverData {Map} Additional data passed to the server
      * @return {void}
      */
-    executeService : function( serviceName, serviceMethod, params, callback, context, serverData )
+    executeService : function( serviceName, serviceMethod, params, callback, context )
     {
-      if ( ! this.getRpcObject() )
+      
+      /* 
+       * create all-purpose json store
+       */
+      if ( ! this.__appStore )
       {
-        this.error("No JsonRpc object configured.");
+        this.__appStore = new qcl.data.store.JsonRpc( 
+            null, null, null, null, this.getRpcObject() 
+        ); 
       }
-      var rpc = this.getRpcObject();
-      rpc.setServiceName( serviceName );
-      var callbackFunc = function( data, ex, id ) 
-      {
-        if ( ex == null ) 
-        {  
-          if ( typeof callback == "function" )
-          {
-            callback.call( context, data );
-          }            
-        } 
-      }
-      if ( serverData )
-      {
-        rpc.setServerData( serverData );
-      }
-
-      rpc.callAsync.apply( rpc, params.unshift( serviceMethod ) );
+      
+      this.__appStore.setServiceName(serviceName);
+      this.__appStore.execute( serviceMethod, params, callback, context);
     },
     
     /*
@@ -390,7 +376,7 @@ qx.Mixin.define("qcl.application.MApplication",
      * Authenticate with session id, if any, otherwise with null to get
      * guest access, if allowed.
      * @param callback {function|undefined} optional callback that is called
-     * when logout request returns from server.
+     *   when logout request returns from server.
      * @param context {object|undefined} Optional context for callback function
      */    
     startAuthentication : function(callback,context)
@@ -532,7 +518,7 @@ qx.Mixin.define("qcl.application.MApplication",
       if( ! store )
       {
         store = this.__eventStore = new qcl.data.store.JsonRpc( 
-            this.getServerUrl(), serviceName, null, null, this.getRpcObject() 
+            null, serviceName, null, null, this.getRpcObject() 
         );
         store.register();        
       }
@@ -554,8 +540,9 @@ qx.Mixin.define("qcl.application.MApplication",
       this.getEventStore().setUseEventTransport(false);
     },
 
-    /**
+    /** 
      * Returns the event store object
+     * @return qcl.data.store.JsonRpc
      */
     getEventStore : function()
     {
@@ -574,7 +561,12 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     __windows : {},
     
-    
+    /**
+     * Sets the window title/caption. If the window is connected to a 
+     * menu button, set the label of this button.
+     * @param title {String}
+     * @return
+     */
     setWindowTitle : function( title )
     {
       document.title = title;
@@ -587,7 +579,7 @@ qx.Mixin.define("qcl.application.MApplication",
     
     /** 
      * Start an application in a new window or bring the
-     * window to the front if it has already been opened
+     * window to the front if it has already been opened.
      *
      * @param application {String} class name of application
      * @param state {Map} application state
@@ -720,12 +712,19 @@ qx.Mixin.define("qcl.application.MApplication",
    ---------------------------------------------------------------------------
    */          
 
-   
-    /* 
-    ---------------------------------------------------------------------------
-      SHORTCUTS
-    ---------------------------------------------------------------------------
-    */             
+   /**
+    * Alerts a message similarly to the alert() function
+    * @param message {String}
+    * @param callback {Function|undefined} Optional callback that is
+    *   called when the user clicks on the "OK" button.
+    */
+   alert : function( message, callback )
+   {
+     access.components.dialog.Dialog.show("alert",{
+       message : message,
+       callback : callback
+     });
+   },
     
     
     /**
@@ -783,23 +782,22 @@ qx.Mixin.define("qcl.application.MApplication",
     },
     
    /**
-    * gets a reference to the global clipboard instance
+    * Returns a reference to the global clipboard instance
     *
-    * @type member
-    * @return {var} TODOC
+    * @return {qcl.application.Clipboard}
     */
    getClipboard : function()
    {
      if (window.opener) {
-       return opener.qcl.clipboard.Manager.getInstance();
+       return opener.qcl.application.Clipboard.getInstance();
      } else {
-       return qcl.clipboard.Manager.getInstance();
+       return qcl.application.Clipboard.getInstance();
      }
    },   
 
     /**
      * Shorthand method to return a config key
-     * @return {String|Array|Bool|Int}
+     * @return {String|Array|Boolean|Int}
      */       
     getConfigKey : function( key )
     {
@@ -809,13 +807,12 @@ qx.Mixin.define("qcl.application.MApplication",
     /**
      * Shorthand method to set a config key
      * @param key {String}
-     * @param value {String|Array|Bool|Int}
-     * @param {Bool} Whether setting succeeded
+     * @param value {String|Array|Boolean|Int}
+     * @return {Bool} Whether setting succeeded
      */      
     setConfigKey : function( key, value )
     {
       return qcl.config.Manager.getInstance().setKey( key, value );
     }
-
   }
 });
