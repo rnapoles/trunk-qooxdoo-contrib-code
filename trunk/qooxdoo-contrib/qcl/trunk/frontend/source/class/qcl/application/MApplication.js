@@ -722,7 +722,7 @@ qx.Mixin.define("qcl.application.MApplication",
    {
      access.components.dialog.Dialog.show("alert",{
        message : message,
-       callback : callback
+       callback : callback || null
      });
    },
     
