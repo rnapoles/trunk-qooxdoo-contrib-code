@@ -140,6 +140,8 @@ public class FilterTest {
         Filter filter;
         TreeAction action;
         Tree tree;
+        Tree a;
+        Tree b;
         
         create("a/a", "a/b", "b/a", "b/b");
         filter = filter().include("**/b");
@@ -148,13 +150,20 @@ public class FilterTest {
         tree = action.getResult();
         assertEquals(2, tree.children.size());
         
-        assertEquals("a", tree.children.get(0).node.getName());
-        assertEquals(1, tree.children.get(0).children.size());
-        assertEquals("b", tree.children.get(0).children.get(0).node.getName());
+        a = tree.children.get(0);
+        if (a.node.getName().equals("a")) {
+        	b = tree.children.get(1);
+        } else {
+        	b = a;
+        	a = tree.children.get(1);
+        }
+        assertEquals("a", a.node.getName());
+        assertEquals(1, a.children.size());
+        assertEquals("b", a.children.get(0).node.getName());
         
-        assertEquals("b", tree.children.get(1).node.getName());
-        assertEquals(1, tree.children.get(1).children.size());
-        assertEquals("b", tree.children.get(1).children.get(0).node.getName());
+        assertEquals("b", b.node.getName());
+        assertEquals(1, b.children.size());
+        assertEquals("b", b.children.get(0).node.getName());
 
         action = new TreeAction();
         filter = filter().include("**/c");
