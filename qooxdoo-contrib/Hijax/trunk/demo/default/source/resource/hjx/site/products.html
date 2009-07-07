@@ -6,12 +6,16 @@
   <link rel="stylesheet" type="text/css" media="all" href="css/main.css" />
   <script type="text/javascript" src="../qx.js"></script>
   <script type="text/javascript" src="../Settings.js"></script>
-  <script type="text/javascript" src="../../../script/hjx-0.js"></script>
-  <script type="text/javascript">  
-    qx.event.Registration.addListener(window, "ready", hjx.Hijax.main, hjx.Hijax);
+  <script type="text/javascript" src="../../../script/hjx.js"></script>
+  <script type="text/javascript">
+    // for "build" version one would write
+    // qx.event.Registration.addListener(window, "ready", hjx.Hijax.main, hjx.Hijax);
+    function ready() {
+      hjx.Hijax.main.call(hjx.Hijax);
+    }
   </script>
 </head>
-<body>
+<body onload="ready()">
   <h1>A Hijaxed Site</h1>
   <ul id="nav">
     <li><a href="main.html">Index</a></li>

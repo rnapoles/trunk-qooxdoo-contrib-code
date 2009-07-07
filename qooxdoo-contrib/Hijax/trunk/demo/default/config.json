@@ -31,7 +31,6 @@
   {
     "APPLICATION"  : "hjx.demo",
     "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
-    "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
@@ -45,34 +44,42 @@
       "library" :
       [
         {
-          "manifest" : "../../Manifest.json"
+          "manifest" : "../../Manifest.json",
+          "uri" : "../../../../../.."
+        },
+        
+        {
+          "manifest" : "${QOOXDOO_PATH}/framework/Manifest.json",
+          "uri" : "../../../../${QOOXDOO_PATH}/framework"
         }
       ]
-    },  
+    },
     
-    "build-script" :
+    "common" :
     {
       "include" : ["hjx.*"],
       "exclude" : ["=qx.*", "=hjx.demo.*"],
-      
+
+      "packages" :
+      {
+        "parts"    : 
+        {
+          "boot" : [ "hjx.*" ]
+        },
+
+        "loader-with-boot" : false
+      }      
+    },
+    
+    "build-script" :
+    {
       "compile-dist" :
       {
         "paths"  :
         {
           "file" : "${BUILD_PATH}/script/hjx.js"
         }        
-      },
-      
-      "packages" :
-      {
-        "parts"    : 
-        {
-          "initial" : [ "hjx.*" ]
-        },
-
-        "loader-with-boot" : false
-      }      
-      
+      }
     },
     
     "source-script" :
@@ -80,18 +87,7 @@
       "compile-source" :
       {
         "file" : "${ROOT}/source/script/hjx.js"
-      },
-
-      "packages" :
-      {
-        "parts"    : 
-        {
-          "initial" : [ "hjx.*" ]
-        },
-
-        "loader-with-boot" : false
-      }       
-      
+      } 
     }
   }
 }
