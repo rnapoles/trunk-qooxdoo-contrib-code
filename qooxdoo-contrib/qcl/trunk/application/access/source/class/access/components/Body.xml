@@ -83,13 +83,13 @@
                 <qcl:observe property="enabled" permission="viewRecord" />
                 <qxt:listener event="execute">
                   // example for nested callbacks
-                  access.components.dialog.Dialog.show("alert",{
+                  qcl.ui.dialog.Dialog.show("alert",{
                     message  : "View record",
                     callback : function(){
-                      access.components.dialog.Dialog.show("confirm",{
+                      qcl.ui.dialog.Dialog.show("confirm",{
                         message  : "Do you really want to view the record?",
                         callback : function(result){
-                          access.components.dialog.Dialog.show("alert",{
+                          qcl.ui.dialog.Dialog.show("alert",{
                             message  : result ? 
                               "I tell you a secret: There is no record." :
                               "All the better."
@@ -104,7 +104,7 @@
               <qx:button label="Permission 'createRecord' (All authenticated)" >
                 <qcl:observe property="enabled" permission="createRecord" />
                 <qxt:listener event="execute">
-                  access.components.dialog.Dialog.show("select",{
+                  qcl.ui.dialog.Dialog.show("select",{
                     message : "Select the type of record to create:",
                     options : [
                       { label:"Database record", value:"database" },
@@ -113,7 +113,7 @@
                     ],
                     allowCancel : true,
                     callback : function(result){
-                      access.components.dialog.Dialog.show("alert",{
+                      qcl.ui.dialog.Dialog.show("alert",{
                         message  : "You selected: '" + result + "'"
                       });
                     }
@@ -125,17 +125,17 @@
                 <qcl:observe property="enabled" permission="createRecord" />
                 <qxt:listener event="execute">
                   // an alternative way of creating an alert widget.
-                  (new access.components.dialog.Alert("Nothing here!")).show();                  
+                  (new qcl.ui.dialog.Alert("Nothing here!")).show();                  
                 </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'deleteRecord' (Manager only)" >
                 <qcl:observe property="enabled" permission="deleteRecord" />
                 <qxt:listener event="execute">
-                  access.components.dialog.Dialog.show("confirm",{
+                  qcl.ui.dialog.Dialog.show("confirm",{
                     message  : "Do you really want to delete the record?",
                     callback : function(result){
-                      access.components.dialog.Dialog.show("alert",{
+                      qcl.ui.dialog.Dialog.show("alert",{
                         message  : result ? "Record will be deleted" : "Record won't be deleted"
                       });
                     }                   
@@ -147,7 +147,7 @@
                 <qcl:observe property="enabled" permission="manageUsers" />
                   <qxt:listener event="execute">
                     <![CDATA[
-                      access.components.dialog.Dialog.show("form",{
+                      qcl.ui.dialog.Dialog.show("form",{
                         message : "Please fill in the form",
                         formData : { 
                         'username' : 
@@ -182,9 +182,10 @@
                            ]
                         }             
                       },
+                      allowCancel : true,
                       callback : function( result )
                       {
-                        (new access.components.dialog.Alert(
+                        (new qcl.ui.dialog.Alert(
                           "Thank you for your input: <pre>" + qx.util.Json.stringify(result,true) + "</pre>"
                         )).show();
                       }
