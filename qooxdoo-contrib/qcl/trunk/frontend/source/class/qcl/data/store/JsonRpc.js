@@ -42,10 +42,10 @@
  *   result : 
  *   {
  *     data   : { (... result data ...) },
- *     events : [ { type : "fooEvent", data : ... }, 
- *                { type : "barEvent", data: ... }, ... ],
- *     messages : [ { name : "appname.messages.foo", data : ... }, 
- *                  { name : "appname.messages.bar", data: ... }, ... ]
+ *     events : [ { type : "fooDataEvent", class: "qx.event.type.Data", data : "foo" }, 
+ *                { type : "barEvent", class: "qx.event.type.Event" }, ... ],
+ *     messages : [ { name : "appname.messages.foo", data : "foo" }, 
+ *                  { name : "appname.messages.bar", data: "bar" }, ... ]
  *   }
  *   // error property only exists if an error occurred 
  *   error : 
@@ -703,10 +703,17 @@ qx.Class.define("qcl.data.store.JsonRpc",
       if( data.events && data.events instanceof Array )
       {
         data.events.forEach( function(event) {
-          var eventObj = new qx.Class.getByName(event.class);
+          if (event.data) 
+          {
+            var eventObj = new qx.event.type.Data;
+            eventObj.init(event.data);
+          }
+          else
+          {
+            var eventObj = new qx.event.type.Event;
+          }
           eventObj.setType(event.Type);
-          if (event.data) eventObj.init(event.data);
-          obj.dispatch( eventObj ); 
+          obj.dispatchEvent( eventObj ); 
         });
       }       
       return;
