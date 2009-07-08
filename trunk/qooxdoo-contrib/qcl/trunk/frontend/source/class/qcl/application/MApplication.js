@@ -62,6 +62,7 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       this.setSessionId( sid );  
     }
+    
   },
  
   /*
@@ -339,6 +340,19 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     setupAuthentication : function( service )
     {
+     
+      /*
+       * check if setup is already done
+       */
+      if ( this.__authenticationSetup )
+      {
+        this.error("Authentication already set up");
+      }
+      this.__authenticationSetup = true;      
+      
+      /*
+       * set user manager and auth store
+       */
       if ( ! this.getUserManager() )
       {
         this.setUserManager( qcl.access.user.Manager.getInstance() );
@@ -352,12 +366,6 @@ qx.Mixin.define("qcl.application.MApplication",
           ) 
         );
       }
-      
-      if ( this.__authenticationSetup )
-      {
-        this.error("Authentication already set up");
-      }
-      this.__authenticationSetup = true;
 
       /*
        * bind the authentication stores data model to the user managers data model
@@ -368,8 +376,8 @@ qx.Mixin.define("qcl.application.MApplication",
        * bind the session id propery of the auth store to the session
        * id of this application
        */
-      this.getAuthStore().bind("model.sessionId", this, "sessionId" );      
-            
+      this.getAuthStore().bind("model.sessionId", this, "sessionId" );
+      
     }, 
 
     /**

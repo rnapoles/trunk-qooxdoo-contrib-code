@@ -93,8 +93,8 @@ qx.Class.define("qcl.ui.dialog.Confirm",
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */  
-    __yesButton : null,
-    __noButton  : null,
+    _yesButton : null,
+    _noButton  : null,
     
     /*
     ---------------------------------------------------------------------------
@@ -124,25 +124,25 @@ qx.Class.define("qcl.ui.dialog.Confirm",
       /*
        * add image 
        */
-      this.__image = new qx.ui.basic.Image();
-      this.__image.setVisibility("excluded");
-      hbox.add( this.__image );
+      this._image = new qx.ui.basic.Image();
+      this._image.setVisibility("excluded");
+      hbox.add( this._image );
       
       /*
        * Add message label
        */
-      this.__message = new qx.ui.basic.Label();
-      this.__message.setRich(true);
-      this.__message.setWidth(200);
-      this.__message.setAllowStretchX(true);
-      hbox.add( this.__message );    
+      this._message = new qx.ui.basic.Label();
+      this._message.setRich(true);
+      this._message.setWidth(200);
+      this._message.setAllowStretchX(true);
+      hbox.add( this._message );    
       
       var _this = this;
       
       /* 
        * Yes button 
        */
-      var yesButton = this.__yesButton =  new qx.ui.form.Button;
+      var yesButton = this._yesButton =  new qx.ui.form.Button;
       yesButton.setAllowStretchX(true);
       yesButton.addListener("execute", this._handleYes, this );
       this.bind("yesButtonLabel", yesButton, "label");
@@ -151,7 +151,7 @@ qx.Class.define("qcl.ui.dialog.Confirm",
       /* 
        * No button 
        */
-      var noButton = this.__noButton = new qx.ui.form.Button;
+      var noButton = this._noButton = new qx.ui.form.Button;
       noButton.setAllowStretchX(true);
       noButton.addListener("execute", this._handleNo, this );
       this.bind("noButtonLabel",noButton, "label" );

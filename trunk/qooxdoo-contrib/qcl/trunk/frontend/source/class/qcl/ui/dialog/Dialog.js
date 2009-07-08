@@ -36,13 +36,13 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      * A map of instances
      * @var {Map}
      */
-    __instances : {},
+    _instances : {},
     
     /**
      * A queue of dialogs waiting to be displayed
      * @var {Array}
      */
-    __dialogQueue : [],
+    _dialogQueue : [],
   
     /**
      * Returns a singleton instance of the dialog type
@@ -51,12 +51,12 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */
     getInstanceByType : function(type)
     {      
-      if ( ! this.__instances[type] )
+      if ( ! this._instances[type] )
       {
-        this.__instances[type] = new qcl.ui.dialog[qx.lang.String.firstUp(type)];
+        this._instances[type] = new qcl.ui.dialog[qx.lang.String.firstUp(type)];
       }
-      this.__instances[type].addListener( "hide", this._nextDialog, this );
-      return this.__instances[type];
+      this._instances[type].addListener( "hide", this._nextDialog, this );
+      return this._instances[type];
     },
     
     /**  
@@ -76,13 +76,13 @@ qx.Class.define("qcl.ui.dialog.Dialog",
        * if no dialogs in the queue, show right away and put a marker
        * in the queue
        */
-      if ( this.__dialogQueue.length == 0 )
+      if ( this._dialogQueue.length == 0 )
       {
         if (properties) {
           instance.set(properties);
         }
         instance.show();
-        this.__dialogQueue.push(true);
+        this._dialogQueue.push(true);
       }
       else
       {
@@ -90,7 +90,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
          * otherwise, push dialog and properties on the queue and add
          * listener to display next dialog when this one is hidden
          */
-        this.__dialogQueue.push( { instance: instance, properties : properties } );
+        this._dialogQueue.push( { instance: instance, properties : properties } );
       }
     },
     
@@ -100,10 +100,10 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */
     _nextDialog : function( )
     {
-      if ( this.__dialogQueue.length )
+      if ( this._dialogQueue.length )
       {
-        var next = this.__dialogQueue.shift();
-        if ( next === true ) next = this.__dialogQueue.shift();
+        var next = this._dialogQueue.shift();
+        if ( next === true ) next = this._dialogQueue.shift();
         if ( next )
         {
           next.instance.set(next.properties);
@@ -366,10 +366,10 @@ qx.Class.define("qcl.ui.dialog.Dialog",
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */  
-    __image : null,
-    __message : null,
-    __okButton : null,
-    __cancelButton : null,       
+    _image : null,
+    _message : null,
+    _okButton : null,
+    _cancelButton : null,       
     
     /*
     ---------------------------------------------------------------------------
@@ -392,7 +392,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */    
     _createOkButton : function()
     {
-      var okButton = this.__okButton =  new qx.ui.form.Button(this.tr("OK"));
+      var okButton = this._okButton =  new qx.ui.form.Button(this.tr("OK"));
       okButton.setIcon("icon/22/actions/dialog-ok.png")
       okButton.setAllowStretchX(false);
       okButton.addListener("execute", this._handleOk, this);  
@@ -406,7 +406,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */
     _createCancelButton : function()
     {
-      var cancelButton = this.__cancelButton =  new qx.ui.form.Button(this.tr("Cancel"));
+      var cancelButton = this._cancelButton =  new qx.ui.form.Button(this.tr("Cancel"));
       cancelButton.setAllowStretchX(false);
       cancelButton.setIcon("icon/22/actions/dialog-cancel.png");
       cancelButton.addListener("execute", this._handleCancel, this);  
@@ -428,14 +428,14 @@ qx.Class.define("qcl.ui.dialog.Dialog",
     */ 
     _applyImage : function( value, old )
     {
-      this.__image.setSource( value );
-      this.__image.setVisibility( value ? "visible" : "excluded" );
+      this._image.setSource( value );
+      this._image.setVisibility( value ? "visible" : "excluded" );
     }, 
     
     _applyMessage : function( value, old )
     {
-      this.__message.setValue( value );
-      this.__message.setVisibility( value ? "visible" : "excluded" );
+      this._message.setValue( value );
+      this._message.setVisibility( value ? "visible" : "excluded" );
     },     
     
     /*

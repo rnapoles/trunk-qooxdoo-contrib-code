@@ -85,11 +85,11 @@ qx.Class.define("qcl.ui.dialog.Select",
       /*
        * Add message label
        */
-      this.__message = new qx.ui.basic.Label();
-      this.__message.setRich(true);
-      this.__message.setWidth(200);
-      this.__message.setAllowStretchX(true);
-      hbox.add( this.__message );    
+      this._message = new qx.ui.basic.Label();
+      this._message.setRich(true);
+      this._message.setWidth(200);
+      this._message.setAllowStretchX(true);
+      hbox.add( this._message );    
       
       /*
        * buttons pane
