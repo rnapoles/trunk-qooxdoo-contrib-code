@@ -20,17 +20,20 @@
 /**
  * 
  * The jsonrpc data store is responsible for fetching data from a json-rpc
- * server backend. The data will be parsed by the marshaler that you supply as
+ * server backend. The data will be processed by the marshaler that you supply as
  * third parameter in the constructor. If you don't supply one, the default
  * qx.data.marshal.Json will be used. 
  * 
- * The store also takes care of transport ...
+ * The store also takes care of transport of events between all widget controllers
+ * bound to it and the store service on the server. This allows to synchronize
+ * widget data across browser windows and even across different computers. A separate
+ * tutorial will explain this feature. 
  * 
  * The databinding requests can be used to transport events and message between 
  * server and client in yet another way by "piggybacking" on the transport in both 
  * directions. If you want to use this feature, the result sent from the server 
  * needs to contain an additional data layer. The response has the to be a hash map 
- * of the following structure.:
+ * of the following structure:
  * 
  * <pre>
  * {
@@ -603,7 +606,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
            * property.
            */
           var data;
-          if ( result && result.data )
+          if ( result && ( result.data || result.messages || result.events ) )
           {
             /*
              * handle messages and events
@@ -686,21 +689,24 @@ qx.Class.define("qcl.data.store.JsonRpc",
     __handleEventsAndMessages : function ( obj, data )
     {
       /*
-      * server messages
-      */
-      if( data.messages && data.messages instanceof Array )
-      {
+       * server messages
+       */
+      if( data.messages && data.messages instanceof Array ){
         data.messages.forEach( function(message){
           qx.event.message.Bus.dispatch( message.name, message.data ); 
         });
       }
 
-      // server events
+      /*
+       * server events
+       */ 
       if( data.events && data.events instanceof Array )
       {
-        data.events.forEach( function(event)
-        {
-          obj.fireDataEvent( event.type, event.data ); 
+        data.events.forEach( function(event) {
+          var eventObj = new qx.Class.getByName(event.class);
+          eventObj.setType(event.Type);
+          if (event.data) eventObj.init(event.data);
+          obj.dispatch( eventObj ); 
         });
       }       
       return;
