@@ -1,5 +1,5 @@
 {
-  "name"    : "access",
+  "name"    : "qcl",
 
   "include" :
   [
@@ -33,7 +33,7 @@
 
   "let" :
   {
-    "APPLICATION"  : "access",
+    "APPLICATION"  : "qcl",
     "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
@@ -42,18 +42,5 @@
     "PYTHON"       : "/opt/local/bin/python2.5",
     "QXTRANSFORMER_PATH": "../../../qooxdoo/qxtransformer/toolkit",
     "QXT_VERBOSE"  : "main:INFO;dev:INFO;"
-  },
-  
-  "jobs" :
-  {
-    "libraries" : 
-    {
-      "library" :
-      [
-        {
-          "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
-        }
-      ]
-    }
   }
 }
