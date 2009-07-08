@@ -110,6 +110,63 @@ qx.Class.define("access.components.dialog.Dialog",
           next.instance.show();
         }
       }
+    },
+    
+    /**
+     * Turns remote server control on or off. If turned on, you can trigger the
+     * display of dialogs using messages which can come from the server.
+     * @see #_onMessage
+     */
+    allowServerControl : function( value )
+    {
+      var messageName = "qcl.components.dialog.Dialog.show";
+      if ( value )
+      {
+        qx.event.message.Bus.getInstance().subscribe( messageName, this._onMessage,this);
+      }
+      else
+      {
+        qx.event.message.Bus.getInstance().unsubscribe( messageName, this._onMessage,this);
+      }
+    },
+    
+    /**
+     * Handles the message. The message data has to be a map with of the following
+     * structure: <pre>
+     * {
+     *   type : "(alert|confirm|form|login|select)",
+     *   properties : { the dialog properties WITHOUT a callback },
+     *   service : "the.name.of.the.rpc.service",
+     *   method : "serviceMethod",
+     *   params : [ the, parameters, passed, to, the, service, method ]
+     * }
+     * </pre>
+     */
+    _onMessage : function( message )
+    {
+      var data = message.getData();
+      if ( data.service )
+      {
+        data.properties.callback = function( result )
+        {
+          /*
+           * push the result to the beginning of the parameter array
+           */
+          if ( ! data.params || ! data.params instanceof Array )
+          {
+            data.params = [];
+          }
+          data.params.unshift(result);
+          
+          /*
+           * send reqeust back to server
+           */
+          qx.core.Init.getApplication().executeService( 
+              data.service, data.method, data.params 
+          );
+        }
+      }
+      access.components.dialog.Dialog.show(data.type,data.properties);
     }
   },
     
@@ -215,6 +272,12 @@ qx.Class.define("access.components.dialog.Dialog",
      CONSTRUCTOR
   *****************************************************************************
   */   
+  
+  /**
+   * @param properties {Map|String|undefined} If you supply a map, all the 
+   * corresponding properties will be set. If a string is given, use it 
+   * as to set the 'message' property.
+   */
   construct: function( properties )
   {
     this.base(arguments);
@@ -229,14 +292,19 @@ qx.Class.define("access.components.dialog.Dialog",
     this.setLayout( new qx.ui.layout.Grow() );
     
     /*
-     * Automatically add to application's root
+     * automatically add to application's root
      */
     qx.core.Init.getApplication().getRoot().add(this);
     
     /*
-     * Set a very high Z-Index
+     * set a very high Z-Index
      */
     this.setZIndex( 1E7 );
+    
+    /*
+     * make it a focus root
+     */
+    qx.ui.core.FocusHandler.getInstance().addRoot(this);
     
     /* 
      * resize event 
@@ -270,10 +338,19 @@ qx.Class.define("access.components.dialog.Dialog",
     /*
      * set properties if given
      */
-    if ( properties )
+    if ( typeof properties == "object" )
     {
       this.set(properties);
     }
+    /*
+     * if argument is a string, assume it is a message
+     */
+    else if ( typeof properties == "string" )
+    {
+      this.setMessage(properties);
+    }
+      
+      
   },
   
   /*
