@@ -158,7 +158,7 @@ qx.Class.define("hjx.Settings",
             type     : 'string',
             required : true,
             prompt   : {
-              url : 'cgi/validate.py'  
+              url : 'contact-validate.php'  
             }
           }
         }
