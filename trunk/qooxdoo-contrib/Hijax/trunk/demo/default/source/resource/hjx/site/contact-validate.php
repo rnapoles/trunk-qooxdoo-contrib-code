@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+<?php
 ################################################################################
 #
 #  qooxdoo - the new era of web development
@@ -24,8 +23,6 @@
 # site. Checks if the request has a parameter "message_textarea" and returns 
 # "true" if its value is at least three characters long.</p>
 
-def index(req, message_textarea=False):
-  out = "false"
-  if message_textarea and len(message_textarea) > 2:
-    out = "true"
-  return out
+echo (strlen($_REQUEST["message_textarea"]) > 2) ? "true" : "false";
+
+?>
