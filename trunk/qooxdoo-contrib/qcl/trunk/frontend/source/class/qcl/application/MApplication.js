@@ -720,7 +720,7 @@ qx.Mixin.define("qcl.application.MApplication",
     */
    alert : function( message, callback )
    {
-     access.components.dialog.Dialog.show("alert",{
+     qcl.ui.dialog.Dialog.show("alert",{
        message : message,
        callback : callback || null
      });
