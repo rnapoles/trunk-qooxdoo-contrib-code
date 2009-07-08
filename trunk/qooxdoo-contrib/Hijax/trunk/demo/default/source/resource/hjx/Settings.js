@@ -45,49 +45,74 @@ qx.Class.define("hjx.Settings",
     __settings :
     {
       // JS functions to execute after page content has changed.
-      '_scripts' :
-      {
-        // "*"            : ['mailto()', 'opWin()', 'imgLoader()'],
-        "*" : []
-      },
+      _onloadScripts : [
+        {
+          regex: ".*",
+          scripts: []
+        }
+      ],
+
+      // JS functions to execute right before a hijax call is executed
+      _onhijaxScripts : [
+        {
+          regex: ".*",
+          scripts: []
+        }
+      ],
+
+      // JS functions to execute before page content will change.
+      _onunloadScripts : [
+        {
+          regex: ".*",
+          scripts: []
+        }
+      ],
+
+      // JS functions to execute when an error occurred
+      _onerrorScripts : [
+        {
+          regex: ".*",
+          scripts: []
+        }
+      ],
 
       // "form.py"     : ['formCheck()']
       // "login/"       : ['focusOnInput()']
       // CSS to include after page has changed
-      '_styles' : [],
+      _styles : [],
 
       // Navigation highlighting to avoid the whole content to be reloaded.
       // The selector picks the navi elements via XPATH expression.
-      '_navi' :
+      _navi :
       {
         "*" :
         {
-          'selector' : [ 'ul#nav li a' ],
-          'link'     : [ '' ],
-          'visited'  : [ '' ],
-          'hover'    : [ '' ],
-          'active'   : [ 'active' ]
+          selector : [ 'ul#nav li a' ],
+          link     : [ '' ],
+          visited  : [ '' ],
+          hover    : [ '' ],
+          active   : [ 'active' ]
         }
       },
 
       // Specify the event and the DOM element which causes a dispatch.
-      '_pages' :
+      _pages :
       {
         "*" :
         {
-          'event'   : 'click',
-          'DOMElem' : 'content'
+          event   : 'click',
+          domElem : 'content'
         },
 
         "form.py" :
         {
-          'event'   : 'submit',
-          'DOMElem' : 'content'
+          event   : 'submit',
+          domElem : 'content'
         }
       },
 
-      // "login/"       : { 'event' : 'submit', 'DOMElem' : 'body' },
-      // "logout/"      : { 'event' : 'click', 'DOMElem' : 'body' }
+      // "login/"       : { event : 'submit', domElem : 'body' },
+      // "logout/"      : { event : 'click', domElem : 'body' }
       // The form field error stylesheet class to highlight an occured error.
       // Furthermore enter the validation details for the forms:
       // Validation starts whether leaving the field or submitting the form.
@@ -95,44 +120,44 @@ qx.Class.define("hjx.Settings",
       // The field value is required true or false.
       // The prompt property is used for server-side validation and requires
       //     the event and the url to the server script.
-      '_forms' :
+      _forms :
       {
-        "error_styles" :
+        error_styles :
         {
-          'field' : 'error',
-          'label' : 'error'
+          field : 'error',
+          label : 'error'
         },
 
-        "contact_form" :
+        contact_form :
         {
-          'validate_onblur' : true,
+          validate_onblur : true,
 
-          'sender_text' :
+          sender_text :
           {
-            'type'     : 'string',
-            'required' : false,
-            'prompt'   : false
+            type     : 'string',
+            required : false,
+            prompt   : false
           },
 
-          'email_email' :
+          email_email :
           {
-            'type'     : 'email',
-            'required' : true,
-            'prompt'   : false
+            type     : 'email',
+            required : true,
+            prompt   : false
           },
 
-          'subject_text' :
+          subject_text :
           {
-            'type'     : 'string',
-            'required' : false,
-            'prompt'   : false
+            type     : 'string',
+            required : false,
+            prompt   : false
           },
 
-          'message_textarea' :
+          message_textarea :
           {
-            'type'     : 'string',
-            'required' : true,
-            'prompt'   : {
+            type     : 'string',
+            required : true,
+            prompt   : {
               url : 'cgi/validate.py'  
             }
           }
