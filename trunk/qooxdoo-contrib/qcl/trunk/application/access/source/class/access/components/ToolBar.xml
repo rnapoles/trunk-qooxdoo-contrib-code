@@ -24,7 +24,7 @@
           converter="function(activeUser){ return ( ! activeUser || activeUser.isAnonymous() ) ? 'visible' : 'excluded' }" />
           
         <qxt:listener type="execute">
-          access.components.dialog.Dialog.show("login");
+          qcl.ui.dialog.Dialog.show("login");
         </qxt:listener>
         
       </qx:toolBarButton>

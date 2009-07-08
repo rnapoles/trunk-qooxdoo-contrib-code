@@ -17,15 +17,15 @@ define("QOOXDOO_CONTRIB_PATH", "../cache/downloads/" );
  * Path to the RpcPhp package in qooxdoo-contrib
  * @var string
  */
-//define("RPCPHP_SERVER_PATH", QOOXDOO_CONTRIB_PATH . "RpcPhp/trunk/");
-define("RPCPHP_SERVER_PATH", "../../../../../../RpcPhp/trunk/" );
+define("RPCPHP_SERVER_PATH", QOOXDOO_CONTRIB_PATH . "RpcPhp/trunk/");
+//define("RPCPHP_SERVER_PATH", "../../../../../../RpcPhp/trunk/" );
 
 /**
  * Path to the qcl php library
  * @var string
  */
-//define("QCL_CLASS_PATH", QOOXDOO_CONTRIB_PATH . "qcl/trunk/backend/php/class/");
-define("QCL_CLASS_PATH", "../../../../../../qcl-php/class/" );
+define("QCL_CLASS_PATH", QOOXDOO_CONTRIB_PATH . "qcl/trunk/backend/php/class/");
+//define("QCL_CLASS_PATH", "../../../../../../qcl-php/class/" );
 
 /**
  * Path to the application backend classes

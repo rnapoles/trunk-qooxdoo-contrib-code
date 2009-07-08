@@ -1,11 +1,11 @@
 /* ************************************************************************
 #asset(access/*)
 #asset(qx/*)
-#require(access.components.dialog.Alert)
-#require(access.components.dialog.Confirm)
-#require(access.components.dialog.Login)
-#require(access.components.dialog.Form)
-#require(access.components.dialog.Select)
+#require(qcl.ui.dialog.Alert)
+#require(qcl.ui.dialog.Confirm)
+#require(qcl.ui.dialog.Login)
+#require(qcl.ui.dialog.Form)
+#require(qcl.ui.dialog.Select)
 ************************************************************************ */
 
 /**
@@ -15,15 +15,15 @@ qx.Class.define("access.Main",
 {
   extend : qx.application.Standalone,
   include : [ qcl.application.MApplication ],
-  
+
   properties :
   {
     server :
     {
-      check : "String",
+      check    : "String",
       nullable : false,
-      apply : "_applyServer",
-      event : "changeServer"
+      apply    : "_applyServer",
+      event    : "changeServer"
     }
   },
 
@@ -36,70 +36,77 @@ qx.Class.define("access.Main",
      */
     main : function()
     {
-       this.base(arguments);
+      this.base(arguments);
 
       /*
-       * logging
-       */
+             * logging
+             */
+
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
 
       /*
-       * the URL of the jsonrpc server
-       */
+             * the URL of the jsonrpc server
+             */
+
       this.info("Starting Application...");
 
       /*
-       * Setup authentication and config without
-       * setting the service methods
-       */
+             * Setup authentication and config without
+             * setting the service methods
+             */
+
       this.setupAuthentication();
       this.setupConfig();
 
       /*
-       * setup server state, this will configure
-       * the service methods and start auth/config
-       */
-      if ( ! this.getState( "server" ) )
-      {
-        this.setServer( "1.0" );
-      }
-      else
-      {
+             * setup server state, this will configure
+             * the service methods and start auth/config
+             */
+
+      if (!this.getState("server")) {
+        this.setServer("qcl");
+      } else {
         this.updateState("server");
       }
-      
+
       /*
-       * pre-configure login popup
-       */
-      var loginPopup = access.components.dialog.Dialog.getInstanceByType("login");
-      loginPopup.set({
+             * pre-configure login popup
+             */
+
+      var loginPopup = qcl.ui.dialog.Dialog.getInstanceByType("login");
+
+      loginPopup.set(
+      {
         callback    : this.checkLogin,
         allowCancel : true,
         image       : "access/qooxdoo-logo.gif",
         text        : "<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations <br/>from the first group box.</p>"
       });
-      
+
       /*
-       * what to do when authentication fails: display message
-       * in popup. 
-       */
+             * what to do when authentication fails: display message
+             * in popup. 
+             */
+
       loginPopup.addListener("loginFail", function(event) {
         loginPopup.setMessage(event.getData());
       }, this);
-      
+
       /*
-       * allow remote user interaction
-       */
-      access.components.dialog.Dialog.allowServerControl(true);
-      
+             * allow remote user interaction
+             */
+
+      qcl.ui.dialog.Dialog.allowServerControl(true);
+
       /*
-       * Greet the user!
-       */
+             * Greet the user!
+             */
+
       this.alert("Welcome to the Access Demo Application!");
-      
     },
+
 
     /**
      * Callback function that takes the username, password and
@@ -125,26 +132,29 @@ qx.Class.define("access.Main",
         else
         {
           /*
-           * login was successful
-           */
+                     * login was successful
+                     */
+
           callback.call(context, true);
 
           /*
-           * load configuration data for this user
-           */
+                     * load configuration data for this user
+                     */
+
           qx.core.Init.getApplication().loadConfig();
         }
       },
       this);
     },
-    
+
+
     /**
      * Starts the server dialog
-     * @return
+     *
+     * @return {void} 
      */
-    startServerDialog : function()
-    {
-      this.executeService("access.ApplicationController","serverDialog1");
+    startServerDialog : function() {
+      this.executeService("access.ApplicationController", "serverDialog1");
     },
 
 
@@ -156,15 +166,18 @@ qx.Class.define("access.Main",
     logoutUser : function()
     {
       /*
-       * call parent method to log out
-       */
-      this.logout(function(){
-        /*
-         * load configuration data for anonymous
-         */
-        this.loadConfig();                
-      }, this);
+             * call parent method to log out
+             */
 
+      this.logout(function()
+      {
+        /*
+                 * load configuration data for anonymous
+                 */
+
+        this.loadConfig();
+      },
+      this);
     },
 
 
@@ -172,52 +185,56 @@ qx.Class.define("access.Main",
      * Changes the backend
      *
      * @param version {var} TODOC
+     * @param old {var} TODOC
      * @return {void} 
      */
-    _applyServer : function( version, old )
+    _applyServer : function(version, old)
     {
       /*
-       * remove the session of the other server if exists
-       */
-      if( old )
-      {
-        this.removeState('sessionId');  
+             * remove the session of the other server if exists
+             */
+
+      if (old) {
+        this.removeState('sessionId');
       }
-      
+
       /*
-       * set the state
-       */
-      this.setState("server", version );
-      
+             * set the state
+             */
+
+      this.setState("server", version);
+
       /*
-       * set the new values according to server version
-       */
+             * set the new values according to server version
+             */
+
       switch(version)
       {
         case "1.0":
           this.setServerUrl("../services/index.php");
-          this.getAuthStore().setServiceName("Access.SimpleAuthController");
-          this.getConfigStore().setServiceName("Access.SimpleConfigController");
+          this.getAuthStore().setServiceName("access.SimpleAuthController");
+          this.getConfigStore().setServiceName("access.SimpleConfigController");
           this.info("Server: changed to 1.0 version.");
           break;
 
         case "qcl":
           this.setServerUrl("../services/server.php");
-          this.getAuthStore().setServiceName("Access.AuthController");
-          this.getConfigStore().setServiceName("Access.ConfigController");
+          this.getAuthStore().setServiceName("access.AuthController");
+          this.getConfigStore().setServiceName("access.ConfigController");
           this.info("Server: changed to trunk version.");
           break;
-          
+
         default:
           this.alert("Invalid server version");
       }
-      
+
       /*
-       * re-authenticate and load new config values
-       */
-      this.startAuthentication(function(){
+             * re-authenticate and load new config values
+             */
+
+      this.startAuthentication(function() {
         this.loadConfig();
-      },this);
+      }, this);
     }
   }
 });
