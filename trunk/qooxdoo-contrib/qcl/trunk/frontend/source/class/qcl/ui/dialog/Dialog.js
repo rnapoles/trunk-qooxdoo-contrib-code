@@ -53,7 +53,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
     {      
       if ( ! this.__instances[type] )
       {
-        this.__instances[type] = new access.components.dialog[qx.lang.String.firstUp(type)];
+        this.__instances[type] = new qcl.ui.dialog[qx.lang.String.firstUp(type)];
       }
       this.__instances[type].addListener( "hide", this._nextDialog, this );
       return this.__instances[type];
