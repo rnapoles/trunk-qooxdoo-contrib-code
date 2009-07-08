@@ -37,13 +37,9 @@ define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
  * Common base class for controllers. Mainly contains convenience
  * methods that proxy methods originating in other objects.
  */
-class qcl_data_controller_Controller extends qcl_core_Object
+class qcl_data_controller_Controller
+  extends qcl_core_Object
 {
-
-  /**
-   * The server object
-   */
-  var $_server;
 
   /**
    * The id of the session, default to PHP session id
@@ -90,7 +86,6 @@ class qcl_data_controller_Controller extends qcl_core_Object
     return qcl_server_Server::getInstance();
   }
 
-
   /**
    * Configures the service. Stub to be overridden
    **/
@@ -99,23 +94,38 @@ class qcl_data_controller_Controller extends qcl_core_Object
   /**
    * Returns a configuration value of the pattern "foo.bar.baz"
    * This retrieves the values set in the service.ini.php file.
-   * @todo move into component
    */
   function getIniValue($path)
   {
     return qcl_application_Application::getIniValue($path);
   }
 
+  /**
+   * Abort the request without throwing an error
+   * @return void
+   */
   function abortRequest()
   {
     $this->_isAborted = true;
   }
 
+  /**
+   * Whether the request has been aborted by the service code
+   * @return bool
+   */
   function isAborted()
   {
     return $this->_isAborted;
   }
 
+  /**
+   * Returns the name of the current service for use in JsonRpc requests
+   * @return unknown_type
+   */
+  function getServiceName()
+  {
+    return str_replace("_",".", substr( $this->className(), strlen(JsonRpcClassPrefix) ) );
+  }
 
   //-------------------------------------------------------------
   // response data

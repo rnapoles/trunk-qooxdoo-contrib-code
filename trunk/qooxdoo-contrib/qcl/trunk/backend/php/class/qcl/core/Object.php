@@ -770,11 +770,20 @@ class qcl_core_Object extends qcl_core_BaseClass
   }
 
   /**
-   * Dispatches a message. Filtering not yet supported, i.e. message name must
-   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * Dispatches a message.
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
-   * @todo move to external class
+   */
+  function dispatchMessage ( $name, $data )
+  {
+    require_once "qcl/event/message/Bus.php";
+    qcl_event_message_Bus::dispatchMessage( &$this, $name, $data );
+  }
+
+  /**
+   * Dispatches a server message.
+   * @param string $name Message name
+   * @param mixed $data Data dispatched with message
    */
   function dispatchServerMessage ( $name, $data )
   {
@@ -786,7 +795,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    * Broadcasts a message to all connected clients
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
-   * @todo move to external class
    */
   function broadcastServerMessage ( $name, $data  )
   {
@@ -801,7 +809,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $type The name of the event
    * @param string|qcl_core_Object $object The object or the object id retrieved by '$this->objectId()'
    * @param string $method callback method of the object
-   * @todo move to external class
    */
   function addListener( $type, $object, $method )
   {

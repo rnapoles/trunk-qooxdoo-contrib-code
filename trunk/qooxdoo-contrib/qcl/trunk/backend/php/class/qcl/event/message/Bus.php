@@ -206,7 +206,7 @@ class qcl_event_message_Bus
     $_this =& qcl_event_message_Bus::getInstance();
     require_once "qcl/event/message/Message.php";
     $message =& new qcl_event_message_Message( $name, $data );
-    $message->setSender( &$sender );
+    if ( $sender) $message->setSender( &$sender );
     return $_this->dispatch( $message );
   }
 
@@ -223,7 +223,7 @@ class qcl_event_message_Bus
     $_this =& qcl_event_message_Bus::getInstance();
     require_once "qcl/event/message/ServerMessage.php";
     $message =& new qcl_event_message_ServerMessage( $name, $data );
-    $message->setSender( &$sender );
+    if ( $sender) $message->setSender( &$sender );
     return $_this->dispatch( $message );
   }
 
@@ -239,7 +239,7 @@ class qcl_event_message_Bus
     $_this =& qcl_event_message_Bus::getInstance();
     require_once "qcl/event/message/ServerMessage.php";
     $message =& new qcl_event_message_ServerMessage( $name, $data );
-    $message->setSender( &$sender );
+    if ( $sender) $message->setSender( &$sender );
     return $_this->dispatch( $message );
   }
 
