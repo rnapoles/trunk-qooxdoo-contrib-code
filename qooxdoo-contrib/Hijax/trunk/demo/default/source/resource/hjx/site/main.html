@@ -11,6 +11,22 @@
     // for "build" version one would write
     // qx.event.Registration.addListener(window, "ready", hjx.Hijax.main, hjx.Hijax);
     function ready() {
+      // Enable stack traces when logging errors
+      if (qx.log.Logger.__serialize_orig == null) {
+        qx.log.Logger.__serialize_orig =  qx.log.Logger.__br; // qx.log.Logger.__serialize;
+        qx.log.Logger.__br = function(value, deep){
+          var type = this.__bq(value); //__detect(value);
+          if (type == "error") {
+            return {
+              type : "error",
+              text : value.toString() + "\n" + qx.dev.StackTrace.getStackTraceFromError(value).join("\n")
+            };
+          } else {
+            return this.__serialize_orig(value, deep);
+          }
+        }
+      }
+
       hjx.Hijax.main.call(hjx.Hijax);
     }
   </script>
