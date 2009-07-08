@@ -232,8 +232,7 @@ class qcl_event_Dispatcher
     $event =& new qcl_event_type_ServerEvent( $type );
     $_this->dispatch( &$target, &$event );
     $_this->__serverEvents[] = array(
-      'type' => $event->getType(),
-      'class' => "qx.event.data.Event"
+      'type' => $event->getType()
     );
   }
 
@@ -254,7 +253,6 @@ class qcl_event_Dispatcher
     $_this->dispatch( &$target, &$event );
     $_this->__serverEvents[] = array(
       'type'  => $event->getType(),
-      'class' => "qx.event.data.DataEvent",
       'data'  => $event->getData()
     );
   }
