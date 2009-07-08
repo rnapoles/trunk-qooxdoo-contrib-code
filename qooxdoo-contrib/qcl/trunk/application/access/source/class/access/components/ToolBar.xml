@@ -18,7 +18,6 @@
         
         <!-- show button only when user is not logged in -->
         <qcl:observe 
-
           property="visibility" 
           source="this.getApplication().getUserManager()"
           sourceProp="activeUser"
@@ -64,18 +63,19 @@
 
       <qx:toolBarMenuButton label="Server" >
         <qx:menu>
-           <qx:radioGroup>
-            <qx:menuRadioButton label="Use RpcPhp 1.0" value="true">
+           <qx:radioGroup widgetId="serverRadioGroup">
+           <!-- todo: use bind here -->
+            <qx:menuRadioButton label="Use RpcPhp 1.0" >
               <qxt:listener event="changeValue">
-                if(e.getData())
+                if( e.getData() )
                 {
                   this.getApplication().setServer("1.0");
                 }
               </qxt:listener>
             </qx:menuRadioButton>
-            <qx:menuRadioButton label="Use qcl server" >
+            <qx:menuRadioButton label="Use qcl server" value="true" >
               <qxt:listener event="changeValue" arg="event">
-                if(event.getData())
+                if( event.getData() )
                 {
                   this.getApplication().setServer("qcl");
                 }

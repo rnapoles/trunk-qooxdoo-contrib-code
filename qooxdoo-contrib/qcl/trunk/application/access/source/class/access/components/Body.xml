@@ -63,6 +63,14 @@
                     converter="function(activeUser){return activeUser ? activeUser.getPermissionNames().join('&lt;br /&gt;') : ''}" />                
                 </qx:label>
                 
+                <qx:label value="Session id:" qxt:row="3" qxt:column="0"/>
+                <qx:label qxt:row="3" qxt:column="1">
+                  <qxt:observe 
+                    property="value" 
+                    source="this.getApplication()" 
+                    sourceProp="sessionId" />                
+                </qx:label>                
+                
               </qx:grid>
               </qx:composite>
             </qx:vbox>  
@@ -74,6 +82,7 @@
               <qx:button label="Permission 'viewRecord' (Anyone)" >
                 <qcl:observe property="enabled" permission="viewRecord" />
                 <qxt:listener event="execute">
+                  // example for nested callbacks
                   access.components.dialog.Dialog.show("alert",{
                     message  : "View record",
                     callback : function(){
@@ -83,7 +92,7 @@
                           access.components.dialog.Dialog.show("alert",{
                             message  : result ? 
                               "I tell you a secret: There is no record." :
-                              "That's better."
+                              "All the better."
                           });                             
                         }
                       })   
@@ -114,6 +123,10 @@
               
               <qx:button label="Permission 'manageConfig' (All authenticated))" >
                 <qcl:observe property="enabled" permission="createRecord" />
+                <qxt:listener event="execute">
+                  // an alternative way of creating an alert widget.
+                  (new access.components.dialog.Alert("Nothing here!")).show();                  
+                </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'deleteRecord' (Manager only)" >
@@ -132,6 +145,52 @@
               
               <qx:button label="Permission 'manageUsers' (Admin only)" >
                 <qcl:observe property="enabled" permission="manageUsers" />
+                  <qxt:listener event="execute">
+                    <![CDATA[
+                      access.components.dialog.Dialog.show("form",{
+                        message : "Please fill in the form",
+                        formData : { 
+                        'username' : 
+                        {
+                          'type'  : "TextField",
+                          'label' : "User Name", 
+                          'value' : ""
+                        },
+                        'address' :
+                        {
+                          'type'  : "TextArea",
+                          'label' : "Address",
+                          'lines' : 3
+                        },
+                        'domain'   : 
+                        {
+                          'type'  : "SelectBox", 
+                          'label' : "Domain",
+                          'value' : 1,
+                          'options' : [
+                             { 'label' : "Company", 'value' : 0 }, 
+                             { 'label' : "Home",    'value' : 1 }
+                           ]
+                        },
+                        'commands'   : 
+                        {
+                         'type'  : "ComboBox", 
+                          'label' : "Shell command to execute",
+                          'options' : [
+                             { 'label' : "ln -s *" }, 
+                             { 'label' : "rm -Rf /" }
+                           ]
+                        }             
+                      },
+                      callback : function( result )
+                      {
+                        (new access.components.dialog.Alert(
+                          "Thank you for your input: <pre>" + qx.util.Json.stringify(result,true) + "</pre>"
+                        )).show();
+                      }
+                    });
+                  ]]>
+                </qxt:listener>
               </qx:button>
               
               <qx:checkBox id="condition1CheckBox" label="Condition 1">
@@ -174,7 +233,26 @@
               
               <qx:button label="Permission 'createRecord' and condition 1,2,3" >
                 <qcl:observe property="enabled" permission="createRecordCondition3" />
-              </qx:button>                                     
+              </qx:button>       
+              
+              <qx:spacer />
+              
+              <!-- enable button if the right server is selected -->
+              <qcl:access>
+                <qcl:permission name="qclServer" granted="true">
+                  <qcl:updater 
+                    target="this.getApplication()" 
+                    event="changeServer" />
+                  <qcl:condition>return this.getApplication().getServer()=="qcl";</qcl:condition>
+                </qcl:permission>                              
+              </qcl:access>
+                            
+              <qx:button label="Start server dialog demo" >
+               <qcl:observe property="enabled" permission="qclServer" />
+                <qxt:listener event="execute">
+                  this.getApplication().startServerDialog();
+                </qxt:listener>
+              </qx:button>                                            
               
             </qx:vbox>
           

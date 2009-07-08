@@ -22,7 +22,8 @@ qx.Class.define("access.Main",
     {
       check : "String",
       nullable : false,
-      apply : "_applyServer"
+      apply : "_applyServer",
+      event : "changeServer"
     }
   },
 
@@ -36,16 +37,10 @@ qx.Class.define("access.Main",
     main : function()
     {
        this.base(arguments);
-      
-      
- 
 
-      
-      
       /*
-                   * logging
-                   */
-
+       * logging
+       */
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
@@ -93,6 +88,17 @@ qx.Class.define("access.Main",
       loginPopup.addListener("loginFail", function(event) {
         loginPopup.setMessage(event.getData());
       }, this);
+      
+      /*
+       * allow remote user interaction
+       */
+      access.components.dialog.Dialog.allowServerControl(true);
+      
+      /*
+       * Greet the user!
+       */
+      this.alert("Welcome to the Access Demo Application!");
+      
     },
 
     /**
@@ -121,17 +127,24 @@ qx.Class.define("access.Main",
           /*
            * login was successful
            */
-
           callback.call(context, true);
 
           /*
            * load configuration data for this user
            */
-
           qx.core.Init.getApplication().loadConfig();
         }
       },
       this);
+    },
+    
+    /**
+     * Starts the server dialog
+     * @return
+     */
+    startServerDialog : function()
+    {
+      this.executeService("access.ApplicationController","serverDialog1");
     },
 
 

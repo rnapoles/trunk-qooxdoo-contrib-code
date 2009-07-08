@@ -31,27 +31,44 @@ qx.Class.define("access.components.dialog.Form",
   */     
   properties :
   {
-    /** 
+    /**   
      * Data to create a form with multiple fields. 
-     * So far implemented: TextField/TextArea and non-editable Combobox
-     *
+     * So far implemented: TextField and non-editable Combobox
+     * 
      * <pre>
      * { 
-     *  'username' : 
-     *  {
-     *    'label' : "User Name", 
-     *    'value' : "", 
-     *    'lines' : 1 
-     *  }, 
-     *  'domain'   : 
-     *  {
-     *    'label' : "Domain",
-     *    'value' : 0,
-     *    'options' : [
-     *      { 'label' : "Company", 'value' : 0, 'icon' : null }, 
-     *      { 'label' : "Home", 'value' : 1, 'icon' : null },
-     *    ]
-     *   }
+     * { 
+     *   'username' : 
+     *   {
+     *     'type'  : "TextField",
+     *     'label' : "User Name", 
+     *     'value' : ""
+     *   },
+     *   'address' :
+     *   {
+     *     'type'  : "TextArea",
+     *     'label' : "Address",
+     *     'lines' : 3
+     *   },
+     *   'domain'   : 
+     *   {
+     *     'type'  : "SelectBox", 
+     *     'label' : "Domain",
+     *     'value' : 1,
+     *     'options' : [
+     *       { 'label' : "Company", 'value' : 0 }, 
+     *       { 'label' : "Home",    'value' : 1 }
+     *     ]
+     *   },
+     *   'commands'   : 
+     *   {
+     *    'type'  : "ComboBox", 
+     *     'label' : "Shell command to execute",
+     *     'options' : [
+     *       { 'label' : "ln -s *" }, 
+     *       { 'label' : "rm -Rf /" }
+     *     ]
+     *   }   
      * }
      * </pre>
      */
@@ -60,6 +77,15 @@ qx.Class.define("access.components.dialog.Form",
       check : "Map",
       nullable : false,
       apply : "_applyFormData"
+    },
+    
+    /**
+     * The result data map
+     */
+    resultData :
+    {
+      check : "Map",
+      nullable : true
     }
   },
   
@@ -113,7 +139,7 @@ qx.Class.define("access.components.dialog.Form",
       hbox.add( this.__message );    
       
       /* 
-       * Form grid  
+       * Form container  
        */
       var formContainer = this.__formContainer = new qx.ui.container.Composite;
       var gridLayout = new qx.ui.layout.Grid(9, 5);
@@ -147,13 +173,28 @@ qx.Class.define("access.components.dialog.Form",
 
     },
     
-    
-    _applyFormData : function (formData, old )
+    /**
+     * Constructs the form on-the-fly
+     * @param formData
+     * @param old
+     * @return
+     */
+    _applyFormData : function ( formData, old )
     {
-  
+      /*
+       * remove all children
+       */
+      this.__formContainer.removeAll();
+       
+      /*
+       * clear result data
+       */
+      this.setResultData({});
+       
       /*
        * loop through form data array
        */
+      var row = 0;
       for ( key in formData )
       {
         
@@ -162,138 +203,87 @@ qx.Class.define("access.components.dialog.Form",
         /*
          * label
          */
-        var l = new qx.ui.basic.Label(fieldData.label);
-        l.setWidth("1*");
-        
-        /*
-         * choose control
-         */
-        if ( fieldData.lines && fieldData.lines > 1)
+        var label = new qx.ui.basic.Label( fieldData.label );
+        this.__formContainer.add( label, { row: row, column: 0} );
+        var formElement = null;
+        switch ( fieldData.type )
         {
-          /*
-           * text area
-           */
-          var t = new qx.ui.form.TextArea( fieldData.value || "");
-          t.setHeight(fieldData.lines * 16);
-          t.setLiveUpdate(true);
-          delete fieldData.lines;
           
-          /*
-           * create an event listener which dynamically updates the
-           * 'value' field in the form data
-           */
-          eval('t.addEventListener("changeValue", function(event){'+  
-            'formData.' + key + '.value=event.getData();' +
-          '});');          
-        }
-        else if ( fieldData.lines )
-        {
-          /*
-           * text field
-           */
-          var t = new qx.ui.form.TextField(fieldData.value || "");
-          t.setHeight(24);
-          t.setLiveUpdate(true);
-          delete fieldData.lines;
+          case "TextArea": 
+            formElement = new qx.ui.form.TextArea( fieldData.value || "");
+            formElement.setHeight(fieldData.lines * 16);
+            formElement.setLiveUpdate(true);
+            break;
+
+          case "TextField":
+            formElement = new qx.ui.form.TextField( fieldData.value || "");
+            formElement.setLiveUpdate(true);
+            break;
             
-          /*
-           * create an event listener which dynamically updates the
-           * 'value' field in the form data
-           */
-          eval('t.addEventListener("changeValue", function(event){'+  
-            'formData.' + key + '.value=event.getData();' +
-          '});');          
-        }
-        else if ( fieldData.options && fieldData.options instanceof Array )
-        {
-          /*
-           * combobox
-           */
-          var t = new qx.ui.form.ComboBox;
-          t.setHeight(24);
-          fieldData.options.forEach(function(data){
-            t.add( new qx.ui.form.ListItem( data.label, data.icon, data.value ) );
-          });
-          if (fieldData.value) 
-          {
-            var i = t.getList().findValue(fieldData.value);
-            if (i) 
-            {
-              t.setSelected(i);
-            }
-          }
-          delete fieldData.options;
-          
-          /*
-           * create an event listener which dynamically updates the
-           * 'value' field in the form data
-           */
-          eval('t.addEventListener("changeValue", function(event){'+  
-            'formData.' + key + '.value=this.getManager().getSelectedItem().getValue();' +
-          '},t);');          
-        }
-        else
-        {
-          this.error("Invalid Form data: " + formData.toString() );
+          case "ComboBox":
+            formElement = new qx.ui.form.ComboBox();
+            fieldData.options.forEach(function( item ){
+              var listItem = new qx.ui.form.ListItem( item.label, item.icon );
+              formElement.add( listItem );
+            });
+            break;
+          case "SelectBox":
+            formElement = new qx.ui.form.SelectBox();
+            var selected = null;
+            fieldData.options.forEach(function( item ){
+              var listItem = new qx.ui.form.ListItem( item.label, item.icon );
+              listItem.setUserData( "value", 
+                item.value !== undefined ?  item.value : item.label
+              );
+              formElement.add( listItem );
+              if( fieldData.value !== undefined 
+                  && fieldData.value == listItem.getUserData( "value" ) )
+              {
+                formElement.setSelection([listItem]);
+                this.getResultData()[key]=fieldData.value;
+              }
+            });
+            break;
+            
+          default:
+            this.error("Invalid form field type:" + fieldData.type);
+  
         }
         
         /*
-         * control width
+         * field name
          */
-        t.setWidth("3*");
+        formElement.__key = ""+key;
         
         /*
-         * panel
+         * add listener to update result map
          */
-        var h = new qx.ui.layout.HorizontalBoxLayout;
-        h.setWidth("100%");
-        h.setHeight("auto");
-        h.setSpacing(5);
-        h.add(l,t);
-        controls.push(h);
+        switch ( fieldData.type )
+        {
+          case "TextArea":
+          case "TextField":
+          case "ComboBox":
+            formElement.addListener("changeValue",function(event){
+              var key   = event.getTarget().__key;
+              var value = event.getData();
+              this.getResultData()[key] = value;
+            },this);
+            break;
+          case "SelectBox":
+            formElement.addListener("changeSelection",function(event){
+              var key   = event.getTarget().__key;
+              var value = event.getData()[0].getUserData("value");
+              this.getResultData()[key] = value;
+            },this);            
+            break;   
+        }
         
+        /*
+         * add form element to form and go to next row
+         */
+         this.__formContainer.add( formElement, { row: row, column: 1} );
+         row++;
       }
-
-      /*
-       * button panel
-       */
-      var p = new qx.ui.layout.HorizontalBoxLayout;
-      p.setSpacing(10);
-      p.setHorizontalChildrenAlign("center");
-      p.add(c, b);
-      controls.push(p);
-
-      /*
-       * window
-       */
-      var w = this._createWindow(
-        this.tr("Information"), 
-        msg, 
-        "icon/16/actions/help-about.png", 
-        "icon/32/status/help-about.png",
-        controls,
-        600
-      );
-
-      /*
-       * add event listener for OK Button
-       */
-      b.addEventListener("execute", function()
-      {
-        w.close();
-        w.dispose();
-        callback.call(context, formData);
-      });
-
-      /*
-       * add event listener for cancel Button
-       */
-      c.addEventListener("execute", function()
-      {
-        w.close();
-        w.dispose();
-        callback.call(context, false);
-      });
     },
         
     /*
@@ -303,16 +293,17 @@ qx.Class.define("access.components.dialog.Form",
     */     
     
     /**
-     * Handle click on a button. Calls callback with
-     * the value set in the options map.
+     * Handle click on ok button. Calls callback with the result map
+     * @override
      */
-    _handleSelection : function( value )
+    _handleOk : function()
     {
+      this.hide();
       if( this.getCallback() )
       {
-        this.getCallback()(value);
+        this.getCallback()(this.getResultData());
       }
-      this.hide();
+      this.resetCallback();
     }
   }    
 });
