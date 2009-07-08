@@ -76,9 +76,9 @@ qx.Class.define("qcl.ui.dialog.Login",
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */  
-    __text : null,
-    __username : null,
-    __password : null,
+    _text : null,
+    _username : null,
+    _password : null,
     
     /*
     ---------------------------------------------------------------------------
@@ -88,8 +88,8 @@ qx.Class.define("qcl.ui.dialog.Login",
 
     _applyText : function( value, old )
     {
-      this.__text.setValue( value );
-      this.__text.setVisibility( value ? "visible" : "excluded" );
+      this._text.setValue( value );
+      this._text.setVisibility( value ? "visible" : "excluded" );
     },    
         
     /*
@@ -116,19 +116,19 @@ qx.Class.define("qcl.ui.dialog.Login",
       /*
        * add image 
        */
-      this.__image = new qx.ui.basic.Image();
-      this.__image.setVisibility("excluded");
-      groupboxContainer.add( this.__image );
+      this._image = new qx.ui.basic.Image();
+      this._image.setVisibility("excluded");
+      groupboxContainer.add( this._image );
       
       /*
        * add text
        */
-      this.__text = new qx.ui.basic.Label();
-      this.__text.setRich(true);
-      this.__text.setAllowStretchX(true);
-      this.__text.setVisibility("excluded");
+      this._text = new qx.ui.basic.Label();
+      this._text.setRich(true);
+      this._text.setAllowStretchX(true);
+      this._text.setVisibility("excluded");
       
-      groupboxContainer.add( this.__text );
+      groupboxContainer.add( this._text );
       
       /* 
        * Group box with login fields  
@@ -156,15 +156,15 @@ qx.Class.define("qcl.ui.dialog.Login",
       /* 
        * Text fields  
        */
-      this.__username = new qx.ui.form.TextField();
-      this.__password = new qx.ui.form.PasswordField();
+      this._username = new qx.ui.form.TextField();
+      this._password = new qx.ui.form.PasswordField();
 
-      gridContainer.add(this.__username.set({
+      gridContainer.add(this._username.set({
         allowShrinkX: false,
         paddingTop: 3
       }), {row: 0, column : 1});
 
-      gridContainer.add(this.__password .set({
+      gridContainer.add(this._password .set({
         allowShrinkX: false,
         paddingTop: 3
       }), {row: 1, column : 1});
@@ -172,21 +172,21 @@ qx.Class.define("qcl.ui.dialog.Login",
       /*
        * Add message label
        */
-      this.__message = new qx.ui.basic.Label();
-      this.__message.setRich(true);
-      this.__message.setAllowStretchX(true);
-      this.__message.setVisibility("excluded");
-      groupboxContainer.add( this.__message );    
+      this._message = new qx.ui.basic.Label();
+      this._message.setRich(true);
+      this._message.setAllowStretchX(true);
+      this._message.setVisibility("excluded");
+      groupboxContainer.add( this._message );    
       
       /* 
        * Login Button 
        */
-      var loginButton = this.__loginButton =  new qx.ui.form.Button(this.tr("Login"));
+      var loginButton = this._loginButton =  new qx.ui.form.Button(this.tr("Login"));
       loginButton.setAllowStretchX(false);
       loginButton.addListener("execute", function(){
         this.getCallback()(
-          this.__username.getValue(),
-          this.__password.getValue(),
+          this._username.getValue(),
+          this._password.getValue(),
           this._handleCheckLogin,
           this
         );
@@ -211,7 +211,7 @@ qx.Class.define("qcl.ui.dialog.Login",
       /* 
        * Prepare effect as soon as the widget is ready 
        */
-      this.addListener("appear", this.__prepareEffect, this);
+      this.addListener("appear", this._prepareEffect, this);
     },  
           
     
@@ -219,9 +219,9 @@ qx.Class.define("qcl.ui.dialog.Login",
      * Sets up the effect that is triggered when the login fails
      * @return {void}
      */
-    __prepareEffect : function()
+    _prepareEffect : function()
     {
-      this.__effect = new qx.fx.effect.combination.Shake(this.getContainerElement().getDomElement());
+      this._effect = new qx.fx.effect.combination.Shake(this.getContainerElement().getDomElement());
     },
     
     /**
@@ -245,7 +245,7 @@ qx.Class.define("qcl.ui.dialog.Login",
       /*
        * clear password field and message label
        */
-      this.__password.setValue("");
+      this._password.setValue("");
       this.setMessage(null);
        
       /*
@@ -258,7 +258,7 @@ qx.Class.define("qcl.ui.dialog.Login",
       }
       else
       {
-        this.__effect.start();
+        this._effect.start();
         this.fireDataEvent("loginFail", message );
       }
     },
@@ -274,7 +274,7 @@ qx.Class.define("qcl.ui.dialog.Login",
     */    
     hide : function()
     {
-      this.__password.setValue("");
+      this._password.setValue("");
       this.setMessage(null);
       this.base(arguments);
     },    

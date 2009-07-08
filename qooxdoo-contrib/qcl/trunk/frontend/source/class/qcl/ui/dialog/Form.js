@@ -102,7 +102,7 @@ qx.Class.define("qcl.ui.dialog.Form",
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */  
-    __formContainer : null,
+    _formContainer : null,
     
     /*
     ---------------------------------------------------------------------------
@@ -132,16 +132,16 @@ qx.Class.define("qcl.ui.dialog.Form",
       /*
        * Add message label
        */
-      this.__message = new qx.ui.basic.Label();
-      this.__message.setRich(true);
-      this.__message.setWidth(200);
-      this.__message.setAllowStretchX(true);
-      hbox.add( this.__message );    
+      this._message = new qx.ui.basic.Label();
+      this._message.setRich(true);
+      this._message.setWidth(200);
+      this._message.setAllowStretchX(true);
+      hbox.add( this._message );    
       
       /* 
        * Form container  
        */
-      var formContainer = this.__formContainer = new qx.ui.container.Composite;
+      var formContainer = this._formContainer = new qx.ui.container.Composite;
       var gridLayout = new qx.ui.layout.Grid(9, 5);
       gridLayout.setColumnAlign(0, "right", "top");
       gridLayout.setColumnAlign(2, "right", "top");
@@ -184,7 +184,7 @@ qx.Class.define("qcl.ui.dialog.Form",
       /*
        * remove all children
        */
-      this.__formContainer.removeAll();
+      this._formContainer.removeAll();
        
       /*
        * clear result data
@@ -204,7 +204,7 @@ qx.Class.define("qcl.ui.dialog.Form",
          * label
          */
         var label = new qx.ui.basic.Label( fieldData.label );
-        this.__formContainer.add( label, { row: row, column: 0} );
+        this._formContainer.add( label, { row: row, column: 0} );
         var formElement = null;
         switch ( fieldData.type.toLowerCase() )
         {
@@ -253,7 +253,7 @@ qx.Class.define("qcl.ui.dialog.Form",
         /*
          * field name
          */
-        formElement.__key = ""+key;
+        formElement._key = ""+key;
         
         /*
          * add listener to update result map
@@ -264,14 +264,14 @@ qx.Class.define("qcl.ui.dialog.Form",
           case "textfield":
           case "combobox":
             formElement.addListener("changeValue",function(event){
-              var key   = event.getTarget().__key;
+              var key   = event.getTarget()._key;
               var value = event.getData();
               this.getResultData()[key] = value;
             },this);
             break;
           case "selectbox":
             formElement.addListener("changeSelection",function(event){
-              var key   = event.getTarget().__key;
+              var key   = event.getTarget()._key;
               var value = event.getData()[0].getUserData("value");
               this.getResultData()[key] = value;
             },this);            
@@ -281,7 +281,7 @@ qx.Class.define("qcl.ui.dialog.Form",
         /*
          * add form element to form and go to next row
          */
-         this.__formContainer.add( formElement, { row: row, column: 1} );
+         this._formContainer.add( formElement, { row: row, column: 1} );
          row++;
       }
     },

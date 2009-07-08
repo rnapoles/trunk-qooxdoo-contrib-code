@@ -65,17 +65,17 @@ qx.Class.define("qcl.ui.dialog.Alert",
       /*
        * add image 
        */
-      this.__image = new qx.ui.basic.Image("icon/48/status/dialog-information.png");
-      hbox.add( this.__image );
+      this._image = new qx.ui.basic.Image("icon/48/status/dialog-information.png");
+      hbox.add( this._image );
       
       /*
        * Add message label
        */
-      this.__message = new qx.ui.basic.Label();
-      this.__message.setRich(true);
-      this.__message.setWidth(200);
-      this.__message.setAllowStretchX(true);
-      hbox.add( this.__message );    
+      this._message = new qx.ui.basic.Label();
+      this._message.setRich(true);
+      this._message.setWidth(200);
+      this._message.setAllowStretchX(true);
+      hbox.add( this._message );    
       
       /* 
        * Ok Button 
