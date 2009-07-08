@@ -23,6 +23,7 @@
           sourceProp="activeUser"
           converter="function(activeUser){ return ( ! activeUser || activeUser.isAnonymous() ) ? 'visible' : 'excluded' }" />
           
+        <!-- show login popup on button click -->          
         <qxt:listener type="execute">
           qcl.ui.dialog.Dialog.show("login");
         </qxt:listener>
@@ -34,13 +35,14 @@
         label="Logout" icon="icon/16/actions/application-exit.png"
         visibility="excluded">
         
-        <!-- show button only when user is logged in -->
+        <!-- show button only when other button is not visible and the other way round -->
         <qcl:observe 
           property="visibility" 
           source="loginButton"
           sourceProp="visibility"
           converter="function(visibility){ return ( visibility == 'visible' ) ? 'excluded' : 'visible' }" />
           
+        <!-- logout user on button click -->
         <qxt:listener type="execute">
           this.getApplication().logoutUser();
         </qxt:listener>

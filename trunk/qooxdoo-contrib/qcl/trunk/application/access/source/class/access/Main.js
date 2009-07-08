@@ -39,32 +39,25 @@ qx.Class.define("access.Main",
       this.base(arguments);
 
       /*
-             * logging
-             */
-
+       * logging
+       */
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
 
-      /*
-             * the URL of the jsonrpc server
-             */
-
       this.info("Starting Application...");
 
       /*
-             * Setup authentication and config without
-             * setting the service methods
-             */
-
+       * Setup authentication and config without
+       * setting the service methods
+       */
       this.setupAuthentication();
       this.setupConfig();
 
       /*
-             * setup server state, this will configure
-             * the service methods and start auth/config
-             */
-
+       * setup server state, this will configure
+       * the service methods and start auth/config
+       */
       if (!this.getState("server")) {
         this.setServer("qcl");
       } else {
@@ -72,9 +65,8 @@ qx.Class.define("access.Main",
       }
 
       /*
-             * pre-configure login popup
-             */
-
+       * pre-configure login popup singleton for later use
+       */
       var loginPopup = qcl.ui.dialog.Dialog.getInstanceByType("login");
 
       loginPopup.set(
@@ -86,24 +78,13 @@ qx.Class.define("access.Main",
       });
 
       /*
-             * what to do when authentication fails: display message
-             * in popup. 
-             */
-
-      loginPopup.addListener("loginFail", function(event) {
-        loginPopup.setMessage(event.getData());
-      }, this);
-
-      /*
-             * allow remote user interaction
-             */
-
+       * allow remote user interaction
+       */
       qcl.ui.dialog.Dialog.allowServerControl(true);
 
       /*
-             * Greet the user!
-             */
-
+       * Greet the user!
+       */
       this.alert("Welcome to the Access Demo Application!");
     },
 
@@ -132,15 +113,13 @@ qx.Class.define("access.Main",
         else
         {
           /*
-                     * login was successful
-                     */
-
+           * login was successful
+           */
           callback.call(context, true);
 
           /*
-                     * load configuration data for this user
-                     */
-
+           * load configuration data for this user
+           */
           qx.core.Init.getApplication().loadConfig();
         }
       },
@@ -166,15 +145,13 @@ qx.Class.define("access.Main",
     logoutUser : function()
     {
       /*
-             * call parent method to log out
-             */
-
+       * call parent method to log out
+       */
       this.logout(function()
       {
         /*
-                 * load configuration data for anonymous
-                 */
-
+         * load configuration data for anonymous
+         */
         this.loadConfig();
       },
       this);
@@ -191,23 +168,20 @@ qx.Class.define("access.Main",
     _applyServer : function(version, old)
     {
       /*
-             * remove the session of the other server if exists
-             */
-
+       * remove the session of the other server if exists
+       */
       if (old) {
         this.removeState('sessionId');
       }
 
       /*
-             * set the state
-             */
-
+       * set the state
+       */
       this.setState("server", version);
 
       /*
-             * set the new values according to server version
-             */
-
+       * set the new values according to server version
+       */
       switch(version)
       {
         case "1.0":
@@ -229,9 +203,8 @@ qx.Class.define("access.Main",
       }
 
       /*
-             * re-authenticate and load new config values
-             */
-
+       * re-authenticate and load new config values
+       */
       this.startAuthentication(function() {
         this.loadConfig();
       }, this);
