@@ -18,36 +18,39 @@
 
 require_once "qcl/ui/dialog/Dialog.php";
 
-class qcl_ui_dialog_Confirm
+class qcl_ui_dialog_Select
   extends qcl_ui_dialog_Dialog
 {
 
   /**
-   * Returns a message to the client which prompts the user to confirm something
+   * Returns a message to the client which prompts the user with a choice of options.
+   *
    * @param string $message The message text
-   * @param array $choices Array containing the "Yes" and the "No" message
-   * @param string $callbackService Service that will be called when the user clicks on the OK button
+   * @param array $options Arrray containing maps of button data with the keys "label", "value", "icon"
+   * @param string $callbackService Service that will be called when the user clicks on the selected button
    * @param string $callbackMethod Service method
    * @param array $callbackParams Optional service params
    * @return unknown_type
    */
   function __construct(
     $message,
-    $choices,
+    $options,
+    $allowCancel=true,
     $callbackService,
     $callbackMethod,
     $callbackParams=null )
   {
-    qcl_event_message_Bus::dispatchServerMessage( null, "qcl.components.dialog.Dialog.show",array(
-     'type' => "confirm",
-     'properties'  => array(
-        'message'  => $message,
-        'yesButtonLabel' => $choices[0],
-        'noButtonLabel'  => $choices[1]
-      ),
-     'service' => $callbackService,
-     'method'  => $callbackMethod,
-     'params'  => $callbackParams
+    qcl_event_message_Bus::dispatchServerMessage( null,
+      "qcl.components.dialog.Dialog.show",array(
+        'type' => "select",
+        'properties' => array(
+          'message'     => $message,
+          'options'     => $options,
+          'allowCancel' => $allowCancel
+         ),
+        'service' => $callbackService,
+        'method'  => $callbackMethod,
+        'params'  => $callbackParams
     ));
   }
 }
