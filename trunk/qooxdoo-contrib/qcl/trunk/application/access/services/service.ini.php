@@ -58,7 +58,7 @@ admindb = test
 tableprefix = access_
 
 ;; Expanded variables
-;; dont't touch this
+;; dontt touch this
 user_userdb   = "${database.type}://${database.username}:${database.userpassw}@${database.host}:${database.port}/${database.userdb}"
 admin_userdb  = "${database.type}://${database.adminname}:${database.adminpassw}@${database.host}:${database.port}/${database.userdb}"
 user_admindb  = "${database.type}://${database.username}:${database.userpassw}@${database.host}:${database.port}/${database.admindb}"
