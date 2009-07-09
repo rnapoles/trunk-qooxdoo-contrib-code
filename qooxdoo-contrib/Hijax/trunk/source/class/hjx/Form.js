@@ -84,6 +84,7 @@ qx.Class.define("hjx.Form",
      * @param vFormId {String} HTML form id
      * @return {var} TODOC
      */
+    /*
     validateForm : function(vFormId)
     {
       var settings = hjx.Settings.__settings._forms[vFormId];
@@ -104,6 +105,7 @@ qx.Class.define("hjx.Form",
 
       return vPassed;
     },
+    */
 
 
     /**
