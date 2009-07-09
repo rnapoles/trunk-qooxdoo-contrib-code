@@ -354,8 +354,10 @@ qx.Class.define("hjx.Hijax",
           };
 
           // (Validate Form here!)
+          /*
           var passedValidation = hjx.Form.validateForm(this._form.id);
           if (passedValidation === false) return;
+          */
 
           // Same origin policy
           // Only localhost Requests will be processed

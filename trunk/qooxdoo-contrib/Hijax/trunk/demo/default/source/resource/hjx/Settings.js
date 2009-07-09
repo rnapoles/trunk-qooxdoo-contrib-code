@@ -109,7 +109,7 @@ qx.Class.define("hjx.Settings",
           event   : 'submit',
           domElem : 'content'
         }
-      },
+      }
 
       // "login/"       : { event : 'submit', domElem : 'body' },
       // "logout/"      : { event : 'click', domElem : 'body' }
@@ -120,6 +120,7 @@ qx.Class.define("hjx.Settings",
       // The field value is required true or false.
       // The prompt property is used for server-side validation and requires
       //     the event and the url to the server script.
+      /*
       _forms :
       {
         error_styles :
@@ -163,6 +164,7 @@ qx.Class.define("hjx.Settings",
           }
         }
       }
+      */
     },
 
 
