@@ -42,37 +42,41 @@ qx.Class.define("hjx.Settings",
 
   statics :
   {
+    _blockElem: null,
+
     __settings :
     {
       // JS functions to execute after page content has changed.
-      _onloadScripts : [
+      onload : [
         {
           regex: ".*",
-          scripts: []
+          handler: function() {
+            hjx.Settings.hideBlocker();
+          }
         }
       ],
 
       // JS functions to execute right before a hijax call is executed
-      _onhijaxScripts : [
+      onhijax : [
         {
           regex: ".*",
-          scripts: []
+          handler: function() {
+            hjx.Settings.showBlocker();
+          }
         }
       ],
 
       // JS functions to execute before page content will change.
-      _onunloadScripts : [
-        {
-          regex: ".*",
-          scripts: []
-        }
+      onunload : [
       ],
 
       // JS functions to execute when an error occurred
-      _onerrorScripts : [
+      onerror : [
         {
           regex: ".*",
-          scripts: []
+          handler: function() {
+            hjx.Settings.hideBlocker();
+          }
         }
       ],
 
@@ -167,6 +171,32 @@ qx.Class.define("hjx.Settings",
       */
     },
 
+    showBlocker : function() {
+      if (this._blockElem == null) {
+        var elem = document.createElement("div");
+        elem.id = "block-elem";
+        elem.style.position = "fixed";
+        elem.style.top      = "0";
+        elem.style.left     = "0";
+        elem.style.width    = "100%";
+        elem.style.height   = "100%";
+        elem.style.zIndex   = "1000";
+        elem.style.backgroundColor = "black";
+        elem.style.opacity  = "0.2";
+        elem.style.cursor   = "wait";
+
+        document.body.appendChild(elem);
+        this._blockElem = elem;
+      } else {
+        this._blockElem.style.display = "block";
+      }
+    },
+
+    hideBlocker : function() {
+      if (this._blockElem != null) {
+        this._blockElem.style.display = "none";
+      }
+    },
 
     /**
      * Getter function for the settings map.

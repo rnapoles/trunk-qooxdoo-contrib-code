@@ -499,7 +499,7 @@ qx.Class.define("hjx.Hijax",
         var statuscode = ev.getStatusCode();
         if (statuscode>=200 && statuscode<300) { // TODO: What happens for other status codes?!?
           // De-initialize the old page
-          this._executePageDependentScripts(this._settings._onunloadScripts);
+          this._executePageDependentHandlers("onunload");
 
           // Navigation highlighting
           for (var naviE in this._settings._navi)
@@ -570,7 +570,7 @@ qx.Class.define("hjx.Hijax",
           }
 
           // Call the initialization functions from the config file
-          this._executePageDependentScripts(this._settings._onloadScripts);
+          this._executePageDependentHandlers("onload");
 
           // Capture events from links and forms
           // NOTE: We caputure the events after running the page dependent scripts in order to catch generated
@@ -590,45 +590,39 @@ qx.Class.define("hjx.Hijax",
           document.location.href = url;
         } else {
           this._httpError(statuscode, url);
-          this._executePageDependentScripts(this._settings._onerrorScripts);
+          this._executePageDependentHandlers("onerror");
           this._resetGlobalCursor();
         }
       },this);
       req.send();
 
-      this._executePageDependentScripts(this._settings._onhijaxScripts);
+      this._executePageDependentHandlers("onhijax");
     },
 
 
-    _executePageDependentScripts : function(scriptsInfo)
-    {
+    _executePageDependentHandlers : function(handlerType) {
       var pagename = this._currentPagename || "";
 
-      for (var i = 0, l=scriptsInfo.length, script, regexComp; i<l; i++)
-      {
-        script = scriptsInfo[i];
-        regexComp = script.regexComp;
+      var handlerInfo = this._settings[handlerType];
+      for (var i = 0, l=handlerInfo.length, script, regexComp; i<l; i++) {
+        info = handlerInfo[i];
+        regexComp = info.regexComp;
 
         if (regexComp == null) {
-          var regex = script.regex;
+          var regex = info.regex;
           if (regex == null) {
-            regexComp = new RegExp("^" + script.patterns.join("|") + "$");
+            regexComp = new RegExp("^" + info.patterns.join("|") + "$");
           } else {
             regexComp = new RegExp(regex);
           }
-          script.regexComp = regexComp;
+          info.regexComp = regexComp;
         }
 
-
         if (regexComp.test(pagename)) {
-          for (var j = 0, src, lj = script.scripts.length; j < lj; j++) {
-            src = script.scripts[j];
-            try {
-              // NOTE: We wrap the executed code in a function in order to prevent global pollution
-              eval("(function() {" + src + "})();");
-            } catch (exc) {
-              qx.log.Logger.error(hjx.Hijax, "Calling script failed: >>>>" + src + "<<<<", exc);
-            }
+          try {
+            info.handler.call(info.scope);
+          } catch (exc) {
+            qx.log.Logger.error(hjx.Hijax, "Calling " + handlerType + " handler #" + i + " failed", exc);
           }
         }
       }
