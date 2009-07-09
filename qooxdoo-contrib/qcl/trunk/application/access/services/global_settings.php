@@ -17,6 +17,7 @@ define( "defaultAccessibility", "public" );
 
 /*
  * whether the server should log the request
+ * You need this only for debugging
  */
 define("JsonRpcDebug", false );
 
