@@ -506,25 +506,29 @@ qx.Class.define("hjx.Hijax",
           {
             if (naviE == "*")
             {
-              for (var i=0, l=this._settings._navi[naviE].selector.length; i<l; i++)
-              {
-                var selString = this._settings._navi[naviE].selector[i];
-                var domElems = qx.bom.Selector.query(selString);
-                var activeClassName = this._settings._navi[naviE].active[0];
+              var naviSetting = this._settings._navi[naviE];
 
-                for (var j=0, le=domElems.length; j<le; j++)
+              for (var i=0, l=naviSetting.selector.length; i<l; i++)
+              {
+                var selString = naviSetting.selector[i];
+                var domElems = qx.bom.Selector.query(selString);
+                var activeClassName = naviSetting.active[0];
+
+                for (var j=0, le=domElems.length, domEl; j<le; j++)
                 {
+                  domEl = domElems[j];
+
                   // add 'active' class name to clicked element's className property.
-                  if (domElems[j].href == url) {
-                    domElems[j].className = domElems[j].className + " " + activeClassName;
+                  if (domEl.href == url) {
+                    domEl.className = domEl.className + " " + activeClassName;
                   }
 
                   // remove 'active' class name from other elements' className property.
-                  else if (domElems[j].className.indexOf(activeClassName) >= 0)
+                  else if (domEl.className.indexOf(activeClassName) >= 0)
                   {
-                    var beforeActive = domElems[j].className.substr(0, domElems[j].className.indexOf(activeClassName));
-                    var afterActive = domElems[j].className.substr(domElems[j].className.indexOf(activeClassName) + activeClassName.length);
-                    domElems[j].className = beforeActive + afterActive;
+                    var beforeActive = domEl.className.substr(0, domEl.className.indexOf(activeClassName));
+                    var afterActive = domEl.className.substr(domEl.className.indexOf(activeClassName) + activeClassName.length);
+                    domEl.className = beforeActive + afterActive;
                   }
                 }
               }
