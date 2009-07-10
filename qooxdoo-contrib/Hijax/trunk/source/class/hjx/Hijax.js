@@ -54,8 +54,6 @@ qx.Class.define("hjx.Hijax",
   */
   statics :
   {
-    PAGE_NAME_DOM_ID  : "hjx.pagename",
-
     domain          : document.domain,
     url             : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
     defaultElement  : null,
