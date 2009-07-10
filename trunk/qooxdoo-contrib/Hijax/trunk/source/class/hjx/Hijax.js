@@ -62,7 +62,8 @@ qx.Class.define("hjx.Hijax",
     defaultRegExp   : /[\w\W\s]*<body[^>]*>([\w\W\s]*)<\/body>[\w\W\s]*/im,
     hijaxHistory    : null,
     historyReqMeth  : [],
-    _settings       : hjx.Settings.getSettings(),
+    _settingsClass  : null,
+    _settings       : null,
     _oldState       : null,
     _scrollToElem   : null,
     _userRequest    : false,
@@ -81,7 +82,10 @@ qx.Class.define("hjx.Hijax",
      */
     main : function() {
       this._scrollToElem = document.body;
-
+      
+      this._settingsClass = qx.Class.getByName(qx.core.Setting.get("hjx.settingsClass"));
+      this._settings = this._settingsClass.getSettings();
+      
       if (this._settings._pages['*']) {
         this.setDefaultContentTarget(this._settings._pages['*'].domElem);
       }
