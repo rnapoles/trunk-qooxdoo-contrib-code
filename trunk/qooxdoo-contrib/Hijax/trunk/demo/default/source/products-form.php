@@ -3,6 +3,9 @@
 <?php
 //print_r($_REQUEST);
 
+// Simulating server-side work
+sleep(1);
+
 if ($_REQUEST["order"]) {
   echo "You <b>ordered</b> a pizza with the following toppings:";
 } else {
