@@ -32,24 +32,28 @@
   {
     var contentNode = document.getElementById("content");
 
+    var start = new Date();
     for (var i = 0, l = contentNode.childNodes.length; i < l; i++)
     {
       var element =  contentNode.childNodes[i];
       element.style.display = oldDisplayValue ? "none" : "";
     }
     oldDisplayValue = !oldDisplayValue;
+    setTimeout(function() {alert(new Date() - start - 500)}, 500);
   }
 
   function visibility()
   {
     var contentNode = document.getElementById("content");
 
+    var start = new Date();
     for (var i = 0, l = contentNode.childNodes.length; i < l; i++)
     {
       var element =  contentNode.childNodes[i];
       element.style.visibility = oldVisibilityValue ? "hidden" : "";
     }
     oldVisibilityValue = !oldVisibilityValue;
+    setTimeout(function() {alert(new Date() - start - 500)}, 500);
   }
   </script>
 </head>
