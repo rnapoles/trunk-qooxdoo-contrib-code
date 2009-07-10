@@ -3,10 +3,8 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>Contact Form</title>
-  <link rel="stylesheet" type="text/css" media="all" href="css/main.css" />
-  <script type="text/javascript" src="../qx.js"></script>
-  <script type="text/javascript" src="../Settings.js"></script>
-  <script type="text/javascript" src="../../../script/hjx.js"></script>
+  <link rel="stylesheet" type="text/css" media="all" href="resource/hjx/css/main.css" />
+  <script type="text/javascript" src="script/hjx.js"></script>
   <script type="text/javascript">
     // for "build" version one would write
     // qx.event.Registration.addListener(window, "ready", hjx.Hijax.main, hjx.Hijax);
@@ -25,16 +23,10 @@
     <li><a href="contact.html">Contact Us</a></li>
   </ul>
   <div id="content">
-    <h2>Contact Form</h2>  
-    <form method="post" action="contact-form.php" id="contact_form">
-      <label for="subject_text">Subject</label><input type="text" name="subject_text"/>
-      <br/>
-      <label for="email_email">E-Mail Address</label><input type="text" name="email_email"/>
-      <br/>
-      <label for="message_textarea">Your Message</label><textarea name="message_textarea"></textarea>
-      <br/>
-      <input id="button_submit" type="submit" value="Send Message"/>
-    </form>
+    <h2>Message sent</h2>
+    <p>Subject: <?php echo $_REQUEST["subject_text"]; ?></p>
+    <p>E-Mail Address: <?php echo $_REQUEST["email_email"]; ?></p>
+    <p>Your Message: <?php echo $_REQUEST["message_textarea"]; ?></p>
   </div>
 </body>
 </html>
