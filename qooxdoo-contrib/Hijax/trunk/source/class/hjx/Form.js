@@ -19,7 +19,7 @@
 ************************************************************************ */
 
 /**
- * The Hijax form class includes some functions from the qooxdoo 0.7's 
+ * The Hijax form class includes some functions from the qooxdoo 0.7's
  * qx.html.Form class.
  * Furthermore the class comes with functions to serialize the form data
  * and to validate the field values, client-side or server-side.
@@ -109,7 +109,7 @@ qx.Class.define("hjx.Form",
 
 
     /**
-     * Validate the field against the passed data type and highlight it if it 
+     * Validate the field against the passed data type and highlight it if it
      * failed validation.
      * Client-side.
      *
@@ -170,7 +170,7 @@ qx.Class.define("hjx.Form",
      *
      * @param vField {HTMLElement} HTML form field element
      * @param vUrl {String} Url to the validation script
-     * @return {void} 
+     * @return {void}
      */
     validateFieldServerSide : function(vField, vUrl)
     {
@@ -223,7 +223,7 @@ qx.Class.define("hjx.Form",
      * validation is in processing.
      *
      * @param vField {HTMLElement} HTML form field element
-     * @return {void} 
+     * @return {void}
      */
     __setProgress : function(vField)
     {
@@ -237,7 +237,7 @@ qx.Class.define("hjx.Form",
      * Removes the progress animation when server-side validation finished.
      *
      * @param vField {HTMLElement} HTML form field element
-     * @return {void} 
+     * @return {void}
      */
     __resetProgress : function(vField) {
       vField.parentNode.removeChild(vField.nextSibling);
@@ -290,10 +290,11 @@ qx.Class.define("hjx.Form",
      * Reinserts the collected form values into their origin fields.
      *
      * @param vFormId {String} Form element id
-     * @return {void} 
+     * @return {void}
      */
     deserializeForm : function(vFormId)
     {
+      console.log("deserializeForm");
       var vFormCollection = this.getFormCollection(vFormId);
 
       for (var elem in vFormCollection)
@@ -368,7 +369,7 @@ qx.Class.define("hjx.Form",
      *
      * @param vId {var} TODOC
      * @param vValue {var} TODOC
-     * @return {void} 
+     * @return {void}
      */
     setFormCollection : function(vId, vValue) {
       this.__formCollection[vId] = vValue;
@@ -379,7 +380,7 @@ qx.Class.define("hjx.Form",
      * TODOC
      *
      * @param vIdentifier {var} TODOC
-     * @return {void} 
+     * @return {void}
      */
     setParentDocument : function(vIdentifier) {
       this.__parentDocument = vIdentifier;
@@ -446,7 +447,7 @@ qx.Class.define("hjx.Form",
         for (var i=0; i<vNode.options.length; i++)
         {
           if (vNode.options[i].selected) {
-            vValues.push(vName + "=" + vNode.options[i].value);
+            vValues.push(vName + "=" + encodeURIComponent(vNode.options[i].value));
           }
         }
 
@@ -454,7 +455,7 @@ qx.Class.define("hjx.Form",
       }
       else
       {
-        return vName + "=" + vNode.value;
+        return vName + "=" + encodeURIComponent(vNode.value);
       }
     },
 
