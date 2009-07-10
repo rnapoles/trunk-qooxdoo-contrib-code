@@ -62,7 +62,7 @@
     "common" :
     {
       "=include" : [ "hjx.*" ],
-      "exclude" : [ "qx.test.*" ],
+      "exclude" : [ "qx.test.*", "hjx.test.*" ],
       
       "packages" : 
       {
@@ -124,6 +124,11 @@
         "source" : "${ROOT}/source/resource/hjx/css",
         "target" : "${BUILD_PATH}/resource/hjx/css"
       }
+    },
+
+    "source" :
+    {
+      "include" : [ "qx.log.Logger", "qx.log.appender.Native" ]
     }    
   }
 }
