@@ -69,6 +69,7 @@ qx.Class.define("hjx.Hijax",
     _userRequest    : false,
     _eventType      : null,
     _form           : null,
+    _initiatingSubmitButton : null,
     _debug          : false,
     _hijaxHandler   : null,
     _nextFormId     : 1,
@@ -173,27 +174,29 @@ qx.Class.define("hjx.Hijax",
       // Capture form submits
       var forms = document.forms;
       for (var i=0, l=forms.length; i<l; i++) {
+        var formElem = forms[i];
+
         if (this._debug) {
-          forms[i].style.border = "1px solid blue";
+          formElem.style.border = "1px solid blue";
         }
 
-        if (forms[i].getAttribute('onsubmit')) {
+        if (formElem.getAttribute('onsubmit')) {
           // Remove existing DOM 0 event handler
-          forms[i].removeAttribute('onsubmit');
+          formElem.removeAttribute('onsubmit');
         }
 
         // Ensure that the form has an ID
-        if (! forms[i].getAttribute('id')) {
-          forms[i].setAttribute('id', this._generateFormId());
+        if (! formElem.getAttribute('id')) {
+          formElem.setAttribute('id', this._generateFormId());
         }
 
         // Formfield blur
         // TODO: Form validation should not be done here
         /*
-        var settings = this._settings._forms[forms[i].id];
+        var settings = this._settings._forms[formElem.id];
         if (settings && settings.validate_onblur === true) {
-          var vFields = qx.legacy.html.Form.getFields(forms[i]);
-          ///var vFields = forms[i].elements;
+          var vFields = qx.legacy.html.Form.getFields(formElem);
+          ///var vFields = formElem.elements;
           for (var j=0, le=vFields.length; j<le; j++) {
             try {
               if (settings[vFields[j].name].required === true) {
@@ -207,17 +210,26 @@ qx.Class.define("hjx.Hijax",
         */
 
         // From history
-        if (hjx.Form.getFormCollection(forms[i].id) &&
-          this.hijaxHistory.getState() == hjx.Form.getFormCollection(forms[i].id).parentDocument)
+        if (hjx.Form.getFormCollection(formElem.id) &&
+          this.hijaxHistory.getState() == hjx.Form.getFormCollection(formElem.id).parentDocument)
         {
           if (this._userRequest === false) {
-            hjx.Form.deserializeForm(forms[i].id);
+            hjx.Form.deserializeForm(formElem.id);
           } else {
-            hjx.Form.setFormCollection(forms[i].id, null);
+            hjx.Form.setFormCollection(formElem.id, null);
           }
         }
-        this.bindEvent(forms[i], 'submit', this._hijaxHandler);
-        qx.bom.Event.addNativeListener(forms[i], "reset", function() {  });
+        this.bindEvent(formElem, 'submit', this._hijaxHandler);
+        qx.bom.Event.addNativeListener(formElem, "reset", function() {  });
+
+        // Hijack all submit buttons
+        var inputArr = formElem.getElementsByTagName("input");
+        for (var j = 0; j < inputArr.length; j++) {
+          var inputElem = inputArr[j];
+          if (inputElem.type == "submit") {
+            this.bindEvent(inputElem, 'click', this._onSubmitButtonClicked, this);
+          }
+        }
       }
       this._userRequest = false;
     },
@@ -279,6 +291,20 @@ qx.Class.define("hjx.Hijax",
       if (this._debug) {
         qx.log.Logger.info(hjx.Hijax, msg);
       }
+    },
+
+
+    _onSubmitButtonClicked : function(event) {
+      hjx.Hijax._onSubmitButtonClickedImpl(event);
+    },
+
+
+    _onSubmitButtonClickedImpl : function(event) {
+      // Remember the submit button that initiated the form submit
+      // We need the button in order to add its name and value to the form data
+      // NOTE: In IE we could use document.activeElement, in Mozilla event.explicitOriginalTarget.
+      //       But in Safari none of these properties are supported.
+      this._initiatingSubmitButton = event.target;
     },
 
 
@@ -475,6 +501,10 @@ qx.Class.define("hjx.Hijax",
             var params = qx.legacy.html.Form.encodeForm(this._form.domElem);
           } else {
             var params = hjx.Form.serializeForm(this._form.domElem);
+            if (this._initiatingSubmitButton != null) {
+              params += "&" + hjx.Form.encodeField(this._initiatingSubmitButton);
+              this._initiatingSubmitButton = null;
+            }
           }
           var req = new qx.io.remote.Request(url, this._form.meth.toUpperCase());
           req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -518,9 +548,9 @@ qx.Class.define("hjx.Hijax",
                 var domElems = qx.bom.Selector.query(selString);
                 var activeClassName = naviSetting.active[0];
 
-                for (var j=0, le=domElems.length, domEl; j<le; j++)
+                for (var j=0, le=domElems.length; j<le; j++)
                 {
-                  domEl = domElems[j];
+                  var domEl = domElems[j];
 
                   // add 'active' class name to clicked element's className property.
                   if (domEl.href == url) {
