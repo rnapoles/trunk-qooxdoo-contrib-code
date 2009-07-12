@@ -67,7 +67,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
 
  /**  
   * @param url {String|null} The url of the jsonrpc service. If no url is
-  *   given, the serverUrl property of the main applicaiton is used.
+  *   given, the serverUrl property of the main application is used.
   * @param serviceName {String|null} The name of the service, i.e. "foo.bar"   
   * @param marshaler {Object|null} The marshaler to be used to create a model 
   *   from the data. If not provided, {@link qx.data.marshal.Json} is used and
@@ -76,7 +76,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
   *   specified in {@link qx.data.store.IStoreDelegate}. Ignored if a 
   *   custom marshaler is provided
   * @param rpc {qx.io.remote.Rpc|undefined} Optional qx.io.remote.Rpc object 
-  *   that can be shared between stores
+  *   that can be shared between stores. If not given, try and get object
+  *   from application instance.
   */
   construct : function( url, serviceName, marshaler, delegate, rpc )
   {
@@ -90,6 +91,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
     {
       this.setUrl(url);
     }
+    
     if (serviceName != null) 
     {
       this.setServiceName( serviceName );
@@ -109,9 +111,9 @@ qx.Class.define("qcl.data.store.JsonRpc",
     }
   
     /* 
-     * use or create JSON-RPC object
+     * use existing or create new JSON-RPC object
      */
-     this.__rpc = rpc || new qx.io.remote.Rpc;
+     this.__rpc = rpc || this.getApplication().getRpcObject() || new qx.io.remote.Rpc;
      
     /*
      * create store id
