@@ -65,10 +65,9 @@ class qcl_core_BaseClass
   /**
    * Generic setter for properties. Behaves like qooxdoo setter.
    * @param string|array $property If string, set the corresponding property to $value.
-   *   If array, assume it is a map and set each key-value pair.
+   *   If array, assume it is a map and set each key-value pair. Returns the object.
    * @param mixed $value
-   * @return unknown_type
-   * @todo type check
+   * @return qcl_core_BaseClass
    */
   public function set( $property, $value=null )
   {
@@ -78,10 +77,11 @@ class qcl_core_BaseClass
       {
         $this->set( $key, $value );
       }
-      return;
+      return $this;
     }
     $this->check( $property );
     $this->$property = $value;
+    return $this;
   }
 
   /**
