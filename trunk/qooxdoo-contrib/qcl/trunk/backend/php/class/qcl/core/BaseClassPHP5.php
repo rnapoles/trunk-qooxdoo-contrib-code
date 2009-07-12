@@ -63,14 +63,23 @@ class qcl_core_BaseClass
   }
 
   /**
-   * Generic getter for properties
-   * @param string $property
+   * Generic setter for properties. Behaves like qooxdoo setter.
+   * @param string|array $property If string, set the corresponding property to $value.
+   *   If array, assume it is a map and set each key-value pair.
    * @param mixed $value
    * @return unknown_type
    * @todo type check
    */
-  public function set( $property, $value )
+  public function set( $property, $value=null )
   {
+    if ( is_array($property) )
+    {
+      foreach ( $property as $key => $value )
+      {
+        $this->set( $key, $value );
+      }
+      return;
+    }
     $this->check( $property );
     $this->$property = $value;
   }
