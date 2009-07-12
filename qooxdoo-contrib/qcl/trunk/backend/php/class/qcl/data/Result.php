@@ -18,11 +18,37 @@
 
 /**
  * The base class for all classes that are used as the result of a
- * service method. Works as a "marker interface" and contains the
- * serialization method toArray().
- * @todo When fully upgrading to PHP5, use interface rather than
- * base class.
+ * service method. Works as a "marker interface" for data results
+ * and provides serialization methods.
  */
 class qcl_data_Result
-  extends qcl_core_BaseClass {}
+  extends qcl_core_BaseClass
+{
+
+  /**
+   * Converts a query result set into a model in which the properties
+   * contain all the values of the properties in the result set
+   * as arrays. Returns the converted object;
+   * @param $data
+   * @return qcl_data_Result
+   */
+  function &queryResultToModel( $data )
+  {
+    if ( ! is_array( $data ) )
+    {
+      trigger_error("Invalid argument");
+    }
+
+    foreach ( $data as $record )
+    {
+      foreach ( $record as $key => $value )
+      {
+        $values = (array) $this->get( $key );
+        array_push( $values, $value );
+        $this->set( $key, $values);
+      }
+    }
+    return $this;
+  }
+}
 ?>

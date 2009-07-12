@@ -27,7 +27,7 @@ class qcl_ui_dialog_Form
    *
    * @param string $message The message text
    * @param array $formData Arrray containing the form data. Example (using
-   * json instead of native php array:
+   * json instead of native php array):
    * <pre>
    * {
    *   'username' :
