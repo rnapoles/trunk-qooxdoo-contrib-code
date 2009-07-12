@@ -949,15 +949,15 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * Sets a property in the current model recordset. Unless you provide an id,
    * you need to call the update() method to commit the property change to the database.
-   * Alias of setProperty
-   * @return void
+   * Returns the object.
+   *
    * @param string|array $first If $first is an associated array, set all
    * key/value pairs as properties.
    * @param mixed  $value
    * @param int $id if given, find and update property recordId
-   * @todo
+   * @return qcl_data_model_Abstract
    */
-  function set( $first, $value=null, $id=null )
+  function &set( $first, $value=null, $id=null )
   {
     if ( is_array($first) )
     {
@@ -965,12 +965,11 @@ class qcl_data_model_Abstract extends qcl_core_Object
       {
         $this->setProperty($key, $value, $id);
       }
-      return true;
+      return $this;
     }
     elseif ( is_a( $first, "qcl_data_model_xmlSchema_DbModel" ) )
     {
       $this->raiseError("Passing a qcl_data_model_xmlSchema_DbModel as argument is deprecated for ::set(). Use copySharedProperties() instead.");
-      return $this->set( $first->getRecord() );
     }
     elseif ( is_string( $first ) )
     {
