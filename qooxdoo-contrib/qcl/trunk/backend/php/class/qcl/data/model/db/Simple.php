@@ -106,7 +106,7 @@ class qcl_data_model_db_Simple
    * @param string $orderBy
    * @param string $properties
    */
-  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $conditions=null, $distict=false)
+  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $conditions=null, $distinct=false)
   {
 
     if ( is_null($properties) ) $properties = "*";

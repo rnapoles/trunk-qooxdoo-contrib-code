@@ -120,29 +120,22 @@ interface qcl_data_db_IModel
    *
    * @param string|array|null  $where 'Where' condition to match. If null, get all. if array,
    * match all key -> value combinations
-   *
    * @param string|array|null[optional] $orderBy Order by property/properties.
    * If an array is given, the last element of the array will be searched for "ASC" or "DESC" and
    * used as sort direction.
-   *
    * @param string|array|null[optional]  $properties  Array of properties to retrieve or null (default)
    * if all. When using joined tables, the parameter must be an array containing two arrays,
    * the first with the properties of the model table, and the second with the properties of the joined
    * table. Alternatively, you can use the syntax "prop1,prop2,prop3" for an unlinked, and
    * "prop1,prop2,prop3|prop1,prop2,prop3" for a linked model. It is also possible to use "*" or "*|*" to
    * get all properties from unlinked and linked models, respectively.
-   *
    * @param string[optional] $link Name of the link in the schema xml. If provided, this will
    * automatically generate the necessary join query.
-   *
-   * @param array[optional] $conditions FIXME
-   *
    * @param bool $distinct Whether only distinct values should be returned
-   *
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $conditions=null, $distict=false );
+  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $distinct=false );
 
 
   /**
