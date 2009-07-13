@@ -82,6 +82,7 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   try {
+    mySim.addGlobalErrorHandler();
     mySim.runTest();
   }
   catch(ex) {
@@ -92,6 +93,8 @@ simulation.Simulation.prototype.runTest = function()
     }
     mySim.log(msg + "<br/>" + ex, "error");
   }
+
+  mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
     if (mySim.getConfigSetting("debug")) {
