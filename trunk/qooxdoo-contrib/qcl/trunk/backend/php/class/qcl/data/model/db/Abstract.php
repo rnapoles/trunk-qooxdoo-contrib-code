@@ -279,7 +279,7 @@ class qcl_data_model_db_Abstract
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $conditions=null, $distict=false )
+  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $distinct=false )
   {
 
     /*
@@ -414,7 +414,7 @@ class qcl_data_model_db_Abstract
     /*
      * distinct values?
      */
-    if ( $distict )
+    if ( $distinct )
     {
       $sql .= "DISTINCT ";
     }
