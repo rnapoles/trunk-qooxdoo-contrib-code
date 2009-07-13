@@ -33,7 +33,7 @@ var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' 
 var testResultHTML = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
 var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
 
-var ignore = ["qx.test.Xml"];
+var ignore = ["qx.test.Xml","qx.test.ui","qx.test.data"];
 var include = [];
 
 /**
@@ -144,6 +144,8 @@ simulation.Simulation.prototype.processPackage = function(packageName)
 
   var isAutReady = this.waitForCondition(isStatusReady, 120000,
                    "Waiting for test package " + packageName + " to load");
+
+  this.addGlobalErrorHandler(selWin + "." + qxAppInst + ".iframe.getWindow()");
 
   if (!isAutReady) {
     this.testFailed = true;
@@ -293,6 +295,7 @@ simulation.Simulation.prototype.logErrors = function(result)
   }
 
   try {
+    mySim.addGlobalErrorHandler();
     mySim.runTestsSteps();
   }
   catch(ex) {
@@ -302,6 +305,8 @@ simulation.Simulation.prototype.logErrors = function(result)
     }
     mySim.log(msg, "error");
   }
+
+  mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
     if (mySim.getConfigSetting("debug")) {
