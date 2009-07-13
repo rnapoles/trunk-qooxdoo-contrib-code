@@ -148,6 +148,14 @@ public class FileNode extends Node {
         children = file.listFiles();
         if (children == null) {
             if (!file.canRead()) {
+                try {
+                    if (isLink()) {
+                        // TODO: check link target
+                        throw new ListException(this, new IOException("broken link"));
+                    }
+                } catch (IOException e) {
+                    // fall through
+                }
                 throw new ListException(this, new IOException("permission denied"));
             } else {
                 return null;
