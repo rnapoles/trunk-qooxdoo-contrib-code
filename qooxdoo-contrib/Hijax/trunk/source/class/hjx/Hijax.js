@@ -193,7 +193,7 @@ qx.Class.define("hjx.Hijax",
         /*
         var settings = this._settings._forms[formElem.id];
         if (settings && settings.validate_onblur === true) {
-          var vFields = qx.legacy.html.Form.getFields(formElem);
+          var vFields = hjx.Form.getFields(formElem);
           ///var vFields = formElem.elements;
           for (var j=0, le=vFields.length; j<le; j++) {
             try {
@@ -496,7 +496,7 @@ qx.Class.define("hjx.Hijax",
         case "submit":
           if (this._userRequest === false) {
             if (!confirm(hjx.Form.POSTretry(qx.bom.client.Locale.LOCALE))) return;
-            var params = qx.legacy.html.Form.encodeForm(this._form.domElem);
+            var params = hjx.Form.encodeForm(this._form.domElem);
           } else {
             var params = hjx.Form.serializeForm(this._form.domElem);
             if (this._initiatingSubmitButton != null) {
@@ -594,8 +594,6 @@ qx.Class.define("hjx.Hijax",
                                 document.getElementsByName(anchor)[0] ||
                                 document.body;
           this._scrollToElem.scrollIntoView(true);
-          //qx.legacy.html.ScrollIntoView.scrollX(this._scrollToElem, true);
-          //qx.legacy.html.ScrollIntoView.scrollY(this._scrollToElem, true);
 
           if (iehistory) document.body.appendChild(iehistory);
 
