@@ -34,6 +34,7 @@ public class SvnFilesystem extends Filesystem {
     static {
         FSRepositoryFactory.setup();
         DAVRepositoryFactory.setup();
+        System.setProperty("svnkit.upgradeWC", "false"); // see https://wiki.svnkit.com/SVNKit_specific_system_properties        
     }
     
     private String username;
