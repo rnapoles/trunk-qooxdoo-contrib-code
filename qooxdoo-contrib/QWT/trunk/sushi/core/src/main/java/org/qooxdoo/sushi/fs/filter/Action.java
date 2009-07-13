@@ -19,11 +19,13 @@
 
 package org.qooxdoo.sushi.fs.filter;
 
+import java.io.IOException;
+
 import org.qooxdoo.sushi.fs.Node;
 
 public interface Action {
     void enter(Node node);
+    void enterFailed(Node node, IOException exception) throws IOException;
     void leave(Node node);
     void select(Node node);
-    
 }

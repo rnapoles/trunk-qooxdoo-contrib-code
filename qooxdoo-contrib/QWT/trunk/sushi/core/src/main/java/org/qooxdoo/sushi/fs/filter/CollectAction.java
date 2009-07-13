@@ -19,6 +19,7 @@
 
 package org.qooxdoo.sushi.fs.filter;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.qooxdoo.sushi.fs.Node;
@@ -31,6 +32,10 @@ public class CollectAction implements Action {
     }
     
     public void enter(Node node) {
+    }
+
+    public void enterFailed(Node node, IOException e) throws IOException {
+        throw e;
     }
 
     public void leave(Node node) {

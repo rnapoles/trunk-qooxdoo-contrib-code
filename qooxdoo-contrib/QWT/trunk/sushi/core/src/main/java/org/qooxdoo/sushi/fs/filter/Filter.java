@@ -243,7 +243,12 @@ public class Filter {
         if (currentDepth >= maxDepth) {
             return;
         }
-        children = list(parent, includes);
+        try {
+            children = list(parent, includes);
+        } catch (IOException e) {
+            result.enterFailed(parent, e);
+            return;
+        }
         if (children == null) {
             // ignore file
         } else {

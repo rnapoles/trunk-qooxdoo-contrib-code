@@ -19,6 +19,7 @@
 
 package org.qooxdoo.sushi.fs.filter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,10 @@ public class TreeAction implements Action {
         }
         nodes.add(node);
         trees.add(null);
+    }
+    
+    public void enterFailed(Node node, IOException e) throws IOException {
+        throw e;
     }
 
     public void leave(Node node) {
