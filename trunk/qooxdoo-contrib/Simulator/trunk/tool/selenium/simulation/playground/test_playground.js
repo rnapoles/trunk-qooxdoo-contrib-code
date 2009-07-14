@@ -108,7 +108,11 @@ simulation.Simulation.prototype.runTest = function()
   sampleNames = String(sampleNames);
   var sampleArr = sampleNames.split(",");
   print("Found " + sampleArr.length + " samples: " + sampleArr); 
-   
+
+  // Log any errors that might have occurred since the application was started 
+  mySim.logGlobalErrors();
+  mySim.clearGlobalErrorStore();
+
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
       print("Selecting next sample: " + sampleArr[i]);
@@ -118,8 +122,11 @@ simulation.Simulation.prototype.runTest = function()
       var boxCont = this.killBoxes();
       
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
-      var sampleStarted = this.isSampleStarted(sampleArr[i]);  
-  
+      var sampleStarted = this.isSampleStarted(sampleArr[i]);
+
+      mySim.logGlobalErrors();
+      mySim.clearGlobalErrorStore();  
+
       if (sampleLoaded && sampleStarted) {
         print(sampleArr[i] + " loaded and started.");
         this.log("Sample " + sampleArr[i] + " started without errors.", "info");
