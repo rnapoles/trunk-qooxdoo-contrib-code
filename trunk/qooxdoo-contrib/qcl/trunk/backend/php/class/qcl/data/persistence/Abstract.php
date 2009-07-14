@@ -152,7 +152,7 @@ class qcl_data_persistence_Abstract
     /*
      * call parent contructor
      */
-    parent::__construct( &$controller );
+    parent::__construct();
 
     /*
      * check if class is subclassed
