@@ -135,7 +135,6 @@ class qcl_data_persistence_Abstract
 
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_data_controller_Controller $controller
    * @param string[optional] $id Optional id if several objects of
    * the same class are to be persisted. If you don't provide an id,
    * the UUID-style object id is used. This means that you need to retrieve
@@ -148,7 +147,7 @@ class qcl_data_persistence_Abstract
    * @param string $sessionId If given, create/retrieve a persistent object that belongs
    * to the session. It will be deleted when the session expires or is deleted.
    */
-  function __construct( $controller=null, $id=null, $userId=null, $sessionId=null )
+  function __construct( $id=null, $userId=null, $sessionId=null )
   {
     /*
      * call parent contructor

@@ -51,14 +51,11 @@ class qcl_locale_QooxdooModel extends qcl_data_persistence_db_Object
 
   /**
    * Constuctor
-   *
-   * @param qcl_locale_Manager $manager
    */
-  function __construct( $manager )
+  function __construct( )
   {
-    parent::__construct( &$manager, __CLASS__ );
-
-    $this->locale_dir     = "../source/translation";
+    parent::__construct( __CLASS__ );
+    $this->locale_dir = "../source/translation";
   }
 
   /**

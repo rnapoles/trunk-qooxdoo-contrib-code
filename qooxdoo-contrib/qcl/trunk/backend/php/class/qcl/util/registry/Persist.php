@@ -41,7 +41,7 @@ class qcl_util_registry_Persist
    */
   function __construct()
   {
-    parent::__construct(null,__CLASS__);
+    parent::__construct( __CLASS__ );
   }
 
   /**

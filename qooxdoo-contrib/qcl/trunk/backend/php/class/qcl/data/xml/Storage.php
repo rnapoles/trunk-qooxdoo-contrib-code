@@ -520,7 +520,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
 
     if ( ! $this->_cacheObj )
     {
-      $this->_cacheObj =& new qcl_data_xml_Cache( null, $cacheId, $this->userId, $this->sessionId );
+      $this->_cacheObj =& new qcl_data_xml_Cache( $cacheId, $this->userId, $this->sessionId );
     }
     return $this->_cacheObj;
   }
