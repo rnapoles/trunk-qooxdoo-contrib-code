@@ -6,7 +6,7 @@
 # it's silent for privates that are defined just once).
 # (thron7, 14jul09)
 
-import os, sys, re, string, types
+import os, sys, re, string, types, codecs
 
 def findpriv(buff):
     # find optimized privates in build version
@@ -27,7 +27,7 @@ def makemap(map,arr):
 
 
 def main():
-    build_buffer = open(sys.argv[1], "r").read()
+    build_buffer = codecs.open(sys.argv[1], "r", "utf-8").read()
     priv_all     = findpriv(build_buffer)
     priv_map     = makemap({}, priv_all)
     priv_mult    = getmult(priv_map)
