@@ -864,3 +864,13 @@ simulation.Simulation.prototype.logGlobalErrors = function()
     }
   }
 };
+
+/**
+ * Empties the global exception store.
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.clearGlobalErrorStore = function()
+{
+  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore = [];", "Clearing errorStore");
+};
