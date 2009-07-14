@@ -47,7 +47,7 @@
               window.clearInterval(poller);
               init();
             }
-          }, 100);
+          }, 50);
         }
       }
     }
