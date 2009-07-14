@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# check for privates in a build file which are multiply defined
+# syntax: $0 build/script/<app>.js
+# will output all privates with their number of *additional* definitions (so
+# it's silent for privates that are defined just once).
+# (thron7, 14jul09)
+
 import os, sys, re, string, types
 
 def findpriv(buff):
