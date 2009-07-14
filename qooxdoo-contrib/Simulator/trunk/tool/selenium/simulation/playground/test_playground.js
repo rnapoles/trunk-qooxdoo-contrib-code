@@ -110,8 +110,8 @@ simulation.Simulation.prototype.runTest = function()
   print("Found " + sampleArr.length + " samples: " + sampleArr); 
 
   // Log any errors that might have occurred since the application was started 
-  mySim.logGlobalErrors();
-  mySim.clearGlobalErrorStore();
+  this.logGlobalErrors();
+  this.clearGlobalErrorStore();
 
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
@@ -124,8 +124,8 @@ simulation.Simulation.prototype.runTest = function()
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
       var sampleStarted = this.isSampleStarted(sampleArr[i]);
 
-      mySim.logGlobalErrors();
-      mySim.clearGlobalErrorStore();  
+      this.logGlobalErrors();
+      this.clearGlobalErrorStore();  
 
       if (sampleLoaded && sampleStarted) {
         print(sampleArr[i] + " loaded and started.");
