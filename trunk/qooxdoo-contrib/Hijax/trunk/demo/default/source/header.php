@@ -39,16 +39,14 @@
         //       qx.event.Registration.addListener(window, "ready", mamba.Init.init);
         //   But if we would do this that way, we would need the whole qooxdoo event
         //   system, which would be a code overhead we don't want.
-        if (window.qx.$$loader != null) {
-          var poller = window.setInterval(function() {
-            if(qx.$$loader.uris[0].length == 0) {
-              // Length equals 0 for the next to last script actually, which gets
-              // loaded while entering this block.
-              window.clearInterval(poller);
-              init();
-            }
-          }, 50);
-        }
+        var poller = window.setInterval(function() {
+          if(qx.$$loader.uris[0].length == 0) {
+            // Length equals 0 for the next to last script actually, which gets
+            // loaded while entering this block.
+            window.clearInterval(poller);
+            init();
+          }
+        }, 50);
       }
     }
   </script>
