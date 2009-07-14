@@ -42,14 +42,13 @@ class qcl_data_model_xmlSchema_DbRegistry
 
   /**
    * Constructor. Reconstructs object properties
-   * @param qcl_data_controller_Controller $controller
    */
-  function __construct( $controller=null )
+  function __construct( )
   {
     /*
      * call parent contructor
      */
-    parent::__construct( &$controller, __CLASS__ );
+    parent::__construct( __CLASS__ );
   }
 
   /**

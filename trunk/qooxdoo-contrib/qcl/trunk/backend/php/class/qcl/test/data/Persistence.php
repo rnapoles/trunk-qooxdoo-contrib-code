@@ -24,7 +24,7 @@ class class_qcl_data_persistence_Tests
   function method_testPersistence()
   {
     $sessionId = $this->skipAuthentication ? null : qcl_access_Manager::getSessionId();
-    $obj =& new TestPersistence(&$this, "TestPersistence", null, $sessionId );
+    $obj =& new TestPersistence("TestPersistence", null, $sessionId );
     $this->info('Initialized $obj->foo = ' . $obj->foo);
     $obj->foo = rand(0,100);
     $this->info('Changing $obj->foo = ' . $obj->foo);
