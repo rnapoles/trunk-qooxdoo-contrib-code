@@ -51,7 +51,7 @@ qx.Class.define("hjx.Settings",
         {
           regex: ".*",
           handler: function() {
-            hjx.Settings.hideBlocker();
+            hjxDemoLoader.hideBlocker();
           }
         }
       ],
@@ -61,7 +61,7 @@ qx.Class.define("hjx.Settings",
         {
           regex: ".*",
           handler: function() {
-            hjx.Settings.showBlocker();
+            hjxDemoLoader.showBlocker();
           }
         }
       ],
@@ -75,7 +75,7 @@ qx.Class.define("hjx.Settings",
         {
           regex: ".*",
           handler: function() {
-            hjx.Settings.hideBlocker();
+            hjxDemoLoader.hideBlocker();
           }
         }
       ],
@@ -169,33 +169,6 @@ qx.Class.define("hjx.Settings",
         }
       }
       */
-    },
-
-    showBlocker : function() {
-      if (this._blockElem == null) {
-        var elem = document.createElement("div");
-        elem.id = "block-elem";
-        elem.style.position = "fixed";
-        elem.style.top      = "0";
-        elem.style.left     = "0";
-        elem.style.width    = "100%";
-        elem.style.height   = "100%";
-        elem.style.zIndex   = "1000";
-        elem.style.backgroundColor = "black";
-        elem.style.opacity  = "0.2";
-        elem.style.cursor   = "wait";
-
-        document.body.appendChild(elem);
-        this._blockElem = elem;
-      } else {
-        this._blockElem.style.display = "block";
-      }
-    },
-
-    hideBlocker : function() {
-      if (this._blockElem != null) {
-        this._blockElem.style.display = "none";
-      }
     },
 
     /**
