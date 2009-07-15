@@ -2,7 +2,11 @@
 
 <h2>Products Page</h2>
 <p>
-  Example for a form with multiple input fields having the same name and with multiple submit buttons.
+  Example for a form with:
+  <ul>
+    <li>multiple input fields having the same name</li>
+    <li>multiple submit buttons</li>
+  </ul>
 </p>
 
 <form method="post" action="products-form.php">
