@@ -90,7 +90,9 @@ simulation.Simulation.prototype.runTestsSteps = function()
   var include = [];
   
   try {
-    include = this.getConfigSetting("include").split(",");
+    var includeStr = this.getConfigSetting("include");
+    this.log("Testing only the following packages: " + includeStr, "info");
+    include = includeStr.split(",");
     if (this.getConfigSetting("debug")) {
       print("Include list configured: " + include);
     }
@@ -101,21 +103,25 @@ simulation.Simulation.prototype.runTestsSteps = function()
     }
   }
   
- var ignore = [];
+  var ignore = [];
   
-  try {
-    ignore = this.getConfigSetting("ignore").split(",");
-    if (this.getConfigSetting("debug")) {
-      print("Ignore list configured: " + ignore);
-    }
-  }
-  catch(ex) {
-    if (this.getConfigSetting("debug")) {
-      print("No ignore list configured.");
+  if (include.length == 0) {
+    try {
+      var ignoreStr = this.getConfigSetting("ignore");
+      this.log("Ignoring the following packages: " + ignoreStr, "info");
+      ignore = ignoreStr.split(",");
+      if (this.getConfigSetting("debug")) {
+        print("Ignore list configured: " + ignore);
+      }
+    } 
+    catch (ex) {
+      if (this.getConfigSetting("debug")) {
+        print("No ignore list configured.");
+      }
     }
   }
 
-  if (include.length > 0) {
+  if (include.length > 0) {    
     packages = include;
   }
   else if (ignore.length > 0) {
