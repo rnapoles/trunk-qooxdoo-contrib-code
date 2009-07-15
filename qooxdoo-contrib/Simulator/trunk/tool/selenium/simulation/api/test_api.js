@@ -9,7 +9,8 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/api/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  'debug' : true
+  'debug' : true,
+  'ignore' : 'qx.ui.virtual'
 };
 
 var args = arguments ? arguments : "";
@@ -24,10 +25,9 @@ load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
 
 var mySim = new simulation.Simulation(baseConf,args);
 
-var selWin = simulation.Simulation.SELENIUMWINDOW;
+var selWin = 'selenium.qxStoredVars["autWindow"]';
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
-var ignoreDocErrors = ["qx.ui.virtual"];
 
 simulation.Simulation.prototype.runTest = function()
 {  
@@ -65,35 +65,49 @@ simulation.Simulation.prototype.logDocErrors = function()
       }
     }
     var warn = [];
-    initialItems = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer.getChildren()[2].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0].getChildren();
+    initialItems = selenium.qxStoredVars["autWindow"].qx.core.Init.getApplication().viewer.getChildren()[2].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0].getChildren();
     checkItems(initialItems, "qx");
     return warn;
   };
   
   this.addOwnFunction("getDocWarnings", getDocWarnings);
-  var docWarnings = this.getEval("selenium.browserbot.getCurrentWindow().qx.Simulation.getDocWarnings();");
+  var docWarnings = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getDocWarnings();");
   
   // docWarnings returns an array, but Rhino gives us a string-like object.
   var docArray = String(docWarnings).split(",");
+  
+  var ignoreList = [];
+  
+  try {
+    ignoreList = this.getConfigSetting("ignore").split(",");
+    if (this.getConfigSetting("debug")) {
+      print("Ignore list configured: " + ignoreList);
+    }
+  }
+  catch(ex) {
+    if (this.getConfigSetting("debug")) {
+      print("No ignore list configured.");
+    }
+  }
     
   function filterArr(item) {
-    for (var i=0; i<ignoreDocErrors.length; i++) {
-      if (item.indexOf(ignoreDocErrors[i]) >= 0) {
+    for (var i=0; i<ignoreList.length; i++) {
+      if (item.indexOf(ignoreList[i]) >= 0) {
         return false;
       }
     }
     return true;
   }
   
-  var filteredArray = docArray.filter(filterArr);
+  docArray = docArray.filter(filterArr);
   
-  if (filteredArray.length > 0) {
+  if (docArray.length > 0) {
     var baseUrl = this.getConfigSetting("autHost") + this.getConfigSetting("autPath");
     this.log("Classes with documentation errors (Excluded: " 
-             + ignoreDocErrors.join() + ")", "info");
-    for (var i=0;i<filteredArray.length; i++) {
+             + ignoreList.join() + ")", "info");
+    for (var i=0;i<docArray.length; i++) {
       this.errWarn++;
-      var apiLink = ' <a href="' + baseUrl + '#' + filteredArray[i] + '">' + filteredArray[i] + '</a>';      
+      var apiLink = ' <a href="' + baseUrl + '#' + docArray[i] + '">' + docArray[i] + '</a>';      
       this.log(apiLink, "warn");
     }    
   }
