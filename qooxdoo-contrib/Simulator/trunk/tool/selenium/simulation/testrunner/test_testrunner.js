@@ -8,7 +8,8 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/test/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  'debug' : true
+  'debug' : true,
+  'ignore' : 'qx.test.Xml'
 };
 
 var args = arguments ? arguments : "";
@@ -32,9 +33,6 @@ var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' 
 // HTML content of the result iframe
 var testResultHTML = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
 var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
-
-var ignore = ["qx.test.Xml","qx.test.ui","qx.test.data"];
-var include = [];
 
 /**
  * Runs a function in the AUT context that reads the available test packages
@@ -87,6 +85,34 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
   if (this.getConfigSetting("debug")) {
     print("TEST PACKAGES: " + packages);
+  }
+  
+  var include = [];
+  
+  try {
+    include = this.getConfigSetting("include").split(",");
+    if (this.getConfigSetting("debug")) {
+      print("Include list configured: " + include);
+    }
+  }
+  catch(ex) {
+    if (this.getConfigSetting("debug")) {
+      print("No include list configured.");
+    }
+  }
+  
+ var ignore = [];
+  
+  try {
+    ignore = this.getConfigSetting("ignore").split(",");
+    if (this.getConfigSetting("debug")) {
+      print("Ignore list configured: " + ignore);
+    }
+  }
+  catch(ex) {
+    if (this.getConfigSetting("debug")) {
+      print("No ignore list configured.");
+    }
   }
 
   if (include.length > 0) {
