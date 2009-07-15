@@ -9,7 +9,8 @@ var baseConf = {
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/application/demobrowser/build/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
-  'logAll' : false
+  'logAll' : false,
+  'ignore' : 'data:Gears,showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,virtual:List,virtual:Cells,virtual:ListBinding,virtual:Messenger,progressive:*,legacy:*'
 };
 
 var args = arguments ? arguments : "";
@@ -38,19 +39,6 @@ var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().
 var shutdownSample = selWin + '.' + qxAppInst + '.infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
 mySim.lastSample = "last";
-
-/*
- * List of demos to ignore. Format: Category:Demo (using the tree items' labels),
- * i.e. spaces instead of underscores.
- * var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize'];
- */ 
-var ignore = ['data:Gears','showcase:Browser','widget:Iframe','test:Serialize','bom:Iframe','virtual:List','virtual:Cells','virtual:ListBinding','virtual:Messenger','progressive:*', 'legacy:*'];
-
-/*
- * List of demos to run. All others will be ignored.
- * var include = ['ui:Font','progressive:*','widget:SelectBox'];
- */
-var include = [];
 
 /*
 *  Returns a command that selects sample number [entry] from the sample tree 
@@ -122,10 +110,11 @@ var getDemosByCategory = function(category)
 */
 simulation.Simulation.prototype.sampleRunner = function(script)
 {
-  var scriptCode = script ? script : runSample;  
+  var scriptCode = script ? script : runSample;
   
   var skip = false;
   // If we have an ignore list, check if the next sample is in there.
+  var ignore = this.ignore;
   if (ignore.length > 0 && scriptCode.indexOf('playNext') > 0 ) {
     try {
       var nextSampleCategory = this.getEval(getNextSampleCategory, "Getting category of next sample");
@@ -309,7 +298,37 @@ simulation.Simulation.prototype.addErrorHandlerToDemo = function()
 simulation.Simulation.prototype.runTest = function()
 {
   print("Starting sample playback");
+
+ var ignore = [];
   
+  try {
+    ignore = this.getConfigSetting("ignore").split(",");
+    if (this.getConfigSetting("debug")) {
+      print("Ignore list configured: " + ignore);
+    }
+  }
+  catch(ex) {
+    if (this.getConfigSetting("debug")) {
+      print("No ignore list configured.");
+    }
+  }
+  
+  this.ignore = ignore;
+
+  var include = [];
+  
+  try {
+    include = this.getConfigSetting("include").split(",");
+    if (this.getConfigSetting("debug")) {
+      print("Include list configured: " + include);
+    }
+  }
+  catch(ex) {
+    if (this.getConfigSetting("debug")) {
+      print("No include list configured.");
+    }
+  }
+
   if (include.length === 0) {
     this.runScript(treeSelect(2), "Selecting first category");
     this.runScript(qxAppInst + '.tree.getSelection()[0].setOpen(true)', "Opening first category");
@@ -385,7 +404,7 @@ simulation.Simulation.prototype.runTest = function()
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 10000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 20000, 
                                           "Waiting for qooxdoo application");
 
 
