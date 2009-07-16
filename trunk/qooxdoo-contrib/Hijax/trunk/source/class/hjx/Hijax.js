@@ -79,10 +79,10 @@ qx.Class.define("hjx.Hijax",
      */
     main : function() {
       this._scrollToElem = document.body;
-      
+
       this._settingsClass = qx.Class.getByName(qx.core.Setting.get("hjx.settingsClass"));
       this._settings = this._settingsClass.getSettings();
-      
+
       if (this._settings._pages['*']) {
         this.setDefaultContentTarget(this._settings._pages['*'].domElem);
       }
@@ -91,6 +91,15 @@ qx.Class.define("hjx.Hijax",
       // Init browser history
       this.hijaxHistory = qx.bom.History.getInstance();
       this.hijaxHistory.addListener('request', this._onHistoryRequest, this);
+
+      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+        var iframes = document.getElementsByTagName("iframe");
+        if(iframes && iframes.length > 0) {
+          this.hijaxHistory.historyIframe = iframes[iframes.length-1];
+        } else {
+          this.error("IE history iframe can't be found. Class qx.bom.History might have changed.");
+        }
+      }
 
       // Handle bookmarks
       var state = this.hijaxHistory.getState();
@@ -195,6 +204,7 @@ qx.Class.define("hjx.Hijax",
         }
         */
 
+
         // From history
         // TODO: Logic should be moved to hjx.Form
         // TODO: Should not be done during hijacking, but during processing of a history back
@@ -256,6 +266,8 @@ qx.Class.define("hjx.Hijax",
     },
 
 
+    // TODO: fix anchor handling in case user want's to open anchor link
+    //       in new tab or window
     _prepareLinkAnchor : function(linkElem) {
       var anchor = linkElem.href.substring(this.baseUrl.length);
       if (anchor.indexOf('#') == 0) {
@@ -335,7 +347,6 @@ qx.Class.define("hjx.Hijax",
       // Regular request
       this._userRequest = true;
 
-
       // Walking up the DOM tree to get the form element
       // When firing the submit event by pressing the enter key, the event occurs on the input element
       while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
@@ -348,6 +359,7 @@ qx.Class.define("hjx.Hijax",
         id      : eventSrc.id,
         action  : eventSrc.action
       };
+
 
       // (Validate Form here!)
       /*
@@ -431,6 +443,8 @@ qx.Class.define("hjx.Hijax",
 
       var url = calledUrl;
       var path = calledUrl;
+
+      // TODO: swap out anchor logic
       var anchor = null;
       var hashPos = calledUrl.indexOf('#');
       if (hashPos != -1) {
@@ -480,15 +494,9 @@ qx.Class.define("hjx.Hijax",
 
       this._setGlobalCursor("progress");
 
-      // Grab the IE History
-      if (document.getElementById('IEHistory')) {
-        var iehistory = document.getElementById('IEHistory');
-      }
 
       req.addListener("completed", function(ev)
       {
-        this._logDebug("Page loaded: " + calledUrl);
-
         var statuscode = ev.getStatusCode();
         if (statuscode>=200 && statuscode<300) { // TODO: What happens for other status codes?!?
           // Loading succeed -> Put that request to the history
@@ -498,68 +506,16 @@ qx.Class.define("hjx.Hijax",
           this._executePageDependentHandlers("onunload");
 
           // Navigation highlighting
-          for (var naviE in this._settings._navi)
-          {
-            if (naviE == "*")
-            {
-              var naviSetting = this._settings._navi[naviE];
-
-              for (var i=0, l=naviSetting.selector.length; i<l; i++)
-              {
-                var selString = naviSetting.selector[i];
-                var domElems = qx.bom.Selector.query(selString);
-                var activeClassName = naviSetting.active[0];
-
-                for (var j=0, le=domElems.length; j<le; j++)
-                {
-                  var domEl = domElems[j];
-
-                  // add 'active' class name to clicked element's className property.
-                  if (domEl.href == url) {
-                    domEl.className = domEl.className + " " + activeClassName;
-                  }
-
-                  // remove 'active' class name from other elements' className property.
-                  else if (domEl.className.indexOf(activeClassName) >= 0)
-                  {
-                    var beforeActive = domEl.className.substr(0, domEl.className.indexOf(activeClassName));
-                    var afterActive = domEl.className.substr(domEl.className.indexOf(activeClassName) + activeClassName.length);
-                    domEl.className = beforeActive + afterActive;
-                  }
-                }
-              }
-            }
-          }
+          this._highlightNavigation(url);
 
           var start = new Date();
-          var pageContent = this._parsePageContent(ev.getContent());
-          document.title = pageContent.title;
-
-          var wantedElemId = null;
-          var pageSettings = this._settings._pages[path];
-          if (pageSettings != null && pageSettings.event == (isFormSubmit ? "submit" : "click")) {
-            wantedElemId = pageSettings.domElem;
-          } else {
-            wantedElemId = this._settings._pages['*'].domElem;
-          }
-
-          if (wantedElemId != null) {
-            var loadedBodyElem = this._stringToDom(pageContent.bodyInnerHtml);
-            var wantedElem = this._getElementById(loadedBodyElem, wantedElemId) || loadedBodyElem;
-            var targetElem = document.getElementById(wantedElemId) || document[wantedElemId];
-            targetElem.innerHTML = wantedElem.innerHTML;
-          } else {
-            document.body.innerHTML = pageContent.bodyInnerHtml;
-          }
-
+          this._updateContent(ev.getContent(), path, anchor);
           var end = new Date();
           qx.log.Logger.info(hjx.Hijax, "Time to change page content: " +(end.getTime() - start.getTime())+ "ms");
-          this._scrollToElem = document.getElementById(anchor) ||
-                                document.getElementsByName(anchor)[0] ||
-                                document.body;
-          this._scrollToElem.scrollIntoView(true);
 
-          if (iehistory) document.body.appendChild(iehistory);
+          if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+            document.body.appendChild(this.hijaxHistory.historyIframe);
+          }
 
           if (this._settings.getPageName != null) {
             this._currentPagename = this._settings.getPageName(calledUrl);
@@ -595,6 +551,74 @@ qx.Class.define("hjx.Hijax",
       req.send();
 
       this._executePageDependentHandlers("onhijax");
+    },
+
+
+    _updateContent : function(pageContent, path, anchor)
+    {
+      pageContent = this._parsePageContent(pageContent);
+      document.title = pageContent.title;
+
+      var wantedElemId = null;
+      var pageSettings = this._settings._pages[path];
+      if (pageSettings != null && pageSettings.event == (isFormSubmit ? "submit" : "click")) {
+        wantedElemId = pageSettings.domElem;
+      } else {
+        wantedElemId = this._settings._pages['*'].domElem;
+      }
+
+      if (wantedElemId != null) {
+        var loadedBodyElem = this._stringToDom(pageContent.bodyInnerHtml);
+        var wantedElem = this._getElementById(loadedBodyElem, wantedElemId) || loadedBodyElem;
+        var targetElem = document.getElementById(wantedElemId) || document[wantedElemId];
+        targetElem.innerHTML = wantedElem.innerHTML;
+      } else {
+        document.body.innerHTML = pageContent.bodyInnerHtml;
+      }
+
+      this._scrollToElem = document.getElementById(anchor) ||
+                           document.getElementsByName(anchor)[0] ||
+                           document.body;
+      this._scrollToElem.scrollIntoView(true);
+    },
+
+
+    _highlightNavigation : function(url)
+    {
+      for (var naviE in this._settings._navi)
+      {
+        if (naviE == "*")
+        {
+          var selString, domElems, activeClassName;
+          var domEl, beforeActive, afterActive;
+          var naviSetting = this._settings._navi[naviE];
+
+          for (var i=0, l=naviSetting.selector.length; i<l; i++)
+          {
+            selString = naviSetting.selector[i];
+            domElems = qx.bom.Selector.query(selString);
+            activeClassName = naviSetting.active[0];
+
+            for (var j=0, le=domElems.length; j<le; j++)
+            {
+              domEl = domElems[j];
+
+              // add 'active' class name to clicked element's className property.
+              if (domEl.href == url) {
+                domEl.className = domEl.className + " " + activeClassName;
+              }
+
+              // remove 'active' class name from other elements' className property.
+              else if (domEl.className.indexOf(activeClassName) >= 0)
+              {
+                beforeActive = domEl.className.substr(0, domEl.className.indexOf(activeClassName));
+                afterActive = domEl.className.substr(domEl.className.indexOf(activeClassName) + activeClassName.length);
+                domEl.className = beforeActive + afterActive;
+              }
+            }
+          }
+        }
+      }
     },
 
 
