@@ -479,7 +479,7 @@ qx.Class.define("htmlarea.command.Manager",
        "mshtml" : function(value, commandObject)
        {
          /* Special handling if a "br" element should be inserted */
-         if (value == htmlarea.HtmlArea.simpleLinebreak)
+         if (value == htmlarea.HtmlAreaNative.simpleLinebreak)
          {
            return this.__insertBrOnLinebreak(); 
          }
@@ -706,7 +706,7 @@ qx.Class.define("htmlarea.command.Manager",
 	          rng.selectNode(nextParagraph);
 	          sel.addRange(rng);
 	          
-	          var htmlToInsert = htmlarea.HtmlArea.EMPTY_DIV;
+	          var htmlToInsert = htmlarea.HtmlAreaNative.EMPTY_DIV;
 	          this.__editorInstance.getCommandManager().addUndoStep("inserthtml", htmlToInsert, this.getCommandObject("inserthtml"));
 	           
 	          this.execute("inserthtml", htmlToInsert);
@@ -741,7 +741,7 @@ qx.Class.define("htmlarea.command.Manager",
           */
          if (parentElement != "li")
          {
-           rng.pasteHTML(htmlarea.HtmlArea.simpleLinebreak);
+           rng.pasteHTML(htmlarea.HtmlAreaNative.simpleLinebreak);
            rng.collapse(false);
            rng.select();
            
@@ -1231,11 +1231,12 @@ qx.Class.define("htmlarea.command.Manager",
        var closings = [];
        
        // retrieve the current styles as structure if no parameter is given
-       var structure = groupedStyles !== null ? groupedStyles : this.__getCurrentStylesGrouped();
+       var structure = typeof groupedStyles !== "undefined" ? groupedStyles : this.__getCurrentStylesGrouped();
        
        // first traverse the "child" chain
        var child = structure.child;
        var legacyFont = false;
+       
        while (child)
        {
          legacyFont = child["legacy-font-size"] != null;
@@ -1428,7 +1429,7 @@ qx.Class.define("htmlarea.command.Manager",
        var styleSettings = {};
   
        /* Retrieve element's computed style. */
-       var decoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
+       var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
   
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
@@ -1468,12 +1469,16 @@ qx.Class.define("htmlarea.command.Manager",
        if (usedStyles["legacy-font-size"] && usedStyles["font-size"]) {
          delete usedStyles["font-size"];
        }
-
+       
        /* Cycle through saved style names and fetch computed value for each of it. */
        for(var style in usedStyles)
        {
-         styleValue = decoration.getPropertyValue(style);
-
+         if (style != "legacy-font-size") {
+           styleValue = decoration.getPropertyValue(style);
+         } else {
+           styleValue = usedStyles[style];
+         }
+         
          /* 
           * The attribute "background-color" is special, since it can have "transparent" as value.
           * In this case, we have to retrieve the _real_ color value from a parent element
@@ -1491,7 +1496,7 @@ qx.Class.define("htmlarea.command.Manager",
            styleSettings[style] = styleValue;
          }
        }
-
+       
        return styleSettings;
      },
 
@@ -1517,7 +1522,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style */
-         var parentDecoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
+         var parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
          
          /* Store values */
          decorationValue = parentDecoration.getPropertyValue("text-decoration");
@@ -1559,7 +1564,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style*/
-         parentDecoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
+         parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
          parentStyleValue = parentDecoration.getPropertyValue("background-color");
 
          /* Check if computed value is valid */
