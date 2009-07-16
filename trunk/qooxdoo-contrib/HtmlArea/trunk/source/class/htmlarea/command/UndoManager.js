@@ -413,7 +413,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        if (this.__checkForNextUndoStep("inserthtml", htmlarea.HtmlArea.simpleLinebreak)) {
+        if (this.__checkForNextUndoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
           this.__executeExtraUndoStep();
         }
       }
@@ -421,7 +421,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
         if (undoInfo.command == "inserthtml" && 
-            undoInfo.value == htmlarea.HtmlArea.EMPTY_DIV && 
+            undoInfo.value == htmlarea.HtmlAreaNative.EMPTY_DIV && 
             this.__checkForNextUndoStep("inserthtml", "insertParagraph"))
         {
           this.__executeExtraUndoStep();
@@ -643,14 +643,14 @@ qx.Class.define("htmlarea.command.UndoManager",
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlArea.simpleLinebreak)) {
+        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
           this.__executeExtraRedoStep();
         }
       }
       
       if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
-        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlArea.EMPTY_DIV))
+        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.EMPTY_DIV))
         {
           // we need to catch the focused paragraph before the extra redo step
           var focusedParagraph = this.__getFocusedParagraph();
