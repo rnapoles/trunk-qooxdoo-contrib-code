@@ -35,7 +35,7 @@
     "class"       : "source/class",
     "resource"    : "source/resource",
     "translation" : "source/translation",
-    "type"        : "library"
+    "type"        : "contribution"
   }
 }
 
