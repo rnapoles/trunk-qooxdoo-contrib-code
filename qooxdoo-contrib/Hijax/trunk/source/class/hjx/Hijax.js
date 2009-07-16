@@ -55,7 +55,7 @@ qx.Class.define("hjx.Hijax",
   statics :
   {
     domain          : document.domain,
-    url             : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
+    baseUrl         : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
     defaultElement  : null,
     defaultRegExp   : /[\w\W\s]*<body[^>]*>([\w\W\s]*)<\/body>[\w\W\s]*/im,
     hijaxHistory    : null,
@@ -65,12 +65,10 @@ qx.Class.define("hjx.Hijax",
     _oldState       : null,
     _scrollToElem   : null,
     _userRequest    : false,
-    _eventType      : null,
     _form           : null,
     _initiatingSubmitButton : null,
     _debug          : false,
-    _hijaxHandler   : null,
-    _nextFormId     : 1,
+    _ignoreNextHistoryEvent : false,
 
 
     /**
@@ -98,13 +96,13 @@ qx.Class.define("hjx.Hijax",
       var state = this.hijaxHistory.getState();
       if (state) {
         // This is a bookmark to another page
-        this._loadPageViaHijax(this._decodeState(state));
+        this._loadPageViaHijax(this._decodeState(state), false);
       } else {
         // This is a normal startup -> Load the start page
         if (this._settings.getStartPage != null) {
           var startPage = this._settings.getStartPage();
           if (startPage != null) {
-            this._loadPageViaHijax(startPage);
+            this._loadPageViaHijax(startPage, false);
           }
         }
       }
@@ -150,22 +148,16 @@ qx.Class.define("hjx.Hijax",
       for (var i=0, l=links.length; i<l; i++) {
         if (this._shouldCaptureLink(links[i])) {
           // This link should be captured -> Capture it
-
           if (this._debug) {
             links[i].style.border = "1px solid green";
           }
 
-          if (links[i].getAttribute('onclick')) {
-            // Remove existing DOM 0 event handler
-            links[i].removeAttribute('onclick');
-          }
-
-          // Internal page anchors
+          // Escape page anchors
           if (links[i].href.indexOf('#') != -1) {
             this._prepareLinkAnchor(links[i]);
           }
 
-          this.bindEvent(links[i], 'click', this._hijaxHandler);
+          this.bindEvent(links[i], 'click', this._onHijaxLinkClicked);
         }
       }
 
@@ -178,14 +170,10 @@ qx.Class.define("hjx.Hijax",
           formElem.style.border = "1px solid blue";
         }
 
-        if (formElem.getAttribute('onsubmit')) {
-          // Remove existing DOM 0 event handler
-          formElem.removeAttribute('onsubmit');
-        }
-
         // Ensure that the form has an ID
+        // TODO: Why do we need an ID? (Perhaps because of "from history" handling)
         if (! formElem.getAttribute('id')) {
-          formElem.setAttribute('id', this._generateFormId());
+          formElem.setAttribute('id', "form-" + i);
         }
 
         // Formfield blur
@@ -198,7 +186,7 @@ qx.Class.define("hjx.Hijax",
           for (var j=0, le=vFields.length; j<le; j++) {
             try {
               if (settings[vFields[j].name].required === true) {
-                this.bindEvent(vFields[j], 'blur', this._hijaxHandler);
+                this.bindEvent(vFields[j], 'blur', this._onHijaxFormBlur);
               }
             } catch(e) {
               qx.log.Logger.error(hjx.Hijax, "", e);
@@ -208,6 +196,8 @@ qx.Class.define("hjx.Hijax",
         */
 
         // From history
+        // TODO: Logic should be moved to hjx.Form
+        // TODO: Should not be done during hijacking, but during processing of a history back
         if (hjx.Form.getFormCollection(formElem.id) &&
           this.hijaxHistory.getState() == hjx.Form.getFormCollection(formElem.id).parentDocument)
         {
@@ -217,7 +207,9 @@ qx.Class.define("hjx.Hijax",
             hjx.Form.setFormCollection(formElem.id, null);
           }
         }
-        this.bindEvent(formElem, 'submit', this._hijaxHandler);
+
+        // Hijack the form
+        this.bindEvent(formElem, 'submit', this._onHijaxFormSubmit);
         qx.bom.Event.addNativeListener(formElem, "reset", function() {  });
 
         // Hijack all submit buttons
@@ -229,6 +221,9 @@ qx.Class.define("hjx.Hijax",
           }
         }
       }
+
+      // TODO: Should be moved to the event handler that sets the flag
+      //       (if possible the flag should be removed)
       this._userRequest = false;
     },
 
@@ -262,7 +257,7 @@ qx.Class.define("hjx.Hijax",
 
 
     _prepareLinkAnchor : function(linkElem) {
-      var anchor = linkElem.href.substring(this.url.length);
+      var anchor = linkElem.href.substring(this.baseUrl.length);
       if (anchor.indexOf('#') == 0) {
         // Cut existent anchor notation from the address
         var loc = location.href;
@@ -272,15 +267,6 @@ qx.Class.define("hjx.Hijax",
         }
         linkElem.href = unescape(loc.replace(/#/, '')) + anchor;
       }
-    },
-
-
-    _generateFormId : function() {
-      var id;
-      do {
-        id = "form-" + (this._nextFormId++);
-      } while (document.getElementById(id) != null);
-      return id;
     },
 
 
@@ -306,154 +292,130 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-    _hijaxHandler : function(event) {
-      hjx.Hijax._hijaxHandlerImpl(event);
+    _onHijaxLinkClicked : function(event) {
+      hjx.Hijax._onHijaxLinkClickedImpl(event);
     },
 
 
-    /**
-     * This function prosseced the fired event by preventing the default
-     * functionality, checking the same origin policy and pushing the
-     * requested path to the browser history.
-     * Forms will be validated client side before sending the data to
-     * the server.
-     *
-     * @param event {Event} The fired event
-     */
-    _hijaxHandlerImpl : function(event)
-    {
-      this._logDebug("Performing hijax call");
+    _onHijaxLinkClickedImpl : function(event) {
+      this._logDebug("Handling hijax link click");
 
       this._preventEventDefaults(event);
-
-      var eventSrc = event.target || event.srcElement;
-      // Check if qx Event or native Event
-      this._setEventType(event.getType ? event.getType() : event.type);
 
       // Regular request
       this._userRequest = true;
 
-      switch (this._getEventType()) {
-        // Captured anchor events
-        case "click":
-          // Walking up the DOM tree to get the link element
-          // If an image is the content element of a link, the event occurs on the image
-          while (eventSrc != null && typeof eventSrc.href == 'undefined') {
-            eventSrc = eventSrc.parentNode;
-          }
-          var callUrl = eventSrc.href;
-          var url = callUrl;
-          var anchor = null;
-          // Same origin policy
-          // Only localhost requests will be processed
-
-          // ==================================> DOES NOT WORK IN CP <================================== \\
-          if (true || new RegExp(this.getSOPDomainRegExp(), 'i').test(callUrl)) {
-            // Add to browser history
-            var path = callUrl.substring(this.url.length);
-            this._oldState = this._decodeState(this.hijaxHistory.getState());
-            var pathHash = path.indexOf('#');
-            if (path == this._oldState && pathHash != -1) {
-              this._loadPageViaHijax(path);
-              return;
-            }
-            // Push the requested path (with query and anchor params) to the browser history
-            this._addHistoryReqMeth(path, this._getEventType());
-            this.hijaxHistory.addToHistory(this._encodeState(path));
-          } else {
-            // open external domains in new window
-            window.open(callUrl);
-          }
-        break;
-
-        // Captured form submit events
-        case "submit":
-          // Walking up the DOM tree to get the form element
-          // When firing the submit event by pressing the enter key, the event occurs on the input element
-          while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
-            eventSrc = eventSrc.parentNode;
-          }
-          // Form parameters
-          this._form = {
-            domElem : eventSrc,
-            meth    : eventSrc.method,
-            id      : eventSrc.id,
-            action  : eventSrc.action
-          };
-
-          // (Validate Form here!)
-          /*
-          var passedValidation = hjx.Form.validateForm(this._form.id);
-          if (passedValidation === false) return;
-          */
-
-          // Same origin policy
-          // Only localhost Requests will be processed
-
-          // ==================================> DOES NOT WORK IN CP <================================== \\
-
-          ///qx.log.Logger.info(hjx.Hijax, "form action = " +this._form.action);
-          ///qx.log.Logger.info(hjx.Hijax, this.getSOPDomainRegExp());
-
-          if (true || new RegExp(this.getSOPDomainRegExp(), 'i').test(this._form.action) ||
-              !(/\w+\:\/\//.test(this._form.action)))
-          {
-            // Save the name of the form parent doc
-            hjx.Form.setParentDocument(this.hijaxHistory.getState());
-            // Add to browser history
-            var hostLength = this._form.action.indexOf(this.url);
-            if (hostLength == -1) {
-              var path = this._form.action;
-            } else {
-              var path = this._form.action.substring(this.url.length);
-            }
-            // Push the requested path to the browser history
-            this._addHistoryReqMeth(this._encodeState(path), this._getEventType());
-            if (path == this._oldState) {
-              this._loadPageViaHijax(path);
-            } else {
-              this.hijaxHistory.addToHistory(this._encodeState(path));
-            }
-          }
-        break;
-
-        // TODO: Form validation should not be done here
-        /*
-        case "blur":
-          // Walking up the DOM tree to get the form element
-          // When firing the submit event by pressing the enter key, the event occurs on the input element
-          var vField = eventSrc;
-          while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
-            eventSrc = eventSrc.parentNode;
-          }
-
-          // Form parameters
-          var fForm = {
-            domElem : eventSrc,
-            meth    : eventSrc.method,
-            id      : eventSrc.id,
-            action  : eventSrc.action
-          };
-
-          // (Validate field here!)
-          var settings = this._settings._forms[fForm.id];
-          try {
-            var validation = hjx.Form.validateField(vField, settings[vField.name].type, settings[vField.name].required);
-            if (validation === true && settings[vField.name].prompt !== false) {
-              hjx.Form.validateFieldServerSide(vField, settings[vField.name].prompt.url);
-            }
-          } catch(e) {
-            qx.log.Logger.error(hjx.Hijax, e);
-          }
-
-          //if (passedValidation === false) return;
-        break;
-        */
+      // Walking up the DOM tree to get the link element
+      // If an image is the content element of a link, the event occurs on the image
+      var eventSrc = event.target || event.srcElement;
+      while (eventSrc != null && typeof eventSrc.href == 'undefined') {
+        eventSrc = eventSrc.parentNode;
       }
+
+      var callUrl = eventSrc.href;
+      var anchor = null;
+
+      var path = callUrl.substring(this.baseUrl.length);
+      this._loadPageViaHijax(path, false);
     },
 
 
+    _onHijaxFormSubmit : function(event) {
+      hjx.Hijax._onHijaxFormSubmitImpl(event);
+    },
 
+
+    _onHijaxFormSubmitImpl : function(event) {
+      this._logDebug("Handling hijax form submit");
+
+      this._preventEventDefaults(event);
+
+      var eventSrc = event.target || event.srcElement;
+
+      // Regular request
+      this._userRequest = true;
+
+
+      // Walking up the DOM tree to get the form element
+      // When firing the submit event by pressing the enter key, the event occurs on the input element
+      while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
+        eventSrc = eventSrc.parentNode;
+      }
+      // Form parameters
+      this._form = {
+        domElem : eventSrc,
+        meth    : eventSrc.method,
+        id      : eventSrc.id,
+        action  : eventSrc.action
+      };
+
+      // (Validate Form here!)
+      /*
+      var passedValidation = hjx.Form.validateForm(this._form.id);
+      if (passedValidation === false) return;
+      */
+
+      // Save the name of the form parent doc
+      hjx.Form.setParentDocument(this.hijaxHistory.getState());
+
+      // Add to browser history
+      var hostLength = this._form.action.indexOf(this.baseUrl);
+      if (hostLength == -1) {
+        var path = this._form.action;
+      } else {
+        var path = this._form.action.substring(this.baseUrl.length);
+      }
+
+      this._loadPageViaHijax(path, true);
+    },
+
+
+    /*
+    _onHijaxFormBlur : function(event) {
+      hjx.Hijax._onHijaxFormBlurImpl(event);
+    },
+
+
+    _onHijaxFormBlurImpl : function(event) {
+      this._logDebug("Handling hijax form blur");
+
+      this._preventEventDefaults(event);
+
+      var eventSrc = event.target || event.srcElement;
+
+      // Regular request
+      this._userRequest = true;
+
+
+      // Walking up the DOM tree to get the form element
+      // When firing the submit event by pressing the enter key, the event occurs on the input element
+      var vField = eventSrc;
+      while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
+        eventSrc = eventSrc.parentNode;
+      }
+
+      // Form parameters
+      var fForm = {
+        domElem : eventSrc,
+        meth    : eventSrc.method,
+        id      : eventSrc.id,
+        action  : eventSrc.action
+      };
+
+      // (Validate field here!)
+      var settings = this._settings._forms[fForm.id];
+      try {
+        var validation = hjx.Form.validateField(vField, settings[vField.name].type, settings[vField.name].required);
+        if (validation === true && settings[vField.name].prompt !== false) {
+          hjx.Form.validateFieldServerSide(vField, settings[vField.name].prompt.url);
+        }
+      } catch(e) {
+        qx.log.Logger.error(hjx.Hijax, e);
+      }
+
+      //if (passedValidation === false) return;
+    },
+    */
 
 
     /**
@@ -463,9 +425,9 @@ qx.Class.define("hjx.Hijax",
      *
      * @param calledUrl {String} The URL called by the event
      */
-    _loadPageViaHijax : function(calledUrl)
+    _loadPageViaHijax : function(calledUrl, isFormSubmit)
     {
-      this._logDebug("Loading page: " + calledUrl);
+      this._logDebug("Loading page: " + calledUrl + ", form submit: " + isFormSubmit);
 
       var url = calledUrl;
       var path = calledUrl;
@@ -475,44 +437,43 @@ qx.Class.define("hjx.Hijax",
         path = calledUrl.substring(0, hashPos);
         anchor = calledUrl.substring(hashPos+1);
         this._scrollToElem = document.getElementById(anchor) ||
-                              document.getElementsByName(anchor)[0] ||
-                              document.body;
+                             document.getElementsByName(anchor)[0] ||
+                             document.body;
       }
       var oldPath = this._oldState || "";
       var stateHashPos = oldPath.indexOf('#');
       if (stateHashPos != -1) {
         oldPath = this._oldState.substring(0, stateHashPos);
       }
-      if (oldPath == path && this._getEventType() != "submit") {
+      if (oldPath == path && ! isFormSubmit) {
         this._scrollToElem.scrollIntoView(true);
         this._scrollToElem = document.body;
         return;
       }
 
       this._oldState = calledUrl;
-      url = this.url+path;
+      url = this.baseUrl+path;
 
-      switch (this._getEventType()) {
-        case "submit":
-          if (this._userRequest === false) {
-            if (!confirm(hjx.Form.POSTretry(qx.bom.client.Locale.LOCALE))) return;
-            var params = hjx.Form.encodeForm(this._form.domElem);
-          } else {
-            var params = hjx.Form.serializeForm(this._form.domElem);
-            if (this._initiatingSubmitButton != null) {
-              params += "&" + hjx.Form.encodeField(this._initiatingSubmitButton);
-              this._initiatingSubmitButton = null;
-            }
+      if (isFormSubmit) {
+        if (this._userRequest === false) {
+          if (!confirm(hjx.Form.POSTretry(qx.bom.client.Locale.LOCALE))) return;
+          var params = hjx.Form.encodeForm(this._form.domElem);
+        } else {
+          var params = hjx.Form.serializeForm(this._form.domElem);
+          if (this._initiatingSubmitButton != null) {
+            params += "&" + hjx.Form.encodeField(this._initiatingSubmitButton);
+            this._initiatingSubmitButton = null;
           }
-          var req = new qx.io.remote.Request(url, this._form.meth.toUpperCase());
-          req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          req.setData(params);
-          break;
-        default:
-          var req = new qx.io.remote.Request(url);
-          req.setRequestHeader("Content-Type", "text/html");
-          req.setResponseType("text/javascript");
+        }
+        var req = new qx.io.remote.Request(url, this._form.meth.toUpperCase());
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        req.setData(params);
+      } else {
+        var req = new qx.io.remote.Request(url);
+        req.setRequestHeader("Content-Type", "text/html");
+        req.setResponseType("text/javascript");
       }
+
       req.setTimeout(30000);
       req.setRequestHeader("Accept-charset", "UTF-8");
       req.setResponseType("text/html");
@@ -530,6 +491,9 @@ qx.Class.define("hjx.Hijax",
 
         var statuscode = ev.getStatusCode();
         if (statuscode>=200 && statuscode<300) { // TODO: What happens for other status codes?!?
+          // Loading succeed -> Put that request to the history
+          this._addToHistory(calledUrl, isFormSubmit);
+
           // De-initialize the old page
           this._executePageDependentHandlers("onunload");
 
@@ -573,7 +537,7 @@ qx.Class.define("hjx.Hijax",
 
           var wantedElemId = null;
           var pageSettings = this._settings._pages[path];
-          if (pageSettings != null && pageSettings.event == this._getEventType()) {
+          if (pageSettings != null && pageSettings.event == (isFormSubmit ? "submit" : "click")) {
             wantedElemId = pageSettings.domElem;
           } else {
             wantedElemId = this._settings._pages['*'].domElem;
@@ -846,16 +810,26 @@ qx.Class.define("hjx.Hijax",
 
 
 
-    _addHistoryReqMeth : function(url, method) {
-      this.historyReqMeth[url] = method;
+    _addToHistory : function(url, isFormSubmit) {
+      var historyState = this._encodeState(url);
+      this.historyReqMeth[historyState] = isFormSubmit;
+
+      var isNewState = (historyState != this.hijaxHistory.getState());
+      this.hijaxHistory.addToHistory(historyState);
+
+      this._ignoreNextHistoryEvent = isNewState;
     },
 
 
     _onHistoryRequest : function(ev) {
-      qx.log.Logger.info(hjx.Hijax, "Page from history requested: " + ev.getData());
-      // Event data = path~anchor
-      this._setEventType(this.historyReqMeth[ev.getData()]);
-      this._loadPageViaHijax(this._decodeState(ev.getData()));
+      if (! this._ignoreNextHistoryEvent) {
+        qx.log.Logger.info(hjx.Hijax, "Page from history requested: " + ev.getData());
+        // Event data = path~anchor
+        var isFormSubmit = this.historyReqMeth[ev.getData()];
+        this._loadPageViaHijax(this._decodeState(ev.getData()), isFormSubmit);
+      } else {
+        this._ignoreNextHistoryEvent = false;
+      }
     },
 
 
@@ -867,36 +841,6 @@ qx.Class.define("hjx.Hijax",
     _resetGlobalCursor : function() {
       document.getElementsByTagName('body')[0].style.cursor = "default";
     },
-
-
-
-
-    _setEventType : function(evType) {
-      this._eventType = evType;
-    },
-
-
-    _getEventType : function() {
-      return this._eventType;
-    },
-
-
-    _resetEventType : function() {
-      this._eventType = null;
-    },
-
-
-
-    // Returns the regular expression for the same origin policy test
-    getSOPDomainRegExp : function() {
-      var escDomain = qx.lang.String.escapeRegexpChars(location.host);
-      var docProtocol = location.protocol;
-      var docPort = location.port;
-      docPort = docPort != "" ? ":" +docPort : "";
-      var regexp = docProtocol+ "\/\/" +escDomain+docPort+ ".*";
-      return regexp;
-    },
-
 
 
     // Error messages for returned server status
