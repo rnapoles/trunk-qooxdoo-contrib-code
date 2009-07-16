@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "HtmlArea Demo",
+
+    "summary" : "HtmlArea Demo",
+    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/foo",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "First Author (uid)",
+        "email" : "first.author@some.domain"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8.3-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "htmlarea.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+

@@ -1,55 +1,77 @@
-// HtmlArea widget - config json
 {
-  "name" : "HtmlArea config.json",
-  
+  "name"    : "HtmlArea",
+
   "include" :
   [
     {
-      "path" : "../../qooxdoo/qooxdoo-0.8.2-sdk/tool/data/config/application.json"
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
     }
   ],
-  
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
   "let" :
   {
     "APPLICATION"  : "htmlarea",
-    "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8.2-sdk",
-    "TEST_INCLUDE" : "${APPLICATION}.*",
-    "CACHE"        : "${QOOXDOO_PATH}/cache",
-    "ROOT"         : ".",
-    "QXTHEME"      : "htmlarea.theme.HtmlArea"
-  },
-  
-  
+    "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Application",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QXTHEME"      : "htmlarea.theme.modern.Theme",
+    "API_EXCLUDE"  : ["qx.legacy.*", "qx.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",
+    "ROOT"         : "."
+  }
+
+  // You only need to edit the remainder of this file, if you want to customize
+  // specific jobs, or add own job definitions.
+
+  /*
   "jobs" :
   {
-    "api-light" :
+    // Uncomment the following entry to add a contrib or library to your
+    // project; make sure to adapt the path to the Manifest.json; if you are
+    // using a contrib: library, it will be downloaded into the path specified
+    // by the 'cache/downloads' config key
+    "libraries" : 
     {
-      "extend" : [ "api" ],
-
-      "let" :
-      {
-        "API_INCLUDE"  : ["${APPLICATION}.*"],
-        "API_EXCLUDE"  : ["qx.*"]
-      }
+      "library" :
+      [
+        {
+          "manifest" : "contrib://SkeletonApplication/trunk/Manifest.json"
+        }
+      ]
     },
-    
-    
-    "build-files" :
+
+    // If you want to tweak a job setting, see the following sample where
+    // the "format" feature of the "build-script" job is overridden.
+    // To see a list of available jobs, invoke 'generate.py x'.
+    "build-script" :
     {
-      "desc"    : "adding the copy of the 'blank.html'",
-
-      "extend" : ["common"],
-
-      "copy-files" :
+      "compile-dist" : 
       {
-        "files" :
-        [
-          "blank.html"
-        ],
-
-        "source" : "${ROOT}/source",
-        "target" : "${BUILD_PATH}"
+        "code" :
+        {
+          "format" : false
+        }
       }
     }
   }
+  */
 }
