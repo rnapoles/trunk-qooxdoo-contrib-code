@@ -28,13 +28,11 @@ qx.Class.define("tileview.TileView",
   construct : function()
   {
     this.base(arguments);
-    this.getChildrenContainer().setLayout(this.__flowLayout = new flowlayout.FlowLayout());
+    this.getChildrenContainer().setLayout(new qx.ui.layout.Flow());
   },
 
   members :
   {
-    __flowLayout : null,
-
     _onAddChild : function(e)
     {
       e.getData().set(
