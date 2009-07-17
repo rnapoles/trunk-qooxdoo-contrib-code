@@ -60,11 +60,9 @@ qx.Class.define("hjx.Hijax",
     defaultRegExp   : /[\w\W\s]*<body[^>]*>([\w\W\s]*)<\/body>[\w\W\s]*/im,
     _hijaxHistory    : null,
     _historyExtraInfo  : [],
-    _settingsClass  : null,
     _settings       : null,
     _oldState       : null,
     _scrollToElem   : null,
-    _userRequest    : false,
     _initiatingSubmitButton : null,
     _debug          : false,
     _ignoreNextHistoryEvent : false,
@@ -79,8 +77,8 @@ qx.Class.define("hjx.Hijax",
     main : function() {
       this._scrollToElem = document.body;
 
-      this._settingsClass = qx.Class.getByName(qx.core.Setting.get("hjx.settingsClass"));
-      this._settings = this._settingsClass.getSettings();
+      var settingsClass = qx.Class.getByName(qx.core.Setting.get("hjx.settingsClass"));
+      this._settings = settingsClass.getSettings();
 
       // Init browser history
       this._hijaxHistory = qx.bom.History.getInstance();
@@ -213,10 +211,6 @@ qx.Class.define("hjx.Hijax",
           }
         }
       }
-
-      // TODO: Should be moved to the event handler that sets the flag
-      //       (if possible the flag should be removed)
-      this._userRequest = false;
     },
 
 
@@ -317,9 +311,6 @@ qx.Class.define("hjx.Hijax",
 
       this._preventEventDefaults(event);
 
-      // Regular request
-      this._userRequest = true;
-
       // Walking up the DOM tree to get the link element
       // If an image is the content element of a link, the event occurs on the image
       var eventSrc = event.target || event.srcElement;
@@ -344,10 +335,6 @@ qx.Class.define("hjx.Hijax",
       this._logDebug("Handling hijax form submit");
 
       this._preventEventDefaults(event);
-
-
-      // Regular request
-      this._userRequest = true;
 
       // Walking up the DOM tree to get the form element
       // When firing the submit event by pressing the enter key, the event occurs on the input element
@@ -400,10 +387,6 @@ qx.Class.define("hjx.Hijax",
       this._preventEventDefaults(event);
 
       var eventSrc = event.target || event.srcElement;
-
-      // Regular request
-      this._userRequest = true;
-
 
       // Walking up the DOM tree to get the form element
       // When firing the submit event by pressing the enter key, the event occurs on the input element
