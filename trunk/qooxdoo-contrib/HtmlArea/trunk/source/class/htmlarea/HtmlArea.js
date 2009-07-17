@@ -577,6 +577,16 @@ qx.Class.define("htmlarea.HtmlArea",
     },
     
     
+    /**
+     * Returns the body of the document
+     * 
+     * @return {Object}
+     */
+    getContentWindow : function() {
+      return this.__editorComponent.getContentWindow();
+    },
+    
+    
     /** 
      * Returns all the words that are contained in a node.
      * 
