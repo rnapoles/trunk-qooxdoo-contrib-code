@@ -58,8 +58,8 @@ qx.Class.define("hjx.Hijax",
     baseUrl         : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
     defaultElement  : null,
     defaultRegExp   : /[\w\W\s]*<body[^>]*>([\w\W\s]*)<\/body>[\w\W\s]*/im,
-    hijaxHistory    : null,
-    historyReqMeth  : [],
+    _hijaxHistory    : null,
+    _historyExtraInfo  : [],
     _settingsClass  : null,
     _settings       : null,
     _oldState       : null,
@@ -83,35 +83,35 @@ qx.Class.define("hjx.Hijax",
       this._settingsClass = qx.Class.getByName(qx.core.Setting.get("hjx.settingsClass"));
       this._settings = this._settingsClass.getSettings();
 
+      // Init browser history
+      this._hijaxHistory = qx.bom.History.getInstance();
+      this._hijaxHistory.addListener('request', this._onHistoryRequest, this);
+
       if (this._settings._pages['*']) {
         this.setDefaultContentTarget(this._settings._pages['*'].domElem);
       }
       this._hijackLinksAndForms();
 
-      // Init browser history
-      this.hijaxHistory = qx.bom.History.getInstance();
-      this.hijaxHistory.addListener('request', this._onHistoryRequest, this);
-
       if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         var iframes = document.getElementsByTagName("iframe");
         if(iframes && iframes.length > 0) {
-          this.hijaxHistory.historyIframe = iframes[iframes.length-1];
+          this._hijaxHistory.historyIframe = iframes[iframes.length-1];
         } else {
           this.error("IE history iframe can't be found. Class qx.bom.History might have changed.");
         }
       }
 
       // Handle bookmarks
-      var state = this.hijaxHistory.getState();
+      var state = this._hijaxHistory.getState();
       if (state) {
         // This is a bookmark to another page
-        this._loadPageViaHijax(this._decodeState(state), false);
+        this._loadPageViaHijax(this._decodeState(state), null);
       } else {
         // This is a normal startup -> Load the start page
         if (this._settings.getStartPage != null) {
           var startPage = this._settings.getStartPage();
           if (startPage != null) {
-            this._loadPageViaHijax(startPage, false);
+            this._loadPageViaHijax(startPage);
           }
         }
       }
@@ -179,8 +179,8 @@ qx.Class.define("hjx.Hijax",
           formElem.style.border = "1px solid blue";
         }
 
-        // Ensure that the form has an ID
-        // TODO: Why do we need an ID? (Perhaps because of "from history" handling)
+        // Ensure that the form has an ID. The ID is needed for restoring the old form values
+        // when navigating to a page with a form using the history
         if (! formElem.getAttribute('id')) {
           formElem.setAttribute('id', "form-" + i);
         }
@@ -204,20 +204,6 @@ qx.Class.define("hjx.Hijax",
         }
         */
 
-
-        // From history
-        // TODO: Logic should be moved to hjx.Form
-        // TODO: Should not be done during hijacking, but during processing of a history back
-        if (hjx.Form.getFormCollection(formElem.id) &&
-          this.hijaxHistory.getState() == hjx.Form.getFormCollection(formElem.id).parentDocument)
-        {
-          if (this._userRequest === false) {
-            hjx.Form.deserializeForm(formElem.id);
-          } else {
-            hjx.Form.setFormCollection(formElem.id, null);
-          }
-        }
-
         // Hijack the form
         this.bindEvent(formElem, 'submit', this._onHijaxFormSubmit);
         qx.bom.Event.addNativeListener(formElem, "reset", function() {  });
@@ -235,6 +221,27 @@ qx.Class.define("hjx.Hijax",
       // TODO: Should be moved to the event handler that sets the flag
       //       (if possible the flag should be removed)
       this._userRequest = false;
+    },
+
+
+    _restoreLastFormData : function() {
+      // Get the extraInfo for the
+      var currentPage = this._hijaxHistory.getState();
+      var extraInfo = null;
+      for (var state in this._historyExtraInfo) {
+        var info = this._historyExtraInfo[state];
+        if (currentPage == info.referrerUrl && info.formData) {
+          extraInfo = info;
+        }
+      }
+
+      // Restore the form
+      if (extraInfo != null) {
+        var formEl = document.getElementById(extraInfo.formId);
+        if (formEl != null) {
+          hjx.Form.restoreForm(formEl, extraInfo.formData);
+        }
+      }
     },
 
 
@@ -328,7 +335,7 @@ qx.Class.define("hjx.Hijax",
       var anchor = null;
 
       var path = callUrl.substring(this.baseUrl.length);
-      this._loadPageViaHijax(path, false);
+      this._loadPageViaHijax(path);
     },
 
 
@@ -360,17 +367,13 @@ qx.Class.define("hjx.Hijax",
         action  : eventSrc.action
       };
 
-
       // (Validate Form here!)
       /*
-      var passedValidation = hjx.Form.validateForm(this._form.id);
+      var passedValidation = hjx.FormValidation.validateForm(this._form.id);
       if (passedValidation === false) return;
       */
 
-      // Save the name of the form parent doc
-      hjx.Form.setParentDocument(this.hijaxHistory.getState());
-
-      // Add to browser history
+      // Get the target page
       var hostLength = this._form.action.indexOf(this.baseUrl);
       if (hostLength == -1) {
         var path = this._form.action;
@@ -378,7 +381,15 @@ qx.Class.define("hjx.Hijax",
         var path = this._form.action.substring(this.baseUrl.length);
       }
 
-      this._loadPageViaHijax(path, true);
+      // Get the form values
+      var formData = hjx.Form.encodeForm(this._form.domElem);
+      if (this._initiatingSubmitButton != null) {
+        formData += "&" + hjx.Form.encodeField(this._initiatingSubmitButton);
+        this._initiatingSubmitButton = null;
+      }
+
+      // Load the page
+      this._loadPageViaHijax(path, eventSrc.id, formData);
     },
 
 
@@ -417,9 +428,9 @@ qx.Class.define("hjx.Hijax",
       // (Validate field here!)
       var settings = this._settings._forms[fForm.id];
       try {
-        var validation = hjx.Form.validateField(vField, settings[vField.name].type, settings[vField.name].required);
+        var validation = hjx.FormValidation.validateField(vField, settings[vField.name].type, settings[vField.name].required);
         if (validation === true && settings[vField.name].prompt !== false) {
-          hjx.Form.validateFieldServerSide(vField, settings[vField.name].prompt.url);
+          hjx.FormValidation.validateFieldServerSide(vField, settings[vField.name].prompt.url);
         }
       } catch(e) {
         qx.log.Logger.error(hjx.Hijax, e);
@@ -437,10 +448,10 @@ qx.Class.define("hjx.Hijax",
      *
      * @param calledUrl {String} The URL called by the event
      */
-    _loadPageViaHijax : function(calledUrl, isFormSubmit)
-    {
-      this._logDebug("Loading page: " + calledUrl + ", form submit: " + isFormSubmit);
+    _loadPageViaHijax : function(calledUrl, formId, formData, restoreLastFormData) {
+      this._logDebug("Loading page: " + calledUrl + ", form data: " + (formData != null));
 
+      var referrerUrl = this._hijaxHistory.getState();
       var url = calledUrl;
       var path = calledUrl;
 
@@ -459,7 +470,7 @@ qx.Class.define("hjx.Hijax",
       if (stateHashPos != -1) {
         oldPath = this._oldState.substring(0, stateHashPos);
       }
-      if (oldPath == path && ! isFormSubmit) {
+      if (oldPath == path && formData == null) {
         this._scrollToElem.scrollIntoView(true);
         this._scrollToElem = document.body;
         return;
@@ -468,20 +479,10 @@ qx.Class.define("hjx.Hijax",
       this._oldState = calledUrl;
       url = this.baseUrl+path;
 
-      if (isFormSubmit) {
-        if (this._userRequest === false) {
-          if (!confirm(hjx.Form.POSTretry(qx.bom.client.Locale.LOCALE))) return;
-          var params = hjx.Form.encodeForm(this._form.domElem);
-        } else {
-          var params = hjx.Form.serializeForm(this._form.domElem);
-          if (this._initiatingSubmitButton != null) {
-            params += "&" + hjx.Form.encodeField(this._initiatingSubmitButton);
-            this._initiatingSubmitButton = null;
-          }
-        }
+      if (formData) {
         var req = new qx.io.remote.Request(url, this._form.meth.toUpperCase());
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.setData(params);
+        req.setData(formData);
       } else {
         var req = new qx.io.remote.Request(url);
         req.setRequestHeader("Content-Type", "text/html");
@@ -498,9 +499,15 @@ qx.Class.define("hjx.Hijax",
       req.addListener("completed", function(ev)
       {
         var statuscode = ev.getStatusCode();
-        if (statuscode>=200 && statuscode<300) { // TODO: What happens for other status codes?!?
+        if (statuscode>=200 && statuscode<300) {
+          // TODO: What happens for other status codes?!?
+
           // Loading succeed -> Put that request to the history
-          this._addToHistory(calledUrl, isFormSubmit);
+          this._addToHistory(calledUrl, {
+              referrerUrl : referrerUrl,
+              formId : formId,
+              formData : formData
+          });
 
           // De-initialize the old page
           this._executePageDependentHandlers("onunload");
@@ -509,12 +516,12 @@ qx.Class.define("hjx.Hijax",
           this._highlightNavigation(url);
 
           var start = new Date();
-          this._updateContent(ev.getContent(), path, anchor);
+          this._updateContent(ev.getContent(), path, anchor, (formData != null));
           var end = new Date();
           qx.log.Logger.info(hjx.Hijax, "Time to change page content: " +(end.getTime() - start.getTime())+ "ms");
 
           if (qx.core.Variant.isSet("qx.client", "mshtml")) {
-            document.body.appendChild(this.hijaxHistory.historyIframe);
+            document.body.appendChild(this._hijaxHistory.historyIframe);
           }
 
           if (this._settings.getPageName != null) {
@@ -531,6 +538,10 @@ qx.Class.define("hjx.Hijax",
           //       links as well.
           this._hijackLinksAndForms();
 
+          if (restoreLastFormData) {
+            this._restoreLastFormData();
+          }
+
           this._resetGlobalCursor();
         }
       },this);
@@ -540,7 +551,8 @@ qx.Class.define("hjx.Hijax",
 
         if (statuscode == 302) {
           // This is a cross-domain redirect -> Handle this like an external link
-          // NOTE: non-cross-domain redirects don't cause an error, they are executed by the XmlHttpRequest automatically
+          // NOTE: non-cross-domain redirects don't cause an error, they are executed by the
+          //       XmlHttpRequest automatically
           document.location.href = url;
         } else {
           this._httpError(statuscode, url);
@@ -554,8 +566,7 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-    _updateContent : function(pageContent, path, anchor)
-    {
+    _updateContent : function(pageContent, path, anchor, isFormSubmit) {
       pageContent = this._parsePageContent(pageContent);
       document.title = pageContent.title;
 
@@ -834,12 +845,12 @@ qx.Class.define("hjx.Hijax",
 
 
 
-    _addToHistory : function(url, isFormSubmit) {
+    _addToHistory : function(url, extraInfo) {
       var historyState = this._encodeState(url);
-      this.historyReqMeth[historyState] = isFormSubmit;
+      this._historyExtraInfo[historyState] = extraInfo;
 
-      var isNewState = (historyState != this.hijaxHistory.getState());
-      this.hijaxHistory.addToHistory(historyState);
+      var isNewState = (historyState != this._hijaxHistory.getState());
+      this._hijaxHistory.addToHistory(historyState);
 
       this._ignoreNextHistoryEvent = isNewState;
     },
@@ -848,9 +859,18 @@ qx.Class.define("hjx.Hijax",
     _onHistoryRequest : function(ev) {
       if (! this._ignoreNextHistoryEvent) {
         qx.log.Logger.info(hjx.Hijax, "Page from history requested: " + ev.getData());
-        // Event data = path~anchor
-        var isFormSubmit = this.historyReqMeth[ev.getData()];
-        this._loadPageViaHijax(this._decodeState(ev.getData()), isFormSubmit);
+
+        var newState = ev.getData(); // path~anchor
+        var extraInfo = this._historyExtraInfo[newState];
+
+        if (extraInfo.formData) {
+          var resendPostMsg = this.getResendPostMsg(qx.bom.client.Locale.LOCALE);
+          if (! confirm(resendPostMsg)) {
+            return;
+          }
+        }
+
+        this._loadPageViaHijax(this._decodeState(newState), extraInfo.formId, extraInfo.formData, true);
       } else {
         this._ignoreNextHistoryEvent = false;
       }
@@ -908,7 +928,18 @@ qx.Class.define("hjx.Hijax",
         e.preventDefault();
         e.stopPropagation();
       }
-    })
+    }),
+
+
+    // Alert message when user retries to submit the form.
+    getResendPostMsg : function(lang) {
+      switch(lang) {
+        case "de":
+          return "Die Seite, die Sie versuchen zu laden, wurde aus POST-Daten erstellt, die im Cache abgelaufen sind. Wenn Sie die Daten nochmals senden, wird jede Aktion, die das Formular ausgef�hrt hat (wie eine Suche oder ein Online-Einkauf), noch einmal durchgef�hrt. Um die Daten nochmals zu senden, klicken Sie OK. Andernfalls klicken Sie auf Abbrechen.";
+        default:
+          return "The page you try to reload contains POST data which is expired in the cache. If you resend the data, every action which submitted the form will be executed again. To send the data once more click OK, otherwise click Cancel.";
+      }
+    }
 
   }
 });
