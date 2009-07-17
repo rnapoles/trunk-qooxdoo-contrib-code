@@ -173,10 +173,7 @@ qx.Class.define("htmlarea.demo.Application",
      qx.bom.element.Style.setStyles(container, { "float": "left" });
     
      var listItem;
-     var attributes = { title: "Change font family",
-                        qxKeepFocus: "on", 
-                        qxSelectable: "off" };
-     var button = qx.bom.Element.create("select", attributes);
+     var button = qx.bom.Element.create("select", { title: "Change font family" });
     
      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
        qx.bom.element.Attribute.set(button, "hideFocus", "true");
@@ -231,10 +228,7 @@ qx.Class.define("htmlarea.demo.Application",
                                                  "float": "left" });
     
      var listItem;
-     var attributes = { title: "Change font size",
-                        qxKeepFocus: "on", 
-                        qxSelectable: "off" };
-     var button = qx.bom.Element.create("select", attributes);
+     var button = qx.bom.Element.create("select", { title: "Change font size" });
     
      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
        qx.bom.element.Attribute.set(button, "hideFocus", "true");
