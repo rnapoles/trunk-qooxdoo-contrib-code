@@ -65,7 +65,6 @@ qx.Class.define("hjx.Hijax",
     _oldState       : null,
     _scrollToElem   : null,
     _userRequest    : false,
-    _form           : null,
     _initiatingSubmitButton : null,
     _debug          : false,
     _ignoreNextHistoryEvent : false,
@@ -118,7 +117,6 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-
     /**
      * Sets the default DOM element where to put the content loaded via hijax.
      *
@@ -139,8 +137,6 @@ qx.Class.define("hjx.Hijax",
           break;
       }
     },
-
-
 
 
     /**
@@ -224,22 +220,22 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-    _restoreLastFormData : function() {
+    _restoreLastFormValues : function() {
       // Get the extraInfo for the
       var currentPage = this._hijaxHistory.getState();
       var extraInfo = null;
       for (var state in this._historyExtraInfo) {
         var info = this._historyExtraInfo[state];
-        if (currentPage == info.referrerUrl && info.formData) {
+        if (currentPage == info.referrerUrl && info.formInfo) {
           extraInfo = info;
         }
       }
 
       // Restore the form
       if (extraInfo != null) {
-        var formEl = document.getElementById(extraInfo.formId);
+        var formEl = document.getElementById(extraInfo.formInfo.formId);
         if (formEl != null) {
-          hjx.Form.restoreForm(formEl, extraInfo.formData);
+          hjx.Form.restoreForm(formEl, extraInfo.formInfo.formData);
         }
       }
     },
@@ -349,47 +345,46 @@ qx.Class.define("hjx.Hijax",
 
       this._preventEventDefaults(event);
 
-      var eventSrc = event.target || event.srcElement;
 
       // Regular request
       this._userRequest = true;
 
       // Walking up the DOM tree to get the form element
       // When firing the submit event by pressing the enter key, the event occurs on the input element
-      while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
-        eventSrc = eventSrc.parentNode;
+      var formEl = event.target || event.srcElement;
+      while (formEl != null && formEl.nodeName.toLowerCase() != "form") {
+        formEl = formEl.parentNode;
       }
-      // Form parameters
-      this._form = {
-        domElem : eventSrc,
-        meth    : eventSrc.method,
-        id      : eventSrc.id,
-        action  : eventSrc.action
-      };
 
       // (Validate Form here!)
       /*
-      var passedValidation = hjx.FormValidation.validateForm(this._form.id);
+      var passedValidation = hjx.FormValidation.validateForm(formEl.id);
       if (passedValidation === false) return;
       */
 
       // Get the target page
-      var hostLength = this._form.action.indexOf(this.baseUrl);
+      var action = formEl.action;
+      var hostLength = action.indexOf(this.baseUrl);
       if (hostLength == -1) {
-        var path = this._form.action;
+        var path = action;
       } else {
-        var path = this._form.action.substring(this.baseUrl.length);
+        var path = action.substring(this.baseUrl.length);
       }
 
       // Get the form values
-      var formData = hjx.Form.encodeForm(this._form.domElem);
+      var formData = hjx.Form.encodeForm(formEl);
       if (this._initiatingSubmitButton != null) {
         formData += "&" + hjx.Form.encodeField(this._initiatingSubmitButton);
         this._initiatingSubmitButton = null;
       }
+      var formInfo = {
+        formId : formEl.id,
+        method : formEl.method,
+        formData : formData
+      };
 
       // Load the page
-      this._loadPageViaHijax(path, eventSrc.id, formData);
+      this._loadPageViaHijax(path, formInfo);
     },
 
 
@@ -448,8 +443,8 @@ qx.Class.define("hjx.Hijax",
      *
      * @param calledUrl {String} The URL called by the event
      */
-    _loadPageViaHijax : function(calledUrl, formId, formData, restoreLastFormData) {
-      this._logDebug("Loading page: " + calledUrl + ", form data: " + (formData != null));
+    _loadPageViaHijax : function(calledUrl, formInfo, restoreLastFormValues) {
+      this._logDebug("Loading page: " + calledUrl + ", form data: " + (formInfo != null));
 
       var referrerUrl = this._hijaxHistory.getState();
       var url = calledUrl;
@@ -470,7 +465,7 @@ qx.Class.define("hjx.Hijax",
       if (stateHashPos != -1) {
         oldPath = this._oldState.substring(0, stateHashPos);
       }
-      if (oldPath == path && formData == null) {
+      if (oldPath == path && formInfo == null) {
         this._scrollToElem.scrollIntoView(true);
         this._scrollToElem = document.body;
         return;
@@ -479,10 +474,10 @@ qx.Class.define("hjx.Hijax",
       this._oldState = calledUrl;
       url = this.baseUrl+path;
 
-      if (formData) {
-        var req = new qx.io.remote.Request(url, this._form.meth.toUpperCase());
+      if (formInfo) {
+        var req = new qx.io.remote.Request(url, formInfo.method.toUpperCase());
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.setData(formData);
+        req.setData(formInfo.formData);
       } else {
         var req = new qx.io.remote.Request(url);
         req.setRequestHeader("Content-Type", "text/html");
@@ -505,8 +500,7 @@ qx.Class.define("hjx.Hijax",
           // Loading succeed -> Put that request to the history
           this._addToHistory(calledUrl, {
               referrerUrl : referrerUrl,
-              formId : formId,
-              formData : formData
+              formInfo : formInfo
           });
 
           // De-initialize the old page
@@ -516,7 +510,7 @@ qx.Class.define("hjx.Hijax",
           this._highlightNavigation(url);
 
           var start = new Date();
-          this._updateContent(ev.getContent(), path, anchor, (formData != null));
+          this._updateContent(ev.getContent(), path, anchor, (formInfo != null));
           var end = new Date();
           qx.log.Logger.info(hjx.Hijax, "Time to change page content: " +(end.getTime() - start.getTime())+ "ms");
 
@@ -538,8 +532,8 @@ qx.Class.define("hjx.Hijax",
           //       links as well.
           this._hijackLinksAndForms();
 
-          if (restoreLastFormData) {
-            this._restoreLastFormData();
+          if (restoreLastFormValues) {
+            this._restoreLastFormValues();
           }
 
           this._resetGlobalCursor();
@@ -863,14 +857,14 @@ qx.Class.define("hjx.Hijax",
         var newState = ev.getData(); // path~anchor
         var extraInfo = this._historyExtraInfo[newState];
 
-        if (extraInfo.formData) {
+        if (extraInfo.formInfo) {
           var resendPostMsg = this.getResendPostMsg(qx.bom.client.Locale.LOCALE);
           if (! confirm(resendPostMsg)) {
             return;
           }
         }
 
-        this._loadPageViaHijax(this._decodeState(newState), extraInfo.formId, extraInfo.formData, true);
+        this._loadPageViaHijax(this._decodeState(newState), extraInfo.formInfo, true);
       } else {
         this._ignoreNextHistoryEvent = false;
       }
