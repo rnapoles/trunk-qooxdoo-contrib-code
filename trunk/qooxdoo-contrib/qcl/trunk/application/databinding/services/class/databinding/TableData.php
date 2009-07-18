@@ -16,32 +16,40 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require "qcl/AbstractStore.php";
+//require dirname( __FILE__ ) . "/AbstractStore.php";
+require_once "qcl/data/store/db/Controller.php";
 
-class class_TableData extends AbstractStore
+class class_TableData
+//  extends AbstractStore // RpcPhp 1.0 server
+  extends qcl_data_store_db_Controller
 {
+
+  /**
+   * Skip authentication if qcl server is used
+   */
+  var $skipAuthentication = true;
 
   function method_resetRowCount( $params )
   {
-    $_SESSION['rowCount'] = rand(1000,9000);  
+    $_SESSION['rowCount'] = rand(1000,9000);
     return array(
       'rowCount'  => $_SESSION['rowCount'],
       'statusText' => "Table has {$_SESSION['rowCount']} rows."
     );
-  }  
-  
+  }
+
   function method_getRowCount( $params )
   {
     if ( ! isset( $_SESSION['rowCount'] ) )
     {
-      $_SESSION['rowCount'] = rand(1000,9000);  
+      $_SESSION['rowCount'] = rand(1000,9000);
     }
     return array(
       'rowCount'  => $_SESSION['rowCount'],
       'statusText' => "Table has {$_SESSION['rowCount']} rows."
     );
   }
-  
+
   /**
    * get node data
    * @param array $params
@@ -50,7 +58,7 @@ class class_TableData extends AbstractStore
   {
 
     list( $firstRow, $lastRow, $requestId, $rowIds, $node ) = $params;
-    
+
     $rowData = array();
     $rowIds = array( "id", "text", "boolean", "number", "date" );
     for ( $i= $firstRow; $i<= $lastRow; $i++ )
@@ -60,40 +68,40 @@ class class_TableData extends AbstractStore
       {
         switch( $rowId )
         {
-          case "id": 
+          case "id":
             $value = (int) $i;
             break;
-            
-          case "number": 
+
+          case "number":
             if ( $node and isset( $node->id ) )
             {
-              $value = $node->id + $i; 
+              $value = $node->id + $i;
             }
             else
             {
               $value = $_SESSION['rowCount']-$i;
             }
             break;
-            
+
           case "date":
             $day = rand(1,30);
             $month = rand(1,12);
             $year = rand(1970,2009);
             $value = "$day.$month.$year";
             break;
-            
+
           case "boolean":
             $value = (bool) ($i % 2);
             break;
-            
+
           case "text":
             if ( $node and isset( $node->label ) )
             {
-              $value = "{$node->label}, Row $i"; 
+              $value = "{$node->label}, Row $i";
             }
             else
             {
-              $value = "Row $i";  
+              $value = "Row $i";
             }
             break;
         }
@@ -101,27 +109,27 @@ class class_TableData extends AbstractStore
       }
       $rowData[] = $row;
     }
-    
+
     $statusText = "Retrieved  rows $firstRow - $lastRow of {$_SESSION['rowCount']}.";
-    
+
     /*
      * return data to client
      */
     return array(
       'requestId'  => $requestId,
-      'rowData'    => $rowData,   
+      'rowData'    => $rowData,
       'statusText' => $statusText
     );
   }
-  
+
   function method_addRow( )
   {
     $_SESSION['rowCount']++;
     return array(
       'statusText' => "Row added."
-    );    
+    );
   }
-  
+
 
 }
 ?>

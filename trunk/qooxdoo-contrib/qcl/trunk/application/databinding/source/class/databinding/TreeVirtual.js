@@ -68,8 +68,8 @@ qx.Class.define("databinding.TreeVirtual",
        * Configure jsonpc-store
        */
       var store = this.store = new qcl.data.store.JsonRpc(
-        /* url */ "../services/index.php",
-        /* service */ "qcl.TreeData",
+        null, // use main application's server url 
+        "databinding.TreeData",
         marshaler
       );
       
@@ -221,7 +221,7 @@ qx.Class.define("databinding.TreeVirtual",
         );
 
         /*
-         * fake server node ids. This is needed becuase we have no
+         * fake server node ids. This is needed because we have no
          * server-supplied tree data yet - in a real scenario, the
          * server will supply those after adding the new node to 
          * the database

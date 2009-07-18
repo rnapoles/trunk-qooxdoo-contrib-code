@@ -44,9 +44,24 @@
     {
       "library" :
       [
-        {
-          "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
-        }
+       /*
+        * qcl-js
+        */
+       {
+         "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
+       },
+       /*
+        * qcl-php
+        */
+       {
+         "manifest" : "contrib://qcl/trunk/backend/php/Manifest.json"
+       },
+       /*
+        * json-rpc server
+        */
+       {
+         "manifest" : "contrib://RpcPhp/trunk/Manifest.json"
+       }  
       ]
     }
   }
