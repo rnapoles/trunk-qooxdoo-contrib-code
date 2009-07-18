@@ -261,6 +261,14 @@ interface qcl_data_db_IModel
   function deleteWhere ( $where );
 
   /**
+   * Deletes records that match a given property value
+   * @param string  $property
+   * @param mixed $value
+   * @return void
+   */
+  function deleteBy ( $property, $value );
+
+  /**
    * Deletes all rows of a table
    * @return void
    */
