@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+ include="qcl/data/model/xmlSchema/DbModel.xml">
+
+  <!-- model for messages stored in the database -->
+  
+  <model
+    name="qcl.data.store.db.EventStoreModel"
+    table="storeEvents"
+    extends="qcl.model.xmlSchema.DbModel">
+    <definition>
+      <properties>
+        <property name="storeId" type="string">
+          <sql>varchar(32) NOT NULL</sql>
+        </property>    
+        <property name="eventData" type="string">
+          <sql>blob NOT NULL</sql>
+        </property>  
+      </properties>
+    </definition>
+  </model>
+</schema>
