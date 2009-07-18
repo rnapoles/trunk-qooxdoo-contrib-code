@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+ include="qcl/data/model/xmlSchema/DbModel.xml">
+
+  <!-- model for messages stored in the database -->
+  
+  <model
+    name="qcl.data.store.db.StoreModel"
+    table="stores"
+    extends="qcl.model.xmlSchema.DbModel">
+    <definition>
+      <properties>
+        <property name="storeId" type="string" unique="true">
+          <sql>varchar(32) NOT NULL</sql>
+        </property>  
+        <property name="storeService" type="string">
+          <sql>varchar(100) NOT NULL</sql>
+        </property>
+      </properties>
+       
+    </definition>
+  </model>
+</schema>
