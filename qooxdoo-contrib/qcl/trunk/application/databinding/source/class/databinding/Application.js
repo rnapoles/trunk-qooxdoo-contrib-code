@@ -20,6 +20,7 @@
 qx.Class.define("databinding.Application",
 {
   extend : qx.application.Standalone,
+  include : [ qcl.application.MApplication ],
 
   /*
     *****************************************************************************
@@ -50,6 +51,14 @@ qx.Class.define("databinding.Application",
         qx.log.appender.Console;
       }
 
+      /*
+       * server url to use
+       */
+      this.setServerUrl(
+//        "../services/index.php",
+        "../services/server.php"
+      );
+      
       /*
        * Main layout: container with splitpane
        */

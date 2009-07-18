@@ -67,8 +67,8 @@ qx.Class.define("databinding.Table",
        *  setup the store that retrieves the data from the backend
        */       
       var store = this._tableStore = new qcl.data.store.JsonRpc(
-          /* url */ "../services/index.php",
-          /* service */ "qcl.TableData",
+          null, // use main application's server url 
+          /* service */ "databinding.TableData",
           marshaler 
       );      
        

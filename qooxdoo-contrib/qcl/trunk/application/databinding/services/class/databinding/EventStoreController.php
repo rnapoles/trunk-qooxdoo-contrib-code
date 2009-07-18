@@ -20,9 +20,9 @@
 /**
  * Abstract class for jsonrpc data stores that handles event propagation.
  * This is a very simple implementation not meant for production. We simply
- * store the event data in the $_SESSION variable, separated by the 
+ * store the event data in the $_SESSION variable, separated by the
  * class name of the extending class, so that events of differnt widget
- * types do not get mixed up. 
+ * types do not get mixed up.
  */
 class AbstractStore
 {
@@ -38,14 +38,14 @@ class AbstractStore
     if( ! isset( $_SESSION['events'] ) )
     {
       $_SESSION['events'] = array();
-    }  
-    
+    }
+
     foreach( (array) $storeIds as $storeId )
     {
-      $_SESSION['events'][$storeId] = array(); 
+      $_SESSION['events'][$storeId] = array();
       $_SESSION['storeService'][$storeId] = $serviceName;
     }
-    
+
     return array(
       'statusText' => "Store registered."
       );
@@ -57,15 +57,15 @@ class AbstractStore
 
     foreach( (array) $storeIds as $storeId )
     {
-      unset( $_SESSION['events'][$storeId] ); 
+      unset( $_SESSION['events'][$storeId] );
     }
-    
+
     return array(
       'statusText' => "Store unregistered."
     );
   }
 
-  
+
   function method_unregisterAll()
   {
     $_SESSION['events'] = array();
@@ -75,15 +75,15 @@ class AbstractStore
     );
   }
 
-  function method_getEvents( $params )
+  function method_exchangeEvents( $params )
   {
 
     list( $map ) = $params;
-    
+
     //echo "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/";
-    
+
     $resultMap = array();
-    
+
     foreach ( $map as $storeId => $events )
     {
       /*
@@ -96,12 +96,12 @@ class AbstractStore
           $this->addToEventQueue( $storeId, $event );
         }
       }
-  
+
       /*
        * retrieve events from queue and empty queue
        */
       $events = $this->pullEventsFromQueue( $storeId );
-      if ( $events ) 
+      if ( $events )
       {
         $resultMap[$storeId] = $events;
       }
@@ -118,7 +118,7 @@ class AbstractStore
 
   function addToEventQueue( $storeId, $event )
   {
-    
+
     /*
      * for each connected store except the requesting one,
      * save an event in the event queue if the stores have the same service name
@@ -130,11 +130,11 @@ class AbstractStore
         $_SESSION['events'][$id][] = $event;
       }
     }
-    
+
     //echo "/* Store #$storeId: Saving event " . print_r( $event, true) . "\nServer event queue: " . print_r( $_SESSION, true ) . "*/";
-    
+
   }
-  
+
 
   function pullEventsFromQueue( $storeId )
   {
