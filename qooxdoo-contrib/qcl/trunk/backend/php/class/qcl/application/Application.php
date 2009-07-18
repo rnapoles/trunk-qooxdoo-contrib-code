@@ -121,11 +121,17 @@ class qcl_application_Application
 
     /*
      * Initialize a dummy qcl_data_model_xmlSchema_DbModel object to create tables
-     * FIXME this can be removed once qcl_data_db_SimpleModel does
+     * @todo this can be removed once qcl_data_db_SimpleModel does
      * automatic table creation.
      */
      require_once "qcl/data/persistence/db/Setup.php";
      qcl_data_persistence_db_Setup::setup();
+
+     /*
+      * now we can include the real persistent object class
+      * @todo this is still a hack
+      */
+     require_once "qcl/data/persistence/db/Object.php";
 
      /*
       * set the default models for config, session and messages. If you
