@@ -745,6 +745,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
      * Polls the server, passing the events in the queue
      * and retrieving the events on the server to all stores
      * that this object serves as proxy for, including itself.
+     * In order for this to work, there has to be a exchangeEvents service
+     * method in the given client, see qcl_data_store_db_Controller::exchangeEvents
      * @return {Void}
      */
     _poll : function()
@@ -754,7 +756,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
         var storeId = store.getStoreId();
         events[storeId] = store.getDataEvents();
       });
-      this.load("getEvents",
+      this.load("exchangeEvents",
           [ events ],
           function(data)
           {
