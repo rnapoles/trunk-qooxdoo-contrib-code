@@ -194,9 +194,9 @@ class qcl_data_model_db_Abstract
     $table = $this->table();
     $sql = "SELECT DISTINCT `$column` FROM {$table} \n";
 
-    if ($where)
+    if ( $where )
     {
-      $sql .= "WHERE $where ";
+      $sql .= "WHERE " . $this->toSql( $where );
     }
     if ( $orderBy )
     {
@@ -961,6 +961,19 @@ class qcl_data_model_db_Abstract
   function deleteWhere ( $where )
   {
     $this->db->deleteWhere ( $this->table(), $this->toSql($where) );
+  }
+
+  /**
+   * Deletes records that match a given property value
+   * @param string  $property
+   * @param mixed $value
+   * @return void
+   */
+  function deleteBy ( $property, $value )
+  {
+    $this->db->deleteWhere ( $this->table(), $this->toSql( array(
+      $property => $value
+    ) ) );
   }
 
   /**
