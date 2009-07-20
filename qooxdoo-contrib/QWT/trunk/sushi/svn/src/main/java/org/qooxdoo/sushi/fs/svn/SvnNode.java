@@ -590,10 +590,10 @@ public class SvnNode extends Node {
     }
     
     public static SvnNode fromWorkspace(FileNode workspace) throws LocatorException, IOException {
-        return (SvnNode) workspace.getIO().node("svn:" + getSvnUrl(workspace));
+        return (SvnNode) workspace.getIO().node("svn:" + urlFromWorkspace(workspace));
     }
 
-    private static String getSvnUrl(FileNode workspace) throws IOException {
+    public static String urlFromWorkspace(FileNode workspace) throws IOException {
         String url;
 
         workspace.join(".svn").checkExists();
