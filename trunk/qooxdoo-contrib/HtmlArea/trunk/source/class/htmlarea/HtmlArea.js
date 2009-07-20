@@ -316,109 +316,44 @@ qx.Class.define("htmlarea.HtmlArea",
     ---------------------------------------------------------------------------
     */
     
-    _applyContentType : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setContentType(value);
-      } else {
-        this.__postPoneProperty({ name: "contentType", value: value });
-      } 
+    _applyContentType : function(value, old) {
+      this.__editorComponent.setContentType(value);
     },
 
     
-    _applyEditable : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setContentType(value);
-      } else {
-        this.__postPoneProperty({ name: "editable", value: value });
-      }
+    _applyEditable : function(value, old) {
+      this.__editorComponent.setContentType(value);
     },
     
     
-    _applyMessengerMode : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setMessengerMode(value);
-      } else {
-        this.__postPoneProperty({ name: "messengerMode", value: value });
-      }
+    _applyMessengerMode : function(value, old) {
+      this.__editorComponent.setMessengerMode(value);
     },
     
     
-    _applyInsertParagraphOnLinebreak : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setInsertParagraphOnLinebreak(value);
-      } else {
-        this.__postPoneProperty({ name: "insertParagraphOnLinebreak", value: value });
-      }
+    _applyInsertParagraphOnLinebreak : function(value, old) {
+      this.__editorComponent.setInsertParagraphOnLinebreak(value);
     },
     
     
-    _applyInsertLinebreakOnCtrlEnter : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setInsertLinebreakOnCtrlEnter(value);
-      } else {
-        this.__postPoneProperty({ name: "insertLinebreakOnCtrlEnter", value: value });
-      }
+    _applyInsertLinebreakOnCtrlEnter : function(value, old) {
+      this.__editorComponent.setInsertLinebreakOnCtrlEnter(value);
     },
     
     
-    _applyPostprocess : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setPostProcess(value);
-      } else {
-        this.__postPoneProperty({ name: "postprocess", value: value });
-      }
+    _applyPostprocess : function(value, old) {
+      this.__editorComponent.setPostProcess(value);
     },
     
     
-    _applyUseUndoRedo : function(value, old)
-    {
-      if (this.__editorComponent != null) {
-        this.__editorComponent.setUseUndoRedo(value);
-      } else {
-        this.__postPoneProperty({ name: "useUndoRedo", value: value });
-      }
-    },
-
-    
-    /**
-     * Collects data of properties which are set before the component is ready.
-     * This way the properties set at the widget can be applied postponed.
-     * 
-     * @param propertyData {Map} name and value of the property to postpone
-     * @return {void}
-     */
-    __postPoneProperty : function(propertyData) {
-      this.__postponedProperties.push(propertyData);
-    },
-    
-    
-    /**
-     * Cycles through the list of postponed property data and applies them
-     * to the underlying editor component.
-     * 
-     * @return {void}
-     */
-    __applyPostponedProperties : function() 
-    {
-      var propertyNameCamelCase, propertyValue;
-      for (var i=0, j=this.__postponedProperties.length; i<j; i++) {
-        propertyNameCamelCase = qx.lang.String.camelCase(this.__postponedProperties[i].name);
-        propertyValue = this.__postponedProperties[i].value;
-        this.__editorComponent["set" + propertyNameCamelCase](propertyValue);
-      }
+    _applyUseUndoRedo : function(value, old) {
+      this.__editorComponent.setUseUndoRedo(value);
     },
     
     
     /**
      * Listener method which is executed once at startup (with "appear" event).
-     * Does basic setup of the editing component, listener delegation and
-     * applies postponed properties.
+     * Does basic setup of the editing component, listener delegation.
      * 
      * @param e {qx.event.type.Event} event instance
      * @return {void}
@@ -427,7 +362,6 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.__setupEditorComponent();
       this.__setupDelegateListeners();
-      this.__applyPostponedProperties();
     },
     
     /**
