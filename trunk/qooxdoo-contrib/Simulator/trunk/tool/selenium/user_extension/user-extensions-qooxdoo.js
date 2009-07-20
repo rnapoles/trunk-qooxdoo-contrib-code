@@ -2064,7 +2064,6 @@ Selenium.prototype.doQxDragAndDrop = function(locator, movementsString, targetLo
     }
     return (current < dest) ? current + 1 : current - 1;
   };
-  LOG.error("Getting root");
   var root = false;
   try {
     root = this.page().findElement("qxh=app:qx.ui.root.Application");
@@ -2072,7 +2071,6 @@ Selenium.prototype.doQxDragAndDrop = function(locator, movementsString, targetLo
   catch(ex) {
     root = this.page().findElement("//body");
   }
-  LOG.error("ROOT: " + root);
   
   var newEventParamString = "" + ",clientX=" + clientStartX + ",clientY=" + clientStartY;
   var additionalParamsForClick = new Selenium.prototype.qx.MouseEventParameters(newEventParamString);  
