@@ -54,15 +54,13 @@ qx.Class.define("hjx.Hijax",
   */
   statics :
   {
-    baseUrl         : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
-    defaultElement  : null,
-    defaultRegExp   : /[\w\W\s]*<body[^>]*>([\w\W\s]*)<\/body>[\w\W\s]*/im,
-    _hijaxHistory    : null,
-    _historyExtraInfo  : [],
-    _settings       : null,
-    _lastCalledUrl  : "",
+    _debug            : false,
+    _baseUrl          : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
+    _hijaxHistory     : null,
+    _historyExtraInfo : [],
+    _settings         : null,
+    _lastCalledUrl    : "",
     _initiatingSubmitButton : null,
-    _debug          : false,
     _ignoreNextHistoryEvent : false,
 
 
@@ -79,12 +77,6 @@ qx.Class.define("hjx.Hijax",
       // Init browser history
       this._hijaxHistory = qx.bom.History.getInstance();
       this._hijaxHistory.addListener('request', this._onHistoryRequest, this);
-
-      if (this._settings._pages['*']) {
-        this.setDefaultContentTarget(this._settings._pages['*'].domElem);
-      }
-      this._hijackLinksAndForms();
-
       if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         var iframes = document.getElementsByTagName("iframe");
         if(iframes && iframes.length > 0) {
@@ -93,6 +85,9 @@ qx.Class.define("hjx.Hijax",
           this.error("IE history iframe can't be found. Class qx.bom.History might have changed.");
         }
       }
+
+      // Hijack the initial page
+      this._hijackLinksAndForms();
 
       // Handle bookmarks
       var state = this._hijaxHistory.getState();
@@ -107,28 +102,6 @@ qx.Class.define("hjx.Hijax",
             this._loadPageViaHijax(startPage);
           }
         }
-      }
-    },
-
-
-    /**
-     * Sets the default DOM element where to put the content loaded via hijax.
-     *
-     * @param elem {HTMLElement} Element in the HTML DOM
-     */
-    setDefaultContentTarget : function(elem) {
-      switch (typeof elem) {
-        case "object": this.defaultElement = elem; break;
-        case "string":
-          try {
-            this.defaultElement = document.getElementById(elem) || document[elem];
-          } catch(exc) {
-            qx.log.Logger.error(hjx.Hijax, "None existing DOM element: " + elem, exc);
-          }
-          break;
-        default:
-          throw new Error("Illegal value for elem: " + elem);
-          break;
       }
     },
 
@@ -295,7 +268,7 @@ qx.Class.define("hjx.Hijax",
       }
 
       var callUrl = linkElem.href;
-      var path = callUrl.substring(this.baseUrl.length);
+      var path = callUrl.substring(this._baseUrl.length);
       this._loadPageViaHijax(path);
     },
 
@@ -339,11 +312,11 @@ qx.Class.define("hjx.Hijax",
 
       // Get the target page
       var action = formEl.action;
-      var hostLength = action.indexOf(this.baseUrl);
+      var hostLength = action.indexOf(this._baseUrl);
       if (hostLength == -1) {
         var path = action;
       } else {
-        var path = action.substring(this.baseUrl.length);
+        var path = action.substring(this._baseUrl.length);
       }
 
       // Get the form values
@@ -400,7 +373,7 @@ qx.Class.define("hjx.Hijax",
       }
 
       // Prepare the request
-      var url = this.baseUrl+path;
+      var url = this._baseUrl + path;
       if (formInfo) {
         var req = new qx.io.remote.Request(url, formInfo.method.toUpperCase());
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
