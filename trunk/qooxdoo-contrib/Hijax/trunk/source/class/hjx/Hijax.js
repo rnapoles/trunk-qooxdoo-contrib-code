@@ -61,8 +61,7 @@ qx.Class.define("hjx.Hijax",
     _hijaxHistory    : null,
     _historyExtraInfo  : [],
     _settings       : null,
-    _oldState       : null,
-    _scrollToElem   : null,
+    _lastCalledUrl  : "",
     _initiatingSubmitButton : null,
     _debug          : false,
     _ignoreNextHistoryEvent : false,
@@ -75,8 +74,6 @@ qx.Class.define("hjx.Hijax",
      * request event which calls a callback.
      */
     main : function() {
-      this._scrollToElem = document.body;
-
       var settingsClass = qx.Class.getByName(qx.core.Setting.get("hjx.settingsClass"));
       this._settings = settingsClass.getSettings();
 
@@ -263,18 +260,26 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-    // TODO: fix anchor handling in case user want's to open anchor link
-    //       in new tab or window
     _prepareLinkAnchor : function(linkElem) {
-      var anchor = linkElem.href.substring(this.baseUrl.length);
-      if (anchor.indexOf('#') == 0) {
-        // Cut existent anchor notation from the address
-        var loc = location.href;
-        var tildePos = loc.indexOf('~');
-        if (tildePos != -1) {
-          loc = loc.substring(0, tildePos);
+      var rawHref = linkElem.getAttribute("href");
+      if (rawHref.indexOf('#') == 0) {
+        // This is a link to a local anchor (e.g.: "#bla") -> Fix the anchor URL
+        // NOTE: Why is this needed? In hijax mode the anchor notation of URLs is used to store the
+        //       current page. E.g. "start.html#current.html"
+        //       If there is a local anchor on the page, the browser will interpret it wrong.
+        //       E.g. "start.html#top" instead of "current.html#top".
+        //       Therefore we fix all local anchor links by prefixing them with the current page name.
+        //       E.g. "#top" -> "current.html#top"
+
+        if (this._lastCalledUrl != "") {
+          var pageUrl = this._lastCalledUrl;
+          var hashPos = pageUrl.indexOf("#");
+          if (hashPos != -1) {
+            pageUrl = pageUrl.substring(0, hashPos);
+          }
+
+          linkElem.href = pageUrl + rawHref;
         }
-        linkElem.href = unescape(loc.replace(/#/, '')) + anchor;
       }
     },
 
@@ -429,34 +434,34 @@ qx.Class.define("hjx.Hijax",
     _loadPageViaHijax : function(calledUrl, formInfo, restoreLastFormValues) {
       this._logDebug("Loading page: " + calledUrl + ", form data: " + (formInfo != null));
 
-      var referrerUrl = this._hijaxHistory.getState();
-      var url = calledUrl;
-      var path = calledUrl;
+      // Use the current page as referrer for this request
+      var referrerUrl = this._lastCalledUrl;
+      var stateHashPos = referrerUrl.indexOf('#');
+      if (stateHashPos != -1) {
+        referrerUrl = this._lastCalledUrl.substring(0, stateHashPos);
+      }
 
-      // TODO: swap out anchor logic
+      // Handle anchor
+      var path = calledUrl;
       var anchor = null;
       var hashPos = calledUrl.indexOf('#');
       if (hashPos != -1) {
         path = calledUrl.substring(0, hashPos);
         anchor = calledUrl.substring(hashPos+1);
-        this._scrollToElem = document.getElementById(anchor) ||
-                             document.getElementsByName(anchor)[0] ||
-                             document.body;
       }
-      var oldPath = this._oldState || "";
-      var stateHashPos = oldPath.indexOf('#');
-      if (stateHashPos != -1) {
-        oldPath = this._oldState.substring(0, stateHashPos);
-      }
-      if (oldPath == path && formInfo == null) {
-        this._scrollToElem.scrollIntoView(true);
-        this._scrollToElem = document.body;
+      if (referrerUrl == path && formInfo == null) {
+        // This is an anchor link on the current page
+        // -> Don't reload the page, simply scroll to the position of the anchor
+        this._scrollToAnchor(anchor);
+        this._addToHistory(calledUrl, {
+            referrerUrl : referrerUrl,
+            formInfo : formInfo
+        });
         return;
       }
 
-      this._oldState = calledUrl;
-      url = this.baseUrl+path;
-
+      // Prepare the request
+      var url = this.baseUrl+path;
       if (formInfo) {
         var req = new qx.io.remote.Request(url, formInfo.method.toUpperCase());
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -472,7 +477,6 @@ qx.Class.define("hjx.Hijax",
       req.setResponseType("text/html");
 
       this._setGlobalCursor("progress");
-
 
       req.addListener("completed", function(ev)
       {
@@ -538,8 +542,17 @@ qx.Class.define("hjx.Hijax",
         }
       },this);
       req.send();
+      this._lastCalledUrl = calledUrl;
 
       this._executePageDependentHandlers("onhijax");
+    },
+
+
+    _scrollToAnchor : function(anchor) {
+      var anchorElem = document.getElementById(anchor) ||
+                       document.getElementsByName(anchor)[0] ||
+                       document.body;
+      anchorElem.scrollIntoView(true);
     },
 
 
@@ -564,10 +577,7 @@ qx.Class.define("hjx.Hijax",
         document.body.innerHTML = pageContent.bodyInnerHtml;
       }
 
-      this._scrollToElem = document.getElementById(anchor) ||
-                           document.getElementsByName(anchor)[0] ||
-                           document.body;
-      this._scrollToElem.scrollIntoView(true);
+      this._scrollToAnchor(anchor);
     },
 
 

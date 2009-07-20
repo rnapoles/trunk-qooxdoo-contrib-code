@@ -1,12 +1,14 @@
 <?php include("header.php"); ?>
 
-<h2>About Us</h2>
+<h2><a name="top">About Us</a></h2>
 
 <div class="exampleDescr">
   Example for a link anchor.
 </div>
 <p>
-  <a href="#bottom">Jump to bottom</a>
+  <a href="#top">Jump to top</a><br>
+  <a href="#bottom">Jump to bottom</a><br>
+  <a href="contact.php#top">Jump to top of contact page</a><br>
 </p>
 <p>
 Lorem ipsum ne qui virtute bonorum maiestatis, cu porro consulatu consetetur eum, populo percipitur ei mel. Eos an affert suscipit iracundia, doctus accusamus vulputate ea usu, diceret offendit intellegebat sed ei. Tempor viderer cum id, no dico primis ornatus vis. Cum an aliquip probatus maiestatis. Ea dicit altera fuisset per, primis atomorum vituperata nam id. Nullam nostrum ei per. Melius utamur gubergren ex est, vix idque praesent laboramus ea.
@@ -65,7 +67,12 @@ Ea qui summo euripidis sadipscing, mei ne diam nulla lucilius. Quo ut illud exer
 <p>
 Eum cu quot impetus electram, ne per paulo alienum concludaturque. Vel fugit commune lobortis no, eius facer erant pro ea. Quo eu harum essent nostrum. Vis nihil deseruisse consectetuer cu. Laudem takimata adipiscing ei vix, vix aliquip urbanitas dissentias ei, cu ius option ponderum gloriatur.
 <p>
-Sea te melius docendi deleniti, eam vide novum quodsi ex, id fierent mentitum hendrerit has. Mel eruditi fastidii facilisis in, sea ea alienum assueverit. Per no dicit oratio equidem, ei mel munere invenire. Cu mel cetero expetendis temporibus, cu cum quem menandri, mea ne tollit numquam explicari. Nam definiebas elaboraret an, at sea decore forensibus sadipscing. Ne qui adhuc nobis legendos, per quas putent propriae <a name="bottom"><span class="highlight">Anchor target</span></a>.
+Sea te melius docendi deleniti, eam vide novum quodsi ex, id fierent mentitum hendrerit has. Mel eruditi fastidii facilisis in, sea ea alienum assueverit. Per no dicit oratio equidem, ei mel munere invenire. Cu mel cetero expetendis temporibus, cu cum quem menandri, mea ne tollit numquam explicari. Nam definiebas elaboraret an, at sea decore forensibus sadipscing. Ne qui adhuc nobis legendos, per quas putent propriae
+<a name="bottom"><span class="highlight">Anchor target</span></a>.
+</p>
+
+<p>
+  <a href="#top">Jump to top</a>
 </p>
 
 <?php include("footer.php"); ?>
