@@ -433,9 +433,43 @@ simulation.Simulation.prototype.typeKeys = function(locator, text)
 simulation.Simulation.prototype.qxTableClick = function(locator, options)
 {
   if (!locator) {
-    throw new Error("No locator specified for type()");
+    throw new Error("No locator specified for qxTableClick()");
   }
-  this.__sel.qxTableClick(locator, options);
+  
+  try {
+    this.__sel.qxTableClick(locator, options);
+  }
+  catch(ex) {
+    this.log("ERROR: qxTableClick " + ex, "error");
+    print("ERROR: qxTableClick " + ex + " \nLocator:\n  " + locator);
+  }
+};
+
+/**
+ * Wrapper around QxSelenium's qxDragAndDropToObject() that catches and logs any 
+ * exceptions so they won't cause the entire test to fail.
+ * 
+ * @param dragLocator {String} Selenium locator identifying the drag target
+ * @param dropLocator {String} Selenium locator identifying the drop target
+ * @throw an exception if no locators were specified
+ * @return {void}
+ */
+simulation.Simulation.prototype.qxDragAndDropToObject = function(dragLocator, dropLocator)
+{
+  if (!dragLocator) {
+    throw new Error("No drag target locator specified for qxDragAndDropToObject()");
+  }
+  if (!dropLocator) {
+    throw new Error("No drop target locator specified for qxDragAndDropToObject()");
+  }
+  
+  try {
+    this.__sel.qxDragAndDropToObject(dragLocator, dropLocator);
+  }
+  catch(ex) {
+    this.log("ERROR: qxDragAndDropToObject " + ex, "error");
+    print("ERROR: qxDragAndDropToObject ");
+  }  
 };
 
 /**
