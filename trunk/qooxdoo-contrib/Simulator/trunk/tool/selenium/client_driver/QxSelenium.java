@@ -83,5 +83,13 @@ public class QxSelenium extends DefaultSelenium
       new String[] {locator, functionName, });
     return ret;
   }
+  
+  public String qxDragAndDrop(String locator, String opts) {
+    return this.commandProcessor.doCommand("qxDragAndDrop", new String[] {locator, opts,});
+  }
+  
+  public String qxDragAndDropToObject(String locator, String opts) {
+    return this.commandProcessor.doCommand("qxDragAndDropToObject", new String[] {locator, opts,});
+  }
 
 }

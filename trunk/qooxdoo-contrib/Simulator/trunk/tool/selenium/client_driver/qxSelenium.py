@@ -37,22 +37,34 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
             return self.do_command("qxClickAt", [locator, opts,])
 
     def qxTableClick(self, locator, opts=None):
-      if opts==None:
-          return self.do_command("qxTableClick", [locator,])
-      else:
-          return self.do_command("qxTableClick", [locator, opts,])
+        if opts==None:
+            return self.do_command("qxTableClick", [locator,])
+        else:
+            return self.do_command("qxTableClick", [locator, opts,])
 
     def qxTableGetRows(self, locator):
-      return self.do_command("getQxTableRows", [locator,])
+        return self.do_command("getQxTableRows", [locator,])
 
     def qxTableGetCols(self, locator):
-      return self.do_command("getQxTableCols", [locator,])      
+        return self.do_command("getQxTableCols", [locator,])      
 
     def qxTableGetValue(self, locator, opts=None):
-      if opts==None:
-          return self.do_command("getQxTableValue", [locator,])
-      else:
-          return self.do_command("getQxTableValue", [locator, opts,])
+        if opts==None:
+            return self.do_command("getQxTableValue", [locator,])
+        else:
+            return self.do_command("getQxTableValue", [locator, opts,])
+
+    def qxDragAndDrop(self, locator, opts=None):
+        if opts==None:
+            return self.do_command("qxDragAndDrop", [locator,])
+        else:
+            return self.do_command("qxDragAndDrop", [locator, opts,])
+
+    def qxDragAndDropToObject(self, locator, opts=None):
+        if opts==None:
+            return self.do_command("qxDragAndDropToObject", [locator,])
+        else:
+            return self.do_command("qxDragAndDropToObject", [locator, opts,])
 
     def get_viewport(self):
         return self.do_command("getViewport", [])
