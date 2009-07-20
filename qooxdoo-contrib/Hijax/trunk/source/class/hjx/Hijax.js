@@ -54,7 +54,6 @@ qx.Class.define("hjx.Hijax",
   */
   statics :
   {
-    domain          : document.domain,
     baseUrl         : /(\w+:\/\/[\w\W.]+\/)(\S*)/.exec(location.href)[1],
     defaultElement  : null,
     defaultRegExp   : /[\w\W\s]*<body[^>]*>([\w\W\s]*)<\/body>[\w\W\s]*/im,
@@ -157,7 +156,7 @@ qx.Class.define("hjx.Hijax",
             this._prepareLinkAnchor(links[i]);
           }
 
-          this.bindEvent(links[i], 'click', this._onHijaxLinkClicked);
+          this._bindEvent(links[i], 'click', this._onHijaxLinkClicked);
         }
       }
 
@@ -179,24 +178,11 @@ qx.Class.define("hjx.Hijax",
         // Formfield blur
         // TODO: Form validation should not be done here
         /*
-        var settings = this._settings._forms[formElem.id];
-        if (settings && settings.validate_onblur === true) {
-          var vFields = hjx.Form.getFields(formElem);
-          ///var vFields = formElem.elements;
-          for (var j=0, le=vFields.length; j<le; j++) {
-            try {
-              if (settings[vFields[j].name].required === true) {
-                this.bindEvent(vFields[j], 'blur', this._onHijaxFormBlur);
-              }
-            } catch(e) {
-              qx.log.Logger.error(hjx.Hijax, "", e);
-            }
-          }
-        }
+        hjx.FormValidation.prepareFormForValidation(formElem);
         */
 
         // Hijack the form
-        this.bindEvent(formElem, 'submit', this._onHijaxFormSubmit);
+        this._bindEvent(formElem, 'submit', this._onHijaxFormSubmit);
         qx.bom.Event.addNativeListener(formElem, "reset", function() {  });
 
         // Hijack all submit buttons
@@ -204,7 +190,7 @@ qx.Class.define("hjx.Hijax",
         for (var j = 0; j < inputArr.length; j++) {
           var inputElem = inputArr[j];
           if (inputElem.type == "submit") {
-            this.bindEvent(inputElem, 'click', this._onSubmitButtonClicked, this);
+            this._bindEvent(inputElem, 'click', this._onSubmitButtonClicked, this);
           }
         }
       }
@@ -284,25 +270,10 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-    _logDebug : function(msg)
-    {
+    _logDebug : function(msg) {
       if (this._debug) {
         qx.log.Logger.info(hjx.Hijax, msg);
       }
-    },
-
-
-    _onSubmitButtonClicked : function(event) {
-      hjx.Hijax._onSubmitButtonClickedImpl(event);
-    },
-
-
-    _onSubmitButtonClickedImpl : function(event) {
-      // Remember the submit button that initiated the form submit
-      // We need the button in order to add its name and value to the form data
-      // NOTE: In IE we could use document.activeElement, in Mozilla event.explicitOriginalTarget.
-      //       But in Safari none of these properties are supported.
-      this._initiatingSubmitButton = event.target;
     },
 
 
@@ -318,16 +289,28 @@ qx.Class.define("hjx.Hijax",
 
       // Walking up the DOM tree to get the link element
       // If an image is the content element of a link, the event occurs on the image
-      var eventSrc = event.target || event.srcElement;
-      while (eventSrc != null && typeof eventSrc.href == 'undefined') {
-        eventSrc = eventSrc.parentNode;
+      var linkElem = event.target || event.srcElement;
+      while (linkElem != null && typeof linkElem.href == 'undefined') {
+        linkElem = linkElem.parentNode;
       }
 
-      var callUrl = eventSrc.href;
-      var anchor = null;
-
+      var callUrl = linkElem.href;
       var path = callUrl.substring(this.baseUrl.length);
       this._loadPageViaHijax(path);
+    },
+
+
+    _onSubmitButtonClicked : function(event) {
+      hjx.Hijax._onSubmitButtonClickedImpl(event);
+    },
+
+
+    _onSubmitButtonClickedImpl : function(event) {
+      // Remember the submit button that initiated the form submit
+      // We need the button in order to add its name and value to the form data
+      // NOTE: In IE we could use document.activeElement, in Mozilla event.explicitOriginalTarget.
+      //       But in Safari none of these properties are supported.
+      this._initiatingSubmitButton = event.target;
     },
 
 
@@ -378,50 +361,6 @@ qx.Class.define("hjx.Hijax",
       // Load the page
       this._loadPageViaHijax(path, formInfo);
     },
-
-
-    /*
-    _onHijaxFormBlur : function(event) {
-      hjx.Hijax._onHijaxFormBlurImpl(event);
-    },
-
-
-    _onHijaxFormBlurImpl : function(event) {
-      this._logDebug("Handling hijax form blur");
-
-      this._preventEventDefaults(event);
-
-      var eventSrc = event.target || event.srcElement;
-
-      // Walking up the DOM tree to get the form element
-      // When firing the submit event by pressing the enter key, the event occurs on the input element
-      var vField = eventSrc;
-      while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
-        eventSrc = eventSrc.parentNode;
-      }
-
-      // Form parameters
-      var fForm = {
-        domElem : eventSrc,
-        meth    : eventSrc.method,
-        id      : eventSrc.id,
-        action  : eventSrc.action
-      };
-
-      // (Validate field here!)
-      var settings = this._settings._forms[fForm.id];
-      try {
-        var validation = hjx.FormValidation.validateField(vField, settings[vField.name].type, settings[vField.name].required);
-        if (validation === true && settings[vField.name].prompt !== false) {
-          hjx.FormValidation.validateFieldServerSide(vField, settings[vField.name].prompt.url);
-        }
-      } catch(e) {
-        qx.log.Logger.error(hjx.Hijax, e);
-      }
-
-      //if (passedValidation === false) return;
-    },
-    */
 
 
     /**
@@ -650,88 +589,6 @@ qx.Class.define("hjx.Hijax",
 
 
     /**
-     * Search in the responded and parsed document tree for specified nodes
-     * related to XPATH expressions.
-     * The selectors will be set in the settings first.
-     * Example: navigation selector /ul#navi/a
-     * Explain: Search for list element with the id "navi" and get all
-     *          anchors inside this element.
-     *
-     * @param root {Object} The root element to start with
-     * @param path {Array} The parts of the path expression
-     * @return (Array | String | null) Return the search results
-     */
-    ELEM : /^\w+$/,
-    IDENT : /^\w*#?\w*$/,
-    CLASS : /^\w*\.?\w*$/,
-    ATTRIB : /^\w+\[.*\]$/,
-
-    searchElement : function(root, path) {
-      if (path.length == 0) {
-        return null;
-      }
-      if (typeof root != "object") {
-        return null;
-      }
-
-      var el = null; // the yet to find current element
-      var step = path[0]; // the current part of the path expression
-      var npath = path.slice(1); // new path - rest of path
-
-      if (step == "") {
-        el = root;
-      } else if (step.match(this.ELEM)) {
-        // HTML element
-        el = root.getElementsByTagName(step);
-      } else if (step.match(this.IDENT)) {
-        // id
-        var ident = step.split('#')[1];
-        el = document.getElementById(ident);
-      } else if (step.match(this.CLASS)) {
-        el = [];
-        // classname
-        var sArr = step.split('.');
-        var cName = sArr[1]; // ClassName
-        try {
-          var tag = sArr[0] != "" ? sArr[0] : "*";
-          var cEl = root.getElementsByTagName(tag); // Element
-          for (var i=0, l=cEl.length; i<l; i++) {
-            if (cName == cEl[i].className) {
-              el.push(cEl[i]);
-            }
-          }
-        } catch (e) {
-          qx.log.Logger.error(hjx.Hijax, e);
-        }
-      } else if (step.match(this.ATTRIB)) {
-        // attribute
-        var attr = null;
-      }
-
-      if (npath.length != 0) {
-        var nroot = el != null ? el : root;
-        try {
-          if (el.length > 0) {
-            var collection = [];
-            for (var i=0, l=el.length; i<l; i++) {
-              collection.push(this.searchElement(el[i], npath));
-            }
-            return collection;
-          } else {
-            return this.searchElement(nroot, npath);
-          }
-        } catch (exc) {
-          qx.log.Logger.error(hjx.Hijax, "TODO", exc);
-        }
-      } else {
-        return el;
-      }
-    },
-
-
-
-
-    /**
      * Transfer the responded string to a document tree that can be
      * manipulated by DOM manipulation.
      * A new document fragment is used for parsing the string.
@@ -763,7 +620,7 @@ qx.Class.define("hjx.Hijax",
 
       return body;
 
-/**
+/*
       if (typeof DOMParser != "undefined") {
         // Mozilla, Firefox, and related browsers
         var doc = (new DOMParser()).parseFromString(htmlString, "text/xml");
@@ -787,7 +644,7 @@ qx.Class.define("hjx.Hijax",
 
       return { title:titleNode[1], body:returnElem };
 
-/**
+/*
       // IFrame
       var iframe = document.createElement('iframe');
       iframe.style.visibility = "hidden";
@@ -828,10 +685,6 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-
-
-
-
     _addToHistory : function(url, extraInfo) {
       var historyState = this._encodeState(url);
       this._historyExtraInfo[historyState] = extraInfo;
@@ -851,7 +704,7 @@ qx.Class.define("hjx.Hijax",
         var extraInfo = this._historyExtraInfo[newState];
 
         if (extraInfo.formInfo) {
-          var resendPostMsg = this.getResendPostMsg(qx.bom.client.Locale.LOCALE);
+          var resendPostMsg = this._getResendPostMsg(qx.bom.client.Locale.LOCALE);
           if (! confirm(resendPostMsg)) {
             return;
           }
@@ -896,12 +749,9 @@ qx.Class.define("hjx.Hijax",
     },
 
 
-
-
-    bindEvent : function(vElement, vEvent, vMethod) {
+    _bindEvent : function(vElement, vEvent, vMethod) {
       qx.bom.Event.addNativeListener(vElement, vEvent, vMethod);
     },
-
 
 
     // Prevent the event from default execution
@@ -919,7 +769,7 @@ qx.Class.define("hjx.Hijax",
 
 
     // Alert message when user retries to submit the form.
-    getResendPostMsg : function(lang) {
+    _getResendPostMsg : function(lang) {
       switch(lang) {
         case "de":
           return "Die Seite, die Sie versuchen zu laden, wurde aus POST-Daten erstellt, die im Cache abgelaufen sind. Wenn Sie die Daten nochmals senden, wird jede Aktion, die das Formular ausgef�hrt hat (wie eine Suche oder ein Online-Einkauf), noch einmal durchgef�hrt. Um die Daten nochmals zu senden, klicken Sie OK. Andernfalls klicken Sie auf Abbrechen.";
