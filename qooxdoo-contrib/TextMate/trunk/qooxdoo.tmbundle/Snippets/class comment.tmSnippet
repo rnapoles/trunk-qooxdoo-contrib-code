@@ -18,7 +18,7 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * $TM_FULLNAME (${1:Your sourceforge account})
+     * $TM_FULLNAME (${1:$QOOXDOO_USERNAME})
 
 ************************************************************************ */</string>
 	<key>name</key>
