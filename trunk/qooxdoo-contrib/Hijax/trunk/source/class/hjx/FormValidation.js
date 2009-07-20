@@ -58,6 +58,64 @@ qx.Class.define("hjx.FormValidation",
     },
 
 
+    prepareFormForValidation(formElem) {
+      var settings = this._settings._forms[formElem.id];
+      if (settings && settings.validate_onblur === true) {
+        var vFields = hjx.Form.getFields(formElem);
+        ///var vFields = formElem.elements;
+        for (var j=0, le=vFields.length; j<le; j++) {
+          try {
+            if (settings[vFields[j].name].required === true) {
+              this.bindEvent(vFields[j], 'blur', this._onFormBlur);
+            }
+          } catch(e) {
+            qx.log.Logger.error(hjx.FormValidation, "", e);
+          }
+        }
+      }
+    },
+
+
+    _onFormBlur : function(event) {
+      hjx.FormValidation._onFormBlurImpl(event);
+    },
+
+
+    _onFormBlurImpl : function(event) {
+      this._preventEventDefaults(event);
+
+      var eventSrc = event.target || event.srcElement;
+
+      // Walking up the DOM tree to get the form element
+      // When firing the submit event by pressing the enter key, the event occurs on the input element
+      var vField = eventSrc;
+      while (eventSrc != null && eventSrc.nodeName.toLowerCase() != "form") {
+        eventSrc = eventSrc.parentNode;
+      }
+
+      // Form parameters
+      var fForm = {
+        domElem : eventSrc,
+        meth    : eventSrc.method,
+        id      : eventSrc.id,
+        action  : eventSrc.action
+      };
+
+      // (Validate field here!)
+      var settings = this._settings._forms[fForm.id];
+      try {
+        var validation = hjx.FormValidation.validateField(vField, settings[vField.name].type, settings[vField.name].required);
+        if (validation === true && settings[vField.name].prompt !== false) {
+          hjx.FormValidation.validateFieldServerSide(vField, settings[vField.name].prompt.url);
+        }
+      } catch(e) {
+        qx.log.Logger.error(hjx.FormValidation, e);
+      }
+
+      //if (passedValidation === false) return;
+    },
+
+
     /**
      * Collects the form fields and the validation settings.
      *
