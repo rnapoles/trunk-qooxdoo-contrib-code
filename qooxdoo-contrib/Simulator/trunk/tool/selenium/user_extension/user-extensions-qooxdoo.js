@@ -114,6 +114,8 @@
  * 
  * getQxObjectFunction, qxTableClick and related methods contributed by Mr. 
  * Hericus
+ * 
+ * Original (qx 0.7) drag and drop code by Phaneesh Nagaraja
  */
 
 // -- Config section ------------------------------------------------
@@ -1880,3 +1882,220 @@ PageBot.prototype._getWinHeight = function(w)
   }
 };
 
+Selenium.prototype.doQxDragAndDropToObject = function(locatorOfObjectToBeDragged, locatorOfDragDestinationObject) {
+ /** Drags an element and drops it on another element
+  *
+  * @param locatorOfObjectToBeDragged an element to be dragged
+  * @param locatorOfDragDestinationObject an element whose location (i.e., whose center-most pixel) will be the point where locatorOfObjectToBeDragged  is dropped
+  */
+  var startX = this.getElementPositionLeft(locatorOfObjectToBeDragged);
+  var startY = this.getElementPositionTop(locatorOfObjectToBeDragged);
+  var destinationLeftX = this.getElementPositionLeft(locatorOfDragDestinationObject);
+  var destinationTopY = this.getElementPositionTop(locatorOfDragDestinationObject);
+  var destinationWidth = this.getElementWidth(locatorOfDragDestinationObject);
+  var destinationHeight = this.getElementHeight(locatorOfDragDestinationObject);
+  var endX = Math.round(destinationLeftX + (destinationWidth / 2));
+  var endY = Math.round(destinationTopY + (destinationHeight / 2));
+  var deltaX = endX - startX;
+  var deltaY = endY - startY;
+  var movementsString = "" + deltaX + "," + deltaY;  
+  this.doQxDragAndDrop(locatorOfObjectToBeDragged, movementsString, locatorOfDragDestinationObject);
+};
+
+Selenium.prototype.getElementPositionLeft = function(locator) {       
+  /**
+   * Retrieves the horizontal position of an element
+   *
+   * @param locator an <a href="#locators">element locator</a> pointing to an element OR an element itself
+   * @return number of pixels from the edge of the frame.
+   */
+  var element;
+  if ("string"==typeof locator) {
+    element = this.page().findElement(locator);
+  }
+  else {
+    element = locator;
+  }
+  var x = element.offsetLeft;
+  var elementParent = element.offsetParent;
+  while (elementParent != null)
+  {
+    if(document.all)
+    {
+      if( (elementParent.tagName != "TABLE") && (elementParent.tagName != "BODY") )
+      {
+        x += elementParent.clientLeft;
+      }
+    }
+    else // Netscape/DOM
+    {
+      if(elementParent.tagName == "TABLE")
+      {
+        var parentBorder = parseInt(elementParent.border, 10);
+        if(isNaN(parentBorder))
+        {
+          var parentFrame = elementParent.getAttribute('frame');
+          if(parentFrame != null)
+          {
+            x += 1;
+          }
+        }
+        else if(parentBorder > 0)
+        {
+          x += parentBorder;
+        }
+      }
+    }
+    x += elementParent.offsetLeft;
+    elementParent = elementParent.offsetParent;
+  }
+  return x;
+};
+
+Selenium.prototype.getElementPositionTop = function(locator) {
+ /**
+ * Retrieves the vertical position of an element
+ *
+ * @param locator an <a href="#locators">element locator</a> pointing to an element OR an element itself
+ * @return number of pixels from the edge of the frame.
+ */
+  var element;
+  if ("string"==typeof locator) {
+    element = this.page().findElement(locator);
+  }
+  else {
+    element = locator;
+  }
+
+  var y = 0;
+
+  while (element != null)
+  {
+    if(document.all)
+    {
+      if( (element.tagName != "TABLE") && (element.tagName != "BODY") )
+      {
+        y += element.clientTop;
+      }
+    }
+    else // Netscape/DOM
+    {
+      if(element.tagName == "TABLE")
+      {
+        var parentBorder = parseInt(element.border, 10);
+        if(isNaN(parentBorder))
+        {
+          var parentFrame = element.getAttribute('frame');
+          if(parentFrame != null)
+          {
+            y += 1;
+          }
+        }
+        else if(parentBorder > 0)
+        {
+            y += parentBorder;
+        }
+      }
+    }
+    y += element.offsetTop;
+
+    // Netscape can get confused in some cases, such that the height of the parent is smaller
+    // than that of the element (which it shouldn't really be). If this is the case, we need to
+    // exclude this element, since it will result in too large a 'top' return value.
+    if (element.offsetParent && element.offsetParent.offsetHeight && element.offsetParent.offsetHeight < element.offsetHeight)
+    {
+      // skip the parent that's too small
+      element = element.offsetParent.offsetParent;
+    }
+    else
+    {
+      // Next up...
+      element = element.offsetParent;
+    }
+  }
+  return y;
+};
+
+Selenium.prototype.getElementWidth = function(locator) {
+ /**
+  * Retrieves the width of an element
+  *
+  * @param locator an <a href="#locators">element locator</a> pointing to an element
+  * @return number width of an element in pixels
+  */
+  var element = this.page().findElement(locator);
+  return element.offsetWidth;
+};
+    
+Selenium.prototype.getElementHeight = function(locator) {
+ /**
+  * Retrieves the height of an element
+  *
+  * @param locator an <a href="#locators">element locator</a> pointing to an element
+  * @return number height of an element in pixels
+  */
+  var element = this.page().findElement(locator);
+  return element.offsetHeight;
+};
+
+Selenium.prototype.doQxDragAndDrop = function(locator, movementsString, targetLocator) {
+ /** Drags an element a certain distance and then drops it
+  * @param locator an element locator
+  * @param movementsString offset in pixels from the current location to which the element should be moved, e.g., "+70,-300"
+  * @param targetLocator locator (optional) locator for the drop target. Neccessary for dragAndDropToObject to work in qooxdoo 0.8
+  */
+  var element = this.page().findElement(locator);  
+  var clientStartXY = getClientXY(element);
+  var clientStartX = clientStartXY[0];
+  var clientStartY = clientStartXY[1];
+  
+  var movements = movementsString.split(/,/);
+  var movementX = Number(movements[0]);
+  var movementY = Number(movements[1]);
+  var clientFinishX = ((clientStartX + movementX) < 0) ? 0 : (clientStartX + movementX);
+  var clientFinishY = ((clientStartY + movementY) < 0) ? 0 : (clientStartY + movementY);
+  var mouseSpeed = this.mouseSpeed;
+  var move = function(current, dest) {
+    if (current == dest) {
+      return current;
+    }
+    if (Math.abs(current - dest) < 1) {
+      return dest;
+    }
+    return (current < dest) ? current + 1 : current - 1;
+  };
+  
+  var root = this.page().findElement("qxh=app:qx.ui.root.Application");
+  
+  var newEventParamString = "" + ",clientX=" + clientStartX + ",clientY=" + clientStartY;
+  var additionalParamsForClick = new Selenium.prototype.qx.MouseEventParameters(newEventParamString);  
+  Selenium.prototype.qx.triggerMouseEventQx('mousedown', element, additionalParamsForClick);
+  Selenium.prototype.qx.triggerMouseEventQx('mouseover', root, additionalParamsForClick); 
+  Selenium.prototype.qx.triggerMouseEventQx('mousemove', root, additionalParamsForClick);
+  
+  var clientX = clientStartX;
+  var clientY = clientStartY;
+  while ((clientX != clientFinishX) || (clientY != clientFinishY)) {
+    //LOG.info("X : " + clientX);
+    //LOG.info("Y : " + clientY);
+    clientX = move(clientX, clientFinishX);
+    clientY = move(clientY, clientFinishY);
+    var newEventParamString = "" + ",clientX=" + clientX + ",clientY=" + clientY;
+    var additionalParamsForClick = new Selenium.prototype.qx.MouseEventParameters(newEventParamString);
+    Selenium.prototype.qx.triggerMouseEventQx('mousemove', root, additionalParamsForClick);
+  }
+  LOG.info("Final X : " + clientFinishX);
+  LOG.info("Final Y : " + clientFinishY);
+  var newEventParamString = "" + ",clientX=" + clientFinishX + ",clientY=" + clientFinishY;
+  var additionalParamsForClick = new Selenium.prototype.qx.MouseEventParameters(newEventParamString);
+  if (targetLocator) {
+    var targetElement = this.page().findElement(targetLocator);
+    Selenium.prototype.qx.triggerMouseEventQx('mouseover', targetElement, additionalParamsForClick);
+    Selenium.prototype.qx.triggerMouseEventQx('mousemove', targetElement, additionalParamsForClick);
+    Selenium.prototype.qx.triggerMouseEventQx('mouseup', targetElement, additionalParamsForClick);
+  }
+  else {
+    triggerMouseEventQx('mousemove', root, additionalParamsForClick);
+    triggerMouseEventQx('mouseup', element, additionalParamsForClick);
+  }
+};
