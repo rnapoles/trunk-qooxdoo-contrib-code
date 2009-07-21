@@ -240,7 +240,7 @@ qx.Class.define("qcl.data.controller.Table",
      {
        if( this.getTarget() && this.getStore() )
        {
-         this.getTarget().getDataModel().reloadData();
+         this.getTarget().getTableModel().reloadRows(0,100);
        }
      },
      
@@ -270,7 +270,7 @@ qx.Class.define("qcl.data.controller.Table",
      
     /**
      * Triggers the request for row data through the store. 
-     * The ata will be in the rowData property of the model that 
+     * The data will be in the rowData property of the model that 
      * is provided by the store.
      * @return {void}
      */

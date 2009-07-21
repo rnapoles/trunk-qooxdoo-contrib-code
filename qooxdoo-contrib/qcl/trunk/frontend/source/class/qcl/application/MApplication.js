@@ -46,7 +46,7 @@ qx.Mixin.define("qcl.application.MApplication",
     /*
      * cache for widget ids
      */
-    this.__widgetById = {};
+    this._widgetById = {};
     
     /*
      * Mixins
@@ -189,10 +189,10 @@ qx.Mixin.define("qcl.application.MApplication",
     ---------------------------------------------------------------------------
     */         
     
-    __rpc : null,
-    __widgetById : {},
-    __sessionId : null,
-    __eventStore: null,
+    _rpc : null,
+    _widgetById : {},
+    _sessionId : null,
+    _eventStore: null,
     
     /*
     ---------------------------------------------------------------------------
@@ -239,7 +239,7 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     setWidgetById : function(id,widget)
     {
-      this.__widgetById[id] = widget;
+      this._widgetById[id] = widget;
     },
     
     /**
@@ -249,7 +249,7 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     getWidgetById : function(id)
     {
-      return this.__widgetById[id];
+      return this._widgetById[id];
     },
     
     /*
@@ -259,11 +259,20 @@ qx.Mixin.define("qcl.application.MApplication",
     */     
     
     /**
-     * Called before the page is closed
+     * Called before the page is closed. If you would like to override this
+     * method, define a _close method in your main application. 
      * @return
      */
     close : function()
     {
+      /*
+       * call application function
+       */
+      if ( typeof this._close == "function" )
+      {
+        return this._close();
+      }      
+      
       if ( this.isMainApplication() )
       {  
         return this.tr("Do you really want to quit %1?",  this.getApplicationName() );
@@ -272,16 +281,19 @@ qx.Mixin.define("qcl.application.MApplication",
     },
     
     /**
-     * Called when the page is closed
+     * Called when the page is closed and unregisteres stores on the server. 
+     * If you want to have additional termination
+     * action, define a _terminate method in your main application, which is 
+     * called after at the end of this method.
      */
     terminate : function()
     {
       /*
        * unregister stores
        */
-      if( this.__eventStore )
+      if( this.getEventStore() )
       {
-        this.__eventStore.unregister( this.__storeIds );
+        this.getEventStore().unregisterStore();
       }
       
       /*
@@ -291,6 +303,14 @@ qx.Mixin.define("qcl.application.MApplication",
       {
         this.executeService( this.getServiceMethodOnTerminate() );
       }
+       
+      /*
+       * call application function
+       */
+       if ( typeof this._terminate == "function" )
+       {
+         this._terminate();
+       }
     },
 
     /*
@@ -299,7 +319,7 @@ qx.Mixin.define("qcl.application.MApplication",
     ---------------------------------------------------------------------------
     */
    
-    __appStore : null,
+    _appStore : null,
      
     /** 
      * Executes a jsonrpc service with the rpc object configured in the 
@@ -317,15 +337,15 @@ qx.Mixin.define("qcl.application.MApplication",
       /* 
        * create all-purpose json store
        */
-      if ( ! this.__appStore )
+      if ( ! this._appStore )
       {
-        this.__appStore = new qcl.data.store.JsonRpc( 
+        this._appStore = new qcl.data.store.JsonRpc( 
             null, null, null, null, this.getRpcObject() 
         ); 
       }
       
-      this.__appStore.setServiceName(serviceName);
-      this.__appStore.execute( serviceMethod, params, callback, context);
+      this._appStore.setServiceName(serviceName);
+      this._appStore.execute( serviceMethod, params, callback, context);
     },
     
     /*
@@ -344,11 +364,11 @@ qx.Mixin.define("qcl.application.MApplication",
       /*
        * check if setup is already done
        */
-      if ( this.__authenticationSetup )
+      if ( this._authenticationSetup )
       {
         this.error("Authentication already set up");
       }
-      this.__authenticationSetup = true;      
+      this._authenticationSetup = true;      
       
       /*
        * set user manager and auth store
@@ -442,11 +462,11 @@ qx.Mixin.define("qcl.application.MApplication",
       /*
        * avoid duplicate bindings
        */
-      if ( this.__configSetup )
+      if ( this._configSetup )
       {
         this.error("Configuration already set up");
       }
-      this.__configSetup = true;
+      this._configSetup = true;
       
       /*
        * set default config manager
@@ -507,7 +527,7 @@ qx.Mixin.define("qcl.application.MApplication",
       {
         this.error("Invalid interval value");
       }
-      if ( this.__eventStore )
+      if ( this._eventStore )
       {
         this.warn("Event transport is already running.");
         return;
@@ -517,13 +537,11 @@ qx.Mixin.define("qcl.application.MApplication",
         this.error("No rpc object defined");
       }
 
-      var store = this.__eventStore;
+      var store = this._eventStore;
       
       if( ! store )
       {
-        store = this.__eventStore = new qcl.data.store.JsonRpc( 
-            null, serviceName, null, null, this.getRpcObject() 
-        );
+        store = this._eventStore = new qcl.data.store.JsonRpc( null, serviceName);
         store.register();        
       }
       store.setInterval( interval );
@@ -536,7 +554,7 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     stopEventTransport : function()
     {
-      if ( ! this.__eventStore )
+      if ( ! this._eventStore )
       {
         this.warn("Event transport is not running.");
         return;
@@ -550,7 +568,7 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     getEventStore : function()
     {
-      return this.__eventStore;
+      return this._eventStore;
     },
 
 
@@ -563,7 +581,7 @@ qx.Mixin.define("qcl.application.MApplication",
     /**
      * Child windows opened by this application
      */
-    __windows : {},
+    _windows : {},
     
     /**
      * Sets the window title/caption. If the window is connected to a 
@@ -608,7 +626,7 @@ qx.Mixin.define("qcl.application.MApplication",
         stateArr.push( key + "=" + encodeURIComponent( state[key] ) )
       }
       var stateStr = "#" + stateArr.join("&");
-      var w = this.__windows[stateStr];
+      var w = this._windows[stateStr];
       if ( w instanceof qx.bom.Window ) 
       {
         w.focus();
@@ -643,14 +661,14 @@ qx.Mixin.define("qcl.application.MApplication",
        * delete reference on close
        */
       w.addEventListener("close", function() {
-        delete this.__windows[stateStr];
+        delete this._windows[stateStr];
         delete w;
       }, this);
 
       /*
        * save window in registry
        */
-      this.__windows[stateStr] = w;
+      this._windows[stateStr] = w;
       
       return w;
     },
