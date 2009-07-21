@@ -107,6 +107,17 @@ qx.Class.define("databinding.Application",
          window.open(document.location + "#2ndWindow");
          window.focus();
        }
+    },
+    
+    _terminate : function ()
+    {
+      /*
+      * if this is the first window, empty event queue
+      */
+     if( window.location.hash != "#2ndWindow"  )
+     {
+       this.executeService("databinding.TableData", "unregisterAll");
+     }            
     }
   }
 });
