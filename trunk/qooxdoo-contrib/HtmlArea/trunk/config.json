@@ -32,10 +32,8 @@
     "APPLICATION"  : "htmlarea",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Application",
     "QOOXDOO_PATH" : "../../qooxdoo/trunk",
-    "QXTHEME"      : "htmlarea.theme.modern.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*", "qx.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   }
 
