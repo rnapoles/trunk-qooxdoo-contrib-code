@@ -90,18 +90,6 @@ qx.Class.define("databinding.TreeVirtual",
       
       
       /*
-       * if this is the first window, empty event queue
-       */
-      if( window.location.hash != "#2ndWindow"  )
-      {
-        store.execute("unregisterAll",[], function(data)
-        {
-          this.info( "All stores unregistered.");
-        }, this);
-        
-      }      
-      
-      /*
        * turn event transport on
        */
       store.setUseEventTransport(true);

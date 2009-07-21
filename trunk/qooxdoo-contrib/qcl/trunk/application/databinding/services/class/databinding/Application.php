@@ -52,8 +52,6 @@ class databinding_Application
      * call parent method
      */
     parent::start();
-
-
   }
 }
 ?>

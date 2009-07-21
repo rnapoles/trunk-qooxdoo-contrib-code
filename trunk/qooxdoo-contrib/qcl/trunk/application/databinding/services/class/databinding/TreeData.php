@@ -16,12 +16,12 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-//require dirname( __FILE__ ) . "/EventStoreController.php";
-require_once "qcl/data/store/db/Controller.php";
+require dirname( __FILE__ ) . "/EventStoreController.php";
+//require_once "qcl/data/store/db/Controller.php";
 
 class class_TreeData
-//  extends AbstractStore // RpcPhp 1.0 server
-  extends qcl_data_store_db_Controller
+  extends EventStoreController // RpcPhp 1.0 server
+//  extends qcl_data_store_db_Controller
 {
 
   /**
@@ -96,15 +96,13 @@ class class_TreeData
       if ( $_SESSION['counter'] > $_SESSION['nodeCount'] )
       {
         return array(
-          'result' => array(
-            'nodeData'   => array(),
-            'queue'      => array(),
-            'statusText' => "Loaded {$_SESSION['nodeCount']} nodes."
-          )
+          'nodeData'   => array(),
+          'queue'      => array(),
+          'statusText' => "Loaded {$_SESSION['nodeCount']} nodes."
         );
       }
 
-      $childCount     = rand(1,10);
+      $childCount = rand(1,10);
 
       for( $i=0; $i < $childCount; $i++ )
       {

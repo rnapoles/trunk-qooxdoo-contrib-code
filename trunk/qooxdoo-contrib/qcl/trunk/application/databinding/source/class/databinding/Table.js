@@ -88,11 +88,11 @@ qx.Class.define("databinding.Table",
       } );   
       
       /*
-       * use the tree store as an event proxy
+       * use the tree store as an event proxy so that we don't have to
+       * setup our own polling for the table
        */
       this.application.treeDemo.store.registerStore(store);
    
-      
       /*
        * create controls that interact with the main table
        */
@@ -104,6 +104,11 @@ qx.Class.define("databinding.Table",
       container.add( controls );
       container.add( table, {flex: 1} );
 
+      /*
+       * load table
+       */
+      this.tableController.reload();
+      
       return container;
       
     },

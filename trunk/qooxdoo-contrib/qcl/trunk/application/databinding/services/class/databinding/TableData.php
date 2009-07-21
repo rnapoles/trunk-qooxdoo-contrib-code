@@ -16,12 +16,12 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-//require dirname( __FILE__ ) . "/AbstractStore.php";
-require_once "qcl/data/store/db/Controller.php";
+require dirname( __FILE__ ) . "/EventStoreController.php";
+//require_once "qcl/data/store/db/Controller.php";
 
 class class_TableData
-//  extends AbstractStore // RpcPhp 1.0 server
-  extends qcl_data_store_db_Controller
+  extends EventStoreController // RpcPhp 1.0 server
+//  extends qcl_data_store_db_Controller
 {
 
   /**
@@ -29,6 +29,9 @@ class class_TableData
    */
   var $skipAuthentication = true;
 
+  /**
+   * Reset the row counter
+   */
   function method_resetRowCount( $params )
   {
     $_SESSION['rowCount'] = rand(1000,9000);
@@ -38,6 +41,9 @@ class class_TableData
     );
   }
 
+  /**
+   * Return the number of rows (randomly generated for a sesion)
+   */
   function method_getRowCount( $params )
   {
     if ( ! isset( $_SESSION['rowCount'] ) )
@@ -51,7 +57,7 @@ class class_TableData
   }
 
   /**
-   * get node data
+   * Return node node data
    * @param array $params
    */
   function method_getRowData( $params )
@@ -122,6 +128,9 @@ class class_TableData
     );
   }
 
+  /**
+   * Add a row which will be randomly generated upon request
+   */
   function method_addRow( )
   {
     $_SESSION['rowCount']++;
@@ -129,7 +138,5 @@ class class_TableData
       'statusText' => "Row added."
     );
   }
-
-
 }
 ?>

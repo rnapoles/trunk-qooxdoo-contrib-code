@@ -24,7 +24,7 @@
  * class name of the extending class, so that events of differnt widget
  * types do not get mixed up.
  */
-class AbstractStore
+class EventStoreController
 {
 
   function method_register( $params )
