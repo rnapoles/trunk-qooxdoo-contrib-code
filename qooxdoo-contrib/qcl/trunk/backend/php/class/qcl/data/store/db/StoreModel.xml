@@ -11,13 +11,15 @@
     <definition>
       <properties>
         <property name="storeId" type="string" unique="true">
-          <sql>varchar(32) NOT NULL</sql>
+          <sql>varchar(50) NOT NULL</sql>
         </property>  
         <property name="storeService" type="string">
           <sql>varchar(100) NOT NULL</sql>
         </property>
+        <property name="sessionId" type="string" unique="true">
+          <sql>varchar(32) NOT NULL</sql>
+        </property>          
       </properties>
-       
     </definition>
   </model>
 </schema>

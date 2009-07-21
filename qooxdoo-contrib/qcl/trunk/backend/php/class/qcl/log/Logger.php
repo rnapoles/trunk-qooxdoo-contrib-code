@@ -40,11 +40,6 @@ class qcl_log_Logger
    */
   function __construct()
   {
-    /*
-     * we are not calling the parent constructor to avoid
-     * idefinite recursion, so we have to duplicate code
-     * from the parent constructor here
-     */
     $this->_class = get_class($this);
   }
 
@@ -201,9 +196,10 @@ class qcl_log_Logger
   {
 
     /*
-     * if a valid log file exists, write message to it
+     * if a valid log file exists or can be created, write message to it
      */
-    if( QCL_LOG_FILE and file_exists(QCL_LOG_FILE) and is_writable( QCL_LOG_FILE ) )
+    if( QCL_LOG_FILE and
+      ( is_writable( QCL_LOG_FILE ) or is_writable( dirname( QCL_LOG_FILE ) ) ) )
     {
       error_log( $message, 3, QCL_LOG_FILE );
     }

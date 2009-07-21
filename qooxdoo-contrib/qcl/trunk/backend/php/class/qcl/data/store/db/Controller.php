@@ -15,6 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require_once "qcl/data/controller/Controller.php";
 require_once "qcl/data/store/db/StoreModel.php";
 require_once "qcl/data/store/db/EventStoreModel.php";
 
@@ -22,24 +23,25 @@ require_once "qcl/data/store/db/EventStoreModel.php";
  * Abstract class for jsonrpc data stores that handles event propagation..
  */
 class qcl_data_store_db_Controller
+  extends qcl_data_controller_Controller
 {
 
   /**
    * Register a store
-   * @param $params
+   * @param $params[0] Store id
+   * @param $params[1] Service name
    * @return unknown_type
    */
   function method_register( $params )
   {
     list( $storeId, $serviceName ) = $params;
-
+    $this->info("Registering store $storeId for service $serviceName.",__CLASS__,__LINE__);
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
-    $storeModel->create();
-    $storeModel->set( array(
+    $storeModel->insert( array(
       "storeId"      => $storeId,
-      "storeService" => $serviceName
+      "storeService" => $serviceName,
+      "sessionId"    => $this->getSessionId()
     ) );
-    $storeModel->save();
 
     return array(
       'statusText' => "Store registered."
@@ -54,6 +56,7 @@ class qcl_data_store_db_Controller
   function method_unregister( $params )
   {
     list( $storeIds ) = $params;
+    $this->info("Unregistering store $storeIds ",__CLASS__,__LINE__);
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
     $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
 
@@ -78,6 +81,7 @@ class qcl_data_store_db_Controller
    */
   function method_unregisterAll()
   {
+    $this->info("Unregistering all stores.");
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
     $storeModel->truncate();
     $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
@@ -98,7 +102,7 @@ class qcl_data_store_db_Controller
 
     list( $map ) = $params;
 
-    //echo "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/";
+//    $this->debug( "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/",__CLASS__,__LINE__);
 
     $resultMap = array();
 
@@ -107,7 +111,7 @@ class qcl_data_store_db_Controller
       /*
        * save client events
        */
-      if ( $events )
+      if ( is_array( $events ) )
       {
         foreach( $events as $event )
         {
@@ -131,6 +135,15 @@ class qcl_data_store_db_Controller
     return array(
       'events' => $resultMap,
     );
+  }
+
+  /**
+   * Alias for exchangeEvents
+   * @todo change javascript code
+   */
+  function method_getEvents( $params )
+  {
+    return $this->method_exchangeEvents( $params );
   }
 
   /**
