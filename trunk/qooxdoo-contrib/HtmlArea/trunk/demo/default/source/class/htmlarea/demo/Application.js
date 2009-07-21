@@ -83,7 +83,7 @@ qx.Class.define("htmlarea.demo.Application",
       this.__htmlArea.set( { height: 400, decorator: "main-bottom-left-right" } );
       
       var vb = new qx.ui.layout.VBox(0);
-      var vbContainer = (new qx.ui.container.Composite(vb));
+      var vbContainer = new qx.ui.container.Composite(vb);
 
       var toolbar = this.__setupToolbar();
       
