@@ -71,13 +71,8 @@ qx.Class.define("htmlarea.HtmlArea",
     
     this._setLayout(new qx.ui.layout.Grow);
     
-    this.addListenerOnce("appear", this.__setupAtAppear);
-    this.addListener("appear", this.forceEditable);
-    
-    this.__postponedProperties = [];
-    
-    this.__el = qx.bom.Element.create("div");
-    this.__editorComponent = new htmlarea.HtmlAreaNative(this.__el, value, styleInformation, source);
+    this.__addAppearListener();    
+    this.__setupEditorComponent(value, styleInformation, source);
   },
 
 
@@ -204,15 +199,6 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
-    /** Toggles the edit mode */
-    editable :
-    {
-      check : "Boolean",
-      init  : false,
-      apply : "_applyEditable"
-    },
-
-
     /**
      * If turned on the editor acts like a messenger widget e.g. if one hits the Enter key the current content gets
      * outputted (via a DataEvent) and the editor clears his content
@@ -291,7 +277,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
   members :
   {
-    __postponedProperties : null,
     __editorComponent : null,
     __isReady : null,
     __commandManager : null,
@@ -321,11 +306,6 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
     
-    _applyEditable : function(value, old) {
-      this.__editorComponent.setContentType(value);
-    },
-    
-    
     _applyMessengerMode : function(value, old) {
       this.__editorComponent.setMessengerMode(value);
     },
@@ -351,28 +331,50 @@ qx.Class.define("htmlarea.HtmlArea",
     },
     
     
+    
+    /*
+    ---------------------------------------------------------------------------
+      SETUP
+    ---------------------------------------------------------------------------
+    */    
+    
     /**
-     * Listener method which is executed once at startup (with "appear" event).
-     * Does basic setup of the editing component, listener delegation.
+     * Adds the "appear" listener for correct startup
      * 
-     * @param e {qx.event.type.Event} event instance
      * @return {void}
      */
-    __setupAtAppear : function(e)
+    __addAppearListener : function()
     {
-      this.__setupEditorComponent();
+      this.addListenerOnce("appear", this.__addToWidgetElement);
+      this.addListener("appear", this.forceEditable);
+    },
+    
+    
+    /**
+     * Setup the low-level editor component and the listener delegate methods.  
+     */
+    __setupEditorComponent : function(value, styleInformation, source)
+    {
+      this.__el = qx.bom.Element.create("div");
+      // append to body element to ensure the iframe of "HtmlAreaNative" gets 
+      // loaded correctly - at least necessary for Opera
+      qx.dom.Element.insertEnd(this.__el, document.body);
+      
+      this.__editorComponent = new htmlarea.HtmlAreaNative(this.__el, value, styleInformation, source);
       this.__setupDelegateListeners();
     },
+    
     
     /**
      * Adds the low-level editing component to the widget
      * 
      * @return {void}
      */
-    __setupEditorComponent : function()
+    __addToWidgetElement : function()
     {
       var domElement = this.getContentElement().getDomElement();
       qx.dom.Element.insertBegin(this.__el.firstChild, domElement);
+      qx.dom.Element.removeChild(this.__el, document.body);
     },
     
     
@@ -421,6 +423,13 @@ qx.Class.define("htmlarea.HtmlArea",
       this.fireDataEvent(clone.getType(), e.getData());
     },
     
+    
+    
+    /*
+    ---------------------------------------------------------------------------
+      PUBLIC API
+    ---------------------------------------------------------------------------
+    */
     
     /**
      * Returns the iframe object which is used to render the content
@@ -575,12 +584,6 @@ qx.Class.define("htmlarea.HtmlArea",
     },
     
     
-    /*
-    ---------------------------------------------------------------------------
-      EXEC-COMMANDS
-    ---------------------------------------------------------------------------
-    */
-
     /**
      * Service method to check if the component is already loaded.
      * Overrides the base method.
@@ -593,7 +596,28 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Whether the documet is in editable mode
+     * Whether the document is in editable mode
+     * 
+     * @param value {Boolean} whether the component should be editable
+     * @return {void}
+     */
+    setEditable : function(value) {
+      return this.__editorComponent.setEditable(value);
+    },
+    
+    
+    /**
+     * Whether the document is in editable mode
+     * 
+     * @return {Boolean}
+     */
+    getEditable : function() {
+      return this.__editorComponent.getEditable();
+    },
+    
+    
+    /**
+     * Whether the document is in editable mode
      * 
      * @return {Boolean}
      */

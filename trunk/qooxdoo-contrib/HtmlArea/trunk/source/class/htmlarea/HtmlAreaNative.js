@@ -668,16 +668,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       check : "String",
       init  : "xhtml"
     },
-
-
-    /** Toggles the edit mode */
-    editable :
-    {
-      check : "Boolean",
-      init  : false,
-      apply : "_applyEditable"
-    },
-
+    
 
     /**
      * If turned on the editor acts like a messenger widget e.g. if one hits the Enter key the current content gets
@@ -1538,20 +1529,18 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /*
     ---------------------------------------------------------------------------
-      MODIFIERS
+      EDITABLE
     ---------------------------------------------------------------------------
     */
 
     /**
-     * Modifier for property "editable"
+     * Whether the document is in editable mode
      * 
-     * @param propValue {var} Current value
-     * @param propOldValue {var} Previous value
-     * @param propData {var} Property configuration map
+     * @param value {Boolean} Current value
      * @return {void}
      * @throws {Error} Failed to enable rich edit functionality
      */
-    _applyEditable : function(propValue, propOldValue, propData)
+    setEditable : function(value)
     {
       if (this.__isLoaded)
       {
@@ -1591,9 +1580,29 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             }
           }
         }
-
-        this.__isEditable = propValue;
+        
+        this.__isEditable = value;
       }
+    },
+    
+    
+    /**
+     * Whether the document is in editable mode
+     * 
+     * @return {Boolean}
+     */
+    getEditable : function() {
+      return this.__isEditable;
+    },
+    
+    
+    /**
+     * Whether the document is in editable mode
+     * 
+     * @return {Boolean}
+     */
+    isEditable : function() {
+      return this.__isEditable;
     },
 
     
@@ -2263,21 +2272,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * 
      * @return {Boolean}
      */
-    isLoaded : function ()
-    {
-      var loaded = this.base(arguments);
-      return this.__isLoaded && loaded;
-    },
-
-
-    /**
-     * Whether the documet is in editable mode
-     * 
-     * @return {Boolean}
-     */
-    isEditable : function ()
-    {
-      return this.__isEditable;
+    isLoaded : function () {
+      return this.__isLoaded;
     },
 
 
