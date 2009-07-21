@@ -1,0 +1,162 @@
+qcl/data/controller/TreeVirtual.js (397,1): Use of deprecated global identifier 'eval'
+qcl/data/controller/TreeVirtual.js (198,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/TreeVirtual.js (229,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/TreeVirtual.js (319,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/TreeVirtual.js (378,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/ui/dialog/Dialog.js (106,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/ui/dialog/Dialog.js (395,13): Protected data field in 'this._okButton'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Dialog.js (409,17): Protected data field in 'this._cancelButton'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Confirm.js (140,4): Unused identifier '_this'
+qcl/ui/dialog/Confirm.js (127,1): Protected data field in 'this._image'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Confirm.js (134,1): Protected data field in 'this._message'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Confirm.js (145,14): Protected data field in 'this._yesButton'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Confirm.js (154,13): Protected data field in 'this._noButton'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Upload.js (158,4): Use of undefined or global identifier 'url'
+qcl/ui/dialog/Upload.js (167,1): Use of undefined or global identifier 'callback'
+qcl/ui/dialog/Upload.js (167,15): Use of undefined or global identifier 'context'
+qcl/ui/dialog/Upload.js (128,1): Use of undefined or global identifier 'callback'
+qcl/ui/dialog/Upload.js (128,15): Use of undefined or global identifier 'context'
+qcl/ui/dialog/Upload.js (178,1): Use of undefined or global identifier 'callback'
+qcl/ui/dialog/Upload.js (178,15): Use of undefined or global identifier 'context'
+qcl/ui/dialog/Upload.js (84,12): Use of undefined or global identifier 'uploadwidget'
+qcl/ui/dialog/Upload.js (84,48): Use of undefined or global identifier 'url'
+qcl/ui/dialog/Upload.js (96,4): Use of undefined or global identifier 'params'
+qcl/ui/dialog/Upload.js (98,11): Use of undefined or global identifier 'params'
+qcl/ui/dialog/Upload.js (100,21): Use of undefined or global identifier 'params'
+qcl/ui/dialog/Upload.js (107,12): Use of undefined or global identifier 'uploadwidget'
+qcl/ui/dialog/Upload.js (116,1): Use of undefined or global identifier 'cv'
+qcl/ui/dialog/Upload.js (142,7): Use of undefined or global identifier 'c'
+qcl/ui/dialog/Upload.js (142,9): Use of undefined or global identifier 'b'
+qcl/ui/dialog/Upload.js (143,1): Use of undefined or global identifier 'controls'
+qcl/ui/dialog/Upload.js (143,11): Use of undefined or global identifier 'cv'
+qcl/ui/dialog/Upload.js (148,50): Use of undefined or global identifier 'msg'
+qcl/ui/dialog/Upload.js (148,126): Use of undefined or global identifier 'controls'
+qcl/ui/dialog/Upload.js (153,1): Use of undefined or global identifier 'b'
+qcl/ui/dialog/Upload.js (174,1): Use of undefined or global identifier 'c'
+qcl/ui/dialog/Upload.js (68,1): Protected data field in 'this._image'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Upload.js (74,1): Protected data field in 'this._message'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/Table.js (109,7): Undeclared private data field 'this.__columnIdArr'. You should list this field in the members section.
+qcl/data/model/Table.js (122,4): Undeclared private data field 'this.__firstLoadingBlock'. You should list this field in the members section.
+qcl/data/model/Table.js (125,30): Undeclared private data field 'this.__rowCount'. You should list this field in the members section.
+qcl/data/model/Table.js (159,1): Undeclared private data field 'this.__firstRowToLoad'. You should list this field in the members section.
+qcl/data/model/Table.js (160,1): Undeclared private data field 'this.__lastRowToLoad'. You should list this field in the members section.
+qcl/data/model/Table.js (162,1): Undeclared private data field 'this.__firstLoadingBlock'. You should list this field in the members section.
+qcl/data/model/Table.js (172,1): Undeclared private data field 'this.__firstRowToLoad'. You should list this field in the members section.
+qcl/data/model/Table.js (173,1): Undeclared private data field 'this.__lastRowToLoad'. You should list this field in the members section.
+qcl/data/model/Table.js (238,1): Protected data field in 'this._rowCount'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplicationState.js (204,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/application/MApplicationState.js (453,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/application/MApplication.js (656,1): Use of deprecated global identifier 'alert'
+qcl/application/MApplication.js (242,1): Protected data field in 'this._widgetById'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (342,1): Protected data field in 'this._appStore'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (371,1): Protected data field in 'this._authenticationSetup'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (469,1): Protected data field in 'this._configSetup'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (544,7): Protected data field in 'this._eventStore'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (671,1): Protected data field in 'this._windows'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (708,1): Protected data field in 'win._window.menuButton'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (49,1): Protected data field in 'this._widgetById'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/MApplication.js (193,13): Data field '_widgetById' has a reference value. If data fields are initialized in the members map with reference values like arrays or maps they will be shared between all instances of the class. Usually it is better to set the value to 'null' and initialize it in the constructor
+qcl/application/MApplication.js (584,10): Data field '_windows' has a reference value. If data fields are initialized in the members map with reference values like arrays or maps they will be shared between all instances of the class. Usually it is better to set the value to 'null' and initialize it in the constructor
+qcl/access/AbstractManager.js (229,5): Use of undefined or global identifier 'hashCode'
+qcl/access/AbstractManager.js (231,12): Use of undefined or global identifier 'hashCode'
+qcl/access/AbstractManager.js (233,9): Use of undefined or global identifier 'hashCode'
+qcl/access/AbstractManager.js (235,15): Use of undefined or global identifier 'hashCode'
+qcl/access/AbstractManager.js (75,1): Protected data field in 'this._objects'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/access/AbstractManager.js (76,1): Protected data field in 'this._index'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/access/AbstractManager.js (41,1): Protected data field in 'this._index'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/access/AbstractManager.js (42,1): Protected data field in 'this._objects'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/access/permission/Permission.js (167,7): Use of undefined or global identifier 'conditionsFunc'
+qcl/access/permission/Permission.js (168,24): Use of undefined or global identifier 'conditionsFunc'
+qcl/access/permission/Permission.js (192,27): Use of undefined or global identifier 'conditionsFunc'
+qcl/access/permission/Permission.js (118,7): Undeclared private data field 'this.__conditions'. You should list this field in the members section.
+qcl/access/permission/Permission.js (45,1): Undeclared private data field 'this.__conditions'. You should list this field in the members section.
+qcl/access/permission/Permission.js (46,1): Undeclared private data field 'this.__state'. You should list this field in the members section.
+qcl/access/permission/Permission.js (47,1): Protected data field in 'this._manager'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/application/Clipboard.js (219,1): Use of deprecated global identifier 'alert'
+qcl/application/Clipboard.js (45,4): Unused identifier 'vActions'
+qcl/application/Clipboard.js (289,4): Unused identifier 'len'
+qcl/application/Clipboard.js (284,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/application/Clipboard.js (286,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/application/Clipboard.js (295,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/application/Clipboard.js (114,1): Undeclared private data field 'this.__data'. You should list this field in the members section.
+qcl/application/Clipboard.js (133,7): Undeclared private data field 'this.__data'. You should list this field in the members section.
+qcl/application/Clipboard.js (144,1): Undeclared private data field 'this.__data'. You should list this field in the members section.
+qcl/application/Clipboard.js (171,1): Undeclared private data field 'this.__actions'. You should list this field in the members section.
+qcl/application/Clipboard.js (186,1): Undeclared private data field 'this.__actions'. You should list this field in the members section.
+qcl/application/Clipboard.js (198,26): Undeclared private data field 'this.__actions'. You should list this field in the members section.
+qcl/application/Clipboard.js (43,1): Undeclared private data field 'this.__data'. You should list this field in the members section.
+qcl/application/Clipboard.js (44,1): Undeclared private data field 'this.__actions'. You should list this field in the members section.
+qcl/data/store/JsonRpc.js (688,1): Use of undefined or global identifier 'params2'
+qcl/data/store/JsonRpc.js (689,45): Use of undefined or global identifier 'params2'
+qcl/data/store/JsonRpc.js (748,1): Use of deprecated global identifier 'alert'
+qcl/data/store/JsonRpc.js (480,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/store/JsonRpc.js (490,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/store/JsonRpc.js (865,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/store/JsonRpc.js (337,1): Protected data field in 'this._timerId'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/store/JsonRpc.js (468,1): Protected data field in 'this._dataEvents'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/store/JsonRpc.js (600,1): Protected data field in '_this._responseData'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/store/JsonRpc.js (605,1): Protected data field in '_this._opaqueCallRef'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/store/JsonRpc.js (689,1): Protected data field in 'this._opaqueCallRef'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/store/JsonRpc.js (116,1): Protected data field in 'this._rpc'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/store/JsonRpc.js (306,13): Data field '_dataEvents' has a reference value. If data fields are initialized in the members map with reference values like arrays or maps they will be shared between all instances of the class. Usually it is better to set the value to 'null' and initialize it in the constructor
+qcl/data/model/SimpleTreeDataModel.js (320,1): Protected data field in 'this._treeColumn'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (671,1): Protected data field in 'this._nodeArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (751,1): Protected data field in 'this._nodeArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (875,1): Protected data field in '_this._nodeRowMap'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (890,1): Protected data field in '_this._rowArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (893,1): Protected data field in '_this._nodeRowMap'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (921,1): Protected data field in 'this._selections'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (926,1): Protected data field in 'this._nodeArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (983,1): Protected data field in 'this._nodeArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (1058,1): Protected data field in 'this._selections'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (1194,1): Protected data field in 'this._nodeArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (1198,1): Protected data field in 'this._selections'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (116,1): Protected data field in 'this._rowArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (117,1): Protected data field in 'this._nodeArr'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (119,1): Protected data field in 'this._nodeRowMap'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (124,1): Protected data field in 'this._treeColumn'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/SimpleTreeDataModel.js (126,1): Protected data field in 'this._selections'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/controller/Table.js (262,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/Table.js (318,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/Table.js (345,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/Table.js (365,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/Table.js (400,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/controller/Table.js (114,21): Data field '__currentRequestIds' has a reference value. If data fields are initialized in the members map with reference values like arrays or maps they will be shared between all instances of the class. Usually it is better to set the value to 'null' and initialize it in the constructor
+qcl/config/Manager.js (158,1): Protected data field in 'this._index'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/config/Manager.js (164,1): Protected data field in 'this._index'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (119,1): Protected data field in 'this._image'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (126,1): Protected data field in 'this._text'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (159,1): Protected data field in 'this._username'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (160,1): Protected data field in 'this._password'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (175,1): Protected data field in 'this._message'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (184,16): Protected data field in 'this._loginButton'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Login.js (224,1): Protected data field in 'this._effect'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/access/user/User.js (127,4): Unused identifier 'hasPermission'
+qcl/access/user/User.js (132,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/access/user/User.js (134,5): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/access/user/User.js (41,1): Protected data field in 'this._manager'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Select.js (88,1): Protected data field in 'this._message'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Form.js (243,22): Use of undefined or global identifier 'key'
+qcl/ui/dialog/Form.js (198,5): Use of undefined or global identifier 'key'
+qcl/ui/dialog/Form.js (201,23): Use of undefined or global identifier 'key'
+qcl/ui/dialog/Form.js (256,21): Use of undefined or global identifier 'key'
+qcl/ui/dialog/Form.js (232,4): Unused identifier 'selected'
+qcl/ui/dialog/Form.js (135,1): Protected data field in 'this._message'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Form.js (144,18): Protected data field in 'this._formContainer'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Form.js (256,1): Protected data field in 'formElement._key'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/data/model/TreeVirtual.js (426,1): Use of undefined or global identifier 'node'
+qcl/data/model/TreeVirtual.js (746,9): Use of undefined or global identifier 'value'
+qcl/data/model/TreeVirtual.js (748,7): Use of undefined or global identifier 'oldValue'
+qcl/data/model/TreeVirtual.js (624,18): Use of undefined or global identifier 'nodeReference'
+qcl/data/model/TreeVirtual.js (624,41): Use of undefined or global identifier 'nodeReference'
+qcl/data/model/TreeVirtual.js (624,62): Use of undefined or global identifier 'nodeReference'
+qcl/data/model/TreeVirtual.js (739,4): Unused identifier 'old'
+qcl/data/model/TreeVirtual.js (474,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/model/TreeVirtual.js (494,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/model/TreeVirtual.js (496,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/model/TreeVirtual.js (508,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/model/TreeVirtual.js (510,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/model/TreeVirtual.js (521,1): The statement of loops and conditions must be enclosed by a block in braces '{}'
+qcl/data/model/TreeVirtual.js (181,13): Data field '__nodeIdMap' has a reference value. If data fields are initialized in the members map with reference values like arrays or maps they will be shared between all instances of the class. Usually it is better to set the value to 'null' and initialize it in the constructor
+qcl/ui/dialog/Alert.js (68,1): Protected data field in 'this._image'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
+qcl/ui/dialog/Alert.js (74,1): Protected data field in 'this._message'. Protected data fields are deprecated. Better use private fields in combination with getter and setter methods.
