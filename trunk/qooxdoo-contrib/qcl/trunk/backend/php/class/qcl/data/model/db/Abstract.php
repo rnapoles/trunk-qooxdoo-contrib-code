@@ -192,7 +192,7 @@ class qcl_data_model_db_Abstract
   {
     $column = $this->getColumnName($property);
     $table = $this->table();
-    $sql = "SELECT DISTINCT `$column` FROM {$table} \n";
+    $sql = "SELECT DISTINCT `$column` FROM `{$table}` \n";
 
     if ( $where )
     {

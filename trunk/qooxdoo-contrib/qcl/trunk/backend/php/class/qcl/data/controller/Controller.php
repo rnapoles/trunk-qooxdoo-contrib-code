@@ -42,13 +42,6 @@ class qcl_data_controller_Controller
 {
 
   /**
-   * The id of the session, default to PHP session id
-   * @var string
-   * @access private
-   */
-  var $_sessionId;
-
-  /**
    * Whether the request has been aborted
    */
   var $_isAborted = false;
@@ -127,6 +120,15 @@ class qcl_data_controller_Controller
     return str_replace("_",".", substr( $this->className(), strlen(JsonRpcClassPrefix) ) );
   }
 
+  /**
+   * Returns the current session id
+   * @return string
+   */
+  function getSessionId()
+  {
+    return qcl_access_Manager::getSessionId();
+  }
+
   //-------------------------------------------------------------
   // response data
   //-------------------------------------------------------------
@@ -136,6 +138,7 @@ class qcl_data_controller_Controller
    * given class.
    * @param string $clazz
    * @return void
+   * @deprecated Work with result object instead
    */
   function setResultClass( $clazz )
   {
@@ -148,6 +151,7 @@ class qcl_data_controller_Controller
    * Shorthand method to set the data object of the response object
    * @param qcl_data_Result $resultObject
    * @return void
+   * @deprecated Work with result object instead
    */
   function setResultObject( $resultObject )
   {
@@ -159,6 +163,7 @@ class qcl_data_controller_Controller
    * data object
    * @param string $key
    * @param mixed $value
+   * @deprecated Work with result object instead
    */
   function setResult ( $key, $value )
   {
@@ -168,13 +173,12 @@ class qcl_data_controller_Controller
   /**
    * Returns all puplic properties of the result data object
    * @return qcl_data_Result
+   * @deprecated Work with result object instead
    */
   function &result()
   {
     return $this->_resultObject;
   }
-
-
 
   //-------------------------------------------------------------
   // service introspection

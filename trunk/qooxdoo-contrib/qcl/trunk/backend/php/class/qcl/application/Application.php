@@ -55,8 +55,8 @@ class qcl_application_Application
   var $_ini = null;
 
   /**
-   * Returns the version of the Bibliograph installation. Can be called
-   * statically
+   * Returns the version of the application. Can be called
+   * statically. Must be implemented by the inheriting class
    * @return string
    */
   function version()

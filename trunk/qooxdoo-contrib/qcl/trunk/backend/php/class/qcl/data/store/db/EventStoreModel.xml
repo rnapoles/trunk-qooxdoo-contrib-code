@@ -11,7 +11,7 @@
     <definition>
       <properties>
         <property name="storeId" type="string">
-          <sql>varchar(32) NOT NULL</sql>
+          <sql>varchar(50) NOT NULL</sql>
         </property>    
         <property name="eventData" type="string">
           <sql>blob NOT NULL</sql>
