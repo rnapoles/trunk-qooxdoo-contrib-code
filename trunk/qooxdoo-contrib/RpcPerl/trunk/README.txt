@@ -12,6 +12,9 @@ For more information see
 
 Release Notes
 -------------
+?   - Compatibility with JSON-2.07 module  (patch by Niko Tyni) 
+      all new Testsuite (patch by Niko Tyni)
+
 0.1 - initial release, preserving full backward compatibility
       with previous unversioned releases.
 

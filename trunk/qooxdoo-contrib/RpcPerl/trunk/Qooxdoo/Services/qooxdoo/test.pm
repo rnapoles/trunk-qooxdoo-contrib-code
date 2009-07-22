@@ -25,6 +25,9 @@ use strict;
 
 use Qooxdoo::JSONRPC;
 
+use JSON;
+my $json1 = $JSON::VERSION < 2;
+
 # Specify method accessibility.  Default value is configured in server,
 # but may be overridden on a per-method basis here.
 #
@@ -164,19 +167,19 @@ sub method_getObject
 
 sub method_getTrue
 {
-    return JSON::True;
+    return $json1 ? &JSON::True : &JSON::true;
 }
 
 
 sub method_getFalse
 {
-    return JSON::False;
+    return $json1 ? &JSON::False : &JSON::false;
 }
 
 
 sub method_getNull
 {
-    return JSON::Null;
+    return $json1 ? &JSON::Null : &JSON::null;
 }
 
 
@@ -214,10 +217,12 @@ sub method_isBoolean
 
     my $param = $params[0];
 
-    my $is_true = ref $param eq 'JSON::NotString'
+    my $is_true = $json1 ? (
+        ref $param eq 'JSON::NotString'
         && defined $param->{value}
         && ($param->{value} eq 'true' ||
-            $param->{value} eq 'false');
+            $param->{value} eq 'false')
+    ) : ( eval { $param->isa('JSON::Boolean') });
     
     return Qooxdoo::JSONRPC::json_bool ($is_true);
 }
@@ -248,8 +253,12 @@ sub method_isNull
 
     my $param = $params[0];
 
-    my $is_null = ref $param eq 'JSON::NotString'
-        && !defined $param->{value};
+    my $is_null = $json1 ? ( 
+        ref $param eq 'JSON::NotString'
+        && !defined $param->{value}
+    ) : (
+        not defined $param
+    );
     
     return Qooxdoo::JSONRPC::json_bool ($is_null);
 }
