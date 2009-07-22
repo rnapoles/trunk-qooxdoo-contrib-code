@@ -7,26 +7,26 @@ require_once "qcl/data/persistence/db/Object.php";
  */
 class class_qcl_access_Tests extends qcl_access_Controller
 {
-  
+
   function method_dummy()
   {
 
-    return $this->result();  
-    
+    return $this->result();
+
   }
-  
+
   function method_testUser()
   {
-    
-    
+
+
     $logger =& $this->getLogger();
     $logger->setFilterEnabled("propertyModel",true);
-        
+
     $user = either ($params[0], "admin");
     //$this->debug("Testing user $user");
     $userModel =& $this->getUserModel();
     $userModel->findByNamedId($user);
-    
+
     if ( $userModel->foundSomething() )
     {
       $this->info($userModel->securityData() );
@@ -36,27 +36,26 @@ class class_qcl_access_Tests extends qcl_access_Controller
     {
       $this->info("User $user not found.");
     }
-    
+
     $logger->setFilterEnabled("propertyModel",false);
     $this->info("blabla!");
-    echo"ljlljl";
     return $this->result();
   }
-  
+
   function method_testRole()
   {
     $roleModel =& $this->getRoleModel();
-    $roleModel->findByNamedId("bibliograph.roles.User");
-    
+    $roleModel->findByNamedId("qcl.roles.User");
+
     $this->info($roleModel->users('namedId'));
-    
+
     $this->info($roleModel->permissions('namedId'));
     return $this->result();
   }
 
- 
+
   /**
-   * @return 
+   * @return
    * @param $params Object
    */
   function method_hasPermission($params)

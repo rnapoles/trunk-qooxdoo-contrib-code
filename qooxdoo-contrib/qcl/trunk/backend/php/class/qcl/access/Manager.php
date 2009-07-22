@@ -208,7 +208,7 @@ class qcl_access_Manager
   }
 
   /**
-   * Checks if active user has a permission
+   * Checks if active user has a permission.
    * @return boolean
    * @param $permission String
    */
@@ -220,7 +220,8 @@ class qcl_access_Manager
     /*
      * check if this permission has a local alias
      */
-    if ( $controller &&  $alias = $this->hasPermissionAlias($controller, $permission) )
+    if ( is_a( $controller, "qcl_data_controller_Controller" )
+         &&  $alias = $controller->hasPermissionAlias( $permission ) )
     {
       $permission = $alias;
     }
@@ -232,29 +233,6 @@ class qcl_access_Manager
     if ( $activeUser and $activeUser->hasPermission( $permission ) )
     {
       return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  /**
-   * Checks if permission has an application-specific
-   * name. This allows to reuse a global permission for a
-   * specific service class without giving the user the same
-   * right in a different service class. Simple implementation
-   * uses a hash map to pair permissions with their
-   * local aliases. More elaborate implementations are certainly
-   * possible.
-   * @param qcl_data_controller_Controller $controller
-   * @param string $permission
-   */
-  function hasPermissionAlias( $controller, $permission )
-  {
-    if ( is_array($controller->permisssionAliasMap) )
-    {
-      return $controller->permisssionAliasMap[$permission];
     }
     else
     {
