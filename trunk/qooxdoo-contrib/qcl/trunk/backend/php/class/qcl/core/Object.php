@@ -273,12 +273,8 @@ class qcl_core_Object extends qcl_core_BaseClass
 
     /*
      * return path name
-     * @todo bad hack to deal with case-sensitive file system. fix this!
      */
-    $path = QCL_SERVICE_PATH . implode( "/", $patharray ) . ".php";
-    if ( file_exists($path) ) return $path;
-    $patharray[count($patharray)-1] = strtolower($patharray[count($patharray)-1]);
-    return QCL_SERVICE_PATH . implode( "/", $patharray ) . ".php";
+     return real_file_path( implode( "/", $patharray ) . ".php");
   }
 
   /**
@@ -310,7 +306,8 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function includeClassfile ( $classname )
   {
-    $path = qcl_core_Object::getClassPath($classname);
+    $path = qcl_core_Object::getClassPath( $classname );
+
     if ( ! file_exists ( $path ) )
     {
       $this->raiseError ( "Class '$classname' cannot be loaded: file '" . addslashes($path) .  "' does not exist." );
