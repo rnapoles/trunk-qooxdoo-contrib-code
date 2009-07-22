@@ -20,7 +20,7 @@ require_once "qcl/data/store/db/StoreModel.php";
 require_once "qcl/data/store/db/EventStoreModel.php";
 
 /**
- * Abstract class for jsonrpc data stores that handles event propagation..
+ * Abstract class for jsonrpc data stores that handles event propagation.
  */
 class qcl_data_store_db_Controller
   extends qcl_data_controller_Controller
