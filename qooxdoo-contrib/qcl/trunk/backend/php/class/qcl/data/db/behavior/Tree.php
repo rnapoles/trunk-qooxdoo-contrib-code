@@ -21,7 +21,6 @@
  * sql database table. Can only be used with a model that inherits from
  * qcl_data_model_xmlSchema_DbModel.
  */
-
 class qcl_data_db_behavior_Tree
 {
 

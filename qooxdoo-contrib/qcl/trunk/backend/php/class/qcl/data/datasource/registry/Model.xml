@@ -11,7 +11,7 @@
     extends="qcl.model.xmlSchema.DbModel">
     <definition>
       <properties>
-         <property name="name" type="string" unique="true"> 
+         <property name="namedId" type="string" unique="true"> 
           <sql>varchar(50) NOT NULL</sql>
         </property>      
          <property name="class" type="string">

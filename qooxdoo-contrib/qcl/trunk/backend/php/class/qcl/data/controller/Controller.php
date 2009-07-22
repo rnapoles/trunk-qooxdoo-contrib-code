@@ -195,6 +195,23 @@ class qcl_data_controller_Controller
     return $activeUser->hasRole( $role );
   }
 
+  //-------------------------------------------------------------
+  // datasources
+  //-------------------------------------------------------------
+
+
+  /**
+   * Returns the  datasource model with the datasource connection
+   * data preloaded.
+   * @param string $datasource
+   * @return qcl_data_datasource_type_db_Model
+   */
+  function &getDatasourceModel( $datasource )
+  {
+    require_once "qcl/data/datasource/Manager.php";
+    return qcl_data_datasource_Manager::getDatasourceModel( $datasource );
+  }
+
 
   //-------------------------------------------------------------
   // response data, deprecated methods
