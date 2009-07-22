@@ -1,0 +1,2 @@
+_ScriptTransport_id=1
+_ScriptTransport_data={"service":"qooxdoo.test","method":"isBoolean","id":1,"params":[ true ],"server_data":null} 

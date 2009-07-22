@@ -25,6 +25,10 @@ use strict;
 
 use JSON;
 
+my $json1 = $JSON::VERSION < 2;
+
+
+
 #use CGI;
 #use CGI::Session;
 
@@ -86,7 +90,13 @@ sub handle_request
 
     # 'selfconvert' is enabled for date conversion. Ideally we also want
     # 'convblessed', but this then disabled 'selfconvert'.
-    my $json = new JSON (selfconvert => 1);
+    my $json;
+    if ($json1) {
+        $json = new JSON (selfconvert => 1);
+    } else {
+        $json = new JSON;
+        $json->convert_blessed;
+    }
 
     # Create the RPC error state
 
@@ -158,7 +168,8 @@ sub handle_request
     my $json_input;
     eval
     {
-        $json_input = $json->jsonToObj ($input);
+        $json_input = $json1 ? $json->jsonToObj ($input)
+                             : JSON::from_json ($input);
     };
 
     if ($@)
@@ -440,7 +451,28 @@ sub handle_request
     $result = {id     => $json_input->{id},
                result => $result};
 
-    send_reply ($json->objToJson ($result), $script_transport_id);
+    my $reply = $json1 ? $json->objToJson ($result)
+                       : $json->encode ($result);
+
+    # warning: a really ugly hack ahead
+    #
+    # Qooxdoo JSON-RPC is an extension to JSON with a new syntax
+    # for encoding date objects
+    # 
+    # unfortunately JSON.pm >= 2 can't be made to output the literal
+    #  new Date(Date.UTC(...))
+    # but insists on quoting it:
+    #  "new Date(Date.UTC(...))"
+    # so we lose.
+    #
+    # The workaround is to put signpost zero bytes (\0) around
+    # the date object notation in Qooxdoo::JSONRPC::Date::TO_JSON
+    # and strip them here along with the quotation marks
+    #
+    # see http://qooxdoo.org/documentation/0.8/rpc_server_writer_guide
+    $reply =~ s,"\\u0000(new Date\(.*?\))\\u0000",$1, if !$json1;
+
+    send_reply ($reply, $script_transport_id);
 }
 
 
@@ -476,7 +508,8 @@ sub json_bool
 {
     my $value = shift;
 
-    return $value ? JSON::True : JSON::False;
+    return $json1 ? ($value ? &JSON::True : &JSON::False)
+                  : ($value ? &JSON::true : &JSON::false);
 }
 
 
@@ -484,8 +517,9 @@ sub json_istrue
 {
     my $value = shift;
 
-    my $is_true = ref $value eq 'JSON::NotString'
-        && defined $value->{value} && $value->{value} eq 'true';
+    my $is_true = $json1 ? (ref $value eq 'JSON::NotString'
+        && defined $value->{value} && $value->{value} eq 'true'
+    ) : ( JSON::is_bool($value) && defined $value && $value eq 'true' );
 
     return $is_true;
 }
@@ -575,7 +609,9 @@ sub send_and_exit
 
     my $script_transport_id =  $self->{script_transport_id};
 
-    Qooxdoo::JSONRPC::send_reply ($self->{json}->objToJson ($result),
+    my $reply = $json1 ? $self->{json}->objToJson ($result)
+                       : $self->{json}->encode ($result);
+    Qooxdoo::JSONRPC::send_reply ($reply,
                                   $script_transport_id);
     exit;
 }
@@ -763,7 +799,7 @@ sub get_millisecond
 # This is the special method used by the JSON module to serialise a class.
 # The feature is enabled with the 'selfconvert' parameter
 
-sub toJson
+my $sub_toJson = sub
 {
     my $self = shift;
 
@@ -777,7 +813,7 @@ sub toJson
     my $second      = $self->{second};
     my $millisecond = $self->{millisecond};
 
-    return sprintf 'new Date(Date.UTC(%d,%d,%d,%d,%d,%d,%d))',
+    my $ret = sprintf 'new Date(Date.UTC(%d,%d,%d,%d,%d,%d,%d))',
     $year,
     $month,
     $day,
@@ -785,6 +821,17 @@ sub toJson
     $minute,
     $second,
     $millisecond;
+
+    # see the elaborate comment in Qooxdoo::JSONRPC::handle_request() above
+    $ret = "\0$ret\0" if !$json1;
+
+    return $ret;
+};
+
+if ($json1) {
+    *toJson = $sub_toJson;
+} else {
+    *TO_JSON = $sub_toJson;
 }
 
 # Routine to convert the date embedded in the JSON string to something
