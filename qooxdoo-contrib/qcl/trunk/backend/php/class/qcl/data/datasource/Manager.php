@@ -123,9 +123,7 @@ class qcl_data_datasource_Manager
 
   /**
    * Creates a new datassource entry according to the schema name,
-   * with the given data. This requires that the datasource model
-   * class has a getInstance() method returning the singleton instance.
-   * Can be called statically.
+   * with the given data. Can be called statically.
    *
    * @param string $datasource Named id of datasource
    * @param string $schemaName Name of schema
@@ -141,7 +139,7 @@ class qcl_data_datasource_Manager
   }
 
   /**
-   * Checks if a datasource of this name exists
+   * Checks if a datasource of this name exists. Can be called statically.
    * @param $datasource
    * @return bool
    */
@@ -153,7 +151,7 @@ class qcl_data_datasource_Manager
   }
 
   /**
-   * Deletes a datasource
+   * Deletes a datasource. Can be called statically.
    * @param $datasource
    * @return void
    */

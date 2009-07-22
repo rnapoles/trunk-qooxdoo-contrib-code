@@ -388,21 +388,28 @@ class qcl_core_Object extends qcl_core_BaseClass
    *   return parent::getInstance( $class );
    * }
    * </pre>
+   *
    * The reason is that PHP cannot access the class name in static classes (which hasn't been resolved in PHP5!).
+   * You can also pass up to 3 arguments after the class name which will be passed
+   * to the constructor function
+   *
    * @param string[optional, defaults to __CLASS__] $class Class name. Does not need to be provided in object instances.
+   * @param mixed[optional] $arg1
+   * @param mixed[optional] $arg2
+   * @param mixed[optional] $arg3
    * @return object singleton  instance of class
    */
-  function &getInstance( $class = __CLASS__ )
+  function &getInstance( $class = __CLASS__, $arg1=null, $arg2=null, $arg3=null )
   {
      if ( ! $GLOBALS[$class] )
      {
        if (phpversion()<5)
        {
-         $GLOBALS[$class] =& new $class;
+         $GLOBALS[$class] =& new $class( &$arg1, &$arg2, &$arg3 );
        }
        else
        {
-         $GLOBALS[$class] = new $class;
+         $GLOBALS[$class] = new $class( $arg1, $arg2, $arg3 );
        }
      }
      return $GLOBALS[$class];
