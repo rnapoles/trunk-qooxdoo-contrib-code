@@ -135,8 +135,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
        * '     "Right"  SHIFT + "Right" -> '
        *
        */
-      var root = qx.core.Init.getApplication().getRoot();
-      var contentWindow = qx.dom.Node.getWindow(root.getContainerElement().getDomElement());
+      var contentWindow = qx.dom.Node.getWindow(element);
       var keyEventHandler = qx.event.Registration.getManager(contentWindow).getHandler(qx.event.handler.Keyboard);
       
       /*
