@@ -42,8 +42,13 @@ simulation.Simulation.prototype.runTest = function()
   if (this.getConfigSetting("debug")) {
     print("Group box after drag: " + firstBoxGroupAfterDrag);
   }
-  
-  var getNewNextBox = selWin + '.document.getElementById("box0").nextSibling.nextSibling.id';
+  var getNewNextBox = selWin + '.document.getElementById("box0").nextSibling.';
+  if (this.getConfigSetting("testBrowser").indexOf("iexplore") >= 0 ) {
+    getNewNextBox += "id";
+  }
+  else {
+    getNewNextBox += "nextSibling.id";
+  }
   var newNextBox = this.getEval(getNewNextBox, "Getting next box ID");
   if (this.getConfigSetting("debug")) {
     print("Next box after drag: " + newNextBox);
