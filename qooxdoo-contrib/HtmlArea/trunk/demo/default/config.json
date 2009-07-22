@@ -34,8 +34,8 @@
     "QXTHEME"      : "htmlarea.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
-    "ROOT"         : "."
+    "ROOT"         : ".",
+    "HTMLAREA_PATH" : "../.."
   },
 
   "jobs" :
@@ -45,9 +45,18 @@
       "library" :
       [
         {
-          "manifest" : "../../Manifest.json"
+          "manifest" : "${HTMLAREA_PATH}/Manifest.json"
         }
       ]
+    },
+
+    "common" :
+    {
+      "copy-files" : {
+        "files" : [ "blank.html" ],
+        "source" : "${HTMLAREA_PATH}/source",
+        "target" : "./build"
+      }
     }
   }
 }
