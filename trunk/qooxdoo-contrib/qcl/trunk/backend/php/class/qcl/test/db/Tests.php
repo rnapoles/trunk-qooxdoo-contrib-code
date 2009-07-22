@@ -1,11 +1,11 @@
 <?php
-require_once "qcl/data/datasource/Controller.php";
+require_once "qcl/data/datasource/Manager.php";
 
 
 /**
  * Service class containing test methods
  */
-class class_qcl_data_db_test_Tests extends qcl_data_datasource_Controller
+class class_qcl_data_db_test_Tests extends qcl_data_datasource_Manager
 {
   
   function method_runTests()

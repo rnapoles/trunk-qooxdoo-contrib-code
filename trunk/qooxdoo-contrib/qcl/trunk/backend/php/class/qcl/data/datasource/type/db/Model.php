@@ -28,7 +28,8 @@ require_once "qcl/data/model/xmlSchema/DbModel.php";
  *
  * @todo rename to qcl_data_datasource_storage_Db
  */
-class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
+class qcl_data_datasource_type_db_Model
+  extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
@@ -67,6 +68,15 @@ class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
   var $datasourceConnectionObj;
 
   /**
+   * Returns singleton instance of this class.
+   * @return qcl_data_datasource_type_db_Model
+   */
+  function &getInstance( $class=__CLASS__ )
+  {
+    return parent::getInstance( $class );
+  }
+
+  /**
    * Returns the name of the datasource schema
    */
   function schemaName()
@@ -75,48 +85,19 @@ class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
   }
 
   /**
-   * Initializes all models that belong to this datasource. It is recommended to
-   * initialize only the models that are needed at every request and use getters
-   * which instantiate the objects on demand for other models.
+   * Initializes all models that belong to this datasource. Empty stub to be
+   * overridden.
    *
    * @abstract
    * @param string $datasource Name of the datasource
    */
-  function initializeModels( $datasource )
-  {
-    $this->notImplemented();
-
-    /* Example:
-    $this->_fooModel =& new my_custom_FooModel( &$this );
-    $this->_barModel =& new my_custom_BarModel( &$this );
-     */
-  }
+  function initializeModels( $datasource ){}
 
   function getDatasourceName()
   {
     return $this->datasource;
   }
 
-  /**
-   * Gets a stored model by name
-   * @param string $name
-   * @return qcl_data_datasource_type_db_Model
-   */
-  function &getModel ( $name )
-  {
-    return $this->models[$name];
-  }
-
-  /**
-   * Stores a model object by name
-   * @param string $name
-   * @param qcl_data_datasource_type_db_Model
-   * @return void
-   */
-  function setModel ( $name, $model )
-  {
-    $this->models[$name] =& $model;
-  }
 
   /**
    * Returns the url of the datasource, if any
@@ -179,19 +160,22 @@ class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
     return $this->datasourceConnectionObj;
   }
 
-  /*
-   * get table prefix for datasource tables.
-   * this get the value of the column "prefix" or, if empty, the named id of the
+  /**
+   * Return table prefix for datasource table.
+   * This get the value of the column "prefix" or, if empty, the named id of the
    * datasource.
    */
   function getTablePrefix()
   {
-    if ( is_array($this->currentRecord) )
+    if ( $this->foundSomething() )
     {
       $prefix = either( $this->getPrefix(), $this->getNamedId() );
-      return $prefix . "_";
+      return parent::getTablePrefix() . $prefix . "_";
     }
-    return "";
+    else
+    {
+      return parent::getTablePrefix();
+    }
   }
 
   function isActive()
@@ -250,9 +234,9 @@ class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
   /**
    * Creates a new native sql datasource
    * @todo implement external dsn
-   * @return void
    * @param string $datasource datasource name
    * @param array  $options    connection data etc.
+   * @return void
    */
   function create ( $datasource, $options = array()  )
   {
@@ -308,8 +292,6 @@ class qcl_data_datasource_type_db_Model extends qcl_data_model_xmlSchema_DbModel
   {
     return false;
   }
-
-
 }
 
 ?>

@@ -30,34 +30,36 @@ class qcl_data_datasource_registry_Model
   var $schemaXmlPath = "qcl/data/datasource/registry/Model.xml";
 
   /**
+   * Returns singleton instance of this class.
+   * @return qcl_data_datasource_registry_Model
+   */
+  function &getInstance()
+  {
+    return parent::getInstance(__CLASS__);
+  }
+
+  /**
    * Register datasource schema
-   * @param string $name Name of datasource schema
+   * @param string $nameId Name of datasource schema
    * @param string $class Name of datasource model class
    * @param string $title Descriptive title of the datasource
    * @param string $description Long description
    * return void
    */
-  function register( $name, $class, $title, $description=null )
+  function register( $namedId, $class, $title, $description=null )
   {
-    if ( !$name or !$class )
+    if ( ! $namedId or !$class )
     {
       $this->raiseError("Invalid parameters.");
     }
-
-    /*
-     * find entry if exists
-     */
-    $this->findWhere(array(
-      'name'        => $name
-    ));
 
     /*
      * insert new entry if not
      */
     if ( $this->foundNothing() )
     {
-      $this->insert( array(
-        'name'        => $name,
+      $this->replace( array(
+        'namedId'     => $namedId,
         'class'       => $class,
         'title'       => $title,
         'description' => $description
@@ -66,13 +68,13 @@ class qcl_data_datasource_registry_Model
   }
 
   /**
-   * Register datasource schema
-   * @param string $name Name of datasource schema
+   * Unregister datasource schema
+   * @param string $namedId Name of datasource schema
    * return void
    */
-  function unregister( $name )
+  function unregister( $namedId )
   {
-    if ( !$name )
+    if ( ! $namedId )
     {
       $this->raiseError("Invalid parameters.");
     }
@@ -80,9 +82,7 @@ class qcl_data_datasource_registry_Model
     /*
      * delete entry if exists
      */
-    $this->deleteWhere(array(
-      'name'        => $name
-    ));
+    $this->deleteBy("namedId",$namedId);
 
   }
 
@@ -91,14 +91,14 @@ class qcl_data_datasource_registry_Model
    * string argument is provided, return only information
    * on the specific schema
    *
-   * @param string[optional] $name
+   * @param string[optional] $namedId
    * @return array
    */
-  function getData( $name=null )
+  function getData( $namedId=null )
   {
-    if ( $name )
+    if ( $namedId )
     {
-      $this->findBy("name",$name);
+      $this->findBy("namedId",$namedId);
       return $this->getRecord();
     }
     else
@@ -112,18 +112,18 @@ class qcl_data_datasource_registry_Model
    * Returns class modelling the datasource
    * @param string $name Name of datasource schema
    */
-  function getClassFor( $name )
+  function getClassFor( $namedId )
   {
-    if ( ! $name )
+    if ( ! $namedId )
     {
       $this->raiseError("No schema name provided.");
     }
-    $this->findBy("name",$name);
+    $this->findBy("namedId",$namedId);
     if ( $this->foundSomething() )
     {
       return $this->getProperty("class");
     }
-    $this->raiseError("No class registered for schema '$name'" );
+    $this->raiseError("No class registered for schema '$namedId'" );
   }
 
   /**
@@ -133,7 +133,7 @@ class qcl_data_datasource_registry_Model
    */
   function schemaList()
   {
-    $this->findWhere(null,"name","name");
+    $this->findWhere(null,"namedId","namedId");
     return $this->values();
   }
 

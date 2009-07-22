@@ -1,12 +1,12 @@
 <?php
-require_once "qcl/data/datasource/Controller.php";
+require_once "qcl/data/datasource/Manager.php";
 require_once "qcl/util/registry/Session.php";
 
 /**
  * Service class containing test methods
  */
 class class_qcl_test_data_jsonrpc
-  extends qcl_data_datasource_Controller
+  extends qcl_data_datasource_Manager
 {
 
   function method_testRpc($params)

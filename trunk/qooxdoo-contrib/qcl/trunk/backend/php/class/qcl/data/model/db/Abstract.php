@@ -532,11 +532,13 @@ class qcl_data_model_db_Abstract
     {
       $this->raiseError("Invalid parameter id: '$ids'");
     }
+
     $rowIds = implode(",", (array) $ids );
-    if ( ! empty($rowIds) )
+
+    if ( ! empty( $rowIds ) )
     {
       $result = $this->findWhere(
-        array( 'id' => " IN ($rowIds)"),
+        "`id` IN ($rowIds)",
         $orderBy, $properties, $link
       );
       return $result;
@@ -819,7 +821,7 @@ class qcl_data_model_db_Abstract
   /**
    * If a row with a matching id/namedId exists, replace it. If not, insert data
    * @param array $data
-   * @return int id of row
+   * @return int id of record
    */
   function replace( $data )
   {
@@ -830,7 +832,15 @@ class qcl_data_model_db_Abstract
     if ( $data['id'] )
     {
       $this->load($id);
-      $this->update($data);
+      if ( $this->foundSomething() )
+      {
+        $this->update($data);
+        return $this->getId();
+      }
+      else
+      {
+        return $this->insert( $data );
+      }
     }
 
     /*
@@ -839,12 +849,16 @@ class qcl_data_model_db_Abstract
     elseif ( $data['namedId'] )
     {
       $this->findBy("namedId", $data['namedId'] );
-      if ( $this->foundNothing() )
+      if ( $this->foundSomething() )
       {
-        $this->raiseError("Cannot replace row. Named id '{$data['namedId']}' does not exist.");
+        $this->set( $data );
+        $this->save();
+        return $this->getId();
       }
-      $this->set( $data );
-      $this->save();
+      else
+      {
+        return $this->insert( $data );
+      }
     }
 
     /*
