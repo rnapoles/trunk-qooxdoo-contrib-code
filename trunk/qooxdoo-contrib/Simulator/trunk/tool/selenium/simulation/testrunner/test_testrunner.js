@@ -191,11 +191,11 @@ simulation.Simulation.prototype.processPackage = function(packageName)
 
   this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
-  var isPackageDone = mySim.waitForCondition(isStatusReady, 300000,
+  var isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
                     "Waiting for test package " + packageName + " to finish");
 
   if (!isPackageDone) {
-    isPackageDone = mySim.waitForCondition(isStatusReady, 500000,
+    isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
                     "Waiting for test package " + packageName + " to finish");
   }
 
@@ -204,7 +204,9 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   }
 
   if (this.getConfigSetting("debug")) {
-    this.logTestDuration(packageStartDate, "Test package " + packageName);
+    if (isPackageDone) {
+      this.logTestDuration(packageStartDate, "Test package " + packageName);
+    }
   }
 
   var result = this.getEval(testResults, 'Getting result HTML');
