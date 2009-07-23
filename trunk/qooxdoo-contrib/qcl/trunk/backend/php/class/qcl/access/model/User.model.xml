@@ -7,7 +7,7 @@
     table="users"
     type="qcl.type.User"
     name="qcl.access.model.User"
-    extends="qcl.model.xmlSchema.DbModel"> 
+    extends="qcl.data.model.xmlSchema.DbModel"> 
      
     <!-- model definition -->
     <definition>
