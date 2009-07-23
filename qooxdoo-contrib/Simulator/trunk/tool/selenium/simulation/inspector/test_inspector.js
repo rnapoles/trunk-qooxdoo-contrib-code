@@ -118,6 +118,11 @@ simulation.Simulation.prototype.runTest = function()
   if (isAppReady) {
     this.log("Inspected application loaded in Inspector", "info");
   }
+  else {
+    this.testFailed = true;
+    this.log("Inspected application not loaded!", "error");    
+    return;
+  }
 
   this.checkWindows();
   
