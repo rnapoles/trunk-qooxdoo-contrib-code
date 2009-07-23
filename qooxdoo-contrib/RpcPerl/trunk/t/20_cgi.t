@@ -1,4 +1,4 @@
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use Qooxdoo::JSONRPC;
 use CGI::Session;
