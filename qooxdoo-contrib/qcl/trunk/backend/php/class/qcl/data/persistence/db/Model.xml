@@ -8,7 +8,7 @@
   <model 
     name="qcl.data.persistence.db.Model"
     table="persistentObjects" 
-    extends="qcl.model.xmlSchema.DbModel">
+    extends="qcl.data.model.xmlSchema.DbModel">
     
     <definition>
 

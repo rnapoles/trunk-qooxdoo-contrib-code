@@ -7,7 +7,7 @@
   <model
     name="qcl.data.store.db.EventStoreModel"
     table="storeEvents"
-    extends="qcl.model.xmlSchema.DbModel">
+    extends="qcl.data.model.xmlSchema.DbModel">
     <definition>
       <properties>
         <property name="storeId" type="string">

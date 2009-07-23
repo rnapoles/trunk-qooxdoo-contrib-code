@@ -1044,11 +1044,11 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
       $parentDoc =& $parentXml->getDocument();
 
       $this->log("Extending document ...","xml");
-      ////$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
+      //$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
 
       $this->_extend(&$doc, &$parentDoc);
 
-        //$this->debug("Result: \n\n". $this->asXml() );
+      //$this->debug("Result: \n\n". $this->asXml() );
 
       if ( $parentXml->hasChanged )
       {

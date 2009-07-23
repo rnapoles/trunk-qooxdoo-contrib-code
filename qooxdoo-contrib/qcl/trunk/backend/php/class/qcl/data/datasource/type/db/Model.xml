@@ -9,7 +9,7 @@
   <model 
     table="datasources"
     name="qcl.data.datasource.type.db.Model"
-    extends="qcl.model.xmlSchema.DbModel">
+    extends="qcl.data.model.xmlSchema.DbModel">
     
     <definition>
       <properties>

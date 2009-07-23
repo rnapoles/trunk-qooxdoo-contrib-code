@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema>
-
   <!-- 
     basic model stored in a database, containing 
     a numeric id, a modified and created column 
   -->
-  <model name="qcl.model.xmlSchema.DbModel">
+  <model 
+    name="qcl.data.model.xmlSchema.DbModel" >
     
     <definition>
 
-      <!-- model properties -->
+      <!-- model properties -->  
       <properties> 
         <property name="id" type="int" skipExport="true"/>
         <!-- 'id' column int(11) NOT NULL AUTO_INCREMENT was added during table creation and defined as primary key -->
