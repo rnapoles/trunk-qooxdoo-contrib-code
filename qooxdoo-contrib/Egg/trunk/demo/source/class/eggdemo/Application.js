@@ -42,9 +42,7 @@ qx.Class.define("eggdemo.Application",
         qx.log.appender.Native;
         qx.log.appender.Console;
       }
-      
-      var time = Math.floor(new Date().getTime() % 86400000 / 1000);
-      this.getRoot().add(new egg.ui.form.TimeField(time));
+      this.getRoot().add(new egg.ui.form.TimeField(new Date()));
     }
   }
 });
