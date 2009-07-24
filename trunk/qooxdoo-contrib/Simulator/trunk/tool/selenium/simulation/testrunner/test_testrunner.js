@@ -8,8 +8,7 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/test/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  'debug' : true,
-  'ignore' : 'qx.test.Xml'
+  'debug' : true
 };
 
 var args = arguments ? arguments : "";
