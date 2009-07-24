@@ -30,8 +30,8 @@
   "let" :
   {
     "APPLICATION"  : "eggdemo",
-    "QOOXDOO_PATH" : "../../ajax/qooxdoo/trunk",
-    "QOOXDOO_URI"  : "/ajax/qooxdoo/trunk/framework",
+    "QOOXDOO_PATH" : "../../core2/hd2/application/frontend/qooxdoo",
+    "QOOXDOO_URI"  : "/core2/hd2/application/frontend/qooxdoo/framework",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "QXICONTHEME"  : ["Tango"],
     "LOCALES"      : [ "en" ],
