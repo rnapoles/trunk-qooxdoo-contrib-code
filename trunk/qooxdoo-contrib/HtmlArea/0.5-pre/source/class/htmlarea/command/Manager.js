@@ -119,8 +119,7 @@ qx.Class.define("htmlarea.command.Manager",
      */
     getCurrentRange : function ()
     {
-      if (this.__currentRange != null)
-      {
+      if (this.__currentRange != null) {
         return this.__currentRange;
       }
 
@@ -143,7 +142,7 @@ qx.Class.define("htmlarea.command.Manager",
       {
         if (this.__editorInstance)
         {
-          this.__currentRange      = this.__editorInstance.getRange();
+          this.__currentRange = this.__editorInstance.getRange();
 
           var sel = this.__editorInstance.__getSelection();
           this.__lastSelectionType = sel ? sel.type : "";
@@ -362,6 +361,7 @@ qx.Class.define("htmlarea.command.Manager",
       return bodyIsFocusNode || (!isInParagraph);
     },
 
+
     /**
      * Inserts a paragraph tag around selection or at the insert point
      * using executeCommand.
@@ -372,7 +372,8 @@ qx.Class.define("htmlarea.command.Manager",
     {
       this.__executeCommand("formatBlock", false, "p");
     },
-        
+
+
     
     /**
      * Returns the styles of each child element of the given paragraph element.
@@ -745,28 +746,28 @@ qx.Class.define("htmlarea.command.Manager",
         var paragraphStyle = this.__generateParagraphStyle(helperStyleStructure);
         
         // generate the span elements to preserve the styling
-				var helperStyle = this.generateHelperString(helperStyleStructure);
-				
-				// Generate unique ids to find the elements later
-				var spanId = "__placeholder__" + Date.parse(new Date());
-				var paragraphId = "__paragraph__" + Date.parse(new Date());
+        var helperStyle = this.generateHelperString(helperStyleStructure);
+        
+        // Generate unique ids to find the elements later
+        var spanId = "__placeholder__" + Date.parse(new Date());
+        var paragraphId = "__paragraph__" + Date.parse(new Date());
 
-				// A paragraph will only be inserted, if the paragraph before it has content.
-				// Therefore we also insert a helper node, then the paragraph and the style
-				// nodes after it.
-				var htmlToInsert = '';
-				var helperString = '<span id="' + spanId + '"></span>';
-				
-				htmlToInsert += helperString;
-				htmlToInsert += '<p id="' + paragraphId + '" ' + paragraphStyle + '>';
-				htmlToInsert += helperStyle + '</p>';
-				
-				this.__editorInstance.getCommandManager().addUndoStep("inserthtml", "insertParagraph", this.getCommandObject("inserthtml"));
-				
-				this.execute("inserthtml", htmlToInsert);
-				
-			  this.__hideSuperfluousParagraph();
-			  this.__doc.getElementById(spanId).removeAttribute("id");
+        // A paragraph will only be inserted, if the paragraph before it has content.
+        // Therefore we also insert a helper node, then the paragraph and the style
+        // nodes after it.
+        var htmlToInsert = '';
+        var helperString = '<span id="' + spanId + '"></span>';
+        
+        htmlToInsert += helperString;
+        htmlToInsert += '<p id="' + paragraphId + '" ' + paragraphStyle + '>';
+        htmlToInsert += helperStyle + '</p>';
+        
+        this.__editorInstance.getCommandManager().addUndoStep("inserthtml", "insertParagraph", this.getCommandObject("inserthtml"));
+        
+        this.execute("inserthtml", htmlToInsert);
+        
+        this.__hideSuperfluousParagraph();
+        this.__doc.getElementById(spanId).removeAttribute("id");
 
         // If previous paragraph only contains helperString ->  it was empty.
         // Empty paragraphs are problematic in Gecko -> not properly rendered.
@@ -1348,30 +1349,32 @@ qx.Class.define("htmlarea.command.Manager",
           */
          var currRange = this.getCurrentRange();
 
-         try
+         if (currRange)
          {
-           currRange.select();
-
-           currRange.pasteHTML(img);
-         }
-         catch (exc)
-         {
-           // we can't pasteHtml so we check if we have selected an image and
-           // replaces all attributes
-           if (this.__lastSelectionType.toLowerCase() == "control")
+           try
            {
-             if (currRange && currRange.length > 0)
-             {
-               var item = currRange(0);
-               item.setAttribute("border", "0");
-               item.setAttribute("hight",  "auto");
-               item.setAttribute("width",  "auto");
+             currRange.select();
 
-               if (item.tagName.toLowerCase() == "img")
+             currRange.pasteHTML(img);
+           }
+           catch (exc)
+           {
+             // we can't pasteHtml so we check if we have selected an image and
+             // replaces all attributes
+             if (this.__lastSelectionType.toLowerCase() === "control")
+             {
+               if (currRange && currRange.length > 0)
                {
-                 for (var attrName in attributes)
+                 var item = currRange(0);
+                 item.setAttribute("border", "0");
+                 item.setAttribute("height", "auto");
+                 item.setAttribute("width",  "auto");
+
+                 if (item.tagName.toLowerCase() === "img")
                  {
-                   item.setAttribute(attrName, attributes[attrName]);
+                   for (var attrName in attributes) {
+                     item.setAttribute(attrName, attributes[attrName]);
+                   }
                  }
                }
              }

@@ -2166,15 +2166,15 @@ qx.Class.define("htmlarea.HtmlArea",
         if (this.__commandManager) {
           this.__commandManager.storeCurrentRange();
         }
-        
+
         // Save range text
         if (this.__storedSelectedHtml == null) {
           this.__storedSelectedHtml = this.getSelectedHtml();
         }
-        
+
         this.createDispatchEvent("focusOut");
       },
-      
+
       "default" : function(e) {
         this.createDispatchEvent("focusOut");
       }
@@ -3068,6 +3068,7 @@ qx.Class.define("htmlarea.HtmlArea",
       "mshtml" : function(sel)
       {
         var doc = this.getContentDocument();
+        this.setFocused(true);
 
         if (qx.util.Validation.isValid(sel))
         {
