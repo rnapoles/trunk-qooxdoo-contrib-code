@@ -507,9 +507,8 @@ qx.Class.define("htmlarea.command.UndoManager",
         catch(error)
         {
           /* It appears, that an execCommand was bound to an element which is not available when calling 'undo' */
-          if (qx.core.Variant.isSet("qx.debug", "on"))
-          {
-            this.debug("execCommand failed! Details: " + error)
+          if (qx.core.Variant.isSet("qx.debug", "on")) {
+            this.error("execCommand failed! Details: " + error)
           }
         }
       },
@@ -996,7 +995,8 @@ qx.Class.define("htmlarea.command.UndoManager",
       */
      __addToUndoStack : function(changeInfo)
      {
-       if (qx.core.Variant.isSet("qx.debug", "on"))
+       if (qx.core.Variant.isSet("qx.debug", "on") && 
+           qx.core.Setting.get("htmlarea.debug") == "on")
        {
          this.debug("ADD TO UNDO STACK");
          this.debug(changeInfo.actionType + " " + changeInfo.command + " " + changeInfo.value);
@@ -1014,7 +1014,8 @@ qx.Class.define("htmlarea.command.UndoManager",
       */
     __addToRedoStack : function(changeInfo)
     {
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if (qx.core.Variant.isSet("qx.debug", "on") &&
+          qx.core.Setting.get("htmlarea.debug") == "on")
       {
         this.debug("ADD TO REDO STACK");
         this.debug(changeInfo.actionType + " " + changeInfo.command + " " + changeInfo.value);

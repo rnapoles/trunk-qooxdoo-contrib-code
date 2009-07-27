@@ -413,8 +413,8 @@ qx.Class.define("htmlarea.command.Manager",
 
         
         /* Debug info */
-        if (qx.core.Variant.isSet("qx.debug", "on"))
-        {
+        if (qx.core.Variant.isSet("qx.debug", "on") &&
+            qx.core.Setting.get("htmlarea.debug") == "on") {
           this.debug("execCommand " + command + " with value " + value + " succeded");
         }
 
@@ -423,8 +423,8 @@ qx.Class.define("htmlarea.command.Manager",
       }
       catch(ex)
       {
-        if (qx.core.Variant.isSet("qx.debug", "on"))
-        {
+        if (qx.core.Variant.isSet("qx.debug", "on") &&
+            qx.core.Setting.get("htmlarea.debug") == "on") {
           this.debug("execCommand " + command + " with value " + value + " failed");
         }
 
@@ -1176,9 +1176,8 @@ qx.Class.define("htmlarea.command.Manager",
          } 
          catch(e)
          {
-           if (qx.core.Variant.isSet("qx.debug", "on"))
-           {
-             this.debug("inserthyperlink failed!");
+           if (qx.core.Variant.isSet("qx.debug", "on")) {
+             this.error("inserthyperlink failed!");
            }
            return false;
          }

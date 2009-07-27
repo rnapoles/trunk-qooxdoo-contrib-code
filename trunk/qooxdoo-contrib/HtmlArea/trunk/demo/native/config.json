@@ -52,10 +52,15 @@
     "common" : {
       "exclude" : [ "qx.ui.*", "qx.theme.*" ],
 
-      "copy-files" : {
+      "copy-files" : 
+      {
         "files" : [ "blank.html" ],
         "source" : "${HTMLAREA_PATH}/source",
         "target" : "./build"
+      },
+      
+      "settings" : {
+        "htmlarea.debug" : "off"
       }
     }
   }

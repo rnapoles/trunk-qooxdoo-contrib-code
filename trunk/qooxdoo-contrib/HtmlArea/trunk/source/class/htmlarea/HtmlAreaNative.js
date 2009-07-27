@@ -1133,7 +1133,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         else
         {
           if (qx.core.Variant.isSet("qx.debug", "on")) {
-            this.debug('document not available, try again...');
+            this.error('document not available, try again...');
           }
   
           qx.event.Timer.once(function()
@@ -1634,7 +1634,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
       
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
+      if (qx.core.Variant.isSet("qx.debug", "on") &&
+          qx.core.Setting.get("htmlarea.debug") == "on") {
         this.debug(e.getType() + " | " + keyIdentifier);
       }
       
@@ -1787,7 +1788,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       {
         var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
         
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
+        if (qx.core.Variant.isSet("qx.debug", "on") &&
+            qx.core.Setting.get("htmlarea.debug") == "on") {
           this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase());
         }
         
@@ -1830,7 +1832,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
 
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
+      if (qx.core.Variant.isSet("qx.debug", "on") &&
+          qx.core.Setting.get("htmlarea.debug") == "on") {
         this.debug(e.getType() + " | " + keyIdentifier);
       }
 
@@ -2224,7 +2227,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     _handleMouseEvent : function(e)
     {
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
+      if (qx.core.Variant.isSet("qx.debug", "on") &&
+          qx.core.Setting.get("htmlarea.debug") == "on") {
         this.debug("handleMouse " + e.getType());
       }
       
@@ -3172,6 +3176,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
          return this._getIframeDocument().body;
        }
     })
+  },
+  
+  
+  settings : {
+    "htmlarea.debug" : "off"
   },
 
 
