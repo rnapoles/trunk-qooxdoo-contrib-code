@@ -1,0 +1,64 @@
+# ************************************************************************
+#   
+#   qooxdoo - the new era of web development
+#   
+#   http://qooxdoo.org
+#   
+#   Copyright:
+#     2006-2008 1&1 Internet AG, Germany, http://www.1and1.org
+#   
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#   
+#   Authors:
+#     * Michael Hartmeier (mlhartme)
+#   
+# ************************************************************************
+
+mapper compiler.Mapper;
+
+grm = "program.grm";
+
+import compiler:
+    Assign, Binary, Block, Declarations, If, Input, Number, Print, Program,
+    StringLiteral, Variable, VariableReference, While, Int, Str, Operator;
+
+Program           => Program;
+
+Declarations      => Declarations:
+                        >\\Program >\Block//Stmt//Declarations >\Block//VariableReference ;
+Variable          => Variable;
+IntType           => Int.TYPE;
+StrType           => Str.TYPE;
+
+Block             => Block;
+Assign            => Assign;
+Input             => Input;
+Print             => Print;
+If                => If;
+While             => While;
+
+Compare           => Binary.createRightOptional;
+Sum               => Binary.createLeftOptional;
+Prod              => Binary.createLeftOptional;
+VariableReference => VariableReference;
+
+id                => [text];
+num               => Number;
+                  => [text] : > num;
+str               => StringLiteral;
+                  => [text] : > str;
+
+"+"               => Operator.ADD;
+"-"               => Operator.SUB;
+"*"               => Operator.MUL;
+"/"               => Operator.DIV;
+
+"!="              => Operator.NE;
+"=="              => Operator.EQ;
+"<"               => Operator.LT;
+"<="              => Operator.LE;
+">"               => Operator.GT;
+">="              => Operator.GE;
