@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs.ssh;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -312,7 +313,7 @@ public class SshNode extends Node {
     
     @Override
     public InputStream createInputStream() throws IOException {
-        FileNode tmp;
+        final FileNode tmp;
         
         tmp = getIO().getTemp().createTempFile();
         try {
@@ -323,7 +324,14 @@ public class SshNode extends Node {
             }
             throw Misc.exception("ssh: get failed", e);
         }
-        return tmp.createInputStream();
+        return new FilterInputStream(tmp.createInputStream()) {
+            @Override
+            public void close() throws IOException {
+                super.close();
+                // because it might be called twice
+                tmp.deleteOpt();
+            }
+        };
     }
     
     @Override
