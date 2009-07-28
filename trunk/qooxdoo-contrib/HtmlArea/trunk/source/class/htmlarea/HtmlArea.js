@@ -71,8 +71,13 @@ qx.Class.define("htmlarea.HtmlArea",
     
     this._setLayout(new qx.ui.layout.Grow);
     
-    this.__addAppearListener();    
-    this.__setupEditorComponent(value, styleInformation, source);
+    this.__addAppearListener();
+
+    this.__initValues = { content: value, 
+                          styleInfo: styleInformation,
+                          source: source };
+                          
+    this.__postPonedProperties = {};
   },
 
 
@@ -277,22 +282,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
   members :
   {
-    __editorComponent : null,
-    __isReady : null,
-    __commandManager : null,
-    __isEditable : null,
-    __firstLineSelected : null,
-    __currentEvent : null,
-    __storedSelectedHtml : null,
-    __iframe : null,
-    __isLoaded : null,
-    __handleFocusEvent : null,
-    __handleBlurEvent : null,
-    __handleFocusOutEvent : null,
-    __handleMouseEvent : null,
-    __handleContextMenuEvent : null,
-    __styleInformation : null,
-    __contentWrap : null,
+    __editorComponent: null,
+    __postPonedProperties: null,
     
     
     /*
@@ -301,33 +292,63 @@ qx.Class.define("htmlarea.HtmlArea",
     ---------------------------------------------------------------------------
     */
     
-    _applyContentType : function(value, old) {
-      this.__editorComponent.setContentType(value);
+    _applyContentType : function(value, old)
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setContentType(value);
+      } else {
+        this.__postPonedProperties["ContentType"] = value;
+      }
     },
 
     
-    _applyMessengerMode : function(value, old) {
-      this.__editorComponent.setMessengerMode(value);
+    _applyMessengerMode : function(value, old)
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setMessengerMode(value);
+      } else {
+        this.__postPonedProperties["MessengerMode"] = value;
+      }
     },
     
     
-    _applyInsertParagraphOnLinebreak : function(value, old) {
-      this.__editorComponent.setInsertParagraphOnLinebreak(value);
+    _applyInsertParagraphOnLinebreak : function(value, old)
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setInsertParagraphOnLinebreak(value);
+      } else {
+        this.__postPonedProperties["InsertParagraphOnLinebreak"] = value;
+      }
     },
     
     
-    _applyInsertLinebreakOnCtrlEnter : function(value, old) {
-      this.__editorComponent.setInsertLinebreakOnCtrlEnter(value);
+    _applyInsertLinebreakOnCtrlEnter : function(value, old)
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setInsertLinebreakOnCtrlEnter(value);
+      } else {
+        this.__postPonedProperties["InsertLinebreakOnCtrlEnter"] = value;
+      }
     },
     
     
-    _applyPostprocess : function(value, old) {
-      this.__editorComponent.setPostProcess(value);
+    _applyPostprocess : function(value, old)
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setPostProcess(value);
+      } else {
+        this.__postPonedProperties["PostProcess"] = value;
+      }
     },
     
     
-    _applyUseUndoRedo : function(value, old) {
-      this.__editorComponent.setUseUndoRedo(value);
+    _applyUseUndoRedo : function(value, old)
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setUseUndoRedo(value);
+      } else {
+        this.__postPonedProperties["UseUndoRedo"] = value;
+      }
     },
     
     
@@ -345,7 +366,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __addAppearListener : function()
     {
-      this.addListenerOnce("appear", this.__addToWidgetElement);
+      this.addListenerOnce("appear", this.__setupEditorComponent);
       this.addListener("appear", this.forceEditable);
     },
     
@@ -353,28 +374,28 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Setup the low-level editor component and the listener delegate methods.  
      */
-    __setupEditorComponent : function(value, styleInformation, source)
+    __setupEditorComponent : function()
     {
-      this.__el = qx.bom.Element.create("div");
-      // append to body element to ensure the iframe of "HtmlAreaNative" gets 
-      // loaded correctly - at least necessary for Opera
-      qx.dom.Element.insertEnd(this.__el, document.body);
-      
-      this.__editorComponent = new htmlarea.HtmlAreaNative(this.__el, value, styleInformation, source);
+      var domElement = this.getContentElement().getDomElement();
+      this.__editorComponent = new htmlarea.HtmlAreaNative(domElement,
+                                                           this.__initValues.content,
+                                                           this.__initValues.styleInfo,
+                                                           this.__initValues.source);
+      this.__applyPostPonedProperties();
       this.__setupDelegateListeners();
     },
     
     
     /**
-     * Adds the low-level editing component to the widget
+     * Applies the postponed properties to the editor component
      * 
      * @return {void}
      */
-    __addToWidgetElement : function()
+    __applyPostPonedProperties : function()
     {
-      var domElement = this.getContentElement().getDomElement();
-      qx.dom.Element.insertBegin(this.__el.firstChild, domElement);
-      qx.dom.Element.removeChild(this.__el, document.body);
+      for(var propertyName in this.__postPonedProperties) {
+        this.__editorComponent["set" + propertName](this.__postPonedProperties[propertyName]);
+      }
     },
     
     
@@ -434,30 +455,34 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Returns the iframe object which is used to render the content
      * 
-     * @return {Iframe} iframe DOM element
+     * @return {Iframe?null} iframe DOM element or null if the editor is not initialized
      */
     getIframeObject : function() {
-      return this.__editorComponent.getIframeObject();
+      return this.__editorComponent != null ? this.__editorComponent.getIframeObject() : null;
     },
     
     /**
      * Getter for command manager.
      * 
-     * @return {htmlarea.manager.Manager?htmlarea.manager.UndoManager} manager instance
+     * @return {htmlarea.manager.Manager?htmlarea.manager.UndoManager?null} manager instance
+     * or null if the editor is not initialized
      */
     getCommandManager : function() {
-      return this.__editorComponent.getCommandManager();
+      return this.__editorComponent != null ? this.__editorComponent.getCommandManager() : null;
     },
         
 
     /**
-     * Setting the value of the editor
+     * Setting the value of the editor if it's initialized
      * 
      * @param value {String} new content to set
      * @return {void}
      */
-    setValue : function(value) {
-       this.__editorComponent.setValue(value);
+    setValue : function(value)
+    {
+       if (this.__editorComponent != null) {
+         this.__editorComponent.setValue(value);
+      }
     },
 
 
@@ -469,10 +494,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * To get the current value of the editor use the {@link #getComputedValue}
      * method instead.
      * 
-     * @return {String} value of the editor
+     * @return {String?null} value of the editor or null if it's not initialized
      */
     getValue : function() {
-      return this.__editorComponent.getValue();
+      return this.__editorComponent != null ? this.__editorComponent.getValue() : null;
     },
 
     
@@ -484,20 +509,20 @@ qx.Class.define("htmlarea.HtmlArea",
      * carefully.
      * 
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
-     * @return {String} computed value of the editor
+     * @return {String?null} computed value of the editor or null if the editor is not initialized
      */
     getComputedValue : function(skipHtmlEncoding) {
-      return this.__editorComponent.getHtml(skipHtmlEncoding);
+      return this.__editorComponent != null ? this.__editorComponent.getHtml(skipHtmlEncoding) : null;
     },
 
 
     /**
      * Returns the complete content of the editor
      * 
-     * @return {String}
+     * @return {String?null} complete content or null if the editor is not initialized
      */
     getCompleteHtml : function() {
-      return this.__editorComponent.getCompleteHtml();
+      return this.__editorComponent != null ? this.__editorComponent.getCompleteHtml() : null;
     },
 
 
@@ -507,7 +532,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Object}
      */
     getContentDocument : function() {
-      return this.__editorComponent.getContentDocument();
+      return this.__editorComponent != null ? this.__editorComponent.getContentDocument() : null;
     },
     
     /**
@@ -516,7 +541,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Object}
      */
     getContentBody : function() {
-      return this.__editorComponent.getContentBody();
+      return this.__editorComponent != null ? this.__editorComponent.getContentBody() : null;
     },
     
     
@@ -526,19 +551,18 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Object}
      */
     getContentWindow : function() {
-      return this.__editorComponent.getContentWindow();
+      return this.__editorComponent != null ? this.__editorComponent.getContentWindow() : null;
     },
     
     
     /** 
      * Returns all the words that are contained in a node.
      * 
-     * @type member
      * @param node {Object} the node element where the text should be retrieved from.
      * @return {String[]} all the words.
      */
     getWords : function(node) {
-      return this.__editorComponent.getWords(node);
+      return this.__editorComponent != null ? this.__editorComponent.getWords(node) : null;
     },
     
     
@@ -549,7 +573,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Map} all words
      */
     getWordsWithElement : function() {
-      return this.__editorComponent.getWordsWithElement();
+      return this.__editorComponent != null ? this.__editorComponent.getWordsWithElement() : null;
     },
     
 
@@ -560,7 +584,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Array} Text nodes
      */
     getTextNodes : function() {
-      return this.__editorComponent.getTextNodes();
+      return this.__editorComponent != null ? this.__editorComponent.getTextNodes() : null;
     },
 
     
@@ -570,7 +594,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} ready or not
      */
     isReady : function() {
-      return this.__editorComponent.isReady();
+      return this.__editorComponent != null ? this.__editorComponent.isReady() : false;
     },
         
     
@@ -580,7 +604,9 @@ qx.Class.define("htmlarea.HtmlArea",
      * gets visible again.
      */
     forceEditable : function() {
-      this.__editorComponent.forceEditable();
+      if (this.__editorComponent != null) {
+        this.__editorComponent.forceEditable();
+      }
     },
     
     
@@ -591,7 +617,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean}
      */
     isLoaded : function() {
-      return this.__editorComponent.isLoaded();
+      return this.__editorComponent != null ? this.__editorComponent.isLoaded() : false;
     },
 
 
@@ -602,7 +628,9 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {void}
      */
     setEditable : function(value) {
-      return this.__editorComponent.setEditable(value);
+      if (this.__editorComponent != null) {
+        this.__editorComponent.setEditable(value);
+      }
     },
     
     
@@ -612,7 +640,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean}
      */
     getEditable : function() {
-      return this.__editorComponent.getEditable();
+      return this.__editorComponent != null ? this.__editorComponent.getEditable() : false;
     },
     
     
@@ -622,7 +650,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean}
      */
     isEditable : function() {
-      return this.__editorComponent.isEditable();
+      return this.__editorComponent != null ? this.__editorComponent.isEditable() : false;
     },
 
 
@@ -633,7 +661,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertHtml : function(value) {
-      return this.__editorComponent.insertHtml(value);
+      return this.__editorComponent != null ? this.__editorComponent.insertHtml(value) : false;
     },
 
 
@@ -643,7 +671,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     removeFormat : function() {
-      return this.__editorComponent.removeFormat();
+      return this.__editorComponent != null ? this.__editorComponent.removeFormat() : false;
     },
 
 
@@ -653,7 +681,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setBold : function() {
-      return this.__editorComponent.setBold();
+      return this.__editorComponent != null ? this.__editorComponent.setBold() : false;
     },
 
 
@@ -663,7 +691,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setItalic : function() {
-      return this.__editorComponent.setItalic();
+      return this.__editorComponent != null ? this.__editorComponent.setItalic() : false;
     },
 
 
@@ -673,7 +701,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setUnderline : function() {
-      return this.__editorComponent.setUnderline();
+      return this.__editorComponent != null ? this.__editorComponent.setUnderline() : false;
     },
 
 
@@ -684,7 +712,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      */
     setStrikeThrough : function() {
-      return this.__editorComponent.setStrikeThrough();
+      return this.__editorComponent != null ? this.__editorComponent.setStrikeThrough() : false;
     },
 
 
@@ -695,7 +723,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setFontSize : function(value) {
-      return this.__editorComponent.setFontSize(value);
+      return this.__editorComponent != null ? this.__editorComponent.setFontSize(value) : false;
     },
 
 
@@ -706,7 +734,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setFontFamily : function(value) {
-      return this.__editorComponent.setFontFamily(value);
+      return this.__editorComponent != null ? this.__editorComponent.setFontFamily(value) : false;
     },
 
 
@@ -717,7 +745,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setTextColor : function(value) {
-      return this.__editorComponent.setTextColor(value);
+      return this.__editorComponent != null ? this.__editorComponent.setTextColor(value) : false;
     },
 
 
@@ -728,7 +756,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setTextBackgroundColor : function(value) {
-      return this.__editorComponent.setTextBackgroundColor(value);
+      return this.__editorComponent != null ? this.__editorComponent.setTextBackgroundColor(value) : false;
     },
 
 
@@ -738,7 +766,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setJustifyLeft : function() {
-      return this.__editorComponent.setJustifyLeft();
+      return this.__editorComponent != null ? this.__editorComponent.setJustifyLeft() : false;
     },
 
 
@@ -748,7 +776,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setJustifyCenter : function() {
-      return this.__editorComponent.setJustifyCenter();
+      return this.__editorComponent != null ? this.__editorComponent.setJustifyCenter() : false;
     },
 
 
@@ -758,7 +786,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setJustifyRight : function() {
-      return this.__editorComponent.setJustifyRight();
+      return this.__editorComponent != null ? this.__editorComponent.setJustifyRight() : false;
     },
 
 
@@ -768,7 +796,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setJustifyFull : function() {
-      return this.__editorComponent.setJustifyFull();
+      return this.__editorComponent != null ? this.__editorComponent.setJustifyFull() : false;
     },
 
 
@@ -778,7 +806,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertIndent : function() {
-      return this.__editorComponent.insertIndent();
+      return this.__editorComponent != null ? this.__editorComponent.insertIndent() : false;
     },
 
 
@@ -788,7 +816,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertOutdent : function() {
-      return this.__editorComponent.insertOutdent();
+      return this.__editorComponent != null ? this.__editorComponent.insertOutdent() : false;
     },
 
 
@@ -798,7 +826,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertOrderedList : function() {
-      return this.__editorComponent.insertOrderedList();
+      return this.__editorComponent != null ? this.__editorComponent.insertOrderedList() : false;
     },
 
 
@@ -808,7 +836,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertUnorderedList : function() {
-      return this.__editorComponent.insertUnorderedList();
+      return this.__editorComponent != null ? this.__editorComponent.insertUnorderedList() : false;
     },
 
 
@@ -818,7 +846,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertHorizontalRuler : function() {
-      return this.__editorComponent.insertHorizontalRuler();
+      return this.__editorComponent != null ? this.__editorComponent.insertHorizontalRuler() :false;
     },
 
 
@@ -829,7 +857,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertImage : function(attributes) {
-      return this.__editorComponent.insertImage(attributes);
+      return this.__editorComponent != null ? this.__editorComponent.insertImage(attributes) : false;
     },
 
 
@@ -840,7 +868,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertHyperLink : function(url) {
-      return this.__editorComponent.insertHyperLink(url);
+      return this.__editorComponent != null ? this.__editorComponent.insertHyperLink(url) : false;
     },
 
     /**
@@ -849,7 +877,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} if succeeded
      */
     removeBackgroundColor : function() {
-      return this.__editorComponent.removeBackgroundColor();
+      return this.__editorComponent != null ? this.__editorComponent.removeBackgroundColor() : false;
     },
 
 
@@ -860,7 +888,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} if succeeded
      */
     setBackgroundColor : function(value) {
-      return this.__editorComponent.setBackgroundColor(value);
+      return this.__editorComponent != null ? this.__editorComponent.setBackgroundColor(value) : false;
     },
 
 
@@ -870,7 +898,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} if succeeded
      */
     removeBackgroundImage : function () {
-      return this.__editorComponent.removeBackgroundImage();
+      return this.__editorComponent != null ? this.__editorComponent.removeBackgroundImage() : false;
     },
 
 
@@ -885,7 +913,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setBackgroundImage : function(url, repeat, position) {
-      return this.__editorComponent.setBackgroundImage(url, repeat, position);
+      return this.__editorComponent != null ? this.__editorComponent.setBackgroundImage(url, repeat, position) : false;
     },
 
 
@@ -895,7 +923,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     selectAll : function() {
-      return this.__editorComponent.selectAll();
+      return this.__editorComponent != null ? this.__editorComponent.selectAll() : false;
     },
 
 
@@ -905,7 +933,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {void}
      */
     undo : function() {
-      return this.__editorComponent.undo();
+      return this.__editorComponent != null ? this.__editorComponent.undo() : false;
     },
 
 
@@ -915,7 +943,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {void}
      */
     redo : function() {
-      return this.__editorComponent.redo();
+      return this.__editorComponent != null ? this.__editorComponent.redo() : false;
     },
 
 
@@ -930,8 +958,11 @@ qx.Class.define("htmlarea.HtmlArea",
      * 
      * @return {void}
      */
-    resetHtml : function() {
-      this.__editorComponent.resetHtml();
+    resetHtml : function()
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.resetHtml();
+      }
     },
 
 
@@ -939,10 +970,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * Get html content (call own recursive method)
      * 
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
-     * @return {String} current content of the editor as XHTML
+     * @return {String?null} current content of the editor as XHTML or null if not initialized
      */
     getHtml : function(skipHtmlEncoding) {
-      return this.__editorComponent.getHtml(skipHtmlEncoding);
+      return this.__editorComponent != null ? this.__editorComponent.getHtml(skipHtmlEncoding) : null;
     },
 
     /**
@@ -951,9 +982,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * 
      * @return {Boolean} True, if area is empty - otherwise false.
      */
-    containsOnlyPlaceholder : function()
-    {
-      return this.__editorComponent.containsOnlyPlaceHolder();
+    containsOnlyPlaceholder : function() {
+      return this.__editorComponent != null ? this.__editorComponent.containsOnlyPlaceHolder() : false;
     },
 
 
@@ -968,10 +998,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * Returns the information about the current context (focusNode). It's a
      * map with information about "bold", "italic", "underline", etc.
      * 
-     * @return {Map} formatting information about the focusNode
+     * @return {Map?null} formatting information about the focusNode or null if not initialized
      */
     getContextInformation : function() {
-      return this.__editorComponent.getContextInformation();
+      return this.__editorComponent != null ? this.__editorComponent.getContextInformation() : null;
     },
     
 
@@ -984,20 +1014,20 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Returns the current selection object
      *
-     * @return {Selection} Selection object
+     * @return {Selection?null} Selection object or null if not initialized.
     */
     getSelection : function() {
-      return this.__editorComponent.getSelection();
+      return this.__editorComponent != null ? this.__editorComponent.getSelection() : null;
     },
 
 
     /**
      * Returns the currently selected text.
      * 
-     * @return {String} Selected plain text.
+     * @return {String?null} Selected plain text or null if not initialized.
      */
     getSelectedText : function() {
-      return this.__editorComponent.getSelectedText();
+      return this.__editorComponent != null ? this.__editorComponent.getSelectedText() : null;
     },
     
 
@@ -1005,10 +1035,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * Returns the content of the actual range as text
      * 
      * @TODO: need to be implemented correctly
-     * @return {String} selected text
+     * @return {String?null} selected text or null if not initialized
      */
     getSelectedHtml : function() {
-      return this.__editorComponent.getSelectedHtml();
+      return this.__editorComponent != null ? this.__editorComponent.getSelectedHtml() : null;
     },
     
     
@@ -1017,8 +1047,11 @@ qx.Class.define("htmlarea.HtmlArea",
      * 
      * @return {void}
      */
-    clearSelection : function() {
-      this.__editorComponent.clearSelection();
+    clearSelection : function()
+    {
+      if (this.__editorComponent != null) {
+        this.__editorComponent.clearSelection();
+      }
     },
     
 
@@ -1031,7 +1064,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * returns the range of the current selection
      * 
-     * @return {Range} Range object
+     * @return {Range?null} Range object or null if not initialized
      */
     getRange : function() {
       return this.__editorComponent.getRange();
@@ -1043,11 +1076,14 @@ qx.Class.define("htmlarea.HtmlArea",
       NODES
       -----------------------------------------------------------------------------
     */
+   
     /**
-      returns the node where the selection ends
-    */
+     *  Returns the node where the selection ends
+     *  
+     *  @return{Node?null} focus node or null if not initialized
+     */
     getFocusNode : function() {
-      return this.__editorComponent.getFocusNode();
+      return this.__editorComponent != null ? this.__editorComponent.getFocusNode() : null;
     }
   },
 
@@ -1063,37 +1099,7 @@ qx.Class.define("htmlarea.HtmlArea",
    *
    * @return {void}
    */
-  destruct : function()
-  {
-    //try
-    //{
-      /* TODO: complete disposing */
-      //var doc = this.getContentDocument();
-      
-      // ************************************************************************
-      //   WIDGET KEY EVENTS
-      // ************************************************************************
-//      qx.event.Registration.removeListener(doc.body, "keydown",  this._handleKeyPress, this);
-//      qx.event.Registration.removeListener(doc.body, "keyup",    this._handleKeyPress, this);
-//      qx.event.Registration.removeListener(doc.body, "keypress", this._handleKeyPress, this);
-      
-      // ************************************************************************
-      //   WIDGET FOCUS/BLUR EVENTS
-      // ************************************************************************
-//      var focusBlurTarget = qx.bom.client.Engine.WEBKIT ? this.__iframe.getWindow() : doc.body;
-//      qx.event.Registration.removeListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-//      qx.event.Registration.removeListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
-//      qx.event.Registration.removeListener(doc, "focusout", this.__handleFocusOutEvent);
-      
-  
-      // ************************************************************************
-      //   WIDGET MOUSE EVENTS
-      // ************************************************************************
-//      qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
-//      qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
-    //} catch (ex) {};
-    
-
-    this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent", "handleFocusOut", "handleMouseEvent", "__contentWrap");
+  destruct : function() {
+    this._disposeFields("__postPonedProperties", "__editorComponent");
   }
 });
