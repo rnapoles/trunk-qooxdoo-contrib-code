@@ -112,11 +112,11 @@ qx.Class.define("hjx.Hijax",
      * to the browser history. Regular links will be rewritten to fragement
      * identifiers.
      */
-    _hijackLinksAndForms : function() {
+    _hijackLinksAndForms : function(parentElem) {
       this._logDebug("Capturing events");
 
       // Hijack anchors (a + area)
-      var links = document.links;
+      var links = qx.bom.Selector.query("a, area", parentElem);
       for (var i=0, l=links.length; i<l; i++) {
         if (this._shouldCaptureLink(links[i])) {
           // This link should be captured -> Capture it
@@ -134,7 +134,7 @@ qx.Class.define("hjx.Hijax",
       }
 
       // Capture form submits
-      var forms = document.forms;
+      var forms = qx.bom.Selector.query("form", parentElem);
       for (var i=0, l=forms.length; i<l; i++) {
         var formElem = forms[i];
 
@@ -409,7 +409,7 @@ qx.Class.define("hjx.Hijax",
           this._highlightNavigation(url);
 
           var start = new Date();
-          this._updateContent(ev.getContent(), path, anchor, (formInfo != null));
+          var contentParentElem = this._updateContent(ev.getContent(), path, anchor, (formInfo != null));
           var end = new Date();
           qx.log.Logger.info(hjx.Hijax, "Time to change page content: " +(end.getTime() - start.getTime())+ "ms");
 
@@ -427,9 +427,9 @@ qx.Class.define("hjx.Hijax",
           this._executePageDependentHandlers("onload");
 
           // Capture events from links and forms
-          // NOTE: We caputure the events after running the page dependent scripts in order to catch generated
+          // NOTE: We capture the events after running the page dependent scripts in order to catch generated
           //       links as well.
-          this._hijackLinksAndForms();
+          this._hijackLinksAndForms(contentParentElem);
 
           if (restoreLastFormValues) {
             this._restoreLastFormValues();
@@ -469,6 +469,7 @@ qx.Class.define("hjx.Hijax",
 
 
     _updateContent : function(pageContent, path, anchor, isFormSubmit) {
+      var contentParentElem;
       pageContent = this._parsePageContent(pageContent);
       document.title = pageContent.title;
 
@@ -483,13 +484,16 @@ qx.Class.define("hjx.Hijax",
       if (wantedElemId != null) {
         var loadedBodyElem = this._stringToDom(pageContent.bodyInnerHtml);
         var wantedElem = this._getElementById(loadedBodyElem, wantedElemId) || loadedBodyElem;
-        var targetElem = document.getElementById(wantedElemId) || document[wantedElemId];
-        targetElem.innerHTML = wantedElem.innerHTML;
+        contentParentElem = document.getElementById(wantedElemId) || document[wantedElemId];
+        contentParentElem.innerHTML = wantedElem.innerHTML;
       } else {
-        document.body.innerHTML = pageContent.bodyInnerHtml;
+        contentParentElem = document.body;
+        contentParentElem.innerHTML = pageContent.bodyInnerHtml;
       }
 
       this._scrollToAnchor(anchor);
+
+      return contentParentElem;
     },
 
 
