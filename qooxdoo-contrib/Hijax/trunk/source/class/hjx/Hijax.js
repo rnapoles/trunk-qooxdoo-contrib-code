@@ -116,7 +116,7 @@ qx.Class.define("hjx.Hijax",
       this._logDebug("Capturing events");
 
       // Hijack anchors (a + area)
-      var links = qx.bom.Selector.query("a, area", parentElem);
+      var links = parentElem ? qx.bom.Selector.query("a, area", parentElem) : document.links;
       for (var i=0, l=links.length; i<l; i++) {
         if (this._shouldCaptureLink(links[i])) {
           // This link should be captured -> Capture it
@@ -134,7 +134,7 @@ qx.Class.define("hjx.Hijax",
       }
 
       // Capture form submits
-      var forms = qx.bom.Selector.query("form", parentElem);
+      var forms = parentElem ? qx.bom.Selector.query("form", parentElem) : document.forms;
       for (var i=0, l=forms.length; i<l; i++) {
         var formElem = forms[i];
 
