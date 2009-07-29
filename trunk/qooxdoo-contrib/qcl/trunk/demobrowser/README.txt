@@ -1,1 +1,0 @@
-This folder will contain pages for the qooxdoo demobrowser
