@@ -91,6 +91,20 @@ qx.Class.define("qcl.ui.dialog.Form",
   
   /*
   *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */    
+  events : 
+  {   
+    /**
+    * Event dispatched when the user changes data in the form
+    */
+   "changeResultData" : "qx.event.type.Event"
+
+  },  
+  
+  /*
+  *****************************************************************************
      MEMBERS
   *****************************************************************************
   */     
@@ -143,8 +157,8 @@ qx.Class.define("qcl.ui.dialog.Form",
        */
       var formContainer = this._formContainer = new qx.ui.container.Composite;
       var gridLayout = new qx.ui.layout.Grid(9, 5);
-      gridLayout.setColumnAlign(0, "right", "top");
-      gridLayout.setColumnAlign(2, "right", "top");
+      gridLayout.setColumnAlign(0, "left", "top");
+      gridLayout.setColumnAlign(1, "left", "top");
       gridLayout.setColumnMinWidth(0, 50);
       gridLayout.setColumnFlex(1, 2);
       formContainer.setLayout(gridLayout);
@@ -174,6 +188,25 @@ qx.Class.define("qcl.ui.dialog.Form",
     },
     
     /**
+     * Set a form result
+     * @param key {String}
+     * @param value {String}
+     * @return {void}
+     */
+    _setResult : function(key,value)
+    {
+      this.getResultData()[key] = value;
+      this.getFormData()[key].value = value;
+      this.fireEvent("changeResultData");
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       APPLY METHODS
+    ---------------------------------------------------------------------------
+    */     
+    
+    /**
      * Constructs the form on-the-fly
      * @param formData
      * @param old
@@ -200,11 +233,10 @@ qx.Class.define("qcl.ui.dialog.Form",
         
         var fieldData = formData[key];
         
+        
         /*
-         * label
+         * Form element
          */
-        var label = new qx.ui.basic.Label( fieldData.label );
-        this._formContainer.add( label, { row: row, column: 0} );
         var formElement = null;
         switch ( fieldData.type.toLowerCase() )
         {
@@ -227,10 +259,11 @@ qx.Class.define("qcl.ui.dialog.Form",
               formElement.add( listItem );
             });
             break;
+            
           case "selectbox":
             formElement = new qx.ui.form.SelectBox();
             var selected = null;
-            fieldData.options.forEach(function( item ){
+            fieldData.options.forEach( function( item ){
               var listItem = new qx.ui.form.ListItem( item.label, item.icon );
               listItem.setUserData( "value", 
                 item.value !== undefined ?  item.value : item.label
@@ -244,16 +277,42 @@ qx.Class.define("qcl.ui.dialog.Form",
               }
             },this);
             break;
+
+          case "radiogroup":
+            formElement = new qx.ui.container.Composite();
+            formElement.setLayout( new qx.ui.layout.VBox(5) );
+            var radioGroup = new qx.ui.form.RadioGroup();
+            var selected = null;
+            fieldData.options.forEach( function( item )
+            {
+              var radioButton = new qx.ui.form.RadioButton( item.label );
+              radioButton.setUserData( "value", 
+                item.value !== undefined ?  item.value : item.label
+              );
+              
+              formElement.add( radioButton );
+              radioGroup.add( radioButton );
+              
+              if ( fieldData.value !== undefined 
+                  && fieldData.value == radioButton.getUserData( "value" ) )
+              {
+                radioGroup.setSelection([radioButton]);
+                this.getResultData()[key]=fieldData.value;
+                this._setResult( key, fieldData.value ); 
+              }
+            },this);
+            break; 
+            
+          case "label":
+            formElement = null;
+            fieldData.labelPosition = "top";
+            break;
             
           default:
             this.error("Invalid form field type:" + fieldData.type);
   
         }
         
-        /*
-         * field name
-         */
-        formElement._key = ""+key;
         
         /*
          * add listener to update result map
@@ -263,26 +322,62 @@ qx.Class.define("qcl.ui.dialog.Form",
           case "textarea":
           case "textfield":
           case "combobox":
+            formElement._key = ""+key;
             formElement.addListener("changeValue",function(event){
               var key   = event.getTarget()._key;
               var value = event.getData();
-              this.getResultData()[key] = value;
+              this._setResult(key,value);
             },this);
             break;
+            
           case "selectbox":
+            formElement._key = ""+key;
             formElement.addListener("changeSelection",function(event){
               var key   = event.getTarget()._key;
               var value = event.getData()[0].getUserData("value");
-              this.getResultData()[key] = value;
+              this._setResult(key,value);
             },this);            
-            break;   
+            break;
+            
+          case "radiogroup":
+            radioGroup._key = ""+key;
+            radioGroup.addListener("changeSelection",function(event){
+              var key   = event.getTarget()._key;
+              var value = event.getData()[0].getUserData("value");
+              this._setResult(key,value);
+            },this);            
+            break;               
         }
         
+       /*
+        * add label and form element to form
+        */
+       var label = new qx.ui.basic.Label( fieldData.label );
+       label.setRich(true);
+       label.setWidth(100);
+       label.setAllowGrowX(true);
+       
+       switch ( fieldData.labelPosition )        
+       {  
+         case "top":
+           this._formContainer.add( label, { row: row, column: 0, colSpan : 2 } );
+           if ( formElement )
+           {
+             this._formContainer.add( formElement, { row: ++row, column: 0, colSpan : 2 } );
+           }
+           break;
+           
+         case "left":
+         default:
+           formElement.setAlignX("right");
+           this._formContainer.add( label, { row: row, column: 0} );
+           this._formContainer.add( formElement, { row: row, column: 1} );          
+       }
+        
         /*
-         * add form element to form and go to next row
-         */
-         this._formContainer.add( formElement, { row: row, column: 1} );
-         row++;
+         * next row
+         */  
+        row++;
       }
     },
         
