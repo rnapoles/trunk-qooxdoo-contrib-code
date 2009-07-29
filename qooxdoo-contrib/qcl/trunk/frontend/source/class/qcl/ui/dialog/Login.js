@@ -131,7 +131,7 @@ qx.Class.define("qcl.ui.dialog.Login",
       groupboxContainer.add( this._text );
       
       /* 
-       * Group box with login fields  
+       * grid layout with login fields  
        */
       var gridContainer = new qx.ui.container.Composite;
       var gridLayout = new qx.ui.layout.Grid(9, 5);
@@ -140,6 +140,9 @@ qx.Class.define("qcl.ui.dialog.Login",
       gridLayout.setColumnMinWidth(0, 50);
       gridLayout.setColumnFlex(1, 2);
       gridContainer.setLayout(gridLayout);
+      gridContainer.setAlignX("center");
+      gridContainer.setMinWidth(200);
+      gridContainer.setMaxWidth(300);
       groupboxContainer.add( gridContainer );
       
       /* 
