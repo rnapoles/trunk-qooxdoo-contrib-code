@@ -887,8 +887,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
          this.__value = value;
          
          var doc = this._getIframeDocument();
-         if (doc)
-         {
+         if (doc && doc.body) {
            doc.body.innerHTML = value;
          }
        }
