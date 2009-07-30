@@ -10,7 +10,8 @@ var baseConf = {
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
   'logAll' : false,
-  'ignore' : 'data:Gears,showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,virtual:List,virtual:Cells,virtual:ListBinding,virtual:Messenger,progressive:*,legacy:*'
+  'ignore' : 'data:Gears,showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,virtual:List,virtual:Cells,virtual:ListBinding,virtual:Messenger,progressive:*,legacy:*',
+  'sampleGlobalErrorLogging' : false
 };
 
 var args = arguments ? arguments : "";
@@ -158,7 +159,9 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     // run the sample
     this.runScript(scriptCode, "Running sample");
     
-    //this.addErrorHandlerToDemo();
+    if (this.getConfigSetting("sampleGlobalErrorLogging")) {
+      this.addErrorHandlerToDemo();
+    }
     
     //this.killBoxes();
     //Packages.java.lang.Thread.sleep(2000);
@@ -205,8 +208,8 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   Packages.java.lang.Thread.sleep(logPause);
   
   // Shut down the sample application
-  //this.getEval(shutdownSample, "Shutting down sample application");
-  //Packages.java.lang.Thread.sleep(2000);
+  this.getEval(shutdownSample, "Shutting down sample application");
+  Packages.java.lang.Thread.sleep(2000);
 
   print(category + " - " + currentSample + ": Processing log");
 
@@ -214,16 +217,14 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   this.log('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>', "info");
   
-  /*
-  var errorsBefore = this.getTotalErrorsLogged(); 
-  
-  if (isGlobalEventReady) {
-    this.logGlobalErrors();
+  if (this.getConfigSetting("sampleGlobalErrorLogging")) {
+    try {
+      this.logGlobalErrors();
+    } 
+    catch (ex) {
+      this.log("Unable to log global errors: " + ex, "error");
+    }
   }
-
-  var errorsAfter = this.getTotalErrorsLogged();
-  
-  */
   
   //Packages.java.lang.Thread.sleep(120000);
 
@@ -233,9 +234,6 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     isErrWarn = true;
   }
   if (isErrWarn || this.getConfigSetting("logAll")) {
-    if (isErrWarn) {
-      this.errWarn++;
-    }
 
     /* Selenium uses http get requests to pass messages to the server log.
     * If the log message is too long, the server throws an http exception.
@@ -396,7 +394,6 @@ simulation.Simulation.prototype.runTest = function()
 
 (function() {
   mySim.testFailed = false;
-  mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
   
@@ -434,7 +431,7 @@ simulation.Simulation.prototype.runTest = function()
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
-    mySim.log("Demos with warnings or errors: " + mySim.errWarn, "info");
+    mySim.log("Demobrowser ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
   }
 
   mySim.logTestDuration();
