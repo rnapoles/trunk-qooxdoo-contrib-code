@@ -58,7 +58,7 @@ qx.Class.define("hjx.FormValidation",
     },
 
 
-    prepareFormForValidation(formElem) {
+    prepareFormForValidation : function(formElem) {
       var settings = this._settings._forms[formElem.id];
       if (settings && settings.validate_onblur === true) {
         var vFields = hjx.Form.getFields(formElem);
