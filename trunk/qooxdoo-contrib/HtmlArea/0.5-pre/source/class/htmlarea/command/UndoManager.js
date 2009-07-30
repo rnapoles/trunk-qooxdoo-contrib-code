@@ -116,6 +116,18 @@ qx.Class.define("htmlarea.command.UndoManager",
 
 
     /**
+     * Returns the current stored range
+     *
+     * @type member
+     * @param preventCreateNewRange {Boolean}
+     * @return {Range} Range object
+     */
+    getCurrentRange : function (preventCreateNewRange) {
+      return this.__commandManager.getCurrentRange(preventCreateNewRange);
+    },
+
+
+    /**
      * stores the current range.
      * 
      * @type member

@@ -115,11 +115,12 @@ qx.Class.define("htmlarea.command.Manager",
      * Returns the current stored range
      *
      * @type member
+     * @param preventCreateNewRange {Boolean}
      * @return {Range} Range object
      */
-    getCurrentRange : function ()
+    getCurrentRange : function (preventCreateNewRange)
     {
-      if (this.__currentRange != null) {
+      if (this.__currentRange != null || preventCreateNewRange === true) {
         return this.__currentRange;
       }
 
@@ -142,7 +143,7 @@ qx.Class.define("htmlarea.command.Manager",
       {
         if (this.__editorInstance)
         {
-          this.__currentRange = this.__editorInstance.getRange();
+          this.__currentRange = this.__editorInstance.getRange(true);
 
           var sel = this.__editorInstance.__getSelection();
           this.__lastSelectionType = sel ? sel.type : "";
@@ -580,10 +581,10 @@ qx.Class.define("htmlarea.command.Manager",
             {
               // get the styles of the previous paragraph and apply them
               var paraStyles = this.__getParagraphStyles(previousElement);
-              for (var pStyle in paraStyles)
-              {
+
+              for (var pStyle in paraStyles) {
                 this.__doc.execCommand(pStyle, false, paraStyles[pStyle]);
-              }          
+              }
             }
           }
         }
