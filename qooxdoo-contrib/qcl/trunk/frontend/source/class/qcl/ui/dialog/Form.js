@@ -296,11 +296,14 @@ qx.Class.define("qcl.ui.dialog.Form",
               if ( fieldData.value !== undefined 
                   && fieldData.value == radioButton.getUserData( "value" ) )
               {
-                radioGroup.setSelection([radioButton]);
-                this.getResultData()[key]=fieldData.value;
-                this._setResult( key, fieldData.value ); 
+                radioGroup.setSelection([radioButton]); 
               }
             },this);
+            var sel = radioGroup.getSelection();
+            if ( sel.length )
+            {
+              this._setResult( key, sel[0].getUserData("value") );
+            }
             break; 
             
           case "label":
