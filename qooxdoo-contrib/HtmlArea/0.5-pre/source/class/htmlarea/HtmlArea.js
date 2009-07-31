@@ -579,6 +579,12 @@ qx.Class.define("htmlarea.HtmlArea",
 
   members :
   {
+
+    _preventFocusEvent : false,
+    _lastFocusAction   : "focusout",
+    _listenerAdded     : false,
+    _examineCursorContextTimer : null,
+
     /**
      * Blocks iframe. Overwritten method from Iframe class
      * IMPORTANT: the implementation of the parent class breaks
@@ -593,7 +599,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this._blockerNode.style.display = "";
       } 
     },
-    
+
+
     /**
      * Releases iframe. Overwritten method from Iframe class
      * IMPORTANT: the implementation of the parent class breaks
@@ -608,8 +615,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this._blockerNode.style.display = "none";
       }
     },
-    
-    
+
+
     /** Initial content which is written dynamically into the iframe's document */
     __contentWrap :
     {
@@ -709,10 +716,13 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getContentBody : function ()
     {
-      if (this.__isReady)
-      {
-        return this.getContentDocument().body;
+      var doc = this.getContentDocument();
+
+      if (doc) {
+        return doc.body;
       }
+
+      return null;
     },
 
 
@@ -725,8 +735,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getWords : function(node)
     {
-      if (!node)
-      {
+      if (!node) {
         node = this.getContentBody();
       }
 
@@ -884,8 +893,19 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.base(arguments);
 
+      /* Register all needed event listeners, gecko add it after document ready */
+      if (!qx.core.Variant.isSet("qx.client", "gecko")) {
+        this.__addEventListeners();
+      }
+
       // we need to set the designMode every time we toggle visibility back to "visible"
       this.forceEditable();
+
+      if (this._applyFocusAfterAppear !== null)
+      {
+        this._applyFocused(this._applyFocusAfterAppear);
+        this._applyFocusAfterAppear = null;
+      }
     },
 
 
@@ -894,34 +914,14 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyFocused : function (value, old)
     {
-      if (this.__isReady)
-      {
+      if (typeof value !== "boolean") {
+        return;
+      }
+
+      if (this.__isReady) {
         this.base(arguments, value, old);
-  
-        /*
-         * If "focused" property is set make editor
-         * ready to use after startup -> user can type ahead immediately
-         *
-         * TODO: Webkit is not able to set the cursor at startup
-         * Tried to append textNode and make new selection/range -> not worked
-         * 
-         * TODO: this functionality is already implemented in Widget, why we do it
-         *       twice?
-         */
-        if (value === true)
-        {
-          this._visualizeFocus();
-  
-          var focusRoot = this.getFocusRoot();
-  
-          if (focusRoot) {
-            focusRoot.setFocusedChild(this);
-          }
-  
-          /* Initially save current range */
-          // not implemented yet
-          //this._storeRange();
-        }
+      } else {
+        this._applyFocusAfterAppear = value;
       }
     },
 
@@ -1017,7 +1017,7 @@ qx.Class.define("htmlarea.HtmlArea",
       // first click of the user hits the blocker node and the focus event
       // does not arrive the HtmlArea component (=iframe document and body)
       this.release();
-      
+
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
        * ***************************************** */
@@ -1038,8 +1038,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * For IE the document needs to be set in "designMode"
        * BEFORE the content is rendered.
        */
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
+      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         this.setEditable(true);
       }
 
@@ -1049,17 +1048,17 @@ qx.Class.define("htmlarea.HtmlArea",
        */
       this.__renderContent();
 
-
-      /* Register all needed event listeners */
-      this.__addEventListeners();
-
+      /* Register all needed event listeners only for gecko, all other browsers will set
+       * it after appear */
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
+        this.__addEventListeners();
+      }
 
       /*
        * Setting the document editable for all other browser engines
        * AFTER the content is set
        */
-      if (!qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
+      if (!qx.core.Variant.isSet("qx.client", "mshtml")) {
         this.setEditable(true);
       }
 
@@ -1075,11 +1074,7 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
       {
-        // only focus if 
-        this.setFocused(true);
-        
-        for (var i=0, j=commandStack.length; i<j; i++)
-        {
+        for (var i=0, j=commandStack.length; i<j; i++) {
           cm.execute(commandStack[i].command, commandStack[i].value);
         }
       }
@@ -1090,8 +1085,8 @@ qx.Class.define("htmlarea.HtmlArea",
       /* dispatch the "ready" event at the end of the initialization */
       this.createDispatchEvent("ready");
     },
-    
-    
+
+
     /**
      * Forces the htmlArea to reset the document editable. This method can
      * be useful (especially for Gecko) whenever the HtmlArea was hidden and 
@@ -1251,53 +1246,146 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    __addEventListeners : function()
+    __addEventListeners : function(retry)
     {
-      var doc = this.getContentDocument();
+      if (!this._listenerAdded)
+      {
+        var doc = this.getContentDocument();
 
-      /*
-       * IMPORTANT
-       * route all key events directly to the KeyEventHandler to transform DOM events to full-featured qooxdoo events.
-       * Doing so the editor has not to deal with DOM events anymore.
-       */
+        if (!doc || !doc.body)
+        {
+          if (typeof retry === "undefined") {
+            retry = 0;
+          }
 
-      qx.html.EventRegistration.addEventListener(doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
-      qx.html.EventRegistration.addEventListener(doc, "keyup",    qx.event.handler.KeyEventHandler.getInstance().__onkeyupdown);
-      qx.html.EventRegistration.addEventListener(doc, "keydown",  qx.event.handler.KeyEventHandler.getInstance().__onkeyupdown);
+          if (retry < 5)
+          {
+            qx.client.Timer.once(function () {
+              this.__addEventListeners(++retry);
+            }, this, 10);
+          }
 
-      /*
-       * Register event handler for focus/blur events
-       *
-       * IE has to catch focus and blur events on the body element
-       * Webkit is listening to the contentWindow and all others catch them at the document directly
-       */
+          return;
+        }
 
-      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? doc.body :
-                            qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : doc;
+        this._listenerAdded = true;
 
-      qx.html.EventRegistration.addEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
-      qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
-
-      /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
-      qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
-      /* Register context menu event - use contextmenu for safari (because mac safari does not fire mouse up event on right click) and mousup for all other
-       * browsers (as ie does not give the right button number for the context menu) */
-      qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
-
+        this._connectKeyListener();
+        this._addFocusListener();
+        this._addMouseListener();
+        this._addContextMenuListener();
+      }
     },
 
-    
+
+    /**
+     * IMPORTANT
+     * route all key events directly to the KeyEventHandler to transform DOM events to full-featured qooxdoo events.
+     * Doing so the editor has not to deal with DOM events anymore.
+     * 
+     * @return {void}
+     */
+    _connectKeyListener : function ()
+    {
+      var keyEventHandler = qx.event.handler.KeyEventHandler.getInstance();
+      var EventRegistration = qx.html.EventRegistration;
+      var doc = this.getContentDocument();
+
+      EventRegistration.addEventListener(doc, "keypress", keyEventHandler.__onkeypress);
+      EventRegistration.addEventListener(doc, "keyup",    keyEventHandler.__onkeyupdown);
+      EventRegistration.addEventListener(doc, "keydown",  keyEventHandler.__onkeyupdown);
+    },
+
+
+    /**
+     * Register event handler for focus/blur events
+     *
+     * IE has to catch focus and blur events on the body element
+     * Webkit is listening to the contentWindow and all others catch them at the document
+     * directly
+     * 
+     * @return {void}
+     */
+    _addFocusListener : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function ()
+      {
+        var EventRegistration = qx.html.EventRegistration;
+        var body = this.getContentBody();
+
+        EventRegistration.addEventListener(body, "focus", this.__handleFocusEvent);
+        EventRegistration.addEventListener(body, "blur",  this.__handleBlurEvent);
+        EventRegistration.addEventListener(this.getContentDocument(), "focusout", this.__handleFocusOut);
+      },
+
+      "webkit" : function ()
+      {
+        var EventRegistration = qx.html.EventRegistration;
+        var win = this.getContentWindow();
+
+        EventRegistration.addEventListener(win, "focus", this.__handleFocusEvent);
+        EventRegistration.addEventListener(win, "blur",  this.__handleBlurEvent);
+        EventRegistration.addEventListener(this.getContentDocument(), "focusout", this.__handleFocusOut);
+      },
+
+      "default" : function ()
+      {
+        var EventRegistration = qx.html.EventRegistration;
+        var doc = this.getContentDocument();
+
+        EventRegistration.addEventListener(doc, "focus", this.__handleFocusEvent);
+        EventRegistration.addEventListener(doc, "blur",  this.__handleBlurEvent);
+        EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
+      }
+    }),
+
+
+    /**
+     * Register mouse event - for IE one has to catch the "click" event, for all others 
+     * the "mouseup" is okay
+     * 
+     * @return {void}
+     */
+    _addMouseListener : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function () {
+        qx.html.EventRegistration.addEventListener(this.getContentBody(), "click", this.__handleMouseEvent);
+      },
+
+      "default" : function () {
+        qx.html.EventRegistration.addEventListener(this.getContentBody(), "mouseup", this.__handleMouseEvent);
+      }
+    }),
+
+
+    /**
+     * Register context menu event - use contextmenu for safari (because mac safari does 
+     * not fire mouse up event on right click) and mousup for all other browsers 
+     * (as ie does not give the right button number for the context menu)
+     * 
+     * @return {void}
+     */
+    _addContextMenuListener : qx.core.Variant.select("qx.client",
+    {
+      "webkit" : function () {
+        qx.html.EventRegistration.addEventListener(this.getContentBody(), "contextmenu", this.__handleContextMenuEvent);
+      },
+
+      "default" : function () {
+        qx.html.EventRegistration.addEventListener(this.getContentBody(), "mouseup", this.__handleContextMenuEvent);
+      }
+    }),
+
+
     /**
      * Returns the commandManager instance
      * 
      * @return {htmlarea.command.Manager ? htmlarea.command.UndoManager} manager
      */
-    getCommandManager : function()
-    {
+    getCommandManager : function() {
       return this.__commandManager;
     },
-    
+
 
     /**
      * Helper method to create an object which acts like
@@ -1335,15 +1423,14 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __setDesignMode : function(onOrOff)
     {
-      var doc = this.getContentDocument();
-
       if (this.__isLoaded)
       {
         try
         {
-          if (qx.core.Variant.isSet("qx.client", "gecko"))
-          {
+          var doc = this.getContentDocument();
+
             // FF Bug (Backspace etc. doesnt work if we dont set it twice)
+          if (qx.core.Variant.isSet("qx.client", "gecko")) {
             doc.designMode = (onOrOff !== false) ? 'Off' : 'On';
           }
 
@@ -1422,6 +1509,57 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * @return {void}
+     */
+    _focus : qx.core.Variant.select("qx.client",
+    {
+      "webkit|gecko" : function () {
+        this.getContentWindow().focus();
+      },
+
+      "default" : function () {
+        this.getContentBody().focus();
+      }
+    }),
+
+
+    /**
+     * @return {void}
+     */
+    _blur : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function () {
+        this.getContentBody().blur();
+      },
+
+      "webkit" : function () {
+        this.getContentWindow().blur();
+      },
+
+      "default" : function () {
+        this.getContentDocument().blur();
+      }
+    }),
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     */
+    _visualizeBlur : function()
+    {
+      try {
+        this._blur();
+      } catch (exc) {
+        this._lastFocusAction = "focusout";
+      }
+
+      this.removeState("focused");
+    },
+
+
+    /**
      * Sets the focus on the editor component
      *
      * @type member
@@ -1429,30 +1567,56 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _visualizeFocus : function()
     {
+      // check on existing focus
+      if (this._lastFocusAction === "focusin")
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("focus already set");
+        }
+
+        return;
+      }
+
+      if (qx.core.Variant.isSet("qx.debug", "on"))
+      {
+        if (!this.isFocused()) {
+          this.warn("no qooxdoo focus is set, try to sync after focusEvent");
+        }
+      }
+
       var elem = this.getElement();
 
       if (!elem || elem && elem.offsetWidth == 0)
       {
-        this.debug("can't visualize focus because the iframe is invisible.");
+        this.warn("can't visualize focus because the iframe is invisible");
         return;
       }
 
-      if (qx.core.Variant.isSet("qx.client", "webkit|gecko"))
+      this.addState("focused");
+
+      if (this.__commandManager && this.__commandManager.getCurrentRange)
       {
-        if (this.__isLoaded)
+        var range = this.__commandManager.getCurrentRange(true);
+
+        if (range && range.select)
         {
-          this.getContentWindow().focus();
-        }
-      }
-      else
-      {
-        if (this.__isLoaded)
-        {
-          this.getContentDocument().body.focus();
+          try
+          {
+            range.select();
+            return;
+          }
+          catch (exc)
+          {
+            this.error(exc);
+          }
         }
       }
 
-      qx.ui.embed.Iframe.prototype._visualizeFocus.call(this);
+      if (this.__isLoaded)
+      {
+        this._focus();
+        this.__startExamineCursorContext();
+      }
     },
 
 
@@ -1484,6 +1648,10 @@ qx.Class.define("htmlarea.HtmlArea",
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
+
+      if (this.__commandManager) {
+        this.__commandManager.invalidateCurrentRange();
+      }
 
       //if (qx.core.Variant.isSet("qx.debug", "on")) {
       //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
@@ -1635,6 +1803,31 @@ qx.Class.define("htmlarea.HtmlArea",
           break;
         }
       }
+
+      this.__startExamineCursorContextByKeyCode(keyIdentifier);
+    },
+
+
+    /**
+     * @param keyCode {String}
+     * @return {void}
+     */
+    __startExamineCursorContextByKeyCode : function (keyCode)
+    {
+      /* These keys can change the selection */
+      switch(keyCode.toLowerCase())
+      {
+        case "left":
+        case "right":
+        case "up":
+        case "down":
+        case "pageup":
+        case "pagedown":
+        case "delete":
+        case "end":
+          this.__startExamineCursorContext();
+        break;
+      }
     },
 
 
@@ -1649,12 +1842,12 @@ qx.Class.define("htmlarea.HtmlArea",
     { 
       "mshtml|webkit" : function(e)
       {
-        var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
-        
+        var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+
         //if (qx.core.Variant.isSet("qx.debug", "on")) {
-        //  this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase() + " | " + e.getCharCode());
+        //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
         //}
-        
+
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
         if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
                                       keyIdentifier == "b" || keyIdentifier == "u" || 
@@ -1663,20 +1856,26 @@ qx.Class.define("htmlarea.HtmlArea",
           e.preventDefault();
           e.stopPropagation();
         }
-        
+
         /* 
          * Only set the flag to true
          * Setting it to false is handled in the "keyUp" handler
          * otherwise holding the "Ctrl" key and hitting e.g. "z"
          * will start the browser shortcut at the second time.
          */
-        if(keyIdentifier == "control")
-        {
+        if(keyIdentifier == "control") {
           this.__controlPressed = true;
         }
       },
       
-      "default" : function(e) {}
+      "default" : function(e)
+      {
+        //if (qx.core.Variant.isSet("qx.debug", "on"))
+        //{
+        //  var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+        //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
+        //}
+      }
     }),
 
 
@@ -1702,7 +1901,7 @@ qx.Class.define("htmlarea.HtmlArea",
       switch(keyIdentifier)
       {
         case "tab":
-          if (qx.core.Client.getInstance().isGecko())
+          if (qx.core.Variant.isSet("qx.client", "gecko"))
           {
             /* TODO - right implementation? */
             this.getFocusRoot().getFocusHandler()._onkeyevent(this.getFocusRoot(), e);
@@ -1756,27 +1955,21 @@ qx.Class.define("htmlarea.HtmlArea",
          first line completely in case the selection is already
          on the first line and "key up" is pressed.
          */
-        if (
-              qx.core.Client.getInstance().isGecko() &&
-              (qx.core.Client.getInstance().getVersion() < 1.9) &&
-              isShiftPressed
-            )
+        if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
-          /* Fetch selection */
-          var sel = this.__getSelection();
-
-          /* First line is selected */
-          if(sel.focusNode == doc.body.firstChild)
+          if(isShiftPressed && qx.core.Client.getInstance().getVersion() < 1.9)
           {
-            /* Check if the first line has been (partly) selected before. */
-            if(this.__firstLineSelected)
+            /* Fetch selection */
+            var sel = this.__getSelection();
+
+            /* First line is selected and */
+            /* Check if the first line has been (partly) selected before and */
+            /* Check if selection does not enclose the complete line already */
+            if(sel.focusNode == doc.body.firstChild && this.__firstLineSelected &&
+               sel.focusOffset != 0)
             {
-              /* Check if selection does not enclose the complete line already */
-              if (sel.focusOffset != 0)
-              {
-                /* Select the complete line. */
-                sel.extend(sel.focusNode, 0);
-              }
+              /* Select the complete line. */
+              sel.extend(sel.focusNode, 0);
             }
           }
         }
@@ -1789,77 +1982,59 @@ qx.Class.define("htmlarea.HtmlArea",
          * first position in the first line.
          */
         case "home":
-          if (qx.core.Client.getInstance().isGecko() && (qx.core.Client.getInstance().getVersion() < 1.9) )
+          if (qx.core.Variant.isSet("qx.client", "gecko"))
           {
-
-            if(isCtrlPressed)
+            if (qx.core.Client.getInstance().getVersion() < 1.9)
             {
-              /* Fetch current selection */
-              var sel = this.__getSelection();
-
-              /*
-               * Select text from current position to first
-               * character on the first line
-               */
-              if (isShiftPressed)
+              if(isCtrlPressed)
               {
-                /* Check if target position is not yet selected */
-                if ( (sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild) )
-                {
-                  /* Extend selection to first child at position 0. */
-                  sel.extend(doc.body.firstChild, 0);
-                }
-              }
-              else
-              {
-                /* Fetch all text nodes from body element */
-                var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
-								var currentItem;
+                /* Fetch current selection */
+                var sel = this.__getSelection();
 
-                /* Iterate over result */
-                while(currentItem = elements.iterateNext())
+                /*
+                 * Select text from current position to first
+                 * character on the first line
+                 */
+                if (isShiftPressed)
                 {
-                  /* Skip CSS text nodes */
-                  if(currentItem.parentNode && (currentItem.parentNode.tagName != "STYLE") )
+                  /* Check if target position is not yet selected */
+                  if ( (sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild) )
                   {
-
-                    /* Expand selection to first text node and collapse here */
-                    try
-                    {
-                      // Sometimes this does not work...
-                      sel.extend(currentItem, 0);
-                      if (!sel.isCollapsed) {
-                        sel.collapseToStart();
-                      }
-                    }catch(e){ }
-                    
-                    /* We have found the correct text node, leave loop here */
-                    break;
+                    /* Extend selection to first child at position 0. */
+                    sel.extend(doc.body.firstChild, 0);
                   }
+                }
+                else
+                {
+                  /* Fetch all text nodes from body element */
+                  var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
+                  var currentItem;
 
-                } // while
+                  /* Iterate over result */
+                  while(currentItem = elements.iterateNext())
+                  {
+                    /* Skip CSS text nodes */
+                    if(currentItem.parentNode && (currentItem.parentNode.tagName != "STYLE") )
+                    {
 
+                      /* Expand selection to first text node and collapse here */
+                      try
+                      {
+                        // Sometimes this does not work...
+                        sel.extend(currentItem, 0);
+                        if (!sel.isCollapsed) {
+                          sel.collapseToStart();
+                        }
+                      }catch(e){ }
+                    
+                      /* We have found the correct text node, leave loop here */
+                      break;
+                    }
+                  } // while
+                } // if
               } // if
-
-            } // if
-
-          }
-
-          this.__startExamineCursorContext();
-        break;
-          
-        /*
-         * For all keys which are able to reposition the cursor
-         * start to examine the current cursor context
-         */
-        case "left":
-        case "right":
-        case "down":
-        case "pageup":
-        case "pagedown":
-        case "delete":
-        case "end":
-          this.__startExamineCursorContext();
+            } // if version
+          } // if gecko
         break;
 
         /* Special shortcuts */
@@ -1907,8 +2082,7 @@ qx.Class.define("htmlarea.HtmlArea",
            * this within the "keyUp" event. This info is not available
            * within the "keyPress" event in mshtml/webkit.
            */
-          if (isCtrlPressed)
-          {
+          if (isCtrlPressed) {
             this.selectAll();
           }
         break;
@@ -1918,15 +2092,15 @@ qx.Class.define("htmlarea.HtmlArea",
        this.__currentEvent = null;
     },
 
-		/**
-		 * Internal function to react on the "enter" key while the crtl key is
-		 * pressed. It inserts special HTML code (or DOM nodes) to create a
-	   * line break.
-		 * 
+    /**
+     * Internal function to react on the "enter" key while the crtl key is
+     * pressed. It inserts special HTML code (or DOM nodes) to create a
+     * line break.
+     * 
      * @param doc {Object} The document element of the htmlarea's iframe.
      * @return void
-		 * @signature function(doc)
-		 */
+     * @signature function(doc)
+     */
     __handleCtrlEnter  : qx.core.Variant.select("qx.client",
     {
 
@@ -1979,17 +2153,17 @@ qx.Class.define("htmlarea.HtmlArea",
     }),
 
 
-		/**
-		 * Internal function to react on the "enter" key. It uses various
-		 * methods to insert special HTML code and cancles the event or 
-		 * just forwards it to the browser.
-		 * 
+    /**
+     * Internal function to react on the "enter" key. It uses various
+     * methods to insert special HTML code and cancles the event or 
+     * just forwards it to the browser.
+     * 
      * @param isShiftPressed {Boolean} Flag indicating if the shift key is hold
      * down
      * @param e {qx.event.type.KeyEvent} Incoming key event
      * @return void
-		 * @signature function(isShiftPressed, e)
-		 */
+     * @signature function(isShiftPressed, e)
+     */
     __handleEnter  : qx.core.Variant.select("qx.client",
     {
 
@@ -2110,7 +2284,7 @@ qx.Class.define("htmlarea.HtmlArea",
           this.__currentEvent.preventDefault();
           this.__currentEvent.stopPropagation();
         }
-        
+
         // Whenever a hotkey is pressed update the current cursorContext
         // Since this examination is done within a timeout we can be sure
         // the execution is performed before we're looking at the cursor context.
@@ -2128,17 +2302,32 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleFocusEvent : function(e)
     {
-      // call the "_apply" method directly
-      // otherwise the property system won't execute the "_apply" method
-      // if the property value doesn't change
-      // this is especially important for the first click of the user
-      this._applyFocused(true);
+      if (this._preventFocusEvent === true)
+      {
+        this._preventFocusEvent = false;
+        return;
+      }
 
-      this.__storedSelectedHtml = null;
-      this.createDispatchEvent("focused");
+      if (e.type === "focus" && this._lastFocusAction === "focusout")
+      {
+        this._lastFocusAction = "focusin";
+
+        // call the "_apply" method directly
+        // otherwise the property system won't execute the "_apply" method
+        // if the property value doesn't change this is especially important for the 
+        // first click of the user
+        if (!this.isFocused()) {
+          this.setFocused(true);
+        } else {
+          this._applyFocused(true);
+        }
+
+        this.__storedSelectedHtml = null;
+        this.createDispatchEvent("focused");
+      }
     },
-    
-    
+
+
     /**
      * Eventlistener for blur events
      *
@@ -2146,8 +2335,14 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      * @return {void}
      */
-    _handleBlurEvent : function(e) {
-      this.__value = this.getComputedValue();
+    _handleBlurEvent : function(e)
+    {
+      if (this._lastFocusAction === "focusout")
+      {
+        qx.client.Timer.once( function () {
+          this.__value = this.getComputedValue();
+        }, this, 0);
+      }
     },
 
 
@@ -2163,23 +2358,33 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       "mshtml" : function(e)
       {
-        if (this.__commandManager) {
-          this.__commandManager.storeCurrentRange();
-        }
+        if (this._lastFocusAction === "focusin")
+        {
+          this._lastFocusAction = "focusout";
 
-        // Save range text
-        if (this.__storedSelectedHtml == null) {
-          this.__storedSelectedHtml = this.getSelectedHtml();
-        }
+          if (this.__commandManager) {
+            this.__commandManager.storeCurrentRange();
+          }
 
-        this.createDispatchEvent("focusOut");
+          // Save range text
+          if (this.__storedSelectedHtml == null) {
+            this.__storedSelectedHtml = this.getSelectedHtml();
+          }
+
+          this.createDispatchEvent("focusOut");
+        }
       },
 
-      "default" : function(e) {
-        this.createDispatchEvent("focusOut");
+      "default" : function(e)
+      {
+        if (this._lastFocusAction === "focusin")
+        {
+          this._lastFocusAction = "focusout";
+          this.createDispatchEvent("focusOut");
+        }
       }
     }),
-    
+
 
     /**
      * Eventlistener for all mouse events.
@@ -2201,7 +2406,11 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__commandManager.invalidateCurrentRange();
       }
 
-      /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
+      // sync qx focus and real focus
+      if (!this.isFocused()) {
+        this.setFocused(true);
+      }
+
       this.__startExamineCursorContext();
     },
 
@@ -2215,6 +2424,10 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleContextMenuEvent : function(e)
     {
+      if (qx.core.Variant.isSet("qx.debug", "on")) {
+        this.debug("_handleContextMenuEvent " + e.type);
+      }
+
       var button = (e.button ? e.button : e.which);
       if (qx.event.type.MouseEvent.buttons.right == button)
       {
@@ -2721,10 +2934,24 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __startExamineCursorContext : function()
     {
+      if (this._examineCursorContextTimer !== null)
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("examine cursor context is running");
+        }
+
+        return;
+      }
+
       /* setting a timeout is important to get the right result */
-      qx.client.Timer.once(function(e) {
-        this.__examineCursorContext();
-      }, this, 200);
+      this._examineCursorContextTimer = qx.client.Timer.once(function(e)
+      {
+        if (this._lastFocusAction === "focusin") {
+          this.__examineCursorContext();
+        }
+
+        this._examineCursorContextTimer = null;
+      }, this, 0);
     },
 
 
@@ -2756,6 +2983,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
       this._processingExamineCursorContext = false;
     },
+
 
     /**
      * Returns the information about the current context (focusNode). It's a
@@ -2971,8 +3199,7 @@ qx.Class.define("htmlarea.HtmlArea",
     getSelectedHtml : function()
     {
       // if a selection is stored, return it.
-      if (this.__storedSelectedHtml != null)
-      {
+      if (this.__storedSelectedHtml != null) {
         return this.__storedSelectedHtml;
       }
 
@@ -3029,12 +3256,20 @@ qx.Class.define("htmlarea.HtmlArea",
      {
       "mshtml" : function()
       {
-        this.getRange().collapse();
+        var range = this.getRange();
+        
+        if (range) {
+          range.collapse();
+        }
       },
-      
+
       "default" : function()
       {
-        this.__getSelection().collapseToEnd();
+        var selection = this.__getSelection();
+
+        if (selection) {
+          selection.collapseToEnd();
+        }
       }
     }),
 
@@ -3051,9 +3286,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Range} Range object
      */
-    getRange : function()
-    {
-      return this.__createRange(this.__getSelection());
+    getRange : function(preventFocusEvent) {
+      return this.__createRange(this.__getSelection(), preventFocusEvent);
     },
 
 
@@ -3065,10 +3299,22 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __createRange : qx.core.Variant.select("qx.client",
     {
-      "mshtml" : function(sel)
+      "mshtml" : function(sel, preventFocusEvent)
       {
         var doc = this.getContentDocument();
-        this.setFocused(true);
+
+        if (this._lastFocusAction !== "focusin")
+        {
+          if (preventFocusEvent === true)
+          {
+            this._preventFocusEvent = true;
+            this.getContentBody().focus();
+          }
+          else
+          {
+            this.setFocused(true);
+          }
+        }
 
         if (qx.util.Validation.isValid(sel))
         {
@@ -3082,26 +3328,38 @@ qx.Class.define("htmlarea.HtmlArea",
         {
           return doc.createTextRange();
         }
-       },
+      },
 
-       "default" : function(sel)
-       {
-         var doc = this.getContentDocument();
-         this.setFocused(true);
+      "default" : function(sel, preventFocusEvent)
+      {
+        var doc = this.getContentDocument();
 
-         if (qx.util.Validation.isValid(sel))
-         {
-           try {
-             return sel.getRangeAt(0);
-           } catch(ex) {
-             return doc.createRange();
-           }
-         }
-         else
-         {
-           return doc.createRange();
-         }
-       }
+        if (this._lastFocusAction !== "focusin")
+        {
+          if (preventFocusEvent === true)
+          {
+            this._preventFocusEvent = true;
+            this.getContentBody().focus();
+          }
+          else
+          {
+            this.setFocused(true);
+          }
+        }
+
+        if (qx.util.Validation.isValid(sel))
+        {
+          try {
+            return sel.getRangeAt(0);
+          } catch(ex) {
+            return doc.createRange();
+          }
+        }
+        else
+        {
+          return doc.createRange();
+        }
+      }
     }),
 
 
@@ -3119,6 +3377,10 @@ qx.Class.define("htmlarea.HtmlArea",
        {
          var sel = this.__getSelection();
          var rng;
+
+         if (!sel) {
+           return this.getContentBody();
+         }
 
          switch(sel.type)
          {
@@ -3142,7 +3404,7 @@ qx.Class.define("htmlarea.HtmlArea",
              return rng.item(0);
 
            default:
-             return this.getContentDocument().body;
+             return this.getContentBody();
          }
        },
 
@@ -3150,12 +3412,11 @@ qx.Class.define("htmlarea.HtmlArea",
        {
          var sel = this.__getSelection();
 
-         if (sel && sel.focusNode)
-         {
+         if (sel && sel.focusNode) {
            return sel.focusNode;
          }
 
-         return this.getContentDocument().body;
+         return this.getContentBody();
        }
     })
   },
@@ -3178,32 +3439,47 @@ qx.Class.define("htmlarea.HtmlArea",
     /* TODO: complete disposing */
     try
     {
-      var doc = this.getContentDocument();
+      if (this._listenerAdded)
+      {
+        var doc    = this.getContentDocument();
+        var client = qx.core.Client.getInstance();
+        var keyEventListener  = qx.event.handler.KeyEventHandler.getInstance();
+        var EventRegistration = qx.html.EventRegistration;
 
-      // ************************************************************************
-      //   WIDGET KEY EVENTS
-      // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(doc, "keydown",  qx.event.handler.KeyEventHandler.getInstance().__onkeydown);
-      qx.html.EventRegistration.removeEventListener(doc, "keyup",    qx.event.handler.KeyEventHandler.getInstance().__onkeyup);
-      qx.html.EventRegistration.removeEventListener(doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
+        // ************************************************************************
+        //   WIDGET KEY EVENTS
+        // ************************************************************************
+        // TODO: remove this privat method call
+        EventRegistration.removeEventListener(doc, "keydown",  keyEventListener.__onkeydown);
+        EventRegistration.removeEventListener(doc, "keyup",    keyEventListener.__onkeyup);
+        EventRegistration.removeEventListener(doc, "keypress", keyEventListener.__onkeypress);
 
-      // ************************************************************************
-      //   WIDGET FOCUS/BLUR EVENTS
-      // ************************************************************************
-      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? doc.body :
-        qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : doc;
-      
-      qx.html.EventRegistration.removeEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.removeEventListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
-      qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
+        // ************************************************************************
+        //   WIDGET FOCUS/BLUR EVENTS
+        // ************************************************************************
+        if (qx.core.Variant.isSet("qx.client", "mshtml"))  {
+          var focusBlurTarget = doc.body;
+        } else if (qx.core.Variant.isSet("qx.client", "webkit")) {
+          var focusBlurTarget = this.getContentWindow();
+        } else {
+          var focusBlurTarget = doc;
+        }
 
-      // ************************************************************************
-      //   WIDGET MOUSE EVENTS
-      // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
-      qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
+        EventRegistration.removeEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
+        EventRegistration.removeEventListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
+        EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
+
+        // ************************************************************************
+        //   WIDGET MOUSE EVENTS
+        // ************************************************************************
+        EventRegistration.removeEventListener(doc.body, client.isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
+        EventRegistration.removeEventListener(doc.body, client.isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
+      }
     }
-    catch(ex) {}
+    catch(ex)
+    {
+      // ignore this exception
+    }
 
     this._disposeFields("__commandManager", "__handleFocusEvent", "handleMouseEvent", "__contentWrap");
   }
