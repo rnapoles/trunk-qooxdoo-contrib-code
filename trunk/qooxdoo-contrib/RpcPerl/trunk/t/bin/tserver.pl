@@ -35,8 +35,16 @@ use Qooxdoo::JSONRPC;
 
 require Getopt::Std;
 my %opts;
-Getopt::Std::getopts('d', \%opts) or die("usage: $0 [-d] <infile>");
+Getopt::Std::getopts('dl:L:', \%opts) or die("usage: $0 [-d] <infile>");
 $Qooxdoo::JSONRPC::debug = exists $opts{d};
+
+my @limited_scalar = split(/\s+/, $opts{l} || "");
+my @limited_regexp = map { qr/$_/ } split(/\s+/, $opts{L} || "");
+my @limited = (@limited_scalar, @limited_regexp);
+
+my $exposed;
+$exposed = [ @limited ] if $opts{l} || $opts{L};
+
 my $infile = shift;
 open(my $in, "<", $infile) or die("open $infile: $!");
 $ENV{REQUEST_METHOD}="GET";
@@ -46,4 +54,4 @@ close $in;
 $session = new CGI::Session;
 $session->param("referer_domain", "localhost");
 
-Qooxdoo::JSONRPC::handle_request ($cgi, $session);
+Qooxdoo::JSONRPC::handle_request ($cgi, $session, $exposed);

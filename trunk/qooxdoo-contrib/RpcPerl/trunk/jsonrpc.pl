@@ -40,7 +40,11 @@ use Qooxdoo::JSONRPC;
 $cgi     = new CGI;
 $session = new CGI::Session;
 
+# It is recommended that you limit the services exposed by this script
+# This example will only expose the Qooxdoo::Services::My::App class
+my $exposed = [ 'my.app' ];
+
 # You can customise this harness here to handle cases before treating
 # the request as being JSON-RPC
 
-Qooxdoo::JSONRPC::handle_request ($cgi, $session);
+Qooxdoo::JSONRPC::handle_request ($cgi, $session, $exposed);

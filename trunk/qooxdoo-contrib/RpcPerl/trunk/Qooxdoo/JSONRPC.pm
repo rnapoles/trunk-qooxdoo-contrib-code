@@ -40,6 +40,10 @@ $Qooxdoo::JSONRPC::service_path = 'Qooxdoo::Services';
 # By default methods have to be prefixed by 'method_'
 $Qooxdoo::JSONRPC::method_prefix = 'method_';
 
+# we expose all services (Qooxdoo::Service::* modules) by default
+# for backward compatibility
+my $DEFAULT_EXPOSED_SERVICES = [ qr/.*/ ];
+
 ##############################################################################
 
 # JSON-RPC error origins
@@ -79,7 +83,16 @@ use constant ScriptTransport_NotInUse        => -1;
 
 sub handle_request
 {
-    my ($cgi, $session) = @_;
+    my ($cgi, $session, $exposed) = @_;
+
+    if ($exposed && (ref $exposed ne 'ARRAY')) {
+	    print STDERR "invalid exposed services list passed to handle_request() (not an ARRAY ref), ignoring\n"
+            if $Qooxdoo::JSONRPC::debug;
+        $exposed = undef;
+    }
+    $exposed ||= $DEFAULT_EXPOSED_SERVICES;
+	print STDERR "exposed services set to " . join(" ", @$exposed) . "\n"
+            if $Qooxdoo::JSONRPC::debug;
 
     my $session_id = $session->id ();
 
@@ -205,6 +218,11 @@ sub handle_request
         $error->set_error (JsonRpcError_IllegalService,
                            "Illegal use of two consecutive dots " .
                            "in service name");
+        $error->send_and_exit;
+    }
+    if (!_is_service_allowed($json_input->{service}, $exposed)) {
+        $error->set_error (JsonRpcError_IllegalService,
+                           "Requested service is not available");
         $error->send_and_exit;
     }
 
@@ -475,6 +493,24 @@ sub handle_request
     send_reply ($reply, $script_transport_id);
 }
 
+
+##############################################################################
+
+# only for internal use
+sub _is_service_allowed
+{
+    my ($service, $allowed_services) = @_;
+    for my $allowed (@$allowed_services) {
+        print STDERR "_is_service_allowed: testing $service against $allowed\n"
+	        if $Qooxdoo::JSONRPC::debug;
+        if (ref $allowed eq 'Regexp') {
+            return 1 if $service =~ /$allowed/;
+        } else {
+            return 1 if $service eq $allowed;
+        }
+    }
+    return 0;
+}
 
 ##############################################################################
 
@@ -899,12 +935,14 @@ The cgi/fcgi script
  my $cgi = new CGI;
  my $session = new CGI::Session;
  Qooxdoo::JSONRPC::handle_request ($cgi, $session);
+ # or preferably
+ # Qooxdoo::JSONRPC::handle_request ($cgi, $session, [ "my.app" ]);
 
  # or if you load CGI::Fast you can easily create a
  # fastcgi aware version
  #while (my $cgi = new CGI::Fast) {
  #   my $session = new CGI::Session;
- #   Qooxdoo::JSONRPC::handle_request ($cgi, $session);
+ #   Qooxdoo::JSONRPC::handle_request ($cgi, $session, [ "my.app" ]);
  #}
 
 Along with the cgi wrapper setup a service module the example
@@ -989,7 +1027,8 @@ Here the service 'qooxdoo.test' is requested to run a method called
 
 This Perl implementation will locate
 a module called Qooxdoo::Services::qooxdoo::test (corresponding to
-Qooxoo/Services/qooxdoo/test.pm in Perl's library path). It will
+Qooxoo/Services/qooxdoo/test.pm in Perl's library path, but see
+L</"Exposed services"> below). It will
 then execute the function Qooxdoo::Services::qooxdoo::test::echo
 with the supplied arguments.
 
@@ -1042,7 +1081,9 @@ The cause of the error was not known.
 
 =item JsonRpcError_IllegalService 1
 
-The Service name was not valid, typically due to a bad character in the name.
+The Service name was not valid, typically due to a bad character in
+the name or due to not being on the list of allowed services (see
+L</"Exposed services"> below.)
 
 =item JsonRpcError_ServiceNotFound 2
 
@@ -1119,6 +1160,22 @@ Methods get access to the session handle as a parameter of the error object.
 Session allows to easy storage of persistant data. Since the session module
 writes all parameters in one go, this can result in a race condition when
 two instances store data.
+
+=head2 Exposed services
+
+For backward compatibility reasons the module will by default expose
+all Qooxdoo::Services::* modules on the Perl's search path. This is a
+bit liberal, and most applications should probably only make a known
+limited subset of services available.  This can be accomplished by
+passing a reference to a list of allowed service names or regular
+expressions as the third parameter of the C<handle_request> function.
+
+The service names are checked against the JSON service name: if you
+want to enable only the C<Qooxdoo::Services::My::App> module, use
+C<handle_request($cgi, $session, [ "my.app" ])>
+
+The handle_request() function will return the C<JsonRpcError_IllegalService>
+error code if the requested service is not on the list.
 
 =head1 AUTHOR
 
