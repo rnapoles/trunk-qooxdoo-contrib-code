@@ -38,7 +38,7 @@ qx.Class.define("qcl.ui.dialog.FormRenderer",
      * Add a group of form items with the corresponding names. The names are
      * displayed as label.
      * The title is optional and is used as grouping for the given form 
-     * items.
+     * items. Additionally, this renderer supports label-only fields.
      * 
      * @param items {qx.ui.core.Widget[]} An array of form items to render.
      * @param names {String[]} An array of names for the form items.
@@ -54,16 +54,20 @@ qx.Class.define("qcl.ui.dialog.FormRenderer",
       }
       
       // add the items, which can be form elements or 
-      for (var i = 0; i < items.length; i++) {
-        if ( names[i] )
+      for (var i = 0; i < items.length; i++) 
+      {
+
+        if ( items[i].getUserData("excluded") )
+        {
+          var label = new qx.ui.basic.Label( names[i] );
+          label.setRich(true);
+          this._add( label, {row: this._row, column: 0, colSpan : 2 } );
+        }
+        else
         {
           var label = this._createLabel(names[i], items[i]);
           this._add(label, {row: this._row, column: 0});
           this._add(items[i], {row: this._row, column: 1});
-        }
-        else
-        {
-          this._add( items[i], {row: this._row, column: 0, colSpan : 2 } ) 
         }
         this._row++;
       }
