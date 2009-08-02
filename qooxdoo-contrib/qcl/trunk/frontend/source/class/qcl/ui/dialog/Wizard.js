@@ -175,12 +175,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        */
       var formContainer = this._formContainer = new qx.ui.container.Composite();
       formContainer.setPadding(16);
-      var gridLayout = new qx.ui.layout.Grid(9, 5);
-      gridLayout.setColumnAlign(0, "right", "top");
-      gridLayout.setColumnAlign(2, "right", "top");
-      gridLayout.setColumnMinWidth(0, 50);
-      gridLayout.setColumnFlex(1, 2);
-      formContainer.setLayout(gridLayout);
+
       formContainer.setMinWidth(300);
       formContainer.setMinHeight(200);
       groupboxContainer.add( formContainer );
@@ -236,7 +231,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
       /*
        * let the "changeResultData" event update the buttons
        */
-      this.addListener("changeResultData", this._updateButtonStatus, this );
+      //this.addListener("changeResultData", this._updateButtonStatus, this );
     },
     
     /**
@@ -245,10 +240,11 @@ qx.Class.define("qcl.ui.dialog.Wizard",
      */
     _updateButtonStatus : function()
     {
-      var resultData = this.getResultData();
+      /*
       this._backButton.setEnabled( this.getAllowBack( resultData ) || this.getAllowBackFunc()( resultData ) );
       this._nextButton.setEnabled( this.getAllowNext( resultData ) || this.getAllowNextFunc()( resultData ) );
       this._finishButton.setEnabled( this.getAllowFinish( resultData ) || this.getAllowFinishFunc()( resultData ) );
+      */
     },
     
     
@@ -259,18 +255,39 @@ qx.Class.define("qcl.ui.dialog.Wizard",
     */     
     
     /**
-     * Apply the page data
+     * Apply the page data. This initializes the response
+     * data model
      * @param pageData
      * @param old
      * @return
      */
     _applyPageData : function ( pageData, old )
     {
-      this.setPage( 0 );
+      if ( pageData )
+      {
+        /*
+         * initialize response data model
+         */
+        var modelData = {};
+        pageData.forEach( function( formData ){
+          for ( var key in formData )
+          {
+            modelData[key] = formData[key].value;
+          }        
+        } );
+        this.setModel( qx.data.marshal.Json.createModel( modelData ) );
+        this.setPage( 0 );
+      }
+      else
+      {
+        this.setFormData(null);
+        this.setModel(null);
+      }
     },
 
-    /**
-    * Apply the page number
+   /**
+    * Go to a given wizard page. This recreates the 
+    * form.
     * @param pageData
     * @param old
     * @return
@@ -279,7 +296,6 @@ qx.Class.define("qcl.ui.dialog.Wizard",
    {
       var pageData = this.getPageData()[ page ];
       delete pageData.pageData;
-      this.setFormData({});
       this.set( pageData );
       this._updateButtonStatus();
    },    
@@ -324,15 +340,16 @@ qx.Class.define("qcl.ui.dialog.Wizard",
       }
     },    
     
-    /**
-     * Finishes the wizard. Calls callback with the result map
+    /** 
+     * Finishes the wizard. Calls callback with the result data model
+     * @return qx.core.Object
      */
     finish : function()
     {
       this.hide();
       if( this.getCallback() )
       {
-        this.getCallback()(this.getResultData());
+        this.getCallback()( this.getModel() );
       }
       this.resetCallback();
     }

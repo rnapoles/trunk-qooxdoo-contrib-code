@@ -17,6 +17,11 @@
   
 ************************************************************************ */
 
+
+/* ************************************************************************
+#require(qcl.ui.dialog.FormRenderer)
+************************************************************************ */
+
 /**
  * A dialog with a form that is constructed on-the-fly
  */
@@ -33,7 +38,11 @@ qx.Class.define("qcl.ui.dialog.Form",
   {
     /**   
      * Data to create a form with multiple fields. 
-     * So far implemented: TextField and non-editable Combobox
+     * So far implemented: 
+     *   TextField / TextArea 
+     *   ComboBox
+     *   SelectBox
+     *   RadioGroup
      * 
      * <pre>
      *
@@ -80,11 +89,11 @@ qx.Class.define("qcl.ui.dialog.Form",
     },
     
     /**
-     * The result data map
+     * The model of the result data
      */
-    resultData :
+    model :
     {
-      check : "Map",
+      check : "qx.core.Object",
       nullable : true
     }
   },
@@ -96,10 +105,6 @@ qx.Class.define("qcl.ui.dialog.Form",
   */    
   events : 
   {   
-    /**
-    * Event dispatched when the user changes data in the form
-    */
-   "changeResultData" : "qx.event.type.Event"
 
   },  
   
@@ -116,7 +121,11 @@ qx.Class.define("qcl.ui.dialog.Form",
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */  
+    
     _formContainer : null,
+    _form : null,
+    _formValidator : null,
+    _formController : null,
     
     /*
     ---------------------------------------------------------------------------
@@ -155,14 +164,8 @@ qx.Class.define("qcl.ui.dialog.Form",
       /* 
        * Form container  
        */
-      var formContainer = this._formContainer = new qx.ui.container.Composite;
-      var gridLayout = new qx.ui.layout.Grid(9, 5);
-      gridLayout.setColumnAlign(0, "left", "top");
-      gridLayout.setColumnAlign(1, "left", "top");
-      gridLayout.setColumnMinWidth(0, 50);
-      gridLayout.setColumnFlex(1, 2);
-      formContainer.setLayout(gridLayout);
-      groupboxContainer.add( formContainer );
+      this._formContainer = new qx.ui.container.Composite;
+      groupboxContainer.add( this._formContainer );
       
       /*
        * buttons pane
@@ -183,21 +186,8 @@ qx.Class.define("qcl.ui.dialog.Form",
        * Cancel Button 
        */
       var cancelButton = this._createCancelButton();
-      buttonPane.add( cancelButton );        
-
-    },
-    
-    /**
-     * Set a form result
-     * @param key {String}
-     * @param value {String}
-     * @return {void}
-     */
-    _setResult : function(key,value)
-    {
-      this.getResultData()[key] = value;
-      this.getFormData()[key].value = value;
-      this.fireEvent("changeResultData");
+      buttonPane.add( cancelButton );
+      
     },
     
     /*
@@ -214,46 +204,87 @@ qx.Class.define("qcl.ui.dialog.Form",
      */
     _applyFormData : function ( formData, old )
     {
+      
       /*
-       * remove all children
+       * remove container content, form, controller and validator
        */
       this._formContainer.removeAll();
-       
+      if ( this._form )
+      {
+        this._form.dispose();
+      }
+      if ( this._formController )
+      {
+        this._formController.dispose();
+      }
+      if ( this._formValidator )
+      {
+       this._formValidator.dispose();
+      }
+      
       /*
-       * clear result data
+       * if form is to be deleted
        */
-      this.setResultData({});
+      if ( ! formData )
+      {
+        return;
+      }
+      
+      /*
+       * if a model doesn't exist, create it from the
+       * form data
+       */
+      if ( ! this.getModel() )  
+      {
+        var modelData = {};
+        for ( var key in formData )
+        {
+          modelData[key] = formData[key].value;
+        }
+        this.setModel( qx.data.marshal.Json.createModel( modelData ) );
+      }
+      
+      
+      /*
+       * create new form, form controller and form validator
+       */
+      this._form = new qx.ui.form.Form();
+      this._formController = new qx.data.controller.Object( this.getModel() );
+      this._formValidator = new qx.ui.form.validation.Manager();
        
       /*
        * loop through form data array
        */
-      var row = 0;
-      for ( key in formData )
+      for ( var key in formData )
       {
-        
         var fieldData = formData[key];
-        
-        
+         
         /*
          * Form element
          */
         var formElement = null;
+        var radioGroup = null;
+        var uiElement = null;
+        
         switch ( fieldData.type.toLowerCase() )
         {
-          
+          case "groupheader" :
+            this._form.addGroupHeader( fieldData.value );
+            break;
+            
           case "textarea": 
-            formElement = new qx.ui.form.TextArea( fieldData.value || "");
+            uiElement = formElement = new qx.ui.form.TextArea();
             formElement.setHeight(fieldData.lines * 16);
             formElement.setLiveUpdate(true);
             break;
 
           case "textfield":
-            formElement = new qx.ui.form.TextField( fieldData.value || "");
+            uiElement = formElement = new qx.ui.form.TextField();
             formElement.setLiveUpdate(true);
             break;
             
           case "combobox":
-            formElement = new qx.ui.form.ComboBox();
+            uiElement = formElement = new qx.ui.form.ComboBox();
             fieldData.options.forEach(function( item ){
               var listItem = new qx.ui.form.ListItem( item.label, item.icon );
               formElement.add( listItem );
@@ -261,7 +292,7 @@ qx.Class.define("qcl.ui.dialog.Form",
             break;
             
           case "selectbox":
-            formElement = new qx.ui.form.SelectBox();
+            uiElement = formElement = new qx.ui.form.SelectBox();
             var selected = null;
             fieldData.options.forEach( function( item ){
               var listItem = new qx.ui.form.ListItem( item.label, item.icon );
@@ -269,46 +300,31 @@ qx.Class.define("qcl.ui.dialog.Form",
                 item.value !== undefined ?  item.value : item.label
               );
               formElement.add( listItem );
-              if( fieldData.value !== undefined 
-                  && fieldData.value == listItem.getUserData( "value" ) )
-              {
-                formElement.setSelection([listItem]);
-                this.getResultData()[key]=fieldData.value;
-              }
             },this);
             break;
 
           case "radiogroup":
-            formElement = new qx.ui.container.Composite();
-            formElement.setLayout( new qx.ui.layout.VBox(5) );
-            var radioGroup = new qx.ui.form.RadioGroup();
+            uiElement = new qx.ui.container.Composite();
+            uiElement.setLayout( new qx.ui.layout.VBox(5) );
+            formElement = new qx.ui.form.RadioGroup();
             var selected = null;
             fieldData.options.forEach( function( item )
             {
               var radioButton = new qx.ui.form.RadioButton( item.label );
-              radioButton.setUserData( "value", 
+              formElement.setUserData( "value", 
                 item.value !== undefined ?  item.value : item.label
               );
-              
+              uiElement.add( radioButton );
               formElement.add( radioButton );
-              radioGroup.add( radioButton );
-              
-              if ( fieldData.value !== undefined 
-                  && fieldData.value == radioButton.getUserData( "value" ) )
-              {
-                radioGroup.setSelection([radioButton]); 
-              }
             },this);
-            var sel = radioGroup.getSelection();
-            if ( sel.length )
-            {
-              this._setResult( key, sel[0].getUserData("value") );
-            }
             break; 
             
           case "label":
-            formElement = null;
-            fieldData.labelPosition = "top";
+            uiElement = new qx.ui.basic.Label( fieldData.value );
+            break;
+            
+          case "atom":
+            uiElement = new qx.ui.basic.Atom( fieldData.value, fieldData.icon );
             break;
             
           default:
@@ -318,70 +334,78 @@ qx.Class.define("qcl.ui.dialog.Form",
         
         
         /*
-         * add listener to update result map
+         * Add form element to controller so that result data
+         * model is updated when form element value changes
          */
+        formElement.setUserData("key",key);
         switch ( fieldData.type.toLowerCase() )
         {
+          
+          /*
+           * simple form elements
+           */
           case "textarea":
           case "textfield":
           case "combobox":
-            formElement._key = ""+key;
-            formElement.addListener("changeValue",function(event){
-              var key   = event.getTarget()._key;
-              var value = event.getData();
-              this._setResult(key,value);
-            },this);
+            this._formController.addTarget( 
+              formElement, "value", key, true
+            );  
             break;
-            
+
+          /*
+           * single selection form elements
+           */
           case "selectbox":
-            formElement._key = ""+key;
-            formElement.addListener("changeSelection",function(event){
-              var key   = event.getTarget()._key;
-              var value = event.getData()[0].getUserData("value");
-              this._setResult(key,value);
-            },this);            
-            break;
-            
           case "radiogroup":
-            radioGroup._key = ""+key;
-            radioGroup.addListener("changeSelection",function(event){
-              var key   = event.getTarget()._key;
-              var value = event.getData()[0].getUserData("value");
-              this._setResult(key,value);
-            },this);            
-            break;               
+            var selectables = formElement.getSelectables();
+            this._formController.addTarget( 
+              formElement, "selection", key, true,
+              function( value )
+              {
+                selectables.forEach( function( selectable ){
+                  if ( selectable.getUserData("value") == value )
+                  {
+                    formElement.setSelection([selectable]);
+                  }
+                }, this );
+              },
+              function( selection )
+              {  
+                var key = formElement.getUserData("key");
+                this.getModel().set( key, selection.getUserData("value") );
+              }
+            );
+            break;            
         }
         
+        /*
+         * form element validation
+         */
+        var validator = null;
+        if ( fieldData.validation )
+        {
+          if ( fieldData.validation.required )
+          {
+            formElement.setRequired(true);
+          }
+          
+          if ( fieldData.validation.validator )
+          {
+            validator = fieldData.validation.validator;
+          }
+        }
+
        /*
         * add label and form element to form
         */
-       var label = new qx.ui.basic.Label( fieldData.label );
-       label.setRich(true);
-       label.setWidth(100);
-       label.setAllowGrowX(true);
-       
-       switch ( fieldData.labelPosition )        
-       {  
-         case "top":
-           this._formContainer.add( label, { row: row, column: 0, colSpan : 2 } );
-           if ( formElement )
-           {
-             this._formContainer.add( formElement, { row: ++row, column: 0, colSpan : 2 } );
-           }
-           break;
-           
-         case "left":
-         default:
-           formElement.setAlignX("right");
-           this._formContainer.add( label, { row: row, column: 0} );
-           this._formContainer.add( formElement, { row: row, column: 1} );          
-       }
-        
-        /*
-         * next row
-         */  
-        row++;
+       var label = fieldData.label || null;
+       this._form.add( uiElement, label, validator );
       }
+      
+      /*
+       * render the form
+       */
+      this._formContainer.add( this._form.createView( qcl.ui.dialog.FormRenderer ) );
     },
         
     /*
