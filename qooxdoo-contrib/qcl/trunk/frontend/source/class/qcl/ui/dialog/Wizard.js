@@ -39,64 +39,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
     {
       check : "Array",
       apply : "_applyPageData"
-    },
-
-    /**
-     * Whether the user is allowed to go to the previous wizard page
-     */
-    allowBack : 
-    {
-      check : "Boolean",
-      init : false
     },  
-    
-    /**  
-     * Callback function, the result of which determines whether the user is
-     * allowed to go to the previous wizard page 
-     */
-    allowBackFunc : 
-    {
-      check : "Function",
-      init : function() { return false; }
-    },
-    
-    /**
-     * Whether the user is allowed to go to the next wizard page
-     */
-    allowNext : 
-    {
-      check : "Boolean",
-      init : false
-    },
-
-    /**
-     * Callback function, the result of which determines whether the user is
-     * allowed to go to the next wizard page
-     */
-    allowNextFunc : 
-    {
-      check : "Function",
-      init : function() { return false; }
-    },    
-
-    /**
-     * Whether the user is allowed to complete the wizard
-     */
-    allowFinish : 
-    {
-      check : "Boolean",
-      init : false
-    },   
-    
-    /**  
-     * Callback function, the result of which determines whether the user is
-     * allowed to go to complete the wizard.
-     */
-    allowFinishFunc : 
-    {
-      check : "Function",
-      init : function() { return false; }
-    },
     
     /**
      * The number of the page in the wizard
@@ -175,7 +118,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        */
       var formContainer = this._formContainer = new qx.ui.container.Composite();
       formContainer.setPadding(16);
-
+      formContainer.setLayout( new qx.ui.layout.Grow() );
       formContainer.setMinWidth(300);
       formContainer.setMinHeight(200);
       groupboxContainer.add( formContainer );
@@ -233,19 +176,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        */
       //this.addListener("changeResultData", this._updateButtonStatus, this );
     },
-    
-    /**
-     * Update the enabled status of the buttons
-     * @return
-     */
-    _updateButtonStatus : function()
-    {
-      /*
-      this._backButton.setEnabled( this.getAllowBack( resultData ) || this.getAllowBackFunc()( resultData ) );
-      this._nextButton.setEnabled( this.getAllowNext( resultData ) || this.getAllowNextFunc()( resultData ) );
-      this._finishButton.setEnabled( this.getAllowFinish( resultData ) || this.getAllowFinishFunc()( resultData ) );
-      */
-    },
+  
     
     
     /*
@@ -269,13 +200,15 @@ qx.Class.define("qcl.ui.dialog.Wizard",
          * initialize response data model
          */
         var modelData = {};
-        pageData.forEach( function( formData ){
+        pageData.forEach( function( pData ){
+          var formData = pData.formData;
           for ( var key in formData )
           {
-            modelData[key] = formData[key].value;
+            modelData[key] = formData[key].value || null;
           }        
         } );
-        this.setModel( qx.data.marshal.Json.createModel( modelData ) );
+        var model = qx.data.marshal.Json.createModel( modelData );
+        this.setModel( model );
         this.setPage( 0 );
       }
       else
@@ -295,9 +228,9 @@ qx.Class.define("qcl.ui.dialog.Wizard",
    _applyPage : function ( page, old )
    {
       var pageData = this.getPageData()[ page ];
+      this.setFormData(null);
       delete pageData.pageData;
       this.set( pageData );
-      this._updateButtonStatus();
    },    
     
     /*
@@ -338,6 +271,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
       {
         this._nextButton.setEnabled(false);
       }
+      this._backButton.setEnabled(true);
     },    
     
     /** 
