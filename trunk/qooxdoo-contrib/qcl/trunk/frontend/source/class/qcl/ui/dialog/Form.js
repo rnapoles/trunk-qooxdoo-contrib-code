@@ -440,7 +440,7 @@ qx.Class.define("qcl.ui.dialog.Form",
       this.hide();
       if( this.getCallback() )
       {
-        this.getCallback()(this.getResultData());
+        this.getCallback()( this.getModel() );
       }
       this.resetCallback();
     }
