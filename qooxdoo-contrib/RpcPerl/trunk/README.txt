@@ -15,6 +15,10 @@ Release Notes
 ?   - Compatibility with JSON-2.07 module  (patch by Niko Tyni) 
       all new Testsuite (patch by Niko Tyni)
 
+    - Do not exit from JSONRPC after sending an Error. Just return
+      to the caller. Otherwhise sending out erros can get quite expensive
+      with the jsonrpc part having to restart every time.
+
 0.1 - initial release, preserving full backward compatibility
       with previous unversioned releases.
 

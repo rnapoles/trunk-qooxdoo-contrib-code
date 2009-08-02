@@ -210,7 +210,8 @@ sub handle_request
     {
         $error->set_error (JsonRpcError_IllegalService,
                            "Illegal character found in service name");
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     if ($json_input->{service} =~ /\.\./)
@@ -218,12 +219,14 @@ sub handle_request
         $error->set_error (JsonRpcError_IllegalService,
                            "Illegal use of two consecutive dots " .
                            "in service name");
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
     if (!_is_service_allowed($json_input->{service}, $exposed)) {
         $error->set_error (JsonRpcError_IllegalService,
                            "Requested service is not available");
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     my @service_components = split (/\./, $json_input->{service});
@@ -236,7 +239,8 @@ sub handle_request
             $error->set_error (JsonRpcError_IllegalService,
                                "A service name component does not begin " .
                                "with a letter");
-            $error->send_and_exit;
+            $error->send;
+            return;
         }
     }
 
@@ -269,7 +273,8 @@ sub handle_request
             $error->set_error (JsonRpcError_ServiceNotFound,
                                "Service '$module' not found");
         }
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     #----------------------------------------------------------------------
@@ -297,7 +302,8 @@ sub handle_request
 
             $error->set_error (JsonRpcError_Unknown,
                                $@);
-            $error->send_and_exit;
+            $error->send;
+            return;
         }
 
         print STDERR "GetAccessibility for $method returns $accessibility\n"
@@ -333,7 +339,8 @@ sub handle_request
         {
             $error->set_error (JsonRpcError_PermissionDenied,
                                "Permission denied");
-            $error->send_and_exit;
+            $error->send;
+            return;
         }
 
         my $refererDomain = $1;
@@ -342,7 +349,8 @@ sub handle_request
         {
             $error->set_error (JsonRpcError_PermissionDenied,
                                "Permission denied");
-            $error->send_and_exit;
+            $error->send;
+            return;
         }
 
         if (!defined $session->param ('session_referer_domain'))
@@ -357,7 +365,8 @@ sub handle_request
         {
             $error->set_error (JsonRpcError_PermissionDenied,
                                "Permission denied");
-            $error->send_and_exit;
+            $error->send;
+            return;
         }
 
         my $refererDomain = $1; 
@@ -367,7 +376,8 @@ sub handle_request
         {
             $error->set_error (JsonRpcError_PermissionDenied,
                                "Permission denied");
-            $error->send_and_exit;
+            $error->send;
+            return;
         }
         else
         {
@@ -378,14 +388,16 @@ sub handle_request
     {
         $error->set_error (JsonRpcError_PermissionDenied,
                            "Permission denied");
-        $error->send_and_exit;
+        $error->send;
+        return;
 
     }
     else
     {
         $error->set_error (JsonRpcError_PermissionDenied,
                            "Service error: unknown accessibility");
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     #----------------------------------------------------------------------
@@ -399,7 +411,8 @@ sub handle_request
         $error->set_error (JsonRpcError_MethodNotFound,
                            "Method '$method' not found " .
                            "in service class '$module'");
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     #----------------------------------------------------------------------
@@ -416,7 +429,8 @@ sub handle_request
     {
         $error->set_error (JsonRpcError_ParameterMismatch,
                            "Arguments were not received in an array");
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     my @params = @{$params};
@@ -443,7 +457,8 @@ sub handle_request
 
         $error->set_error (JsonRpcError_Unknown,
                            $@);
-        $error->send_and_exit;
+        $error->send;
+        return;
     }
 
     # (I've had to assume this behaviour based on the test results)
@@ -634,7 +649,7 @@ sub set_script_transport_id
 }
 
 
-sub send_and_exit
+sub send
 {
     my $self                = shift;
 
@@ -649,6 +664,12 @@ sub send_and_exit
                        : $self->{json}->encode ($result);
     Qooxdoo::JSONRPC::send_reply ($reply,
                                   $script_transport_id);
+}
+
+sub send_and_exit
+{
+    my $self = shift;
+    $self->send();
     exit;
 }
 
