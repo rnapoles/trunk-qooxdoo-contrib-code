@@ -14,6 +14,7 @@
 #
 # Authors:
 #  * Nick Glencross
+#  * Tobi Oetiker
 
 # This is a simple JSON-RPC server.  We receive a service name in
 # dot-separated path format and expect to find the class containing the
@@ -22,23 +23,27 @@
 # This harness script should be run using CGI or preferably mod_perl
 
 use strict;
-
 use CGI;
-use CGI::Session;
+#use CGI::Fast;
+use CGI::Session::Driver::file;
 
-use vars qw($cgi $session);
+# make sure session files do not clash
+$CGI::Session::Driver::file::FileName = ($ENV{USER}||'').$0.'%s.session';
 
 # Change this space-separated list of directories to include
 # Qooxdoo::JSONRPC.pm and co-located Services
-use lib qw(/PATH_TO_QOOXDOO/backend/perl);
+#use lib qw(/PATH_TO_QOOXDOO/backend/perl);
 
-# If this module can't be found, the previous line is incorrect
-use Qooxdoo::JSONRPC;
+use Qooxdoo::JSONRPC;   
 
-# Instantiating the CGI module which parses the HTTP request
+# talk about what we do in the apache error log
+#$Qooxdoo::JSONRPC::debug = 0;
 
-$cgi     = new CGI;
-$session = new CGI::Session;
+# By default methods are located in Qooxdoo/Services
+#$Qooxdoo::JSONRPC::service_path = 'Qooxdoo::Services';
+
+# By default methods have to be prefixed by 'method_'
+#$Qooxdoo::JSONRPC::method_prefix = 'method_';
 
 # It is recommended that you limit the services exposed by this script
 # This example will only expose the Qooxdoo::Services::My::App class
@@ -47,4 +52,16 @@ my $exposed = [ 'my.app' ];
 # You can customise this harness here to handle cases before treating
 # the request as being JSON-RPC
 
-Qooxdoo::JSONRPC::handle_request ($cgi, $session, $exposed);
+my $cgi = new CGI;
+my $session = new CGI::Session;
+Qooxdoo::JSONRPC::handle_request ($cgi, $session);
+
+# or preferably
+# Qooxdoo::JSONRPC::handle_request ($cgi, $session, $exposed);
+
+# or if you load CGI::Fast you can easily create a fastcgi aware version
+
+#while (my $cgi = new CGI::Fast) {  
+#   my $session = new CGI::Session;
+#   Qooxdoo::JSONRPC::handle_request ($cgi, $session, $exposed);
+#}
