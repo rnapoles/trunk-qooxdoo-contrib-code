@@ -46,17 +46,13 @@ qx.Class.define("htmlarea.HtmlArea",
 
   construct : function(value, styleInformation, source)
   {
-    // **********************************************************************
-    //   INIT
-    // **********************************************************************
-    var uri = source || null;
-    this.base(arguments, uri);
+    this.base(arguments, source || null);
 
     /* Set some init values */
     this.__isLoaded = false;
     this.__isEditable = false;
     this.__isReady = false;
-    
+
     this.__firstLineSelected = false;
     this.__listEntryStyles = "";
 
@@ -1114,7 +1110,7 @@ qx.Class.define("htmlarea.HtmlArea",
           }
           else
           {
-            doc.body.contentEditable = true;            
+            doc.body.contentEditable = true;
             this.__setDesignMode(true);
           }
         }
@@ -1529,7 +1525,10 @@ qx.Class.define("htmlarea.HtmlArea",
     _blur : qx.core.Variant.select("qx.client",
     {
       "mshtml" : function () {
-        this.getContentBody().blur();
+        // TODO: find better way to get an focusOut event, if we call blur in this way:
+        //         > this.getContentBody().blur();
+        //       other windows than the actual will get the focus
+        qx.ui.core.ClientDocument.getInstance().focus();
       },
 
       "webkit" : function () {
