@@ -1548,6 +1548,15 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _visualizeBlur : function()
     {
+      if (this._lastFocusAction === "focusout")
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("focus already lost");
+        }
+
+        return;
+      }
+
       try {
         this._blur();
       } catch (exc) {
@@ -2275,6 +2284,10 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleFocusEvent : function(e)
     {
+      if (qx.core.Variant.isSet("qx.debug", "on")) {
+        this.debug("FocusIn| LastAction:" + this._lastFocusAction + ",PreventFocus" + this._preventFocusEvent +",IsQXFocuse:"+this.isFocused());
+      }
+
       if (this._preventFocusEvent === true)
       {
         this._preventFocusEvent = false;
@@ -2331,6 +2344,10 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       "mshtml" : function(e)
       {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("FocusOut| LastAction:" + this._lastFocusAction + ",PreventFocus" + this._preventFocusEvent +",IsQXFocuse:"+this.isFocused());
+        }
+
         if (this._lastFocusAction === "focusin")
         {
           this._lastFocusAction = "focusout";
@@ -2350,6 +2367,10 @@ qx.Class.define("htmlarea.HtmlArea",
 
       "default" : function(e)
       {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("FocusOut| LastAction:" + this._lastFocusAction + ",PreventFocus" + this._preventFocusEvent +",IsQXFocuse:"+this.isFocused());
+        }
+
         if (this._lastFocusAction === "focusin")
         {
           this._lastFocusAction = "focusout";
