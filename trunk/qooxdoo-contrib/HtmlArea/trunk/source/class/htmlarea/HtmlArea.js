@@ -394,7 +394,7 @@ qx.Class.define("htmlarea.HtmlArea",
     __applyPostPonedProperties : function()
     {
       for(var propertyName in this.__postPonedProperties) {
-        this.__editorComponent["set" + propertName](this.__postPonedProperties[propertyName]);
+        this.__editorComponent["set" + propertyName](this.__postPonedProperties[propertyName]);
       }
     },
     
