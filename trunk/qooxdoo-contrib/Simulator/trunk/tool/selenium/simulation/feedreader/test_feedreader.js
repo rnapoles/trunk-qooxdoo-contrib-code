@@ -42,7 +42,7 @@ simulation.Simulation.prototype.checkArticle = function()
 
 mySim.runTest = function()
 {  
-  //this.addOwnFunction("getObjectByClassname", getObjectByClassname);
+  this.addChildrenGetter();
   this.addObjectGetter();
   
   var testPause = 360000;
@@ -73,7 +73,9 @@ mySim.runTest = function()
   // Use the preferences window to change the application language  
   // Click the preferences button, then check if the prefs window opened.  
   this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "", "Clicking Preferences button.");
-  var prefWindowScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")';
+  Packages.java.lang.Thread.sleep(2000);
+
+  var prefWindowScript = selWin + '.qx.Simulation.getChildrenByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")[0]';
   var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
   this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
   Packages.java.lang.Thread.sleep(2000);
@@ -113,11 +115,12 @@ mySim.runTest = function()
   // Add a new feed
   // Click "Add Feed"
   this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "", "Clicking Add Feed button");
+  Packages.java.lang.Thread.sleep(2000);
     
-  var feedWindowScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")';
+  var feedWindowScript = selWin + '.qx.Simulation.getChildrenByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")[0]';
   var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
   this.waitForCondition(isFeedWindowVisible, 10000, "Waiting for Add Feed window to open.");
-  Packages.java.lang.Thread.sleep(2000);  
+  Packages.java.lang.Thread.sleep(2000);
   
   // Check if the Add Feed window's caption was translated.
   var addFeedWindowLabel = feedWindowScript + ".getCaption().toString()";
