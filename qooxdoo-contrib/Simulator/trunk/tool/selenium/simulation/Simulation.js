@@ -788,6 +788,36 @@ simulation.Simulation.prototype.addObjectGetter = function()
 };
 
 /**
+ * Adds a function <code>qx.Simulation.getChildrenByClassname</code> to the AUT's 
+ * window. This function takes two arguments: A parent object and a qooxdoo 
+ * class name string.
+ * It will return an array containing any children of the parent object with a 
+ * classname property matching the class name string.
+ * 
+ * The function should be executed through getEval like this:
+ * <code>this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getChildrenByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';</code>
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.addChildrenGetter = function()
+{
+  var getChildrenByClassname = function(parent, searchterm)
+  {
+    var foundKids = [];
+    var kids = parent.getChildren();
+    for (var i=0,l=kids.length;i<l; i++) {    
+      if (kids[i].classname == searchterm) {
+        foundKids.push(kids[i]);
+      }
+    }
+    return foundKids;
+  };
+  
+  this.addOwnFunction("getChildrenByClassname", getChildrenByClassname);
+  
+};
+
+/**
  * Adds a function <code>qx.Simulation.sanitize</code> to the AUT's 
  * window, which will strip most special characters from a given string. 
  * It's more reliable to do this in this in the browser since some
