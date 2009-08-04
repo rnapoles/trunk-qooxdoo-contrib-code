@@ -304,18 +304,22 @@ qx.Class.define("qcl.ui.dialog.Form",
             },this);
             break;
 
-//          case "radiogroup":
-//            formElement = new qx.ui.form.RadioGroup();
-//            var selected = null;
-//            fieldData.options.forEach( function( item )
-//            {
-//              var radioButton = new qx.ui.form.RadioButton( item.label );
-//              formElement.setUserData( "value", 
-//                item.value !== undefined ?  item.value : item.label
-//              );
-//              formElement.add( radioButton );
-//            },this);
-//            break; 
+          case "radiogroup":
+            formElement = new qx.ui.form.RadioGroup();
+            if ( fieldData.orientation )
+            {
+              formElement.setUserData("orientation", fieldData.orientation );
+            }
+            var selected = null;
+            fieldData.options.forEach( function( item )
+            {
+              var radioButton = new qx.ui.form.RadioButton( item.label );
+              radioButton.setUserData( "value", 
+                item.value !== undefined ?  item.value : item.label
+              );
+              formElement.add( radioButton );
+            },this);
+            break; 
             
           case "label":
             formElement = new qx.ui.form.TextField(); // dummy
@@ -377,6 +381,7 @@ qx.Class.define("qcl.ui.dialog.Form",
                       }
                     }, this );
                   }
+                  //console.warn("Value is " + value + " > selection is " + selection);
                   return selection;
                 }
               },
@@ -384,6 +389,7 @@ qx.Class.define("qcl.ui.dialog.Form",
                 "converter" : function( selection )
                 {  
                   var value = selection[0].getUserData("value");
+                  //console.warn("Selection is " + selection + " > Value is " + value);
                   return value; 
                 }
               }
@@ -412,7 +418,7 @@ qx.Class.define("qcl.ui.dialog.Form",
        /*
         * add label and form element to form
         */
-       var label = fieldData.label || fieldData.value;
+       var label = fieldData.label;
         this._form.add( formElement, label, validator );
       }
       

@@ -139,7 +139,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      * Handles the message. The message data has to be a map with of the following
      * structure: <pre>
      * {
-     *   type : "(alert|confirm|form|login|select)",
+     *   type : "(alert|confirm|form|login|select|wizard)",
      *   properties : { the dialog properties WITHOUT a callback },
      *   service : "the.name.of.the.rpc.service",
      *   method : "serviceMethod",
@@ -164,7 +164,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
           data.params.unshift(result);
           
           /*
-           * send reqeust back to server
+           * send request back to server
            */
           qx.core.Init.getApplication().executeService( 
               data.service, data.method, data.params 
