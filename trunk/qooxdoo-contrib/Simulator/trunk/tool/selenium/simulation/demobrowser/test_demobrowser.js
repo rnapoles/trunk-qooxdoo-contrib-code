@@ -11,7 +11,8 @@ var baseConf = {
   'debug' : true,
   'logAll' : false,
   'ignore' : 'data:Gears,showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,virtual:List,virtual:Cells,virtual:ListBinding,virtual:Messenger,progressive:*,legacy:*',
-  'sampleGlobalErrorLogging' : false
+  'sampleGlobalErrorLogging' : false,
+  'shutdownSample' : false
 };
 
 var args = arguments ? arguments : "";
@@ -208,8 +209,10 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   Packages.java.lang.Thread.sleep(logPause);
   
   // Shut down the sample application
-  this.getEval(shutdownSample, "Shutting down sample application");
-  Packages.java.lang.Thread.sleep(2000);
+  if (this.getConfigSetting("shutdownSample")) {
+    this.getEval(shutdownSample, "Shutting down sample application");
+    Packages.java.lang.Thread.sleep(2000);
+  }
 
   print(category + " - " + currentSample + ": Processing log");
 
