@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.Strings;
 
-
+// TODO: open jdk 6 has a FileSystem class
 public abstract class Filesystem {
     /** separates file system name from rootPath in locator strings */
     public static final char SEPARTOR = ':';
@@ -91,6 +91,4 @@ public abstract class Filesystem {
     public List<String> split(String path) {
         return Strings.split(separator, path);
     }
-    
-    
 }

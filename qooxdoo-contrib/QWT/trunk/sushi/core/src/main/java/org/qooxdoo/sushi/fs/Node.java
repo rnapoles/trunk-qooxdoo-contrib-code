@@ -452,13 +452,17 @@ public abstract class Node {
         Buffer leftBuffer;
         int leftChunk;
         int rightChunk;
+        boolean[] leftEof;
+        boolean[] rightEof;
         
         leftBuffer = getIO().getBuffer();
         leftSrc = createInputStream();
+        leftEof = new boolean[] { false };
         rightSrc = right.createInputStream();
+        rightEof = new boolean[] { false };
         do {
-            leftChunk = leftBuffer.fill(leftSrc);
-            rightChunk = rightBuffer.fill(rightSrc);
+            leftChunk = leftEof[0] ? 0 : leftBuffer.fill(leftSrc, leftEof);
+            rightChunk = rightEof[0] ? 0 : rightBuffer.fill(rightSrc, rightEof);
             if (leftChunk != rightChunk) {
                 return true;
             }
@@ -704,23 +708,19 @@ public abstract class Node {
         }
     }
     
-    public String digest(String name) throws IOException, NoSuchAlgorithmException {
+    public byte[] digestBytes(String name) throws IOException, NoSuchAlgorithmException {
         InputStream src;
-        StringBuilder result;
+        MessageDigest complete;
         
         src =  createInputStream();
-        MessageDigest complete;
-
         complete = MessageDigest.getInstance(name);
         getIO().getBuffer().digest(src, complete);
         src.close();
-        result = new StringBuilder();
-        for (byte b : complete.digest()) {
-            // two parts to head leading zeros
-            result.append(Integer.toString(b >> 4 & 0xf, 16));
-            result.append(Integer.toString(b & 0xf, 16));
-        }
-        return result.toString();
+        return complete.digest();
+    }
+    
+    public String digest(String name) throws IOException, NoSuchAlgorithmException {
+        return Strings.toHex(digestBytes(name));
     }
     
     //-- Object functionality
