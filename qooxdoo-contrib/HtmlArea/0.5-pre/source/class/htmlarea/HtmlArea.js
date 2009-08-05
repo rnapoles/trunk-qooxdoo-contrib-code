@@ -561,7 +561,15 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       check : "Boolean",
       init  : true
+    },
+
+
+    nativeFocused : {
+      check : "Boolean",
+      init  : false,
+      apply : "_applyNativeFocused"
     }
+
   },
 
 
@@ -577,7 +585,6 @@ qx.Class.define("htmlarea.HtmlArea",
   {
 
     _preventFocusEvent : false,
-    _lastFocusAction   : "focusout",
     _listenerAdded     : false,
     _examineCursorContextTimer : null,
 
@@ -896,11 +903,66 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // we need to set the designMode every time we toggle visibility back to "visible"
       this.forceEditable();
+    },
 
-      if (this._applyFocusAfterAppear !== null)
+
+    /**
+     * @param isFocused {Boolean}
+     * @return {void}
+     */
+    _syncNativeAndQxFocus : function (isFocused)
+    {
+      if (this.getFocused() !== isFocused) {
+        this.setFocused(isFocused);
+      }
+    },
+
+
+    /**
+     * @param isFocused {Boolean}
+     * @return {void}
+     */
+    _syncQxAndNativeFocus : function (isFocused)
+    {
+      if (this.getNativeFocused() !== isFocused) {
+        this.setNativeFocused(isFocused);
+      }
+    },
+
+
+    /**
+     * @param isFocused {Boolean}
+     * @return {void}
+     */
+    _applyNativeFocused : function (isFocused)
+    {
+      //if (qx.core.Variant.isSet("qx.debug", "on")) {
+      //  this.debug("_applyNativeFocused("+isFocused+") | isFocused()="+this.isFocused());
+      //}
+
+      this._syncNativeAndQxFocus(isFocused);
+
+      if (isFocused)
       {
-        this._applyFocused(this._applyFocusAfterAppear);
-        this._applyFocusAfterAppear = null;
+        this.addState("focused");
+
+        this.__storedSelectedHtml = null;
+        this.createDispatchEvent("focused");
+      }
+      else
+      {
+        this.removeState("focused");
+
+        if (this.__commandManager) {
+          this.__commandManager.storeCurrentRange();
+        }
+
+        // Save range text
+        if (this.__storedSelectedHtml == null) {
+          this.__storedSelectedHtml = this.getSelectedHtml();
+        }
+
+        this.createDispatchEvent("focusOut");
       }
     },
 
@@ -910,14 +972,37 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyFocused : function (value, old)
     {
+      //if (qx.core.Variant.isSet("qx.debug", "on")) {
+      //  this.debug("_applyFocused("+value+") | isNativeFocused()="+this.isNativeFocused());
+      //}
+
       if (typeof value !== "boolean") {
-        return;
+        throw new Error("_applyFocused: invalid value of focused property: " + value);
       }
 
-      if (this.__isReady) {
-        this.base(arguments, value, old);
-      } else {
-        this._applyFocusAfterAppear = value;
+      if (!this.__isReady || !this.isCreated() || !this.isLoaded()) {
+        throw new Error("_applyFocused: htmlarea is not ready yet");
+      }
+
+      var focusRoot = this.getFocusRoot();
+
+      if (value === true)
+      {
+        if (focusRoot.getActiveChild() !== this)
+        {
+          focusRoot.setActiveChild(this);
+          focusRoot.setFocusedChild(this);
+        }
+
+        if (!this.isNativeFocused()) {
+          this._visualizeFocus();
+        }
+      }
+      else
+      {
+        if (this.isNativeFocused()) {
+          this._visualizeBlur();
+        }
       }
     },
 
@@ -1525,10 +1610,7 @@ qx.Class.define("htmlarea.HtmlArea",
     _blur : qx.core.Variant.select("qx.client",
     {
       "mshtml" : function () {
-        // TODO: find better way to get an focusOut event, if we call blur in this way:
-        //         > this.getContentBody().blur();
-        //       other windows than the actual will get the focus
-        qx.ui.core.ClientDocument.getInstance().focus();
+        this.getElement().blur();
       },
 
       "webkit" : function () {
@@ -1536,7 +1618,7 @@ qx.Class.define("htmlarea.HtmlArea",
       },
 
       "default" : function () {
-        this.getContentDocument().blur();
+        this.getContentBody().blur();
       }
     }),
 
@@ -1546,24 +1628,31 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      */
-    _visualizeBlur : function()
+    _visualizeBlur : function(force)
     {
-      if (this._lastFocusAction === "focusout")
+      if (!this.isNativeFocused())
       {
         if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug("focus already lost");
+          this.debug("_visualizeBlur: focus already lost");
         }
 
-        return;
+        if (force !== true) {
+          return;
+        }
       }
 
-      try {
+      try
+      {
         this._blur();
-      } catch (exc) {
-        this._lastFocusAction = "focusout";
+      }
+      catch (exc)
+      {
+        this.error("_blur: " + exc);
       }
 
-      this.removeState("focused");
+      qx.client.Timer.once(function () {
+        this._syncQxAndNativeFocus(false);
+      }, this, 50);
     },
 
 
@@ -1573,45 +1662,90 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    _visualizeFocus : function()
+    _visualizeFocus : function(force)
     {
-      // check on existing focus
-      if (this._lastFocusAction === "focusin")
+      if (this._isElementVisible() && (force === true || this._isVisualizeFocusAllowed()))
       {
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug("focus already set");
+        if (!this._focusCurrentRange())
+        {
+          try {
+            this._focus();
+          } catch (exc) {
+            this.error("_focus: " + exc);
+          }
         }
 
-        return;
+        qx.client.Timer.once(function () {
+          this._syncQxAndNativeFocus(true);
+        }, this, 50);
+
+        this.__startExamineCursorContext();
+      }
+      else
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("_visualizeFocus: not allowed");
+        }
+      }
+    },
+
+
+    /**
+     * @return {Boolean}
+     */
+    _isElementVisible : function ()
+    {
+      var elem = this.getElement();
+
+      if (!elem || elem && elem.offsetWidth == 0) {
+        return false;
+      }
+
+      return true;
+    },
+
+
+    /**
+     * @return {Boolean}
+     */
+    _isVisualizeFocusAllowed : function ()
+    {
+      if (this.isNativeFocused())
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("_visualizeFocus: focus already set");
+        }
+
+        return false;
       }
 
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
         if (!this.isFocused()) {
-          this.warn("no qooxdoo focus is set, try to sync after focusEvent");
+          this.debug("_visualizeFocus: no qooxdoo focus is set, try to sync after focusEvent");
         }
       }
 
-      var elem = this.getElement();
+      return true;
+    },
 
-      if (!elem || elem && elem.offsetWidth == 0)
-      {
-        this.warn("can't visualize focus because the iframe is invisible");
-        return;
-      }
 
-      this.addState("focused");
-
+    /**
+     * @return {Boolean}
+     */
+    _focusCurrentRange : function ()
+    {
       if (this.__commandManager && this.__commandManager.getCurrentRange)
       {
-        var range = this.__commandManager.getCurrentRange(true);
+        var range = this.__commandManager.getCurrentRange();
 
         if (range && range.select)
         {
           try
           {
             range.select();
-            return;
+
+            return true;
           }
           catch (exc)
           {
@@ -1620,11 +1754,7 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
 
-      if (this.__isLoaded)
-      {
-        this._focus();
-        this.__startExamineCursorContext();
-      }
+      return false;
     },
 
 
@@ -1647,10 +1777,6 @@ qx.Class.define("htmlarea.HtmlArea",
       var isShiftPressed  = e.isShiftPressed();
       var isCtrlPressed   = e.isCtrlPressed();
       this.__currentEvent = e;
-
-      if (this.__commandManager) {
-        this.__commandManager.invalidateCurrentRange();
-      }
 
       //if (qx.core.Variant.isSet("qx.debug", "on")) {
       //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode() + "|Ctrl:"+isCtrlPressed);
@@ -1848,15 +1974,31 @@ qx.Class.define("htmlarea.HtmlArea",
           e.preventDefault();
           e.stopPropagation();
         }
+        else
+        {
+          if (this.__commandManager) {
+            this.__commandManager.invalidateCurrentRange();
+          }
+        }
       },
 
       "default" : function(e)
       {
-        //if (qx.core.Variant.isSet("qx.debug", "on"))
-        //{
-        //  var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+        var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+        var isCtrlPressed = e.isCtrlPressed();
+
+        //if (qx.core.Variant.isSet("qx.debug", "on")) {
         //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
         //}
+
+        if (!(isCtrlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
+                                keyIdentifier == "b" || keyIdentifier == "u" || 
+                                keyIdentifier == "i" || keyIdentifier == "k")))
+        {
+          if (this.__commandManager) {
+            this.__commandManager.invalidateCurrentRange();
+          }
+        }
       }
     }),
 
@@ -2282,35 +2424,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      * @return {void}
      */
-    _handleFocusEvent : function(e)
-    {
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug("FocusIn| LastAction:" + this._lastFocusAction + ",PreventFocus" + this._preventFocusEvent +",IsQXFocuse:"+this.isFocused());
-      }
-
-      if (this._preventFocusEvent === true)
-      {
-        this._preventFocusEvent = false;
-        return;
-      }
-
-      if (e.type === "focus" && this._lastFocusAction === "focusout")
-      {
-        this._lastFocusAction = "focusin";
-
-        // call the "_apply" method directly
-        // otherwise the property system won't execute the "_apply" method
-        // if the property value doesn't change this is especially important for the 
-        // first click of the user
-        if (!this.isFocused()) {
-          this.setFocused(true);
-        } else {
-          this._applyFocused(true);
-        }
-
-        this.__storedSelectedHtml = null;
-        this.createDispatchEvent("focused");
-      }
+    _handleFocusEvent : function(e) {
+      this.setNativeFocused(true);
     },
 
 
@@ -2323,7 +2438,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleBlurEvent : function(e)
     {
-      if (this._lastFocusAction === "focusout")
+      if (!this.isNativeFocused())
       {
         qx.client.Timer.once( function () {
           this.__value = this.getComputedValue();
@@ -2340,44 +2455,9 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {qx.event.type.Event} focus out event
      * @return {void}
      */
-    _handleFocusOut : qx.core.Variant.select("qx.client",
-    {
-      "mshtml" : function(e)
-      {
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug("FocusOut| LastAction:" + this._lastFocusAction + ",PreventFocus" + this._preventFocusEvent +",IsQXFocuse:"+this.isFocused());
-        }
-
-        if (this._lastFocusAction === "focusin")
-        {
-          this._lastFocusAction = "focusout";
-
-          if (this.__commandManager) {
-            this.__commandManager.storeCurrentRange();
-          }
-
-          // Save range text
-          if (this.__storedSelectedHtml == null) {
-            this.__storedSelectedHtml = this.getSelectedHtml();
-          }
-
-          this.createDispatchEvent("focusOut");
-        }
-      },
-
-      "default" : function(e)
-      {
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug("FocusOut| LastAction:" + this._lastFocusAction + ",PreventFocus" + this._preventFocusEvent +",IsQXFocuse:"+this.isFocused());
-        }
-
-        if (this._lastFocusAction === "focusin")
-        {
-          this._lastFocusAction = "focusout";
-          this.createDispatchEvent("focusOut");
-        }
-      }
-    }),
+    _handleFocusOut : function(e) {
+      this.setNativeFocused(false);
+    },
 
 
     /**
@@ -2392,7 +2472,7 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleMouseEvent : function(e)
     {
       if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug("handleMouse " + e.type);
+        this.debug("handleMouseEvent | Type: " + e.type + ", Focused: " + this.isFocused() + ", NativeFocused: " + this.isNativeFocused());
       }
 
       // need to invalidate the stored range
@@ -2418,13 +2498,18 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleContextMenuEvent : function(e)
     {
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug("_handleContextMenuEvent " + e.type);
+      // need to invalidate the stored range
+      if (this.__commandManager) {
+        this.__commandManager.invalidateCurrentRange();
       }
 
       var button = (e.button ? e.button : e.which);
       if (qx.event.type.MouseEvent.buttons.right == button)
       {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug("handleContextMenuEvent | Type: " + e.type + ", Focused: " + this.isFocused() + ", LastAction: " + this.isNativeFocused());
+        }
+
         var data   = {
           x : e.clientX,
           y : e.clientY,
@@ -2462,8 +2547,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * 
      * @return {Boolean}
      */
-    isEditable : function ()
-    {
+    isEditable : function () {
       return this.__isEditable;
     },
 
@@ -2475,8 +2559,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param value {String} html content
      * @return {Boolean} Success of operation
      */
-    insertHtml : function (value)
-    {
+    insertHtml : function (value) {
       return this.__commandManager.execute("inserthtml", value);
     },
 
@@ -2855,7 +2938,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * the user is able to type ahead but right after the clearing the
        * caret is not visible (-> cursor does not blink)
        */
-      if (qx.core.Client.getInstance().isGecko()) {
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
         doc.body.innerHTML = "<p>&nbsp;</p>";
       }
 
@@ -2863,7 +2946,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * To ensure Webkit is showing a cursor after resetting the
        * content it is necessary to create a new selection and add a range
        */
-      else if (qx.core.Client.getInstance().isWebkit())
+      else if (qx.core.Variant.isSet("qx.client", "webkit"))
       {
         var sel = this.__getSelection();
         var rng = doc.createRange();
@@ -2940,12 +3023,20 @@ qx.Class.define("htmlarea.HtmlArea",
       /* setting a timeout is important to get the right result */
       this._examineCursorContextTimer = qx.client.Timer.once(function(e)
       {
-        if (this._lastFocusAction === "focusin") {
+        if (this.isNativeFocused()) {
           this.__examineCursorContext();
         }
 
         this._examineCursorContextTimer = null;
       }, this, 0);
+    },
+
+
+    /**
+     * @return {Boolean}
+     */
+    _isProcessingExamineCursorContext : function () {
+      return this._processingExamineCursorContext === true;
     },
 
 
@@ -2966,14 +3057,17 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __examineCursorContext : function()
     {
-      if (this._processingExamineCursorContext || this.getEditable() == false) {
+      if (this._isProcessingExamineCursorContext() || this.getEditable() === false) {
         return;
       }
 
       this._processingExamineCursorContext = true;
 
       var eventMap = this.getContextInformation();
-      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
+
+      if (eventMap !== null) {
+        this.createDispatchDataEvent("cursorContext", eventMap);
+      }
 
       this._processingExamineCursorContext = false;
     },
@@ -2999,8 +3093,16 @@ qx.Class.define("htmlarea.HtmlArea",
       if (qx.dom.Node.isText(focusNode)) {
         focusNode = focusNode.parentNode;
       }
-      
-      var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : doc.defaultView.getComputedStyle(focusNode, null);
+
+      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+        var focusNodeStyle = focusNode.currentStyle;
+      } else {
+        var focusNodeStyle = doc.defaultView ? doc.defaultView.getComputedStyle(focusNode, null) : null;
+      }
+
+      if (!focusNodeStyle) {
+        return null;
+      }
 
       /*
        * BOLD
@@ -3112,6 +3214,7 @@ qx.Class.define("htmlarea.HtmlArea",
       return eventMap;
     },
 
+
     /**
      * returns the attribute value of a given element
      * 
@@ -3174,12 +3277,12 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       "mshtml" : function()
       {
-        return this.getRange().text;
+        return this.getCurrentRange(true).text;
       },
 
       "default" : function()
       {
-        return this.getRange().toString();
+        return this.getCurrentRange(true).toString();
       }
     }),
 
@@ -3197,7 +3300,7 @@ qx.Class.define("htmlarea.HtmlArea",
         return this.__storedSelectedHtml;
       }
 
-      var range = this.getRange();
+      var range = this.getCurrentRange(true);
 
       if (!range) {
         return "";
@@ -3219,20 +3322,21 @@ qx.Class.define("htmlarea.HtmlArea",
         return range.toString();
       }
     },
-    
-    
+
+
     /**
      * Clears the current selection
      * 
      * @type member
      * @return {void}
      */
-    clearSelection : qx.core.Variant.select("qx.client", {
+    clearSelection : qx.core.Variant.select("qx.client",
+    {
       "mshtml" : function()
       {
         this.__getSelection().empty(); 
       },
-      
+
       "default" : function()
       {
         this.__getSelection().collapseToStart();
@@ -3250,7 +3354,7 @@ qx.Class.define("htmlarea.HtmlArea",
      {
       "mshtml" : function()
       {
-        var range = this.getRange();
+        var range = this.getCurrentRange(true);
         
         if (range) {
           range.collapse();
@@ -3273,6 +3377,27 @@ qx.Class.define("htmlarea.HtmlArea",
      TEXT RANGE
      -----------------------------------------------------------------------------
     */
+
+
+    /**
+     * @param createNew {Boolean}
+     * @param preventFocusEvent {Boolean}
+     * @return {Range}
+     */
+    getCurrentRange : function (createNew, preventFocusEvent)
+    {
+      if (this.__commandManager)
+      {
+        var range = this.__commandManager.getCurrentRange(true);
+
+        if (range != null) {
+          return range;
+        }
+      }
+
+      return createNew === true ? this.getRange(preventFocusEvent) : null;
+    },
+
 
     /**
      * returns the range of the current selection
@@ -3297,17 +3422,8 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var doc = this.getContentDocument();
 
-        if (this._lastFocusAction !== "focusin")
-        {
-          if (preventFocusEvent === true)
-          {
-            this._preventFocusEvent = true;
-            this.getContentBody().focus();
-          }
-          else
-          {
-            this.setFocused(true);
-          }
+        if (!this.isFocused()) {
+          //this.setFocused(true);
         }
 
         if (qx.util.Validation.isValid(sel))
@@ -3328,17 +3444,8 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var doc = this.getContentDocument();
 
-        if (this._lastFocusAction !== "focusin")
-        {
-          if (preventFocusEvent === true)
-          {
-            this._preventFocusEvent = true;
-            this.getContentBody().focus();
-          }
-          else
-          {
-            this.setFocused(true);
-          }
+        if (!this.isFocused()) {
+          //this.setFocused(true);
         }
 
         if (qx.util.Validation.isValid(sel))
@@ -3385,14 +3492,16 @@ qx.Class.define("htmlarea.HtmlArea",
               * there _is_ a correct parent element
               */
              rng = this.__createRange(sel);
-             rng.collapse(false);  /* collapse to end */
+             /* collapse to end */
+             rng.collapse(false);
              return rng.parentElement();
 
            case "Control":
              rng = this.__createRange(sel);
 
+             /* collapse to end */
              try {
-               rng.collapse(false);  /* collapse to end */
+               rng.collapse(false);
              } catch(ex) {}
 
              return rng.item(0);

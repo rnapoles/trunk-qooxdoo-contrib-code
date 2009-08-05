@@ -199,6 +199,7 @@ qx.Class.define("htmlarea.command.Manager",
       }
     },
 
+
     /**
      * Populate the internal "commands" object with the available commands and their settings.
      *
@@ -464,6 +465,48 @@ qx.Class.define("htmlarea.command.Manager",
     }),
     
 
+    _getExecCommandTarget : function (command)
+    {
+      var execCommandTarget = this.__doc;
+
+      if (!this.__currentRange)
+      {
+        execCommandTarget = this.__doc;
+      }
+      else
+      {
+        if(command != "selectall")
+        {
+          /*
+           * Select the content of the Text Range object to set the cursor at the right position
+           * and to give user feedback. Otherwise IE will set the cursor at the first position of the
+           * editor area
+           */
+          this.__currentRange.select();
+
+          /*
+           * If the saved Text Range object contains no text
+           * collapse it and execute the command at the document object
+           */
+          /* or
+           * Selected range is a control range with an image inside.
+           */
+          if((this.__currentRange.text && this.__currentRange.text.length > 0) ||
+             (this.__currentRange.length == 1 && this.__currentRange.item(0) && this.__currentRange.item(0).tagName == "IMG"))
+          {
+            execCommandTarget = this.__currentRange; 
+          }
+          else
+          {
+            execCommandTarget = this.__doc;
+          }
+        }
+      }
+
+      return execCommandTarget;
+    },
+
+
     /**
      * Internal method to deal with special cases when executing commands
      *
@@ -479,23 +522,21 @@ qx.Class.define("htmlarea.command.Manager",
       {
         /* The document object is the default target for all execCommands */
         var execCommandTarget = this.__doc;
-        
+
         /* Flag indicating if range was empty before executing command. Needed for IE bug. */
         var emptyRange = false;
         var range;
 
         /* Request current range explicitly, if command is one of the invalid focus commands. */
-        if(
-          (qx.core.Variant.isSet("qx.client", "mshtml")) &&
-          (qx.core.Client.getInstance().getVersion() < 7) &&
-          (this.__invalidFocusCommands[command])
-        )
+        if(qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          this.__currentRange = this.__editorInstance.getRange(); 
+          if (qx.core.Client.getInstance().getVersion() < 7 && this.__invalidFocusCommands[command]) {
+            this.__currentRange = this.getCurrentRange();
+          }
         }
 
         /* Body element must have focus before executing command */
-        this.__doc.body.focus();
+        this.__focus();
 
         /*
          * IE looses the selection if the user clicks on any other element e.g. a toolbar item
@@ -506,74 +547,34 @@ qx.Class.define("htmlarea.command.Manager",
          */
         if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          if (!this.__currentRange)
-          {
-            execCommandTarget = this.__doc;
-          }
-          else
-          {
-            if(command != "selectall")
-            {
-              /*
-               * Select the content of the Text Range object to set the cursor at the right position
-               * and to give user feedback. Otherwise IE will set the cursor at the first position of the
-               * editor area
-               */
-              this.__currentRange.select();
-  
-              if(
-                  /*
-                   * If the saved Text Range object contains no text
-                   * collapse it and execute the command at the document object
-                   */
-                  (
-                    (this.__currentRange.text) &&
-                    (this.__currentRange.text.length > 0)
-                  )
-                  ||
-                  /*
-                   * Selected range is a control range with an image inside.
-                   */
-                  (
-                    (this.__currentRange.length == 1) &&
-                    (this.__currentRange.item(0)) &&
-                    (this.__currentRange.item(0).tagName == "IMG")
-                  )
-                )
-              {
-                execCommandTarget = this.__currentRange; 
-              }
-              else
-              {
-                execCommandTarget = this.__doc;
-              }
-              
-            }
-          }
+          execCommandTarget = this._getExecCommandTarget(command);
 
           /* 
            * IE has the unwanted behavior to select text after executing some commands
            * (see this.__invalidFocusCommands).
            * If this happens, we have to collapse the range afterwards.    
            */
-          if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (this.__invalidFocusCommands[command]) )
+          if(qx.core.Variant.isSet("qx.client", "mshtml"))
           {
-            range = this.getCurrentRange();
+            if (this.__invalidFocusCommands[command])
+            {
+              range = this.getCurrentRange();
 
-            /* Check if range is empty */
-            if (range.text == "") {
-              emptyRange = true;
+              /* Check if range is empty */
+              if (range.text == "") {
+                emptyRange = true;
+              }
             }
           }
-
         }
-        
+
         // If the current paragraph is an empty one take over the collected 
         // formatting elements of the previous paragraph and apply them here
         if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
           // look for an *empty* paragraphs which are a result of a line-break
-          var rngParent = this.__editorInstance.getRange().parentElement();
+          var rngParent = this.getCurrentRange().parentElement();
+
           if (rngParent.nodeName.toLowerCase() === "p" && rngParent.childNodes.length === 0)
           {
             var previousElement = rngParent.previousSibling; 
@@ -583,7 +584,7 @@ qx.Class.define("htmlarea.command.Manager",
               var paraStyles = this.__getParagraphStyles(previousElement);
 
               for (var pStyle in paraStyles) {
-                this.__doc.execCommand(pStyle, false, paraStyles[pStyle]);
+                execCommandTarget.execCommand(pStyle, false, paraStyles[pStyle]);
               }
             }
           }
@@ -601,8 +602,7 @@ qx.Class.define("htmlarea.command.Manager",
 
         
         /* Debug info */
-        if (qx.core.Variant.isSet("qx.debug", "on"))
-        {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
           this.debug("execCommand " + command + " with value " + value + " succeded");
         }
 
@@ -614,8 +614,7 @@ qx.Class.define("htmlarea.command.Manager",
       }
       catch(ex)
       {
-        if (qx.core.Variant.isSet("qx.debug", "on"))
-        {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
           this.debug("execCommand " + command + " with value " + value + " failed");
         }
 
@@ -672,7 +671,7 @@ qx.Class.define("htmlarea.command.Manager",
     {
       "mshtml" : function(value, commandObject)
       {
-        this.__editorInstance.getContentDocument().body.focus();
+        this.__focus();
 
         /* Special handling if a "br" element should be inserted */
         if (value == htmlarea.HtmlArea.simpleLinebreak)
@@ -684,13 +683,9 @@ qx.Class.define("htmlarea.command.Manager",
           /* this.__currentRange can be a wrong range!*/
           var storedRange = this.getCurrentRange();
 
-          /* in this case, get the range again (we lose the cursor position by doing that) */
-          var actualRange = this.__editorInstance.getRange();
-
           if(storedRange)
           {
-            if (this.__lastSelectionType == "Control")
-            {
+            if (this.__lastSelectionType.toLowerCase() == "control") {
               storedRange.collapse();
             }
 
@@ -703,6 +698,9 @@ qx.Class.define("htmlarea.command.Manager",
             }
             catch(e)
             {
+              /* in this case, get the range again (we lose the cursor position by doing that) */
+              var actualRange = this.__editorInstance.getRange();
+
               /* If this fails, use the range we read explicitly */
               actualRange.pasteHTML(value);
               actualRange.collapse(false);
@@ -717,7 +715,7 @@ qx.Class.define("htmlarea.command.Manager",
       "default" : function (value, commandObject)
       {
         /* Body element must have focus before executing command */
-        this.__editorInstance.getContentWindow().focus();
+        this.__focus();
 
         var returnValue = this.__doc.execCommand(commandObject.identifier, false, value);
 
@@ -1149,23 +1147,18 @@ qx.Class.define("htmlarea.command.Manager",
          var focusNode = this.__editorInstance.getFocusNode();
          this.__manualOutdent(focusNode);
        }
-       
-       // Body element must have focus before executing command
-       this.__editorInstance.getContentWindow().focus();
+
+       this.__focus();
 
        // If a saved range is available use it
        var target = this.__currentRange !== null ? this.__currentRange : this.__doc;
        var returnValue = target.execCommand(commandObject.identifier, false, value);
-       
-       // (re)-focus the editor after the execCommand
-       this.__focusAfterExecCommand();
-       
-       
+
        // If the list was removed check if a paragraph has to be added
        if (this.__paragraphMissing()) {
          this.__insertHelperParagraph();
        }
-       
+
        if (qx.core.Variant.isSet("qx.client", "webkit"))
        {
          // Get the parent of the current focusNode as starting node for 
@@ -1173,7 +1166,10 @@ qx.Class.define("htmlarea.command.Manager",
          var focusNode = this.__editorInstance.getFocusNode();
          this.__manualOutdent(focusNode.parentNode);
        }
-       
+
+       // (re)-focus the editor after the execCommand
+       this.__focusAfterExecCommand();
+
        return returnValue;
      },
      
@@ -1221,18 +1217,21 @@ qx.Class.define("htmlarea.command.Manager",
      * @param commandObject {Object} command object
      * @return {Boolean} Success of operation
      */
-     __insertImage : qx.core.Variant.select("qx.client", {
+     __insertImage : qx.core.Variant.select("qx.client",
+     {
        "gecko" : function(attributes, commandObject)
        {
          /* Only insert an image if the src attribute info is available */
          if (attributes.src)
          {
+           this.__focus();
+
            /* Insert the image via the execCommand and add the attributes afterwards */
-           this.__doc.execCommand(commandObject.identifier, false, attributes.src);
-           
+           var result = this.__doc.execCommand(commandObject.identifier, false, attributes.src);
+
            /* Remove the "src" attribute from the map */
            delete attributes.src;
-           
+
            /* Get the image node */
            var sel = this.__editorInstance.__getSelection();
 
@@ -1322,8 +1321,10 @@ qx.Class.define("htmlarea.command.Manager",
              var rng = this.__editorInstance.getRange();
              rng.selectNodeContents(inline);
            }
-           
-           return true;
+
+           this.__focusAfterExecCommand();
+
+           return result;
          }
          else
          {
@@ -1333,6 +1334,8 @@ qx.Class.define("htmlarea.command.Manager",
 
        "mshtml" : function(attributes, commandObject)
        {
+         this.__focus();
+
          /* Put together the HTML for the image */
          var img = "<img ";
          for (var attrName in attributes)
@@ -1349,14 +1352,16 @@ qx.Class.define("htmlarea.command.Manager",
           * TextRange Object. 
           */
          var currRange = this.getCurrentRange();
+         var result = false;
 
          if (currRange)
          {
            try
            {
              currRange.select();
-
              currRange.pasteHTML(img);
+
+             result = true;
            }
            catch (exc)
            {
@@ -1381,12 +1386,18 @@ qx.Class.define("htmlarea.command.Manager",
              }
            }
          }
+
+         this.__focusAfterExecCommand();
+         return result;
        },
 
        "default" : function(attributes, commandObject)
        {
          /* For all other browsers use the execCommand directly */
-         return this.__doc.execCommand(commandObject.identifier, false, attributes.src);  
+         var result = this.__doc.execCommand(commandObject.identifier, false, attributes.src);
+         this.__focusAfterExecCommand();
+
+         return result;
        }
      }),
      
@@ -1488,31 +1499,34 @@ qx.Class.define("htmlarea.command.Manager",
          {
            /* Only use the link id for links which are based on a collapsed selection */
            var linkId   = "qx_link" + (++this.__hyperLinkId);
-           
+
            /* Create and insert the link as DOM nodes */
            var linkNode = this.__doc.createElement("a");
            var hrefAttr = this.__doc.createAttribute("href");
            var idAttr   = this.__doc.createAttribute("id");
            var linkText = document.createTextNode(url);
-           
+
            idAttr.nodeValue   = linkId;
            linkNode.setAttributeNode(idAttr);
-           
+
            hrefAttr.nodeValue = url;
            linkNode.setAttributeNode(hrefAttr);
-           
+
            linkNode.appendChild(linkText);
            rng.insertNode(linkNode);
            rng.selectNode(linkNode);
-           
+
            sel.collapseToEnd();
-           
+
            return true;
          }
          else
          {
            /* Use the execCommand if any selection is available */
-           return this.__doc.execCommand(commandObject.identifier, false, url);
+           var result = this.__doc.execCommand(commandObject.identifier, false, url);
+           this.__focusAfterExecCommand();
+
+           return result;
          }
        },
        
@@ -1527,7 +1541,9 @@ qx.Class.define("htmlarea.command.Manager",
          {
            if (this.__currentRange != null && this.__currentRange.text != "")
            {
-             return this.__currentRange.execCommand(commandObject.identifier, false, url);
+             var result = this.__currentRange.execCommand(commandObject.identifier, false, url);
+             this.__focusAfterExecCommand();
+             return result;
            }
            else
            {
@@ -1536,20 +1552,23 @@ qx.Class.define("htmlarea.command.Manager",
          } 
          catch(e)
          {
-           if (qx.core.Variant.isSet("qx.debug", "on"))
-           {
+           if (qx.core.Variant.isSet("qx.debug", "on")) {
              this.debug("inserthyperlink failed!");
            }
+
            return false;
          }
        },
        
        "default" : function(url, commandObject)
        {
-         return this.__doc.execCommand(commandObject.identifier, false, url);
+         var result = this.__doc.execCommand(commandObject.identifier, false, url);
+         this.__focusAfterExecCommand();
+         return result;
        }
      }),
-     
+
+
      /**
       * Internal method to insert an horizontal ruler in the document
       *
@@ -1561,7 +1580,7 @@ qx.Class.define("htmlarea.command.Manager",
      __insertHr : function(value, commandObject)
      {
        var htmlText = "<hr />";
-  
+
        /*
         * Gecko needs some extra HTML elements to keep
         * the current style setting after inserting the
@@ -1573,7 +1592,7 @@ qx.Class.define("htmlarea.command.Manager",
   
        return this.__insertHtml(htmlText, commandObject);
      },
-     
+
 
      /**
       * Helper function which generates a string containing HTML which can be 
@@ -1633,7 +1652,7 @@ qx.Class.define("htmlarea.command.Manager",
        
        return formatString;
      },
-     
+
 
      /**
       * Helper function which generates a documentFragment of <span>-tags 
@@ -1922,14 +1941,14 @@ qx.Class.define("htmlarea.command.Manager",
          parentStyleValue = parentDecoration.getPropertyValue("background-color");
 
          /* Check if computed value is valid */
-         if (parentStyleValue != "transparent")
-         {
-           /* Return computed value */
+         if (parentStyleValue != "transparent") {
            return parentStyleValue;
          }
-
        }
+
+       return null;
      },
+
 
      /**
       * Internal method to change the font size of the selection.
@@ -2063,7 +2082,9 @@ qx.Class.define("htmlarea.command.Manager",
          } // for
 
        /* No lists are selected */
-       }else{
+       }
+       else
+       {
 
          /* Check if element is inside a list entry */
          
@@ -2116,17 +2137,8 @@ qx.Class.define("htmlarea.command.Manager",
            
        }
 
-       /* Focus and select range in IE before executing command */
-       if (qx.core.Variant.isSet("qx.client", "mshtml"))
-       {
-         this.__doc.body.focus();
+       this.__focus();
 
-         // if we have actually an existing range we have to select it
-         if (this.__currentRange)
-         {
-           this.__currentRange.select();
-         }
-       }
        /*
         * Gecko uses span tags to save the style settings over block elements.
         * These span tags contain CSS which has a higher priority than the
@@ -2134,7 +2146,7 @@ qx.Class.define("htmlarea.command.Manager",
         * For each span tag inside the selection the CSS property has to be 
         * removed to hand over the control to the font size value of execCommand().
         */
-       else if(qx.core.Variant.isSet("qx.client", "gecko"))
+       if(qx.core.Variant.isSet("qx.client", "gecko"))
        {
          var parent = rng.commonAncestorContainer;
 
@@ -2149,9 +2161,9 @@ qx.Class.define("htmlarea.command.Manager",
             * never work out correctly.
             */
            var spans = parent.getElementsByTagName("span");
-           for (i=0; i<spans.length; i++) {
-             if (spans[i].style.fontSize)
-             {
+           for (i=0; i<spans.length; i++)
+           {
+             if (spans[i].style.fontSize) {
                spans[i].style.fontSize = null;
              }
            }
@@ -2159,7 +2171,10 @@ qx.Class.define("htmlarea.command.Manager",
        }
 
        /* Execute command on selection */
-       return this.__doc.execCommand("FontSize", false, value);
+       var result = this.__doc.execCommand("FontSize", false, value);
+       this.__focusAfterExecCommand();
+
+       return result;
      },
 
 
@@ -2173,11 +2188,12 @@ qx.Class.define("htmlarea.command.Manager",
       * @param commandObject {Object} command infos
       * @return {Boolean} success of operation
       */
-     __setTextBackgroundColor : qx.core.Variant.select("qx.client", {
+     __setTextBackgroundColor : qx.core.Variant.select("qx.client",
+     {
        "mshtml" : function(value, commandObject)
        {
          /* Body element must have focus before executing command */
-         this.__doc.body.focus();
+         this.__focus();
 
          /* Select range if it exists */
          if (this.__currentRange) {
@@ -2185,23 +2201,20 @@ qx.Class.define("htmlarea.command.Manager",
          }
 
          this.__doc.execCommand("BackColor", false, value);
-
-         /* Focus the editor */
          this.__focusAfterExecCommand();
+
          return true;
        },
 
        "gecko|opera" : function(value, commandObject)
        {
-         /* Body element must have focus before executing command */
-         this.__doc.body.focus();
-         
+         this.__focus();
          this.__doc.execCommand("HiliteColor", false, value);
-         
-         /* Focus the editor */
          this.__focusAfterExecCommand();
+
+         return true;
        },
-       
+
        "webkit" : function(value, commandObject) 
        {
          var sel = this.__editorInstance.__getSelection();
@@ -2210,17 +2223,13 @@ qx.Class.define("htmlarea.command.Manager",
          /* check for a range */
          if (!sel.isCollapsed)
          {
-            /* Body element must have focus before executing command */
-            this.__doc.body.focus();
-           
+           this.__focus();
            this.__doc.execCommand("BackColor", false, value);
-           
-           /* Focus the editor */
            this.__focusAfterExecCommand();
-           
+
            /* collapse the selection */
            sel.collapseToEnd();
-           
+
            return true;
          }
          else
@@ -2267,7 +2276,7 @@ qx.Class.define("htmlarea.command.Manager",
            sel.addRange(rng);
            
            /* Body element must have focus before executing command */
-           this.__doc.body.focus();
+           this.__focus();
            
            this.__doc.execCommand("BackColor", false, value);
            
@@ -2278,10 +2287,11 @@ qx.Class.define("htmlarea.command.Manager",
            sel.collapseToEnd();
            
            return true;
-         }          
+         }
        }
      }),
-     
+
+
      /**
       * Internal method to set a background color for the whole document
       *
@@ -2405,15 +2415,16 @@ qx.Class.define("htmlarea.command.Manager",
       * @type member
       * @return {Boolean} Success of operation
       */
-     __selectAll : qx.core.Variant.select("qx.client", {
+     __selectAll : qx.core.Variant.select("qx.client",
+     {
        "mshtml" : function(value, commandObject)
        {
          var rng = this.__doc.body.createTextRange();
          rng.select();
-         
+
          return true;
        },
-      
+
        "default" : function(value, commandObject)
        {
          return this.__executeCommand(commandObject.identifier, false, value);
@@ -2471,79 +2482,32 @@ qx.Class.define("htmlarea.command.Manager",
     },
 
 
-     /**
-     * (Re)-focuses the editor after an execCommand was executed
-     *
+    /**
+     * @return {void}
+     */
+    __focus : function () {
+      this.__editorInstance._focus();
+    },
+
+
+    /**
      * @type member
      * @return void
      */
-    __focusAfterExecCommand : qx.core.Variant.select("qx.client", {
-      
-      "mshtml" : function()
-      {
-        qx.client.Timer.once(function(e)
-        {
-          /*
-           * IE needs to change the activeChild to the editor component
-           * otherwise the e.g. pressed button (to set the selected content bold)
-           * will receive the following events
-           * call _visualizeFocus to get the right feedback to the user (editor is active)
-           */
-          qx.ui.core.ClientDocument.getInstance().setActiveChild(this.__editorInstance);
+    __focusAfterExecCommand : function()
+    {
+      qx.client.Timer.once(function () {
+        this.__editorInstance._visualizeFocus(true);
+      }, this, 50);
+    }
 
-          /* 
-           * sometimes IE can't select the range, but this is not important, so 
-           * we can ignore it
-           */
-          try
-          {
-            /* Select range before focus body element */
-            var range = this.getCurrentRange();
-  
-            if (range)
-            {
-              range.select();
-            }
-          }
-          catch (e)
-          {
-            this.debug ("can't select range in __focusAfterExecCommand.");
-          }
-
-          this.__editorInstance._visualizeFocus();
-        }, this, 50);
-      },
-        
-      "webkit" : function()
-      {
-        /*
-         * Webkit needs a mix of both (IE/Gecko). It is needed to (re)set the editor widget
-         * as the active child and to focus the editor widget (again).
-         */
-         qx.client.Timer.once(function(e)
-         {
-           qx.ui.core.ClientDocument.getInstance().setActiveChild(this);
-           this.getContentWindow().focus();
-         }, this.__editorInstance, 50);
-       },
-        
-       "default" : function()
-       {
-         /* for all other browser a short delayed focus on the contentWindow should do the job */
-         qx.client.Timer.once(function(e) {
-           this.getContentWindow().focus();
-         }, this.__editorInstance, 50);
-       }
-    })
-    
   },
 
 
   /**
    * Destructor
    */
-  destruct : function()
-  {
+  destruct : function() {
     this._disposeFields("__doc", "__editorInstance", "__commands");
   }
 });
