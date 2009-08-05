@@ -56,17 +56,28 @@ public class Buffer {
     }
     
     public int fill(InputStream in) throws IOException {
-        return fill(in, buffer);
+        return fill(in, buffer, 0, buffer.length, null);
+    }
+
+    public int fill(InputStream in, boolean[] eof) throws IOException {
+        return fill(in, buffer, 0, buffer.length, eof);
     }
 
     public static int fill(InputStream in, byte[] buffer) throws IOException {
+        return fill(in, buffer, 0, buffer.length, null);
+    }
+
+    public static int fill(InputStream in, byte[] buffer, int start, int max, boolean[] eof) throws IOException {
         int chunk;
         int ofs;
         
-        for (ofs = 0; ofs < buffer.length; ofs += chunk) {
-            chunk = in.read(buffer, ofs, buffer.length - ofs);
+        for (ofs = 0; ofs < max; ofs += chunk) {
+            chunk = in.read(buffer, ofs, max - ofs);
             if (chunk < 0) {
-                break;
+                if (eof != null) {
+                    eof[0] = true;
+                }
+                return ofs;
             }
         }
         return ofs;

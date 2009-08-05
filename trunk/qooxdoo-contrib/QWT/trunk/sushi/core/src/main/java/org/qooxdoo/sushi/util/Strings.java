@@ -29,6 +29,21 @@ public class Strings {
     //
     //-- one string 
     //
+
+    public static String toHex(byte ... bytes) {
+        StringBuilder result;
+        
+        result = new StringBuilder();
+        toHex(result, bytes);
+        return result.toString();
+    }
+    
+    public static void toHex(StringBuilder result, byte ... bytes) {
+        for (byte b : bytes) {
+            result.append(Integer.toString(b >> 4 & 0xf, 16));
+            result.append(Integer.toString(b & 0xf, 16));
+        }
+    }
     
     public static String join(String separator, String ... strings) {
         return join(separator, Arrays.asList(strings));
