@@ -1693,6 +1693,14 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * @return {Boolean}
      */
+    isVisible : function () {
+      return this._isElementVisible();
+    },
+
+
+    /**
+     * @return {Boolean}
+     */
     _isElementVisible : function ()
     {
       var elem = this.getElement();
