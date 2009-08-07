@@ -156,7 +156,15 @@ simulation.Simulation = function(baseConf, args)
     for (i in args) {
       if (args[i].indexOf("=") >0) {
         var tempArr = args[i].split("=");
-        conf[tempArr[0]] = tempArr[1];
+        if (tempArr[1] == "true") {
+          conf[tempArr[0]] = true;
+        }
+        else if (tempArr[1] == "false") {
+          conf[tempArr[0]] = false;
+        }
+        else {
+          conf[tempArr[0]] = tempArr[1]; 
+        }
       }
     }
     return conf;
