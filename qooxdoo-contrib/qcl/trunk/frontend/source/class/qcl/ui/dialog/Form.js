@@ -27,7 +27,7 @@
  */
 qx.Class.define("qcl.ui.dialog.Form",
 {
-  extend : qx.dialog.Dialog,
+  extend : qcl.ui.dialog.Dialog,
   
   /*
   *****************************************************************************
