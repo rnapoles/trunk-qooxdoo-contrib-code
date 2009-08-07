@@ -49,8 +49,44 @@ qx.Class.define("qcl.ui.dialog.Wizard",
       check : "Integer",
       apply : "_applyPage",
       init : 0
+    },
+    
+    /**
+     * Whether to allow the user to go to the previous
+     * wizard page
+     */
+    allowBack :
+    {
+      check : "Boolean",
+      init : false,
+      event : "changeAllowBack"
+    },
+
+    /**
+     * Whether to allow the user to go to the next
+     * wizard page
+     */
+    allowNext :
+    {
+      check : "Boolean",
+      init : false,
+      event : "changeAllowNext"
+    },    
+    
+    /**
+     * Whether to allow the user to finish the wizard. Automatically
+     * set to 'true' on the last page of the wizard. The "Finish" button
+     * is enabled if this property is 'true' AND all the form entries pass
+     * the validation tests. 
+     */
+    allowFinish :
+    {
+      check : "Boolean",
+      init : false,
+      event : "changeAllowFinish"
     }
   },
+ 
   
   /*
   *****************************************************************************
@@ -145,16 +181,17 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        *  'Back' button 
        */
       this._backButton = new qx.ui.form.Button( "< " + this.tr("Back") );
-      this._backButton.setEnabled(false);
       this._backButton.addListener("execute",this.goBack,this);
+      this.bind("allowBack",this._backButton,"enabled");
+      this._backButton.setEnabled(false);
       buttonPane.add( this._backButton );   
 
       /* 
        *  'Next' button 
        */
       this._nextButton = new qx.ui.form.Button( this.tr("Next") + " >" );
-      this._nextButton.setEnabled(false);
       this._nextButton.addListener("execute",this.goForward,this);
+      this._nextButton.setEnabled(false);
       buttonPane.add( this._nextButton );   
       
       /* 
@@ -164,20 +201,47 @@ qx.Class.define("qcl.ui.dialog.Wizard",
       buttonPane.add( cancelButton );        
       
       /* 
-       *  Finish button 
+       *  Finish button
        */
       this._finishButton = new qx.ui.form.Button( this.tr("Finish")  );
+      this._finishButton.addListener("execute",this.finish,this);
       this._finishButton.setEnabled(false);
-      this._finishButton.addListener("execute",this.finish,this);      
       buttonPane.add( this._finishButton );
       
-      /*
-       * let the "changeResultData" event update the buttons
-       */
-      //this.addListener("changeResultData", this._updateButtonStatus, this );
+      
     },
-  
-    
+
+    /**
+     * Add bindings to the validation manager to control the state of 
+     * the wizard buttons. 
+     * @param form {qx.ui.form.Form}
+     * @return {void}
+     */
+    _onFormReady : function( form )
+    {
+      var _this = this;
+      
+      /*
+       * bind the enabled state of the "next" button to the validity of the
+       * current form, as long as the last page hasn't been reached.
+       */
+      form.getValidationManager().bind( "valid", this._nextButton, "enabled", {
+        converter : function( value ) {
+          return value && _this.getAllowNext();
+        }
+      });
+
+      /*
+       * bind the enabled state of the "finish" button to the validity of the
+       * current form and the state of the "allowFinish" property
+       */
+
+      form.getValidationManager().bind( "valid", this._finishButton, "enabled", {
+        converter : function( value ){
+          return value && _this.getAllowFinish();
+        }
+      });
+    },    
     
     /*
     ---------------------------------------------------------------------------
@@ -209,7 +273,6 @@ qx.Class.define("qcl.ui.dialog.Wizard",
         } );
         var model = qx.data.marshal.Json.createModel( modelData );
         this.setModel( model );
-        this.setPage( 0 );
       }
       else
       {
@@ -221,16 +284,43 @@ qx.Class.define("qcl.ui.dialog.Wizard",
    /**
     * Go to a given wizard page. This recreates the 
     * form.
-    * @param pageData
-    * @param old
+    * @param page {Integer}
+    * @param old {Integer}
     * @return
     */
    _applyPage : function ( page, old )
    {
       var pageData = this.getPageData()[ page ];
       this.setFormData(null);
+      
+      /*
+       * delete properties that are not allowed to be set
+       */
       delete pageData.pageData;
+      delete pageData.page;
+      
+      /*
+       * set button status
+       */
+      var length = this.getPageData().length; 
+      this.setAllowNext( page < length -1 );
+      this.setAllowBack( page > 0 );
+      if ( ! this.getAllowFinish() )
+      {
+        this.setAllowFinish( page == length -1 );
+      }
+      
+      
+      /*
+       * create form
+       */
       this.set( pageData );
+      
+      /*
+       * validate form
+       */
+      this._form.getValidationManager().validate();
+
    },    
     
     /*
@@ -238,6 +328,15 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        API METHODS
     ---------------------------------------------------------------------------
     */
+    
+    /**
+     * Starts the wizard
+     */
+    start : function()
+    {
+      this.show();
+      this.setPage( 0 );
+    },
 
     /**
      * Goes to the previous wizard button
@@ -250,10 +349,6 @@ qx.Class.define("qcl.ui.dialog.Wizard",
         this.error("Cannot go back!");
       }
       this.setPage( --page );
-      if ( page == 0 )
-      {
-        this._backButton.setEnabled(false);
-      }
     },
 
     /**
@@ -267,23 +362,18 @@ qx.Class.define("qcl.ui.dialog.Wizard",
         this.error("Cannot go forward!");
       }
       this.setPage( ++page );
-      if ( page == this.getPageData().length -1 )
-      {
-        this._nextButton.setEnabled(false);
-      }
-      this._backButton.setEnabled(true);
     },    
     
     /** 
-     * Finishes the wizard. Calls callback with the result data model
-     * @return qx.core.Object
+     * Finishes the wizard. Calls callback with the result data map
+     * @return {Object}
      */
     finish : function()
     {
       this.hide();
       if( this.getCallback() )
       {
-        this.getCallback()( this.getModel() );
+        this.getCallback()( this._mappifyResultModel() );
       }
       this.resetCallback();
     }

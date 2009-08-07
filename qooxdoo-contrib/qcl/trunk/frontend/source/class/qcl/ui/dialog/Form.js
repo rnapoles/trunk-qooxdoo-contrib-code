@@ -27,7 +27,7 @@
  */
 qx.Class.define("qcl.ui.dialog.Form",
 {
-  extend : qcl.ui.dialog.Dialog,
+  extend : qx.dialog.Dialog,
   
   /*
   *****************************************************************************
@@ -215,6 +215,7 @@ qx.Class.define("qcl.ui.dialog.Form",
       }
       if ( this._form )
       {
+        this._form.getValidationManager().removeAllBindings();
         this._form.dispose();
       }
       this._formContainer.removeAll();
@@ -250,10 +251,9 @@ qx.Class.define("qcl.ui.dialog.Form",
       this._formController = new qx.data.controller.Object( this.getModel() );
       
       /*
-       * bind the enabled state of the "next" button to the validity of the
-       * current form
+       * hook for subclasses to do something with the new form
        */
-      this._form.getValidationManager().bind( "valid", this._nextButton, "enabled");
+      this._onFormReady( this._form );
       
       /*
        * loop through form data array
@@ -430,6 +430,18 @@ qx.Class.define("qcl.ui.dialog.Form",
       this._formContainer.add( view );
       
     },
+    
+    /**
+     * Hook for subclasses to do something with the form, for example
+     * in order to attach bindings to the validation manager.
+     * Empty stub to be overridden.
+     * @param form {qx.ui.form.Form}
+     * @return {void}
+     */
+    _onFormReady : function( form )
+    {
+      return; 
+    },
         
     /*
     ---------------------------------------------------------------------------
@@ -446,9 +458,22 @@ qx.Class.define("qcl.ui.dialog.Form",
       this.hide();
       if( this.getCallback() )
       {
-        this.getCallback()( this.getModel() );
+        this.getCallback()( this._mappifyResultModel() );
       }
       this.resetCallback();
+    },
+    
+    /**
+     * Converts object property values into map
+     * @return
+     */
+    _mappifyResultModel : function()
+    {
+      var resultMap = {};
+      qx.Class.getProperties( qx.Class.getByName( this.getModel().classname ) ).forEach( function(property){
+        resultMap[property] = this.getModel().get( property );
+      },this);
+      return resultMap;
     }
   }    
 });
