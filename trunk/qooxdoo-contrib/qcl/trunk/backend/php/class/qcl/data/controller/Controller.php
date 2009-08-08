@@ -244,6 +244,18 @@ class qcl_data_controller_Controller
 
   /**
    * Shorthand method to set a property of the result
+   * data object. Alias of setResult()
+   * @param string $key
+   * @param mixed $value
+   * @deprecated Work with result object instead
+   */
+  function set ( $key, $value )
+  {
+    $this->_resultObject->set( $key, $value );
+  }
+
+  /**
+   * Shorthand method to set a property of the result
    * data object
    * @param string $key
    * @param mixed $value

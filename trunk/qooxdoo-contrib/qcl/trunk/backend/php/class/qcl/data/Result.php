@@ -26,6 +26,24 @@ class qcl_data_Result
 {
 
   /**
+   * Constructor. Optionally presets the object property values
+   * @param array|null $data
+   * @return void
+   */
+  function __construct( $data=null )
+  {
+    if ( is_array( $data ) )
+    {
+      foreach( $data as $key => $value )
+      {
+        $this->createProperty( $key, array(
+          'init' => $value
+        ) );
+      }
+    }
+  }
+
+  /**
    * Converts a query result set into a model in which the properties
    * contain all the values of the properties in the result set
    * as arrays. Returns the converted object;

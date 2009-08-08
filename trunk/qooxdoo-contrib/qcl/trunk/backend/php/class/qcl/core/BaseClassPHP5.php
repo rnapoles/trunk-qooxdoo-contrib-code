@@ -29,6 +29,12 @@ class qcl_core_BaseClass
   private $_mixinlookup = array();
 
   /**
+   * Data on the properties of this object, similar to qooxdoo properties
+   * @var array
+   */
+  private $_properties;
+
+  /**
    * Checks if class has this property
    * @param $property
    * @return unknown_type
@@ -83,6 +89,22 @@ class qcl_core_BaseClass
     $this->$property = $value;
     return $this;
   }
+
+  /**
+   * Creates a property with information similar to the qooxdoo property system.
+   * Simple implementation to be overridden by more complex
+   * behavior. Currently, only "init" is supported.
+   * @param string $name Name of the property
+   * @param array $data Property data similar to qooxdoo 'properties' configuration
+   * @return unknown_type
+   * @todo backport to PHP4
+   */
+  public function createProperty( $name, $data )
+  {
+    $this->_properties[$name] = $data;
+    $this->$name = $data['init'];
+  }
+
 
   /**
    * Method called when called method does not exist. (PHP5)
