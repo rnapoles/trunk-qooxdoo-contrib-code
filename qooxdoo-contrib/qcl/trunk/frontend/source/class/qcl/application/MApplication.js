@@ -733,7 +733,8 @@ qx.Mixin.define("qcl.application.MApplication",
       OTHER UTILITY METHODS
    ---------------------------------------------------------------------------
    */          
-
+   _alert : null,
+   
    /**
     * Alerts a message similarly to the alert() function
     * @param message {String}
@@ -742,10 +743,15 @@ qx.Mixin.define("qcl.application.MApplication",
     */
    alert : function( message, callback )
    {
-     qcl.ui.dialog.Dialog.show("alert",{
-       message : message,
+     if ( ! this._alert ) 
+     {
+       this._alert = new qcl.ui.dialog.Alert();
+     }
+     this._alert.set({
+       message  : message,
        callback : callback || null
      });
+     this._alert.show();
    },
     
     
