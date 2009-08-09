@@ -20,6 +20,8 @@
 
 /* ************************************************************************
 #require(qcl.ui.dialog.FormRenderer)
+#require(qx.util.Serializer)
+#require(qx.util.Validate)
 ************************************************************************ */
 
 /**
@@ -404,21 +406,96 @@ qx.Class.define("qcl.ui.dialog.Form",
         var validator = null;
         if ( formElement && fieldData.validation )
         {
+          
+          /*
+           * is field required?
+           */
           if ( fieldData.validation.required )
           {
             formElement.setRequired(true);
           }
           
+          /*
+           * is there a validator?
+           */
           if ( fieldData.validation.validator )
           {
-            validator = fieldData.validation.validator;
+             var validator = fieldData.validation.validator;
+
+            /*
+             * if validator is a string ...
+             */
+            if ( typeof validator == "string" )
+            {
+              /*
+               * if a validation factory exists, use this
+               */
+              if ( qx.util.Validate[validator] )
+              {
+                validator = qx.util.Validate[validator]();
+              }
+
+              /*
+               * else, is it a regular expression?
+               */
+              else if ( validator.charAt(0) == "/" )
+              {
+                validator = qx.util.Validate.regExp( new RegExp( validator.substr( 1, validator.length-2 ) ) );
+              }
+
+              /*
+               * error
+               */
+              else 
+              {
+                this.error("Invalid string validator.");
+              }
+            }
+
+            /*
+             * in all other cases, it must be a funciton or an async validation
+             * object
+             */
+            else if ( ! ( validator instanceof qx.ui.form.validation.AsyncValidator ) 
+                && typeof validator != "function" ) 
+            {
+              this.error("Invalid validator.");
+            }
+          }
+           
+          /*
+           * Server validation?
+           */
+          if ( fieldData.validation.service )
+          {
+            var service = fieldData.validation.service;
+            var _this = this;
+            validator =  new qx.ui.form.validation.AsyncValidator(
+              function( validatorObj, value) 
+              {
+                if ( ! validatorObj.__asyncInProgress )
+                {
+                  validatorObj.__asyncInProgress = true;
+                  qx.core.Init.getApplication().executeService( 
+                    service.name, service.method, [value], function(response)
+                    {
+                      try {
+                      var valid = ( response &&  typeof response == "object" && response.data ) ? response.data : response;
+                      validatorObj.setValid( valid );
+                      validatorObj.__asyncInProgress = false;
+                      } catch(e ) { alert(e) };
+                    } 
+                  );
+                }
+              }
+            );
           }
         }
 
-       /*
-        * add label and form element to form
-        */
-       var label = fieldData.label;
+        /*
+         * add label and form element to form
+         */
+        var label = fieldData.label;
         this._form.add( formElement, label, validator );
       }
       
@@ -428,6 +505,11 @@ qx.Class.define("qcl.ui.dialog.Form",
       view = this._form.createView( qcl.ui.dialog.FormRenderer );
       view.setAllowGrowX(true);
       this._formContainer.add( view );
+      
+      /*
+       * validate the form
+       */
+      this._form.getValidationManager().validate();
       
     },
     
@@ -461,19 +543,6 @@ qx.Class.define("qcl.ui.dialog.Form",
         this.getCallback()( this._mappifyResultModel() );
       }
       this.resetCallback();
-    },
-    
-    /**
-     * Converts object property values into map
-     * @return
-     */
-    _mappifyResultModel : function()
-    {
-      var resultMap = {};
-      qx.Class.getProperties( qx.Class.getByName( this.getModel().classname ) ).forEach( function(property){
-        resultMap[property] = this.getModel().get( property );
-      },this);
-      return resultMap;
     }
   }    
 });

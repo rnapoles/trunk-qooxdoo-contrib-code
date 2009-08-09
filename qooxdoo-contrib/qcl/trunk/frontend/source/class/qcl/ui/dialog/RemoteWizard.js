@@ -54,14 +54,13 @@ qx.Class.define("qcl.ui.dialog.RemoteWizard",
   */     
   members :
   {
-  
-    
+ 
     /*
     ---------------------------------------------------------------------------
        API METHODS
     ---------------------------------------------------------------------------
     */
-
+    
     /**
      * Goes to the previous wizard button
      */
@@ -75,7 +74,7 @@ qx.Class.define("qcl.ui.dialog.RemoteWizard",
       this.getApplication().executeService(
         this.getServiceName(),
         this.getServiceMethod(),
-        [ page-1, this._mappifyResultModel() ],
+        [ page-1, qx.util.Serializer.toJson( this.getModel() ) ],
         function ( data ){
           this.set( data );
         },
@@ -96,7 +95,7 @@ qx.Class.define("qcl.ui.dialog.RemoteWizard",
       this.getApplication().executeService(
         this.getServiceName(),
         this.getServiceMethod(),
-        [ page+1, this._mappifyResultModel() ],
+        [ page+1, qx.util.Serializer.toJson( this.getModel() ) ],
         function ( data ){
           this.set( data );
         },
@@ -114,7 +113,7 @@ qx.Class.define("qcl.ui.dialog.RemoteWizard",
       this.getApplication().executeService(
         this.getServiceName(),
         this.getServiceMethod(),
-        [ null, this._mappifyResultModel() ]
+        [ null, qx.util.Serializer.toJson( this.getModel() ) ]
       );
     }
   }    
