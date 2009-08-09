@@ -200,15 +200,29 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function formatOutput( $data )
   {
-    $requestId = $this->getId();
-    $sessionId = qcl_access_Manager::getSessionId();
-    $events    = qcl_event_Dispatcher::getServerEvents();
-    $messages  = qcl_event_message_Bus::getServerMessages( $sessionId );
-
+    /*
+     * response object
+     */
     $response =& qcl_server_Response::getInstance();
+
+    /*
+     * request id
+     */
+    $requestId = $this->getId();
     $response->setId( $requestId );
-    $response->setEvents( $events );
-    $response->setMessages( $messages );
+
+    /*
+     * events and messages
+     */
+    if ( qcl_application_Application::getIniValue("service.event_transport") == "on" )
+    {
+      $events    = qcl_event_Dispatcher::getServerEvents();
+      $response->setEvents( $events );
+      $sessionId = qcl_access_Manager::getSessionId();
+      $messages  = qcl_event_message_Bus::getServerMessages( $sessionId );
+      $response->setMessages( $messages );
+    }
+
     if( is_a( $data, "qcl_data_Result" ) )
     {
       $data = $data->toArray();
