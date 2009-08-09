@@ -247,23 +247,7 @@
                   <qcl:condition>return this.getApplication().getServer()=="qcl";</qcl:condition>
                 </qcl:permission>                              
               </qcl:access>
-              
-              <qx:label rich="true" width="200" allowStretchX="true">
-                <qxt:property name="value">
-                  <![CDATA[
-                   <p>Server dialogs are dialogs that are initiated by the server and return the result
-                   of the user action back to the server. This allows server-side logic to interact
-                   with the user.</p> 
-                   ]]>
-                </qxt:property>
-                
-              </qx:label>      
-              <qx:button label="Start server dialog demo" >
-               <qcl:observe property="enabled" permission="qclServer" />
-                <qxt:listener event="execute">
-                  this.getApplication().startServerDialog();
-                </qxt:listener>
-              </qx:button>                                            
+                                                     
               
             </qx:vbox>
           

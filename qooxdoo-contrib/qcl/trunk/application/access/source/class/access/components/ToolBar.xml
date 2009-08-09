@@ -25,7 +25,7 @@
           
         <!-- show login popup on button click -->          
         <qxt:listener type="execute">
-          qcl.ui.dialog.Dialog.show("login");
+          this.getApplication()._loginPopup.show();
         </qxt:listener>
         
       </qx:toolBarButton>
