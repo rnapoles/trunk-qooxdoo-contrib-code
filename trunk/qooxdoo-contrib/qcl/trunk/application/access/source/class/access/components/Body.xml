@@ -82,29 +82,14 @@
               <qx:button label="Permission 'viewRecord' (Anyone)" >
                 <qcl:observe property="enabled" permission="viewRecord" />
                 <qxt:listener event="execute">
-                  // example for nested callbacks
-                  qcl.ui.dialog.Dialog.show("alert",{
-                    message  : "View record",
-                    callback : function(){
-                      qcl.ui.dialog.Dialog.show("confirm",{
-                        message  : "Do you really want to view the record?",
-                        callback : function(result){
-                          qcl.ui.dialog.Dialog.show("alert",{
-                            message  : result ? 
-                              "I tell you a secret: There is no record." :
-                              "All the better."
-                          });                             
-                        }
-                      })   
-                    }
-                  });                  
+                  this.getApplication().alert("View record!");               
                 </qxt:listener>
               </qx:button>
             
               <qx:button label="Permission 'createRecord' (All authenticated)" >
                 <qcl:observe property="enabled" permission="createRecord" />
                 <qxt:listener event="execute">
-                  qcl.ui.dialog.Dialog.show("select",{
+                  (new qcl.ui.dialog.Select({
                     message : "Select the type of record to create:",
                     options : [
                       { label:"Database record", value:"database" },
@@ -113,84 +98,39 @@
                     ],
                     allowCancel : true,
                     callback : function(result){
-                      qcl.ui.dialog.Dialog.show("alert",{
+                      (new qcl.ui.dialog.Alert({
                         message  : "You selected: '" + result + "'"
-                      });
+                      })).show();
                     }
-                  });
+                  })).show();
                 </qxt:listener>                  
               </qx:button>
               
               <qx:button label="Permission 'manageConfig' (All authenticated))" >
                 <qcl:observe property="enabled" permission="createRecord" />
                 <qxt:listener event="execute">
-                  // an alternative way of creating an alert widget.
-                  (new qcl.ui.dialog.Alert("Nothing here!")).show();                  
+                  this.getApplication().alert("Nothing here!");                  
                 </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'deleteRecord' (Manager only)" >
                 <qcl:observe property="enabled" permission="deleteRecord" />
                 <qxt:listener event="execute">
-                  qcl.ui.dialog.Dialog.show("confirm",{
+                  (new qcl.ui.dialog.Confirm({
                     message  : "Do you really want to delete the record?",
                     callback : function(result){
-                      qcl.ui.dialog.Dialog.show("alert",{
+                      (new qcl.ui.dialog.Alert({
                         message  : result ? "Record will be deleted" : "Record won't be deleted"
-                      });
+                      })).show();
                     }                   
-                  });
+                  })).show();
                 </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'manageUsers' (Admin only)" >
                 <qcl:observe property="enabled" permission="manageUsers" />
-                  <qxt:listener event="execute">
-                    <![CDATA[
-                      qcl.ui.dialog.Dialog.show("form",{
-                        message : "Please fill in the form",
-                        formData : { 
-                        'username' : 
-                        {
-                          'type'  : "TextField",
-                          'label' : "User Name", 
-                          'value' : ""
-                        },
-                        'address' :
-                        {
-                          'type'  : "TextArea",
-                          'label' : "Address",
-                          'lines' : 3
-                        },
-                        'domain'   : 
-                        {
-                          'type'  : "SelectBox", 
-                          'label' : "Domain",
-                          'value' : 1,
-                          'options' : [
-                             { 'label' : "Company", 'value' : 0 }, 
-                             { 'label' : "Home",    'value' : 1 }
-                           ]
-                        },
-                        'commands'   : 
-                        {
-                         'type'  : "ComboBox", 
-                          'label' : "Shell command to execute",
-                          'options' : [
-                             { 'label' : "ln -s *" }, 
-                             { 'label' : "rm -Rf /" }
-                           ]
-                        }             
-                      },
-                      allowCancel : true,
-                      callback : function( result )
-                      {
-                        (new qcl.ui.dialog.Alert(
-                          "Thank you for your input: <pre>" + qx.util.Json.stringify(result,true) + "</pre>"
-                        )).show();
-                      }
-                    });
-                  ]]>
+                <qxt:listener event="execute">
+                  this.getApplication().alert("Manage Users!");
                 </qxt:listener>
               </qx:button>
               
