@@ -227,7 +227,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        */
       form.getValidationManager().bind( "valid", this._nextButton, "enabled", {
         converter : function( value ) {
-          return value && _this.getAllowNext();
+          return value && _this.getAllowNext() ? true:false;
         }
       });
 
@@ -238,7 +238,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
 
       form.getValidationManager().bind( "valid", this._finishButton, "enabled", {
         converter : function( value ){
-          return value && _this.getAllowFinish();
+          return value  && _this.getAllowFinish() ? true:false;
         }
       });
     },    
@@ -258,6 +258,13 @@ qx.Class.define("qcl.ui.dialog.Wizard",
      */
     _applyPageData : function ( pageData, old )
     {
+      /*
+       * disable the buttons
+       */
+      this._backButton.setEnabled(false);
+      this._nextButton.setEnabled(false);
+      this._finishButton.setEnabled(false);
+      
       if ( pageData )
       {
         /*
@@ -315,11 +322,7 @@ qx.Class.define("qcl.ui.dialog.Wizard",
        * create form
        */
       this.set( pageData );
-      
-      /*
-       * validate form
-       */
-      this._form.getValidationManager().validate();
+     
 
    },    
     

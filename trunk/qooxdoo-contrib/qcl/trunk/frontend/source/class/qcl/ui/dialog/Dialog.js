@@ -37,84 +37,15 @@ qx.Class.define("qcl.ui.dialog.Dialog",
   */     
   statics :
   {
-    /**
-     * A map of instances
-     * @var {Map}
-     */
-    _instances : {},
-    
-    /**
-     * A queue of dialogs waiting to be displayed
-     * @var {Array}
-     */
-    _dialogQueue : [],
   
     /**
-     * Returns a singleton instance of the dialog type
+     * Returns a instance of the dialog type
      * @param type {String}
      * @return qcl.ui.dialog.Dialog
      */
     getInstanceByType : function(type)
     {      
-      if ( ! this._instances[type] )
-      {
-        this._instances[type] = new qcl.ui.dialog[qx.lang.String.firstUp(type)];
-      }
-      this._instances[type].addListener( "hide", this._nextDialog, this );
-      return this._instances[type];
-    },
-    
-    /**  
-     * Show a dialog by the given type and set the property map. If another
-     * dialog (or the same one) is already active and visible, defer the
-     * showing of the dialog until the other one is closed.
-     * 
-     * @param type {String}
-     * @param properties {Map}
-     * @return {void}
-     */    
-    show : function( type, properties )
-    {
-      var instance = this.getInstanceByType( type );
-      
-      /*
-       * if no dialogs in the queue, show right away and put a marker
-       * in the queue
-       */
-      if ( this._dialogQueue.length == 0 )
-      {
-        if (properties) {
-          instance.set(properties);
-        }
-        instance.show();
-        this._dialogQueue.push(true);
-      }
-      else
-      {
-        /*
-         * otherwise, push dialog and properties on the queue and add
-         * listener to display next dialog when this one is hidden
-         */
-        this._dialogQueue.push( { instance: instance, properties : properties } );
-      }
-    },
-    
-    /**
-     * This is supposed to allow consecutive dialogs without using callbacks
-     * It is not working, though.
-     */
-    _nextDialog : function( )
-    {
-      if ( this._dialogQueue.length )
-      {
-        var next = this._dialogQueue.shift();
-        if ( next === true ) next = this._dialogQueue.shift();
-        if ( next )
-        {
-          next.instance.set(next.properties);
-          next.instance.show();
-        }
-      }
+      return new qcl.ui.dialog[qx.lang.String.firstUp(type)];
     },
     
     /**
@@ -171,7 +102,9 @@ qx.Class.define("qcl.ui.dialog.Dialog",
           );
         }
       }
-      qcl.ui.dialog.Dialog.show(data.type,data.properties);
+      var widget = qcl.ui.dialog.Dialog.getInstanceByType(data.type);
+      widget.set( data.properties );
+      widget.show();
     }
   },
     
