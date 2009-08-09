@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require "qcl/core/Object.php";
+require_once "qcl/core/Object.php";
 
 class qcl_core_StaticClass extends qcl_core_Object
 {
