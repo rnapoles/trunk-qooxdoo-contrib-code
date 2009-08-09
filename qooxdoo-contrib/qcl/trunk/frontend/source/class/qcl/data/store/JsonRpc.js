@@ -608,7 +608,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
            * property.
            */
           var data;
-          if ( result && ( result.data || result.messages || result.events ) )
+          if ( result && ( result.data !== undefined || result.messages || result.events ) )
           {
             /*
              * handle messages and events
