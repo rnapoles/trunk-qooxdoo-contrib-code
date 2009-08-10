@@ -167,6 +167,7 @@ qx.Class.define("qcl.ui.dialog.Form",
        * Form container  
        */
       this._formContainer = new qx.ui.container.Composite;
+      this._formContainer.setLayout( new qx.ui.layout.Grow() );
       groupboxContainer.add( this._formContainer );
       
       /*
