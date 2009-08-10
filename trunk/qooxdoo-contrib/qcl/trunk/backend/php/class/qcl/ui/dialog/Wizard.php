@@ -38,8 +38,7 @@ class qcl_ui_dialog_Wizard
     $callbackMethod,
     $callbackParams=null )
   {
-    qcl_event_message_Bus::dispatchServerMessage( null,
-     "qcl.components.dialog.Dialog.show",array(
+    $this->dispatchDialogMessage( array(
        'type' => "wizard",
        'properties'  => array(
           'pageData'    => $pageData,

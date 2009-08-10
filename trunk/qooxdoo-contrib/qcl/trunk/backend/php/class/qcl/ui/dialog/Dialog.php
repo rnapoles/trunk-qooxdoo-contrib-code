@@ -18,11 +18,46 @@
 
 require_once "qcl/data/Result.php";
 require_once "qcl/event/message/Bus.php";
+require_once "qcl/application/Application.php";
 
 /**
  * Base class for dialog data
  *
  */
 class qcl_ui_dialog_Dialog
-  extends qcl_data_Result{}
+  extends qcl_data_Result
+{
+
+  function dispatchDialogMessage( $data )
+  {
+    /*
+     * if we have a database-based message transport, use this
+     */
+    if ( qcl_application_Application::getIniValue("service.event_transport") == "on" )
+    {
+      qcl_event_message_Bus::dispatchServerMessage(
+        null, "qcl.components.dialog.Dialog.show", $data
+      );
+    }
+
+    /*
+     * otherwise, force a response that contains only this message
+     */
+    else
+    {
+      qcl_server_Server::forceResponse( array(
+        'id'     => qcl_server_Server::getServerObject()->getId(),
+        'error'  => null,
+        'result' => array(
+          'messages' => array(
+            array (
+              'name' => "qcl.components.dialog.Dialog.show",
+              'data' => $data
+            )
+          )
+        )
+      ));
+    }
+  }
+}
 ?>
