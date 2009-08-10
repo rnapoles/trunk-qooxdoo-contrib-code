@@ -207,7 +207,7 @@ qx.Class.define("qcl.ui.dialog.Form",
      */
     _applyFormData : function ( formData, old )
     {
-      
+ try{     
       /*
        * remove container content, form, controller
        */
@@ -511,7 +511,11 @@ qx.Class.define("qcl.ui.dialog.Form",
        * validate the form
        */
       this._form.getValidationManager().validate();
-      
+ }
+ catch(e)
+ {
+   alert(e);
+ }
     },
     
     /**
@@ -541,7 +545,7 @@ qx.Class.define("qcl.ui.dialog.Form",
       this.hide();
       if( this.getCallback() )
       {
-        this.getCallback()( this._mappifyResultModel() );
+        this.getCallback()( qx.util.Serializer.toJson( this.getModel() ) );
       }
       this.resetCallback();
     }
