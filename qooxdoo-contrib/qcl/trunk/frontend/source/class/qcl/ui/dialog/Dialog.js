@@ -45,7 +45,14 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */
     getInstanceByType : function(type)
     {      
-      return new qcl.ui.dialog[qx.lang.String.firstUp(type)];
+       try 
+       {
+         return new qcl.ui.dialog[qx.lang.String.firstUp(type)];
+       }
+       catch(e)
+       {
+         this.error(type + "is not a valid dialog type");
+       }
     },
     
     /**
