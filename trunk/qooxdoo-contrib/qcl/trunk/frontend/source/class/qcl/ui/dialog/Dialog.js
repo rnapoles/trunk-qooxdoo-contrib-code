@@ -62,7 +62,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */
     allowServerControl : function( value )
     {
-      var messageName = "qcl.components.dialog.Dialog.show";
+      var messageName = "qcl.ui.dialog.Dialog.createDialog";
       if ( value )
       {
         qx.event.message.Bus.getInstance().subscribe( messageName, this._onMessage,this);

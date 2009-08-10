@@ -168,7 +168,7 @@ class class_DialogDemo
              "validation" : {
                "required" : true,
                "service" : {
-                  "name" : "bibliograph.controller.Setup",
+                  "name" : "DialogDemo",
                   "method" : "checkUserName"
                }
              }
@@ -256,16 +256,19 @@ EOT
       array(
         'lastname' => array(
           'type'      => "textfield",
-          'label'     => "Last name"
+          'label'     => "Last name",
+          'value'     => ""
         ),
         'firstname' => array(
           'type'      => "textfield",
-          'label'     => "First name"
+          'label'     => "First name",
+          'value'     => ""
         ),
        'address' => array(
           'type'      => "textarea",
           'label'     => "Address",
-          'lines'     => 3
+          'lines'     => 3,
+          'value'     => ""
         ),
         'country' => array(
           'type'      => "selectbox",
@@ -288,7 +291,8 @@ EOT
             array( 'label' => "Rocket Scientist", 'value' => 3 ),
             array( 'label' => "IT Expert",   'value' => 4 ),
             array( 'label' => "Circus Director",  'value' => 5 )
-          )
+          ),
+          'value'       => ""
         )
       ),
       true, /* allow cancel */

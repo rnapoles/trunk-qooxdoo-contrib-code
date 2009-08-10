@@ -36,7 +36,7 @@ class qcl_ui_dialog_Dialog
     if ( qcl_application_Application::getIniValue("service.event_transport") == "on" )
     {
       qcl_event_message_Bus::dispatchServerMessage(
-        null, "qcl.components.dialog.Dialog.show", $data
+        null, "qcl.ui.dialog.Dialog.createDialog", $data
       );
     }
 
@@ -51,7 +51,7 @@ class qcl_ui_dialog_Dialog
         'result' => array(
           'messages' => array(
             array (
-              'name' => "qcl.components.dialog.Dialog.show",
+              'name' => "qcl.ui.dialog.Dialog.createDialog",
               'data' => $data
             )
           )

@@ -5,6 +5,7 @@
 [service]
 control_access = yes
 allow_anonymous_access = yes
+event_transport = yes
 
 [database]
 

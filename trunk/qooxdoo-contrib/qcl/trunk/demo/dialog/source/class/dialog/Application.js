@@ -14,6 +14,7 @@
 #asset(qx/icon/Tango/48/status/dialog-information.png)
 #asset(qx/icon/Tango/22/actions/dialog-ok.png)
 #asset(qx/icon/Tango/22/actions/dialog-cancel.png)
+#require(qcl.ui.dialog.RemoteWizard)
 
 ************************************************************************ */
 
@@ -51,12 +52,7 @@ qx.Class.define("dialog.Application",
         // support additional cross-browser console. Press F7 to toggle visibility
         qx.log.appender.Console;
       }
-    
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-       */
+
     
       /*
        * the URL of the jsonrpc server
@@ -67,7 +63,6 @@ qx.Class.define("dialog.Application",
        * allow remote user interaction
        */
       qcl.ui.dialog.Dialog.allowServerControl(true);    
-    
     
       /*
        * button data
@@ -101,12 +96,12 @@ qx.Class.define("dialog.Application",
          {
            label : "Remote Wizard (Requires RpcPhp backend)",
            method : "createRemoteWizard",
-           enabled : false
+           enabled : true
          },
          {
            label : "Server-initiated dialogs (Requires RpcPhp backend)",
            method : "startServerDialog",
-           enabled : false
+           enabled : true
          }
        ];
     
