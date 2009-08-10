@@ -43,7 +43,8 @@ define("RPCPHP_SERVER_PATH", QOOXDOO_CONTRIB_PATH . "RpcPhp/trunk/");
  * Path to the qcl php library
  * @var string
  */
-define("QCL_CLASS_PATH", QOOXDOO_CONTRIB_PATH . "qcl/trunk/backend/php/class/");
+//define("QCL_CLASS_PATH", QOOXDOO_CONTRIB_PATH . "qcl/trunk/backend/php/class/");
+define("QCL_CLASS_PATH", "../../../../../../qcl-php/class/" );
 
 /**
  * Path to the application backend classes
