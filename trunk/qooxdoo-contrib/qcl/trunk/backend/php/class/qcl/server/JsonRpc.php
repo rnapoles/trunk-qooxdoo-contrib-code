@@ -493,21 +493,37 @@ class qcl_server_JsonRpc extends JsonRpcServer
     exit;
   }
 
-
   /**
-   * Logs an informational message
+   * Logs to log file or system log
+   * @param $str
+   * @return void
    */
-  function info($str)
+  function _log ( $str )
   {
-    error_log( "\qcl_server_JsonRpc: ".  $str . "\n",3, QCL_LOG_FILE);
+    if ( is_writable( QCL_LOG_FILE) )
+    {
+      error_log( $str, 3, QCL_LOG_FILE );
+    }
+    else
+    {
+      error_log( $str );
+    }
   }
 
   /**
    * Logs an informational message
    */
-  function warn($str)
+  function info( $str )
   {
-    error_log( "\nqcl_server_JsonRpc: *** WARN: ".  $str . "\n",3, QCL_LOG_FILE);
+    $this->_log( "\qcl_server_JsonRpc: ".  $str . "\n");
+  }
+
+  /**
+   * Logs an informational message
+   */
+  function warn( $str )
+  {
+    $this->_log( "\nqcl_server_JsonRpc: *** WARN: ".  $str . "\n" );
   }
 
   /**
@@ -518,7 +534,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function logError( $msg )
   {
     $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg . "\n" . debug_get_backtrace();
-    error_log( $msg, 3, QCL_LOG_FILE);
+    $this->_log( $msg );
   }
 }
 ?>

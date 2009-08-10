@@ -128,13 +128,25 @@ class qcl_server_Server extends qcl_core_Object
   /**
    * Aborts the request with an error message
    * @param $message
-   * @return unknown_type
+   * @return void
    */
   function abort( $message )
   {
     $serverObj =& qcl_server_Server::getServerObject();
     $serverObj->setError( null, $message );
     $serverObj->sendErrorAndExit();
+    exit;
+  }
+
+  /**
+   * Aborts the request and forces a data response
+   * @param $data
+   * @return void
+   */
+  function forceResponse( $data )
+  {
+    $serverObj =& qcl_server_Server::getServerObject();
+    echo $serverObj->json->encode( $data );
     exit;
   }
 
