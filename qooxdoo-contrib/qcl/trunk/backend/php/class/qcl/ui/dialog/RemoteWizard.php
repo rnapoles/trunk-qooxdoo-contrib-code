@@ -45,8 +45,7 @@ class qcl_ui_dialog_RemoteWizard
     $callbackService,
     $callbackMethod)
   {
-    qcl_event_message_Bus::dispatchServerMessage( null,
-     "qcl.components.dialog.Dialog.show",array(
+    $this->dispatchDialogMessage( array(
        'type'       => "remoteWizard",
        'properties' => array(
           'serviceName'   => $callbackService,

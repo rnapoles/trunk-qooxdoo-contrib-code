@@ -40,8 +40,7 @@ class qcl_ui_dialog_Select
     $callbackMethod,
     $callbackParams=null )
   {
-    qcl_event_message_Bus::dispatchServerMessage( null,
-      "qcl.components.dialog.Dialog.show",array(
+    $this->dispatchDialogMessage( array(
         'type' => "select",
         'properties' => array(
           'message'     => $message,
