@@ -240,7 +240,7 @@ qx.Class.define("qcl.ui.dialog.Form",
         var modelData = {};
         for ( var key in formData )
         {
-          modelData[key] = formData[key].value;
+          modelData[key] = formData[key].value || null;
         }
         var model = qx.data.marshal.Json.createModel( modelData );
         this.setModel( model );
