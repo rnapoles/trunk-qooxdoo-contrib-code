@@ -46,9 +46,13 @@
       {
         "parts"    : 
         {
-          //"boot" : [ "${APPLICATION}.Application", "qx.bom.client.Engine" ], //dosn't work
-          "boot" : [ "${APPLICATION}.Application" ], // works
-          "core" : [ "qx.bom.*", "qx.dom.*", "qx.event.*" ]
+          "boot" : {
+            //[ "${APPLICATION}.Application", "qx.bom.client.Engine" ] //dosn't work
+            [ "${APPLICATION}.Application" ], // works
+          },
+          "core" : {
+            [ "qx.bom.*", "qx.dom.*", "qx.event.*" ]
+          }
         },
 
         "init" : "boot"
