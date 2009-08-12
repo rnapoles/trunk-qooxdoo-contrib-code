@@ -48,10 +48,10 @@
         {
           "boot" : {
             //[ "${APPLICATION}.Application", "qx.bom.client.Engine" ] //dosn't work
-            [ "${APPLICATION}.Application" ], // works
+            "include" : [ "${APPLICATION}.Application" ] // works
           },
           "core" : {
-            [ "qx.bom.*", "qx.dom.*", "qx.event.*" ]
+            "include" : [ "qx.bom.*", "qx.dom.*", "qx.event.*" ]
           }
         },
 
