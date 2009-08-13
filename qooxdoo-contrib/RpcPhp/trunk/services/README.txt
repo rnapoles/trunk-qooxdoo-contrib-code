@@ -25,7 +25,7 @@ $server->start();
 
 You can also use the index.php provided in this package.
 
-The service classes are placed in the impl/ subfolder. You can
+The service classes are placed in the class/ subfolder. You can
 also choose a different location for the service classes by
 defining the "servicePathPrefix" in the global_settings.php file
 (if you use it) or elsewhere in your code. Make sure to include
@@ -34,15 +34,13 @@ a trailing slash.
 The server is extremely flexible, you can subclass the JsonRpcServer and
 finetune almost every aspect of its behavior by overriding the different
 methods. Also, the class uses the behavior design pattern by delegation
-of accessibility and error behaviors to separate objects. This will
-be extended to request and response objects later. 
+of accessibility and error behaviors to separate objects.
 
-Two extensions of the server class are provided: a PHP5 version which
-uses the Exception handling feature of PHP5 and a PostRpcServer class
-which can be used for testing purposes and which transforms GET and POST
-requests into jsonrpc requests. This can serve as an example how to
-write other servers on top of the jsonrpc server (for example, using
-XML-RPC, etc.).
+As an example for the subclassing of the server, a PostRpcServer class
+has been included which can be used for testing purposes. This class
+transforms GET and POST requests into jsonrpc requests. This can serve
+ as an example how to write other servers on top of the jsonrpc server 
+ (for example, using XML-RPC, etc.).
 
 For more information see
   * http://qooxdoo.org/documentation/RPC
