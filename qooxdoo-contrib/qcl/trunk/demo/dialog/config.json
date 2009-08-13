@@ -47,13 +47,13 @@
         * qcl-js
         */
        {
-         "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
+         "manifest" : "../../frontend/Manifest.json"
        },
        /*
         * qcl-php
         */
        {
-         "manifest" : "contrib://qcl/trunk/backend/php/Manifest.json"
+         "manifest" : "../../backend/php/Manifest.json"
        },
        /*
         * json-rpc server
