@@ -118,7 +118,7 @@ simulation.Simulation = function(baseConf, args)
     var conf = baseConf || {};
     if (args) {      
       var argConf = getConfigFromArgs(args);
-      for (prop in argConf) {
+      for (var prop in argConf) {
         conf[prop] = argConf[prop];
       }
     }
@@ -131,7 +131,7 @@ simulation.Simulation = function(baseConf, args)
     }
 
      // Set defaults if they're not already set.
-    for (key in defaults) {
+    for (var key in defaults) {
       if (!(key in conf)) {
         conf[key] = defaults[key];
       }
@@ -152,8 +152,8 @@ simulation.Simulation = function(baseConf, args)
    */
   function getConfigFromArgs(args)
   { 
-    conf = {}; 
-    for (i in args) {
+    var conf = {}; 
+    for (var i in args) {
       if (args[i].indexOf("=") >0) {
         var tempArr = args[i].split("=");
         if (tempArr[1] == "true") {
@@ -404,13 +404,11 @@ simulation.Simulation.prototype.type = function(locator, text, keys)
   var selCmd = keys ? "typeKeys" : "type"; 
 
   try {
-    var ret = this.__sel[selCmd](locator, text);
+    this.__sel[selCmd](locator, text);
   }
   catch(ex) {
     print("ERROR: Unable to enter text: " + ex + " \nText:\n  " + text);
   }
-
-  return;
 };
 
 /**
@@ -647,8 +645,8 @@ simulation.Simulation.prototype.logTestDuration = function(sDate, desc)
   var stopDate = new Date();
   var elapsed = stopDate.getTime() - startDate.getTime();
   elapsed = (elapsed / 1000);
-  min = Math.floor(elapsed / 60);
-  sec = Math.round(elapsed % 60);
+  var min = Math.floor(elapsed / 60);
+  var sec = Math.round(elapsed % 60);
   if (sec < 10) {
     sec = "0" + sec;
   }
@@ -777,7 +775,7 @@ simulation.Simulation.prototype.addObjectGetter = function()
   var getObjectByClassname = function(parent, searchterm)
   {
     var obj = null;
-    for (prop in parent) {
+    for (var prop in parent) {
       var property = parent[prop];
       try {
         if (typeof property == "object") {
@@ -910,7 +908,7 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
   this.addOwnFunction("addGlobalErrorHandler", addHandler);
   this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.addGlobalErrorHandler(" + qxWin + ");", "Adding error handler");
   
-  globalErr = function()
+  var globalErr = function()
   {
      var exceptions = selenium.browserbot.getCurrentWindow().qx.Simulation.errorStore;
      var exString = exceptions.join("|");
