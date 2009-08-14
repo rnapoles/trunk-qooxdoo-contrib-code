@@ -37,6 +37,7 @@ simulation.Simulation.prototype.runTest = function()
   }
   
   this.qxDragAndDropToObject('//div[@id="box0"]/div[@class="dragHandle"]', '//div[@id="box5"]');
+  Packages.java.lang.Thread.sleep(4000);
   
   var firstBoxGroupAfterDrag = this.getEval(getFirstBoxGroup, "Getting ID of the first box parent");
   if (this.getConfigSetting("debug")) {
