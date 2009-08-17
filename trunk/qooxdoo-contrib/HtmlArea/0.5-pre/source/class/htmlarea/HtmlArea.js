@@ -977,11 +977,11 @@ qx.Class.define("htmlarea.HtmlArea",
       //}
 
       if (typeof value !== "boolean") {
-        throw new Error("_applyFocused: invalid value of focused property: " + value);
+        this.warn("_applyFocused: invalid value of focused property: " + value);
       }
 
       if (!this.__isReady || !this.isCreated() || !this.isLoaded()) {
-        throw new Error("_applyFocused: htmlarea is not ready yet");
+        this.warn("_applyFocused: htmlarea is not ready yet");
       }
 
       var focusRoot = this.getFocusRoot();
