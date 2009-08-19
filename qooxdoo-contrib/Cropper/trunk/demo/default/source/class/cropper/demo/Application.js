@@ -16,7 +16,7 @@
 /**
  * This is the main application class of the cropper demo application
  */
-qx.Class.define("cropper.demo.Demo", {
+qx.Class.define("cropper.demo.Application", {
     extend : qx.application.Standalone,
 
     members : {
