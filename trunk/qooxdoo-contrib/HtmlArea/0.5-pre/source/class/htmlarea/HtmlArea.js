@@ -1129,12 +1129,6 @@ qx.Class.define("htmlarea.HtmlArea",
        */
       this.__renderContent();
 
-      /* Register all needed event listeners only for gecko, all other browsers will set
-       * it after appear */
-      if (qx.core.Variant.isSet("qx.client", "gecko")) {
-        this.__addEventListeners();
-      }
-
       /*
        * Setting the document editable for all other browser engines
        * AFTER the content is set
@@ -1163,10 +1157,49 @@ qx.Class.define("htmlarea.HtmlArea",
       // stack is finished, set commandManager to the real one
       this.__commandManager = cm;
 
+      this.__fireReady();
+    },
+
+
+    /**
+     * Tries to fire the ready event and to add the event listeners.
+     * This is needed because of a possible race condition while loading the body
+     * 
+     * @type member
+     * @param retry {Boolean} indicates if the method is in retry state
+     * @return {void}
+     */
+    __fireReady : function(retry)
+    {
+      var doc = this.getContentDocument();
+
+      if (!doc || !doc.body)
+      {
+        if (typeof retry === "undefined") {
+          retry = 0;
+        }
+
+        if (retry < 5)
+        {
+          qx.client.Timer.once(function () {
+            this.__fireReady(++retry);
+          }, this, 10);
+        } else {
+          this.createDispatchDataEvent("loadingError");
+        }
+
+        return;
+      }
+
+      /* Register all needed event listeners only for gecko, all other browsers will set
+       * it after appear */
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
+        this.__addEventListeners();
+      }
+
       /* dispatch the "ready" event at the end of the initialization */
       this.createDispatchEvent("ready");
     },
-
 
     /**
      * Forces the htmlArea to reset the document editable. This method can
@@ -1327,28 +1360,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    __addEventListeners : function(retry)
+    __addEventListeners : function()
     {
       if (!this._listenerAdded)
       {
-        var doc = this.getContentDocument();
-
-        if (!doc || !doc.body)
-        {
-          if (typeof retry === "undefined") {
-            retry = 0;
-          }
-
-          if (retry < 5)
-          {
-            qx.client.Timer.once(function () {
-              this.__addEventListeners(++retry);
-            }, this, 10);
-          }
-
-          return;
-        }
-
         this._listenerAdded = true;
 
         this._connectKeyListener();
