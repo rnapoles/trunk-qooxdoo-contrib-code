@@ -214,57 +214,7 @@ class JsonRpcServer extends AbstractServer
     set_error_handler( array($this,"jsonRpcErrorHandler") );
   }
 
-  /**
-   * Call the requested method passing it the provided params
-   * plus the error object plus a reference to the server
-   * instance. Override this method for a different behavior.
-   * The method handles PHP4 and PHP5.
-   * @param object $serviceObject
-   * @param string $method
-   * @param array $params
-   * @return mixed
-   */
-  function callServiceMethod( $serviceObject, $method, $params )
-  {
-    $errorBehavior =& $this->getErrorBehavior();
 
-    /*
-     * PHP 4 - Error will be caught by set_error_handler,
-     * if set up.
-     */
-    if ( phpversion() < 5 )
-    {
-      $result = $serviceObject->$method(
-        $params,        /* parameters */
-        $errorBehavior, /* the error object */
-        &$this          /* the server object */
-      );
-    }
-
-    /*
-     * PHP5: JsonRpcErrors can be thrown manually.
-     * To not raise a parse error in PHP4, the try/catch code is
-     * put into an eval().
-     */
-    else
-    {
-      eval('
-        try {
-          $result = $serviceObject->$method(
-            $params,        /* parameters */
-            $errorBehavior, /* the error object */
-            &$this          /* the server object */
-          );
-        }
-        catch (JsonRpcError $exception)
-        {
-          $result = $exception;
-          $result->SetId( $this->getId() );
-        }
-      ');
-    }
-    return $result;
-  }
 
   /**
    * Returns server data component of request
