@@ -339,12 +339,8 @@ interface qcl_data_db_IModel
    */
   function getSecondsSince($timestamp);
 
-
-
   /**
-   * returns the prefix for tables used by this
-   * model. defaults to the datasource name plus underscore
-   * or an empty string if there is no datasource
+   * Returns the prefix for tables used by this model.
    * @return string
    */
   function getTablePrefix();
