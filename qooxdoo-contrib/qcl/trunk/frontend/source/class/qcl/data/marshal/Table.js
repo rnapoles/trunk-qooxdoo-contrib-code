@@ -102,7 +102,7 @@ qx.Class.define("qcl.data.marshal.Table",
      * @param includeBubbleEvents {Boolean} Whether the model should support
      *   the bubbling of change events or not.
      */
-    jsonToClass: function(data) {
+    toClass: function(data) {
 
       // class already exists
       if (qx.Class.isDefined("qx.data.model.Table" )) {
@@ -133,7 +133,7 @@ qx.Class.define("qcl.data.marshal.Table",
     * @param data {Object} The object for which models should be created.
     * @return {qx.data.model.Table}
     */
-    jsonToModel: function(data) 
+    toModel: function(data) 
     {   
       var model = new qx.data.model.Table;
       model.set(data);
