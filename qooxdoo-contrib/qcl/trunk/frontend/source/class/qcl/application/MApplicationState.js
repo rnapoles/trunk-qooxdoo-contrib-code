@@ -25,17 +25,19 @@
 /**
  * A mixin for an application instance that provides synchronization between
  * the application's properties and the application state saved in the URL hash.
- * The syntax is the same as in the URL GET parameters, i.e. state values are
- * saved as #key1=value1&key2=value2&key3=value3 etc. Any change to the state
- * values (for example, by using the back or forward buttons or by manually
- * changing the URL) will fire a "changeXXX" event on the application instance
- * for each hash parameter that has changed.
+ * The syntax is the similar to the URL GET parameters, i.e. state values are
+ * saved as key-value pairs. You can freely choose the characters that represent
+ * the "equal" and "ampersand" characters (including those), however the default
+ * are "~~~" and "~"   #key1~value1~~~key2~value2~~~key3~value3 etc. because they
+ * result in nicely readable URI strings (some browsers aggressively percent-encode
+ * the URI string even when there are no ambiguities to be avoided). 
+ *  
+ * Any change to the state values (for example, by using the back or forward 
+ * buttons or by manually changing the URL) will update a corresponding property, 
+ * if defined, dispatching change events or calling apply methods, if so configured. 
  * 
- * It is recommended to create an application property for each state property.
- * This property will be updated whenevet the state changes and should
- * not fire a "changeXXX" event, so that the event is not dispatched twice.
- * Instead, create an apply method for each property you use which sets
- * the corresponding state.
+ * Since the state is not automatically updated when the property changes, 
+ * you need to manually set the state in an "apply" method.
  * 
  * <pre>
  * 
@@ -45,7 +47,8 @@
  *   myProperty : {
  *     check : "String",
  *     nullable : true
- *     apply : "_applyMyProperty"
+ *     apply : "_applyMyProperty",
+ *     event : "changeMyProperty"
  *   },
  * ...
  * members: {
@@ -61,6 +64,58 @@
  */
 qx.Mixin.define("qcl.application.MApplicationState",
 {
+
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */  
+
+  properties : 
+  {
+    /** 
+     * The character separating the state variable definitions.
+     * You can use all non-reserved characters here To improve
+     * readability of the URI string, use characters that are not
+     * percent-encoded, such as the tilde ~. You can also use a 
+     * combination of characters, such as '~~~'. The URI hash 
+     * string is first split on this character(s), then on the
+     * {@link qcl.application.MApplicationState#stateDefineChar}
+     * character(s).
+     */
+    stateSeparatorChar :
+    {
+      check : "String",
+      init : "~~~",
+      nullable : false 
+    },
+    
+    /** 
+     * The character which separates state variable name and state value.
+     * See {@link qcl.application.MApplicationState#stateSeparatorChar} for
+     * the choice of the character.
+     */
+    stateDefineChar :
+    {
+      check : "String",
+      init : "~",
+      nullable : false
+    },
+    
+    /**
+     * Whether to support the forward and back button to control
+     * application state
+     */
+    historySupport :
+    {
+      check : "Boolean",
+      init : false,
+      apply : "_applyHistorySupport",
+      event : "changeHistorySupport"
+    }
+  
+  }, 
+  
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -96,6 +151,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     __backHistoryStack : null,
     __forwardHistoryStack : null,
     
+    
     /*
     ---------------------------------------------------------------------------
        GET PARAMETERS
@@ -113,11 +169,12 @@ qx.Mixin.define("qcl.application.MApplicationState",
       var getParams = window.location.parameters = {};
       if (search)
       {
-        var parts = search.substr(1).split("&");
+        var searchStr = decodeURIComponent(search.substr(1));
+        var parts = searchStr.split( this.getStateSeparatorChar() );
         for (var i=0; i<parts.length; i++)
         {
-          var p = parts[i].split('=');
-          getParams[p[0]] = typeof p[1] == "string" ? decodeURIComponent(p[1].replace(/\+/g, ' ')) : true;
+          var p = parts[i].split( this.getStateDefineChar() );
+          getParams[p[0]] = typeof p[1] == "string" ? p[1].replace(/\+/g, ' ') : true;
         }
       }
       return getParams;
@@ -161,9 +218,9 @@ qx.Mixin.define("qcl.application.MApplicationState",
       var p = [];
       for (var key in getParams) 
       {
-        p.push(key + "=" + encodeURIComponent(getParams[key]));
+        p.push(key + this.getStateDefineChar() + encodeURIComponent(getParams[key]));
       }
-      window.location.search = p.join("&");
+      window.location.search = p.join( this.getStateSeparatorChar() );
     },
 
     /*
@@ -180,25 +237,28 @@ qx.Mixin.define("qcl.application.MApplicationState",
      */
     _analyzeHashString : function(string)
     { 
-      var hash  = string || location.hash || "";
+      var hash  = string || location.hash.substr(1) || "";
+      
+      
       /*
        * Safari bug
        */
       while ( hash.search(/%25/) != -1 )
       {
         hash = hash.replace(/%25/g,"%");
-      }      
+      }
       
-      hash = hash.replace(/#/,"").replace(/%3D/g,"=").replace(/%26/g,"&"); 
+      hash = decodeURIComponent(hash); 
+      
       var hashParams = {};
       if (hash)
       {
-        var parts = hash.split("&");
+        var parts = hash.split( this.getStateSeparatorChar() );
 
         for (var i=0; i<parts.length; i++)
         {
-          var p = parts[i].split('=');
-          hashParams[p[0]] = typeof p[1] == "string" ? decodeURIComponent(p[1].replace(/\+/g, ' ')) : true;
+          var p = parts[i].split( this.getStateDefineChar() );
+          hashParams[p[0]] = typeof p[1] == "string" ? p[1].replace(/\+/g, ' ') : true;
         }
       }
       if ( ! string ) location.hashParams = hashParams;
@@ -249,10 +309,10 @@ qx.Mixin.define("qcl.application.MApplicationState",
 
       for (var key in hashParams) 
       {
-        p.push(key + "=" + encodeURIComponent(hashParams[key]));
+        p.push(key + this.getStateDefineChar() + encodeURIComponent(hashParams[key]));
       }
 
-      window.location.hash = p.join("&");
+      window.location.hash = p.join( this.getStateSeparatorChar() );
       
       /*
        * Safari bug
@@ -282,11 +342,11 @@ qx.Mixin.define("qcl.application.MApplicationState",
         var p = [];
         for (var key in hashParams) 
         {
-          p.push(key + "=" + encodeURIComponent( hashParams[key] ) );
+          p.push(key + this.getStateDefineChar() + encodeURIComponent( hashParams[key] ) );
         }
         if ( p.length )
         {
-          window.location.hash = p.join("&");
+          window.location.hash = p.join( this.getStateSeparatorChar() );
         }
         else
         {
@@ -427,7 +487,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
      * @return {Map}
      */
     updateState : function()
-    {
+    {  
       var states = {};
       var stateMap = this._analyzeHashString();
       if ( arguments[0] instanceof Array )
@@ -453,7 +513,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
          if ( states && ! states[key] ) continue;
          this._handleStateChange( key, stateMap[key] );
       }
-      return stateMap;
+      return stateMap;    
     },
 
     /**
@@ -495,50 +555,23 @@ qx.Mixin.define("qcl.application.MApplicationState",
      * @param value {Boolean}
      * @return {void}
      */
-    setHistorySupport : function (value)
+    _applyHistorySupport : function (value,old)
     {
-      if( value )
+      if ( value && ! old )
       {            
     
         var state = qx.bom.History.getInstance().getState();  
-        //console.log("Initial state: " + state);
         this.__lastHash    = state; 
         this.__hashParams  = this._analyzeHashString();
-        //console.log(this.__hashParams);
         
         /*
          * setup event listener for history changes
          */
-        qx.bom.History.getInstance().addEventListener("request", function(e) 
+        qx.bom.History.getInstance().addListener("request", function(e) 
         {
-          var state = e.getData();
-          //console.log("'request' event received with hash'"+state+"'");
-          
-          /*
-           * application specific state update
-           */ 
-          var hashParams = this._analyzeHashString(state);
-          
-          /*
-           * check all hash keys
-           */
-          for ( var key in hashParams )
-          {
-            var value = hashParams[key]; 
-            //console.log("State param '"+key+"': new value '"+value+"', previous value '"+this.__hashParams[key]+"'.");
-                        
-            /*
-             * fire events
-             */
-            if ( value != this.__hashParams[key] )
-            {
-              this.__hashParams[key] = value;
-              this.set( key, value );
-              this._handleStateChange(key,value);
-            }
-          }
+          this.updateState();
         }, this);
-      }     
+      }  
     },
   
     /**
