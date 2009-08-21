@@ -115,7 +115,7 @@ qx.Class.define("qcl.data.marshal.TreeVirtual",
      * @param includeBubbleEvents {Boolean} Whether the model should support
      *   the bubbling of change events or not.
      */
-    jsonToClass: function(data) 
+    toClass: function(data) 
     {
 
       // class already exists
@@ -149,7 +149,7 @@ qx.Class.define("qcl.data.marshal.TreeVirtual",
      * @param data {Object} The object for which models should be created.
      * @return {qx.data.model.TreeVirtual}
      */
-    jsonToModel: function(data) 
+    toModel: function(data) 
     {   
       var model = new qx.data.model.TreeVirtual;
       model.set(data);
