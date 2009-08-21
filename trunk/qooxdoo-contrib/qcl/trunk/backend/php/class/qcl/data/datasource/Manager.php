@@ -122,6 +122,18 @@ class qcl_data_datasource_Manager
   }
 
   /**
+   * Unregister datasource. Can be called statically.
+   * @param string $name Name of datasource schema
+   */
+  function unregisterSchema( $schemaName )
+  {
+    $_this =& qcl_data_datasource_Manager::getInstance();
+    $_this->log("Unregistering class '$class'", QCL_LOG_DATASOURCE);
+    $registry =& $_this->getRegistry();
+    $registry->unregister( $schemaName );
+  }
+
+  /**
    * Creates a new datassource entry according to the schema name,
    * with the given data. Can be called statically.
    *
@@ -232,10 +244,10 @@ class qcl_data_datasource_Manager
     //$this->debug("Datasource '$name' has schema name '$dsSchemaName'");
 
     /*
-     * get datasource schema model and copy over record data
+     * get datasource schema model and relaod datasource data
      */
     $dsSchemaModel =& $this->getSchemaModel( $dsSchemaName );
-    $dsSchemaModel->currentRecord = $dsModel->currentRecord;
+    $dsSchemaModel->load( $dsModel->getId() );
 
     /*
      * store name of the datasource in the model
