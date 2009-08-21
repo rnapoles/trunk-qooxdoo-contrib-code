@@ -67,6 +67,33 @@ if ( ! defined("servicePathPrefix") )
 }
 
 /**
+ * How to pass the RPC parameters to the service method. Can have
+ * three values:
+ *
+ * 1) 'array': The signature used in RpcPhp 1.0, passing all
+ * parameters as an array in the first method argument, and the error
+ * object as the second argument.This is the default mode (if the
+ * constant is not defined by the user) and the only one that works
+ * in PHP4.
+ *
+ * 2) 'args': Pass the parameters as a normal method call, so that
+ * the method definition can use them as named arguments. This also
+ * improves the ability to document the source code of the service methods.
+ * This will be the standard mode in a future version of the server.
+ * The error object does not need to be passed to the service method any
+ * longer.
+ *
+ * 3) 'check': Via method introspection, this checks whether the first
+ * argument of the method is called "params". If yes, use the 'array' mode.
+ * If not, use the 'args' mode.
+ *
+ */
+if ( ! defined("RpcMethodSignatureMode") )
+{
+  define( "RpcMethodSignatureMode", "array" );
+}
+
+/**
  * Prefixes for RPC classes and methods
  *
  * Since you do not want to expose all classes or all methods that are
@@ -879,12 +906,12 @@ class AbstractServer
     }
     return true;
   }
+
   /**
    * Call the requested method passing it the provided params
    * plus the error object plus a reference to the server
-   * instance. Override this method for a different behavior,
-   * in particular if you want to catch errors thrown in the
-   * called method.
+   * instance. Override this method for a different behavior.
+   * The method handles PHP4 and PHP5.
    * @param object $serviceObject
    * @param string $method
    * @param array $params
@@ -893,11 +920,30 @@ class AbstractServer
   function callServiceMethod( $serviceObject, $method, $params )
   {
     $errorBehavior =& $this->getErrorBehavior();
-    $result = $serviceObject->$method(
-      $params,        /* parameters */
-      $errorBehavior, /* the error object */
-      &$this          /* the server object */
-    );
+
+    /*
+     * PHP 4 - Error will be caught by set_error_handler,
+     * if set up.
+     */
+    if ( phpversion() < 5 )
+    {
+      $result = $serviceObject->$method(
+        $params,        /* parameters */
+        $errorBehavior, /* the error object */
+        &$this          /* the server object */
+      );
+    }
+
+    /*
+     * PHP5: JsonRpcErrors can be thrown manually, also, we can
+     * check the service method signature via introspection.
+     * To not raise a parse error in PHP4, the code is included in
+     * an external script
+     */
+    else
+    {
+      require dirname(__FILE__) . "/lib/callServiceMethod.php5";
+    }
     return $result;
   }
 
