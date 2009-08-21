@@ -203,7 +203,7 @@ class qcl_data_model_db_Abstract
       if ( is_string($orderBy) )
       {
         $orderBy = $this->getColumnName($orderBy);
-        $sql .= "ORDER BY `$orderBy`";
+        $sql .= " ORDER BY `$orderBy`";
       }
       else
       {
