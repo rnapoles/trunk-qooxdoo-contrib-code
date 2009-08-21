@@ -68,6 +68,13 @@ class qcl_data_datasource_type_db_Model
   var $datasourceConnectionObj;
 
   /**
+   * Whether the global table prefix from the service.ini.php file
+   * should be used or not.
+   * @var boolean
+   */
+  var $useGlobalTablePrefix = true;
+
+  /**
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_type_db_Model
    */
@@ -161,21 +168,33 @@ class qcl_data_datasource_type_db_Model
   }
 
   /**
-   * Return table prefix for datasource table.
-   * This get the value of the column "prefix" or, if empty, the named id of the
-   * datasource.
+   * Returns the prefix for tables used by the models connected to this database.
+   * Defaults to the datasource name plus underscore if there is a datasource.
+   * If the $useGlobalTablePrefix property is true, add a global prefix set in
+   * service.ini.php.
+   *
+   * @return string
    */
   function getTablePrefix()
   {
     if ( $this->foundSomething() )
     {
-      $prefix = either( $this->getPrefix(), $this->getNamedId() );
-      return parent::getTablePrefix() . $prefix . "_";
+      $prefix = either( $this->getPrefix(), $this->getNamedId() ) . "_";
+      if ( $this->getUseGlobalTablePrefix() )
+      {
+        $prefix = parent::getTablePrefix() . $prefix;
+      }
     }
     else
     {
-      return parent::getTablePrefix();
+      $prefix = parent::getTablePrefix();
     }
+    return $prefix;
+  }
+
+  function getUseGlobalTablePrefix()
+  {
+    return $this->useGlobalTablePrefix;
   }
 
   function isActive()
