@@ -505,7 +505,6 @@ qx.Mixin.define("qcl.application.MApplication",
     */
    loadConfig : function()
    {
-     this.info("Loading configuration...");
      this.getConfigStore().load();
    },
    
