@@ -414,39 +414,52 @@ qx.Mixin.define("qcl.application.MApplicationState",
         /*
          * Update application property, if exists
          */ 
-        var clazz = qx.Class.getByName( this.classname );
-        
-        if ( qx.Class.hasProperty( clazz, name ) )
-        { 
-          switch( qx.Class.getPropertyDefinition( clazz, name ).check )
-          {
-            case "Integer":
-              if ( isNaN( parseInt( value )  ) )
-              {
-                this.error("Trying to set non-integer state property to integer application property");
-              }
-              value = parseInt( value );
-              break;
-            
-            case "Boolean":
-              value = new Boolean( value );
-              break;
-              
-            case "String":
-              break;
-              
-            default:
-              this.error( "Cannot set application property for state " +  name + ": invalid type");
-              
-          }
-          this.set( name, value );
-        }
+        this._set( name, value );
         
         /*
          * qooxdoo browser navigation button support
          */
         this.addToHistory( location.hash.substr(1), description );        
       }
+    },
+    
+    /**
+     * Sets an application property, if exists, casting
+     * values to the correct type, if necessary
+     * @param name
+     * @param value
+     * @return {void}
+     */
+    _set : function ( name, value )
+    {
+      var clazz = qx.Class.getByName( this.classname );
+      
+      if ( qx.Class.hasProperty( clazz, name ) )
+      { 
+
+        switch( qx.Class.getPropertyDefinition( clazz, name ).check )
+        {
+          case "Integer":
+            if ( isNaN( parseInt( value )  ) )
+            {
+              this.error("Trying to set non-integer state property to integer application property");
+            }
+            value = parseInt( value );
+            break;
+          
+          case "Boolean":
+            value = new Boolean( value );
+            break;
+            
+          case "String":
+            break;
+            
+          default:
+            this.error( "Cannot set application property for state " +  name + ": invalid type");
+            
+        }
+        this.set( name, value );
+      }      
     },
     
     /**
@@ -511,7 +524,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
       for(var key in stateMap)
       {
          if ( states && ! states[key] ) continue;
-         this._handleStateChange( key, stateMap[key] );
+         this._set( key, stateMap[key] );
       }
       return stateMap;    
     },
@@ -527,22 +540,6 @@ qx.Mixin.define("qcl.application.MApplicationState",
       this.addToHistory(location.hash.substr(1),null);
     },
     
-    /**
-     * Handles the change or update of a state: sets an existing
-     * property of that name.
-     * @param name {String} Name of state
-     * @param data {String} State data
-     * @return void
-     * //todo check if property exists
-     */
-    _handleStateChange : function ( name, data )
-    {
-      try
-      {
-        this.set(name,data);
-      }
-      catch(e){}
-    },
     
     /*
     ---------------------------------------------------------------------------
