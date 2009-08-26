@@ -896,13 +896,16 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.base(arguments);
 
-      /* Register all needed event listeners, gecko add it after document ready */
-      if (!qx.core.Variant.isSet("qx.client", "gecko")) {
-        this.__addEventListeners();
-      }
-
-      // we need to set the designMode every time we toggle visibility back to "visible"
-      this.forceEditable();
+      this.__waitforDocumentIsReady(undefined, function() 
+      {
+        /* Register all needed event listeners, gecko add it after document ready */
+        if (!qx.core.Variant.isSet("qx.client", "gecko")) {
+          this.__addEventListeners();
+        }
+  
+        // we need to set the designMode every time we toggle visibility back to "visible"
+        this.forceEditable();
+      }, this);
     },
 
 
@@ -1159,17 +1162,19 @@ qx.Class.define("htmlarea.HtmlArea",
 
       this.__fireReady();
     },
-
-
+    
+    
     /**
-     * Tries to fire the ready event and to add the event listeners.
-     * This is needed because of a possible race condition while loading the body
+     * Retry mechanism to wait until the document is ready.
+     * Calls the given handler if it was successfull.
      * 
      * @type member
-     * @param retry {Boolean} indicates if the method is in retry state
+     * @param retry {Number} counts the number of retries
+     * @param handler {Function} callback function. Called after the mechanism was successful.
+     * @param scope {var} the scope of the callback function
      * @return {void}
      */
-    __fireReady : function(retry)
+    __waitforDocumentIsReady : function(retry, handler, scope) 
     {
       var doc = this.getContentDocument();
 
@@ -1182,23 +1187,41 @@ qx.Class.define("htmlarea.HtmlArea",
         if (retry < 5)
         {
           qx.client.Timer.once(function () {
-            this.__fireReady(++retry);
+            this.__waitforDocumentIsReady(++retry, handler, scope);
           }, this, 10);
-        } else {
+        } 
+        else 
+        {
           this.createDispatchDataEvent("loadingError");
         }
 
         return;
       }
+      handler.call(this);
+    },
 
-      /* Register all needed event listeners only for gecko, all other browsers will set
-       * it after appear */
-      if (qx.core.Variant.isSet("qx.client", "gecko")) {
-        this.__addEventListeners();
-      }
 
-      /* dispatch the "ready" event at the end of the initialization */
-      this.createDispatchEvent("ready");
+    /**
+     * Tries to fire the ready event and to add the event listeners.
+     * This is needed because of a possible race condition while loading the body
+     * 
+     * @type member
+     * @return {void}
+     */
+    __fireReady : function()
+    {
+      this.__waitforDocumentIsReady(undefined, function()
+      {
+        /* Register all needed event listeners only for gecko, all other browsers will set
+         * it after appear */
+        if (qx.core.Variant.isSet("qx.client", "gecko")) {
+          this.__addEventListeners();
+        }
+  
+        /* dispatch the "ready" event at the end of the initialization */
+        this.createDispatchEvent("ready");
+      }, this);
+
     },
 
     /**
