@@ -30,6 +30,11 @@ var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
 
 simulation.Simulation.prototype.runTest = function()
 {
+  if (this.getConfigSetting("testBrowser").indexOf("iexplore") >= 0) {
+    this.getEval("window.moveTo(0, 0)", "Moving window");
+    this.getEval("window.resizeTo(screen.width, screen.height)", "Resizing window");
+  }
+  
   var getFirstBoxGroup = selWin + '.document.getElementById("box0").parentNode.id';
   var firstBoxGroupInit = this.getEval(getFirstBoxGroup, "Getting ID of the first box parent");
   if (this.getConfigSetting("debug")) {
