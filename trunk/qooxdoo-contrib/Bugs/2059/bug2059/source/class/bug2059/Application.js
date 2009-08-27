@@ -29,8 +29,22 @@ qx.Class.define("bug2059.Application",
         list.add(new qx.ui.form.ListItem("Item " + i));
       }
 
+      var button = new qx.ui.form.Button("Block root");
+      
       var doc = this.getRoot();
       doc.add(list, {left: 100, top: 50});
+      doc.add(button, {left: 250, top: 50})
+      
+      doc.setBlockerColor("red");
+      doc.setBlockerOpacity(0.3);
+      
+      button.addListener("execute", function() {
+        doc.block();
+        
+        qx.event.Timer.once(function() {
+          doc.unblock();
+        }, 2000);
+      });
     },
 
     getContextMenu : function()
@@ -44,6 +58,9 @@ qx.Class.define("bug2059.Application",
       menu.add(cutButton);
       menu.add(copyButton);
       menu.add(pasteButton);
+      
+      menu.setAppearance("myContextMenu");
+      menu.syncAppearance();
 
       return menu;
     }

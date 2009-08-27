@@ -14,5 +14,19 @@ qx.Theme.define("bug2059.theme.Appearance",
 
   appearances :
   {
+    "myContextMenu" : 
+    {
+      alias : "menu",
+      include : "menu",
+      
+      style : function(states)
+      {
+        return {
+          blockBackground : true,
+          blockerColor : "black",
+          blockerOpacity : 0.3
+        };
+      }
+    }
   }
 });
