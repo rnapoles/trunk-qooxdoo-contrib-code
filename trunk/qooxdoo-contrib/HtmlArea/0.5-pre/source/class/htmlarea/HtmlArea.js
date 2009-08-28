@@ -896,16 +896,7 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.base(arguments);
 
-      this.__waitforDocumentIsReady(undefined, function() 
-      {
-        /* Register all needed event listeners, gecko add it after document ready */
-        if (!qx.core.Variant.isSet("qx.client", "gecko")) {
-          this.__addEventListeners();
-        }
-  
-        // we need to set the designMode every time we toggle visibility back to "visible"
-        this.forceEditable();
-      }, this);
+      this.forceEditable();
     },
 
 
@@ -1212,16 +1203,12 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.__waitforDocumentIsReady(undefined, function()
       {
-        /* Register all needed event listeners only for gecko, all other browsers will set
-         * it after appear */
-        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-          this.__addEventListeners();
-        }
+        /* Register all needed event listeners */
+        this.__addEventListeners();
   
         /* dispatch the "ready" event at the end of the initialization */
         this.createDispatchEvent("ready");
       }, this);
-
     },
 
     /**
