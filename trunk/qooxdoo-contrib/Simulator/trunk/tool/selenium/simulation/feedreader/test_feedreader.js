@@ -8,7 +8,7 @@ var baseConf = {
   autHost : 'http://localhost',
   autPath : '/~dwagner/workspace/qooxdoo.trunk/application/feedreader/build/index.html',
   simulatorSvn : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  debug : true 
+  debug : true
 };
 
 var args = arguments ? arguments : "";
@@ -41,7 +41,7 @@ simulation.Simulation.prototype.checkArticle = function()
 };
 
 mySim.runTest = function()
-{  
+{
   this.addChildrenGetter();
   this.addObjectGetter();
   
@@ -194,13 +194,6 @@ mySim.runTest = function()
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
                                           "Waiting for qooxdoo application");
 
-  /*
-  var product = mySim.getEval("navigator.product", "Getting browser product name");
-  if (product == "Gecko") {
-    mySim.addMozillaConsoleListener();
-  }
-  */
-
   if (!isAppReady) {
     mySim.testFailed = true;
     mySim.stop();
@@ -223,6 +216,12 @@ mySim.runTest = function()
   mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
+
+    if (parseInt(mySim.__disposerDebugLevel, 10) > 0 ) {
+      mySim.getEval(selWin + ".qx.core.ObjectRegistry.shutdown();", "Shutting down qooxdoo application");
+      // TODO: Log disposer debug messages
+    }
+    
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }

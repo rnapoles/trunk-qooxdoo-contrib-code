@@ -58,7 +58,8 @@ simulation.Simulation = function(baseConf, args)
     debug : false,
     autName : "Unnamed Application",
     stepSpeed : "250",
-    globalTimeout : 120000
+    globalTimeout : 120000,
+    disposerDebug : false
   };
   
   /*
@@ -248,7 +249,11 @@ simulation.Simulation.prototype.startSession = function()
     this.prepareNameSpace();
     this.addSanitizer();
     this.logEnvironment();
-    this.logUserAgent();    
+    this.logUserAgent();
+    if (this.getConfigSetting("disposerDebug")) {
+      var storeDisposerDebugLevel = "selenium.qxStoredVars['autWindow'].qx.core.Setting.get('qx.disposerDebugLevel')";
+      this.__disposerDebugLevel = this.getEval(storeDisposerDebugLevel, "Getting qx.disposerDebugLevel");
+    }
   }
   catch (ex) {
     this.logEnvironment("file");
