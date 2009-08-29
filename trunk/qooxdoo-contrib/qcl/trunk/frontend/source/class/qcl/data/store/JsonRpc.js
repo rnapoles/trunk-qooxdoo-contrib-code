@@ -480,7 +480,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
        /*
         * abort if no event transport
         */
-       if ( ! this.getUseEventTransport() && ! this.getProxyStore() ) return;
+       if ( ! this.getUseEventTransport() && ! this.getEventStore() ) return;
       
        /*
         * convert the event for propagation to the server
