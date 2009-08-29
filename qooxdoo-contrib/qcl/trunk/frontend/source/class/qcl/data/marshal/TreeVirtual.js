@@ -133,6 +133,7 @@ qx.Class.define("qcl.data.marshal.TreeVirtual",
           nodeData : { check : "Array", init : [] },
           queue : { check : "Array", init : [] },
           events : { check : "Map", init : [] },
+          transactionId : { check : "Integer", init : 0 },
           statusText : { check: "String", init : "", event: "changeStatusText" }
         }
       });
