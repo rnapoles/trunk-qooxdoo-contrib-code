@@ -113,10 +113,12 @@ qx.Class.define("qcl.data.marshal.Table",
       qx.Class.define("qx.data.model.Table", {
         extend: qx.core.Object,
         properties : {
-        rowCount : { check: "Integer", init : null },
-        rowData  : { check : "Array", init : null  },
+        rowCount : { check: "Integer", nullable : true },
+        rowData  : { check : "Array", nullable : true },
         events : { check : "Array", init : [] },
-        requestId : { check: "Integer", init : null },
+        requestId : { check: "Integer", nullable : true },
+        transactionId : { check: "Integer", nullable : true, event: "changeTransactionId" },
+        columnLayout : { check: "Map", nullable: true },
         statusText : { check: "String", init : "", event: "changeStatusText"  }
       }
       });
