@@ -17,12 +17,21 @@
  */
 
 /**
- * Interface for a controller that
- * @author bibliograph
+ * Interface for a controller that supplies data for a
+ * TreeVirtual widget
  *
  */
-interface qcl_data_controller_ITreeController
+interface qcl_data_controller_ITreeVirtualController
 {
+
+  /**
+   * Return the data of a node of the tree.
+   * @param string $datasource Datasource name
+   * @param int    $nodeId
+   * @return array
+   */
+  function getNodeData( $datasource, $nodeId );
+
   /**
    * Returns the number of nodes in a given database
    * @param string $datasource
@@ -31,7 +40,7 @@ interface qcl_data_controller_ITreeController
   function method_getNodeCount( $datasource );
 
   /**
-   * Returns the number of children of a folder with the given id
+   * Returns the number of children of a node with the given id
    * in the given datasource.
    *
    * @param $datasource
@@ -40,7 +49,6 @@ interface qcl_data_controller_ITreeController
    */
   function method_getChildCount( $datasource, $nodeId );
 
-
   /**
    * Returns the hierarchy of ids that lead to a specific node
    * @param string $datasource
@@ -48,14 +56,6 @@ interface qcl_data_controller_ITreeController
    * @return array
    */
   function method_getNodeIdHierarchy( $datasource, $nodeId );
-
-  /**
-   * Return the data of a folder node of the tree.
-   * @param string $datasource Datasource name
-   * @param int    $nodeId
-   * @return array
-   */
-  function getNodeData( $datasource, $nodeId );
 
   /**
    * Returns the node data of the children of a given array of

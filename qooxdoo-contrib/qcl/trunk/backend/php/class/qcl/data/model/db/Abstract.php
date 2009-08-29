@@ -102,6 +102,8 @@ class qcl_data_model_db_Abstract
     return $this->table;
   }
 
+
+
   /**
    * Connects to database. if this model is connected to
    * a datasource model, reuse the datasource's database
@@ -1150,6 +1152,15 @@ class qcl_data_model_db_Abstract
   function getTableName()
   {
     return $this->table;
+  }
+
+  /**
+   * Sets the name of the main data table
+   * @return void
+   */
+  function setTableName( $table )
+  {
+    $this->table = $table;
   }
 
   /**
