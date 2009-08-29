@@ -23,15 +23,15 @@ require_once "qcl/data/db/IModel.php";
  * documents for a schema. In this model type, declare public properties
  * with qcl_data_db_PROPERTY_* constants. However, there is be no automatic
  * setup and maintenance of tables (at least for now). This system is
- * probably a bit faster than the other.
- * @todo change inheritance order: this class should have all methods from
- * qcl_data_model_xmlSchema_DbModel that do not rely on the xml schema system,
- * and qcl_data_model_xmlSchema_DbModel should inherit from it.
+ * probably a lot faster than the other, and depends on much less stuff.
+ * We also need it to instantiate helper objects for the higher complexity
+ * objects which would otherwise lead to indefinite recursion.
+ *
  * Caution: you cannot access the object properties directly, but need to
  * use getter and setter methods (for now).
  *
  * The simple model will be completely rewritten using a qooxdoo-class-like
- * property system, so don't use it.
+ * property system, so don't use it for now.
  *
  * @todo is SimpleModel the right name?
  * @todo Implement automatic getter and setter access to properties that
@@ -83,6 +83,37 @@ class qcl_data_model_db_Simple
     $this->setTableName( $this->getTablePrefix() . $this->table() );
 
     parent::__construct(&$controller);
+  }
+
+  /**
+   * Set the transaction id for this table to 0 if it hasn't been
+   * initialized yet
+   * @todo implement
+   * @return void
+   */
+  function initTransactionId()
+  {
+    //
+  }
+
+  /**
+   * Return the transaction id for this model.
+   * @todo implement
+   * @return int
+   */
+  function getTransactionId()
+  {
+    return 0;
+  }
+
+  /**
+   * Increment the transaction id for this model.
+   * @todo implement
+   * @return void
+   */
+  function incrementTransactionId()
+  {
+    //
   }
 
   /**
