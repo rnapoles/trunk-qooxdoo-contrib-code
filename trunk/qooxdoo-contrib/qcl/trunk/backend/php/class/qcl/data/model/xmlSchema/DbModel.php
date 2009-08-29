@@ -690,12 +690,12 @@ class qcl_data_model_xmlSchema_DbModel
       $this->raiseError("Model '{$this->name}': No table name!");
     }
     $prefix = $this->getTablePrefix();
-    $this->table = $prefix . (string) $modelAttrs['table'];
+    $this->setTableName( $prefix . (string) $modelAttrs['table'] );
 
     /*
      * Whether the table for this model exists already
      */
-    $tableExists  = $db->tableExists( $this->table );
+    $tableExists  = $db->tableExists( $this->table() );
     //$this->debug("Table {$this->table} (" . $this->className(). ")" . ($tableExists ? " exists." : " does not exist." ) );
 
     /*

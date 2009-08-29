@@ -1,11 +1,11 @@
 <?php
 /*
- * qooxdoo - the new era of web development
+ * qcl - the qooxdoo component library
  *
- * http://qooxdoo.org
+ * http://qooxdoo.org/contrib/project/qcl/
  *
  * Copyright:
- *   2009 Christian Boulanger
+ *   2007-2009 Christian Boulanger
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -15,7 +15,9 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+
 require_once "qcl/data/controller/Controller.php";
+require_once "qcl/data/store/IStoreController.php";
 require_once "qcl/data/store/db/StoreModel.php";
 require_once "qcl/data/store/db/EventStoreModel.php";
 
@@ -24,22 +26,22 @@ require_once "qcl/data/store/db/EventStoreModel.php";
  */
 class qcl_data_store_db_Controller
   extends qcl_data_controller_Controller
+  implements qcl_data_store_IStoreController
 {
 
   /**
    * Register a store
-   * @param $params[0] Store id
-   * @param $params[1] Service name
-   * @return unknown_type
+   * @param string $storeId Id of the store
+   * @param string $serviceName The name of the service that the store is connected tp
+   * @return array
    */
-  function method_register( $params )
+  function method_register( $storeId, $serviceName=null )
   {
-    list( $storeId, $serviceName ) = $params;
     $this->info("Registering store $storeId for service $serviceName.",__CLASS__,__LINE__);
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
     $storeModel->insert( array(
       "storeId"      => $storeId,
-      "storeService" => $serviceName,
+      "storeService" => either( $serviceName, $this->className() ),
       "sessionId"    => $this->getSessionId()
     ) );
 
@@ -50,12 +52,11 @@ class qcl_data_store_db_Controller
 
   /**
    * Unregister a store
-   * @param $params
-   * @return unknown_type
+   * @param array|string $storeIds An array of store ids or a single store id
+   * @return array
    */
-  function method_unregister( $params )
+  function method_unregister( $storeIds )
   {
-    list( $storeIds ) = $params;
     $this->info("Unregistering store $storeIds ",__CLASS__,__LINE__);
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
     $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
@@ -93,14 +94,13 @@ class qcl_data_store_db_Controller
 
   /**
    * Receives and returns events for the given store(s)
-   * @param $params[0] Map, the keys being the store ids, and the values being
+   * @param array $map Map, the keys being the store ids, and the values being
    * an array of event data maps.
    * @return array Map with the same structure
    */
-  function method_exchangeEvents( $params )
+  function method_exchangeEvents( $map )
   {
 
-    list( $map ) = $params;
 
 //    $this->debug( "/* Store #$storeId: Retrieving events, Server event queue: " . print_r( $_SESSION, true ) . "*/",__CLASS__,__LINE__);
 
@@ -135,15 +135,6 @@ class qcl_data_store_db_Controller
     return array(
       'events' => $resultMap,
     );
-  }
-
-  /**
-   * Alias for exchangeEvents
-   * @todo change javascript code
-   */
-  function method_getEvents( $params )
-  {
-    return $this->method_exchangeEvents( $params );
   }
 
   /**

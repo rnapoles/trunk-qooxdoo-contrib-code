@@ -153,14 +153,22 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
       require_once ( str_replace("_","/",$class) . ".php" );
 
       /*
-       * create and save adapter
+       * adapter
        */
       $db =& new $class( $dsn );
       //$this->debug("Created new $class adapter... for '$dsn'.");
+
+      /*
+       * check for errors
+       */
       if ( $db->error )
       {
         qcl_data_db_Manager::raiseError( $db->error );
       }
+
+      /*
+       * save adapter
+       */
       $__dbcache[$cacheId] =& $db;
     }
 

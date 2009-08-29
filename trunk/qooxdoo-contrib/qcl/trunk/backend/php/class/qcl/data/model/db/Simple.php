@@ -76,11 +76,11 @@ class qcl_data_model_db_Simple
    */
   function __construct($controller=null)
   {
-    if ( ! $this->table )
+    if ( ! $this->table() )
     {
       $this->raiseError("No table name!");
     }
-    $this->table = $this->getTablePrefix() . $this->table;
+    $this->setTableName( $this->getTablePrefix() . $this->table() );
 
     parent::__construct(&$controller);
   }

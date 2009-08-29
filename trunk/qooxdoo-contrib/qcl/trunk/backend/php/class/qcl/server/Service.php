@@ -90,6 +90,10 @@ class qcl_server_Service
     return $this->_isAborted;
   }
 
+  //-------------------------------------------------------------
+  // Introspection methods
+  //-------------------------------------------------------------
+
   /**
    * Returns the name of the current service for use in JsonRpc requests
    * @return unknown_type
@@ -108,10 +112,6 @@ class qcl_server_Service
   {
     return (substr($method,0, strlen(JsonRpcMethodPrefix)) == JsonRpcMethodPrefix);
   }
-
-  //-------------------------------------------------------------
-  // Introspection methods
-  //-------------------------------------------------------------
 
   /**
    * Checks for PHP5 and aborts if not present
