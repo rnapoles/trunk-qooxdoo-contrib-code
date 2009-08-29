@@ -17,7 +17,7 @@
  */
 require_once "qcl/data/model/Abstract.php";
 require_once "qcl/data/db/__init__.php";
-
+require_once "qcl/util/registry/Persist.php";
 
 /**
  * Abstrac class for models that are based on a relational
@@ -165,6 +165,94 @@ class qcl_data_model_db_Abstract
   function getColumnName ( $name )
   {
     $this->notImplemented(__CLASS__);
+  }
+
+ /**
+   * Gets the name of the main data table
+   * @return string
+   */
+  function getTableName()
+  {
+    return $this->table;
+  }
+
+  /**
+   * Sets the name of the main data table. This also initializes
+   * a transaction id for this table.
+   * @param $table Table name
+   * @return void
+   */
+  function setTableName( $table )
+  {
+    $this->table = $table;
+    $this->initTransactionId();
+  }
+
+  /**
+   * Set the transaction id for this table to 0 if it hasn't been
+   * initialized yet
+   * @return void
+   */
+  function initTransactionId()
+  {
+    $this->notImplemented(__CLASS__);
+  }
+
+  /**
+   * Return the transaction id for this modes
+   * @return int
+   */
+  function getTransactionId()
+  {
+    $this->notImplemented(__CLASS__);
+  }
+
+  /**
+   * Increment the transaction id for this model.
+   * @return void
+   */
+  function incrementTransactionId()
+  {
+    $this->notImplemented(__CLASS__);
+  }
+
+  /**
+   * returns the prefix for tables used by this
+   * model. defaults to the datasource name plus underscore
+   * or an empty string if there is no datasource
+   * @return string
+   */
+  function getTablePrefix()
+  {
+    $prefix = qcl_application_Application::getIniValue("database.tableprefix");
+    $dsModel =& $this->getDatasourceModel();
+    if ( $dsModel )
+    {
+      $prefix = $dsModel->getTablePrefix();
+    }
+    //$this->info("Prefix for {$this->name} is '$prefix'.");
+    return $prefix;
+  }
+
+  /**
+   * Whether the model has the given index
+   * @param $index
+   * @return boolean
+   */
+  function hasIndex( $index )
+  {
+    return in_array( $index, $this->indexes() );
+  }
+
+  /**
+   * Returns a list of index names of the table
+   * which holds the records of this model
+   * @return array
+   */
+  function indexes()
+  {
+    $db = $this->db();
+    return $db->indexes( $this->table() );
   }
 
   //-------------------------------------------------------------
@@ -749,6 +837,11 @@ class qcl_data_model_db_Abstract
     }
 
     /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
+    /*
      * return id or 0 if the insert was not successful
      */
     return $id;
@@ -795,6 +888,11 @@ class qcl_data_model_db_Abstract
      */
     $data = $this->unschematize($data);
 
+    /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
     //$this->debug($data);
 
     return $this->db->update( $this->table(), $data, $this->getColumnName("id") );
@@ -808,6 +906,14 @@ class qcl_data_model_db_Abstract
    */
   function updateWhere( $data, $where )
   {
+    /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
+    /*
+     * do the update
+     */
     return $this->db->updateWhere( $this->table(), $data, $this->toSql($where) );
   }
 
@@ -827,6 +933,11 @@ class qcl_data_model_db_Abstract
    */
   function replace( $data )
   {
+    /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
     /*
      * if the data has an 'id' property, simply update the data. This requires
      * that such a row exists
@@ -976,6 +1087,14 @@ class qcl_data_model_db_Abstract
    */
   function deleteWhere ( $where )
   {
+    /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
+    /*
+     * delete
+     */
     $this->db->deleteWhere ( $this->table(), $this->toSql($where) );
   }
 
@@ -987,6 +1106,14 @@ class qcl_data_model_db_Abstract
    */
   function deleteBy ( $property, $value )
   {
+    /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
+    /*
+     * delete
+     */
     $this->db->deleteWhere ( $this->table(), $this->toSql( array(
       $property => $value
     ) ) );
@@ -998,6 +1125,14 @@ class qcl_data_model_db_Abstract
    */
   function truncate()
   {
+    /*
+     * increment transaction id for this model
+     */
+    $this->incrementTransactionId();
+
+    /*
+     * truncate
+     */
     $table = $this->table();
     $this->db->execute("TRUNCATE `{$table}`;");
   }
@@ -1144,63 +1279,5 @@ class qcl_data_model_db_Abstract
     }
     return $map;
   }
-
-  /**
-   * Gets the name of the main data table
-   * @return string
-   */
-  function getTableName()
-  {
-    return $this->table;
-  }
-
-  /**
-   * Sets the name of the main data table
-   * @return void
-   */
-  function setTableName( $table )
-  {
-    $this->table = $table;
-  }
-
-  /**
-   * returns the prefix for tables used by this
-   * model. defaults to the datasource name plus underscore
-   * or an empty string if there is no datasource
-   * @return string
-   */
-  function getTablePrefix()
-  {
-    $prefix = qcl_application_Application::getIniValue("database.tableprefix");
-    $dsModel =& $this->getDatasourceModel();
-    if ( $dsModel )
-    {
-      $prefix = $dsModel->getTablePrefix();
-    }
-    //$this->info("Prefix for {$this->name} is '$prefix'.");
-    return $prefix;
-  }
-
-  /**
-   * Whether the model has the given index
-   * @param $index
-   * @return boolean
-   */
-  function hasIndex( $index )
-  {
-    return in_array( $index, $this->indexes() );
-  }
-
-  /**
-   * Returns a list of index names of the table
-   * which holds the records of this model
-   * @return array
-   */
-  function indexes()
-  {
-    $db = $this->db();
-    return $db->indexes( $this->table() );
-  }
-
 }
 ?>

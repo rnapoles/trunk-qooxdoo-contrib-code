@@ -160,8 +160,50 @@ class qcl_data_model_xmlSchema_DbModel
       }
 
     }
-
   }
+
+  /**
+   * Set the transaction id for this table to 0 if it hasn't been
+   * initialized yet
+   * @return void
+   */
+  function initTransactionId()
+  {
+    if ( ! qcl_util_registry_Persist::has( "transaction_id_" . $this->table() ) )
+    {
+      qcl_util_registry_Persist::set( "transaction_id_" . $this->table(),0 );
+    }
+  }
+
+  /**
+   * Return the transaction id for this modes
+   * @return int
+   */
+  function getTransactionId()
+  {
+    if ( ! $this->table() )
+    {
+      $this->raiseError("Model has no table yet.");
+    }
+    return (int) qcl_util_registry_Persist::get( "transaction_id_" . $this->table());
+  }
+
+  /**
+   * Increment the transaction id for this model.
+   * @return void
+   */
+  function incrementTransactionId()
+  {
+  if ( ! $this->table() )
+    {
+      $this->raiseError("Model has no table yet.");
+    }
+    qcl_util_registry_Persist::set(
+      "transaction_id_" . $this->table(),
+      $this->getTransactionId()+1
+    );
+  }
+
 
   /**
    * Rets the name of the column that holds the unique (numeric) id of this table.
@@ -1717,6 +1759,10 @@ class qcl_data_model_xmlSchema_DbModel
     $data[$foreignkey]   = $localId;
     $data[$jmForeignKey] = $linkedId;
 
+    /*
+     * increment transaction id
+     */
+    $this->incrementTransactionId();
 
     if ( $remove )
     {
