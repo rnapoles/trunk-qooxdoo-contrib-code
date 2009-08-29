@@ -226,11 +226,11 @@ qx.Class.define("htmleditor.HtmlEditor", {
 				for (var i = 0; i < styles.length; i++) {
 					var style = styles[i];
 					var item = new qx.ui.form.ListItem(style.desc);
-					item.setValue(style.tag);
+					item.setUserData("value",style.tag);
 					select.add(item);
 				}
-				select.setValue("");
-				select.addListener("changeValue", this.__onChangeParaStyle, this);
+				select.setSelection([]);
+				select.addListener("changeSelection", this.__onChangeParaStyle, this);
 				part.add(select);
 				return select;
 			},
@@ -253,13 +253,13 @@ qx.Class.define("htmleditor.HtmlEditor", {
 			"justify": function(part) {
 				var obj = new Object();
 				obj.left = new qx.ui.toolbar.RadioButton("Left Justify", "htmleditor/icon/16/htmleditor/justify-left.png");
-				obj.left.addListener("changeChecked", function(e) { if (e.getData()) this.__htmlArea.setJustifyLeft(); }, this);
+				obj.left.addListener("changeValue", function(e) { if (e.getData()) this.__htmlArea.setJustifyLeft(); }, this);
 				obj.center = new qx.ui.toolbar.RadioButton("Center Justify", "htmleditor/icon/16/htmleditor/justify-center.png");
-				obj.center.addListener("changeChecked", function(e) { if (e.getData()) this.__htmlArea.setJustifyCenter(); }, this);
+				obj.center.addListener("changeValue", function(e) { if (e.getData()) this.__htmlArea.setJustifyCenter(); }, this);
 				obj.right = new qx.ui.toolbar.RadioButton("Right Justify", "htmleditor/icon/16/htmleditor/justify-right.png");
-				obj.right.addListener("changeChecked", function(e) { if (e.getData()) this.__htmlArea.setJustifyRight(); }, this);
+				obj.right.addListener("changeValue", function(e) { if (e.getData()) this.__htmlArea.setJustifyRight(); }, this);
 				obj.full = new qx.ui.toolbar.RadioButton("Full Justify", "htmleditor/icon/16/htmleditor/justify-full.png");
-				obj.full.addListener("changeChecked", function(e) { if (e.getData()) this.__htmlArea.setJustifyFull(); }, this);
+				obj.full.addListener("changeValue", function(e) { if (e.getData()) this.__htmlArea.setJustifyFull(); }, this);
 				part.add(obj.left);
 				part.add(obj.right);
 				part.add(obj.center);
@@ -302,6 +302,27 @@ qx.Class.define("htmleditor.HtmlEditor", {
 			"font" :			[ "font-size" ],
 			"insert" :			[ "insert-link", "insert-picture", "paste-as-text", "horiz-ruler" ],
 			"undo" :			[ "undo", "redo", "remove-formatting" ]
+		},
+		
+		/**
+		 * Creates a button. Overwrites an existing button with the 
+		 * same name.
+		 * @param name {String} Name of the button, used in button sets etc.
+		 * @param buttonData {Map} Map containing the "caption", "icon" and "handler"
+		 * keys. Caption and icon properties are strings, the handler property
+		 * contains a function that is called when the button is pressed.
+		 * @return {Void}
+		 */
+		createButton : function( name, buttonData )
+		{
+		  if ( typeof name != "string" || name == "" ||
+		       typeof buttonData.caption != "string" ||
+		       typeof buttonData.icon != "string" ||
+		       typeof buttonData.handler != "function" )
+		  {
+		    this.error("Invalid button data");
+		  }
+		  this.__buttons[name] = buttonData;
 		},
 		
 		/**
@@ -384,7 +405,7 @@ qx.Class.define("htmleditor.HtmlEditor", {
 					} else {
 						if (buttonDef.toggle) {
 							widget = new qx.ui.toolbar.CheckBox(buttonDef.caption, buttonDef.icon);
-							widget.addListener("changeChecked", buttonDef.handler, this);
+							widget.addListener("changeValue", buttonDef.handler, this);
 						} else {
 							widget = new qx.ui.toolbar.Button(buttonDef.caption, buttonDef.icon);
 							widget.addListener("execute", buttonDef.handler, this);
@@ -475,13 +496,13 @@ qx.Class.define("htmleditor.HtmlEditor", {
 			var justify = this.__toolbarButtons["justify"];
 			if (justify) {
 				if (map.justifyRight)
-					justify.right.setChecked(true);
+					justify.right.setValue(true);
 				else if (map.justifyCenter)
-					justify.center.setChecked(true);
+					justify.center.setValue(true);
 				else if (map.justifyFull)
-					justify.full.setChecked(true);
+					justify.full.setValue(true);
 				else
-					justify.left.setChecked(true);
+					justify.left.setValue(true);
 			}
 			this.__updatingToolbar = false;
 		},
@@ -498,7 +519,7 @@ qx.Class.define("htmleditor.HtmlEditor", {
 				state = parseInt(state) != 0;
 			var button = this.__toolbarButtons[name];
 			if (button)
-				button.setChecked(state);
+				button.setValue(state);
 		},
 		
 		/**
@@ -657,7 +678,7 @@ qx.Class.define("htmleditor.HtmlEditor", {
 		 * Called when the paragraph style has been selected from the drop down
 		 */
 		__onChangeParaStyle: function(event) {
-			var tag = event.getCurrentTarget().getSelected().getValue().toUpperCase();
+			var tag = event.getCurrentTarget().getSelection()[0].getUserData("value").toUpperCase();
 			this.debug("setting paragraph style to " + tag);
 			this.__htmlArea.setParagraphStyle(tag);
 		},
