@@ -183,7 +183,7 @@ simulation.Simulation.prototype.runTest = function()
     mySim.log("Playground ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
   }
 
-  mySim.logTestDuration();
   mySim.stop();
+  mySim.logTestDuration();
 
 })();

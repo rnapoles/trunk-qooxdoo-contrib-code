@@ -294,7 +294,7 @@ simulation.Simulation.prototype.logErrors = function(result)
     mySim.log("Classes with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
   }
 
-  mySim.logTestDuration();
   mySim.stop();
+  mySim.logTestDuration();
 
 })();

@@ -222,7 +222,7 @@ mySim.runTest = function()
     mySim.log("Feedreader ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
   }
 
-  mySim.logTestDuration();
   mySim.stop();
+  mySim.logTestDuration();  
 
 })();

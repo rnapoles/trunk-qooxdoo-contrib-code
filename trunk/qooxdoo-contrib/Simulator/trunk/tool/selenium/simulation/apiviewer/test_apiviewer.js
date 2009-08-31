@@ -104,7 +104,7 @@ simulation.Simulation.prototype.runTest = function()
     mySim.log("APIViewer ended with warnings or errors: " + errors, "info");
   }
 
-  mySim.logTestDuration();
   mySim.stop();
+  mySim.logTestDuration();
 
 })();
