@@ -216,12 +216,6 @@ mySim.runTest = function()
   mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
-
-    if (parseInt(mySim.__disposerDebugLevel, 10) > 0 ) {
-      mySim.getEval(selWin + ".qx.core.ObjectRegistry.shutdown();", "Shutting down qooxdoo application");
-      // TODO: Log disposer debug messages
-    }
-    
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
