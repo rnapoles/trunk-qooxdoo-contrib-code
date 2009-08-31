@@ -169,7 +169,7 @@ simulation.Simulation.prototype.runTest = function()
     mySim.log("Inspector ended with warnings or errors: " + errors, "info");
   }
 
+  mySim.stop();
   mySim.logTestDuration();
-  //mySim.stop();
 
 })();

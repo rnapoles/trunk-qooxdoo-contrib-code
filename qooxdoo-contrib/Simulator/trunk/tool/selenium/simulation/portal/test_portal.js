@@ -121,7 +121,7 @@ simulation.Simulation.prototype.runTest = function()
     mySim.log("Portal ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
   }
 
-  mySim.logTestDuration();
   mySim.stop();
+  mySim.logTestDuration();  
 
 })();

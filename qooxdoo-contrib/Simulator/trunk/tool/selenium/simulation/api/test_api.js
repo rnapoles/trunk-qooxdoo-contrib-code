@@ -155,7 +155,7 @@ simulation.Simulation.prototype.logDocErrors = function()
     mySim.log("API ended with warnings or errors: " + errors, "info");
   }
 
+  mySim.stop();
   mySim.logTestDuration();
-  //mySim.stop();
 
 })();
