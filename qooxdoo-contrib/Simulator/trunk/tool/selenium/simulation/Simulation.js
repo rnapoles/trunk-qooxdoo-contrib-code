@@ -250,10 +250,6 @@ simulation.Simulation.prototype.startSession = function()
     this.addSanitizer();
     this.logEnvironment();
     this.logUserAgent();
-    if (this.getConfigSetting("disposerDebug")) {
-      var storeDisposerDebugLevel = "selenium.qxStoredVars['autWindow'].qx.core.Setting.get('qx.disposerDebugLevel')";
-      this.__disposerDebugLevel = this.getEval(storeDisposerDebugLevel, "Getting qx.disposerDebugLevel");
-    }
   }
   catch (ex) {
     this.logEnvironment("file");
@@ -863,9 +859,55 @@ simulation.Simulation.prototype.addSanitizer = function()
  */
 simulation.Simulation.prototype.stop = function()
 {
+  if (this.getConfigSetting("disposerDebug")) {
+    var getDisposerDebugLevel = "selenium.qxStoredVars['autWindow'].qx.core.Setting.get('qx.disposerDebugLevel')";
+    var disposerDebugLevel = this.getEval(getDisposerDebugLevel, "Getting qx.disposerDebugLevel");
+    
+    if (parseInt(disposerDebugLevel, 10) > 0 ) {
+      this.logDisposerDebug();
+    }
+  }
+  
   this.__sel.stop();
   if (this.getConfigSetting("debug")) {
     print("Simulation finished.");
+  }
+};
+
+
+simulation.Simulation.prototype.logDisposerDebug = function()
+{
+  // Create and register a new logger
+  var rb = "new " + selWin + ".qx.log.appender.RingBuffer()";
+  this.storeEval(rb, "ringBuffer");  
+  this.getEval(selWin + ".qx.log.Logger.register(selenium.qxStoredVars['ringBuffer'])", "Registering log appender");
+  this.getEval("selenium.qxStoredVars['ringBuffer'].clearHistory()", "Clearing log history");  
+  
+  var getRingBufferEntries = function() {
+    var entries = selenium.qxStoredVars["ringBuffer"].getAllLogEvents();
+    var entryArray = [];
+    for (var i=0,l=entries.length; i<l; i++) {
+      var entry = entries[i].time;
+      for (var j=0,m=entries[i].items.length; j<m; j++) {
+        entry += " " + entries[i].items[j].text;
+      }
+      entryArray.push(entry);
+    }
+    return entryArray.join("|");
+  };
+  
+  this.addOwnFunction("getRingBufferEntries", getRingBufferEntries);
+  
+  // Shut down
+  this.getEval(selWin + ".qx.core.ObjectRegistry.shutdown()", "Shutting down qooxdoo application");
+  
+  // Process log entries
+  var debugLog = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getRingBufferEntries()", "Retrieving disposer debug messages");
+  debugLog = String(debugLog);
+  debugLogArray = debugLog.split("|");
+  
+  for (var i=0,l=debugLogArray.length; i<l; i++) {
+    this.log(debugLogArray[i], "warn");
   }
 };
 
