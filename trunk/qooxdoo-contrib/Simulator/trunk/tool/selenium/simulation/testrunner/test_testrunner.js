@@ -318,7 +318,7 @@ simulation.Simulation.prototype.logErrors = function(result)
     return;
   }
 
-  var isSuiteReady = mySim.waitForCondition(isStatusReady, 240000,
+  var isSuiteReady = mySim.waitForCondition(isStatusReady, 360000,
                                             "Waiting for test suite to load");
 
   if (!isSuiteReady) {
