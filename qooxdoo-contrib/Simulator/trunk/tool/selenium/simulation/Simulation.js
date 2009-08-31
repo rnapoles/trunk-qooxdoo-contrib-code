@@ -886,10 +886,11 @@ simulation.Simulation.prototype.logDisposerDebug = function()
   var getRingBufferEntries = function() {
     var entries = selenium.qxStoredVars["ringBuffer"].getAllLogEvents();
     var entryArray = [];
-    for (var i=0,l=entries.length; i<l; i++) {
-      var entry = entries[i].time;
+    // the last message is "Disposed X objects", ignore it
+    for (var i=0,l=entries.length; i<(l-1); i++) {
+      var entry = "";
       for (var j=0,m=entries[i].items.length; j<m; j++) {
-        entry += " " + entries[i].items[j].text;
+        entry += entries[i].items[j].text + " ";
       }
       entryArray.push(entry);
     }
@@ -975,7 +976,7 @@ simulation.Simulation.prototype.logGlobalErrors = function()
   var exceptions = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getGlobalErrors()", "Retrieving global error store");
   var ex = String(exceptions);
   if (ex.length > 0) {
-    var exArr = ex.split("|");   
+    var exArr = ex.split("|");
     for (var i = 0; i < exArr.length; i++) {
       this.log("Global Error Handler caught exception: " + exArr[i], "error");
     }
