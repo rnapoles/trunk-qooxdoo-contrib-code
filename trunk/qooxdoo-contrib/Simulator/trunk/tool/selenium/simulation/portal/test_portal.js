@@ -113,15 +113,8 @@ simulation.Simulation.prototype.runTest = function()
   }
   
   mySim.logGlobalErrors();
-
-  if (!mySim.testFailed) {
-    if (mySim.debug) {
-      print("Test run finished successfully.");
-    }
-    mySim.log("Portal ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
-  }
+  mySim.logResults();
 
   mySim.stop();
-  mySim.logTestDuration();  
 
 })();

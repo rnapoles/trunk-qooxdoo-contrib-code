@@ -131,7 +131,6 @@ simulation.Simulation.prototype.runTest = function()
 // - Main --------------------------------------------------------------------
 (function() { 
   mySim.testFailed = false;
-  mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
   
@@ -161,15 +160,9 @@ simulation.Simulation.prototype.runTest = function()
     mySim.log(msg + "<br/>" + ex, "error");
   }
 
-  if (!mySim.testFailed) {
-    if (mySim.getConfigSetting("debug")) {
-      print("Test run finished successfully.");
-    }
-    var errors = mySim.getTotalErrorsLogged() + mySim.errWarn;
-    mySim.log("Inspector ended with warnings or errors: " + errors, "info");
-  }
+  //mySim.logGlobalErrors();
+  mySim.logResults();
 
   mySim.stop();
-  mySim.logTestDuration();
 
 })();
