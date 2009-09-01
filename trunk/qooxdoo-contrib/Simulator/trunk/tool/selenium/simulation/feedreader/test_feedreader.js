@@ -40,6 +40,31 @@ simulation.Simulation.prototype.checkArticle = function()
   }  
 };
 
+simulation.Simulation.prototype.checkFeeds = function()
+{
+  var feedChecker = function()
+  {
+    var qxApp = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(); 
+    var items = qxApp.getRoot().getChildren()[0].getChildren()[2].getChildren()[0].getItems();
+    var invalidFeeds = [];
+    for (var i=0,l=items.length; i<l; i++) {
+      if (items[i].getIcon().indexOf("process-stop") >=0) {
+        invalidFeeds.push(items[i].getLabel());
+      }
+    }
+    return invalidFeeds.join("|");
+  };
+  
+  this.addOwnFunction("checkFeeds", feedChecker);
+  var invalidFeeds = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.checkFeeds()");
+  invalidFeeds = String(invalidFeeds);
+  invalidFeedArray = invalidFeeds.split("|");
+  for (var i=0,l=invalidFeedArray.length; i<l; i++) {
+    this.log("Feed not loaded: " + invalidFeedArray[i], "warn");
+  }
+  
+};
+
 mySim.runTest = function()
 {
   this.addChildrenGetter();
@@ -48,10 +73,13 @@ mySim.runTest = function()
   var testPause = 360000;
 
   var tree = selWin + '.qx.Simulation.getObjectByClassname(' + selWin +'.qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
+  //var tree = selWin + '.' + qxAppInst +  '.getRoot().getChildren()[0].getChildren()[2].getChildren()[0]';
   var lastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");
   
   var isLastFeedLoaded = tree + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";  
   this.waitForCondition(isLastFeedLoaded, testPause, "Waiting for feeds to load");
+  
+  this.checkFeeds();
   
   var getLastFeedLabel = tree + ".getItems()[" + lastFeedNum + "].getLabel()";
   var lastFeedLabel = this.getEval(getLastFeedLabel, "Getting last feed's label");
@@ -174,16 +202,12 @@ mySim.runTest = function()
   this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "", "Selecting first item from new feed.");  
   
   this.checkArticle();
-
-  //Packages.java.lang.Thread.sleep(360000);
-  
 };
 
 // - Main --------------------------------------------------------------------
 
 (function() { 
   mySim.testFailed = false;
-  //mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
   
@@ -214,15 +238,8 @@ mySim.runTest = function()
   }
 
   mySim.logGlobalErrors();
-
-  if (!mySim.testFailed) {
-    if (mySim.getConfigSetting("debug")) {
-      print("Test run finished successfully.");
-    }
-    mySim.log("Feedreader ended with warnings or errors: " + mySim.getTotalErrorsLogged(), "info");
-  }
+  mySim.logResults();
 
   mySim.stop();
-  mySim.logTestDuration();  
 
 })();
