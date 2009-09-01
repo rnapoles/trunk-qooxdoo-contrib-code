@@ -75,6 +75,7 @@ simulation.Simulation = function(baseConf, args)
 
 
   var __totalErrorsLogged = 0;
+  var __totalWarningsLogged = 0;
   
   /**
    * Sets the total number of errors logged.
@@ -89,6 +90,18 @@ simulation.Simulation = function(baseConf, args)
   };
   
   /**
+   * Sets the total number of warnings logged.
+   * 
+   * @private
+   * @param warnings {Integer} The new warning count
+   * @return {void}
+   */
+  setTotalWarningsLogged = function(warnings) 
+  {
+    __totalWarningsLogged = warnings;
+  };
+
+  /**
    * Returns the total number of errors logged by the {@link #log} method.
    * 
    * @return {Integer} Number of errors logged so far in the current Simulation
@@ -96,6 +109,17 @@ simulation.Simulation = function(baseConf, args)
   this.getTotalErrorsLogged = function()
   {
     return __totalErrorsLogged;
+  };
+
+
+  /**
+   * Returns the total number of warnings logged by the {@link #log} method.
+   * 
+   * @return {Integer} Number of warnings logged so far in the current Simulation
+   */
+  this.getTotalWarningsLogged = function()
+  {
+    return __totalWarningsLogged;
   };
 
   /**
@@ -221,6 +245,18 @@ simulation.Simulation.prototype.incrementTotalErrorsLogged = function()
   var oldCount = this.getTotalErrorsLogged();
   var newCount = oldCount + 1;
   setTotalErrorsLogged(newCount);  
+};
+
+/**
+ * Increments the number of total warnings logged by one
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.incrementTotalWarningsLogged = function()
+{
+  var oldCount = this.getTotalWarningsLogged();
+  var newCount = oldCount + 1;
+  setTotalWarningsLogged(newCount);  
 };
 
 /**
@@ -510,6 +546,10 @@ simulation.Simulation.prototype.log = function(text, level, browserLog)
 
   if (lvl == "error") {
     this.incrementTotalErrorsLogged();
+  }
+  
+  if (lvl == "warn") {
+    this.incrementTotalWarningsLogged();
   }
   
   msg = this.sanitize(msg);
@@ -858,6 +898,21 @@ simulation.Simulation.prototype.addSanitizer = function()
  * @return {void}
  */
 simulation.Simulation.prototype.stop = function()
+{  
+  this.__sel.stop();
+  if (this.getConfigSetting("debug")) {
+    print("Simulation finished.");
+  }
+};
+
+/**
+ * Default simulation result logging: Logs any disposer debug messages, the 
+ * total number of issues (= warnings + errors) that occurred during the 
+ * simulation and the elapsed time. 
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.logResults = function()
 {
   if (this.getConfigSetting("disposerDebug")) {
     var getDisposerDebugLevel = "selenium.qxStoredVars['autWindow'].qx.core.Setting.get('qx.disposerDebugLevel')";
@@ -868,13 +923,24 @@ simulation.Simulation.prototype.stop = function()
     }
   }
   
-  this.__sel.stop();
-  if (this.getConfigSetting("debug")) {
-    print("Simulation finished.");
+  if (!this.testFailed) {
+    if (this.getConfigSetting("debug")) {
+      print("Test run finished successfully.");
+    }
+    
+    var totalIssues = this.getTotalErrorsLogged() + this.getTotalWarningsLogged();
+    this.log(this.getConfigSetting("autName") + " ended with warnings or errors: " + totalIssues, "info");
   }
+  
+  this.logTestDuration();
 };
 
-
+/**
+ * "Manually" shuts down the qooxdoo application and logs any disposer debug
+ * messages. The setting "qx.disposerDebugLevel" must be set to at least 1 in 
+ * the qooxdoo application. Also, the simulation must be started with the option
+ * disposerDebug=true   
+ */
 simulation.Simulation.prototype.logDisposerDebug = function()
 {
   // Create and register a new logger
