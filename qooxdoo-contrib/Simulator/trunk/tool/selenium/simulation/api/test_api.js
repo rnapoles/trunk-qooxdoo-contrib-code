@@ -106,7 +106,6 @@ simulation.Simulation.prototype.logDocErrors = function()
     this.log("Classes with documentation errors (Excluded: " 
              + ignoreList.join() + ")", "info");
     for (var i=0;i<docArray.length; i++) {
-      this.errWarn++;
       var apiLink = ' <a href="' + baseUrl + '#' + docArray[i] + '">' + docArray[i] + '</a>';      
       this.log(apiLink, "warn");
     }    
@@ -117,7 +116,6 @@ simulation.Simulation.prototype.logDocErrors = function()
 // - Main --------------------------------------------------------------------
 (function() { 
   mySim.testFailed = false;
-  mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
   
@@ -147,15 +145,9 @@ simulation.Simulation.prototype.logDocErrors = function()
     mySim.log(msg + "<br/>" + ex, "error");
   }
 
-  if (!mySim.testFailed) {
-    if (mySim.getConfigSetting("debug")) {
-      print("Test run finished successfully.");
-    }
-    var errors = mySim.getTotalErrorsLogged() + mySim.errWarn;
-    mySim.log("API ended with warnings or errors: " + errors, "info");
-  }
+  //mySim.logGlobalErrors();
+  mySim.logResults();
 
   mySim.stop();
-  mySim.logTestDuration();
 
 })();
