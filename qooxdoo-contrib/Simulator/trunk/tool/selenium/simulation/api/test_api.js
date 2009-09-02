@@ -49,7 +49,7 @@ simulation.Simulation.prototype.logDocErrors = function()
       for (var i = 0; i < items.length; i++) {
         var icon = items[i].getIcon();
         if (icon.indexOf("_warning") >= 0) {
-          if (icon.indexOf("class") >= 0) {
+          if (icon.match(/(class)|(interface)|(mixin)/)) {
             warn.push(parentLabel + "." + items[i].getLabel());
           }
           else {
