@@ -3290,12 +3290,14 @@ qx.Class.define("htmlarea.HtmlArea",
     {
        "mshtml" : function()
        {
-         return this.getContentDocument().selection;
+         var contentDocument = this.getContentDocument();
+         return contentDocument ? contentDocument.selection : null;
        },
 
        "default" : function()
        {
-         return this.getContentWindow().getSelection();
+         var contentWindow = this.getContentWindow();
+         return contentWindow ? contentWindow.getSelection() : null;
        }
     }),
 
@@ -3367,12 +3369,18 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       "mshtml" : function()
       {
-        this.__getSelection().empty(); 
+        var selection = this.__getSelection();
+        if (selection) {
+          selection.empty();
+        } 
       },
 
       "default" : function()
       {
-        this.__getSelection().collapseToStart();
+        var selection = this.__getSelection();
+        if (selection) {
+          selection.collapseToStart();
+        }
       }
     }),
 
