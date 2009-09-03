@@ -76,7 +76,7 @@ class qcl_application_Application
    */
   function &getInstance( $class = __CLASS__ )
   {
-    if ( ! is_object( $GLOBALS['QCL_APPLICATION_INSTANCE'] ) )
+    if ( ! isset( $GLOBALS['QCL_APPLICATION_INSTANCE'] ) or ! is_object( $GLOBALS['QCL_APPLICATION_INSTANCE'] ) )
     {
       $GLOBALS['QCL_APPLICATION_INSTANCE'] =& new $class;
     }
@@ -189,7 +189,22 @@ class qcl_application_Application
       return array();
     }
 
-    $_this->_ini = parse_ini_file ( $ini_path, true );
+    /*
+     * PHP5.3
+     */
+    if ( defined("INI_SCANNER_RAW") )
+    {
+      $_this->_ini = parse_ini_file ( $ini_path, true, INI_SCANNER_RAW );
+    }
+
+    /*
+     * PHP < 5.3
+     */
+    else
+    {
+      $_this->_ini = parse_ini_file ( $ini_path, true );
+    }
+
     return $_this->_ini;
   }
 

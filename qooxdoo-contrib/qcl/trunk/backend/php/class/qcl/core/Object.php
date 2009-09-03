@@ -15,7 +15,11 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/log/Logger.php";
+
+/*
+ * Error reporting level
+ */
+error_reporting( $error_reporting );
 
 /*
  * For constant definition for which a simple integer is sufficient,
@@ -28,6 +32,7 @@ $constId = 0;
  * dependencies
  */
 require_once "qcl/core/functions.php";      // global functions
+require_once "qcl/log/Logger.php";
 require_once "qcl/lang/String.php";         // String object similar to java
 require_once "qcl/lang/Utf8String.php";     // Class with methods to deal with Utf8 Strings
 require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
@@ -39,6 +44,14 @@ if ( phpversion() < 5 )
   require_once "qcl/core/BaseClassPHP4.php";
 else
   require_once "qcl/core/BaseClassPHP5.php";
+
+/**
+ * path to log file
+ */
+if ( ! defined( "QCL_LOG_PATH") )
+{
+  define( "QCL_LOG_PATH" ,  sys_get_temp_dir() );
+}
 
 /**
  * path to log file
@@ -401,11 +414,18 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function &getInstance( $class = __CLASS__, $arg1=null, $arg2=null, $arg3=null )
   {
-     if ( ! $GLOBALS[$class] )
+    if ( ! $GLOBALS[$class] )
      {
-       if (phpversion()<5)
+       if ( phpversion() < 5 )
        {
-         $GLOBALS[$class] =& new $class( &$arg1, &$arg2, &$arg3 );
+         /*
+          * PHP5.3 will not respect error_reporting level here
+          * when parsing the code
+          * FIXME remove this, security hazard
+          */
+         eval('
+          $GLOBALS[$class] =& new $class( &$arg1, &$arg2, &$arg3 );
+         ');
        }
        else
        {
@@ -427,7 +447,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @deprecated Use native php code to instantiate classes, this will
    * be removed.
    */
-  function &getNew( $classname, $controller = null )
+  function &getNew( $classname )
   {
     /*
      * convert dot-separated class names into php-style
@@ -454,15 +474,19 @@ class qcl_core_Object extends qcl_core_BaseClass
     }
 
     /*
-     * Provide the controller if given
+     * PHP 5.3 doesn't respect error_reporting here when
+     * parsing the code
+     * FIXME remove this, security hazard
      */
-    if ( ! $controller and is_a ( $this, "qcl_data_controller_Controller" ) )
+    if ( phpversion() < 5 )
     {
-      $instance =& new $classname(&$this);
+      eval('
+        $instance =& new $classname;
+      ');
     }
     else
     {
-      $instance =& new $classname(&$controller);
+      $instance = new $classname;
     }
 
     return $instance;

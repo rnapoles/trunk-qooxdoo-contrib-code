@@ -16,6 +16,15 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+/*
+ * set error level.
+ * For PHP < 5.3, comment out the E_DEPRECATED line
+ */
+error_reporting(
+  E_ALL
+  ^ E_DEPRECATED
+);
+
 /**
  * Script to test qcl jsonrpc server backend
  */
