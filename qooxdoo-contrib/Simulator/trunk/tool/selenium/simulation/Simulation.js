@@ -77,6 +77,8 @@ simulation.Simulation = function(baseConf, args)
   var __totalErrorsLogged = 0;
   var __totalWarningsLogged = 0;
   
+  this.testFailed = false;
+  
   /**
    * Sets the total number of errors logged.
    * 
@@ -872,9 +874,7 @@ simulation.Simulation.prototype.addChildrenGetter = function()
  * script.
  * 
  * The function should be executed through getEval like this:
- * <code>this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getObjectByClassname(selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(), "qx.ui.tree.Tree")';</code>
- * 
- * TODO: Return an array of *all* objects that are instances of the wanted class
+ * <code>this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.sanitize(string)';</code>
  * 
  * @return {void}
  */
