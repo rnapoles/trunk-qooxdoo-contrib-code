@@ -17,7 +17,8 @@
  */
 
 /*
- * Error reporting level
+ * Error reporting level. Global var $error_reporting needs to be
+ * defined in global_settings.php or config.php
  */
 error_reporting( $error_reporting );
 
@@ -180,6 +181,34 @@ class qcl_core_Object extends qcl_core_BaseClass
      * setup logger object
      */
     $this->setupLogger();
+  }
+
+  /**
+   * Object oriented way of checking whether the class
+   * implements an interface.
+   *
+   * @param string $interface
+   * @param string $className If omitted (default), the given
+   * object's class is checked.
+   * @return unknown_type
+   */
+  function implementsInterface( $interface, $className = null )
+  {
+    if ( phpversion() >= 5 )
+    {
+      if ( $className )
+      {
+        return in_array( $interface, class_implements( $className ) );
+      }
+      else
+      {
+        return in_array( $interface, class_implements( $this ) );
+      }
+    }
+    else
+    {
+      trigger_error("implementsInterface not yet implemented for PHP4.");
+    }
   }
 
 

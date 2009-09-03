@@ -311,6 +311,16 @@ class qcl_data_datasource_type_db_Model
   {
     return false;
   }
+
+  /**
+   * Returns an array of the type of models that this datasource provides.
+   * Defaults to an empty array.
+   * @return array
+   */
+  function providesModelTypes()
+  {
+    return array();
+  }
 }
 
 ?>

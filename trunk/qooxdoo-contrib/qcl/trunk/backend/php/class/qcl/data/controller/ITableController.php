@@ -25,6 +25,16 @@ interface qcl_data_controller_ITableController
 {
 
   /**
+   * Returns the layout of the columns of the table displaying
+   * the records
+   *
+   * @param $datasource
+   * @return array An arrary
+   * @todo: specify return array
+   */
+  function method_getTableLayout( $datasource );
+
+  /**
    * Returns the number of rows displayed in the table,
    * according to the query data
    *
@@ -35,9 +45,16 @@ interface qcl_data_controller_ITableController
 
   /**
    * Returns row data according to the query data
-   * @param object $queryData
+   *
+   * @param int $firstRow
+   * @param int $lastRow
+   * @param string|null $requestId Request id used to identify a series of requests
+   * (for example, for caching).
+   * @param object|null $queryData Arbitrary object containing information
+   * for the query
+   *
    * @return array
    */
-  function method_getRowData( $queryData );
+  function method_getRowData( $firstRow, $lastRow, $requestId=null, $queryData=null );
 }
 ?>
