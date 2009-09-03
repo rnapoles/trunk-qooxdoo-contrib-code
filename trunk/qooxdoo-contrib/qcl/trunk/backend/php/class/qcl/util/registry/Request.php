@@ -30,7 +30,7 @@ class qcl_util_registry_Request
    */
   function &getInstance( )
   {
-    if ( ! is_object( $GLOBALS[__CLASS__] ) )
+    if ( ! isset( $GLOBALS[__CLASS__] ) or ! is_object( $GLOBALS[__CLASS__] ) )
     {
       $GLOBALS[__CLASS__] =& new qcl_util_registry_Request;
     }

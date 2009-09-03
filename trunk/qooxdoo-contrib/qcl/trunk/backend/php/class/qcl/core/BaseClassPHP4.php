@@ -435,6 +435,10 @@ if (!function_exists('get_headers'))
   }
 }
 
+/**
+ * Provided by php [spat] hm2k.org 22-Aug-2008 11:20
+ * http://us3.php.net/manual/en/function.sys-get-temp-dir.php
+ */
 if ( !function_exists('sys_get_temp_dir'))
 {
   function sys_get_temp_dir() {
