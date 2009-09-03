@@ -39,6 +39,7 @@ qx.Class.define("qcl.data.marshal.Table",
   {
     this.base(arguments);
     this.__delegate = delegate;
+    this.setQueryParams([]);
   },
   
   /*
@@ -57,7 +58,7 @@ qx.Class.define("qcl.data.marshal.Table",
    {
      check : "Array",
      nullable : true,
-     init : []
+     init : null
    },    
 
    /** 
