@@ -11,6 +11,7 @@
 /* ************************************************************************
 
 #asset(bug2557/*)
+#asset(qx/icon/Tango/22/apps/internet-web-browser.png)
 
 ************************************************************************ */
 
@@ -45,7 +46,7 @@ qx.Class.define("bug2557.Application",
         qx.log.appender.Console;
       }
 
-      var textField = new qx.ui.form.TextField();
+      /*var textField = new qx.ui.form.TextField();
       textField.focus();
       
       var doc = this.getRoot();
@@ -61,7 +62,19 @@ qx.Class.define("bug2557.Application",
       
       textField.addListener("keypress", function(e) {
         this.debug("keypress: " + e.getKeyIdentifier());
-      }, this);
+      }, this);*/
+      
+      var button1 = new qx.ui.form.Button("First Button", "icon/22/apps/internet-web-browser.png");
+      
+      var doc = this.getRoot();
+      doc.add(button1, {left: 100, top: 50});
+      
+      button1.addListener("execute", function(e) {
+        var txt = new qx.ui.form.TextField();
+        doc.add(txt, { left:0, top: 0});
+        txt.addListener("keypress", function() {alert("hi")});
+        txt.focus();
+      });
     }
   }
 });
