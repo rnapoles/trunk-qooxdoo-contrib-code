@@ -573,7 +573,9 @@ qx.Class.define("htmleditor.htmlarea.HtmlArea",
     
     styleSheetHref : {
         check: "String",
-        apply: "__applyStyleSheetHref"
+        apply: "__applyStyleSheetHref",
+        nullable: true,
+        init: null
     }
   },
 
@@ -1073,13 +1075,14 @@ qx.Class.define("htmleditor.htmlarea.HtmlArea",
       // stack is finished, set commandManager to the real one
       this.__commandManager = cm;
 
-	  // Set the style sheet (if there is one)
-	  if (this.getStyleSheetHref())
-		  this.__applyStyleSheetHref(this.getStyleSheetHref(), "");
+	    // Set the style sheet (if there is one)
+	    if (this.getStyleSheetHref() != null) {
+		    this.__applyStyleSheetHref(this.getStyleSheetHref(), "");
+      }
 		  
       /* dispatch the "ready" event at the end of the initialization */
       this.fireEvent("ready");
-	  this.fireEvent("onNewValueLoaded");
+	    this.fireEvent("onNewValueLoaded");
     },
     
     
