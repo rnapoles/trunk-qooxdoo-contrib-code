@@ -76,9 +76,7 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
   {
     /**
      * Sets the selection of the widget by examining the "value" property
-     * of the bound model item. This relies on undocumented behavior: the 
-     * ListItems contain a reference to the bound model item in the 'model'
-     * userData property. 
+     * of the bound model item.
      * 
      * @param value
      * @param old
