@@ -221,6 +221,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     
     /**
      * This event is dispatched when the editor gets a right click.
+     * 
+     * Fires a data event with the following data:
+     * 
+     *   * x - absolute x coordinate
+     *   * y - absolute y coordinate
+     *   * relX - relative x coordinate
+     *   * relY - relative y coordinate
+     *   * target - DOM element target
      */
     "contextmenu"      : "qx.event.type.Data",
     
@@ -2240,17 +2248,32 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * Event Listener for the "contextmenu" event. Stops the browser from
      * displaying the native context menu and fires an own event for the 
      * application developers to position their own (qooxdoo) contextmenu.
+     * 
+     * Fires a data event with the following data:
+     * 
+     *   * x - absolute x coordinate
+     *   * y - absolute y coordinate
+     *   * relX - relative x coordinate
+     *   * relY - relative y coordinate
+     *   * target - DOM element target
      *
-     * @type member
      * @param e {Object} Event object
      * @return {void}
      */
     _handleContextMenuEvent : function(e)
     {
-      var data   = {
-        x : e.getViewportLeft(),
-        y : e.getViewportTop(),
-        target : e.getTarget()
+      var relX = e.getViewportLeft();
+      var relY = e.getViewportTop();
+      
+      var absX = qx.bom.element.Location.getLeft(this.__widget) + relX;
+      var absY = qx.bom.element.Location.getTop(this.__widget) + relY;
+      
+      var data = {
+        x: absX,
+        y: absY,
+        relX: relX,
+        relY: relY, 
+        target: e.getTarget()
       };
       
       e.preventDefault();
