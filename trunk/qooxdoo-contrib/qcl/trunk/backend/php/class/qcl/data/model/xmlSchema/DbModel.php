@@ -3046,7 +3046,9 @@ class qcl_data_model_xmlSchema_DbModel
    * Fields are different from properties in the sense that there can
    * be fields that combine several properties for searching, such as
    * a "fulltext" field
+   *
    * @return array Array of fields
+   * @todo document xml schema
    */
   function getFields()
   {
@@ -3081,7 +3083,7 @@ class qcl_data_model_xmlSchema_DbModel
         $ftext = (string) $attrs['fulltext'];
         $index = (string) either( $attrs['useIndex'],$attrs['useindex']);
         $sfld  = (string) either( $attrs['searchField'],$attrs['searchfield']);
-        $mapTo = (string) either( $attrs['mapTo'],$attrs['mapto']);
+        $property = (string) $attrs['property'];
 
         /*
          * using an index as a field
@@ -3107,12 +3109,12 @@ class qcl_data_model_xmlSchema_DbModel
          * if field shouldn't be mapped to a property
          * @todo document
          */
-        elseif ( $mapTo !="none" and $sfld != "true" )
+        elseif ( $property !="none" and $sfld != "true" )
         {
           /*
            * check if corresponding property exists
            */
-          $prop = either( $mapTo, $name );
+          $prop = either( $property, $name );
           if ( ! $this->hasProperty ( $prop ) )
           {
             $this->raiseError("Model has no property '$prop'.");
@@ -3217,7 +3219,7 @@ class qcl_data_model_xmlSchema_DbModel
   }
 
   /**
-   * get the type of a field
+   * Returns the the type of a field
    * @param string $name field name
    * @return string field type
    */
@@ -3226,6 +3228,18 @@ class qcl_data_model_xmlSchema_DbModel
     $node  =& $this->getFieldNode( $name );
     $attrs = $node->attributes();
     return (string) $attrs['type'];
+  }
+
+  /**
+   * Returns the the property that is connected to a field.
+   * @param string $name field name
+   * @return string property name
+   */
+  function getFieldProperty( $name )
+  {
+    $node  =& $this->getFieldNode( $name );
+    $attrs = $node->attributes();
+    return either( (string) $attrs['property'], $name ) ;
   }
 
   //-------------------------------------------------------------
