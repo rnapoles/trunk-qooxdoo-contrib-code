@@ -19,14 +19,11 @@
 
 
 /**
- * A mixin for list-type widgets (List, SelectBox) when using single selection.
- * Having a "value" property greatly simplifies 
- * binding. This assumes that the including widget has been connected to a model
- * through qx.data.controller.List. Ideally, the ListItems contained in the 
- * including widgets should have a "value" property, which would have been set
- * up by the controller together with the 'label' and 'icon' properties, this
- * would greatly simplify things and would not require the model binding. However,
- * (unfortunately), the value property has been deprecated in the framework. 
+ *  A mixin for list-type widgets (List, SelectBox) that reimplements the removed
+ *  "value" property for single-selection form widgets (named "selectedValue").
+ *  This assumes that the including widget has been connected to a model through 
+ *  qx.data.controller.List and that the loaded model items contain a "value" 
+ *  property ( [ { label: "My list item label", value : "myValue" }, ... ] ). 
  */
 qx.Mixin.define("qcl.ui.form.MSingleSelectionValue", 
 {
@@ -42,7 +39,7 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
    */
   construct : function()
   {
-    this.bind("selection",this,"selectionValue",{
+    this.bind("selection",this,"selectedValue",{
       converter : this._convertSelectionToValue
     });
     
@@ -60,10 +57,10 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
     /**
      * The value of the (single-selection) List / SelectBox 
      */
-    selectionValue : 
+    selectedValue : 
     {
-      apply: "_applySelectionValue",
-      event: "changeSelectionValue",
+      apply: "_applySelectedValue",
+      event: "changeSelectedValue",
       init: null,
       nullable: true
     }
@@ -87,10 +84,10 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
      * @param old
      * @return
      */
-    _applySelectionValue : function( value, old )
+    _applySelectedValue : function( value, old )
     {
       this.getSelectables().forEach( function(item){
-        if ( item.getUserData('model') && item.getUserData('model').getValue() == value )
+        if ( item.getModel() && item.getModel().getValue() == value )
         {
           this.setSelection( [item] );
         }
@@ -104,17 +101,18 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
      */
     _convertSelectionToValue : function( items )
     {
-       if ( items.length )
+      if ( items.length )
       {
-        if ( items[0].getUserData("model") )
+        if ( items[0].getModel() )
         {
-          return items[0].getUserData("model").getValue();
+          return items[0].getModel().getValue();
         }
         else
         {
           return null;
         }
       }
+      return null;
     }
   }
 });
