@@ -69,7 +69,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
   {
     this.base(arguments);
     
-    var uri = source || qx.util.ResourceManager.toUri("htmlarea/static/blank.html");
+    var uri = source || qx.util.ResourceManager.getInstance().toUri("htmlarea/static/blank.html");
     
     this.__connectToDomElement(element);
     this.__initContentWrap();
