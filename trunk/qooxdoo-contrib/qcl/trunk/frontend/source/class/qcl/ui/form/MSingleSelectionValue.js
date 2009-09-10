@@ -86,6 +86,8 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
     {
       this.getSelectables().forEach( function(item){
         if ( typeof item.getModel == "function" 
+              && item.getModel()
+              && typeof item.getModel() == "object"
               && typeof item.getModel().getValue == "function" 
               && item.getModel().getValue() == value )
         {
@@ -104,7 +106,8 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
       if ( items.length )
       {
         if ( typeof items[0].getModel == "function" 
-            && items[0].getModel()
+            && items[0].getModel() 
+            && typeof items[0].getModel() == "object"
             && typeof items[0].getModel().getValue == "function" )
         {
           return items[0].getModel().getValue();
