@@ -122,7 +122,7 @@ qx.Class.define("htmlarea.demo.Application",
     
    __insertImageHandler : function(e)
    {
-     attributes = { src    : qx.util.ResourceManager.toUri("htmlarea/image/qooxdoo_logo.png"),
+     attributes = { src    : qx.util.ResourceManager.getInstance().toUri("htmlarea/image/qooxdoo_logo.png"),
                         border : 0,
                         title  : "qooxdoo logo",
                         alt    : "qooxdoo logo" },
@@ -345,7 +345,7 @@ qx.Class.define("htmlarea.demo.Application",
          else 
          {
            attributes = { type: "image", 
-                          src: qx.util.ResourceManager.toUri(infos.image),
+                          src: qx.util.ResourceManager.getInstance().toUri(infos.image),
                           title: infos.text,
                           qxKeepFocus: "on", 
                           qxSelectable: "off" };
