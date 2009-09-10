@@ -85,23 +85,27 @@ qx.Mixin.define("qcl.ui.form.MSingleSelectionValue",
     _applySelectedValue : function( value, old )
     {
       this.getSelectables().forEach( function(item){
-        if ( item.getModel() && item.getModel().getValue() == value )
+        if ( typeof item.getModel == "function" 
+              && typeof item.getModel().getValue == "function" 
+              && item.getModel().getValue() == value )
         {
           this.setSelection( [item] );
         }
       },this);
     },
-    
+
     /**
-     * Converts a seletion into a value
+     * Converts a seletion into a value.
      * @param selection {Array}
-     * @return {String}
+     * @return {String|null}
      */
     _convertSelectionToValue : function( items )
     {
       if ( items.length )
       {
-        if ( items[0].getModel() )
+        if ( typeof items[0].getModel == "function" 
+            && items[0].getModel()
+            && typeof items[0].getModel().getValue == "function" )
         {
           return items[0].getModel().getValue();
         }
