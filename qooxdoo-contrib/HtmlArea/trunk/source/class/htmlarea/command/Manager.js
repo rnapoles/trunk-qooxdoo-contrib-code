@@ -164,8 +164,8 @@ qx.Class.define("htmlarea.command.Manager",
         justifycenter         : { useBuiltin : false, identifier : "JustifyCenter", method : "__setTextAlign" },
         justifyfull           : { useBuiltin : false, identifier : "JustifyFull", method : "__setTextAlign" },
 
-        indent                : { useBuiltin : true, identifier : "Indent", method : "__setInOutdent" },
-        outdent               : { useBuiltin : true, identifier : "Outdent", method : "__setInOutdent" },
+        indent                : { useBuiltin : true, identifier : "Indent", method : null },
+        outdent               : { useBuiltin : true, identifier : "Outdent", method : null },
 
         copy                  : { useBuiltin : true, identifier : "Copy", method : null },
         cut                   : { useBuiltin : true, identifier : "Cut", method : null },
@@ -218,14 +218,17 @@ qx.Class.define("htmlarea.command.Manager",
       {
         var commandObject = this._commands[command];
 
-				/**
-				 * We have to make sure that the elements inside the selection are
-				 * inside a paragraph before executing a command. Otherwise executing
-				 * commands will cause problems for our paragraph handling.
-				 */
-				if (this.__paragraphMissing()) {
-					this.__insertHelperParagraph();
-				}
+        // We have to make sure that the elements inside the selection are
+        // inside a paragraph before executing a command. Otherwise executing
+        // commands will cause problems for our paragraph handling.
+        //
+        // EXCEPTION: this interferes with webkit browsers at indent/outdent
+        if (!(qx.bom.client.Engine.WEBKIT && (command == "indent" || command == "outdent")))
+        { 
+          if (this.__paragraphMissing()) {
+            this.__insertHelperParagraph();
+          }
+        }
 
         /* Pass all useBuiltin commands right to the browser */
         if (commandObject.useBuiltin)
@@ -768,26 +771,6 @@ qx.Class.define("htmlarea.command.Manager",
       * @return {Boolean} Success of operation
       */
      __setTextAlign : function(value, commandObject)
-     {
-       /* Get Range for IE, or document in other browsers */
-       var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.__editorInstance.getRange() : this.__doc; 
-
-       /* Execute command on it */
-       return commandTarget.execCommand(commandObject.identifier, false, value);
-     },
-     
-     
-     /**
-      * Helper function to set Indent/Outdent on a range.
-      * In IE we need to explicitly get the current range before executing
-      * the Indent/Outdent command on it.
-      *
-      * @type member
-      * @param value {String} indent/outdent value
-      * @param commandObject {Object} command object
-      * @return {Boolean} Success of operation
-      */
-     __setInOutdent : function(value, commandObject)
      {
        /* Get Range for IE, or document in other browsers */
        var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.__editorInstance.getRange() : this.__doc; 
