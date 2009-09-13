@@ -34,7 +34,7 @@
   "let" :
   {
     "APPLICATION"  : "qcl",
-    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
+    "QOOXDOO_PATH" : "../../../qooxdoo/qooxdoo-0.8.3-sdk",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${QOOXDOO_PATH}/cache",
