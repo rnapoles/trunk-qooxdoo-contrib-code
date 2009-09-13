@@ -87,7 +87,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
      * set url, name and method of the service. If URL is null,
      * the server url is used
      */
-    if (url != null) 
+    if ( url != null) 
     {
       this.setUrl(url);
     }
@@ -113,7 +113,18 @@ qx.Class.define("qcl.data.store.JsonRpc",
     /* 
      * use existing or create new JSON-RPC object
      */
-     this.__rpc = rpc || this.getApplication().getRpcObject() || new qx.io.remote.Rpc;
+    if ( rpc )
+    {
+      this.__rpc = rpc;
+    }
+    else if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) )
+    {
+      this.__rpc = this.getApplication().getRpcObject();
+    }
+    else
+    {
+      this.__rpc = new qx.io.remote.Rpc();
+    }
      
     /*
      * create store id
@@ -520,13 +531,30 @@ qx.Class.define("qcl.data.store.JsonRpc",
      */
     _configureRequest: function() 
     {
-
+      
+      var app = qx.core.Init.getApplication();
+      
       /* 
        * configure request object
        */
       var rpc = this.__rpc;
       rpc.setTimeout( this.getTimeout() );
-      rpc.setUrl( this.getUrl() || this.getApplication().getServerUrl() );
+      
+      if ( this.getUrl() )
+      {
+        rpc.setUrl( this.getUrl() );
+      }
+      else if( qx.Class.hasMixin( 
+            qx.Class.getByName( app.classname ), 
+            qcl.application.MApplication ) )
+      {
+        rpc.setUrl( this.getApplication().getServerUrl() );
+      }
+      else
+      {
+        this.error("Cannot determine URL for request.");
+      }
+      
       rpc.setServiceName( this.getServiceName() );
       rpc.setCrossDomain( this.getAllowCrossDomainRequests() );
 
@@ -536,8 +564,9 @@ qx.Class.define("qcl.data.store.JsonRpc",
        * doesn't support application state) @todo rewrite, remove if we have a
        * cometd implementation
        */
-      var app = qx.core.Init.getApplication();
-      if ( typeof app.getStates == "function" )
+      if( qx.Class.hasMixin( 
+            qx.Class.getByName( app.classname ), 
+            qcl.application.MApplicationState ) )
       {
         rpc.setServerData( app.getStates() );  
       }
