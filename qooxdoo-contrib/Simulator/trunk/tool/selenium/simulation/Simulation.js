@@ -288,6 +288,8 @@ simulation.Simulation.prototype.startSession = function()
     this.addSanitizer();
     this.logEnvironment();
     this.logUserAgent();
+    this.addRingBuffer();
+    this.addRingBufferGetter();
   }
   catch (ex) {
     this.logEnvironment("file");
@@ -919,9 +921,12 @@ simulation.Simulation.prototype.logResults = function()
     var disposerDebugLevel = this.getEval(getDisposerDebugLevel, "Getting qx.disposerDebugLevel");
     
     if (parseInt(disposerDebugLevel, 10) > 0 ) {
-      this.logDisposerDebug();
+      //this.logDisposerDebug();
+      this.qxShutdown();
     }
   }
+  
+  this.logRingBufferEntries();
   
   if (!this.testFailed) {
     if (this.getConfigSetting("debug")) {
@@ -936,25 +941,31 @@ simulation.Simulation.prototype.logResults = function()
 };
 
 /**
- * "Manually" shuts down the qooxdoo application and logs any disposer debug
- * messages. The setting "qx.disposerDebugLevel" must be set to at least 1 in 
- * the qooxdoo application. Also, the simulation must be started with the option
- * disposerDebug=true   
+ * Creates a new qx.log.appender.RingBuffer in the AUT and registers it. 
+ * 
+ * @return {void}
  */
-simulation.Simulation.prototype.logDisposerDebug = function()
+simulation.Simulation.prototype.addRingBuffer = function()
 {
-  // Create and register a new logger
   var rb = "new " + selWin + ".qx.log.appender.RingBuffer()";
   this.storeEval(rb, "ringBuffer");  
   this.getEval(selWin + ".qx.log.Logger.register(selenium.qxStoredVars['ringBuffer'])", "Registering log appender");
-  this.getEval("selenium.qxStoredVars['ringBuffer'].clearHistory()", "Clearing log history");  
-  
+  //this.getEval("selenium.qxStoredVars['ringBuffer'].clearHistory()", "Clearing log history");
+};
+
+/**
+ * Adds a function to the AUT that retrieves all messages from the logger 
+ * created by addRingBuffer.
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.addRingBufferGetter = function()
+{
   var getRingBufferEntries = function() {
     var entries = selenium.qxStoredVars["ringBuffer"].getAllLogEvents();
     var entryArray = [];
-    // the last message is "Disposed X objects", ignore it
-    for (var i=0,l=entries.length; i<(l-1); i++) {
-      var entry = "";
+    for (var i=0,l=entries.length; i<l; i++) {
+      var entry = entries[i].level + ":";
       for (var j=0,m=entries[i].items.length; j<m; j++) {
         entry += entries[i].items[j].text + " ";
       }
@@ -963,19 +974,37 @@ simulation.Simulation.prototype.logDisposerDebug = function()
     return entryArray.join("|");
   };
   
-  this.addOwnFunction("getRingBufferEntries", getRingBufferEntries);
-  
-  // Shut down
-  this.getEval(selWin + ".qx.core.ObjectRegistry.shutdown()", "Shutting down qooxdoo application");
-  
-  // Process log entries
+  this.addOwnFunction("getRingBufferEntries", getRingBufferEntries);  
+};
+
+/**
+ * Retrieves all messages from the logger created by addRingBuffer and writes 
+ * them to the simulation log.
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.logRingBufferEntries = function()
+{
   var debugLog = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getRingBufferEntries()", "Retrieving disposer debug messages");
   debugLog = String(debugLog);
   debugLogArray = debugLog.split("|");
   
   for (var i=0,l=debugLogArray.length; i<l; i++) {
-    this.log(debugLogArray[i], "warn");
+    var level = debugLogArray[i].substr(0,debugLogArray[i].indexOf(":"));
+    var message = debugLogArray[i].substr(debugLogArray[i].indexOf(":") + 1);
+    this.log(message, level);
   }
+};
+
+/**
+ * "Manually" shuts down the qooxdoo application. Can be used for disposer debug
+ * logging.
+ * 
+ * @return {void}
+ */
+simulation.Simulation.prototype.qxShutdown = function()
+{
+  this.getEval(selWin + ".qx.core.ObjectRegistry.shutdown()", "Shutting down qooxdoo application");
 };
 
 /**
