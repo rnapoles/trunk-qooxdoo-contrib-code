@@ -1198,7 +1198,7 @@ qx.Class.define("htmlarea.command.UndoManager",
              * to be sure that the changes (like adding a table cell) 
              * to the DOM are already done. 
              */
-            qx.client.Timer.once(function()
+            qx.event.Timer.once(function()
             {
               /* Compare width and height and innerHTML */
               if (tableNode.style.width != this.__selectedNode.style.width ||
