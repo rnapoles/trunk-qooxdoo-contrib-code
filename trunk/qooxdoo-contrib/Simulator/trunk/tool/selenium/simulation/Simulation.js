@@ -217,8 +217,33 @@ simulation.Simulation = function(baseConf, args)
       return __config[prop];
     }   
   };
+  
+  function addZero(val)
+  {
+    if (val < 10) {
+      val = "0" + val;
+    }
+    return val;
+  }
 
   this.startDate = new Date();
+  
+  this.startDateString = this.startDate.getFullYear() + "-";
+  
+  var month = this.startDate.getMonth() + 1;  
+  this.startDateString += addZero(month) + "-";
+  
+  var day = this.startDate.getDate();  
+  this.startDateString += addZero(day) + " ";
+  
+  var hours = this.startDate.getHours();  
+  this.startDateString += addZero(hours) + ":";
+  
+  var minutes = this.startDate.getMinutes();
+  this.startDateString += addZero(minutes) + ":";
+  
+  var seconds = this.startDate.getSeconds();
+  this.startDateString += addZero(seconds);
   
   // Determine the name for the log file.
   if (!("logFile" in __config)) {
@@ -618,7 +643,7 @@ simulation.Simulation.prototype.sanitize = function(text)
 simulation.Simulation.prototype.logEnvironment = function(logTo)
 {
   var log = logTo || "";
-  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDate.toLocaleString() + "</h1>", "none", logTo);
+  this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDateString + "</h1>", "none", logTo);
   this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none", logTo);
   this.log("Platform: " + environment["os.name"], "none", log);
 };
