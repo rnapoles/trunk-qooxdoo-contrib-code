@@ -77,6 +77,14 @@ qx.Class.define("htmlarea.HtmlArea",
                           styleInfo: styleInformation,
                           source: source };
                           
+
+    qx.event.Registration.addListener(document.body, "mousedown", this.block, this, true);
+    qx.event.Registration.addListener(document.body, "mouseup", this.release, this, true);
+    qx.event.Registration.addListener(document.body, "losecapture", this.release, this, true);
+
+    this.__blockerElement = this._createBlockerElement();
+    this.getContainerElement().add(this.__blockerElement);
+
     this.__postPonedProperties = {};
   },
 
@@ -284,6 +292,7 @@ qx.Class.define("htmlarea.HtmlArea",
   {
     __editorComponent: null,
     __postPonedProperties: null,
+    __blockerElement : null,
     
     
     /*
@@ -351,6 +360,32 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
     
+
+
+    /**
+     * Creates <div> element which is aligned over iframe node to avoid losing mouse events.
+     *
+     * @return {Object} Blocker element node
+     */
+    _createBlockerElement : function()
+    {
+      el = new qx.html.Element("div");
+
+      el.setStyle("zIndex", 20);
+      el.setStyle("position", "absolute");
+      el.setStyle("display", "none");
+
+      // IE needs some extra love here to convince it to block events.
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        el.setStyles({
+          backgroundImage: "url(" + qx.util.ResourceManager.getInstance().toUri("qx/static/blank.gif") + ")",
+          backgroundRepeat: "repeat"
+        });
+      }
+
+      return el;
+    },
     
     
     /*
@@ -451,6 +486,22 @@ qx.Class.define("htmlarea.HtmlArea",
       PUBLIC API
     ---------------------------------------------------------------------------
     */
+
+
+    // overridden
+    renderLayout : function(left, top, width, height)
+    {
+      this.base(arguments, left, top, width, height);
+
+      var pixel = "px";
+      var insets = this.getInsets();
+
+      this.__blockerElement.setStyle("left", insets.left + pixel);
+      this.__blockerElement.setStyle("top", insets.top + pixel);
+      this.__blockerElement.setStyle("width", (width - insets.left - insets.right) + pixel);
+      this.__blockerElement.setStyle("height", (height - insets.top - insets.bottom) + pixel);
+    },
+
     
     /**
      * Returns the iframe object which is used to render the content
@@ -1084,7 +1135,28 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getFocusNode : function() {
       return this.__editorComponent != null ? this.__editorComponent.getFocusNode() : null;
+    },
+
+    /**
+     * Cover the iframe with a transparent blocker div element. This prevents
+     * mouse or key events to be handled by the iframe. To release the blocker
+     * use {@link #release}.
+     *
+     */
+    block : function() {
+      this.__blockerElement.setStyle("display", "block");
+    },
+
+
+    /**
+     * Release the blocker set by {@link #block}.
+     *
+     */
+    release : function() {
+      this.__blockerElement.setStyle("display", "none");
     }
+
+
   },
 
 
@@ -1099,7 +1171,13 @@ qx.Class.define("htmlarea.HtmlArea",
    *
    * @return {void}
    */
-  destruct : function() {
+  destruct : function()
+  {
+    this._disposeObjects("__blockerElement");
     this._disposeFields("__postPonedProperties", "__editorComponent");
+
+    qx.event.Registration.removeListener(document.body, "mousedown", this.block, this, true);
+    qx.event.Registration.removeListener(document.body, "mouseup", this.release, this, true);
+    qx.event.Registration.removeListener(document.body, "losecapture", this.release, this, true);
   }
 });
