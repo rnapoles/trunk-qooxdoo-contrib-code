@@ -58,9 +58,11 @@ simulation.Simulation.prototype.checkFeeds = function()
   this.addOwnFunction("checkFeeds", feedChecker);
   var invalidFeeds = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.checkFeeds()");
   invalidFeeds = String(invalidFeeds);
-  invalidFeedArray = invalidFeeds.split("|");
-  for (var i=0,l=invalidFeedArray.length; i<l; i++) {
-    this.log("Feed not loaded: " + invalidFeedArray[i], "warn");
+  if (invalidFeeds != "") {
+    invalidFeedArray = invalidFeeds.split("|");
+    for (var i = 0, l = invalidFeedArray.length; i < l; i++) {
+      this.log("Feed not loaded: " + invalidFeedArray[i], "warn");
+    }
   }
   
 };
