@@ -148,7 +148,8 @@ simulation.Simulation.prototype.runTest = function()
     return;
   }
 
-  try {    
+  try {
+    mySim.addGlobalErrorHandler();
     mySim.runTest();
   }
   catch(ex) {
@@ -160,7 +161,7 @@ simulation.Simulation.prototype.runTest = function()
     mySim.log(msg + "<br/>" + ex, "error");
   }
 
-  //mySim.logGlobalErrors();
+  mySim.logGlobalErrors();
   mySim.logResults();
 
   mySim.stop();
