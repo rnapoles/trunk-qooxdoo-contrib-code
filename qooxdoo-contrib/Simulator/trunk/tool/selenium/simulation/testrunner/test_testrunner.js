@@ -191,7 +191,7 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
   var isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
-                    "Waiting for test package " + packageName + " to finish");
+                    "Waiting for test package " + packageName + " to finish", "info");
 
   if (!isPackageDone) {
     isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
