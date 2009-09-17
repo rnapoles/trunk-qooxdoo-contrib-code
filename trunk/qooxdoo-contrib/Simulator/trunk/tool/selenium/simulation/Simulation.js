@@ -57,6 +57,8 @@ simulation.Simulation = function(baseConf, args)
   var defaults = {
     debug : false,
     autName : "Unnamed Application",
+    selServer : 'localhost',
+    selPort : 4444,
     stepSpeed : "250",
     globalTimeout : 120000,
     disposerDebug : false
@@ -69,7 +71,7 @@ simulation.Simulation = function(baseConf, args)
   simulation.Simulation.SELENIUMWINDOW = 'selenium.qxStoredVars["autWindow"]';
   simulation.Simulation.QXAPPINSTANCE = 'qx.core.Init.getApplication()';
   simulation.Simulation.ISQXAPPREADY = 'var qxReady = false; try { if (' 
-    + simulation.Simulation.SELENIUMWINDOW + '.' 
+    + simulation.Simulation.SELENIUMWINDOW + '.'  
     + simulation.Simulation.QXAPPINSTANCE 
     + ') { qxReady = true; } } catch(e) {} qxReady;';
 
@@ -150,17 +152,17 @@ simulation.Simulation = function(baseConf, args)
       }
     }
 
-    // Check if all required keys are set.
-    for (var i=0,l=required.length; i<l; i++) {
-      if (!(required[i] in conf)) {
-        throw new Error("Required property " + required[i] + " not in configuration!");
-      }
-    }
-
      // Set defaults if they're not already set.
     for (var key in defaults) {
       if (!(key in conf)) {
         conf[key] = defaults[key];
+      }
+    }
+    
+    // Check if all required keys are set.
+    for (var i=0,l=required.length; i<l; i++) {
+      if (!(required[i] in conf)) {
+        throw new Error("Required property " + required[i] + " not in configuration!");
       }
     }
 
@@ -666,11 +668,13 @@ simulation.Simulation.prototype.logUserAgent = function(){
  * @param timeout {Integer} timeout in milliseconds
  * @param description {String} optional description that will be logged if there
  *   was an exception during evaluation
+ * @param loglevel {String} The level of the message to log if the command timed
+ * out. One of "debug", "info", "warn", "error". Default is "error".
  * @throw an exception if no condition or timeout were specified
  * @return {Boolean} true if the condition was met before the timeout
  */
 simulation.Simulation.prototype.waitForCondition = function(condition, timeout, 
-                                                            description)
+                                                            description, loglevel)
 {
   if (!condition) {
     throw new Error("No condition to wait for specified.");
@@ -685,6 +689,8 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout,
   if (this.getConfigSetting("debug")) {
     print(desc);
   }
+  
+  var level = loglevel || "error";
 
   try {
     this.__sel.waitForCondition(condition, timeout.toString());
@@ -694,7 +700,7 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout,
     if (this.getConfigSetting("debug")) {
       print(ex);
     }
-    this.log(desc, "error");
+    this.log(desc, level);
     return false;
   }
 };
