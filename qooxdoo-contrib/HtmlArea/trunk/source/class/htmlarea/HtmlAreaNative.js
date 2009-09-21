@@ -757,6 +757,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     __handleContextMenuEvent : null,
     __styleInformation : null,
     __contentWrap : null,
+    __savedRange : null,
     
     
     /**
@@ -3142,6 +3143,56 @@ qx.Class.define("htmlarea.HtmlAreaNative",
            return doc.createRange();
          }
        }
+    }),
+
+
+    /**
+     * Saves the current range to let the next command operate on this range.
+     * Currently only interesting for IE browsers, since they loose the range /
+     * selection whenever an element is clicked which need to have a focus (e.g.
+     * a textfield widget).
+     * 
+     * *NOTE:* the next executed command will reset this range.
+     * 
+     * @signature function()
+     * @return {void}
+     */
+    saveRange : qx.core.Variant.select("qx.client", {
+      "mshtml" : function() {
+        this.__savedRange = this.getRange();
+      },
+      
+      "default" : function() {}
+    }),
+    
+    
+    /**
+     * Returns the current stored range.
+     * 
+     * @signature function()
+     * @return {Range|null} range object or null
+     */
+    getSavedRange : qx.core.Variant.select("qx.client", {
+      "mshtml" : function() {
+        return this.__savedRange;
+      },
+      
+      "default" : function() {}
+    }),
+    
+    
+    /**
+     * Resets the current saved range.
+     * 
+     * @signature function()
+     * @return {void}
+     */
+    resetSavedRange : qx.core.Variant.select("qx.client", {
+      "mshtml" : function() {
+        this.__savedRange = null;
+      },
+      
+      "default" : function() {}
     }),
 
 

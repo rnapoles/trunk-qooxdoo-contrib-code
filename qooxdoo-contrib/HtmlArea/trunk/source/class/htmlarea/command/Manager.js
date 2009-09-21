@@ -209,13 +209,14 @@ qx.Class.define("htmlarea.command.Manager",
         return false;
       }
 
-      /* Normalize */
+      // Normalize
       command = command.toLowerCase();
       value   = value != null ? value : null;
 
-      /* Check if the given command is supported */
+      // Check if the given command is supported
       if (this._commands[command])
       {
+        var result;
         var commandObject = this._commands[command];
 
         // We have to make sure that the elements inside the selection are
@@ -230,23 +231,23 @@ qx.Class.define("htmlarea.command.Manager",
           }
         }
 
-        /* Pass all useBuiltin commands right to the browser */
-        if (commandObject.useBuiltin)
-        {
-          return this.__executeCommand(commandObject.identifier, false, value);
+        // Pass all useBuiltin commands right to the browser
+        if (commandObject.useBuiltin) {
+          result = this.__executeCommand(commandObject.identifier, false, value);
         }
         else
         {
-          /* Call the specialized method */
-          if (commandObject.method != null && this[commandObject.method])
-          {
-            return this[commandObject.method].call(this, value, commandObject);
+          // Call the specialized method
+          if (commandObject.method != null && this[commandObject.method]) {
+            result = this[commandObject.method].call(this, value, commandObject);
           }
-          else
-          {
+          else {
             this.error("The method '"+ commandObject.method +"' you calling to execute the command '"+ command +"' is not available!");
           }
         }
+        
+        this.__editorInstance.resetSavedRange();
+        return result;
       }
       else
       {
@@ -471,6 +472,28 @@ qx.Class.define("htmlarea.command.Manager",
 
 
      /**
+      * Returns the range to operate on
+      * 
+      * @signature function()
+      * @return {Range} native range object
+      */
+     __getTargetRange : qx.core.Variant.select("qx.client", {
+      "mshtml" : function()
+      {
+        var editor = this.__editorInstance;
+        var range = editor.getSavedRange() != null ?
+                    editor.getSavedRange() : editor.getRange();
+                    
+        return range;
+      },
+      
+      "default" : function() {
+        return this.__editorInstance.getRange();
+      }
+     }),
+
+
+     /**
       * Inserts custom HTML code at the selection point.
       *
       * @param value {String} HTML code to insert
@@ -481,9 +504,10 @@ qx.Class.define("htmlarea.command.Manager",
      {
        "mshtml" : function(value, commandObject)
        {
-         /* Special handling if a "br" element should be inserted */
-         if (value == htmlarea.HtmlAreaNative.simpleLinebreak)
-         {
+         var result;
+         
+         // Special handling if a "br" element should be inserted
+         if (value == htmlarea.HtmlAreaNative.simpleLinebreak) {
            return this.__insertBrOnLinebreak(); 
          }
          else
@@ -491,25 +515,27 @@ qx.Class.define("htmlarea.command.Manager",
            this.__doc.body.focus();
            
            var sel   = this.__editorInstance.getSelection();
-           var range = this.__editorInstance.getRange();
+           var range = this.__getTargetRange();
            
-           /* DO NOT allow pasteHTML on control selections (like selected images) */
+           // DO NOT allow pasteHTML on control selections (like selected images)
            if(range && sel.type != "Control")
            {
-             /* Try to pasteHTML on the stored range */
+             // Try to pasteHTML on the stored range
              try
              {
                range.pasteHTML(value);
                range.collapse(false);
                range.select();
-               return true;
+               result = true;
              }
              catch(e) {}
            }
-           else
-           {
-             return false;
+           else {
+             result = false;
            }
+           
+           this.__editorInstance.resetSavedRange();
+           return result;
          }
        },
        
@@ -974,41 +1000,40 @@ qx.Class.define("htmlarea.command.Manager",
        
        "mshtml" : function(attributes, commandObject)
        {
-         /* Put together the HTML for the image */
+         var result;
+         
+         // Put together the HTML for the image
          var img = "<img ";
-         for (var attrName in attributes)
-         {
+         for (var attrName in attributes) {
            img += attrName + "='" + attributes[attrName] + "' ";
          }
          img += "/>";
                   
-         /* 
-          * IE *does not* support the "insertHtml" command and
-          * the "insertImage" command is not sufficient.
-          * We need to add the given attributes to the image, so the
-          * only working solution is to use the "pasteHTML" method of the
-          * TextRange Object. 
-          */
+         // IE *does not* support the "insertHtml" command and
+         // the "insertImage" command is not sufficient.
+         // We need to add the given attributes to the image, so the
+         // only working solution is to use the "pasteHTML" method of the
+         // TextRange Object.
          var sel = this.__editorInstance.getSelection();
-         var currRange = this.__editorInstance.getRange();
+         var currRange = this.__getTargetRange();
          
-         /* DO NOT allow pasteHTML at control selections (like selected images) */
+         // DO NOT allow pasteHTML at control selections (like selected images)
          if (sel.type != "Control")
          {
            currRange.select();
            currRange.pasteHTML(img);
            
-           return true;
+           result = true;
          }
-         else
-         {
-           return false;
+         else {
+           result = false;
          }
+         
+         this.__editorInstance.resetSavedRange();
+         return result;
        },
        
-       "default" : function(attributes, commandObject)
-       {
-         /* For all other browsers use the execCommand directly */
+       "default" : function(attributes, commandObject) {
          return this.__doc.execCommand(commandObject.identifier, false, attributes.src);  
        }
      }),
@@ -1101,17 +1126,13 @@ qx.Class.define("htmlarea.command.Manager",
          var sel      = this.__editorInstance.getSelection();
          var rng      = this.__editorInstance.getRange();
          
-         /* 
-          * SPECIAL CASE
-          * If the selection is collapsed insert a link with
-          * the URL as text.
-          */
+         // If the selection is collapsed insert a link with the URL as text.
          if (sel.isCollapsed)
          {
-           /* Only use the link id for links which are based on a collapsed selection */
+           // Only use the link id for links which are based on a collapsed selection
            var linkId   = "qx_link" + (++this.__hyperLinkId);
            
-           /* Create and insert the link as DOM nodes */
+           // Create and insert the link as DOM nodes
            var linkNode = this.__doc.createElement("a");
            var hrefAttr = this.__doc.createAttribute("href");
            var idAttr   = this.__doc.createAttribute("id");
@@ -1131,31 +1152,33 @@ qx.Class.define("htmlarea.command.Manager",
            
            return true;      
          }
-         else
-         {
-           /* Use the execCommand if any selection is available */
+         else {
            return this.__doc.execCommand(commandObject.identifier, false, url);
          }
        },
        
        "mshtml" : function(url, commandObject)
        {
-         /* 
-          * Check for a valid text range. If it is available (=text selected) insert the
-          * link via the "insertLink" execCommand otherwise insert the link with the URL 
-          * as link text.  
-          */
+         // Check for a valid text range. If it is available (=text selected) 
+         // insert the link via the "insertLink" execCommand otherwise insert 
+         // the link with the URL as link text.  
          try
          {
-           var range = this.__editorInstance.getRange();
-           if (range != null && range.text != "")
-           {
-             return range.execCommand(commandObject.identifier, false, url);
+           var result;
+           var range = this.__getTargetRange();
+           var editor = this.__editorInstance;
+           var range = editor.getSavedRange() != null ?
+                       editor.getSavedRange() : editor.getRange();
+           
+           if (range != null && range.text != "") {
+             result = range.execCommand(commandObject.identifier, false, url);
            }
-           else
-           {
-             return this.__insertHtml(' <a href="' + url + '">' + url + '</a> ', commandObject);
+           else {
+             result = this.__insertHtml(' <a href="' + url + '">' + url + '</a> ', commandObject);
            }
+           
+           this.__editorInstance.resetSavedRange();
+           return result;
          } 
          catch(e)
          {
@@ -1166,8 +1189,7 @@ qx.Class.define("htmlarea.command.Manager",
          }
        },
        
-       "default" : function(url, commandObject)
-       {
+       "default" : function(url, commandObject) {
          return this.__doc.execCommand(commandObject.identifier, false, url);
        }
      }),

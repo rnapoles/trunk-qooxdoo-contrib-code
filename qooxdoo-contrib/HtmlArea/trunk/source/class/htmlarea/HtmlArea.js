@@ -1122,6 +1122,41 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * Safes the current range to let the next command operate on this range.
+     * Currently only interesting for IE browsers, since they loose the range /
+     * selection whenever an element is clicked which need to have a focus (e.g.
+     * a textfield widget).
+     * 
+     * *NOTE:* the next executed command will reset this range.
+     * 
+     * @return {void}
+     */
+    saveRange : function() {
+      this.__editorComponent.saveRange();
+    },
+    
+    
+    /**
+     * Returns the current stored range.
+     * 
+     * @return {Range|null} range object or null
+     */
+    getSavedRange : function() {
+      return this.__editorComponent.getSavedRange();
+    },
+    
+    
+    /**
+     * Resets the current saved range.
+     * 
+     * @return {void}
+     */
+    resetSavedRange : function() {
+      this.__editorComponent.resetSavedRange();
+    },
+
+
     /*
       -----------------------------------------------------------------------------
       NODES
