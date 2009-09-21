@@ -163,7 +163,9 @@ qx.Class.define("htmlarea.demo.Application",
       
       var cancelButton = new qx.ui.form.Button("Cancel");
       cancelButton.setWidth(60);
-      cancelButton.addListener("execute", createLinkWindow.close);
+      cancelButton.addListener("execute", function(e) { 
+        createLinkWindow.close();
+      }, this);
       buttonContainer.add(cancelButton);
       
       createLinkWindow.add(buttonContainer);
