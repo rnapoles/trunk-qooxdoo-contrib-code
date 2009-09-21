@@ -142,8 +142,36 @@ qx.Class.define("htmlarea.demo.Application",
     
     __insertLinkHandler : function(e)
     {
-      var result = window.prompt("Link: ", "http://");
-      this.insertHyperLink(result);
+      var createLinkWindow = new qx.ui.window.Window("Insert Hyperlink");
+      createLinkWindow.setLayout(new qx.ui.layout.VBox(20));
+      createLinkWindow.set({ width: 400, showMaximize: false, showMinimize: false });
+      
+      var textField = new qx.ui.form.TextField("http://");
+      createLinkWindow.add(textField);
+      
+      var hBoxLayout = new qx.ui.layout.HBox(10);
+      hBoxLayout.setAlignX("right");
+      var buttonContainer = new qx.ui.container.Composite(hBoxLayout);
+      
+      var okButton = new qx.ui.form.Button("OK");
+      okButton.setWidth(60);
+      okButton.addListener("execute", function(e) {
+        this.insertHyperLink(textField.getValue());
+        createLinkWindow.close();
+      }, this);
+      buttonContainer.add(okButton);
+      
+      var cancelButton = new qx.ui.form.Button("Cancel");
+      cancelButton.setWidth(60);
+      cancelButton.addListener("execute", createLinkWindow.close);
+      buttonContainer.add(cancelButton);
+      
+      createLinkWindow.add(buttonContainer);
+      
+      createLinkWindow.center();
+      createLinkWindow.open();
+      
+      this.__editorComponent.saveRange();
     },
     
     
