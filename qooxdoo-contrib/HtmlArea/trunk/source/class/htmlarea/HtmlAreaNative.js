@@ -846,7 +846,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         style   : qx.core.Variant.select("qx.client",
             {
           "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-          'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto ; background-image:none; margin:0px; padding:5px; }' +
+          'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto; background-image:none; margin:0px; padding:5px; }' +
           'p { margin:0px; padding:0px; } ',
           
           "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: auto; }' +
