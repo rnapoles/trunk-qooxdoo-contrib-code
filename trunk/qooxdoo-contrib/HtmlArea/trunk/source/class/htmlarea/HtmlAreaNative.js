@@ -1668,8 +1668,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 rng.collapse(true);
                 rng.pasteHTML('<br/><div class="placeholder"></div>');
               }
-              else
-              {
+              else {
                 return;
               }
             break;
@@ -1682,53 +1681,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             case "control":
               this.__controlPressed = false;            
             break;
-            
-            /*
-             * Execute the "selectAll" command identifier whenever the shortcut "Ctrl+A" is pressed
-             */
-            case "a":
-              this.__executeHotkey('selectAll', true);              
-            break;
-            
-            case "b":
-              this.__executeHotkey('setBold', true);
-            break;
-            
-            case "i":
-            case "k":
-              this.__executeHotkey('setItalic', true);
-            break;
-            
-            case "u":
-              this.__executeHotkey('setUnderline', true);
-            break;
           }
-        }
-        
-        /*
-         * Execute "undo" and "redo" commands
-         * Ctrl+Z -> Undo
-         * Ctrl+Y -> Redo
-         * Ctrl+Shift+Z -> Redo
-         * 
-         * It is needed to implement this at the keyUp event handler for IE 
-         * because one does not get the keyIdentifier at the keyPress event in IE.
-         * (Only "Ctrl" is returned)
-         * 
-         * DO NOT stop this event by passing "true" to the executeHotkey method.
-         * The browser handling of undo/redo is already suppressed at the "keyDown" handler.
-         */
-        if(keyIdentifier == "z" && this.__controlPressed && !isShiftPressed)
-        {
-          this.__executeHotkey('undo', false);
-        }
-        else if(keyIdentifier == "z" && this.__controlPressed && isShiftPressed)
-        {
-          this.__executeHotkey('redo', false);
-        }
-        else if(keyIdentifier == "y" && this.__controlPressed)
-        {
-          this.__executeHotkey('redo', false);
         }
       }
       
