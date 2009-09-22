@@ -56,11 +56,11 @@ interface qcl_data_store_IStoreController
   /**
    * Adds an event to the event queue of all stores except the
    * requesting one.
-   * @param $storeId Id of the current store
-   * @param $event Event data
+   * @param array $event Event data
+   * @param string|null $storeId Id of the current store
    * @return void
    */
-  function addToEventQueue( $storeId, $event );
+  function addToEventQueue( $event, $storeId=null );
 
   /**
    * Retrieve all event data that has been queued for a given store id.
