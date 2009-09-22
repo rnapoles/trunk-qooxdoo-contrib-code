@@ -40,15 +40,17 @@ qx.Class.define("qcl.data.controller.Table",
    {
      this.base(arguments);
      
-     if( target != null ) 
+     if( target != undefined ) 
      {
        this.setTarget( target );
      }
      
-     if( store != null ) 
+     if( store != undefined ) 
      {
        this.setStore( store );
      }     
+     
+     this.__currentRequestIds = [];
    },
 
    /*
@@ -111,7 +113,7 @@ qx.Class.define("qcl.data.controller.Table",
      ---------------------------------------------------------------------------
      */          
      __rowCountRequest : false,
-     __currentRequestIds : [],
+     __currentRequestIds : null,
 
      /*
      ---------------------------------------------------------------------------
@@ -394,18 +396,39 @@ qx.Class.define("qcl.data.controller.Table",
      */
     _storeOnChangeBubble : function( event )
     {
+       try{
        /*
         * no action if no target or the event source is the the target tree
         */
        if ( ! this.getTarget()  
-           || event.getData().hashCode == this.getTarget().toHashCode() ) return;
+           || event.getData().hashCode == this.getTarget().toHashCode() ) 
+       {
+         return;
+       }
+      var data = event.getData();
+      var tableModel = this.getTarget().getTableModel();
       
-       /*
-        * set the value in the target data model
-        */
-       var data = event.getData();
-       this.getTarget().getTableModel().setValue( data.col, data.row, data.value );
-      
+      /*
+       * if there is a record id 
+       */
+      if ( data.id )     
+      {
+        var rowIndex = tableModel.getRowById(data.id);
+        var colIndex = tableModel.getColumnIndexById(data.name);
+        if ( rowIndex != undefined && colIndex != undefined )
+        {
+          tableModel.setValue( colIndex, rowIndex,  data.value);
+        }
+      }
+   
+      /*
+       * set the value in the target data model by column and value
+       */
+      else if ( data.col && data.row )
+      {
+        tableModel.setValue( data.col, data.row, data.value ); 
+      }
+       }catch(e){console.warn(e)}
     }    
   }
 });

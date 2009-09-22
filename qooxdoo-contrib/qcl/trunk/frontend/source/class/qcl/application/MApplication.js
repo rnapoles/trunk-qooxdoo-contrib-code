@@ -522,10 +522,7 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     startEventTransport : function( serviceName, serviceMethod, interval )
     {
-      if ( ! interval || isNaN(parseInt(interval) ) )
-      {
-        this.error("Invalid interval value");
-      }
+
       if ( this._eventStore )
       {
         this.warn("Event transport is already running.");
@@ -541,9 +538,20 @@ qx.Mixin.define("qcl.application.MApplication",
       if( ! store )
       {
         store = this._eventStore = new qcl.data.store.JsonRpc( null, serviceName);
-        store.register();        
+        store.registerStore();        
       }
-      store.setInterval( interval );
+      if ( interval )
+      {
+        if ( isNaN( parseInt( interval ) ) )
+        {
+          this.error("Invalid interval value");
+        }        
+        store.setInterval( interval );  
+      }
+      if ( serviceMethod )
+      {
+        store.setServiceMethodExchangeEvents( serviceMethod ); 
+      }
       store.setUseEventTransport( true );
     },
     

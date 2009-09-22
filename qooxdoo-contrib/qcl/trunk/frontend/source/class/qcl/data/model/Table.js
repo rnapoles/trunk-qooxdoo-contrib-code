@@ -40,6 +40,7 @@ qx.Class.define("qcl.data.model.Table",
   construct : function(serviceName)
   {
     this.base(arguments);
+    this.__idIndex = {};
   },
   
   /*
@@ -58,6 +59,12 @@ qx.Class.define("qcl.data.model.Table",
     {
       check : "qcl.data.controller.Table",
       nullable : true
+    },
+    
+    idColumn :
+    {
+      check : "String",
+      init : "id"
     }
   },
   
@@ -94,6 +101,16 @@ qx.Class.define("qcl.data.model.Table",
   members :
   {
 
+    /*
+    ---------------------------------------------------------------------------
+       PRIVATE MEMBERS
+    ---------------------------------------------------------------------------
+    */         
+    __idIndex : null,
+    __firstRow : null,
+    __lastRow : null,
+     
+          
     /*
     ---------------------------------------------------------------------------
        ADDED METHODS
@@ -215,6 +232,15 @@ qx.Class.define("qcl.data.model.Table",
       this.base(arguments, rowIndex);
     },
     
+    /**
+     * Returns the row index identified by the id in the id column
+     * @param id {Integer}
+     * @return {Integer}
+     */
+    getRowById : function( id )
+    {
+      return this.__idIndex[id];
+    },
     
     /*
     ---------------------------------------------------------------------------
@@ -255,15 +281,44 @@ qx.Class.define("qcl.data.model.Table",
       //console.log("Requesting rows " + firstRow + " - " + lastRow );
       if ( this.getController() )
       {
+        this.__firstRow = firstRow;
+        this.__lastRow = lastRow;
+        
         /*
          * call the controller's method which will then 
          * trigger a request by the store
          */
         this.getController()._loadRowData( firstRow, lastRow );
       } 
-    }
+    },
     
-    // @todo _cancelRequest
+    /**
+     * Sets row data.
+     *
+     * Has to be called by {@link _loadRowData()}.
+     * @override
+     * @param rowDataArr {Map[]} the loaded row data or null if there was an error.
+     * @return {void}
+     */
+    _onRowDataLoaded : function(rowDataArr)
+    {
+      /*
+       * call parent method
+       */
+      this.base(arguments,rowDataArr);
+      
+      /*
+       * create index
+       */
+      var index= this.__firstRow;
+      var idCol = this.getIdColumn();
+      rowDataArr.forEach(function(row){
+        this.__idIndex[row[idCol]]=index++;
+      },this);
+      
+      this.__firstRow = null;
+      this.__lastRow = null;      
+    }
     
   }
 });

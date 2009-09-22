@@ -134,7 +134,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
     /*
      * store a reference to itself for polling
      */
-     this.getProxiedStores().push(this);
+     this.setProxiedStores([this]);
   },
 
   /*
@@ -264,12 +264,22 @@ qx.Class.define("qcl.data.store.JsonRpc",
     },
     
     /** 
-     * The polling frequency in ms
+     * The polling frequency in seconds
      */
     interval :
     {
       check : "Integer",
       init : 3
+    },
+    
+    /**
+     * The name of the service method that is used to exchange
+     * events with the server
+     */
+    serviceMethodExchangeEvents :
+    {
+      check : "String",
+      init : "exchangeEvents"
     },
     
     /**
@@ -290,10 +300,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
     proxiedStores : 
     {
       check : "Array",
-      init : []
+      nullable : false
     }
-
-
   },
 
   /*
@@ -419,48 +427,56 @@ qx.Class.define("qcl.data.store.JsonRpc",
      }
    },
     
-   /**
-    * Register store with server.
-    * @param store {qcl.data.store.JsonRpc|undefined} If not given, register
-    * myself.
+   /**  
+    * Register store with server. If the application has a central
+    * event store, register with this store.
     */    
-   registerStore : function(store)
+   registerStore : function()
    {
-     if( ! store )
-     {
-       this.load("register",[ this.getStoreId() ],function(data){
-         //this.info(data);
-       }, this );  
-     }
-     else
-     {
-       this.getProxiedStores().push(store);
-     }
+     /*
+      * register with server
+      */
+     this.load("register",[ this.getStoreId() ],function(data){
+       //this.info(data);
+     }, this );  
 
+     /*
+      * register with event store
+      */
+     if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
+         && this.getApplication().getEventStore()
+         && this.getApplication().getEventStore() != this 
+     ){
+        this.getApplication().getEventStore().getProxiedStores().push(this);
+     }
    },
 
-   /**
-    * Unegister store with server.
-    * @param store {qcl.data.store.JsonRpc|undefined} If not given, unregister
-    * myself.
+   /**  
+    * Unegister store from server and from event store, if exists 
     */    
-   unregisterStore : function(store)
+   unregisterStore : function()
    {
-      if( ! store )
-      {
-        this.load("unregister",[this.getProxiedStores()],function(data){
-          //this.info(data);
-        }, this );        
-      }
-      else
-      {
-        qx.lang.Array.remove( this.getProxiedStores(), store );
-        this.load("unregister",[[store.getStoredId()]],function(data){
-          //this.info(data);
-        }, this );                
-      }
+      /*
+       * unregister from server
+       */
+      this.load("unregister",[ this.getProxiedStores() ],function(data){
+        //this.info(data);
+      }, this );  
 
+      /*
+       * unregister from event store
+       */
+      if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
+          && this.getApplication().getEventStore()
+          && this.getApplication().getEventStore() != this 
+      ){
+        qx.lang.Array.remove( 
+          this.getApplication().getEventStore().getProxiedStores(),
+          this
+        );
+      }
    },
+   
     
     /**
      * Returns the current event queue and empties it.
@@ -607,7 +623,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
        */
       var callbackFunc = function( result, ex, id ) 
       { 
-       /*
+        try{
+        /*
          * decrement counter and reset cursor
          */
         if ( --_this.__requestCounter < 1)
@@ -679,7 +696,9 @@ qx.Class.define("qcl.data.store.JsonRpc",
            */
           if ( typeof finalCallback == "function" )
           {
+            try{
             finalCallback.call( context, data );
+            }catch(e){console.warn(e)}
           }            
         } 
         else 
@@ -698,9 +717,9 @@ qx.Class.define("qcl.data.store.JsonRpc",
            * notify that data has been received but failed
            */
           _this.fireDataEvent("loaded",null);
-
         }
-
+        
+        }catch(e){console.warn(e)}
       }     
 
       /*
@@ -766,7 +785,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
       /*
        * simply alert error
        */
-      alert(ex.message); 
+      //this.warn(ex.message); 
       
     },
     
@@ -778,21 +797,30 @@ qx.Class.define("qcl.data.store.JsonRpc",
      */
     _poll : function()
     {
+      try{
       var events = {};
       this.getProxiedStores().forEach(function(store){
         var storeId = store.getStoreId();
         events[storeId] = store.getDataEvents();
       });
-      this.load("getEvents",
-          [ events ],
-          function(data)
-          {
+      this.execute( 
+        this.getServiceMethodExchangeEvents(),
+        [ events ],
+        function(data)
+        {
+          try{
             this.getProxiedStores().forEach(function(store){
-              store._handleServerEvents(data.events[store.getStoreId()]);
+              var events = data.events[store.getStoreId()];
+              if ( qx.lang.Type.isArray(events) )
+              {
+                store._handleServerEvents(events);
+              }
             });
-          }, 
-          this 
-        );        
+          }catch(e){console.warn(e)}
+        }, 
+        this 
+      ); 
+      }catch(e){console.warn(e)}
     },
     
     /**
@@ -800,7 +828,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
      */
     _handleServerEvents : function( events )
     {
-      
       for ( var i=0; i < events.length; i++)
       {
         var ed = events[i];
@@ -814,7 +841,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
         event.setTarget(this);
         
         this.dispatchEvent( event );
-
       }
     },
     
