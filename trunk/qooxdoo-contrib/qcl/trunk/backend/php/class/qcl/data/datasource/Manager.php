@@ -50,6 +50,8 @@ class qcl_data_datasource_Manager
     return parent::getInstance( $class );
   }
 
+
+
   /**
    * Retrieves and initializes the datasource model object for a
    * datasource with the given name. Caches the result during a
@@ -102,7 +104,8 @@ class qcl_data_datasource_Manager
    */
   function &getRegistry()
   {
-    return qcl_data_datasource_registry_Model::getInstance();
+    $registry =& qcl_data_datasource_registry_Model::getInstance();
+    return $registry;
   }
 
   /**
@@ -131,6 +134,33 @@ class qcl_data_datasource_Manager
     $_this->log("Unregistering class '$class'", QCL_LOG_DATASOURCE);
     $registry =& $_this->getRegistry();
     $registry->unregister( $schemaName );
+  }
+
+  /**
+   * Returns a list of registered schema names
+   *
+   * @return array
+   */
+  function getSchemaList()
+  {
+    $_this =& qcl_data_datasource_Manager::getInstance();
+    $registry =& $_this->getRegistry();
+    return $registry->schemaList();
+  }
+
+  function getSchemaData( $schema )
+  {
+    $_this =& qcl_data_datasource_Manager::getInstance();
+    $registry =& $_this->getRegistry();
+    $registry->findByNamedId( $schema );
+    if ( $registry->foundSomething() )
+    {
+      return $registry->getRecord();
+    }
+    else
+    {
+      return null;
+    }
   }
 
   /**
@@ -206,6 +236,8 @@ class qcl_data_datasource_Manager
     return $this->getNew( $class );
   }
 
+
+
   /**
    * Returns the datasource model object used by a named datasource
    * @param string $name name of the datasource, must be in the datasources table
@@ -255,6 +287,18 @@ class qcl_data_datasource_Manager
     $dsSchemaModel->datasource = $name;
 
     return $dsSchemaModel;
+  }
+
+  /**
+   * Returns a list of registered schema names
+   *
+   * @return array
+   */
+  function getDatasourceList()
+  {
+    $dsModel =& qcl_data_datasource_type_db_Model::getInstance();
+    $dsModel->findAll("namedId");
+    return $dsModel->values();
   }
 }
 ?>

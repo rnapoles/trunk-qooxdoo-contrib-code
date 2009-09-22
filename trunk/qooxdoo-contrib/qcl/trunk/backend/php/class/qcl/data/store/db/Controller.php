@@ -37,13 +37,17 @@ class qcl_data_store_db_Controller
    */
   function method_register( $storeId, $serviceName=null )
   {
-    $this->info("Registering store $storeId for service $serviceName.",__CLASS__,__LINE__);
+    $this->info("Registering store $storeId.",__CLASS__,__LINE__);
+
+    $this->cleanUp();
+
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
     $storeModel->insert( array(
       "storeId"      => $storeId,
       "storeService" => either( $serviceName, $this->className() ),
       "sessionId"    => $this->getSessionId()
     ) );
+
 
     return array(
       'statusText' => "Store registered."
@@ -115,7 +119,7 @@ class qcl_data_store_db_Controller
       {
         foreach( $events as $event )
         {
-          $this->addToEventQueue( $storeId, $event );
+          $this->addToEventQueue( $event, $storeId );
         }
       }
 
@@ -133,37 +137,58 @@ class qcl_data_store_db_Controller
       }
     }
     return array(
-      'events' => $resultMap,
+      'events' => $resultMap
     );
   }
 
   /**
    * Adds an event to the event queue of all stores except the
    * requesting one.
-   * @param $storeId Id of the current store
+   *
    * @param $event Event data
+   * @param $storeId|null Id of the current store. If null, then add an event
+   * for all store
    * @return void
    */
-  function addToEventQueue( $storeId, $event )
+  function addToEventQueue( $event, $storeId=null )
   {
     $storeModel =& qcl_data_store_db_StoreModel::getInstance();
     $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
 
     /*
-     * get the store service registered for the store id
+     * if a store id is given, add an event for each store except the
+     * requesting one
      */
-    $storeService = $storeModel->findValues("storeService",array(
-      'storeId' => $storeId
-    ));
+    if ( $storeId )
+    {
+      /*
+       * get the store service registered for the store id
+       */
+      $storeService = $storeModel->findValues("storeService",array(
+        'storeId' => $storeId
+      ));
+
+      /*
+       * find all store ids that are not the requesting store and which
+       * have the same store service
+       */
+      $storeIds = $storeModel->findValues("storeId", "
+        `storeId` != '$storeId'
+        AND `storeService` = '{$storeService[0]}'
+      ");
+    }
 
     /*
-     * find all store ids that are not the requesting store and which
-     * have the same store service
+     * if no store id is given, add an event for all the stores that
+     * match the store service
      */
-    $storeIds = $storeModel->findValues("storeId", "
-      `storeId` != '$storeId'
-      AND `storeService` = '{$storeService[0]}'
-    ");
+    else
+    {
+      $storeService = $this->className();
+      $storeIds = $storeModel->findValues("storeId", "
+        `storeService` = '$storeService'
+      ");
+    }
 
     /*
      * for each of these stores, save the event in the event queue
@@ -201,6 +226,23 @@ class qcl_data_store_db_Controller
     $eventStore->deleteBy( "storeId", $storeId );
 
     return $events;
+  }
+
+  /**
+   * Delete stale entries in the store and store event tables
+   * @todo this should be automatic through the schema system
+   * @return void
+   */
+  function cleanUp()
+  {
+    $storeModel =& qcl_data_store_db_StoreModel::getInstance();
+    $prefix = $storeModel->getTablePrefix();
+
+    $storeModel->deleteWhere("sessionId NOT IN (SELECT sessionId FROM {$prefix}sessions)");
+
+    $eventStoreModel =& qcl_data_store_db_EventStoreModel::getInstance();
+    $eventStoreModel->deleteWhere("storeId NOT IN (SELECT storeId FROM {$prefix}stores)");
+
   }
 }
 ?>
