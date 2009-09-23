@@ -1824,7 +1824,7 @@ qx.Class.define("htmlarea.command.Manager",
          /* Body element must have focus before executing command */
          this.__doc.body.focus();
          
-         this.__doc.execCommand("BackColor", false, value);
+         return this.__doc.execCommand("BackColor", false, value);
        },
        
        "gecko|opera" : function(value, commandObject)
@@ -1832,7 +1832,7 @@ qx.Class.define("htmlarea.command.Manager",
          /* Body element must have focus before executing command */
          this.__doc.body.focus();
          
-         this.__doc.execCommand("HiliteColor", false, value);
+         return this.__doc.execCommand("HiliteColor", false, value);
        },
        
        "webkit" : function(value, commandObject) 
