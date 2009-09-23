@@ -351,50 +351,47 @@ qx.Class.define("htmlarea.command.UndoManager",
       */
     __undoCustom : function(undoInfo)
     {
-      /* Fill the info for the (possible) redo */
+      // Fill the info for the (possible) redo
       var redoAction = undoInfo;
+      var Style = qx.bom.element.Style;
 
-      /* Add the (different) needed parameter for the redo */
+      // Add the (different) needed parameter for the redo
       switch(undoInfo.command)
       {
         case "backgroundcolor":
-          this.redoAction.parameter = [ qx.bom.element.Style.get(this.__doc.body, "backgroundColor") ];
+          redoAction.parameter = [ Style.get(this.__doc.body, "backgroundColor") ];
         break;
 
         case "backgroundimage":
-          this.redoAction.parameter = [ qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
-                                        qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
-                                        qx.bom.element.Style.get(this.__doc.body, "backgroundPosition") ];
+          redoAction.parameter = [ Style.get(this.__doc.body, "backgroundImage"),
+                                   Style.get(this.__doc.body, "backgroundRepeat"),
+                                   Style.get(this.__doc.body, "backgroundPosition") ];
         break;
       }
 
       this.__addToRedoStack(redoAction);
       
-      /* Special handling for inserting hyperlinks */
+      // Remove the link manually
+      // Only necessary if the link was inserted at a collapsed selection 
       if (undoInfo.command == "inserthyperlink")
       {
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
-          /* Get the current linkId and locate the element */
           var linkId = "qx_link" + this.__commandManager.__hyperLinkId;
-          var link = this.__doc.getElementById(linkId); 
+          var link = this.__doc.getElementById(linkId);
           
           if (link)
           {
-            /* Delete the element */
             link.parentNode.removeChild(link);
             
             return true;
           }
-          else
-          {
+          else {
             return false;
           }
         }
       }
-      else
-      {
-        /* Undo changes by applying the corresponding command */
+      else {
         return this.__commandManager.execute(undoInfo.command, undoInfo.value);  
       }
     },
@@ -816,12 +813,14 @@ qx.Class.define("htmlarea.command.UndoManager",
        * execCommand. This is only needed for non-mshtml as IE uses his own
        * undo mechanism.
        */
-      this.__commandManager.getCommandObject("backgroundcolor").custumUndo = true;
-      this.__commandManager.getCommandObject("backgroundimage").custumUndo = true;
+      this.__commandManager.getCommandObject("backgroundcolor").customUndo = true;
+      this.__commandManager.getCommandObject("backgroundimage").customUndo = true;
       
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
-      {
-        this.__commandManager.getCommandObject("inserthyperlink").custumUndo = true;
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
+        // TODO: disable the undo of links which are not created at a text selection.
+        //       Check if it's applicable at all to allow inserting links without
+        //       a valid text selection
+        // this.__commandManager.getCommandObject("inserthyperlink").customUndo = true;
       }
     },
     
@@ -861,12 +860,8 @@ qx.Class.define("htmlarea.command.UndoManager",
           break;
           
           case "inserthyperlink":
-            /*
-             * SPECIAL CASE
-             * If the hyperlinks gets inserted on a selection treat it as a command step
-             */
-            if (sel && !sel.isCollapsed)
-            {
+            // If the hyperlinks gets inserted on a selection treat it as a command step
+            if (sel && !sel.isCollapsed) {
               undoObject.actionType = "Command";
             }
           break;
@@ -903,18 +898,16 @@ qx.Class.define("htmlarea.command.UndoManager",
                 return;
             }
           }
-          else
-          {
+          else {
             undoObject.actionType = "Command";
           }
         }
-        else
-        {
+        else {
           undoObject.actionType = "Command";
         }
       }
 
-      /* Add the undoObject to the undoStack */
+      // Add the undoObject to the undoStack
       this.__updateUndoStack(undoObject);
     },
 
