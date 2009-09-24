@@ -646,7 +646,7 @@ simulation.Simulation.prototype.logEnvironment = function(logTo)
 {
   var log = logTo || "";
   this.log("<h1>" + this.getConfigSetting("autName") + " results from " + this.startDateString + "</h1>", "none", logTo);
-  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "\">" + this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "</a></p>", "none", logTo);
+  this.log("<p>Application under test: <a href=\"" + this.getConfigSetting("autHost") + unescape(this.getConfigSetting("autPath")) + "\">" + this.getConfigSetting("autHost") + unescape(this.getConfigSetting("autPath")) + "</a></p>", "none", logTo);
   this.log("Platform: " + environment["os.name"], "none", log);
 };
 
@@ -1016,7 +1016,7 @@ simulation.Simulation.prototype.addRingBufferGetter = function()
  */
 simulation.Simulation.prototype.logRingBufferEntries = function()
 {
-  var debugLog = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getRingBufferEntries()", "Retrieving disposer debug messages");
+  var debugLog = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getRingBufferEntries()", "Retrieving log messages");
   debugLog = String(debugLog);
   debugLogArray = debugLog.split("|");
   
