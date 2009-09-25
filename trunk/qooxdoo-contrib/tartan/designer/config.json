@@ -1,0 +1,93 @@
+{
+	"name"    : "designer",
+
+	"include" :
+	[
+	{
+		"path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+	}
+	],
+
+	"export" :
+	[
+	"api",
+	"build",
+	"clean",
+	"distclean",
+	"fix",
+	"inspector",
+	"lint",
+	"migration",
+	"pretty",
+	"profiling",
+	"source",
+	"source-all",
+	"test",
+	"test-source",
+	"translation",
+	"blueprint-source",
+	"blueprint-build",
+	"blueprint-build-gzip"
+	],
+
+	"let" :
+	{
+		"APPLICATION"  : "designer",
+		"QOOXDOO_PATH" : "../../../qooxdoo-0.8.3-sdk",
+		"QXTHEME"      : "designer.theme.Theme",
+		"API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+		"LOCALES"      : [ "en" ],
+		"ROOT"         : "."
+	},
+
+	"jobs" :
+	{
+		"blueprint-source" :
+		{ 
+			"library" :
+			[
+			{
+				"manifest"   : "../blueprint/Manifest.json",
+				"namespace"  : "blueprint"
+			}
+			],
+
+			"extend" :
+			[
+			"source"
+			]
+		},
+
+		"blueprint-build" :
+		{
+			"library" :
+			[
+			{
+				"manifest"   : "../blueprint/Manifest.json",
+				"namespace"  : "blueprint"
+			}
+			],
+
+			"extend" :
+			[
+			"build"
+			]
+		},
+
+		"blueprint-build-gzip" :
+		{
+			"compile-dist" :
+			{
+				"paths" :
+				{
+					"gzip"     : true
+				}
+			},
+
+			"extend" :
+			[
+			"blueprint-build"
+			]
+		}
+	}
+}
