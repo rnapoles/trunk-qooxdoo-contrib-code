@@ -338,9 +338,9 @@ qx.Class.define("designer.tree.Tree",
 		    var jsonString = qx.util.Json.stringify(jsonObject["object"], true);
 		    
 		    // Source version:
-		    self.location = "../../playground/source/#" + escape('{"code": ' + '"' + encodeURIComponent(jsonString) + '"}');
+		    self.location = "../../playground/source/index.html#" + escape('{"code": ' + '"' + encodeURIComponent(jsonString) + '"}');
 		    // Build version:
-		    // self.location = "../playground/#" + escape('{"code": ' + '"' + encodeURIComponent(jsonString) + '"}');
+		    // self.location = "../playground/index.html#" + escape('{"code": ' + '"' + encodeURIComponent(jsonString) + '"}');
 		},
 		
 		exportJson : function()

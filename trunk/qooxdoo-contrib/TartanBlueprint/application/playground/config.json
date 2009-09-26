@@ -11,7 +11,7 @@
     "let" :
     {
         "APPLICATION"  : "playground",
-        "QOOXDOO_PATH" : "../../../qooxdoo-0.8.3-sdk",
+        "QOOXDOO_PATH" : "../../../../qooxdoo-0.8.3-sdk/",
         "CACHE"        : "${TMPDIR}/cache",
         "QXTHEME"      : "qx.theme.Modern",
         "LOCALES"      : [ "en", "de" ],
@@ -73,7 +73,7 @@
             "library" :
             [
             {
-                "manifest"   : "../blueprint/Manifest.json",
+                "manifest"   : "../../framework/blueprint/Manifest.json",
                 "namespace"  : "blueprint"
             }
             ],
@@ -89,7 +89,7 @@
             "library" :
             [
             {
-                "manifest"   : "../blueprint/Manifest.json",
+                "manifest"   : "../../framework/blueprint/Manifest.json",
                 "namespace"  : "blueprint"
             }
             ],
