@@ -98,7 +98,6 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
 	function setLocale($locale=null)
 	{
 		$localeModel =& $this->getLocaleModel();
-		$this->debug($localeModel->objectId());
     $locale =  either(
       $locale,
       $this->getUserLocale(),
