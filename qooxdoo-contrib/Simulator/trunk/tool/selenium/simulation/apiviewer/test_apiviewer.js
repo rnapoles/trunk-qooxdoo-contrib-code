@@ -28,11 +28,35 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
 
 simulation.Simulation.prototype.runTest = function()
-{  
+{
   // Make sure the locale is 'en' to simplify dealing with log messages.
   var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";  
-  this.runScript(setLocale, "Setting application locale to EN");  
+  this.runScript(setLocale, "Setting application locale to EN");
   
+  // Add a function that finds span tags with the given content
+  var getSpanByContent = function(content) {
+    var found = false;
+    var spans = selenium.browserbot.getCurrentWindow().document.getElementsByTagName("span");
+    for (var i=0,l=spans.length; i<l; i++) {
+      if (spans[i].innerHTML.indexOf(content) == 0) {
+        found = true;
+      }
+    }
+    return found;
+  };
+  
+  this.addOwnFunction("getSpanByContent", getSpanByContent);
+  
+  this.checkSearch();
+  this.checkView("getActive", "Expand properties");
+  this.checkView("addChildrenToQueue", "Show Inherited");
+  this.checkView("_activateMoveHandle", "Show Protected");
+  this.checkView("__computeMoveCoordinates", "Show Private");
+  
+};
+
+simulation.Simulation.prototype.checkSearch = function()
+{
   this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[1]", "", "Clicking search button");
   
   this.type("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
@@ -53,12 +77,23 @@ simulation.Simulation.prototype.runTest = function()
   }
   else {
     this.log("Successfully opened search result", "info");
-  }
-  
-  // Select a specific class from the tree, expand properties, ...
-  
+  }  
 };
 
+simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
+{
+  this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.MenuButton", "", "Clicking View menu button");
+  this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
+  Packages.java.lang.Thread.sleep(3000);
+  var foundNewMethod = this.getEval(selWin + ".qx.Simulation.getSpanByContent('" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
+  
+  if (String(foundNewMethod) != "true") {
+    this.log("Documentation for " + newMethodName + " not found, possible problem with " + buttonLabel, "error");
+  }
+  else {
+    this.log(buttonLabel + " checked: OK", "info");
+  }
+};
 
 // - Main --------------------------------------------------------------------
 (function() { 
