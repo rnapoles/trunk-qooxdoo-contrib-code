@@ -172,11 +172,14 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
   /* Workaround for stability issues: Move qx.test.ui and qx.test.Xml to the 
   back of the queue. */
-  var temp = packages.splice(entryAt(packages, "qx.test.ui"), 1);
-  packages = packages.concat(temp);
-  
-  temp = packages.splice(entryAt(packages, "qx.test.Xml"), 1);
-  packages = packages.concat(temp);
+  if ("qx.test.ui" in packages) {
+    var temp = packages.splice(entryAt(packages, "qx.test.ui"), 1);
+    packages = packages.concat(temp);
+  }
+  if ("qx.test.Xml" in packages) {
+    temp = packages.splice(entryAt(packages, "qx.test.Xml"), 1);
+    packages = packages.concat(temp);
+  }
 
   if (this.getConfigSetting("debug")) {
     print("Final test package list: " + packages);
