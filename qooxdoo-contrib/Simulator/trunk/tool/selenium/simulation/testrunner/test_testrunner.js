@@ -168,15 +168,16 @@ simulation.Simulation.prototype.runTestsSteps = function()
         return i;
       }
     }
+    return false;
   }
 
   /* Workaround for stability issues: Move qx.test.ui and qx.test.Xml to the 
   back of the queue. */
-  if ("qx.test.ui" in packages) {
+  if (entryAt(packages, "qx.test.ui") >= 0) {
     var temp = packages.splice(entryAt(packages, "qx.test.ui"), 1);
     packages = packages.concat(temp);
   }
-  if ("qx.test.Xml" in packages) {
+  if (entryAt(packages, "qx.test.Xml") >= 0) {
     temp = packages.splice(entryAt(packages, "qx.test.Xml"), 1);
     packages = packages.concat(temp);
   }
