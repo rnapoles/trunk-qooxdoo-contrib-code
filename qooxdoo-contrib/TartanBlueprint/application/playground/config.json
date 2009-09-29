@@ -21,6 +21,17 @@
 
     "jobs" :
     {
+        "libraries" : 
+        {
+            "library" :
+            [
+            {
+                "manifest"   : "../../framework/blueprint/Manifest.json",
+                "namespace"  : "blueprint"
+            }
+            ]
+        },
+        
         "build-script" :
         {
 
@@ -44,8 +55,7 @@
             {
                 "optimize" : ["variables", "basecalls", "privates", "strings"]
             }
-        }
-        ,
+        },
 
         "source" :
         {
@@ -66,38 +76,6 @@
             {
                 "=qx.debug" : ["on"]
             }
-        },
-
-        "blueprint-source" :
-        { 
-            "library" :
-            [
-            {
-                "manifest"   : "../../framework/blueprint/Manifest.json",
-                "namespace"  : "blueprint"
-            }
-            ],
-
-            "extend" :
-            [
-            "source"
-            ]
-        },
-
-        "blueprint-build" :
-        { 
-            "library" :
-            [
-            {
-                "manifest"   : "../../framework/blueprint/Manifest.json",
-                "namespace"  : "blueprint"
-            }
-            ],
-
-            "extend" :
-            [
-            "build"
-            ]
         }
     }
 }
