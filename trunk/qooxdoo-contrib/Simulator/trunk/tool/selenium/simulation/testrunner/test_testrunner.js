@@ -37,7 +37,7 @@ var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
  * Runs a function in the AUT context that reads the available test packages
  * from the tree.
  *
- * @returns {Array} an array of test package names
+ * @return {Array} an array of test package names
  */
 simulation.Simulation.prototype.getPackageArray = function()
 {
@@ -69,23 +69,13 @@ simulation.Simulation.prototype.getPackageArray = function()
   return packArr;
 };
 
-/*
- * Prepare the list of test packages to be run.
+/**
+ * Gets an array of packages to be tested from the "include" config option.
+ *
+ * @return {Array} an array of test package names
  */
-simulation.Simulation.prototype.runTestsSteps = function()
+simulation.Simulation.prototype.getIncludeList = function()
 {
-  var packages = this.getPackageArray();
-
-  if (!packages) {
-    this.log("ERROR: Unable to get list of test packages.", "error");
-    this.testFailed = true;
-    return;
-  }
-
-  if (this.getConfigSetting("debug")) {
-    print("TEST PACKAGES: " + packages);
-  }
-  
   var include = [];
   
   try {
@@ -102,38 +92,75 @@ simulation.Simulation.prototype.runTestsSteps = function()
     }
   }
   
+  return include;  
+};
+
+/**
+ * Removes any package names listed in the "ignore" config option from the full
+ * list of test packages.
+ *
+ * @param packagesOld {Array} Array of initial test package names
+ * @return {Array} Array of remaining test package names
+ */
+simulation.Simulation.prototype.removeIgnored = function(packagesOld)
+{
+  var packages = packagesOld.concat([])
   var ignore = [];
   
-  if (include.length == 0) {
-    try {
-      var ignoreStr = this.getConfigSetting("ignore");
-      this.log("Ignoring the following packages: " + ignoreStr, "info");
-      ignore = ignoreStr.split(",");
-      if (this.getConfigSetting("debug")) {
-        print("Ignore list configured: " + ignore);
-      }
-    } 
-    catch (ex) {
-      if (this.getConfigSetting("debug")) {
-        print("No ignore list configured.");
-      }
+  try {
+    var ignoreStr = this.getConfigSetting("ignore");
+    this.log("Ignoring the following packages: " + ignoreStr, "info");
+    ignore = ignoreStr.split(",");
+    if (this.getConfigSetting("debug")) {
+      print("Ignore list configured: " + ignore);
+    }
+  } 
+  catch (ex) {
+    if (this.getConfigSetting("debug")) {
+      print("No ignore list configured.");
     }
   }
 
-  if (include.length > 0) {    
-    packages = include;
-  }
-  else if (ignore.length > 0) {
-
-    for (var x = 0; x < packages.length; x++) {
+  if (ignore.length > 0) {
+    for (var x=packages.length-1; x > 0; x--) {
       for (var j = 0; j < ignore.length; j++) {
         if (packages[x] == ignore[j]) {
           packages.splice(x, 1);
         }
       }
     }
-
   }
+  return packages;
+};
+
+/**
+ * Determines which test packages should be run and processes them.
+ * 
+ * @return void
+ */
+simulation.Simulation.prototype.runTestsSteps = function()
+{
+  var packages = false;
+  var include = this.getIncludeList();
+  
+  if (include.length > 0) {
+    packages = include;
+  }
+  else {
+    packages = this.getPackageArray();
+  }
+
+  if (!packages) {
+    this.log("ERROR: Unable to get list of test packages.", "error");
+    this.testFailed = true;
+    return;
+  }
+
+  if (this.getConfigSetting("debug")) {
+    print("Initial test package list: " + packages);
+  }
+  
+  packages = this.removeIgnored(packages);
 
   function entryAt(array, entry) {
     for (var i=0;i<array.length;i++) {
@@ -147,9 +174,9 @@ simulation.Simulation.prototype.runTestsSteps = function()
   packages = packages.concat(temp);
 
   if (this.getConfigSetting("debug")) {
-    print("TESTING PACKAGES: " + packages);
+    print("Final test package list: " + packages);
   }
-
+Packages.java.lang.Thread.sleep(200000);
   // Get the current test application's URI from the input field.
   this.autUri = this.getEval(selWin + '.document.getElementsByTagName("input")[0].value', 'Getting AUT URI');
   this.autUri = this.autUri.substring(0, this.autUri.indexOf('=')+1);
@@ -161,8 +188,11 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
 };
 
-/*
- * Run a test package and log the results.
+/**
+ * Runs a test package and logs the results.
+ * 
+ * @param packageName {String} The name of the package to be processed
+ * @return void
  */
 simulation.Simulation.prototype.processPackage = function(packageName)
 {
@@ -208,20 +238,24 @@ simulation.Simulation.prototype.processPackage = function(packageName)
     }
   }
 
-  var result = this.getEval(testResults, 'Getting result HTML');
-
-  if (result) {
-    this.logErrors(result);
-  }
-
 };
 
-/*
- * Takes HTML content from the result iframe, splits it up into individual test
+/**
+ * Gets HTML content from the result iframe, splits it up into individual test
  * results, removes successful results and logs the rest.
+ * 
+ * @return void
  */
-simulation.Simulation.prototype.logErrors = function(result)
+simulation.Simulation.prototype.logErrors = function()
 {
+  // get the result HTML.
+  var result = this.getEval(testResults, 'Getting result HTML');
+  if (!result || result === "") {
+    this.log("Unable to retrieve test result HTML!", "error");
+    return;
+  }
+  
+  // split it up into individual entries.
   var logArray = [];
   if (result.indexOf("</div>") >0 ) {
     logArray = result.split("</div>");
@@ -239,11 +273,11 @@ simulation.Simulation.prototype.logErrors = function(result)
   for (var i=0, l=logArray.length; i<l; i++) {
     var line = logArray[i];
 
-    // Workaround for (rhino?) issue with replace() and single quotes.
+    // workaround for (rhino?) issue with replace() and single quotes.
     line = line.split("'");
     line = line.join("\'");
 
-    // only log warnings and errors
+    // ignore successful results
     if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) && line.indexOf('testResult success') < 0) {
 
       // strip uninformative stack trace
@@ -259,6 +293,7 @@ simulation.Simulation.prototype.logErrors = function(result)
         }
       }
 
+      // replace evil special characters
       try {
         line = line.replace(/\<br\>/gi, "<br/>");
         line = line.replace(/\'/g, "\\'");
@@ -282,6 +317,7 @@ simulation.Simulation.prototype.logErrors = function(result)
         }
       }
 
+      // log the result
       this.errWarn++;
       if (this.getConfigSetting("debug")) {
         print("Logging line " + line);
