@@ -170,13 +170,18 @@ simulation.Simulation.prototype.runTestsSteps = function()
     }
   }
 
+  /* Workaround for stability issues: Move qx.test.ui and qx.test.Xml to the 
+  back of the queue. */
   var temp = packages.splice(entryAt(packages, "qx.test.ui"), 1);
+  packages = packages.concat(temp);
+  
+  temp = packages.splice(entryAt(packages, "qx.test.Xml"), 1);
   packages = packages.concat(temp);
 
   if (this.getConfigSetting("debug")) {
     print("Final test package list: " + packages);
   }
-Packages.java.lang.Thread.sleep(200000);
+
   // Get the current test application's URI from the input field.
   this.autUri = this.getEval(selWin + '.document.getElementsByTagName("input")[0].value', 'Getting AUT URI');
   this.autUri = this.autUri.substring(0, this.autUri.indexOf('=')+1);
