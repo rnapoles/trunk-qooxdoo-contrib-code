@@ -17,9 +17,9 @@ Tartan Blueprint
 
 ************************************************************************ */
 
-qx.Class.define("blueprint.ui.form.ColorSelector",
+qx.Class.define("blueprint.ui.control.ColorSelector",
 {
-	extend : qx.ui.form.ColorSelector,
+	extend : qx.ui.control.ColorSelector,
 
 	include :
 	[
