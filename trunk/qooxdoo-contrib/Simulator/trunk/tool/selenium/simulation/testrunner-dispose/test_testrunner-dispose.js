@@ -26,7 +26,7 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE + '.viewer';
 // Content of the "status" text field
-var qxStatusText = '.widgets["statuspane.systeminfo"].getContent().toString()';
+var qxStatusText = '.widgets["statuspane.systeminfo"].getValue().toString()';
 // Check if a test run has finished
 var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' + selWin + '.' + qxAppInst + qxStatusText + ' == "Enabled auto-reload"';
 // HTML content of the result iframe
