@@ -1,0 +1,35 @@
+{
+  "info" : 
+  {
+    "name" : "jqPlot Demo",
+
+    "summary" : "Demo for using jqPlot with Qooxdoo",
+    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    
+    "homepage" : "",
+
+    "license" : "LGPL and EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Fritz Zaucker (zaucker), Oetiker+Partner AG, CH-4600 Olten",
+        "email" : "fritz.zaucker@oetiker.ch",
+	"homepage" : "http://www.oetiker.ch"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.9-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "test",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
