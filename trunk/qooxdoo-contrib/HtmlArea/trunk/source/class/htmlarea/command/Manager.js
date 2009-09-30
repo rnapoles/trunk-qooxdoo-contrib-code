@@ -1346,17 +1346,14 @@ qx.Class.define("htmlarea.command.Manager",
        var grouped = {};
        var child = null;
        
-       /* Fetch current styles */
        var collectedStyles = this.getCurrentStyles(elem);
        
        child = grouped.child = {};
        
-       /* Cycle over collected styles and generate output string */
        for(var attribute in collectedStyles)
        {
-         // "text-decoration" is special
-         if (attribute != "text-decoration")
-         {
+         // "text-decoration" has to processed afterwards
+         if (attribute != "text-decoration") {
            child[attribute] = collectedStyles[attribute];
          }
        }
@@ -1368,18 +1365,13 @@ qx.Class.define("htmlarea.command.Manager",
        {
          var textDecorations = collectedStyles["text-decoration"];
          
-         /*
-          * An extra <span> is needed for every text-decoration value,
-          * because the color of a decoration is based on the element's color. 
-          */
+         // An extra <span> is needed for every text-decoration value,
+         // because the color of a decoration is based on the element's color. 
          for(var i=0, j=textDecorations.length; i<j; i++)
          {
-           if (child == null)
-           {
+           if (child == null) {
              child = grouped.child = {};
-           }
-           else
-           {
+           } else {
              child = child.child = {};
            }
            
@@ -1409,101 +1401,114 @@ qx.Class.define("htmlarea.command.Manager",
       * @param elem {Element ? null} optional element reference the lookup should start
       * @return {Map} map with all style settings with style attributes as keys.
       */
-     getCurrentStyles : function(elem)
+     getCurrentStyles : function(element)
      {
-       if (elem == null)
+       if (element == null)
        {
-         /* Current selection */
          var sel = this.__editorInstance.getSelection();
          
-         /* Check the focusNode - if not available return a empty map */
-         if (!sel || sel.focusNode == null)
-         {
+         if (!sel || sel.focusNode == null) {
            return {};
          }
          
-         /* Get HTML element on which the selection has ended */
-         elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
+         // Get HTML element on which the selection has ended
+         element = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
        }
-
-       /*
-        * Name of styles, which apply on the element, will be saved here.
-        */
-       var usedStyles = {};
-
-       /* This map will be build to save the style settings over the <hr> element. */
-       var styleSettings = {};
   
-       /* Retrieve element's computed style. */
-       var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
-  
-       /* Get element's ancestors to fetch all style attributes, which apply on element. */
-       var parents = qx.dom.Hierarchy.getAncestors(elem);
+       // Get element's ancestors to fetch all style attributes which are inherited
+       // by the element to check
+       var parents = qx.dom.Hierarchy.getAncestors(element);
+       var elementAndParents = qx.lang.Array.insertBefore(parents, element, parents[0]);
+       
+       var collectedStyles = this.__collectStylesOfElementCollection(elementAndParents);
+       var resultMap = this.__processCollectedStyles(collectedStyles, elementAndParents);  
+       
+       return resultMap;
+     },
 
-       /* List of parent elements plus the element itself. */
-       var elementAndParents = qx.lang.Array.insertBefore(parents, elem, parents[0]);
 
-       /* Helper vars */
-       var styleAttribute;
-       var styleValue;
-       var i, j; 
-
-       /* Read style attributes set on element and all parents */
-       for(var i=0; i<elementAndParents.length; i++)
+     /**
+      * Processes the given element collection and collects the applied CSS
+      * styles. Does some additional corrections on the styles to retrieve the 
+      * correct values.
+      * 
+      * @param elementCollection {Array} Array of elements to collect styles from.
+      * @return {Map} collected styles in a map.
+      */
+     __collectStylesOfElementCollection : function(elementCollection)
+     {
+       var collectedStyles = {};
+       var styleAttribute, element;
+       
+       for (var i=0, j=elementCollection.length; i<j; i++)
        {
-         elem = elementAndParents[i];
-         /* Cycle though style properties */
-         for (j=0; j<elem.style.length; j++)
+         element = elementCollection[i];
+         
+         for (var k=0, l=element.style.length; k<l; k++)
          {
-           styleAttribute = elem.style[j];
+           styleAttribute = element.style[k];
            if (styleAttribute.length > 0 && 
-               typeof usedStyles[styleAttribute] === "undefined") {
-             usedStyles[styleAttribute] = elem.style.getPropertyValue(styleAttribute);
+               typeof collectedStyles[styleAttribute] === "undefined") {
+             collectedStyles[styleAttribute] = element.style.getPropertyValue(styleAttribute);
            }
          }
 
-         /*
-          * We need to save the font size, which is set on font tags,
-          * separately.
-          */
-         if(elem.tagName.toUpperCase() == "FONT" && elem.size) {
-           usedStyles["legacy-font-size"] = elem.size;
+         // only process the "FONT" elements to retrieve the font size
+         // for the next paragraph. Only the first occurence is important. 
+         if(element.tagName.toUpperCase() == "FONT" && element.size && 
+            collectedStyles["legacy-font-size"] === undefined) {
+           collectedStyles["legacy-font-size"] = element.size;
          }
-
-       } // for
-       
-       if (usedStyles["legacy-font-size"] && usedStyles["font-size"]) {
-         delete usedStyles["font-size"];
        }
        
-       /* Cycle through saved style names and fetch computed value for each of it. */
-       for(var style in usedStyles)
+       // The size of the "FONT" element has a higher priority as the CSS 
+       // font size value 
+       if (collectedStyles["legacy-font-size"] && collectedStyles["font-size"]) {
+         delete collectedStyles["font-size"];
+       }
+       
+       return collectedStyles;
+     },
+
+
+     /**
+      * Walks over the collected styles and gets inherited value of each.
+      * 
+      * @param collectedStyles {Map}
+      * @return {Map} processed styles 
+      */
+     __processCollectedStyles : function(collectedStyles, elementAndParents) 
+     {
+       var element = elementAndParents[0];
+       var elementComputedStyle = this.__editorInstance.getContentWindow().getComputedStyle(element, null);
+       
+       var styleValue;
+       var resultMap = {};
+       for(var style in collectedStyles)
        {
+         // "legacy-font-size" is not valid CSS attribute
+         // do not get the computed of it 
          if (style != "legacy-font-size") {
-           styleValue = decoration.getPropertyValue(style);
+           styleValue = elementComputedStyle.getPropertyValue(style);
          } else {
-           styleValue = usedStyles[style];
+           styleValue = collectedStyles[style];
          }
          
-         /* 
-          * The attribute "background-color" is special, since it can have "transparent" as value.
-          * In this case, we have to retrieve the _real_ color value from a parent element
-          */
+         // Get the _real_ color if the collected style has the default value
+         // "transparent" by retrieving it from the parant element.
          if(style == "background-color" && styleValue == "transparent") {
-           styleSettings[style] = this.__getBackgroundColor(parents);
+           resultMap[style] = this.__getBackgroundColor(parents);
          }
-         /*
-          * The attribute "text-decoration" is even more special. ;-) __getTextDecorations() generates an
-          * array containing all text-decoration styles and colors, that are visible on element.
-          */
+         // collect all "text-decoration" styles along the parent hierarchy
+         // to get the correct (with all inherited values) "text-decoration" style 
          else if(style == "text-decoration") {
-           styleSettings[style] = this.__getTextDecorations(elementAndParents);
+           resultMap[style] = this.__getTextDecorations(elementAndParents);
          } else {
-           styleSettings[style] = styleValue;
+           resultMap[style] = styleValue;
          }
        }
        
-       return styleSettings;
+       return resultMap;
      },
 
 
@@ -1519,33 +1524,27 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __getTextDecorations : function(parents)
      {
-       var elem, decorationValue, colorValue;
+       var decorationValue, colorValue, parentDecoration;
        var decorationValues = [];
 
-       /* Cycle through parents */
-       for(var i=0; i<parents.length; i++)
+       var editorWindow = this.__editorInstance.getContentWindow();
+       for(var i=0, j=parents.length; i<j; i++)
        {
-         elem = parents[i];
-
-         /* Retrieve computed style */
-         var parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+         parentDecoration = editorWindow.getComputedStyle(parents[i], null);
          
-         /* Store values */
          decorationValue = parentDecoration.getPropertyValue("text-decoration");
          colorValue = parentDecoration.getPropertyValue("color");
 
-         /* Check if text-decoration is valid */
+         // Check if text-decoration is valid
          if (decorationValue != "none")
          {
-           /* Add parent's decoration style values to array */
            decorationValues.push({
-             'text-decoration' : decorationValue,
-             'color'           : colorValue
+             'text-decoration': decorationValue,
+             'color': colorValue
            });
          }
        }
 
-       /* Return collected values */
        return decorationValues;
      },
 
