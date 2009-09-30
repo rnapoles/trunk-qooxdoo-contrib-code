@@ -72,7 +72,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     var uri = source || qx.util.ResourceManager.getInstance().toUri("htmlarea/static/blank.html");
     
     this.__connectToDomElement(element);
-    this.__initContentWrap();
+    this.__initDocumentSkeletonParts();
     this._createAndAddIframe(uri);
     
     
@@ -110,7 +110,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     this.__handleContextMenuEvent = qx.lang.Function.bind(this._handleContextMenuEvent, this);
 
 
-    /* Check for available content */
+    // Check for available content
     if (typeof value === "string") {
       this.__value = value;
     }
@@ -756,7 +756,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     __handleMouseEvent : null,
     __handleContextMenuEvent : null,
     __styleInformation : null,
-    __contentWrap : null,
+    __documentSkeletonParts : null,
     __savedRange : null,
     
     
@@ -834,27 +834,27 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * 
      * @return {void}
      */
-    __initContentWrap : function()
+    __initDocumentSkeletonParts : function()
     {
-      this.__contentWrap =
+      this.__documentSkeletonParts =
       {
         "xhtml" :
         {
-        doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-        html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en"><title></title>',
-        meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />',
-        style   : qx.core.Variant.select("qx.client",
-            {
-          "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-          'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto; background-image:none; margin:0px; padding:5px; }' +
-          'p { margin:0px; padding:0px; } ',
+          doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+          html : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
+          meta: '<title></title><meta http-equiv="Content-type" content="text/html; charset=UTF-8" />',
+          style : qx.core.Variant.select("qx.client",
+          {
+            "mshtml" : 'html { margin:0px; padding:0px; } ' +
+                       'body { font-size: 100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto; background-image:none; margin:0px; padding:5px; }' +
+                       'p { margin:0px; padding:0px; } ',
           
-          "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: auto; }' +
-          'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; }' +
-          'p { margin:0px; padding:0px; } '
-            }),
-            body    : '<body id="bodyElement">\n',
-            footer  : '</body></html>'
+            "default" : 'html { width:100%; height:100%; margin:0px; padding:0px; overflow-y:auto; overflow-x:auto; } ' +
+                        'body { font-size:100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; } ' +
+                        'p { margin:0px; padding:0px; } '
+          }),
+          body : '<body>',
+          footer : '</body></html>'
         }
       };      
     },
@@ -938,9 +938,50 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * 
      * @return {String}
      */
-    getCompleteHtml : function () {
-      return this.__getWrappedContent(this.getHtml(), true);
+    getCompleteHtml : function()
+    {
+      var skeletonParts = this.__documentSkeletonParts[this.getContentType()];
+      
+      var completeHtml = skeletonParts.html + '<head>' + skeletonParts.meta + '</head>';
+      // use "'" to prevent problems with certain font names encapsulated with '"'
+      completeHtml += "<body style='" + this.__getBodyStyleToExport() + "'>"; 
+      completeHtml += this.getHtml() + '</body></html>';
+      
+      return completeHtml;
     },
+
+
+    /**
+     * Returns the CSS styles which should be exported as a CSS string.
+     * This prevents that styles which are only for internal use appear in the
+     * result (e.g. overflow settings).
+     * 
+     * @return {String} CSS string of body styles to export
+     */
+    __getBodyStyleToExport : function() 
+    {
+      var stylesToExport = [ "backgroundColor", "backgroundImage",
+                             "backgroundRepeat", "backgroundPosition",
+                             "fontFamily", "fontSize",
+                             "marginTop", "marginBottom", "marginLeft", "marginRight",
+                             "paddingTop", "paddingBottom", "paddingLeft", "paddingRight" ];
+                                   
+      var Style = qx.bom.element.Style;
+      var body = this.getContentBody();
+      var bodyStyle = {};
+      var styleAttribute, styleValue;
+      var modeToUse = qx.bom.client.Engine.MSHTML ? 2 : 1;
+      for (var i=0, j=stylesToExport.length; i<j; i++)
+      {
+        styleAttribute = stylesToExport[i];
+        styleValue = Style.get(body, styleAttribute, modeToUse);        
+        if (styleValue !== undefined && styleValue != "") {
+          bodyStyle[styleAttribute] = styleValue;
+        } 
+      }
+      
+      return qx.bom.element.Style.compile(bodyStyle);
+    }, 
 
 
     /**
@@ -1246,10 +1287,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         this.setEditable(true);
       }
 
-      /*
-       * Render content - opens a new document and inserts
-       * all needed elements plus the initial content
-       */
+      // Render content - opens a new document and inserts
+      // all needed elements plus the initial content
       this.__renderContent();
 
 
@@ -1278,11 +1317,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
       {
-        // only focus if 
-        ////this.setFocused(true);
-        
-        for (var i=0, j=commandStack.length; i<j; i++)
-        {
+        for (var i=0, j=commandStack.length; i<j; i++) {
           cm.execute(commandStack[i].command, commandStack[i].value);
         }
       }
@@ -1290,7 +1325,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       // stack is finished, set commandManager to the real one
       this.__commandManager = cm;
 
-      /* dispatch the "ready" event at the end of the initialization */
+      // dispatch the "ready" event at the end of the initialization
       this.fireEvent("ready");
     },
     
@@ -1374,46 +1409,31 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
 
     /**
-     * Returns the wrapped content of the editor
+     * Returns the document skeleton with content usable for the editor
      *
      * @param value {String} body.innerHTML
-     * @param useCurrentBodyStyle {Boolean ? null} whether the current style of the body should be used
      * @return {String} content
      */
-    __getWrappedContent : function (value, useCurrentBodyStyle)
+    __generateDocumentSkeleton : function(value)
     {
-      var value = (typeof value == "string") ? value : "";
-      var doc = this._getIframeDocument();
-
-      /**
-       * To hide the horizontal scrollbars in gecko browsers set the "overflow-x" explicit to "hidden"
-       * In mshtml browsers this does NOT work. The property "overflow-x" overwrites the value of "overflow-y".
-       **/
-      var geckoOverflow = qx.bom.client.Engine.GECKO ? " html, body {overflow-x: visible; } " : "";
-
-      var wrap = this.__contentWrap[this.getContentType()];
-
-      /**
-       * When setting the content with a doctype IE7 has one major problem.
-       * With EVERY char inserted the editor component hides the text/flickers. To display it again
-       * it is necessary to unfocus and focus again the editor component. To avoid this unwanted
-       * behaviour it is necessary to set NO DOCTYPE.
-       *
-       * WRONG IMPLEMENTATION:
-       * propValue = wrap.doctype + wrap.html + '<head>' + wrap.head + '</head>' + wrap.body + propValue + wrap.footer;
-       **/
-
-      var body = "<p>&nbsp;</p>";
-      if (useCurrentBodyStyle === true)
-      {
-        body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(doc.body)+'">');
-      }
-
-      /* CORRECT IMPLEMENTATION */
-      return wrap.html +
-             '<head>' + wrap.meta +
-             '<style type="text/css">' + geckoOverflow + wrap.style + this.__styleInformation + '</style>' +
-             '</head>' + body + value + wrap.footer;
+      // To hide the horizontal scrollbars in gecko browsers set the 
+      // "overflow-x" explicit to "hidden"
+      // In mshtml browsers this does NOT work. The property "overflow-x" 
+      // overwrites the value of "overflow-y".
+      var overflow = qx.bom.client.Engine.GECKO ? " html, body {overflow-x: visible; } " : "";
+      
+      var skeletonParts = this.__documentSkeletonParts[this.getContentType()];
+      var head = '<head>' + skeletonParts.meta + 
+                 '<style type="text/css">' + overflow + skeletonParts.style + this.__styleInformation + '</style>' +
+                 '</head>';
+      var content = skeletonParts.body + value;
+      
+      // When setting the content with a doctype IE7 has one major problem.
+      // With EVERY char inserted the editor component hides the text/flickers.
+      // To display it again it is necessary to unfocus and focus again the 
+      // editor component. To avoid this unwanted behaviour it is necessary to
+      // set NO DOCTYPE.
+      return skeletonParts.html + head + content + skeletonParts.footer;
     },
 
 
@@ -1429,11 +1449,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       if (typeof value == "string")
       {
         var doc = this._getIframeDocument();
-
         try
         {
           doc.open("text/html", true);
-          doc.write(this.__getWrappedContent(value));
+          doc.write(this.__generateDocumentSkeleton(value));
           doc.close();
         }
         catch (e)
@@ -1553,24 +1572,17 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       {
         this.__setDesignMode(true);
 
-        /*
-         * For Gecko set additionally "styleWithCSS" and as fallback for older
-         * Gecko engines "useCSS".
-         */
+        // For Gecko set additionally "styleWithCSS" to turn on CSS.
+        // Fallback for older Gecko engines is "useCSS".
+        // see http://www.mozilla.org/editor/midas-spec.html
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
-          try
-          {
-            /*
-             * use the new command "styleWithCSS" to turn on CSS
-             * useCSS is deprecated - see http://www.mozilla.org/editor/midas-spec.html
-             */
+          try {
             this.__commandManager.execute("stylewithcss", true);
           }
           catch(ex)
           {
-            try
-            {
+            try {
               this.__commandManager.execute("usecss", false);
             }
             catch(ex)
@@ -1580,8 +1592,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 this.error("Failed to enable rich edit functionality");
                 this.fireDataEvent("loadingError", ex);
               }
-              else
-              {
+              else {
                 throw new Error("Failed to enable rich edit functionality");
               }
             }
@@ -3253,7 +3264,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     
 
     this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent", 
-                        "handleFocusOut", "handleMouseEvent", "__contentWrap",
+                        "handleFocusOut", "handleMouseEvent", "__documentSkeletonParts",
                         "__iframe");
   }
 });

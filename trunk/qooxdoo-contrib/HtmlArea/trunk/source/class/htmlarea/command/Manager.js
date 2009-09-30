@@ -223,8 +223,10 @@ qx.Class.define("htmlarea.command.Manager",
         // inside a paragraph before executing a command. Otherwise executing
         // commands will cause problems for our paragraph handling.
         //
-        // EXCEPTION: this interferes with webkit browsers at indent/outdent
-        if (!(qx.bom.client.Engine.WEBKIT && (command == "indent" || command == "outdent")))
+        // EXCEPTION: this interferes with webkit browsers at indent/outdent and
+        // with the commands "stylewidthcss" and "usecss" used at the startup (only gecko)
+        if (!(qx.bom.client.Engine.WEBKIT && (command == "indent" || command == "outdent")) && 
+            !(qx.bom.client.Engine.GECKO && (command == "stylewithcss" || command == "usecss")))
         { 
           if (this.__paragraphMissing()) {
             this.__insertHelperParagraph();
