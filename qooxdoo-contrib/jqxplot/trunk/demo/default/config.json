@@ -28,7 +28,7 @@
   "let" :
   {
     "APPLICATION"  : "jqxplot",
-    "QOOXDOO_PATH" : "../../../../../frontend",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
