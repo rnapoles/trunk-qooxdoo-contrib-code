@@ -1,0 +1,39 @@
+{
+  "name"    : "JqPlot with Qooxdoo Demo",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "jqxplot",
+    "QOOXDOO_PATH" : "../../../../../frontend",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache_test",
+    "ROOT"         : "."
+  }
+
+}
