@@ -1721,8 +1721,17 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   var descArr = [];
   var c;
 
+   /* If the node is one of the qooxdoo Iframes (html or ui.embed) containing 
+    * another qooxdoo application, try to retrieve it's root widget */
+  if ( (node.classname.indexOf("Iframe") + 6 == node.classname.length) && node.getWindow ) {
+    LOG.debug("getQxNodeDescendants: using getWindow() to retrieve descendants");
+    try {
+      descArr = descArr.concat(node.getWindow().qx.core.Init.getApplication().getRoot());
+    }
+    catch(ex) {}
+  }
   // check external widget children (built with w.add())
-  if (node.getChildren) {
+  else if (node.getChildren) {
     LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants of " + node);
     // +" (got: "+ (c.length? c.length: 0)+")");
     c = node.getChildren();
