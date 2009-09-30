@@ -330,16 +330,20 @@ simulation.Simulation.prototype.startSession = function()
 };
 
 /**
- * Attaches a "Simulation" namespace object to the AUT window's qx object.
- * This will be used to store custom methods added by addOwnFunction.
+ * Attaches a "Simulation" namespace object to the specified window's qx object.
+ * This will be used to store custom methods added by addOwnFunction. If no 
+ * window is specified, the AUT's window is used.
  * 
+ * @param win {String} The name of the target window. Must evaluate to a 
+ * JavaScript Window object.
  * @return {void}
  */
-simulation.Simulation.prototype.prepareNameSpace = function()
+simulation.Simulation.prototype.prepareNameSpace = function(win)
 {
-  var ns = String(this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation', 'Checking for qx.Simulation namespace'));
+  var targetWin = win || 'selenium.qxStoredVars["autWindow"]';
+  var ns = String(this.getEval(targetWin + '.qx.Simulation', 'Checking for qx.Simulation namespace'));
   if (ns == "null" || ns == "undefined") {
-    this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation = {};', 'Creating qx.Simulation namespace');
+    this.getEval(targetWin + '.qx.Simulation = {};', 'Creating qx.Simulation namespace');
   }
 };
 
@@ -1039,25 +1043,28 @@ simulation.Simulation.prototype.qxShutdown = function()
 };
 
 /**
- * Creates a global error handler that stores JavaScript exceptions. Global 
- * Error Handling must be enabled in the AUT.
+ * Creates a global error handler that stores JavaScript exceptions that are 
+ * thrown in the specified window. Global Error Handling must be enabled in the 
+ * AUT.
  * Also adds a simple getter function that returns the contents of the exception
  * store as a string separated by pipe characters ("|");
- * 
- * @param win {String} The window object to attach the global error handler to
+ *
+ * @param win {String} The target window. Must evaluate to a JavaScript Window 
+ * object. Default: The AUT's window.
  * @return {void}
  */
 simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
 {
   var qxWin = win || "selenium.qxStoredVars['autWindow']";
-  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore = [];", "Adding errorStore");
+  this.prepareNameSpace(qxWin);
+  this.getEval(qxWin + ".qx.Simulation.errorStore = [];", "Adding errorStore");
   
-  var addHandler = function(win)
+  var addHandler = function(autWin)
   {
-    var targetWin = win || selenium.qxStoredVars['autWindow']; 
+    var targetWin = autWin || selenium.qxStoredVars['autWindow']; 
     targetWin.qx.event.GlobalError.setErrorHandler(function(ex) {
       var exString = "";
-      if (ex instanceof win.qx.core.WindowError) {
+      if (ex instanceof targetWin.qx.core.WindowError) {
         exString = ex.toString() + " in " + ex.getUri() + " line " + ex.getLineNumber();
       }
       else {
@@ -1075,16 +1082,17 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
       var sanitizedEx = selenium.qxStoredVars['autWindow'].qx.Simulation.sanitize(exString);
       //sanitizedEx = sanitizedEx.replace(/\n/g,"<br/>");
       //sanitizedEx = sanitizedEx.replace(/\r/g,"<br/>");      
-      selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore.push(sanitizedEx);     
+      targetWin.qx.Simulation.errorStore.push(sanitizedEx);
     });
   };
   
   this.addOwnFunction("addGlobalErrorHandler", addHandler);
   this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.addGlobalErrorHandler(" + qxWin + ");", "Adding error handler");
   
-  var globalErr = function()
+  var globalErr = function(win)
   {
-     var exceptions = selenium.browserbot.getCurrentWindow().qx.Simulation.errorStore;
+     var targetWin = win || selenium.qxStoredVars['autWindow'];
+     var exceptions = targetWin.qx.Simulation.errorStore;
      var exString = exceptions.join("|");
      return exString;     
   };
@@ -1093,13 +1101,16 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
 };
 
 /**
- * Logs the contents of the global exception store.
- * 
- * @return {void}
+ * Logs the contents of the given window's global exception store.
+ *
+ * @param win {String} The target window. Must evaluate to a JavaScript Window 
+ * object. Default: The AUT's window.
+ * @return {Integer} The number of global errors.
  */
-simulation.Simulation.prototype.logGlobalErrors = function()
+simulation.Simulation.prototype.logGlobalErrors = function(win)
 {
-  var exceptions = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getGlobalErrors()", "Retrieving global error store");
+  targetWin = win || "";
+  var exceptions = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getGlobalErrors(" + targetWin + ")", "Retrieving global error store");
   var ex = String(exceptions);
   if (ex.length > 0) {
     var exArr = ex.split("|");
@@ -1107,14 +1118,18 @@ simulation.Simulation.prototype.logGlobalErrors = function()
       this.log("Global Error Handler caught exception: " + exArr[i], "error");
     }
   }
+  return ex.length;
 };
 
 /**
- * Empties the global exception store.
- * 
+ * Empties the given window's global exception store.
+ *
+ * @param win {String} The target window. Must evaluate to a JavaScript Window 
+ * object. Default: The AUT's window.
  * @return {void}
  */
-simulation.Simulation.prototype.clearGlobalErrorStore = function()
+simulation.Simulation.prototype.clearGlobalErrorStore = function(win)
 {
-  this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.errorStore = [];", "Clearing errorStore");
+  var targetWin = win || selenium.qxStoredVars['autWindow'];
+  this.getEval(targetWin + ".qx.Simulation.errorStore = [];", "Clearing errorStore");
 };
