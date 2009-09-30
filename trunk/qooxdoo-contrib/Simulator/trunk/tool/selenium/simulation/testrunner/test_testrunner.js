@@ -215,7 +215,8 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   var isAutReady = this.waitForCondition(isStatusReady, 120000,
                    "Waiting for test package " + packageName + " to load");
 
-  this.addGlobalErrorHandler(selWin + "." + qxAppInst + ".iframe.getWindow()");
+  var testAppWindow = selWin + "." + qxAppInst + ".iframe.getWindow()";
+  this.addGlobalErrorHandler(testAppWindow);
 
   if (!isAutReady) {
     this.testFailed = true;
@@ -240,6 +241,8 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   if (!isPackageDone) {
     this.testFailed = true;
   }
+  
+  this.logGlobalErrors(testAppWindow);
 
   if (this.getConfigSetting("debug")) {
     if (isPackageDone) {
@@ -390,8 +393,11 @@ simulation.Simulation.prototype.logErrors = function()
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
+    
+    var totalErrors = mySim.getTotalErrorsLogged() + mySim.getTotalWarningsLogged();
 
-    mySim.log("Tests with warnings or errors: " + mySim.errWarn, "info");
+    //mySim.log("Tests with warnings or errors: " + mySim.errWarn, "info");
+    mySim.log("Tests with warnings or errors: " + totalErrors, "info");
   }
 
   mySim.stop();
