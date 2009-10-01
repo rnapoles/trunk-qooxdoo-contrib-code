@@ -1130,6 +1130,6 @@ simulation.Simulation.prototype.logGlobalErrors = function(win)
  */
 simulation.Simulation.prototype.clearGlobalErrorStore = function(win)
 {
-  var targetWin = win || selenium.qxStoredVars['autWindow'];
+  var targetWin = win || "selenium.qxStoredVars['autWindow']";
   this.getEval(targetWin + ".qx.Simulation.errorStore = [];", "Clearing errorStore");
 };
