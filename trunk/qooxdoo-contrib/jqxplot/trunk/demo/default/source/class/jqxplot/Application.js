@@ -1,33 +1,20 @@
 /* ************************************************************************
 
    Copyright:
+       2009 by Fritz Zaucker
 
    License:
+       LGPL: http://www.gnu.org/licenses/lgpl.html
+       EPL:  http://www.eclipse.org/org/documents/epl-v10.php
 
    Authors:
+       Fritz Zaucker, Oetiker+Partner AG, CH-4600 Olten, http://www.oetiker.ch
 
 ************************************************************************ */
 
-/* ************************************************************************
-
-#asset(test/*)
-
-************************************************************************ */
-
-/**
- * This is the main application class of your custom application "test"
- */
 qx.Class.define("jqxplot.Application",
 {
   extend : qx.application.Standalone,
-
-
-
-  /*
-  *****************************************************************************
-     MEMBERS
-  *****************************************************************************
-  */
 
   members :
   {
@@ -132,7 +119,7 @@ qx.Class.define("jqxplot.Application",
                                   },
                                   legend: {show: true, fontSize: '8pt'},
                                   // disable zoom
-                                  cursor: {zoom:false }
+                                  cursor: {zoom:false, showTooltip:false}
                               });
 		break;
 

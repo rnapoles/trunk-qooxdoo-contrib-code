@@ -34,6 +34,18 @@
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache_test",
     "ROOT"         : "."
-  }
+  },
+
+ "jobs" :
+ {
+    "=build-files" :
+    {
+       "copy-files":
+       {
+          "files": ["index.html", "plot"]
+       }
+    }
+ }
+
 
 }
