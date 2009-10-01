@@ -72,7 +72,7 @@ qx.Class.define("blueprint.Application",
                     "target":"table"
                 }
             };
-            var test1 = blueprint.Manager.getInstance().buildObject(buttonObj, "new_form", false);
+            var test1 = blueprint.Manager.getInstance().generate(buttonObj, "new_form", false);
 
             // Document is the application root
             var doc = this.getRoot();
