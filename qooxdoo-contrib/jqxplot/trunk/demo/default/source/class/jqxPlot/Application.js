@@ -12,7 +12,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("jqxplot.Application",
+qx.Class.define("jqxPlot.Application",
 {
   extend : qx.application.Standalone,
 
