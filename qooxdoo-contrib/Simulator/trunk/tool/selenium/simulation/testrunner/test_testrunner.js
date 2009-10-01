@@ -241,7 +241,7 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   if (!isPackageDone) {
     this.testFailed = true;
   }
-  
+  this.logErrors();
   this.logGlobalErrors(testAppWindow);
 
   if (this.getConfigSetting("debug")) {
@@ -330,16 +330,11 @@ simulation.Simulation.prototype.logErrors = function()
       }
 
       // log the result
-      this.errWarn++;
       if (this.getConfigSetting("debug")) {
         print("Logging line " + line);
       }
       this.log(line, "error");
     }
-  }
-
-  if (this.getConfigSetting("debug")) {
-    print(this.errWarn + " lines logged");
   }
 
 };
@@ -348,7 +343,6 @@ simulation.Simulation.prototype.logErrors = function()
 
 (function() {
   mySim.testFailed = false;
-  mySim.errWarn = 0;
 
   var sessionStarted = mySim.startSession();
 
@@ -395,8 +389,6 @@ simulation.Simulation.prototype.logErrors = function()
     }
     
     var totalErrors = mySim.getTotalErrorsLogged() + mySim.getTotalWarningsLogged();
-
-    //mySim.log("Tests with warnings or errors: " + mySim.errWarn, "info");
     mySim.log("Tests with warnings or errors: " + totalErrors, "info");
   }
 
