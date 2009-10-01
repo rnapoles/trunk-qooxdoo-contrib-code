@@ -32,9 +32,6 @@ interface. Feel free to improve until I get around to it.
 
   This method is currently not used in the demo application.
 
-- Please refer to the licensing instructions of the included libraries
-  if you intend to use them in your applications.
-
 - Please refer to the documentation of jqPlot for details on the
   various graph types, options, etc.
 
@@ -42,6 +39,20 @@ interface. Feel free to improve until I get around to it.
   libraries. However, before reporting problems with qooxdoo to the
   mailing list or filing bugs, please test your code WITHOUT the
   jQuery/ExCanvas/jqPlot libraries.
+
+
+=== Licensing ===
+
+- The jqxPlot package includes copies of ExplorerCanvas, jQuery and jqPlot. 
+  Please refer to the licensing instructions of these libraries if you
+  intend to use them in your applications.
+
+- The jqxPlot package as a whole is distributed under the EPL license, due
+  to the incompatibility of the Apache license covering ExplorerCanvas and
+  and the LGPL license.
+
+- The code in Application.js is distributed under LGPL and EPL, as it can be
+  used without ExplorerCanvas (at least with some browsers).
 
 
 Cheers,
