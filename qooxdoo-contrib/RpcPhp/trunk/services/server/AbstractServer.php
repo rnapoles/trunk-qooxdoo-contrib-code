@@ -1042,7 +1042,7 @@ class AbstractServer
        * Otherwise, we need to add a call to a qooxdoo-specific function
        */
       $reply =
-            "qx.remote.ScriptTransport._requestFinished(" .
+            "qx.io.remote.ScriptTransport._requestFinished(" .
       $scriptTransportId . ", " . $reply .
             ");";
       print $reply;
