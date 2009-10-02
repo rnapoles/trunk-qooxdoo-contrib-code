@@ -13,7 +13,7 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Alexander Back (aback)
+     * Alexander Steitz (aback)
      * Michael Haitz (mhaitz)
      * Jonathan Weiß (jonathan_rass)
 
@@ -31,19 +31,19 @@
 /**
  * Rich text editor widget which encapsulates the low-level {@link htmlarea.HtmlAreaNative}
  * component to offer editing features.
- * 
- * 
+ *
+ *
  * Optimized for the use at a RIA.
  */
 qx.Class.define("htmlarea.HtmlArea",
 {
   extend : qx.ui.core.Widget,
-  
+
   /*
    * IMPORTANT NOTE
    * If you add functionality which manipulates the content of the HtmlArea
    * AND you want make these changes undo-/redo-able you have to make sure
-   * to implement methods in the "Manager" and "UndoManager" classes. 
+   * to implement methods in the "Manager" and "UndoManager" classes.
    */
 
   /*
@@ -59,7 +59,7 @@ qx.Class.define("htmlarea.HtmlArea",
    * @param styleInformation {String | Map | null} Optional style information for the editor's document
    *                                               Can be a string or a map (example: { "p" : "padding:2px" }
    * @param source {String} source of the iframe
-   * 
+   *
    * @lint ignoreDeprecated(_keyCodeToIdentifierMap)
    */
   construct : function(value, styleInformation, source)
@@ -68,15 +68,15 @@ qx.Class.define("htmlarea.HtmlArea",
     //   INIT
     // **********************************************************************
     this.base(arguments);
-    
+
     this._setLayout(new qx.ui.layout.Grow);
-    
+
     this.__addAppearListener();
 
-    this.__initValues = { content: value, 
+    this.__initValues = { content: value,
                           styleInfo: styleInformation,
                           source: source };
-                          
+
 
     qx.event.Registration.addListener(document.body, "mousedown", this.block, this, true);
     qx.event.Registration.addListener(document.body, "mouseup", this.release, this, true);
@@ -110,7 +110,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * This event holds a data map which informs about the formatting at the
      * current cursor position. It holds the following keys:
-     * 
+     *
      * * bold
      * * italic
      * * underline
@@ -123,7 +123,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * * justifyCenter
      * * justifyRight
      * * justifyFull
-     * 
+     *
      * This map can be used to control/update a toolbar states.
      */
     "cursorContext"    : "qx.event.type.Data",
@@ -143,13 +143,13 @@ qx.Class.define("htmlarea.HtmlArea",
      * This event is dispatched when the document receives an "focusout" event
      */
     "focusOut"         : "qx.event.type.Event",
-    
+
     /**
      * This event is dispatched when the editor gets a right click.
      */
     "contextmenu"      : "qx.event.type.Data",
-    
-    /** 
+
+    /**
      * Holds information about the state of undo/redo
      * Keys are "undo" and "redo".
      * Possible values are 0 and -1 to stay in sync with
@@ -234,8 +234,8 @@ qx.Class.define("htmlarea.HtmlArea",
       init  : true,
       apply : "_applyInsertParagraphOnLinebreak"
     },
-    
-    
+
+
     /**
      * If true we add a linebreak after control+enter
      */
@@ -246,7 +246,7 @@ qx.Class.define("htmlarea.HtmlArea",
       apply : "_applyInsertLinebreakOnCtrlEnter"
     },
 
-    
+
     /**
      * Function to use in postprocessing html. See getHtml() and __getHtml().
      */
@@ -268,7 +268,7 @@ qx.Class.define("htmlarea.HtmlArea",
       init  : true,
       apply : "_applyUseUndoRedo"
     },
-    
+
     /**
      * appearance
      */
@@ -293,14 +293,14 @@ qx.Class.define("htmlarea.HtmlArea",
     __editorComponent: null,
     __postPonedProperties: null,
     __blockerElement : null,
-    
-    
+
+
     /*
     ---------------------------------------------------------------------------
       MODIFIERS
     ---------------------------------------------------------------------------
     */
-    
+
     _applyContentType : function(value, old)
     {
       if (this.__editorComponent != null) {
@@ -310,7 +310,7 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
-    
+
     _applyMessengerMode : function(value, old)
     {
       if (this.__editorComponent != null) {
@@ -319,8 +319,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__postPonedProperties["MessengerMode"] = value;
       }
     },
-    
-    
+
+
     _applyInsertParagraphOnLinebreak : function(value, old)
     {
       if (this.__editorComponent != null) {
@@ -329,8 +329,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__postPonedProperties["InsertParagraphOnLinebreak"] = value;
       }
     },
-    
-    
+
+
     _applyInsertLinebreakOnCtrlEnter : function(value, old)
     {
       if (this.__editorComponent != null) {
@@ -339,8 +339,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__postPonedProperties["InsertLinebreakOnCtrlEnter"] = value;
       }
     },
-    
-    
+
+
     _applyPostprocess : function(value, old)
     {
       if (this.__editorComponent != null) {
@@ -349,8 +349,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__postPonedProperties["PostProcess"] = value;
       }
     },
-    
-    
+
+
     _applyUseUndoRedo : function(value, old)
     {
       if (this.__editorComponent != null) {
@@ -359,7 +359,7 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__postPonedProperties["UseUndoRedo"] = value;
       }
     },
-    
+
 
 
     /**
@@ -386,17 +386,17 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return el;
     },
-    
-    
+
+
     /*
     ---------------------------------------------------------------------------
       SETUP
     ---------------------------------------------------------------------------
-    */    
-    
+    */
+
     /**
      * Adds the "appear" listener for correct startup
-     * 
+     *
      * @return {void}
      */
     __addAppearListener : function()
@@ -404,10 +404,10 @@ qx.Class.define("htmlarea.HtmlArea",
       this.addListenerOnce("appear", this.__setupEditorComponent);
       this.addListener("appear", this.forceEditable);
     },
-    
-    
+
+
     /**
-     * Setup the low-level editor component and the listener delegate methods.  
+     * Setup the low-level editor component and the listener delegate methods.
      */
     __setupEditorComponent : function()
     {
@@ -419,11 +419,11 @@ qx.Class.define("htmlarea.HtmlArea",
       this.__applyPostPonedProperties();
       this.__setupDelegateListeners();
     },
-    
-    
+
+
     /**
      * Applies the postponed properties to the editor component
-     * 
+     *
      * @return {void}
      */
     __applyPostPonedProperties : function()
@@ -432,8 +432,8 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__editorComponent["set" + propertyName](this.__postPonedProperties[propertyName]);
       }
     },
-    
-    
+
+
     /**
      * Setup listeners for events of the low-level editing component and fires
      * them at the editing widget.
@@ -443,19 +443,19 @@ qx.Class.define("htmlarea.HtmlArea",
       this.__editorComponent.addListener("ready", this.__delegateEvent, this);
       this.__editorComponent.addListener("focused", this.__delegateEvent, this);
       this.__editorComponent.addListener("focusout", this.__delegateEvent, this);
-      
+
       this.__editorComponent.addListener("loadingError", this.__delegateDataEvent, this);
       this.__editorComponent.addListener("cursorContext", this.__delegateDataEvent, this);
       this.__editorComponent.addListener("contextmenu", this.__delegateDataEvent, this);
       this.__editorComponent.addListener("undoRedoState", this.__delegateDataEvent, this);
-      this.__editorComponent.addListener("messengerContent", this.__delegateDataEvent, this);      
+      this.__editorComponent.addListener("messengerContent", this.__delegateDataEvent, this);
     },
-    
-    
+
+
     /**
      * Clones the incoming event and fires it at itself to let the application
      * developers listen to the widget instance.
-     * 
+     *
      * @param e {qx.event.type.Event} event instance
      * @return {void}
      */
@@ -464,12 +464,12 @@ qx.Class.define("htmlarea.HtmlArea",
       var clone = e.clone();
       this.fireEvent(clone.getType());
     },
-    
-    
+
+
     /**
      * Clones the incoming data event and fires it at itself to let the application
      * developers listen to the widget instance.
-     * 
+     *
      * @param e {qx.event.type.Data} event instance
      * @return {void}
      */
@@ -478,9 +478,9 @@ qx.Class.define("htmlarea.HtmlArea",
       var clone = e.clone();
       this.fireDataEvent(clone.getType(), e.getData());
     },
-    
-    
-    
+
+
+
     /*
     ---------------------------------------------------------------------------
       PUBLIC API
@@ -502,30 +502,30 @@ qx.Class.define("htmlarea.HtmlArea",
       this.__blockerElement.setStyle("height", (height - insets.top - insets.bottom) + pixel);
     },
 
-    
+
     /**
      * Returns the iframe object which is used to render the content
-     * 
+     *
      * @return {Iframe?null} iframe DOM element or null if the editor is not initialized
      */
     getIframeObject : function() {
       return this.__editorComponent != null ? this.__editorComponent.getIframeObject() : null;
     },
-    
+
     /**
      * Getter for command manager.
-     * 
+     *
      * @return {htmlarea.manager.Manager?htmlarea.manager.UndoManager?null} manager instance
      * or null if the editor is not initialized
      */
     getCommandManager : function() {
       return this.__editorComponent != null ? this.__editorComponent.getCommandManager() : null;
     },
-        
+
 
     /**
      * Setting the value of the editor if it's initialized
-     * 
+     *
      * @param value {String} new content to set
      * @return {void}
      */
@@ -544,21 +544,21 @@ qx.Class.define("htmlarea.HtmlArea",
      * is not delivering the current content in a stable manner.
      * To get the current value of the editor use the {@link #getComputedValue}
      * method instead.
-     * 
+     *
      * @return {String?null} value of the editor or null if it's not initialized
      */
     getValue : function() {
       return this.__editorComponent != null ? this.__editorComponent.getValue() : null;
     },
 
-    
+
     /**
      * Getting the computed value of the editor.
      * This method returns the current value of the editor traversing
      * the elements below the body element. With this method you always
      * get the current value, but it is much more expensive. So use it
      * carefully.
-     * 
+     *
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String?null} computed value of the editor or null if the editor is not initialized
      */
@@ -569,7 +569,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Returns the complete content of the editor
-     * 
+     *
      * @return {String?null} complete content or null if the editor is not initialized
      */
     getCompleteHtml : function() {
@@ -579,79 +579,79 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Returns the document of the iframe
-     * 
+     *
      * @return {Object}
      */
     getContentDocument : function() {
       return this.__editorComponent != null ? this.__editorComponent.getContentDocument() : null;
     },
-    
+
     /**
      * Returns the body of the document
-     * 
+     *
      * @return {Object}
      */
     getContentBody : function() {
       return this.__editorComponent != null ? this.__editorComponent.getContentBody() : null;
     },
-    
-    
+
+
     /**
      * Returns the body of the document
-     * 
+     *
      * @return {Object}
      */
     getContentWindow : function() {
       return this.__editorComponent != null ? this.__editorComponent.getContentWindow() : null;
     },
-    
-    
-    /** 
+
+
+    /**
      * Returns all the words that are contained in a node.
-     * 
+     *
      * @param node {Object} the node element where the text should be retrieved from.
      * @return {String[]} all the words.
      */
     getWords : function(node) {
       return this.__editorComponent != null ? this.__editorComponent.getWords(node) : null;
     },
-    
-    
+
+
     /**
      * *** IN DEVELOPMENT! ***
      * Returns all words
-     * 
+     *
      * @return {Map} all words
      */
     getWordsWithElement : function() {
       return this.__editorComponent != null ? this.__editorComponent.getWordsWithElement() : null;
     },
-    
+
 
     /**
      * *** IN DEVELOPMENT! ***
      * Returns all text nodes
-     * 
+     *
      * @return {Array} Text nodes
      */
     getTextNodes : function() {
       return this.__editorComponent != null ? this.__editorComponent.getTextNodes() : null;
     },
 
-    
+
     /**
      * Whether the editor is ready to accept commands etc.
-     * 
+     *
      * @return {Boolean} ready or not
      */
     isReady : function() {
       return this.__editorComponent != null ? this.__editorComponent.isReady() : false;
     },
-        
-    
+
+
     /**
      * Forces the htmlArea to reset the document editable. This method can
-     * be useful (especially for Gecko) whenever the HtmlArea was hidden and 
+     * be useful (especially for Gecko) whenever the HtmlArea was hidden and
      * gets visible again.
      */
     forceEditable : function() {
@@ -659,12 +659,12 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__editorComponent.forceEditable();
       }
     },
-    
-    
+
+
     /**
      * Service method to check if the component is already loaded.
      * Overrides the base method.
-     * 
+     *
      * @return {Boolean}
      */
     isLoaded : function() {
@@ -674,7 +674,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Whether the document is in editable mode
-     * 
+     *
      * @param value {Boolean} whether the component should be editable
      * @return {void}
      */
@@ -683,21 +683,21 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__editorComponent.setEditable(value);
       }
     },
-    
-    
+
+
     /**
      * Whether the document is in editable mode
-     * 
+     *
      * @return {Boolean}
      */
     getEditable : function() {
       return this.__editorComponent != null ? this.__editorComponent.getEditable() : false;
     },
-    
-    
+
+
     /**
      * Whether the document is in editable mode
-     * 
+     *
      * @return {Boolean}
      */
     isEditable : function() {
@@ -707,7 +707,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Inserts html content on the current selection
-     * 
+     *
      * @param value {String} html content
      * @return {Boolean} Success of operation
      */
@@ -718,7 +718,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Removes all formatting styles on the current selection content
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     removeFormat : function() {
@@ -728,7 +728,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to bold font style
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setBold : function() {
@@ -738,7 +738,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to italic font style
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setItalic : function() {
@@ -748,7 +748,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to underline font style
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setUnderline : function() {
@@ -758,7 +758,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to strikethrough font style
-     * 
+     *
      * @return {Boolean} Success of operation
      *
      */
@@ -769,7 +769,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified font size
-     * 
+     *
      * @param value {Number} Font size
      * @return {Boolean} Success of operation
      */
@@ -780,7 +780,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified font family
-     * 
+     *
      * @param value {String} Font family
      * @return {Boolean} Success of operation
      */
@@ -791,7 +791,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified font color
-     * 
+     *
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
@@ -802,7 +802,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified background color
-     * 
+     *
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
@@ -813,7 +813,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Left-justifies the current selection
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setJustifyLeft : function() {
@@ -853,7 +853,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Indents the current selection
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertIndent : function() {
@@ -863,7 +863,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Outdents the current selection
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertOutdent : function() {
@@ -873,7 +873,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Inserts an ordered list
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertOrderedList : function() {
@@ -893,7 +893,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Inserts a horizontal ruler
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertHorizontalRuler : function() {
@@ -934,7 +934,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the background color of the editor
-     * 
+     *
      * @param value {String} color
      * @return {Boolean} if succeeded
      */
@@ -945,7 +945,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Alias for setBackgroundImage(null);
-     * 
+     *
      * @return {Boolean} if succeeded
      */
     removeBackgroundImage : function () {
@@ -970,7 +970,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Selects the whole content
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     selectAll : function() {
@@ -980,7 +980,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Undo last operation
-     * 
+     *
      * @return {void}
      */
     undo : function() {
@@ -990,7 +990,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Redo last undo
-     * 
+     *
      * @return {void}
      */
     redo : function() {
@@ -1006,7 +1006,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Resets the content of the editor
-     * 
+     *
      * @return {void}
      */
     resetHtml : function()
@@ -1019,7 +1019,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Get html content (call own recursive method)
-     * 
+     *
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String?null} current content of the editor as XHTML or null if not initialized
      */
@@ -1030,7 +1030,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Helper function to examine if HTMLArea is empty, except for
      * place holder(s) needed by some browsers.
-     * 
+     *
      * @return {Boolean} True, if area is empty - otherwise false.
      */
     containsOnlyPlaceholder : function() {
@@ -1043,18 +1043,18 @@ qx.Class.define("htmlarea.HtmlArea",
       PROCESS CURSOR CONTEXT
       -----------------------------------------------------------------------------
     */
-    
-    
+
+
     /**
      * Returns the information about the current context (focusNode). It's a
      * map with information about "bold", "italic", "underline", etc.
-     * 
+     *
      * @return {Map?null} formatting information about the focusNode or null if not initialized
      */
     getContextInformation : function() {
       return this.__editorComponent != null ? this.__editorComponent.getContextInformation() : null;
     },
-    
+
 
     /*
      -----------------------------------------------------------------------------
@@ -1074,28 +1074,28 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Returns the currently selected text.
-     * 
+     *
      * @return {String?null} Selected plain text or null if not initialized.
      */
     getSelectedText : function() {
       return this.__editorComponent != null ? this.__editorComponent.getSelectedText() : null;
     },
-    
+
 
     /**
      * Returns the content of the actual range as text
-     * 
+     *
      * @TODO: need to be implemented correctly
      * @return {String?null} selected text or null if not initialized
      */
     getSelectedHtml : function() {
       return this.__editorComponent != null ? this.__editorComponent.getSelectedHtml() : null;
     },
-    
-    
+
+
     /**
      * Clears the current selection
-     * 
+     *
      * @return {void}
      */
     clearSelection : function()
@@ -1104,7 +1104,7 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__editorComponent.clearSelection();
       }
     },
-    
+
 
     /*
      -----------------------------------------------------------------------------
@@ -1114,7 +1114,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * returns the range of the current selection
-     * 
+     *
      * @return {Range?null} Range object or null if not initialized
      */
     getRange : function() {
@@ -1127,29 +1127,29 @@ qx.Class.define("htmlarea.HtmlArea",
      * Currently only interesting for IE browsers, since they loose the range /
      * selection whenever an element is clicked which need to have a focus (e.g.
      * a textfield widget).
-     * 
+     *
      * *NOTE:* the next executed command will reset this range.
-     * 
+     *
      * @return {void}
      */
     saveRange : function() {
       this.__editorComponent.saveRange();
     },
-    
-    
+
+
     /**
      * Returns the current stored range.
-     * 
+     *
      * @return {Range|null} range object or null
      */
     getSavedRange : function() {
       return this.__editorComponent.getSavedRange();
     },
-    
-    
+
+
     /**
      * Resets the current saved range.
-     * 
+     *
      * @return {void}
      */
     resetSavedRange : function() {
@@ -1162,10 +1162,10 @@ qx.Class.define("htmlarea.HtmlArea",
       NODES
       -----------------------------------------------------------------------------
     */
-   
+
     /**
      *  Returns the node where the selection ends
-     *  
+     *
      *  @return{Node?null} focus node or null if not initialized
      */
     getFocusNode : function() {

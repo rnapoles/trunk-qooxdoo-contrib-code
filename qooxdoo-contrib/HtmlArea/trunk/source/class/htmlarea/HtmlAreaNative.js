@@ -13,7 +13,7 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Alexander Back (aback)
+     * Alexander Steitz (aback)
      * Michael Haitz (mhaitz)
      * Jonathan Weiß (jonathan_rass)
 
@@ -31,21 +31,21 @@
 /**
  * Low-level Rich text editor which can be used by connecting it to an
  * existing DOM element (DIV node).
- * This component does not contain any {@link qx.ui} code resulting in a 
+ * This component does not contain any {@link qx.ui} code resulting in a
  * smaller footprint.
- * 
- * 
- * Optimized for the use at a traditional webpage. 
+ *
+ *
+ * Optimized for the use at a traditional webpage.
  */
 qx.Class.define("htmlarea.HtmlAreaNative",
 {
   extend : qx.core.Object,
-  
+
   /*
    * IMPORTANT NOTE
    * If you add functionality which manipulates the content of the HtmlArea
    * AND you want make these changes undo-/redo-able you have to make sure
-   * to implement methods in the "Manager" and "UndoManager" classes. 
+   * to implement methods in the "Manager" and "UndoManager" classes.
    */
 
   /*
@@ -62,29 +62,29 @@ qx.Class.define("htmlarea.HtmlAreaNative",
    * @param styleInformation {String | Map | null} Optional style information for the editor's document
    *                                               Can be a string or a map (example: { "p" : "padding:2px" }
    * @param source {String} source of the iframe
-   * 
+   *
    * @lint ignoreDeprecated(_keyCodeToIdentifierMap)
    */
   construct : function(element, value, styleInformation, source)
   {
     this.base(arguments);
-    
+
     var uri = source || qx.util.ResourceManager.getInstance().toUri("htmlarea/static/blank.html");
-    
+
     this.__connectToDomElement(element);
     this.__initDocumentSkeletonParts();
     this._createAndAddIframe(uri);
-    
-    
+
+
     this.__isLoaded = false;
     this.__isEditable = false;
     this.__isReady = false;
-    
+
     this.__firstLineSelected = false;
-    
+
     // catch load event
     this._addIframeLoadListener();
-    
+
     // set the optional style information - if available
     this.__styleInformation = htmlarea.HtmlAreaNative.__formatStyleInformation(styleInformation);
 
@@ -137,7 +137,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
        */
       var contentWindow = qx.dom.Node.getWindow(element);
       var keyEventHandler = qx.event.Registration.getManager(contentWindow).getHandler(qx.event.handler.Keyboard);
-      
+
       /*
        * fix mapping for the keys "#", "-", "P", "S", "X"
        * for other keys there maybe also a problem with the wrong identifier,
@@ -185,7 +185,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     /**
      * This event holds a data map which informs about the formatting at the
      * current cursor position. It holds the following keys:
-     * 
+     *
      * * bold
      * * italic
      * * underline
@@ -198,7 +198,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * * justifyCenter
      * * justifyRight
      * * justifyFull
-     * 
+     *
      * This map can be used to control/update a toolbar states.
      */
     "cursorContext"    : "qx.event.type.Data",
@@ -218,12 +218,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * This event is dispatched when the document receives an "focusout" event
      */
     "focusOut"         : "qx.event.type.Event",
-    
+
     /**
      * This event is dispatched when the editor gets a right click.
-     * 
+     *
      * Fires a data event with the following data:
-     * 
+     *
      *   * x - absolute x coordinate
      *   * y - absolute y coordinate
      *   * relX - relative x coordinate
@@ -231,8 +231,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *   * target - DOM element target
      */
     "contextmenu"      : "qx.event.type.Data",
-    
-    /** 
+
+    /**
      * Holds information about the state of undo/redo
      * Keys are "undo" and "redo".
      * Possible values are 0 and -1 to stay in sync with
@@ -254,13 +254,13 @@ qx.Class.define("htmlarea.HtmlAreaNative",
   {
     /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
     simpleLinebreak : "<br>",
-    
+
     EMPTY_DIV : "<div></div>",
 
     /* regex to extract text content from innerHTML */
     GetWordsRegExp     : /([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g,
     CleanupWordsRegExp : /[\u0000-\u0040]/gi,
-    
+
     /**
      * Formats the style information. If the styleInformation was passed
      * in as a map it gets converted to a string.
@@ -295,7 +295,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * Example:
      * htmlarea.HtmlAreaNative.__parseStyle("text-align: left; text-weight: bold;");
-     * 
+     *
      * @type static
      * @param str {String} String that contain valid style informations separated by ";"
      * @return {Map} Map of style names and it's values
@@ -305,7 +305,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var map = {};
       var a = str.split(";");
       var i;
-    
+
       for (i = 0; i < a.length; i++)
       {
         var style = a[i], sep = style.indexOf(":");
@@ -313,7 +313,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         if (sep === -1) {
           continue;
         }
-    
+
         var name =  qx.lang.String.trim(style.substring(0, sep));
         var value = qx.lang.String.trim(style.substring(sep+1, style.length));
 
@@ -322,7 +322,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         }
 
       }
-    
+
       return map;
     },
 
@@ -343,12 +343,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       switch(root.nodeType)
       {
-        // This is main area for returning html from iframe content. Content 
+        // This is main area for returning html from iframe content. Content
         // from editor can be sometimes ugly, so it's needed to do some
         // postprocess to make it beautiful.
         //
-        // The initial version of this function used direct HTML rendering 
-        // (each tag was rendered). This sometimes caused to render empty 
+        // The initial version of this function used direct HTML rendering
+        // (each tag was rendered). This sometimes caused to render empty
         // elements. I'm introducing here new method - store tag name and
         // attributes and use some logic to render them (or not).
 
@@ -401,7 +401,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             for (i = 0; i < len; i++)
             {
               a = attrs[i];
-              
+
               // TODO: Document this, I don't know what "specified" means
               if (!a.specified) {
                 continue;
@@ -439,7 +439,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 }
                 else
                 {
-                  value = a.nodeValue; 
+                  value = a.nodeValue;
                 }
               }
               else
@@ -467,7 +467,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               }
 
               // Ignore qooxdoo attributes (for example $$hash)
-              if (name.charAt(0) === "$") { 
+              if (name.charAt(0) === "$") {
                 continue;
               }
 
@@ -504,7 +504,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 attributes: attributes,
                 styles: styles
               };
-              
+
               // call user defined postprocessing function
               postprocess(info);
 
@@ -513,7 +513,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               // and get tag back
               tag = info.tag;
             }
-         
+
             // --------------------------------------------------------------
             // Generate Html
             // --------------------------------------------------------------
@@ -547,14 +547,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               html.push(closed ? " />" : ">");
             }
           }
-          
+
           // Child nodes, recursive call itself
 
           for (i = root.firstChild; i; i = i.nextSibling)
           {
             html.push(htmlarea.HtmlAreaNative.__getHtml(i, true, skipHtmlEncoding, postprocess));
           }
-          
+
           // Close
 
           if (outputRoot && !closed && tag)
@@ -565,7 +565,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
         // Node.TEXT_NODE
         case 3:
-          
+
           html.push(skipHtmlEncoding ? root.data : htmlarea.HtmlAreaNative.__htmlEncode(root.data));
           break;
 
@@ -675,7 +675,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       check : "String",
       init  : "xhtml"
     },
-    
+
 
     /**
      * If turned on the editor acts like a messenger widget e.g. if one hits the Enter key the current content gets
@@ -697,8 +697,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       check : "Boolean",
       init  : true
     },
-    
-    
+
+
     /**
      * If true we add a linebreak after control+enter
      */
@@ -708,7 +708,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       init  : true
     },
 
-    
+
     /**
      * Function to use in postprocessing html. See getHtml() and __getHtml().
      */
@@ -758,80 +758,80 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     __styleInformation : null,
     __documentSkeletonParts : null,
     __savedRange : null,
-    
-    
+
+
     /**
      * Create a "DIV" element which can be added to the document.
      * This element is the container for the editable iframe element.
-     * 
+     *
      * @param element {Element} DOM element to connect to
      * @return {void}
      */
     __connectToDomElement : function(element)
     {
-      if (element && qx.dom.Node.isElement(element) && 
+      if (element && qx.dom.Node.isElement(element) &&
           element.nodeName.toLowerCase() == "div") {
         this.__widget = element;
       }
     },
-    
-    
+
+
     /**
-     * Creates an iframe element with the given URI and adds it to 
+     * Creates an iframe element with the given URI and adds it to
      * the container element.
-     * 
+     *
      * @param uri {String} URI of the iframe
      */
     _createAndAddIframe : function(uri)
     {
       this.__iframe = qx.bom.Iframe.create();
       qx.bom.Iframe.setSource(this.__iframe, uri);
-      
+
       // Omit native dotted outline border
       if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         qx.bom.element.Attribute.set(this.__iframe, "hideFocus", "true");
       } else {
         qx.bom.element.Style.set(this.__iframe, "outline", "none");
       }
-      qx.bom.element.Style.setStyles(this.__iframe, { width: "100%", 
+      qx.bom.element.Style.setStyles(this.__iframe, { width: "100%",
                                                       height: "100%" });
-      
+
       qx.dom.Element.insertBegin(this.__iframe, this.__widget);
     },
-    
-    
+
+
     /**
      * Returns the document of the iframe.
-     * 
+     *
      * @return {Document}
      */
     _getIframeDocument : function() {
       return qx.bom.Iframe.getDocument(this.__iframe);
     },
-    
-    
+
+
     /**
      * Returns the window of the iframe.
-     * 
+     *
      * @return {Window}
      */
     _getIframeWindow : function() {
       return qx.bom.Iframe.getWindow(this.__iframe);
     },
-    
-    
+
+
     /**
      * Adds the "load" listener to the iframe.
-     * 
+     *
      * @return {void}
      */
     _addIframeLoadListener : function() {
       qx.event.Registration.addListener(this.__iframe, "load", this._loaded, this);
     },
-    
+
     /**
      * Initial content which is written dynamically into the iframe's document
-     * 
+     *
      * @return {void}
      */
     __initDocumentSkeletonParts : function()
@@ -848,7 +848,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             "mshtml" : 'html { margin:0px; padding:0px; } ' +
                        'body { font-size: 100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } ',
-          
+
             "default" : 'html { width:100%; height:100%; margin:0px; padding:0px; overflow-y:auto; overflow-x:auto; } ' +
                         'body { font-size:100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; } ' +
                         'p { margin:0px; padding:0px; } '
@@ -856,7 +856,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           body : '<body>',
           footer : '</body></html>'
         }
-      };      
+      };
     },
 
 
@@ -866,35 +866,35 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Returns the iframe object which is used to render the content
-     * 
+     *
      * @return {Iframe} iframe DOM element
      */
     getIframeObject : function() {
       return this.__iframe;
     },
-    
+
     /**
      * Getter for command manager.
-     * 
+     *
      * @return {htmlarea.manager.Manager?htmlarea.manager.UndoManager} manager instance
      */
     getCommandManager : function() {
       return this.__commandManager;
     },
-        
+
 
     /**
      * Setting the value of the editor
-     * 
+     *
      * @param value {String} new content to set
      * @return {void}
      */
     setValue : function(value)
     {
        if (typeof value === "string")
-       { 
+       {
          this.__value = value;
-         
+
          var doc = this._getIframeDocument();
          if (doc && doc.body) {
            doc.body.innerHTML = value;
@@ -910,21 +910,21 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * is not delivering the current content in a stable manner.
      * To get the current value of the editor use the {@link #getComputedValue}
      * method instead.
-     * 
+     *
      * @return {String} value of the editor
      */
     getValue : function() {
       return this.__value;
     },
 
-    
+
     /**
      * Getting the computed value of the editor.
      * This method returns the current value of the editor traversing
      * the elements below the body element. With this method you always
      * get the current value, but it is much more expensive. So use it
      * carefully.
-     * 
+     *
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} computed value of the editor
      */
@@ -935,18 +935,18 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Returns the complete content of the editor
-     * 
+     *
      * @return {String}
      */
     getCompleteHtml : function()
     {
       var skeletonParts = this.__documentSkeletonParts[this.getContentType()];
-      
+
       var completeHtml = skeletonParts.html + '<head>' + skeletonParts.meta + '</head>';
       // use "'" to prevent problems with certain font names encapsulated with '"'
-      completeHtml += "<body style='" + this.__getBodyStyleToExport() + "'>"; 
+      completeHtml += "<body style='" + this.__getBodyStyleToExport() + "'>";
       completeHtml += this.getHtml() + '</body></html>';
-      
+
       return completeHtml;
     },
 
@@ -955,17 +955,17 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * Returns the CSS styles which should be exported as a CSS string.
      * This prevents that styles which are only for internal use appear in the
      * result (e.g. overflow settings).
-     * 
+     *
      * @return {String} CSS string of body styles to export
      */
-    __getBodyStyleToExport : function() 
+    __getBodyStyleToExport : function()
     {
       var stylesToExport = [ "backgroundColor", "backgroundImage",
                              "backgroundRepeat", "backgroundPosition",
                              "fontFamily", "fontSize",
                              "marginTop", "marginBottom", "marginLeft", "marginRight",
                              "paddingTop", "paddingBottom", "paddingLeft", "paddingRight" ];
-                                   
+
       var Style = qx.bom.element.Style;
       var body = this.getContentBody();
       var bodyStyle = {};
@@ -974,19 +974,19 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       for (var i=0, j=stylesToExport.length; i<j; i++)
       {
         styleAttribute = stylesToExport[i];
-        styleValue = Style.get(body, styleAttribute, modeToUse);        
+        styleValue = Style.get(body, styleAttribute, modeToUse);
         if (styleValue !== undefined && styleValue != "") {
           bodyStyle[styleAttribute] = styleValue;
-        } 
+        }
       }
-      
+
       return qx.bom.element.Style.compile(bodyStyle);
-    }, 
+    },
 
 
     /**
      * Returns the document of the iframe
-     * 
+     *
      * @return {Object}
      */
     getContentDocument : function ()
@@ -995,10 +995,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         return this._getIframeDocument();
       }
     },
-    
+
     /**
      * Returns the body of the document
-     * 
+     *
      * @return {Object}
      */
     getContentBody : function ()
@@ -1007,11 +1007,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         return this._getIframeDocument().body;
       }
     },
-    
-    
+
+
     /**
      * Returns the window of the iframe
-     * 
+     *
      * @return {Node} window node
      */
     getContentWindow : function()
@@ -1020,11 +1020,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
          return this._getIframeWindow();
       }
     },
-    
-    
-    /** 
+
+
+    /**
      * Returns all the words that are contained in a node.
-     * 
+     *
      * @type member
      * @param node {Object} the node element where the text should be retrieved from.
      * @return {String[]} all the words.
@@ -1047,12 +1047,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       return !words ? [] : words;
     },
-    
-    
+
+
     /**
      * *** IN DEVELOPMENT! ***
      * Returns all words
-     * 
+     *
      * @return {Map} all words
      */
     getWordsWithElement : function()
@@ -1084,11 +1084,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       return result;
     },
-    
-    
+
+
     /**
-     * Cleaning up a given word (removing HTML code) 
-     * 
+     * Cleaning up a given word (removing HTML code)
+     *
      * @param word {String} Word to clean
      * @return {String}
      */
@@ -1101,12 +1101,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       return word.replace(htmlarea.HtmlAreaNative.CleanupWordsRegExp, "");
     },
-    
+
 
     /**
      * *** IN DEVELOPMENT! ***
      * Returns all text nodes
-     * 
+     *
      * @return {Array} Text nodes
      */
     getTextNodes : function() {
@@ -1117,7 +1117,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     /**
      * *** IN DEVELOPMENT! ***
      * Helper method for returning all text nodes
-     * 
+     *
      * @param element {Element} element to retrieve all text nodes from
      * @return {Array} Text nodes
      */
@@ -1125,7 +1125,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       var result = [];
       var tmp;
-      
+
       // Element node
       if(element.hasChildNodes)
       {
@@ -1162,7 +1162,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     /**
      * should be removed if someone find a better way to ensure that the document
      * is ready in IE6
-     * 
+     *
      * @return {void}
      */
     __waitForDocumentReady : function()
@@ -1184,7 +1184,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           if (qx.core.Variant.isSet("qx.debug", "on")) {
             this.error('document not available, try again...');
           }
-  
+
           qx.event.Timer.once(function()
           {
             this.__waitForDocumentReady();
@@ -1202,7 +1202,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Is executed when event "load" is fired
-     * 
+     *
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1216,10 +1216,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       {
         /*
          * It seems this timeout is not needed anymore for gecko.
-         * -> Keep an sharp on this one.  
+         * -> Keep an sharp on this one.
          */
         this._onDocumentIsReady();
-        
+
         // we need some thinking time in gecko --> https://bugzilla.mozilla.org/show_bug.cgi?id=191994
         /*var self = this;
         window.setTimeout( function()
@@ -1239,24 +1239,24 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       }
     },
 
-    
+
     /**
      * Whether the editor is ready to accept commands etc.
-     * 
+     *
      * @return {Boolean} ready or not
      */
     isReady : function()
     {
       return this.__isReady;
     },
-    
-    
+
+
     /**
      * Initializes the command manager, sets the document editable, renders
      * the content and adds a needed event listeners when the document is ready
      * for it.
      * After the successful startup the "ready" event is thrown.
-     * 
+     *
      * @type member
      * @return {void}
      */
@@ -1328,11 +1328,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       // dispatch the "ready" event at the end of the initialization
       this.fireEvent("ready");
     },
-    
-    
+
+
     /**
      * Forces the htmlArea to reset the document editable. This method can
-     * be useful (especially for Gecko) whenever the HtmlArea was hidden and 
+     * be useful (especially for Gecko) whenever the HtmlArea was hidden and
      * gets visible again.
      */
     forceEditable : qx.core.Variant.select("qx.client",
@@ -1342,7 +1342,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         var doc = this._getIframeDocument();
         if (doc)
         {
-          /* 
+          /*
            * Don't ask my why, but this is the only way I found to get
            * gecko back to a state of an editable document after the htmlArea
            * was hidden and visible again.
@@ -1351,18 +1351,18 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           if (qx.bom.client.Engine.VERSION >= "1.9")
           {
             doc.designMode = "Off";
-          
+
             doc.body.contentEditable = false;
             doc.body.contentEditable = true;
           }
           else
           {
-            doc.body.contentEditable = true;            
+            doc.body.contentEditable = true;
             this.__setDesignMode(true);
           }
         }
       },
-        
+
       "default" : function() {}
     }),
 
@@ -1370,7 +1370,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     /**
      * Returns style attribute as string of a given element
      *
-     * @param elem {Element} Element to check for styles 
+     * @param elem {Element} Element to check for styles
      * @return {String} Complete style attribute as string
      */
     __getElementStyleAsString : function(elem)
@@ -1416,21 +1416,21 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     __generateDocumentSkeleton : function(value)
     {
-      // To hide the horizontal scrollbars in gecko browsers set the 
+      // To hide the horizontal scrollbars in gecko browsers set the
       // "overflow-x" explicit to "hidden"
-      // In mshtml browsers this does NOT work. The property "overflow-x" 
+      // In mshtml browsers this does NOT work. The property "overflow-x"
       // overwrites the value of "overflow-y".
       var overflow = qx.bom.client.Engine.GECKO ? " html, body {overflow-x: visible; } " : "";
-      
+
       var skeletonParts = this.__documentSkeletonParts[this.getContentType()];
-      var head = '<head>' + skeletonParts.meta + 
+      var head = '<head>' + skeletonParts.meta +
                  '<style type="text/css">' + overflow + skeletonParts.style + this.__styleInformation + '</style>' +
                  '</head>';
       var content = skeletonParts.body + value;
-      
+
       // When setting the content with a doctype IE7 has one major problem.
       // With EVERY char inserted the editor component hides the text/flickers.
-      // To display it again it is necessary to unfocus and focus again the 
+      // To display it again it is necessary to unfocus and focus again the
       // editor component. To avoid this unwanted behaviour it is necessary to
       // set NO DOCTYPE.
       return skeletonParts.html + head + content + skeletonParts.footer;
@@ -1439,7 +1439,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Opens a new document and sets the content (if available)
-     * 
+     *
      * @return {void}
      */
     __renderContent : function()
@@ -1466,7 +1466,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Adds all needed eventlistener
-     * 
+     *
      * @return {void}
      */
     __addListeners : function()
@@ -1476,7 +1476,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       qx.event.Registration.addListener(doc.body, "keypress", this._handleKeyPress, this);
       qx.event.Registration.addListener(doc.body, "keyup",    this._handleKeyUp,    this);
       qx.event.Registration.addListener(doc.body, "keydown",  this._handleKeyDown,  this);
-      
+
       /*
        * Register event handler for focus/blur events
        *
@@ -1487,10 +1487,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       qx.event.Registration.addListener(focusBlurTarget, "focus", this.__handleFocusEvent, this);
       qx.event.Registration.addListener(focusBlurTarget, "blur",  this.__handleBlurEvent, this);
       qx.event.Registration.addListener(doc, "focusout",  this.__handleFocusOutEvent, this);
-      
+
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
-      
+
       /* Register contextmenu event */
       qx.event.Registration.addListener(doc.documentElement, "contextmenu", this.__handleContextMenuEvent, this);
     },
@@ -1501,7 +1501,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * a command manager instance to collect all commands
      * which are executed BEFORE the command manager instance
      * is ready
-     * 
+     *
      * @return {Object} stack command manager object
      */
     __createStackCommandManager : function()
@@ -1524,7 +1524,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the designMode of the document
-     * 
+     *
      * @param onOrOff {Boolean} Set or unset the design mode on the current document
      * @return {void}
      */
@@ -1561,7 +1561,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Whether the document is in editable mode
-     * 
+     *
      * @param value {Boolean} Current value
      * @return {void}
      * @throws {Error} Failed to enable rich edit functionality
@@ -1598,33 +1598,33 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             }
           }
         }
-        
+
         this.__isEditable = value;
       }
     },
-    
-    
+
+
     /**
      * Whether the document is in editable mode
-     * 
+     *
      * @return {Boolean}
      */
     getEditable : function() {
       return this.__isEditable;
     },
-    
-    
+
+
     /**
      * Whether the document is in editable mode
-     * 
+     *
      * @return {Boolean}
      */
     isEditable : function() {
       return this.__isEditable;
     },
 
-    
-    
+
+
     /*
     ---------------------------------------------------------------------------
       EVENT HANDLING
@@ -1643,7 +1643,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * All keyUp events are delegated to this method
-     * 
+     *
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1652,12 +1652,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
-      
+
       if (qx.core.Variant.isSet("qx.debug", "on") &&
           qx.core.Setting.get("htmlarea.debug") == "on") {
         this.debug(e.getType() + " | " + keyIdentifier);
       }
-      
+
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -1683,19 +1683,19 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 return;
               }
             break;
-            
+
             /*
              * the keyUp event of the control key ends the "Ctrl+Enter"
              * session. So it is supported that the user is pressing this
              * combination several times without releasing the "Ctrl" key
              */
             case "control":
-              this.__controlPressed = false;            
+              this.__controlPressed = false;
             break;
           }
         }
       }
-      
+
       else if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
         /* These keys can change the selection */
@@ -1710,7 +1710,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           case "delete":
           case "end":
             var focusNode = this.getFocusNode();
-            
+
             /* Set flag indicating if first line is selected */
             this.__firstLineSelected = (focusNode == this.getContentBody().firstChild);
           break;
@@ -1739,7 +1739,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var sel = this.getSelection();
       var helperString = "";
       /* Insert bogus node if we are on an empty line: */
-      
+
       if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
       {
         helperString = "<br class='webkit-block-placeholder' />";
@@ -1755,26 +1755,26 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @return {void}
      */
     _handleKeyDown : qx.core.Variant.select("qx.client",
-    { 
+    {
       "mshtml|webkit" : function(e)
       {
         var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
-        
+
         if (qx.core.Variant.isSet("qx.debug", "on") &&
             qx.core.Setting.get("htmlarea.debug") == "on") {
           this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase());
         }
-        
+
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
-        if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
+        if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" ||
                                       keyIdentifier == "b" || keyIdentifier == "u" ||
                                       keyIdentifier == "i" || keyIdentifier == "k"))
         {
           e.preventDefault();
           e.stopPropagation();
         }
-        
-        /* 
+
+        /*
          * Only set the flag to true
          * Setting it to false is handled in the "keyUp" handler
          * otherwise holding the "Ctrl" key and hitting e.g. "z"
@@ -1785,14 +1785,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         }
 
       },
-      
+
       "default" : function(e) {}
     }),
 
 
     /**
      * All keyPress events are delegated to this method
-     * 
+     *
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1838,7 +1838,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             {
               return;
             }
-            
+
             e.preventDefault();
             e.stopPropagation();
 
@@ -1851,7 +1851,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 return;
               }
 
-              
+
               /*
                * Insert additionally an empty div element - this ensures that
                * the caret is shown and the cursor moves down a line correctly
@@ -1902,7 +1902,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               {
                 e.preventDefault();
                 e.stopPropagation();
-              }              
+              }
             }
           }
           /*
@@ -1910,19 +1910,19 @@ qx.Class.define("htmlarea.HtmlAreaNative",
            */
           else if(qx.core.Variant.isSet("qx.client", "gecko"))
           {
-            if (this.getInsertParagraphOnLinebreak() && 
+            if (this.getInsertParagraphOnLinebreak() &&
                 !isShiftPressed && !isCtrlPressed)
             {
               var sel = this.getSelection();
               if (sel)
               {
                 var selNode = sel.focusNode;
-                
+
                 // check if the caret is within a word - Gecko can handle it
                 if (this.__isSelectionWithinWordBoundary()) {
                   return;
                 }
-                
+
                 // caret is at an empty line
                 if (this.__isFocusNodeAnElement()) {
                   return;
@@ -1938,7 +1938,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                   selNode = selNode.parentNode;
                 }
               }
-              
+
               this.__commandManager.insertParagraphOnLinebreak();
               e.preventDefault();
               e.stopPropagation();
@@ -2018,7 +2018,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               {
                 /* Fetch all text nodes from body element */
                 var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
-								var currentItem;
+                var currentItem;
 
                 /* Iterate over result */
                 while(currentItem = elements.iterateNext())
@@ -2036,7 +2036,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                         sel.collapseToStart();
                       }
                     }catch(e){ }
-                    
+
                     /* We have found the correct text node, leave loop here */
                     break;
                   }
@@ -2051,7 +2051,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
           this.__startExamineCursorContext();
         break;
-          
+
         /*
          * For all keys which are able to reposition the cursor
          * start to examine the current cursor context
@@ -2141,7 +2141,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           this.__currentEvent.preventDefault();
           this.__currentEvent.stopPropagation();
         }
-        
+
         // Whenever a hotkey is pressed update the current cursorContext
         // Since this examination is done within a timeout we can be sure
         // the execution is performed before we're looking at the cursor context.
@@ -2161,8 +2161,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       this.__storedSelectedHtml = null;
       this.fireEvent("focused");
     },
-    
-    
+
+
     /**
      * Eventlistener for blur events
      *
@@ -2172,11 +2172,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     _handleBlurEvent : function(e) {
       this.__value = this.getComputedValue();
     },
-    
-    
+
+
     /**
      * Eventlistener for focusout events - dispatched before "blur"
-     * 
+     *
      * @param e {Object} Event object
      * @return {void}
      */
@@ -2203,7 +2203,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           qx.core.Setting.get("htmlarea.debug") == "on") {
         this.debug("handleMouse " + e.getType());
       }
-      
+
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
     },
@@ -2211,11 +2211,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Event Listener for the "contextmenu" event. Stops the browser from
-     * displaying the native context menu and fires an own event for the 
+     * displaying the native context menu and fires an own event for the
      * application developers to position their own (qooxdoo) contextmenu.
-     * 
+     *
      * Fires a data event with the following data:
-     * 
+     *
      *   * x - absolute x coordinate
      *   * y - absolute y coordinate
      *   * relX - relative x coordinate
@@ -2229,27 +2229,27 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       var relX = e.getViewportLeft();
       var relY = e.getViewportTop();
-      
+
       var absX = qx.bom.element.Location.getLeft(this.__widget) + relX;
       var absY = qx.bom.element.Location.getTop(this.__widget) + relY;
-      
+
       var data = {
         x: absX,
         y: absY,
         relX: relX,
-        relY: relY, 
+        relY: relY,
         target: e.getTarget()
       };
-      
+
       e.preventDefault();
       e.stopPropagation();
-      
+
       qx.event.Timer.once(function() {
         this.fireDataEvent("contextmenu", data);
       }, this, 0);
     },
-    
-    
+
+
     /*
     ---------------------------------------------------------------------------
       EXEC-COMMANDS
@@ -2259,7 +2259,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     /**
      * Service method to check if the component is already loaded.
      * Overrides the base method.
-     * 
+     *
      * @return {Boolean}
      */
     isLoaded : function () {
@@ -2269,7 +2269,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Inserts html content on the current selection
-     * 
+     *
      * @param value {String} html content
      * @return {Boolean} Success of operation
      */
@@ -2281,7 +2281,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Removes all formatting styles on the current selection content
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     removeFormat : function()
@@ -2292,7 +2292,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to bold font style
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setBold : function()
@@ -2303,7 +2303,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to italic font style
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setItalic : function()
@@ -2314,7 +2314,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to underline font style
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setUnderline : function()
@@ -2325,7 +2325,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to strikethrough font style
-     * 
+     *
      * @return {Boolean} Success of operation
      *
      */
@@ -2337,7 +2337,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to the specified font size
-     * 
+     *
      * @param value {Number} Font size
      * @return {Boolean} Success of operation
      */
@@ -2349,7 +2349,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to the specified font family
-     * 
+     *
      * @param value {String} Font family
      * @return {Boolean} Success of operation
      */
@@ -2360,7 +2360,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to the specified font color
-     * 
+     *
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
@@ -2371,7 +2371,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the current selection content to the specified background color
-     * 
+     *
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
@@ -2383,7 +2383,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Left-justifies the current selection
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     setJustifyLeft : function()
@@ -2427,7 +2427,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Indents the current selection
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertIndent : function()
@@ -2438,7 +2438,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Outdents the current selection
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertOutdent : function()
@@ -2449,7 +2449,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Inserts an ordered list
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertOrderedList : function()
@@ -2471,7 +2471,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Inserts a horizontal ruler
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     insertHorizontalRuler : function()
@@ -2515,7 +2515,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Sets the background color of the editor
-     * 
+     *
      * @param value {String} color
      * @return {Boolean} if succeeded
      */
@@ -2527,7 +2527,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Alias for setBackgroundImage(null);
-     * 
+     *
      * @return {Boolean} if succeeded
      */
     removeBackgroundImage : function () {
@@ -2553,7 +2553,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Selects the whole content
-     * 
+     *
      * @return {Boolean} Success of operation
      */
     selectAll : function()
@@ -2564,7 +2564,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Undo last operation
-     * 
+     *
      * @return {void}
      */
     undo : function()
@@ -2583,7 +2583,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Redo last undo
-     * 
+     *
      * @return {void}
      */
     redo : function()
@@ -2608,7 +2608,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Resets the content of the editor
-     * 
+     *
      * @return {void}
      */
     resetHtml : function()
@@ -2646,7 +2646,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Get html content (call own recursive method)
-     * 
+     *
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} current content of the editor as XHTML
      */
@@ -2664,7 +2664,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     /**
      * Helper function to examine if HTMLArea is empty, except for
      * place holder(s) needed by some browsers.
-     * 
+     *
      * @return {Boolean} True, if area is empty - otherwise false.
      */
     containsOnlyPlaceholder : qx.core.Variant.select("qx.client",
@@ -2688,12 +2688,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       PROCESS CURSOR CONTEXT
       -----------------------------------------------------------------------------
     */
-    
-    
+
+
     /**
      * Returns the information about the current context (focusNode). It's a
      * map with information about "bold", "italic", "underline", etc.
-     * 
+     *
      * @return {Map} formatting information about the focusNode
      */
     getContextInformation : function()
@@ -2747,11 +2747,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         ----------
       */
       var focusNode = this.getFocusNode();
-      
+
       if (qx.dom.Node.isText(focusNode)) {
         focusNode = focusNode.parentNode;
       }
-      
+
       var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : doc.defaultView.getComputedStyle(focusNode, null);
 
       /*
@@ -2860,16 +2860,16 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         justifyRight        : justifyRight ? 1 : 0,
         justifyFull         : justifyFull ? 1 : 0
       };
-      
+
       this._processingExamineCursorContext = false;
-      
+
       return eventMap;
     },
 
 
     /**
      * returns the attribute value of a given element
-     * 
+     *
      * @param element {Object}
      * @param attribute {String}
      * @return {String}
@@ -2921,7 +2921,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Returns the currently selected text.
-     * 
+     *
      * @return {String} Selected plain text.
      */
     getSelectedText : qx.core.Variant.select("qx.client",
@@ -2940,7 +2940,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * Returns the content of the actual range as text
-     * 
+     *
      * @TODO: need to be implemented correctly
      * @return {String} selected text
      */
@@ -2959,11 +2959,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         return this.__getRangeContents(range);
       }
     },
-    
-    
+
+
     /**
      * Browser-specific implementation to get the current range contents
-     * 
+     *
      * @param range {Range object} Native range object
      * @return {String} range contents
      * @signature function(range)
@@ -2972,80 +2972,80 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       "mshtml" : function(range) {
         return range.item ? range.item(0).outerHTML : range.htmlText;
       },
-      
+
       "default" : function(range)
       {
         var tmpBody = document.createElement("body");
         tmpBody.appendChild(range.cloneContents());
-        
+
         return tmpBody.innerHTML;
       }
     }),
-        
-    
-    
+
+
+
     /**
      * Clears the current selection
-     * 
+     *
      * @return {void}
      */
     clearSelection : qx.core.Variant.select("qx.client", {
       "mshtml" : function()
       {
-        this.getSelection().empty(); 
+        this.getSelection().empty();
       },
-      
+
       "default" : function()
       {
         this.getSelection().collapseToStart();
       }
     }),
-    
-    
+
+
     /**
      * Checks if the cursor is within a word boundary.
-	   * ATTENTION: Currently only implemented for Gecko
-	   * 
-	   * @signature function()
-	   * @return {Boolean} within word boundary
+     * ATTENTION: Currently only implemented for Gecko
+     *
+     * @signature function()
+     * @return {Boolean} within word boundary
      */
     __isSelectionWithinWordBoundary : qx.core.Variant.select("qx.client", {
       "gecko" : function()
       {
         var sel = this.getSelection();
         var focusNode = this.getFocusNode();
-        
+
         // check if the caret is within a word
-        return sel && sel.isCollapsed && qx.dom.Node.isText(focusNode) && 
+        return sel && sel.isCollapsed && qx.dom.Node.isText(focusNode) &&
                sel.anchorOffset < focusNode.length;
       },
-      
+
       "default" : function() {
         return false;
       }
     }),
-    
-    
+
+
     /**
      * Check the selection focus node if it's an element.
-     * Used a paragraph handling - if the focus node is an 
+     * Used a paragraph handling - if the focus node is an
      * element it's not necessary to intercept the paragraph handling.
-     * 
-	   * ATTENTION: Currently only implemented for Gecko
-	   * 
-	   * @signature function()
-	   * @return {Boolean} selection focus node 
+     *
+     * ATTENTION: Currently only implemented for Gecko
+     *
+     * @signature function()
+     * @return {Boolean} selection focus node
      */
     __isFocusNodeAnElement : qx.core.Variant.select("qx.client", {
       "gecko" : function() {
         return qx.dom.Node.isElement(this.getFocusNode());
       },
-      
+
       "default" : function() {
         return false;
       }
     }),
-    
+
 
     /*
      -----------------------------------------------------------------------------
@@ -3055,7 +3055,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     /**
      * returns the range of the current selection
-     * 
+     *
      * @return {Range} Range object
      */
     getRange : function()
@@ -3075,7 +3075,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       "mshtml" : function(sel)
       {
         var doc = this._getIframeDocument();
-        
+
         if (sel)
         {
           try {
@@ -3115,9 +3115,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * Currently only interesting for IE browsers, since they loose the range /
      * selection whenever an element is clicked which need to have a focus (e.g.
      * a textfield widget).
-     * 
+     *
      * *NOTE:* the next executed command will reset this range.
-     * 
+     *
      * @signature function()
      * @return {void}
      */
@@ -3125,14 +3125,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       "mshtml" : function() {
         this.__savedRange = this.getRange();
       },
-      
+
       "default" : function() {}
     }),
-    
-    
+
+
     /**
      * Returns the current stored range.
-     * 
+     *
      * @signature function()
      * @return {Range|null} range object or null
      */
@@ -3140,14 +3140,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       "mshtml" : function() {
         return this.__savedRange;
       },
-      
+
       "default" : function() {}
     }),
-    
-    
+
+
     /**
      * Resets the current saved range.
-     * 
+     *
      * @signature function()
      * @return {void}
      */
@@ -3155,7 +3155,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       "mshtml" : function() {
         this.__savedRange = null;
       },
-      
+
       "default" : function() {}
     }),
 
@@ -3214,8 +3214,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
        }
     })
   },
-  
-  
+
+
   settings : {
     "htmlarea.debug" : "off"
   },
@@ -3238,14 +3238,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       /* TODO: complete disposing */
       var doc = this._getIframeDocument();
-      
+
       // ************************************************************************
       //   WIDGET KEY EVENTS
       // ************************************************************************
       qx.event.Registration.removeListener(doc.body, "keypress",  this._handleKeyPress, this);
       qx.event.Registration.removeListener(doc.body, "keyup",    this._handleKeyUp, this);
       qx.event.Registration.removeListener(doc.body, "keydown", this._handleKeyDown, this);
-      
+
       // ************************************************************************
       //   WIDGET FOCUS/BLUR EVENTS
       // ************************************************************************
@@ -3253,17 +3253,17 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       qx.event.Registration.removeListener(focusBlurTarget, "focus", this.__handleFocusEvent);
       qx.event.Registration.removeListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
       qx.event.Registration.removeListener(doc, "focusout", this.__handleFocusOutEvent);
-      
-  
+
+
       // ************************************************************************
       //   WIDGET MOUSE EVENTS
       // ************************************************************************
       qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
       qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
     } catch (ex) {};
-    
 
-    this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent", 
+
+    this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent",
                         "handleFocusOut", "handleMouseEvent", "__documentSkeletonParts",
                         "__iframe");
   }
