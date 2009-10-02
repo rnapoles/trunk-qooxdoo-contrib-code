@@ -43,11 +43,10 @@ qx.Class.define("htmlarea.command.UndoManager",
     this.__commandManager = commandManager;
     this.__editorInstance = editorInstance;
 
-    /* Initialize */
     this.__undoStack = [];
     this.__redoStack = [];
     this._commands  = null;
-    this.__doc       = null;
+    this.__doc = null;
     this.__registeredHandler = {};
     this.__knownActionTypes = { command : true, 
                                 content : true, 
@@ -55,15 +54,10 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     this.__populateCommandList();
     
-    /* Bind listener to get into the right context */
     this.__handleKeyPress = qx.lang.Function.bind(this._handleKeyPress, this);
-    
-    /* Bind listener to get into the right context */
     this.__handleMouseUp = qx.lang.Function.bind(this._handleMouseUp, this);
     
-    if (qx.core.Variant.isSet("qx.client", "mshtml"))
-    {
-      /* Bind listener to get into the right context - only needed in IE */
+    if (qx.core.Variant.isSet("qx.client", "mshtml")) {
       this.__handleMouseDown = qx.lang.Function.bind(this._handleMouseDown, this);
     }
   },
@@ -74,16 +68,12 @@ qx.Class.define("htmlarea.command.UndoManager",
    */
   members :
   {
-    /* Flag if a redo operation is possible */
     __redoPossible : false,
-
-    /* Flag if a undo operation is possible */
     __undoPossible : false,
 
     /* Flag for the undo-mechanism to monitor the content changes */
     __startTyping : false,
     
-    /* Known action types */
     __knownActionTypes : null,
     
     /* Map with infos about custom registered handler */
@@ -97,6 +87,8 @@ qx.Class.define("htmlarea.command.UndoManager",
     __handleKeyPress : null,
     __handleMouseUp : null,
     __handleMouseDown : null,
+    __currentContent : null,
+    
     
     /* *******************************************************
      *
@@ -115,15 +107,14 @@ qx.Class.define("htmlarea.command.UndoManager",
       this.__doc = doc;
       this.__commandManager.setContentDocument(doc);
       
-      /* keypress events to monitor if the user is typing */
       qx.event.Registration.addListener(doc.body, "keypress", this.__handleKeyPress, this);
       
-      /* Mouse up listener is used to look after internal changes like image resizing etc. */
+      // monitor internal changes like image resizing etc.
       qx.event.Registration.addListener(doc.body, "mouseup", this.__handleMouseUp, this);
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        /* Mouse down listener is used to look after internal changes like image resizing etc. */
+        // monitor internal changes like image resizing etc.
         qx.event.Registration.addListener(doc.body, "mousedown", this.__handleMouseDown, this, true);
       }
     },
@@ -136,8 +127,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @type member
      * @return {Boolean} whether the key event should be stopped or not
      */
-    insertParagraphOnLinebreak : function()
-    {
+    insertParagraphOnLinebreak : function() {
       return this.__commandManager.insertParagraphOnLinebreak();
     },
     
@@ -153,56 +143,56 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       var result;
       
-      /* Normalize */
+      // Normalize
       command = command.toLowerCase();
 
-      /*
-       * Check for commands handled directly be this manager
-       * otherwise pass it along to the command manager and collect
-       * undo infos.
-       */
+      // Check for commands handled directly be this manager otherwise pass it 
+      // along to the command manager and collect undo infos.
       if (this._commands[command])
       {
-        /*
-         * Pass all commands directly to the commandManager if
-         * they marked as "passthrough". This way it is possible
-         * to execute commands without adding them to the undoStack.
-         */
-        if (this._commands[command].passthrough)
-        {
+        // Pass all commands directly to the commandManager if they marked as 
+        // "passthrough". This way it is possible to execute commands without 
+        // adding them to the undoStack.
+        if (this._commands[command].passthrough) {
           result = this.__commandManager.execute(command, value);
-        }
-        else
-        {
-          /* Call the responsible method */
+        } else {
           result = this[command].call(this);
         }
       }
       else
       {
-        
-        /* Execute the command */
-        result = this.__commandManager.execute(command, value);
-
-        if (result)
+        if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          /* Collect undo info */
           this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
+          
+          result = this.__commandManager.execute(command, value);
+          
+          // remove last undo step from stack if command wasn't successful
+          if (!result) {
+            this.__undoStack.pop();
+          }
+        }
+        else 
+        {
+          result = this.__commandManager.execute(command, value);
+  
+          if (result) {
+            this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
+          }
         }
         
-        /* Check if undo/redo steps are possible */
         if (command == "undo" && this.__undoStack.length == 0)
         {
           this.__undoPossible = false;
           
-          /* Fire an undo/redo state event */
+          // Fire an undo/redo state event
           this.__updateUndoRedoState();
         }
         else if (command == "redo" && this.__redoStack.length == 0)
         {
           this.__redoPossible = false;
           
-          /* Fire an undo/redo state event */
+          // Fire an undo/redo state event
           this.__updateUndoRedoState();            
         }
       }
@@ -259,9 +249,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      *
      * @return {Boolean} Whether an undo is possible or not
      */
-    isUndoPossible : function()
-    {
-      /* If no undo history entry is available but content was edited */
+    isUndoPossible : function() {
       return this.__undoPossible;
     },
     
@@ -276,24 +264,19 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
        var result;
 
-       /* Check if any content changes occured */
-       if (this.__startTyping)
-       {
+       // Check if any content changes occured
+       if (this.__startTyping) {
          this.__addAdditionalContentUndoStep();
        }
        
-       /*
-        * Look after the change history
-        * if any custom change was found undo it manually
-        */
-       
+       // Look after the change history
+       // if any custom change was found undo it manually
        if (this.__undoStack.length > 0)
        {
          var undoStep = this.__undoStack.pop();
          
          if (this.__knownActionTypes[undoStep.actionType.toLowerCase()])
          {
-           /* Pass the undo-handling to the specialized methods ("__undo" + actionType) */
            switch(undoStep.actionType)
            {
              case "Command":
@@ -313,7 +296,7 @@ qx.Class.define("htmlarea.command.UndoManager",
                break;
            }
          }
-         /* Any there any handlers which are registered to this actionType? */
+         // Any there any handlers which are registered to this actionType?
          else if(this.__registeredHandler[undoStep.actionType])
          {
             var handler = this.__registeredHandler[undoStep.actionType];
@@ -322,18 +305,14 @@ qx.Class.define("htmlarea.command.UndoManager",
             // add it automatically to the redoStack
             this.__addToRedoStack(undoStep);
          }
-         else
-         {
+         else {
            this.error("actionType " + undoStep.actionType + " is not managed! Please provide a handler method!");
          }
 
-         /* (re)set the flags */
-         this.__startTyping  = false;
-
-         /* A redo operation is now possible */
+         this.__startTyping = false;
          this.__redoPossible = true;
          
-         /* Fire an update event  */
+         // Fire an update event
          this.__updateUndoRedoState();
          
          return result;
@@ -349,52 +328,68 @@ qx.Class.define("htmlarea.command.UndoManager",
       * @param undoInfo {Object} Undo info object
       * @return {Boolean}
       */
-    __undoCustom : function(undoInfo)
-    {
-      // Fill the info for the (possible) redo
-      var redoAction = undoInfo;
-      var Style = qx.bom.element.Style;
-
-      // Add the (different) needed parameter for the redo
-      switch(undoInfo.command)
+    __undoCustom : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(undoInfo)
       {
-        case "backgroundcolor":
-          redoAction.parameter = [ Style.get(this.__doc.body, "backgroundColor") ];
-        break;
-
-        case "backgroundimage":
-          redoAction.parameter = [ Style.get(this.__doc.body, "backgroundImage"),
-                                   Style.get(this.__doc.body, "backgroundRepeat"),
-                                   Style.get(this.__doc.body, "backgroundPosition") ];
-        break;
-      }
-
-      this.__addToRedoStack(redoAction);
+        var currentContent = this.__doc.body.innerHTML; 
+        
+        var oldContent = undoInfo.content;
+        this.__doc.body.innerHTML = oldContent;
+        
+        var redoAction = undoInfo;
+        redoAction.content = currentContent;
+        this.__addToRedoStack(redoAction);
+        
+        return true;
+      },
       
-      // Remove the link manually
-      // Only necessary if the link was inserted at a collapsed selection 
-      if (undoInfo.command == "inserthyperlink")
+      "default" : function(undoInfo)
       {
-        if (qx.core.Variant.isSet("qx.client", "gecko"))
+        // Fill the info for the (possible) redo
+        var redoAction = undoInfo;
+        var Style = qx.bom.element.Style;
+  
+        // Add the (different) needed parameter for the redo
+        switch(undoInfo.command)
         {
-          var linkId = "qx_link" + this.__commandManager.__hyperLinkId;
-          var link = this.__doc.getElementById(linkId);
-          
-          if (link)
+          case "backgroundcolor":
+            redoAction.parameter = [ Style.get(this.__doc.body, "backgroundColor") ];
+          break;
+  
+          case "backgroundimage":
+            redoAction.parameter = [ Style.get(this.__doc.body, "backgroundImage"),
+                                     Style.get(this.__doc.body, "backgroundRepeat"),
+                                     Style.get(this.__doc.body, "backgroundPosition") ];
+          break;
+        }
+  
+        this.__addToRedoStack(redoAction);
+        
+        // Remove the link manually
+        // Only necessary if the link was inserted at a collapsed selection 
+        if (undoInfo.command == "inserthyperlink")
+        {
+          if (qx.core.Variant.isSet("qx.client", "gecko"))
           {
-            link.parentNode.removeChild(link);
+            var linkId = "qx_link" + this.__commandManager.__hyperLinkId;
+            var link = this.__doc.getElementById(linkId);
             
-            return true;
-          }
-          else {
-            return false;
+            if (link)
+            {
+              link.parentNode.removeChild(link);
+              
+              return true;
+            }
+            else {
+              return false;
+            }
           }
         }
+        else {
+          return this.__commandManager.execute(undoInfo.command, undoInfo.value);  
+        }
       }
-      else {
-        return this.__commandManager.execute(undoInfo.command, undoInfo.value);  
-      }
-    },
+    }),
 
 
     /**
@@ -402,32 +397,35 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @param undoInfo {Object} Undo info object
      * @return {Boolean}
+     * @signature function(undoInfo)
      */
-    __undoCommand : function(undoInfo)
-    {
-      /* Add undo step to the redoStack */
-      this.__addToRedoStack(undoInfo);
+    __undoCommand : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(undoInfo) {},
       
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      "default" : function(undoInfo)
       {
-        if (this.__checkForNextUndoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
-          this.__executeExtraUndoStep();
-        }
-      }
-      
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
-      {
-        if (undoInfo.command == "inserthtml" && 
-            undoInfo.value == htmlarea.HtmlAreaNative.EMPTY_DIV && 
-            this.__checkForNextUndoStep("inserthtml", "insertParagraph"))
+        this.__addToRedoStack(undoInfo);
+        
+        if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          this.__executeExtraUndoStep();
+          if (this.__checkForNextUndoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
+            this.__executeExtraUndoStep();
+          }
         }
+        
+        if (qx.core.Variant.isSet("qx.client", "gecko"))
+        {
+          if (undoInfo.command == "inserthtml" && 
+              undoInfo.value == htmlarea.HtmlAreaNative.EMPTY_DIV && 
+              this.__checkForNextUndoStep("inserthtml", "insertParagraph"))
+          {
+            this.__executeExtraUndoStep();
+          }
+        }
+        
+        return this.__doc.execCommand("Undo", false, null);
       }
-      
-      /* Use the native undo command */
-      return this.__doc.execCommand("Undo", false, null);
-    },
+    }),
     
     
     /**
@@ -478,7 +476,6 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __undoInternal : function(undoInfo)
     {
-      /* Add undo step to the redoStack */
       this.__addToRedoStack(undoInfo);
       
       return this.__doc.execCommand("Undo", false, null);
@@ -490,15 +487,14 @@ qx.Class.define("htmlarea.command.UndoManager",
      *
      * @param undoInfo {Object} Undo info object
      * @return {Boolean}
+     * @signature function(undoInfo)
      */
     __undoContent : qx.core.Variant.select("qx.client", {
       "gecko" : function(undoInfo)
       {
-        /* Add undo step to the redoStack */
         this.__addToRedoStack(undoInfo);
         
-        try
-        {
+        try {
           return this.__doc.execCommand("Undo", false, null);
         }
         catch(error)
@@ -510,9 +506,10 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
       },
       
+      "mshtml" : function(undoInfo) {},
+      
       "default" : function(undoInfo)
       {
-        /* Add undo step to the redoStack */
         this.__addToRedoStack(undoInfo);
         
         this.__doc.execCommand("Undo", false, null);
@@ -532,8 +529,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      *
      * @return {Boolean} Whether redo is possible or not
      */
-    isRedoPossible : function()
-    {
+    isRedoPossible : function() {
       return this.__redoPossible;
     },
     
@@ -550,18 +546,14 @@ qx.Class.define("htmlarea.command.UndoManager",
        {
          var result;
 
-         /*
-          * Look after the change history
-          * if any custom change was found redo it manually
-          */
-         
+         // Look after the change history
+         // if any custom change was found redo it manually
          if (this.__redoStack.length > 0)
          {
            var redoStep = this.__redoStack.pop();
            
            if (this.__knownActionTypes[redoStep.actionType.toLowerCase()]) 
            {
-             /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
              switch(redoStep.actionType)
              {
                case "Command":
@@ -594,13 +586,10 @@ qx.Class.define("htmlarea.command.UndoManager",
              this.error("actionType " + redoStep.actionType + " is not managed! Please provide a handler method!");
            }
 
-           /* (re)set the flags */
            this.__startTyping  = false;
-
-           /* A redo operation is now possible */
            this.__undoPossible = true;
 
-           /* Fire an update event  */
+           // Fire an update event
            this.__updateUndoRedoState();
          }
 
@@ -614,14 +603,30 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @param redoInfo {Object} Redo info object
      * @return {Boolean}
+     * @singature function(redoInfo)
      */
-    __redoCustom : function(redoInfo)
-    {
-      /* Add redo step to the undoStack */
-      this.__addToUndoStack(redoInfo);
+    __redoCustom : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(redoInfo)
+      {
+        var currentContent = this.__doc.body.innerHTML;
+        
+        var newContent = redoInfo.content;
+        this.__doc.body.innerHTML = newContent;
+
+        var undoInfo = redoInfo;
+        undoInfo.content = currentContent;
+        this.__addToUndoStack(undoInfo);
+        
+        return true;
+      },
       
-      return this.__doc.execCommand("Redo", false, null);
-    },
+      "default" : function(redoInfo)
+      {
+        this.__addToUndoStack(redoInfo);
+        
+        return this.__doc.execCommand("Redo", false, null);
+      }
+    }),
     
     
     /**
@@ -629,38 +634,42 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @param redoInfo {Object} Redo info object
      * @return {Boolean}
+     * @signature function(redoInfo)
      */
-    __redoCommand : function(redoInfo)
-    {
-      /* Update the undo history */
-      this.__addToUndoStack(redoInfo);
+    __redoCommand : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(redoInfo) {},
       
-      var result = this.__doc.execCommand("Redo", false, null);
-      
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      "default" : function(redoInfo)
       {
-        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
-          this.__executeExtraRedoStep();
-        }
-      }
-      
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
-      {
-        if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.EMPTY_DIV))
+        this.__addToUndoStack(redoInfo);
+        
+        var result = this.__doc.execCommand("Redo", false, null);
+        
+        if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          // we need to catch the focused paragraph before the extra redo step
-          var focusedParagraph = this.__getFocusedParagraph();
-          
-          this.__executeExtraRedoStep();
-          
-          if (focusedParagraph != null) {
-            this.__correctCaretPositionAfterRedo(focusedParagraph);
+          if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
+            this.__executeExtraRedoStep();
           }
         }
+        
+        if (qx.core.Variant.isSet("qx.client", "gecko"))
+        {
+          if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.EMPTY_DIV))
+          {
+            // we need to catch the focused paragraph before the extra redo step
+            var focusedParagraph = this.__getFocusedParagraph();
+            
+            this.__executeExtraRedoStep();
+            
+            if (focusedParagraph != null) {
+              this.__correctCaretPositionAfterRedo(focusedParagraph);
+            }
+          }
+        }
+        
+        return result;
       }
-      
-      return result;
-    },
+    }),
     
     
     /**
@@ -762,7 +771,6 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __redoInternal : function(redoInfo)
     {
-      /* Update the undo history */
       this.__addToUndoStack(redoInfo);
       
       return this.__doc.execCommand("Redo", false, null);
@@ -774,13 +782,17 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @param redoInfo {Object} Redo info object
      * @return {Boolean}
+     * @signature function(redoInfo)
      */
-    __redoContent : function(redoInfo)
-    {
-      /* Add the redo step to the undoStack */
-      this.__addToUndoStack(redoInfo);
-      return this.__doc.execCommand("Redo", false, null);
-    },    
+    __redoContent : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(redoInfo) {},
+
+      "default" : function(redoInfo)
+      {
+        this.__addToUndoStack(redoInfo);
+        return this.__doc.execCommand("Redo", false, null);
+      }
+    }),
     
     
     /* *******************************************************
@@ -834,82 +846,95 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @param commandObject {Object} internal commandObject
      * @return {void}
      */
-    __collectUndoInfo : function(command, value, commandObject)
-    {
-      var undoObject           = this.getUndoRedoObject();
-      undoObject.commandObject = commandObject;
-      undoObject.command       = command;
-      undoObject.value         = value;
-      undoObject.actionType    = "Custom";
+    __collectUndoInfo : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(command, value, commandObject)
+      {
+        var undoObject = this.getUndoRedoObject();
+        undoObject.commandObject = commandObject;
+        undoObject.command = command;
+        undoObject.value = value;
+        undoObject.actionType = "Custom";
+        undoObject.content = this.__doc.body.innerHTML;
+        
+        this.__updateUndoStack(undoObject);
+      },
       
-      var sel = this.__editorInstance.getSelection(); 
-
-      if (commandObject.customUndo)
+      "default" : function(command, value, commandObject)
       {
-        var parameters = [];
-        switch(command)
+        var undoObject = this.getUndoRedoObject();
+        undoObject.commandObject = commandObject;
+        undoObject.command = command;
+        undoObject.value = value;
+        undoObject.actionType = "Custom";
+        
+        var sel = this.__editorInstance.getSelection(); 
+  
+        if (commandObject.customUndo)
         {
-          case "backgroundcolor":
-            parameters.push(qx.bom.element.Style.get(this.__doc.body, "backgroundColor"));
-          break;
-
-          case "backgroundimage":
-            parameters.push(qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
-                            qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
-                            qx.bom.element.Style.get(this.__doc.body, "backgroundPosition"));
-          break;
-          
-          case "inserthyperlink":
-            // If the hyperlinks gets inserted on a selection treat it as a command step
-            if (sel && !sel.isCollapsed) {
-              undoObject.actionType = "Command";
-            }
-          break;
-        }
-
-        undoObject.parameter  = parameters;
-      }
-      else
-      {
-        if (qx.core.Variant.isSet("qx.client", "gecko"))
-        {
-          /*
-           * Ignore commands which normally act on ranges if the current range
-           * is collapsed, e.g. Gecko DOES NOT mark setting a collapsed range to
-           * bold as an extra action. 
-           * However commands like inserting an ordered list or table which do not 
-           * need to act on a range to work should be captured.
-           *
-           */
-          if (sel && sel.isCollapsed)
+          var parameters = [];
+          switch(command)
           {
-            switch(command)
-            {
-              // TODO: create a list of all commands which DO NOT need to act on a range to perform!
-              case "insertorderedlist":
-              case "insertunorderedlist":
-              case "justifyright":
-              case "inserthtml":
-              case "insertimage":
+            case "backgroundcolor":
+              parameters.push(qx.bom.element.Style.get(this.__doc.body, "backgroundColor"));
+            break;
+  
+            case "backgroundimage":
+              parameters.push(qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
+                              qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
+                              qx.bom.element.Style.get(this.__doc.body, "backgroundPosition"));
+            break;
+            
+            case "inserthyperlink":
+              // If the hyperlinks gets inserted on a selection treat it as a command step
+              if (sel && !sel.isCollapsed) {
                 undoObject.actionType = "Command";
-              break;
-              
-              default:
-                return;
+              }
+            break;
+          }
+  
+          undoObject.parameter  = parameters;
+        }
+        else
+        {
+          if (qx.core.Variant.isSet("qx.client", "gecko"))
+          {
+            /*
+             * Ignore commands which normally act on ranges if the current range
+             * is collapsed, e.g. Gecko DOES NOT mark setting a collapsed range to
+             * bold as an extra action. 
+             * However commands like inserting an ordered list or table which do not 
+             * need to act on a range to work should be captured.
+             *
+             */
+            if (sel && sel.isCollapsed)
+            {
+              switch(command)
+              {
+                // TODO: create a list of all commands which DO NOT need to act on a range to perform!
+                case "insertorderedlist":
+                case "insertunorderedlist":
+                case "justifyright":
+                case "inserthtml":
+                case "insertimage":
+                  undoObject.actionType = "Command";
+                break;
+                
+                default:
+                  return;
+              }
+            }
+            else {
+              undoObject.actionType = "Command";
             }
           }
           else {
             undoObject.actionType = "Command";
           }
         }
-        else {
-          undoObject.actionType = "Command";
-        }
+        
+        this.__updateUndoStack(undoObject);
       }
-
-      // Add the undoObject to the undoStack
-      this.__updateUndoStack(undoObject);
-    },
+    }),
 
 
     /**
@@ -922,19 +947,12 @@ qx.Class.define("htmlarea.command.UndoManager",
       */
      __updateUndoStack : function(changeInfo)
      {
-       /*
-        * If any editing of the content happened before
-        * add the content change as undo history entry
-        */
-       if (this.__startTyping)
-       {
+       if (this.__startTyping) {
          this.__addAdditionalContentUndoStep();
        }
 
-       /* Add the change to the undo history */
        this.__addToUndoStack(changeInfo);
        
-       /* After a command (other than "undo") no redo is possible */
        this.__redoPossible = false;
        this.__redoStack    = [];
        
@@ -954,6 +972,12 @@ qx.Class.define("htmlarea.command.UndoManager",
          var undoObject = this.getUndoRedoObject();
          undoObject.actionType = "Content";
          
+         if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+           undoObject.content = this.__currentContent;
+           undoObject.actionType = "Custom";
+           this.__currentContent = null;
+         }
+         
          this.__addToUndoStack(undoObject);
          
          this.__startTyping = false;
@@ -969,13 +993,14 @@ qx.Class.define("htmlarea.command.UndoManager",
      getUndoRedoObject : function()
      {
        return {
-        actionType    : null,
-        commandObject : null,
-        command       : null,
-        value         : null,
-        parameter     : null,
-        range         : null,
-        marker        : null
+        actionType: null,
+        commandObject: null,
+        command: null,
+        value: null,
+        parameter: null,
+        range: null,
+        marker: null,
+        content: null
       };
      },
 
@@ -1040,7 +1065,6 @@ qx.Class.define("htmlarea.command.UndoManager",
         case "pagedown":
         case "home":
         case "end":
-          /* Indicate end of typing */
           this.__startTyping  = false;
           this.__undoPossible = true;
           
@@ -1057,22 +1081,21 @@ qx.Class.define("htmlarea.command.UndoManager",
         break;
 
         default:
-
-          /* Check if shortcut for undo/redo is used */
+          // if the user starts typing 
           if(! (e.isCtrlPressed() && (keyIdentifier == "z" || keyIdentifier == "y")) ) {
-            /* Otherwise mark the redo as not possible anymore */
             this.__redoPossible = false;
             this.__redoStack    = [];
           }
 
-          /* Indicate start of typing */
           if (!this.__startTyping)
           {
-            /* Mark the beginning of typing */
             this.__startTyping = true;
-            
-            /* undo is now possible */
             this.__undoPossible = true;
+            
+            // store current content for adding it to undo stack later
+            if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+              this.__currentContent = this.__doc.body.innerHTML;
+            }
             
             /* Fire an update event  */
             this.__updateUndoRedoState();
@@ -1105,14 +1128,12 @@ qx.Class.define("htmlarea.command.UndoManager",
                                   content : checkNode.outerHTML 
                                 };
         }
-        else
-        {
+        else {
           this.__selectedNode = null;
         }     
       },
       
-      "default" : function(e)
-      {
+      "default" : function(e) {
         return true;
       }
     }),
@@ -1129,10 +1150,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       "gecko" : function(e)
       {
-        /* Get the current selected node (if available) */
         var sel = this.__editorInstance.getSelection();
-        
-        // if no selection exists, we have no selected node
         if (!sel)
         {
           this.__selectedNode = null;
@@ -1244,8 +1262,7 @@ qx.Class.define("htmlarea.command.UndoManager",
               }
             }
           }
-          else
-          {
+          else {
             this.__selectedNode = null;
           }
         }
@@ -1258,13 +1275,19 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @return {void} 
      */
-    __addInternalUndoStep : function()
-    {
-      var undoStep = this.getUndoRedoObject();
-      undoStep.actionType = "Internal";
-            
-      this.__addToUndoStack(undoStep);
-    },
+    __addInternalUndoStep : qx.core.Variant.select("qx.client", {
+      "mshtml" : function() {
+        this.__collectUndoInfo("Internal", null, null);
+      },
+    
+      "default" : function()
+      {
+        var undoStep = this.getUndoRedoObject();
+        undoStep.actionType = "Internal";
+              
+        this.__addToUndoStack(undoStep);
+      }
+    }),
     
     
     /**
@@ -1299,9 +1322,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       qx.event.Registration.removeListener(this.__doc.body, "keypress", this.__handleKeyPress);
       qx.event.Registration.removeListener(this.__doc, "mouseup", this.__handleMouseUp);
       
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        /* Mouse down listener is used to look after internal changes like image resizing etc. */
+      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         qx.event.Registration.removeListener(this.__doc, "mousedown", this.__handleMouseDown);
       }
     }
