@@ -13,7 +13,7 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Alexander Back (aback)
+     * Alexander Steitz (aback)
      * Jonathan Weiß (jonathan_rass)
 
 ************************************************************************ */
@@ -21,7 +21,7 @@
 qx.Theme.define("htmlarea.theme.HtmlArea",
 {
   title : "HtmlArea meta theme",
- 
+
   meta :
   {
     color : qx.theme.modern.Color,

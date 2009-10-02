@@ -11,13 +11,13 @@
 /**
  * This class demonstrates how to define unit tests for your application.
  *
- * Execute <code>generate.py test</code> to generate a testrunner application 
+ * Execute <code>generate.py test</code> to generate a testrunner application
  * and open it from <tt>test/index.html</tt>
  *
- * The methods that contain the tests are instance methods with a 
- * <code>test</code> prefix. You can create an arbitrary number of test 
- * classes like this one. They can be organized in a regular class hierarchy, 
- * i.e. using deeper namespaces and a corresponding file structure within the 
+ * The methods that contain the tests are instance methods with a
+ * <code>test</code> prefix. You can create an arbitrary number of test
+ * classes like this one. They can be organized in a regular class hierarchy,
+ * i.e. using deeper namespaces and a corresponding file structure within the
  * <tt>test</tt> folder.
  */
 qx.Class.define("htmlarea.test.Startup",
@@ -33,7 +33,7 @@ qx.Class.define("htmlarea.test.Startup",
       this.__htmlArea.set({ width: 200, height: 200 });
       qx.core.Init.getApplication().getRoot().add(this.__htmlArea);
     },
-    
+
     tearDown : function() {
       qx.core.Init.getApplication().getRoot().remove(this.__htmlArea);
     },
@@ -43,7 +43,7 @@ qx.Class.define("htmlarea.test.Startup",
       TESTS
     ---------------------------------------------------------------------------
     */
-   
+
     testIsReady : function()
     {
       this.__htmlArea.addListener("ready", function(e) {
@@ -53,10 +53,10 @@ qx.Class.define("htmlarea.test.Startup",
           this.assertTrue(this.__htmlArea.isEditable(), "HtmlArea not editable!");
           this.assertTrue(this.__htmlArea.isLoaded(), "HtmlArea not loaded!");
           this.assertTrue(qx.dom.Node.isWindow(this.__htmlArea.getContentWindow()));
-          this.assertTrue(qx.dom.Node.isDocument(this.__htmlArea.getContentDocument()));          
-        }, this);        
+          this.assertTrue(qx.dom.Node.isDocument(this.__htmlArea.getContentDocument()));
+        }, this);
       }, this);
-      
+
       this.wait(); // defaults to 5000
     }
   }
