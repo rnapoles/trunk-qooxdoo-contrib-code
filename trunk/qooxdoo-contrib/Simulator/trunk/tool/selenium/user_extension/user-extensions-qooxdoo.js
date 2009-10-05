@@ -2125,3 +2125,35 @@ Selenium.prototype.doQxDragAndDrop = function(locator, movementsString, targetLo
     triggerMouseEventQx('mouseup', element, additionalParamsForClick);
   }
 };
+
+
+/**
+ * Finds an element by evaluating a JavaScript code snippet 
+ * 
+ * @param {String} The JavaScript code that returns the element
+ * @param {Object} inDocument The AUT's document
+ * @param {Object} inWindow The AUT's window object
+ * @return {null | Element}
+ */
+PageBot.prototype.locateElementByQxscript = function(qxFunction, inDocument, inWindow)
+{
+  LOG.info("Locate Element by qooxdoo function= " + qxFunction + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  var qxObject = false;
+  
+  if (inWindow.wrappedJSObject) {
+    inWindow = inWindow.wrappedJSObject;
+  }
+
+  try {
+    qxObject = eval.call(inWindow, qxFunction);    
+  }
+  catch(ex) {
+    LOG.error("locateElementByQxfunc: Error while running the code snippet: " + ex);
+  }
+  
+  if (qxObject) {
+    return qxObject.getContentElement().getDomElement();
+  } else {
+    return null;
+  }
+};
