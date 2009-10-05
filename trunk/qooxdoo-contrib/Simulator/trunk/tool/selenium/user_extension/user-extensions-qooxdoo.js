@@ -641,9 +641,9 @@ Selenium.prototype.getQxTableCols = function(locator)
 
 
 /**
- * Uses the standard qx locators to find a qooxdoo object, and then executes
- * the given function of that object.  If the object does not contain the 
- * referenced function, then an exception will be thrown.
+ * Executes the given function of a qooxdoo object identified by a locator. If 
+ * the object does not contain the referenced function, then an exception will 
+ * be thrown.
  *
  * @type member
  * @param locator {var} an element locator
@@ -653,6 +653,25 @@ Selenium.prototype.getQxTableCols = function(locator)
  */
 Selenium.prototype.getQxObjectFunction = function(locator, functionName)
 {
+  var qxObject = this.getQxWidgetByLocator(locator);
+
+  if (qxObject[functionName]) {
+    return qxObject[functionName]();
+  } 
+  else {
+    throw new SeleniumError("Object does not have function (" + functionName + "), " + locator);
+  }  
+};
+
+
+/**
+ * Uses the standard locators to find a qooxdoo widget and returns it.
+ * 
+ * @param locator {String} an element locator
+ * @return {Object} The qooxdoo widget
+ */
+Selenium.prototype.getQxWidgetByLocator = function(locator)
+{
   var element = this.page().findElement(locator);
   if (!element) {
     throw new SeleniumError("No such object: " + locator);
@@ -660,21 +679,14 @@ Selenium.prototype.getQxObjectFunction = function(locator, functionName)
   var qx = this.getQxGlobalObject();
 
   // this.page().findElement() returns the html element.
-  // we also need the real object to work with.
   var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
   if (qxObject) {
-    if (qxObject[functionName]) {
-      return qxObject[functionName]();
-    } 
-    else {
-      throw new SeleniumError("Object does not have function (" + functionName + "), " + locator);
-    }
-  } 
+    return qxObject;
+  }
   else {
     throw new SeleniumError("Object is not a qooxdoo object: " + locator);
   }
 };
-
 
 /**
  * Uses the standard qx locators to find a table, and then returns the text
@@ -1080,7 +1092,7 @@ PageBot.prototype._getClientDocument = function(inWindow){
    }
   }
   
-}
+};
 
 
 /**
