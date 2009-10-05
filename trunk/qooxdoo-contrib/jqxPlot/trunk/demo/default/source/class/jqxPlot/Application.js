@@ -104,7 +104,10 @@ qx.Class.define("jqxPlot.Application",
                                           showTooltip: true 
                                           // followMouse and zoom don't work together very well 
                                           // (the zoom box and the tooltip get into eachothers way);
-                                          // this seems to be a jqplot bug.
+                                          // this is a jqplot bug that is fixed in jqplot trunk AFTER
+                                          // the current release 0.9.4.
+                                          // I will update this demo once the next release of jqPlot is 
+                                          // available.
                                           // , followMouse: true 
 					}
                               }
