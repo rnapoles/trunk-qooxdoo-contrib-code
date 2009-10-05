@@ -100,8 +100,12 @@ qx.Class.define("jqxPlot.Application",
                                              fontSize: '10pt'
 					   }
                                 },
-                                cursor: { zoom: true, showTooltip: true,
-					  followMouse: true, clickReset: true
+                                cursor: { zoom: true, clickReset: true,
+                                          showTooltip: true 
+                                          // followMouse and zoom don't work together very well 
+                                          // (the zoom box and the tooltip get into eachothers way);
+                                          // this seems to be a jqplot bug.
+                                          // , followMouse: true 
 					}
                               }
 		  );
