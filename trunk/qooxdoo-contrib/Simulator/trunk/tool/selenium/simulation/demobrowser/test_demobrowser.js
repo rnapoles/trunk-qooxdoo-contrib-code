@@ -49,7 +49,7 @@ mySim.lastSample = "last";
 function treeSelect(entry)
 {
   entry = entry ? entry : 0;
-  return qxAppInst + '.tree.select(' + qxAppInst + '.tree.getItems()[' + entry + '])';
+  return qxAppInst + '.tree.setSelection([' + qxAppInst + '.tree.getItems()[' + entry + ']])';
 }
 
 /*
