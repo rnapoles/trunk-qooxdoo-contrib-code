@@ -3,7 +3,7 @@
   {
     "name" : "jqPlot Demo",
 
-    "summary" : "Demo for using jqPlot with Qooxdoo",
+    "summary" : "Demo for using jqPlot with qooxdoo",
     "description" : "This is a skeleton for a custom application with qooxdoo.",
     
     "homepage" : "",

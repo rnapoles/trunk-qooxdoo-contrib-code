@@ -63,7 +63,7 @@ qx.Class.define("jqxPlot.Application",
  	    var graphType = e.getData()[0].getLabel();
 	    var dom = graphCanvas.getContainerElement().getDomElement();
 	    qx.bom.element.Attribute.set(dom, 'id', 'jqxPlotBox');
- 	    var title = 'Testing jqPlot with Qooxdoo';
+ 	    var title = 'Testing jqPlot with qooxdoo';
 
             switch (graphType) {
 	      case 'Bar graph':
