@@ -1,5 +1,5 @@
 {
-  "name"    : "JqPlot with Qooxdoo Demo",
+  "name"    : "Demo for using jqPlot with qooxdoo",
 
   "include" :
   [
@@ -28,7 +28,7 @@
   "let" :
   {
     "APPLICATION"  : "jqxPlot",
-    "QOOXDOO_PATH" : "/usr/pack/qooxdoo-0.8svn-za/frontend",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
