@@ -29,10 +29,12 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 simulation.Simulation.prototype.checkArticle = function()
 {
-  var articleScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
+  var articleLocator = 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname="feedreader.view.Article"]';
+  var articleScript = 'selenium.getQxObjectFunction(\'' + articleLocator + '\', "getArticle")';
+  //var articleScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
   var article = this.getEval(articleScript, "Checking for article");
 
-  if (article != "null") {
+  if (String(article).indexOf("feedreader.model.Article") >= 0) {
     print("Article found.");
   }
   else {
@@ -69,14 +71,11 @@ simulation.Simulation.prototype.checkFeeds = function()
 
 mySim.runTest = function()
 {
-  this.addChildrenGetter();
-  this.addObjectGetter();
-  
   var testPause = 360000;
-
-  var tree = selWin + '.qx.Simulation.getObjectByClassname(' + selWin +'.qx.core.Init.getApplication(), "qx.ui.tree.Tree")';
-  //var tree = selWin + '.' + qxAppInst +  '.getRoot().getChildren()[0].getChildren()[2].getChildren()[0]';
-  var lastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");
+  var treeLocator = "qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.tree.Tree";
+  var tree = 'selenium.getQxWidgetByLocator("' + treeLocator + '")';  
+  
+  var lastFeedNum = this.getEval(tree + '.getItems().length - 1', "Getting last feed's number");
   
   var isLastFeedLoaded = tree + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";  
   this.waitForCondition(isLastFeedLoaded, testPause, "Waiting for feeds to load");
@@ -105,7 +104,8 @@ mySim.runTest = function()
   this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "", "Clicking Preferences button.");
   Packages.java.lang.Thread.sleep(2000);
 
-  var prefWindowScript = selWin + '.qx.Simulation.getChildrenByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.PreferenceWindow")[0]';
+  var prefWindowLocator = 'qxh=[@classname="feedreader.view.PreferenceWindow"]';
+  var prefWindowScript = 'selenium.getQxWidgetByLocator(\'' + prefWindowLocator + '\')';
   var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
   this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
   Packages.java.lang.Thread.sleep(2000);
@@ -146,8 +146,9 @@ mySim.runTest = function()
   // Click "Add Feed"
   this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "", "Clicking Add Feed button");
   Packages.java.lang.Thread.sleep(2000);
-    
-  var feedWindowScript = selWin + '.qx.Simulation.getChildrenByClassname(' + selWin + '.qx.core.Init.getApplication().getRoot(), "feedreader.view.AddFeedWindow")[0]';
+  
+  var feedWindowLocator = 'qxh=[@classname="feedreader.view.AddFeedWindow"]';
+  var feedWindowScript = 'selenium.getQxWidgetByLocator(\'' + feedWindowLocator + '\')';  
   var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
   this.waitForCondition(isFeedWindowVisible, 10000, "Waiting for Add Feed window to open.");
   Packages.java.lang.Thread.sleep(2000);

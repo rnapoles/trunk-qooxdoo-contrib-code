@@ -28,8 +28,9 @@ var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
 
 var getSampleNames = function()
 {
-  // TODO: Make this less horrible.
-  var kids = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().getRoot().getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[1].getMenu().getChildren();  
+  var locator = "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton";  
+  var menuWidget = selenium.getQxWidgetByLocator(locator);
+  var kids = menuWidget.getMenu().getChildren();  
   var sampleNames = "";
   for(var i=0,l=kids.length; i<l; i++) {  
     sampleNames += kids[i].getLabel() + ",";
