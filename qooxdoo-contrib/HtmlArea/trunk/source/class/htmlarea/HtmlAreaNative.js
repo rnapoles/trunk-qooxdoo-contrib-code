@@ -1709,6 +1709,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           case "pagedown":
           case "delete":
           case "end":
+          case "backspace":
             var focusNode = this.getFocusNode();
 
             /* Set flag indicating if first line is selected */
@@ -2063,6 +2064,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         case "pagedown":
         case "delete":
         case "end":
+        case "backspace":
           this.__startExamineCursorContext();
         break;
 
