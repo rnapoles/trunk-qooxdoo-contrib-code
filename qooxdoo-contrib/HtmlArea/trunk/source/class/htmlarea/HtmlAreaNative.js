@@ -88,25 +88,21 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     // set the optional style information - if available
     this.__styleInformation = htmlarea.HtmlAreaNative.__formatStyleInformation(styleInformation);
 
-    /**
-     * Wrapper method for focus events
-     *
-     * @param e {Object} Event object
-     */
+    // Wrapper methods for focus events
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
     this.__handleBlurEvent = qx.lang.Function.bind(this._handleBlurEvent, this);
     this.__handleFocusOutEvent = qx.lang.Function.bind(this._handleFocusOutEvent, this);
 
 
-    /**
-     * Wrapper method for mouse events.
-     * The mouse events are primarily needed to examine the current cursor context.
-     * The cursor context examines if the current text node is formatted in any manner
-     * like bold or italic. An event is thrown to e.g. activate/deactivate toolbar buttons.
-     *
-     * @param e {Object} Event object
-     */
-    this.__handleMouseEvent = qx.lang.Function.bind(this._handleMouseEvent, this);
+    // Wrapper methods for mouse events.
+    // The mouse events are primarily needed to examine the current cursor context.
+    // The cursor context examines if the current text node is formatted in any manner
+    // like bold or italic. An event is thrown to e.g. activate/deactivate toolbar buttons.
+    // Additionally the mouseup at document level is necessary for gecko and webkit
+    // to reset the focus (see Bug #2896). 
+    this.__handleMouseUpOnBody = qx.lang.Function.bind(this._handleMouseUpOnBody, this);
+    this.__handleMouseUpOnDocument = qx.lang.Function.bind(this._handleMouseUpOnDocument, this);
+
     this.__handleContextMenuEvent = qx.lang.Function.bind(this._handleContextMenuEvent, this);
 
 
@@ -753,7 +749,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     __handleFocusEvent : null,
     __handleBlurEvent : null,
     __handleFocusOutEvent : null,
-    __handleMouseEvent : null,
+    __handleMouseUpOnBody : null,
+    __handleMouseUpOnDocument : null,
     __handleContextMenuEvent : null,
     __styleInformation : null,
     __documentSkeletonParts : null,
@@ -1262,28 +1259,18 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     _onDocumentIsReady : function()
     {
-      /* *******************************************
-       *    INTIALIZE THE AVAILABLE COMMANDS       *
-       * ******************************************* */
-
-      /* Create a new command manager instance */
       var cm = new htmlarea.command.Manager(this);
 
-      /* Decorate the commandManager with the UndoManager if undo/redo is enabled */
-      if (this.getUseUndoRedo())
-      {
-       cm = new htmlarea.command.UndoManager(cm, this);
+      // Decorate the commandManager with the UndoManager if undo/redo is enabled
+      if (this.getUseUndoRedo()) {
+        cm = new htmlarea.command.UndoManager(cm, this);
       }
 
-      /* Set the "isLoaded" flag */
       this.__isLoaded = true;
 
-      /*
-       * For IE the document needs to be set in "designMode"
-       * BEFORE the content is rendered.
-       */
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
+      // For IE the document needs to be set in "designMode"
+      // BEFORE the content is rendered.
+      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         this.setEditable(true);
       }
 
@@ -1291,30 +1278,25 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       // all needed elements plus the initial content
       this.__renderContent();
 
-
-      /* Register all needed event listeners */
       this.__addListeners();
 
-
-      /*
-       * Setting the document editable for all other browser engines
-       * AFTER the content is set
-       */
-      if (!qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
+      // Setting the document editable for all other browser engines
+      // AFTER the content is set
+      if (!qx.core.Variant.isSet("qx.client", "mshtml")) {
         this.setEditable(true);
       }
 
       // now we can set the ready state
       this.__isReady = true;
 
-      /* Look out for any queued commands which are execute BEFORE this commandManager was available */
-      var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
+      // Look out for any queued commands which are execute BEFORE this 
+      // commandManager was available
+      var commandStack = this.__commandManager.stackedCommands ? this.__commandManager.commandStack : null;
 
-      /* Inform the commandManager on which document he should operate */
+      // Inform the commandManager on which document he should operate
       cm.setContentDocument(this._getIframeDocument());
 
-      /* Execute the stacked commmands - if any */
+      // Execute the stacked commmands - if any
       if (commandStack != null)
       {
         for (var i=0, j=commandStack.length; i<j; i++) {
@@ -1471,28 +1453,24 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     __addListeners : function()
     {
+      var Registration = qx.event.Registration;
       var doc = this._getIframeDocument();
 
-      qx.event.Registration.addListener(doc.body, "keypress", this._handleKeyPress, this);
-      qx.event.Registration.addListener(doc.body, "keyup",    this._handleKeyUp,    this);
-      qx.event.Registration.addListener(doc.body, "keydown",  this._handleKeyDown,  this);
+      Registration.addListener(doc.body, "keypress", this._handleKeyPress, this);
+      Registration.addListener(doc.body, "keyup",    this._handleKeyUp,    this);
+      Registration.addListener(doc.body, "keydown",  this._handleKeyDown,  this);
 
-      /*
-       * Register event handler for focus/blur events
-       *
-       * IE and Gecko has to catch focus and blur events on the body element.
-       * Webkit is listening to the contentWindow
-       */
       var focusBlurTarget = qx.bom.client.Engine.WEBKIT ? this._getIframeWindow() : doc.body;
-      qx.event.Registration.addListener(focusBlurTarget, "focus", this.__handleFocusEvent, this);
-      qx.event.Registration.addListener(focusBlurTarget, "blur",  this.__handleBlurEvent, this);
-      qx.event.Registration.addListener(doc, "focusout",  this.__handleFocusOutEvent, this);
+      Registration.addListener(focusBlurTarget, "focus", this.__handleFocusEvent, this);
+      Registration.addListener(focusBlurTarget, "blur",  this.__handleBlurEvent, this);
 
-      /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
-      qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
+      Registration.addListener(doc, "focusout",  this.__handleFocusOutEvent, this);
 
-      /* Register contextmenu event */
-      qx.event.Registration.addListener(doc.documentElement, "contextmenu", this.__handleContextMenuEvent, this);
+      var mouseEventName = qx.bom.client.Engine.MSHTML ? "click" : "mouseup";
+      Registration.addListener(doc.body, mouseEventName, this.__handleMouseUpOnBody, this);
+      Registration.addListener(doc.documentElement, mouseEventName, this.__handleMouseUpOnDocument, this);
+
+      Registration.addListener(doc.documentElement, "contextmenu", this.__handleContextMenuEvent, this);
     },
 
 
@@ -2196,19 +2174,41 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * This method is invoked for mshtml on "click" events and
      * on "mouseup" events for all others.
      *
-     * @param e {Object} Event object
+     * @param e {qx.event.type.Mouse} mouse event instance
      * @return {void}
      */
-    _handleMouseEvent : function(e)
+    _handleMouseUpOnBody : function(e)
     {
       if (qx.core.Variant.isSet("qx.debug", "on") &&
           qx.core.Setting.get("htmlarea.debug") == "on") {
         this.debug("handleMouse " + e.getType());
       }
+      this.__mouseUpOnBody = true;
 
-      /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
     },
+
+
+    /**
+     * Checks if the user has performed a selection and released  the mouse
+     * button outside of the editor. If so the body element is re-activated
+     * to receive the keypress events correctly.
+     * 
+     * @param e {qx.event.type.Mouse} mouse event instance
+     * @return {void}
+     * @signature function(e)
+     */
+    _handleMouseUpOnDocument : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(e) {},
+      
+      "default" : function(e)
+      {
+        if (!this.__mouseUpOnBody) {
+          qx.bom.Element.activate(this.getContentBody());
+        }
+        this.__mouseUpOnBody = false;
+      }
+    }),
 
 
     /**
@@ -3240,33 +3240,26 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       /* TODO: complete disposing */
       var doc = this._getIframeDocument();
+      var Registration = qx.event.Registration;
+            
+      Registration.removeListener(doc.body, "keypress", this._handleKeyPress, this);
+      Registration.removeListener(doc.body, "keyup", this._handleKeyUp, this);
+      Registration.removeListener(doc.body, "keydown", this._handleKeyDown, this);
 
-      // ************************************************************************
-      //   WIDGET KEY EVENTS
-      // ************************************************************************
-      qx.event.Registration.removeListener(doc.body, "keypress",  this._handleKeyPress, this);
-      qx.event.Registration.removeListener(doc.body, "keyup",    this._handleKeyUp, this);
-      qx.event.Registration.removeListener(doc.body, "keydown", this._handleKeyDown, this);
-
-      // ************************************************************************
-      //   WIDGET FOCUS/BLUR EVENTS
-      // ************************************************************************
       var focusBlurTarget = qx.bom.client.Engine.WEBKIT ? this._getIframeWindow() : doc.body;
-      qx.event.Registration.removeListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-      qx.event.Registration.removeListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
-      qx.event.Registration.removeListener(doc, "focusout", this.__handleFocusOutEvent);
+      Registration.removeListener(focusBlurTarget, "focus", this.__handleFocusEvent);
+      Registration.removeListener(focusBlurTarget, "blur",  this.__handleBlurEvent);
+      Registration.removeListener(doc, "focusout", this.__handleFocusOutEvent);
 
-
-      // ************************************************************************
-      //   WIDGET MOUSE EVENTS
-      // ************************************************************************
-      qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
-      qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
+      var mouseEventName = qx.bom.client.Engine.MSHTML ? "click" : "mouseup";
+      Registration.removeListener(doc.body, mouseEventName, this.__handleMouseUpOnBody, this);
+      Registration.removeListener(doc.body, mouseEventName, this.__handleMouseUpOnDocument, this);
+      Registration.removeListener(doc.documentElement, "contextmenu", this.__handleContextMenuEvent, this);
     } catch (ex) {};
 
 
     this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent",
-                        "handleFocusOut", "handleMouseEvent", "__documentSkeletonParts",
-                        "__iframe");
+                        "__handleFocusOutEvent", "handleMouseUpOnBody", "__handleMouseUpOnDocument", 
+                        "__documentSkeletonParts", "__iframe");
   }
 });
