@@ -183,16 +183,12 @@ qx.Class.define("htmlarea.command.UndoManager",
         if (command == "undo" && this.__undoStack.length == 0)
         {
           this.__undoPossible = false;
-
-          // Fire an undo/redo state event
-          this.__updateUndoRedoState();
+          this.__fireUndoRedoStateEvent();
         }
         else if (command == "redo" && this.__redoStack.length == 0)
         {
           this.__redoPossible = false;
-
-          // Fire an undo/redo state event
-          this.__updateUndoRedoState();
+          this.__fireUndoRedoStateEvent();
         }
       }
 
@@ -310,9 +306,7 @@ qx.Class.define("htmlarea.command.UndoManager",
          }
 
          this.__redoPossible = true;
-
-         // Fire an update event
-         this.__updateUndoRedoState();
+         this.__fireUndoRedoStateEvent();
 
          return result;
        }
@@ -586,9 +580,7 @@ qx.Class.define("htmlarea.command.UndoManager",
            }
 
            this.__undoPossible = true;
-
-           // Fire an update event
-           this.__updateUndoRedoState();
+           this.__fireUndoRedoStateEvent();
          }
 
          return result;
@@ -954,8 +946,7 @@ qx.Class.define("htmlarea.command.UndoManager",
        this.__redoPossible = false;
        this.__redoStack    = [];
 
-       /* Fire an update event  */
-       this.__updateUndoRedoState();
+       this.__fireUndoRedoStateEvent();
      },
 
 
@@ -1106,8 +1097,7 @@ qx.Class.define("htmlarea.command.UndoManager",
           this.__currentContent = this.__doc.body.innerHTML;
         }
   
-        /* Fire an update event  */
-        this.__updateUndoRedoState();
+        this.__fireUndoRedoStateEvent();
       }
     },
 
@@ -1306,7 +1296,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      *
      * @return {void}
      */
-    __updateUndoRedoState : function()
+    __fireUndoRedoStateEvent : function()
     {
       qx.event.Timer.once(function(e)
       {
