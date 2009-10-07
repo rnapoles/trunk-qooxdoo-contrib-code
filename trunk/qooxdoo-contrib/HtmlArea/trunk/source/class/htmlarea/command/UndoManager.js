@@ -71,8 +71,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     __redoPossible : false,
     __undoPossible : false,
 
-    /* Flag for the undo-mechanism to monitor the content changes */
-    __startTyping : false,
+    __contentChange : false,
 
     __knownActionTypes : null,
 
@@ -197,6 +196,8 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
       }
 
+      this.__contentChange = false;
+
       return result;
     },
 
@@ -264,8 +265,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
        var result;
 
-       // Check if any content changes occured
-       if (this.__startTyping) {
+       if (this.__contentChange) {
          this.__addAdditionalContentUndoStep();
        }
 
@@ -309,7 +309,6 @@ qx.Class.define("htmlarea.command.UndoManager",
            this.error("actionType " + undoStep.actionType + " is not managed! Please provide a handler method!");
          }
 
-         this.__startTyping = false;
          this.__redoPossible = true;
 
          // Fire an update event
@@ -586,7 +585,6 @@ qx.Class.define("htmlarea.command.UndoManager",
              this.error("actionType " + redoStep.actionType + " is not managed! Please provide a handler method!");
            }
 
-           this.__startTyping  = false;
            this.__undoPossible = true;
 
            // Fire an update event
@@ -947,7 +945,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       */
      __updateUndoStack : function(changeInfo)
      {
-       if (this.__startTyping) {
+       if (this.__contentChange) {
          this.__addAdditionalContentUndoStep();
        }
 
@@ -980,7 +978,7 @@ qx.Class.define("htmlarea.command.UndoManager",
 
          this.__addToUndoStack(undoObject);
 
-         this.__startTyping = false;
+         this.__contentChange = false;
        }
      },
 
@@ -1052,7 +1050,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     _handleKeyPress : function(e)
     {
-      var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
+      var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+      var isCtrlPressed = e.isCtrlPressed();
 
       switch(keyIdentifier)
       {
@@ -1065,42 +1064,51 @@ qx.Class.define("htmlarea.command.UndoManager",
         case "pagedown":
         case "home":
         case "end":
-          this.__startTyping  = false;
-          this.__undoPossible = true;
-
-          /* Fire an update event  */
-          this.__updateUndoRedoState();
+        case "enter":
+          // these keys do not mark a content change by the user
         break;
 
-        case "enter":
-        case "space":
-          this.__undoPossible = true;
-
-          /* Fire an update event  */
-          this.__updateUndoRedoState();
+        case "a":
+        case "b":
+        case "i":
+        case "u":
+        case "k":
+        case "y":
+        case "z":
+          // hitting hotkeys do not mark a content change  
+          if (!isCtrlPressed) {
+            this.__markContentChange();
+          }
         break;
 
         default:
-          // if the user starts typing
-          if(! (e.isCtrlPressed() && (keyIdentifier == "z" || keyIdentifier == "y")) ) {
-            this.__redoPossible = false;
-            this.__redoStack    = [];
-          }
-
-          if (!this.__startTyping)
-          {
-            this.__startTyping = true;
-            this.__undoPossible = true;
-
-            // store current content for adding it to undo stack later
-            if (qx.core.Variant.isSet("qx.client", "mshtml")) {
-              this.__currentContent = this.__doc.body.innerHTML;
-            }
-
-            /* Fire an update event  */
-            this.__updateUndoRedoState();
-          }
+          this.__redoPossible = false;
+          this.__redoStack = [];
+          this.__markContentChange();
        }
+    },
+    
+    
+    /**
+     * A content change which is handled as separate undo step is marked.
+     * 
+     * @return {void}
+     */
+    __markContentChange : function()
+    {
+      if (!this.__contentChange)
+      {
+        this.__contentChange = true;
+        this.__undoPossible = true;
+  
+        // store current content for adding it to undo stack later
+        if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+          this.__currentContent = this.__doc.body.innerHTML;
+        }
+  
+        /* Fire an update event  */
+        this.__updateUndoRedoState();
+      }
     },
 
 
