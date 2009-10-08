@@ -60,33 +60,45 @@ qx.Class.define("blueprint.Application",
             // var button1 = new qx.ui.form.Button("First Button", "blueprint/test.png");
 
             var buttonObj = {
-                "objectClass":"blueprint.ui.form.Button",
-                "objectId":"refresh_button",
-                "type":"object",
-                "qxSettings":{
-                    "label":"Refresh",
-                    "icon":"icon/16/silk/arrow_refresh.png"
+                "objectClass": "blueprint.ui.container.Composite",
+                "objectId": "",
+                "type": "top_container",
+                "qxSettings": {
+
                 },
-                "constructorSettings":{
-                    "execute":"tablerefresh",
-                    "target":"table"
-                }
+                "constructorSettings": {
+                    "innerLayout": "qx.ui.layout.Canvas" 
+                },
+                "blueprintScripts": {
+                    "buttonListener": "$mybutton.addListener(\"execute\", function(e) {alert(\"Hello World!\");});" 
+                },
+                "contents": [
+                    {
+                        "layoutmap": {
+                            "top": 50,
+                            "left": 50 
+                        },
+                        "object": {
+                            "objectClass": "blueprint.ui.form.Button",
+                            "objectId": "mybutton",
+                            "type": "object",
+                            "qxSettings": {
+                                "label": "First Button" 
+                            },
+                            "constructorSettings": {
+
+                            } 
+                        } 
+                    } 
+                ]
             };
-            var test1 = blueprint.Manager.getInstance().generate(buttonObj, "new_form", false);
+            
+            var test1 = blueprint.Manager.getInstance().generate(buttonObj, null, "hello_world", false);
 
             // Document is the application root
             var doc = this.getRoot();
 
-
             doc.add(test1, {top: 50, left: 50});
-
-            // Add an event listener
-            /*
-            button1.addListener("execute", function(e) {
-                alert("Hello World");
-            });
-            */
-
 
         }
     }
