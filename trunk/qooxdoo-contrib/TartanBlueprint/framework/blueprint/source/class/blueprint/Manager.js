@@ -63,12 +63,12 @@ qx.Class.define("blueprint.Manager", {
     				// A good example of a prerequisite would be a RadioGroup. It is required to manage radio buttons but does not exist in the
     				// layout as an object.
 				
-    				if (vData.prerequsites != undefined) {
-    					for (var i=0;i<vData.prerequsites.length;i++) {
-    						if (vData.prerequsites[i].object.objectId == undefined || vData.prerequsites[i].object.objectId == null || vData.prerequsites[i].object.objectId == '') {
+    				if (vData.prerequisites != undefined) {
+    					for (var i=0;i<vData.prerequisites.length;i++) {
+    						if (vData.prerequisites[i].object.objectId == undefined || vData.prerequisites[i].object.objectId == null || vData.prerequisites[i].object.objectId == '') {
     							this.warn('Prerequisite ' + vData.objectClass + ' created without an objectId.');
     						}
-    						this.generate(vData.prerequsites[i].object, this, namespace);
+    						this.generate(vData.prerequisites[i].object, this, namespace);
     					}
     				}
     			}
