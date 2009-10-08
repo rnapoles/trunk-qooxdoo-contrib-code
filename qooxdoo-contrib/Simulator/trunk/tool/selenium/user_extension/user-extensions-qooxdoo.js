@@ -1551,6 +1551,7 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
       }
     } catch(e) {
       if (curr.classname === qxclass) {
+        LOG.warn("instanceof test failed for " + qxclass + ", falling back to classname string comparison. ");
         return curr;
       }
     }
