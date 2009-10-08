@@ -38,7 +38,8 @@
             "include" :     
             [
             "${APPLICATION}.*",
-            "qx.*"
+            "qx.*",
+            "blueprint.*"
             ],
             "exclude" :
             [
@@ -63,7 +64,8 @@
             "include" :     
             [
             "${APPLICATION}.*",
-            "qx.*"
+            "qx.*",
+            "blueprint.*"
             ],
             "exclude" :
             [

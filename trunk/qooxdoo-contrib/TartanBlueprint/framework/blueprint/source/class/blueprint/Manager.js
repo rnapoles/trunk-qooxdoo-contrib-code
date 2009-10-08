@@ -110,142 +110,14 @@ qx.Class.define("blueprint.Manager", {
 		
 		__buildObject : function(vData, namespace, skipRecursion)
 		{
-			var newItem = null;
-			switch(vData.objectClass) {
-				case 'blueprint.ui.basic.Image':
-				newItem = new blueprint.ui.basic.Image(vData, namespace, skipRecursion);
-				break;
-
-				case 'blueprint.ui.basic.Label':
-				newItem = new blueprint.ui.basic.Label(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.container.Composite':
-				newItem = new blueprint.ui.container.Composite(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.container.Scroll':
-				newItem = new blueprint.ui.container.Scroll(vData, namespace, skipRecursion);
-				break;
-
-				case 'blueprint.ui.form.Button':
-				newItem = new blueprint.ui.form.Button(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.CheckBox':
-				newItem = new blueprint.ui.form.CheckBox(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.DateField':
-				newItem = new blueprint.ui.form.DateField(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.HiddenField':
-				newItem = new blueprint.ui.form.HiddenField(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.PasswordField':
-				newItem = new blueprint.ui.form.PasswordField(vData, namespace, skipRecursion);
-				break;
-							
-				case 'blueprint.ui.form.RadioGroup':
-				newItem = new blueprint.ui.form.RadioGroup(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.RadioButton':
-				newItem = new blueprint.ui.form.RadioButton(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.SelectBox':
-				newItem = new blueprint.ui.form.SelectBox(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.Slider':
-				newItem = new blueprint.ui.form.Slider(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.Spinner':
-				newItem = new blueprint.ui.form.Spinner(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.form.TextArea':
-				newItem = new blueprint.ui.form.TextArea(vData, namespace, skipRecursion);
-				break;
-
-				case 'blueprint.ui.form.TextField':
-				newItem = new blueprint.ui.form.TextField(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.groupbox.GroupBox':
-				newItem = new blueprint.ui.groupbox.GroupBox(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.menu.Button':
-				newItem = new blueprint.ui.menu.Button(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.menu.Separator':
-				newItem = new blueprint.ui.menu.Separator(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.table.cellrenderer.Default':
-				newItem = new blueprint.ui.table.cellrenderer.Default(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.table.model.Simple':
-				newItem = new blueprint.ui.table.model.Simple(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.table.Table':
-				newItem = new blueprint.ui.table.Table(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.tabview.Page':
-				newItem = new blueprint.ui.tabview.Page(vData, namespace, skipRecursion);
-				break;
-
-				case 'blueprint.ui.tabview.TabView':
-				newItem = new blueprint.ui.tabview.TabView(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.Button':
-				newItem = new blueprint.ui.toolbar.Button(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.CheckBox':
-				newItem = new blueprint.ui.toolbar.CheckBox(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.MenuButton':
-				newItem = new blueprint.ui.toolbar.MenuButton(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.RadioButton':
-				newItem = new blueprint.ui.toolbar.RadioButton(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.Separator':
-				newItem = new blueprint.ui.toolbar.Separator(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.SplitButton':
-				newItem = new blueprint.ui.toolbar.SplitButton(vData, namespace, skipRecursion);
-				break;
-				
-				case 'blueprint.ui.toolbar.ToolBar':
-				newItem = new blueprint.ui.toolbar.ToolBar(vData, namespace, skipRecursion);
-				break;
-
-				case 'blueprint.ui.window.Window':
-				newItem = new blueprint.ui.window.Window(vData, namespace, skipRecursion);
-				break;
-
-				default:
-				this.warn("Manager doesn't know what to do with: " + vData.objectClass);
-				eval("newItem = new blueprint." + vData.objectClass + "(vData, namespace, skipRecursion)");
-				break;
+			var clazz = qx.Class.getByName(vData.objectClass);
+			if (clazz != undefined) {
+                var newItem = new clazz(vData, namespace, skipRecursion);
+            
+			    return newItem;
+			} else {
+			    throw new Error("Clazz not found for '" + vData.objectClass + "'. All blueprint classes were not included. Try generating your project using the source-all job?");
 			}
-			return newItem;
 		}
 	}
 });
