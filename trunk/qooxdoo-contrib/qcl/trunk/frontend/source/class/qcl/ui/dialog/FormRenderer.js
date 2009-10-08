@@ -17,6 +17,9 @@
      * Martin Wittemann (martinwittemann) 
 
 ************************************************************************ */
+/* ******
+#require(qx.ui.form.renderer.Single) 
+** */
 
 /**
  * Form renderer renderer for {@link qx.ui.form.Form}. This is a 
