@@ -1495,9 +1495,9 @@ qx.Class.define("htmlarea.command.Manager",
          }
 
          // Get the _real_ color if the collected style has the default value
-         // "transparent" by retrieving it from the parant element.
+         // "transparent" by retrieving it from the parent element.
          if(style == "background-color" && styleValue == "transparent") {
-           resultMap[style] = this.__getBackgroundColor(parents);
+           resultMap[style] = this.__getBackgroundColor(elementAndParents);
          }
          // collect all "text-decoration" styles along the parent hierarchy
          // to get the correct (with all inherited values) "text-decoration" style
