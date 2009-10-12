@@ -161,7 +161,7 @@ qx.Class.define("qcl.data.model.TreeVirtual",
   construct : function()
   {
     this.base(arguments);
-    this.__nodeIdMap = {};
+    this._nodeIdMap = {};
     this.__orphanNodes = [];
     
   },  
@@ -188,7 +188,7 @@ qx.Class.define("qcl.data.model.TreeVirtual",
     /**
      * Map that connects server node ids with client node ids
      */
-    __nodeIdMap : null,
+    _nodeIdMap : null,
     
     /**
      * Nodes that cannot be attached to the parent at the time their data
@@ -223,7 +223,7 @@ qx.Class.define("qcl.data.model.TreeVirtual",
      * @param nodeId {Int} The id of the node (index in the data array)
      * @return {Array} The ids of the nodes added
      */    
-    __addNodeData : function( parentNodeId, data, nodeId )
+    _addNodeData : function( parentNodeId, data, nodeId )
     {
 
       /*
@@ -339,7 +339,7 @@ qx.Class.define("qcl.data.model.TreeVirtual",
           var childNodeId = childIds[i];
 
           //this.info( "Adding Child (" + childNodeId + ") to node '" + node.label + "' #" + newNodeId + "(" + nodeId + ")");
-          var childNodeIds = this.__addNodeData( newNodeId, data, childNodeId );
+          var childNodeIds = this._addNodeData( newNodeId, data, childNodeId );
 
           /*
            * mark node as already added
@@ -440,7 +440,7 @@ qx.Class.define("qcl.data.model.TreeVirtual",
       for ( var i=0; i< treeData.length; i++ )
       {
         node = treeData[i];
-        nodeIds.concat( this.__addNodeData( parentNodeId, treeData, i ) );
+        nodeIds.concat( this._addNodeData( parentNodeId, treeData, i ) );
       };
 
       return nodeIds;
@@ -480,6 +480,26 @@ qx.Class.define("qcl.data.model.TreeVirtual",
       this.__dontFireEvents = false;
     },
 
+    /**
+     * Checks if a the server-side node id exists for the given
+     * client-side id
+     * 
+     * @param clientNodeId {Integer}
+     * @return {Boolean}
+     */
+    hasServerNodeId : function( clientNodeId )
+    {
+      try
+      {
+        var serverNodeId =  this.getData()[ clientNodeId ].data.id;
+      }
+      catch(e)
+      {
+        return false;
+      }
+      return ( serverNodeId != undefined );
+    },    
+    
     /**
      * Returns the server-side node id, given its client-side id
      * @param clientNodeId {Integer}
@@ -525,7 +545,18 @@ qx.Class.define("qcl.data.model.TreeVirtual",
       var node = this.getNode(clientNodeId);
       if ( ! node.data ) node.data = {};
       node.data.parentId = serverParentNodeId;
-    },    
+    },
+    
+    /**
+     * Checks if a client side node id exists for the given
+     * server side node id.
+     * @param  serverNodeId {Integer}
+     * @return {Boolean}
+     */
+    hasClientNodeId : function( serverNodeId )
+    {
+      return ( this._nodeIdMap[serverNodeId] != undefined )
+    },
 
     /**
      * Returns the client-side node id, given its server-side  id
@@ -535,7 +566,7 @@ qx.Class.define("qcl.data.model.TreeVirtual",
     getClientNodeId : function( serverNodeId )
     {
       if ( ! serverNodeId ) return 0;
-      var clientNodeId = this.__nodeIdMap[serverNodeId];
+      var clientNodeId = this._nodeIdMap[serverNodeId];
 
       if ( clientNodeId == undefined )
       {
@@ -547,14 +578,29 @@ qx.Class.define("qcl.data.model.TreeVirtual",
     /**
      * Maps the client node id to a server node id
      * @param serverNodeId {Integer}
-     * @param clientNodeId {Integer}
+     * @param clientNodeId {Integer} 
      * @return {Void}
      */
     mapServerIdToClientId : function ( serverNodeId, clientNodeId )
     {
-      this.__nodeIdMap[serverNodeId] = clientNodeId;
-    },       
+      this._nodeIdMap[serverNodeId] = clientNodeId;
+    },        
 
+    /**
+     * builds the map connecting server node id with client node id
+     */
+    buildNodeIdMap : function()
+    {
+      this._nodeIdMap = {};
+      for ( var i=0; i < this._nodeArr.length; i++ )
+      {
+        var node = this._nodeArr[i];
+        if ( node.data && node.data.id )
+        {
+          this._nodeIdMap[ node.data.id ] = node.nodeId;
+        }
+      }
+    }, 
 
     /*
      ---------------------------------------------------------------------------
@@ -749,10 +795,10 @@ qx.Class.define("qcl.data.model.TreeVirtual",
      *
      * See overridden method for details
      */
-    setColumnData : function( nodeId, columnIndex, data)
+    setColumnData : function( nodeId, columnIndex, value)
     {
-      var old = this.getData()[nodeId].columnData[columnIndex];
-      this.getData()[nodeId].columnData[columnIndex] = data;
+      var oldValue = this.getData()[nodeId].columnData[columnIndex];
+      this.getData()[nodeId].columnData[columnIndex] = value;
 
       /*
        * event for databinding listeners
