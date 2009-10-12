@@ -118,7 +118,19 @@ simulation.Simulation.prototype.runTest = function()
     if (sampleArr[i] !== "") {
       print("Selecting next sample: " + sampleArr[i]);
       this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton', '', 'Clicking menu button');
-      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);      
+      
+      /* Since Selenium starts the browser in windowed mode, the menu might have 
+       * scrolling arrows. In that case, the locator must include the additional
+       * MenuSlideBarWidget.
+       */
+      try {
+        // use Selenium's qxClick (without the wrapper) so exceptions won't be caught.
+        this.__sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']');
+      }
+      catch(ex) {
+        // try again with the MenuSlideBar
+        this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/qx.ui.menu.MenuSlideBar/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
+      }      
 
       var boxCont = this.killBoxes();
       
