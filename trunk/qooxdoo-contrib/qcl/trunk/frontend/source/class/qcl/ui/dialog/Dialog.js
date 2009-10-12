@@ -20,6 +20,7 @@
 /* ************************************************************************
 #asset(qx.icontheme/22/actions/dialog-cancel.png)
 #asset(qx.icontheme/22/actions/dialog-ok.png)
+#ignore(qcl.ui.dialog)
 ************************************************************************ */
 
 
