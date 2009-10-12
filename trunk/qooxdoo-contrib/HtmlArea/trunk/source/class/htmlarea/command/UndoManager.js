@@ -416,7 +416,7 @@ qx.Class.define("htmlarea.command.UndoManager",
           }
         }
 
-        return this.__doc.execCommand("Undo", false, null);
+        return this.__performUndo();
       }
     }),
 
@@ -451,7 +451,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __executeExtraUndoStep : function()
     {
-      this.__doc.execCommand("Undo", false, null);
+      this.__performUndo();
 
       if (this.__undoStack.length > 0)
       {
@@ -471,7 +471,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       this.__addToRedoStack(undoInfo);
 
-      return this.__doc.execCommand("Undo", false, null);
+      return this.__performUndo();
     },
 
 
@@ -488,7 +488,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         this.__addToRedoStack(undoInfo);
 
         try {
-          return this.__doc.execCommand("Undo", false, null);
+          return this.__performUndo();
         }
         catch(error)
         {
@@ -505,9 +505,25 @@ qx.Class.define("htmlarea.command.UndoManager",
       {
         this.__addToRedoStack(undoInfo);
 
-        this.__doc.execCommand("Undo", false, null);
+        return this.__performUndo();
       }
     }),
+
+
+    /**
+     * Wrapper method for undo execCommand to prevent any exceptions bubbling
+     * up to the user.
+     * 
+     * @return {Boolean} Success of execCommand
+     */
+    __performUndo : function()
+    {
+      try {
+        return this.__doc.execCommand("Undo", false, null);
+      } catch(e) {
+        return false;
+      }
+    },
 
 
 
@@ -614,7 +630,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       {
         this.__addToUndoStack(redoInfo);
 
-        return this.__doc.execCommand("Redo", false, null);
+        return this.__performRedo();
       }
     }),
 
@@ -633,7 +649,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       {
         this.__addToUndoStack(redoInfo);
 
-        var result = this.__doc.execCommand("Redo", false, null);
+        var result = this.__performRedo();
 
         if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
@@ -720,7 +736,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       var nextRedoStep = this.__redoStack.pop();
       this.__addToUndoStack(nextRedoStep);
-      this.__doc.execCommand("Redo", false, null);
+      this.__performRedo();
     },
 
 
@@ -763,7 +779,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       this.__addToUndoStack(redoInfo);
 
-      return this.__doc.execCommand("Redo", false, null);
+      return this.__performRedo();
     },
 
 
@@ -780,9 +796,25 @@ qx.Class.define("htmlarea.command.UndoManager",
       "default" : function(redoInfo)
       {
         this.__addToUndoStack(redoInfo);
-        return this.__doc.execCommand("Redo", false, null);
+        return this.__performRedo();
       }
     }),
+
+
+    /**
+     * Wrapper method for redo execCommand to prevent any exceptions bubbling
+     * up to the user.
+     * 
+     * @return {Boolean} Success of execCommand
+     */
+    __performRedo : function()
+    {
+      try {
+        return this.__doc.execCommand("Redo", false, null);
+      } catch(e) {
+        return false;
+      }
+    },
 
 
     /* *******************************************************
