@@ -1039,7 +1039,7 @@ simulation.Simulation.prototype.logRingBufferEntries = function()
  */
 simulation.Simulation.prototype.qxShutdown = function()
 {
-  this.getEval(selWin + ".qx.core.ObjectRegistry.shutdown()", "Shutting down qooxdoo application");
+  this.getEval('selenium.qxStoredVars["autWindow"].qx.core.ObjectRegistry.shutdown()', "Shutting down qooxdoo application");
 };
 
 /**
