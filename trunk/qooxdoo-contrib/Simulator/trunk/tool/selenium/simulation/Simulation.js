@@ -982,9 +982,9 @@ simulation.Simulation.prototype.logResults = function()
  */
 simulation.Simulation.prototype.addRingBuffer = function()
 {
-  var rb = "new " + selWin + ".qx.log.appender.RingBuffer()";
+  var rb = "new selenium.qxStoredVars['autWindow'].qx.log.appender.RingBuffer()";
   this.storeEval(rb, "ringBuffer");  
-  this.getEval(selWin + ".qx.log.Logger.register(selenium.qxStoredVars['ringBuffer'])", "Registering log appender");
+  this.getEval("selenium.qxStoredVars['autWindow'].qx.log.Logger.register(selenium.qxStoredVars['ringBuffer'])", "Registering log appender");
   //this.getEval("selenium.qxStoredVars['ringBuffer'].clearHistory()", "Clearing log history");
 };
 
