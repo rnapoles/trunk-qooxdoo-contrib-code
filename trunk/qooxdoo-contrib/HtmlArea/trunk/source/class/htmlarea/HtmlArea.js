@@ -442,7 +442,7 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.__editorComponent.addListener("ready", this.__delegateEvent, this);
       this.__editorComponent.addListener("focused", this.__delegateEvent, this);
-      this.__editorComponent.addListener("focusout", this.__delegateEvent, this);
+      this.__editorComponent.addListener("focusOut", this.__delegateEvent, this);
 
       this.__editorComponent.addListener("loadingError", this.__delegateDataEvent, this);
       this.__editorComponent.addListener("cursorContext", this.__delegateDataEvent, this);
@@ -1208,8 +1208,8 @@ qx.Class.define("htmlarea.HtmlArea",
    */
   destruct : function()
   {
-    this._disposeObjects("__blockerElement");
-    this._disposeFields("__postPonedProperties", "__editorComponent");
+    this._disposeObjects("__blockerElement", "__editorComponent");
+    this._disposeFields("__postPonedProperties");
 
     qx.event.Registration.removeListener(document.body, "mousedown", this.block, this, true);
     qx.event.Registration.removeListener(document.body, "mouseup", this.release, this, true);
