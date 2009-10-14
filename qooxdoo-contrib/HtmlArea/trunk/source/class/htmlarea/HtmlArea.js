@@ -369,7 +369,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _createBlockerElement : function()
     {
-      el = new qx.html.Element("div");
+      var el = new qx.html.Element("div");
 
       el.setStyle("zIndex", 20);
       el.setStyle("position", "absolute");
