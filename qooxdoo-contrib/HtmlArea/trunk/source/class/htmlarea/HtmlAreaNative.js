@@ -1028,9 +1028,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     getWords : function(node)
     {
-      if (!node)
-      {
+      if (!node) {
         node = this.getContentBody();
+      }
+
+      if (!node) {
+        return [];
       }
 
       // Clone the node
@@ -1633,7 +1636,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       if (qx.core.Variant.isSet("qx.debug", "on") &&
           qx.core.Setting.get("htmlarea.debug") == "on") {
-        this.debug(e.getType() + " | " + keyIdentifier);
+        //this.debug(e.getType() + " | " + keyIdentifier);
       }
 
       /*
@@ -1741,7 +1744,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
         if (qx.core.Variant.isSet("qx.debug", "on") &&
             qx.core.Setting.get("htmlarea.debug") == "on") {
-          this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase());
+          //this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase());
         }
 
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
@@ -1785,7 +1788,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       if (qx.core.Variant.isSet("qx.debug", "on") &&
           qx.core.Setting.get("htmlarea.debug") == "on") {
-        this.debug(e.getType() + " | " + keyIdentifier);
+        //this.debug(e.getType() + " | " + keyIdentifier);
       }
 
 
@@ -2139,6 +2142,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     _handleFocusEvent : function(e)
     {
       this.__storedSelectedHtml = null;
+
       this.fireEvent("focused");
     },
 
@@ -2165,7 +2169,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       if (this.__storedSelectedHtml == null) {
         this.__storedSelectedHtml = this.getSelectedHtml();
       }
-      this.fireEvent("focusout");
+
+      this.fireEvent("focusOut");
     },
 
 
@@ -3257,8 +3262,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       Registration.removeListener(doc.documentElement, "contextmenu", this.__handleContextMenuEvent, this);
     } catch (ex) {};
 
+    this._disposeObjects("__commandManager");
 
-    this._disposeFields("__commandManager", "__handleFocusEvent", "__handleBlurEvent",
+    this._disposeFields("__handleFocusEvent", "__handleBlurEvent",
                         "__handleFocusOutEvent", "handleMouseUpOnBody", "__handleMouseUpOnDocument", 
                         "__documentSkeletonParts", "__iframe");
   }
