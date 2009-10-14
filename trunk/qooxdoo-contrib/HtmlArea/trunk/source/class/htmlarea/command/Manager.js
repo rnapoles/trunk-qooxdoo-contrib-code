@@ -261,7 +261,6 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Checks if the focus node is not inside a paragraph tag.
      *
-     * @type member
      * @return {Boolean} True if no paragraph is found, otherwise false.
      */
     __paragraphMissing : function()
@@ -301,7 +300,6 @@ qx.Class.define("htmlarea.command.Manager",
      * Inserts a paragraph tag around selection or at the insert point
      * using executeCommand.
      *
-     * @type member
      */
     __insertHelperParagraph : function()
     {
@@ -554,7 +552,6 @@ qx.Class.define("htmlarea.command.Manager",
      /**
       * Inserts a paragraph when hitting the "enter" key
       *
-      * @type member
       * @signature function()
       * @return {Boolean} whether the key event should be stopped or not
       */
@@ -815,7 +812,6 @@ qx.Class.define("htmlarea.command.Manager",
       * This only applies for IE since other browsers are removing the indents
       * as default.
       *
-      * @type member
       * @param value {String} list value
       * @param commandObject {Object} command object
       * @return {Boolean} Success of operation
@@ -852,7 +848,6 @@ qx.Class.define("htmlarea.command.Manager",
       * This little helper method takes a node as argument and looks along the
       * parent hierarchy for any "blockquote" elements and removes them.
       *
-      * @type member
       * @param startNode {Node} starting point of the lookup
       * @return {void}
       */
@@ -1225,7 +1220,6 @@ qx.Class.define("htmlarea.command.Manager",
       *
       * *** ONLY IN USE FOR GECKO ***
       *
-      * @type member
       * @param groupedStyles {Map} Data structure with grouped styles.
       *                            Structure of the "__getCurrentStylesGrouped" method.
       * @return {String} String containing tags with special style settings.
@@ -1286,7 +1280,6 @@ qx.Class.define("htmlarea.command.Manager",
       *
       * *** ONLY IN USE FOR GECKO ***
       *
-      * @type member
       * @return {DocumentFragment} documentFragment containing styled elements
       */
      __generateHelperNodes : function()
@@ -1397,7 +1390,6 @@ qx.Class.define("htmlarea.command.Manager",
       * Internal helper function which retrieves all style settings, which are set
       * on the focus node and saves them on a span element.
       *
-      * @type member
       * @param elem {Element ? null} optional element reference the lookup should start
       * @return {Map} map with all style settings with style attributes as keys.
       */
@@ -1932,7 +1924,6 @@ qx.Class.define("htmlarea.command.Manager",
      /**
       * Sets the background image of the document
       *
-      * @type member
       * @param value {Array} Array consisting of url [0], background-repeat [1] and background-position [2]
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of operation
@@ -2097,12 +2088,14 @@ qx.Class.define("htmlarea.command.Manager",
     },
 
     /**
-      * TODOC
+      * Special implementation for webkit browser to set the text-decoration
+      * underline. In webkit the apply of text-decoration is different to other
+      * browsers and cannot be performed with an <code>execCommand</code> 
       *
-      * @type member
       * @param value {String} color info
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of operation
+      * @signature function(value, commandObject)
       */
      __setUnderline  : qx.core.Variant.select("qx.client", {
        "webkit" : function(value, commandObject)
@@ -2152,12 +2145,14 @@ qx.Class.define("htmlarea.command.Manager",
      }),
 
      /**
-      * TODOC
+      * Special implementation for webkit browser to set the text-decoration
+      * strikethrough. In webkit the apply of text-decoration is different to other
+      * browsers and cannot be performed with an <code>execCommand</code> 
       *
-      * @type member
       * @param value {String} color info
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of operation
+      * @signature function(value, commandObject)
       */
      __setStrikeThrough  : qx.core.Variant.select("qx.client", {
        "webkit" : function(value, commandObject)
