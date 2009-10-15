@@ -2184,6 +2184,6 @@ qx.Class.define("htmlarea.command.Manager",
    */
   destruct : function()
   {
-    this._disposeFields("__doc", "__editorInstance", "_commands");
+    this._disposeFields("__doc", "__editorInstance", "_commands", "__invalidFocusCommands", "__fontSizeNames");
   }
 });

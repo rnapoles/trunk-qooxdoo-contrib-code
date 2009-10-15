@@ -3266,6 +3266,6 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     this._disposeFields("__handleFocusEvent", "__handleBlurEvent",
                         "__handleFocusOutEvent", "handleMouseUpOnBody", "__handleMouseUpOnDocument", 
-                        "__documentSkeletonParts", "__iframe");
+                        "__documentSkeletonParts", "__iframe", "__widget");
   }
 });
