@@ -55,19 +55,23 @@ qx.Class.define("bug2765.Application",
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "bug2765/test.png");
+      var container = new qx.ui.container.Scroll().set({
+         width: 400,
+         height: 300
+       });
 
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      this.getRoot().add(container, {left: 50, top: 10});
 
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
+      var content = new qx.ui.container.Composite().set({
+        backgroundColor : "lime",
+        minHeight: 310,
+        maxHeight: 310,
+        minWidth : 400,
+        maxWidth : 400
       });
+
+      container.add(content);
+
     }
   }
 });
