@@ -1209,7 +1209,7 @@ qx.Class.define("htmlarea.HtmlArea",
   destruct : function()
   {
     this._disposeObjects("__blockerElement", "__editorComponent");
-    this._disposeFields("__postPonedProperties");
+    this._disposeFields("__postPonedProperties", "__initValues");
 
     qx.event.Registration.removeListener(document.body, "mousedown", this.block, this, true);
     qx.event.Registration.removeListener(document.body, "mouseup", this.release, this, true);
