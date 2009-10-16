@@ -2130,8 +2130,8 @@ Selenium.prototype.doQxDragAndDrop = function(locator, movementsString, targetLo
     Selenium.prototype.qx.triggerMouseEventQx('mouseup', targetElement, additionalParamsForClick);
   }
   else {
-    triggerMouseEventQx('mousemove', root, additionalParamsForClick);
-    triggerMouseEventQx('mouseup', element, additionalParamsForClick);
+    Selenium.prototype.qx.triggerMouseEventQx('mousemove', root, additionalParamsForClick);
+    Selenium.prototype.qx.triggerMouseEventQx('mouseup', element, additionalParamsForClick);
   }
 };
 
