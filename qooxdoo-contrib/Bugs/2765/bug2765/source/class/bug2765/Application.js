@@ -56,12 +56,12 @@ qx.Class.define("bug2765.Application",
       */
 
       var container = new qx.ui.container.Scroll().set({
-         width: 400,
-         minHeight: 50,
-         maxHeight: 50
+         width : 400,
+         height : 100
        });
 
-      this.getRoot().add(container, {left: 50, top: 10});
+      var doc = this.getRoot();
+      doc.add(container, {left: 50, top: 10});
 
       var content = new qx.ui.container.Composite().set({
         minHeight: 310,
@@ -73,8 +73,52 @@ qx.Class.define("bug2765.Application",
       var label = new qx.ui.basic.Label("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,");
       label.setRich(true);
       content.add(label);
-
       container.add(content);
+
+      var toggleButton = new qx.ui.form.ToggleButton("Change container size");
+      
+      toggleButton.addListener("changeValue", function(e){
+        if (e.getData() === true)
+        {
+          container.set({
+            minWidth: 55,
+            maxWidth: 55,
+            minHeight: 50,
+            maxHeight: 50
+          });
+        }
+        else
+        {
+          container.set({
+            minWidth : 400,
+            minHeight : 100,
+            maxWidth : 400,
+            maxHeight : 100
+          });
+        }
+      }, this);
+      
+      doc.add(toggleButton, {left: 50, top: 140});
+
+      var spinnerX = new qx.ui.form.Spinner(20, 400, 600);
+      var spinnerY = new qx.ui.form.Spinner(20, 100, 200);
+
+      doc.add(spinnerX, {left: 250, top: 140});
+      doc.add(spinnerY, {left: 350, top: 140});
+
+      spinnerX.addListener("changeValue", function(e) {
+        container.set({
+          minWidth : e.getData(),
+          maxWidth : e.getData()
+        })
+      });
+
+      spinnerY.addListener("changeValue", function(e) {
+        container.set({
+          minHeight : e.getData(),
+          maxHeight : e.getData()
+        })
+      });
 
     }
   }
