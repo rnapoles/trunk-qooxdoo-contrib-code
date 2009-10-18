@@ -250,12 +250,12 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Function to use in postprocessing html. See getHtml() and __getHtml().
      */
-    postprocess:
+    postProcess:
     {
       check: "Function",
       nullable: true,
       init: null,
-      apply : "_applyPostprocess"
+      apply : "_applyPostProcess"
     },
 
 
@@ -341,7 +341,7 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
-    _applyPostprocess : function(value, old)
+    _applyPostProcess : function(value, old)
     {
       if (this.__editorComponent != null) {
         this.__editorComponent.setPostProcess(value);
