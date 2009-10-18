@@ -329,10 +329,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param root {Node} Root node (starting point)
      * @param outputRoot {Boolean} Controls whether the root node is also added to the output
      * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
-     * @param postprocess {function} optional function to call which is executed with every element processing
+     * @param postProcess {function} optional function to call which is executed with every element processing
      * @return {String} Content of current node
      */
-    __getHtml : function(root, outputRoot, skipHtmlEncoding, postprocess)
+    __getHtml : function(root, outputRoot, skipHtmlEncoding, postProcess)
     {
       // String builder is array for large text content
       var html = [];
@@ -341,7 +341,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       {
         // This is main area for returning html from iframe content. Content
         // from editor can be sometimes ugly, so it's needed to do some
-        // postprocess to make it beautiful.
+        // postProcess to make it beautiful.
         //
         // The initial version of this function used direct HTML rendering
         // (each tag was rendered). This sometimes caused to render empty
@@ -378,7 +378,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               {
                 for (i=root.firstChild; i; i=i.nextSibling)
                 {
-                  html.push(htmlarea.HtmlAreaNative.__getHtml(i, true, skipHtmlEncoding, postprocess));
+                  html.push(htmlarea.HtmlAreaNative.__getHtml(i, true, skipHtmlEncoding, postProcess));
                 }
                 return html.join("");
               }
@@ -482,12 +482,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             }
 
             // --------------------------------------------------------------
-            // Postprocess
+            // PostProcess
             // --------------------------------------------------------------
 
-            // Call optional postprocess function to modify tag, attributes
+            // Call optional postProcess function to modify tag, attributes
             // or styles in this element.
-            if (postprocess)
+            if (postProcess)
             {
               // create postprocess-info:
               // - info.domElement - current dom element
@@ -502,7 +502,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               };
 
               // call user defined postprocessing function
-              postprocess(info);
+              postProcess(info);
 
               // remove reference to dom element (is it needed ? For IE ?)
               info.domElement = null;
@@ -548,7 +548,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
           for (i = root.firstChild; i; i = i.nextSibling)
           {
-            html.push(htmlarea.HtmlAreaNative.__getHtml(i, true, skipHtmlEncoding, postprocess));
+            html.push(htmlarea.HtmlAreaNative.__getHtml(i, true, skipHtmlEncoding, postProcess));
           }
 
           // Close
@@ -706,9 +706,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
 
     /**
-     * Function to use in postprocessing html. See getHtml() and __getHtml().
+     * Function to use in postProcessing html. See getHtml() and __getHtml().
      */
-    postprocess:
+    postProcess:
     {
       check: "Function",
       nullable: true,
@@ -2665,7 +2665,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         return null;
       }
 
-      return htmlarea.HtmlAreaNative.__getHtml(doc.body, false, skipHtmlEncoding, this.getPostprocess());
+      return htmlarea.HtmlAreaNative.__getHtml(doc.body, false, skipHtmlEncoding, this.getPostProcess());
     },
 
     /**
