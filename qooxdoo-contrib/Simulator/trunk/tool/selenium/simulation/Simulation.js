@@ -61,7 +61,8 @@ simulation.Simulation = function(baseConf, args)
     selPort : 4444,
     stepSpeed : "250",
     globalTimeout : 120000,
-    disposerDebug : false
+    disposerDebug : false,
+    applicationLog : true
   };
   
   /*
@@ -315,8 +316,10 @@ simulation.Simulation.prototype.startSession = function()
     this.addSanitizer();
     this.logEnvironment();
     this.logUserAgent();
-    this.addRingBuffer();
-    this.addRingBufferGetter();
+    if (this.getConfigSetting("applicationLog")) {
+      this.addRingBuffer();
+      this.addRingBufferGetter();
+    }
   }
   catch (ex) {
     this.logEnvironment("file");
@@ -961,7 +964,9 @@ simulation.Simulation.prototype.logResults = function()
     }
   }
   
-  this.logRingBufferEntries();
+  if (this.getConfigSetting("applicationLog")) {
+    this.logRingBufferEntries();
+  }
   
   if (!this.testFailed) {
     if (this.getConfigSetting("debug")) {
