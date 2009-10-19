@@ -486,16 +486,18 @@ Selenium.prototype.clickElementQx = function(element, eventParamString)
   var additionalParamsForClick = new Selenium.prototype.qx.MouseEventParameters(eventParamString);    
   triggerEvent(element, 'focus', false);
   Selenium.prototype.qx.triggerMouseEventQx('mouseover', element, additionalParamsForClick);
-  Selenium.prototype.qx.triggerMouseEventQx('mousedown', element, additionalParamsForClick);
+  Selenium.prototype.qx.triggerMouseEventQx('mousedown', element, additionalParamsForClick);  
+  Selenium.prototype.qx.triggerMouseEventQx('mouseup', element, additionalParamsForClick);
   if (additionalParamsForClick.getParamValue("button", "left") == 2) {
     Selenium.prototype.qx.triggerMouseEventQx('contextmenu', element, additionalParamsForClick);
   }
-  Selenium.prototype.qx.triggerMouseEventQx('mouseup', element, additionalParamsForClick);  
-  if (additionalParamsForClick.getParamValue("double", false)) {
-    Selenium.prototype.qx.triggerMouseEventQx('dblclick', element, additionalParamsForClick);
-  }
   else {
-    Selenium.prototype.qx.triggerMouseEventQx('click', element, additionalParamsForClick);  
+    if (additionalParamsForClick.getParamValue("double", false)) {
+      Selenium.prototype.qx.triggerMouseEventQx('dblclick', element, additionalParamsForClick);
+    }
+    else {
+      Selenium.prototype.qx.triggerMouseEventQx('click', element, additionalParamsForClick);
+    }
   }
   
   // do not blur or mouseout as additional events won't be fired correctly
@@ -504,7 +506,7 @@ Selenium.prototype.clickElementQx = function(element, eventParamString)
 
 
 /**
- * Check wheather an qooxdoo Element is enabled or not
+ * Check whether a qooxdoo Element is enabled or not
  *
  * @type member
  * @param locator {var} an element locator
