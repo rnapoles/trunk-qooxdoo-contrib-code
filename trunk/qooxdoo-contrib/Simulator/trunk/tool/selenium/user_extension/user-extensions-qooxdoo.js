@@ -506,7 +506,7 @@ Selenium.prototype.clickElementQx = function(element, eventParamString)
 
 
 /**
- * Check whether a qooxdoo Element is enabled or not
+ * Check wheather an qooxdoo Element is enabled or not
  *
  * @type member
  * @param locator {var} an element locator
@@ -1314,7 +1314,7 @@ PageBot.prototype._searchQxObjectByQxUserData = function(obj, userDataSearchStri
 PageBot.prototype.qx = {};  // create qx name space
 // some regexps, to safe stack space
 PageBot.prototype.qx.IDENTIFIER = new RegExp('^[a-z$][a-z0-9_\.$]*$', 'i');
-PageBot.prototype.qx.NTHCHILD = /^child\[\d+\]$/i;
+PageBot.prototype.qx.NTHCHILD = /^child\[-?\d+\]$/i;
 PageBot.prototype.qx.ATTRIB = /^\[.*\]$/;
 
 
@@ -1588,17 +1588,27 @@ PageBot.prototype._getQxElementFromStep3 = function(root, childspec)
   var m;
 
   // extract child index
-  m = /child\[(\d+)\]/i.exec(childspec);
+  m = /child\[(-?\d+)\]/i.exec(childspec);
 
   if ((m instanceof Array) && m.length > 1) {
-    idx = m[1];
+    idx = parseInt(m[1], 10);
   } else {
     return null;
   }
 
   childs = this._getQxNodeDescendants(root);
 
-  if (idx < 0 || idx >= childs.length) {
+  // Negative index value: Reverse access  
+  if (idx < 0 ) {
+    if (Math.abs(idx) > childs.length) {
+      return null;
+    } else {
+      var index = (childs.length + idx);
+      return childs[index];
+    }
+  }  
+  
+  if (idx >= childs.length) {
     return null;
   } else {
     return childs[idx];
