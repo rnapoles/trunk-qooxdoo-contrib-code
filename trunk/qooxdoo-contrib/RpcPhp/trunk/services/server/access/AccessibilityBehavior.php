@@ -39,30 +39,30 @@ if ( ! defined("defaultAccessibility") )
  * the behavior of the accessibility of RPC object, subclass this
  * class and use AbstractServer::setAccessibilityBehavior() to configure
  * the server with the subclass.
- * 
+ *
  * @author Derrell Lipman
  * @author Christian Boulanger
  */
-class AccessibilityBehavior 
+class AccessibilityBehavior
 {
- 
+
   /**
    * Error message
    * @var string
    */
   var $error_message;
-  
+
   /**
    * Error number
    */
   var $error_number;
-  
+
   /**
    * Server object
    * @var AbstractServer
    */
-  var $server; 
-  
+  var $server;
+
   /**
    * PHP4 Constructor
    */
@@ -70,16 +70,16 @@ class AccessibilityBehavior
   {
     $this->__construct( &$server );
   }
-  
+
   /**
    * PHP 5 Constructor
    * @param AbstractServer $server
    */
   function __construct( $server )
   {
-    $this->server =& $server;  
+    $this->server =& $server;
   }
-  
+
   /**
    * Check accessibility of a service class by doing referrer checking
    * There is a global default which can be overridden by
@@ -90,27 +90,27 @@ class AccessibilityBehavior
    */
   function checkAccessibility( $serviceObject, $method )
   {
-    
-    /* 
+
+    /*
      * Assign the default accessibility
      */
     $accessibility = defaultAccessibility;
-    
+
     /*
-     * See if there is a "GetAccessibility" method in the class.  
-     * If there is, it should take two parameters: the method name 
+     * See if there is a "GetAccessibility" method in the class.
+     * If there is, it should take two parameters: the method name
      * and the default accessibility, and return one of the
      * Accessibililty values.
      */
     if ( method_exists($serviceObject, "GetAccessibility") )
     {
-      /* 
+      /*
        * Yup, there is.  Get the accessibility for the requested method
-       */ 
+       */
       $accessibility = $serviceObject->GetAccessibility($method, $accessibility);
     }
-    
-    /* 
+
+    /*
      * Do the accessibility test.
      */
     switch( $accessibility )
@@ -118,7 +118,7 @@ class AccessibilityBehavior
       case Accessibility_Public:
         /* Nothing to do.  The method is accessible. */
         break;
-        
+
       case Accessibility_Domain:
         /* Determine the protocol used for the request */
         if (isset($_SERVER["SSL_PROTOCOL"]))
@@ -129,10 +129,10 @@ class AccessibilityBehavior
         {
             $requestUriDomain = "http://";
         }
-    
+
         // Add the server name
         $requestUriDomain .= $_SERVER["SERVER_NAME"];
-    
+
         // The port number optionally follows.  We don't know if they manually
         // included the default port number, so we just have to assume they
         // didn't.
@@ -142,19 +142,19 @@ class AccessibilityBehavior
             // Non-default port number, so append it.
             $requestUriDomain .= ":" . $_SERVER["SERVER_PORT"];
         }
-    
+
         /* Get the Referer, up through the domain part */
-        if (ereg("^(https?://[^/]*)", $_SERVER["HTTP_REFERER"], $regs) === false)
+        if (preg_match("#^(https?://[^/]*)#", $_SERVER["HTTP_REFERER"], $regs) === false)
         {
             /* unrecognized referer */
             $this->error_number = JsonRpcError_PermissionDenied;
             $this->error_message = "Permission Denied [2]";
             return false;
         }
-    
+
         /* Retrieve the referer component */
         $refererDomain = $regs[1];
-    
+
         /* Is the method accessible? */
         if ($refererDomain != $requestUriDomain)
         {
@@ -163,7 +163,7 @@ class AccessibilityBehavior
             $this->error_message = "Permission Denied [3]";
             return false;
         }
-    
+
         /* If no referer domain has yet been saved in the session... */
         if (! isset($_SESSION["session_referer_domain"]))
         {
@@ -171,10 +171,10 @@ class AccessibilityBehavior
             $_SESSION["session_referer_domain"] = $refererDomain;
         }
         break;
-        
+
       case Accessibility_Session:
         /* Get the Referer, up through the domain part */
-        if (ereg("(((http)|(https))://[^/]*)(.*)",
+        if (preg_match("#(((http)|(https))://[^/]*)(.*)#",
                  $_SERVER["HTTP_REFERER"],
                  $regs) === false)
         {
@@ -183,10 +183,10 @@ class AccessibilityBehavior
             $this->error_message = "Permission Denied [4]";
             return false;
         }
-    
+
         /* Retrieve the referer component */
         $refererDomain = $regs[1];
-    
+
         /* Is the method accessible? */
         if (isset($_SESSION["session_referer_domain"]) &&
             $refererDomain != $_SESSION["session_referer_domain"])
@@ -201,32 +201,32 @@ class AccessibilityBehavior
             /* No referer domain is yet saved in the session.  Save it. */
             $_SESSION["session_referer_domain"] = $refererDomain;
         }
-    
+
         break;
-    
+
       case Accessibility_Fail:
         $this->error_number  = JsonRpcError_PermissionDenied;
         $this->error_message = "Permission Denied [6]";
         return false;
-    
+
       default:
         /* Service's GetAccessibility() function returned a bogus value */
         $this->error_number  = JsonRpcError_PermissionDenied;
         $this->error_message = "Service error: unknown accessibility.";
         return false;
     }
-    
+
     /*
      * we made it to here. method is accessible
      */
     return true;
   }
-  
+
   function getErrorMessage()
   {
     return $this->error_message;
   }
-  
+
   function getErrorNumber()
   {
     return $this->error_number;
