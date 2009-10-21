@@ -45,3 +45,10 @@ transforms GET and POST requests into jsonrpc requests. This can serve
 For more information see
   * http://qooxdoo.org/documentation/RPC
   * http://qooxdoo.org/documentation/RPC_PHP
+  
+PHP version info:
+
+The current trunk tries to cover PHP versions 4.3 up to 5.3, which results
+in some wierd hybrid coding style, and can only be achieved by suppressing
+deprecation messages. PHP 4 compatibility will be dropped soon, then the
+code will be cleaned up and prepared for full PHP 5.3 compliance.
