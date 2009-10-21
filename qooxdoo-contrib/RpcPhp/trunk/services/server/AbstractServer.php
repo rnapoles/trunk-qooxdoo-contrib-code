@@ -658,7 +658,7 @@ class AbstractServer
     /*
      * First check for legal characters
      */
-    if (ereg("^[_.a-zA-Z0-9]+$", $service) === false)
+    if (preg_match("#^[_.a-zA-Z0-9]+$#", $service) === false)
     {
       /*
        * There's some illegal character in the service name
@@ -686,7 +686,7 @@ class AbstractServer
     $serviceComponents = $this->getServiceComponents( $service );
     for ($i = 0; $i < count($serviceComponents); $i++)
     {
-      if (ereg("^[a-zA-Z]", $serviceComponents[$i]) === false)
+      if (preg_match("#^[a-zA-Z]#", $serviceComponents[$i]) === false)
       {
         $error->SetError(
         JsonRpcError_IllegalService,

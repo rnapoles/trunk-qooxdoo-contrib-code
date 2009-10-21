@@ -174,7 +174,7 @@ class class_fs
                 return false;
             }
 
-            if(ereg("^.*[/\\].*$", $pathComponents[$i]) !== false)
+            if(preg_match("#^.*[/\\].*$#", $pathComponents[$i]) !== false)
             {
                 $error->SetError(
                     FsError_InvalidPath,

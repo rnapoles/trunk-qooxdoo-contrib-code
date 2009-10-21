@@ -383,7 +383,7 @@ class JsonRpcServer extends AbstractServer
    */
   function jsonrpc_catch_errors( $buffer )
   {
-    if (ereg("(error</b>:)(.+)(<br)", $buffer, $regs) )
+    if (preg_match("#(error</b>:)(.+)(<br)#", $buffer, $regs) )
     {
       /*
        * parse error string from PHP error message
