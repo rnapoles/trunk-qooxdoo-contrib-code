@@ -166,7 +166,7 @@ qx.Class.define("qooxit.Application",
       root.add(layouts);
 
       // Add our available layouts
-      this._addAvailableLayouts(layouts);
+      this._addAvailableContainers(root);
 
       // Create the widgets folder
       var widgets = new qx.ui.tree.TreeFolder("Widgets");
@@ -174,21 +174,16 @@ qx.Class.define("qooxit.Application",
       root.add(widgets);
 
       // Add our available widgets
-      this._addAvailableWidgets(widgets);
+      this._addAvailableWidgets(root);
     },
 
-    _addAvailableLayouts : function(layoutFolder)
+    _addAvailableContainers : function(root)
     {
-      // Add some items to the layouts folder
-      this.__addItem(layoutFolder,
-                     "Canvas (qx.ui.layout.Canvas)",
-                     {
-                       factory : function(param)
-                       {
-                         return new qx.ui.container.Composite(
-                           new qx.ui.layout.Canvas());
-                       }
-                     });
+      // Add some containers
+      this.addClass(root,
+                    "Canvas (qx.ui.layout.Canvas)",
+                    qooxit.library.ui.layout.Canvas);
+/*
       this.__addItem(layoutFolder,
                      "Vertical Box (qx.ui.layout.VBox)",
                      {
@@ -216,10 +211,12 @@ qx.Class.define("qooxit.Application",
                            new qx.ui.layout.Grid());
                        }
                      });
+*/
     },
 
     _addAvailableWidgets : function(widgetFolder)
     {
+/*
       this.__addItem(widgetFolder,
                      "Label (qx.ui.basic.Label)",
                      {
@@ -402,24 +399,39 @@ qx.Class.define("qooxit.Application",
             return table;
           }
         });
+*/
     },
 
-    __addItem : function(folder, label, attributes)
+    addClass : function(root, label, clazz)
     {
-      var item = new qx.ui.tree.TreeFile(label);
-      item.setDraggable(true);
-      item.addListener("dragstart",
-                       function(e)
-                       {
-                         e.addAction("copy");
-                         e.addType("qooxit/available");
-                       });
-      item.addListener("droprequest",
-                       function(e)
-                       {
-                         e.addData("qooxit/available", attributes.factory);
-                       });
-      folder.add(item);
+      // Create a new tree element
+      var treeItem = new qx.ui.tree.TreeFolder(label);
+
+      // This item has to be draggable to be dropped into the applciation view
+      treeItem.setDraggable(true);
+
+      // Instantiate the specified class
+      var classInstance = new clazz.getInstance();
+
+      // Allow the item to be copied
+      treeItem.addListener("dragstart",
+                           function(e)
+                           {
+                             e.addAction("copy");
+                             e.addType("qooxit/available");
+                           });
+
+      // If it is dropped, provide the factory for adding it to the application
+      // tree.
+      treeItem.addListener("droprequest",
+                           function(e)
+                           {
+                             e.addData("qooxit/available",
+                                       classInstance.factory);
+                           });
+
+      // Figure out where in the tree this item belongs
+      folder.add(treeItem);
     }
   }
 });

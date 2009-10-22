@@ -23,6 +23,22 @@ qx.Class.define("qooxit.library.ui.AbstractElement",
   extend : qx.core.Object,
   type   : "singleton",
 
+  construct : function()
+  {
+    this.base(arguments);
+    this.initCategory();
+  },
+
+  properties :
+  {
+    category :
+    {
+      check    : "String",
+      nullable : false,
+      init     : "Widget"
+    }
+  },
+
   members :
   {
     __snippets : null,
