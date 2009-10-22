@@ -21,6 +21,15 @@ qx.Class.define("qooxit.library.ui.layout.VBox",
 {
   extend : qooxit.library.ui.AbstractElement,
 
+  properties :
+  {
+    category :
+    {
+      refine : true
+      init   : "Container"
+    }
+  },
+
   members :
   {
     // overridden
