@@ -320,7 +320,7 @@ class JsonRpcServer extends AbstractServer
       /*
        * We have what looks like a valid ScriptTransport request
        */
-      $this->setScriptTransportId($scriptTransportId);
+      $this->setScriptTransportId($_GET["_ScriptTransport_id"]);
       $input = $_GET["_ScriptTransport_data"];
       $input = $this->json->decode(get_magic_quotes_gpc()
       ? stripslashes($input)
