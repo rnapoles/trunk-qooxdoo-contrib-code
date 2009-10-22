@@ -1755,46 +1755,56 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   var c;
 
    /* If the node is one of the qooxdoo Iframes (html or ui.embed) containing 
-    * another qooxdoo application, try to retrieve it's root widget */
-  if ( (node.classname.indexOf("Iframe") + 6 == node.classname.length) && node.getWindow ) {
+    * another qooxdoo application, try to retrieve its root widget */
+  if ((node.classname.indexOf("Iframe") + 6 == node.classname.length) && node.getWindow) {
     LOG.debug("getQxNodeDescendants: using getWindow() to retrieve descendants");
     try {
       descArr = descArr.concat(node.getWindow().qx.core.Init.getApplication().getRoot());
-    }
-    catch(ex) {}
-  }
-  // check external widget children (built with w.add())
-  else if (node.getChildren) {
-    LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants of " + node);
-    // +" (got: "+ (c.length? c.length: 0)+")");
-    c = node.getChildren();
-    descArr = descArr.concat(c);
-    if (node.getMenu) {
-      LOG.debug("Getting child menu");
-      descArr = descArr.push(node.getMenu());
+    } 
+    catch (ex) {
     }
   }
-  // check TreeFolder items: Only neccessary for qooxdoo versions < 0.8.3
-  else if (node.getItems) {
-    LOG.debug("getQxNodeDescendants: using getItems() to retrieve descendants");
-    descArr = descArr.concat(node.getItems());
-  }
-  // check internal children (e.g. child controls)
-  else if (node._getChildren) {
-    LOG.debug("getQxNodeDescendants: using _getChildren() to retrieve descendants of " + node);
-    c = node._getChildren();
-    descArr = descArr.concat(c);
-    if (node.getMenu) {
-      LOG.debug("Getting child menu");
-      descArr.push(node.getMenu());
-    }
-  }
+  
   else {
-    // use JS object members
-    LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
-    for (var m in node) {
-      descArr.push(node[m]);
+    // check external widget children (built with w.add())
+    if (node.getChildren) {
+      LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants of " + node);
+      // +" (got: "+ (c.length? c.length: 0)+")");
+      c = node.getChildren();
+      descArr = descArr.concat(c);
+      if (node.getMenu) {
+        LOG.debug("Getting child menu");
+        descArr = descArr.push(node.getMenu());
+      }
     }
+    
+    // check TreeFolder items: Only neccessary for qooxdoo versions < 0.8.3
+    else {
+      if (node.getItems) {
+        LOG.debug("getQxNodeDescendants: using getItems() to retrieve descendants");
+        descArr = descArr.concat(node.getItems());
+      }
+    }
+    
+    // check internal children (e.g. child controls)
+    if (node._getChildren) {
+      LOG.debug("getQxNodeDescendants: using _getChildren() to retrieve descendants of " + node);
+      c = node._getChildren();
+      descArr = descArr.concat(c);
+      if (node.getMenu) {
+        LOG.debug("Getting child menu");
+        descArr.push(node.getMenu());
+      }
+    }
+    
+    // use JS object members
+    if (!(node.getChildren || node._getChildren)) {
+      LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
+      for (var m in node) {
+        descArr.push(node[m]);
+      }
+    }
+    
   }
 
   // only select useful subnodes (only objects, no circular refs, etc.)
