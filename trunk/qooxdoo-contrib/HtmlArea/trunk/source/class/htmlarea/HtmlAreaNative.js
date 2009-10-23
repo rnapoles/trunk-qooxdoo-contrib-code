@@ -75,13 +75,6 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     this.__initDocumentSkeletonParts();
     this._createAndAddIframe(uri);
 
-
-    this.__isLoaded = false;
-    this.__isEditable = false;
-    this.__isReady = false;
-
-    this.__firstLineSelected = false;
-
     // catch load event
     this._addIframeLoadListener();
 
@@ -203,6 +196,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * This event is dispatched when the editor is ready to use
      */
     "ready"            : "qx.event.type.Event",
+
+    /**
+     * This event is dispatched when the editor is ready to use after it was
+     * re-located and re-initialized. Only implemented for Gecko browsers.
+     */
+    "readyAfterInvalid" : "qx.event.type.Event",
 
     /**
      * This event is dispatched when the editor gets the focus and his own handling is done
@@ -738,14 +737,16 @@ qx.Class.define("htmlarea.HtmlAreaNative",
   members :
   {
     __widget : null,
-    __isReady : null,
+    __isReady : false,
+    __isInvalid : false,
+    __isLoaded : false,
+    __isEditable : false,
+    __isFirstLineSelected : false,
     __commandManager : null,
-    __isEditable : null,
-    __firstLineSelected : null,
+    __stackCommandManager : null,
     __currentEvent : null,
     __storedSelectedHtml : null,
     __iframe : null,
-    __isLoaded : null,
     __handleFocusEvent : null,
     __handleBlurEvent : null,
     __handleFocusOutEvent : null,
@@ -1212,29 +1213,16 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         return;
       }
 
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
-      {
-        /*
-         * It seems this timeout is not needed anymore for gecko.
-         * -> Keep an sharp on this one.
-         */
-        this._onDocumentIsReady();
+      if (this.__isInvalid) {
+        this.__resetEditorToValidState();
+        return;
+      }
 
-        // we need some thinking time in gecko --> https://bugzilla.mozilla.org/show_bug.cgi?id=191994
-        /*var self = this;
-        window.setTimeout( function()
-        {
-          self._onDocumentIsReady();
-        //}, 10);*/
-      }
-      else if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        // sometimes IE does some strange things and the document is not available
-        // so we wait for it
+      // sometimes IE does some strange things and the document is not available
+      // so we wait for it
+      if (qx.core.Variant.isSet("qx.client", "mshtml")) {
         this.__waitForDocumentReady();
-      }
-      else
-      {
+      } else {
         this._onDocumentIsReady();
       }
     },
@@ -1245,8 +1233,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} ready or not
      */
-    isReady : function()
-    {
+    isReady : function() {
       return this.__isReady;
     },
 
@@ -1263,8 +1250,6 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     _onDocumentIsReady : function()
     {
       var cm = new htmlarea.command.Manager(this);
-
-      // Decorate the commandManager with the UndoManager if undo/redo is enabled
       if (this.getUseUndoRedo()) {
         cm = new htmlarea.command.UndoManager(cm, this);
       }
@@ -1277,8 +1262,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         this.setEditable(true);
       }
 
-      // Render content - opens a new document and inserts
-      // all needed elements plus the initial content
+      // Open a new document and insert needed elements plus the initial content
       this.__renderContent();
 
       this.__addListeners();
@@ -1289,26 +1273,14 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         this.setEditable(true);
       }
 
-      // now we can set the ready state
       this.__isReady = true;
 
-      // Look out for any queued commands which are execute BEFORE this 
-      // commandManager was available
-      var commandStack = this.__commandManager.stackedCommands ? this.__commandManager.commandStack : null;
-
-      // Inform the commandManager on which document he should operate
+      // replace the commandManager to be sure the stacked commands are
+      // executed at the correct manager 
+      this.__commandManager = cm;
       cm.setContentDocument(this._getIframeDocument());
 
-      // Execute the stacked commmands - if any
-      if (commandStack != null)
-      {
-        for (var i=0, j=commandStack.length; i<j; i++) {
-          cm.execute(commandStack[i].command, commandStack[i].value);
-        }
-      }
-
-      // stack is finished, set commandManager to the real one
-      this.__commandManager = cm;
+      this.__processStackedCommands();
 
       // dispatch the "ready" event at the end of the initialization
       this.fireEvent("ready");
@@ -1346,6 +1318,63 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             this.__setDesignMode(true);
           }
         }
+      },
+
+      "default" : function() {}
+    }),
+
+
+    /**
+     * Sets the editor for all gecko browsers into the state "invalid" to be 
+     * able to re-initialize the editor with the next load of the iframe.
+     * 
+     * This "invalid" state is necessary whenever the whole HtmlArea high-level
+     * widget is moved around to another container.
+     * 
+     * Only implemented for Gecko browser.
+     * 
+     * @signature function()
+     */
+    invalidateEditor : qx.core.Variant.select("qx.client",
+    {
+      "gecko" : function()
+      {
+        this.__isLoaded = false;
+        this.__isReady = false;
+        this.__isInvalid = true;
+      },
+
+      "default" : function() {}
+    }),
+
+
+    /**
+     * Called when the iframes is loaded and the HtmlArea is in the "invalid"
+     * state. Re-initializes the HtmlArea and fires the {@link readyAfterInvalid}
+     * event to offer a time moment for the application developer to execute 
+     * commands after the re-location.
+     * 
+     * Only implemented for Gecko browser.
+     * 
+     * @signature function()
+     */
+    __resetEditorToValidState : qx.core.Variant.select("qx.client",
+    {
+      "gecko" : function()
+      {
+        this.__renderContent();
+        this.__addListeners();
+        
+        this.__commandManager.setContentDocument(this._getIframeDocument());
+
+        this.setEditable(true);
+        this.forceEditable();
+
+        this.__isLoaded = true;
+        this.__isReady = true;
+        this.__isInvalid = false;
+
+        this.fireEvent("readyAfterInvalid");
       },
 
       "default" : function() {}
@@ -1478,27 +1507,51 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
 
     /**
-     * Helper method to create an object which acts like
-     * a command manager instance to collect all commands
-     * which are executed BEFORE the command manager instance
-     * is ready
+     * Helper method to create an object which acts like a command manager 
+     * instance to collect all commands which are executed BEFORE the command 
+     * manager instance is ready.
      *
      * @return {Object} stack command manager object
      */
     __createStackCommandManager : function()
     {
-      return {
-        execute : function(command, value)
+      if (this.__stackCommandManager == null)
+      { 
+        this.__stackCommandManager = {
+          execute : function(command, value)
+          {
+            this.stackedCommands = true;
+            this.commandStack.push( { command : command, value : value } );
+          },
+  
+          commandStack : [],
+          stackedCommands : false
+        };
+      }
+      this.__stackCommandManager.stackedCommands = false;
+      
+      return this.__stackCommandManager;
+    },
+
+
+    /**
+     * Process the stacked commands if available.
+     * This feature is necessary at startup when the command manager is yet
+     * not ready to execute the commands after the initialization.
+     */
+    __processStackedCommands : function()
+    {
+      var manager = this.__stackCommandManager;
+      
+      if (manager != null && manager.stackedCommands)
+      {
+        var commandStack = manager.commandStack;
+        if (commandStack != null)
         {
-         /* Set the flag to show the "real" commandManager a command was stacked */
-         this.stackedCommands = true;
-
-         this.commandStack.push( { command : command, value : value } );
-        },
-
-        commandStack : [],
-
-        stackedCommands : false
+          for (var i=0, j=commandStack.length; i<j; i++) {
+            this.__commandManager.execute(commandStack[i].command, commandStack[i].value);
+          }
+        }
       }
     },
 
@@ -1694,7 +1747,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             var focusNode = this.getFocusNode();
 
             /* Set flag indicating if first line is selected */
-            this.__firstLineSelected = (focusNode == this.getContentBody().firstChild);
+            this.__isFirstLineSelected = (focusNode == this.getContentBody().firstChild);
           break;
         }
       }
@@ -1955,7 +2008,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           if(sel.focusNode == doc.body.firstChild)
           {
             /* Check if the first line has been (partly) selected before. */
-            if(this.__firstLineSelected)
+            if(this.__isFirstLineSelected)
             {
               /* Check if selection does not enclose the complete line already */
               if (sel.focusOffset != 0)

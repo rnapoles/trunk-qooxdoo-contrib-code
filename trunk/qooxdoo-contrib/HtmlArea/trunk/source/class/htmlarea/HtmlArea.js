@@ -134,6 +134,12 @@ qx.Class.define("htmlarea.HtmlArea",
     "ready"            : "qx.event.type.Event",
 
     /**
+     * This event is dispatched when the editor is ready to use after it was
+     * re-located and re-initialized. Only implemented for Gecko browsers.
+     */
+    "readyAfterInvalid" : "qx.event.type.Event",
+
+    /**
      * This event is dispatched when the editor gets the focus and his own handling is done
      */
     "focused"          : "qx.event.type.Event",
@@ -418,6 +424,10 @@ qx.Class.define("htmlarea.HtmlArea",
                                                            this.__initValues.source);
       this.__applyPostPonedProperties();
       this.__setupDelegateListeners();
+
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
+        this.__setupInvalidateListener();
+      }
     },
 
 
@@ -441,6 +451,7 @@ qx.Class.define("htmlarea.HtmlArea",
     __setupDelegateListeners : function()
     {
       this.__editorComponent.addListener("ready", this.__delegateEvent, this);
+      this.__editorComponent.addListener("readyAfterInvalid", this.__delegateEvent, this);
       this.__editorComponent.addListener("focused", this.__delegateEvent, this);
       this.__editorComponent.addListener("focusOut", this.__delegateEvent, this);
 
@@ -477,6 +488,23 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       var clone = e.clone();
       this.fireDataEvent(clone.getType(), e.getData());
+    },
+
+
+    /**
+     * Listens to DOM changes of the container element to get informed when the
+     * HtmlArea is moved to another container.
+     * 
+     * This method is only implemented for Gecko browsers.
+     */
+    __setupInvalidateListener : function()
+    {
+      var self = this;
+      var element = this.getContainerElement().getDomElement();
+      
+      qx.bom.Event.addNativeListener(element, "DOMNodeRemoved", qx.event.GlobalError.observeMethod(function(e) {
+        self.__editorComponent.invalidateEditor();
+      }));
     },
 
 
