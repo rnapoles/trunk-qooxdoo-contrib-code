@@ -941,6 +941,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate qooxdoo-Object by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.findOnlyVisible = false;
 
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
 
@@ -968,6 +969,7 @@ PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.findOnlyVisible = false;
 
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
 
@@ -995,6 +997,7 @@ PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo-UserData-XPath-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.findOnlyVisible = false;
 
   var locatorParts = qxLocator.split('//');
 
@@ -1057,6 +1060,7 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.findOnlyVisible = false;
 
   var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
 
@@ -1066,6 +1070,43 @@ PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
     return null;
   }
 };
+
+
+/**
+ * Finds an element identified by qooxdoo object hierarchy, down from the Application object.
+ * Widgets with the "visibility" property not set to "visible" and their children are
+ * ignored. 
+ * 
+ * locator syntax: qxhv=firstLevelChild/secondLevelChild/thirdLevelChild
+ * 
+ *    where on each level the child can be identified by:
+ *    - an identifier (which will be taken as a literal object member of the
+ *      parent)
+ *    - a special identifier starting with "qx." (this will be taken as a
+ *      qooxdoo class signifying the child, e.g. "qx.ui.form.Button") [TODO]
+ *    - "child[n]" (where n signifies the nth child of the current parent) [TODO]
+ *    -
+ *
+ * @type member
+ * @param qxLocator {var} TODOC
+ * @param inDocument {var} TODOC
+ * @param inWindow {var} TODOC
+ * @return {var | null} TODOC
+ */
+PageBot.prototype.locateElementByQxhv = function(qxLocator, inDocument, inWindow)
+{
+  LOG.info("Locate visible Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.findOnlyVisible = true;
+
+  var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
+
+  if (qxObject) {
+    return qxObject.getContentElement().getDomElement();
+  } else {
+    return null;
+  }
+};
+
 
 /**
  * Returns the client document instance or null if Init.getApplication() returned null. 
@@ -1317,6 +1358,7 @@ PageBot.prototype.qx.IDENTIFIER = new RegExp('^[a-z$][a-z0-9_\.$]*$', 'i');
 PageBot.prototype.qx.NTHCHILD = /^child\[-?\d+\]$/i;
 PageBot.prototype.qx.ATTRIB = /^\[.*\]$/;
 
+PageBot.prototype.qx.findOnlyVisible = false;
 
 
 /**
@@ -1815,7 +1857,13 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     var curr = descArr[i];
     if ((typeof(curr) == "object") && (curr != node) && (curr != null))
     {
-      descArr1.push(descArr[i]);
+      if (!descArr[i].getVisibility) {
+        // always select a subnode if we can't check its visibility
+        descArr1.push(descArr[i]);
+      } else if (!this.qx.findOnlyVisible || (this.qx.findOnlyVisible && descArr[i].getVisibility() == "visible")) {
+        // if findOnlyVisible is active, check the subnode's visibility property
+        descArr1.push(descArr[i]);
+      }
     }
   }
 
