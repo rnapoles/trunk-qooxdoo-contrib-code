@@ -1116,6 +1116,61 @@ PageBot.prototype.locateElementByQxhv = function(qxLocator, inDocument, inWindow
 
 
 /**
+ * Finds an element by it's HTML ID attribute, then checks the visibility of the 
+ * qooxdoo widget it belongs to. The element is returned only if the widget is
+ * visible. 
+ * 
+ * locator syntax: qxidv=htmlId
+ *
+ * @type member
+ * @param qxLocator {String} A qooxdoo locator string
+ * @param inDocument {Document} The AUT document object
+ * @param inWindow {Window} The AUT window object
+ * @return {Element | null} The found element
+ */
+PageBot.prototype.locateElementByQxidv = function(qxLocator, inDocument, inWindow)
+{
+  LOG.info("Locate visible qooxdoo widget by HTML ID=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  
+  if (inWindow.wrappedJSObject) {
+    inWindow = inWindow.wrappedJSObject;
+  }
+ 
+  var id = qxLocator.substr(qxLocator.indexOf("=") + 1);
+  
+  try {
+    var element = inDocument.getElementById(id);
+  }
+  catch(ex) {
+    LOG.error("qxidv Locator: Couldn't find an element with the ID " + id + ": " + ex);
+    return null;
+  }
+  
+  if (element.wrappedJSObject) {
+    element = element.wrappedJSObject;
+  }
+  
+  var qx = inWindow.qx;
+  
+  try {
+    var qxWidget = qx.ui.core.Widget.getWidgetByElement(element);
+  }
+  catch(ex) {
+    LOG.error("qxidv Locator: Couldn't find a widget for the HTML element with the ID " + id + ": " + ex);
+    return null;
+  }
+  
+  if (qxWidget.isSeeable()) {
+    return element;
+  } else {
+    LOG.info("qxidv Locator: The element with the ID " + id + " belongs to an invisible qooxdoo widget!");
+    return null;
+  }
+  
+};
+
+
+/**
  * Returns the client document instance or null if Init.getApplication() returned null. 
  * Reason is that qooxdoo 0.7 relies on the application being set when the client document
  * is accessed  
