@@ -20,12 +20,12 @@
 ************************************************************************ */
 
 /**
- * Selenium Extension for testing Applications build with qooxdoo
+ * Selenium Extension for testing applications built with qooxdoo
  *   see http://qooxdoo.org
  *
- * This extension covers the following commands to test applications build with qooxdoo:
+ * This extension covers the following commands to test applications built with qooxdoo:
  *  1.) special click commands: "qxClick" and "qxClickAt"
- *  2.) special qooxdoo element-locator "qx=" and "qxp="
+ *  2.) special qooxdoo element locators "qx=" and "qxp="
  *
  * Supported Browsers:
  *  - Mozilla-Family
@@ -173,11 +173,12 @@ Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER =
 
 
 /**
- * TODOC
+ * Returns the correct numeric mouse button identifier needed to create a mouse 
+ * event in different browsers (IE vs. non-IE). 
  *
  * @type member
- * @param buttonName {var} TODOC
- * @return {var} TODOC
+ * @param buttonName {String} The mouse button. One of "left", "right", "middle" 
+ * @return {Integer} The numeric mouse button value
  */
 Selenium.prototype.qx.MouseEventParameters.prototype.getButtonValue = function(buttonName)
 {
@@ -195,17 +196,17 @@ Selenium.prototype.qx.MouseEventParameters.prototype.getButtonValue = function(b
 
 
 /**
- * Returns an value if found for given paramName.
- *  If not found, given defaultValue is returned
+ * Returns the value of a given parameter name if it's set.
+ * If it's not set, the given default value is returned
  * 
- * Type-conversion is donne for string, boolean and number automatically
- *  based on type of the given defaultValue.
+ * Type conversion is done automatically for string, boolean and number
+ * based on the type of the given default value.
  *
  * @type member
- * @param paramName {var} string name of parameter to search for
+ * @param paramName {String} string name of the parameter to search for
  * @param defaultValue {var} <different types> default value to be returned, if no value is found
  *            the type is important, see documentation above for details
- * @return {var} TODOC
+ * @return {var} The parameter value
  */
 Selenium.prototype.qx.MouseEventParameters.prototype.getParamValue = function(paramName, defaultValue)
 {
@@ -259,17 +260,21 @@ Selenium.prototype.qx.MouseEventParameters.prototype.getParamValue = function(pa
 // END: Handling of MouseEventParameters
 // ***************************************************
 /**
- * TODOC
+ * Creates a native mouse event, configures it and dispatches it on the given 
+ * element.
  *
  * @type member
- * @param buttonName {var} TODOC
- * @return {var} TODOC
+ * @param eventType {String} The name of the event to be created, e.g. "click", 
+ * "mouseover", etc.
+ * @param element {Element} The DOM element the event should be dispatched on
+ * @param eventParamObject {MouseEventParameters} Parameter object
+ * @return void
  */
 Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventParamObject)
 {
   if (!eventParamObject)
   {
-    // this can only be, if the internal call-chain is wrong
+    // this can only be if the internal call-chain is wrong
     LOG.error("triggerMouseEventQx: eventParamObject is essential");
     return;
   }
@@ -474,11 +479,12 @@ Selenium.prototype.doQxClickAt = function(locator, eventParams)
 
 
 /**
- * TODOC
+ * Internal helper method used by qxClick and qxClickAt
  *
  * @type member
- * @param element {var} TODOC
- * @param eventParamString {var} TODOC
+ * @param element {Element} DOM Element the click event should be dispatched to.  
+ * @param eventParamString {String} Comma-separated list of additional event 
+ * parameters
  * @return {void} 
  */
 Selenium.prototype.clickElementQx = function(element, eventParamString)
@@ -506,11 +512,11 @@ Selenium.prototype.clickElementQx = function(element, eventParamString)
 
 
 /**
- * Check wheather an qooxdoo Element is enabled or not
+ * Check whether a qooxdoo Element is enabled or not
  *
  * @type member
- * @param locator {var} an element locator
- * @return {var} TODOC
+ * @param locator {String} an element locator string
+ * @return {Boolean} Whether the element is enabled
  * @throws TODOC
  */
 Selenium.prototype.isQxEnabled = function(locator)
@@ -923,20 +929,21 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 // qooxdoo-locator (qx=) and special (qxx=)
 // ****************************************
 /**
- * Finds an qooxdoo-Object (!) identified by qooxdoo userData attribute
- *  Note: Here the Selenium locator abstraction is used to get an js-object _not_ an DOM-element
+ * Finds a qooxdoo object(!) identified by its userData attribute.
+ * Note: Here, the Selenium locator abstraction is used to get a JS object, 
+ * _not_ a DOM Element.
  * 
  * locator syntax: qxx=oneId/childId1/childId2
- *   note: childs can also be found directly if their qooxdoo-Id is unique in the current application state
- *         if multiple id's exist in qooxdoo, the first found is used!
+ *   note: children can also be found directly if their qooxdoo ID is unique in the current application state
+ *         if multiple IDs exist in qooxdoo, the first match is used!
  * trailing and preceeding "/" are invalid (like qx=/el1/el2/) and will be ignored
  * also surplus "/" are ignored (like qx=el1//el2)
  *
  * @type member
- * @param qxLocator {var} TODOC
- * @param inDocument {var} TODOC
- * @param inWindow {var} TODOC
- * @return {var} TODOC
+ * @param qxLocator {String} A qooxdoo locator string
+ * @param inDocument {Document} The AUT document object
+ * @param inWindow {Window} The AUT window object
+ * @return {null | Object} The found qooxdoo object
  */
 PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 {
@@ -952,19 +959,19 @@ PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 
 
 /**
- * Finds an element identified by qooxdoo userData attribute
+ * Finds an element identified by a qooxdoo userData attribute
  * 
  * locator syntax: qx=oneId/childId1/childId2
- *   note: childs can also be found directly if their qooxdoo-Id is unique in the current application state
- *         if multiple id's exist in qooxdoo, the first found is used!
+ *   note: children can also be found directly if their qooxdoo ID is unique in the current application state
+ *         if multiple IDs exist in qooxdoo, the first match is used!
  * trailing and preceeding "/" are invalid (like qx=/el1/el2/) and will be ignored
  * also surplus "/" are ignored (like qx=el1//el2)
  *
  * @type member
- * @param qxLocator {var} TODOC
- * @param inDocument {var} TODOC
- * @param inWindow {var} TODOC
- * @return {var} TODOC
+ * @param qxLocator {String} A qooxdoo locator string
+ * @param inDocument {Document} The AUT document object
+ * @param inWindow {Window} The AUT window object
+ * @return {null | Element} The found DOM element
  */
 PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
 {
@@ -988,9 +995,9 @@ PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
  * credits: Sebastian Dauss
  *
  * @type member
- * @param qxLocator {var} TODOC
- * @param inDocument {var} TODOC
- * @param inWindow {var} TODOC
+ * @param qxLocator {String} A qooxdoo locator string
+ * @param inDocument {Document} The AUT document object
+ * @param inWindow {Window} The AUT window object
  * @return {null | var} TODOC
  * @throws TODOC
  */
@@ -1052,9 +1059,9 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
  *    -
  *
  * @type member
- * @param qxLocator {var} TODOC
- * @param inDocument {var} TODOC
- * @param inWindow {var} TODOC
+ * @param qxLocator {String} A qooxdoo locator string
+ * @param inDocument {Document} The AUT document object
+ * @param inWindow {Window} The AUT window object
  * @return {var | null} TODOC
  */
 PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
@@ -1088,9 +1095,9 @@ PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
  *    -
  *
  * @type member
- * @param qxLocator {var} TODOC
- * @param inDocument {var} TODOC
- * @param inWindow {var} TODOC
+ * @param qxLocator {String} A qooxdoo locator string
+ * @param inDocument {Document} The AUT document object
+ * @param inWindow {Window} The AUT window object
  * @return {var | null} TODOC
  */
 PageBot.prototype.locateElementByQxhv = function(qxLocator, inDocument, inWindow)
