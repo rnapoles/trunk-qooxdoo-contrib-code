@@ -35,6 +35,8 @@ qx.Class.define("rpcconsole.demo.Application",
     desktop   : null,
     counter   : 1,
     serverUrl : "../../../../../RpcPhp/1.0.1/services/index.php",
+    lastCreatedConsole : null,
+    _activeConsole : null,
     
     /**
      * This method contains the initial application code and gets called 
@@ -59,6 +61,18 @@ qx.Class.define("rpcconsole.demo.Application",
         Console Desktop
       -------------------------------------------------------------------------
       */
+      
+      /*
+       * GET parameters
+       */
+      var s = window.location.search.substring(1).split('&');
+      if(!s.length) return;
+      var c = {};
+      for(var i  = 0; i < s.length; i++)  {
+          var parts = s[i].split('=');
+          c[unescape(parts[0])] = unescape(parts[1]);
+      }
+      window.location.parameters = c; 
 
       /*
        * main layout
@@ -73,6 +87,12 @@ qx.Class.define("rpcconsole.demo.Application",
       var createWindowButton = new qx.ui.toolbar.Button("Create RPC Console");
       createWindowButton.addListener("execute", this.createRpcConsole, this);
       toolbar.add(createWindowButton);
+
+      var testsMenuButton = new qx.ui.toolbar.MenuButton("Tests");
+      testsMenuButton.setShowArrow(true);
+      testsMenuButton.setMenu( this.createTestsMenu() );
+      toolbar.add(testsMenuButton);
+      
       mainLayout.add( toolbar );
          
       /*
@@ -114,16 +134,146 @@ qx.Class.define("rpcconsole.demo.Application",
       });
       
       /*
+       * get server url from get parameter or property
+       */
+      if ( window.location.parameters.serverUrl )
+      {
+        var serverUrl = window.location.parameters.serverUrl;
+      } 
+      else
+      {
+        var serverUrl = this.serverUrl;
+      }
+      
+      /*
        * console
        */
-      var console = new rpcconsole.RpcConsole( this.serverUrl );      
+      var console = new rpcconsole.RpcConsole( serverUrl );      
       win.add(console);
+      win.addListener("changeActive",function(e){
+        if (e.getData())
+        {
+          this._activeConsole = console;
+        }
+      },this);
 
       /*
        * finish
        */
       win.open();
 
-    }
+    },
+    
+    /**
+     * Returns the consolein the currently active window
+     * @return {rpcconsole.RpcConsole}
+     */
+    getActiveConsole : function()
+    {
+      return this._activeConsole;
+    },
+    
+
+    /**
+     * Create a menu with various tests for the demo application
+     */
+    createTestsMenu : function()
+    {
+      var menu = new qx.ui.menu.Menu();
+      var testData = this.getTestData();
+      testData.forEach( function(data){
+        var button = new qx.ui.menu.Button( data.label );
+        button.addListener("execute", function(){
+          if ( this._activeConsole )
+          {
+            this._activeConsole.sendRequest( data.requestData, data.callback, this);
+          }
+        }, this);
+        menu.add(button);        
+      },this);
+      return menu;      
+    },
+
+    
+    /**
+     * Returns the test data. Override with your own implementation
+     * @return {Object}
+     */
+    getTestData : function()
+    {
+      return this.testdata;
+    },
+    
+    /**
+     * Test data
+     */
+    testdata : 
+    [
+      {
+        label : "Use RpcPhp trunk server ",
+        requestData : {
+          url : "../../../../../RpcPhp/trunk/services/index.php"
+        }
+      },
+      {
+        label : "Use RpcPhp 1.0.1 server ",
+        requestData : {
+          url : "../../../../../RpcPhp/1.0.1/services/index.php"
+        }
+      },        
+      {
+        label       : "qooxdoo.test.echo - Send a simple 'hello world' message to be echoed by the server.", 
+        requestData : {
+          service : "qooxdoo.test",
+          method : "echo",
+          params : ["Hello World!"],
+          serverData : {
+            authentication : {
+              username : "Foo",
+              password : "Bar"
+            }
+          }
+        }
+      },
+      
+      /*
+       * custom test
+       */
+      {
+        label : "Custom test: Authenticate against qcl backend",
+        requestData : {
+          url     : "http://localhost:8080/Bibliograph/bibliograph-2.0/bibliograph/services/server.php", 
+          service : "bibliograph.controller.Authentication",
+          method : "authenticate",
+          params : [null]
+        },
+        callback : function( response ){
+          this.getActiveConsole().getRequestModel().setServerData({
+            sessionId : response.result.data.sessionId
+          });
+        }
+      },
+      
+      /*
+       * Custom Test: qcl service introspection
+       */
+      {
+        label : "Custom test: qcl service introspection",
+        requestData : {
+          url     : "http://localhost:8080/Bibliograph/bibliograph-2.0/bibliograph/services/server.php", 
+          service : "bibliograph.controller.Authentication",
+          method : "listMethods",
+          params : []
+        },
+        callback : function( response ){
+          var methods = response.result.data;
+          var methodComboBox = this.getActiveConsole()._methodComboBox;
+          methodComboBox.removeAll();
+          methods.forEach( function(method) {
+            methodComboBox.add ( new qx.ui.form.ListItem(method) );
+          }, this);
+        }
+      }      
+    ]
   }
 });
