@@ -32,11 +32,16 @@
     "APPLICATION"  : "rpcconsole.demo",
     "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
     "QXTHEME"      : "rpcconsole.demo.theme.Theme",
-    "API_EXCLUDE"  : ["qx.test.*"],
+    "API_EXCLUDE"  : ["qx.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   },
+  
+  "copy-files" :
+  {
+    "files"     : [ "script/rpcconsole.testData.js" ]
+  },  
 
   "jobs" :
   {

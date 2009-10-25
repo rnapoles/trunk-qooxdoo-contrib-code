@@ -31,7 +31,7 @@
   {
     "APPLICATION"  : "rpcconsole",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/0.9-pre",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
     //"QXTHEME"      : "rpcconsole.theme.modern.Theme",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "rpcconsole.demo.*"],
