@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2009 ACME Corporation -or- Your Name, http://www.example.com
+     2009 Christian Boulanger
      
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -9,7 +9,7 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Your Name (username)
+     * Christian Boulanger (cboulanger)
 
 ************************************************************************ */
 
@@ -20,8 +20,8 @@
 ************************************************************************ */
 
 /**
- * This is the main class of contribution "RpcConsole"
- * 
+ * A GUI client for testing JSON-RPC Requests. This widget can be embedded
+ * in your application.
  */
 qx.Class.define("rpcconsole.RpcConsole",
 {
@@ -80,7 +80,7 @@ qx.Class.define("rpcconsole.RpcConsole",
     /*
      * rpc object
      */
-    this._rpc = new qx.io.remote.Rpc();    
+    this.__rpc = new qx.io.remote.Rpc();    
   },
   
   
@@ -98,13 +98,15 @@ qx.Class.define("rpcconsole.RpcConsole",
       PRIVATE MEMBERS
     -------------------------------------------------------------------------
     */
-    _rpc                 : null,
-    _form                : null,
-    _formController      : null,
-    _methodComboBox      : null,
-    _sendButton          : null,
-    _cancelButton        : null,
-    _opaqueCallReference : null,    
+    __rpc                 : null,
+    __form                : null,
+    __formController      : null,
+    __methodComboBox      : null,
+    __serviceComboBox     : null,
+    __sendButton          : null,
+    __cancelButton        : null,
+    __opaqueCallReference : null,    
+    __responseTextArea    : null,
     
     /**
      * Creates the UI
@@ -123,18 +125,18 @@ qx.Class.define("rpcconsole.RpcConsole",
        * main service info
        */
       var servicePage = new qx.ui.tabview.Page("Service Info");
-      tabview.add(servicePage)
+      tabview.add(servicePage);
       var grid = new qx.ui.layout.Grid();
       grid.setSpacing(5);
-      grid.setColumnAlign(0, "left", "middle"),
+      grid.setColumnAlign(0, "left", "middle"); 
       grid.setColumnFlex(1,1);
       servicePage.setLayout(grid);
       
       /*
        * form
        */
-      this._form = new qx.ui.form.Form()
-      this._formController = new qx.data.controller.Form( null, this._form );
+      this.__form = new qx.ui.form.Form()
+      this.__formController = new qx.data.controller.Form( null, this.__form );
       
       /*
        * Server URL
@@ -143,17 +145,17 @@ qx.Class.define("rpcconsole.RpcConsole",
       servicePage.add(label, {row: 0, column: 0});
       var serverUrlTextfield = new qx.ui.form.TextField();
       servicePage.add( serverUrlTextfield, {row: 0, column: 1});
-      this._form.add( serverUrlTextfield, null, null, "url" );
+      this.__form.add( serverUrlTextfield, null, null, "url" );
   
       /*
        * Service name
        */
       label = new qx.ui.basic.Label("Service name:");
       servicePage.add(label, {row: 1, column: 0});
-      var serviceTextfield = new qx.ui.form.TextField("");
-      serviceTextfield.setPlaceholder("The service name, i.e. qooxdoo.test");
-      servicePage.add( serviceTextfield, {row: 1, column: 1});
-      this._form.add( serviceTextfield, null, qx.util.Validate.regExp(/[a-zA-Z0-9\.]+/), "service" );
+      var serviceComboBox = this.__serviceComboBox = new qx.ui.form.ComboBox("");
+      serviceComboBox.setPlaceholder("The service name, i.e. qooxdoo.test");
+      servicePage.add( serviceComboBox, {row: 1, column: 1});
+      this.__form.add( serviceComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9\.]+/), "service" );
       
       /*
        * Service method
@@ -161,11 +163,11 @@ qx.Class.define("rpcconsole.RpcConsole",
       label = new qx.ui.basic.Label("Service method:");
       servicePage.add(label, {row: 2, column: 0});
       var hbox = new qx.ui.container.Composite( new qx.ui.layout.HBox(5) );
-      var methodComboBox = this._methodComboBox = new qx.ui.form.ComboBox();
+      var methodComboBox = this.__methodComboBox = new qx.ui.form.ComboBox();
       methodComboBox.setPlaceholder("The service method, i.e. echo");
       hbox.add( methodComboBox, { flex : 1 } );
       servicePage.add(hbox, {row: 2, column: 1});    
-      this._form.add( methodComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9]+/), "method" );
+      this.__form.add( methodComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9]+/), "method" );
   
       /*
        * options
@@ -174,7 +176,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       var crossDomainCheckBox = new qx.ui.form.CheckBox( "Cross Domain" );
       crossDomainCheckBox.setEnabled(false); // not yet functional
       hbox.add( crossDomainCheckBox );
-      this._form.add( crossDomainCheckBox, null, null, "crossDomain" );
+      this.__form.add( crossDomainCheckBox, null, null, "crossDomain" );
       hbox.add( new qx.ui.basic.Label("Timeout:") );
       var timeoutSpinner = new qx.ui.form.Spinner().set({
         minimum  : 3,
@@ -184,7 +186,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       });
       hbox.add( timeoutSpinner );
       hbox.add( new qx.ui.basic.Label("seconds") );
-      this._form.add( timeoutSpinner, null, null, "timeout" );
+      this.__form.add( timeoutSpinner, null, null, "timeout" );
   
       servicePage.add( new qx.ui.basic.Label("Options:"), {row: 3, column: 0 });
       servicePage.add(hbox, {row: 3, column: 1 });
@@ -197,8 +199,8 @@ qx.Class.define("rpcconsole.RpcConsole",
         placeholder : "Please enter the method parameters, separated by comma and properly quoted, for example: \"Hello World!\"."
       });
       servicePage.add( paramsTextField, { row: 4, column : 1} );
-      this._form.add( paramsTextField, null, null, "params" );
-      this._formController.addBindingOptions("params", {
+      this.__form.add( paramsTextField, null, null, "params" );
+      this.__formController.addBindingOptions("params", {
         converter : function( data ) {
           if ( qx.lang.Type.isArray( data ) && data.length )
           {
@@ -233,8 +235,8 @@ qx.Class.define("rpcconsole.RpcConsole",
       var serverDataTextArea = new qx.ui.form.TextArea();
       serverDataTextArea.setPlaceholder("You can send arbitrary json data with your request here.")
       serverDataPage.add( serverDataTextArea );
-      this._form.add( serverDataTextArea , null, null, "serverData" );
-      this._formController.addBindingOptions("serverData", {
+      this.__form.add( serverDataTextArea , null, null, "serverData" );
+      this.__formController.addBindingOptions("serverData", {
         converter : function( data ) {
           if ( data )
           {
@@ -265,7 +267,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       var authenticationPage = new qx.ui.tabview.Page( "Authentication" );
       var grid = new qx.ui.layout.Grid();
       grid.setSpacing(5);
-      grid.setColumnAlign(0, "left", "middle"),
+      grid.setColumnAlign(0, "left", "middle");
       grid.setColumnFlex(1,1);     
       authenticationPage.setLayout( grid );
       tabview.add( authenticationPage );
@@ -275,10 +277,10 @@ qx.Class.define("rpcconsole.RpcConsole",
        */
       var authenticationCheckBox = new qx.ui.form.CheckBox("Use Basic Http Authentication");
       authenticationPage.add( authenticationCheckBox, { row: 0, column: 0, colSpan : 2 });
-      this._form.add( authenticationCheckBox , null, null, "useBasicHttpAuth" );
+      this.__form.add( authenticationCheckBox , null, null, "useBasicHttpAuth" );
       
       var userNameTextField = new qx.ui.form.TextField();
-      this._form.add( userNameTextField , null, null, "username" );
+      this.__form.add( userNameTextField , null, null, "username" );
       authenticationCheckBox.bind("value",userNameTextField,"enabled");
       var label = new qx.ui.basic.Label("User name");
       label.setBuddy(userNameTextField);
@@ -286,7 +288,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       authenticationPage.add( userNameTextField, { row: 1, column: 1});
       
       var passwordTextField = new qx.ui.form.PasswordField();
-      this._form.add( passwordTextField , null, null, "password" );    
+      this.__form.add( passwordTextField , null, null, "password" );    
       authenticationCheckBox.bind("value",passwordTextField,"enabled");
       label = new qx.ui.basic.Label("Password");
       label.setBuddy(passwordTextField);
@@ -297,24 +299,24 @@ qx.Class.define("rpcconsole.RpcConsole",
        * buttons
        */
       hbox = new qx.ui.container.Composite( new qx.ui.layout.HBox(5) );
-      this._sendButton = new qx.ui.form.Button("Send");
-      this._sendButton.addListener("execute", this._onSendButtonExecute ,this );
-      hbox.add( this._sendButton );
-      this._cancelButton = new qx.ui.form.Button("Cancel")
-      this._cancelButton.setEnabled(false);
-      this._cancelButton.addListener("execute", function(){
+      this.__sendButton = new qx.ui.form.Button("Send");
+      this.__sendButton.addListener("execute", this._onSendButtonExecute ,this );
+      hbox.add( this.__sendButton );
+      this.__cancelButton = new qx.ui.form.Button("Cancel")
+      this.__cancelButton.setEnabled(false);
+      this.__cancelButton.addListener("execute", function(){
         this.cancelRequest();
       }, this);
-      hbox.add( this._cancelButton );
+      hbox.add( this.__cancelButton );
       this.add(hbox);
       
       /*
        * response 
        */
       this.add( new qx.ui.basic.Label("Response") );
-      this._responseTextArea = new qx.ui.form.TextArea();
-      this.add( this._responseTextArea, { flex : 1 } );
-      this.bind("responseModel", this._responseTextArea, "value",{
+      this.__responseTextArea = new qx.ui.form.TextArea();
+      this.add( this.__responseTextArea, { flex : 1 } );
+      this.bind("responseModel", this.__responseTextArea, "value",{
         converter : function( data ) {
           return data ? qx.util.Serializer.toJson( data ) : "";
         }
@@ -324,8 +326,8 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * configure form controller and create model
        */      
-      this.setRequestModel( this._formController.createModel(true) );
-      this._formController.getModel().setUrl(serverUrl);
+      this.setRequestModel( this.__formController.createModel(true) );
+      this.__formController.getModel().setUrl(serverUrl);
       
       /*
        * select first page
@@ -379,7 +381,52 @@ qx.Class.define("rpcconsole.RpcConsole",
      */
     getRpc : function()
     {
-      return this._rpc;
+      return this.__rpc;
+    },
+    
+    /**
+     * Returns the combobox widget for the service name
+     * @return {qx.ui.form.ComboBox}
+     */
+    getServiceComboBox : function()
+    {
+      return this.__serviceComboBox;
+    },
+
+    /**
+     * Returns the combobox widget for the service method
+     * @return {qx.ui.form.ComboBox}
+     */
+    getMethodComboBox : function()
+    {
+      return this.__methodComboBox;
+    },
+
+    /**
+     * Returns text area containing the response data
+     * @return {qx.ui.form.TextArea}
+     */
+    getResponseTextArea : function()
+    {
+      return this.__responseTextArea;
+    }, 
+    
+    /**
+     * Returns form widget
+     * @return {qx.ui.form.Form}
+     */
+    getForm : function()
+    {
+      return this.__form;
+    },
+
+    /**
+     * Returns form widget
+     * @return {qx.ui.form.Form}
+     */
+    getFormController : function()
+    {
+      return this.__formController;
     },
     
     /**
@@ -440,15 +487,15 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * button status
        */
-      this._sendButton.setEnabled(false);
-      this._cancelButton.setEnabled(true);      
+      this.__sendButton.setEnabled(false);
+      this.__cancelButton.setEnabled(true);      
       
       /*
        * event if request fails
        */
       rpc.addListenerOnce("failed", function(e){
-        this._sendButton.setEnabled(true);
-        this._cancelButton.setEnabled(false);        
+        this.__sendButton.setEnabled(true);
+        this.__cancelButton.setEnabled(false);        
         alert( e.getData().toString() );
       },this);
       
@@ -460,8 +507,8 @@ qx.Class.define("rpcconsole.RpcConsole",
         var data = e.getData();
         
         // buttons
-        this._sendButton.setEnabled(true);
-        this._cancelButton.setEnabled(false);        
+        this.__sendButton.setEnabled(true);
+        this.__cancelButton.setEnabled(false);        
         
         // save response as model
         this.setResponseModel( qx.data.marshal.Json.createModel(data,true) );
@@ -485,7 +532,7 @@ qx.Class.define("rpcconsole.RpcConsole",
        * send rpc request
        */
       var args = [ true, requestModel.getMethod() ].concat( requestModel.getParams() );
-      this._opaqueCallReference = rpc.callAsyncListeners.apply(rpc, args )
+      this.__opaqueCallReference = rpc.callAsyncListeners.apply(rpc, args )
       
     }, 
     
@@ -494,13 +541,13 @@ qx.Class.define("rpcconsole.RpcConsole",
      */
     cancelRequest : function()
     {
-      this.rpc.abort( this._opaqueCallReference );
+      this.rpc.abort( this.__opaqueCallReference );
 
       /*
        * button status
        */
-      this._sendButton.setEnabled(true);
-      this._cancelButton.setEnabled(false);
+      this.__sendButton.setEnabled(true);
+      this.__cancelButton.setEnabled(false);
       
     }
   }  

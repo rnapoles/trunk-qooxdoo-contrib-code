@@ -1,27 +1,36 @@
 /* ************************************************************************
 
    Copyright:
-
+     2009 Christian Boulanger
+     
    License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
 
    Authors:
+     * Christian Boulanger (cboulanger)
 
 ************************************************************************ */
 
 /* ************************************************************************
 
 #asset(rpcconsole.demo/*)
+#ignore(testName)
+#require(qx.ui.form.ListItem)
 
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "rpcconsole"
+ * A demo of the RpcConsole. This is a scriptable test client for your JSON-RPC
+ * backend. Example test data is loaded from script/rpcconsole.testData.js, but
+ * you can override this with adding '?testDataUrl=http://path/to/my/testData.js' 
+ * to the build or source URL of this app. To change the default server url,
+ * add '?serverUrl=http://path/to/my/server/'   
  */
 qx.Class.define("rpcconsole.demo.Application",
 {
   extend : qx.application.Standalone,
-
-
 
   /*
   *****************************************************************************
@@ -32,11 +41,30 @@ qx.Class.define("rpcconsole.demo.Application",
   members :
   {
     
+    /*
+    -------------------------------------------------------------------------
+      PUBLIC MEMBERS
+    -------------------------------------------------------------------------
+    */
     desktop   : null,
     counter   : 1,
     serverUrl : "../../../../../RpcPhp/1.0.1/services/index.php",
-    lastCreatedConsole : null,
-    _activeConsole : null,
+    testDataUrl : "script/rpcconsole.testData.js",
+
+    /*
+    -------------------------------------------------------------------------
+      PRIVATE MEMBERS
+    -------------------------------------------------------------------------
+    */        
+    __activeConsole : null,
+    __testData : null,
+    __testsMenu : null,
+
+    /*
+    -------------------------------------------------------------------------
+      STARTUP
+    -------------------------------------------------------------------------
+    */    
     
     /**
      * This method contains the initial application code and gets called 
@@ -55,18 +83,14 @@ qx.Class.define("rpcconsole.demo.Application",
         // support additional cross-browser console. Press F7 to toggle visibility
         qx.log.appender.Console;
       }
-
-      /*
-      -------------------------------------------------------------------------
-        Console Desktop
-      -------------------------------------------------------------------------
-      */
       
       /*
        * GET parameters
        */
       var s = window.location.search.substring(1).split('&');
-      if(!s.length) return;
+      if(!s.length) {
+        return;
+      }
       var c = {};
       for(var i  = 0; i < s.length; i++)  {
           var parts = s[i].split('=');
@@ -84,17 +108,26 @@ qx.Class.define("rpcconsole.demo.Application",
        * menu bar
        */
       var toolbar = new qx.ui.toolbar.ToolBar();
+      mainLayout.add( toolbar );
+      
+      /*
+       * button to create a new console
+       */
       var createWindowButton = new qx.ui.toolbar.Button("Create RPC Console");
       createWindowButton.addListener("execute", this.createRpcConsole, this);
       toolbar.add(createWindowButton);
-
+      
+      /*
+       * menu with tests
+       */
       var testsMenuButton = new qx.ui.toolbar.MenuButton("Tests");
       testsMenuButton.setShowArrow(true);
-      testsMenuButton.setMenu( this.createTestsMenu() );
+      var menu = this.getTestsMenu();
+      var testData = this.getTestData();
+      this.populateMenu( menu, testData );
+      testsMenuButton.setMenu( menu );
       toolbar.add(testsMenuButton);
-      
-      mainLayout.add( toolbar );
-         
+               
       /*
        * desktop
        */
@@ -103,14 +136,28 @@ qx.Class.define("rpcconsole.demo.Application",
         decorator: "main", 
         backgroundColor: "background-pane"
       });
-      mainLayout.add(this.desktop, { flex: 1});
+      mainLayout.add(this.desktop, { flex: 1 });
       
       /*
        * create initial window
        */
       this.createRpcConsole();
+      
+      /*
+       * load initial test data
+       */
+      var testDataUrl = window.location.parameters.testDataUrl || this.testDataUrl;
+      if ( testDataUrl )
+      {
+        this.loadTestData( testDataUrl );
+      }
     },
     
+    /*
+    -------------------------------------------------------------------------
+      PUBLIC API
+    -------------------------------------------------------------------------
+    */    
     
     /**
      * Create a window with an Rpc Console
@@ -153,7 +200,7 @@ qx.Class.define("rpcconsole.demo.Application",
       win.addListener("changeActive",function(e){
         if (e.getData())
         {
-          this._activeConsole = console;
+          this.__activeConsole = console;
         }
       },this);
 
@@ -170,110 +217,166 @@ qx.Class.define("rpcconsole.demo.Application",
      */
     getActiveConsole : function()
     {
-      return this._activeConsole;
+      return this.__activeConsole;
     },
     
-
     /**
-     * Create a menu with various tests for the demo application
+     * Returns a menu instance that is used for the tests
+     * @return {qx.ui.menu.Menu}
      */
-    createTestsMenu : function()
+    getTestsMenu : function()
     {
-      var menu = new qx.ui.menu.Menu();
-      var testData = this.getTestData();
-      testData.forEach( function(data){
-        var button = new qx.ui.menu.Button( data.label );
-        button.addListener("execute", function(){
-          if ( this._activeConsole )
-          {
-            this._activeConsole.sendRequest( data.requestData, data.callback, this);
-          }
-        }, this);
-        menu.add(button);        
-      },this);
-      return menu;      
+      if ( ! this.__testsMenu )
+      {
+        this.__testsMenu = new qx.ui.menu.Menu();
+      }
+      return this.__testsMenu;
     },
 
+    /**
+     * Populates a menu with various tests for the demo application.
+     * @param menu {qx.ui.menu.Menu} The menu to populate
+     * @param testData {Map} An map of maps of the following structure:
+     * <pre>
+     * {
+     *   testName : {
+     *     label : "The label in the menu",
+     *     /**
+     *      * Optional initialization function called when the 
+     *      * button is created. If the function returns boolean false,
+     *      * the button is not attached to the menu.
+     *      * The menu button, the testData map and the name of test are 
+     *      * passed as arguments. 
+     *      * /
+     *     init : function( button, testData, testName ){
+     *      // "this" refers to the main application
+     *      return true;
+     *     },
+     *     /**
+     *      * Optional function called when the menu button is executed.
+     *      * If the function returns boolean false, the request is not
+     *      * send. The testData map and the name of test are 
+     *      * passed as arguments.
+     *      * /
+     *     execute : function( testData, testName )
+     *     {
+     *        // "this" refers to the main application
+     *        return true;
+     *     },
+     *     /**
+     *      * The request model data. Each value overrides an existing
+     *      * property. Other properties are kept.
+     *      * / 
+     *     requestData : {
+     *       url     : "http://", 
+     *       service : "my.service.name",
+     *       method : "myMethodName",
+     *       params : ["arg1", "arg2", [ "arg", 3] ]
+     *     },
+     *     /**
+     *      * Optional callback function called after the result of the
+     *      * request has returned from the server.
+     *      * /
+     *     callback : function( response ){
+     *       this.getActiveConsole().getRequestModel().setServerData(
+     *        // do something with the response, for example, change
+     *        // the server data like here
+     *        // "this" refers to the main application
+     *       );
+     *     }
+     *   },
+     *   
+     *   testName2 : {
+     *    ...
+     *   },
+     *   
+     *   testName3 : {
+     *    ...
+     *   }
+     *   ...
+     * }
+     *
+     * </pre>
+     */
+    populateMenu : function( menu, testData )
+    {
+      menu.removeAll();
+      
+      /*
+       * (re-) populate the menu from the test data
+       */
+      for ( var testName in testData )
+      {
+        var data = testData[testName];
+        
+        /*
+         * menu button with listener
+         */
+        var button = new qx.ui.menu.Button( data.label );
+
+        /*
+         * initialization function. if result is boolean false,
+         * skip this button
+         */
+        if ( qx.lang.Type.isFunction( data.init ) )
+        {
+          var result = data.init.call( this, button, testData, testName );
+          if ( result === false ) {
+            continue;
+          }
+        }
+        
+        /*
+         * event handler called when user clicks the button
+         */
+
+        // Closures are wierd animals. Hack to get the iterated 'testName'
+        // into the closure. Without this hack, test name always evaluates to the
+        // last key in testData. Any idea how to solve this differently?
+        // There is also a big problem with build code optimization and "eval"
+        this.button = button;
+        eval( 
+        'this.button.addListener("execute", function(){'+
+          'var doSendRequest, data = this.getTestData().'+testName+';'+
+          'if ( qx.lang.Type.isFunction(data.execute)){'+
+            'doSendRequest = data.execute.call(this,this.getTestData(),"'+testName+'");'+
+          '}'+
+          'if ( doSendRequest !== false && this.getActiveConsole() && data.requestData ){'+
+            'this.getActiveConsole().sendRequest( data.requestData, data.callback, this );'+
+          '}'+
+        '}, this);'
+        );
+        menu.add(button);
+      } 
+    },
     
     /**
-     * Returns the test data. Override with your own implementation
-     * @return {Object}
+     * Returns the test data map
+     * @return {Map}
      */
     getTestData : function()
     {
-      return this.testdata;
+      return this.__testData;
     },
     
     /**
-     * Test data
+     * Sets the test data map and populates the menu.
+     * @param testData {Map}
      */
-    testdata : 
-    [
-      {
-        label : "Use RpcPhp trunk server ",
-        requestData : {
-          url : "../../../../../RpcPhp/trunk/services/index.php"
-        }
-      },
-      {
-        label : "Use RpcPhp 1.0.1 server ",
-        requestData : {
-          url : "../../../../../RpcPhp/1.0.1/services/index.php"
-        }
-      },        
-      {
-        label       : "qooxdoo.test.echo - Send a simple 'hello world' message to be echoed by the server.", 
-        requestData : {
-          service : "qooxdoo.test",
-          method : "echo",
-          params : ["Hello World!"],
-          serverData : {
-            authentication : {
-              username : "Foo",
-              password : "Bar"
-            }
-          }
-        }
-      },
-      
-      /*
-       * custom test
-       */
-      {
-        label : "Custom test: Authenticate against qcl backend",
-        requestData : {
-          url     : "http://localhost:8080/Bibliograph/bibliograph-2.0/bibliograph/services/server.php", 
-          service : "bibliograph.controller.Authentication",
-          method : "authenticate",
-          params : [null]
-        },
-        callback : function( response ){
-          this.getActiveConsole().getRequestModel().setServerData({
-            sessionId : response.result.data.sessionId
-          });
-        }
-      },
-      
-      /*
-       * Custom Test: qcl service introspection
-       */
-      {
-        label : "Custom test: qcl service introspection",
-        requestData : {
-          url     : "http://localhost:8080/Bibliograph/bibliograph-2.0/bibliograph/services/server.php", 
-          service : "bibliograph.controller.Authentication",
-          method : "listMethods",
-          params : []
-        },
-        callback : function( response ){
-          var methods = response.result.data;
-          var methodComboBox = this.getActiveConsole()._methodComboBox;
-          methodComboBox.removeAll();
-          methods.forEach( function(method) {
-            methodComboBox.add ( new qx.ui.form.ListItem(method) );
-          }, this);
-        }
-      }      
-    ]
+    setTestData : function( testData )
+    {
+      this.__testData = testData;
+      this.populateMenu( this.getTestsMenu(), this.__testData );
+    },
+    
+    /**
+     * Loads the test data from the given url
+     * @param testDataUrl {String}
+     * @return {void}
+     */
+    loadTestData : function( testDataUrl )
+    {
+      new qx.io2.ScriptLoader().load( testDataUrl );
+    }
   }
 });
