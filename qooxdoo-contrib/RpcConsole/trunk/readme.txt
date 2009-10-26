@@ -11,10 +11,7 @@ manually or by user-supplied scripts.
 The demo allows to open multiple windows with independent consoles, and to 
 load test data from a given url. Since qx.io2.ScriptLoader is used, you can 
 use the contribution demo app to debug the backend of applications which 
-live both on the same or on a different domain. 
-
-Note: For this to work, this bug needs to be fixed:
-http://bugzilla.qooxdoo.org/show_bug.cgi?id=2978
+live both on the same or on a different domain.
 
 Example test data is loaded from script/rpcconsole.testData.js, but
 you can override this with adding '?testDataUrl=http://path/to/my/testData.js' 
@@ -31,20 +28,18 @@ qx.core.Init.getApplication().setTestData(
      * Optional initialization function called when the 
      * button is created. If the function returns boolean false,
      * the button is not attached to the menu.
-     * The menu button, the testData map and the name of test are 
-     * passed as arguments. 
+     * The menu button and the name of test are passed as arguments. 
     */
-    init : function( button, testData, testName ){
+    init : function( button, testName ){
      // "this" refers to the main application
      return true;
     },
     /**
      * Optional function called when the menu button is executed.
      * If the function returns boolean false, the request is not
-     * send. The testData map and the name of test are 
-     * passed as arguments.
+     * send. The name of the test is passed as argument.
      */
-    execute : function( testData, testName )
+    execute : function( testName )
     {
        // "this" refers to the main application
        return true;
@@ -82,20 +77,19 @@ qx.core.Init.getApplication().setTestData(
   ...
 });
 
-As the testData map is passed as an argument to init and execute functions,
-you combine several jobs by the following code
+You can combine several jobs by the following code
 
 testName1 :
 {
   label : "Combine Jobs 2 and 3",  
-  execute: function( testData, testName)
+  execute: function()
   {
-    this.sendRequest( testData.testName2.requestData, function(result)
+    this.runTest( "testName2", function(result)
     {
-      this.sendRequest( testData.testName3.requestData, function(result)
+      this.runTest( "testName3", function(result)
       {
         this.info("Tests completed.");
-      }, this);
-    },this);
+      });
+    });
   }
 }
