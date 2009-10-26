@@ -78,6 +78,12 @@ public class QxSelenium extends DefaultSelenium
     return ret;
   }
 
+  public String qxTableGetColumnIds(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableColumnIds", 
+      new String[] {locator,});
+    return ret;
+  }
+
   public String qxObjectExecFunction(String locator, String functionName) {
     String ret = this.commandProcessor.getString("getQxObjectFunction", 
       new String[] {locator, functionName, });

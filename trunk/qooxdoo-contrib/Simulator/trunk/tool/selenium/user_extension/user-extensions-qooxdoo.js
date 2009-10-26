@@ -595,6 +595,38 @@ Selenium.prototype.isQxInstanceOf = function (object, qxclass) {
 
 
 /**
+ * Uses the standard qx locators to find a table, and then returns a semicolon-
+ * separated list of column IDs.
+ *
+ * @type member
+ * @param locator {String} an element locator
+ * @return {String} A list of column IDs
+ */
+Selenium.prototype.getQxTableColumnIds = function(locator)
+{
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
+    }
+  }
+  else {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  
+  var columnIds = [];    
+  var model = qxObject.getTableModel();
+  var colCount = model.getColumnCount();
+  for (var i=0; i<colCount; i++) {
+    columnIds.push(model.getColumnId(i));
+  }
+  
+  return columnIds.join(";");
+};
+
+
+/**
  * Uses the standard qx locators to find a table, and then returns the number of
  * rows from the table model.
  *
@@ -744,7 +776,7 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
  * @param {String} name The column name to be searched for
  * @return {Integer|null} The found column index
  */
-Selenium.prototype.getTableColumnIndexByName = function(table, name)
+Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
 {
   var model = table.getTableModel();
   var colCount = model.getColumnCount();
@@ -844,7 +876,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
     LOG.debug("Got column index " + col + " from colId");
   } else if (additionalParamsForClick["colName"]) {
     // get column index by columnName
-    col = Number(this.getTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
+    col = Number(this.getQxTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
     LOG.debug("Got column index " + col + " from colName");
   } else {
     throw new SeleniumError("No column given, specify either col, colId or colName!");
