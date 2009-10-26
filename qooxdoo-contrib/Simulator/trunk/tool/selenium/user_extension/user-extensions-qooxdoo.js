@@ -604,23 +604,17 @@ Selenium.prototype.isQxInstanceOf = function (object, qxclass) {
  */
 Selenium.prototype.getQxTableRows = function(locator)
 {
-  var element = this.page().findElement(locator);
-  if (!element) {
-    throw new SeleniumError("No such object: " + locator);
-  }
-  var qx = this.getQxGlobalObject();
-
-  // this.page().findElement() returns the html element.
-  // we also need the real object to work with.
-  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
   if (qxObject) {
     if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not a qx Table: " + locator);
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
     }
-  } 
-  else {
-    throw new SeleniumError("Object is not a qx Table: " + locator);
   }
+  else {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  
   return String(qxObject.getTableModel().getRowCount());
 };
 
@@ -635,23 +629,17 @@ Selenium.prototype.getQxTableRows = function(locator)
  */
 Selenium.prototype.getQxTableCols = function(locator)
 {
-  var element = this.page().findElement(locator);
-  if (!element) {
-    throw new SeleniumError("No such object: " + locator);
-  }
-  var qx = this.getQxGlobalObject();
-
-  // this.page().findElement() returns the html element.
-  // we also need the real object to work with.
-  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
   if (qxObject) {
     if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not a qx Table: " + locator);
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
     }
-  } 
-  else {
-    throw new SeleniumError("Object is not a qx Table: " + locator);
   }
+  else {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  
   return String(qxObject.getTableModel().getColumnCount());
 };
 
@@ -715,22 +703,15 @@ Selenium.prototype.getQxWidgetByLocator = function(locator)
  */
 Selenium.prototype.getQxTableValue = function(locator, eventParams)
 {
-  var element = this.page().findElement(locator);
-  if (!element) {
-    throw new SeleniumError("No such object: " + locator);
-  }
-  var qx = this.getQxGlobalObject();
-
-  // this.page().findElement() returns the html element.
-  // we also need the real object to work with.
-  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
   if (qxObject) {
     if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not a qx Table: " + locator);
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
     }
-  } 
+  }
   else {
-    throw new SeleniumError("Object is not a qx Table: " + locator);
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
   }
 
   var additionalParamsForClick = {};
@@ -812,22 +793,15 @@ Selenium.prototype.getTableColumnIndexByName = function(table, name)
  */
 Selenium.prototype.doQxTableClick = function(locator, eventParams)
 {
-  var element = this.page().findElement(locator);
-  if (!element) {
-      throw new SeleniumError("No such object: " + locator);
-  }
-  var qx = this.getQxGlobalObject();
-
-  // this.page().findElement() returns the html element.
-  // we also need the real object to work with.
-  var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
   if (qxObject) {
     if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not a qx Table: " + locator);
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
     }
-  } 
+  }
   else {
-    throw new SeleniumError("Object is not a qx Table: " + locator);
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
   }
 
   // Now add the extra components to the locator to find the clipper itself.
