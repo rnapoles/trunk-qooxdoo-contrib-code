@@ -1030,7 +1030,7 @@ PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
 
   if (qxObject) {
-    return qxObject.getElement();
+    return qxObject.getContentElement().getDomElement();
   }
 };
 
@@ -1078,7 +1078,7 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
     return null;
   }
 
-  var qxElement = qxObject.getElement();  
+  var qxElement = qxObject.getContentElement().getDomElement();
   
   var resultElement;
   if (this.locateElementByXPath){
@@ -1404,7 +1404,7 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
 
   if (qxResultObject)
   {
-    LOG.debug("qxResultObject=" + qxResultObject + ", element=" + qxResultObject.getElement());
+    LOG.debug("qxResultObject=" + qxResultObject + ", element=" + qxResultObject.getContentElement().getDomElement());
     return qxResultObject;
   }
   else
