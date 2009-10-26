@@ -755,6 +755,27 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
   return String(qxObject.getTableModel().getValue(col, row));
 };
 
+/**
+ * Searches the given table for a column with the given name and returns the 
+ * column index.
+ * 
+ * @param {qx.ui.table.Table} table The table to be searched
+ * @param {String} name The column name to be searched for
+ * @return {Integer|null} The found column index
+ */
+Selenium.prototype.getTableColumnIndexByName = function(table, name)
+{
+  var model = table.getTableModel();
+  var colCount = model.getColumnCount();
+  for (var i=0; i<colCount; i++) {
+    var colName = model.getColumnName(i);
+    if (colName == name) {
+      return i;
+    }
+  }
+  return null;
+};
+
 
 /**
  * Uses the standard qx locators to find a table, and then processes a click on 
@@ -763,9 +784,13 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
  * extra Composite/Scroller/Clipper to the locator as required.
  *
  * <p>
+ * The column to click can be located using the index, ID or name by specifying 
+ * one of the col, colId or colName parameters.
+ * 
+ * <p>
  * mousedown, mouseup will be fired instead of only click
- * additionaly to doQxClick the x-/y-coordinates of located element will be 
- * determined.
+ * in addition to to doQxClick the x-/y-coordinates of the located element will 
+ * be determined.
  * TODO: implement it like doFooAt, where additional coordinates will be added 
  * to the element-coords
  * <p>
@@ -775,8 +800,10 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
  *
  * @type member
  * @param locator {var} an element locator
- * @param row {var} table row to click
- * @param col {var} table column to click
+ * @param row {var} index of the table row to click
+ * @param col {var} index of the table column to click
+ * @param colId {var} ID of the column to click
+ * @param colName {var} Name of the column to click
  * @param eventParams {var} additional parameter for the mouse-event to set. 
  * e.g. clientX.
  * If no eventParams are set, defaults will be: left mousebutton, all keys false
@@ -831,8 +858,24 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
       additionalParamsForClick[name] = value;
     }
   }
+  
   var row = Number(additionalParamsForClick["row"]);
-  var col = Number(additionalParamsForClick["col"]);
+  var col = null;
+  if (additionalParamsForClick["col"]) {
+    col = Number(additionalParamsForClick["col"]);
+  } else if (additionalParamsForClick["colId"]) {
+    // get column index by columnID
+    var model = qxObject.getTableModel();
+    col = Number(model.getColumnIndexById(additionalParamsForClick["colId"]));
+    LOG.debug("Got column index " + col + " from colId");
+  } else if (additionalParamsForClick["colName"]) {
+    // get column index by columnName
+    col = Number(this.getTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
+    LOG.debug("Got column index " + col + " from colName");
+  } else {
+    throw new SeleniumError("No column given, specify either col, colId or colName!");
+  }
+  
   LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
 
   var doContextMenu = false;
