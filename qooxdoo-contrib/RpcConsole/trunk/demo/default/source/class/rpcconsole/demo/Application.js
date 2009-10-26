@@ -245,20 +245,18 @@ qx.Class.define("rpcconsole.demo.Application",
      *      * Optional initialization function called when the 
      *      * button is created. If the function returns boolean false,
      *      * the button is not attached to the menu.
-     *      * The menu button, the testData map and the name of test are 
-     *      * passed as arguments. 
+     *      * The menu button and the name of test are passed as arguments. 
      *      * /
-     *     init : function( button, testData, testName ){
+     *     init : function( button, testName ){
      *      // "this" refers to the main application
      *      return true;
      *     },
      *     /**
      *      * Optional function called when the menu button is executed.
      *      * If the function returns boolean false, the request is not
-     *      * send. The testData map and the name of test are 
-     *      * passed as arguments.
+     *      * send. The  name of the test is passed as argument.
      *      * /
-     *     execute : function( testData, testName )
+     *     execute : function( testName )
      *     {
      *        // "this" refers to the main application
      *        return true;
