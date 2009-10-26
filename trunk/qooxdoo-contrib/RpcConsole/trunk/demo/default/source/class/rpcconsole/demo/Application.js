@@ -327,17 +327,9 @@ qx.Class.define("rpcconsole.demo.Application",
         /*
          * event handler called when user clicks the button
          */
-
-        // Closures are wierd animals. Hack to get the iterated 'testName'
-        // into the closure. Without this hack, test name always evaluates to the
-        // last key in testData. Any idea how to solve this differently?
-        // There is also a big problem with build code optimization and "eval"
-        this.button = button;
-        eval( 
-        'this.button.addListener("execute", function(){'+
-          'this.runTest("'+testName+'");'+
-        '}, this);'
-        );
+        button.addListener("execute", qx.lang.Function.bind(function(testName){ 
+          this.runTest( testName );
+        },this, testName ));
         menu.add(button);
       } 
     },
