@@ -16,6 +16,7 @@
 /* ************************************************************************
 
 #asset(rpcconsole/*)
+#require(qx.ui.form.ListItem)
 
 ************************************************************************ */
 
@@ -174,7 +175,6 @@ qx.Class.define("rpcconsole.RpcConsole",
        */
       hbox = new qx.ui.container.Composite( new qx.ui.layout.HBox(5) );
       var crossDomainCheckBox = new qx.ui.form.CheckBox( "Cross Domain" );
-      crossDomainCheckBox.setEnabled(false); // not yet functional
       hbox.add( crossDomainCheckBox );
       this.__form.add( crossDomainCheckBox, null, null, "crossDomain" );
       hbox.add( new qx.ui.basic.Label("Timeout:") );
@@ -493,10 +493,15 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * event if request fails
        */
+      var doAlert = true; // hack because event listener gets called more than once for some reason
       rpc.addListenerOnce("failed", function(e){
-        this.__sendButton.setEnabled(true);
-        this.__cancelButton.setEnabled(false);        
-        alert( e.getData().toString() );
+        if ( doAlert )
+        {
+          this.__sendButton.setEnabled(true);
+          this.__cancelButton.setEnabled(false);        
+          alert( e.getData().toString() );
+          doAlert = false;
+        }
       },this);
       
       /*

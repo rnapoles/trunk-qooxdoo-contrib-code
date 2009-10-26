@@ -320,7 +320,7 @@ qx.Class.define("rpcconsole.demo.Application",
          */
         if ( qx.lang.Type.isFunction( data.init ) )
         {
-          var result = data.init.call( this, button, testData, testName );
+          var result = data.init.call( this, button, testName );
           if ( result === false ) {
             continue;
           }
@@ -337,13 +337,7 @@ qx.Class.define("rpcconsole.demo.Application",
         this.button = button;
         eval( 
         'this.button.addListener("execute", function(){'+
-          'var doSendRequest, data = this.getTestData().'+testName+';'+
-          'if ( qx.lang.Type.isFunction(data.execute)){'+
-            'doSendRequest = data.execute.call(this,this.getTestData(),"'+testName+'");'+
-          '}'+
-          'if ( doSendRequest !== false && this.getActiveConsole() && data.requestData ){'+
-            'this.getActiveConsole().sendRequest( data.requestData, data.callback, this );'+
-          '}'+
+          'this.runTest("'+testName+'");'+
         '}, this);'
         );
         menu.add(button);
@@ -351,11 +345,16 @@ qx.Class.define("rpcconsole.demo.Application",
     },
     
     /**
-     * Returns the test data map
+     * Returns the test data map. If an argument is given, just return the
+     * test data of the test of the given name, otherwise return the full map.
      * @return {Map}
      */
-    getTestData : function()
+    getTestData : function( testName )
     {
+      if ( testName )
+      {
+        return this.__testData[testName]
+      }
       return this.__testData;
     },
     
@@ -376,7 +375,67 @@ qx.Class.define("rpcconsole.demo.Application",
      */
     loadTestData : function( testDataUrl )
     {
-      new qx.io2.ScriptLoader().load( testDataUrl );
+      new qx.io2.ScriptLoader().load( testDataUrl+"?"+(new Date).getTime(), function(){}, null );
+    },
+    
+    /**
+     * Runs the test with the given name.
+     * @param testName {String}
+     * @param callback {Function|undefined} If given, execute this callback
+     *   after executing the callback in the test data.
+     * @return {void}
+     */
+    runTest : function( testName, callback )
+    {
+      var doSendRequest, data = this.getTestData(testName);
+      if ( ! data )
+      {
+        this.error("A test with name '"+testName+"' does not exist.");
+      }
+      
+      /*
+       * function to exectue before the request
+       */
+      if ( qx.lang.Type.isFunction( data.execute ) )
+      {
+        doSendRequest = data.execute.call( this, testName );
+      }
+      
+      /*
+       * send request
+       */
+      if ( doSendRequest !== false && this.getActiveConsole() && data.requestData )
+      {
+        this.getActiveConsole().sendRequest( data.requestData, function(result){
+          /*
+           * execute the test data callback
+           */
+          if ( qx.lang.Type.isFunction( data.callback ) )
+          {
+            data.callback.call( this, result);
+          }
+          /*
+           * execute the method callback
+           */
+          if ( qx.lang.Type.isFunction( callback ) )
+          {
+            callback.call( this, result);
+          }        
+        }, this );
+      }
+    },
+    
+    /**
+     * Convenience method that passes its arguments to the sendRequest method
+     * of the currently active console. 
+     * @param requestData {Map}
+     * @param callback {Function|undefined}
+     * @param context {Object|undefined}
+     * @return {void}
+     */
+    sendRequest : function( requestData, callback, context )
+    {
+      this.getActiveConsole().sendRequest( requestData, callback, context ); 
     }
   }
 });
