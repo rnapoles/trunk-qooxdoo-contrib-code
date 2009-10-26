@@ -99,6 +99,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       PRIVATE MEMBERS
     -------------------------------------------------------------------------
     */
+    __tabview             : null,
     __rpc                 : null,
     __form                : null,
     __formController      : null,
@@ -108,6 +109,8 @@ qx.Class.define("rpcconsole.RpcConsole",
     __cancelButton        : null,
     __opaqueCallReference : null,    
     __responseTextArea    : null,
+    __logTextArea         : null,
+    __logPage             : null,
     
     /**
      * Creates the UI
@@ -119,7 +122,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * tabview
        */
-      var tabview = new qx.ui.tabview.TabView();
+      var tabview = this.__tabview = new qx.ui.tabview.TabView();
       this.add(tabview);
       
       /*
@@ -157,6 +160,8 @@ qx.Class.define("rpcconsole.RpcConsole",
       serviceComboBox.setPlaceholder("The service name, i.e. qooxdoo.test");
       servicePage.add( serviceComboBox, {row: 1, column: 1});
       this.__form.add( serviceComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9\.]+/), "service" );
+      // @todo: save service name in combobox
+
       
       /*
        * Service method
@@ -169,7 +174,8 @@ qx.Class.define("rpcconsole.RpcConsole",
       hbox.add( methodComboBox, { flex : 1 } );
       servicePage.add(hbox, {row: 2, column: 1});    
       this.__form.add( methodComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9]+/), "method" );
-  
+      // @todo: save method name in combobox
+      
       /*
        * options
        */
@@ -320,7 +326,16 @@ qx.Class.define("rpcconsole.RpcConsole",
         converter : function( data ) {
           return data ? qx.util.Serializer.toJson( data ) : "";
         }
-      })
+      });
+      
+      /*
+       * log
+       */
+      var logPage = this.__logPage = new qx.ui.tabview.Page( "Log" );
+      logPage.setLayout( new qx.ui.layout.Grow() );
+      tabview.add( logPage );
+      var logTextArea = this.__logTextArea = new qx.ui.form.TextArea();
+      logPage.add( logTextArea );
       
       
       /*
@@ -353,7 +368,6 @@ qx.Class.define("rpcconsole.RpcConsole",
         
         // hack
         json = json.replace(/\[object Object\]/,qx.util.Json.stringify(this.getRequestModel().getServerData()));
-        console.log(json);
         
         var requestData = qx.util.Json.parse( json );        
         
@@ -410,6 +424,15 @@ qx.Class.define("rpcconsole.RpcConsole",
     {
       return this.__responseTextArea;
     }, 
+    
+    /**
+     * Returns text area containing the response data
+     * @return {qx.ui.form.TextArea}
+     */
+    getLogTextArea : function()
+    {
+      return this.__logTextArea;
+    },     
     
     /**
      * Returns form widget
@@ -532,7 +555,7 @@ qx.Class.define("rpcconsole.RpcConsole",
         }
         
       },this);
-      
+            
       /*
        * send rpc request
        */
@@ -554,6 +577,16 @@ qx.Class.define("rpcconsole.RpcConsole",
       this.__sendButton.setEnabled(true);
       this.__cancelButton.setEnabled(false);
       
+    },
+    
+    /**
+     * Log to the logging text area and display log. 
+     * @param text {String}
+     */
+    log : function( text )
+    {
+      this.__tabview.setSelection( [this.__logPage] );
+      this.getLogTextArea().setValue( (this.getLogTextArea().getValue() || "") + text + "\n" ); 
     }
   }  
 });
