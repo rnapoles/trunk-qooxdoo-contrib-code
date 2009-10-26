@@ -40,16 +40,39 @@
  *      * Optional callback function called after the result of the
  *      * request has returned from the server.
  *      * /
- *     callback : function( response ){
- *       this.getActiveConsole().getRequestModel().setServerData(
+ *     callback : function( result ){
  *        // do something with the response, for example, change
  *        // the server data like here
- *        // "this" refers to the main application
+ *        // "this" refers to the main application    
+ *       this.getActiveConsole().getRequestModel().setServerData(
+ *         foo : response.bar
  *       );
+ *     },
+ *     /**
+ *      * Optional data to compare the result with an expected.
+ *      * If the value is a function, this function must return
+ *      * true if the result is correct, false, if the result is 
+ *      * wrong. You can also return a string which is taken as
+ *      * an error message.  
+ *      * Alternatively, the data can be of any native data type
+ *      * (boolean, null, string, array, object) and will be
+ *      * compared verbatim to the result by jsonifying both 
+ *      * values. "callback" and "checkResult" are mutually
+ *      * exclusive. 
+ *      * /
+ *     checkResult : function( result )
+ *     {
+ *       if (result == "foo!")
+ *       {
+ *         return true;
+ *       }
+ *       return "Result is wrong!"; 
  *     }
  *   },
  *   
  *   testName2 : {
+ *    // don't show a corresponding menu button 
+ *    visible : false,
  *    ...
  *   },
  *   
@@ -149,6 +172,219 @@ qx.core.Init.getApplication().setTestData(
       {
         alert("Please enter a valid URL");
       }
+    }
+  },
+  
+  /**
+   * Run automated tests 
+   */
+  runAutomatedTests : {
+    label : "Execute qooxdoo.test.* test suite",
+    execute : function(){
+      this.info( "Starting test suite ");
+      this.runTests("qooxdoo.test.*");
+    }
+  },
+  
+  /**
+   * qooxdoo.test test suite
+   * powered by Derrell Lipman
+   */
+  "qooxdoo.test.getInteger" : 
+  {
+    visible : false,
+    requestData : {
+      service : "qooxdoo.test",
+      method  : "getInteger",
+      timeout : 10
+    },
+    checkResult : 1
+  },
+  
+  "qooxdoo.test.getFloat" : 
+  {
+    visible : false,   
+    requestData : {
+      method  : "getFloat"
+    },     
+    checkResult : 1/3
+  },
+  
+  "qooxdoo.test.getString" : 
+  {
+    visible : false,    
+    requestData : {
+      method  : "getString"
+    },      
+    checkResult : "Hello world"
+  },
+  
+  "qooxdoo.test.getBadString": 
+  {
+    visible : false,   
+    requestData : {
+      method  : "getBadString"
+    },               
+    checkResult : "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">"
+  },
+  
+  "qooxdoo.test.getArrayInteger": 
+  {
+    visible : false,   
+    requestData : {
+      method  : "getArrayInteger"
+    },  
+    checkResult : [ 1, 2, 3, 4 ]
+  },
+  
+  "qooxdoo.test.getArrayString" : 
+  {
+    visible : false,    
+    requestData : {
+      method  : "getArrayString"
+    },  
+    checkResult : [ "one", "two", "three", "four" ]
+  },
+  
+  "qooxdoo.test.getObject" : 
+  {
+    visible : false,   
+    requestData : {
+      method  : "getObject"
+    },               
+    checkResult : {"use":0}
+  },
+  
+  "qooxdoo.test.getTrue" : 
+  {
+    visible : false,    
+    requestData : {
+      method  : "getTrue"
+    },              
+    checkResult : true
+  },
+  
+  "qooxdoo.test.getFalse" : 
+  {
+    visible : false,  
+    requestData : {
+      method  : "getFalse"
+    },                
+    checkResult : false
+  },
+  
+  "qooxdoo.test.getNull" : 
+  {
+    visible : false,         
+    requestData : {
+      method  : "getNull"
+    },
+    checkResult : null
+  },
+
+  "qooxdoo.test.isInteger" : 
+  {
+    visible : false,  
+    requestData : {
+      method  : "isInteger",
+      params : [ 1 ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.isFloat" : 
+  {
+    visible : false,        
+    requestData : {
+      method  : "isFloat",
+      params : [ 1/3 ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.isString" : 
+  {
+    visible : false,        
+    requestData : {
+      method  : "isString",
+      params : [ "Hello World!" ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.isBoolean" : 
+  {
+    visible : false,        
+    requestData : {
+      method  : "isBoolean",
+      params : [ true ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.isArray" : 
+  {
+    visible : false,        
+    requestData : {
+      method  : "isArray",
+      params : [ [1,2,3] ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.isObject": 
+  {
+    visible : false,        
+    requestData : {
+      method  : "isObject",
+      params : [ { "foo" : "bar" } ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.isNull" : 
+  {
+    visible : false,        
+    requestData : {
+      method  : "isNull",
+      params : [ null ]
+    },
+    checkResult : true
+  },
+  
+  "qooxdoo.test.getParams" : 
+  {
+    visible : false,
+    requestData : {
+      method  : "getParams",
+      params : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]
+    },
+    checkResult : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]    
+  },
+  
+  "qooxdoo.test.getParam": 
+  {
+    visible : false,        
+    requestData : {
+      method  : "getParam",
+      params : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]
+    },
+    checkResult : null
+  },
+  
+  "qooxdoo.test.getCurrentTimestamp" :
+  {
+    visible : false,        
+    requestData : {
+      method  : "getCurrentTimestamp"
+    },
+    checkResult : function( result ) {
+//      if ( qx.lang.Type.isDate( result ) )
+//      {
+//        return true;
+//      }
+//      return "Response is not a date!";
+      return true;
     }
   }
 });

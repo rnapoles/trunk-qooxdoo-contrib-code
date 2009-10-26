@@ -26,7 +26,11 @@
  * backend. Example test data is loaded from script/rpcconsole.testData.js, but
  * you can override this with adding '?testDataUrl=http://path/to/my/testData.js' 
  * to the build or source URL of this app. To change the default server url,
- * add '?serverUrl=http://path/to/my/server/'   
+ * add '?serverUrl=http://path/to/my/server/'. To automatically start a test after
+ * the test data has loaded, add "?runTest=nameOfTheTest". All of the GET parameters
+ * can be combined.
+ * Please refer to {@link #populateMenu} for an explanation of the syntax of the 
+ * test data.
  */
 qx.Class.define("rpcconsole.demo.Application",
 {
@@ -149,8 +153,18 @@ qx.Class.define("rpcconsole.demo.Application",
       var testDataUrl = window.location.parameters.testDataUrl || this.testDataUrl;
       if ( testDataUrl )
       {
-        this.loadTestData( testDataUrl );
+        this.loadTestData( testDataUrl, function(){
+          /*
+           * start test if requested
+           */
+          var runTest = window.location.parameters.runTest;
+          if ( runTest )
+          {
+            this.runTest( runTest );
+          }
+        },this );
       }
+      
     },
     
     /*
@@ -275,16 +289,39 @@ qx.Class.define("rpcconsole.demo.Application",
      *      * Optional callback function called after the result of the
      *      * request has returned from the server.
      *      * /
-     *     callback : function( response ){
-     *       this.getActiveConsole().getRequestModel().setServerData(
+     *     callback : function( result ){
      *        // do something with the response, for example, change
      *        // the server data like here
-     *        // "this" refers to the main application
+     *        // "this" refers to the main application    
+     *       this.getActiveConsole().getRequestModel().setServerData(
+     *         foo : response.bar
      *       );
+     *     },
+     *     /**
+     *      * Optional data to compare the result with an expected.
+     *      * If the value is a function, this function must return
+     *      * true if the result is correct, false, if the result is 
+     *      * wrong. You can also return a string which is taken as
+     *      * an error message.  
+     *      * Alternatively, the data can be of any native data type
+     *      * (boolean, null, string, array, object) and will be
+     *      * compared verbatim to the result by jsonifying both 
+     *      * values. "callback" and "checkResult" are mutually
+     *      * exclusive. 
+     *      * /
+     *     checkResult : function( result )
+     *     {
+     *       if (result == "foo!")
+     *       {
+     *         return true;
+     *       }
+     *       return "Result is wrong!"; 
      *     }
      *   },
      *   
      *   testName2 : {
+     *    // don't show a corresponding menu button 
+     *    visible : false,
      *    ...
      *   },
      *   
@@ -306,6 +343,15 @@ qx.Class.define("rpcconsole.demo.Application",
       for ( var testName in testData )
       {
         var data = testData[testName];
+        
+        /*
+         * if the 'visible' property is set to false,
+         * don't show a button 
+         */
+        if ( data.visible === false )
+        {
+          continue;
+        }
         
         /*
          * menu button with listener
@@ -361,11 +407,16 @@ qx.Class.define("rpcconsole.demo.Application",
     /**
      * Loads the test data from the given url
      * @param testDataUrl {String}
+     * @param callback {Function|undefined} Optional callback function
+     * @param context {Object|undefined} Optional context object
      * @return {void}
      */
-    loadTestData : function( testDataUrl )
+    loadTestData : function( testDataUrl, callback, context )
     {
-      new qx.io2.ScriptLoader().load( testDataUrl+"?"+(new Date).getTime(), function(){}, null );
+      new qx.io2.ScriptLoader().load( 
+        testDataUrl+"?"+(new Date).getTime(),  // disable caching of script file
+        callback, context  
+      );
     },
     
     /**
@@ -396,20 +447,72 @@ qx.Class.define("rpcconsole.demo.Application",
        */
       if ( doSendRequest !== false && this.getActiveConsole() && data.requestData )
       {
-        this.getActiveConsole().sendRequest( data.requestData, function(result){
+        this.getActiveConsole().sendRequest( data.requestData, function(response){
+          
           /*
-           * execute the test data callback
+           * check response
            */
-          if ( qx.lang.Type.isFunction( data.callback ) )
+          if ( ! qx.lang.Type.isObject(response) || response.result === undefined )
           {
-            data.callback.call( this, result);
+            this.logTestFailed( testName, "Invalid response: " + qx.util.Json.stringify(response) );
+            return;
           }
+          
+          /*
+           * Optional data to compare the result with an expected.
+           * If the value is a function, this function must return
+           * true if the result is correct, false, if the result is 
+           * wrong. You can also return a string which is taken as
+           * an error message.
+           */
+          if ( qx.lang.Type.isFunction( data.checkResult ) )
+          {
+            var check = data.checkResult.call( this, response.result );
+            if ( check === true )
+            {
+              this.logTestPassed( testName );
+            }
+            else
+            {
+              this.logTestFailed( testName, check===false ? "Wrong result." : check );
+            }
+          }
+         
+          
+          /* Alternatively, the data can be of any native data type
+           * (boolean, null, string, array, object) and will be
+           * compared verbatim to the result by jsonifying both 
+           * values.
+           */ 
+          else if (data.checkResult != undefined )
+          {
+            var expected = qx.util.Json.stringify( data.checkResult );
+            var received = qx.util.Json.stringify( response.result ); 
+            if ( received == expected )
+            {
+              this.logTestPassed( testName );
+            }
+            else
+            {
+              this.logTestFailed( testName, "Expected:" + expected + ", received:" + received );
+            }
+          }
+          
+          /*
+           * if no check has been specified, execute the test data callback
+           * if one exists. 
+           */
+          else if ( qx.lang.Type.isFunction( data.callback ) )
+          {
+            data.callback.call( this, response.result);
+          }
+          
           /*
            * execute the method callback
            */
           if ( qx.lang.Type.isFunction( callback ) )
           {
-            callback.call( this, result);
+            callback.call( this, response.result);
           }        
         }, this );
       }
@@ -426,6 +529,122 @@ qx.Class.define("rpcconsole.demo.Application",
     sendRequest : function( requestData, callback, context )
     {
       this.getActiveConsole().sendRequest( requestData, callback, context ); 
+    },
+    
+    /**
+     * Run all or selected tests sequentially. 
+     * @param includeArg {Array|null|undefined} If array, run only the 
+     *   given tests by name. If null or undefined, run all tests.
+     * @param excludeArg {Array|undefined} If array, exclude the named
+     *   tests. Only makes sense if the includeArg argument is null (==include all).
+     * @return {void}
+     */
+    runTests : function( includeArg, excludeArg )
+    {
+      var testData = this.getTestData();
+      var testNameArr = [];
+      for( testName in testData )
+      {
+        /*
+         * If an array has been passed as include argument,
+         * skip if test name is not in the array
+         */
+        if ( qx.lang.Type.isArray(includeArg) 
+          && ! qx.lang.Array.contains( includeArg, testName ) )
+        {
+          continue;
+        }
+        
+        /*
+         * If a string has been passed as include argument,
+         * skip if test name does not match the string. You 
+         * can use the "*" wildcard to truncate the search
+         * string.
+         */
+        else if ( qx.lang.Type.isString( includeArg ) 
+          && qx.lang.String.contains( includeArg, "*" )
+          && testName.substr(0,includeArg.indexOf("*")-1) != includeArg.substr(0,includeArg.indexOf("*")-1))
+        {
+          continue;
+        }     
+        
+        /*
+         * If an array has been passed as exclude argument,
+         * skip if test name is in the array
+         */
+        if ( qx.lang.Type.isArray( excludeArg ) 
+          && qx.lang.Array.contains( excludeArg, testName ) )
+        {
+          continue;
+        }
+        
+        /*
+         * If a string has been passed as exclude argument,
+         * skip if test name matches the string. You 
+         * can use the "*" wildcard to truncate the search
+         * string.
+         */
+        else if ( qx.lang.Type.isString( excludeArg ) 
+          && qx.lang.String.contains( excludeArg, "*" )
+          && testName.substr(0,excludeArg.indexOf("*")-1) == excludeArg.substr(0,excludeArg.indexOf("*")-1))
+        {
+          continue;
+        }
+        
+        /*
+         * include test
+         */
+        testNameArr.push( testName );
+      }
+  
+      /*
+       * run the the named tests
+       */
+      this.runTestsByName( testNameArr );
+    },
+    
+    /**
+     * Run the named tests sequentially. 
+     * @param testNameArr {Array} An array of names of tests to run
+     */
+    runTestsByName : function ( testNameArr )
+    {
+      if ( ! qx.lang.Type.isArray( testNameArr) || ! testNameArr.length )
+      {
+        this.error("Invalid argument");
+      }
+      var testName = testNameArr.shift();
+      this.runTest( testName, function() {
+        if ( testNameArr.length )
+        {
+          this.runTestsByName( testNameArr ); 
+        } 
+        else
+        {
+          this.getActiveConsole().log("Tests finished.");
+        }
+      });
+    },
+    
+    /**
+     * Logs a successful test to the active console. Override this method
+     * for other behavior
+     * @param testName {String}
+     */
+    logTestPassed : function ( testName )
+    {
+      this.getActiveConsole().log("Test '" + testName + "': passed.");
+    },
+    
+    /**
+     * Logs a failed test to the active console. Override this method
+     * for other behavior
+     * @param testName {String}
+     * @param error {String}
+     */
+    logTestFailed : function ( testName, error )
+    {
+      this.getActiveConsole().log("!!! Test '" + testName + "' failed: " + error);
     }
   }
 });

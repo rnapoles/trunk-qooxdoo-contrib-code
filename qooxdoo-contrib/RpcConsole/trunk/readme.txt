@@ -16,7 +16,9 @@ live both on the same or on a different domain.
 Example test data is loaded from script/rpcconsole.testData.js, but
 you can override this with adding '?testDataUrl=http://path/to/my/testData.js' 
 to the build or source URL of this app. To change the default server url,
-add '?serverUrl=http://path/to/my/server/'.
+add '?serverUrl=http://path/to/my/server/'. To automatically start a test after
+the test data has loaded, add "?runTest=nameOfTheTest". All of the GET parameters
+can be combined.
 
 The test data file populates the "Tests" menu and  must look like this:
 
@@ -58,16 +60,39 @@ qx.core.Init.getApplication().setTestData(
      * Optional callback function called after the result of the
      * request has returned from the server.
      */
-    callback : function( response ){
-      this.getActiveConsole().getRequestModel().setServerData(
+    callback : function( result ){
        // do something with the response, for example, change
        // the server data like here
-       // "this" refers to the main application
+       // "this" refers to the main application    
+      this.getActiveConsole().getRequestModel().setServerData(
+        foo : response.bar
       );
+    },
+    /**
+     * Optional data to compare the result with an expected.
+     * If the value is a function, this function must return
+     * true if the result is correct, false, if the result is 
+     * wrong. You can also return a string which is taken as
+     * an error message.  
+     * Alternatively, the data can be of any native data type
+     * (boolean, null, string, array, object) and will be
+     * compared verbatim to the result by jsonifying both 
+     * values. "callback" and "checkResult" are mutually
+     * exclusive. 
+     */
+    checkResult : function( result )
+    {
+      if (result == "foo!")
+      {
+        return true;
+      }
+      return "Result is wrong!"; 
     }
   },
   
   testName2 : {
+    // don't show a corresponding menu button 
+    visible : false,  
    ...
   },
   
@@ -93,3 +118,10 @@ testName1 :
     });
   }
 }
+
+or run all test or a selection of tests by the runTests() method. 
+
+Todo:
+----
+- test cross-domain requests
+- save service name and method in the comboboxes' list for easy access.
