@@ -1052,6 +1052,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       // Replace all ">" with space "> " to creat new word borders
       nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
+      // Remove all line breaks
+      nodeClone.innerHTML = nodeClone.innerHTML.replace(/\n/gi, " ");
+      // Remove all comments
+      nodeClone.innerHTML = nodeClone.innerHTML.replace(/<!--.*-->/gi, "");
 
       var text  = qx.core.Variant.isSet("qx.client", "mshtml|opera") ? nodeClone.innerText : nodeClone.textContent;
       var words = text.match(htmlarea.HtmlAreaNative.GetWordsRegExp);
