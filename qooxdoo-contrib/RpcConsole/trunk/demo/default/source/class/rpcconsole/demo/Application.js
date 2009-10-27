@@ -533,10 +533,13 @@ qx.Class.define("rpcconsole.demo.Application",
     
     /**
      * Run all or selected tests sequentially. 
-     * @param includeArg {Array|null|undefined} If array, run only the 
-     *   given tests by name. If null or undefined, run all tests.
-     * @param excludeArg {Array|undefined} If array, exclude the named
-     *   tests. Only makes sense if the includeArg argument is null (==include all).
+     * @param includeArg {Array|String|undefined} If array, run only the 
+     *   given tests by name. If string, run all tests that match the string.
+     *   You can use the "*" wildcard to match more than one test.
+     *   If null or undefined, run all tests.
+     * @param excludeArg {Array|String|undefined} If array, exclude the named
+     *   tests. If string, run all tests that match the string.
+     *   You can use the "*" wildcard to match more than one test.
      * @return {void}
      */
     runTests : function( includeArg, excludeArg )
