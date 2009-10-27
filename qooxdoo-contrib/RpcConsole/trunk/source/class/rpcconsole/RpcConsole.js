@@ -187,9 +187,10 @@ qx.Class.define("rpcconsole.RpcConsole",
       var timeoutSpinner = new qx.ui.form.Spinner().set({
         minimum  : 3,
         maximum  : 60,
-        value    : 10,
         editable : true
       });
+      timeoutSpinner.setValue(10);
+      
       hbox.add( timeoutSpinner );
       hbox.add( new qx.ui.basic.Label("seconds") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );
@@ -364,11 +365,7 @@ qx.Class.define("rpcconsole.RpcConsole",
         /*
          * create request data map
          */
-        var json = qx.util.Serializer.toJson( this.getRequestModel() );
-        
-        // hack
-        json = json.replace(/\[object Object\]/,qx.util.Json.stringify(this.getRequestModel().getServerData()));
-        
+        var json = qx.util.Serializer.toJson( this.getRequestModel() ); 
         var requestData = qx.util.Json.parse( json );        
         
         /*
