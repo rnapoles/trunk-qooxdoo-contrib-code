@@ -247,14 +247,23 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
   statics :
   {
-    /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
+    // Inserted when the property "insertParagraphOnLinebreak" is false
     simpleLinebreak : "<br>",
 
     EMPTY_DIV : "<div></div>",
 
-    /* regex to extract text content from innerHTML */
+    // regex to extract text content from innerHTML
     GetWordsRegExp     : /([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g,
     CleanupWordsRegExp : /[\u0000-\u0040]/gi,
+    
+    // map with infos about hotkey methods
+    hotkeyInfo : {
+      bold : { method: "setBold" },
+      italic : { method: "setItalic" },
+      underline : { method: "setUnderline" },
+      undo : { method: "undo" },
+      redo : { method: "redo" }
+    },
 
     /**
      * Formats the style information. If the styleInformation was passed
@@ -756,6 +765,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     __styleInformation : null,
     __documentSkeletonParts : null,
     __savedRange : null,
+    __fireCursorContextOnNextInput : false,
 
 
     /**
@@ -1489,12 +1499,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var doc = this._getIframeDocument();
 
       Registration.addListener(doc.body, "keypress", this._handleKeyPress, this);
-      Registration.addListener(doc.body, "keyup",    this._handleKeyUp,    this);
-      Registration.addListener(doc.body, "keydown",  this._handleKeyDown,  this);
+      Registration.addListener(doc.body, "keyup", this._handleKeyUp,    this);
+      Registration.addListener(doc.body, "keydown", this._handleKeyDown,  this);
 
       var focusBlurTarget = qx.bom.client.Engine.WEBKIT ? this._getIframeWindow() : doc.body;
       Registration.addListener(focusBlurTarget, "focus", this.__handleFocusEvent, this);
-      Registration.addListener(focusBlurTarget, "blur",  this.__handleBlurEvent, this);
+      Registration.addListener(focusBlurTarget, "blur", this.__handleBlurEvent, this);
 
       Registration.addListener(doc, "focusout",  this.__handleFocusOutEvent, this);
 
@@ -1683,24 +1693,23 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     _handleKeyUp : function(e)
     {
-      var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
-      var isShiftPressed  = e.isShiftPressed();
+      var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+      var isShiftPressed = e.isShiftPressed();
+      var isCtrlPressed = e.isCtrlPressed();
       this.__currentEvent = e;
 
       if (qx.core.Variant.isSet("qx.debug", "on") &&
           qx.core.Setting.get("htmlarea.debug") == "on") {
-        //this.debug(e.getType() + " | " + keyIdentifier);
+        this.debug(e.getType() + " | " + keyIdentifier);
       }
 
-      /*
-       * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
-       * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
-       * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one
-       * the linebreak gets inserted.
-       */
+      // This block inserts a linebreak when the key combination "Ctrl+Enter" 
+      // was pressed. It is necessary in IE to look after the keypress and the
+      // keyup event. The keypress delivers the "Ctrl" key and the keyup the 
+      // "Enter" key. If the latter occurs right after the first one the 
+      // linebreak gets inserted.
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        /* Handle all shortcuts with "Ctrl+KEY" */
         if (this.__controlPressed)
         {
           switch(keyIdentifier)
@@ -1712,27 +1721,24 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 var rng = this.__createRange(sel);
                 rng.collapse(true);
                 rng.pasteHTML('<br/><div class="placeholder"></div>');
-              }
-              else {
-                return;
+
+                this.__startExamineCursorContext();
               }
             break;
 
-            /*
-             * the keyUp event of the control key ends the "Ctrl+Enter"
-             * session. So it is supported that the user is pressing this
-             * combination several times without releasing the "Ctrl" key
-             */
+            // The keyUp event of the control key ends the "Ctrl+Enter" session.
+            // So it is supported that the user is pressing this combination 
+            // several times without releasing the "Ctrl" key.
             case "control":
               this.__controlPressed = false;
+              return;
             break;
           }
         }
       }
-
       else if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
-        /* These keys can change the selection */
+        // These keys can change the selection
         switch(keyIdentifier)
         {
           case "left":
@@ -1744,25 +1750,23 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           case "delete":
           case "end":
           case "backspace":
-            var focusNode = this.getFocusNode();
-
-            /* Set flag indicating if first line is selected */
-            this.__isFirstLineSelected = (focusNode == this.getContentBody().firstChild);
+            this.__isFirstLineSelected = (this.getFocusNode() == this.getContentBody().firstChild);
           break;
         }
       }
       else if (qx.core.Variant.isSet("qx.client", "webkit"))
       {
-        if (e.isCtrlPressed() && this.getInsertLinebreakOnCtrlEnter() && keyIdentifier == "enter")
+        if (isCtrlPressed && this.getInsertLinebreakOnCtrlEnter() && 
+            keyIdentifier == "enter")
         {
           this.__insertWebkitLineBreak();
 
-          /* Stop event */
           e.preventDefault();
           e.stopPropagation();
+
+          this.__startExamineCursorContext();
         }
       }
-
     },
 
     /**
@@ -1773,10 +1777,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       var sel = this.getSelection();
       var helperString = "";
-      /* Insert bogus node if we are on an empty line: */
 
-      if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
-      {
+      // Insert bogus node if we are on an empty line:
+      if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI") {
         helperString = "<br class='webkit-block-placeholder' />";
       }
 
@@ -1841,36 +1844,47 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       if (qx.core.Variant.isSet("qx.debug", "on") &&
           qx.core.Setting.get("htmlarea.debug") == "on") {
-        //this.debug(e.getType() + " | " + keyIdentifier);
+        this.debug(e.getType() + " | " + keyIdentifier);
+      }
+
+      // if a hotkey was executed at an empty selection it is necessary to fire
+      // a "cursorContext" event after the first input
+      if (this.__fireCursorContextOnNextInput)
+      {
+        // for IE it's necessary to NOT look at the cursorcontext right after
+        // the "Enter" because the corresponding styles / elements are not yet
+        // created.
+        var fireEvent = !(qx.core.Variant.isSet("qx.client", "mshtml") && 
+                          keyIdentifier == "enter");
+
+        if (fireEvent)
+        {
+          this.__startExamineCursorContext();
+          this.__fireCursorContextOnNextInput = false;
+        }
       }
 
 
       switch(keyIdentifier)
       {
         case "enter":
-
-          /* If only "Enter" key was pressed and "messengerMode" is activated */
+          // If only "Enter" key was pressed and "messengerMode" is activated
           if (!isShiftPressed && !isCtrlPressed && this.getMessengerMode())
           {
             e.preventDefault();
             e.stopPropagation();
 
-            /* Dispatch data event with editor content */
-            this.dispatchEvent(new qx.event.type.Data("messengerContent", this.getComputedValue()), true);
-
-            /* Reset the editor content */
+            var dataEvent = new qx.event.type.Data("messengerContent", this.getComputedValue());
+            this.dispatchEvent(dataEvent, true);
             this.resetHtml();
           }
 
-          /*
-           * This mechanism is to provide a linebreak when pressing "Ctrl+Enter".
-           * The implementation for IE is located at the "control" block and at the
-           * "_handleKeyUp" method.
-           */
+          // This mechanism is to provide a linebreak when pressing "Ctrl+Enter".
+          // The implementation for IE is located at the "control" block and at
+          // the "_handleKeyUp" method.
           if (isCtrlPressed)
           {
-            if (!this.getInsertLinebreakOnCtrlEnter())
-            {
+            if (!this.getInsertLinebreakOnCtrlEnter()) {
               return;
             }
 
@@ -1879,33 +1893,29 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
             if (qx.core.Variant.isSet("qx.client", "gecko"))
             {
-              // check if the caret is within a word
               if (this.__isSelectionWithinWordBoundary())
               {
                 this.insertHtml("<br />");
+                this.__startExamineCursorContext();
                 return;
               }
 
-
-              /*
-               * Insert additionally an empty div element - this ensures that
-               * the caret is shown and the cursor moves down a line correctly
-               *
-               * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
-               * only necessary to have anything AFTER the "br" element to get it work.
-               * Strange hack, I know ;-)
-               */
+              // Insert additionally an empty div element - this ensures that
+              // the caret is shown and the cursor moves down a line correctly
+              //
+              // ATTENTION: the "div" element itself gets not inserted by Gecko,
+              // it is only necessary to have anything AFTER the "br" element to
+              // get it work.
               this.insertHtml("<br /><div id='placeholder'></div>");
             }
             else if (qx.core.Variant.isSet("qx.client", "opera"))
             {
-               /*
-                * To insert a linebreak for Opera it is necessary to work with ranges and add the
-                * br element on node-level. The selection of the node afterwards is necessary for Opera
-                * to show the cursor correctly.
-                */
-               var sel    = this.getSelection();
-               var rng    = this.__createRange(sel);
+               // To insert a linebreak for Opera it is necessary to work with 
+               // ranges and add the <br> element on node-level. The selection 
+               // of the node afterwards is necessary for Opera to show the 
+               // cursor correctly.
+               var sel = this.getSelection();
+               var rng = this.__createRange(sel);
 
                var brNode = doc.createElement("br");
                rng.collapse(true);
@@ -1916,33 +1926,30 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                sel.addRange(rng);
                rng.collapse(true);
             }
+
+            this.__startExamineCursorContext();
           }
 
-          /*
-           * Special handling for IE when hitting the "Enter" key
-           * instead of letting the IE insert a <p> insert manually a <br>
-           * if the corresponding property is set
-           */
+          // Special handling for IE when hitting the "Enter" key instead of 
+          // letting the IE insert a <p> insert manually a <br> if the 
+          // corresponding property is set.
           if (qx.core.Variant.isSet("qx.client", "mshtml"))
           {
             if (!this.getInsertParagraphOnLinebreak())
             {
-
-              /*
-               * Insert a "br" element to force a line break. If the insertion succeeds
-               * stop the key event otherwise let the browser handle the linebreak e.g.
-               * if the user is currently editing an (un)ordered list.
-               */
+              // Insert a "br" element to force a line break. If the insertion
+              // succeeds stop the key event otherwise let the browser handle 
+              // the linebreak e.g. if the user is currently editing an 
+              // (un)ordered list.
               if (this.__commandManager.execute("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak))
               {
+                this.__startExamineCursorContext();
                 e.preventDefault();
                 e.stopPropagation();
               }
             }
           }
-          /*
-           * Special handling for Firefox when hitting the "Enter" key
-           */
+          // Special handling for Firefox when hitting the "Enter" key
           else if(qx.core.Variant.isSet("qx.client", "gecko"))
           {
             if (this.getInsertParagraphOnLinebreak() &&
@@ -1954,12 +1961,16 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 var selNode = sel.focusNode;
 
                 // check if the caret is within a word - Gecko can handle it
-                if (this.__isSelectionWithinWordBoundary()) {
+                if (this.__isSelectionWithinWordBoundary())
+                {
+                  this.__startExamineCursorContext();
                   return;
                 }
 
                 // caret is at an empty line
-                if (this.__isFocusNodeAnElement()) {
+                if (this.__isFocusNodeAnElement())
+                {
+                  this.__startExamineCursorContext();
                   return;
                 }
 
@@ -1968,6 +1979,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 {
                   if (selNode.nodeName.toLowerCase() == "li")
                   {
+                    this.__startExamineCursorContext();
                     return;
                   }
                   selNode = selNode.parentNode;
@@ -1977,6 +1989,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               this.__commandManager.insertParagraphOnLinebreak();
               e.preventDefault();
               e.stopPropagation();
+              
+              this.__startExamineCursorContext();
             }
           }
           else if(qx.core.Variant.isSet("qx.client", "webkit"))
@@ -1985,112 +1999,94 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             {
               this.__insertWebkitLineBreak();
 
-              /* Stop event */
               e.preventDefault();
               e.stopPropagation();
+
+              this.__startExamineCursorContext();
            }
           }
           break;
 
 
         case "up" :
-        /*
-         * Firefox 2 needs some additional work to select the
-         first line completely in case the selection is already
-         on the first line and "key up" is pressed.
-         */
-        if (qx.bom.client.Engine.GECKO && qx.bom.client.Engine.FULLVERSION < 1.9 && isShiftPressed)
-        {
-          /* Fetch selection */
-          var sel = this.getSelection();
-
-          /* First line is selected */
-          if(sel.focusNode == doc.body.firstChild)
+          // Firefox 2 needs some additional work to select the first line 
+          // completely in case the selection is already on the first line and 
+          // "key up" is pressed.
+          if (qx.bom.client.Engine.GECKO && qx.bom.client.Engine.FULLVERSION < 1.9 && isShiftPressed)
           {
-            /* Check if the first line has been (partly) selected before. */
-            if(this.__isFirstLineSelected)
+            var sel = this.getSelection();
+
+            // First line is selected
+            if(sel.focusNode == doc.body.firstChild)
             {
-              /* Check if selection does not enclose the complete line already */
-              if (sel.focusOffset != 0)
+              // Check if the first line has been (partly) selected before.
+              if(this.__isFirstLineSelected)
               {
-                /* Select the complete line. */
-                sel.extend(sel.focusNode, 0);
+                // Check if selection does not enclose the complete line already
+                if (sel.focusOffset != 0)
+                {
+                  // Select the complete line.
+                  sel.extend(sel.focusNode, 0);
+                }
               }
             }
           }
-        }
-        break;
+          break;
 
 
-        /*
-         * Firefox 2 needs some extra work to move the cursor
-         * (and optionally select text while moving) to
-         * first position in the first line.
-         */
+        // Firefox 2 needs some extra work to move the cursor (and optionally 
+        // select text while moving) to first position in the first line.
         case "home":
           if (qx.bom.client.Engine.GECKO && qx.bom.client.Engine.FULLVERSION < 1.9)
           {
-
             if(isCtrlPressed)
             {
-              /* Fetch current selection */
               var sel = this.getSelection();
 
-              /*
-               * Select text from current position to first
-               * character on the first line
-               */
+              // Select text from current position to first character on first line
               if (isShiftPressed)
               {
-                /* Check if target position is not yet selected */
-                if ( (sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild) )
+                // Check if target position is not yet selected
+                if ((sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild))
                 {
-                  /* Extend selection to first child at position 0. */
+                  // Extend selection to first child at position 0
                   sel.extend(doc.body.firstChild, 0);
                 }
               }
               else
               {
-                /* Fetch all text nodes from body element */
+                // Fetch all text nodes from body element
                 var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
                 var currentItem;
 
-                /* Iterate over result */
                 while(currentItem = elements.iterateNext())
                 {
-                  /* Skip CSS text nodes */
+                  // Skip CSS text nodes
                   if(currentItem.parentNode && (currentItem.parentNode.tagName != "STYLE") )
                   {
-
-                    /* Expand selection to first text node and collapse here */
+                    // Expand selection to first text node and collapse here
                     try
                     {
                       // Sometimes this does not work...
                       sel.extend(currentItem, 0);
-                      if (!sel.isCollapsed) {
+                      if (!this.isSelectionCollapsed()) {
                         sel.collapseToStart();
                       }
-                    }catch(e){ }
+                    } catch(e) {}
 
-                    /* We have found the correct text node, leave loop here */
+                    // We have found the correct text node, leave loop here
                     break;
                   }
-
-                } // while
-
-              } // if
-
-            } // if
-
+                }
+              }
+            }
           }
 
           this.__startExamineCursorContext();
         break;
 
-        /*
-         * For all keys which are able to reposition the cursor
-         * start to examine the current cursor context
-         */
+        // For all keys which are able to reposition the cursor start to examine
+        // the current cursor context
         case "left":
         case "right":
         case "down":
@@ -2102,23 +2098,23 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           this.__startExamineCursorContext();
         break;
 
-        /* Special shortcuts */
+        // Special shortcuts
         case "b":
           if (isCtrlPressed) {
-            this.__executeHotkey('setBold', true);
+            this.__executeHotkey('bold', true);
           }
         break;
 
         case "i":
         case "k":
           if (isCtrlPressed) {
-            this.__executeHotkey('setItalic', true);
+            this.__executeHotkey('italic', true);
           }
         break;
 
         case "u":
           if (isCtrlPressed) {
-            this.__executeHotkey('setUnderline', true);
+            this.__executeHotkey('underline', true);
           }
         break;
 
@@ -2139,16 +2135,13 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           break;
 
         case "a":
-          /*
-           * Select the whole content if "Ctrl+A" was pressed
-           *
-           * NOTE: this code is NOT executed for mshtml and webkit. To get to
-           * know if "Ctrl+A" is pressed in mshtml/webkit one need to check
-           * this within the "keyUp" event. This info is not available
-           * within the "keyPress" event in mshtml/webkit.
-           */
-          if (isCtrlPressed)
-          {
+          // Select the whole content if "Ctrl+A" was pressed
+          //
+          // NOTE: this code is NOT executed for mshtml and webkit. To get to
+          // know if "Ctrl+A" is pressed in mshtml/webkit one need to check
+          // this within the "keyUp" event. This info is not available
+          // within the "keyPress" event in mshtml/webkit.
+          if (isCtrlPressed) {
             this.selectAll();
           }
         break;
@@ -2166,9 +2159,15 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param preventDefault {Boolean} whether do preventDefault or not
      * @return {void}
      */
-    __executeHotkey : function (method, preventDefault)
+    __executeHotkey : function (hotkeyIdentifier, preventDefault)
     {
-      if (this[method])
+      var method = null;
+      var hotkeyInfo = htmlarea.HtmlAreaNative.hotkeyInfo;
+      if (hotkeyInfo[hotkeyIdentifier]) {
+        method = hotkeyInfo[hotkeyIdentifier].method;
+      }
+      
+      if (method != null && this[method])
       {
         this[method]();
 
@@ -2176,6 +2175,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         {
           this.__currentEvent.preventDefault();
           this.__currentEvent.stopPropagation();
+        }
+        
+        if (this.isSelectionCollapsed()) {
+          this.__fireCursorContextOnNextInput = true;
         }
 
         // Whenever a hotkey is pressed update the current cursorContext
@@ -2333,8 +2336,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param value {String} html content
      * @return {Boolean} Success of operation
      */
-    insertHtml : function (value)
-    {
+    insertHtml : function (value) {
       return this.__commandManager.execute("inserthtml", value);
     },
 
@@ -2344,8 +2346,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    removeFormat : function()
-    {
+    removeFormat : function() {
       return this.__commandManager.execute("removeformat");
     },
 
@@ -2355,8 +2356,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setBold : function()
-    {
+    setBold : function() {
       return this.__commandManager.execute("bold");
     },
 
@@ -2366,8 +2366,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setItalic : function()
-    {
+    setItalic : function() {
       return this.__commandManager.execute("italic");
     },
 
@@ -2377,8 +2376,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setUnderline : function()
-    {
+    setUnderline : function() {
       return this.__commandManager.execute("underline");
     },
 
@@ -2389,8 +2387,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @return {Boolean} Success of operation
      *
      */
-    setStrikeThrough : function()
-    {
+    setStrikeThrough : function() {
       return this.__commandManager.execute("strikethrough");
     },
 
@@ -2401,8 +2398,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param value {Number} Font size
      * @return {Boolean} Success of operation
      */
-    setFontSize : function(value)
-    {
+    setFontSize : function(value) {
       return this.__commandManager.execute("fontsize", value);
     },
 
@@ -2435,8 +2431,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
-    setTextBackgroundColor : function(value)
-    {
+    setTextBackgroundColor : function(value) {
       return this.__commandManager.execute("textbackgroundcolor", value);
     },
 
@@ -2446,8 +2441,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setJustifyLeft : function()
-    {
+    setJustifyLeft : function() {
       return this.__commandManager.execute("justifyleft");
     },
 
@@ -2457,8 +2451,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setJustifyCenter : function()
-    {
+    setJustifyCenter : function() {
       return this.__commandManager.execute("justifycenter");
     },
 
@@ -2468,8 +2461,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setJustifyRight : function()
-    {
+    setJustifyRight : function() {
       return this.__commandManager.execute("justifyright");
     },
 
@@ -2479,8 +2471,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    setJustifyFull : function()
-    {
+    setJustifyFull : function() {
       return this.__commandManager.execute("justifyfull");
     },
 
@@ -2490,8 +2481,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    insertIndent : function()
-    {
+    insertIndent : function() {
       return this.__commandManager.execute("indent");
     },
 
@@ -2501,8 +2491,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    insertOutdent : function()
-    {
+    insertOutdent : function() {
       return this.__commandManager.execute("outdent");
     },
 
@@ -2512,8 +2501,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    insertOrderedList : function()
-    {
+    insertOrderedList : function() {
       return this.__commandManager.execute("insertorderedlist");
     },
 
@@ -2523,8 +2511,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    insertUnorderedList : function()
-    {
+    insertUnorderedList : function() {
       return this.__commandManager.execute("insertunorderedlist");
     },
 
@@ -2534,8 +2521,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    insertHorizontalRuler : function()
-    {
+    insertHorizontalRuler : function() {
       return this.__commandManager.execute("inserthorizontalrule");
     },
 
@@ -2546,8 +2532,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param attributes {Map} Map of HTML attributes to apply
      * @return {Boolean} Success of operation
      */
-    insertImage : function(attributes)
-    {
+    insertImage : function(attributes) {
       return this.__commandManager.execute("insertimage", attributes);
     },
 
@@ -2558,8 +2543,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param url {String} URL for the image to be inserted
      * @return {Boolean} Success of operation
      */
-    insertHyperLink : function(url)
-    {
+    insertHyperLink : function(url) {
       return this.__commandManager.execute("inserthyperlink", url);
     },
 
@@ -2579,8 +2563,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @param value {String} color
      * @return {Boolean} if succeeded
      */
-    setBackgroundColor : function (value)
-    {
+    setBackgroundColor : function (value) {
       this.__commandManager.execute("backgroundcolor", value);
     },
 
@@ -2605,8 +2588,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *                          Default value is "top"
      * @return {Boolean} Success of operation
      */
-    setBackgroundImage : function(url, repeat, position)
-    {
+    setBackgroundImage : function(url, repeat, position) {
       return this.__commandManager.execute("backgroundimage", [ url, repeat, position ]);
     },
 
@@ -2616,8 +2598,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Boolean} Success of operation
      */
-    selectAll : function()
-    {
+    selectAll : function() {
       return this.__commandManager.execute("selectall");
     },
 
@@ -2629,13 +2610,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     undo : function()
     {
-      /* Only execute this command if undo/redo is activated */
-      if (this.getUseUndoRedo())
-      {
+      if (this.getUseUndoRedo()) {
         return this.__commandManager.execute("undo");
-      }
-      else
-      {
+      } else {
         return true;
       }
     },
@@ -2648,13 +2625,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     redo : function()
     {
-      /* Only execute this command if undo/redo is activated */
-      if (this.getUseUndoRedo())
-      {
+      if (this.getUseUndoRedo()) {
         return this.__commandManager.execute("redo");
-      }
-      else
-      {
+      } else {
         return true;
       }
     },
@@ -2756,8 +2729,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Map} formatting information about the focusNode
      */
-    getContextInformation : function()
-    {
+    getContextInformation : function() {
       return this.__examineCursorContext();
     },
 
@@ -2768,7 +2740,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     __startExamineCursorContext : function()
     {
-      /* setting a timeout is important to get the right result */
+      // setting a timeout is important to get the right result */
       qx.event.Timer.once(function(e) {
         var contextInfo = this.__examineCursorContext();
         this.fireDataEvent("cursorContext", contextInfo);
@@ -2967,15 +2939,30 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     */
     getSelection : qx.core.Variant.select("qx.client",
     {
-       "mshtml" : function()
-       {
+       "mshtml" : function() {
          return this._getIframeDocument().selection;
        },
 
-       "default" : function()
-       {
+       "default" : function() {
          return this._getIframeWindow().getSelection();
        }
+    }),
+    
+    
+    /**
+     * Helper method to check if the selection is collapsed
+     * 
+     * @return {Boolean} collapsed status of selection
+     */
+    isSelectionCollapsed : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function() {
+        return this.getSelection().type == "None";
+      },
+      
+      "default": function() {
+        return this.getSelection().isCollapsed;
+      }
     }),
 
 
@@ -3076,7 +3063,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         var focusNode = this.getFocusNode();
 
         // check if the caret is within a word
-        return sel && sel.isCollapsed && qx.dom.Node.isText(focusNode) &&
+        return sel && this.isSelectionCollapsed() && qx.dom.Node.isText(focusNode) &&
                sel.anchorOffset < focusNode.length;
       },
 
@@ -3118,8 +3105,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {Range} Range object
      */
-    getRange : function()
-    {
+    getRange : function() {
       return this.__createRange(this.getSelection());
     },
 
