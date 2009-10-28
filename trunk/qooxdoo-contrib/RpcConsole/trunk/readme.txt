@@ -132,6 +132,3 @@ testName1 :
 
 or run all test or a selection of tests by the runTests() method. 
 
-Todo:
-----
-- save service name and method in the comboboxes' list for easy access.
