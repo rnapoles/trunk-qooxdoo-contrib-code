@@ -19,7 +19,8 @@
  */
 qx.Class.define("qooxit.library.ui.layout.Grid",
 {
-  extend : qooxit.library.ui.AbstractElement,
+  extend : qooxit.library.ui.Abstract,
+  type   : "singleton",
 
   properties :
   {
@@ -37,6 +38,12 @@ qx.Class.define("qooxit.library.ui.layout.Grid",
     {
       // Return a Composite container with a grid layout
       return new qx.ui.container.Composite(new qx.ui.layout.Grid());
+    },
+
+    // overridden
+    getMenuHierarchy : function()
+    {
+      return [ "Layouts" ];
     }
   }
-}
+});

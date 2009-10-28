@@ -19,13 +19,14 @@
  */
 qx.Class.define("qooxit.library.ui.layout.Canvas",
 {
-  extend : qooxit.library.ui.AbstractElement,
+  extend : qooxit.library.ui.Abstract,
+  type   : "singleton",
 
   properties :
   {
     category :
     {
-      refine : true
+      refine : true,
       init   : "Container"
     }
   },
@@ -37,6 +38,12 @@ qx.Class.define("qooxit.library.ui.layout.Canvas",
     {
       // Return a Composite container with a canvas layout
       return new qx.ui.container.Composite(new qx.ui.layout.Canvas());
+    },
+
+    // overridden
+    getMenuHierarchy : function()
+    {
+      return [ "Layouts", "Canvas" ];
     }
   }
-}
+});

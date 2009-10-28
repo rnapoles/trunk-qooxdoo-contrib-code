@@ -18,15 +18,13 @@
  * Abstract class for defining a UI element that may be added to an
  * application.
  */
-qx.Class.define("qooxit.library.ui.AbstractElement",
+qx.Class.define("qooxit.library.ui.Abstract",
 {
   extend : qx.core.Object,
-  type   : "singleton",
 
   construct : function()
   {
     this.base(arguments);
-    this.initCategory();
   },
 
   properties :
@@ -86,7 +84,11 @@ qx.Class.define("qooxit.library.ui.AbstractElement",
     {
       var source = [];
 
-      source.push("var name = (" + this.factory.toString() ")(" + name + ");");
+      source.push("var name = (",
+                  this.factory.toString(),
+                  ")(",
+                  name,
+                  ");");
 
       // If snippets were requested...
       if (snippets)
@@ -117,7 +119,7 @@ qx.Class.define("qooxit.library.ui.AbstractElement",
 
       // Join it all together and give 'em the result
       return source.join("");
-    }
+    },
 
     /**
      * Get the map of snippets which pertain to this UI element.
@@ -136,7 +138,7 @@ qx.Class.define("qooxit.library.ui.AbstractElement",
 
       // Otherwise calculate it now
       this.__snippetNames = [];
-      for (var snippet in snippets)
+      for (var snippet in this.__snippets)
       {
         this.__snippetNames.push(snippet);
       }
@@ -151,6 +153,18 @@ qx.Class.define("qooxit.library.ui.AbstractElement",
      */
     getElementOptions : function()
     {
+    },
+
+   /**
+    * Specify the menu hierarchy for this class
+    *
+    * @return {Array}
+    *   Each component of the array is a hierarchy level in the
+    *   Available Widgets menu.
+    */
+    getMenuHierarchy : function()
+    {
+      throw new Error("getMenuHierarchy() is abstract");
     }
   }
-}
+});
