@@ -22,15 +22,6 @@ qx.Class.define("qooxit.library.ui.layout.HBox",
   extend : qooxit.library.ui.Abstract,
   type   : "singleton",
 
-  properties :
-  {
-    category :
-    {
-      refine : true
-      init   : "Container"
-    }
-  },
-
   members :
   {
     // overridden

@@ -170,8 +170,7 @@ qx.Class.define("qooxit.Application",
     _addAvailableContainers : function(root)
     {
       // Add some containers
-      this.addClass(root,
-                    qooxit.library.ui.layout.Canvas);
+      this.addClass(root, qooxit.library.ui.layout.Canvas);
 /*
       this.__addItem(layoutFolder,
                      "Vertical Box (qx.ui.layout.VBox)",
