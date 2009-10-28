@@ -29,12 +29,6 @@ qx.Class.define("qooxit.library.ui.layout.HBox",
     {
       // Return a Composite container with a horizontal box layout
       return new qx.ui.container.Composite(new qx.ui.layout.HBox());
-    },
-
-    // overridden
-    getMenuHierarchy : function()
-    {
-      return [ "Layouts" ];
     }
   }
 });

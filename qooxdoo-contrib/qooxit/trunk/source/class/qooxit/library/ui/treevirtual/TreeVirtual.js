@@ -20,14 +20,13 @@
 qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
 {
   extend : qooxit.library.ui.Abstract,
+  type   : "singleton",
 
   members :
   {
     // overridden
     factory : function()
     {
-      this.base(arguments);
-
       // Since the getElementOptions() method isn't yet implemented, kludge it
       // for the moment;
       var options =
@@ -110,4 +109,4 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
       }
     }
   }
-}
+});

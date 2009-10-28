@@ -20,6 +20,7 @@
 qx.Class.define("qooxit.library.ui.basic.Label",
 {
   extend : qooxit.library.ui.Abstract,
+  type   : "singleton",
 
   members :
   {
@@ -30,4 +31,4 @@ qx.Class.define("qooxit.library.ui.basic.Label",
       return new qx.ui.basic.Label("Hello world!");
     }
   }
-}
+});
