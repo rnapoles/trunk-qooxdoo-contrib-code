@@ -27,16 +27,6 @@ qx.Class.define("qooxit.library.ui.Abstract",
     this.base(arguments);
   },
 
-  properties :
-  {
-    category :
-    {
-      check    : "String",
-      nullable : false,
-      init     : "Widget"
-    }
-  },
-
   members :
   {
     __snippets : null,
