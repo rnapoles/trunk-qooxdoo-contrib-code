@@ -57,6 +57,30 @@ qx.Class.define("rpcconsole.RpcConsole",
       check    : "qx.core.Object",
       nullable : true,
       event    : "changeResponseModel"
+    },
+    
+    /**
+     * The model for the list controller managing the
+     * entries in the combo box for the service name
+     */
+    serviceListModel : 
+    {
+      check : "qx.data.Array",
+      nullable : true,
+      apply : "_applyServiceListModel",
+      event : "changeServiceListModel"
+    },
+    
+    /**
+     * The model for the list controller managing the
+     * entries in the combo box for the method name
+     */
+    methodListModel : 
+    {
+      check : "qx.data.Array",
+      nullable : true,
+      apply : "_applyMethodListModel",
+      event : "changeMethodListModel"
     }
   },
   
@@ -99,18 +123,20 @@ qx.Class.define("rpcconsole.RpcConsole",
       PRIVATE MEMBERS
     -------------------------------------------------------------------------
     */
-    __tabview             : null,
-    __rpc                 : null,
-    __form                : null,
-    __formController      : null,
-    __methodComboBox      : null,
-    __serviceComboBox     : null,
-    __sendButton          : null,
-    __cancelButton        : null,
-    __opaqueCallReference : null,    
-    __responseTextArea    : null,
-    __logTextArea         : null,
-    __logPage             : null,
+    __tabview               : null,
+    __rpc                   : null,
+    __form                  : null,
+    __formController        : null,
+    __serviceComboBox       : null,
+    __serviceListController : null,
+    __methodComboBox        : null,
+    __methodListController  : null,
+    __sendButton            : null,
+    __cancelButton          : null,
+    __opaqueCallReference   : null,    
+    __responseTextArea      : null,
+    __logTextArea           : null,
+    __logPage               : null,
     
     /**
      * Creates the UI
@@ -150,10 +176,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       var serverUrlTextfield = new qx.ui.form.TextField();
       servicePage.add( serverUrlTextfield, {row: 0, column: 1});
       this.__form.add( serverUrlTextfield, null, null, "url" );
-      /*
-       * function to automatically (un)check cross-domain
-       * button
-       */      
+       // function to automatically (un)check cross-domain
       var converterFunc = qx.lang.Function.bind( function( url ) 
       {
         if ( url && this.getRequestModel() )
@@ -183,8 +206,31 @@ qx.Class.define("rpcconsole.RpcConsole",
       serviceComboBox.setPlaceholder("The service name, i.e. qooxdoo.test");
       servicePage.add( serviceComboBox, {row: 1, column: 1});
       this.__form.add( serviceComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9\.]+/), "service" );
-      // @todo: save service name in combobox
-
+      // list controller to manage the combobox list
+      this.__serviceListController = new qx.data.controller.List(new qx.data.Array(),serviceComboBox);
+       // function to add the last used service name to the combobox list      
+      var converterFunc = qx.lang.Function.bind( function( service ) 
+      {
+        if ( service )
+        {
+          var list = this.getServiceListController().getModel();
+          if ( list.contains( service ) )
+          {
+            list.removeAt( list.indexOf( service ) )
+          }
+          list.unshift( service );
+          if ( list.length > 10 )
+          {
+            list.pop();
+          }
+        }
+        return service;
+      }, this);     
+      this.__formController.addBindingOptions("service", {
+        converter : converterFunc
+      }, {
+        converter : converterFunc
+      });
       
       /*
        * Service method
@@ -197,7 +243,34 @@ qx.Class.define("rpcconsole.RpcConsole",
       hbox.add( methodComboBox, { flex : 1 } );
       servicePage.add(hbox, {row: 2, column: 1});    
       this.__form.add( methodComboBox, null, qx.util.Validate.regExp(/[a-zA-Z0-9]+/), "method" );
-      // @todo: save method name in combobox
+      // list controller to manage the combo box list
+      this.__methodListController = new qx.data.controller.List(new qx.data.Array(),methodComboBox);
+       // function to add the last used service name to the combobox list      
+      var converterFunc = qx.lang.Function.bind( function( method ) 
+      {
+        try
+        {
+        if ( method )
+        {
+          var list = this.getMethodListController().getModel();
+          if ( list.contains( method ) )
+          {
+            list.removeAt( list.indexOf( method ) )
+          }
+          list.unshift( method );
+          if ( list.length > 10 )
+          {
+            list.pop();
+          }
+        }
+        return method;
+        }catch(e){console.warn(e)}
+      }, this);     
+      this.__formController.addBindingOptions("method", {
+        converter : converterFunc
+      }, {
+        converter : converterFunc
+      });      
       
       /*
        * options
@@ -397,6 +470,31 @@ qx.Class.define("rpcconsole.RpcConsole",
       }
     },
     
+    /*
+    -------------------------------------------------------------------------
+      APPLY METHODS
+    -------------------------------------------------------------------------
+    */     
+    
+    /**
+     * Applies a new value to the serviceListModel property
+     * @param value {qx.data.Array|null}
+     * @param old {qx.data.Array|null}
+     */
+    _applyServiceListModel : function( value, old )
+    {
+      this.getServiceListController().setModel( value );
+    },
+    
+    /**
+     * Applies a new value to the methodListModel property
+     * @param value {qx.data.Array|null}
+     * @param old {qx.data.Array|null}
+     */
+    _applyMethodListModel : function( value, old )
+    {
+      this.getMethodListController().setModel( value );
+    },
     
     /*
     -------------------------------------------------------------------------
@@ -414,23 +512,26 @@ qx.Class.define("rpcconsole.RpcConsole",
     },
     
     /**
-     * Returns the combobox widget for the service name
-     * @return {qx.ui.form.ComboBox}
+     * Returns the controller that manages the list of entries
+     * for the service name
+     * @return {qx.data.controller.List}
      */
-    getServiceComboBox : function()
+    getServiceListController : function()
     {
-      return this.__serviceComboBox;
+      return this.__serviceListController;
     },
 
     /**
-     * Returns the combobox widget for the service method
-     * @return {qx.ui.form.ComboBox}
+     * Returns the controller that manages the list of entries
+     * for the method name
+     * @return {qx.data.controller.List}
      */
-    getMethodComboBox : function()
+    getMethodListController : function()
     {
-      return this.__methodComboBox;
+      return this.__methodListController;
     },
-
+    
+    
     /**
      * Returns text area containing the response data
      * @return {qx.ui.form.TextArea}
@@ -538,6 +639,7 @@ qx.Class.define("rpcconsole.RpcConsole",
           this.__sendButton.setEnabled(true);
           this.__cancelButton.setEnabled(false);        
           alert( e.getData().toString() );
+          this.cancelRequest();
           doAlert = false;
         }
       },this);
