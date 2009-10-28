@@ -16,6 +16,9 @@
 /* ************************************************************************
 
 #asset(rpcconsole.demo/*)
+#asset(qx/icon/${qx.icontheme}/16/actions/document-open.png)
+#asset(qx/icon/${qx.icontheme}/16/actions/view-refresh.png)
+#asset(qx/icon/${qx.icontheme}/16/actions/document-save-as.png)
 #ignore(testName)
 #require(qx.ui.form.ListItem)
 
@@ -62,7 +65,10 @@ qx.Class.define("rpcconsole.demo.Application",
     */        
     __activeConsole : null,
     __testData : null,
+    __testDataUrl : null,
     __testsMenu : null,
+    __helpWindow : null,
+    __editorWindow : null,
 
     /*
     -------------------------------------------------------------------------
@@ -122,15 +128,44 @@ qx.Class.define("rpcconsole.demo.Application",
       toolbar.add(createWindowButton);
       
       /*
+       * load / edit menu
+       */
+      var button = new qx.ui.toolbar.MenuButton("Load/Edit Tests");
+      button.setShowArrow(true);
+      var menu = new qx.ui.menu.Menu();
+      // load
+      var mb = new qx.ui.menu.Button( "Load test data from file", "icon/16/actions/document-open.png" );
+      mb.addListener("execute", this._onLoadButtonExecute, this);
+      menu.add(mb);
+      // reload
+      mb = new qx.ui.menu.Button( "Reload test data", "icon/16/actions/view-refresh.png" );
+      mb.addListener("execute", this._onReloadButtonExecute, this);
+      menu.add(mb);
+      // edit
+      mb = new qx.ui.menu.Button( "Edit test data", "icon/16/actions/document-save-as.png" );
+      mb.addListener("execute", this._onEditButtonExecute, this);
+      menu.add(mb);      
+      
+      button.setMenu( menu );
+      toolbar.add(button);
+      
+      /*
        * menu with tests
        */
-      var testsMenuButton = new qx.ui.toolbar.MenuButton("Tests");
-      testsMenuButton.setShowArrow(true);
+      var button = new qx.ui.toolbar.MenuButton("Run Tests");
+      button.setShowArrow(true);
       var menu = this.getTestsMenu();
       var testData = this.getTestData();
       this.populateMenu( menu, testData );
-      testsMenuButton.setMenu( menu );
-      toolbar.add(testsMenuButton);
+      button.setMenu( menu );
+      toolbar.add(button);
+      
+      /*
+       * "About" menu
+       */
+      var button = new qx.ui.toolbar.Button("About RpcConsole");
+      button.addListener("execute", this._onAboutButtonExecute, this);
+      toolbar.add(button);      
                
       /*
        * desktop
@@ -165,6 +200,95 @@ qx.Class.define("rpcconsole.demo.Application",
         },this );
       }
       
+    },
+    
+    /**
+     * Called when the "Load" button is executed.
+     */
+    _onLoadButtonExecute :  function()
+    {
+      var testDataUrl = prompt("Enter Test Data URL:");
+      if ( ! testDataUrl ) return;
+      try 
+      {
+        qx.util.Validate.url()(testDataUrl); 
+        this.loadTestData( testDataUrl );  
+      }
+      catch(e)
+      {
+        alert("Please enter a valid URL");
+      }
+    },
+    
+    /**
+     * Called when the "Reload" button is executed
+     */
+    _onReloadButtonExecute : function()
+    {
+      if ( this.getTestDataUrl() )
+      {
+        this.loadTestData( this.getTestDataUrl() );  
+      }
+    },
+    
+    /**
+     * Called when the "About" button is executed
+     */
+    _onAboutButtonExecute : function()
+    {
+      if ( ! this.__helpWindow )
+      {
+        var win = this.__helpWindow = new qx.ui.window.Window("About RpcConsole");
+        win.set({
+          width : 800,
+          height : 500,
+          showMinimize : false
+        });
+        win.addListener("appear", win.center, win );
+        win.setLayout( new qx.ui.layout.Grow() );
+        var iframe = new qx.ui.embed.Iframe("../../../readme.txt");
+        win.add( iframe );
+      }
+      this.__helpWindow.open();
+    },
+    
+    /**
+     * Called when the "Edit" button is executed
+     */
+    _onEditButtonExecute : function()
+    {
+      if ( ! this.getTestData() )
+      {
+        return;
+      }
+      if ( ! this.__editorWindow )
+      {
+        var win = this.__editorWindow = new qx.ui.window.Window("Edit test data");
+        win.set({
+          width : 600,
+          height : 500,
+          showMinimize : false
+        });
+        win.addListener("appear", win.center, win );
+        win.setLayout( new qx.ui.layout.VBox(5) );
+        var textArea = new qx.ui.form.TextArea();
+        textArea.setValue( qx.util.Json.stringify( this.getTestData(), true) );
+        win.add( textArea, { flex : 1 });
+        var button = new qx.ui.form.Button("Update","icon/16/actions/document-save-as.png");
+        button.addListener("execute", function(){
+          try 
+          {
+            this.setTestData( window.eval( "(" + textArea.getValue() + ")" ) );
+            win.close();
+          } 
+            catch(e)
+          {
+            alert(e);
+          }
+        },this);
+        win.add( button );
+      }
+      this.__editorWindow.open();      
     },
     
     /*
@@ -246,6 +370,15 @@ qx.Class.define("rpcconsole.demo.Application",
       }
       return this.__testsMenu;
     },
+    
+    /**
+     * Return the url of the last test data loaded
+     * @return {String}
+     */
+    getTestDataUrl : function()
+    {
+      return this.__testDataUrl;
+    },
 
     /**
      * Populates a menu with various tests for the demo application.
@@ -255,6 +388,7 @@ qx.Class.define("rpcconsole.demo.Application",
      * {
      *   testName : {
      *     label : "The label in the menu",
+     *     icon : "path/to/the/optional-icon.png",
      *     /**
      *      * Optional initialization function called when the 
      *      * button is created. If the function returns boolean false,
@@ -356,7 +490,7 @@ qx.Class.define("rpcconsole.demo.Application",
         /*
          * menu button with listener
          */
-        var button = new qx.ui.menu.Button( data.label );
+        var button = new qx.ui.menu.Button( data.label, data.icon || null );
 
         /*
          * initialization function. if result is boolean false,
@@ -413,6 +547,7 @@ qx.Class.define("rpcconsole.demo.Application",
      */
     loadTestData : function( testDataUrl, callback, context )
     {
+      this.__testDataUrl = testDataUrl;
       new qx.io2.ScriptLoader().load( 
         testDataUrl+"?"+(new Date).getTime(),  // disable caching of script file
         callback, context  

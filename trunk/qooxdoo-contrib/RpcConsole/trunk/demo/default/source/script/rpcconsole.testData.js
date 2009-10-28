@@ -6,6 +6,7 @@
  * {
  *   testName : {
  *     label : "The label in the menu",
+ *     icon : "path/to/the/optional-icon.png",
  *     /**
  *      * Optional initialization function called when the 
  *      * button is created. If the function returns boolean false,
@@ -152,28 +153,6 @@ qx.core.Init.getApplication().setTestData(
     }
   },  
   
-  /**
-   * load test data from file
-   */
-  loadTestData : {
-    label : "Load test data from file",
-    init : function(){
-      this.info("Test data ready.")
-    },
-    execute : function(){
-      var testDataUrl = prompt("Enter Test Data URL:");
-      if ( ! testDataUrl ) return;
-      try 
-      {
-        qx.util.Validate.url()(testDataUrl); 
-        this.loadTestData( testDataUrl );  
-      }
-      catch(e)
-      {
-        alert("Please enter a valid URL");
-      }
-    }
-  },
   
   /**
    * Run automated tests 

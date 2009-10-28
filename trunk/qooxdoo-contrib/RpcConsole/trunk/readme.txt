@@ -1,6 +1,17 @@
 RpcConsole
 ==========
 
+   Copyright:
+     2009 Christian Boulanger
+     
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Christian Boulanger (cboulanger)
+
 This contribution is a scriptable test client for your JSON-RPC backend. 
 
 It contains an embeddable widget which allows the user to input request data
@@ -9,9 +20,8 @@ demo application (rpcconsole.demo.Application), which can be used run tests
 manually or by user-supplied scripts. 
 
 The demo allows to open multiple windows with independent consoles, and to 
-load test data from a given url. Since qx.io2.ScriptLoader is used, you can 
-use the contribution demo app to debug the backend of applications which 
-live both on the same or on a different domain.
+load test data from a given url. You can this application to debug the backend 
+of applications which live both on the same or on a different domain.
 
 Example test data is loaded from script/rpcconsole.testData.js, but
 you can override this with adding '?testDataUrl=http://path/to/my/testData.js' 
@@ -26,6 +36,7 @@ qx.core.Init.getApplication().setTestData(
 {
   testName : {
     label : "The label in the menu",
+    icon : "path/to/the/optional-icon.png",
     /**
      * Optional initialization function called when the 
      * button is created. If the function returns boolean false,

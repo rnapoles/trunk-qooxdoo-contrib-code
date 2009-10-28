@@ -31,7 +31,7 @@
   {
     "APPLICATION"  : "rpcconsole.demo",
     "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
-    "QXTHEME"      : "rpcconsole.demo.theme.Theme",
+//    "QXTHEME"      : "rpcconsole.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
