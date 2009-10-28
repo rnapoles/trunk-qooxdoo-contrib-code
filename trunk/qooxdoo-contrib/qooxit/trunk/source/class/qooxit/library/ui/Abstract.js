@@ -22,9 +22,17 @@ qx.Class.define("qooxit.library.ui.Abstract",
 {
   extend : qx.core.Object,
 
-  construct : function()
+  properties :
   {
-    this.base(arguments);
+   /**
+    * The menu hierarchy for this class.  The value will be an array, where
+    * each component of the array is a hierarchy level in the Available
+    * Widgets menu.
+    */
+    menuHierarchy :
+    {
+      init     : null
+    }
   },
 
   members :
@@ -143,18 +151,6 @@ qx.Class.define("qooxit.library.ui.Abstract",
      */
     getElementOptions : function()
     {
-    },
-
-   /**
-    * Specify the menu hierarchy for this class
-    *
-    * @return {Array}
-    *   Each component of the array is a hierarchy level in the
-    *   Available Widgets menu.
-    */
-    getMenuHierarchy : function()
-    {
-      throw new Error("getMenuHierarchy() is abstract");
     }
   }
 });
