@@ -93,6 +93,15 @@ qx.Class.define("bug2716.Application",
       button.focus();
       
       this.loginPanel.add(groupBox);
+      
+      var timer = new qx.event.Timer(4000)
+      timer.addListener("interval", function(e)
+      {
+        this.debug(qx.ui.core.FocusHandler.getInstance().getFocusedWidget());
+        doc.isBlocked() == true ? doc.unblock() : doc.block();
+        button.focus();
+      }, this);
+      timer.start();
     }
   }
 });
