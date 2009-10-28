@@ -19,7 +19,7 @@
  */
 qx.Class.define("qooxit.library.ui.basic.Label",
 {
-  extend : qooxit.library.ui.AbstractElement,
+  extend : qooxit.library.ui.Abstract,
 
   members :
   {

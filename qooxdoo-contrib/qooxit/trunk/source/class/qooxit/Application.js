@@ -160,18 +160,8 @@ qx.Class.define("qooxit.Application",
 
     populateAvailable : function(root)
     {
-      // Create the layouts folder
-      var layouts = new qx.ui.tree.TreeFolder("Layouts");
-      layouts.setOpen(true)
-      root.add(layouts);
-
       // Add our available layouts
       this._addAvailableContainers(root);
-
-      // Create the widgets folder
-      var widgets = new qx.ui.tree.TreeFolder("Widgets");
-      widgets.setOpen(true)
-      root.add(widgets);
 
       // Add our available widgets
       this._addAvailableWidgets(root);
@@ -181,7 +171,6 @@ qx.Class.define("qooxit.Application",
     {
       // Add some containers
       this.addClass(root,
-                    "Canvas (qx.ui.layout.Canvas)",
                     qooxit.library.ui.layout.Canvas);
 /*
       this.__addItem(layoutFolder,
@@ -402,16 +391,31 @@ qx.Class.define("qooxit.Application",
 */
     },
 
-    addClass : function(root, label, clazz)
+    /**
+     * Add a class to the Available menu.
+     *
+     * @param root {qx.ui.tree.AbstractTreeItem}
+     *   The root of the AVailable menu tree
+     *
+     * @param clazz {qooxit.library.ui.Abstract}
+     *   The class being added to the menu.
+     *
+     * @return {Void}
+     */
+    addClass : function(root, clazz)
     {
-      // Create a new tree element
-      var treeItem = new qx.ui.tree.TreeFolder(label);
+      // Instantiate the specified class
+      var classInstance = clazz.getInstance();
+
+      // Ascertain the menu for this class
+      var menuHierarchy = classInstance.getMenuHierarchy();
+
+      // Find or create this menu item and get the tree parent to insert our
+      // new tree item.
+      var treeItem = this.findMenuItem(root, menuHierarchy);
 
       // This item has to be draggable to be dropped into the applciation view
       treeItem.setDraggable(true);
-
-      // Instantiate the specified class
-      var classInstance = new clazz.getInstance();
 
       // Allow the item to be copied
       treeItem.addListener("dragstart",
@@ -429,9 +433,73 @@ qx.Class.define("qooxit.Application",
                              e.addData("qooxit/available",
                                        classInstance.factory);
                            });
+    },
 
-      // Figure out where in the tree this item belongs
-      folder.add(treeItem);
+    /**
+     * Recursively find the menu item in the tree which is associated with the
+     * provided hierarchy. If the item is not found, it is created.
+     *
+     * @param root {qx.ui.tree.AbstractTreeItem}
+     *   The current node of the tree we are searching
+     *
+     * @param menuHierarchy {Array}
+     *   A list of remaining hierarchy elements to be located.
+     *   NOTE: This function is destructive of the array. It shifts items off
+     *         the beginning of the array as they are found.
+     *
+     * @return {qx.ui.tree.AbstractTreeItem}
+     *   The found or newly-created folder.
+     */
+    findMenuItem : function(root, menuHierarchy)
+    {
+      // Get the non-recursive list of items in the tree at this level
+      var items = root.getItems(false, true);
+
+      // Get the current name we're looking for.
+      var current = menuHierarchy.shift();
+
+      // For each item in the tree...
+      for (var item = 0; item < items.length; item++)
+      {
+        // ... does it match our current item in the hierarchy?
+        if (items[item].getLabel() == current)
+        {
+          // Yup. Are there any more?
+          if (menuHierarchy.length == 0)
+          {
+            // Nope. The requested hierarchy was found and terminates here.
+            return items[item];
+          }
+
+          // There are more. Call recursively.
+          return this.findMenuItem(items[item], menuHierarchy);
+        }
+      }
+
+      // This item wasn't here. Put it back on the hierarchy array
+      menuHierarchy.unshift(current);
+
+      // Recursively create the rest of the hierarchy
+      while (menuHierarchy.length > 0)
+      {
+        // Get the item to be added
+        current = menuHierarchy.shift();
+
+        // Create a new folder for this level of the hierarchy
+        var folder = new qx.ui.tree.TreeFolder(current);
+
+        // The folder is open by default
+        folder.setOpen(true)
+
+        // Add it to its parent
+        root.add(folder);
+
+        // The new parent is the just-added folder
+        root = folder;
+      }
+
+      // The last item we added was the one we were looking for.
+      return folder;
     }
   }
 });
