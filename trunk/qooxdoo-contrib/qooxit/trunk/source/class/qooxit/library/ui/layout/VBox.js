@@ -29,12 +29,6 @@ qx.Class.define("qooxit.library.ui.layout.VBox",
     {
       // Return a Composite container with a vertical box layout
       return new qx.ui.container.Composite(new qx.ui.layout.VBox());
-    },
-
-    // overridden
-    getMenuHierarchy : function()
-    {
-      return [ "Layouts" ];
     }
   }
 });

@@ -127,11 +127,13 @@ qx.Class.define("qooxit.Application",
           var related = e.getRelatedTarget();
           var label = related.getLabel();
 
+/*
           this.debug("data=" + factory +
                      ", related=" + related + 
                      ", source label=" + related.getLabel() +
                      ", dropTarget=" + e.getTarget() +
                      ", origTarget=" + folder);
+*/
           
           // Add a node to the Application tree
           folder.add(new qx.ui.tree.TreeFile(label));
@@ -147,32 +149,17 @@ qx.Class.define("qooxit.Application",
 
       leftPane.add(applicationTree, { flex : 1 } );
 
-      // Create the (hidden) root of the application hierarchy tree
+      // Create the root of the application hierarchy tree
       var applicationRoot =
         new qx.ui.tree.TreeFolder(this.tr("Application Root"));
       applicationRoot.setOpen(true);
       applicationTree.setRoot(applicationRoot);
 
-      // Allow the defer sections to run, so that library classes can
-      // register themselves, then populate the tree of available classes.
-      var timer = qx.util.TimerManager.getInstance();
-      timer.start(function(root, timerId)
-                  {
-                    this.populateAvailable(root);
-                  },
-                  0,
-                  this,
-                  availableRoot,
-                  100);
-    },
-
-    populateAvailable : function(root)
-    {
-      // Add all registered classes
+      // Add all registered classes to the Available menu
       var list = qooxit.library.Library.getClasses();
       for (var i = 0; i < list.length; i++)
       {
-        this.addClass(root, list[i]);
+        this.addClass(availableRoot, list[i]);
       }
     },
 

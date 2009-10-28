@@ -20,6 +20,7 @@
 qx.Class.define("qooxit.library.ui.tree.Tree",
 {
   extend : qooxit.library.ui.Abstract,
+  type   : "singleton",
 
   members :
   {
@@ -60,4 +61,4 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
       }
     }
   }
-}
+});

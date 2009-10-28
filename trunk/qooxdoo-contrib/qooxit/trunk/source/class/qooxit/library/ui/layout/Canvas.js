@@ -22,11 +22,6 @@ qx.Class.define("qooxit.library.ui.layout.Canvas",
   extend : qooxit.library.ui.Abstract,
   type   : "singleton",
 
-  construct : function()
-  {
-    this.base(arguments);
-  },
-
   members :
   {
     // overridden
