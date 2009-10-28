@@ -150,6 +150,29 @@ qx.Class.define("rpcconsole.RpcConsole",
       var serverUrlTextfield = new qx.ui.form.TextField();
       servicePage.add( serverUrlTextfield, {row: 0, column: 1});
       this.__form.add( serverUrlTextfield, null, null, "url" );
+      /*
+       * function to automatically (un)check cross-domain
+       * button
+       */      
+      var converterFunc = qx.lang.Function.bind( function( url ) 
+      {
+        if ( url && this.getRequestModel() )
+        {
+          var domain = window.location.protocol + "//" +
+            window.location.hostname + ":" +
+            window.location.port;
+          this.getRequestModel().setCrossDomain(
+           url.substr(0,domain.length) != domain 
+           && url.substr(0,1) != "." 
+          );
+        }
+        return url;
+      }, this);     
+      this.__formController.addBindingOptions("url", {
+        converter : converterFunc
+      }, {
+        converter : converterFunc
+      });
   
       /*
        * Service name
@@ -184,13 +207,8 @@ qx.Class.define("rpcconsole.RpcConsole",
       hbox.add( crossDomainCheckBox );
       this.__form.add( crossDomainCheckBox, null, null, "crossDomain" );
       hbox.add( new qx.ui.basic.Label("Timeout:") );
-      var timeoutSpinner = new qx.ui.form.Spinner().set({
-        minimum  : 3,
-        maximum  : 60,
-        editable : true
-      });
-      timeoutSpinner.setValue(10);
-      
+      var timeoutSpinner = new qx.ui.form.Spinner(10,10,60);
+      timeoutSpinner.setEditable(true);
       hbox.add( timeoutSpinner );
       hbox.add( new qx.ui.basic.Label("seconds") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );

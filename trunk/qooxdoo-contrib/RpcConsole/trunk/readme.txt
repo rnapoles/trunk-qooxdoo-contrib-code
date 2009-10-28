@@ -20,7 +20,7 @@ demo application (rpcconsole.demo.Application), which can be used run tests
 manually or by user-supplied scripts. 
 
 The demo allows to open multiple windows with independent consoles, and to 
-load test data from a given url. You can this application to debug the backend 
+load test data from a given url. You can use this application to debug the backend 
 of applications which live both on the same or on a different domain.
 
 Example test data is loaded from script/rpcconsole.testData.js, but
@@ -134,5 +134,4 @@ or run all test or a selection of tests by the runTests() method.
 
 Todo:
 ----
-- test cross-domain requests
 - save service name and method in the comboboxes' list for easy access.
