@@ -38,10 +38,6 @@
     "ROOT"         : "."
   },
   
-  "copy-files" :
-  {
-    "files"     : [ "script/rpcconsole.testData.js" ]
-  },  
 
   "jobs" :
   {
@@ -53,6 +49,14 @@
           "manifest" : "../../Manifest.json"
         }
       ]
-    }
+    },
+    
+    "build-files":
+    {
+      "copy-files" :
+      {
+        "files"     : [ "script/rpcconsole.testData.js" ]
+      }      
+    } 
   }
 }
