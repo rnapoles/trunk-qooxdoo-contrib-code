@@ -31,47 +31,77 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
       // for the moment;
       var options =
         {
-          columns : [ "Tree", "Permissions", "Last Accessed" ]
+          columns : [ "Tree", "Permissions", "Last Accessed" ],
+          width   : 400,
+          height  : 200
         }
 
+      // Instantiate a tree object
+      var tree = new qx.ui.treevirtual.TreeVirtual(options.columns);
+
+      // Set tree attributes
+      tree.set(
+        {
+          width  : options.width,
+          height : options.height
+        });
+
       // Return a Tree widget
-      return new qx.ui.treevirtual.TreeVirtual(options.columns);
+      return tree;
     },
 
     snippets :
     {
-      example :
+      resizeBehavior :
       {
-        description : "Resize behavior, data model, a whole bunch of crap",
+        brief : "Resize behavior",
+
+        description :
+          "Allow the tree to adjust its width and column sizes based on " +
+          "the space available in its container.",
 
         code : function(tree)
         {
-          // Set the tree's width
-          tree.set(
-            {
-              width  : 400
-            });
-
-          // Don't let the open/close symbol disappear when no children
-          tree.setAlwaysShowOpenCloseSymbol(true);
-
           // Obtain the resize behavior object to manipulate
           var resizeBehavior = tree.getTableColumnModel().getBehavior();
 
           // Ensure that the tree column remains sufficiently wide
           resizeBehavior.set(0, { width:"1*", minWidth:180  });
+        }
+      },
 
-          // tree data model
-          var dataModel = tree.getDataModel();
+      openCloseButtonAlways :
+      {
+        brief : "Retain open/close button always",
 
+        description :
+          "Force the open/close symbol to be displayed even when " +
+          "there are no children of a node.",
+
+        code : function(tree)
+        {
+          // Don't let the open/close symbol disappear when no children
+          tree.setAlwaysShowOpenCloseSymbol(true);
+        }
+      },
+
+      sampleData :
+      {
+        brief : "Sample data",
+
+        description :
+          "Add sample data to the tree.",
+
+        code : function(o)
+        {
           //
           // Add a bunch of data to the model, for demonstration.
           //
           var te1 = dataModel.addBranch(null, "Desktop", true);
-          tree.nodeSetLabelStyle(te1,
-                                 "background-color: red; " +
-                                 "color: white;" +
-                                 "font-weight: bold;");
+          o.nodeSetLabelStyle(te1,
+                              "background-color: red; " +
+                              "color: white;" +
+                              "font-weight: bold;");
 
           var te1_1;
 
@@ -88,7 +118,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
           dataModel.addBranch(te1, "Network", true);
 
           te = dataModel.addBranch(te1, "Trash", true);
-          tree.nodeSetCellStyle(te, "background-color: cyan;");
+          o.nodeSetCellStyle(te, "background-color: cyan;");
 
           var te2 = dataModel.addBranch(null, "Inbox", true);
 
