@@ -137,6 +137,7 @@ qx.Class.define("rpcconsole.RpcConsole",
     __responseTextArea      : null,
     __logTextArea           : null,
     __logPage               : null,
+    __paramsCache           : null,
     
     /**
      * Creates the UI
@@ -144,6 +145,11 @@ qx.Class.define("rpcconsole.RpcConsole",
     _createUI : function( serverUrl )
     {
       this.setLayout( new qx.ui.layout.VBox(10) );
+      
+      /*
+       * variable initialization
+       */
+      this.__paramsCache = {};
       
       /*
        * tabview
@@ -248,14 +254,13 @@ qx.Class.define("rpcconsole.RpcConsole",
        // function to add the last used service name to the combobox list      
       var converterFunc = qx.lang.Function.bind( function( method ) 
       {
-        try
-        {
         if ( method )
         {
           var list = this.getMethodListController().getModel();
           if ( list.contains( method ) )
           {
-            list.removeAt( list.indexOf( method ) )
+            var index = list.indexOf( method );
+            list.removeAt( index );
           }
           list.unshift( method );
           if ( list.length > 10 )
@@ -264,14 +269,14 @@ qx.Class.define("rpcconsole.RpcConsole",
           }
         }
         return method;
-        }catch(e){console.warn(e)}
       }, this);     
       this.__formController.addBindingOptions("method", {
         converter : converterFunc
       }, {
         converter : converterFunc
-      });      
-      
+      });
+
+         
       /*
        * options
        */
@@ -285,7 +290,6 @@ qx.Class.define("rpcconsole.RpcConsole",
       hbox.add( timeoutSpinner );
       hbox.add( new qx.ui.basic.Label("seconds") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );
-  
       servicePage.add( new qx.ui.basic.Label("Options:"), {row: 3, column: 0 });
       servicePage.add(hbox, {row: 3, column: 1 });
       
@@ -322,7 +326,26 @@ qx.Class.define("rpcconsole.RpcConsole",
           }
           return [];
         }
-      });      
+      });   
+      
+      /*
+       * save the parameters for a given method and automagically 
+       * fill out when a value is selected from the combobox drop-down.
+       */
+      // save parameters for a method
+      paramsTextField.addListener("changeValue",function(e){
+        var method = this.getRequestModel().getMethod();
+        this.__paramsCache[method]=e.getData();
+      },this);
+      // fill params from cache when a method is selected from the dropdown
+      methodComboBox.getChildrenContainer().addListener("changeSelection",function(e){
+        var selection = e.getData();
+        if ( selection.length )
+        {
+          var method = selection[0].getModel();
+          paramsTextField.setValue( this.__paramsCache[method] || null );
+        }
+      },this);      
       
       /*
        * serverData tab
