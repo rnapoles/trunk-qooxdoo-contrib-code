@@ -37,7 +37,7 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
       {
         description : "Create and open the root; add 10 items to the tree",
 
-        code : function()
+        code : function(o)
         {
           // Create a root folder
           var root = new qx.ui.tree.TreeFolder("Root");
@@ -56,7 +56,7 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
           }
 
           // Specify which element is the root of the tree
-          tree.setRoot(root);
+          o.setRoot(root);
         }
       }
     }
