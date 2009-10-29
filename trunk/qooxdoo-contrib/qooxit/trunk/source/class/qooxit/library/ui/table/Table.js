@@ -122,7 +122,7 @@ qx.Class.define("qooxit.library.ui.table.Table",
       return table;
     },
 
-    snippets :
+    __snippets :
     {
       resizeBehaviorFirstColumn :
       {

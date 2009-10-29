@@ -21,6 +21,7 @@
 qx.Class.define("qooxit.library.ui.Abstract",
 {
   extend : qx.core.Object,
+  type   : "singleton",
 
   properties :
   {
@@ -37,7 +38,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
   members :
   {
-    __snippets : null,
+    __snippets     : {},    // reference type ok here since this is a singleton
     __snippetNames : null,
 
     /**
@@ -54,6 +55,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
      */
     factory : function(snippets)
     {
+      throw new Error("factory() is abstract");
     },
 
     /**
@@ -118,6 +120,59 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Join it all together and give 'em the result
       return source.join("");
     },
+
+    /**
+     * Add a new snippet for this class.
+     *
+     * @param name {String}
+     *   The snippet name, which must be unique. It is used as the name within
+     *   the private snippets map.
+     *
+     * @param snippet {Map}
+     *   A map containing the following properties:
+     *   <dl>
+     *     <dt>brief {String}</dt>
+     *     <dd>
+     *       A brief summary of the snippet, displayed in the list from which
+     *       snippets are selected.
+     *     </dd>
+     *     <dt>description {String}</dt>
+     *     <dd>
+     *       A full description of the snippet, for display upon request by
+     *       the user.
+     *     </dd>
+     *     <dt>code {Function}</dt>
+     *     <dd>
+     *       The function which will be called to apply the snippet. The
+     *       function is passed a single parameter, the object on which the
+     *       snippet is to be applied.
+     *     </dd>
+     *   </dl>
+     *
+     * @param bForce {Boolean}
+     *   Whether this snippet should be allowed to overwrite an existing
+     *   snippet of the same name.
+     *
+     * @return {Boolean}
+     *   <i>true</i> if the snippet was applied;
+     *   <i>false</i> if it would have overwritten an existing snippet but
+     *   bForce was false..
+     */
+    addSnippet : function(name, snippet, bForce)
+    {
+      // Don't let them overwrite an existing snippet without really meaning to
+      if (! bForce && this.snippets[name])
+      {
+        // Tell 'em that it failed
+        return false;
+      }
+
+      // Add the provided snippet
+      this.snippets[name] = snippet;
+
+      // Tell 'em it succeeded
+      return true;
+    }
 
     /**
      * Get the map of snippets which pertain to this UI element.

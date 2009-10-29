@@ -31,7 +31,7 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
       return new qx.ui.tree.Tree();
     },
 
-    snippets :
+    __snippets :
     {
       addItems :
       {

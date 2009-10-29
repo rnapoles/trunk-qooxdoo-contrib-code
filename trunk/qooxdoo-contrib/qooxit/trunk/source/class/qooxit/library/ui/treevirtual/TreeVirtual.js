@@ -50,7 +50,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
       return tree;
     },
 
-    snippets :
+    __snippets :
     {
       resizeBehavior :
       {
