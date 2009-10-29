@@ -54,8 +54,12 @@ qx.Class.define("qooxit.library.Library",
           clazz         : qooxit.library.ui.treevirtual.TreeVirtual,
           menuHierarchy :
             [ "Widget", "Tree", "Virtual (qx.ui.treevirtual.TreeVirtual)" ]
+        },
+        {
+          clazz         : qooxit.library.ui.table.Table,
+          menuHierarchy :
+            [ "Widget", "Table (qx.ui.table.Table)" ]
         }
-
       ],
 
     __registeredClasses :
