@@ -1,0 +1,7 @@
+templates
+  When specifying the options for a class, it might be nice to be able to save
+  those options as a template so that future instantiations of the same class
+  can be easily configured with the same options. One way to implement this
+  would be to dynamically create subclass that has the templated options.
+
+
