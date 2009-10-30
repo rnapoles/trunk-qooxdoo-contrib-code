@@ -22,7 +22,7 @@
  * "sleep".
  */
 
-class class_test
+class class_test extends ServiceIntrospection
 {
     /**
      * Specify method accessibility.  Default value is configured in server,

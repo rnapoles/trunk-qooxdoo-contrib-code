@@ -36,11 +36,11 @@
  *
  */
 
-
-/*
- * Dependencies
- */
 require_once dirname(__FILE__) . "/AbstractServer.php";
+if ( phpversion() >= 5 )
+{
+  require_once dirname(__FILE__) . "/ServiceIntrospection.php";
+}
 
 /*
  * include JsonRpcError class. If you want to use your own class, include a
@@ -58,7 +58,7 @@ if ( ! class_exists("JsonRpcError") )
 define("ScriptTransport_NotInUse", -1);
 
 /**
- * switches error handling on or off. Override in global_settings.php
+ * Switches error handling on or off. Override in global_settings.php
  * default: on
  *
  */
@@ -357,7 +357,6 @@ class JsonRpcServer extends AbstractServer
     return $input;
   }
 
-
   /**
    * Format the response string, given the service method output.
    * By default, wrap it in a result map and encode it in json.
@@ -518,7 +517,6 @@ class JsonRpcServer extends AbstractServer
   {
     @error_log( $msg . "\n", 3, JsonRpcDebugFile );
   }
-
 
 }
 ?>

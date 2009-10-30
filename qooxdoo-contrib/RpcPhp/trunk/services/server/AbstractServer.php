@@ -90,7 +90,14 @@ if ( ! defined("servicePathPrefix") )
  */
 if ( ! defined("RpcMethodSignatureMode") )
 {
-  define( "RpcMethodSignatureMode", "array" );
+  if ( phpversion() >= 5 )
+  {
+    define( "RpcMethodSignatureMode", "check" );
+  }
+  else
+  {
+    define( "RpcMethodSignatureMode", "array" );
+  }
 }
 
 /**
@@ -736,7 +743,7 @@ class AbstractServer
 
         /*
          * if package index file exists, which loads package
-         * dependencies (usually '__index__.php', load this first
+         * dependencies (usually '__index__.php'), load this first
          */
         if ( JsonRpcPackageIndexFile )
         {
@@ -850,7 +857,7 @@ class AbstractServer
 
   /**
    * Returns the actual service object, based on the class name.
-   * Instantiates
+   * Instantiates the object and returns it.
    * Override this if you want to pass additional data to the
    * service class' constructor.
    * @param string $className
@@ -858,7 +865,7 @@ class AbstractServer
    */
   function &getServiceObject( $className )
   {
-    $serviceObject = new $className( &$this );
+    $serviceObject = new $className();
     return $serviceObject;
   }
 

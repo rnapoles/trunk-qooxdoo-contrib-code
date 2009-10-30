@@ -31,6 +31,13 @@ error_reporting( E_ALL ^ E_NOTICE /* ^ E_WARNING */ );
 //define("JsonRpcMethodPrefix",  "method_");
 
 /*
+ * signature mode, defaults to "array" in PHP4 and "check" in PHP5
+ */
+//define( "RpcMethodSignatureMode", "check" );
+
+
+
+/*
  * turn debugging on
  */
 define( "JsonRpcDebug", false );
