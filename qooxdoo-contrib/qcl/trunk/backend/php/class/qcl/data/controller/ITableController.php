@@ -15,6 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require_once "qcl/data/controller/IItemController.php";
 
 /**
  * Interface for a controller that supplies data for a
@@ -22,6 +23,7 @@
  *
  */
 interface qcl_data_controller_ITableController
+//  extends qcl_data_controller_IItemController
 {
 
   /**
