@@ -81,7 +81,6 @@ class ServiceIntrospection
     {
       if ( ($pos = strpos( $line, "@param" )) !== false  )
       {
-        echo "/* '$line' $pos */";
         $params[++$paramIndex] = substr( $line, $pos + 7 ) . " ";
         $mode = 1;
       }
