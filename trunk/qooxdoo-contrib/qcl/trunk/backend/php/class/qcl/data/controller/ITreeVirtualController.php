@@ -15,6 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require_once "qcl/data/controller/ITreeController.php";
 
 /**
  * Interface for a controller that supplies data for a
@@ -22,22 +23,28 @@
  *
  */
 interface qcl_data_controller_ITreeVirtualController
+//  extends qcl_data_controller_ITreeController
 {
 
   /**
    * Return the data of a node of the tree.
    * @param string $datasource Datasource name
    * @param int    $nodeId
+   * @param int    $parentId Optional id of parent folder
+   * @param mixed|null $options Optional data
    * @return array
    */
-  function getNodeData( $datasource, $nodeId );
+  function getNodeData( $datasource, $nodeId, $parentId=null, $options=null );
 
   /**
-   * Returns the number of nodes in a given database
+   * Returns the number of nodes in a given datasource
    * @param string $datasource
-   * @return array
+   * @param mixed|null $options Optional data, for example, when nodes
+   *   should be filtered by a certain criteria
+   * @return array containing the keys 'nodeCount', 'transactionId'
+   *   and (optionally) 'statusText'.
    */
-  function method_getNodeCount( $datasource );
+  function method_getNodeCount( $datasource, $options=null );
 
   /**
    * Returns the number of children of a node with the given id
@@ -45,17 +52,12 @@ interface qcl_data_controller_ITreeVirtualController
    *
    * @param $datasource
    * @param $nodeId
+   * @param mixed|null $options Optional data, for example, when nodes
+   *   should be filtered by a certain criteria
    * @return array
    */
-  function method_getChildCount( $datasource, $nodeId );
+  function method_getChildCount( $datasource, $nodeId, $options=null );
 
-  /**
-   * Returns the hierarchy of ids that lead to a specific node
-   * @param string $datasource
-   * @param int $nodeId
-   * @return array
-   */
-  function method_getNodeIdHierarchy( $datasource, $nodeId );
 
   /**
    * Returns the node data of the children of a given array of
@@ -77,10 +79,12 @@ interface qcl_data_controller_ITreeVirtualController
    * @param int $max The maximum number of queues to retrieve
    * @param bool $recurse Whether recurse into the tree branch
    * @param string $storeId The id of the connected datastore
+   * @param string|null $options Optional data, for example, when nodes
+   *   should be filtered by a certain criteria
    * @return array
    */
   function method_getChildNodeData(
-    $datasource, $ids, $max=null, $recurse=false, $storeId=null );
+    $datasource, $ids, $max=null, $recurse=false, $storeId=null, $options=null );
 
 }
 ?>

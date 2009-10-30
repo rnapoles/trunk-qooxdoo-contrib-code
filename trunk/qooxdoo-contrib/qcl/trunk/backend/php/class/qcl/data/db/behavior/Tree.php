@@ -18,39 +18,47 @@
 
 /**
  * Behavior class providing methods to model a basic tree structure based on an
- * sql database table. Can only be used with a model that inherits from
- * qcl_data_model_xmlSchema_DbModel.
+ * sql database table.
  */
 class qcl_data_db_behavior_Tree
+  implements qcl_data_model_ITreeNodeModel
 {
 
-
-	/**
-	 * gets child nodes of a branch ordered by the order field
-	 * @param int $parentId
-	 */
-	function getChildren ( $parentId )
+  /**
+   * Returns the data of child nodes of a branch ordered by the order field
+   * @param int $parentId
+   * @param string|null $orderBy Optional propert name by which the returned
+   *   data should be ordered
+   * @return array
+   */
+	function getChildren ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
-		return $this->findWhere("{$this->col_parentId} = $parentId", $this->col_position );
+		return $this->findWhere(
+		  array( "parentId" => $parentId ),
+		  either( $orderBy, "position")
+		);
 	}
 
-	/**
-	 * gets child node ids of a branch ordered by the order field
-	 * @param int $parentId
-	 * @param string|null $orderBy
-	 */
+  /**
+   * Returns the ids of the child node ids optionally ordered by a property
+   * @param int $parentId
+   * @param string|null $orderBy Optional propert name by which the returned
+   *   data should be ordered
+   * @return array
+   */
 	function getChildIds ( $parentId, $orderBy=null )
 	{
-    $orderBy     = either( $orderBy, "position" );
+    $orderBy  = either( $orderBy, "position" );
     $parentIdCol = $this->getColumnName("parentId");
 		return $this->findValues("id", "$parentIdCol=" . (int) $parentId, $orderBy );
 	}
 
-	/**
-	 * gets number of child nodes of a branch
-	 * @param int $parentId
-	 */
+  /**
+   * Returns the number of children of the given node
+   * @param int $parentId
+   * @return int
+   */
 	function getChildCount ( $parentId )
 	{
 		$parentId = (int) $parentId;
@@ -64,22 +72,24 @@ class qcl_data_db_behavior_Tree
 		return (int) $count;
 	}
 
-	/**
-	 * reorders childrens positions
-	 * @param int $parentId parent folder id
-	 * @param string|null $orderBy defaults to position column
-	 */
+  /**
+   * Reorders the position of the child node. If the tree data in the
+   * model does not support reordering, implement as empty stub.
+   * @param int $parentId parent folder id
+   * @param string|null $orderBy defaults to position column
+   * @return void
+   */
 	function reorder ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
-		$orderBy  = either ( $orderBy, $this->col_position );
+		$orderBy  = either ( $orderBy, "position" );
 		$childIds = $this->getChildIds ( $parentId, $orderBy );
 		$index = 1;
 		foreach ( $childIds as $id )
 		{
 			$data=array();
-			$data[$this->col_id] 		= $id;
-			$data[$this->col_position] 	= $index++;
+			$data["id"] 		= $id;
+			$data["position"] 	= $index++;
 			$this->update($data);
 		}
 		return true;
@@ -319,7 +329,5 @@ class qcl_data_db_behavior_Tree
       // to do: implement
     }
   }
-
-
 }
 ?>
