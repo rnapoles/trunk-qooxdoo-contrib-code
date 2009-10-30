@@ -34,7 +34,7 @@ try {
   if ( RpcMethodSignatureMode == "check" )
   {
     $methodObj = new ReflectionMethod(
-      $serviceObject->className(),$method
+      get_class( $serviceObject ), $method
     );
     $parameters = $methodObj->getParameters();
     if ( count($parameters) )
