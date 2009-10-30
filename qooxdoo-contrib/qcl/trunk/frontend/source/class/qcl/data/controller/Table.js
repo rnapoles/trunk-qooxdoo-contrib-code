@@ -242,7 +242,12 @@ qx.Class.define("qcl.data.controller.Table",
      {
        if( this.getTarget() && this.getStore() )
        {
-         this.getTarget().getTableModel().reloadRows(0,100);
+         var table = this.getTarget();
+         table.clearSelection();
+         table.scrollCellVisible(0,0);
+         var model = this.getTarget().getTableModel();
+         model.clearCache();
+         model.reloadRows(0,100);
        }
      },
      
