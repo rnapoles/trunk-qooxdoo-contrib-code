@@ -5,7 +5,7 @@
  */
 $error_reporting = defined( "E_DEPRECATED" ) ?
   /*
-   * > PHP 5.3
+   * >= PHP 5.3
    */
   E_ALL
   ^ E_NOTICE
