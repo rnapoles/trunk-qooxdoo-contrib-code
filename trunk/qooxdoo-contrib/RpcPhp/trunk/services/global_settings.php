@@ -12,7 +12,7 @@ error_reporting( E_ALL ^ E_NOTICE /* ^ E_WARNING */ );
 /*
  * default accessibility mode for the services, defaults to "domain"
  */
-//define( "defaultAccessibility", "public" );
+define( "defaultAccessibility", "public" );
 
 /*
  * if the service classes are not in the class/ folder,
