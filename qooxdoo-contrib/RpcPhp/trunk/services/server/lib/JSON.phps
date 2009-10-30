@@ -901,7 +901,7 @@ class JSON_Date
 
         $format = "%Y,%m,%d,%H,%M,%S";
         $s = gmstrftime($format, $secondsSinceEpoch + 0);
-        $a = split(",", $s);
+        $a = explode(",", $s);
         $this->year = $a[0];
         $this->month = $a[1] - 1;
         $this->day = $a[2];
