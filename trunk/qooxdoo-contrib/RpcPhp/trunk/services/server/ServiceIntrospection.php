@@ -174,7 +174,6 @@ class ServiceIntrospection
    * the jsonrpc method about which information is being requested.
    * The result is a string. The value of that string is a text description,
    * for human use, of the method in question.
-   * @param string $class Class name
    * @param string $method The name of the method
    * @return string The documentation text of the method.
    */
