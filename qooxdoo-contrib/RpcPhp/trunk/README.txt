@@ -1,6 +1,6 @@
 ===== RpcPhp =====
 
-qooxdoo RPC server in PHP
+qooxdoo RPC server in PHP (4.3-5.3)
 
 Authors:
  * Derrell Lipman (derrell)
@@ -25,7 +25,7 @@ $server->start();
 
 You can also use the index.php provided in this package.
 
-The service classes are placed in the class/ subfolder. You can
+The service classes are placed in the "class/" subfolder. You can
 also choose a different location for the service classes by
 defining the "servicePathPrefix" in the global_settings.php file
 (if you use it) or elsewhere in your code. Make sure to include
@@ -48,7 +48,6 @@ For more information see
   
 PHP version info:
 
-The current trunk tries to cover PHP versions 4.3 up to 5.3, which results
-in some wierd hybrid coding style, and can only be achieved by suppressing
-deprecation messages. PHP 4 compatibility will be dropped soon, then the
-code will be cleaned up and prepared for full PHP 5.3 compliance.
+Version 1.2 supports PHP versions 4.3 up to 5.3, which sometimes results
+in wierd hybrid coding style, and can only be achieved by suppressing
+deprecation messages. 

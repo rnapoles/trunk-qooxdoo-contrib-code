@@ -23,7 +23,7 @@
     ],
     
     "version" : "trunk",
-    "qooxdoo-versions": ["0.7", "0.8" ]
+    "qooxdoo-versions": ["0.7", "0.8", "0.9-pre" ]
   },
   "provides" : {
     "namespace"   : "",
