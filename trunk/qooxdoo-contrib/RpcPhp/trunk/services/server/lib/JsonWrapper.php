@@ -16,7 +16,7 @@ class JsonWrapper
    * PHP 4 constructor. Will only be called under PHP4 and will use
    * the slow php-only encoder if the json extension is not loaded
    */
-  function Json()
+  function JsonWrapper()
 	{
 	  if ( ! function_exists("json_encode" ) )
     {
