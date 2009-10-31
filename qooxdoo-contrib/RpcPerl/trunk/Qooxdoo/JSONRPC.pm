@@ -542,7 +542,7 @@ sub send_reply
     }
     else
     {
-        $reply = "qx.io.remote.ScriptTransport._requestFinished" .
+        $reply = "qx.io.remote.transport.Script._requestFinished" .
             "($script_transport_id, $reply);";
 
         print STDERR "Send $reply\n" if $Qooxdoo::JSONRPC::debug;
