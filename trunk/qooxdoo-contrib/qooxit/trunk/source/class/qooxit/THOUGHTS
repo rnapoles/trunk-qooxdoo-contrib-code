@@ -4,4 +4,13 @@ templates
   can be easily configured with the same options. One way to implement this
   would be to dynamically create subclass that has the templated options.
 
+widget and source outlines
+  Mousing over an item in the Application tree should (optionally?) highlight
+  the associated widget if the Live Application view is selected; or highlight
+  the associated block of code if the Source view is selected.
+
+example applications
+  In addition to simple snippets, qooxit could provide entire example
+  applicaitons in qooxit tree format, so users can gain experience in
+  manipulating qooxit to their needs.
 
