@@ -121,28 +121,30 @@ qx.Class.define("qooxit.Application",
         "drop",
         function(e)
         {
-          var factory = e.getData("qooxit/available");
+          var classInstance = e.getData("qooxit/available");
           var orig = e.getOriginalTarget();
           var folder = orig.getLayoutParent();
           var related = e.getRelatedTarget();
           var label = related.getLabel();
 
 /*
-          this.debug("data=" + factory +
-                     ", related=" + related + 
+          this.debug("related=" + related +
                      ", source label=" + related.getLabel() +
                      ", dropTarget=" + e.getTarget() +
-                     ", origTarget=" + folder);
+                     ", origTarget=" + folder +
+                     ", dest label=" + folder.getLabel());
 */
           
+          // Add the node to the specified parent by calling its factory
+          qx.lang.Function.bind(classInstance.factory,
+                                classInstance)(pageLive, related.getLabel());
+
           // Add a node to the Application tree
-          folder.add(new qx.ui.tree.TreeFile(label));
+          var subFolder = new qx.ui.tree.TreeFolder(label)
+          subFolder.setOpen(true);
+          folder.add(subFolder);
 
-          // Add the node to the window by calling its factory
-          pageLive.add(factory(label));
-
-          // Clear the selection from the source and destination trees
-          folder.getTree().resetSelection();
+          // Clear the selection from the source trees
           related.getTree().resetSelection();
         },
         this);
@@ -199,12 +201,13 @@ qx.Class.define("qooxit.Application",
 
       // If it is dropped, provide the factory for adding it to the application
       // tree.
-      treeItem.addListener("droprequest",
-                           function(e)
-                           {
-                             e.addData("qooxit/available",
-                                       classInstance.factory);
-                           });
+      treeItem.addListener(
+        "droprequest",
+        function(e)
+        {
+          e.addData("qooxit/available",
+                    classInstance);
+        });
     },
 
     /**

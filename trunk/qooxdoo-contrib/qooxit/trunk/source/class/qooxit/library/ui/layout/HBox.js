@@ -25,10 +25,10 @@ qx.Class.define("qooxit.library.ui.layout.HBox",
   members :
   {
     // overridden
-    factory : function()
+    factory : function(parent, name, options)
     {
-      // Return a Composite container with a horizontal box layout
-      return new qx.ui.container.Composite(new qx.ui.layout.HBox());
+      // Add a Composite container with a horizontal box layout to the parent
+      parent.add(new qx.ui.container.Composite(new qx.ui.layout.HBox()));
     }
   }
 });

@@ -20,8 +20,7 @@
  */
 qx.Class.define("qooxit.library.ui.Abstract",
 {
-  extend : qx.core.Object,
-  type   : "singleton",
+  extend : qx.ui.core.Widget,
 
   properties :
   {
@@ -38,7 +37,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
   members :
   {
-    __snippets     : {},    // reference type ok here since this is a singleton
+    _snippets     : {},    // reference type ok here since this is a singleton
     __snippetNames : null,
 
     /**
@@ -46,14 +45,21 @@ qx.Class.define("qooxit.library.ui.Abstract",
      * class. Any default values for the element can/should be set within this
      * function.
      *
-     * @param snippets {Array?}
-     *   If provided, this is an array of strings, each containing the short
-     *   name of a snippet to be included.
+     * @param parent {qx.ui.core.Widget}
+     *   The parent container to which this new widget is to be added. It is
+     *   the responsibility of this method to add the new widget to the
+     *   parent.
      *
-     * @return {qx.ui.core.Widget}
-     *   The instantiated UI element, ready to be added to a container.
+     * @param name {String}
+     *   The name of type of widget being added
+     *
+     * @param options {Map?}
+     *   If provided, this is the options to be applied, without building
+     *   a query window to ask the user for options.
+     *
+     * @return {Void}
      */
-    factory : function(snippets)
+    factory : function(parent, name, options)
     {
       throw new Error("factory() is abstract");
     },
@@ -94,7 +100,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
       if (snippets)
       {
         // First, ensure that there are some snippets
-        if (! this.__snippets)
+        if (! this._snippets)
         {
           throw new Error("Request for snippets, but none defined");
         }
@@ -102,7 +108,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
         // ... then for each one...
         for (var snippet in snippets)
         {
-          if (! this.__snippets[snippet])
+          if (! this._snippets[snippet])
           {
             throw new Error("Request for snippet '" + snippet + "' but " +
                             "that snippet is not found.");
@@ -110,7 +116,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
           // ... add its code.
           source.push("(",
-                      this.__snippets[snippet].code.toString(),
+                      this._snippets[snippet].code.toString(),
                       ")(",
                       name,
                       ");");
@@ -172,7 +178,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
       // Tell 'em it succeeded
       return true;
-    }
+    },
 
     /**
      * Get the map of snippets which pertain to this UI element.
@@ -191,7 +197,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
       // Otherwise calculate it now
       this.__snippetNames = [];
-      for (var snippet in this.__snippets)
+      for (var snippet in this._snippets)
       {
         this.__snippetNames.push(snippet);
       }
@@ -203,9 +209,43 @@ qx.Class.define("qooxit.library.ui.Abstract",
     /**
      * Display an options window allowing the user to select or enter any
      * details required for the factory or snippet code.
+     *
+     * @param options {Map}
      */
-    getElementOptions : function()
+    optionsWindow : function(name, spec, options)
     {
+      // Create a new modal window
+      var win = new qx.ui.window.Window("Properties of new " + name);
+      win.set(
+        {
+          minWidth  : 400,
+          layout    : new qx.ui.layout.VBox(10),
+          modal     : true
+        });
+
+      // Add the window to the root
+      qx.core.Init.getApplication().getRoot().add(win);
+
+      // Create the Ok button
+      var ok = new qx.ui.form.Button("Ok");
+      ok.addListener("execute",
+                     function(e)
+                     {
+                       win.setUserData("options", options);
+                       win.close();
+                     },
+                     win);
+      // Add the ok button to the window
+      win.add(ok);
+
+      // Center the window
+      win.center();
+
+      // Open the window now.
+      win.open();
+
+      // Return the window so the caller can listen on its "beforeClose" event
+      return win;
     }
   }
 });

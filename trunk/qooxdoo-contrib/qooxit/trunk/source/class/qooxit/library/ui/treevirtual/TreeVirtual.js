@@ -25,7 +25,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
   members :
   {
     // overridden
-    factory : function()
+    factory : function(parent, name, options)
     {
       // Since the getElementOptions() method isn't yet implemented, kludge it
       // for the moment;
@@ -46,11 +46,11 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
           height : options.height
         });
 
-      // Return a Tree widget
-      return tree;
+      // Add the tree to its parent
+      parent.add(tree);
     },
 
-    __snippets :
+    _snippets :
     {
       resizeBehavior :
       {
@@ -97,6 +97,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
           //
           // Add a bunch of data to the model, for demonstration.
           //
+          var dataModel = o.getDataModel();
           var te1 = dataModel.addBranch(null, "Desktop", true);
           o.nodeSetLabelStyle(te1,
                               "background-color: red; " +

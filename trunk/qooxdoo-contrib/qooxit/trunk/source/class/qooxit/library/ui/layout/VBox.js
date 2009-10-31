@@ -25,10 +25,10 @@ qx.Class.define("qooxit.library.ui.layout.VBox",
   members :
   {
     // overridden
-    factory : function()
+    factory : function(parent, name, options)
     {
-      // Return a Composite container with a vertical box layout
-      return new qx.ui.container.Composite(new qx.ui.layout.VBox());
+      // Add a Composite container with a vertical box layout to the parent
+      parent.add(new qx.ui.container.Composite(new qx.ui.layout.VBox()));
     }
   }
 });
