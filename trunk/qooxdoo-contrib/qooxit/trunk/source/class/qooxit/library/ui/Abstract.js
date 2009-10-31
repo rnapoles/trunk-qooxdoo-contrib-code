@@ -301,17 +301,11 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
       // Create a map of names used for creating a databinding model
       var modelSkeleton = {};
-
-      // Create a databinding model
-      var model = qx.data.marshal.Json.createModel(modelSkeleton);
-
-      // Create the databinding controller
-      var controller = new qx.data.controller.Object(model);
-
+      
       // For each item in the specification...
       for (var item in spec)
       {
-        // Look at its type.
+        // Look at its type. 
         var specItem = spec[item];
         var type = specItem.type;
 
@@ -370,6 +364,14 @@ qx.Class.define("qooxit.library.ui.Abstract",
           type(item, options);
         }
       }
+
+      // Create a databinding model
+      var model = qx.data.marshal.Json.createModel(modelSkeleton);
+
+      // Create the databinding controller
+      var controller = new qx.data.controller.Object(model);
+
+
 
       // Create an HBox in which to place the ok and cancel buttons
       hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
