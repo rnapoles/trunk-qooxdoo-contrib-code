@@ -135,17 +135,55 @@ qx.Class.define("qooxit.Application",
                      ", dest label=" + folder.getLabel());
 */
           
-          // Add the node to the specified parent by calling its factory
-          qx.lang.Function.bind(classInstance.factory,
-                                classInstance)(pageLive, related.getLabel());
+          // Get the default options
+          var options =
+            qx.lang.Function.bind(classInstance.getDefaultOptions,
+                                  classInstance)();
 
-          // Add a node to the Application tree
-          var subFolder = new qx.ui.tree.TreeFolder(label)
-          subFolder.setOpen(true);
-          folder.add(subFolder);
+          // Get the specification of the user interface for options retrieval
+          var spec =
+            qx.lang.Function.bind(classInstance.getOptionsSpec,
+                                  classInstance)();
 
-          // Clear the selection from the source trees
-          related.getTree().resetSelection();
+          // Determine dropped widget type (used in title of options window)
+          var type = related.getLabel();
+
+          // Generate the options window for the user to make selections
+          var fOptionsWindow =
+            qx.lang.Function.bind(classInstance.optionsWindow, classInstance);
+          var optionsWin = fOptionsWindow(type, spec, options);
+
+          // When the options window closes, retrieve the options, add a node
+          // to the Application tree, and use the factory to add the class
+          // to the Live Application View
+          optionsWin.addListener(
+            "close",
+            function(e)
+            {
+              // Retrieve the selected options.
+              var options = e.getTarget().getUserData("options");
+
+              // Were we given any?
+              if (! options)
+              {
+                // Nope, they cancelled. Get outta here!
+                return;
+              }
+
+              // Add the node to the specified parent by calling its factory
+              var fFactory =
+                qx.lang.Function.bind(classInstance.factory, classInstance);
+              fFactory(pageLive, options);
+
+              // Add a node to the Application tree
+              var subFolder = new qx.ui.tree.TreeFolder(label)
+              subFolder.setOpen(true);
+              folder.add(subFolder);
+
+              // Clear the selection from the source trees
+              related.getTree().resetSelection();
+            },
+            classInstance);
         },
         this);
 

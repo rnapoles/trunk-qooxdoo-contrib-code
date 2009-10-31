@@ -50,16 +50,13 @@ qx.Class.define("qooxit.library.ui.Abstract",
      *   the responsibility of this method to add the new widget to the
      *   parent.
      *
-     * @param name {String}
-     *   The name of type of widget being added
-     *
      * @param options {Map?}
      *   If provided, this is the options to be applied, without building
      *   a query window to ask the user for options.
      *
      * @return {Void}
      */
-    factory : function(parent, name, options)
+    factory : function(parent, options)
     {
       throw new Error("factory() is abstract");
     },
@@ -241,12 +238,31 @@ qx.Class.define("qooxit.library.ui.Abstract",
      * Display an options window allowing the user to select or enter any
      * details required for the factory or snippet code.
      *
+     * @param type {String}
+     *   The type of the type of widget being configured.
+     *
+     * @param spec {Map}
+     *   A specification of the options fields to create. The name of each
+     *   member of the map is the name of an option in the "options" map. The
+     *   value of each member here is either a string indicating a type (one
+     *   of "String", "Integer", or "Boolean") or a function which handles the
+     *   form element on its own.
+     *
      * @param options {Map}
+     *   The initial values of each of the options, and also where the options
+     *   provided by the user will be stored when the user pressed the Ok
+     *   button.
+     *
+     * @return {qx.ui.window.Window}
+     *   The modal window in which options processing occurs, herein referred
+     *   to as 'win'. The caller may wait on win's "close" or "beforeClose"
+     *   event, at which time it may call win.getUserData("options") to
+     *   retrieve a (possibly) modified options map.
      */
-    optionsWindow : function(name, spec, options)
+    optionsWindow : function(type, spec, options)
     {
       // Create a new modal window
-      var win = new qx.ui.window.Window("Properties of new " + name);
+      var win = new qx.ui.window.Window("Properties of new " + type);
       win.set(
         {
           minWidth  : 400,
@@ -262,20 +278,36 @@ qx.Class.define("qooxit.library.ui.Abstract",
       ok.addListener("execute",
                      function(e)
                      {
-                       win.setUserData("options", options);
-                       win.close();
+                       // Save the options
+                       this.setUserData("options", options);
+                       this.close();
                      },
                      win);
       // Add the ok button to the window
       win.add(ok);
 
+      // Create the Cancel button
+      var cancel = new qx.ui.form.Button("Cancel");
+      cancel.addListener("execute",
+                         function(e)
+                         {
+                           // Set options to null to indicate they cancelled
+                           this.setUserData("options", null);
+                           this.close();
+                         },
+                         win);
+
+      // Add the cancel button to the window
+      win.add(cancel);
+
       // Center the window
       win.center();
 
-      // Open the window now.
+      // Open the window.
       win.open();
 
-      // Return the window so the caller can listen on its "beforeClose" event
+      // Return the window so the caller can listen on its "close" or
+      // "beforeClose" event
       return win;
     }
   }

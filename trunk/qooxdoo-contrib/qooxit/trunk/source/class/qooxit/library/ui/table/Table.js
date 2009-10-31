@@ -22,82 +22,74 @@ qx.Class.define("qooxit.library.ui.table.Table",
   extend : qooxit.library.ui.Abstract,
   type   : "singleton",
 
+  construct : function()
+  {
+    // Set the options specification for this widget
+    this.setOptionsSpec(
+      {
+        columns :
+        {
+          type   : qx.lang.Function.bind(
+            function(options)
+            {
+              this.warn("implement columns input");
+            },
+            this)
+        },
+
+        custom  :
+        {
+          type   : qx.lang.Function.bind(
+            function(options)
+            {
+              this.warn("implement custom input");
+            },
+            this)
+        },
+
+        width   :
+        {
+          type   : "Integer",
+          prompt : this.tr("Width")
+        },
+
+        height  :
+        {
+          type   : "Integer",
+          prompt : this.tr("Height")
+        }
+      });
+  },
+
+  properties :
+  {
+    optionsSpec :
+    {
+      init : null
+    },
+
+    defaultOptions :
+    {
+      init :
+      {
+        columns : [ "ID", "Number 1", "Number 2", "Image" ],
+        custom  :
+        {
+          tableColumnModel : function(obj)
+          {
+            return new qx.ui.table.columnmodel.Resize(obj);
+          }
+        },
+        width   : 400,
+        height  : 200
+      }
+    }
+  },
+
   members :
   {
     // overridden
-    factory : function(parent, name, options)
-    {
-      // Were options given to us?
-      if (! options)
-      {
-        // Nope. Create default option values
-        options =
-          {
-            columns : [ "ID", "Number 1", "Number 2", "Image" ],
-            custom  :
-            {
-              tableColumnModel : function(obj)
-              {
-                return new qx.ui.table.columnmodel.Resize(obj);
-              }
-            },
-            width   : 400,
-            height  : 200
-          };
-
-        // Create the input specifications
-        var spec =
-          {
-            columns : qx.lang.Function.bind(
-              function(options)
-              {
-                this.warn("implement columns input");
-              },
-              this),
-
-            custom  : qx.lang.Function.bind(
-              function(options)
-              {
-                this.warn("implement custom input");
-              },
-              this),
-
-            width   : "Integer",
-
-            height  : "Integer"
-          };
-
-        // Generate the options window for the user to make selections
-        this.optionsWindow(name, spec, options).addListener(
-          "beforeClose",
-          function(e)
-          {
-            // Create the table using the user-specified options
-            this.__createTable(parent, e.getTarget().getUserData("options"));
-          },
-          this);
-      }
-      else
-      {
-        // Use the provided options without user intervention, e.g. when
-        // restoring from a previously saved configuration.
-        this.__createTable(parent, options);
-      }
-    },
-
-    /**
-     * Create the table using the specified options.
-     *
-     * @param parent {qx.ui.core.Widget}
-     *   The container to which the table should be added
-     *
-     * @param options {Map}
-     *   The map of options as documented by the "spec" passed to
-     *   this.optionsWindow().
-     *
-     * @return {Void}
-     */
-    __createTable : function(parent, options)
+    factory : function(parent, options)
     {
       // table model
       var tableModel = new qx.ui.table.model.Simple();
