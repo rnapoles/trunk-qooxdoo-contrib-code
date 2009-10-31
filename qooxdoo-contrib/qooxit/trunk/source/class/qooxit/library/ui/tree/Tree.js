@@ -25,13 +25,13 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
   members :
   {
     // overridden
-    factory : function()
+    factory : function(parent, name, options)
     {
       // Return a Tree widget
-      return new qx.ui.tree.Tree();
+      parent.add(new qx.ui.tree.Tree());
     },
 
-    __snippets :
+    _snippets :
     {
       addItems :
       {

@@ -25,24 +25,80 @@ qx.Class.define("qooxit.library.ui.table.Table",
   members :
   {
     // overridden
-    factory : function()
+    factory : function(parent, name, options)
     {
-      // Since the getElementOptions() method isn't yet implemented, kludge it
-      // for the moment;
-      var options =
-        {
-          columns : [ "ID", "Number 1", "Number 2", "Image" ],
-          custom  :
+      // Were options given to us?
+      if (! options)
+      {
+        // Nope. Create default option values
+        options =
           {
-            tableColumnModel : function(obj)
+            columns : [ "ID", "Number 1", "Number 2", "Image" ],
+            custom  :
             {
-              return new qx.ui.table.columnmodel.Resize(obj);
-            }
-          },
-          width   : 400,
-          height  : 200
-        }
+              tableColumnModel : function(obj)
+              {
+                return new qx.ui.table.columnmodel.Resize(obj);
+              }
+            },
+            width   : 400,
+            height  : 200
+          };
 
+        // Create the input specifications
+        var spec =
+          {
+            columns : qx.lang.Function.bind(
+              function(options)
+              {
+                this.warn("implement columns input");
+              },
+              this),
+
+            custom  : qx.lang.Function.bind(
+              function(options)
+              {
+                this.warn("implement custom input");
+              },
+              this),
+
+            width   : "Integer",
+
+            height  : "Integer"
+          };
+
+        // Generate the options window for the user to make selections
+        this.optionsWindow(name, spec, options).addListener(
+          "beforeClose",
+          function(e)
+          {
+            // Create the table using the user-specified options
+            this.__createTable(parent, e.getTarget().getUserData("options"));
+          },
+          this);
+      }
+      else
+      {
+        // Use the provided options without user intervention, e.g. when
+        // restoring from a previously saved configuration.
+        this.__createTable(parent, options);
+      }
+    },
+
+    /**
+     * Create the table using the specified options.
+     *
+     * @param parent {qx.ui.core.Widget}
+     *   The container to which the table should be added
+     *
+     * @param options {Map}
+     *   The map of options as documented by the "spec" passed to
+     *   this.optionsWindow().
+     *
+     * @return {Void}
+     */
+    __createTable : function(parent, options)
+    {
       // table model
       var tableModel = new qx.ui.table.model.Simple();
       tableModel.setColumns(options.columns);
@@ -119,10 +175,10 @@ qx.Class.define("qooxit.library.ui.table.Table",
       var renderer = new qx.ui.table.cellrenderer.Image(19, 16);
       table.getTableColumnModel().setDataCellRenderer(3, renderer);
 
-      return table;
+      parent.add(table);
     },
 
-    __snippets :
+    _snippets :
     {
       resizeBehaviorFirstColumn :
       {
@@ -135,7 +191,7 @@ qx.Class.define("qooxit.library.ui.table.Table",
         code : function(o)
         {
           // Obtain the resize behavior object to manipulate
-          var resizeBehavior = table.getTableColumnModel().getBehavior();
+          var resizeBehavior = o.getTableColumnModel().getBehavior();
 
           // Force a minimum width on the first column, but allow it to grow
           resizeBehavior.set(0, { width:"1*", minWidth:180  });
