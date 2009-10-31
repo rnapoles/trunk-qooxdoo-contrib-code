@@ -30,9 +30,9 @@ qx.Class.define("qooxit.library.ui.table.Table",
         columns :
         {
           type   : qx.lang.Function.bind(
-            function(options)
+            function(item, options)
             {
-              this.warn("implement columns input");
+              this.warn("implement " + item + " input");
             },
             this)
         },
@@ -40,9 +40,9 @@ qx.Class.define("qooxit.library.ui.table.Table",
         custom  :
         {
           type   : qx.lang.Function.bind(
-            function(options)
+            function(item, options)
             {
-              this.warn("implement custom input");
+              this.warn("implement " + item + " input");
             },
             this)
         },
@@ -50,12 +50,18 @@ qx.Class.define("qooxit.library.ui.table.Table",
         width   :
         {
           type   : "Integer",
+          min    : 1,
+          max    : 5000,
+          value  : 400,
           prompt : this.tr("Width")
         },
 
         height  :
         {
           type   : "Integer",
+          min    : 1,
+          max    : 5000,
+          value  : 100,
           prompt : this.tr("Height")
         }
       });
