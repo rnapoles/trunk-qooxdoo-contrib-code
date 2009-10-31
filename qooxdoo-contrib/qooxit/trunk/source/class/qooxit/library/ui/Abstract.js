@@ -299,6 +299,15 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Create a map of objects we create, which we'll use for data binding
       var objects = {};
 
+      // Create a map of names used for creating a databinding model
+      var modelSkeleton = {};
+
+      // Create a databinding model
+      var model = qx.data.marshal.Json.createModel(modelSkeleton);
+
+      // Create the databinding controller
+      var controller = new qx.data.controller.Object(model);
+
       // For each item in the specification...
       for (var item in spec)
       {
@@ -327,16 +336,19 @@ qx.Class.define("qooxit.library.ui.Abstract",
           {
           case "String":
             o = new qx.ui.form.TextField();
+            modelSkeleton[item] = null;
             break;
 
           case "Integer":
             o = new qx.ui.form.Spinner(specItem.min,
                                        specItem.value,
                                        specItem.max);
+            modelSkeleton[item] = specItem.value;
             break;
 
           case "Boolean":
             o = new qx.ui.form.CheckBox();
+            modelSkeleton[item] = 0;
             break;
 
           default:
