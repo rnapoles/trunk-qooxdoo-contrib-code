@@ -35,6 +35,8 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
     {
       addItems :
       {
+        brief : "Create and open the root; add 10 items to the tree",
+
         description : "Create and open the root; add 10 items to the tree",
 
         code : function(o)

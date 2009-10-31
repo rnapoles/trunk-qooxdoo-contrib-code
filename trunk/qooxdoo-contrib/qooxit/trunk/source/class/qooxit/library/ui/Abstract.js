@@ -37,8 +37,8 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
   members :
   {
-    _snippets     : {},    // reference type ok here since this is a singleton
-    __snippetNames : null,
+    _snippets      : {},    // reference type ok here since this is a singleton
+    __snippetBrief : null,
 
     /**
      * Function to instantiate the actual UI element associated with this
@@ -183,27 +183,58 @@ qx.Class.define("qooxit.library.ui.Abstract",
     /**
      * Get the map of snippets which pertain to this UI element.
      *
-     * @return {Array}
-     *   The names of the available snippets for this UI element
+     * @return {Map}
+     *   The names and brief descriptions of the available snippets for
+     *   this UI element
      */
-    getSnippetNames : function()
+    getSnippetBrief : function()
     {
-      // if we've already calculated the list of snippet names...
-      if (this.__snippetNames)
+      // if we've already calculated the list of snippets...
+      if (this.__snippetBrief)
       {
         // ... then just return it.
-        return this.__snippetNames;
+        return this.__snippetBrief;
       }
 
       // Otherwise calculate it now
-      this.__snippetNames = [];
+      this.__snippetBrief = {};
       for (var snippet in this._snippets)
       {
-        this.__snippetNames.push(snippet);
+        this.__snippetBrief[snippet] = this._snippets[snippet].brief;
       }
 
       // Now we can give 'em what they came for.
-      return this.__snippetNames;
+      return this.__snippetBrief;
+    },
+
+    /**
+     * Get a snippet's full description
+     *
+     * @param name {String}
+     *   The name of the snippet for which the description is desired
+     *
+     * @return {String}
+     *   The description of the specified snippet
+     */
+    getSnippetDescription : function(name)
+    {
+      // Return the requested name
+      return this._snippets[name].description;
+    },
+
+    /**
+     * Get a snippet's code
+     *
+     * @param name {String}
+     *   The name of the snippet for which the code is desired
+     *
+     * @return {Function}
+     *   The function implementing the code of the specified snippet
+     */
+    getSnippetCode : function(name)
+    {
+      // Return the requested code
+      return this._snippets[name].code;
     },
 
     /**
