@@ -238,7 +238,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
      * Display an options window allowing the user to select or enter any
      * details required for the factory or snippet code.
      *
-     * @param type {String}
+     * @param widgetType {String}
      *   The type of the type of widget being configured.
      *
      * @param spec {Map}
@@ -259,13 +259,12 @@ qx.Class.define("qooxit.library.ui.Abstract",
      *   event, at which time it may call win.getUserData("options") to
      *   retrieve a (possibly) modified options map.
      */
-    optionsWindow : function(type, spec, options)
+    optionsWindow : function(widgetType, spec, options)
     {
       // Create a new modal window
-      var win = new qx.ui.window.Window("Properties of new " + type);
+      var win = new qx.ui.window.Window("Properties of new " + widgetType);
       win.set(
         {
-          minWidth  : 400,
           layout    : new qx.ui.layout.VBox(10),
           modal     : true
         });
@@ -273,8 +272,104 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Add the window to the root
       qx.core.Init.getApplication().getRoot().add(win);
 
+      // Create a vbox to hold a grid (user input) and hbox (ok/cancel)
+      var vBox = new qx.ui.container.Composite(new qx.ui.layout.VBox(5));
+      win.add(vBox);
+
+      // Create an HBox in which to place the grid of input queries
+      var hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
+      vBox.add(hBox);
+
+      // Add a left-side spacer
+      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
+
+      // Create a grid layout for each of the options
+      var gridLayout = new qx.ui.layout.Grid();
+      gridLayout.setSpacing(5);
+      gridLayout.setColumnAlign(0, "right", "middle");
+      var grid = new qx.ui.container.Composite(gridLayout);
+      hBox.add(grid);
+
+      // Add a right-side spacer
+      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
+
+      // Initialize the row counter for adding to the grid
+      var row = 0;
+
+      // Create a map of objects we create, which we'll use for data binding
+      var objects = {};
+
+      // For each item in the specification...
+      for (var item in spec)
+      {
+        // Look at its type.
+        var specItem = spec[item];
+        var type = specItem.type;
+
+        // Is it a string indicating a standard request?
+        if (qx.lang.Type.isString(type))
+        {
+          // Yup. There must be a prompt method.
+          var prompt = specItem.prompt;
+          if (! prompt)
+          {
+            throw new Error("No prompt is specified for " + widgetType);
+          }
+
+          // Add this item's prompt to column 0
+          var label = new qx.ui.basic.Label(prompt + ":");
+          grid.add(label, { row : row, column : 0 });
+
+
+          // What specific type is requested?
+          var o;
+          switch(type)
+          {
+          case "String":
+            o = new qx.ui.form.TextField();
+            break;
+
+          case "Integer":
+            o = new qx.ui.form.Spinner(specItem.min,
+                                       specItem.value,
+                                       specItem.max);
+            break;
+
+          case "Boolean":
+            o = new qx.ui.form.CheckBox();
+            break;
+
+          default:
+            throw new Error("Unrecognized type '" + type +
+                            "' for " + widgetType);
+          }
+
+          // Add the object to the grid
+          grid.add(o, { row : row, column : 1 });
+
+          // Track the object for data binding
+          objects[item] = o;
+
+          // Increment to next row
+          ++row;
+        }
+        else if (qx.lang.Type.isFunction(type))
+        {
+          type(item, options);
+        }
+      }
+
+      // Create an HBox in which to place the ok and cancel buttons
+      hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
+      hBox.setHeight(24);
+      vBox.add(hBox);
+
+      // Add a left-side spacer
+      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
+
       // Create the Ok button
       var ok = new qx.ui.form.Button("Ok");
+      ok.setWidth(80);
       ok.addListener("execute",
                      function(e)
                      {
@@ -284,10 +379,11 @@ qx.Class.define("qooxit.library.ui.Abstract",
                      },
                      win);
       // Add the ok button to the window
-      win.add(ok);
+      hBox.add(ok);
 
       // Create the Cancel button
       var cancel = new qx.ui.form.Button("Cancel");
+      cancel.setWidth(80);
       cancel.addListener("execute",
                          function(e)
                          {
@@ -298,7 +394,10 @@ qx.Class.define("qooxit.library.ui.Abstract",
                          win);
 
       // Add the cancel button to the window
-      win.add(cancel);
+      hBox.add(cancel);
+
+      // Add a right-side spacer
+      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
 
       // Center the window
       win.center();
