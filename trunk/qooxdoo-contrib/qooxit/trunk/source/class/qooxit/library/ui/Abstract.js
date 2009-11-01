@@ -262,7 +262,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
     optionsWindow : function(widgetType, spec, options)
     {
       // Create a new modal window
-      var win = new qx.ui.window.Window("Properties of new " + widgetType);
+      var win = new qx.ui.window.Window("Properties");
       win.set(
         {
           layout    : new qx.ui.layout.VBox(10),
@@ -272,13 +272,15 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Add the window to the root
       qx.core.Init.getApplication().getRoot().add(win);
 
-      // Create a vbox to hold a grid (user input) and hbox (ok/cancel)
-      var vBox = new qx.ui.container.Composite(new qx.ui.layout.VBox(5));
-      win.add(vBox);
+
+      // Create a groupbox to hold a grid (user input) and hbox (ok/cancel)
+      var groupBox = new qx.ui.groupbox.GroupBox(widgetType);
+      groupBox.setLayout(new qx.ui.layout.VBox(5));
+      win.add(groupBox);
 
       // Create an HBox in which to place the grid of input queries
       var hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
-      vBox.add(hBox);
+      groupBox.add(hBox);
 
       // Add a left-side spacer
       hBox.add(new qx.ui.core.Widget(), { flex : 1 });
@@ -376,7 +378,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Create an HBox in which to place the ok and cancel buttons
       hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
       hBox.setHeight(24);
-      vBox.add(hBox);
+      groupBox.add(hBox);
 
       // Add a left-side spacer
       hBox.add(new qx.ui.core.Widget(), { flex : 1 });
