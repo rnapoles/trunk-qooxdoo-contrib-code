@@ -138,6 +138,7 @@ qx.Class.define("rpcconsole.RpcConsole",
     __logTextArea           : null,
     __logPage               : null,
     __paramsCache           : null,
+    __failedListener        : null,
     
     /**
      * Creates the UI
@@ -303,16 +304,16 @@ qx.Class.define("rpcconsole.RpcConsole",
       servicePage.add( paramsTextField, { row: 4, column : 1} );
       this.__form.add( paramsTextField, null, null, "params" );
       this.__formController.addBindingOptions("params", {
-        converter : function( data ) {
+        converter : qx.lang.Function.bind( function( data ) {
           if ( qx.lang.Type.isArray( data ) && data.length )
           {
             var json = qx.util.Json.stringify(  data );
             return json.substring(1,json.length-1);
           }
           return null;
-        }
+        }, this )
       }, {
-        converter : function( data ) {
+        converter : qx.lang.Function.bind( function( data ) {
           if ( data )
           {
             try
@@ -325,7 +326,7 @@ qx.Class.define("rpcconsole.RpcConsole",
             }
           }
           return [];
-        }
+        }, this )
       });   
       
       /*
@@ -655,16 +656,11 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * event if request fails
        */
-      var doAlert = true; // hack because event listener gets called more than once for some reason
-      rpc.addListenerOnce("failed", function(e){
-        if ( doAlert )
-        {
+      this.__failedListener = rpc.addListenerOnce("failed", function(e){
           this.__sendButton.setEnabled(true);
           this.__cancelButton.setEnabled(false);        
           alert( e.getData().toString() );
           this.cancelRequest();
-          doAlert = false;
-        }
       },this);
       
       /*
@@ -672,6 +668,7 @@ qx.Class.define("rpcconsole.RpcConsole",
        */
       rpc.addListenerOnce("completed", function(e){
         
+        rpc.removeListenerById( this.__failedListener );
         var data = e.getData();
         
         // buttons
@@ -709,8 +706,11 @@ qx.Class.define("rpcconsole.RpcConsole",
      */
     cancelRequest : function()
     {
-      this.rpc.abort( this.__opaqueCallReference );
-
+      if ( this.rpc && this.__opaqueCallReference )
+      {
+        this.rpc.abort( this.__opaqueCallReference );
+      }
+      
       /*
        * button status
        */
