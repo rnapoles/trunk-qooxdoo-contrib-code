@@ -265,45 +265,25 @@ qx.Class.define("qooxit.library.ui.Abstract",
       var win = new qx.ui.window.Window("Properties");
       win.set(
         {
-          layout    : new qx.ui.layout.VBox(10),
+          layout    : new qx.ui.layout.VBox(),
           modal     : true
         });
 
       // Add the window to the root
       qx.core.Init.getApplication().getRoot().add(win);
 
-
-      // Create a groupbox to hold a grid (user input) and hbox (ok/cancel)
+      // Create a groupbox to hold a form for user input
       var groupBox = new qx.ui.groupbox.GroupBox(widgetType);
       groupBox.setLayout(new qx.ui.layout.VBox(5));
       win.add(groupBox);
 
-      // Create an HBox in which to place the grid of input queries
-      var hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
-      groupBox.add(hBox);
+      // Create a form
+      var form = new qx.ui.form.Form();
 
-      // Add a left-side spacer
-      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
+      var o = new qx.ui.form.TextField();
+      o.setWidth(128);
+      form.add(o, "Name", null, "__name__");
 
-      // Create a grid layout for each of the options
-      var gridLayout = new qx.ui.layout.Grid();
-      gridLayout.setSpacing(5);
-      gridLayout.setColumnAlign(0, "right", "middle");
-      var grid = new qx.ui.container.Composite(gridLayout);
-      hBox.add(grid);
-
-      // Add a right-side spacer
-      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
-
-      // Initialize the row counter for adding to the grid
-      var row = 0;
-
-      // Create a map of objects we create, which we'll use for data binding
-      var objects = {};
-
-      // Create a map of names used for creating a databinding model
-      var modelSkeleton = {};
-      
       // For each item in the specification...
       for (var item in spec)
       {
@@ -321,30 +301,23 @@ qx.Class.define("qooxit.library.ui.Abstract",
             throw new Error("No prompt is specified for " + widgetType);
           }
 
-          // Add this item's prompt to column 0
-          var label = new qx.ui.basic.Label(prompt + ":");
-          grid.add(label, { row : row, column : 0 });
-
-
           // What specific type is requested?
           var o;
           switch(type)
           {
           case "String":
+            // Create a text field for the string
             o = new qx.ui.form.TextField();
-            modelSkeleton[item] = null;
             break;
 
           case "Integer":
             o = new qx.ui.form.Spinner(specItem.min,
                                        specItem.value,
                                        specItem.max);
-            modelSkeleton[item] = specItem.value;
             break;
 
           case "Boolean":
             o = new qx.ui.form.CheckBox();
-            modelSkeleton[item] = 0;
             break;
 
           default:
@@ -352,14 +325,15 @@ qx.Class.define("qooxit.library.ui.Abstract",
                             "' for " + widgetType);
           }
 
-          // Add the object to the grid
-          grid.add(o, { row : row, column : 1 });
+          // Are there any settings specified?
+          if (specItem.settings)
+          {
+            // Yup.
+            o.set(specItem.settings);
+          }
 
-          // Track the object for data binding
-          objects[item] = o;
-
-          // Increment to next row
-          ++row;
+          // Add it to the form
+          form.add(o, prompt, null, item);
         }
         else if (qx.lang.Type.isFunction(type))
         {
@@ -367,53 +341,55 @@ qx.Class.define("qooxit.library.ui.Abstract",
         }
       }
 
-      // Create a databinding model
-      var model = qx.data.marshal.Json.createModel(modelSkeleton);
-
-      // Create the databinding controller
-      var controller = new qx.data.controller.Object(model);
-
-
-
-      // Create an HBox in which to place the ok and cancel buttons
-      hBox = new qx.ui.container.Composite(new qx.ui.layout.HBox(16));
-      hBox.setHeight(24);
-      groupBox.add(hBox);
-
-      // Add a left-side spacer
-      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
-
       // Create the Ok button
       var ok = new qx.ui.form.Button("Ok");
       ok.setWidth(80);
-      ok.addListener("execute",
-                     function(e)
-                     {
-                       // Save the options
-                       this.setUserData("options", options);
-                       this.close();
-                     },
-                     win);
-      // Add the ok button to the window
-      hBox.add(ok);
+      ok.addListener(
+        "execute",
+        function(e)
+        {
+          if (form.validate())
+          {
+            // Convert the options into a native object
+            var newOptions = qx.util.Serializer.toNativeObject(model);
+
+            // Merge unmodified original options into the new ones
+            for (var item in spec)
+            {
+              newOptions[item] = newOptions[item] || options[item];
+            }
+
+            // Save the new options
+            this.setUserData("options", newOptions);
+
+            // Close the window
+            this.close();
+          }
+        },
+        win);
+      form.addButton(ok);
 
       // Create the Cancel button
       var cancel = new qx.ui.form.Button("Cancel");
       cancel.setWidth(80);
-      cancel.addListener("execute",
-                         function(e)
-                         {
-                           // Set options to null to indicate they cancelled
-                           this.setUserData("options", null);
-                           this.close();
-                         },
-                         win);
+      cancel.addListener(
+        "execute",
+        function(e)
+        {
+          // Set options to null to indicate they cancelled
+          this.setUserData("options", null);
+          this.close();
+        },
+        win);
+      form.addButton(cancel);
 
-      // Add the cancel button to the window
-      hBox.add(cancel);
+      // Create the view
+      var single = new qx.ui.form.renderer.Single(form);
+      groupBox.add(single);
 
-      // Add a right-side spacer
-      hBox.add(new qx.ui.core.Widget(), { flex : 1 });
+      // Create the databinding controller
+      var controller = new qx.data.controller.Form(null, form);
+      var model = controller.createModel();
 
       // Center the window
       win.center();

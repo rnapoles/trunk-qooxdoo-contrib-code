@@ -118,6 +118,11 @@ qx.Class.define("qooxit.library.ui.table.Table",
 
       // table
       var table = new qx.ui.table.Table(tableModel, options.custom);
+      table.set(
+        {
+          width  : options.width,
+          height : options.height
+        });
 
       table.setMetaColumnCounts([1, -1]);
       var selectionMode =

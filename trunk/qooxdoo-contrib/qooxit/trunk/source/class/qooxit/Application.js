@@ -161,7 +161,7 @@ qx.Class.define("qooxit.Application",
             function(e)
             {
               // Retrieve the selected options.
-              var options = e.getTarget().getUserData("options");
+              var options = optionsWin.getUserData("options");
 
               // Were we given any?
               if (! options)
