@@ -95,7 +95,7 @@ qx.Class.define("qooxit.library.ui.table.Table",
   members :
   {
     // overridden
-    factory : function(parent, options)
+    factory : function(options)
     {
       // table model
       var tableModel = new qx.ui.table.model.Simple();
@@ -178,7 +178,7 @@ qx.Class.define("qooxit.library.ui.table.Table",
       var renderer = new qx.ui.table.cellrenderer.Image(19, 16);
       table.getTableColumnModel().setDataCellRenderer(3, renderer);
 
-      parent.add(table);
+      return table;
     },
 
     _snippets :

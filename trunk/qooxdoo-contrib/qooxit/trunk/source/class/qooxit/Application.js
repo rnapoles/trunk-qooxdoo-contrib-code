@@ -126,6 +126,7 @@ qx.Class.define("qooxit.Application",
           var folder = orig.getLayoutParent();
           var related = e.getRelatedTarget();
           var label = related.getLabel();
+          var sourceTree = related.getTree();
 
 /*
           this.debug("related=" + related +
@@ -136,54 +137,67 @@ qx.Class.define("qooxit.Application",
 */
           
           // Get the default options
-          var options =
-            qx.lang.Function.bind(classInstance.getDefaultOptions,
-                                  classInstance)();
+          var options = {};
+          if (classInstance.getDefaultOptions)
+          {
+            options =
+              qx.lang.Function.bind(classInstance.getDefaultOptions,
+                                    classInstance)();
+          }
 
-          // Get the specification of the user interface for options retrieval
-          var spec =
-            qx.lang.Function.bind(classInstance.getOptionsSpec,
-                                  classInstance)();
 
-          // Determine dropped widget type (used in title of options window)
-          var type = related.getLabel();
+          // If there's an options specification provided...
+          if (classInstance.getOptionsSpec)
+          {
+            // Get it for options retrieval
+            var spec =
+              qx.lang.Function.bind(classInstance.getOptionsSpec,
+                                    classInstance)();
 
-          // Generate the options window for the user to make selections
-          var fOptionsWindow =
-            qx.lang.Function.bind(classInstance.optionsWindow, classInstance);
-          var optionsWin = fOptionsWindow(type, spec, options);
+            // Determine dropped widget type (used in title of options window)
+            var type = related.getLabel();
 
-          // When the options window closes, retrieve the options, add a node
-          // to the Application tree, and use the factory to add the class
-          // to the Live Application View
-          optionsWin.addListener(
-            "close",
-            function(e)
-            {
-              // Retrieve the selected options.
-              var options = optionsWin.getUserData("options");
+            // Generate the options window for the user to make selections
+            var fOptionsWindow =
+              qx.lang.Function.bind(classInstance.optionsWindow,
+                                    classInstance);
+            var optionsWin = fOptionsWindow(type, spec, options);
 
-              // Were we given any?
-              if (! options)
+            // When the options window closes, retrieve the options, add a node
+            // to the Application tree, and use the factory to add the class
+            // to the Live Application View
+            optionsWin.addListener(
+              "close",
+              function(e)
               {
-                // Nope, they cancelled. Get outta here!
-                return;
-              }
+                // Retrieve the selected options.
+                var options = optionsWin.getUserData("options");
 
-              // Add the node to the specified parent by calling its factory
-              var fFactory =
-                qx.lang.Function.bind(classInstance.factory, classInstance);
-              fFactory(pageLive, options);
+                // Were we given any?
+                if (! options)
+                {
+                  // Nope, they cancelled. Get outta here!
+                  return;
+                }
 
-              // Add a node to the Application tree
-              var subFolder = new qx.ui.tree.TreeFolder(label)
-              subFolder.setOpen(true);
-              folder.add(subFolder);
-
-              // Clear the selection from the source trees
-              related.getTree().resetSelection();
-            },
-            classInstance);
+                // Add the requested object
+                this.addObject(classInstance,
+                               options,
+                               label,
+                               folder,
+                               sourceTree);
+              },
+              this);
+          }
+          else
+          {
+            // There's no options spec, so just use the default options
+            this.addObject(classInstance,
+                           options,
+                           label,
+                           folder,
+                           sourceTree);
+          }
         },
         this);
 
@@ -195,12 +209,37 @@ qx.Class.define("qooxit.Application",
       applicationRoot.setOpen(true);
       applicationTree.setRoot(applicationRoot);
 
+      // Save the root object in the application root node of the tree
+      applicationRoot.setUserData("object", pageLive);
+
       // Add all registered classes to the Available menu
       var list = qooxit.library.Library.getClasses();
       for (var i = 0; i < list.length; i++)
       {
         this.addClass(availableRoot, list[i]);
       }
+    },
+
+    addObject : function(classInstance, options, label, folder, sourceTree)
+    {
+      // Add the node to the specified parent by calling its factory
+      var fFactory =
+        qx.lang.Function.bind(classInstance.factory, classInstance);
+      var o = fFactory(options);
+
+      // Add a node to the Application tree
+      var subFolder = new qx.ui.tree.TreeFolder(label)
+      subFolder.setOpen(true);
+      folder.add(subFolder);
+
+      // Add the new node to its parent's node
+      folder.getUserData("object").add(o);
+
+      // Save the object with its node in the Application tree
+      subFolder.setUserData("object", o);
+
+      // Clear the selection from the source tree
+      sourceTree.resetSelection();
     },
 
     /**
