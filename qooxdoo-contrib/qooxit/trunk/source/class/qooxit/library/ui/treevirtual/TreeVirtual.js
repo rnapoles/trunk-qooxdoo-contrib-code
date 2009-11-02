@@ -22,20 +22,74 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
   extend : qooxit.library.ui.Abstract,
   type   : "singleton",
 
+  construct : function()
+  {
+    // Set the options specification for this widget
+    this.setOptionsSpec(
+      {
+        columns :
+        {
+          type   : qx.lang.Function.bind(
+            function(item, options)
+            {
+              this.warn("implement " + item + " input");
+            },
+            this)
+        },
+
+        custom  :
+        {
+          type   : qx.lang.Function.bind(
+            function(item, options)
+            {
+              this.warn("implement " + item + " input");
+            },
+            this)
+        },
+
+        width   :
+        {
+          type   : "Integer",
+          min    : 1,
+          max    : 5000,
+          value  : 400,
+          prompt : this.tr("Width")
+        },
+
+        height  :
+        {
+          type   : "Integer",
+          min    : 1,
+          max    : 5000,
+          value  : 100,
+          prompt : this.tr("Height")
+        }
+      });
+  },
+
+  properties :
+  {
+    optionsSpec :
+    {
+      init : null
+    },
+
+    defaultOptions :
+    {
+      init :
+      {
+        columns : [ "Tree", "Permissions", "Last Accessed" ],
+        width   : 400,
+        height  : 200
+      }
+    }
+  },
+
   members :
   {
     // overridden
-    factory : function(parent, name, options)
+    factory : function(options)
     {
-      // Since the getElementOptions() method isn't yet implemented, kludge it
-      // for the moment;
-      var options =
-        {
-          columns : [ "Tree", "Permissions", "Last Accessed" ],
-          width   : 400,
-          height  : 200
-        }
-
       // Instantiate a tree object
       var tree = new qx.ui.treevirtual.TreeVirtual(options.columns);
 
@@ -47,7 +101,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
         });
 
       // Add the tree to its parent
-      parent.add(tree);
+      return tree;
     },
 
     _snippets :
