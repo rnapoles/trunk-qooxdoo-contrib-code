@@ -1,8 +1,8 @@
 <?php
 /*
- * qcl - the qooxdoo component library
+ * qooxdoo - the new era of web development
  *
- * http://qooxdoo.org/contrib/project/qcl/
+ * http://qooxdoo.org
  *
  * Copyright:
  *   2007-2009 Christian Boulanger
@@ -24,7 +24,8 @@
  * <pre>
  * function method_methodSignature( $method )
  * {
- *   return new ServiceIntrospection( $this )->method_methodSignature( $method );
+ *    $serviceIntrospection = new ServiceIntrospection( $this );
+ *    return $serviceIntrospection->method_methodSignature( $method );
  * }
  */
 class ServiceIntrospection
@@ -43,8 +44,8 @@ class ServiceIntrospection
   }
 
   /**
-   * Returns the name of the current service for use in JsonRpc requests
-   * @return unknown_type
+   * Returns the name of the current service for use in JsonRpc requests.
+   * @return string
    */
   function getServiceName()
   {
@@ -52,13 +53,63 @@ class ServiceIntrospection
   }
 
   /**
-   * Checks whether a method name is a service method
+   * Returns the path of the file extending / proxying this class. This works only
+   * if the class name mirrors the directory structure (foo_bar_baz == foo/bar/baz.php)
+   * @return string
+   */
+  function getFilePath()
+  {
+    return str_replace("_","/", substr( $this->className, strlen(JsonRpcClassPrefix) ) ) . ".php";
+  }
+
+  /**
+   * Returns the method name of a service method by adding the service method
+   * prefix.
+   *
+   * @param string $method
+   * @return string
+   */
+  function getMethodName ( $method )
+  {
+    return JsonRpcMethodPrefix . $method;
+  }
+
+  /**
+   * Checks whether a method name is a service method.
+   *
+   * @param string $method_name
+   * @return bool
+   */
+  function isServiceMethodName ( $method_name )
+  {
+    return (substr( $method_name, 0, strlen(JsonRpcMethodPrefix)) == JsonRpcMethodPrefix);
+  }
+
+  /**
+   * Checks whether this service class has the given service method
+   *
    * @param string $method
    * @return bool
    */
-  function isServiceMethod ( $method )
+  function hasServiceMethod ( $method )
   {
-    return (substr($method, 0, strlen(JsonRpcMethodPrefix)) == JsonRpcMethodPrefix);
+    return method_exists( $this, $this->getMethodName( $method ) );
+  }
+
+  /**
+   * Checks whether this service class has the given service method and
+   * throws an error if not.
+   *
+   * @param string $method
+   * @return void
+   * @throws JsonRpcError
+   */
+  function checkServiceMethod ( $method )
+  {
+    if ( ! $this->hasServiceMethod( $method ) )
+    {
+      throw new JsonRpcError(JsonRpcError_Origin_Server, "Method '$method' is invalid or does not exist.");
+    }
   }
 
   /**
@@ -113,8 +164,34 @@ class ServiceIntrospection
     );
   }
 
+  /**
+   * Lists all the services available in a directory.
+   * @return array
+   */
+  function method_listServices()
+  {
+
+    $services = array();
+    $path = realpath( dirname( servicePathPrefix . $this->getFilePath() ) );
+    $dir = dir( $path );
+    while ( false !== ( $file = $dir->read() ) )
+    {
+      $file = "$path/$file";
+      if ( is_file( $file ) and substr( $file, -4, 4 ) == ".php" )
+      {
+        $content = file_get_contents( $file );
+        if ( preg_match("/class class_([a-zA-Z0-9_]+)/",$content,$matches) )
+        {
+          $services[] = str_replace("_",".",$matches[1]);
+        }
+      }
+    }
+    return $services;
+  }
+
+
   //-------------------------------------------------------------
-  // Introspection API
+  // Service class introspection API
   //-------------------------------------------------------------
 
   /**
@@ -128,7 +205,7 @@ class ServiceIntrospection
     foreach( $class->getMethods() as $method )
     {
       $name = $method->getName();
-      if ( $this->isServiceMethod( $name ) )
+      if ( $this->isServiceMethodName( $name ) )
       {
         $methods[] = substr( $name, strlen(JsonRpcMethodPrefix)  );
       }
@@ -158,7 +235,8 @@ class ServiceIntrospection
    */
   function method_methodSignature( $method )
   {
-    $method = new ReflectionMethod( $this->className, JsonRpcMethodPrefix . $method );
+    $this->checkServiceMethod( $method );
+    $method = new ReflectionMethod( $this->className, $this->getMethodName( $method ) );
     $docComment = $method->getDocComment();
     $signature = $this->_analyzeDocComment( $docComment );
     return array_merge(
@@ -178,6 +256,7 @@ class ServiceIntrospection
    */
   function method_methodHelp( $method )
   {
+    $this->checkServiceMethod( $method );
     $method = new ReflectionMethod( $this->className, JsonRpcMethodPrefix . $method );
     $docComment = $method->getDocComment();
     $signature = $this->_analyzeDocComment( $docComment );
