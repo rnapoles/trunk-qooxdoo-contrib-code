@@ -138,7 +138,7 @@ qx.Class.define("rpcconsole.RpcConsole",
     __logTextArea           : null,
     __logPage               : null,
     __paramsCache           : null,
-    __failedListener        : null,
+    __listenersAdded        : null,
     
     /**
      * Creates the UI
@@ -652,54 +652,73 @@ qx.Class.define("rpcconsole.RpcConsole",
        */
       this.__sendButton.setEnabled(false);
       this.__cancelButton.setEnabled(true);      
-      
+     
       /*
-       * event if request fails
+       * handler
        */
-      this.__failedListener = rpc.addListenerOnce("failed", function(e){
+      var handler = qx.lang.Function.bind( function( result, error, id )
+      {
+        if ( error )
+        {
+          this.__sendButton.setEnabled(true);
+          this.__cancelButton.setEnabled(false);
+          if ( typeof error == "xml" )
+          {
+            this.handleError( "Unparseable XML response." ); 
+          }
+          else
+          {
+            this.handleError( error.toString() );  
+          }
+          this.cancelRequest();
+        }
+        else
+        {
+          // buttons
           this.__sendButton.setEnabled(true);
           this.__cancelButton.setEnabled(false);        
-          alert( e.getData().toString() );
-          this.cancelRequest();
-      },this);
-      
-      /*
-       * event handler if request is successful
-       */
-      rpc.addListenerOnce("completed", function(e){
-        
-        rpc.removeListenerById( this.__failedListener );
-        var data = e.getData();
-        
-        // buttons
-        this.__sendButton.setEnabled(true);
-        this.__cancelButton.setEnabled(false);        
-        
-        // save response as model
-        this.setResponseModel( qx.data.marshal.Json.createModel(data,true) );
-        
-        // callback
-        if ( qx.lang.Type.isFunction( callback ) )
-        {
-          try
-          {
-            callback.call( context, data );  
+          
+          // save response as model
+          var response = {
+            "id" : id,
+            "result" : result,
+            "error" : null
           }
-          catch(e)
+          this.setResponseModel( qx.data.marshal.Json.createModel(response,true) );
+        
+          // callback
+          if ( qx.lang.Type.isFunction( callback ) )
           {
-            this.warn(e);
+            try
+            {
+              callback.call( context, response );  
+            }
+            catch(e)
+            {
+              this.warn(e);
+            }
           }
         }
-        
       },this);
-            
+
       /*
        * send rpc request
        */
-      var args = [ true, requestModel.getMethod() ].concat( requestModel.getParams() );
-      this.__opaqueCallReference = rpc.callAsyncListeners.apply(rpc, args )
+      var args = [ handler, requestModel.getMethod() ].concat( requestModel.getParams() );
+      this.__opaqueCallReference = rpc.callAsync.apply(rpc, args )
       
-    }, 
+    },
+    
+    /**
+     * Handles the error message. By default, log it. For more sophisticated
+     * behavior, override this method.
+     * @param error {String}
+     * @return {void}
+     */
+    handleError : function( error )
+    {
+      this.log( "!!! " + error);  
+    },
     
     /**
      * Cancels the current request
@@ -726,7 +745,8 @@ qx.Class.define("rpcconsole.RpcConsole",
     log : function( text )
     {
       this.__tabview.setSelection( [this.__logPage] );
-      this.getLogTextArea().setValue( (this.getLogTextArea().getValue() || "") + text + "\n" ); 
+      this.getLogTextArea().setValue( (this.getLogTextArea().getValue() || "") + text + "\n" );
+      this.getLogTextArea().getContentElement().scrollToY(10000); 
     }
   }  
 });
