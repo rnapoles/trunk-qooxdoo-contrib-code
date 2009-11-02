@@ -906,7 +906,7 @@ class AbstractServer
         JsonRpcError_MethodNotFound,
          "Method `" . $method . "` not found " .
          "in service class `" .
-        $this->serviceName .
+        $this->getService() .
          "`."
          );
         return false;
@@ -934,11 +934,7 @@ class AbstractServer
      */
     if ( phpversion() < 5 )
     {
-      $result = $serviceObject->$method(
-        $params,        /* parameters */
-        $errorBehavior, /* the error object */
-        &$this          /* the server object */
-      );
+      $result = $serviceObject->$method( $params, $errorBehavior );
     }
 
     /*
