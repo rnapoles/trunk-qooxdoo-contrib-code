@@ -243,7 +243,7 @@ qx.Class.define("qcl.data.controller.Table",
        if( this.getTarget() && this.getStore() )
        {
          var table = this.getTarget();
-         table.clearSelection();
+         table.resetSelection();
          table.scrollCellVisible(0,0);
          var model = this.getTarget().getTableModel();
          model.clearCache();
