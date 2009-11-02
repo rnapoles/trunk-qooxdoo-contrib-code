@@ -85,10 +85,20 @@ try {
   }
 
 }
-catch (JsonRpcError $exception)
+catch ( JsonRpcError $exception)
 {
   $result = $exception;
   $result->SetId( $this->getId() );
+}
+catch ( Exception $exception )
+{
+  $result = new JsonRpcError(
+    JsonRpcError_ScriptError,
+    "PHP Script Error: "  . $exception->getMessage() . "in " . $exception->getFile() . ", line " . $exception->getLine(),
+    JsonRpcError_Origin_Server
+  );
+  $result->SetId( $this->getId() );
+  $this->log( $exception->getTraceAsString() );
 }
 
 ?>

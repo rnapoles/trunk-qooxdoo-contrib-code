@@ -147,7 +147,7 @@ class JsonRpcServer extends AbstractServer
      * messing up the JSONRPC response if a parsing or runtime error occurs,
      * and to allow the client application to handle those errors nicely
      */
-    if (JsonRpcErrorHandling == "on")
+    if ( JsonRpcErrorHandling == "on")
     {
       $this->setupErrorHandling();
     }
@@ -192,9 +192,16 @@ class JsonRpcServer extends AbstractServer
 
   /**
    * Setup a PHP4-style error handling
+   * see http://forums.knownhost.com/showthread.php?p=5290
    */
   function setupErrorHandling()
   {
+
+    //This may seem counterintuitive since our goal is to
+    //hide errors from users, but our output buffer callback will
+    //need to see everything in order to catch the bad stuff.
+    ini_set('display_errors', 'On');
+
     /*
      * start buffering to catch errors with handler function
      */
@@ -205,8 +212,8 @@ class JsonRpcServer extends AbstractServer
      * comment out uncaught errors. You'll need to examine the
      * http response to see the uncaught errors!
      */
-    ini_set('error_prepend_string', "/*");
-    ini_set('error_append_string', "*/");
+    ini_set('error_prepend_string', '<phpfatalerror>');
+    ini_set('error_append_string', '</phpfatalerror>');
 
     /*
      * error handler function for php jsonrpc
@@ -379,10 +386,11 @@ class JsonRpcServer extends AbstractServer
    * workaround using output buffering (see post by
    * smp at ncoastsoft dot com at
    *   http://www.php.net/manual/en/function.set-error-handler.php
+   * and http://forums.knownhost.com/showthread.php?p=5290
    */
   function jsonrpc_catch_errors( $buffer )
   {
-    if (preg_match("#(error</b>:)(.+)(<br)#", $buffer, $regs) )
+    if (preg_match("|(<phpfatalerror>)(.+)(</phpfatalerror>)|", $buffer, $regs) )
     {
       /*
        * parse error string from PHP error message
@@ -392,7 +400,7 @@ class JsonRpcServer extends AbstractServer
       /*
        * log error message
        */
-      $this->logError("*** Error: $err");
+      JsonRpcServer::logError("*** Error: $err");
 
       /*
        * return error formatted as a JSONRPC error response
@@ -428,7 +436,8 @@ class JsonRpcServer extends AbstractServer
      * Determine error type
      * @todo: remove those which are not captured by set_error_handler()
      */
-    switch($errno){
+    switch($errno)
+    {
       case E_ERROR:
         $errtype= "Error";
         break;
@@ -487,17 +496,20 @@ class JsonRpcServer extends AbstractServer
     }
 
     /*
-     * respect error_reporting level
+     * Error message
      */
-    $errno = $errno & error_reporting();
-    if ($errno == 0) return true;
-
-    $errmsg =   "*** Error: $errtype in $errfile, line $errline: $errstr";
+    $errmsg = "$errtype: $errstr in $errfile, line $errline ";
 
     /*
      * log error message
      */
-    $this->logError( $errmsg );
+    JsonRpcServer::logError( $errmsg );
+
+    /*
+     * respect error_reporting level
+     */
+    $errno = $errno & error_reporting();
+    if ($errno == 0) return true;
 
     /*
      * return jsonified error message
