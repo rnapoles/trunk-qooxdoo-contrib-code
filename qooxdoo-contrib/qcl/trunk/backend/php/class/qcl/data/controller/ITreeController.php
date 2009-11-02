@@ -22,20 +22,7 @@ require_once "qcl/data/controller/IItemController.php";
  * qcl_data_model_ITreeNodeModel
  */
 interface qcl_data_controller_ITreeController
-//  extends qcl_data_controller_IItemController
 {
-
-  /**
-   * Creates a node.
-   * @param string $datasource Name of the datasource which will contain
-   *   the new record.
-   * @param int $parentId Id of parent node
-   * @param mixed|null $options Optional data that might be
-   *   necessary to create the new record
-   * @return mixed Id of the newly created record.
-   * @override
-   */
-  function method_create( $datasource, $parentId, $options=null );
 
   /**
    * Returns the data of child nodes of a branch ordered by the order field
@@ -80,20 +67,20 @@ interface qcl_data_controller_ITreeController
     *   the node siblings
     * @param string $datasource Name of the datasource
     * @param int $nodeId
-    * @param int $parentId
-    * @param int $position  New position
+    * @param int|string $position New position
     * @return void
     */
-  function method_changePosition ( $datasource, $nodeId, $parentId, $position );
+  function method_changePosition ( $datasource, $nodeId, $position );
 
    /**
     * Change parent node
     * @param string $datasource Name of the datasource
     * @param int $nodeId  Node id
     * @param int $parentId  New parent node id
+    * @param int|null $position Position among siblings (if supported)
     * @return int Old parent id
     */
-  function method_changeParent( $datasource, $nodeId, $parentId );
+  function method_changeParent( $datasource, $nodeId, $parentId, $position=null );
 
   /**
    * Returns the path of a node in the folder hierarchy as a

@@ -91,148 +91,78 @@ class qcl_server_Service
   }
 
   //-------------------------------------------------------------
-  // Introspection methods
-  //-------------------------------------------------------------
-
-  /**
-   * Returns the name of the current service for use in JsonRpc requests
-   * @return unknown_type
-   */
-  function getServiceName()
-  {
-    return str_replace("_",".", substr( $this->className(), strlen(JsonRpcClassPrefix) ) );
-  }
-
-  /**
-   * Checks whether a method name is a service method
-   * @param string $method
-   * @return bool
-   */
-  function isServiceMethod ( $method )
-  {
-    return (substr($method,0, strlen(JsonRpcMethodPrefix)) == JsonRpcMethodPrefix);
-  }
-
-  /**
-   * Checks for PHP5 and aborts if not present
-   * @return void
-   */
-  function _checkPHP5()
-  {
-    if ( phpversion() < 5 )
-    {
-      $this->raiseError("Introspection is only available in PHP5");
-    }
-  }
-
-  /**
-   * Analyzes a PhpRpc method's doc comment. This allows to provide non-standard
-   * documentation in the sense that you can use @param $params[0], @param $params[1],
-   * etc.
-   *
-   * @param $docComment
-   * @return unknown_type
-   */
-  function _analyzeDocComment( $docComment )
-  {
-    $params = array();
-    $return = "";
-    $doc = "";
-    $lines = explode("\n", $docComment) ;
-    foreach ($lines as $index => $line )
-    {
-      if ( $pos = strpos( $line, "@param" ) !== false  )
-      {
-       $params[] = substr( $line, $pos + 11 );
-      }
-      elseif ( $pos = strpos( $line, "@return" ) !== false  )
-      {
-       $return = substr( $line, $pos + 12 );
-      }
-      elseif ( $index < count( $lines ) -1 )
-      {
-        $doc .= substr( $line, strrpos( $line, "*" )+1 );
-      }
-    }
-    return array(
-      "doc"    => $doc,
-      "params" => $params,
-      "return" => $return
-    );
-  }
-
-  //-------------------------------------------------------------
   // Introspection API
   //-------------------------------------------------------------
 
   /**
-   * This method returns a list of the methods the server has, by name.
+   * @see ServiceIntrospection::method_listServices()
+   * @return array
+   */
+  function method_listServices()
+  {
+    if ( phpversion() > 5 )
+    {
+      $serviceIntrospection = new ServiceIntrospection( $this );
+      return $serviceIntrospection->method_listServices();
+    }
+    else
+    {
+      trigger_error( "Introspection requires PHP5");
+    }
+  }
+
+
+  /**
+   * @see ServiceIntrospection::method_listMethods()
    * @return array
    */
   function method_listMethods()
   {
-    $this->_checkPHP5();
-    $class = new ReflectionClass($this->className());
-    $methods = new ArrayList();
-    foreach( $class->getMethods() as $method )
+    if ( phpversion() > 5 )
     {
-      $name = $method->getName();
-      if ( $this->isServiceMethod( $name ) )
-      {
-        $methods->add( substr( $name, strlen(JsonRpcMethodPrefix)  ) );
-      }
+      $serviceIntrospection = new ServiceIntrospection( $this );
+      return $serviceIntrospection->method_listMethods();
     }
-    return $methods->toArray();
+    else
+    {
+      trigger_error( "Introspection requires PHP5");
+    }
   }
 
   /**
-   * This method returns a description of the argument format a particular
-   * method expects. The method takes one parameter. Its value is the name
-   * of the method about which information is being requested.
-   * The result is an array, with each element representing one method
-   * signature. The array is a list of the signatures of the method.
-   * There are no duplicate signatures. The list does not necessarily
-   * contain all possible signatures. A signature is a description of
-   * parameter and result types for a call to a method. A method can have
-   * multiple signatures; for example a method might take either a host
-   * name and port number or just a host name (and default the port number).
-   * The array entry that represents a signature is an array of strings, with
-   * at least one element. The first element tells the type of the method's
-   * result. The rest tell the types of the method's parameters, in order.
-   * @param string $params[0] The name of the method
+   * @see ServiceIntrospection::method_methodSignature()
+   * @param string $method
    * @return array
    */
-  function method_methodSignature( $params )
+  function method_methodSignature( $method )
   {
-    $this->_checkPHP5();
-    list( $method ) = $params;
-    $method = new ReflectionMethod( $this->className(), JsonRpcMethodPrefix . $method );
-    $docComment = $method->getDocComment();
-    $signature = $this->_analyzeDocComment( $docComment );
-    return array_merge(
-      array( $signature['return'] ),
-      $signature['params']
-    );
+    if ( phpversion() > 5 )
+    {
+      $serviceIntrospection = new ServiceIntrospection( $this );
+      return $serviceIntrospection->method_methodSignature( $method );
+    }
+    else
+    {
+      trigger_error( "Introspection requires PHP5");
+    }
   }
 
   /**
-   * This method returns a text description of a particular method.
-   * The method takes one parameter, a string. Its value is the name of
-   * the jsonrpc method about which information is being requested.
-   * The result is a string. The value of that string is a text description,
-   * for human use, of the method in question.
-   * @param string $params[0] The name of the method
+   * @see ServiceIntrospection::method_methodHelp()
+   * @param string $method
    * @return string
    */
-  function method_methodHelp( $params )
+  function method_methodHelp( $method )
   {
-    $this->_checkPHP5();
-    list( $method ) = $params;
-    $method = new ReflectionMethod( $this->className(), JsonRpcMethodPrefix . $method );
-    $docComment = $method->getDocComment();
-    $signature = $this->_analyzeDocComment( $docComment );
-    return $signature['doc'];
+    if ( phpversion() > 5 )
+    {
+      $serviceIntrospection = new ServiceIntrospection( $this );
+      return $serviceIntrospection->method_methodHelp( $method );
+    }
+    else
+    {
+      trigger_error( "Introspection requires PHP5");
+    }
   }
-
 }
 ?>
