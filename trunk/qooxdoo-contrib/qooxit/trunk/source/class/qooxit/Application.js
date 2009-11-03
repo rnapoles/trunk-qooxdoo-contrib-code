@@ -74,21 +74,89 @@ qx.Class.define("qooxit.Application",
       pageLive.setLayout(new qx.ui.layout.VBox());
       tabView.add(pageLive);
 
-      // Create the Source page
-      var pageSource = new qx.ui.tabview.Page(this.tr("Source View"));
-      pageSource.setLayout(new qx.ui.layout.VBox());
-      tabView.add(pageSource);
+      // Create the WidgetFactory.js page
+      var pageWidgetFactory = new qx.ui.tabview.Page("WidgetFactory.js");
+      tabView.add(pageWidgetFactory);
 
-      var source =
+      // Create the initialization text
+      var initText =
+        'qx.Class.define("custom.WidgetFactory",\n' +
+        '{\n' +
+        '  statics :\n' +
+        '  {\n' +
+        '  }\n' +
+        '});\n';
+
+      var widgetFactorySource =
         {
-          page   : pageSource,
+          page   : pageWidgetFactory,
           editor : null,
-          text   : (function(e)
-                    {
-                      console.log("hello world");
-                    }).toString()
-        }
-      this.createSourceEditor(source);
+          text   : initText,
+          appear : function(editor)
+          {
+            // Find the initial insertion point: 3 lines before the end
+            editor.insertPoint =
+              editor.prevLine(
+                editor.prevLine(
+                  editor.lastLine()));
+          }
+        };
+
+      this.createSourceEditor(widgetFactorySource);
+
+      // Create the Application.js page
+      var pageApplication = new qx.ui.tabview.Page("Application.js");
+      pageApplication.setLayout(new qx.ui.layout.Canvas()); // simulate root
+      tabView.add(pageApplication);
+
+      // Create the initialization text
+      initText =
+        'qx.Class.define("custom.Application",\n' +
+        '{\n' +
+        '  extend : qx.application.Standalone,\n' +
+        '\n' +
+        '  members :\n' +
+        '  {\n' +
+        '    main : function()\n' +
+        '    {\n' +
+        '      // Call super class\n' +
+        '      this.base(arguments);\n' +
+        '\n' +
+        '      // Enable logging in debug variant\n' +
+        '      if (qx.core.Variant.isSet("qx.debug", "on"))\n' +
+        '      {\n' +
+        '        // support native logging capabilities,\n' +
+        '        // e.g. Firebug for Firefox\n' +
+        '        qx.log.appender.Native;\n' +
+        '\n' +
+        '        // support additional cross-browser console.\n' +
+        '        // Press F7 to toggle visibility\n' +
+        '        qx.log.appender.Console;\n' +
+        '      }\n' +
+        '\n' +
+        '    }\n' +
+        '  }\n' +
+        '});\n';
+
+      var applicationSource =
+        {
+          page   : pageApplication,
+          editor : null,
+          text   : initText,
+          appear : function(editor)
+          {
+            // Find the initial insertion point: 3 lines before the end
+            editor.insertPoint =
+              editor.prevLine(
+                editor.prevLine(
+                  editor.prevLine(
+                    editor.prevLine(
+                      editor.lastLine()))));
+          }
+        };
+
+      this.createSourceEditor(applicationSource);
+
 
 
       //
@@ -197,7 +265,9 @@ qx.Class.define("qooxit.Application",
                                options,
                                label,
                                folder,
-                               sourceTree);
+                               sourceTree,
+                               widgetFactorySource,
+                               applicationSource);
               },
               this);
           }
@@ -208,7 +278,9 @@ qx.Class.define("qooxit.Application",
                            options,
                            label,
                            folder,
-                           sourceTree);
+                           sourceTree,
+                           widgetFactorySource,
+                           applicationSource);
           }
         },
         this);
@@ -232,7 +304,13 @@ qx.Class.define("qooxit.Application",
       }
     },
 
-    addObject : function(classInstance, options, label, folder, sourceTree)
+    addObject : function(classInstance,
+                         options,
+                         label,
+                         folder,
+                         sourceTree,
+                         widgetFactorySource,
+                         applicationSource)
     {
       // Add the node to the specified parent by calling its factory
       var fFactory =
@@ -249,6 +327,29 @@ qx.Class.define("qooxit.Application",
 
       // Save the object with its node in the Application tree
       subFolder.setUserData("object", o);
+
+      // Create the class name from the class instance
+      var className =
+        classInstance.basename +
+        "." +
+        classInstance.classname;
+      var getClassInstance =
+        className + ".getInstance()";
+
+      // Write the Application code
+      applicationSource.insertIntoLine(
+        handle,
+        "end",
+        "\n" +
+        "(function()\n" +
+          "{\n" +
+          "  var className = " + className + ";\n" +
+          "  var fFactory =\n" +
+          "    qx.lang.Function.bind(" + getClassInstance + ".factory,\n" +
+          "                          classInstance);\n" +
+          "  var o = fFactory(" + options + ");\n" +
+          "}\n" +
+          ")();\n\n");
 
       // Clear the selection from the source tree
       sourceTree.resetSelection();
@@ -388,7 +489,43 @@ qx.Class.define("qooxit.Application",
               continuousScanning : false,
               width              : width + "px",
               height             : height + "px",
-              autoMatchParens    : true
+              autoMatchParens    : true,
+//              readOnly           : true,
+              initCallback       : function(editor)
+              {
+                // Set the initial text
+                editor.setCode(source.text);
+
+                // Move to the proper insertion point
+                source.appear(editor);
+
+
+                var text = "// hello world";
+
+                (function(text)
+                 {
+                   // Determine how many lines long the text is including
+                   // the extra newline we'll prepend
+                   var lines = text.split("\n").length + 1;
+
+                   var startLine = editor.lineNumber(editor.insertPoint);
+                   editor.insertIntoLine(editor.insertPoint,
+                                         "end",
+                                         "\n" + text);
+                   var endPoint = editor.nthLine(startLine + lines);
+
+                   editor.selectLines(editor.insertPoint, 0,
+                                      endPoint, 0);
+
+                   // Reindent the new text
+                   editor.reindentSelection();
+
+                   // Remove the selection indication
+                   editor.selectLines(endPoint, 0);
+                   editor.options.readOnly = true;
+
+                 })(text);
+              }
             });
 
           source.editor.frame.style.width =
@@ -398,7 +535,8 @@ qx.Class.define("qooxit.Application",
 
           // to achieve auto-resize, the editor sets the size of the
           // container element
-          source.page.addListener("resize", function()
+          source.page.addListener("resize",
+                                  function()
                                   {
                                     source.editor.frame.style.width =
                                       source.page.getBounds().width + "px";
@@ -406,6 +544,17 @@ qx.Class.define("qooxit.Application",
                                       source.page.getBounds().height + "px";
                                   },
                                   this);
+
+
+          // The protector blocks the editor, therefore it needs to be
+          // removed. This code fragment is a temporary solution, it
+          // will be removed once a better solution is found
+          var protector = source.page.getContainerElement().getChildren()[0];
+          if (protector)
+          {
+            var parent = protector.getDomElement().parentNode;
+            parent.removeChild(protector.getDomElement());
+          }
         },
         this);
     }

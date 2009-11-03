@@ -280,9 +280,11 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Create a form
       var form = new qx.ui.form.Form();
 
+/*
       var o = new qx.ui.form.TextField();
       o.setWidth(128);
       form.add(o, this.tr("Name"), null, "__name__");
+*/
 
       // For each item in the specification...
       for (var item in spec)
