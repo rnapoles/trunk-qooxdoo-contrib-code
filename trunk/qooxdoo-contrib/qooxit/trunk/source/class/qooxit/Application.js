@@ -336,6 +336,7 @@ qx.Class.define("qooxit.Application",
       var getClassInstance =
         className + ".getInstance()";
 
+/*
       // Write the Application code
       applicationSource.insertIntoLine(
         handle,
@@ -350,6 +351,7 @@ qx.Class.define("qooxit.Application",
           "  var o = fFactory(" + options + ");\n" +
           "}\n" +
           ")();\n\n");
+*/
 
       // Clear the selection from the source tree
       sourceTree.resetSelection();
@@ -490,7 +492,7 @@ qx.Class.define("qooxit.Application",
               width              : width + "px",
               height             : height + "px",
               autoMatchParens    : true,
-//              readOnly           : true,
+              readOnly           : true,
               initCallback       : function(editor)
               {
                 // Set the initial text
@@ -500,7 +502,7 @@ qx.Class.define("qooxit.Application",
                 source.appear(editor);
 
 
-                var text = "// hello world";
+                var text = "// hello world\n// This is a test";
 
                 (function(text)
                  {
@@ -517,12 +519,12 @@ qx.Class.define("qooxit.Application",
                    editor.selectLines(editor.insertPoint, 0,
                                       endPoint, 0);
 
-                   // Reindent the new text
-                   editor.reindentSelection();
+                   // Reindent the new text using internal indentRegion()
+                   editor.editor.indentRegion(editor.insertPoint, endPoint);
 
                    // Remove the selection indication
                    editor.selectLines(endPoint, 0);
-                   editor.options.readOnly = true;
+
 
                  })(text);
               }
