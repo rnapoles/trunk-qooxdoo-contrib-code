@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2008, Burak Arslan (burak.arslan-qx@arskom.com.tr).
+ * Copyright (c) 2008-2009, Burak Arslan (burak.arslan-qx@arskom.com.tr).
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -14,19 +14,20 @@
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
- * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
- * AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, 
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
 qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
+    ,include : [qx.locale.MTranslation]
     ,construct : function(url) {
         this.base(arguments);
 
@@ -54,10 +55,10 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
     }
 
     ,members : {
-         __wsdl : null
-
+         __cache : null
         ,__extract_fault : function(method_name, async, callback, req) {
             var retval = null;
+
             if(req.responseXML.getElementsByTagName("faultcode").length > 0) {
                 var fault_string  = req.responseXML.getElementsByTagName("faultstring")[0].childNodes[0].nodeValue;
                 fault_string += "\nDetail:\n\n" + req.responseXML.getElementsByTagName("detail")[0].childNodes[0].nodeValue;
@@ -77,22 +78,22 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
         ,__on_send_soap_request : function(method_name, async, callback, req) {
             var retval = null;
-            var nsmap = this.self(arguments).NAMESPACES;
 
             if (req.responseXML == null) {
                 this.dispatchEvent(new qx.io.remote.Response("failed"));
             }
             else {
-                var tag_name = qx.xml.Element.selectSingleNode(this.__wsdl,"/a:definitions/a:portType/a:operation[@name='"+method_name+"']/a:output/@name",nsmap);
+                // get the response type for the method named method_name
+                var tag_name = this.__cache.methods[method_name].output.name
 
                 if(tag_name == null) {
                     retval = this.__extract_fault(method_name, async, callback, req);
                 }
                 else {
-                    var nd = req.responseXML.getElementsByTagName(tag_name.nodeValue);
+                    var nd = req.responseXML.getElementsByTagName(tag_name);
                     if(nd == null || nd.length == 0) {
-                        var tns = this.__wsdl.documentElement.getAttribute("targetNamespace");
-                        nd = qx.xml.Element.getElementsByTagNameNS(req.responseXML, tns, tag_name.nodeValue);
+                        var tns = this.__cache.target_namespace;
+                        nd = qx.xml.Element.getElementsByTagNameNS(req.responseXML, tns, tag_name);
                     }
 
                     if(nd == null || nd.length == 0) {
@@ -112,101 +113,91 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         }
 
         ,__to_object : function(node) {
-            var ssn = qx.xml.Element.selectSingleNode;
-            var sn = qx.xml.Element.selectNodes;
-            var nsmap = this.self(arguments).NAMESPACES;
-
             var retval = null;
 
-            if(ssn(this.__wsdl,"/a:definitions/a:types", nsmap) != null) { // get return type from wsdl
-                var return_type_node = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:element[@name='"+node.nodeName+"']", nsmap);
-                var return_type_name = return_type_node.getAttribute("type");
-                return_type_name = return_type_name.split(":")[1];
+            if (this.__cache.schema != null) { // get return type from wsdl
+                var type = this.__cache.schema.complex[node.nodeName];
 
-                var return_type_definition = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+return_type_name+"']", nsmap);
-                var retval_type_node = ssn(return_type_definition, ".//x:element",nsmap);
-
-                retval = this.__extract(node.childNodes[0],retval_type_node);
+                retval = this.__extract(node.childNodes[0], type);
             }
             else { // no types section so get the type directly from the message part node
-                var part_node = ssn(this.__wsdl,"/a:definitions/a:message[@name='"+(node.localName || node.baseName)+"']/a:part[1]", nsmap);
-                retval = this.__extract(node.childNodes[0],part_node);
+                throw new Error("no types section");
             }
 
             return retval;
         }
 
-        ,__extract : function(node, type_node) {
-            var ssn = qx.xml.Element.selectSingleNode;
-            var sn = qx.xml.Element.selectNodes;
-            var nsmap = this.self(arguments).NAMESPACES;
-
+        ,__extract : function(node, type) {
             var retval = null;
 
-            // get type name
-            var type_name = type_node.getAttribute("type");
-            if (type_name == null) {
-                type_name = type_node.getAttribute("xsi:type");
-            }
-            type_name = type_name.split(":")[1];
-            var type_name_lower = type_name.toLowerCase();
-
-            // in case this is a primitive value, (we don't know yet)
-            // get the value as well. do it here instead of doing it
-            // inside every primitive case.
-            var value_ = null;
+            var value = null;
             if (node.hasChildNodes()) {
-                value_ = node.childNodes[0].nodeValue;
+                value = node.childNodes[0].nodeValue;
             }
             else {
-                value_ = node.nodeValue;
+                value = node.nodeValue;
             }
 
-            // let's see...
+            var type_name=null;
+            if (type.children) {
+                type_name = type.children[node.tagName].type.split(":")[1];
+            }
+            else {
+                type_name = type.type.split(":")[1];
+            }
+            
+            type_name_lower = type_name.toLowerCase();
+            
             if (type_name_lower == "boolean") {
-                retval = value_ + "" == "true";
+                retval = value + "" == "true";
             }
-            else if (type_name_lower == "int" || type_name == "long") {
-                retval = (value_ != null) ? parseInt(value_ + "", 10) : 0;
+            else if (type_name_lower == "int" || type_name_lower == "long") {
+                retval = (value != null) ? parseInt(value + "", 10) : 0;
             }
-            else if (type_name_lower == "double") {
-                retval = (value_ != null) ? parseFloat(value_ + "") : 0;
+            else if (type_name_lower == "double" || type_name_lower == "float") {
+                retval = (value != null) ? parseFloat(value + "") : 0;
             }
             else if (type_name_lower == "datetime") {
-                if(value_ != null) {
-                    value_ = value_ + "";
-                    value_ = value_.substring(0, (value_.lastIndexOf(".") == -1 ? value_.length : value_.lastIndexOf(".")));
-                    value_ = value_.replace(/T/gi," ");
-                    value_ = value_.replace(/-/gi,"/");
+                if(value != null) {
+                    value = value + "";
+                    value = value.substring(0, (value.lastIndexOf(".") == -1 ? (value.lastIndexOf("+") == -1 ? value.length : value.lastIndexOf("+")) : value.lastIndexOf(".")));
+                    value = value.replace(/T/gi," ");
+                    value = value.replace(/-/gi,"/");
                     retval = new Date();
-                    retval.setTime(Date.parse(value_));
+                    retval.setTime(Date.parse(value));
                 }
             }
             else if (type_name_lower == "string") {
-                retval = (value_ != null) ? value_ + "" : "";
+                retval = (value != null) ? value + "" : "";
+            }
+            else if (type_name_lower == "anytype") {
+                retval = node;
             }
             else { // it's a complex type
-                var type_node = ssn(this.__wsdl,"/a:definitions/a:types/x:schema/x:complexType[@name='"+type_name+"']", nsmap);
-                var elts = sn(type_node, ".//x:element",nsmap);
-                if (elts.length == 1 && elts[0].getAttribute("minOccurs") != null
-                                     && elts[0].getAttribute("maxOccurs") != null) { // it's an array
-
+                var complex_type = this.__cache.schema.complex[type_name];
+                if (complex_type.is_array) { // it's an array
                     retval = new Array();
+
                     for (var i=0; i < node.childNodes.length; i++) {
-                        retval[retval.length] = this.__extract(node.childNodes[i],elts[0]);
+                        var n=node.childNodes[i];
+                        var nn=n.nodeName;
+                        retval.push(this.__extract(n,complex_type.children[nn]));
                     }
                 }
                 else {
                     if (node.hasChildNodes()){
                         retval = new Object();
 
-                        for (var i=0; i<elts.length; ++i) {
+                        for (var i=0,l=node.childNodes.length; i<l; ++i) {
                             var nn = node.childNodes[i].nodeName;
-                            if (nn == null) {
-                                throw new Error("'"+nn+"' not found in the type node. This wsdl is invalid.");
+                            var is_null = node.childNodes[i].getAttribute("xs:null");
+
+                            if (is_null) {
+                                retval[nn] = null;
                             }
-                            var elt = ssn(type_node, ".//x:element[@name='"+nn+"']",nsmap);
-                            retval[node.childNodes[i].nodeName] = this.__extract(node.childNodes[i],elt);
+                            else {
+                                retval[nn] = this.__extract(node.childNodes[i], complex_type.children[nn]);
+                            }
                         }
                     }
                 }
@@ -234,7 +225,7 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
 
         // private: invoke async
         ,__load_wsdl : function(method_, parameters, async, callback) {
-            if(this.__wsdl == null) {
+            if(this.__cache == null) {
                 var xmlHttp = qx.io.remote.transport.XmlHttp.createRequestObject();
                 xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
                 if(async) {
@@ -257,24 +248,142 @@ qx.Class.define("soapdemo.soap.Client", { extend : qx.core.Object
         }
 
         ,__on_load_wsdl : function(method_, parameters, async, callback, req) {
-            this.__wsdl = req.responseXML;
-            if (this.__wsdl == null) {
+            var wsdl = req.responseXML;
+            if (wsdl == null) {
                 this.dispatchEvent(new qx.io.remote.Response("wsdl_failed"));
                 return null;
             }
             else {
+                this.__cache = this.__cache_wsdl(wsdl);
                 return this.__send_soap_request(method_, parameters, async, callback);
             }
         }
 
-        ,__send_soap_request : function(method_, parameters, async, callback) {
-            var ns; // namespace
-            if (this.__wsdl.documentElement.attributes["targetNamespace"] + "" == "undefined") {
-                ns = this.__wsdl.documentElement.attributes.getNamedItem("targetNamespace").nodeValue;
+        ,__cache_wsdl : function(wsdl) {
+            var retval = new Object();
+            var cn = null;
+
+            retval.methods = new Object();
+            retval.messages = new Array();
+            retval.schema = new Object();
+            retval.target_namespace = wsdl.documentElement.getAttribute("targetNamespace");
+
+            // get porttype
+            var port_type_node = null;
+            var schema_node = null;
+
+            if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+                cn = wsdl.childNodes[1].childNodes;
             }
             else {
-                ns = this.__wsdl.documentElement.attributes["targetNamespace"].value;
+                cn = wsdl.childNodes[0].childNodes;
             }
+
+            for (var i=0, l = cn.length; i<l; ++i) {
+                var tn = cn[i].tagName;
+                if (tn == "portType") {
+                    port_type_node = cn[i];
+                }
+                else if (tn == "message") {
+
+                }
+                else if (tn == "types") {
+                    schema_node = cn[i].childNodes[0];
+                }
+            }
+
+            // fill methods
+            var methods = retval.methods;
+
+            cn = port_type_node.childNodes;
+            for (var i=0, l = cn.length; i<l; ++i) {
+                var method_name = cn[i].getAttribute("name");
+                methods[method_name] = new Object();
+
+                var method = methods[method_name];
+                for (var j=0, m=cn[i].childNodes.length; j<m; ++j) {
+                    var method_node = cn[i].childNodes[j];
+                    var tn = method_node.tagName;
+
+                    if (tn == "input" || tn == "output") {
+                        method[tn] = new Object();
+                        method[tn].name = method_node.getAttribute("name");
+                        method[tn].message = method_node.getAttribute("message");
+                    }
+                }
+            }
+
+            if (schema_node == null) { // fill schema
+                retval.schema = null;
+            }
+            else {
+                var schema = retval.schema;
+                schema.simple = new Object();
+                schema.complex = new Object();
+
+                cn = schema_node.childNodes;
+                for (var i=0, l = cn.length; i<l; ++i) {
+                    var tn = cn[i].tagName;
+
+                    var elt = new Object();
+                    elt.type = cn[i].getAttribute("type");
+                    if (elt.type == null) {
+                        elt.type = cn[i].getAttribute("xsi:type");
+                    }
+                    var elt_name = cn[i].getAttribute("name");
+
+                    if (tn == "xs:element") {
+                        schema.simple[elt_name] = elt
+                    }
+                    else if (tn == "xs:complexType") {
+                        elt.children = new Object();
+                        var first_node = cn[i].childNodes[0];
+
+                        if (first_node.hasChildNodes()) {
+                            first_node = first_node.childNodes[0];
+
+                            if (first_node.nextSibling == null && first_node.getAttribute("minOccurs") != null
+                                                               && first_node.getAttribute("maxOccurs") != null) { // it's an array
+                                elt.is_array = true;
+                                elt.min_occurs = first_node.getAttribute("minOccurs");
+                                elt.max_occurs = first_node.getAttribute("maxOccurs");
+
+                                var child = new Object()
+                                child.type = first_node.getAttribute("type");
+                                if (child.type == null) {
+                                    child.type = first_node.getAttribute("xsi:type");
+                                }
+                                var child_name = first_node.getAttribute("name");
+
+                                elt.children[child_name] = child;
+                            }
+                            else {
+                                for (var node = first_node; node != null; node = node.nextSibling) {
+                                    var child = new Object();
+
+                                    var child_name = node.getAttribute("name");
+                                    child.type = node.getAttribute("type");
+                                    if (child.type == null) {
+                                        child.type = node.getAttribute("xsi:type");
+                                    }
+
+                                    elt.children[child_name] = child;
+                                }
+                            }
+                        }
+
+                        schema.complex[elt_name] = elt
+                    }
+                    else {
+                        throw new Error("invalid tag name '"+tn+"' encountered under schema node.");
+                    }
+                }
+            }
+            return retval;
+        }
+
+        ,__send_soap_request : function(method_, parameters, async, callback) {
+            var ns = this.__cache.target_namespace;
 
             // build SOAP request
             var sr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
