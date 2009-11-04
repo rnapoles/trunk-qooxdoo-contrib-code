@@ -76,7 +76,7 @@ qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
                 else if(o instanceof Array) {
                     for(var p in o) {
                         if(!isNaN(p)) { // linear array
-                            for (var i = 0; i<o.length; ++i) {                                
+                            for (var i = 0; i<o.length; ++i) {
                                 var type=null;
                                 if (o[i].basename) {
                                     type = o[i].basename;
@@ -113,7 +113,7 @@ qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
                         }
                     }
                 }
-                else if (o instanceof XMLDocument) {
+                else if (qx.xml.Document.isXmlDocument(o)) {
                     s+=qx.xml.Element.serialize(o);
                 }
                 else { // Object or custom function
