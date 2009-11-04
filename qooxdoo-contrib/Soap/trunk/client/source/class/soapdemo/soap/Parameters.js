@@ -12,8 +12,9 @@
  */
 
 qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
+    ,include : [qx.locale.MTranslation]
     ,construct : function() {
-        this.__pl={};
+        this.__pl=new Object();
     }
 
     ,members : {
@@ -37,7 +38,7 @@ qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
                     return "";
                 }
                 // Date
-                else if(o.constructor.toString().indexOf("function Date()") > -1) {
+                else if(o instanceof Date) {
                     var year = o.getFullYear().toString();
                     var month = (o.getMonth() + 1).toString();
 
@@ -68,44 +69,57 @@ qx.Class.define("soapdemo.soap.Parameters", { extend : qx.core.Object
                     var timezone = ((o.getTimezoneOffset() < 0) ? "+" : "-") + tzhours + ":" + tzminutes;
                     s += year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + "." + milliseconds + timezone;
                 }
+                else if (o instanceof Number) {
+                    s += o.toString();
+                }
                 // Array
-                else if(o.constructor.toString().indexOf("function Array()") > -1) {
+                else if(o instanceof Array) {
                     for(var p in o) {
                         if(!isNaN(p)) { // linear array
-                            (/function\s+(\w*)\s*\(/ig).exec(o[p].constructor.toString());
+                            for (var i = 0; i<o.length; ++i) {                                
+                                var type=null;
+                                if (o[i].basename) {
+                                    type = o[i].basename;
+                                }
+                                else {
+                                    //(/function\s+(\w*)\s*\(/ig).exec(o[i].constructor.toString());
+                                    type = Object.prototype.toString.call(o[i]).slice(8, -1);
+                                }
 
-                            var type = RegExp.$1;
-                            switch(type) {
-                            case "":
-                                type = typeof(o[p]);
-                                break;
+                                qx.log.Logger.debug(type + " " + typeof(o[i]) + "\n" + o[i].constructor.toString());
+                                switch(type) {
+                                case "String":
+                                    type = "string";
+                                    break;
 
-                            case "String":
-                                type = "string";
-                                break;
+                                case "Number":
+                                    type = "int";
+                                    break;
 
-                            case "Number":
-                                type = "int";
-                                break;
+                                case "Boolean":
+                                    type = "bool";
+                                    break;
 
-                            case "Boolean":
-                                type = "bool";
-                                break;
-
-                            case "Date":
-                                type = "DateTime";
-                                break;
+                                case "Date":
+                                    type = "DateTime";
+                                    break;
+                                }
+                                s += "<" + type + ">" + this.__serialize(o[i]) + "</" + type + ">"
                             }
-                            s += "<" + type + ">" + this.__serialize(o[p]) + "</" + type + ">"
+                            break;
                         }
                         else {   // associative array
                             s += "<" + p + ">" + this.__serialize(o[p]) + "</" + p + ">"
                         }
                     }
                 }
+                else if (o instanceof XMLDocument) {
+                    s+=qx.xml.Element.serialize(o);
+                }
                 else { // Object or custom function
-                    for(var c in o.simple_object) {
-                        s += "<" + c + ">" + this.__serialize(o.simple_object[c]) + "</" + c + ">";
+                    var so=o.simple_object;
+                    for(var k in so) {
+                        s += "<" + k + ">" + this.__serialize(so[k]) + "</" + k + ">";
                     }
                 }
                 break;
