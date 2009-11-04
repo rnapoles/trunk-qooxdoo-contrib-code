@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2008, Burak Arslan (burak.arslan-qx@arskom.com.tr).
+ * Copyright (c) 2008-2009, Burak Arslan (burak.arslan-qx@arskom.com.tr).
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,25 @@
  */
 
 qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
+    ,include : [qx.locale.MTranslation]
     ,construct : function(service_instance, row_count_method_name, row_data_method_name, service_arguments, session_id, mapper) {
         this.base(arguments);
         this.setRowCountMethodName(row_count_method_name);
         this.setRowDataMethodName(row_data_method_name);
         this.setServiceInstance(service_instance);
         this.setServiceArguments(service_arguments);
-        this.__mapper = mapper;
+
         if (session_id + "" != "undefined") {
             this.setSessionId(session_id)
+        }
+        else {
+            this.setSessionId("");
+        }
+        if (mapper + "" != "undefined") {
+            this.__mapper = mapper;
+        }
+        else {
+            this.__mapper = null;
         }
     }
 
@@ -44,13 +54,16 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
         ,rowDataMethodName:  { check: "String", nullable: false}
         ,serviceInstance:    { check: "soapdemo.soap.Client", nullable: false }
         ,serviceArguments:   { check: "soapdemo.soap.Parameters", nullable: false }
-        ,sessionId:          { check: "String", init: "", nullable: false}
+        ,sessionId:          { check: "String", init: null}
+    }
+
+    ,events : {
+         "data_loaded": "qx.event.type.Data"
     }
 
     ,members : {
          __count_request_sent : false
         ,__mapper : null
-        ,__data_request_sent : false
 
         ,_loadRowCount : function() {
             var ctx = this;
@@ -73,7 +86,7 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
                 ctx.SoapRunning = null;
                 ctx.__count_request_sent = false;
                 if (r instanceof Error) {
-                    ctx.warn("An error has occured!\r\n\r\n" + r.fileName + " line " + r.lineNumber);
+                    ctx.warn("An error has occured!\n\n" + r.fileName + " line " + r.lineNumber);
                     ctx._onRowCountLoaded(0);
                 }
                 else {
@@ -84,6 +97,7 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
 
         ,_loadRowData : function(firstRow, lastRow) {
             var ctx=this;
+
 
             var params = ctx.getServiceArguments();
             var req = new soapdemo.soap.Request();
@@ -99,14 +113,35 @@ qx.Class.define("soapdemo.soap.RemoteImpl", { extend : qx.ui.table.model.Remote
                     ctx._onRowDataLoaded([]);
                 }
                 else {
-                    if (this.__mapper != null) {
-                        for (i=0;i<r.length;++i) {
-                            this.__mapper(r[i]);
-                        }
+                    if (ctx.__mapper != null) {
+                        ctx.__mapper(r);
                     }
                     ctx._onRowDataLoaded(r);
+                    ctx.fireDataEvent("dataLoaded",r);
                 }
             });
+        }
+
+        // overridden
+        ,getValue : function(columnIndex, rowIndex) {
+            var rowData = this.getRowData(rowIndex);
+
+            var retval=null;
+
+            if (rowData != null) {
+                var columnId = this.getColumnId(columnIndex);
+                if (columnId.constructor == Array) {
+                    retval = rowData[columnId[0]];
+                    for (var i=1; i< columnId.length; ++i) {
+                        retval = retval[columnId[i]];
+                    }
+                }
+                else {
+                    retval = rowData[columnId];
+                }
+            }
+
+            return retval;
         }
     }
 });
