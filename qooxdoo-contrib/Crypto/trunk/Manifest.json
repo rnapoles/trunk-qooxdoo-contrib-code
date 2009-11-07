@@ -5,8 +5,7 @@
 
    "summary" : "Collaborating on crypto related features (e.g. OpenPGP, MD5, SHA, RSA, etc.).  ",
    
-    "description": "Collaborating on crypto related features (e.g. OpenPGP, MD5, SHA, RSA, etc.). 
-  ",
+    "description": "Collaborating on crypto related features (e.g. OpenPGP, MD5, SHA, RSA, etc.).",
     "keywords" : ["cryptography", "crypto", "OpenPGP", "GnuPG"],
     "homepage" : "http://contrib.qooxdoo.org/Crypto",
     
