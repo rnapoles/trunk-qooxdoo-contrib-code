@@ -1,0 +1,18 @@
+The RpcPython project provides JSON-RPC backend functionality useful for
+WEB applications using the qooxdoo library ( http://qooxdoo.org ) or
+simply requiring a JSON-RPC compatible datasource.
+
+RpcPython includes and continues the currently unmaintained qxjsonrpc package 
+(Origianl Author: Viktor Ferenczi, see http://python.cx.hu), which, however
+does not work with the current qooxdoo version. The qxjsonrpc package supports 
+REST-style requests (GET & POST) and the python WSGI module. 
+
+In contrast, the code developed in this contrib project aims only at strict
+json-rpc compliance as described here:
+
+  http://qooxdoo.org/documentation/Rpc_server_writer_guide
+  
+This means that REST-style requests are only inofficially supported. The
+main protocol implemented is raw json sent by a POST request.
+
+The code is in the process of being ported - it is not functional yet.

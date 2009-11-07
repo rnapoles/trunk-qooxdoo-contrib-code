@@ -1,0 +1,31 @@
+Installation instructions for RpcPython
+
+Requirements:
+
+1. Python 2.4 or 2.5
+
+Go to http://www.python.org for instructions.
+
+2. JSON serializer package
+
+At least one supported package must be installed. Supported packages:
+
+- python-cjson-1.0.3x3 or newer: http://python.cx.hu
+
+- simplejson: http://cheeseshop.python.org/pypi/simplejson
+
+NOTE: python-cjson is MUCH faster, but not pure-python (requires C compiler).
+
+Installation:
+
+- Using distutils: python setup.py install
+
+Testing:
+
+You can find tests under the services subdirectory. Use the RpcExample
+or RpcConsole contrib projects as a frontend to test the python backend. 
+
+Contact:
+
+Viktor Ferenczi <python@cx.hu> (Original author)
+Christian Boulanger <info@bibliograph.org> (Porting to 0.8)
