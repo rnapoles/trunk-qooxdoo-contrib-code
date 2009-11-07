@@ -1,0 +1,36 @@
+{
+  "info" : 
+  {
+    "name" : "Crypto",
+
+   "summary" : "Collaborating on crypto related features (e.g. OpenPGP, MD5, SHA, RSA, etc.).  ",
+   
+    "description": "Collaborating on crypto related features (e.g. OpenPGP, MD5, SHA, RSA, etc.). 
+  ",
+    "keywords" : ["cryptography", "crypto", "OpenPGP", "GnuPG"],
+    "homepage" : "http://contrib.qooxdoo.org/Crypto",
+    
+    "license" : "LGPL/EPL",    
+    "authors" : [
+      {
+        "name" : "Bill Adams",
+        "user" : "badams5116",
+        "email" : "badams AT mywebserve DOT com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.7","0.8","trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "crypto",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}
+
