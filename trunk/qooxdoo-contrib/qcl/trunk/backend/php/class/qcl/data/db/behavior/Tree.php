@@ -80,7 +80,7 @@ class qcl_data_db_behavior_Tree
 	function reorder ( $orderBy=null )
 	{
 		$orderBy  = either ( $orderBy, "position" );
-		$childIds = $this->getChildIds ( $this->getId(), $orderBy );
+		$childIds = $this->getChildIds ( $orderBy );
 		$index = 1;
 		foreach ( $childIds as $id )
 		{
