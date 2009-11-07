@@ -288,12 +288,19 @@ class qcl_data_model_db_Abstract
     {
       $sql .= "WHERE " . $this->toSql( $where );
     }
-    if ( $orderBy )
+    if ( ! is_null( $orderBy ) )
     {
       if ( is_string($orderBy) )
       {
-        $orderBy = $this->getColumnName($orderBy);
-        $sql .= " ORDER BY `$orderBy`";
+        $ob = $this->getColumnName($orderBy);
+        if ( $ob )
+        {
+          $sql .= " ORDER BY `$ob`";
+        }
+        else
+        {
+          $this->raiseError("Invalid order by column '$orderBy'.");
+        }
       }
       else
       {
