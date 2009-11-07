@@ -27,8 +27,8 @@
     "namespace"   : "crypto",
     "encoding"    : "utf-8",
     "class"       : "source/class",
-    "resource"    : "source/resource",
-    "translation" : "source/translation",
+    "resource"    : null,
+    "translation" : null,
     "type"        : "contribution"
   }
 }
