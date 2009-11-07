@@ -43,7 +43,7 @@ class qcl_data_db_behavior_Tree
    */
 	function getChildren ( $orderBy=null )
 	{
-		return $this->findWhere(
+	  return $this->findWhere(
 		  array( "parentId" => $this->getId() ),
 		  either( $orderBy, "position")
 		);
@@ -57,8 +57,8 @@ class qcl_data_db_behavior_Tree
    */
 	function getChildIds ( $orderBy=null )
 	{
-    $orderBy  = either( $orderBy, "position" );
-		return $this->findValues("id", array( "parentId" => $this->getId() ), $orderBy );
+	  $id = ( $this->foundSomething() ) ? $this->getId() : 0;
+	  return $this->findValues("id", array( "parentId" => $id ), $orderBy );
 	}
 
   /**
