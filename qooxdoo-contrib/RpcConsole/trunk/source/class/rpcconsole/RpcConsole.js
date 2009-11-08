@@ -17,6 +17,7 @@
 
 #asset(rpcconsole/*)
 #require(qx.ui.form.ListItem)
+#require(rpcconsole.MRpcMockup)
 
 ************************************************************************ */
 
@@ -103,8 +104,9 @@ qx.Class.define("rpcconsole.RpcConsole",
     this._createUI( serverUrl );
       
     /*
-     * rpc object
+     * use patched rpc object
      */
+    qx.Class.patch( qx.io.remote.Rpc, rpcconsole.MRpcMockup );
     this.__rpc = new qx.io.remote.Rpc();    
   },
   
@@ -279,18 +281,40 @@ qx.Class.define("rpcconsole.RpcConsole",
 
          
       /*
-       * options
+       * Cross domain
        */
       hbox = new qx.ui.container.Composite( new qx.ui.layout.HBox(5) );
       var crossDomainCheckBox = new qx.ui.form.CheckBox( "Cross Domain" );
       hbox.add( crossDomainCheckBox );
       this.__form.add( crossDomainCheckBox, null, null, "crossDomain" );
+      
+      /*
+       * Timeout
+       */
       hbox.add( new qx.ui.basic.Label("Timeout:") );
       var timeoutSpinner = new qx.ui.form.Spinner(10,10,60);
-      timeoutSpinner.setEditable(true);
+      timeoutSpinner.set({
+        editable : true
+      });
       hbox.add( timeoutSpinner );
-      hbox.add( new qx.ui.basic.Label("seconds") );
+      hbox.add( new qx.ui.basic.Label("sec.") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );
+      
+      /*
+       * Mockup generation
+       */
+      var mockupControl = new qx.ui.form.SelectBox();
+      mockupControl.add( new qx.ui.form.ListItem("Off") );
+      mockupControl.add( new qx.ui.form.ListItem("Monitor") );
+      mockupControl.add( new qx.ui.form.ListItem("On") );
+      mockupControl.addListener("changeSelection",function(e){
+        var sel = e.getData();
+        var label = sel[0].getLabel();
+        this.__rpc.setMockupMode(label.toLowerCase() );
+      },this);
+      hbox.add( new qx.ui.basic.Label("Mockup:") );
+      hbox.add(mockupControl);
+      
       servicePage.add( new qx.ui.basic.Label("Options:"), {row: 3, column: 0 });
       servicePage.add(hbox, {row: 3, column: 1 });
       

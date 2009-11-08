@@ -34,7 +34,7 @@
 //    "QXTHEME"      : "rpcconsole.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
+    "CACHE"        : "cache",
     "ROOT"         : "."
   },
   
@@ -47,7 +47,10 @@
       [
         {
           "manifest" : "../../Manifest.json"
-        }
+        },
+        {
+          "manifest" : "contrib://Crypto/trunk/Manifest.json"
+        }         
       ]
     },
     
