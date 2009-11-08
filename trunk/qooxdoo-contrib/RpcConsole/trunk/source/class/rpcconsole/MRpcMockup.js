@@ -16,16 +16,23 @@
 /* ************************************************************************
 
 #asset(mockup/*)
-#require(qx.ui.form.ListItem)
 #require(openpgp.sha1)
 
 ************************************************************************ */
 
 /**
- * A mixin for qx.io.remote.Rpc which needs to be applied with qx.Class.patch
- * which allows to prepare code relying on a backend to work with mockup
- * data only. The mixin works in three modes, controlled by the "mockupMode" 
- * property:
+ * A mixin for qx.io.remote.Rpc which allows to prepare code relying on a 
+ * json-rpc backend to work with static mockup data independently of the 
+ * server. This allows to develop client and server independently and to 
+ * create static demos.
+ * 
+ * For the mixin to work, you need to patch qx.io.remote.Rpc like so: 
+ * <pre>
+ * qx.Class.patch( qx.io.remote.Rpc, rpcconsole.MRpcMockup );
+ * </pre>
+ * 
+ * The mixin works in three modes, controlled by a new "mockupMode" 
+ * property of a qx.io.remote.Rpc instance:
  * <pre>
  * 1. "off": no effect, qx.io.remote.Rpc works normally
  * 2. "monitor": qx.io.remote.Rpc works normally, but for each request,
@@ -35,6 +42,7 @@
  *    the content of the file that has been created with the information of
  *    the monitor mode (2).
  * </pre>
+ * 
  * This mixin requires the use of the "Crypto" contribution, which you can 
  * include by adding 
  * <pre>
@@ -42,7 +50,10 @@
  *   "manifest" : "contrib://Crypto/trunk/Manifest.json"
  * }
  * </pre> 
- * to the "libraries" key in your config.json   
+ * to the "libraries" key in your config.json file.
+ * 
+ * The mixin works by overriding the _callInternal method of qx.io.remote.Rpc,
+ * this is why it is neccessary to use qx.Class.patch() instead of qx.Class.include().
  * 
  */
 qx.Mixin.define("rpcconsole.MRpcMockup",
@@ -55,6 +66,10 @@ qx.Mixin.define("rpcconsole.MRpcMockup",
   */  
   properties :
   {
+    /**
+     * The mode of the mockup state. Can be "off" or "on", or "monitor" to 
+     * generate the mockup data.
+     */
     mockupMode :
     {
       check : ["monitor","on","off"],
