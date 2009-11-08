@@ -33,15 +33,17 @@
  * 
  * The mixin works in three modes, controlled by a new "mockupMode" 
  * property of a qx.io.remote.Rpc instance:
- * <pre>
- * 1. "off": no effect, qx.io.remote.Rpc works normally
- * 2. "monitor": qx.io.remote.Rpc works normally, but for each request,
- *    the mixin displays the path and a json string that must be stored
- *    in a file on this path for the mockup to work.
- * 3. "on": instead of sending the request to the server, the mixin retrieves
+ * <ol>
+ * <li>"off": no effect, qx.io.remote.Rpc works normally</li>
+ * <li>"monitor": qx.io.remote.Rpc works normally, but for each request,
+ *    the mixin opens a browser window with json data to store in a file.
+ *    The window contains instructions where to save this file.
+ * </li>    
+ * <li>"on": instead of sending the request to the server, the mixin retrieves
  *    the content of the file that has been created with the information of
  *    the monitor mode (2).
- * </pre>
+ * </li>
+ * </ol>
  * 
  * This mixin requires the use of the "Crypto" contribution, which you can 
  * include by adding 
