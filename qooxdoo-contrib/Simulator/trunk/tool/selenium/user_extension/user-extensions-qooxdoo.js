@@ -866,7 +866,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
   }
   
   var row = Number(additionalParamsForClick["row"]);
-  var col = null;
+  var col = 0;
   if (additionalParamsForClick["col"]) {
     col = Number(additionalParamsForClick["col"]);
   } else if (additionalParamsForClick["colId"]) {
@@ -879,7 +879,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
     col = Number(this.getQxTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
     LOG.debug("Got column index " + col + " from colName");
   } else {
-    throw new SeleniumError("No column given, specify either col, colId or colName!");
+    LOG.info("No column given, using column index 0.");
   }
   
   LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
@@ -1858,6 +1858,19 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
           return actobj;
         }
       }
+    }
+
+    // check for userData using special key:value syntax
+    if (attrib.indexOf("userData") === 0 && attval.indexOf(":") > 0 ) {
+      var keyval = attval.split(":");
+      LOG.debug("Qxh Locator: Attribute Step: Checking for userData field " + keyval[0] + " with value " + keyval[1]);
+      
+      var currval = actobj.getUserData(keyval[0]);
+      
+      var urattval = new RegExp(keyval[1]);
+      if (currval && currval.match(urattval)) {
+        return actobj;
+      }      
     }
 
     // then, check normal JS attribs
