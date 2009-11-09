@@ -48,7 +48,7 @@
     "APPLICATION"  : "demobrowser",
     "API_EXCLUDE"  : ["${APPLICATION}.demo.*"],
     "TEST_INCLUDE"   : "${APPLICATION}.*",
-    "QOOXDOO_PATH" : "../../org.qooxdoo.sdk/qooxdoo",
+    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
     "THEME"        : "demobrowser.Theme",
     "PYTHON"       : "python"
   },
