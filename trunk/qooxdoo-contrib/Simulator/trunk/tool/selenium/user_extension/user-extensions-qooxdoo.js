@@ -571,8 +571,8 @@ Selenium.prototype.getQxGlobalObject = function ()
  * <p>
  * Use quotes around qxclass when you pass it in.
  *
- * @param object {var} The object to check
- * @parame qxclass {var} The string name of the qx class type to compare against
+ * @param object {Object} The object to check
+ * @parame qxclass {String} The string name of the qx class type to compare against
  * @return returns true of object instanceof qxclass, false if not.
  */
 Selenium.prototype.isQxInstanceOf = function (object, qxclass) {
@@ -971,6 +971,63 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
       coordsXY[0] + "," + coordsXY[1] );
   }
 
+};
+
+
+/**
+ * Finds a text field/text area child control of a widget and triggers key
+ * events, as if a user was typing.
+ * EXPERIMENTAL, needs more testing.
+ *
+ * @param locator an <a href="#locators">element locator</a>
+ * @param value the value to type
+ */
+Selenium.prototype.doQxType = function(locator, value)
+{
+  // Get the widget
+  var qxWidget = this.getQxWidgetByLocator(locator);
+  // Get the child widgets
+  var extChildren = qxWidget.getChildren();
+  var intChildren = qxWidget._getChildren();
+  var children = extChildren.concat(intChildren);
+  
+  // Check for any child controls that inherit from qx.ui.form.AbstractField
+  var childFields = [];
+  for (var i=0,l=children.length; i<l; i++) {
+    if (this.isQxInstanceOf(children[i], "qx.ui.form.AbstractField")) {
+      childFields.push(children[i]);
+    }
+    // In case the instanceof check fails, look for form widget class names
+    else if (this.isQxInstanceOf(children[i], "qx.ui.form.TextField") || 
+             this.isQxInstanceOf(children[i], "qx.ui.form.TextArea")) {
+      childFields.push(children[i]);
+    }
+  }
+  
+  // Trigger the key events
+  var events = ["keydown", "keyup", "keypress"];
+  
+  for (var i=0,l=childFields.length; i<l; i++) {
+    var element = childFields[i].getContentElement().getDomElement();
+    
+    //triggerEvent(element, 'focus', false);
+    
+    for (var j=0,m=value.length; j<m; j++) {
+    
+      for (var k = 0; k < events.length; k++) {
+        triggerKeyEvent(element, events[k], value[j], true, 
+          this.browserbot.controlKeyDown, 
+          this.browserbot.altKeyDown, 
+          this.browserbot.shiftKeyDown, 
+          this.browserbot.metaKeyDown);
+      }
+      
+    }
+    
+    //triggerEvent(element, 'blur', false);
+    
+  }
+  
 };
 
 
