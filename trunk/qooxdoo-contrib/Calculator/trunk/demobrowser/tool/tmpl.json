@@ -3,7 +3,7 @@
       "library" :
       [
         {
-          "manifest" : "../../org.qooxdoo.sdk/qooxdoo/framework/Manifest.json"
+          "manifest" : "../../../qooxdoo/trunk/framework/Manifest.json"
         },
         {
           "manifest" : "Manifest.demo.json"
