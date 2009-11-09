@@ -95,7 +95,7 @@ mySim.runTest = function()
   
   this.checkArticle();
   
-  var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getContent().toString()";
+  var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getValue().toString()";
   
   var oldLabel = this.getEval(staticFeedsLabel, "Getting label of Static Feeds");
 
