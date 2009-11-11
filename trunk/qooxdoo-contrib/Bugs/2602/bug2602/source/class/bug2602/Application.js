@@ -40,9 +40,19 @@ qx.Class.define("bug2602.Application",
       {
         this.debug("keypress");
       }, this);
+      
+      
+      var textarea = new qx.ui.form.TextArea;
+      textarea.setValue("abcdefg");
+
+      textarea.addListener("keypress", function(e)
+      {
+        this.debug("keypress");
+      }, this);
 
       var doc = this.getRoot();
       doc.add(quantifyText, {left: 100, top: 50});
+      doc.add(textarea, {left: 100, top: 150});
       
       
       /*var timer = new qx.event.Timer(1000);
