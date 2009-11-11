@@ -975,59 +975,84 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
 
 /**
- * Finds a text field/text area child control of a widget and triggers key
- * events, as if a user was typing.
- * EXPERIMENTAL, needs more testing.
+ * Get all children of a widget that are instances of the given class(es).
+ * TODO: Check if we can use PageBot._getQxNodeDescendants() for this. 
+ * 
+ * @param {Object} parentWidget The parent qooxdoo widget
+ * @param {Array} classNames A list of class name strings
+ * @return {Array} A list of matching child widgets
+ */
+Selenium.prototype.getChildControls = function(parentWidget, classNames)
+{
+  // Get the child widgets  
+  var children = [];
+  try {
+    children = parentWidget._getChildren();
+  }
+  catch(ex) {}
+  
+  /* external child widgets - shouldn't be necessary to get the child controls  
+  var extChildren = [];
+  try {
+    extChildren = parentWidget.getChildren();
+  } 
+  catch(ex) {}
+  
+  children = children.concat(extChildren);
+  */
+ 
+  // Check the parent as well
+  var widgets = [parentWidget].concat(children);
+  
+  var childControls = [];
+
+  for (var i=0,l=widgets.length; i<l; i++) {
+    for (var j=0,m=classNames.length; j<m; j++) {
+      if (this.isQxInstanceOf(widgets[i], classNames[j])) {
+        childControls.push(widgets[i]);
+      }
+    }
+  }
+  
+  return childControls;
+};
+
+
+/**
+ * Simulate a user entering text into any qooxdoo widget that is either itself
+ * an instance of qx.ui.form.AbstractField or has a child control that is.
  *
- * @param locator an <a href="#locators">element locator</a>
- * @param value the value to type
+ * @param {String} locator an <a href="#locators">element locator</a>
+ * @param {String} value the value to type
  */
 Selenium.prototype.doQxType = function(locator, value)
 {
   // Get the widget
   var qxWidget = this.getQxWidgetByLocator(locator);
-  // Get the child widgets
-  var extChildren = qxWidget.getChildren();
-  var intChildren = qxWidget._getChildren();
-  var children = extChildren.concat(intChildren);
   
-  // Check for any child controls that inherit from qx.ui.form.AbstractField
-  var childFields = [];
-  for (var i=0,l=children.length; i<l; i++) {
-    if (this.isQxInstanceOf(children[i], "qx.ui.form.AbstractField")) {
-      childFields.push(children[i]);
-    }
-    // In case the instanceof check fails, look for form widget class names
-    else if (this.isQxInstanceOf(children[i], "qx.ui.form.TextField") || 
-             this.isQxInstanceOf(children[i], "qx.ui.form.TextArea")) {
-      childFields.push(children[i]);
-    }
-  }
+  var classNames = [ "qx.ui.form.AbstractField", 
+                     "qx.ui.form.TextField",
+                     "qx.ui.form.TextArea",
+                     "qx.ui.form.PasswordField"];
+  
+  var fieldWidgets = this.getChildControls(qxWidget, classNames);
   
   // Trigger the key events
   var events = ["keydown", "keyup", "keypress"];
+  var element = fieldWidgets[0].getContentElement().getDomElement();
   
-  for (var i=0,l=childFields.length; i<l; i++) {
-    var element = childFields[i].getContentElement().getDomElement();
-    
-    //triggerEvent(element, 'focus', false);
-    
-    for (var j=0,m=value.length; j<m; j++) {
-    
-      for (var k = 0; k < events.length; k++) {
-        triggerKeyEvent(element, events[k], value[j], true, 
-          this.browserbot.controlKeyDown, 
-          this.browserbot.altKeyDown, 
-          this.browserbot.shiftKeyDown, 
-          this.browserbot.metaKeyDown);
-      }
-      
+  for (var j=0,m=value.length; j<m; j++) {
+  
+    for (var k = 0; k < events.length; k++) {
+      triggerKeyEvent(element, events[k], value[j], true, 
+        this.browserbot.controlKeyDown, 
+        this.browserbot.altKeyDown, 
+        this.browserbot.shiftKeyDown, 
+        this.browserbot.metaKeyDown);
     }
     
-    //triggerEvent(element, 'blur', false);
-    
   }
-  
+
 };
 
 
@@ -1771,7 +1796,7 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
       }
     } catch(e) {
       if (curr.classname === qxclass) {
-        LOG.warn("instanceof test failed for " + qxclass + ", falling back to classname string comparison. ");
+        LOG.info("instanceof test failed for " + qxclass + ", falling back to classname string comparison. ");
         return curr;
       }
     }
