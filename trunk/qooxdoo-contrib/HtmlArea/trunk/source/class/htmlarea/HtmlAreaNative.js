@@ -854,13 +854,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
           style : qx.core.Variant.select("qx.client",
           {
             "mshtml" : 'html { margin:0px; padding:0px; } ' +
-                       'body { font-size: 100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto; background-image:none; margin:0px; padding:5px; }' +
-                       'p { margin:0px; padding:0px; } ',
+                       'body { font-size: 100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:auto; background-image:none; margin:0px; padding:5px; } ',
 
             "default" : 'html { width:100%; height:100%; margin:0px; padding:0px; overflow-y:auto; overflow-x:auto; } ' +
-                        'body { font-size:100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; } ' +
-                        'p { margin:0px; padding:0px; } '
+                        'body { font-size:100.01%; font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:visible; background-image:none; margin:0px; padding:5px; } '
           }),
+          contentStyle : 'p { margin:0px; padding:0px; }',
           body : '<body>',
           footer : '</body></html>'
         }
@@ -950,7 +949,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       var skeletonParts = this.__documentSkeletonParts[this.getContentType()];
 
-      var completeHtml = skeletonParts.html + '<head>' + skeletonParts.meta + '</head>';
+      var completeHtml = skeletonParts.html + '<head>' + skeletonParts.meta +
+                         '<style type="text/css">' + skeletonParts.contentStyle + '</style>' +
+                         '</head>';
+
       // use "'" to prevent problems with certain font names encapsulated with '"'
       completeHtml += "<body style='" + this.__getBodyStyleToExport() + "'>";
       completeHtml += this.getHtml() + '</body></html>';
@@ -1452,7 +1454,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       var skeletonParts = this.__documentSkeletonParts[this.getContentType()];
       var head = '<head>' + skeletonParts.meta +
-                 '<style type="text/css">' + overflow + skeletonParts.style + this.__styleInformation + '</style>' +
+                 '<style type="text/css">' + overflow + skeletonParts.style + skeletonParts.contentStyle + this.__styleInformation + '</style>' +
                  '</head>';
       var content = skeletonParts.body + value;
 
