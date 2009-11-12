@@ -23,12 +23,11 @@ qx.Class.define("bug2925.Application",
       var doc = this.getRoot();
 
       var listbox = new qx.ui.form.SelectBox();
-      listbox.setRich(true);
       
       for (var i = 0; i < 10; i++)
       {
         var item = new qx.ui.form.ListItem();
-        item.setRich(true);
+        i % 2 == 0 ? item.setRich(true) : item.setRich(false);
         item.setLabel("<span style='color:red'>" + i + "</span>");
         listbox.add(item);
       }
