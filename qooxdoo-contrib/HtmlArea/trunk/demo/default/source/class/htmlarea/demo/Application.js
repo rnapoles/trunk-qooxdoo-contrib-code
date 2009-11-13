@@ -114,7 +114,7 @@ qx.Class.define("htmlarea.demo.Application",
       
     __insertImageHandler : function(e)
     {
-      var attributes = { src    : qx.util.ResourceManager.toUri("htmlarea/image/qooxdoo_logo.png"),
+      var attributes = { src    : qx.util.ResourceManager.getInstance().toUri("htmlarea/image/qooxdoo_logo.png"),
                          border : 0,
                          title  : "qooxdoo logo",
                          alt    : "qooxdoo logo" };
