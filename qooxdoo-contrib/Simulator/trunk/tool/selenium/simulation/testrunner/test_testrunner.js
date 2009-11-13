@@ -8,7 +8,8 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/test/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  'debug' : true
+  'debug' : true,
+  'getAutLog' : false
 };
 
 var args = arguments ? arguments : "";
@@ -243,6 +244,10 @@ simulation.Simulation.prototype.processPackage = function(packageName)
   }
   this.logErrors();
   this.logGlobalErrors(testAppWindow);
+  
+  if (this.getConfigSetting("getAutLog")) {
+    this.logAutLog();
+  }
 
   if (this.getConfigSetting("debug")) {
     if (isPackageDone) {
@@ -338,6 +343,20 @@ simulation.Simulation.prototype.logErrors = function()
   }
 
 };
+
+
+/**
+ * Logs the HTML content of the Test Runner's AUT log component.
+ */
+simulation.Simulation.prototype.logAutLog = function()
+{
+  var logLocator = 'qxh=[@classname="testrunner.runner.TestRunner"]/qx.ui.splitpane.Pane/child[1]/qx.ui.splitpane.Pane/child[1]/child[1]/qx.ui.embed.Html';
+  var findElem = 'selenium.page().findElement(\'' + logLocator + '\')';
+  var logContent = this.getEval(findElem + '.innerHTML');
+  this.log("AUT Log contents:", "info");
+  this.log(logContent);
+};
+
 
 // - Main --------------------------------------------------------------------
 
