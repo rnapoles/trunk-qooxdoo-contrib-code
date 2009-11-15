@@ -8,14 +8,7 @@ qxjsonrpc - JSON-RPC backend for the qooxdoo JavaScript library
 -----------------------------------------------------------------------------
 
 This module contains service and server classes can be used with qooxdoo's
-RPC_* test pages. Example test server:
-
-from qxjsonrpc.test.qxrpc import TestHTTPServer
-
-srv=TestHTTPServer()
-srv.serve_forever()
-
-This module can also be run as a test server listening at 127.0.0.1:8000.
+RPC_* test pages. 
 
 Open qooxdoo's RPC 4 test, check Cross Browser mode, set URL to
 http://127.0.0.1:8000 and leave service path as qooxdoo.test.
@@ -38,20 +31,16 @@ This test server will also work with the RPC 6 test using the same settings.
 
 import time
 import datetime
-
-import qxjsonrpc
-import qxjsonrpc.http
-
 from qxjsonrpc import public, fail
 
 #============================================================================
 # Exported symbols
 
-__all__=['TestService','TestHTTPServer']
+__all__=['Test']
 
 #============================================================================
 
-class TestService(object):
+class Test(object):
     '''Test service can be used with the RPC_* test pages'''
     @public
     def echo(self, v):
@@ -130,40 +119,3 @@ class TestService(object):
     @fail
     def getFail(self):
         raise Exception('THIS METHOD SHOULD NOT BE CALLED - IT IS A REAL ERROR IF RAISED')
-
-#============================================================================
-
-class TestHTTPServer(qxjsonrpc.http.HTTPServer):
-    '''HTTP JSON-RPC server for testing. Can be used with test.html and
-    qooxdoo's RPC_4 and RPC_6 tests in cross domain mode.'''
-    def __init__(self, host='127.0.0.1', port=8000):
-        qxjsonrpc.http.HTTPServer.__init__(self, host, port, debug=True)
-        self.setService('qooxdoo.test', TestService())
-
-#============================================================================
-
-def main():
-    '''Run test server at 127.0.0.1:8000'''
-    print 'Running: qxjsonrpc %s'%qxjsonrpc.__version__.number 
-    print 'How to run tests with this server:'
-    print
-    print 'Open transports.html to test connection and HTTP methods.'
-    print 'Use RPC_4 and RPC_6 tests from qooxdoo to test TestService.'
-    print "Set 127.0.0.1:8000 as server URL and don't touch the service name."
-    print 'You should check the "Cross Domain" checkbox before testing.'
-    print 'Debugging output is enabled in the test server, watch stdout.'
-    print 'Getting an APPLICATION SPECIFIC ERROR is normal with RPC tests.'
-    print
-    print 'Ctrl-C aborts this test server.'
-    print
-    print 'Test server log output follows:'
-    print
-    srv=TestHTTPServer()
-    srv.serve_forever()
-
-#============================================================================
-
-if __name__=='__main__':
-    main()
-
-#============================================================================
