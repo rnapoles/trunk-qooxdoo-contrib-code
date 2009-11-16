@@ -2841,9 +2841,10 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       // only traverse the DOM upwards if were are not already within the body element or at the top of the document
       // -> nodeType 9 = document node
-      if (node != null && node.nodeName.toLowerCase() != "body" && node.parentNode.nodeType != 9)
+      if (node != null && node.nodeName.toLowerCase() != "body" && 
+          node.parentNode != null && node.parentNode.nodeType != 9)
       {
-        while (node.nodeName.toLowerCase() != "body")
+        while (node != null && node.nodeName.toLowerCase() != "body")
         {
           var nodename = node.nodeName.toLowerCase();
           if (nodename == "ol")
@@ -2857,8 +2858,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             break;
           }
 
-          if (computedFontSize == null || computedFontSize == "")
-          {
+          if (computedFontSize == null || computedFontSize == "") {
             computedFontSize = this._getAttribute(node, 'size');
           }
 
