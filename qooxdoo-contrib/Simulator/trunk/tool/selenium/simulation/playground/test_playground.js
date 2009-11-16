@@ -134,6 +134,10 @@ simulation.Simulation.prototype.runTest = function()
 
       var boxCont = this.killBoxes();
       
+      // Click "Run"
+      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', '', 'Pressing Run button');
+      Packages.java.lang.Thread.sleep(2000);
+      
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
       var sampleStarted = this.isSampleStarted(sampleArr[i]);
 
