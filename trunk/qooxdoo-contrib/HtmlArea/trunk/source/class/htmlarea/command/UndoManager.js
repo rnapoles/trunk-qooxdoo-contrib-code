@@ -160,7 +160,8 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
       else
       {
-        if (qx.core.Variant.isSet("qx.client", "mshtml"))
+        if (qx.core.Variant.isSet("qx.client", "mshtml") ||
+            qx.core.Variant.isSet("qx.client", "webkit"))
         {
           this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
 
@@ -322,7 +323,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       * @return {Boolean}
       */
     __undoCustom : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(undoInfo)
+      "mshtml|webkit" : function(undoInfo)
       {
         var currentContent = this.__doc.body.innerHTML;
 
@@ -393,18 +394,11 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @signature function(undoInfo)
      */
     __undoCommand : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(undoInfo) {},
+      "mshtml|webkit" : function(undoInfo) {},
 
       "default" : function(undoInfo)
       {
         this.__addToRedoStack(undoInfo);
-
-        if (qx.core.Variant.isSet("qx.client", "mshtml"))
-        {
-          if (this.__checkForNextUndoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
-            this.__executeExtraUndoStep();
-          }
-        }
 
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
@@ -499,7 +493,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
       },
 
-      "mshtml" : function(undoInfo) {},
+      "mshtml|webkit" : function(undoInfo) {},
 
       "default" : function(undoInfo)
       {
@@ -612,7 +606,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @singature function(redoInfo)
      */
     __redoCustom : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(redoInfo)
+      "mshtml|webkit" : function(redoInfo)
       {
         var currentContent = this.__doc.body.innerHTML;
 
@@ -643,20 +637,13 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @signature function(redoInfo)
      */
     __redoCommand : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(redoInfo) {},
+      "mshtml|webkit" : function(redoInfo) {},
 
       "default" : function(redoInfo)
       {
         this.__addToUndoStack(redoInfo);
 
         var result = this.__performRedo();
-
-        if (qx.core.Variant.isSet("qx.client", "mshtml"))
-        {
-          if (this.__checkForNextRedoStep("inserthtml", htmlarea.HtmlAreaNative.simpleLinebreak)) {
-            this.__executeExtraRedoStep();
-          }
-        }
 
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
@@ -791,7 +778,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @signature function(redoInfo)
      */
     __redoContent : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(redoInfo) {},
+      "mshtml|webkit" : function(redoInfo) {},
 
       "default" : function(redoInfo)
       {
@@ -869,7 +856,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @return {void}
      */
     __collectUndoInfo : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(command, value, commandObject)
+      "mshtml|webkit" : function(command, value, commandObject)
       {
         var undoObject = this.getUndoRedoObject();
         undoObject.commandObject = commandObject;
@@ -993,7 +980,8 @@ qx.Class.define("htmlarea.command.UndoManager",
          var undoObject = this.getUndoRedoObject();
          undoObject.actionType = "Content";
 
-         if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+         if (qx.core.Variant.isSet("qx.client", "mshtml") ||
+             qx.core.Variant.isSet("qx.client", "webkit")) {
            undoObject.content = this.__currentContent;
            undoObject.actionType = "Custom";
            this.__currentContent = null;
@@ -1125,7 +1113,8 @@ qx.Class.define("htmlarea.command.UndoManager",
         this.__undoPossible = true;
   
         // store current content for adding it to undo stack later
-        if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+        if (qx.core.Variant.isSet("qx.client", "mshtml") ||
+            qx.core.Variant.isSet("qx.client", "webkit")) {
           this.__currentContent = this.__doc.body.innerHTML;
         }
   
@@ -1306,7 +1295,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @return {void}
      */
     __addInternalUndoStep : qx.core.Variant.select("qx.client", {
-      "mshtml" : function() {
+      "mshtml|webkit" : function() {
         this.__collectUndoInfo("Internal", null, null);
       },
 
