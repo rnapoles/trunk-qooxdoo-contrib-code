@@ -1321,11 +1321,16 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       qx.event.Timer.once(function(e)
       {
-        var data = {
-          undo : this.isUndoPossible() ? 0 : -1,
-          redo : this.isRedoPossible() ? 0 : -1
-        };
-        this.__editorInstance.fireDataEvent("undoRedoState", data);
+        // it may happen that this asynchronous function is executed during/after
+        // the dispose phase.
+        if (this.__editorInstance != null)
+        {
+          var data = {
+            undo : this.isUndoPossible() ? 0 : -1,
+            redo : this.isRedoPossible() ? 0 : -1
+          };
+          this.__editorInstance.fireDataEvent("undoRedoState", data);
+        }
       }, this, 200);
     }
   },
