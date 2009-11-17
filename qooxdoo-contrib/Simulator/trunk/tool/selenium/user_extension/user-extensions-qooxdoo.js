@@ -1019,6 +1019,39 @@ Selenium.prototype.getChildControls = function(parentWidget, classNames)
 
 
 /**
+ * Set the value of a qooxdoo text field widget which can either be the widget
+ * returned by the given locator, or one of its child widgets. 
+ * Does not simulate key events.
+ *
+ * @param {String} locator an <a href="#locators">element locator</a>
+ * @param {String} value the value to set
+ */
+Selenium.prototype.doQxType = function(locator, value)
+{
+  // Get the widget
+  var qxWidget = this.getQxWidgetByLocator(locator);
+  
+  var classNames = [ "qx.ui.form.AbstractField", 
+                     "qx.ui.form.TextField",
+                     "qx.ui.form.TextArea",
+                     "qx.ui.form.PasswordField"];
+  
+  var fieldWidgets = this.getChildControls(qxWidget, classNames);
+  
+  // Get the DOM input element
+  var element = fieldWidgets[0].getContentElement().getDomElement();
+  
+  // The content element is a div node in qooxdoo >= 0.9-pre
+  if (element.tagName.toLowerCase() == "div") {
+    element = element.firstChild;
+  }
+  
+  element.value = value;
+
+};
+
+
+/**
  * Simulate a user entering text into any qooxdoo widget that is either itself
  * an instance of qx.ui.form.AbstractField or has a child control that is.
  *
@@ -1037,14 +1070,18 @@ Selenium.prototype.doQxTypeKeys = function(locator, value)
   
   var fieldWidgets = this.getChildControls(qxWidget, classNames);
   
-  // Trigger the key events
-  var events = ["keydown", "keyup", "keypress"];
+  // Get the DOM input element
   var element = fieldWidgets[0].getContentElement().getDomElement();
   
   // The content element is a div node in qooxdoo >= 0.9-pre
   if (element.tagName.toLowerCase() == "div") {
     element = element.firstChild;
   }
+  
+  element.focus();
+  
+  // Trigger the key events
+  var events = ["keydown", "keyup", "keypress"];
   
   for (var j=0,m=value.length; j<m; j++) {
   
