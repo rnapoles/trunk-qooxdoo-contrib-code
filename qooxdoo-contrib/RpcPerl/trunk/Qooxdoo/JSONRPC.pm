@@ -25,6 +25,10 @@ use strict;
 
 use JSON;
 
+
+# map NULL to undef
+$JSON::UnMapping=1;
+
 my $json1 = $JSON::VERSION < 2;
 
 
@@ -99,7 +103,8 @@ sub handle_request
     print STDERR "Session id: $session_id\n"
 	if $Qooxdoo::JSONRPC::debug;
 
-    print $session->header(-charset=>'utf-8');
+    print $session->header(-charset=>'utf-8',
+                           -content_type => 'text/javascript');
 
     # 'selfconvert' is enabled for date conversion. Ideally we also want
     # 'convblessed', but this then disabled 'selfconvert'.
@@ -109,6 +114,7 @@ sub handle_request
     } else {
         $json = new JSON;
         $json->convert_blessed;
+	$json->utf8;
     }
 
     # Create the RPC error state
@@ -136,12 +142,14 @@ sub handle_request
             if $Qooxdoo::JSONRPC::debug;
 
         if ($content_type =~ m{application/json})
-        {
+        {	    
             $input = $cgi->param('POSTDATA');
         }
         else
         {
             print "JSON-RPC request expected -- unexpected data received\n";
+            print STDERR "JSON-RPC request expected -- unexpected data received\n"
+                if $Qooxdoo::JSONRPC::debug;
             exit;
         }
     }
@@ -155,8 +163,10 @@ sub handle_request
         # We have what looks like a valid ScriptTransport request
         $script_transport_id = $cgi->param ('_ScriptTransport_id');
         $error->set_script_transport_id ($script_transport_id);
-
         $input = $cgi->param ('_ScriptTransport_data');
+        # sometimes the request contains escaped characters
+        # this may happen due redirection
+        $input =~ s/%([0-9a-z]{2})/chr(hex($1))/ieg;
     }
     else
     {
@@ -182,13 +192,17 @@ sub handle_request
     eval
     {
         $json_input = $json1 ? $json->jsonToObj ($input)
-                             : JSON::from_json ($input);
+                             : JSON::from_json ($input,{utf8 => 1});
     };
 
     if ($@)
     {
-        print"A bad JSON-RPC request was received which could not be parsed\n";
-        exit;
+        print STDERR "JSON Parser sais: $@\n"
+            if $Qooxdoo::JSONRPC::debug;
+        $error->set_error (JsonRpcError_Unknown,
+                           "A bad JSON-RPC request was received which could not be parsed");
+        $error->send;
+        return;
     }
 
     unless ($json_input && 
@@ -196,8 +210,12 @@ sub handle_request
             exists $json_input->{method} &&
             exists $json_input->{params})
     {
-        print "A bad JSON-RPC request was received\n";
-        exit;
+        print STDERR "A bad JSON-RPC request was received\n"
+            if $Qooxdoo::JSONRPC::debug;
+        $error->set_error (JsonRpcError_Unknown,
+                           "A bad JSON-RPC request was received");
+        $error->send;
+        return;
     }
 
     $error->set_id ($json_input->{id});
@@ -478,7 +496,8 @@ sub handle_request
 
     if (ref $result eq 'Qooxdoo::JSONRPC::error')
     {
-        $error->send_and_exit ();
+        $error->send();
+	return;
     }
 
     $result = {id     => $json_input->{id},
@@ -540,7 +559,7 @@ sub send_reply
         print STDERR "Send $reply\n" if $Qooxdoo::JSONRPC::debug;
         print $reply;
     }
-    else
+    else  
     {
         $reply = "qx.io.remote.transport.Script._requestFinished" .
             "($script_transport_id, $reply);";
