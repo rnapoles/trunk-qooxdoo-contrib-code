@@ -97,5 +97,17 @@ public class QxSelenium extends DefaultSelenium
   public String qxDragAndDropToObject(String locator, String opts) {
     return this.commandProcessor.doCommand("qxDragAndDropToObject", new String[] {locator, opts,});
   }
+  
+  public String qxType(String locator, String value) {
+    String ret = this.commandProcessor.doCommand("qxType", 
+      new String[] {locator, value, });
+    return ret;
+  }
+  
+  public String qxTypeKeys(String locator, String value) {
+    String ret = this.commandProcessor.doCommand("qxTypeKeys", 
+      new String[] {locator, value, });
+    return ret;
+  }
 
 }
