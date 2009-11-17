@@ -106,9 +106,8 @@ simulation.Simulation.prototype.runTest = function()
   if (this.getConfigSetting("debug")) {
     print("Loading application " + inspectedAppPath + " in Inspector");
   }
-  this.type("qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.form.TextField", inspectedAppPath);
-  //this.typeKeys("qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.form.TextField", "");
-  
+  // Temporary workaround until QxSelenium.qxType and qxType work reliably.
+  this.__sel.type("xpath=//input", inspectedAppPath);
   Packages.java.lang.Thread.sleep(10000);
 
   var inspectedAppLoaded = "selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication()._loadedWindow.qx.core.Init.getApplication()";
