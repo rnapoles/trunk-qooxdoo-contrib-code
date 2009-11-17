@@ -1025,7 +1025,7 @@ Selenium.prototype.getChildControls = function(parentWidget, classNames)
  * @param {String} locator an <a href="#locators">element locator</a>
  * @param {String} value the value to type
  */
-Selenium.prototype.doQxType = function(locator, value)
+Selenium.prototype.doQxTypeKeys = function(locator, value)
 {
   // Get the widget
   var qxWidget = this.getQxWidgetByLocator(locator);
@@ -1040,6 +1040,11 @@ Selenium.prototype.doQxType = function(locator, value)
   // Trigger the key events
   var events = ["keydown", "keyup", "keypress"];
   var element = fieldWidgets[0].getContentElement().getDomElement();
+  
+  // The content element is a div node in qooxdoo >= 0.9-pre
+  if (element.tagName.toLowerCase() == "div") {
+    element = element.firstChild;
+  }
   
   for (var j=0,m=value.length; j<m; j++) {
   
