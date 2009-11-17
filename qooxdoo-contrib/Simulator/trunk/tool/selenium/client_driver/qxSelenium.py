@@ -69,6 +69,12 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
         else:
             return self.do_command("qxDragAndDropToObject", [locator, opts,])
 
+    def qxType(self, locator, value):
+        return self.do_command("qxType", [locator, value,])
+    
+    def qxTypeKeys(self, locator, value):
+        return self.do_command("qxTypeKeys", [locator, value,])
+
     def get_viewport(self):
         return self.do_command("getViewport", [])
 
@@ -83,4 +89,3 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
             return self.do_command("captureScreenshot", [filename,])
         else:
             return self.do_command("captureScreenshot", [filename, geometry,])
-
