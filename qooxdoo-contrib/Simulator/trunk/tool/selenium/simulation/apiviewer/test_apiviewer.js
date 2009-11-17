@@ -1,7 +1,7 @@
 var baseConf = {
   'autName' : 'APIViewer',
   'globalTimeout' : 300000,
-  'stepSpeed' : '250',
+  'stepSpeed' : '500',
   'selServer' : 'localhost',
   'selPort' : 4444,
   'testBrowser' : '*custom /usr/lib/firefox-3.0.10/firefox -no-remote -P selenium-3',
@@ -58,12 +58,19 @@ simulation.Simulation.prototype.runTest = function()
 simulation.Simulation.prototype.checkSearch = function()
 {
   this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[1]", "", "Clicking search button");
-  
-  this.type("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
-  // execute typeKeys once so all needed events are fired. 
-  this.typeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "w");
-  
+  /*
+  this.qxType("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
   Packages.java.lang.Thread.sleep(2000);
+  // execute typeKeys once so all needed events are fired.
+  this.qxTypeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "w");
+  */
+ 
+  // Temporary workaround until QxSelenium.qxType and qxType work reliably.
+  this.__sel.type("xpath=//input", "qx.ui.window.Windo");
+  // execute typeKeys once so all needed events are fired.
+  this.__sel.typeKeys("xpath=//input", "w");
+  
+  Packages.java.lang.Thread.sleep(1000);
   
   this.qxTableClick("qxh=app:viewer/[@_searchView]/qx.ui.table.Table","row=0");
   
@@ -72,7 +79,7 @@ simulation.Simulation.prototype.checkSearch = function()
   // Check if the HTML embed's content has changed.
   var classViewerHtmlScript = selWin + '.document.getElementById("ClassViewer").innerHTML';
   var classViewerHtml = this.getEval(classViewerHtmlScript);
-  if (!(classViewerHtml.indexOf("qx.ui.window") > 0)) {
+  if (!(classViewerHtml.indexOf("qx.ui.window.Window") > 0)) {
     this.log("Unexpected class viewer HTML content", "error");
   }
   else {
