@@ -1353,6 +1353,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     catch(e) {}
 
     this._disposeObjects("__commandManager");
-    this._disposeFields("__editorInstance", "__undoStack", "__redoStack", "_commands", "__doc", "__knownActionTypes", "__registeredHandler");
+    this.__editorInstance = this.__undoStack = this.__redoStack = this._commands = this.__doc = null;
+    this.__knownActionTypes = this.__registeredHandler = null;
   }
 });
