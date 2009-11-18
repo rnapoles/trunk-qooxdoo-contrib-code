@@ -1762,15 +1762,19 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       }
       else if (qx.core.Variant.isSet("qx.client", "webkit"))
       {
-        if (isCtrlPressed && this.getInsertLinebreakOnCtrlEnter() && 
-            keyIdentifier == "enter")
+        if (isCtrlPressed) 
         {
-          this.__insertWebkitLineBreak();
-
-          e.preventDefault();
-          e.stopPropagation();
-
-          this.__startExamineCursorContext();
+          if (this.getInsertLinebreakOnCtrlEnter() && keyIdentifier == "enter")
+          {
+            this.__insertWebkitLineBreak();
+  
+            e.preventDefault();
+            e.stopPropagation();
+  
+            this.__startExamineCursorContext();
+          }
+          
+          this.__controlPressed = false;
         }
       }
     },
