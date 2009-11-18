@@ -3313,8 +3313,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
     this._disposeObjects("__commandManager");
 
-    this._disposeFields("__handleFocusEvent", "__handleBlurEvent",
-                        "__handleFocusOutEvent", "handleMouseUpOnBody", "__handleMouseUpOnDocument", 
-                        "__documentSkeletonParts", "__iframe", "__widget");
+    this.__handleFocusEvent = this.__handleBlurEvent = this.__handleFocusOutEvent = null;
+    this.handleMouseUpOnBody = this.__handleMouseUpOnDocument = this.__documentSkeletonParts = null;
+    this.__iframe = this.__widget = null; 
   }
 });
