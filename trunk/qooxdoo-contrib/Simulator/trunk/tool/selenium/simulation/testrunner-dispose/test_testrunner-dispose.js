@@ -105,7 +105,7 @@ simulation.Simulation.prototype.processPackage = function(packageName)
     print("Loading package: " + packageName);
   }
   // Enter the test app URI with the current package's name after 'testclass='.
-  this.type("dom=document.getElementsByTagName('input')[0]", this.autUri + packageName);
+  this.qxType("xpath=//input", this.autUri + packageName);
   this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");
 
   var isAutReady = this.waitForCondition(isStatusReady, 120000,

@@ -452,7 +452,7 @@ simulation.Simulation.prototype.qxClick = function(locator, options, description
 };
 
 /**
- * Wrapper around Selenium's type() that catches and logs any exceptions so 
+ * Wrapper around QxSelenium's qxType() that catches and logs any exceptions so 
  * they won't cause the entire test to fail.
  * 
  * @param locator {String} Selenium locator identifying the element that should
@@ -462,7 +462,7 @@ simulation.Simulation.prototype.qxClick = function(locator, options, description
  * @throw an exception if no locator or text were specified
  * @return {void}
  */
-simulation.Simulation.prototype.type = function(locator, text, keys)
+simulation.Simulation.prototype.qxType = function(locator, text, keys)
 {
   if (!locator) {
     throw new Error("No locator specified for type()");
@@ -476,19 +476,19 @@ simulation.Simulation.prototype.type = function(locator, text, keys)
     print("Typing: " + text);
   }
   
-  var selCmd = keys ? "typeKeys" : "type"; 
+  var qxSelCmd = keys ? "qxTypeKeys" : "qxType"; 
 
   try {
-    this.__sel[selCmd](locator, text);
+    this.__sel[qxSelCmd](locator, text);
   }
   catch(ex) {
-    print("ERROR: Unable to enter text: " + ex + " \nText:\n  " + text);
+    this.log("Unable to enter text: " + ex + " \nText:\n  " + text, "error");
   }
 };
 
 /**
- * Wrapper around Selenium's typeKeys() that catches and logs any exceptions so 
- * they won't cause the entire test to fail.
+ * Wrapper around QxSelenium's qxTypeKeys() that catches and logs any exceptions 
+ * so they won't cause the entire test to fail.
  * 
  * @param locator {String} Selenium locator identifying the element that should
  *   receive the keydown/keyup/keypress events 
@@ -496,9 +496,9 @@ simulation.Simulation.prototype.type = function(locator, text, keys)
  * @throw an exception if no locator or text were specified
  * @return {void}
  */
-simulation.Simulation.prototype.typeKeys = function(locator, text)
+simulation.Simulation.prototype.qxTypeKeys = function(locator, text)
 {
-  this.type(locator, text, true);
+  this.qxType(locator, text, true);
 };
 
 /**
