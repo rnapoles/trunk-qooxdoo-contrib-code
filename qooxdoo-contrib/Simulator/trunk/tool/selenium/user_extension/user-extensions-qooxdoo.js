@@ -1047,7 +1047,10 @@ Selenium.prototype.doQxType = function(locator, value)
     element = this.page().findElement(locator);
   }
   
-  element.value = value;
+  if (this.browserbot.shiftKeyDown) {
+    value = value.toUpperCase();
+  }
+  this.browserbot.replaceText(element, value);
 
 };
 
