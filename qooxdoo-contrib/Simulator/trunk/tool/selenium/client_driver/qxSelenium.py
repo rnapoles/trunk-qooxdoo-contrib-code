@@ -56,6 +56,9 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
             return self.do_command("getQxTableValue", [locator,])
         else:
             return self.do_command("getQxTableValue", [locator, opts,])
+          
+    def qxObjectExecFunction(self, locator, functionName):
+        return self.do_command("getQxObjectFunction", [locator, functionName,])
 
     def qxDragAndDrop(self, locator, opts=None):
         if opts==None:
