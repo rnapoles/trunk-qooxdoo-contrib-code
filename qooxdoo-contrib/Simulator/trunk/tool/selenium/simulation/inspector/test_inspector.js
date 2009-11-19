@@ -106,8 +106,7 @@ simulation.Simulation.prototype.runTest = function()
   if (this.getConfigSetting("debug")) {
     print("Loading application " + inspectedAppPath + " in Inspector");
   }
-  // Temporary workaround until QxSelenium.qxType and qxType work reliably.
-  this.__sel.type("xpath=//input", inspectedAppPath);
+  this.qxType("xpath=//input", inspectedAppPath);
   Packages.java.lang.Thread.sleep(10000);
 
   var inspectedAppLoaded = "selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication()._loadedWindow.qx.core.Init.getApplication()";

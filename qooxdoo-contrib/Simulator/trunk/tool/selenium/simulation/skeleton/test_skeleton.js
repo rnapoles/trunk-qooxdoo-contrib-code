@@ -30,7 +30,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 simulation.Simulation.prototype.bomTest = function()
 {
   this.__sel.focus('//html/body/div[@id="logger"]');
-  this.typeKeys('//html/body/div[@id="logger"]', 'A');
+  this.qxTypeKeys('//html/body/div[@id="logger"]', 'A');
   var divContent = this.getEval(selWin + '.document.getElementById("logger").innerHTML', "Getting logger div content.");
   if (divContent.indexOf("A") === 0) {
     this.log("qooxdoo event system seems to work.", "info");
