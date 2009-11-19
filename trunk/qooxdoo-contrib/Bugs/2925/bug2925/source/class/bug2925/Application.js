@@ -32,7 +32,7 @@ qx.Class.define("bug2925.Application",
         listbox.add(item);
       }
       
-      doc.add(listbox, {left:50, top: 50, right: 50});
+      doc.add(listbox, {left:50, top: 50});
     }
   }
 });
