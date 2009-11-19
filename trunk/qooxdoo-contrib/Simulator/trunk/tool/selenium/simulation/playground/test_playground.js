@@ -94,6 +94,7 @@ simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample)
 
 simulation.Simulation.prototype.runTest = function()
 {
+  //this.__sel.windowmaximize();
   // Make sure the locale is 'en' to simplify dealing with log messages.
   var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";
   this.runScript(setLocale, "Setting application locale to EN");    
@@ -113,31 +114,29 @@ simulation.Simulation.prototype.runTest = function()
   // Log any errors that might have occurred since the application was started 
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
-
+      
+  var sampleMenuButtonLocator = 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton';
+  var sampleMenuLocator = sampleMenuButtonLocator + '/qx.ui.menu.Menu';
+  
+  // Click the menu button so the menu is created
+  this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
+  var sampleMenuFirstChild = this.__sel.qxObjectExecFunction(sampleMenuLocator + '/child[0]', 'toString');
+  
+  if (sampleMenuFirstChild.indexOf("MenuSlideBar") > 0) {
+    sampleMenuLocator += '/qx.ui.menu.MenuSlideBar';
+  }
+  // Close the menu
+  this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
+  
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
       print("Selecting next sample: " + sampleArr[i]);
-      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton', '', 'Clicking menu button');
-      
-      /* Since Selenium starts the browser in windowed mode, the menu might have 
-       * scrolling arrows. In that case, the locator must include the additional
-       * MenuSlideBarWidget.
-       */
-      try {
-        // use Selenium's qxClick (without the wrapper) so exceptions won't be caught.
-        this.__sel.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/child[' + i + ']');
-      }
-      catch(ex) {
-        // try again with the MenuSlideBar
-        this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/qx.ui.menu.MenuSlideBar/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
-      }      
+      this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
+	  this.qxClick(sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
 
       var boxCont = this.killBoxes();
-      
-      // Click "Run"
-      this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', '', 'Pressing Run button');
-      Packages.java.lang.Thread.sleep(2000);
-      
+	  Packages.java.lang.Thread.sleep(2000);
+	  
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
       var sampleStarted = this.isSampleStarted(sampleArr[i]);
 
