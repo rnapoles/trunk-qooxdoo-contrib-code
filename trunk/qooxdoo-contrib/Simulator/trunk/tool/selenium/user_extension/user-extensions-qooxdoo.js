@@ -1028,22 +1028,23 @@ Selenium.prototype.getChildControls = function(parentWidget, classNames)
  */
 Selenium.prototype.doQxType = function(locator, value)
 {
-  // Get the widget
-  var qxWidget = this.getQxWidgetByLocator(locator);
-  
-  var classNames = [ "qx.ui.form.AbstractField", 
-                     "qx.ui.form.TextField",
-                     "qx.ui.form.TextArea",
-                     "qx.ui.form.PasswordField"];
-  
-  var fieldWidgets = this.getChildControls(qxWidget, classNames);
-  
-  // Get the DOM input element
-  var element = fieldWidgets[0].getContentElement().getDomElement();
-  
-  // The content element is a div node in qooxdoo >= 0.9-pre
-  if (element.tagName.toLowerCase() == "div") {
-    element = element.firstChild;
+  // qooxdoo locator
+  if (locator.substr(0, 2) == "qx") {
+    // Get the widget
+    var qxWidget = this.getQxWidgetByLocator(locator);
+    
+    var classNames = ["qx.ui.form.AbstractField", "qx.ui.form.TextField", 
+                      "qx.ui.form.TextArea", "qx.ui.form.PasswordField"];
+    
+    var fieldWidgets = this.getChildControls(qxWidget, classNames);
+    
+    // Get the DOM input element
+    var element = fieldWidgets[0].getContentElement().getDomElement();
+    
+  } 
+  // Selenium locator
+  else {
+    element = this.page().findElement(locator);
   }
   
   element.value = value;
@@ -1060,28 +1061,27 @@ Selenium.prototype.doQxType = function(locator, value)
  */
 Selenium.prototype.doQxTypeKeys = function(locator, value)
 {
-  // Get the widget
-  var qxWidget = this.getQxWidgetByLocator(locator);
-  
-  var classNames = [ "qx.ui.form.AbstractField", 
-                     "qx.ui.form.TextField",
-                     "qx.ui.form.TextArea",
-                     "qx.ui.form.PasswordField"];
-  
-  var fieldWidgets = this.getChildControls(qxWidget, classNames);
-  
-  // Get the DOM input element
-  var element = fieldWidgets[0].getContentElement().getDomElement();
-  
-  // The content element is a div node in qooxdoo >= 0.9-pre
-  if (element.tagName.toLowerCase() == "div") {
-    element = element.firstChild;
+  // qooxdoo locator
+  if (locator.substr(0, 2) == "qx") {
+    // Get the widget
+    var qxWidget = this.getQxWidgetByLocator(locator);
+    
+    var classNames = ["qx.ui.form.AbstractField", "qx.ui.form.TextField", "qx.ui.form.TextArea", "qx.ui.form.PasswordField"];
+    
+    var fieldWidgets = this.getChildControls(qxWidget, classNames);
+    
+    // Get the DOM input element
+    var element = fieldWidgets[0].getContentElement().getDomElement();
+  }
+  // Selenium locator
+  else {
+    element = this.page().findElement(locator);
   }
   
   element.focus();
   
   // Trigger the key events
-  var events = ["keydown", "keyup", "keypress"];
+  var events = ["keydown", "keypress", "keyup"];
   
   for (var j=0,m=value.length; j<m; j++) {
   
