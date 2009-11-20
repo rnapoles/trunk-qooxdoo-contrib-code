@@ -380,17 +380,65 @@ qx.Class.define("qooxit.Application",
       widgetFactorySource.editor.selectLines(endPoint, 0);
 
       // The new insert point is the previous end point, but CodeMirror
-      // requires a point not at the end of a line.
+      // requires a point on the previous line for the new insert point
       endPoint = widgetFactorySource.editor.nthLine(startLine + lines - 1);
       widgetFactorySource.editor.insertPoint = endPoint;
 
       //
-      // Generate the Application code
+      // Generate the Application code.
       //
-
 
       // Clear the selection from the source tree
       sourceTree.resetSelection();
+
+      // Determine the starting line number in the widget factory
+      var startLine = applicationSource.editor.lineNumber(
+        applicationSource.editor.insertPoint);
+
+      // If there has been anything added previously then add a comma
+      var comma = (startLine > 4 ? ",\n\n\n" : "\n");
+
+      // Write the Application code.
+      // First, if there's a comment...
+      if (options.comment)
+      {
+        // ... then add it.
+        text += "// " + options.comment + "\n";
+      }
+
+      // Assign a call to the factory method to the specified named variable
+      text +=
+        "var " + options.name + " = " +
+        "custom.WidgetFactory." + className + "(\n" +
+        "{\n" +
+        qx.util.Json.stringify(options, true) +
+        "});\n";
+
+      // Determine how many lines long the text is including
+      // the extra newlines we'll prepend
+      var lines = text.split("\n").length;
+
+      // Insert the new text
+      applicationSource.editor.insertIntoLine(
+        applicationSource.editor.insertPoint,
+        "end",
+        text);
+
+      // Reindent the new text using internal indentRegion()
+      var startPoint = applicationSource.editor.insertPoint;
+      var endPoint = applicationSource.editor.nthLine(startLine + lines);
+      applicationSource.editor.editor.indentRegion(
+        applicationSource.editor.nthLine(3), endPoint);
+
+      // Remove the selection indication
+//      applicationSource.editor.selectLines(startPoint, endPoint);
+      applicationSource.editor.selectLines(endPoint, 0);
+
+      // The new insert point is the previous end point, but CodeMirror
+      // requires a point on the previous line for the new insert point
+      endPoint = applicationSource.editor.nthLine(startLine + lines - 1);
+      applicationSource.editor.insertPoint = endPoint;
+
     },
 
     /**
