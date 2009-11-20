@@ -329,39 +329,65 @@ qx.Class.define("qooxit.Application",
       // Save the object with its node in the Application tree
       subFolder.setUserData("object", o);
 
-      // Create the class name from the class instance
-      var className = classInstance.basename;
+      //
+      // Generate the WidgetFactory code
+      //
+
+      // Create the class name from the class instance. We'll strip off the
+      // everything that's not generic (the first few components) and then
+      // create camelcase with a leading lower-case letter.
+      var classNameParts = classInstance.classname.split(".");
+      classNameParts.shift();   // remove qooxit
+      classNameParts.shift();   // remove library
+      classNameParts[0] = qx.lang.String.firstLow(classNameParts[0]);
+      for (var i = 1; i < classNameParts.length; i++)
+      {
+        classNameParts[i] = qx.lang.String.firstUp(classNameParts[i]);
+      }
+      var className = classNameParts.join("");
+
+      // Determine the starting line number in the widget factory
+      var startLine = widgetFactorySource.editor.lineNumber(
+        widgetFactorySource.editor.insertPoint);
+
+      // If there has been anything added previously then add a comma
+      var comma = (startLine > 4 ? ",\n\n\n" : "\n");
 
       // Write the Application code
       var text =
-        "\n" +
+        comma +
         className + " : " +
-        classInstance.factory.toString() +
-        "\n\n";
+        classInstance.factory.toString();
 
       // Determine how many lines long the text is including
-      // the extra newline we'll prepend
-      var lines = text.split("\n").length + 1;
+      // the extra newlines we'll prepend
+      var lines = text.split("\n").length;
 
       // Insert the new text
-      var startLine = widgetFactorySource.editor.lineNumber(
-        widgetFactorySource.editor.insertPoint);
       widgetFactorySource.editor.insertIntoLine(
         widgetFactorySource.editor.insertPoint,
         "end",
         text);
 
       // Reindent the new text using internal indentRegion()
+      var startPoint = widgetFactorySource.editor.insertPoint;
       var endPoint = widgetFactorySource.editor.nthLine(startLine + lines);
       widgetFactorySource.editor.editor.indentRegion(
-        widgetFactorySource.editor.insertPoint,
-        endPoint);
+        widgetFactorySource.editor.nthLine(3), endPoint);
 
       // Remove the selection indication
+//      widgetFactorySource.editor.selectLines(startPoint, endPoint);
       widgetFactorySource.editor.selectLines(endPoint, 0);
 
-      // The new insert point is the previous end point
+      // The new insert point is the previous end point, but CodeMirror
+      // requires a point not at the end of a line.
+      endPoint = widgetFactorySource.editor.nthLine(startLine + lines - 1);
       widgetFactorySource.editor.insertPoint = endPoint;
+
+      //
+      // Generate the Application code
+      //
+
 
       // Clear the selection from the source tree
       sourceTree.resetSelection();
