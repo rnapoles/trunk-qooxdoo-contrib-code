@@ -1086,16 +1086,17 @@ Selenium.prototype.doQxTypeKeys = function(locator, value)
   // Trigger the key events
   var events = ["keydown", "keypress", "keyup"];
   
-  for (var j=0,m=value.length; j<m; j++) {
+  var keys = new String(value).split("");
   
+  for (var i = 0; i < keys.length; i++) {
+    var c = keys[i];
     for (var k = 0; k < events.length; k++) {
-      triggerKeyEvent(element, events[k], value[j], true, 
+      triggerKeyEvent(element, events[k], c, true, 
         this.browserbot.controlKeyDown, 
         this.browserbot.altKeyDown, 
         this.browserbot.shiftKeyDown, 
         this.browserbot.metaKeyDown);
     }
-    
   }
 
 };
