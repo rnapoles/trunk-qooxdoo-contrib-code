@@ -438,6 +438,12 @@ var select = {};
     // Helper for selecting a range object.
     function selectRange(range, window) {
       var selection = window.getSelection();
+
+      // djl...
+      if (!selection || selection.rangeCount == 0)
+        return;
+      // ...djl
+
       selection.removeAllRanges();
       selection.addRange(range);
     };
