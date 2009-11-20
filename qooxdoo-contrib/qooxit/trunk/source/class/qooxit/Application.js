@@ -98,7 +98,8 @@ qx.Class.define("qooxit.Application",
             editor.insertPoint =
               editor.prevLine(
                 editor.prevLine(
-                  editor.lastLine()));
+                  editor.prevLine(
+                    editor.lastLine())));
           }
         };
 
@@ -329,29 +330,38 @@ qx.Class.define("qooxit.Application",
       subFolder.setUserData("object", o);
 
       // Create the class name from the class instance
-      var className =
-        classInstance.basename +
-        "." +
-        classInstance.classname;
-      var getClassInstance =
-        className + ".getInstance()";
+      var className = classInstance.basename;
 
-/*
       // Write the Application code
-      applicationSource.insertIntoLine(
-        handle,
-        "end",
+      var text =
         "\n" +
-        "(function()\n" +
-          "{\n" +
-          "  var className = " + className + ";\n" +
-          "  var fFactory =\n" +
-          "    qx.lang.Function.bind(" + getClassInstance + ".factory,\n" +
-          "                          classInstance);\n" +
-          "  var o = fFactory(" + options + ");\n" +
-          "}\n" +
-          ")();\n\n");
-*/
+        className + " : " +
+        classInstance.factory.toString() +
+        "\n\n";
+
+      // Determine how many lines long the text is including
+      // the extra newline we'll prepend
+      var lines = text.split("\n").length + 1;
+
+      // Insert the new text
+      var startLine = widgetFactorySource.editor.lineNumber(
+        widgetFactorySource.editor.insertPoint);
+      widgetFactorySource.editor.insertIntoLine(
+        widgetFactorySource.editor.insertPoint,
+        "end",
+        text);
+
+      // Reindent the new text using internal indentRegion()
+      var endPoint = widgetFactorySource.editor.nthLine(startLine + lines);
+      widgetFactorySource.editor.editor.indentRegion(
+        widgetFactorySource.editor.insertPoint,
+        endPoint);
+
+      // Remove the selection indication
+      widgetFactorySource.editor.selectLines(endPoint, 0);
+
+      // The new insert point is the previous end point
+      widgetFactorySource.editor.insertPoint = endPoint;
 
       // Clear the selection from the source tree
       sourceTree.resetSelection();
