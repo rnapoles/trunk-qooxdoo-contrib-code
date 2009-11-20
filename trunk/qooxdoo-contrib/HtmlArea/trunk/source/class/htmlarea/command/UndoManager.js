@@ -694,6 +694,10 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __getFocusedParagraph : function()
     {
+      if (this.__editorInstance == null) {
+        return null;
+      }
+
       var selection = this.__editorInstance.getSelection();
       var focusNode = selection.focusNode;
 
@@ -870,6 +874,10 @@ qx.Class.define("htmlarea.command.UndoManager",
 
       "default" : function(command, value, commandObject)
       {
+        if (this.__editorInstance == null) {
+          return;
+        }
+
         var undoObject = this.getUndoRedoObject();
         undoObject.commandObject = commandObject;
         undoObject.command = command;
@@ -1169,6 +1177,10 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       "gecko" : function(e)
       {
+        if (this.__editorInstance == null) {
+          return;
+        }
+
         var sel = this.__editorInstance.getSelection();
         if (!sel)
         {
@@ -1177,18 +1189,14 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
 
         var anchorNode = sel.anchorNode;
-
         var checkNode = anchorNode.childNodes[sel.anchorOffset];
-        /* We have direct access to the currently selected node (e.g. an image) */
+
+        // We have direct access to the currently selected node (e.g. an image)
         if (checkNode && checkNode.nodeName.toLowerCase() == "img")
         {
-          /*
-           * Check for stored element
-           * Store the element if is not available
-           * otherwise compare the current image element with the stored one
-           */
-          if (this.__selectedNode == null)
-          {
+          // Store the element if is not available
+          // otherwise compare the current image element with the stored one
+          if (this.__selectedNode == null) {
             this.__selectedNode = checkNode.cloneNode(true);
           }
           else
@@ -1196,29 +1204,23 @@ qx.Class.define("htmlarea.command.UndoManager",
             if (this.__selectedNode.style.width != checkNode.style.width ||
                 this.__selectedNode.style.height != checkNode.style.height)
             {
-              /* A change occured -> add undo step and update the stored element */
+              // A change occured -> add undo step and update the stored element
               this.__addInternalUndoStep();
               this.__selectedNode = checkNode.cloneNode(true);
-              return;
             }
           }
         }
-        else if (anchorNode.nodeName.toLowerCase() == "td" || anchorNode.parentNode.nodeName.toLowerCase() == "td")
+        else if (anchorNode.nodeName.toLowerCase() == "td" || 
+                 anchorNode.parentNode.nodeName.toLowerCase() == "td")
         {
           var tableNode = anchorNode.parentNode;
-          /* Traverse up to the "table" element */
-          while (tableNode.nodeName.toLowerCase() != "table")
-          {
+          while (tableNode.nodeName.toLowerCase() != "table") {
             tableNode = tableNode.parentNode;
           }
 
-          /*
-           * Check for stored element
-           * Store the element if is not available
-           * otherwise compare the current table element with the stored one
-           */
-          if (this.__selectedNode == null)
-          {
+          // Store the element if is not available
+          // otherwise compare the current table element with the stored one
+          if (this.__selectedNode == null) {
             this.__selectedNode = tableNode.cloneNode(true);
           }
           else
@@ -1230,21 +1232,19 @@ qx.Class.define("htmlarea.command.UndoManager",
              */
             qx.event.Timer.once(function()
             {
-              /* Compare width and height and innerHTML */
+              // Compare width and height and innerHTML
               if (tableNode.style.width != this.__selectedNode.style.width ||
                   tableNode.style.height != this.__selectedNode.style.height ||
                   tableNode.innerHTML != this.__selectedNode.innerHTML)
               {
-                /* A change occured -> add undo step and update the stored element */
+                // A change occured -> add undo step and update the stored element
                 this.__addInternalUndoStep();
                 this.__selectedNode = tableNode.cloneNode(true);
               }
             }, this, 0);
           }
         }
-        else
-        {
-          /* Reset the stored element for every other case */
+        else {
           this.__selectedNode = null;
         }
       },
