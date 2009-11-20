@@ -50,259 +50,8 @@ qx.Class.define("qooxit.Application",
         qx.log.appender.Console;
       }
 
-      // Create a splitpane as the main workspace
-      var horizSplit = new qx.ui.splitpane.Pane("horizontal");
-      this.getRoot().add(horizSplit, { edge : 0 });
-
-      // Create a VBox for the left pane
-      var leftPane = new qx.ui.container.Composite(new qx.ui.layout.VBox());
-      horizSplit.add(leftPane, 1);
-
-      // Create a VBox for the right pane
-      var rightPane = new qx.ui.container.Composite(new qx.ui.layout.VBox());
-      horizSplit.add(rightPane, 2);
-
-      //
-      // The right pane shows the generated source code, or the generated page.
-      // Add a tabview to select which.
-      //
-      var tabView = new qx.ui.tabview.TabView();
-      rightPane.add(tabView, { flex : 1 } );
-
-      // Create the Live page
-      var pageLive = new qx.ui.tabview.Page(this.tr("Live Application View"));
-      pageLive.setLayout(new qx.ui.layout.VBox());
-      tabView.add(pageLive);
-
-      // Create the WidgetFactory.js page
-      var pageWidgetFactory = new qx.ui.tabview.Page("WidgetFactory.js");
-      tabView.add(pageWidgetFactory);
-
-      // Create the initialization text
-      var initText =
-        'qx.Class.define("custom.WidgetFactory",\n' +
-        '{\n' +
-        '  statics :\n' +
-        '  {\n' +
-        '  }\n' +
-        '});\n';
-
-      var widgetFactorySource =
-        {
-          page   : pageWidgetFactory,
-          editor : null,
-          text   : initText,
-          appear : function(editor)
-          {
-            // Find the initial insertion point: 3 lines before the end
-            editor.insertPoint =
-              editor.prevLine(
-                editor.prevLine(
-                  editor.prevLine(
-                    editor.lastLine())));
-          }
-        };
-
-      this.createSourceEditor(widgetFactorySource);
-
-      // Create the Application.js page
-      var pageApplication = new qx.ui.tabview.Page("Application.js");
-      pageApplication.setLayout(new qx.ui.layout.Canvas()); // simulate root
-      tabView.add(pageApplication);
-
-      // Create the initialization text
-      initText =
-        'qx.Class.define("custom.Application",\n' +
-        '{\n' +
-        '  extend : qx.application.Standalone,\n' +
-        '\n' +
-        '  members :\n' +
-        '  {\n' +
-        '    main : function()\n' +
-        '    {\n' +
-        '      // Call super class\n' +
-        '      this.base(arguments);\n' +
-        '\n' +
-        '      // Enable logging in debug variant\n' +
-        '      if (qx.core.Variant.isSet("qx.debug", "on"))\n' +
-        '      {\n' +
-        '        // support native logging capabilities,\n' +
-        '        // e.g. Firebug for Firefox\n' +
-        '        qx.log.appender.Native;\n' +
-        '\n' +
-        '        // support additional cross-browser console.\n' +
-        '        // Press F7 to toggle visibility\n' +
-        '        qx.log.appender.Console;\n' +
-        '      }\n' +
-        '\n' +
-        '    }\n' +
-        '  }\n' +
-        '});\n';
-
-      var applicationSource =
-        {
-          page   : pageApplication,
-          editor : null,
-          text   : initText,
-          appear : function(editor)
-          {
-            // Find the initial insertion point: 3 lines before the end
-            editor.insertPoint =
-              editor.prevLine(
-                editor.prevLine(
-                  editor.prevLine(
-                    editor.prevLine(
-                      editor.lastLine()))));
-          }
-        };
-
-      this.createSourceEditor(applicationSource);
-
-
-
-      //
-      // The left pane shows two trees. The top is the available widgets; the
-      // bottom is  the hierarchical representation of the application being
-      // built.
-      //
-
-      // Add a top label
-      var label = new qx.ui.basic.Label();
-      label.setRich(true);
-      label.setValue(this.tr("Available Layouts & Widgets ") +
-                     "<span style='color:blue; font-weight:bold;'>" +
-                     this.tr("(drag from this tree)") +
-                     "</span>");
-      leftPane.add(label);
-
-      // Add the available layouts and widgets tree
-      var availableTree = new qx.ui.tree.Tree();
-      leftPane.add(availableTree, { flex : 2 } );
-
-      // Create the (hidden) root of the available layouts and widgets tree
-      var availableRoot = new qx.ui.tree.TreeFolder("Root");
-      availableRoot.setOpen(true);
-      availableTree.setRoot(availableRoot);
-      availableTree.setHideRoot(true);
-
-      // Add a top label
-      label = new qx.ui.basic.Label();
-      label.setRich(true);
-      label.setValue(this.tr("Application Layout & Widget Hierarchy ") +
-                     "<span style='color:blue; font-weight:bold;'>" +
-                     this.tr("(drag to or within this tree, or right-click)") +
-                     "</span>");
-      leftPane.add(label);
-
-      // Add the application hierarchy tree
-      var applicationTree = new qx.ui.tree.Tree();
-      applicationTree.setDroppable(true);
-
-      applicationTree.addListener(
-        "drop",
-        function(e)
-        {
-          var classInstance = e.getData("qooxit/available");
-          var orig = e.getOriginalTarget();
-          var folder = orig.getLayoutParent();
-          var related = e.getRelatedTarget();
-          var label = related.getLabel();
-          var sourceTree = related.getTree();
-
-/*
-          this.debug("related=" + related +
-                     ", source label=" + related.getLabel() +
-                     ", dropTarget=" + e.getTarget() +
-                     ", origTarget=" + folder +
-                     ", dest label=" + folder.getLabel());
-*/
-          
-          // Get the default options
-          var options = {};
-          if (classInstance.getDefaultOptions)
-          {
-            options =
-              qx.lang.Function.bind(classInstance.getDefaultOptions,
-                                    classInstance)();
-          }
-
-
-          // If there's an options specification provided...
-          if (classInstance.getOptionsSpec)
-          {
-            // Get it for options retrieval
-            var spec =
-              qx.lang.Function.bind(classInstance.getOptionsSpec,
-                                    classInstance)();
-
-            // Determine dropped widget type (used in title of options window)
-            var type = related.getLabel();
-
-            // Generate the options window for the user to make selections
-            var fOptionsWindow =
-              qx.lang.Function.bind(classInstance.optionsWindow,
-                                    classInstance);
-            var optionsWin = fOptionsWindow(type, spec, options);
-
-            // When the options window closes, retrieve the options, add a node
-            // to the Application tree, and use the factory to add the class
-            // to the Live Application View
-            optionsWin.addListener(
-              "close",
-              function(e)
-              {
-                // Retrieve the selected options.
-                var options = optionsWin.getUserData("options");
-
-                // Were we given any?
-                if (! options)
-                {
-                  // Nope, they cancelled. Get outta here!
-                  return;
-                }
-
-                // Add the requested object
-                this.addObject(classInstance,
-                               options,
-                               label,
-                               folder,
-                               sourceTree,
-                               widgetFactorySource,
-                               applicationSource);
-              },
-              this);
-          }
-          else
-          {
-            // There's no options spec, so just use the default options
-            this.addObject(classInstance,
-                           options,
-                           label,
-                           folder,
-                           sourceTree,
-                           widgetFactorySource,
-                           applicationSource);
-          }
-        },
-        this);
-
-      leftPane.add(applicationTree, { flex : 1 } );
-
-      // Create the root of the application hierarchy tree
-      var applicationRoot =
-        new qx.ui.tree.TreeFolder(this.tr("Application Root"));
-      applicationRoot.setOpen(true);
-      applicationTree.setRoot(applicationRoot);
-
-      // Save the root object in the application root node of the tree
-      applicationRoot.setUserData("object", pageLive);
-
-      // Add all registered classes to the Available menu
-      var list = qooxit.library.Library.getClasses();
-      for (var i = 0; i < list.length; i++)
-      {
-        this.addClass(availableRoot, list[i]);
-      }
+      // Start the progressive loader
+      this.progressiveLoader();
     },
 
     addObject : function(classInstance,
@@ -388,6 +137,9 @@ qx.Class.define("qooxit.Application",
       // Generate the Application code.
       //
 
+      // Initially there's no text
+      text = "";
+
       // Clear the selection from the source tree
       sourceTree.resetSelection();
 
@@ -406,13 +158,25 @@ qx.Class.define("qooxit.Application",
         text += "// " + options.comment + "\n";
       }
 
+      // Retrieve the variable name
+      var name = options.__name__;
+
+      // Save this name in the new object
+      subFolder.setUserData("name", name);
+
+      // Temporarily delete the variable name from the options
+      delete options.__name__;
+
       // Assign a call to the factory method to the specified named variable
       text +=
-        "var " + options.name + " = " +
+        "\n" +
+        "var " + name + " = " +
         "custom.WidgetFactory." + className + "(\n" +
-        "{\n" +
         qx.util.Json.stringify(options, true) +
-        "});\n";
+        ");\n";
+
+      // Add it to the specified container
+      text += folder.getUserData("name") + ".add(" + name + ");\n";
 
       // Determine how many lines long the text is including
       // the extra newlines we'll prepend
@@ -439,6 +203,8 @@ qx.Class.define("qooxit.Application",
       endPoint = applicationSource.editor.nthLine(startLine + lines - 1);
       applicationSource.editor.insertPoint = endPoint;
 
+      // Put the variable name back in the options in preparation for saving
+      options.__name__ = name;
     },
 
     /**
@@ -557,92 +323,564 @@ qx.Class.define("qooxit.Application",
     {
       // this code part uses the CodeMirror library to add a
       // syntax-highlighting editor as an textarea replacement
-      source.page.addListenerOnce(
-        "appear", function()
+      var height = source.page.getBounds().height;
+      var width = source.page.getBounds().width;
+
+      source.editor = new CodeMirror(
+        source.page.getContainerElement().getDomElement(),
         {
-          var height = source.page.getBounds().height;
-          var width = source.page.getBounds().width;
+          content            : source.text,
+          parserfile         : [ "tokenizejavascript.js",
+                                 "parsejavascript.js" ],
+          stylesheet         : "resource/qooxit/css/jscolors.css",
+          path               : "resource/qooxit/js/",
+          textWrapping       : false,
+          continuousScanning : false,
+          width              : width + "px",
+          height             : height + "px",
+          autoMatchParens    : true,
+          readOnly           : true,
+          initCallback       : function(editor)
+          {
+            // Set the initial text
+            editor.setCode(source.text);
 
-          source.editor = new CodeMirror(
-            source.page.getContainerElement().getDomElement(),
+            // Move to the proper insertion point
+            source.appear(editor);
+          }
+        });
+
+      source.editor.frame.style.width =
+        source.page.getBounds().width + "px";
+      source.editor.frame.style.height =
+        source.page.getBounds().height + "px";
+
+      // to achieve auto-resize, the editor sets the size of the
+      // container element
+      source.page.addListener("resize",
+                              function()
+                              {
+                                source.editor.frame.style.width =
+                                  source.page.getBounds().width + "px";
+                                source.editor.frame.style.height =
+                                  source.page.getBounds().height + "px";
+                              },
+                              this);
+
+
+      // The protector blocks the editor, therefore it needs to be
+      // removed. This code fragment is a temporary solution, it
+      // will be removed once a better solution is found
+      var protector = source.page.getContainerElement().getChildren()[0];
+            if (protector)
+      {
+        var parent = protector.getDomElement().parentNode;
+        parent.removeChild(protector.getDomElement());
+      }
+    },
+
+    progressiveLoader : function()
+    {
+      // We'll use the progressive table's progress footer.  For that, we
+      // need to define column widths as if we were a table.
+      var columnWidths = new qx.ui.progressive.renderer.table.Widths(1);
+      columnWidths.setWidth(0, "100%");
+
+      // Instantiate a Progressive
+      var footer = new qx.ui.progressive.headfoot.Progress(columnWidths);
+      var structure = new qx.ui.progressive.structure.Default(null, footer);
+      var progressive = new qx.ui.progressive.Progressive(structure);
+
+      // We want to see each progressive increment as we're loading.  Ensure
+      // that the widget queue gets flushed
+      progressive.setFlushWidgetQueueAfterBatch(true);
+
+      // Create a helper function for adding functions to the data model
+      var _this = this;
+      var addFunc = function(func)
+      {
+        var ret =
+        {
+          renderer : "func",
+          data     : qx.lang.Function.bind(func, _this)
+        };
+        return ret;
+      };
+
+      // Instantiate a data model and populate it.
+      var dataModel = new qx.ui.progressive.model.Default();
+
+      // Instantiate a Function Caller
+      var functionCaller = new qx.ui.progressive.renderer.FunctionCaller();
+
+      // Give Progressive the renderer, and assign a name
+      progressive.addRenderer("func", functionCaller);
+
+      var qooxdooUrl = "http://resources.qooxdoo.org/images/logo.gif";
+      var qooxdoo = new qx.ui.basic.Image(qooxdooUrl, "100%", "100%");
+      progressive.add(qooxdoo);
+
+      // Make the Progressive fairly small
+      progressive.set(
+        {
+          height          : 100,
+          width           : 272,
+          zIndex          : 99999,
+          backgroundColor : "gray",
+          opacity         : 0.86,
+          batchSize       : 1
+        });
+
+      // Add the Progressive to the root, initially off-screen
+      this.getRoot().add(progressive,
             {
-              content            : source.text,
-              parserfile         : [ "tokenizejavascript.js",
-                                     "parsejavascript.js" ],
-              stylesheet         : "resource/qooxit/css/jscolors.css",
-              path               : "resource/qooxit/js/",
-              textWrapping       : false,
-              continuousScanning : false,
-              width              : width + "px",
-              height             : height + "px",
-              autoMatchParens    : true,
-              readOnly           : true,
-              initCallback       : function(editor)
-              {
-                // Set the initial text
-                editor.setCode(source.text);
-
-                // Move to the proper insertion point
-                source.appear(editor);
-
-
-                var text = "// hello world\n// This is a test";
-
-                (function(text)
-                 {
-                   // Determine how many lines long the text is including
-                   // the extra newline we'll prepend
-                   var lines = text.split("\n").length + 1;
-
-                   var startLine = editor.lineNumber(editor.insertPoint);
-                   editor.insertIntoLine(editor.insertPoint,
-                                         "end",
-                                         "\n" + text);
-                   var endPoint = editor.nthLine(startLine + lines);
-
-                   editor.selectLines(editor.insertPoint, 0,
-                                      endPoint, 0);
-
-                   // Reindent the new text using internal indentRegion()
-                   editor.editor.indentRegion(editor.insertPoint, endPoint);
-
-                   // Remove the selection indication
-                   editor.selectLines(endPoint, 0);
-
-
-                 })(text);
-              }
+              top             : -1000,
+              left            : -1000
             });
 
-          source.editor.frame.style.width =
-            source.page.getBounds().width + "px";
-          source.editor.frame.style.height =
-            source.page.getBounds().height + "px";
+      var pages =
+        [
+          { text : "Red",    background : "red",    color : "white" },
+          { text : "Green",  background : "green",  color : "white" },
+          { text : "Blue",   background : "blue",   color : "white" },
+          { text : "Purple", background : "purple", color : "white" },
+          { text : "Yellow", background : "yellow", color : "black" }
+        ];
 
-          // to achieve auto-resize, the editor sets the size of the
-          // container element
-          source.page.addListener("resize",
-                                  function()
-                                  {
-                                    source.editor.frame.style.width =
-                                      source.page.getBounds().width + "px";
-                                    source.editor.frame.style.height =
-                                      source.page.getBounds().height + "px";
-                                  },
-                                  this);
+      // Wait for execution to start so we can provide a place to store
+      // references to objects we add to the application.
+      this.context =
+        {
+          document : this.getRoot(),
+          pages    : pages
+        };
+      progressive.addListener(
+        "renderStart",
+        function(e)
+        {
+          // Our event data is an object containing the 'state' object and
+          // the number of elements to be rendered.
+          var state = e.getData().state;
+          var initialNum = e.getData().initial;
 
+          // Center ourself
+          var rootBounds = this.getRoot().getBounds();
+          var progressive = e.getData().state.getProgressive();
+          var progressiveBounds = progressive.getBounds();
 
-          // The protector blocks the editor, therefore it needs to be
-          // removed. This code fragment is a temporary solution, it
-          // will be removed once a better solution is found
-          var protector = source.page.getContainerElement().getChildren()[0];
-          if (protector)
-          {
-            var parent = protector.getDomElement().parentNode;
-            parent.removeChild(protector.getDomElement());
-          }
+          var left =
+            Math.floor((rootBounds.width - progressiveBounds.width) / 2);
+          var top =
+            Math.floor((rootBounds.height - progressiveBounds.height) / 2);
+
+          progressive.setLayoutProperties(
+            {
+              left : left < 0 ? 0 : left,
+              top  : top < 0 ? 0 : top
+            });
+
+          // Save our context in the userData field of the state object.
+          state.getUserData().context = this.context;
+
+          // Also save the number of elements for our progress bar usage.
+          state.getUserData().initialNum = initialNum;
         },
         this);
+
+      progressive.addListener(
+        "renderEnd",
+        function(e)
+        {
+          // We don't need the Progressive any longer.  Arrange for it to be
+          // destroyed.
+          qx.event.Timer.once(
+            function()
+            {
+              this.getLayoutParent().remove(this);
+              this.dispose();
+            },
+            this, 0);
+        });
+
+      // Create a splitpane as the main workspace
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the splitpane
+          var  horizSplit = new qx.ui.splitpane.Pane("horizontal");
+          this.getRoot().add(horizSplit, { edge : 0 });
+
+          // Create a VBox for the left pane
+          context.leftPane =
+            new qx.ui.container.Composite(new qx.ui.layout.VBox());
+          horizSplit.add(context.leftPane, 1);
+
+          // Create a VBox for the right pane
+          context.rightPane =
+            new qx.ui.container.Composite(new qx.ui.layout.VBox());
+          horizSplit.add(context.rightPane, 2);
+        }));
+
+      //
+      // The right pane shows the Live generated page and source views.
+      // Add a tabview to select which.
+      //
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the tab view
+          context.tabView = new qx.ui.tabview.TabView();
+
+          // Add it to the right pane.
+          context.rightPane.add(context.tabView, { flex : 1 } );
+        }));
+
+      // Create the Live page
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the page
+          context.pageLive =
+            new qx.ui.tabview.Page(this.tr("Live Application View"));
+
+          // Give it a vertical box layout
+          context.pageLive.setLayout(new qx.ui.layout.VBox());
+
+          // Add it to the tab view
+          context.tabView.add(context.pageLive);
+        }));
+
+      // Create the WidgetFactory page
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the page
+          context.pageWidgetFactory =
+            new qx.ui.tabview.Page("WidgetFactory.js");
+
+          // Add it to the tab view
+          context.tabView.add(context.pageWidgetFactory);
+
+          // Cause the WidgetFactory page to be rendered so the editor
+          // has a div to work with
+          context.tabView.setSelection([ context.pageWidgetFactory ]);
+
+          // We need a longer timeout before creating the code editor
+          progressive.setInterElementTimeout(1000);
+        }));
+
+      // Create the code editor in the WidgetFactory page
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the initialization text
+          var initText =
+            'qx.Class.define("custom.WidgetFactory",\n' +
+            '{\n' +
+            '  statics :\n' +
+            '  {\n' +
+            '  }\n' +
+            '});\n';
+
+          context.widgetFactorySource =
+            {
+              page   : context.pageWidgetFactory,
+              editor : null,
+              text   : initText,
+              appear : function(editor)
+              {
+                // Find the initial insertion point: 3 lines before the end
+                editor.insertPoint =
+                  editor.prevLine(
+                    editor.prevLine(
+                      editor.prevLine(
+                        editor.lastLine())));
+              }
+            };
+
+          // Create the source editor
+          this.createSourceEditor(context.widgetFactorySource);
+        }));
+
+      // Create the Application page
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the page
+          context.pageApplication =
+            new qx.ui.tabview.Page("Application.js");
+
+          // Add it to the tab view
+          context.tabView.add(context.pageApplication);
+
+          // Cause the Application page to be rendered so the editor
+          // has a div to work with
+          context.tabView.setSelection([ context.pageApplication ]);
+        }));
+
+      // Create the code editor in the Application page
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the initialization text
+          var initText =
+            'qx.Class.define("custom.Application",\n' +
+            '{\n' +
+            '  extend : qx.application.Standalone,\n' +
+            '\n' +
+            '  members :\n' +
+            '  {\n' +
+            '    main : function()\n' +
+            '    {\n' +
+            '      // Call super class\n' +
+            '      this.base(arguments);\n' +
+            '\n' +
+            '      // Enable logging in debug variant\n' +
+            '      if (qx.core.Variant.isSet("qx.debug", "on"))\n' +
+            '      {\n' +
+            '        // support native logging capabilities,\n' +
+            '        // e.g. Firebug for Firefox\n' +
+            '        qx.log.appender.Native;\n' +
+            '\n' +
+            '        // support additional cross-browser console.\n' +
+            '        // Press F7 to toggle visibility\n' +
+            '        qx.log.appender.Console;\n' +
+            '      }\n' +
+            '\n' +
+            '    }\n' +
+            '  }\n' +
+            '});\n';
+
+          context.applicationSource =
+            {
+              page   : context.pageApplication,
+              editor : null,
+              text   : initText,
+              appear : function(editor)
+              {
+                // Find the initial insertion point: 3 lines before the end
+                editor.insertPoint =
+                  editor.prevLine(
+                    editor.prevLine(
+                      editor.prevLine(
+                        editor.prevLine(
+                          editor.lastLine()))));
+              }
+            };
+
+          this.createSourceEditor(context.applicationSource);
+        }));
+
+      // Switch back to the Live view
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Make the Live view active again
+          context.tabView.setSelection([ context.pageLive ]);
+
+          // We can go back to nomal no-delay rendering now
+          progressive.setInterElementTimeout(0);
+        }));
+
+      //
+      // The left pane shows two trees. The top is the available widgets; the
+      // bottom is  the hierarchical representation of the application being
+      // built.
+      //
+
+      // Add the top tree, to display available layouts and widgets
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Add a top label
+          var label = new qx.ui.basic.Label();
+          label.setRich(true);
+          label.setValue(this.tr("Available Layouts & Widgets ") +
+                         "<span style='color:blue; font-weight:bold;'>" +
+                         this.tr("(drag from this tree)") +
+                         "</span>");
+          context.leftPane.add(label);
+
+          // Add the available layouts and widgets tree
+          var availableTree = new qx.ui.tree.Tree();
+          context.leftPane.add(availableTree, { flex : 2 } );
+
+          // Create the (hidden) root of the available layouts and widgets tree
+          context.availableRoot = new qx.ui.tree.TreeFolder("Root");
+          context.availableRoot.setOpen(true);
+          availableTree.setRoot(context.availableRoot);
+          availableTree.setHideRoot(true);
+
+          // Add a top label
+          label = new qx.ui.basic.Label();
+          label.setRich(true);
+          label.setValue(this.tr("Application Layout & Widget Hierarchy ") +
+                         "<span style='color:blue; font-weight:bold;'>" +
+                         this.tr("(drag to or within this tree, or right-click)") +
+                         "</span>");
+          context.leftPane.add(label);
+
+          // Add the application hierarchy tree
+          context.applicationTree = new qx.ui.tree.Tree();
+          context.applicationTree.setDroppable(true);
+
+          context.applicationTree.addListener(
+            "drop",
+            function(e)
+            {
+              var classInstance = e.getData("qooxit/available");
+              var orig = e.getOriginalTarget();
+              var folder = orig.getLayoutParent();
+              var related = e.getRelatedTarget();
+              var label = related.getLabel();
+              var sourceTree = related.getTree();
+
+/*
+              this.debug("related=" + related +
+                         ", source label=" + related.getLabel() +
+                         ", dropTarget=" + e.getTarget() +
+                         ", origTarget=" + folder +
+                         ", dest label=" + folder.getLabel());
+*/
+
+              // Get the default options
+              var options = {};
+              if (classInstance.getDefaultOptions)
+              {
+                options =
+                  qx.lang.Function.bind(classInstance.getDefaultOptions,
+                                        classInstance)();
+              }
+
+
+              // If there's an options specification provided...
+              if (classInstance.getOptionsSpec)
+              {
+                // Get it for options retrieval
+                var spec =
+                  qx.lang.Function.bind(classInstance.getOptionsSpec,
+                                        classInstance)();
+
+                // Determine dropped widget type (used in title of options
+                // window)
+                var type = related.getLabel();
+
+                // Generate the options window for the user to make selections
+                var fOptionsWindow =
+                  qx.lang.Function.bind(classInstance.optionsWindow,
+                                        classInstance);
+                var optionsWin = fOptionsWindow(type, spec, options);
+
+                // When the options window closes, retrieve the options,
+                // add a node  to the Application tree, and use the factory
+                // to add the class to the Live Application View
+                optionsWin.addListener(
+                  "close",
+                  function(e)
+                  {
+                    // Retrieve the selected options.
+                    var options = optionsWin.getUserData("options");
+
+                    // Were we given any?
+                    if (! options)
+                    {
+                      // Nope, they cancelled. Get outta here!
+                      return;
+                    }
+
+                    // Add the requested object
+                    this.addObject(classInstance,
+                                   options,
+                                   label,
+                                   folder,
+                                   sourceTree,
+                                   context.widgetFactorySource,
+                                   context.applicationSource);
+                  },
+                  this);
+              }
+              else
+              {
+                // Generate a name for this object
+                options.__name__ =
+                  "o" + qooxit.library.ui.Abstract.objectNumber++;
+
+                // There's no options spec, so just use the default options
+                this.addObject(classInstance,
+                               options,
+                               label,
+                               folder,
+                               sourceTree,
+                               context.widgetFactorySource,
+                               context.applicationSource);
+              }
+            },
+            this);
+
+          context.leftPane.add(context.applicationTree, { flex : 1 } );
+        }));
+
+      // Create the application hierarchy tree
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create the root of the application hierarchy tree
+          var applicationRoot =
+            new qx.ui.tree.TreeFolder(this.tr("Application Root"));
+          applicationRoot.setOpen(true);
+          context.applicationTree.setRoot(applicationRoot);
+
+          // Save the root object in the application root node of the tree
+          applicationRoot.setUserData("object", context.pageLive);
+
+          // Save the name of the root object
+          applicationRoot.setUserData("name", "_root_");
+
+          // Add all registered classes to the Available menu
+          var list = qooxit.library.Library.getClasses();
+          for (var i = 0; i < list.length; i++)
+          {
+            this.addClass(context.availableRoot, list[i]);
+          }
+        }));
+
+
+      // Tell Progressive about its data model
+      progressive.setDataModel(dataModel);
+
+
+      // Begin execution
+      progressive.render();
     }
   }
 });
