@@ -36,11 +36,11 @@ from qxjsonrpc import public, fail
 #============================================================================
 # Exported symbols
 
-__all__=['Tests']
+__all__=['Test']
 
 #============================================================================
 
-class Tests(object):
+class Test(object):
     '''Test service can be used with the RPC_* test pages'''
     @public
     def echo(self, v):
