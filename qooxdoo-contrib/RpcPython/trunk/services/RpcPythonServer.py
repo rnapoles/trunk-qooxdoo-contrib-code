@@ -10,8 +10,8 @@ Contributor: Christian Boulanger (cboulanger)
 This is the main server that listens for requests, imports service classes
 and calls the service methods. It receives a service name in
 dot-separated path format and expect to find the class containing the
-service in a file. If the service name is "foo.bar.Baz", the class is named
-"Baz" in the "foo.bar" module, located in "services/foo/bar/Baz.py". The 
+service in a file. If the service name is "foo.bar.baz", the class is named
+"Baz" in the "foo.bar.baz" module, located in "services/foo/bar/baz.py". The 
 class file is dynamically loaded when the request is received. The methods
 are protected - they are only executed if the method contains the "public"
 decorator.
@@ -25,6 +25,7 @@ import qxjsonrpc.http
 from qxjsonrpc import public, fail
 from qxjsonrpc._error import *
 
+# Add parent directory to pythonpath
 sys.path.append("..")
 
 #============================================================================
@@ -35,12 +36,26 @@ class RpcPythonServer(qxjsonrpc.http.HTTPServer):
         qxjsonrpc.http.HTTPServer.__init__(self, host, port, debug=debug)
         
     def getService(self,name):
-        '''overridden method to allow call-time importation of service classes'''
+        '''Overridden method to allow call-time importation of service classes.
+            We convert the rpc service 'my.very.special.service' into the 
+            python import path 'my.very.special.service.Service'
+        '''
+        # Parse out the last part of the service path
+        lastDot = name.rfind(u".")
+        if lastDot is not -1:
+            lastPart = name[lastDot + 1:]
+        else:
+            lastPart = name
+            
+        # Add the capitalized part to the class name 
+        name = name + "." + lastPart.capitalize()
+        print name
         return self._get_class(name)
     
     # the following is adapted from http://code.activestate.com/recipes/223972/
     def _get_mod(self, modulePath):
         """Import a module programmatically"""
+        print "module path: " + modulePath
         try:
             aMod = sys.modules[modulePath]
             if not isinstance(aMod, types.ModuleType):
@@ -78,9 +93,6 @@ class RpcPythonServer(qxjsonrpc.http.HTTPServer):
     
     def _get_class(self, fullClassName):
         """Load a module and retrieve a class (NOT an instance).
-        
-        If the parentClass is supplied, className must be of parentClass
-        or a subclass of parentClass (or None is returned).
         """
         aClass = self._get_func(fullClassName)
         
