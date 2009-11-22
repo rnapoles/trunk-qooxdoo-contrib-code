@@ -1,12 +1,24 @@
-#!/usr/bin/python
-# -*- coding: ascii -*-
-'''==========================================================================
-qxjsonrpc - JSON-RPC backend for the qooxdoo JavaScript library
+#############################################################################
+#
+#   RpcPython
+#
+#   http://qooxdoo.org/contrib/project#rpcpython
+#
+#   Copyright:
+#     (C) 2007 - Viktor Ferenczi (python@cx.hu) 
+#
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#
+#   Authors:
+#     * Viktor Ferenczi (python@cx.hu)
+#     * Christian Boulanger (cboulanger)
+#
+#############################################################################
 
-(C) 2007 - Viktor Ferenczi (python@cx.hu) - Licence: GNU LGPL
-
------------------------------------------------------------------------------
-
+'''
 This module contains service and server classes can be used with qooxdoo's
 RPC_* test pages. 
 
@@ -34,14 +46,14 @@ import datetime
 from qxjsonrpc import public, fail
 
 #============================================================================
-# Exported symbols
-
-__all__=['Test']
-
+# Expose this module as an RPC service 
+isRpcService = True
 #============================================================================
+
 
 class Test(object):
     '''Test service can be used with the RPC_* test pages'''
+    
     @public
     def echo(self, v):
         return 'Client said: [ %s ]'%(v,)
