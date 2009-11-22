@@ -1,37 +1,57 @@
 #!/usr/bin/python
 # -*- coding: ascii -*-
-'''==========================================================================
-qxjsonrpc - JSON-RPC backend for the qooxdoo JavaScript library
+#############################################################################
+#
+#   RpcPython
+#
+#   http://qooxdoo.org/contrib/project#rpcpython
+#
+#   Copyright:
+#      
+#
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#
+#   Authors:
+#     * Viktor Ferenczi (python@cx.hu)
+#     * Christian Boulanger (cboulanger)
+#
+#############################################################################
 
-(C) 2007-2009 - Viktor Ferenczi (python@cx.hu) - Licence: GNU LGPL
-Contributor: Christian Boulanger (cboulanger)
------------------------------------------------------------------------------
+'''==========================================================================
 
 This is the main server that listens for requests, imports service classes
-and calls the service methods. It receives a service name in
-dot-separated path format and expect to find the class containing the
-service in a file. If the service name is "foo.bar.Baz", the class is named
-"Baz" in the "foo.bar" module, located in "services/foo/bar/Baz.py". The 
-class file is dynamically loaded when the request is received. The methods
-are protected - they are only executed if the method contains the "public"
-decorator.
+and calls the service methods. It receives a service name in dot-separated path 
+format and expect to find the class containing the service in a file. 
+If the service name is "foo.bar.baz", the class is named "Baz" in the 
+"foo.bar.baz" module, located in "foo/bar/baz.py" somewhere on the python
+class path. The class file is dynamically loaded when the request is received. 
+The classes and methods are protected. The service class is loaded only if
+the containing module contains the "isRpcService" property set to True and
+if the method contains the  "public" decorator.
 
 =========================================================================='''
 
+import sys
+import os
 import qxjsonrpc
-from RpcPythonServer import RpcPythonServer
+from server.jsonrpc import JsonRpcServer
 
+# Add "class" subdirectory to pythonpath
+service_class_path = os.path.dirname(os.path.abspath(__file__)) + "/class"
+sys.path.append( service_class_path )
 
 def main():
     '''Run json-rpc server.'''
     print 'Running: qxjsonrpc %s'%qxjsonrpc.__version__.number 
     print
     print 'Debugging output is enabled in the test server, watch stdout.'
-    print 'Getting an APPLICATION SPECIFIC ERROR is normal with RPC tests.'
     print
     print 'Ctrl-C aborts this server.'
     print
-    print 'Test server log output follows:'
+    print 'Server log output follows:'
     print
     
     #@todo get host and port from command line arguments
@@ -40,7 +60,7 @@ def main():
     debug=True;
     
     #start server
-    srv=RpcPythonServer(host,port,debug)
+    srv=JsonRpcServer(host,port,debug)
     srv.serve_forever()
 
 #============================================================================
