@@ -1,31 +1,32 @@
 Installation instructions for RpcPython
+=======================================
 
 Requirements:
+------------
 
 1. Python 2.4 or 2.5
-
-Go to http://www.python.org for instructions.
+   The python you use for the qooxdoo toolchain.
 
 2. JSON serializer package
-
-At least one supported package must be installed. Supported packages:
-
-- python-cjson-1.0.3x3 or newer: http://python.cx.hu
-
-- simplejson: http://cheeseshop.python.org/pypi/simplejson
-
-NOTE: python-cjson is MUCH faster, but not pure-python (requires C compiler).
+   At least one supported package must be installed. Supported packages:
+   - python-cjson-1.0.3x3 (download from http://python.cx.hu)
+     The current code works only with 1.0.3, will be ported to newer 
+     versions.
+   - simplejson: http://cheeseshop.python.org/pypi/simplejson
+   NOTE: python-cjson is MUCH faster, but not pure-python (requires C compiler).
 
 Installation:
-
-- Using distutils: python setup.py install
+-------------
+No installation is necessary, the qxjsonrpc library is shipped with this
+contrib for easier maintenance and upgrade
 
 Testing:
-
+--------
 You can find tests under the services subdirectory. Use the RpcExample
 or RpcConsole contrib projects as a frontend to test the python backend. 
 
 Contact:
+--------
 
 Viktor Ferenczi <python@cx.hu> (Original author)
 Christian Boulanger <info@bibliograph.org> (Porting to 0.8)
