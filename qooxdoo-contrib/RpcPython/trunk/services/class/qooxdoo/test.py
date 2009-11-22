@@ -131,3 +131,9 @@ class Test(object):
     @fail
     def getFail(self):
         raise Exception('THIS METHOD SHOULD NOT BE CALLED - IT IS A REAL ERROR IF RAISED')
+
+    counter = 0
+    @public
+    def incrementCounter(self):
+        self.counter = self.counter+1
+        return self.counter
