@@ -46,6 +46,16 @@ qx.Class.define("qooxit.library.Library",
             [ "Widget", "Label (qx.ui.basic.Label)" ]
         },
         {
+          clazz         : qooxit.library.ui.basic.Atom,
+          menuHierarchy :
+            [ "Widget", "Atom (qx.ui.basic.Atom)" ]
+        },
+        {
+          clazz         : qooxit.library.ui.form.Button,
+          menuHierarchy :
+            [ "Widget", "Button (qx.ui.form.Button)" ]
+        },
+        {
           clazz         : qooxit.library.ui.tree.Tree,
           menuHierarchy :
             [ "Widget", "Tree", "Traditional (qx.ui.tree.Tree)" ]
@@ -59,6 +69,11 @@ qx.Class.define("qooxit.library.Library",
           clazz         : qooxit.library.ui.table.Table,
           menuHierarchy :
             [ "Widget", "Table (qx.ui.table.Table)" ]
+        },
+        {
+          clazz         : qooxit.library.ui.control.ColorSelector,
+          menuHierarchy :
+            [ "Widget", "Color Selector (qx.ui.control.ColorSelector)" ]
         }
       ],
 

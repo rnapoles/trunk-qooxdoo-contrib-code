@@ -201,8 +201,10 @@ qx.Class.define("qooxit.Application",
       text +=
         "\n\n" +
         "var " + name + " = " +
-        "custom.WidgetFactory." + classInstance.factory.className + "(\n" +
-        qx.util.Json.stringify(options, true) +
+        "custom.WidgetFactory." + classInstance.factory.className + "(" +
+        (qx.lang.Object.isEmpty(options)
+         ? ""
+         : "\n" + qx.util.Json.stringify(options, true)) +
         ");\n";
 
       // Reset the tree node to include the variable name
@@ -787,6 +789,9 @@ qx.Class.define("qooxit.Application",
             '        // e.g. Firebug for Firefox\n' +
             '        qx.log.appender.Native;\n' +
             '      }\n' +
+            '\n' +
+            '      // Get a local reference to the root object\n' +
+            '      var _root_ = this.getRoot();\n' +
             '    }\n' +
             '  }\n' +
             '});\n';
