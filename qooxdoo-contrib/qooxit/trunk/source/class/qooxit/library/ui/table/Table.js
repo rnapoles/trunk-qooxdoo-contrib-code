@@ -106,16 +106,6 @@ qx.Class.define("qooxit.library.ui.table.Table",
         "icon/16/actions/dialog-cancel.png"
       ];
 
-      var rowData = [];
-      for (var row = 0; row < 100; row++)
-      {
-        var x = Math.random() * 1000;
-        rowData.push([ row, x, x, image[Math.floor(x) % 2] ]);
-      }
-      tableModel.setData(rowData);
-      tableModel.setColumnEditable(1, true);
-      tableModel.setColumnEditable(2, true);
-
       // table
       var table = new qx.ui.table.Table(tableModel, options.custom);
       table.set(
@@ -128,6 +118,16 @@ qx.Class.define("qooxit.library.ui.table.Table",
       var selectionMode =
         qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION;
       table.getSelectionModel().setSelectionMode(selectionMode);
+
+      var rowData = [];
+      for (var row = 0; row < 100; row++)
+      {
+        var x = Math.random() * 1000;
+        rowData.push([ row, x, x, image[Math.floor(x) % 2] ]);
+      }
+      tableModel.setData(rowData);
+      tableModel.setColumnEditable(1, true);
+      tableModel.setColumnEditable(2, true);
 
       var newRenderer =
         new qx.ui.table.cellrenderer.Conditional("right", "", "", "");
