@@ -59,4 +59,7 @@ class Test(object):
     @public
     def echo(self, v):
         return 'Client said: [ %s ]'%(v,)
+        
+Todo:
+- update qxjsonrpc to a newer cjson version (currently works only with cjson 0.3).
 
