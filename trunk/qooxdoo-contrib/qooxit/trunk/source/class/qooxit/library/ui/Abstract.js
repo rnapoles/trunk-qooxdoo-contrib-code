@@ -359,6 +359,9 @@ qx.Class.define("qooxit.library.ui.Abstract",
         {
           if (form.validate())
           {
+            // Switch to a "wait" cursor
+            qx.core.Init.getApplication().getRoot().setGlobalCursor("wait");
+
             // Convert the options into a native object
             var newOptions = qx.util.Serializer.toNativeObject(model);
 
@@ -399,6 +402,15 @@ qx.Class.define("qooxit.library.ui.Abstract",
       // Create the databinding controller
       var controller = new qx.data.controller.Form(null, form);
       var model = controller.createModel();
+
+      // Allow pressing Enter at any time to simulate clicking the Ok button.
+      var command = new qx.ui.core.Command("Enter");
+      command.addListener(
+        "execute",
+        function()
+        {
+          ok.execute();
+        }, this);
 
       // Center the window
       win.center();

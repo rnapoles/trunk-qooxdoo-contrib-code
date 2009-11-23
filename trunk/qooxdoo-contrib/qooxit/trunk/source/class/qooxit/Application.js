@@ -187,6 +187,9 @@ qx.Class.define("qooxit.Application",
         qx.util.Json.stringify(options, true) +
         ");\n";
 
+      // Reset the tree node to include the variable name
+      subFolder.setLabel(name + ": " + subFolder.getLabel())
+
       // Add it to the specified container
       text += folder.getUserData("name") + ".add(" + name + ");\n";
 
@@ -805,17 +808,58 @@ qx.Class.define("qooxit.Application",
                   "close",
                   function(e)
                   {
-                    // Retrieve the selected options.
-                    var options = optionsWin.getUserData("options");
+                    // Allow the wait cursor to take effect. Create a slight
+                    // pause before adding the object
+                    var timer = qx.util.TimerManager.getInstance();
+                    timer.start(
+                      function(userData, timerId)
+                      {
+                        // Retrieve the selected options.
+                        var options = optionsWin.getUserData("options");
 
-                    // Were we given any?
-                    if (! options)
-                    {
-                      // Nope, they cancelled. Get outta here!
-                      return;
-                    }
+                        // Were we given any?
+                        if (! options)
+                        {
+                          // Nope, they cancelled. Get outta here!
+                          return;
+                        }
 
-                    // Add the requested object
+                        // Add the requested object
+                        this.addObject(classInstance,
+                                       options,
+                                       label,
+                                       folder,
+                                       sourceTree,
+                                       context.widgetFactorySource,
+                                       context.applicationSource);
+
+                        // Revert back to the default cursor. The "wait" cursor
+                        // was set when the Ok button was pressed
+                        this.getRoot().setGlobalCursor("default");
+                      },
+                      0,
+                      this,
+                      null,
+                      10);
+                  },
+                  this);
+              }
+              else
+              {
+                // Switch to a "wait" cursor
+                this.getRoot().setGlobalCursor("wait");
+
+                // Allow the wait cursor to take effect. Create a slight
+                // pause before adding the object
+                var timer = qx.util.TimerManager.getInstance();
+                timer.start(
+                  function(userData, timerId)
+                  {
+                    // Generate a name for this object
+                    options.__name__ =
+                      "o" + qooxit.library.ui.Abstract.objectNumber++;
+
+                    // There's no options spec, so just use the default options
                     this.addObject(classInstance,
                                    options,
                                    label,
@@ -823,23 +867,14 @@ qx.Class.define("qooxit.Application",
                                    sourceTree,
                                    context.widgetFactorySource,
                                    context.applicationSource);
-                  },
-                  this);
-              }
-              else
-              {
-                // Generate a name for this object
-                options.__name__ =
-                  "o" + qooxit.library.ui.Abstract.objectNumber++;
 
-                // There's no options spec, so just use the default options
-                this.addObject(classInstance,
-                               options,
-                               label,
-                               folder,
-                               sourceTree,
-                               context.widgetFactorySource,
-                               context.applicationSource);
+                    // Revert back to the default cursor.
+                    this.getRoot().setGlobalCursor("default");
+                  },
+                  0,
+                  this,
+                  null,
+                  10);
               }
             },
             this);
