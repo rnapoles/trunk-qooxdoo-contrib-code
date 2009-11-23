@@ -181,7 +181,7 @@ qx.Class.define("qooxit.Application",
 
       // Assign a call to the factory method to the specified named variable
       text +=
-        "\n" +
+        "\n\n" +
         "var " + name + " = " +
         "custom.WidgetFactory." + classInstance.factory.className + "(\n" +
         qx.util.Json.stringify(options, true) +
@@ -191,7 +191,7 @@ qx.Class.define("qooxit.Application",
       subFolder.setLabel(name + ": " + subFolder.getLabel())
 
       // Add it to the specified container
-      text += folder.getUserData("name") + ".add(" + name + ");\n";
+      text += folder.getUserData("name") + ".add(" + name + ");";
 
       // Determine how many lines long the text is including
       // the extra newlines we'll prepend
@@ -675,7 +675,6 @@ qx.Class.define("qooxit.Application",
             '        // Press F7 to toggle visibility\n' +
             '        qx.log.appender.Console;\n' +
             '      }\n' +
-            '\n' +
             '    }\n' +
             '  }\n' +
             '});\n';
