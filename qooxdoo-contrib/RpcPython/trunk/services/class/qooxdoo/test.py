@@ -57,67 +57,92 @@ class Test(object):
     @public
     def echo(self, v):
         return 'Client said: [ %s ]'%(v,)
+    
     @public
     def sink(self, *args, **kw):
         time.sleep(240)
+    
     @public
     def sleep(self, t):
         time.sleep(float(t))
         return t
+    
     @public
     def getInteger(self):
         return 1
+    
     @public
     def getFloat(self):
         return 1/3.0
+    
+    @public
+    def getBadString(self):
+        return "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">"
+    
     @public
     def getString(self):
         return "Hello world"
+    
     @public
     def getArrayInteger(self):
         return [1, 2, 3, 4]
+    
     @public
     def getArrayString(self):
         return ["one", "two", "three", "four"]
+    
     @public
     def getObject(self):
         return {'one':1, 'two':2}
+    
     @public
     def getTrue(self):
         return True
+    
     @public
     def getFalse(self):
         return False
+    
     @public
     def getNull(self):
         return None
+    
     @public
     def isInteger(self, v):
         return isinstance(v,(int,long))
+    
     @public
     def isFloat(self, v):
         return isinstance(v,float)
+    
     @public
     def isString(self, v):
         return isinstance(v,basestring)
+    
     @public
     def isBoolean(self, v):
         return isinstance(v,bool)
+    
     @public
     def isArray(self, v):
         return isinstance(v,(list,tuple))
+    
     @public
     def isObject(self, v):
         return isinstance(v,dict)
+    
     @public
     def isNull(self, v):
         return v is None
+    
     @public
     def getParams(self, *args):
         return args
+    
     @public
     def getParam(self, *args):
         return args[0]
+    
     @public
     def getCurrentTimestamp(self):
         ct=datetime.datetime.utcnow()
@@ -125,9 +150,11 @@ class Test(object):
         dt=ct-st
         t=dt.days*86400+dt.seconds
         return {'now':t, 'json':ct}
+    
     @public
-    def getError(self):
+    def getError(self,*args):
         raise Exception('APPLICATION SPECIFIC ERROR - THIS IS NORMAL IN RPC TESTS')
+    
     @fail
     def getFail(self):
         raise Exception('THIS METHOD SHOULD NOT BE CALLED - IT IS A REAL ERROR IF RAISED')
@@ -135,5 +162,6 @@ class Test(object):
     counter = 0
     @public
     def incrementCounter(self):
+        """Test for object persistence: service object should be the same on each call."""
         self.counter = self.counter+1
         return self.counter

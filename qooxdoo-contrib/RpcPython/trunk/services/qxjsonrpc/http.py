@@ -98,15 +98,11 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             if form_data[:1]=='{' and form_data[-1:]=='}':
                 # Form data contains JSON
                 form=dict(_data_=form_data)
-	    else:
+            else:
                 # Parse POST data as query string and extract request arguments
                 form=cgi.parse_qs(form_data, True)
                 for k in form:
-                    form[k]=form[k][0]																		    
-            # Parse POST data and extract request arguments
-            form=cgi.parse_qs(form_data, True)
-            for k in form:
-                form[k]=form[k][0]
+                    form[k]=form[k][0]                                                                            
             # Determine transport type
             if '_data_' in form:
                 # JSON encoded request object in the _data_ variable
