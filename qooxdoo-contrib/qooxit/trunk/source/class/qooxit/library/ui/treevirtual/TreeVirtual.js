@@ -61,7 +61,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
           type   : "Integer",
           min    : 1,
           max    : 5000,
-          value  : 100,
+          value  : 300,
           prompt : this.tr("Height")
         }
       });
@@ -78,7 +78,7 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
     {
       init :
       {
-        columns : [ "Tree", "Permissions", "Last Accessed" ],
+        columns : [ "Tree" ],
         width   : 400,
         height  : 200
       }
@@ -106,6 +106,65 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
 
     _snippets :
     {
+      sampleData :
+      {
+        brief : "Sample data",
+
+        description :
+          "Add sample data to the tree.",
+
+        overrides :
+        {
+          columns : [ "Tree", "Permissions", "Last Accessed" ]
+        },
+
+        code : function(tree)
+        {
+          //
+          // Add a bunch of data to the model, for demonstration.
+          //
+          var dataModel = tree.getDataModel();
+          var te1 = dataModel.addBranch(null, "Desktop", true);
+          tree.nodeSetLabelStyle(te1,
+                                 "background-color: red; " +
+                                 "color: white;" +
+                                 "font-weight: bold;");
+
+          var te1_1;
+
+          dataModel.addBranch(te1, "Files", true);
+
+          te1_1 = dataModel.addBranch(te1, "Workspace", true);
+          var te = dataModel.addLeaf(te1_1, "Windows (C:)");
+          dataModel.setColumnData(te, 1, "-rwxr-xr-x");
+          dataModel.setColumnData(te, 2, "2007-01-30 22:54:03");
+          te = dataModel.addLeaf(te1_1, "Documents (D:)");
+          dataModel.setColumnData(te, 1, "-rwxr-xr-x");
+          dataModel.setColumnData(te, 2, "2007-01-30 22:54:03");
+
+          dataModel.addBranch(te1, "Network", true);
+
+          te = dataModel.addBranch(te1, "Trash", true);
+          tree.nodeSetCellStyle(te, "background-color: cyan;");
+
+          var te2 = dataModel.addBranch(null, "Inbox", true);
+
+          te = dataModel.addBranch(te2, "Spam", false);
+
+          for (var i = 1; i < 200; i++)
+          {
+            dataModel.addLeaf(te, "Spam Message #" + i);
+          }
+
+          dataModel.addBranch(te2, "Sent", false);
+          dataModel.addBranch(te2, "Trash", false);
+          dataModel.addBranch(te2, "Data", false);
+          dataModel.addBranch(te2, "Edit", false);
+
+          dataModel.setData();
+        }
+      },
+
       resizeBehavior :
       {
         brief : "Resize behavior",
@@ -136,60 +195,6 @@ qx.Class.define("qooxit.library.ui.treevirtual.TreeVirtual",
         {
           // Don't let the open/close symbol disappear when no children
           tree.setAlwaysShowOpenCloseSymbol(true);
-        }
-      },
-
-      sampleData :
-      {
-        brief : "Sample data",
-
-        description :
-          "Add sample data to the tree.",
-
-        code : function(o)
-        {
-          //
-          // Add a bunch of data to the model, for demonstration.
-          //
-          var dataModel = o.getDataModel();
-          var te1 = dataModel.addBranch(null, "Desktop", true);
-          o.nodeSetLabelStyle(te1,
-                              "background-color: red; " +
-                              "color: white;" +
-                              "font-weight: bold;");
-
-          var te1_1;
-
-          dataModel.addBranch(te1, "Files", true);
-
-          te1_1 = dataModel.addBranch(te1, "Workspace", true);
-          var te = dataModel.addLeaf(te1_1, "Windows (C:)");
-          dataModel.setColumnData(te, 1, "-rwxr-xr-x");
-          dataModel.setColumnData(te, 2, "2007-01-30 22:54:03");
-          te = dataModel.addLeaf(te1_1, "Documents (D:)");
-          dataModel.setColumnData(te, 1, "-rwxr-xr-x");
-          dataModel.setColumnData(te, 2, "2007-01-30 22:54:03");
-
-          dataModel.addBranch(te1, "Network", true);
-
-          te = dataModel.addBranch(te1, "Trash", true);
-          o.nodeSetCellStyle(te, "background-color: cyan;");
-
-          var te2 = dataModel.addBranch(null, "Inbox", true);
-
-          te = dataModel.addBranch(te2, "Spam", false);
-
-          for (var i = 1; i < 200; i++)
-          {
-            dataModel.addLeaf(te, "Spam Message #" + i);
-          }
-
-          dataModel.addBranch(te2, "Sent", false);
-          dataModel.addBranch(te2, "Trash", false);
-          dataModel.addBranch(te2, "Data", false);
-          dataModel.addBranch(te2, "Edit", false);
-
-          dataModel.setData();
         }
       }
     }

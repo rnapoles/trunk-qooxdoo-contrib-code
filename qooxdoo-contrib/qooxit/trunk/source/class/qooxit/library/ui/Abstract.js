@@ -68,69 +68,6 @@ qx.Class.define("qooxit.library.ui.Abstract",
     },
 
     /**
-     * Generate the source code associated with the instantiation of this
-     * UI element. This is used to create the code that's added to the Source
-     * View.
-     *
-     * Currently, we simply call the string version of the factory
-     * function. Later, it'd be nice to unwrap the function call to make
-     * the generated source code somewhat more readable.
-     *
-     * @param instance_name {String}
-     *   The name that should be used to reference this UI element instance.
-     *
-     * @param snippets {Array?}
-     *   If provided, this is an array of strings, each containing the short
-     *   name of a snippet to be included, one after the other, after the code
-     *   to instantiate the widget.
-     *
-     * @return {String}
-     *   The string representation of the UI element instantiation, ready to
-     *   be inserted into the Source View window.
-     *
-     */
-    toSource : function(name, snippets)
-    {
-      var source = [];
-
-      source.push("var name = (",
-                  this.factory.toString(),
-                  ")(",
-                  name,
-                  ");");
-
-      // If snippets were requested...
-      if (snippets)
-      {
-        // First, ensure that there are some snippets
-        if (! this._snippets)
-        {
-          throw new Error("Request for snippets, but none defined");
-        }
-
-        // ... then for each one...
-        for (var snippet in snippets)
-        {
-          if (! this._snippets[snippet])
-          {
-            throw new Error("Request for snippet '" + snippet + "' but " +
-                            "that snippet is not found.");
-          }
-
-          // ... add its code.
-          source.push("(",
-                      this._snippets[snippet].code.toString(),
-                      ")(",
-                      name,
-                      ");");
-        }
-      }
-
-      // Join it all together and give 'em the result
-      return source.join("");
-    },
-
-    /**
      * Add a new snippet for this class.
      *
      * @param name {String}
@@ -267,6 +204,8 @@ qx.Class.define("qooxit.library.ui.Abstract",
      */
     optionsWindow : function(widgetType, spec, options)
     {
+      var value;
+
       // Create a new modal window
       var win = new qx.ui.window.Window("Properties");
       win.set(
@@ -315,19 +254,55 @@ qx.Class.define("qooxit.library.ui.Abstract",
           switch(type)
           {
           case "String":
+            // Retrieve the value. Prefer one from options, if available.
+            value = options[item] || specItem.value;
+
             // Create a text field for the string
-            o = new qx.ui.form.TextField();
+            o = new qx.ui.form.TextField(value);
             break;
 
           case "Integer":
-            o = new qx.ui.form.Spinner(specItem.min,
-                                       specItem.value,
-                                       specItem.max);
+            // Retrieve the min, value, and max. Prefer ones from options,
+            // if they are  available.
+            value = options[item] || specItem.value;
+
+            // Create the spinner for this integer value
+            o = new qx.ui.form.Spinner(specItem.min, value, specItem.max);
             break;
 
           case "Boolean":
             o = new qx.ui.form.CheckBox();
             break;
+
+/* Doesn't work yet; needs a subclass of ComboBox that implements
+   qx.data.IListData so that qx.util.Serializer.toNativeObject can
+   retrieve the entire list rather than only the selected item.
+
+          case "ComboBox":
+            // create a combo box
+            var o = new qx.ui.form.ComboBox();
+
+            // fill the combo box with the provided items
+            for (var i=0; i < specItem.value.length; i++)
+            {
+              var listItem = new qx.ui.form.ListItem(specItem.value[i]);
+              o.add(listItem);
+
+              // Select the first one
+              if (i == 0)
+              {
+                o.getChildControl("list").setSelection([ listItem ]);
+              }
+            }
+
+            // Allow adding new items
+            o.addListener("changeValue",
+                          function(e)
+                          {
+                            comboBox.add(e.getData());
+                          });
+            break;
+*/
 
           default:
             throw new Error("Unrecognized type '" + type +

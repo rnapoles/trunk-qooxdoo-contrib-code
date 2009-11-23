@@ -28,18 +28,20 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
     factory : function(options)
     {
       // Return a Tree widget
-      return new qx.ui.tree.Tree();
+      var tree = new qx.ui.tree.Tree();
+
+      return tree;
     },
 
     _snippets :
     {
-      addItems :
+      sampleData :
       {
-        brief : "Create and open the root; add 10 items to the tree",
+        brief : "Sample data",
 
         description : "Create and open the root; add 10 items to the tree",
 
-        code : function(o)
+        code : function(tree)
         {
           // Create a root folder
           var root = new qx.ui.tree.TreeFolder("Root");
@@ -48,17 +50,26 @@ qx.Class.define("qooxit.library.ui.tree.Tree",
           root.setOpen(true);
 
           // Add some items to the root
-          for (var i = 0; i < 10; i++)
+          for (var i = 0; i < 5; i++)
           {
-            // Instantiate an item...
-            var item = new qx.ui.tree.TreeFile("Item " + i);
+            // Instantiate a branch...
+            var branch = new qx.ui.tree.TreeFolder("Branch " + (i + 1));
 
             // ... and add it as a child of the root
-            root.add(item);
+            root.add(branch);
+
+            for (var j = 0; j < 3; j++)
+            {
+              // Instantiate an item...
+              var item = new qx.ui.tree.TreeFile("Item " + (j + 1));
+
+              // ... and add it as a child of the current branch
+              branch.add(item);
+            }
           }
 
           // Specify which element is the root of the tree
-          o.setRoot(root);
+          tree.setRoot(root);
         }
       }
     }
