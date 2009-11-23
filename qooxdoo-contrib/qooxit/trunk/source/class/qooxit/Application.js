@@ -79,59 +79,71 @@ qx.Class.define("qooxit.Application",
       subFolder.setUserData("object", o);
 
       //
-      // Generate the WidgetFactory code
+      // See if we need to generate the WidgetFactory code entry
       //
-
-      // Create the class name from the class instance. We'll strip off the
-      // everything that's not generic (the first few components) and then
-      // create camelcase with a leading lower-case letter.
-      var classNameParts = classInstance.classname.split(".");
-      classNameParts.shift();   // remove qooxit
-      classNameParts.shift();   // remove library
-      classNameParts[0] = qx.lang.String.firstLow(classNameParts[0]);
-      for (var i = 1; i < classNameParts.length; i++)
+      // NOTE: Using a property of the factory method is (a) somewhat of a
+      // kludge, and (b) will have to be changed anyway when we need
+      // persistence of this knowledge.
+      //
+      if (! classInstance.factory.className)
       {
-        classNameParts[i] = qx.lang.String.firstUp(classNameParts[i]);
+        //
+        // Generate the WidgetFactory code
+        //
+
+        // Create the class name from the class instance. We'll strip off
+        // everything that's not generic (the first few components) and then
+        // create camelcase with a leading lower-case letter.
+        var classNameParts = classInstance.classname.split(".");
+        classNameParts.shift();   // remove qooxit
+        classNameParts.shift();   // remove library
+        classNameParts[0] = qx.lang.String.firstLow(classNameParts[0]);
+        for (var i = 1; i < classNameParts.length; i++)
+        {
+          classNameParts[i] = qx.lang.String.firstUp(classNameParts[i]);
+        }
+        var className = classNameParts.join("");
+
+        // Determine the starting line number in the widget factory
+        var startLine = widgetFactorySource.editor.lineNumber(
+          widgetFactorySource.editor.insertPoint);
+
+        // If there has been anything added previously then add a comma
+        var comma = (startLine > 4 ? ",\n\n\n" : "\n");
+
+        // Write the Application code
+        var text =
+          comma +
+          className + " : " +
+          classInstance.factory.toString();
+
+        // Determine how many lines long the text is including
+        // the extra newlines we'll prepend
+        var lines = text.split("\n").length;
+
+        // Insert the new text
+        widgetFactorySource.editor.insertIntoLine(
+          widgetFactorySource.editor.insertPoint,
+          "end",
+          text);
+
+        // Reindent the new text using internal indentRegion()
+        var startPoint = widgetFactorySource.editor.insertPoint;
+        var endPoint = widgetFactorySource.editor.nthLine(startLine + lines);
+        widgetFactorySource.editor.editor.indentRegion(
+          widgetFactorySource.editor.nthLine(3), endPoint);
+
+        // Remove the selection indication
+        widgetFactorySource.editor.selectLines(endPoint, 0);
+
+        // The new insert point is the previous end point, but CodeMirror
+        // requires a point on the previous line for the new insert point
+        endPoint = widgetFactorySource.editor.nthLine(startLine + lines - 1);
+        widgetFactorySource.editor.insertPoint = endPoint;
+
+        // Mark this factory as having been written to the WidgetFactory
+        classInstance.factory.className = className;
       }
-      var className = classNameParts.join("");
-
-      // Determine the starting line number in the widget factory
-      var startLine = widgetFactorySource.editor.lineNumber(
-        widgetFactorySource.editor.insertPoint);
-
-      // If there has been anything added previously then add a comma
-      var comma = (startLine > 4 ? ",\n\n\n" : "\n");
-
-      // Write the Application code
-      var text =
-        comma +
-        className + " : " +
-        classInstance.factory.toString();
-
-      // Determine how many lines long the text is including
-      // the extra newlines we'll prepend
-      var lines = text.split("\n").length;
-
-      // Insert the new text
-      widgetFactorySource.editor.insertIntoLine(
-        widgetFactorySource.editor.insertPoint,
-        "end",
-        text);
-
-      // Reindent the new text using internal indentRegion()
-      var startPoint = widgetFactorySource.editor.insertPoint;
-      var endPoint = widgetFactorySource.editor.nthLine(startLine + lines);
-      widgetFactorySource.editor.editor.indentRegion(
-        widgetFactorySource.editor.nthLine(3), endPoint);
-
-      // Remove the selection indication
-//      widgetFactorySource.editor.selectLines(startPoint, endPoint);
-      widgetFactorySource.editor.selectLines(endPoint, 0);
-
-      // The new insert point is the previous end point, but CodeMirror
-      // requires a point on the previous line for the new insert point
-      endPoint = widgetFactorySource.editor.nthLine(startLine + lines - 1);
-      widgetFactorySource.editor.insertPoint = endPoint;
 
       //
       // Generate the Application code.
@@ -171,7 +183,7 @@ qx.Class.define("qooxit.Application",
       text +=
         "\n" +
         "var " + name + " = " +
-        "custom.WidgetFactory." + className + "(\n" +
+        "custom.WidgetFactory." + classInstance.factory.className + "(\n" +
         qx.util.Json.stringify(options, true) +
         ");\n";
 
@@ -195,7 +207,6 @@ qx.Class.define("qooxit.Application",
         applicationSource.editor.nthLine(3), endPoint);
 
       // Remove the selection indication
-//      applicationSource.editor.selectLines(startPoint, endPoint);
       applicationSource.editor.selectLines(endPoint, 0);
 
       // The new insert point is the previous end point, but CodeMirror
@@ -321,8 +332,8 @@ qx.Class.define("qooxit.Application",
 
     createSourceEditor : function(source)
     {
-      // this code part uses the CodeMirror library to add a
-      // syntax-highlighting editor as an textarea replacement
+      // This code uses the CodeMirror library to add a
+      // syntax-highlighting editor
       var height = source.page.getBounds().height;
       var width = source.page.getBounds().width;
 
@@ -438,22 +449,10 @@ qx.Class.define("qooxit.Application",
               left            : -1000
             });
 
-      var pages =
-        [
-          { text : "Red",    background : "red",    color : "white" },
-          { text : "Green",  background : "green",  color : "white" },
-          { text : "Blue",   background : "blue",   color : "white" },
-          { text : "Purple", background : "purple", color : "white" },
-          { text : "Yellow", background : "yellow", color : "black" }
-        ];
-
       // Wait for execution to start so we can provide a place to store
       // references to objects we add to the application.
-      this.context =
-        {
-          document : this.getRoot(),
-          pages    : pages
-        };
+      this.context = {};
+
       progressive.addListener(
         "renderStart",
         function(e)
@@ -679,7 +678,7 @@ qx.Class.define("qooxit.Application",
               text   : initText,
               appear : function(editor)
               {
-                // Find the initial insertion point: 3 lines before the end
+                // Find the initial insertion point
                 editor.insertPoint =
                   editor.prevLine(
                     editor.prevLine(
@@ -741,10 +740,11 @@ qx.Class.define("qooxit.Application",
           // Add a top label
           label = new qx.ui.basic.Label();
           label.setRich(true);
-          label.setValue(this.tr("Application Layout & Widget Hierarchy ") +
-                         "<span style='color:blue; font-weight:bold;'>" +
-                         this.tr("(drag to or within this tree, or right-click)") +
-                         "</span>");
+          label.setValue(
+            this.tr("Application Layout & Widget Hierarchy ") +
+              "<span style='color:blue; font-weight:bold;'>" +
+              this.tr("(drag to or within this tree, or right-click)") +
+              "</span>");
           context.leftPane.add(label);
 
           // Add the application hierarchy tree
