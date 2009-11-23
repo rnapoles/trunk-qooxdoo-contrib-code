@@ -1096,9 +1096,23 @@ Selenium.prototype.getInputElement = function(element)
   // Otherwise get the qooxdoo widget the element belongs to
   var qx = this.getQxGlobalObject();
   var qxWidget = qx.ui.core.Widget.getWidgetByElement(element);
+  
+  if (this.isQxInstanceOf(qxWidget, "htmlarea.HtmlArea")) {
+    var iframe = qxWidget.getIframeObject();
+    try {
+      return iframe.contentDocument.body;
+    } catch (ex) {
+      return iframe.document.body;
+    }
+  }
+  
   var classNames = ["qx.ui.form.AbstractField", "qx.ui.form.TextField", "qx.ui.form.TextArea", "qx.ui.form.PasswordField"];
   // Search the widget and its child controls for a text field
   var fieldWidgets = this.getChildControls(qxWidget, classNames);
+  if (!fieldWidgets.length > 0) {
+    throw new SeleniumError("No input/text area child found in widget " + qxWidget.classname);
+  }
+  
   // Get the DOM input element
   return fieldWidgets[0].getContentElement().getDomElement();
 };
