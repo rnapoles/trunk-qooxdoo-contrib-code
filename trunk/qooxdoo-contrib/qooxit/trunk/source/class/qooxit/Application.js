@@ -12,6 +12,9 @@
      * Derrell Lipman (derrell)
 
 #asset(qooxit/*)
+#asset(qx/icon/${qx.icontheme}/16/actions/*)
+#asset(qx/icon/${qx.icontheme}/16/apps/utilities-help.png)
+#asset(qx/icon/${qx.icontheme}/22/apps/preferences-users.png)
 #ignore(CodeMirror)
 ************************************************************************ */
 
@@ -24,6 +27,9 @@ qx.Class.define("qooxit.Application",
 
   members :
   {
+    /** Whether we are displaying widgets with sample data */
+    bSampleData : true,
+
     /**
      * This method contains the initial application code and gets called 
      * during startup of the application
@@ -409,7 +415,8 @@ qx.Class.define("qooxit.Application",
       // that the widget queue gets flushed
       progressive.setFlushWidgetQueueAfterBatch(true);
 
-      // Create a helper function for adding functions to the data model
+      // Create a helper function for adding functions to the data model. We
+      // let it bind 'this' to the Application object.
       var _this = this;
       var addFunc = function(func)
       {
@@ -420,6 +427,14 @@ qx.Class.define("qooxit.Application",
         };
         return ret;
       };
+
+      // Create a helper function to add new buttons to the menu
+      var addButton = function(dest, caption, icon, submenu)
+      {
+        var button = new qx.ui.menu.Button(caption, icon, null, submenu);
+        dest.add(button);
+        return button;
+      }
 
       // Instantiate a data model and populate it.
       var dataModel = new qx.ui.progressive.model.Default();
@@ -507,6 +522,76 @@ qx.Class.define("qooxit.Application",
             this, 0);
         });
 
+      // Create a menu bar at the top of the page
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create a frame for the menu bar and add it at the top of the page
+          var frame = new qx.ui.container.Composite(new qx.ui.layout.Grow());
+          this.getRoot().add(frame,
+                             {
+                               top    : 0,
+                               left   : 0,
+                               right  : 0
+                             });
+
+          // Create a menu bar and add it to the frame
+          var menuBar = new qx.ui.menubar.MenuBar();
+          frame.add(menuBar);
+
+          // Save the menu bar reference
+          context.menuBar = menuBar;
+        }));
+
+
+      // Add the File menu
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create a File menu and its button and add to the menu bar
+          var menu = new qx.ui.menu.Menu();
+          var button = new qx.ui.menubar.Button("File", null, menu);
+          context.menuBar.add(button);
+
+          // Add buttons to the File menu
+          addButton(menu, "New", "icon/16/actions/document-new.png");
+          addButton(menu, "Open", "icon/16/actions/document-open.png");
+          addButton(menu, "Close");
+          addButton(menu, "Save", "icon/16/actions/document-save.png");
+          addButton(menu, "Save as...","icon/16/actions/document-save-as.png");
+          addButton(menu, "Export Project");
+        }));
+
+      // Add the Development menu
+      dataModel.addElement(addFunc(
+        function(userData)
+        {
+          // Get our context
+          var context = userData.context;
+
+          // Create a Development menu and its button and add to the menu bar
+          var menu = new qx.ui.menu.Menu();
+          var button = new qx.ui.menubar.Button("Development", null, menu);
+          context.menuBar.add(button);
+
+          // Add buttons to the Development menu
+          var cbSamples = new qx.ui.menu.CheckBox("Sample Data");
+          cbSamples.setValue(_this.bSampleData);
+          cbSamples.addListener("changeValue",
+                                function(e)
+                                {
+                                  this.bSampleData = e.getData();
+                                },
+                                _this);
+          menu.add(cbSamples);
+        }));
+
       // Create a splitpane as the main workspace
       dataModel.addElement(addFunc(
         function(userData)
@@ -516,7 +601,13 @@ qx.Class.define("qooxit.Application",
 
           // Create the splitpane
           var  horizSplit = new qx.ui.splitpane.Pane("horizontal");
-          this.getRoot().add(horizSplit, { edge : 0 });
+          this.getRoot().add(horizSplit,
+                             {
+                               top    : 20,
+                               bottom : 0,
+                               left   : 0,
+                               right  : 0
+                             });
 
           // Create a VBox for the left pane
           context.leftPane =
