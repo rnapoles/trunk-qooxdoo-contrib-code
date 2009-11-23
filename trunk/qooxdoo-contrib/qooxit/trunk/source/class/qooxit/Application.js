@@ -73,6 +73,18 @@ qx.Class.define("qooxit.Application",
         qx.lang.Function.bind(classInstance.factory, classInstance);
       var o = fFactory(options);
 
+      // If sample data is being requested...
+      if (qx.core.Init.getApplication().bSampleData &&
+          classInstance._snippets &&
+          classInstance._snippets.sampleData &&
+          classInstance._snippets.sampleData.code)
+      {
+        var fSampleData =
+          qx.lang.Function.bind(classInstance._snippets.sampleData.code,
+                                classInstance);
+        fSampleData(o);
+      }
+
       // Add a node to the Application tree
       var subFolder = new qx.ui.tree.TreeFolder(label)
       subFolder.setOpen(true);
@@ -198,6 +210,19 @@ qx.Class.define("qooxit.Application",
 
       // Add it to the specified container
       text += folder.getUserData("name") + ".add(" + name + ");";
+
+      // Was sample data requested?
+      if (qx.core.Init.getApplication().bSampleData &&
+          classInstance._snippets &&
+          classInstance._snippets.sampleData &&
+          classInstance._snippets.sampleData.code)
+      {
+        // Yup. Add the sample data snippet
+        text +=
+          "\n\n" +
+          "// Add sample data\n" +
+          "(" + classInstance._snippets.sampleData.code + ")(" + name + ");";
+      }
 
       // Determine how many lines long the text is including
       // the extra newlines we'll prepend
@@ -761,10 +786,6 @@ qx.Class.define("qooxit.Application",
             '        // support native logging capabilities,\n' +
             '        // e.g. Firebug for Firefox\n' +
             '        qx.log.appender.Native;\n' +
-            '\n' +
-            '        // support additional cross-browser console.\n' +
-            '        // Press F7 to toggle visibility\n' +
-            '        qx.log.appender.Console;\n' +
             '      }\n' +
             '    }\n' +
             '  }\n' +
@@ -861,6 +882,9 @@ qx.Class.define("qooxit.Application",
               var related = e.getRelatedTarget();
               var label = related.getLabel();
               var sourceTree = related.getTree();
+              var options = {};
+              var overrides;
+              var override;
 
 /*
               this.debug("related=" + related +
@@ -871,14 +895,27 @@ qx.Class.define("qooxit.Application",
 */
 
               // Get the default options
-              var options = {};
               if (classInstance.getDefaultOptions)
               {
                 options =
-                  qx.lang.Function.bind(classInstance.getDefaultOptions,
-                                        classInstance)();
+                  qx.lang.Object.clone(
+                    qx.lang.Function.bind(classInstance.getDefaultOptions,
+                                          classInstance)());
               }
 
+              // See if there are sample data overrides to apply
+              if (qx.core.Init.getApplication().bSampleData &&
+                  classInstance._snippets &&
+                  classInstance._snippets.sampleData &&
+                  classInstance._snippets.sampleData.overrides)
+              {
+                // Yup. Get them and override the default option values
+                overrides = classInstance._snippets.sampleData.overrides;
+                for (override in overrides)
+                {
+                  options[override] = overrides[override];
+                }
+              }
 
               // If there's an options specification provided...
               if (classInstance.getOptionsSpec)
