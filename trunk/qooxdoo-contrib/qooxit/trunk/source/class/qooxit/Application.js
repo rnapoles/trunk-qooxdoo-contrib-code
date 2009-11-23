@@ -486,6 +486,9 @@ qx.Class.define("qooxit.Application",
 
           // Also save the number of elements for our progress bar usage.
           state.getUserData().initialNum = initialNum;
+
+          // We need a longer timeout to let the progress bar appear
+          progressive.setInterElementTimeout(500);
         },
         this);
 
@@ -541,6 +544,9 @@ qx.Class.define("qooxit.Application",
 
           // Add it to the right pane.
           context.rightPane.add(context.tabView, { flex : 1 } );
+
+          // Restore the default timeout
+          progressive.setInterElementTimeout(0);
         }));
 
       // Create the Live page
@@ -746,7 +752,8 @@ qx.Class.define("qooxit.Application",
           label.setValue(
             this.tr("Application Layout & Widget Hierarchy ") +
               "<span style='color:blue; font-weight:bold;'>" +
-              this.tr("(drag to or within this tree, or right-click)") +
+//              this.tr("(drag to or within this tree, or right-click)") +
+              this.tr("(drag to or within this tree)") +
               "</span>");
           context.leftPane.add(label);
 
