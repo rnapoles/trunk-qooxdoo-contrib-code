@@ -412,7 +412,9 @@ qx.core.Init.getApplication().setTestData(
     requestData : {
       method  : "getCurrentTimestamp"
     },
+    params : [],
     checkResult : function( result ) {
+// @todo reenable response check
 //      if ( qx.lang.Type.isDate( result ) )
 //      {
 //        return true;
