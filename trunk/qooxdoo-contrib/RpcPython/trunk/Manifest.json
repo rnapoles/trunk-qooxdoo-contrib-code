@@ -6,7 +6,7 @@
     "summary" : "qooxdoo RPC server in Python",
     "description": "",
     "keywords" : ["RPC"],
-    "homepage" : "http://qooxdoo.org/documentation/RPC",
+    "homepage" : "http://qooxdoo.org/documentation/rpc_python",
     
     "license" : "LGPL/EPL",    
     "authors" : [
