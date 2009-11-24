@@ -718,6 +718,10 @@ Selenium.prototype.getQxWidgetByLocator = function(locator)
     throw new SeleniumError("No such object: " + locator);
   }
   var qx = this.getQxGlobalObject();
+  
+  if (element.wrappedJSObject) {
+    element = element.wrappedJSObject;
+  }
 
   // this.page().findElement() returns the html element.
   var qxObject = qx.ui.core.Widget.getWidgetByElement( element );
