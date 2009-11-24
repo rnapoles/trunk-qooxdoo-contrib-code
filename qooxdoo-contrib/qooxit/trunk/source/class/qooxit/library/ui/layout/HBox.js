@@ -22,6 +22,15 @@ qx.Class.define("qooxit.library.ui.layout.HBox",
   extend : qooxit.library.ui.Abstract,
   type   : "singleton",
 
+  construct : function()
+  {
+    // Call the superclass constructor
+    this.base(arguments);
+
+    // This is a container.
+    this.setIsContainer(true);
+  },
+
   members :
   {
     // overridden

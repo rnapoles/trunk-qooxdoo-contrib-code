@@ -32,6 +32,16 @@ qx.Class.define("qooxit.library.ui.Abstract",
     menuHierarchy :
     {
       init     : null
+    },
+
+    /**
+     * Whether this object is a container. Objects can only be dropped into
+     * containers.
+     */
+    isContainer :
+    {
+      check    : "Boolean",
+      init     : false
     }
   },
 

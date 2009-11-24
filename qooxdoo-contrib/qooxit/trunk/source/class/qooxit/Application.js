@@ -96,6 +96,37 @@ qx.Class.define("qooxit.Application",
       // Save the object with its node in the Application tree
       subFolder.setUserData("object", o);
 
+      // Save the options
+      subFolder.setUserData("options", options);
+
+      // Allow the item to be dragged around in the application tree
+      subFolder.setDraggable(true);
+
+      // If this is a container...
+      if (classInstance.getIsContainer())
+      {
+        // ... then handle a drop into it
+        subFolder.setDroppable(true);
+        subFolder.addListener("drop", this.handleDrop, this);
+      }
+
+      // Allow the item to be copied
+      subFolder.addListener("dragstart",
+                            function(e)
+                            {
+                              e.addAction("move");
+                              e.addType("qooxit");
+                            });
+
+      // If it is dropped, provide the factory for adding it to the application
+      // tree.
+      subFolder.addListener(
+        "droprequest",
+        function(e)
+        {
+          e.addData("qooxit", classInstance);
+        });
+
       //
       // See if we need to generate the WidgetFactory code entry
       //
@@ -194,6 +225,9 @@ qx.Class.define("qooxit.Application",
       // Save this name in the new object
       subFolder.setUserData("name", name);
 
+      // Save the factory from which we instantiated this object
+      subFolder.setUserData("classInstance", classInstance);
+
       // Temporarily delete the variable name from the options
       delete options.__name__;
 
@@ -277,7 +311,7 @@ qx.Class.define("qooxit.Application",
       // new tree item.
       var treeItem = this.findMenuItem(root, menuHierarchy);
 
-      // This item has to be draggable to be dropped into the applciation view
+      // This item has to be draggable to be dropped into the application tree
       treeItem.setDraggable(true);
 
       // Allow the item to be copied
@@ -285,7 +319,7 @@ qx.Class.define("qooxit.Application",
                            function(e)
                            {
                              e.addAction("copy");
-                             e.addType("qooxit/available");
+                             e.addType("qooxit");
                            });
 
       // If it is dropped, provide the factory for adding it to the application
@@ -294,7 +328,7 @@ qx.Class.define("qooxit.Application",
         "droprequest",
         function(e)
         {
-          e.addData("qooxit/available",
+          e.addData("qooxit",
                     classInstance);
         });
     },
@@ -875,148 +909,41 @@ qx.Class.define("qooxit.Application",
 
           // Add the application hierarchy tree
           context.applicationTree = new qx.ui.tree.Tree();
-          context.applicationTree.setDroppable(true);
 
+/*
+          // Disallow drop other than in a container
           context.applicationTree.addListener(
-            "drop",
+            "dragover",
             function(e)
             {
-              var classInstance = e.getData("qooxit/available");
               var orig = e.getOriginalTarget();
-              var folder = orig.getLayoutParent();
+              var folder =
+                (orig.getLayoutParent() instanceof qx.ui.tree.TreeFolder
+                 ? orig.getLayoutParent()
+                 : orig.getRoot());
               var related = e.getRelatedTarget();
               var label = related.getLabel();
               var sourceTree = related.getTree();
-              var options = {};
-              var overrides;
-              var override;
 
-/*
-              this.debug("related=" + related +
-                         ", source label=" + related.getLabel() +
-                         ", dropTarget=" + e.getTarget() +
-                         ", origTarget=" + folder +
-                         ", dest label=" + folder.getLabel());
-*/
+              this.debug("target=" + e.getTarget() + ", " +
+                         "orig=" + orig + ", " +
+                         "folder=" + folder + ", " +
+                         "related=" + related + ", " +
+                         "label=" + label + ", " +
+                         "sourceTree=" + sourceTree + ", " +
+                         "dropTarget=" + e.getTarget());
 
-              // Get the default options
-              if (classInstance.getDefaultOptions)
+              // If the drop target isn't a container...
+              var classInstance = orig.getUserData("classInstance");
+              if (! classInstance ||
+                  ! classInstance.getIsContainer())
               {
-                options =
-                  qx.lang.Object.clone(
-                    qx.lang.Function.bind(classInstance.getDefaultOptions,
-                                          classInstance)());
-              }
-
-              // See if there are sample data overrides to apply
-              if (qx.core.Init.getApplication().bSampleData &&
-                  classInstance._snippets &&
-                  classInstance._snippets.sampleData &&
-                  classInstance._snippets.sampleData.overrides)
-              {
-                // Yup. Get them and override the default option values
-                overrides = classInstance._snippets.sampleData.overrides;
-                for (override in overrides)
-                {
-                  options[override] = overrides[override];
-                }
-              }
-
-              // If there's an options specification provided...
-              if (classInstance.getOptionsSpec)
-              {
-                // Get it for options retrieval
-                var spec =
-                  qx.lang.Function.bind(classInstance.getOptionsSpec,
-                                        classInstance)();
-
-                // Determine dropped widget type (used in title of options
-                // window)
-                var type = related.getLabel();
-
-                // Generate the options window for the user to make selections
-                var fOptionsWindow =
-                  qx.lang.Function.bind(classInstance.optionsWindow,
-                                        classInstance);
-                var optionsWin = fOptionsWindow(type, spec, options);
-
-                // When the options window closes, retrieve the options,
-                // add a node  to the Application tree, and use the factory
-                // to add the class to the Live Application View
-                optionsWin.addListener(
-                  "close",
-                  function(e)
-                  {
-                    // Allow the wait cursor to take effect. Create a slight
-                    // pause before adding the object
-                    var timer = qx.util.TimerManager.getInstance();
-                    timer.start(
-                      function(userData, timerId)
-                      {
-                        // Retrieve the selected options.
-                        var options = optionsWin.getUserData("options");
-
-                        // Were we given any?
-                        if (! options)
-                        {
-                          // Nope, they cancelled. Get outta here!
-                          return;
-                        }
-
-                        // Add the requested object
-                        this.addObject(classInstance,
-                                       options,
-                                       label,
-                                       folder,
-                                       sourceTree,
-                                       context.widgetFactorySource,
-                                       context.applicationSource);
-
-                        // Revert back to the default cursor. The "wait" cursor
-                        // was set when the Ok button was pressed
-                        this.getRoot().setGlobalCursor("default");
-                      },
-                      0,
-                      this,
-                      null,
-                      10);
-                  },
-                  this);
-              }
-              else
-              {
-                // Switch to a "wait" cursor
-                this.getRoot().setGlobalCursor("wait");
-
-                // Allow the wait cursor to take effect. Create a slight
-                // pause before adding the object
-                var timer = qx.util.TimerManager.getInstance();
-                timer.start(
-                  function(userData, timerId)
-                  {
-                    // Generate a name for this object
-                    options.__name__ =
-                      "o" + qooxit.library.ui.Abstract.objectNumber++;
-
-                    // There's no options spec, so just use the default options
-                    this.addObject(classInstance,
-                                   options,
-                                   label,
-                                   folder,
-                                   sourceTree,
-                                   context.widgetFactorySource,
-                                   context.applicationSource);
-
-                    // Revert back to the default cursor.
-                    this.getRoot().setGlobalCursor("default");
-                  },
-                  0,
-                  this,
-                  null,
-                  10);
+                // ... then don't allow a drop there.
+//                e.preventDefault();
               }
             },
             this);
+*/
 
           context.leftPane.add(context.applicationTree, { flex : 1 } );
         }));
@@ -1040,6 +967,15 @@ qx.Class.define("qooxit.Application",
           // Save the name of the root object
           applicationRoot.setUserData("name", "_root_");
 
+          // pageLive (and thus applicationRoot) has a VBox layout
+          var classInstance = qooxit.library.ui.layout.VBox.getInstance();
+applicationRoot.debug("root has tree " + applicationRoot.getTree() + ", VBox " + classInstance);
+          applicationRoot.setUserData("classInstance", classInstance);
+
+          // Handle a drop
+          applicationRoot.setDroppable(true);
+          applicationRoot.addListener("drop", this.handleDrop, this);
+
           // Add all registered classes to the Available menu
           var list = qooxit.library.Library.getClasses();
           for (var i = 0; i < list.length; i++)
@@ -1055,6 +991,168 @@ qx.Class.define("qooxit.Application",
 
       // Begin execution
       progressive.render();
+    },
+
+    handleDrop : function(e)
+    {
+      var classInstance = e.getData("qooxit");
+      var orig = e.getOriginalTarget();
+      var folder = orig.getLayoutParent();
+      var related = e.getRelatedTarget();
+      var label = related.getLabel();
+      var sourceTree = related.getTree();
+      var options = {};
+      var overrides;
+      var override;
+
+      this.debug("related=" + related +
+                 ", source label=" + related.getLabel() +
+                 ", dropTarget=" + e.getTarget() +
+                 ", origTarget=" + folder +
+                 ", dest label=" + folder.getLabel());
+
+      // Determine if this is a drag within the application tree
+      if (related.getTree() == folder.getTree())
+      {
+        // It is. Remove it from the tree and re-insert it.
+        related.getParent().remove(related);
+
+        // Remove it from the Live application view
+        var o = related.getUserData("object");
+        o.getLayoutParent().remove(o);
+
+        // Re-add it in the new location
+        this.addObject(related.getUserData("classInstance"),
+                       related.getUserData("options"),
+                       label,
+                       folder,
+                       sourceTree,
+                       this.context.widgetFactorySource,
+                       this.context.applicationSource);
+
+
+        // Now handle the source repositioning
+
+        // That's all, folks!
+        return;
+      }
+
+      // Get the default options
+      if (classInstance.getDefaultOptions)
+      {
+        options =
+          qx.lang.Object.clone(
+            qx.lang.Function.bind(classInstance.getDefaultOptions,
+                                  classInstance)());
+      }
+
+      // See if there are sample data overrides to apply
+      if (qx.core.Init.getApplication().bSampleData &&
+          classInstance._snippets &&
+          classInstance._snippets.sampleData &&
+          classInstance._snippets.sampleData.overrides)
+      {
+        // Yup. Get them and override the default option values
+        overrides = classInstance._snippets.sampleData.overrides;
+        for (override in overrides)
+        {
+          options[override] = overrides[override];
+        }
+      }
+
+      // If there's an options specification provided...
+      if (classInstance.getOptionsSpec)
+      {
+        // Get it for options retrieval
+        var spec =
+          qx.lang.Function.bind(classInstance.getOptionsSpec,
+                                classInstance)();
+
+        // Determine dropped widget type (used in title of options
+        // window)
+        var type = related.getLabel();
+
+        // Generate the options window for the user to make selections
+        var fOptionsWindow =
+          qx.lang.Function.bind(classInstance.optionsWindow,
+                                classInstance);
+        var optionsWin = fOptionsWindow(type, spec, options);
+
+        // When the options window closes, retrieve the options,
+        // add a node  to the Application tree, and use the factory
+        // to add the class to the Live Application View
+        optionsWin.addListener(
+          "close",
+          function(e)
+          {
+            // Allow the wait cursor to take effect. Create a slight
+            // pause before adding the object
+            var timer = qx.util.TimerManager.getInstance();
+            timer.start(
+              function(userData, timerId)
+              {
+                // Retrieve the selected options.
+                var options = optionsWin.getUserData("options");
+
+                // Were we given any?
+                if (! options)
+                {
+                  // Nope, they cancelled. Get outta here!
+                  return;
+                }
+
+                // Add the requested object
+                this.addObject(classInstance,
+                               options,
+                               label,
+                               folder,
+                               sourceTree,
+                               this.context.widgetFactorySource,
+                               this.context.applicationSource);
+
+                // Revert back to the default cursor. The "wait" cursor
+                // was set when the Ok button was pressed
+                this.getRoot().setGlobalCursor("default");
+              },
+              0,
+              this,
+              null,
+              10);
+          },
+          this);
+      }
+      else
+      {
+        // Switch to a "wait" cursor
+        this.getRoot().setGlobalCursor("wait");
+
+        // Allow the wait cursor to take effect. Create a slight
+        // pause before adding the object
+        var timer = qx.util.TimerManager.getInstance();
+        timer.start(
+          function(userData, timerId)
+          {
+            // Generate a name for this object
+            options.__name__ =
+              "o" + qooxit.library.ui.Abstract.objectNumber++;
+
+            // There's no options spec, so just use the default options
+            this.addObject(classInstance,
+                           options,
+                           label,
+                           folder,
+                           sourceTree,
+                           this.context.widgetFactorySource,
+                           this.context.applicationSource);
+
+            // Revert back to the default cursor.
+            this.getRoot().setGlobalCursor("default");
+          },
+          0,
+          this,
+          null,
+          10);
+      }
     }
   }
 });
