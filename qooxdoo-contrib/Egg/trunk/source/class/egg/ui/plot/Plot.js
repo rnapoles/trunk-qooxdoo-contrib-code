@@ -30,7 +30,7 @@ $.jqplot.config.enablePlugins = false;
  * * How easy would be to remove jQuery?
  *  
  */
-qx.Class.define("egg.plot.Plot",
+qx.Class.define("egg.ui.plot.Plot",
 {
   extend: qx.ui.container.Composite,
   
