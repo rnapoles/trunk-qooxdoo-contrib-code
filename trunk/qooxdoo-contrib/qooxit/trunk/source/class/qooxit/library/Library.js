@@ -74,6 +74,16 @@ qx.Class.define("qooxit.library.Library",
           clazz         : qooxit.library.ui.control.ColorSelector,
           menuHierarchy :
             [ "Widget", "Color Selector (qx.ui.control.ColorSelector)" ]
+        },
+        {
+          clazz         : qooxit.library.ui.control.DateChooser,
+          menuHierarchy :
+            [ "Widget", "Date Chooser (qx.ui.control.DateChooser)" ]
+        },
+        {
+          clazz         : qooxit.library.ui.form.DateField,
+          menuHierarchy :
+            [ "Widget", "Date Field (qx.ui.control.DateField)" ]
         }
       ],
 
