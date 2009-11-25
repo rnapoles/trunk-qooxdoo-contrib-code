@@ -99,6 +99,9 @@ qx.Class.define("qooxit.Application",
       // Save the options
       subFolder.setUserData("options", options);
 
+      // Save the original label
+      subFolder.setUserData("label", label);
+
       // Allow the item to be dragged around in the application tree
       subFolder.setDraggable(true);
 
@@ -909,42 +912,6 @@ qx.Class.define("qooxit.Application",
 
           // Add the application hierarchy tree
           context.applicationTree = new qx.ui.tree.Tree();
-
-/*
-          // Disallow drop other than in a container
-          context.applicationTree.addListener(
-            "dragover",
-            function(e)
-            {
-              var orig = e.getOriginalTarget();
-              var folder =
-                (orig.getLayoutParent() instanceof qx.ui.tree.TreeFolder
-                 ? orig.getLayoutParent()
-                 : orig.getRoot());
-              var related = e.getRelatedTarget();
-              var label = related.getLabel();
-              var sourceTree = related.getTree();
-
-              this.debug("target=" + e.getTarget() + ", " +
-                         "orig=" + orig + ", " +
-                         "folder=" + folder + ", " +
-                         "related=" + related + ", " +
-                         "label=" + label + ", " +
-                         "sourceTree=" + sourceTree + ", " +
-                         "dropTarget=" + e.getTarget());
-
-              // If the drop target isn't a container...
-              var classInstance = orig.getUserData("classInstance");
-              if (! classInstance ||
-                  ! classInstance.getIsContainer())
-              {
-                // ... then don't allow a drop there.
-//                e.preventDefault();
-              }
-            },
-            this);
-*/
-
           context.leftPane.add(context.applicationTree, { flex : 1 } );
         }));
 
@@ -969,7 +936,6 @@ qx.Class.define("qooxit.Application",
 
           // pageLive (and thus applicationRoot) has a VBox layout
           var classInstance = qooxit.library.ui.layout.VBox.getInstance();
-applicationRoot.debug("root has tree " + applicationRoot.getTree() + ", VBox " + classInstance);
           applicationRoot.setUserData("classInstance", classInstance);
 
           // Handle a drop
@@ -1024,7 +990,7 @@ applicationRoot.debug("root has tree " + applicationRoot.getTree() + ", VBox " +
         // Re-add it in the new location
         this.addObject(related.getUserData("classInstance"),
                        related.getUserData("options"),
-                       label,
+                       related.getUserData("label"),
                        folder,
                        sourceTree,
                        this.context.widgetFactorySource,
