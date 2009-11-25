@@ -92,6 +92,23 @@ simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample)
   return foundErrors;
 };
 
+simulation.Simulation.prototype.getCodeMirrorActive = function()
+{
+  try {
+    var codeMirrorIframe = this.__sel.isVisible('xpath=//iframe[@class="code-mirror-iframe"]');
+    var codeMirrorHighlight = this.__sel.isElementPresent('xpath=//span[@class="js-keyword"]');
+    codeMirrorHighlight = new String(codeMirrorHighlight);
+    if (codeMirrorIframe && codeMirrorHighlight == "true") {
+      return true;
+    } else {
+      return false;
+    }
+  } catch(ex) {
+    this.log("Unable to check syntax highlighting: " + ex, "error");
+    return false;
+  }
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   //this.__sel.windowmaximize();
@@ -128,14 +145,38 @@ simulation.Simulation.prototype.runTest = function()
   // Close the menu
   this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
   
+  // Check if syntax highlighting is on  
+  if (this.getCodeMirrorActive()) {
+    this.log("Syntax highlighting is active", "info");
+    // Turn off syntax highlighting
+    this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[0]/qx.ui.form.ToggleButton', '', 'Deactivating syntax highlighting');
+    Packages.java.lang.Thread.sleep(500);
+    if (this.getCodeMirrorActive()) {
+      this.log("Syntax highlighting was not deactivated!", "error");
+    } else {
+      this.log("Syntax highlighting deactivated correctly", "info");
+    }
+    // And turn it on again
+    this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[0]/qx.ui.form.ToggleButton', '', 'Deactivating syntax highlighting');
+    Packages.java.lang.Thread.sleep(500);
+    if (this.getCodeMirrorActive()) {
+      this.log("Syntax highlighting reactivated correctly", "info");
+    } else {
+      this.log("Syntax highlighting was not reactivated!", "error");
+    }
+  } else {
+    this.log("Syntax highlighting is not active!", "error");
+  }
+  
+  // Select and check each sample
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
       print("Selecting next sample: " + sampleArr[i]);
       this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
-	  this.qxClick(sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
+	    this.qxClick(sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
 
       var boxCont = this.killBoxes();
-	  Packages.java.lang.Thread.sleep(2000);
+	    Packages.java.lang.Thread.sleep(2000);
 	  
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
       var sampleStarted = this.isSampleStarted(sampleArr[i]);
