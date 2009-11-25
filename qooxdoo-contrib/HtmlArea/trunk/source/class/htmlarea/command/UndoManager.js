@@ -699,17 +699,29 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
 
       var selection = this.__editorInstance.getSelection();
-      var focusNode = selection.focusNode;
+      var focusNode = selection ? selection.focusNode : null;
 
-      while (focusNode.nodeName.toLowerCase() != "p")
-      {
-        focusNode = focusNode.parentNode;
-        if (focusNode.nodeName.toLowerCase() == "body") {
-          return null;
-        }
+      if (focusNode == null) {
+        return null;
       }
 
-      if (focusNode.nodeName.toLowerCase() == "p") {
+      try
+      {
+        while (focusNode.nodeName.toLowerCase() != "p")
+        {
+          focusNode = focusNode.parentNode;
+
+          if (!focusNode || focusNode.nodeName.toLowerCase() == "body") {
+            return null;
+          }
+        }
+      }
+      catch (exc)
+      {
+        return null;
+      }
+
+      if (focusNode != null && focusNode.nodeName.toLowerCase() == "p") {
         return focusNode;
       } else {
         return null;
@@ -756,7 +768,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         range.collapse(true);
       },
 
-      "default" : function() {}
+      "default" : qx.lang.Function.empty
     }),
 
 
