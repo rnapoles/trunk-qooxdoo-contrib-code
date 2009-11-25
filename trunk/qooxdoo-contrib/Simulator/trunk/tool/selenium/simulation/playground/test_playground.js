@@ -25,11 +25,19 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
+var locators = {
+  menuButton : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton",
+  syntaxHighlightingButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[0]/qx.ui.form.ToggleButton',
+  editorTextArea : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/[@classname="playground.EditorContainer"]/qx.ui.form.TextArea',
+  runButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]',
+  playgroundApplication : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Scroll/qx.ui.root.Inline',
+  logButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox',
+  sampleMenuButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton'
+};
 
 var getSampleNames = function()
-{
-  var locator = "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton";  
-  var menuWidget = selenium.getQxWidgetByLocator(locator);
+{  
+  var menuWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton');
   var kids = menuWidget.getMenu().getChildren();  
   var sampleNames = "";
   for(var i=0,l=kids.length; i<l; i++) {  
@@ -109,6 +117,45 @@ simulation.Simulation.prototype.getCodeMirrorActive = function()
   }
 };
 
+simulation.Simulation.prototype.checkEdit = function(sampleName)
+{ 
+  try {
+    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    var newButtonLabel = "Simulator was here";
+    var playAreaCode = new String(this.__sel.qxObjectExecFunction(locators["editorTextArea"], 'getValue'));
+    var modifiedCode = playAreaCode.replace(/First Button/, newButtonLabel);
+    this.__sel.type(locators["editorTextArea"], modifiedCode);
+    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    this.qxClick(locators["runButton"], '', 'Pressing Run button');
+  } catch(ex) {
+    this.log("Could not edit sample " + sampleName + ": " + ex, "error");
+    return;
+  }
+
+  var sampleLoaded = this.isSampleLoaded(sampleName);
+  var sampleStarted = this.isSampleStarted(sampleName);
+
+  this.logGlobalErrors();
+  this.clearGlobalErrorStore();  
+
+  if (!sampleLoaded || !sampleStarted) {
+    this.log("Modified sample " + sampleName + " did not start correctly!", "error");
+    return;
+  }
+  
+  try {
+    var playAppButtonLoc = locators["playgroundApplication"] + '/qx.ui.form.Button';
+    var playAppButtonLabel = new String(this.__sel.qxObjectExecFunction(playAppButtonLoc, 'getLabel'));
+    if (playAppButtonLabel == newButtonLabel) {
+      this.log("Successfully ran modified sample " + sampleName, "info");
+    } else {
+      this.log("Modification of sample " + sampleName + " failed!", "error");
+    }
+  } catch(ex) {
+    this.log("Error checking modified sample " + sampleName + ": " + ex, "error");
+  }
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   //this.__sel.windowmaximize();
@@ -117,10 +164,10 @@ simulation.Simulation.prototype.runTest = function()
   this.runScript(setLocale, "Setting application locale to EN");    
    
   // Open log pane
-  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox', "", 'Opening log pane');
+  this.qxClick(locators["logButton"], "", 'Opening log pane');
   
   // Load the first sample again to make sure we get the english log output.
-  this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]', '', 'Pressing Run button');
+  this.qxClick(locators["runButton"], '', 'Pressing Run button');
 
   this.addOwnFunction("getSampleNames", getSampleNames);  
   var sampleNames = this.getEval(selWin + ".qx.Simulation.getSampleNames();", "Getting sample names");
@@ -131,25 +178,24 @@ simulation.Simulation.prototype.runTest = function()
   // Log any errors that might have occurred since the application was started 
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
-      
-  var sampleMenuButtonLocator = 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton';
-  var sampleMenuLocator = sampleMenuButtonLocator + '/qx.ui.menu.Menu';
+  
+  var sampleMenuLocator = locators["sampleMenuButton"] + '/qx.ui.menu.Menu';
   
   // Click the menu button so the menu is created
-  this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
+  this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
   var sampleMenuFirstChild = this.__sel.qxObjectExecFunction(sampleMenuLocator + '/child[0]', 'toString');
   
   if (sampleMenuFirstChild.indexOf("MenuSlideBar") > 0) {
     sampleMenuLocator += '/qx.ui.menu.MenuSlideBar';
   }
   // Close the menu
-  this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
+  this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
   
   // Check if syntax highlighting is on  
   if (this.getCodeMirrorActive()) {
     this.log("Syntax highlighting is active", "info");
     // Turn off syntax highlighting
-    this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[0]/qx.ui.form.ToggleButton', '', 'Deactivating syntax highlighting');
+    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
     Packages.java.lang.Thread.sleep(500);
     if (this.getCodeMirrorActive()) {
       this.log("Syntax highlighting was not deactivated!", "error");
@@ -157,7 +203,7 @@ simulation.Simulation.prototype.runTest = function()
       this.log("Syntax highlighting deactivated correctly", "info");
     }
     // And turn it on again
-    this.qxClick('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[0]/qx.ui.form.ToggleButton', '', 'Deactivating syntax highlighting');
+    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
     Packages.java.lang.Thread.sleep(500);
     if (this.getCodeMirrorActive()) {
       this.log("Syntax highlighting reactivated correctly", "info");
@@ -168,14 +214,22 @@ simulation.Simulation.prototype.runTest = function()
     this.log("Syntax highlighting is not active!", "error");
   }
   
+  this.checkEdit(sampleArr[0]);
+  
   // Select and check each sample
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
+      this.__sel.chooseOkOnNextConfirmation();
       print("Selecting next sample: " + sampleArr[i]);
-      this.qxClick(sampleMenuButtonLocator, '', 'Clicking menu button');
+      this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
 	    this.qxClick(sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
 
-      var boxCont = this.killBoxes();
+      try {
+        this.__sel.getConfirmation();
+      } catch(ex) {
+        // An exception here just means there was no dialog box
+      }    
+      
 	    Packages.java.lang.Thread.sleep(2000);
 	  
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
