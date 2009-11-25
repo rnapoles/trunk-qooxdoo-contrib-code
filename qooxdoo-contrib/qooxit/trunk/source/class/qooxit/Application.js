@@ -291,10 +291,10 @@ qx.Class.define("qooxit.Application",
     },
 
     /**
-     * Add a class to the Available menu.
+     * Add a class to the Containers & Widgets menu.
      *
      * @param root {qx.ui.tree.AbstractTreeItem}
-     *   The root of the AVailable menu tree
+     *   The root of the Containers & Widgets  menu tree
      *
      * @param clazz {qooxit.library.ui.Abstract}
      *   The class being added to the menu.
@@ -712,7 +712,7 @@ qx.Class.define("qooxit.Application",
 
           // Create the page
           context.pageLive =
-            new qx.ui.tabview.Page(this.tr("Live Application View"));
+            new qx.ui.tabview.Page("Live Application View");
 
           // Give it a vertical box layout
           context.pageLive.setLayout(new qx.ui.layout.VBox());
@@ -867,51 +867,51 @@ qx.Class.define("qooxit.Application",
         }));
 
       //
-      // The left pane shows two trees. The top is the available widgets; the
-      // bottom is  the hierarchical representation of the application being
-      // built.
+      // The left pane shows two trees. The top is the Containers & Widgets;
+      // the bottom is the hierarchical representation of the application
+      // being built.
       //
 
-      // Add the top tree, to display available layouts and widgets
+      // Add the top tree, to display available containers and widgets
       dataModel.addElement(addFunc(
         function(userData)
         {
           // Get our context
           var context = userData.context;
 
-          // Add a top label
-          var label = new qx.ui.basic.Label();
-          label.setRich(true);
-          label.setValue(this.tr("Available Layouts & Widgets ") +
-                         "<span style='color:blue; font-weight:bold;'>" +
-                         this.tr("(drag from this tree)") +
-                         "</span>");
-          context.leftPane.add(label);
+          // Generate a label for this groupbox
+          var label =
+            "<u>C</u>ontainers & Widgets " +
+            "<span style='color:blue; font-weight:bold;'>" +
+            "(drag from this tree)" +
+            "</span>";
 
-          // Add the available layouts and widgets tree
+          // Create a Tabview and add it to the left pane
+          var tabView = new qx.ui.tabview.TabView();
+          tabView.setContentPadding(0);
+          context.leftPane.add(tabView, { flex : 2 });
+
+          // Create a  Page and add it to the tabview
+          var pg = new qx.ui.tabview.Page(label);
+          pg.setLayout(new qx.ui.layout.VBox());
+          pg.getChildControl("button").getChildControl("label").setRich(true);
+          tabView.add(pg);
+
+          // Add the available containers and widgets tree
           var availableTree = new qx.ui.tree.Tree();
-          context.leftPane.add(availableTree, { flex : 2 } );
+          pg.add(availableTree, { flex : 1 } );
+
+          // Create a command to focus the containers & widgets tree. Apply
+          // the same command to Alt and Meta to support both Macs (Meta) and
+          // other systems (Alt).
+          var command = new qx.ui.core.Command("Alt-C");
+          command.addListener("execute", availableTree.focus, availableTree);
 
           // Create the (hidden) root of the available layouts and widgets tree
           context.availableRoot = new qx.ui.tree.TreeFolder("Root");
           context.availableRoot.setOpen(true);
           availableTree.setRoot(context.availableRoot);
           availableTree.setHideRoot(true);
-
-          // Add a top label
-          label = new qx.ui.basic.Label();
-          label.setRich(true);
-          label.setValue(
-            this.tr("Application Layout & Widget Hierarchy ") +
-              "<span style='color:blue; font-weight:bold;'>" +
-//              this.tr("(drag to or within this tree, or right-click)") +
-              this.tr("(drag to or within this tree)") +
-              "</span>");
-          context.leftPane.add(label);
-
-          // Add the application hierarchy tree
-          context.applicationTree = new qx.ui.tree.Tree();
-          context.leftPane.add(context.applicationTree, { flex : 1 } );
         }));
 
       // Create the application hierarchy tree
@@ -921,9 +921,41 @@ qx.Class.define("qooxit.Application",
           // Get our context
           var context = userData.context;
 
+          // Generate a label for this groupbox
+          var label =
+            "<span style='padding-left: 10px;'>" +
+            "<u>A</u>pplication Hierarchy " +
+            "<span style='color:blue; font-weight:bold;'>" +
+            "(drag to or within this tree)" +
+            "</span>" +
+            "</span>";
+
+          // Create a Tabview and add it to the left pane
+          var tabView = new qx.ui.tabview.TabView();
+          tabView.setContentPadding(0);
+          context.leftPane.add(tabView, { flex : 1 });
+
+          // Create a  Page and add it to the tabview
+          var pg = new qx.ui.tabview.Page(label);
+          pg.setLayout(new qx.ui.layout.VBox());
+          pg.getChildControl("button").getChildControl("label").setRich(true);
+          tabView.add(pg);
+
+          // Add the application hierarchy tree
+          context.applicationTree = new qx.ui.tree.Tree();
+          pg.add(context.applicationTree, { flex : 1 } );
+
+          // Create a command to focus the application hierarchy tree. Apply
+          // the same command to Alt and Meta to support both Macs (Meta) and
+          // other systems (Alt).
+          var command = new qx.ui.core.Command("Alt-A");
+          command.addListener("execute",
+                              context.applicationTree.focus,
+                              context.applicationTree);
+
           // Create the root of the application hierarchy tree
           var applicationRoot =
-            new qx.ui.tree.TreeFolder(this.tr("Application Root"));
+            new qx.ui.tree.TreeFolder("Application Root");
           applicationRoot.setOpen(true);
           context.applicationTree.setRoot(applicationRoot);
 
@@ -941,7 +973,7 @@ qx.Class.define("qooxit.Application",
           applicationRoot.setDroppable(true);
           applicationRoot.addListener("drop", this.handleDrop, this);
 
-          // Add all registered classes to the Available menu
+          // Add all registered classes to the Containers & Widgets menu
           var list = qooxit.library.Library.getClasses();
           for (var i = 0; i < list.length; i++)
           {
