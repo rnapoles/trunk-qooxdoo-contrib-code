@@ -316,6 +316,9 @@ qx.Class.define("qooxit.Application",
       // This item has to be draggable to be dropped into the application tree
       treeItem.setDraggable(true);
 
+      // Save the class instance for this item
+      treeItem.setUserData("classInstance", classInstance);
+
       // Allow the item to be copied
       treeItem.addListener("dragstart",
                            function(e)
@@ -898,20 +901,94 @@ qx.Class.define("qooxit.Application",
           tabView.add(pg);
 
           // Add the available containers and widgets tree
-          var availableTree = new qx.ui.tree.Tree();
-          pg.add(availableTree, { flex : 1 } );
+          context.availableTree = new qx.ui.tree.Tree();
+          pg.add(context.availableTree, { flex : 1 } );
 
           // Create a command to focus the containers & widgets tree. Apply
           // the same command to Alt and Meta to support both Macs (Meta) and
           // other systems (Alt).
           var command = new qx.ui.core.Command("Alt-C");
-          command.addListener("execute", availableTree.focus, availableTree);
+          command.addListener("execute",
+                              context.availableTree.focus,
+                              context.availableTree);
+
+          // Create a command to add the selected container or widget from
+          // the Containers & Widgets tree to the selected Application
+          // Hierarchy container.
+          var command = new qx.ui.core.Command("Enter");
+          command.addListener(
+            "execute",
+            function(e)
+            {
+              // Ensure that the Available Containers & Widgets tree is focused
+              if (! context.availableTree.hasState("focused"))
+              {
+                // It isn't. Ignore.
+                return;
+              }
+
+              // Ensure that there's a selected item in the Available
+              // Containers & Widgets tree
+              var selection = context.availableTree.getSelection();
+              if (selection.length == 0)
+              {
+                // Nope, no selected item. Let 'em know.
+                alert("There is no selected item in the Containers & " +
+                      "Widgets tree. Please select an item first.");
+                return;
+              }
+
+              // Save the selected source item
+              var source = selection[0];
+
+              // Ensure that there's a selected item in the Application tree
+              var selection = context.applicationTree.getSelection();
+              if (selection.length == 0)
+              {
+                // Nope, no selected item. Let 'em know.
+                alert("There is no selected container in the Application " +
+                      "Hierarchy tree into which this item should be added. " +
+                      "Please select a container item in the Application " +
+                      "Hierarchy tree first.");
+                return;
+              }
+
+              // Save the selected destination item
+              var destination = selection[0];
+
+              // Ensure that the selected item is a container
+              if (destination.getTree().getRoot() != destination &&
+                  ! destination.getUserData("classInstance").getIsContainer())
+              {
+                // It's not. Let 'em know.
+                alert("The selected item in the Application Hierarachy " +
+                      "tree is not a container. Please select a container " +
+                      "item in the Application Hierarchy tree first.");
+              }
+
+              // Simulate a drop event
+              var Registration = qx.event.Registration;
+              var e =
+                Registration.createEvent("drop",
+                                         qx.event.type.Drag,
+                                         [ false, null ]);
+
+              // The target is the destination item
+              e.setTarget(destination);
+
+              // The related target is the source item
+              e.setRelatedTarget(source);
+
+              // Call the drop handler
+              this.handleDrop(e, source.getUserData("classInstance"));
+            },
+            this);
 
           // Create the (hidden) root of the available layouts and widgets tree
           context.availableRoot = new qx.ui.tree.TreeFolder("Root");
           context.availableRoot.setOpen(true);
-          availableTree.setRoot(context.availableRoot);
-          availableTree.setHideRoot(true);
+          context.availableTree.setRoot(context.availableRoot);
+          context.availableTree.setHideRoot(true);
         }));
 
       // Create the application hierarchy tree
@@ -990,11 +1067,13 @@ qx.Class.define("qooxit.Application",
       progressive.render();
     },
 
-    handleDrop : function(e)
+    handleDrop : function(e, classInstance)
     {
-      var classInstance = e.getData("qooxit");
+/*
       var orig = e.getOriginalTarget();
       var folder = orig.getLayoutParent();
+*/
+      var folder = e.getTarget();
       var related = e.getRelatedTarget();
       var label = related.getLabel();
       var sourceTree = related.getTree();
@@ -1002,10 +1081,15 @@ qx.Class.define("qooxit.Application",
       var overrides;
       var override;
 
+      if (! classInstance)
+      {
+          classInstance = e.getData("qooxit");
+      }
+
       this.debug("related=" + related +
-                 ", source label=" + related.getLabel() +
                  ", dropTarget=" + e.getTarget() +
                  ", origTarget=" + folder +
+                 ", source label=" + related.getLabel() +
                  ", dest label=" + folder.getLabel());
 
       // Determine if this is a drag within the application tree
