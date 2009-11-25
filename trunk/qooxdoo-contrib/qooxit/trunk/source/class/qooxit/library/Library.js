@@ -15,7 +15,7 @@
 ************************************************************************ */
 
 /**
- * Implementation of a Canvas layout (in a Composite container)
+ * The base library of available and registered classes.
  */
 qx.Class.define("qooxit.library.Library",
 {
@@ -28,17 +28,22 @@ qx.Class.define("qooxit.library.Library",
         {
           clazz         : qooxit.library.ui.layout.Canvas,
           menuHierarchy :
-            [ "Layouts", "Canvas (qx.ui.layout.Canvas)" ]
+            [ "Container", "Canvas (qx.ui.layout.Canvas)" ]
         },
         {
           clazz         : qooxit.library.ui.layout.HBox,
           menuHierarchy :
-            [ "Layouts", "Horizontal Box (qx.ui.layout.HBox)" ]
+            [ "Container", "Horizontal Box (qx.ui.layout.HBox)" ]
         },
         {
           clazz         : qooxit.library.ui.layout.VBox,
           menuHierarchy :
-            [ "Layouts", "Vertical Box (qx.ui.layout.VBox)" ]
+            [ "Container", "Vertical Box (qx.ui.layout.VBox)" ]
+        },
+        {
+          clazz         : qooxit.library.ui.core.Widget,
+          menuHierarchy :
+            [ "Widget", "Spacer (qx.ui.core.Widget)" ]
         },
         {
           clazz         : qooxit.library.ui.basic.Label,

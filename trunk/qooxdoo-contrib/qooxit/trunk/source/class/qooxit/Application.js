@@ -169,8 +169,7 @@ qx.Class.define("qooxit.Application",
           className + " : " +
           classInstance.factory.toString();
 
-        // Determine how many lines long the text is including
-        // the extra newlines we'll prepend
+        // Determine how many lines long the text is.
         var lines = text.split("\n").length;
 
         // Insert the new text
