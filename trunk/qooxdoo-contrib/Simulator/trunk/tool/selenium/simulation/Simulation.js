@@ -295,7 +295,7 @@ simulation.Simulation.prototype.incrementTotalWarningsLogged = function()
  * @return {Boolean} true if the Selenium session started without errors
  */
 simulation.Simulation.prototype.startSession = function()
-{  
+{
   if (this.getConfigSetting("debug")) {
     print("Starting " + this.getConfigSetting("autName") + " session with browser " + this.getConfigSetting("testBrowser"));
   }
@@ -305,21 +305,9 @@ simulation.Simulation.prototype.startSession = function()
     this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));    
     this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
-    /* 
-     * Store the AUT window object to avoid calling 
-     * selenium.browserbot.getCurrentWindow() repeatedly.
-     */
-    this.__sel.getEval('selenium.qxStoredVars = {}');    
-    this.storeEval('selenium.browserbot.getCurrentWindow()', 'autWindow');
-
-    this.prepareNameSpace();
-    this.addSanitizer();
+    this.setupEnvironment();
     this.logEnvironment();
     this.logUserAgent();
-    if (this.getConfigSetting("applicationLog")) {
-      this.addRingBuffer();
-      this.addRingBufferGetter();
-    }
   }
   catch (ex) {
     this.logEnvironment("file");
@@ -330,6 +318,45 @@ simulation.Simulation.prototype.startSession = function()
     return false;
   }
   return true;
+};
+
+/**
+ * Add some testing utilities to the qooxdoo application. Must be called
+ * after the application is (re)loaded.
+ */
+simulation.Simulation.prototype.setupEnvironment = function()
+{
+  try {
+    /* 
+     * Store the AUT window object to avoid calling 
+     * selenium.browserbot.getCurrentWindow() repeatedly.
+     */
+    this.__sel.getEval('selenium.qxStoredVars = {}');    
+    this.storeEval('selenium.browserbot.getCurrentWindow()', 'autWindow');
+
+    this.prepareNameSpace();
+    this.addSanitizer();
+    if (this.getConfigSetting("applicationLog")) {
+      this.addRingBuffer();
+      this.addRingBufferGetter();
+    }
+  }
+  catch(ex) {
+    this.log("Error while setting up test environment: " + ex, "error");
+  }
+};
+
+/**
+ * Open a URI containing a qooxdoo application and prepare it for testing. If no
+ * URI is given, the current AUT is reloaded.
+ * 
+ * @param {String} uri Optional URI of the qooxdoo application to be loaded.
+ */
+simulation.Simulation.prototype.qxOpen = function(uri)
+{
+  openUri = uri || this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath");
+  this.__sel.open(openUri);
+  this.setupEnvironment();
 };
 
 /**
