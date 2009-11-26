@@ -208,6 +208,8 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   // wait for the sample to finish loading, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
   
+  //this.runDemoTest(category, currentSample);
+  
   // Shut down the sample application
   if (this.getConfigSetting("shutdownSample")) {
     this.getEval(shutdownSample, "Shutting down sample application");
@@ -343,7 +345,17 @@ simulation.Simulation.prototype.runTest = function()
     this.currentSample = currentCatSam[1];
     
     while (this.currentSample != this.lastSample) {
-      print("currentCat " + this.currentCategory + " currentSam " + this.currentSample);
+      if (this.lastCategory) {
+        if (this.currentCategory != this.lastCategory) {
+          print("New category, reloading application");
+          this.log("New category " + this.currentCategory + ", reloading application", "debug");
+          this.qxOpen();
+          this.addGlobalErrorHandler();
+          this.addOwnFunction("chooseDemo", chooseDemo);
+          this.getEval(selWin + ".qx.Simulation.chooseDemo('" + this.currentCategory + "','" + this.currentSample + "');");
+        }
+      }
+      
       if (this.currentCategory != finalCategory || (this.currentCategory == finalCategory && this.currentSample != finalSample) ) {
         this.lastCategory = this.currentCategory;
         this.lastSample = this.currentSample;        
@@ -382,6 +394,17 @@ simulation.Simulation.prototype.runTest = function()
         }
       }
       else {
+        if (this.currentCategory) {
+          if (cat != this.currentCategory) {
+            print("New category, reloading application");
+            this.log("New category " + this.currentCategory + ", reloading application", "debug");
+            this.qxOpen();
+            this.addGlobalErrorHandler();
+            this.addOwnFunction("chooseDemo", chooseDemo);
+            this.addOwnFunction("getDemosByCategory", getDemosByCategory);
+          }
+        }
+        
         var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";
         var currentCatSam = this.sampleRunner(runIncluded);
         this.currentCategory = currentCatSam[0];
