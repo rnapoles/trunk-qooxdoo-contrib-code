@@ -118,7 +118,7 @@ simulation.Simulation.prototype.getCodeMirrorActive = function()
 };
 
 simulation.Simulation.prototype.checkEdit = function(sampleName)
-{ 
+{
   try {
     this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
     var newButtonLabel = "Simulator was here";
@@ -153,7 +153,43 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
     }
   } catch(ex) {
     this.log("Error checking modified sample " + sampleName + ": " + ex, "error");
+    return;
   }
+  
+  this.checkCodeFromUrl("Simulator");
+  
+};
+
+simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
+{
+  var newButtonLabel = "A flying monkey";
+  try {
+    var hash = String(this.getEval(selWin + ".location.hash")).substr(1);
+    var newHash = hash.replace(pattern, newButtonLabel);
+    // Modifying the URL hash doesn't trigger a reload, so Selenium.load will 
+    // wait forever. Workaround: Load a different page first. 
+    this.__sel.open(this.getConfigSetting("autHost"));
+    // Now open the Playground with the modified code
+    this.qxOpen(this.getConfigSetting("autPath") + "#" + encodeURIComponent(newHash));  
+    this.addGlobalErrorHandler();
+  } catch(ex) {
+    this.log("Unable to load Playground with URI code: " + ex);
+    return;
+  }
+  
+  try {
+    var playAppButtonLoc = locators["playgroundApplication"] + '/qx.ui.form.Button';
+    var playAppButtonLabel = new String(this.__sel.qxObjectExecFunction(playAppButtonLoc, 'getLabel'));
+    if (playAppButtonLabel.indexOf(newButtonLabel) >= 0) {
+      this.log("Successfully ran sample code from URL", "info");
+    } else {
+      this.log("Running sample code from URL failed!", "error");
+    }
+  } catch(ex) {
+    this.log("Error while running sample code from URL: " + ex, "error");
+    return;
+  }
+  
 };
 
 simulation.Simulation.prototype.runTest = function()
