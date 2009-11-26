@@ -192,6 +192,32 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
   
 };
 
+simulation.Simulation.prototype.checkSyntaxHighlighting = function()
+{
+  // Check if syntax highlighting is on
+  if (this.getCodeMirrorActive()) {
+    this.log("Syntax highlighting is active", "info");
+    // Turn off syntax highlighting
+    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    Packages.java.lang.Thread.sleep(500);
+    if (this.getCodeMirrorActive()) {
+      this.log("Syntax highlighting was not deactivated!", "error");
+    } else {
+      this.log("Syntax highlighting deactivated correctly", "info");
+    }
+    // And turn it on again
+    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    Packages.java.lang.Thread.sleep(500);
+    if (this.getCodeMirrorActive()) {
+      this.log("Syntax highlighting reactivated correctly", "info");
+    } else {
+      this.log("Syntax highlighting was not reactivated!", "error");
+    }
+  } else {
+    this.log("Syntax highlighting is not active!", "error");
+  }  
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   //this.__sel.windowmaximize();
@@ -227,27 +253,12 @@ simulation.Simulation.prototype.runTest = function()
   // Close the menu
   this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
   
-  // Check if syntax highlighting is on  
-  if (this.getCodeMirrorActive()) {
-    this.log("Syntax highlighting is active", "info");
-    // Turn off syntax highlighting
-    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
-    Packages.java.lang.Thread.sleep(500);
-    if (this.getCodeMirrorActive()) {
-      this.log("Syntax highlighting was not deactivated!", "error");
-    } else {
-      this.log("Syntax highlighting deactivated correctly", "info");
-    }
-    // And turn it on again
-    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
-    Packages.java.lang.Thread.sleep(500);
-    if (this.getCodeMirrorActive()) {
-      this.log("Syntax highlighting reactivated correctly", "info");
-    } else {
-      this.log("Syntax highlighting was not reactivated!", "error");
-    }
+  var browser = this.getConfigSetting("testBrowser").toLowerCase();
+  
+  if( browser.indexOf("firefox") >= 0 && browser.indexOf("1.5") >= 0 ) {
+    this.log("Skipping syntax highlighting check in Firefox 1.5", "info");
   } else {
-    this.log("Syntax highlighting is not active!", "error");
+    this.checkSyntaxHighlighting();
   }
   
   this.checkEdit(sampleArr[0]);
