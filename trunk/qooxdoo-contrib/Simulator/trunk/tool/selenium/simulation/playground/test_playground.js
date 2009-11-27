@@ -156,7 +156,7 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
     return;
   }
   
-  this.checkCodeFromUrl("Simulator");
+  //this.checkCodeFromUrl("Simulator");
   
 };
 
@@ -170,7 +170,12 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
     // wait forever. Workaround: Load a different page first. 
     this.__sel.open(this.getConfigSetting("autHost"));
     // Now open the Playground with the modified code
-    this.qxOpen(this.getConfigSetting("autPath") + "#" + encodeURIComponent(newHash));  
+    this.qxOpen(this.getConfigSetting("autPath") + "#" + encodeURIComponent(newHash));
+    // There will be an alert box if running the URI code failed
+    if (this.__sel.isAlertPresent()) {
+      var al = this.__sel.getAlert();
+      this.log("Running code from URI failed: " + al);
+    }
     this.addGlobalErrorHandler();
   } catch(ex) {
     this.log("Unable to load Playground with URI code: " + ex);
