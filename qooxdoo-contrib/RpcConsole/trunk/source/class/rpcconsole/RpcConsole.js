@@ -454,6 +454,11 @@ qx.Class.define("rpcconsole.RpcConsole",
         this.cancelRequest();
       }, this);
       hbox.add( this.__cancelButton );
+      var clearLogButton = new qx.ui.form.Button("Clear log");
+      clearLogButton.addListener("execute",function(){
+        this.__logTextArea.setValue("");
+      },this);
+      hbox.add( clearLogButton );
       this.add(hbox);
       
       /*
@@ -692,6 +697,17 @@ qx.Class.define("rpcconsole.RpcConsole",
           }
           else
           {
+            // save response as model
+            var response = {
+              "id" : id,
+              "result" : null,
+              "error" : {
+                "origin" : error.origin,
+                "message" : error.message,
+                "code" : error.code
+              }
+            }
+            this.getResponseTextArea().setValue( qx.util.Json.stringify(response) );
             this.handleError( error.toString() );  
           }
           this.cancelRequest();
