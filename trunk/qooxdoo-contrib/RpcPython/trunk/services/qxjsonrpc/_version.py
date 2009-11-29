@@ -21,8 +21,8 @@ __all__=['__version__']
 class __version__:
     '''Package version information'''
     major=0
-    minor=0
-    revision=10
+    minor=1
+    revision=0
     stable=(minor>1 and (minor&1)==0)
     number='%d.%d.%d'%(major, minor, revision)
 

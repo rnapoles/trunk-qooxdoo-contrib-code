@@ -36,8 +36,8 @@ RpcPython includes and continues the currently unmaintained qxjsonrpc package
     somewhere on the python class path.
   * The class file is dynamically loaded and the service object instantiated when the 
     request is received (will be done only once for each service object).
-  * The classes and methods are protected. The service class is loaded only if the 
-    containing module contains the "isRpcService" property set to True and if the 
+  * The classes and methods are protected. The service class is only executed if it
+    is a subclass of qxjsonrpc.server.JsonRpcService and if the called 
     method contains the "public" decorator.
 
 Example: 
@@ -50,11 +50,9 @@ qooxdoo client calls
 File class/qooxdoo/test.py
 
 from qxjsonrpc import public, fail
+from qxjsonrpc.server import JsonRpcService
 
-# Expose this module as an RPC service 
-isRpcService = True
-
-class Test(object):
+class Test(JsonRpcService):
     
     @public
     def echo(self, v):
@@ -62,4 +60,3 @@ class Test(object):
         
 Todo:
 - update qxjsonrpc to a newer cjson version (currently works only with cjson 0.3).
-
