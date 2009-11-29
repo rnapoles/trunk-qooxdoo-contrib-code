@@ -4,14 +4,14 @@
   "include" :
   [
     {
-      "path" : "../../../../trunk/qooxdoo/tool/data/config/application.json"
+      "path" : "../qooxdoo/trunk/tool/data/config/application.json"
     }
   ],
 
   "let" :
   {
     "APPLICATION"  : "rpcexample",
-    "QOOXDOO_PATH" : "../../../../trunk/qooxdoo",
+    "QOOXDOO_PATH" : "../qooxdoo/current",
     "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*"],
@@ -25,7 +25,8 @@
     {
       "settings" :
       {
-        "qx.ioRemoteDebug" : "on"
+        "qx.ioRemoteDebug" : "on",
+        "rpcexample.URL" : "../../../RpcPhp/trunk/services/index.php"
       }
     }
   }

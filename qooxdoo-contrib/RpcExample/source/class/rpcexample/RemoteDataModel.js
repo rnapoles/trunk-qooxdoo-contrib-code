@@ -12,6 +12,7 @@
  *   Derrell Lipman (derrell)
  *
  */
+
 qx.Class.define("rpcexample.RemoteDataModel",
 {
   extend : qx.ui.table.model.Remote,
@@ -35,7 +36,7 @@ qx.Class.define("rpcexample.RemoteDataModel",
   statics :
   {
     // The URL for remote services.
-    URL     : "/services/",
+    URL     : qx.core.Setting.get("rpcexample.URL"),
 
     // The service to use.  We expect this service to implement two methods:
     // getRowCount and getRowData.
