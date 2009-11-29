@@ -281,7 +281,10 @@ class AbstractServer
     /*
      * Use servicePathPrefix constant for backwards compatibility
      */
-    $this->servicePaths = array ( servicePathPrefix );
+    $this->servicePaths = array (
+      dirname(__FILE__) . "/services",
+      servicePathPrefix
+    );
 
     /**
      * Hook for subclasses to do initialization stuff.

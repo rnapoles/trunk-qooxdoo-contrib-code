@@ -16,6 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+
 /**
  * Class providing introspection methods similar to those in
  * xmlrpc (see http://xmlrpc-c.sourceforge.net/introspection.html). In order to use
@@ -263,4 +264,16 @@ class ServiceIntrospection
     return $signature['doc'];
   }
 }
+
+/*
+ * add capability
+ */
+require_once dirname(__FILE__) . "/services/system.php";
+class_system::addCapability(
+  "introspection",
+  "http://www.qooxdoo.org",
+  "0.1",
+  array(),
+  array("listMethods","methodSignature","methodHelp")
+);
 ?>
