@@ -22,8 +22,8 @@
       }
     ],
     
-    "version" : "trunk",
-    "qooxdoo-versions": [ "0.8", "0.9-pre" ]
+    "version" : "0.1",
+    "qooxdoo-versions": [ "0.8", "1.0" ]
   },
   "provides" : {
     "namespace"   : "",
