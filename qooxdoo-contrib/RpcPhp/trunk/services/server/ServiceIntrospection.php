@@ -121,7 +121,7 @@ class ServiceIntrospection
    * @param $docComment
    * @return unknown_type
    */
-  function _analyzeDocComment( $docComment )
+  function __analyzeDocComment( $docComment )
   {
     $params = array();
     $return = "";
@@ -163,6 +163,28 @@ class ServiceIntrospection
       "params" => $params,
       "return" => trim($return)
     );
+  }
+
+  /**
+   * Extracts the javascript type from a docstring section
+   */
+  function __extractJavascriptType( $str )
+  {
+    $parts = explode(" ", $str);
+    switch( $parts[0] )
+    {
+      case "array":
+      case "string":
+      case "object":
+        return $parts[0];
+
+      case "int":
+      case "float":
+        return "number";
+
+      default:
+        return null;
+    }
   }
 
   /**
@@ -230,7 +252,7 @@ class ServiceIntrospection
    * result. The rest tell the types of the method's parameters, in order.
    *
    * @param string $method The name of the method
-   * @return array An array, the first element telling the type of the method's
+   * @return array An array of signatures. Each signature is an array, the first element telling the type of the method's
    * result, the rest telling the types of the method's parameters and the
    * description of the parameter, separated by space, in order.
    */
@@ -239,11 +261,14 @@ class ServiceIntrospection
     $this->checkServiceMethod( $method );
     $method = new ReflectionMethod( $this->className, $this->getMethodName( $method ) );
     $docComment = $method->getDocComment();
-    $signature = $this->_analyzeDocComment( $docComment );
-    return array_merge(
-      array( $signature['return'] ),
-      $signature['params']
-    );
+    $signature  = $this->__analyzeDocComment( $docComment );
+    $returnType = $this->__extractJavascriptType( $signature['return'] );
+    $paramTypes = array();
+    foreach( $signature['params']  as $param )
+    {
+      $paramTypes[] = $this->__extractJavascriptType( $param );
+    }
+    return array(array_merge(array( $returnType ),$paramTypes));
   }
 
   /**
@@ -260,8 +285,10 @@ class ServiceIntrospection
     $this->checkServiceMethod( $method );
     $method = new ReflectionMethod( $this->className, JsonRpcMethodPrefix . $method );
     $docComment = $method->getDocComment();
-    $signature = $this->_analyzeDocComment( $docComment );
-    return $signature['doc'];
+    $docComment = str_replace(array(" *","/**","*/"),"",$docComment);
+    return $docComment;
+//    $signature = $this->_analyzeDocComment( $docComment );
+//    return $signature['doc'];
   }
 }
 
@@ -271,7 +298,7 @@ class ServiceIntrospection
 require_once dirname(__FILE__) . "/services/system.php";
 class_system::addCapability(
   "introspection",
-  "http://www.qooxdoo.org",
+  "http://qooxdoo.org/documentation/json_rpc_introspection",
   "0.1",
   array(),
   array("listMethods","methodSignature","methodHelp")
