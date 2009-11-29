@@ -184,7 +184,7 @@ qx.Class.define("rpcexample.Application",
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null)
       {
-        defaultURL = "/services/";
+        defaultURL = qx.core.Setting.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
@@ -298,7 +298,7 @@ qx.Class.define("rpcexample.Application",
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
-        defaultURL = "/services/";
+        defaultURL = qx.core.Setting.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
@@ -398,7 +398,7 @@ qx.Class.define("rpcexample.Application",
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
-        defaultURL = "/services/";
+        defaultURL = qx.core.Setting.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
@@ -649,7 +649,7 @@ qx.Class.define("rpcexample.Application",
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
-        defaultURL = "/services/";
+        defaultURL = qx.core.Setting.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
