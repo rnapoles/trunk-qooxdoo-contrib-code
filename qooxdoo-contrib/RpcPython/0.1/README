@@ -1,0 +1,62 @@
+#############################################################################
+#
+#   RpcPython
+#
+#   http://qooxdoo.org/contrib/project#rpcpython
+#
+#   Copyright:
+#      
+#
+#   License:
+#     LGPL: http://www.gnu.org/licenses/lgpl.html
+#     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#     See the LICENSE file in the project's top-level directory for details.
+#
+#   Authors:
+#     * Viktor Ferenczi (python@cx.hu)
+#     * Christian Boulanger (cboulanger)
+#
+#############################################################################
+
+The RpcPython project provides JSON-RPC backend functionality for
+web applications using the qooxdoo library ( http://qooxdoo.org ) or
+simply requiring a JSON-RPC compatible datasource.
+
+RpcPython includes and continues the currently unmaintained qxjsonrpc package 
+(Original Author: Viktor Ferenczi, see http://python.cx.hu/qxjsonrpc).
+
+===== Usage =====
+
+  * Start the server by "python start-server.py". The server listenes on port 8000. 
+    You can configure the port in the start-server.py script. 
+  * The server imports service classes and calls the service methods. 
+    It receives a service name in dot-separated path format and expect to find the 
+    class containing the service in a file. If the service name is "foo.bar.baz", 
+    the class is named "Baz" in the "foo.bar.baz" module, located in "foo/bar/baz.py" 
+    somewhere on the python class path.
+  * The class file is dynamically loaded and the service object instantiated when the 
+    request is received (will be done only once for each service object).
+  * The classes and methods are protected. The service class is only executed if it
+    is a subclass of qxjsonrpc.server.JsonRpcService and if the called 
+    method contains the "public" decorator.
+
+Example: 
+qooxdoo client calls 
+
+  * service: "qooxdoo.test"
+  * method: "echo"
+  * params: ["Hello World']
+
+File class/qooxdoo/test.py
+
+from qxjsonrpc import public, fail
+from qxjsonrpc.server import JsonRpcService
+
+class Test(JsonRpcService):
+    
+    @public
+    def echo(self, v):
+        return 'Client said: [ %s ]'%(v,)
+        
+Todo:
+- update qxjsonrpc to a newer cjson version (currently works only with cjson 0.3).
