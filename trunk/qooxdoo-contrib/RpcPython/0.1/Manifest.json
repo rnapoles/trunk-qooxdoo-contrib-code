@@ -1,0 +1,37 @@
+{
+  "info" :
+  {
+    "name" : "RpcPython",
+  
+    "summary" : "qooxdoo RPC server in Python",
+    "description": "",
+    "keywords" : ["RPC"],
+    "homepage" : "http://qooxdoo.org/documentation/rpc_python",
+    
+    "license" : "LGPL/EPL",    
+    "authors" : [
+      {
+        "name" : "Viktor Ferenczi",
+        "user" : "",
+        "email" : "python AT cx DOT hu"
+      },    
+      {
+        "name" : "Christian Boulanger",
+        "user" : "cboulanger",
+        "email" : "c.boulanger@qxtransformer.org"
+      }
+    ],
+    
+    "version" : "trunk",
+    "qooxdoo-versions": [ "0.8", "0.9-pre" ]
+  },
+  "provides" : {
+    "namespace"   : "",
+    "encoding"    : "utf-8",
+    "class"       : "",
+    "resource"    : "",
+    "translation" : "",
+    "type"        : "library"  
+  
+  }  
+}
