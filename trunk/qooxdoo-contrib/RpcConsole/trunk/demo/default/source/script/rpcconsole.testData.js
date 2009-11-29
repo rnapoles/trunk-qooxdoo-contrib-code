@@ -109,28 +109,7 @@ qx.core.Init.getApplication().setTestData(
         }
       }
     }
-  },   
-  
-  /**
-   * Use the trunk server
-   */
-  useTrunk : {
-    label : "Use RpcPhp trunk server ",
-    requestData : {
-      url : "../../../../../RpcPhp/trunk/services/index.php"
-    }
   },
-  
-  /**
-   * Use the stable server
-   * @type 
-   */
-  useStable : {
-    label : "Use RpcPhp stable (1.0.1) server ",
-    requestData : {
-      url : "../../../../../RpcPhp/1.0.1/services/index.php"
-    }
-  },  
   
   /**
    * Demo showing how to connect several test data items.
@@ -166,59 +145,14 @@ qx.core.Init.getApplication().setTestData(
   },
   
   /**
-   * Service introspection 
+   * Load introspection tests
    */
-  listMethods : {
-    label : "Service introspection (trunk only): listMethods",
-    requestData : {
-      service : "qooxdoo.test",
-      method : "listMethods"
-    },
-    callback : function( result )
-    {
-      this.getActiveConsole().setMethodListModel( new qx.data.Array(result) );
-      var rqm = this.getActiveConsole().getRequestModel();
-      var alertStr = "Service '" + rqm.getService() +" contains the following methods: \n";
-      alertStr += result.join(", ");
-      alert( alertStr );
-    }
-  },
-  methodSignature : {
-    label : "Service introspection (trunk only): methodSignature",
-    requestData : {
-      service : "qooxdoo.test",
-      method : "methodSignature",
-      params : ["methodSignature"]
-    },
-    callback : function( result )
-    {
-      var rqm = this.getActiveConsole().getRequestModel();
-      var alertStr = "Service '" + rqm.getService() + "', method '" + rqm.getMethod() + "'"+
-        " has the following signature: \n";
-      var returnType = result.shift();
-      while( result.length )
-      {
-        alertStr += "@param " + result.shift() + "\n";
-      }
-      alertStr += "@return " + returnType;
-      alert( alertStr );
-    }
-  },
-  methodHelp : {
-    label : "Service introspection (trunk only): methodHelp",
-    requestData : {
-      service : "qooxdoo.test",
-      method : "methodHelp",
-      params : ["methodHelp"]
-    },
-    callback : function( result )
-    {
-      var rqm = this.getActiveConsole().getRequestModel();
-      var alertStr = "Service '" + rqm.getService() + "', method '" + rqm.getMethod() + "':\n" + result;
-      alert( alertStr );      
+  loadIntrospectionTests : {
+    label : "Load introspection tests",
+    execute : function(){
+      this.loadTestData("script/rpcconsole.testIntrospection.js");
     }
   },  
-  
   
   /**
    * qooxdoo.test test suite
@@ -230,7 +164,8 @@ qx.core.Init.getApplication().setTestData(
     requestData : {
       service : "qooxdoo.test",
       method  : "getInteger",
-      timeout : 10
+      timeout : 10,
+      params : []
     },
     checkResult : 1
   },

@@ -58,7 +58,7 @@
     {
       "copy-files" :
       {
-        "files"     : [ "script/rpcconsole.testData.js" ]
+        "files"     : [ "script/rpcconsole.testData.js","script/rpcconsole.testIntrospection.js" ]
       }      
     } 
   }
