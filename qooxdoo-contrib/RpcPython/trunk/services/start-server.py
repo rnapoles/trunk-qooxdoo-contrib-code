@@ -34,14 +34,10 @@ if the method contains the  "public" decorator.
 
 =========================================================================='''
 
-import sys
 import os
 import qxjsonrpc
-from server.jsonrpc import JsonRpcServer
+from qxjsonrpc.server import JsonRpcServer
 
-# Add "class" subdirectory to pythonpath
-service_class_path = os.path.dirname(os.path.abspath(__file__)) + "/class"
-sys.path.append( service_class_path )
 
 def main():
     '''Run json-rpc server.'''
@@ -54,13 +50,19 @@ def main():
     print 'Server log output follows:'
     print
     
-    #@todo get host and port from command line arguments
+    #@todo get host, port, service path from command line arguments
     host = '127.0.0.1'
     port=8000
     debug=True;
+    service_class_path = os.path.dirname(os.path.abspath(__file__)) + "/class"
     
     #start server
     srv=JsonRpcServer(host,port,debug)
+    
+    # Add service path
+    srv.addServicePath( service_class_path )
+    
+    # wait for requests
     srv.serve_forever()
 
 #============================================================================

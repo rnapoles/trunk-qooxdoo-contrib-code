@@ -44,14 +44,9 @@ This test server will also work with the RPC 6 test using the same settings.
 import time
 import datetime
 from qxjsonrpc import public, fail
+from qxjsonrpc.server import JsonRpcService, ServiceIntrospection
 
-#============================================================================
-# Expose this module as an RPC service 
-isRpcService = True
-#============================================================================
-
-
-class Test(object):
+class Test(JsonRpcService,ServiceIntrospection):
     '''Test service can be used with the RPC_* test pages'''
     
     @public
@@ -144,7 +139,7 @@ class Test(object):
         return args[0]
     
     @public
-    def getCurrentTimestamp(self):
+    def getCurrentTimestamp(self, *args):
         ct=datetime.datetime.utcnow()
         st=datetime.datetime(1970,1,1,0,0,0)
         dt=ct-st

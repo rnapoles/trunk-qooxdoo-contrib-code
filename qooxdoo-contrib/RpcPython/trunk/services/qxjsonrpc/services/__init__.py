@@ -5,7 +5,7 @@
 #   http://qooxdoo.org/contrib/project#rpcpython
 #
 #   Copyright:
-#      
+#     
 #
 #   License:
 #     LGPL: http://www.gnu.org/licenses/lgpl.html
