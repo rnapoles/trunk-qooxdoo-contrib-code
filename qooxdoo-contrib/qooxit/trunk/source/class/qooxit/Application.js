@@ -124,24 +124,35 @@ qx.Class.define("qooxit.Application",
       }
 
       // Add a node to the Application tree
-      var subFolder = new qx.ui.tree.TreeFolder(label)
-      subFolder.setOpen(true);
-      folder.add(subFolder);
+      var subItem;
+      // If this is a container...
+      if (classInstance.getIsContainer())
+      {
+        // ... then create a tree folder
+        subItem = new qx.ui.tree.TreeFolder(label)
+        subItem.setOpen(true);
+      }
+      else
+      {
+        // ... otherwise create a tree file (for now)
+        subItem = new qx.ui.tree.TreeFile(label);
+      }
+      folder.add(subItem);
 
       // Add the new node to its parent's node
       folder.getUserData("object").add(o);
 
       // Save the object with its node in the Application tree
-      subFolder.setUserData("object", o);
+      subItem.setUserData("object", o);
 
       // Save the options
-      subFolder.setUserData("options", options);
+      subItem.setUserData("options", options);
 
       // Save the original label
-      subFolder.setUserData("label", label);
+      subItem.setUserData("label", label);
 
       // Allow the item to be dragged around in the application tree
-      subFolder.setDraggable(true);
+      subItem.setDraggable(true);
 
       this.addObjectRemote(folder.getUserData("name"),
                           classInstance.classname,
@@ -151,12 +162,12 @@ qx.Class.define("qooxit.Application",
       if (classInstance.getIsContainer())
       {
         // ... then handle a drop into it
-        subFolder.setDroppable(true);
-        subFolder.addListener("drop", this.handleDrop, this);
+        subItem.setDroppable(true);
+        subItem.addListener("drop", this.handleDrop, this);
       }
 
       // Allow the item to be copied
-      subFolder.addListener("dragstart",
+      subItem.addListener("dragstart",
                             function(e)
                             {
                               e.addAction("move");
@@ -165,7 +176,7 @@ qx.Class.define("qooxit.Application",
 
       // If it is dropped, provide the factory for adding it to the application
       // tree.
-      subFolder.addListener(
+      subItem.addListener(
         "droprequest",
         function(e)
         {
@@ -267,10 +278,10 @@ qx.Class.define("qooxit.Application",
       var name = options.__name__;
 
       // Save this name in the new object
-      subFolder.setUserData("name", name);
+      subItem.setUserData("name", name);
 
       // Save the factory from which we instantiated this object
-      subFolder.setUserData("classInstance", classInstance);
+      subItem.setUserData("classInstance", classInstance);
 
       // Temporarily delete the variable name from the options
       delete options.__name__;
@@ -286,7 +297,7 @@ qx.Class.define("qooxit.Application",
         ");\n";
 
       // Reset the tree node to include the variable name
-      subFolder.setLabel(name + ": " + subFolder.getLabel())
+      subItem.setLabel(name + ": " + subItem.getLabel())
 
       // Add it to the specified container
       text += folder.getUserData("name") + ".add(" + name + ");";
