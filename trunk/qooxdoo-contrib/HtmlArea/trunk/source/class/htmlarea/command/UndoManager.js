@@ -763,9 +763,13 @@ qx.Class.define("htmlarea.command.UndoManager",
 
         var selection = this.__editorInstance.getSelection();
         var range = this.__editorInstance.getRange();
-        range.selectNode(nodeToSelect);
-        selection.addRange(range);
-        range.collapse(true);
+
+        if (selection && range)
+        {
+          range.selectNode(nodeToSelect);
+          selection.addRange(range);
+          range.collapse(true);
+        }
       },
 
       "default" : qx.lang.Function.empty
@@ -1191,6 +1195,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
 
         var sel = this.__editorInstance.getSelection();
+
         if (!sel)
         {
           this.__selectedNode = null;
