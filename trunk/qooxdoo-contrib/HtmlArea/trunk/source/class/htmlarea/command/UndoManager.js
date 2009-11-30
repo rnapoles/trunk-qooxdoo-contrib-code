@@ -711,7 +711,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         {
           focusNode = focusNode.parentNode;
 
-          if (!focusNode || focusNode.nodeName.toLowerCase() == "body") {
+          if (!focusNode || qx.dom.Node.isNodeName(focusNode, "body")) {
             return null;
           }
         }
@@ -721,7 +721,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         return null;
       }
 
-      if (focusNode != null && focusNode.nodeName.toLowerCase() == "p") {
+      if (focusNode != null && qx.dom.Node.isNodeName(focusNode, "p")) {
         return focusNode;
       } else {
         return null;
@@ -1161,12 +1161,11 @@ qx.Class.define("htmlarea.command.UndoManager",
       {
         var checkNode = e.getOriginalTarget();
 
-        if (checkNode != null && checkNode.nodeType == 1 &&
-            (checkNode.nodeName.toLowerCase() == "img" || checkNode.nodeName.toLowerCase() == "table"))
+        if (qx.dom.Node.isElement(checkNode) &&
+            (qx.dom.Node.isNodeName(checkNode, "img") || qx.dom.Node.isNodeName(checkNode, "table")))
         {
           this.__selectedNode = { node : checkNode,
-                                  content : checkNode.outerHTML
-                                };
+                                  content : checkNode.outerHTML};
         }
         else {
           this.__selectedNode = null;
@@ -1206,7 +1205,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         var checkNode = anchorNode.childNodes[sel.anchorOffset];
 
         // We have direct access to the currently selected node (e.g. an image)
-        if (checkNode && checkNode.nodeName.toLowerCase() == "img")
+        if (qx.dom.Node.isNodeName(checkNode, "img"))
         {
           // Store the element if is not available
           // otherwise compare the current image element with the stored one
@@ -1224,11 +1223,12 @@ qx.Class.define("htmlarea.command.UndoManager",
             }
           }
         }
-        else if (anchorNode.nodeName.toLowerCase() == "td" || 
-                 anchorNode.parentNode.nodeName.toLowerCase() == "td")
+        else if (qx.dom.Node.isNodeName(anchorNode, "td") || 
+                 qx.dom.Node.isNodeName(anchorNode.parentNode, "td"))
         {
           var tableNode = anchorNode.parentNode;
-          while (tableNode.nodeName.toLowerCase() != "table") {
+
+          while (qx.dom.Node.isNodeName(tableNode, "table")) {
             tableNode = tableNode.parentNode;
           }
 

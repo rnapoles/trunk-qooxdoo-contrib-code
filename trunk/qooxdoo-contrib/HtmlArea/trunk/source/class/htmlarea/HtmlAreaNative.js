@@ -412,7 +412,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               }
 
               // Attribute name and value pair
-              var name = a.nodeName.toLowerCase();
+              var name = qx.dom.Node.getName(a);
               var value = a.nodeValue;
 
               // Mozilla reports some special tags here; we don't need them.
@@ -632,14 +632,13 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     isBlockNode : function(node)
     {
-      if (!qx.dom.Node.isElement(node))
-      {
+      if (!qx.dom.Node.isElement(node)) {
        return false;
       }
 
-      node = node.nodeName || node;
+      node = qx.dom.Node.getName(node);
 
-      return /^(body|form|textarea|fieldset|ul|ol|dl|li|div|p|h[1-6]|quote|pre|table|thead|tbody|tfoot|tr|td|th|iframe|address|blockquote)$/.test(node.toLowerCase());
+      return /^(body|form|textarea|fieldset|ul|ol|dl|li|div|p|h[1-6]|quote|pre|table|thead|tbody|tfoot|tr|td|th|iframe|address|blockquote)$/.test(node);
     },
 
 
@@ -656,9 +655,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         return false;
       }
 
-      node = node.nodeName || node;
+      node = qx.dom.Node.getName(node);
 
-      return /^(body|td|th|caption|fieldset|div)$/.test(node.toLowerCase());
+      return /^(body|td|th|caption|fieldset|div)$/.test(node);
     }
  },
 
@@ -777,8 +776,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     __connectToDomElement : function(element)
     {
-      if (element && qx.dom.Node.isElement(element) &&
-          element.nodeName.toLowerCase() == "div") {
+      if (qx.dom.Node.isElement(element) &&
+          qx.dom.Node.isNodeName(element, "div"))
+      {
         this.__widget = element;
       }
     },
@@ -1998,9 +1998,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 }
 
                 // check if inside a list
-                while (selNode.nodeName.toLowerCase() != "body")
+                while (!qx.dom.Node.isNodeName(selNode, "body"))
                 {
-                  if (selNode.nodeName.toLowerCase() == "li")
+                  if (qx.dom.Node.isNodeName(selNode, "li"))
                   {
                     this.__startExamineCursorContext();
                     return;
@@ -2825,7 +2825,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
        */
       var isBold = qx.core.Variant.isSet("qx.client", "mshtml|opera") ? focusNodeStyle.fontWeight == 700 :
                                                                         focusNodeStyle.getPropertyValue("font-weight") == "bold" ||
-                                                                        focusNode.nodeName.toLowerCase() == "b";
+                                                                        qx.dom.Node.isNodeName(focusNode, "b");
 
       /*
        * ITALIC
@@ -2869,12 +2869,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
 
       // only traverse the DOM upwards if were are not already within the body element or at the top of the document
       // -> nodeType 9 = document node
-      if (node != null && node.nodeName.toLowerCase() != "body" && 
-          node.parentNode != null && node.parentNode.nodeType != 9)
+      if (node != null && node.parentNode != null && !qx.dom.Node.isDocument(node.parentNode))
       {
-        while (node != null && node.nodeName.toLowerCase() != "body")
+        while (node != null && !qx.dom.Node.isNodeName(node, "body"))
         {
-          var nodename = node.nodeName.toLowerCase();
+          var nodename = qx.dom.Node.getName(node);
+
           if (nodename == "ol")
           {
             orderedList = true;

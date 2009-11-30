@@ -632,7 +632,7 @@ qx.Class.define("htmlarea.command.Manager",
           var focusNode = sel.focusNode;
           var traversalNode = sel.focusNode;
 
-          while (traversalNode.nodeName.toLowerCase() != "p") {
+          while (!qx.dom.Node.isNodeName(traversalNode, "p")) {
             traversalNode = traversalNode.parentNode;
           }
 
@@ -685,11 +685,10 @@ qx.Class.define("htmlarea.command.Manager",
        "mshtml" : function()
        {
          var rng = this.__editorInstance.getRange();
-         var parentElement = rng.parentElement().nodeName.toLowerCase();
 
          // Only insert the "br" element if we are currently NOT inside a list.
          // Return "false" to let the browser handle this (event is not stopped).
-         if (parentElement != "li")
+         if (rng && !qx.dom.Node.isNodeName(rng.parentElement(), "li"))
          {
            rng.pasteHTML(htmlarea.HtmlAreaNative.simpleLinebreak);
            rng.collapse(false);
@@ -775,7 +774,7 @@ qx.Class.define("htmlarea.command.Manager",
        var blockquotes = [];
        var parent = startNode.parentNode;
 
-       while (parent.nodeName.toLowerCase() == "blockquote")
+       while (qx.dom.Node.isNodeName(parent, "blockquote"))
        {
          blockquotes.push(parent);
          parent = parent.parentNode;
@@ -849,10 +848,10 @@ qx.Class.define("htmlarea.command.Manager",
              // IMPORTANT: if e.g. the user copy-and-pastes a text styled with
              // FONT elements Gecko does add the image inside this font element
              if (qx.dom.Node.isElement(img.previousSibling) && 
-                 formatElements[img.previousSibling.nodeName.toLowerCase()]) {
+                 formatElements[qx.dom.Node.getName(img.previousSibling)]) {
                startNode = img.previousSibling;
              }
-             else if (formatElements[img.parentNode.nodeName.toLowerCase()])
+             else if (formatElements[qx.dom.Node.getName(img.parentNode)])
              {
                startNode = img.parentNode;
                sibling = false;
