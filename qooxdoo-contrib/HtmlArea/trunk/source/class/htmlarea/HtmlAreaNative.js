@@ -1868,8 +1868,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         // for IE it's necessary to NOT look at the cursorcontext right after
         // the "Enter" because the corresponding styles / elements are not yet
         // created.
-        var fireEvent = !(qx.core.Variant.isSet("qx.client", "mshtml") && 
-                          keyIdentifier == "enter");
+        var fireEvent = !(qx.core.Variant.isSet("qx.client", "mshtml") && keyIdentifier == "enter") || 
+                        !(qx.core.Variant.isSet("qx.client", "gecko") &&  keyIdentifier == "enter");
 
         if (fireEvent)
         {
@@ -2005,6 +2005,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               e.stopPropagation();
               
               this.__startExamineCursorContext();
+              this.__fireCursorContextOnNextInput = true;
             }
           }
           else if(qx.core.Variant.isSet("qx.client", "webkit"))
