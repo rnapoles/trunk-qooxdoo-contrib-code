@@ -1727,10 +1727,13 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             case "enter":
               if (this.getInsertLinebreakOnCtrlEnter())
               {
-                var sel = this.getSelection();
-                var rng = this.__createRange(sel);
-                rng.collapse(true);
-                rng.pasteHTML('<br/><div class="placeholder"></div>');
+                var rng = this.__createRange(this.getSelection());
+
+                if (rng)
+                {
+                  rng.collapse(true);
+                  rng.pasteHTML('<br/><div class="placeholder"></div>');
+                }
 
                 this.__startExamineCursorContext();
               }
@@ -1783,6 +1786,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       }
     },
 
+
     /**
      * Helper function which inserts an linebreak at the selection.
      *
@@ -1793,12 +1797,13 @@ qx.Class.define("htmlarea.HtmlAreaNative",
       var helperString = "";
 
       // Insert bogus node if we are on an empty line:
-      if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI") {
+      if(sel && (sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")) {
         helperString = "<br class='webkit-block-placeholder' />";
       }
 
       this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlAreaNative.simpleLinebreak);
     },
+
 
     /**
      * All keyDown events are delegated to this method
@@ -1924,21 +1929,24 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             }
             else if (qx.core.Variant.isSet("qx.client", "opera"))
             {
-               // To insert a linebreak for Opera it is necessary to work with 
-               // ranges and add the <br> element on node-level. The selection 
-               // of the node afterwards is necessary for Opera to show the 
-               // cursor correctly.
-               var sel = this.getSelection();
-               var rng = this.__createRange(sel);
+              // To insert a linebreak for Opera it is necessary to work with 
+              // ranges and add the <br> element on node-level. The selection 
+              // of the node afterwards is necessary for Opera to show the 
+              // cursor correctly.
+              var sel = this.getSelection();
+              var rng = this.__createRange(sel);
 
-               var brNode = doc.createElement("br");
-               rng.collapse(true);
-               rng.insertNode(brNode);
-               rng.collapse(true);
+              if (sel && rng)
+              {
+                var brNode = doc.createElement("br");
+                rng.collapse(true);
+                rng.insertNode(brNode);
+                rng.collapse(true);
 
-               rng.selectNode(brNode);
-               sel.addRange(rng);
-               rng.collapse(true);
+                rng.selectNode(brNode);
+                sel.addRange(rng);
+                rng.collapse(true);
+              }
             }
 
             this.__startExamineCursorContext();
@@ -1970,6 +1978,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                 !isShiftPressed && !isCtrlPressed)
             {
               var sel = this.getSelection();
+
               if (sel)
               {
                 var selNode = sel.focusNode;
@@ -2032,7 +2041,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             var sel = this.getSelection();
 
             // First line is selected
-            if(sel.focusNode == doc.body.firstChild)
+            if(sel && sel.focusNode == doc.body.firstChild)
             {
               // Check if the first line has been (partly) selected before.
               if(this.__isFirstLineSelected)
@@ -2062,7 +2071,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               if (isShiftPressed)
               {
                 // Check if target position is not yet selected
-                if ((sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild))
+                if (sel && (sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild))
                 {
                   // Extend selection to first child at position 0
                   sel.extend(doc.body.firstChild, 0);
@@ -2078,7 +2087,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
                   elements = doc.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
                 }
 
-                if (elements)
+                if (elements && sel)
                 {
                   while(currentItem = elements.iterateNext())
                   {
@@ -2695,7 +2704,9 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         var sel = this.getSelection();
         var rng = doc.createRange();
 
-        sel.addRange(rng);
+        if (rng && sel) {
+          sel.addRange(rng);
+        }
       }
     },
 
@@ -2963,15 +2974,15 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     getSelection : qx.core.Variant.select("qx.client",
     {
        "mshtml" : function() {
-         return this._getIframeDocument().selection;
+         return this._getIframeDocument() ? this._getIframeDocument().selection : null;
        },
 
        "default" : function() {
-         return this._getIframeWindow().getSelection();
+         return this._getIframeWindow() ? this._getIframeWindow().getSelection() : null;
        }
     }),
-    
-    
+
+
     /**
      * Helper method to check if the selection is collapsed
      * 
@@ -2980,11 +2991,11 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     isSelectionCollapsed : qx.core.Variant.select("qx.client",
     {
       "mshtml" : function() {
-        return this.getSelection().type == "None";
+        return this.getSelection() && this.getSelection().type == "None";
       },
-      
+
       "default": function() {
-        return this.getSelection().isCollapsed;
+        return this.getSelection() && this.getSelection().isCollapsed;
       }
     }),
 
@@ -2998,12 +3009,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
     {
       "mshtml" : function()
       {
-        return this.getRange().text;
+        return this.getRange() ? this.getRange().text : "";
       },
 
       "default" : function()
       {
-        return this.getRange().toString();
+        return this.getRange() ? this.getRange().toString() : "";
       }
     }),
 
@@ -3082,15 +3093,24 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      *
      * @return {void}
      */
-    clearSelection : qx.core.Variant.select("qx.client", {
+    clearSelection : qx.core.Variant.select("qx.client",
+    {
       "mshtml" : function()
       {
-        this.getSelection().empty();
+        var sel = this.getSelection();
+
+        if (sel) {
+          sel.empty();
+        }
       },
 
       "default" : function()
       {
-        this.getSelection().collapseToStart();
+        var sel = this.getSelection();
+
+        if (sel) {
+          sel.collapseToStart();
+        }
       }
     }),
 

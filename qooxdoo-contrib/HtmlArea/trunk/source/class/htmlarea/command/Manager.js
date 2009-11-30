@@ -430,7 +430,7 @@ qx.Class.define("htmlarea.command.Manager",
            var range = this.__getTargetRange();
 
            // DO NOT allow pasteHTML on control selections (like selected images)
-           if(range && sel.type != "Control")
+           if(range && sel && sel.type != "Control")
            {
              // Try to pasteHTML on the stored range
              try
@@ -619,10 +619,16 @@ qx.Class.define("htmlarea.command.Manager",
        * @return {void}
        * @signature function()
        */
-      __hideSuperfluousParagraph : qx.core.Variant.select("qx.client", {
+      __hideSuperfluousParagraph : qx.core.Variant.select("qx.client",
+      {
         "gecko" : function()
         {
           var sel = this.__editorInstance.getSelection();
+
+          if (!sel || !sel.focusNode) {
+            return;
+          }
+
           var focusNode = sel.focusNode;
           var traversalNode = sel.focusNode;
 
@@ -630,13 +636,9 @@ qx.Class.define("htmlarea.command.Manager",
             traversalNode = traversalNode.parentNode;
           }
 
-          while (focusNode.firstChild &&
-                 qx.dom.Node.isElement(focusNode.firstChild)) {
-            focusNode = focusNode.firstChild;
-          }
-
           var prevSiblingId = traversalNode.previousSibling.id;
           var nextSiblingId = traversalNode.nextSibling ? traversalNode.nextSibling.id : null;
+
           if (qx.lang.String.startsWith(prevSiblingId, "__paragraph__") &&
               prevSiblingId == nextSiblingId)
           {
@@ -651,7 +653,18 @@ qx.Class.define("htmlarea.command.Manager",
             this.execute("inserthtml", htmlToInsert);
 
             var secondRange = this.__editorInstance.getRange();
+
+            if (focusNode)
+            {
+              while (focusNode && focusNode.firstChild &&
+                     qx.dom.Node.isElement(focusNode.firstChild))
+              {
+                focusNode = focusNode.firstChild;
+              }
+            }
+
             secondRange.selectNode(focusNode);
+
             sel.addRange(secondRange);
             secondRange.collapse(true);
           }
@@ -917,7 +930,7 @@ qx.Class.define("htmlarea.command.Manager",
          var currRange = this.__getTargetRange();
 
          // DO NOT allow pasteHTML at control selections (like selected images)
-         if (sel.type != "Control")
+         if (sel && sel.type != "Control")
          {
            currRange.select();
            currRange.pasteHTML(img);
@@ -1711,7 +1724,7 @@ qx.Class.define("htmlarea.command.Manager",
          var rng = this.__editorInstance.getRange();
 
          // check for a range
-         if (!sel.isCollapsed)
+         if (!sel || !sel.isCollapsed)
          {
            // Body element must have focus before executing command
            this.__doc.body.focus();
@@ -1719,7 +1732,9 @@ qx.Class.define("htmlarea.command.Manager",
            this.__doc.execCommand("BackColor", false, value);
 
            // collapse the selection
-           sel.collapseToEnd();
+           if (sel) {
+             sel.collapseToEnd();
+           }
 
            return true;
          }
@@ -1946,9 +1961,14 @@ qx.Class.define("htmlarea.command.Manager",
 
              // Set the cursor behind the created element
              var sel = this.__editorInstance.getSelection();
-             sel.extend(helper, 0);
-             if (!sel.isCollapsed) {
-               sel.collapseToEnd();
+
+             if (sel)
+             {
+               sel.extend(helper, 0);
+
+               if (!sel.isCollapsed) {
+                 sel.collapseToEnd();
+               }
              }
            }
            else
@@ -1976,17 +1996,24 @@ qx.Class.define("htmlarea.command.Manager",
       * @return {Boolean} Success of operation
       * @signature function(value, commandObject)
       */
-     __setStrikeThrough  : qx.core.Variant.select("qx.client", {
+     __setStrikeThrough  : qx.core.Variant.select("qx.client",
+     {
        "webkit" : function(value, commandObject)
        {
          var focusNode = this.__editorInstance.getFocusNode();
          var helper = this.__doc.createElement("span");
          qx.bom.element.Style.set(helper, "textDecoration", "line-through");
          focusNode.appendChild(helper);
+
          var sel = this.__editorInstance.getSelection();
-         sel.extend(helper, 0);
-         if (!sel.isCollapsed) {
-           sel.collapseToEnd();
+
+         if (sel)
+         {
+           sel.extend(helper, 0);
+
+           if (!sel.isCollapsed) {
+             sel.collapseToEnd();
+           }
          }
 
          return true;
