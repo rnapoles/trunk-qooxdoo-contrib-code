@@ -1627,13 +1627,17 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         // see http://www.mozilla.org/editor/midas-spec.html
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
-          try {
-            this.__commandManager.execute("stylewithcss", true);
+          try
+          {
+            var doc = this._getIframeDocument();
+            doc.execCommand("styleWithCSS", false, true);
           }
           catch(ex)
           {
-            try {
-              this.__commandManager.execute("usecss", false);
+            try
+            {
+              var doc = this._getIframeDocument();
+              doc.execCommand("useCSS", false, false);
             }
             catch(ex)
             {
