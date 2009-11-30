@@ -23,7 +23,7 @@
  */
 qx.Class.define("qooxit.Application",
 {
-  extend : qx.application.Standalone,
+  extend  : qx.application.Standalone,
 
   members :
   {
@@ -44,6 +44,10 @@ qx.Class.define("qooxit.Application",
     {
       // Call super class
       this.base(arguments);
+
+      // Add a bindTo() method to qx.core.Object as a shortcut to constantly
+      // having to use qx.lang.Function.bind()
+      qx.Class.include(qx.core.Object, qooxit.MObject);
 
       // We want to use some of the high-level node operation convenience
       // methods rather than manually digging into the TreeVirtual helper
@@ -107,8 +111,7 @@ qx.Class.define("qooxit.Application",
                          applicationSource)
     {
       // Add the node to the specified parent by calling its factory
-      var fFactory =
-        qx.lang.Function.bind(classInstance.factory, classInstance);
+      var fFactory = classInstance.bindTo(classInstance.factory);
       var o = fFactory(options);
 
       // If sample data is being requested...
@@ -118,8 +121,7 @@ qx.Class.define("qooxit.Application",
           classInstance._snippets.sampleData.code)
       {
         var fSampleData =
-          qx.lang.Function.bind(classInstance._snippets.sampleData.code,
-                                classInstance);
+          classInstance.bindTo(classInstance._snippets.sampleData.code);
         fSampleData(o);
       }
 
@@ -361,7 +363,7 @@ qx.Class.define("qooxit.Application",
     addObjectRemote : function(parentName, className, options)
     {
       this.hRpc = this.rpc.callAsync(
-        qx.lang.Function.bind(
+        this.bindTo(
           function(result, ex, id)
           {
             this.hRpc = null;
@@ -373,8 +375,7 @@ qx.Class.define("qooxit.Application",
             {
               alert("Async(" + id + ") exception: " + ex);
             }
-          },
-          this),
+          }),
         "addChild",
         parentName,
         className,
@@ -581,7 +582,7 @@ qx.Class.define("qooxit.Application",
         var ret =
         {
           renderer : "func",
-          data     : qx.lang.Function.bind(func, _this)
+          data     : _this.bindTo(func)
         };
         return ret;
       };
@@ -1223,8 +1224,7 @@ qx.Class.define("qooxit.Application",
       {
         options =
           qx.lang.Object.clone(
-            qx.lang.Function.bind(classInstance.getDefaultOptions,
-                                  classInstance)());
+            classInstance.bindTo(classInstance.getDefaultOptions)());
       }
 
       // See if there are sample data overrides to apply
@@ -1245,18 +1245,14 @@ qx.Class.define("qooxit.Application",
       if (classInstance.getOptionsSpec)
       {
         // Get it for options retrieval
-        var spec =
-          qx.lang.Function.bind(classInstance.getOptionsSpec,
-                                classInstance)();
+        var spec = classInstance.bindTo(classInstance.getOptionsSpec)();
 
         // Determine dropped widget type (used in title of options
         // window)
         var type = related.getLabel();
 
         // Generate the options window for the user to make selections
-        var fOptionsWindow =
-          qx.lang.Function.bind(classInstance.optionsWindow,
-                                classInstance);
+        var fOptionsWindow = classInstance.bindTo(classInstance.optionsWindow);
         var optionsWin = fOptionsWindow(type, spec, options);
 
         // When the options window closes, retrieve the options,
