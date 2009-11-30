@@ -552,7 +552,7 @@ qx.Class.define("htmlarea.command.Manager",
         this.__editorInstance.insertHtml("<p style='" + elementStyleString + "'><br class='webkit-block-placeholder' />");
       },
 
-      "default" : function() {}
+      "default" : qx.lang.Function.empty
       }),
 
       /**
@@ -657,7 +657,7 @@ qx.Class.define("htmlarea.command.Manager",
           }
         },
 
-        "default" : function() {}
+        "default" : qx.lang.Function.empty
       }),
 
 
@@ -1019,8 +1019,8 @@ qx.Class.define("htmlarea.command.Manager",
      {
        "gecko" : function(url, commandObject)
        {
-         var sel      = this.__editorInstance.getSelection();
-         var rng      = this.__editorInstance.getRange();
+         var sel = this.__editorInstance.getSelection();
+         var rng = this.__editorInstance.getRange();
 
          // If the selection is collapsed insert a link with the URL as text.
          if (sel.isCollapsed)
@@ -1032,7 +1032,7 @@ qx.Class.define("htmlarea.command.Manager",
            var linkNode = this.__doc.createElement("a");
            var hrefAttr = this.__doc.createAttribute("href");
            var idAttr   = this.__doc.createAttribute("id");
-           var linkText = document.createTextNode(url);
+           var linkText = this.__doc.createTextNode(url);
 
            idAttr.nodeValue   = linkId;
            linkNode.setAttributeNode(idAttr);
@@ -1048,7 +1048,8 @@ qx.Class.define("htmlarea.command.Manager",
 
            return true;
          }
-         else {
+         else
+         {
            return this.__doc.execCommand(commandObject.identifier, false, url);
          }
        },
@@ -1917,24 +1918,36 @@ qx.Class.define("htmlarea.command.Manager",
      */
     __getSelectedHtml : function()
     {
-      var tmpBody = document.createElement("body");
       var range   = this.__editorInstance.getRange();
 
-      if (!range) {
+      if (!range || !this.__doc) {
         return "";
       };
 
-      if (range.cloneContents) {
-        tmpBody.appendChild(range.cloneContents());
-      } else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined') {
+      var tmpBody = this.__doc.createElement("body");
+
+      if (tmpBody && range.cloneContents)
+      {
+        try
+        {
+          tmpBody.appendChild(range.cloneContents());
+          return tmpBody ? tmpBody.innerHTML : "";
+        }
+        catch (exc)
+        {
+          // @see Bug 3142
+          // ignore this exception: NOT_FOUND_ERR: DOM Exception 8
+          return "";
+        }
+      }
+      else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined')
+      {
         return range.item ? range.item(0).outerHTML : range.htmlText;
-      } else {
-        return range.toString();
       }
 
-      // FIXME: This code will be never executed
-      return tmpBody.innerHTML;
+      return range.toString();
     },
+
 
     /**
       * Special implementation for webkit browser to set the text-decoration
