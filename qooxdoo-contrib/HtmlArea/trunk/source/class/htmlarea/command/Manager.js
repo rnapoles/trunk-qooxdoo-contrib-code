@@ -1898,54 +1898,18 @@ qx.Class.define("htmlarea.command.Manager",
      *
      * @return {String} selected text
      */
-    __getSelectedText : function()
-    {
-      var range = this.__editorInstance.getRange();
-      if (range)
-      {
-        return (typeof range == "string") ? range : range.toString();
-      }
-
-      return "";
+    __getSelectedText : function() {
+      return this.__editorInstance.getSelectedText();
     },
 
 
     /**
      * returns the content of the actual range as text
      *
-     * @TODO: need to be implemented correctly
      * @return {String} selected text
      */
-    __getSelectedHtml : function()
-    {
-      var range   = this.__editorInstance.getRange();
-
-      if (!range || !this.__doc) {
-        return "";
-      };
-
-      var tmpBody = this.__doc.createElement("body");
-
-      if (tmpBody && range.cloneContents)
-      {
-        try
-        {
-          tmpBody.appendChild(range.cloneContents());
-          return tmpBody ? tmpBody.innerHTML : "";
-        }
-        catch (exc)
-        {
-          // @see Bug 3142
-          // ignore this exception: NOT_FOUND_ERR: DOM Exception 8
-          return "";
-        }
-      }
-      else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined')
-      {
-        return range.item ? range.item(0).outerHTML : range.htmlText;
-      }
-
-      return range.toString();
+    __getSelectedHtml : function() {
+      return this.__editorInstance.getSelectedHtml();
     },
 
 

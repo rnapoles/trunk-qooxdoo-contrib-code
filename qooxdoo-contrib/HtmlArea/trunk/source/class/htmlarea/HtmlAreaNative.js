@@ -3040,7 +3040,12 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      */
     __getRangeContents : qx.core.Variant.select("qx.client",
     {
-      "mshtml" : function(range) {
+      "mshtml" : function(range)
+      {
+        if (!range) {
+          return "";
+        }
+
         return range.item ? range.item(0).outerHTML : range.htmlText;
       },
 
@@ -3062,6 +3067,8 @@ qx.Class.define("htmlarea.HtmlAreaNative",
             // @see Bug 3142
             // ignore this exception: NOT_FOUND_ERR: DOM Exception 8
           }
+
+          return range + "";
         }
 
         return "";
