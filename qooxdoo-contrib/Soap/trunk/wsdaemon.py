@@ -1,7 +1,8 @@
-#!/usr/bin/python -O
+#!/usr/bin/python -Ot
 
 # 
-# Copyright (c) 2008, Burak Arslan (burak.arslan-qx@arskom.com.tr) and others.
+# Copyright (c) 2008-2009, Burak Arslan (burak.arslan-qx@arskom.com.tr) 
+# and others.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -25,7 +26,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 
 from soaplib.wsgi_soap import SimpleWSGISoapApp
 from soaplib.service import soapmethod
@@ -41,20 +42,20 @@ import SimpleHTTPServer, SocketServer, BaseHTTPServer, urlparse, sys
 
 from datetime import datetime
 
-staticFolder='/client/'
+staticFolder='/static/'
 class BasicWebServiceDaemon:
     from cherrypy.wsgiserver import CherryPyWSGIServer
 
     def __init__(self, func, server_address=("0.0.0.0", 8080)):
         self.runbasic(func, server_address)
-        
+
     def runbasic(self, func, server_address):
         """
         Runs a simple HTTP server hosting WSGI app `func`. The directory "staticFolder" 
         is hosted statically.
-    
+
         Based on [WsgiServer][ws] from [Colin Stewart][cs].
-        
+
         [ws]: http://www.owlfish.com/software/wsgiutils/documentation/wsgi-server-api.html
         [cs]: http://www.owlfish.com/
         """
@@ -107,11 +108,11 @@ class BasicWebServiceDaemon:
                                 result = a[1](env, self.wsgi_start_response)
                                 called=True
                                 break
-                    
+
                     if not called:
                         result=['no service configured at path ' + path]
                         self.wsgi_headers= ('404 ERR', [('Content-type', 'text/html')])
-                        
+
                     try:
                         try:
                             for data in result:
@@ -184,7 +185,6 @@ class SOAPRequest(ClassSerializer):
     def __init__(self, startrow=0):
         self.startrow = startrow
         self.endrow = startrow+50
-
 
 class ReturnObject(ClassSerializer):
     class types:
