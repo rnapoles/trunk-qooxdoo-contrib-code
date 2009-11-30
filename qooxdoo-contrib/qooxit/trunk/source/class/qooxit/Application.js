@@ -30,6 +30,12 @@ qx.Class.define("qooxit.Application",
     /** Whether we are displaying widgets with sample data */
     bSampleData : true,
 
+    /** Our reusable JSON-RPC object */
+    rpc         : null,
+
+    /** The handle for an active RPC */
+    hRpc        : null,
+
     /**
      * This method contains the initial application code and gets called 
      * during startup of the application
@@ -50,16 +56,48 @@ qx.Class.define("qooxit.Application",
       {
         // support native logging capabilities, e.g. Firebug for Firefox
         qx.log.appender.Native;
-
-        // support additional cross-browser console. Press F7 to toggle
-        // visibility
-        qx.log.appender.Console;
       }
+
+      // Instantiate a new RPC object
+      this.rpc = new qx.io.remote.Rpc();
+      this.rpc.setTimeout(10000);
+      this.rpc.setUrl("/~derrell/web/index.jsp");
+      this.rpc.setServiceName("qooxit.application");
+
+      // Only allow a single concurrent request, so we are sure that saving a
+      // child to the server has completed before the next child is saved.
+      qx.io.remote.RequestQueue.getInstance().setMaxConcurrentRequests(1);
 
       // Start the progressive loader
       this.progressiveLoader();
     },
 
+    /**
+     * Add an object to the Application tree, the Live view, and the source
+     * view.
+     *
+     * @param classInstance {qooxit.library/ui/Abstract}
+     *   The library singleton instance from which the object is created
+     *
+     * @param options {Map}
+     *   Merged default and user-provided options for creating this object
+     *
+     * @param label {String}
+     *   Label to add to the Application tree for this item
+     *
+     * @param folder {qx.ui.tree.TreeFolder}
+     *   The folder in the Application tree into which this item should be
+     *   added
+     *
+     * @param sourceTree {qx.ui.tree.Tree}
+     *   The tree from which the item being added was dragged
+     *
+     * @param widgetFactorySource {Map}
+     *   Information about the WidgetFactory.js source editor
+     *
+     * @param applicationSource {Map}
+     *   Information about the Application.js source editor
+     */
     addObject : function(classInstance,
                          options,
                          label,
@@ -104,6 +142,10 @@ qx.Class.define("qooxit.Application",
 
       // Allow the item to be dragged around in the application tree
       subFolder.setDraggable(true);
+
+      this.addObjectRemote(folder.getUserData("name"),
+                          classInstance.classname,
+                          options);
 
       // If this is a container...
       if (classInstance.getIsContainer())
@@ -289,6 +331,45 @@ qx.Class.define("qooxit.Application",
       // Put the variable name back in the options in preparation for saving
       options.__name__ = name;
     },
+
+
+    /**
+     * Add an object to the remote store.
+     *
+     * @param parentName
+     *   The name of the parent to which the new item is being added
+     *
+     * @param className
+     *   The name of the qooxit factory class which instantiates this new
+     *   object
+     *
+     * @param options
+     *   Options to be passed to the qooxit factory class to instantiate this
+     *   object.
+     */
+    addObjectRemote : function(parentName, className, options)
+    {
+      this.hRpc = this.rpc.callAsync(
+        qx.lang.Function.bind(
+          function(result, ex, id)
+          {
+            this.hRpc = null;
+                if (ex == null)
+            {
+              alert("id " + id + ":\n\n" + result);
+            }
+            else
+            {
+              alert("Async(" + id + ") exception: " + ex);
+            }
+          },
+          this),
+        "addChild",
+        parentName,
+        className,
+        options);
+    },
+
 
     /**
      * Add a class to the Containers & Widgets menu.
@@ -1042,9 +1123,17 @@ qx.Class.define("qooxit.Application",
           // Save the name of the root object
           applicationRoot.setUserData("name", "_root_");
 
+          // There are no options other than the mandatory name
+          applicationRoot.setUserData("options", { __name__ : "_root_" } );
+
           // pageLive (and thus applicationRoot) has a VBox layout
           var classInstance = qooxit.library.ui.layout.VBox.getInstance();
           applicationRoot.setUserData("classInstance", classInstance);
+
+          // Add the root object at the server
+          this.addObjectRemote("",
+                               classInstance.classname,
+                               applicationRoot.getUserData("options"));
 
           // Handle a drop
           applicationRoot.setDroppable(true);
@@ -1112,7 +1201,7 @@ qx.Class.define("qooxit.Application",
                        this.context.applicationSource);
 
 
-        // Now handle the source repositioning
+        // TODO: handle the source repositioning
 
         // That's all, folks!
         return;
