@@ -86,10 +86,8 @@ qx.Class.define("qooxit.library.ui.table.Table",
         columns : [ "ID", "Column 1" ],
         custom  :
         {
-          tableColumnModel : function(obj)
-          {
-            return new qx.ui.table.columnmodel.Resize(obj);
-          }
+          tableColumnModel :
+            "return new qx.ui.table.columnmodel.Resize(obj);"
         },
         width   : 400,
         height  : 200
@@ -108,8 +106,16 @@ qx.Class.define("qooxit.library.ui.table.Table",
       // Set the columns to be used
       tableModel.setColumns(options.columns);
 
+      // Generate custom.
+      // TODO: This needs to be generalized for all members of options.custom
+      var custom =
+        {
+          tableColumnModel :
+            new Function("obj", options.custom.tableColumnModel)
+        };
+
       // table
-      var table = new qx.ui.table.Table(tableModel, options.custom);
+      var table = new qx.ui.table.Table(tableModel, custom);
       table.set(
         {
           width  : options.width,
