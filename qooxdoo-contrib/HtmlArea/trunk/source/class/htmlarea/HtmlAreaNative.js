@@ -1336,7 +1336,7 @@ qx.Class.define("htmlarea.HtmlAreaNative",
         }
       },
 
-      "default" : function() {}
+      "default" : qx.lang.Function.empty
     }),
 
 
@@ -2070,27 +2070,35 @@ qx.Class.define("htmlarea.HtmlAreaNative",
               }
               else
               {
-                // Fetch all text nodes from body element
-                var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
+                var elements = null;
                 var currentItem;
 
-                while(currentItem = elements.iterateNext())
-                {
-                  // Skip CSS text nodes
-                  if(currentItem.parentNode && (currentItem.parentNode.tagName != "STYLE") )
-                  {
-                    // Expand selection to first text node and collapse here
-                    try
-                    {
-                      // Sometimes this does not work...
-                      sel.extend(currentItem, 0);
-                      if (!this.isSelectionCollapsed()) {
-                        sel.collapseToStart();
-                      }
-                    } catch(e) {}
+                // Fetch all text nodes from body element
+                if (doc) {
+                  elements = doc.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
+                }
 
-                    // We have found the correct text node, leave loop here
-                    break;
+                if (elements)
+                {
+                  while(currentItem = elements.iterateNext())
+                  {
+                    // Skip CSS text nodes
+                    if(currentItem && currentItem.parentNode && 
+                       currentItem.parentNode.tagName != "STYLE")
+                    {
+                      // Expand selection to first text node and collapse here
+                      try
+                      {
+                        // Sometimes this does not work...
+                        sel.extend(currentItem, 0);
+                        if (!this.isSelectionCollapsed()) {
+                          sel.collapseToStart();
+                        }
+                      } catch(e) {}
+  
+                      // We have found the correct text node, leave loop here
+                      break;
+                    }
                   }
                 }
               }
@@ -3030,17 +3038,33 @@ qx.Class.define("htmlarea.HtmlAreaNative",
      * @return {String} range contents
      * @signature function(range)
      */
-    __getRangeContents : qx.core.Variant.select("qx.client", {
+    __getRangeContents : qx.core.Variant.select("qx.client",
+    {
       "mshtml" : function(range) {
         return range.item ? range.item(0).outerHTML : range.htmlText;
       },
 
       "default" : function(range)
       {
-        var tmpBody = document.createElement("body");
-        tmpBody.appendChild(range.cloneContents());
+        var doc = this._getIframeDocument();
 
-        return tmpBody.innerHTML;
+        if (doc && range)
+        {
+          try
+          {
+            var tmpBody = doc.createElement("body");
+            tmpBody.appendChild(range.cloneContents());
+
+            return tmpBody.innerHTML;
+          }
+          catch (exc)
+          {
+            // @see Bug 3142
+            // ignore this exception: NOT_FOUND_ERR: DOM Exception 8
+          }
+        }
+
+        return "";
       }
     }),
 
