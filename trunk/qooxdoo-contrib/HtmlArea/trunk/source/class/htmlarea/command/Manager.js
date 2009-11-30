@@ -42,11 +42,9 @@ qx.Class.define("htmlarea.command.Manager",
     this._commands       = null;
     this.__populateCommandList();
 
-    /*
-     * When executing these commands, IE 6 sometimes selects the last <span> tag
-     * completly by mistake. It is necessary to check if the range is still
-     * collapsed after executing one of these commands.
-     */
+    // When executing these commands, IE 6 sometimes selects the last <span> tag
+    // completly by mistake. It is necessary to check if the range is still
+    // collapsed after executing one of these commands.
     this.__invalidFocusCommands =
     {
       "Bold"          : true,
@@ -60,10 +58,9 @@ qx.Class.define("htmlarea.command.Manager",
      */
     this.__fontSizeNames = [ 10, 12, 16, 18, 24, 32, 48 ];
 
-    /*
-     * In Gecko-browser hyperlinks which are based on *collapsed* selection are inserted as DOM nodes.
-     * To keep track of these nodes they are equipped with an unique id (-> "qx_link" + __hyperLinkId)
-     */
+    // In Gecko-browser hyperlinks which are based on *collapsed* selection are 
+    // inserted as DOM nodes. To keep track of these nodes they are equipped 
+    // with an unique id (-> "qx_link" + __hyperLinkId)
     this.__hyperLinkId = 0;
   },
 
@@ -83,7 +80,6 @@ qx.Class.define("htmlarea.command.Manager",
 
   members :
   {
-
     __doc : null,
     __editorInstance : null,
     __startTyping : false,
@@ -103,18 +99,10 @@ qx.Class.define("htmlarea.command.Manager",
      * @param doc {Object} contentDocument of the editor instance
      * @return {void}
      */
-    setContentDocument : function(doc)
-    {
+    setContentDocument : function(doc) {
       this.__doc = doc;
     },
 
-    /*
-     * Store the current range for IE browser to support execCommands
-     * fired from e.g. toolbar buttons. If the HtmlArea looses the selection
-     * because the user e.g. clicked at a toolbar button the last selection
-     * has to be stored in order to perform the desired execCommand correctly.
-     */
-    //__currentRange    : null,
 
     /* ****************************************************************
      *                  COMMAND PROCESSING
@@ -128,12 +116,9 @@ qx.Class.define("htmlarea.command.Manager",
      */
     getCommandObject : function(commandName)
     {
-      if (this._commands[commandName])
-      {
+      if (this._commands[commandName]) {
         return this._commands[commandName];
-      }
-      else
-      {
+      } else {
         return null;
       }
     },
@@ -246,8 +231,7 @@ qx.Class.define("htmlarea.command.Manager",
         this.__editorInstance.resetSavedRange();
         return result;
       }
-      else
-      {
+      else {
         this.error("Command " + command + " is currently not supported!");
       }
     },
@@ -296,8 +280,7 @@ qx.Class.define("htmlarea.command.Manager",
      * using executeCommand.
      *
      */
-    __insertHelperParagraph : function()
-    {
+    __insertHelperParagraph : function() {
       this.__executeCommand("formatBlock", false, "p");
     },
 
@@ -314,85 +297,50 @@ qx.Class.define("htmlarea.command.Manager",
     {
       try
       {
-        /* The document object is the default target for all execCommands */
+        // The document object is the default target for all execCommands
         var execCommandTarget = this.__doc;
 
-        /* Flag indicating if range was empty before executing command. Needed for IE bug. */
+        // Flag indicating if range was empty before executing command. Needed for IE bug.
         var emptyRange = false;
 
-        /* Request current range explicitly, if command is one of the invalid focus commands. */
-        /*if(
-          (qx.bom.client.Engine.MSHTML) &&
-          (qx.bom.client.Engine.VERSION < 7) &&
-          (this.__invalidFocusCommands[command])
-        )
-        {
-          this.__currentRange = this.__editorInstance.getRange();
-        }*/
-
-        // get the current range
         var range = this.__editorInstance.getRange();
 
-        /* Body element must have focus before executing command */
+        // Body element must have focus before executing command
         this.__doc.body.focus();
 
-        /*
-         * IE looses the selection if the user clicks on any other element e.g. a toolbar item
-         * To manipulate the selected text correctly IE has to execute the command on the previously
-         * saved Text Range object rather than the document object.
-         *
-         * Ignore the "SelectAll" command otherwise the range handling would interfere with it.
-         */
+        // IE looses the selection if the user clicks on any other element e.g. 
+        // a toolbar item. To manipulate the selected text correctly IE has to 
+        // execute the command on the previously saved Text Range object rather 
+        // than the document object.
+        //
+        // Ignore the "SelectAll" command otherwise the range handling would 
+        // interfere with it.
         if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-
           if(command != "selectall")
           {
-            /*
-             * Select the content of the Text Range object to set the cursor at the right position
-             * and to give user feedback. Otherwise IE will set the cursor at the first position of the
-             * editor area
-             */
+            // Select the content of the Text Range object to set the cursor at the right position
+            // and to give user feedback. Otherwise IE will set the cursor at the first position of the
+            // editor area
             range.select();
 
-            if(
-                /*
-                 * If the saved Text Range object contains no text
-                 * collapse it and execute the command at the document object
-                 */
-                (
-                  (range.text) &&
-                  (range.text.length > 0)
-                )
-                ||
-                /*
-                 * Selected range is a control range with an image inside.
-                 */
-                (
-                  (range.length == 1) &&
-                  (range.item(0)) &&
-                  (range.item(0).tagName == "IMG")
-                )
-              )
-            {
+            // If the saved Text Range object contains no text collapse it and 
+            // execute the command at the document object or selected range is 
+            // a control range with an image inside.
+            if(((range.text) && (range.text.length > 0)) || 
+               ((range.length == 1) && (range.item(0)) && (range.item(0).tagName == "IMG"))) {
               execCommandTarget = range;
-            }
-            else
-            {
+            } else {
               execCommandTarget = this.__doc;
             }
 
           }
 
-          /*
-           * IE has the unwanted behavior to select text after executing some commands
-           * (see this.__invalidFocusCommands).
-           * If this happens, we have to collapse the range afterwards.
-           */
+          // IE has the unwanted behavior to select text after executing some commands
+          // (see this.__invalidFocusCommands).
+          // If this happens, we have to collapse the range afterwards.
           if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (this.__invalidFocusCommands[command]) )
           {
-            //var range = this.__editorInstance.getRange();
-            /* Check if range is empty */
             if (range.text == "") {
               emptyRange = true;
             }
@@ -402,22 +350,17 @@ qx.Class.define("htmlarea.command.Manager",
 
         var result = execCommandTarget.execCommand(command, ui, value);
 
-        /* If range has been empty before executing command, collapse range */
-        if (emptyRange)
-        {
-          if (range.text != "") {
-            range.collapse();
-          }
+        if (emptyRange && range.text != "") {
+          range.collapse();
         }
 
 
-        /* Debug info */
         if (qx.core.Variant.isSet("qx.debug", "on") &&
             qx.core.Setting.get("htmlarea.debug") == "on") {
           this.debug("execCommand " + command + " with value " + value + " succeded");
         }
 
-        /* Reset the startTyping flag to mark the next insert of any char as a new undo step */
+        // Mark the next insert of any char as a new undo step
         this.__startTyping = false;
       }
       catch(ex)
@@ -510,7 +453,7 @@ qx.Class.define("htmlarea.command.Manager",
 
        "default" : function (value, commandObject)
        {
-         /* Body element must have focus before executing command */
+         // Body element must have focus before executing command
          this.__doc.body.focus();
 
          return this.__doc.execCommand(commandObject.identifier, false, value);
@@ -588,7 +531,6 @@ qx.Class.define("htmlarea.command.Manager",
        */
       "webkit" : function()
       {
-
         var styles = this.getCurrentStyles();
         var elementStyleString = "";
 
@@ -610,7 +552,7 @@ qx.Class.define("htmlarea.command.Manager",
         this.__editorInstance.insertHtml("<p style='" + elementStyleString + "'><br class='webkit-block-placeholder' />");
       },
 
-      "default" : function(){}
+      "default" : function() {}
       }),
 
       /**
@@ -732,10 +674,8 @@ qx.Class.define("htmlarea.command.Manager",
          var rng = this.__editorInstance.getRange();
          var parentElement = rng.parentElement().nodeName.toLowerCase();
 
-         /*
-          * Only insert the "br" element if we are currently NOT inside a list.
-          * If we are return "false" to let the browser handle this (event is not stopped).
-          */
+         // Only insert the "br" element if we are currently NOT inside a list.
+         // Return "false" to let the browser handle this (event is not stopped).
          if (parentElement != "li")
          {
            rng.pasteHTML(htmlarea.HtmlAreaNative.simpleLinebreak);
@@ -748,8 +688,7 @@ qx.Class.define("htmlarea.command.Manager",
          return false;
        },
 
-       "default" : function()
-       {
+       "default" : function() {
          return false;
        }
      }),
@@ -766,10 +705,8 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __setTextAlign : function(value, commandObject)
      {
-       /* Get Range for IE, or document in other browsers */
        var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.__editorInstance.getRange() : this.__doc;
 
-       /* Execute command on it */
        return commandTarget.execCommand(commandObject.identifier, false, value);
      },
 
@@ -795,7 +732,7 @@ qx.Class.define("htmlarea.command.Manager",
          this.__manualOutdent(focusNode);
        }
 
-       /* Body element must have focus before executing command */
+       // Body element must have focus before executing command
        this.__doc.body.focus();
 
        var returnValue = this.__doc.execCommand(commandObject.identifier, false, value);
@@ -857,16 +794,16 @@ qx.Class.define("htmlarea.command.Manager",
      __insertImage : qx.core.Variant.select("qx.client", {
        "gecko" : function(attributes, commandObject)
        {
-         /* Only insert an image if the src attribute info is available */
+         // Only insert an image if the src attribute info is available
          if (attributes.src)
          {
-           /* Insert the image via the execCommand and add the attributes afterwards */
+           // Insert image via the execCommand and add the attributes afterwards
            this.__doc.execCommand(commandObject.identifier, false, attributes.src);
 
-           /* Remove the "src" attribute from the map */
+           // source is set so remove it from the attributes map
            delete attributes.src;
 
-           /* Get the image node */
+           // Selection is expected to be the image node
            var sel = this.__editorInstance.getSelection();
 
            // TODO: need to revert the execCommand if no selection exists?
@@ -898,8 +835,8 @@ qx.Class.define("htmlarea.command.Manager",
              // check if the image is one the same hierarchy level
              // IMPORTANT: if e.g. the user copy-and-pastes a text styled with
              // FONT elements Gecko does add the image inside this font element
-             if (qx.dom.Node.isElement(img.previousSibling) && formatElements[img.previousSibling.nodeName.toLowerCase()])
-             {
+             if (qx.dom.Node.isElement(img.previousSibling) && 
+                 formatElements[img.previousSibling.nodeName.toLowerCase()]) {
                startNode = img.previousSibling;
              }
              else if (formatElements[img.parentNode.nodeName.toLowerCase()])
@@ -941,13 +878,10 @@ qx.Class.define("htmlarea.command.Manager",
              var imageParent = img.parentNode;
 
              // image is last child -> append
-             if (img == imageParent.lastChild)
-             {
-               imageParent.appendChild(documentFragment);
-             }
              // image is anywhere in between -> use nextSibling
-             else
-             {
+             if (img == imageParent.lastChild) {
+               imageParent.appendChild(documentFragment);
+             } else {
                imageParent.insertBefore(documentFragment, img.nextSibling);
              }
 
@@ -958,8 +892,7 @@ qx.Class.define("htmlarea.command.Manager",
 
            return true;
          }
-         else
-         {
+         else {
            return false;
          }
        },
@@ -1057,12 +990,9 @@ qx.Class.define("htmlarea.command.Manager",
          }
          inlineStyle.nodeValue = styles;
 
-         if (parent != null)
-         {
+         if (parent != null) {
            parent.appendChild(inline);
-         }
-         else
-         {
+         } else {
            root = inline;
          }
 
@@ -1138,8 +1068,7 @@ qx.Class.define("htmlarea.command.Manager",
 
            if (range != null && range.text != "") {
              result = range.execCommand(commandObject.identifier, false, url);
-           }
-           else {
+           } else {
              result = this.__insertHtml(' <a href="' + url + '">' + url + '</a> ', commandObject);
            }
 
@@ -1171,11 +1100,8 @@ qx.Class.define("htmlarea.command.Manager",
      {
        var htmlText = "<hr />";
 
-       /*
-        * Gecko needs some extra HTML elements to keep
-        * the current style setting after inserting the
-        * <hr> tag.
-        */
+       // Gecko needs some extra HTML elements to keep the current style setting 
+       // after inserting the <hr> tag.
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
          htmlText += this.__generateHelperString();
        }
@@ -1215,8 +1141,7 @@ qx.Class.define("htmlarea.command.Manager",
          // if a "legacy-font-size" entry is within the grouped styles it is
          // necessary to create a font element to achieve the correct format
          formatString += legacyFont ? '<font style="' : spanBegin;
-         for (var style in child)
-         {
+         for (var style in child) {
            formatString += (style != "child" && style != "legacy-font-size") ? style + ':' + child[style] + ';' : "";
          }
          formatString += legacyFont ? '" size="'+ child["legacy-font-size"] +'">' : '">';
@@ -1228,14 +1153,12 @@ qx.Class.define("htmlarea.command.Manager",
 
        // SPECIAL CASE: only one font element
        // Gecko "optimizes" this by removing the empty font element completely
-       if (closings.length == 1 && closings[0] == "</font>")
-       {
+       if (closings.length == 1 && closings[0] == "</font>") {
          formatString += "<span></span>";
        }
 
        // close the elements
-       for (var i=0, j=closings.length; i<j; i++)
-       {
+       for (var i=0, j=closings.length; i<j; i++) {
          formatString += closings[i];
        }
 
@@ -1273,8 +1196,7 @@ qx.Class.define("htmlarea.command.Manager",
          // attach styles
          for (var style in child)
          {
-           if (style != "child" && style != "legacy-font-size")
-           {
+           if (style != "child" && style != "legacy-font-size") {
              qx.bom.element.Style.set(element, style, child[style]);
            }
          }
@@ -1524,19 +1446,16 @@ qx.Class.define("htmlarea.command.Manager",
      {
        var elem, parentDecoration, parentStyleValue;
 
-       /* Cycle through parents */
        for(var i=0; i<parents.length; i++)
        {
          elem = parents[i];
 
-         /* Retrieve computed style*/
+         // Retrieve computed style
          parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
          parentStyleValue = parentDecoration.getPropertyValue("background-color");
 
-         /* Check if computed value is valid */
-         if (parentStyleValue != "transparent")
-         {
-           /* Return computed value */
+         // If any _real_ color is found return this one
+         if (parentStyleValue != "transparent") {
            return parentStyleValue;
          }
 
@@ -1554,80 +1473,68 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __setFontSize : function(value, commandObject)
      {
-       /* Current selection and range */
        var sel = this.__editorInstance.getSelection();
 
        var rng = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
            this.__editorInstance.getRange() :
            rng = sel.getRangeAt(0);
 
-       /* <ol> or <ul> tags, which are selected, will be saved here */
+       // <ol> or <ul> tags, which are selected, will be saved here
        var lists = [];
 
-       /* Flag indicating whether a whole <li> tag is selected  */
+       // Flag indicating whether a whole <li> tag is selected
        var listEntrySelected;
 
-       /* Helper vars */
        var listTypes = ["OL", "UL"];
        var tmp, i, j, element;
 
-       /*
-        * At first the selection is examined to figure out
-        * a) whether several lists or
-        * b) one single <ol> or <li> tag is selected
-        */
+       // At first the selection is examined to figure out
+       // a) whether several lists or
+       // b) one single <ol> or <li> tag is selected
 
-       /* Fetch selected element node to examine what is inside the selection */
+       // Fetch selected element node to examine what is inside the selection
        element = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
            rng.parentElement() :
            rng.commonAncestorContainer;
 
-       /* If it is the <body> tag, a whole bunch of elements has been selected */
+       // If it is the <body> tag, a whole bunch of elements has been selected
        if (element.tagName == "BODY")
        {
          for (var i=0; i<listTypes.length; i++)
          {
-           /* Search for list elements... */
+           // Search for list elements...
            tmp = element.getElementsByTagName(listTypes[i]);
            for (var j=0; j<tmp.length; j++)
            {
-             if (tmp[j])
-             {
-               /* ... and add them to list */
+             if (tmp[j]) {
                lists.push(tmp[j]);
              }
            }
          }
        }
-       /* A list tag has been (possibly only partly) selected */
-       else if(qx.lang.Array.contains(listTypes, element.tagName))
-       {
+       // A list tag has been (possibly only partly) selected
+       else if(qx.lang.Array.contains(listTypes, element.tagName)) {
          lists.push(element);
        }
 
-       /* We have found some list elements */
        if(lists.length > 0)
        {
-         /* Walk through all list elements and check if they are selected */
+         // Walk through all list elements and check if they are selected
          for(var i=0; i<lists.length; i++)
          {
            var listElement = lists[i];
 
-           /*
-            * Check if the entire list element has been selected.
-            *
-            * Note: If more than one element is selected in IE,
-            * they are all selected completely. This is a good thing, since
-            * IE does not support anchorOffset or nodeOffset. :-)
-            */
+           // Check if the entire list element has been selected.
+           //
+           // Note: If more than one element is selected in IE, they are all 
+           // selected completely. This is a good thing, since IE does not 
+           // support anchorOffset or nodeOffset. :-)
            listEntrySelected = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
-               /*
-                * Element is selected or <body> tag is selected
-                * (in this case, the list item inside the selection is selected, too)
-                */
+               // Element is selected or <body> tag is selected
+               // (in this case, the list item inside the selection is selected, too)
                ( (listElement == element) || (element.tagName == "BODY") ) :
 
-               /* In other browsers, we can test more preciously */
+               // In other browsers, we can test more preciously
                sel.containsNode(listElement, false);
 
            /* Walk through all list entries in list element: */
@@ -1783,7 +1690,7 @@ qx.Class.define("htmlarea.command.Manager",
      __setTextBackgroundColor : qx.core.Variant.select("qx.client", {
        "mshtml" : function(value, commandObject)
        {
-         /* Body element must have focus before executing command */
+         // Body element must have focus before executing command
          this.__doc.body.focus();
 
          return this.__doc.execCommand("BackColor", false, value);
@@ -1791,7 +1698,7 @@ qx.Class.define("htmlarea.command.Manager",
 
        "gecko|opera" : function(value, commandObject)
        {
-         /* Body element must have focus before executing command */
+         // Body element must have focus before executing command
          this.__doc.body.focus();
 
          return this.__doc.execCommand("HiliteColor", false, value);
@@ -1802,68 +1709,62 @@ qx.Class.define("htmlarea.command.Manager",
          var sel = this.__editorInstance.getSelection();
          var rng = this.__editorInstance.getRange();
 
-         /* check for a range */
+         // check for a range
          if (!sel.isCollapsed)
          {
-            /* Body element must have focus before executing command */
-            this.__doc.body.focus();
+           // Body element must have focus before executing command
+           this.__doc.body.focus();
 
            this.__doc.execCommand("BackColor", false, value);
 
-           /* collapse the selection */
+           // collapse the selection
            sel.collapseToEnd();
 
            return true;
          }
          else
          {
-           /*
-            * Act like an IE browser
-            * -> if the selection is collapsed select the whole word and
-            * perform the action on this selection.
-            */
+           // Act like an IE browser
+           // -> if the selection is collapsed select the whole word and
+           // perform the action on this selection.
            var right  = sel.anchorOffset;
            var left   = sel.anchorOffset;
            var rng    = sel.getRangeAt(0);
            var anchor = sel.anchorNode;
 
-           /* Check the left side - stop at a linebreak or a space */
+           // Check the left side - stop at a linebreak or a space
            while (left > 0)
            {
-             if (anchor.nodeValue.charCodeAt(left) == 160 || anchor.nodeValue.charCodeAt(left) == 32)
-             {
+             if (anchor.nodeValue.charCodeAt(left) == 160 || 
+                 anchor.nodeValue.charCodeAt(left) == 32) {
                break;
-             }
-             else
-             {
+             } else {
                left--;
              }
            }
 
-           /* Check the right side - stop at a linebreak or a space */
+           // Check the right side - stop at a linebreak or a space
            while (right < anchor.nodeValue.length)
            {
-             if (anchor.nodeValue.charCodeAt(right) == 160 || anchor.nodeValue.charCodeAt(right) == 32)
-             {
+             if (anchor.nodeValue.charCodeAt(right) == 160 || 
+                 anchor.nodeValue.charCodeAt(right) == 32) {
                break;
-             }
-             else
-             {
+             } else {
                right++
              }
            }
 
-           /* Set the start and end of the range to cover the whole word */
+           // Set the start and end of the range to cover the whole word
            rng.setStart(sel.anchorNode, sel.anchorNode.nodeValue.charAt(left) == " " ? left + 1 : left);
            rng.setEnd(sel.anchorNode, right);
            sel.addRange(rng);
 
-           /* Body element must have focus before executing command */
+           // Body element must have focus before executing command
            this.__doc.body.focus();
 
            this.__doc.execCommand("BackColor", false, value);
 
-           /* Collapse the selection */
+           // Collapse the selection
            sel.collapseToEnd();
 
            return true;
@@ -1880,10 +1781,7 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __setBackgroundColor : function(value, commandObject)
      {
-       /* Normalize */
        value = value != null && typeof value == "string" ? value : "transparent";
-
-       /* Set the new background color */
        qx.bom.element.Style.set(this.__doc.body, "backgroundColor", value);
 
        return true;
@@ -1901,9 +1799,7 @@ qx.Class.define("htmlarea.command.Manager",
      {
        var url, repeat, position;
 
-       /* Check for value */
-       if (value == null)
-       {
+       if (value == null) {
          url = null;
        }
        else
@@ -1913,7 +1809,7 @@ qx.Class.define("htmlarea.command.Manager",
          position = value[2];
        }
 
-       /* If url is null remove the background image */
+       // If url is null remove the background image
        if (url == null || typeof url != "string")
        {
          qx.bom.element.Style.set(this.__doc.body, "backgroundImage", "");
@@ -1923,44 +1819,35 @@ qx.Class.define("htmlarea.command.Manager",
          return true;
        }
 
-       /*
-        * Normalize the url parameter. Especially when doing undo/redo operations the url
-        * *can* be passed in as full CSS like 'url(SOMEURL)' rather than just 'SOMEURL'.
-        */
+       // Normalize the url parameter. Especially when doing undo/redo operations
+       // the url *can* be passed in as full CSS like 'url(SOMEURL)' rather than 
+       // just 'SOMEURL'.
        else
        {
-         /* Quick test for 'url(' */
-         if (url.search(/^url.*\(/) == -1)
-         {
+         // Quick test for 'url('
+         if (url.search(/^url.*\(/) == -1) {
            url = "url(" + url + ")";
          }
        }
 
-       /*
-        * Return silently if the parameter "repeat" is not valid and report
-        * the error in debug mode
-        */
+       // Return silently if the parameter "repeat" is not valid and report
+       //the error in debug mode
        if (repeat != null && htmlarea.command.Manager.__backgroundRepeat.indexOf(repeat) < 0 )
        {
-         if (qx.core.Variant.isSet("qx.debug", "on"))
-         {
+         if (qx.core.Variant.isSet("qx.debug", "on")) {
            this.error("The value '" +repeat + "' is not allowed for parameter 'repeat'. Possible values are '" + htmlarea.command.Manager.__backgroundRepeat + "'");
          }
          return false;
        }
-       else
-       {
+       else {
          repeat = "no-repeat";
        }
 
-       /*
-        * Return silently if the parameter "position" is not valid
-        * and report the error in debug mode
-        */
+       // Return silently if the parameter "position" is not valid
+       // and report the error in debug mode
        if (position != null && htmlarea.command.Manager.__backgroundPosition.indexOf('|'+position+'|') < 0)
        {
-         if (qx.core.Variant.isSet("qx.debug", "on"))
-         {
+         if (qx.core.Variant.isSet("qx.debug", "on")) {
            this.error("The value '" + position + "' is not allowed for parameter 'position'. Possible values are '" + htmlarea.command.Manager.__backgroundPosition + "'");
          }
          return false;
@@ -1973,10 +1860,8 @@ qx.Class.define("htmlarea.command.Manager",
        }
 
 
-       /*
-        * Don't use the "background" css property to prevent overwriting the
-        * current background color
-        */
+       // Don't use the "background" css property to prevent overwriting the
+       // current background color
        qx.bom.element.Style.set(this.__doc.body, "backgroundImage", url);
        qx.bom.element.Style.set(this.__doc.body, "backgroundRepeat", repeat);
        qx.bom.element.Style.set(this.__doc.body, "backgroundPosition", position);
@@ -2039,16 +1924,11 @@ qx.Class.define("htmlarea.command.Manager",
         return "";
       };
 
-      if (range.cloneContents)
-      {
+      if (range.cloneContents) {
         tmpBody.appendChild(range.cloneContents());
-      }
-      else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined')
-      {
+      } else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined') {
         return range.item ? range.item(0).outerHTML : range.htmlText;
-      }
-      else
-      {
+      } else {
         return range.toString();
       }
 
@@ -2072,17 +1952,14 @@ qx.Class.define("htmlarea.command.Manager",
          var contextMap = this.__editorInstance.getContextInformation();
          var focusNode = this.__editorInstance.getFocusNode();
 
-         if(contextMap.underline)
-         {
-           // underline is already set as text-decoration, so remove it
+         // underline is already set as text-decoration, so remove it
+         if(contextMap.underline) {
            focusNode.style.textDecoration = "none";
          }
          else
          {
-           /*
-            * Text decoration is set to strikethrough, so add a new element
-            * to apply both
-            */
+           // Text decoration is set to strikethrough, so add a new element
+           // to apply both
            if(contextMap.strikethrough)
            {
              // Create a new span tag, apply a style on it and append it
@@ -2107,8 +1984,7 @@ qx.Class.define("htmlarea.command.Manager",
          return true;
        },
 
-       "default" : function(value, commandObject)
-       {
+       "default" : function(value, commandObject) {
          return this.__executeCommand(commandObject.identifier, false, value);
        }
      }),
@@ -2139,8 +2015,7 @@ qx.Class.define("htmlarea.command.Manager",
          return true;
        },
 
-       "default" : function(value, commandObject)
-       {
+       "default" : function(value, commandObject) {
          return this.__executeCommand(commandObject.identifier, false, value);
        }
      })
@@ -2151,8 +2026,7 @@ qx.Class.define("htmlarea.command.Manager",
   /**
    * Destructor
    */
-  destruct : function()
-  {
+  destruct : function() {
     this.__doc = this.__editorInstance = this._commands = this.__invalidFocusCommands = this.__fontSizeNames = null;
   }
 });
