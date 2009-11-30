@@ -186,10 +186,7 @@ qx.Class.define("htmlarea.command.Manager",
         inserthtml            : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHtml" },
         resethtml             : { useBuiltin : false, identifier : null, method : "__resetHtml" },
         gethtml               : { useBuiltin : false, identifier : null, method : "__getHtml" },
-        removeformat          : { useBuiltin : true, identifier : "RemoveFormat", method : null },
-
-        stylewithcss          : { useBuiltin : false, identifier : "styleWithCSS", method : "__styleWithCSS" },
-        usecss                : { useBuiltin : false, identifier : "useCSS", method : "__useCSS" }
+        removeformat          : { useBuiltin : true, identifier : "RemoveFormat", method : null }
       }
     },
 
@@ -223,10 +220,8 @@ qx.Class.define("htmlarea.command.Manager",
         // inside a paragraph before executing a command. Otherwise executing
         // commands will cause problems for our paragraph handling.
         //
-        // EXCEPTION: this interferes with webkit browsers at indent/outdent and
-        // with the commands "stylewidthcss" and "usecss" used at the startup (only gecko)
-        if (!(qx.bom.client.Engine.WEBKIT && (command == "indent" || command == "outdent")) &&
-            !(qx.bom.client.Engine.GECKO && (command == "stylewithcss" || command == "usecss")))
+        // EXCEPTION: this interferes with webkit browsers at indent/outdent.
+        if (!(qx.bom.client.Engine.WEBKIT && (command == "indent" || command == "outdent")))
         {
           if (this.__paragraphMissing()) {
             this.__insertHelperParagraph();
@@ -443,32 +438,6 @@ qx.Class.define("htmlarea.command.Manager",
     /* ************************************************************
      *          CUSTOM COMMAND IMPLEMENTATION
      * *********************************************************** */
-
-     /**
-      * Command used at startup to setup the iframe as an editable area.
-      *
-      * @param value {Boolean} value of the command
-      * @param commandObject {Object} command infos
-      * @return {Boolean} Succes of operation
-      */
-     __styleWithCSS : function(value, commandObject)
-     {
-       return this.__doc.execCommand(commandObject.identifier, false, value);
-     },
-
-
-     /**
-      * Command used at startup to setup the iframe as an editable area. This
-      * command is a fallback to the "styleWithCSS" command.
-      *
-      * @param value {Boolean} value of the command
-      * @param commandObject {Object} command infos
-      * @return {Boolean} Success of the operation
-      */
-     __useCSS : function(value, commandObject)
-     {
-       return this.__doc.execCommand(commandObject.identifier, false, value);
-     },
 
 
      /**

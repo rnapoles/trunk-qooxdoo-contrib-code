@@ -838,10 +838,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       this._commands = {
         undo         : { passthrough : false },
-        redo         : { passthrough : false },
-
-        stylewithcss : { passthrough : true },
-        usecss       : { passthrough : true }
+        redo         : { passthrough : false }
       };
 
       /*
