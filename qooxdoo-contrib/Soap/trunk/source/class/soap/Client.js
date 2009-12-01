@@ -24,7 +24,11 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This license applies to this file except the __send_soap_request function,
+ * which is licensed under GPL.
  */
+
 
 qx.Class.define("soap.Client", { extend : qx.core.Object
     ,include : [qx.locale.MTranslation]
@@ -45,15 +49,6 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
         ,url :              { check : "String",  nullable : true }
     }
 
-    ,statics : {
-        NAMESPACES: {
-             "a"    : "http://schemas.xmlsoap.org/wsdl/"
-            ,"x"    : "http://www.w3.org/2001/XMLSchema"
-            ,"plnk" : "http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
-            ,"soap" : "http://schemas.xmlsoap.org/wsdl/soap/"
-        }
-    }
-
     ,members : {
          __cache : null
         ,easy : function (method_name) {
@@ -67,7 +62,7 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
             if (! method_input) {
                 throw new Error("Method named '" + method_name + "' is not exposed via wsdl.");
             }
-            
+
             for (var i=1, j=0, l=arguments.length-1; i<l; ++j) {
                 var child_type = method_input.children[j];
 
@@ -416,6 +411,7 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
             return retval;
         }
 
+        // this function is gpl
         ,__send_soap_request : function(method_, parameters, async, callback) {
             var ns = this.__cache.target_namespace;
 
@@ -423,7 +419,7 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
             var sr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                     "<soap:Envelope " +
                         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-                        "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
+                        "xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" " +
                         "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                     "<soap:Body>" +
                     "<" + method_ + " xmlns=\"" + ns + "\">" +
