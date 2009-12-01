@@ -1,18 +1,8 @@
 ==== Soap Module ====
 
-This is a soap rpc module for qooxdoo. The original code comes from:
+This package contains a soap rpc module, a sample remote table model and a soap
+backend written in python, using soaplib 0.8.1 and CherryPy 3.x.
 
-http://www.codeplex.com/JavaScriptSoapClient/
+See inside for more info.
 
-It's heavily modified because that code seems to be tested only against 
-.Net web services. 
 
-I've also added a sample remote table model for convenience.
-
-There is also a soap backend written in python, using a patched version
-of soaplib, and a vanilla CherryPy 3.1.
-
-Note that the original soap client was licensed under GPL, which is 
-NOT compatible with LGPL, the license that qooxdoo uses. If you use 
-this code in your project, you *might* have to open source it all! 
-Please consult your lawyer for more precise information.
