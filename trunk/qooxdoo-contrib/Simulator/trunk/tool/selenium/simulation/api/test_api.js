@@ -9,8 +9,7 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/api/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
-  'debug' : true,
-  'ignore' : 'qx.ui.virtual'
+  'debug' : true
 };
 
 var args = arguments ? arguments : "";
@@ -67,14 +66,20 @@ simulation.Simulation.prototype.logDocErrors = function()
     var warn = [];
     initialItems = selenium.qxStoredVars["autWindow"].qx.core.Init.getApplication().viewer.getChildren()[2].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0].getChildren();
     checkItems(initialItems, "qx");
-    return warn;
+    return warn.join("|");
   };
   
   this.addOwnFunction("getDocWarnings", getDocWarnings);
   var docWarnings = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getDocWarnings();");
   
-  // docWarnings returns an array, but Rhino gives us a string-like object.
-  var docArray = String(docWarnings).split(",");
+  var docString = String(docWarnings);
+  
+  if (docString == "") {
+    this.log("No documentation errors found.", "info");
+    return;
+  }
+  
+  var docArray = docString.split("|");
   
   var ignoreList = [];
   
