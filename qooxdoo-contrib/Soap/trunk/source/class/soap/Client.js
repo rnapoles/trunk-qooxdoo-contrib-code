@@ -56,6 +56,36 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
 
     ,members : {
          __cache : null
+        ,easy : function (method_name) {
+            if (! method_name) {
+                throw new Error("method_name must be defined!");
+            }
+
+            var args = new soap.Parameters();
+            var method_input = this.__cache.schema.complex[method_name];
+
+            if (! method_input) {
+                throw new Error("Method named '" + method_name + "' is not exposed via wsdl.");
+            }
+            
+            for (var i=1, j=0, l=arguments.length-1; i<l; ++j) {
+                var child_type = method_input.children[j];
+
+                if (! child_type) {
+                    throw new Error("Too many arguments!");
+                }
+
+                args.add(method_input.children[j].name, arguments[i]);
+                ++i;
+            }
+
+            return this.__invoke(method_name, args, true, arguments[arguments.length-1]);
+        }
+
+        ,callAsync : function(methodName, args, handler) {
+            return this.__invoke(methodName, args, true, handler);
+        }
+
         ,__extract_fault : function(method_name, async, callback, req) {
             var retval = null;
 
@@ -145,9 +175,9 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
             else {
                 type_name = type.type.split(":")[1];
             }
-            
+
             var type_name_lower = type_name.toLowerCase();
-            
+
             if (type_name_lower == "boolean") {
                 retval = value + "" == "true";
             }
@@ -358,16 +388,20 @@ qx.Class.define("soap.Client", { extend : qx.core.Object
                                 elt.children[child_name] = child;
                             }
                             else {
+                                var order=0;
                                 for (var node = first_node; node != null; node = node.nextSibling) {
                                     var child = new Object();
 
-                                    var child_name = node.getAttribute("name");
+                                    child.name = node.getAttribute("name");
                                     child.type = node.getAttribute("type");
                                     if (child.type == null) {
                                         child.type = node.getAttribute("xsi:type");
                                     }
 
-                                    elt.children[child_name] = child;
+                                    elt.children[child.name] = child;
+                                    elt.children[order] = child;
+
+                                    ++order;
                                 }
                             }
                         }

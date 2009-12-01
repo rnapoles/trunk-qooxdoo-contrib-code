@@ -73,9 +73,8 @@ qx.Class.define("soap.demo.scr.basic.Simple", { extend : qx.core.Object
             params.add("name", txtName.getValue());
             params.add("times", txtTimes.getValue());
 
-            var self = this;
-            self.SoapRunning = soap.demo.Application.cliSvc.callAsync( "say_hello", params, function(r) {
-                self.SoapRunning = null;
+            var ctx = this;
+            soap.demo.Application.cliSvc.easy("say_hello", txtName.getValue(), txtTimes.getValue(), function(r) {
                 if (r instanceof Error) {
                     alert("An error has occured!\r\n\r\n" + r.fileName + " line " + r.lineNumber);
                 }
