@@ -1,14 +1,30 @@
 
 /*
- * Javascript "SOAP Client" library
+ * Copyright (c) 2008-2009, Burak Arslan (burak.arslan-qx@arskom.com.tr).
+ * All rights reserved.
  *
- * @version: 2.4 - 2007.12.21
- * @author: Matteo Casati - http://www.guru4.net/
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Arskom Consultancy Ltd. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- */
-
-/*
- * Qooxdoo integration by Burak Arslan (burak.arslan-qx@arskom.com.tr)
+ * THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 qx.Class.define("soap.Parameters", { extend : qx.core.Object
@@ -18,7 +34,7 @@ qx.Class.define("soap.Parameters", { extend : qx.core.Object
     }
 
     ,members : {
-        __pl : null
+         __pl : null
 
         ,__serialize : function(o) {
             var s = "";
@@ -40,8 +56,8 @@ qx.Class.define("soap.Parameters", { extend : qx.core.Object
                 // Date
                 else if(o instanceof Date) {
                     var year = o.getFullYear().toString();
-                    var month = (o.getMonth() + 1).toString();
 
+                    var month = (o.getMonth() + 1).toString();
                     month = (month.length == 1) ? "0" + month : month;
 
                     var date = o.getDate().toString();
@@ -57,66 +73,64 @@ qx.Class.define("soap.Parameters", { extend : qx.core.Object
                     seconds = (seconds.length == 1) ? "0" + seconds : seconds;
 
                     var milliseconds = o.getMilliseconds().toString();
-                    var tzminutes = Math.abs(o.getTimezoneOffset());
-                    var tzhours = 0;
 
-                    while(tzminutes >= 60) {
-                        tzhours++;
-                        tzminutes -= 60;
+                    var tz_minutes = Math.abs(o.getTimezoneOffset());
+                    var tz_hours = (tz_minutes/60)>>0;
+                    tz_minutes -= tz_hours * 60;
+
+                    tz_hours = tz_hours.toString();
+                    tz_minutes = tz_minutes.toString();
+
+                    if (tz_minutes.length == 1) {
+                        tz_minutes = "0" + tz_minutes;
                     }
-                    tzminutes = (tzminutes.toString().length == 1) ? "0" + tzminutes.toString() : tzminutes.toString();
-                    tzhours = (tzhours.toString().length == 1) ? "0" + tzhours.toString() : tzhours.toString();
-                    var timezone = ((o.getTimezoneOffset() < 0) ? "+" : "-") + tzhours + ":" + tzminutes;
+
+                    if (tz_hours.length == 1) {
+                        tz_hours = "0" + tz_hours;
+                    }
+
+                    var timezone = ((o.getTimezoneOffset() < 0) ? "+" : "-") + tz_hours + ":" + tz_minutes;
                     s += year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + "." + milliseconds + timezone;
                 }
                 else if (o instanceof Number) {
                     s += o.toString();
                 }
-                // Array
                 else if(o instanceof Array) {
-                    for(var p in o) {
-                        if(!isNaN(p)) { // linear array
-                            for (var i = 0; i<o.length; ++i) {
-                                var type=null;
-                                if (o[i].basename) {
-                                    type = o[i].basename;
-                                }
-                                else {
-                                    //(/function\s+(\w*)\s*\(/ig).exec(o[i].constructor.toString());
-                                    type = Object.prototype.toString.call(o[i]).slice(8, -1);
-                                }
+                    for (var i = 0; i<o.length; ++i) {
+                        var type=null;
 
-                                qx.log.Logger.debug(type + " " + typeof(o[i]) + "\n" + o[i].constructor.toString());
-                                switch(type) {
-                                case "String":
-                                    type = "string";
-                                    break;
+                        if (o[i].basename) {
+                            type = o[i].basename;
+                        }
+                        else {
+                            type = Object.prototype.toString.call(o[i]).slice(8, -1);
+                        }
 
-                                case "Number":
-                                    type = "int";
-                                    break;
+                        qx.log.Logger.debug(type + " " + typeof(o[i]) + "\n" + o[i].constructor.toString());
+                        switch(type) {
+                        case "String":
+                            type = "string";
+                            break;
 
-                                case "Boolean":
-                                    type = "bool";
-                                    break;
+                        case "Number":
+                            type = "int";
+                            break;
 
-                                case "Date":
-                                    type = "DateTime";
-                                    break;
-                                }
-                                s += "<" + type + ">" + this.__serialize(o[i]) + "</" + type + ">"
-                            }
+                        case "Boolean":
+                            type = "bool";
+                            break;
+
+                        case "Date":
+                            type = "DateTime";
                             break;
                         }
-                        else {   // associative array
-                            s += "<" + p + ">" + this.__serialize(o[p]) + "</" + p + ">"
-                        }
+                        s += "<" + type + ">" + this.__serialize(o[i]) + "</" + type + ">"
                     }
                 }
                 else if (qx.xml.Document.isXmlDocument(o)) {
-                    s+=qx.xml.Element.serialize(o);
+                    s += qx.xml.Element.serialize(o);
                 }
-                else { // Object or custom function
+                else { // Object
                     var so=o.simple_object;
                     for(var k in so) {
                         s += "<" + k + ">" + this.__serialize(so[k]) + "</" + k + ">";
@@ -135,7 +149,6 @@ qx.Class.define("soap.Parameters", { extend : qx.core.Object
 
         ,add : function(name, value) {
             this.__pl[name] = value;
-            return this;
         }
 
         ,toXml : function() {
