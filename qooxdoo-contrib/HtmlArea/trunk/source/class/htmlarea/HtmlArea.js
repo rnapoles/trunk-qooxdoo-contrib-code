@@ -405,10 +405,8 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @return {void}
      */
-    __addAppearListener : function()
-    {
+    __addAppearListener : function() {
       this.addListenerOnce("appear", this.__setupEditorComponent);
-      this.addListener("appear", this.forceEditable);
     },
 
 
@@ -428,6 +426,8 @@ qx.Class.define("htmlarea.HtmlArea",
       if (qx.core.Variant.isSet("qx.client", "gecko")) {
         this.__setupInvalidateListener();
       }
+
+      this.addListener("appear", this.forceEditable);
     },
 
 
