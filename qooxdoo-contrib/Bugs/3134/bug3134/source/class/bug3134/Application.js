@@ -34,11 +34,16 @@ qx.Class.define("bug3134.Application",
       var textArea = new qx.ui.form.TextArea("");
       
       textField.addListener("keydown", function(e) {
+        textArea.setValue(textArea.getValue() + "keydown\n");
         e.preventDefault();
       }, this);
       
       textField.addListener("keypress", function(e) {
         textArea.setValue(textArea.getValue() + "keypress\n");
+      }, this);
+      
+      textField.addListener("keyup", function(e) {
+        textArea.setValue(textArea.getValue() + "keyup\n");
       }, this);
       
       var doc = this.getRoot();
