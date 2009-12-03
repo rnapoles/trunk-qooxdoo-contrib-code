@@ -495,7 +495,7 @@ simulation.Simulation.prototype.qxType = function(locator, text, keys)
     throw new Error("No locator specified for type()");
   }
   
-  if (!text) {
+  if (typeof(text) != "string") {
     throw new Error("No text specified for type()");
   }
 
