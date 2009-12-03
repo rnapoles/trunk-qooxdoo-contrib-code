@@ -331,6 +331,15 @@ simulation.Simulation.prototype.runTest = function()
       print("No include list configured.");
     }
   }
+  
+  // Remove the text from the search field so no demos are filtered
+  this.qxType('qxh=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Composite/qx.ui.form.TextField', "");
+  
+  if (this.getConfigSetting("theme", false)) {
+    var chosenTheme = this.getConfigSetting("theme");
+    this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]', "", "Clicking Theme button");
+    this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
+  }
 
   if (include.length === 0) {
     this.runScript(treeSelect(2), "Selecting first category");
@@ -345,6 +354,7 @@ simulation.Simulation.prototype.runTest = function()
     this.currentSample = currentCatSam[1];
     
     while (this.currentSample != this.lastSample) {
+      /*
       if (this.lastCategory) {
         if (this.currentCategory != this.lastCategory) {
           print("New category, reloading application");
@@ -355,6 +365,7 @@ simulation.Simulation.prototype.runTest = function()
           this.getEval(selWin + ".qx.Simulation.chooseDemo('" + this.currentCategory + "','" + this.currentSample + "');");
         }
       }
+      */
       
       if (this.currentCategory != finalCategory || (this.currentCategory == finalCategory && this.currentSample != finalSample) ) {
         this.lastCategory = this.currentCategory;
@@ -394,6 +405,7 @@ simulation.Simulation.prototype.runTest = function()
         }
       }
       else {
+        /*
         if (this.currentCategory) {
           if (cat != this.currentCategory) {
             print("New category, reloading application");
@@ -404,6 +416,7 @@ simulation.Simulation.prototype.runTest = function()
             this.addOwnFunction("getDemosByCategory", getDemosByCategory);
           }
         }
+        */
         
         var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";
         var currentCatSam = this.sampleRunner(runIncluded);
@@ -414,6 +427,37 @@ simulation.Simulation.prototype.runTest = function()
     }
   }
 
+};
+
+simulation.Simulation.prototype.runDemoTest = function(category, sample)
+{
+  var demoTestSource = simSvn + "/trunk/tool/selenium/simulation/demobrowser/";
+  demoTestSource += category + "/" + sample + ".js";
+  
+  // Apparently load won't throw an exception if the file doesn't exist :(
+  try {
+    load([demoTestSource]);
+  }
+  catch(ex) {
+    print ("Unable to load test code for demo " + category + ":" + sample + ": " + ex);
+  }
+  
+  if (demoTestCode["category"] == category && demoTestCode["demo"] == sample) {
+    for (method in demoTestCode["testMethods"]) {
+      simulation.Simulation.prototype[method] = demoTestCode["testMethods"][method];
+      var testFullName = category + "." + sample + "." + method;
+      try {
+        this[method]();
+        this.log(testFullName + " successful", "info");
+      } catch(ex) {
+        this.log(testFullName + " failed: " + ex, "error");
+      }
+      
+      simulation.Simulation.prototype[method] = null;
+       
+    }
+  }
+  
 };
 
 // - Main --------------------------------------------------------------------
