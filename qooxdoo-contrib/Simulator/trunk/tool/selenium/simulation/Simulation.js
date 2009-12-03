@@ -204,17 +204,25 @@ simulation.Simulation = function(baseConf, args)
    * Public getter for configuration settings.
    * 
    * @param prop {String} the name of a configuration key
+   * @param defaultValue {String} Optional value to be returned if the key isn't
+   * defined in the configuration
    * @return {String} the value of the requested configuration key
    * @throw an exception if no key was specified or the key doesn't exist in the
-   *   configuration map
+   *   configuration map and no default value was specified
    */
-  this.getConfigSetting = function(prop)
+  this.getConfigSetting = function(prop, defaultValue)
   {
     if (!prop) {
       throw new Error("No configuration key specified!");
     }
-    else if (!(prop in __config)) {
-      throw new Error("Key " + prop + " not in configuration!");
+    
+    if (!(prop in __config)) {
+      if (defaultValue || typeof(defaultValue) == "boolean") {
+        return defaultValue;
+      }
+      else {
+        throw new Error("Key " + prop + " not in configuration!");  
+      }   
     }
     else {
       return __config[prop];
