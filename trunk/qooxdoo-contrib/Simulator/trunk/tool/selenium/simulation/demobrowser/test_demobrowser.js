@@ -337,6 +337,7 @@ simulation.Simulation.prototype.runTest = function()
   
   if (this.getConfigSetting("theme", false)) {
     var chosenTheme = this.getConfigSetting("theme");
+    this.log("Switching theme to " + chosenTheme, "info");
     this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]', "", "Clicking Theme button");
     this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
   }
