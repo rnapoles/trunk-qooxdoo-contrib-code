@@ -222,6 +222,27 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   this.log('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>', "info");
   
+  var expectedLogEntries = [
+    "Load runtime",
+    "Main runtime",
+    "Finalize runtime"
+  ];
+  
+  if (this.getConfigSetting("shutdownSample", false)) {
+    expectedLogEntries.push("ObjectRegistry: Disposed");
+  }
+  
+  if (sampleLog) {
+    for (var i = 0, l = expectedLogEntries.length; i < l; i++) {
+      if (sampleLog.indexOf(expectedLogEntries[i]) < 0) {
+        errWarn = true;
+      }
+    }
+  }
+  else {
+    this.log("Unable to get log for sample " + category + "-" + currentSample, "error");
+  }
+  
   if (this.getConfigSetting("sampleGlobalErrorLogging")) {
     try {
       this.logGlobalErrors();
@@ -236,6 +257,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   // we're only interested in logs containing warnings or errors
   var isErrWarn = false;
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
+    this.log("Sample " + category + "-" + currentSample + " has incomplete log!","warn");
     isErrWarn = true;
   }
   if (isErrWarn || this.getConfigSetting("logAll")) {
@@ -248,6 +270,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     // we can speed this up since we don't have to wait for the browser
     this.__sel.setSpeed("150");
 
+    this.log('<div class="qxappender">');
     for (var j=0, l=logArray.length; j<l; j++) {
       var line = logArray[j] + '</DIV>';
       // only log relevant lines
@@ -257,6 +280,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
         line = line.replace(/\'/g, "\\'");
         line = line.replace(/\n/g, "<br/>");
         line = line.replace(/\r/g, "<br/>");
+        //line = '<div class="qxappender"'> + line + '</div>';
         if (line.indexOf('level-error')) {
           this.log(line, "error");
         }
@@ -271,9 +295,14 @@ simulation.Simulation.prototype.sampleRunner = function(script)
         }
       }
     }
+    this.log("</div>");
 
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));  
   }
+  else {
+    this.log("No errors/warnings found", "info");
+  }
+  
   return [category,currentSample];
 };
 
@@ -302,7 +331,7 @@ simulation.Simulation.prototype.runTest = function()
 {
   print("Starting sample playback");
 
- var ignore = [];
+  var ignore = [];
   
   try {
     ignore = this.getConfigSetting("ignore").split(",");
