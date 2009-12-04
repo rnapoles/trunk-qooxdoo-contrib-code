@@ -31,7 +31,7 @@
   "let" :
   {
     "APPLICATION"  : "öäüωωßæø",
-    "QOOXDOO_PATH" : "../../../qooxdoo.trunk",
+    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
     "QXTHEME"      : "öäüωωßæø.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
