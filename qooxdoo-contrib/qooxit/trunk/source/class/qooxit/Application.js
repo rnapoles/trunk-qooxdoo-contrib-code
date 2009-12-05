@@ -31,7 +31,10 @@ qx.Class.define("qooxit.Application",
     bSampleData : true,
 
     /** Whether to display the server-generated XML */
-    bShowXml    : true,
+    bShowXml    : false,
+
+    /** Whether to display the server-generated JSON */
+    bShowJson   : false,
 
     /** Our reusable JSON-RPC object */
     rpc         : null,
@@ -441,9 +444,15 @@ qx.Class.define("qooxit.Application",
             this.hRpc = null;
             if (ex == null)
             {
+//              alert(result.debug);
+
               if (this.bShowXml)
               {
-                alert(result);
+                alert(result.xml);
+              }
+              if (this.bShowJson)
+              {
+                alert(qx.dev.Debug.debugObjectToString(result.json, "JSON"));
               }
             }
             else
@@ -853,6 +862,17 @@ qx.Class.define("qooxit.Application",
                                 },
                                 _this);
           menu.add(cbShowXml);
+
+          // Add a button for displaying server-generated JSON
+          var cbShowJson = new qx.ui.menu.CheckBox("DEBUG: Server JSON");
+          cbShowJson.setValue(_this.bShowJson);
+          cbShowJson.addListener("changeValue",
+                                function(e)
+                                {
+                                  this.bShowJson = e.getData();
+                                },
+                                _this);
+          menu.add(cbShowJson);
         }));
 
       // Create a splitpane as the main workspace
