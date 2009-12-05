@@ -240,7 +240,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
       var o = new qx.ui.form.TextField(defaultName);
       o.setWidth(128);
-      form.add(o, this.tr("Name"), null, "__name__");
+      form.add(o, "Name", null, "__name__");
 
       // For each item in the specification...
       for (var item in spec)
@@ -394,7 +394,13 @@ qx.Class.define("qooxit.library.ui.Abstract",
         "execute",
         function()
         {
-          ok.execute();
+          // Set the focus on the ok button
+          ok.focus();
+
+          // Allow the ok button to focus so that the currently-focused
+          // field has time to update its data
+          var timer = qx.util.TimerManager.getInstance();
+          timer.start(ok.execute, 0, ok, null, 10);
         }, this);
 
       // Center the window

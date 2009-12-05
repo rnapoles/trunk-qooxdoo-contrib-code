@@ -34,7 +34,7 @@ qx.Class.define("qooxit.Application",
     bShowXml    : false,
 
     /** Whether to display the server-generated JSON */
-    bShowJson   : false,
+    bShowJson   : true,
 
     /** Our reusable JSON-RPC object */
     rpc         : null,
@@ -84,7 +84,6 @@ qx.Class.define("qooxit.Application",
       this.highlighter.setStyles(
         {
           position        : "absolute",
-//          visibility      : "hidden",
           top             : "-9999px",
           left            : "-9999px",
           width           : "20px",
@@ -139,6 +138,11 @@ qx.Class.define("qooxit.Application",
      * @param widgetFactorySource {Map}
      *   Information about the WidgetFactory.js source editor
      *
+     * @param bNoRemote {Boolean}
+     *  If true, do not add the object remotely. This indicates that we
+     *  are adding objects as the result of having received them from the
+     *  server.
+     *
      * @param applicationSource {Map}
      *   Information about the Application.js source editor
      */
@@ -148,7 +152,8 @@ qx.Class.define("qooxit.Application",
                          folder,
                          sourceTree,
                          widgetFactorySource,
-                         applicationSource)
+                         applicationSource,
+                         bNoRemote)
     {
       // Add the node to the specified parent by calling its factory
       var fFactory = classInstance.bindTo(classInstance.factory);
@@ -196,9 +201,13 @@ qx.Class.define("qooxit.Application",
       // Allow the item to be dragged around in the application tree
       subItem.setDraggable(true);
 
-      this.addObjectRemote(folder.getUserData("name"),
-                          classInstance.classname,
-                          options);
+      if (! bNoRemote)
+      {
+        this.addObjectRemote(folder.getUserData("name"),
+                             classInstance.classname,
+                             label,
+                             options);
+      }
 
       // If this is a container...
       if (classInstance.getIsContainer())
@@ -333,8 +342,8 @@ qx.Class.define("qooxit.Application",
       // Initially there's no text
       text = "";
 
-      // Clear the selection from the source tree
-      sourceTree.resetSelection();
+      // Clear the selection from the source tree, if one is specified
+      sourceTree && sourceTree.resetSelection();
 
       // Determine the starting line number in the widget factory
       var startLine = applicationSource.editor.lineNumber(
@@ -418,6 +427,9 @@ qx.Class.define("qooxit.Application",
 
       // Put the variable name back in the options in preparation for saving
       options.__name__ = name;
+
+      // Give 'em the new object
+      return subItem;
     },
 
 
@@ -431,13 +443,16 @@ qx.Class.define("qooxit.Application",
      *   The name of the qooxit factory class which instantiates this new
      *   object
      *
+     * @param label
+     *   The label in the Application tree
+     *
      * @param options
      *   Options to be passed to the qooxit factory class to instantiate this
      *   object.
      */
-    addObjectRemote : function(parentName, className, options)
+    addObjectRemote : function(parentName, className, label, options)
     {
-      this.hRpc = this.rpc.callAsync(
+      this.rpc.callAsync(
         this.bindTo(
           function(result, ex, id)
           {
@@ -454,6 +469,16 @@ qx.Class.define("qooxit.Application",
               {
                 alert(qx.dev.Debug.debugObjectToString(result.json, "JSON"));
               }
+
+              // If this was adding the root object...
+              if (parentName.length == 0 &&
+                  result.json[0].children &&
+                  result.json[0].children.length > 0)
+              {
+                // ... then add any children reported by the server
+                this.addObjectTree(result.json[0].children,
+                                   this.context.applicationRoot);
+              }
             }
             else
             {
@@ -463,7 +488,40 @@ qx.Class.define("qooxit.Application",
         "addChild",
         parentName,
         className,
+        label,
         options);
+    },
+
+
+    addObjectTree : function(widgetDescriptionList, folder)
+    {
+      for (var i = 0; i < widgetDescriptionList.length; i++)
+      {
+        // Get a refrence to the descripton of the widget being added
+        var widget = widgetDescriptionList[i];
+
+        // Get the qooxit class instance for this widget
+        var classInstance =
+          qooxit.library.Library.getInstanceByName(widget.className);
+
+        // Create the new object according to the description
+        this.warn("Add " + classInstance + " label=" + widget.label);
+        var subFolder = this.addObject(classInstance,
+                                       widget.options || {},
+                                       widget.label,
+                                       folder,
+                                       null,
+                                       this.context.widgetFactorySource,
+                                       this.context.applicationSource,
+                                       true);
+
+        // If this widget description shows any children, ...
+        if (widget.children && widget.children.length > 0)
+        {
+          // ... then recursively add them
+          this.addObjectTree(widget.children, subFolder);
+        }
+      }
     },
 
 
@@ -532,7 +590,7 @@ qx.Class.define("qooxit.Application",
      */
     findMenuItem : function(root, menuHierarchy)
     {
-      // Get the non-recursive list of items in the tree at this level
+      // Get the non-recursiv elist of items in the tree at this level
       var items = root.getItems(false, true);
 
       // Get the current name we're looking for.
@@ -1248,32 +1306,34 @@ qx.Class.define("qooxit.Application",
                               context.applicationTree);
 
           // Create the root of the application hierarchy tree
-          var applicationRoot =
+          context.applicationRoot =
             new qx.ui.tree.TreeFolder("Application Root");
-          applicationRoot.setOpen(true);
-          context.applicationTree.setRoot(applicationRoot);
+          context.applicationRoot.setOpen(true);
+          context.applicationTree.setRoot(context.applicationRoot);
 
           // Save the root object in the application root node of the tree
-          applicationRoot.setUserData("object", context.pageLive);
+          context.applicationRoot.setUserData("object", context.pageLive);
 
           // Save the name of the root object
-          applicationRoot.setUserData("name", "_root_");
+          context.applicationRoot.setUserData("name", "_root_");
 
           // There are no options other than the mandatory name
-          applicationRoot.setUserData("options", { __name__ : "_root_" } );
+          context.applicationRoot.setUserData("options",
+                                              { __name__ : "_root_" } );
 
           // pageLive (and thus applicationRoot) has a VBox layout
           var classInstance = qooxit.library.ui.layout.VBox.getInstance();
-          applicationRoot.setUserData("classInstance", classInstance);
+          context.applicationRoot.setUserData("classInstance", classInstance);
 
           // Add the root object at the server
           this.addObjectRemote("",
                                classInstance.classname,
-                               applicationRoot.getUserData("options"));
+                               "Application Root",
+                               context.applicationRoot.getUserData("options"));
 
           // Handle a drop
-          applicationRoot.setDroppable(true);
-          applicationRoot.addListener("drop", this.handleDrop, this);
+          context.applicationRoot.setDroppable(true);
+          context.applicationRoot.addListener("drop", this.handleDrop, this);
 
           // Add all registered classes to the Containers & Widgets menu
           var list = qooxit.library.Library.getClasses();
