@@ -30,11 +30,11 @@ qx.Class.define("qooxit.Application",
     /** Whether we are displaying widgets with sample data */
     bSampleData : true,
 
+    /** Whether to display the server-generated XML */
+    bShowXml    : true,
+
     /** Our reusable JSON-RPC object */
     rpc         : null,
-
-    /** The handle for an active RPC */
-    hRpc        : null,
 
     /**
      * This method contains the initial application code and gets called 
@@ -97,6 +97,20 @@ qx.Class.define("qooxit.Application",
 
       // Add it to the application's root container
       this.getRoot().getContainerElement().add(this.highlighter);
+
+      // Create a recurrent keep-alive timer. Send an otherwise superfluous
+      // request to the server periodically solely to keep the session alive.
+      var timer = qx.util.TimerManager.getInstance();
+      timer.start(
+        function(userData, timerId)
+        {
+          // Empty callback function; method="keepAlive"; no parameters
+          this.rpc.callAsync(qx.lang.Function.empty, "keepAlive");
+        },
+        30000,
+        this,
+        null,
+        30000);
     },
 
     /**
@@ -420,16 +434,17 @@ qx.Class.define("qooxit.Application",
      */
     addObjectRemote : function(parentName, className, options)
     {
-      return;
-
       this.hRpc = this.rpc.callAsync(
         this.bindTo(
           function(result, ex, id)
           {
             this.hRpc = null;
-                if (ex == null)
+            if (ex == null)
             {
-              alert("id " + id + ":\n\n" + result);
+              if (this.bShowXml)
+              {
+                alert(result);
+              }
             }
             else
             {
@@ -558,6 +573,15 @@ qx.Class.define("qooxit.Application",
       return folder;
     },
 
+    /**
+     * Create the source editor.
+     *
+     * @param source {Map}
+     *   A map containing the following:
+     *     page   - The qooxdoo tab page in which to add the source editor
+     *     text   - Any initial text to be placed in the editor
+     *     appear - a function to call when the editor appears
+     */
     createSourceEditor : function(source)
     {
       // This code uses the CodeMirror library to add a
@@ -618,6 +642,11 @@ qx.Class.define("qooxit.Application",
       }
     },
 
+    /**
+     * Progressively load the application This allows a somewhat lengthy
+     * initialization sequence to be shown with a progress bar and visible
+     * indications of widgets being added to the screen.
+     */
     progressiveLoader : function()
     {
       // We'll use the progressive table's progress footer.  For that, we
@@ -799,8 +828,12 @@ qx.Class.define("qooxit.Application",
           var button = new qx.ui.menubar.Button("Development", null, menu);
           context.menuBar.add(button);
 
+          //
           // Add buttons to the Development menu
-          var cbSamples = new qx.ui.menu.CheckBox("Sample Data");
+          //
+
+          // Add a button for inserting sample data
+          var cbSamples = new qx.ui.menu.CheckBox("Include Sample Data");
           cbSamples.setValue(_this.bSampleData);
           cbSamples.addListener("changeValue",
                                 function(e)
@@ -809,6 +842,17 @@ qx.Class.define("qooxit.Application",
                                 },
                                 _this);
           menu.add(cbSamples);
+
+          // Add a button for displaying server-generated XML
+          var cbShowXml = new qx.ui.menu.CheckBox("DEBUG: Server XML");
+          cbShowXml.setValue(_this.bShowXml);
+          cbShowXml.addListener("changeValue",
+                                function(e)
+                                {
+                                  this.bShowXml = e.getData();
+                                },
+                                _this);
+          menu.add(cbShowXml);
         }));
 
       // Create a splitpane as the main workspace
@@ -1228,12 +1272,22 @@ qx.Class.define("qooxit.Application",
       progressive.render();
     },
 
+    /**
+     * Event handler for a drop on the Application Hierarchy tree
+     *
+     * @param e {qx.event.type.Drag}
+     *   The event containing the information about what was dropped and where
+     *   it was dropped.
+     *
+     * @param classInstance {qooxit.library.ui.Abstract?}
+     *   If the drop is the result of dragging an item already in the
+     *   Application tree to a new position in the Application tree, this is
+     *   the instance of the class that initially instantiated the object to
+     *   which this tree item is associated. When the drop is due to a new
+     *   widget being added, this parameter will not be provided.
+     */
     handleDrop : function(e, classInstance)
     {
-/*
-      var orig = e.getOriginalTarget();
-      var folder = orig.getLayoutParent();
-*/
       var folder = e.getTarget();
       var related = e.getRelatedTarget();
       var label = related.getLabel();
