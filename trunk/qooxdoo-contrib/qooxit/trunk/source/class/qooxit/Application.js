@@ -74,6 +74,29 @@ qx.Class.define("qooxit.Application",
 
       // Start the progressive loader
       this.progressiveLoader();
+
+      // Create an element to highlight objects during mouseover of
+      // the Application tree.
+      this.highlighter = new qx.html.Element("div");
+      this.highlighter.setStyles(
+        {
+          position        : "absolute",
+//          visibility      : "hidden",
+          top             : "-9999px",
+          left            : "-9999px",
+          width           : "20px",
+          height          : "20px",
+          backgroundColor : "transparent",
+          borderStyle     : "solid",
+          borderWidth     : "1px",
+          borderColor     : "red",
+          padding         : "0px",
+          margin          : "0px",
+          zIndex          : "9999"
+        });
+
+      // Add it to the application's root container
+      this.getRoot().getContainerElement().add(this.highlighter);
     },
 
     /**
@@ -167,6 +190,41 @@ qx.Class.define("qooxit.Application",
         subItem.setDroppable(true);
         subItem.addListener("drop", this.handleDrop, this);
       }
+
+      // On mouseover of this item, highlight it in the Live view
+      subItem.addListener(
+        "mouseover",
+        function(e)
+        {
+          var container = o.getContainerElement().getDomElement();
+          var location = qx.bom.element.Location.get(container, "margin");
+          this.highlighter.setStyles(
+            {
+              visibility  : "show",
+              borderColor : classInstance.getIsContainer() ? "green" : "red",
+              top         : (location.top) + "px",
+              left        : (location.left) + "px",
+              width       : (location.right - location.left) + "px",
+              height      : (location.bottom - location.top) + "px"
+            },
+            true);
+        },
+        this);
+
+      // On mouseout of this item, remove the highlight
+      subItem.addListener(
+        "mouseout",
+        function(e)
+        {
+          this.highlighter.setStyles(
+            {
+              top    : "-9999px",
+              left   : "-9999px",
+              width  : "20px",
+              height : "20px"
+            });
+        },
+        this);
 
       // Allow the item to be copied
       subItem.addListener("dragstart",
@@ -362,6 +420,8 @@ qx.Class.define("qooxit.Application",
      */
     addObjectRemote : function(parentName, className, options)
     {
+      return;
+
       this.hRpc = this.rpc.callAsync(
         this.bindTo(
           function(result, ex, id)
