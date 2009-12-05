@@ -96,6 +96,9 @@ qx.Class.define("qooxit.library.Library",
       [
       ],
 
+    __registeredClassesByName :
+    {
+    },
 
     /**
      * Return the list of registered classes.
@@ -106,6 +109,21 @@ qx.Class.define("qooxit.library.Library",
     getClasses : function()
     {
       return qooxit.library.Library.__registeredClasses;
+    },
+
+    /**
+     * Return a class instance given its class name
+     *
+     * @param name
+     *   The fully-qualified name of a class
+     *
+     * @return {qooxit.library.ui.Abstract}
+     *   The class identified by the specified name
+     */
+    getInstanceByName : function(name)
+    {
+      var clazz = qooxit.library.Library.__registeredClassesByName[name];
+      return clazz.getInstance();
     }
   },
 
@@ -124,6 +142,9 @@ qx.Class.define("qooxit.library.Library",
       // ... and give it its initial menu hierarchy
       var instance = avail[i].clazz.getInstance();
       instance.setMenuHierarchy(avail[i].menuHierarchy);
+
+      // Allow fast access to this class by its class name
+      Library.__registeredClassesByName[instance.classname] = avail[i].clazz;
     }
   }
 });
