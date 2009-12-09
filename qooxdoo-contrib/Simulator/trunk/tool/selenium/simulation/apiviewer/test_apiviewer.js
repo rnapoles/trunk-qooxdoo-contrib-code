@@ -86,9 +86,13 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
   this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.MenuButton", "", "Clicking View menu button");
   this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
   */
-
-  this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
-  Packages.java.lang.Thread.sleep(3000);
+ 
+  var active = String(this.__sel.qxObjectExecFunction('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', 'getValue'));
+  // check if the view option is already activated
+  if (active == "false") {
+    this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
+    Packages.java.lang.Thread.sleep(3000);
+  }
   var foundNewMethod = this.getEval(selWin + ".qx.Simulation.getSpanByContent('" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
   
   if (String(foundNewMethod) != "true") {
