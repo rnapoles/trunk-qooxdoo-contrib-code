@@ -1432,20 +1432,12 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
 
   if (inWindow.qx)
   {
-    LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
-    // check for object space spec
-    if (qxLocator.match('^app:')) 
-    {
-      qxAppRoot = inWindow.qx.core.Init.getApplication();
-    } else 
-    {
-      qxAppRoot = this._getClientDocument(inWindow);
-      if (qxAppRoot == null){
-        LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
-        return null;
-      }
-    }
     this._globalQxObject = inWindow.qx;
+    LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
+    
+    var locAndRoot = this._getLocatorAndRoot(qxLocator, inWindow);
+    qxLocator = locAndRoot.qxLocator;
+    var qxAppRoot = locAndRoot.qxAppRoot;
   }
 
   else
@@ -1484,6 +1476,66 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
   }
 
   return qxResultObject;
+};
+
+
+/**
+ * Determines the root (widget) for hierarchical qooxdoo locators. Returns the 
+ * root and the relevant part of the locator (for multi-part locators).
+ * 
+ * @param locator {String} The complete locator string
+ * @param inWindow {Object} The AUT window object
+ * @return {Map} A map with the keys "qxLocator" and "qxAppRoot"
+ */
+PageBot.prototype._getLocatorAndRoot = function(locator, inWindow)
+{
+  var appRoot = null;
+  // check for object space spec
+  if (locator.match('^app:')) {
+    appRoot = inWindow.qx.core.Init.getApplication();
+  } 
+  else {
+    appRoot = this._getClientDocument(inWindow);
+    if (appRoot == null){
+      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+      return null;
+    }
+  }
+  
+  if (locator.match('^inline:')) {
+    if (locator.indexOf("//") < 0) {
+      throw new SeleniumError("Wrong format for inline locator!");
+    }
+    var temp = locator.split(":");
+    var locatorParts = temp[1].split("//");
+    LOG.debug("Inline locator parts: " + locatorParts[0] + " and " + locatorParts[1]);
+    // Get the inline root's DOM element
+    try {
+      var domElem = this.findElement(locatorParts[0]);
+      if (domElem.wrappedJSObject) {
+        domElem = domElem.wrappedJSObject;
+      }
+    } catch(ex) {
+      throw new SeleniumError("Inline locator couldn't find element using" + 
+        locatorParts[0] + ": " + ex);
+    }
+    
+    // Get the inline root widget
+    try {
+      appRoot = this._globalQxObject.ui.core.Widget.getWidgetByElement(domElem);
+    } catch(ex) {
+      throw new SeleniumError("Inline locator couldn't find Inline root: " + ex);
+    }
+    
+    locator = locatorParts[1];
+    LOG.debug("Inline locator processing qxh locator: " + locator);
+  }
+  
+  return {
+    qxLocator : locator,
+    qxAppRoot : appRoot 
+  };
+  
 };
 
 
