@@ -102,28 +102,3 @@ msgstr ""
 #: playground/Application.js:988
 msgid "Open the qooxdoo Manual"
 msgstr ""
-
-#~ msgid "Starting application '"
-#~ msgstr ""
-
-#~ msgid "Successfully started."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Unfortunately, an unrecoverable internal error was caused by your code.\\\n"
-#~ "This may prevent the playground application to run properly.\\\n"
-#~ "Please copy your code, restart the playground and paste your code.\\\n"
-#~ "\\\n"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Unfortunately, an unrecoverable internal error was caused by your code.\\\n"
-#~ "This may prevent the playground application to run properly.\\\n"
-#~ "Please copy your code, restart the playground and paste your code.\\\n"
-#~ "\\\n"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "You changed the code of the current sample.\\\n"
-#~ "Click OK to discard your changes."
-#~ msgstr ""

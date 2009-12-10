@@ -332,24 +332,3 @@ msgstr[1] "%1 of %2 rader"
 #: qx/ui/table/columnmodel/Resize.js:199
 msgid "Reset column widths"
 msgstr "Återställ kolumnbredder"
-
-#~ msgid "Case sensitive"
-#~ msgstr "Versalkänslig"
-
-#~ msgid "Choose a date"
-#~ msgstr "Välj ett datum"
-
-#~ msgid "Description"
-#~ msgstr "Beskrivning"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgid "Search"
-#~ msgstr "Sök"
-
-#~ msgid "Search items in list"
-#~ msgstr "Sök artiklar i en lista"
-
-#~ msgid "Search next occurrence"
-#~ msgstr "Sök nästa förekomst"
