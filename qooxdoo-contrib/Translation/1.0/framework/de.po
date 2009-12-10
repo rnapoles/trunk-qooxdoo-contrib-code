@@ -334,24 +334,3 @@ msgstr[1] "%1 von %2 Zeilen"
 #: qx/ui/table/columnmodel/Resize.js:199
 msgid "Reset column widths"
 msgstr "Spaltenbreite zurücksetzen"
-
-#~ msgid "Case sensitive"
-#~ msgstr "Groß-/Kleinschreibung"
-
-#~ msgid "Choose a date"
-#~ msgstr "Datum auswählen"
-
-#~ msgid "Description"
-#~ msgstr "Beschreibung"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgid "Search"
-#~ msgstr "Suchen"
-
-#~ msgid "Search items in list"
-#~ msgstr "Liste durchsuchen"
-
-#~ msgid "Search next occurrence"
-#~ msgstr "Weiter suchen"

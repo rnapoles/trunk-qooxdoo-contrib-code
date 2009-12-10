@@ -334,24 +334,3 @@ msgstr[1] "%1 de %2 filas"
 #: qx/ui/table/columnmodel/Resize.js:199
 msgid "Reset column widths"
 msgstr "Reestablecer anchos de columnas"
-
-#~ msgid "Case sensitive"
-#~ msgstr "Sensible a mayúsculas y minúsculas"
-
-#~ msgid "Choose a date"
-#~ msgstr "Seleccione una fecha"
-
-#~ msgid "Description"
-#~ msgstr "Descripción"
-
-#~ msgid "ID"
-#~ msgstr "Código"
-
-#~ msgid "Search"
-#~ msgstr "Buscar"
-
-#~ msgid "Search items in list"
-#~ msgstr "Buscar elementos en la lista"
-
-#~ msgid "Search next occurrence"
-#~ msgstr "Buscar siguiente"

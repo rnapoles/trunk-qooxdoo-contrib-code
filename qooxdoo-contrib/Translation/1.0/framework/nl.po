@@ -332,24 +332,3 @@ msgstr[1] "%1 van %2 rijen"
 #: qx/ui/table/columnmodel/Resize.js:199
 msgid "Reset column widths"
 msgstr "Kolombreedte herstellen"
-
-#~ msgid "Case sensitive"
-#~ msgstr "Hoofdlettergevoelig"
-
-#~ msgid "Choose a date"
-#~ msgstr "Datum kiezen"
-
-#~ msgid "Description"
-#~ msgstr "Beschrijving"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgid "Search"
-#~ msgstr "Zoeken"
-
-#~ msgid "Search items in list"
-#~ msgstr "Lijst doorzoeken"
-
-#~ msgid "Search next occurrence"
-#~ msgstr "Verder zoeken"

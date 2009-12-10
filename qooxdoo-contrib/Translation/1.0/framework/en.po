@@ -333,24 +333,3 @@ msgstr[1] ""
 #: qx/ui/table/columnmodel/Resize.js:199
 msgid "Reset column widths"
 msgstr ""
-
-#~ msgid "Case sensitive"
-#~ msgstr ""
-
-#~ msgid "Choose a date"
-#~ msgstr ""
-
-#~ msgid "Description"
-#~ msgstr ""
-
-#~ msgid "ID"
-#~ msgstr ""
-
-#~ msgid "Search"
-#~ msgstr ""
-
-#~ msgid "Search items in list"
-#~ msgstr ""
-
-#~ msgid "Search next occurrence"
-#~ msgstr ""
