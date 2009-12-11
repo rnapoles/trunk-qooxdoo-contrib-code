@@ -1523,6 +1523,12 @@ PageBot.prototype._getLocatorAndRoot = function(locator, inWindow)
     // Get the inline root widget
     try {
       appRoot = this._globalQxObject.ui.core.Widget.getWidgetByElement(domElem);
+      // If the inline root instance is configured to to respect the dom 
+      // element's original dimensions, an additional div is created: 
+      if (!appRoot) {
+        appRoot = this._globalQxObject.ui.core.Widget.getWidgetByElement(domElem.firstChild);
+      }
+      
     } catch(ex) {
       throw new SeleniumError("Inline locator couldn't find Inline root: " + ex);
     }
