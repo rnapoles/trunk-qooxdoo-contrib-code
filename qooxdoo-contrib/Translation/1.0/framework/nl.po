@@ -3,10 +3,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: qooxdoo framework\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: isooik gmail com\n"
 "POT-Creation-Date: 2008-05-19 10:11+0200\n"
-"PO-Revision-Date: 2009-02-04 13:40+0100\n"
-"Last-Translator: Isaak Malik <isooik -AT- Gmail -DOT- com>\n"
+"PO-Revision-Date: 2009-12-11 23:34+0100\n"
+"Last-Translator: Isaak Malik <isooik gmail com>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -142,7 +142,7 @@ msgstr "Shift"
 
 #: qx/locale/Key.js:114
 msgid "key_full_Control"
-msgstr "Bediending"
+msgstr "Control"
 
 #: qx/locale/Key.js:115
 msgid "key_full_Control_Mac"
@@ -150,7 +150,7 @@ msgstr ""
 
 #: qx/locale/Key.js:116
 msgid "key_full_Alt"
-msgstr "Alternative"
+msgstr "Alt"
 
 #: qx/locale/Key.js:117
 msgid "key_full_CapsLock"
@@ -194,7 +194,7 @@ msgstr "End"
 
 #: qx/locale/Key.js:127
 msgid "key_full_Home"
-msgstr "Oorsprong"
+msgstr "Positie 1"
 
 #: qx/locale/Key.js:128
 msgid "key_full_Insert"
@@ -232,26 +232,26 @@ msgstr "Contextmenu"
 #: qx/test/locale/Locale.js:78
 msgid "test One car"
 msgid_plural "test %1 cars"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "test één auto"
+msgstr[1] "test %1 auto's"
 
 #: qx/test/ui/LocaleSwitch.js:85 qx/test/ui/LocaleSwitch.js:115
 #: qx/test/locale/Locale.js:60
 msgid "test one"
-msgstr ""
+msgstr "test één"
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:64
 #: qx/test/locale/Locale.js:68
 msgid "test Hello %1!"
-msgstr ""
+msgstr "test Hallo %1!"
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:68
 msgid "test Jonny"
-msgstr ""
+msgstr "test Jonny"
 
 #: qx/test/ui/LocaleSwitch.js:99
 msgid "test two"
-msgstr ""
+msgstr "test twee"
 
 #: qx/ui/control/ColorPopup.js:138
 msgid "Automatic"
@@ -259,7 +259,7 @@ msgstr "Automatisch"
 
 #: qx/ui/control/ColorPopup.js:146
 msgid "Open ColorSelector"
-msgstr "Open KleurenKiezer"
+msgstr "Open Kleurkiezer"
 
 #: qx/ui/control/ColorPopup.js:171
 msgid "OK"
@@ -275,7 +275,7 @@ msgstr "Kleur Kiezer"
 
 #: qx/ui/control/ColorSelector.js:232
 msgid "Visual"
-msgstr ""
+msgstr "Visueel"
 
 #: qx/ui/control/ColorSelector.js:292
 msgid "Presets"
@@ -287,7 +287,7 @@ msgstr "Details"
 
 #: qx/ui/control/ColorSelector.js:334 qx/ui/control/ColorPopup.js:153
 msgid "Preview (Old/New)"
-msgstr "Preview (Oud/Nieuw)"
+msgstr "Voorafkijk (Oud/Nieuw)"
 
 #: qx/ui/control/ColorSelector.js:352
 msgid "Hex"
