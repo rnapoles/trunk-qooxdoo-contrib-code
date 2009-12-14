@@ -1,5 +1,5 @@
 {
-  "name"    : "3179",
+  "name"    : "custom",
 
   "include" :
   [
@@ -30,9 +30,9 @@
 
   "let" :
   {
-    "APPLICATION"  : "3179",
+    "APPLICATION"  : "custom",
     "QOOXDOO_PATH" : "../../qooxdoo/trunk",
-    "QXTHEME"      : "3179.theme.Theme",
+    "QXTHEME"      : "custom.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
