@@ -3,10 +3,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: qooxdoo framework\n"
-"Report-Msgid-Bugs-To: isooik gmail com\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-05-19 10:11+0200\n"
 "PO-Revision-Date: 2009-12-11 23:34+0100\n"
-"Last-Translator: Isaak Malik <isooik gmail com>\n"
+"Last-Translator: Isaak Malik <isooik AT gmail DOT com>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -232,26 +232,26 @@ msgstr "Contextmenu"
 #: qx/test/locale/Locale.js:78
 msgid "test One car"
 msgid_plural "test %1 cars"
-msgstr[0] "test één auto"
-msgstr[1] "test %1 auto's"
+msgstr[0] ""
+msgstr[1] ""
 
 #: qx/test/ui/LocaleSwitch.js:85 qx/test/ui/LocaleSwitch.js:115
 #: qx/test/locale/Locale.js:60
 msgid "test one"
-msgstr "test één"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:64
 #: qx/test/locale/Locale.js:68
 msgid "test Hello %1!"
-msgstr "test Hallo %1!"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:68
 msgid "test Jonny"
-msgstr "test Jonny"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:99
 msgid "test two"
-msgstr "test twee"
+msgstr ""
 
 #: qx/ui/control/ColorPopup.js:138
 msgid "Automatic"
