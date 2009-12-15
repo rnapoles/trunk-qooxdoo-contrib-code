@@ -53,6 +53,36 @@ simulation.Simulation.prototype.runTest = function()
   this.checkView("_activateMoveHandle", "Protected");
   this.checkView("__computeMoveCoordinates", "Private");
   
+  var constructorDetail = false;
+  try {
+    this.__sel.click('//img[@onclick="apiviewer.ObjectRegistry.getObjectFromHashCode(\'ce\').toggleShowItemDetails(\'construct\')"]');
+    constructorDetail = true;
+  } catch(ex) {
+    this.log("Error while opening constructor details: " + ex, "error");
+  }
+  
+  var clickedLink = false;
+  if (constructorDetail) {
+    try {
+      this.__sel.click("link=qx.ui.core.Widget#construct");
+      clickedLink = true;
+    } catch(ex) {
+      this.log("Error while clicking internal link: " + ex, "error"); 
+    }
+  }
+  
+  if (clickedLink) {
+    // Check if the HTML embed's content has changed.
+    var classViewerHtmlScript = selWin + '.document.getElementById("ClassViewer").innerHTML';
+    var classViewerHtml = this.getEval(classViewerHtmlScript);
+    if (!(classViewerHtml.indexOf("qx.ui.core.Widget") > 0)) {
+      this.log("Unexpected class viewer HTML content", "error");
+    }
+    else {
+      this.log("Link opened successfully", "info");
+    }
+  }
+  
 };
 
 simulation.Simulation.prototype.checkSearch = function()
