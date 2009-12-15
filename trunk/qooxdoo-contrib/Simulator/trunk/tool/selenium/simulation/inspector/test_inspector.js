@@ -102,6 +102,12 @@ simulation.Simulation.prototype.checkWindows = function()
 
 simulation.Simulation.prototype.runTest = function()
 {
+  this.locators = {
+    inspectorToolBar : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar",
+    inspectedAppRoot : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application",
+    feedReaderAddFeed : "/qx.ui.container.Composite/[@classname=\"feedreader.view.ToolBar\"]/qx.ui.toolbar.Part/qx.ui.toolbar.Button"
+  };
+  
   var inspectedAppPath = this.getConfigSetting("inspectedApplication");
   if (this.getConfigSetting("debug")) {
     print("Loading application " + inspectedAppPath + " in Inspector");
@@ -123,6 +129,14 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   this.checkWindows();
+  
+  var toolbarEnabled = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar, "getEnabled"));
+  if (toolbarEnabled == "false") {
+    this.log("Inspector toolbar is disabled!", "error");
+  }
+  else {
+    this.log("Inspector toolbar is enabled.", "info");
+  }
   
 };
 
