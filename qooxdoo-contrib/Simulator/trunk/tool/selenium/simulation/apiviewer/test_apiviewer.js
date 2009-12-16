@@ -55,7 +55,7 @@ simulation.Simulation.prototype.runTest = function()
   
   var constructorDetail = false;
   try {
-    this.__sel.click('//img[@onclick="apiviewer.ObjectRegistry.getObjectFromHashCode(\'ce\').toggleShowItemDetails(\'construct\')"]');
+    this.__sel.click('//img[contains(@onclick, "toggleShowItemDetails(\'construct\')")]');
     constructorDetail = true;
   } catch(ex) {
     this.log("Error while opening constructor details: " + ex, "error");
