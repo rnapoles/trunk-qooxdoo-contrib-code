@@ -61,18 +61,14 @@ qx.Class.define("qooxit.library.ui.Abstract",
      * class. Any default values for the element can/should be set within this
      * function.
      *
-     * @param parent {qx.ui.core.Widget}
-     *   The parent container to which this new widget is to be added. It is
-     *   the responsibility of this method to add the new widget to the
-     *   parent.
-     *
      * @param options {Map?}
      *   If provided, this is the options to be applied, without building
      *   a query window to ask the user for options.
      *
-     * @return {Void}
+     * @return {qx.ui.core.Widget}
+     *   The widget created by this factory
      */
-    factory : function(parent, options)
+    factory : function(options)
     {
       throw new Error("factory() is abstract");
     },
