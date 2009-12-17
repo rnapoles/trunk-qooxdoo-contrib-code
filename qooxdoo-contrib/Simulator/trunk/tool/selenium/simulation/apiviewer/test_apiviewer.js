@@ -131,6 +131,7 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
   else {
     this.log(buttonLabel + " checked: OK", "info");
   }
+  this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
 };
 
 // - Main --------------------------------------------------------------------
