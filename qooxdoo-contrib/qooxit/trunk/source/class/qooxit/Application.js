@@ -917,27 +917,32 @@ qx.Class.define("qooxit.Application",
                                 _this);
           menu.add(cbSamples);
 
-          // Add a button for displaying server-generated XML
-          var cbShowXml = new qx.ui.menu.CheckBox("DEBUG: Server XML");
-          cbShowXml.setValue(_this.bShowXml);
-          cbShowXml.addListener("changeValue",
-                                function(e)
-                                {
-                                  this.bShowXml = e.getData();
-                                },
-                                _this);
-          menu.add(cbShowXml);
+          // If we're not allowing RPC there'll be no XML nor JSON, so
+          // don't even ask whether they want those displayed.
+          if (qooxit.Application.bAllowRpc)
+          {
+            // Add a button for displaying server-generated XML
+            var cbShowXml = new qx.ui.menu.CheckBox("DEBUG: Server XML");
+            cbShowXml.setValue(_this.bShowXml);
+            cbShowXml.addListener("changeValue",
+                                  function(e)
+                                  {
+                                    this.bShowXml = e.getData();
+                                  },
+                                  _this);
+            menu.add(cbShowXml);
 
-          // Add a button for displaying server-generated JSON
-          var cbShowJson = new qx.ui.menu.CheckBox("DEBUG: Server JSON");
-          cbShowJson.setValue(_this.bShowJson);
-          cbShowJson.addListener("changeValue",
-                                function(e)
-                                {
-                                  this.bShowJson = e.getData();
-                                },
-                                _this);
-          menu.add(cbShowJson);
+            // Add a button for displaying server-generated JSON
+            var cbShowJson = new qx.ui.menu.CheckBox("DEBUG: Server JSON");
+            cbShowJson.setValue(_this.bShowJson);
+            cbShowJson.addListener("changeValue",
+                                   function(e)
+                                   {
+                                     this.bShowJson = e.getData();
+                                   },
+                                   _this);
+            menu.add(cbShowJson);
+          }
         }));
 
       // Create a splitpane as the main workspace
