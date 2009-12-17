@@ -25,6 +25,12 @@ qx.Class.define("qooxit.Application",
 {
   extend  : qx.application.Standalone,
 
+  statics :
+  {
+    /** Whether to allow any RPC calls. Setting false allows local debugging */
+    bAllowRpc : false
+  },
+
   members :
   {
     /** Whether we are displaying widgets with sample data */
@@ -100,19 +106,24 @@ qx.Class.define("qooxit.Application",
       // Add it to the application's root container
       this.getRoot().getContainerElement().add(this.highlighter);
 
-      // Create a recurrent keep-alive timer. Send an otherwise superfluous
-      // request to the server periodically solely to keep the session alive.
-      var timer = qx.util.TimerManager.getInstance();
-      timer.start(
-        function(userData, timerId)
-        {
-          // Empty callback function; method="keepAlive"; no parameters
-          this.rpc.callAsync(qx.lang.Function.empty, "keepAlive");
-        },
-        30000,
-        this,
-        null,
-        30000);
+      // If RPC isn't disabled...
+      if (qooxit.Application.bAllowRpc)
+      {
+        // ... then create a recurrent keep-alive timer. Send an otherwise
+        // superfluous request to the server periodically solely to keep the
+        // session alive.
+        var timer = qx.util.TimerManager.getInstance();
+        timer.start(
+          function(userData, timerId)
+          {
+            // Empty callback function; method="keepAlive"; no parameters
+            this.rpc.callAsync(qx.lang.Function.empty, "keepAlive");
+          },
+          30000,
+          this,
+          null,
+          30000);
+      }
     },
 
     /**
@@ -452,6 +463,13 @@ qx.Class.define("qooxit.Application",
      */
     addObjectRemote : function(parentName, className, label, options)
     {
+      // If we've disabled RPC...
+      if (! qooxit.Application.bAllowRpc)
+      {
+        // ... then there's nothing to do.
+        return;
+      }
+
       this.rpc.callAsync(
         this.bindTo(
           function(result, ex, id)
@@ -902,12 +920,16 @@ qx.Class.define("qooxit.Application",
                       alert("Beginning a new project. " +
                             "(This needs user confirmation!)");
 
-                      // Begin a new project
-                      this.rpc.callAsync(function(e)
-                                         {
-                                           window.location.reload();
-                                         },
-                                         "newProject");
+                      // If RPC isn't disabled...
+                      if (qooxit.Application.bAllowRpc)
+                      {
+                        // Begin a new project
+                        this.rpc.callAsync(function(e)
+                                           {
+                                             window.location.reload();
+                                           },
+                                           "newProject");
+                      }
                     });
           addButton(menu,
                     "Open",
