@@ -1912,9 +1912,9 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
   for (var i=0; i<childs.length; i++)
   {
     curr = childs[i];
-    LOG.debug(curr.classname + " " + qxclass);
+    LOG.debug("Qxh Locator: Comparing found child " + curr.classname + " to wanted class " + qxclass);
     try {
-      if (curr instanceof myClass) {
+      if (curr instanceof myClass || curr.classname === qxclass) {
         return curr;
       }
     } catch(e) {
