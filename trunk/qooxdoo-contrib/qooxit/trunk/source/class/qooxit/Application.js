@@ -34,7 +34,7 @@ qx.Class.define("qooxit.Application",
     bShowXml    : false,
 
     /** Whether to display the server-generated JSON */
-    bShowJson   : true,
+    bShowJson   : false,
 
     /** Our reusable JSON-RPC object */
     rpc         : null,
@@ -68,7 +68,7 @@ qx.Class.define("qooxit.Application",
       // Instantiate a new RPC object
       this.rpc = new qx.io.remote.Rpc();
       this.rpc.setTimeout(10000);
-      this.rpc.setUrl("/~derrell/web/index.jsp");
+      this.rpc.setUrl("/~dlipman/web/index.jsp");
       this.rpc.setServiceName("qooxit.application");
 
       // Only allow a single concurrent request, so we are sure that saving a
@@ -361,7 +361,7 @@ qx.Class.define("qooxit.Application",
       }
 
       // Retrieve the variable name
-      var name = options.__name__;
+      var name = options["_name_"];
 
       // Save this name in the new object
       subItem.setUserData("name", name);
@@ -370,7 +370,7 @@ qx.Class.define("qooxit.Application",
       subItem.setUserData("classInstance", classInstance);
 
       // Temporarily delete the variable name from the options
-      delete options.__name__;
+      delete options["_name_"];
 
       // Assign a call to the factory method to the specified named variable
       text +=
@@ -426,7 +426,7 @@ qx.Class.define("qooxit.Application",
       applicationSource.editor.insertPoint = endPoint;
 
       // Put the variable name back in the options in preparation for saving
-      options.__name__ = name;
+      options["_name_"] = name;
 
       // Give 'em the new object
       return subItem;
@@ -456,7 +456,6 @@ qx.Class.define("qooxit.Application",
         this.bindTo(
           function(result, ex, id)
           {
-            this.hRpc = null;
             if (ex == null)
             {
 //              alert(result.debug);
@@ -493,6 +492,19 @@ qx.Class.define("qooxit.Application",
     },
 
 
+    /**
+     * Add an entire tree of objects. This method is called upon start-up, to
+     * re-load the previous application in development.
+     *
+     * @param widgetDescriptionList {Map}
+     *   An array of widget descriptions. Each widget description contains the
+     *   widget's class name, the label to be applied to the new node in the
+     *   application tree, and an array of child descriptions. This function
+     *   is called recursively for child lists.
+     *
+     * @param folder {qx.ui.tree.TreeFolder}
+     *   The parent folder to which the new widget should be added
+     */
     addObjectTree : function(widgetDescriptionList, folder)
     {
       for (var i = 0; i < widgetDescriptionList.length; i++)
@@ -533,8 +545,6 @@ qx.Class.define("qooxit.Application",
      *
      * @param clazz {qooxit.library.ui.Abstract}
      *   The class being added to the menu.
-     *
-     * @return {Void}
      */
     addClass : function(root, clazz)
     {
@@ -744,12 +754,21 @@ qx.Class.define("qooxit.Application",
       };
 
       // Create a helper function to add new buttons to the menu
-      var addButton = function(dest, caption, icon, submenu)
-      {
-        var button = new qx.ui.menu.Button(caption, icon, null, submenu);
-        dest.add(button);
-        return button;
-      }
+      var addButton =
+        this.bindTo(
+          function(dest, caption, icon, onExecute, submenu)
+          {
+            var button = new qx.ui.menu.Button(caption, icon, null, submenu);
+            dest.add(button);
+
+            // If there's a function provided to handle execute events...
+            if (onExecute)
+            {
+              // ... then add a listener for it.
+              button.addListener("execute", onExecute, this);
+            }
+            return button;
+          });
 
       // Instantiate a data model and populate it.
       var dataModel = new qx.ui.progressive.model.Default();
@@ -875,12 +894,49 @@ qx.Class.define("qooxit.Application",
           context.menuBar.add(button);
 
           // Add buttons to the File menu
-          addButton(menu, "New", "icon/16/actions/document-new.png");
-          addButton(menu, "Open", "icon/16/actions/document-open.png");
-          addButton(menu, "Close");
-          addButton(menu, "Save", "icon/16/actions/document-save.png");
-          addButton(menu, "Save as...","icon/16/actions/document-save-as.png");
-          addButton(menu, "Export Project");
+          addButton(menu,
+                    "New",
+                    "icon/16/actions/document-new.png",
+                    function(e)
+                    {
+                      alert("Beginning a new project. " +
+                            "(This needs user confirmation!)");
+
+                      // Begin a new project
+                      this.rpc.callAsync(function(e)
+                                         {
+                                           window.location.reload();
+                                         },
+                                         "newProject");
+                    });
+          addButton(menu,
+                    "Open",
+                    "icon/16/actions/document-open.png",
+                    function(e)
+                    {
+                      alert("Not yet implemented");
+                    });
+          addButton(menu,
+                    "Close",
+                    null,
+                    function(e)
+                    {
+                      alert("Not yet implemented");
+                    });
+          addButton(menu,
+                    "Save as...",
+                    "icon/16/actions/document-save-as.png",
+                    function(e)
+                    {
+                      alert("Not yet implemented");
+                    });
+          addButton(menu,
+                    "Export Project",
+                    null,
+                    function(e)
+                    {
+                      alert("Not yet implemented");
+                    });
         }));
 
       // Add the Development menu
@@ -1319,7 +1375,7 @@ qx.Class.define("qooxit.Application",
 
           // There are no options other than the mandatory name
           context.applicationRoot.setUserData("options",
-                                              { __name__ : "_root_" } );
+                                              { "_name_" : "_root_" } );
 
           // pageLive (and thus applicationRoot) has a VBox layout
           var classInstance = qooxit.library.ui.layout.VBox.getInstance();
@@ -1504,7 +1560,7 @@ qx.Class.define("qooxit.Application",
           function(userData, timerId)
           {
             // Generate a name for this object
-            options.__name__ =
+            options["_name_"] =
               "o" + qooxit.library.ui.Abstract.objectNumber++;
 
             // There's no options spec, so just use the default options

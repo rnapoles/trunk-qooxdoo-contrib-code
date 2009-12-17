@@ -240,7 +240,7 @@ qx.Class.define("qooxit.library.ui.Abstract",
 
       var o = new qx.ui.form.TextField(defaultName);
       o.setWidth(128);
-      form.add(o, "Name", null, "__name__");
+      form.add(o, "Name", null, "_name_");
 
       // For each item in the specification...
       for (var item in spec)
