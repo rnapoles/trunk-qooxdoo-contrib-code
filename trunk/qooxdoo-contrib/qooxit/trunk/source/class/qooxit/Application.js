@@ -146,9 +146,6 @@ qx.Class.define("qooxit.Application",
      * @param sourceTree {qx.ui.tree.Tree}
      *   The tree from which the item being added was dragged
      *
-     * @param widgetFactorySource {Map}
-     *   Information about the WidgetFactory.js source editor
-     *
      * @param bNoRemote {Boolean}
      *  If true, do not add the object remotely. This indicates that we
      *  are adding objects as the result of having received them from the
@@ -162,7 +159,6 @@ qx.Class.define("qooxit.Application",
                          label,
                          folder,
                          sourceTree,
-                         widgetFactorySource,
                          applicationSource,
                          bNoRemote)
     {
@@ -281,72 +277,6 @@ qx.Class.define("qooxit.Application",
         });
 
       //
-      // See if we need to generate the WidgetFactory code entry
-      //
-      // NOTE: Using a property of the factory method is (a) somewhat of a
-      // kludge, and (b) will have to be changed anyway when we need
-      // persistence of this knowledge.
-      //
-      if (! classInstance.factory.className)
-      {
-        //
-        // Generate the WidgetFactory code
-        //
-
-        // Create the class name from the class instance. We'll strip off
-        // everything that's not generic (the first few components) and then
-        // create camelcase with a leading lower-case letter.
-        var classNameParts = classInstance.classname.split(".");
-        classNameParts.shift();   // remove qooxit
-        classNameParts.shift();   // remove library
-        classNameParts[0] = qx.lang.String.firstLow(classNameParts[0]);
-        for (var i = 1; i < classNameParts.length; i++)
-        {
-          classNameParts[i] = qx.lang.String.firstUp(classNameParts[i]);
-        }
-        var className = classNameParts.join("");
-
-        // Determine the starting line number in the widget factory
-        var startLine = widgetFactorySource.editor.lineNumber(
-          widgetFactorySource.editor.insertPoint);
-
-        // If there has been anything added previously then add a comma
-        var comma = (startLine > 4 ? ",\n\n\n" : "\n");
-
-        // Write the Application code
-        var text =
-          comma +
-          className + " : " +
-          classInstance.factory.toString();
-
-        // Determine how many lines long the text is.
-        var lines = text.split("\n").length;
-
-        // Insert the new text
-        widgetFactorySource.editor.insertIntoLine(
-          widgetFactorySource.editor.insertPoint,
-          "end",
-          text);
-
-        // Reindent the new text using internal indentRegion()
-        var startPoint = widgetFactorySource.editor.insertPoint;
-        var endPoint = widgetFactorySource.editor.nthLine(startLine + lines);
-        widgetFactorySource.editor.editor.indentRegion(
-          widgetFactorySource.editor.nthLine(3), endPoint);
-
-        // Remove the selection indication
-        widgetFactorySource.editor.selectLines(endPoint, 0);
-
-        // The new insert point is the previous end point, but CodeMirror
-        // requires a point on the previous line for the new insert point
-        endPoint = widgetFactorySource.editor.nthLine(startLine + lines - 1);
-        widgetFactorySource.editor.insertPoint = endPoint;
-
-        // Mark this factory as having been written to the WidgetFactory
-        classInstance.factory.className = className;
-      }
-
-      //
       // Generate the Application code.
       //
 
@@ -387,7 +317,7 @@ qx.Class.define("qooxit.Application",
       text +=
         "\n\n" +
         "var " + name + " = " +
-        "custom.WidgetFactory." + classInstance.factory.className + "(" +
+        "(" + classInstance.factory.toString() + ")(" +
         (qx.lang.Object.isEmpty(options)
          ? ""
          : "\n" + qx.util.Json.stringify(options, true)) +
@@ -541,7 +471,6 @@ qx.Class.define("qooxit.Application",
                                        widget.label,
                                        folder,
                                        null,
-                                       this.context.widgetFactorySource,
                                        this.context.applicationSource,
                                        true);
 
@@ -1077,64 +1006,6 @@ qx.Class.define("qooxit.Application",
           context.tabView.add(context.pageLive);
         }));
 
-      // Create the WidgetFactory page
-      dataModel.addElement(addFunc(
-        function(userData)
-        {
-          // Get our context
-          var context = userData.context;
-
-          // Create the page
-          context.pageWidgetFactory =
-            new qx.ui.tabview.Page("WidgetFactory.js");
-
-          // Add it to the tab view
-          context.tabView.add(context.pageWidgetFactory);
-
-          // Cause the WidgetFactory page to be rendered so the editor
-          // has a div to work with
-          context.tabView.setSelection([ context.pageWidgetFactory ]);
-
-          // We need a longer timeout before creating the code editor
-          progressive.setInterElementTimeout(1000);
-        }));
-
-      // Create the code editor in the WidgetFactory page
-      dataModel.addElement(addFunc(
-        function(userData)
-        {
-          // Get our context
-          var context = userData.context;
-
-          // Create the initialization text
-          var initText =
-            'qx.Class.define("custom.WidgetFactory",\n' +
-            '{\n' +
-            '  statics :\n' +
-            '  {\n' +
-            '  }\n' +
-            '});\n';
-
-          context.widgetFactorySource =
-            {
-              page   : context.pageWidgetFactory,
-              editor : null,
-              text   : initText,
-              appear : function(editor)
-              {
-                // Find the initial insertion point: 3 lines before the end
-                editor.insertPoint =
-                  editor.prevLine(
-                    editor.prevLine(
-                      editor.prevLine(
-                        editor.lastLine())));
-              }
-            };
-
-          // Create the source editor
-          this.createSourceEditor(context.widgetFactorySource);
-        }));
-
       // Create the Application page
       dataModel.addElement(addFunc(
         function(userData)
@@ -1481,7 +1352,6 @@ qx.Class.define("qooxit.Application",
                        related.getUserData("label"),
                        folder,
                        sourceTree,
-                       this.context.widgetFactorySource,
                        this.context.applicationSource);
 
 
@@ -1556,7 +1426,6 @@ qx.Class.define("qooxit.Application",
                                label,
                                folder,
                                sourceTree,
-                               this.context.widgetFactorySource,
                                this.context.applicationSource);
 
                 // Revert back to the default cursor. The "wait" cursor
@@ -1591,7 +1460,6 @@ qx.Class.define("qooxit.Application",
                            label,
                            folder,
                            sourceTree,
-                           this.context.widgetFactorySource,
                            this.context.applicationSource);
 
             // Revert back to the default cursor.
