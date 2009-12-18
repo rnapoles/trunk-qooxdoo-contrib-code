@@ -10,9 +10,9 @@
 		<string>htc</string>
 	</array>
 	<key>foldingStartMarker</key>
-	<string>(^.*\bfunction\s*(\w+\s*)?\([^\)]*\)(\s*\{[^\}]*)?\s*$)|(^\s*\/\*)|(^\s*\bstatics\b\s*:)|(^\s*\bmembers\b\s*:)|(^\s*\bsettings\b\s*:)|(^\s*\bevents\b\s*:)|(^\s*\bproperties\b\s*:)</string>
+	<string>(^.*\bfunction\s*(\w+\s*)?\([^\)]*\)(\s*\{[^\}]*)?\s*$)|(^\s*\/\*)|(^\s*\bstatics\b\s*:)|(^\s*\bmembers\b\s*:)|(^\s*\bsettings\b\s*:)|(^\s*\bevents\b\s*:)|(^\s*\bproperties\b\s*:)|({)</string>
 	<key>foldingStopMarker</key>
-	<string>(\*\/)|(^\s*\})</string>
+	<string>(\*\/)|(^\s*\})|(})</string>
 	<key>keyEquivalent</key>
 	<string>^~J</string>
 	<key>name</key>
