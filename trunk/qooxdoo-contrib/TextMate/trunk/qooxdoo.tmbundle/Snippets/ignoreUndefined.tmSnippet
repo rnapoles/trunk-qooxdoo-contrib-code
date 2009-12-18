@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>@lint ignoreUndefined(${1:variable})</string>
+	<key>name</key>
+	<string>ignoreUndefined</string>
+	<key>scope</key>
+	<string>comment.block</string>
+	<key>tabTrigger</key>
+	<string>ignore</string>
+	<key>uuid</key>
+	<string>55D3D2D1-FC63-4C7B-9EF9-D274B991D5BA</string>
+</dict>
+</plist>

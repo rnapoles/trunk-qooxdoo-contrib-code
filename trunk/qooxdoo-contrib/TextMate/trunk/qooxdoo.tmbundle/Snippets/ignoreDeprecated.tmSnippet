@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>@lint ignoreDeprecated(${1:variable})</string>
+	<key>name</key>
+	<string>ignoreDeprecated</string>
+	<key>scope</key>
+	<string>comment.block</string>
+	<key>tabTrigger</key>
+	<string>ignore</string>
+	<key>uuid</key>
+	<string>61E7049B-4B8B-4E4D-8FFA-EC0143176342</string>
+</dict>
+</plist>

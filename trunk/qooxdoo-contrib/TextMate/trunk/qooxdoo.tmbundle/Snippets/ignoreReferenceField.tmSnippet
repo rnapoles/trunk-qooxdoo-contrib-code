@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>@lint ignoreReferenceField(${1:variable})</string>
+	<key>name</key>
+	<string>ignoreReferenceField</string>
+	<key>scope</key>
+	<string>comment.block</string>
+	<key>tabTrigger</key>
+	<string>ignore</string>
+	<key>uuid</key>
+	<string>1D7E5D9C-792E-400C-83C2-3AF67CBE5D38</string>
+</dict>
+</plist>
