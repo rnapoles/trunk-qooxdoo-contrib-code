@@ -12,7 +12,12 @@ For more information see
 
 Release Notes
 -------------
-?   - Compatibility with JSON-2.07 module  (patch by Niko Tyni) 
+?   - added new Qooxdoo::SessionLite module to use as a replacement for
+      CGI::Session. For file based sessions it has the advantage that it is
+      resistante against race conditions of multiple instances of the script
+      modifying the stored data.
+
+    - Compatibility with JSON-2.07 module  (patch by Niko Tyni) 
       all new Testsuite (patch by Niko Tyni)
 
     - Do not exit from JSONRPC after sending an Error. Just return
