@@ -973,7 +973,7 @@ The cgi/fcgi script
  #$Qooxdoo::JSONRPC::method_prefix = 'method_';
 
  my $cgi = new CGI;
- my $session = new CGI::Session;
+ my $session = new CGI::Session(undef,$cgi);
  Qooxdoo::JSONRPC::handle_request ($cgi, $session);
  # or preferably
  # Qooxdoo::JSONRPC::handle_request ($cgi, $session, [ "my.app" ]);
@@ -981,7 +981,7 @@ The cgi/fcgi script
  # or if you load CGI::Fast you can easily create a
  # fastcgi aware version
  #while (my $cgi = new CGI::Fast) {
- #   my $session = new CGI::Session;
+ #   my $session = new CGI::Session(undef,$cgi);
  #   Qooxdoo::JSONRPC::handle_request ($cgi, $session, [ "my.app" ]);
  #}
 
