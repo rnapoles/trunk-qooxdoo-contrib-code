@@ -53,13 +53,13 @@ SYNOPSIS
      #$Qooxdoo::JSONRPC::method_prefix = 'method_';
 
      my $cgi = new CGI;
-     my $session = new CGI::Session;
+     my $session = new CGI::Session(undef,$cgi);
      Qooxdoo::JSONRPC::handle_request ($cgi, $session);
 
      # or if you load CGI::Fast you can easily create a
      # fastcgi aware version
      #while (my $cgi = new CGI::Fast) {
-     #   my $session = new CGI::Session;
+     #   my $session = new CGI::Session(undef,$cgi);
      #   Qooxdoo::JSONRPC::handle_request ($cgi, $session);
      #}
 
