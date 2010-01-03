@@ -1,9 +1,9 @@
 {
   "info" : 
   {
-    "name" : "cometd",
+    "name" : "Cometd",
 
-    "summary" : "cometd Contribution",
+    "summary" : "Cometd Contribution",
     "description" : "A qooxdoo wrapper for the cometd server-push library.",
     
     "homepage" : "http://contrib.qooxdoo.org/project/cometd",
@@ -18,7 +18,7 @@
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["0.9-pre"]
+    "qooxdoo-versions": ["1.0","trunk"]
   },
   
   "provides" : 
