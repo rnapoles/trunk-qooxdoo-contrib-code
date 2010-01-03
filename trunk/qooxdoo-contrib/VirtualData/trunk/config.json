@@ -1,0 +1,39 @@
+{
+  "name"    : "VirtualData",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "clean",
+    "distclean",
+    "fix",
+    "info,
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "virtualdata",
+    "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.0.1-pre",
+    //"QXTHEME"      : "virtualdata.theme.modern.Theme",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.test.*", "virtualdata.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",
+    "ROOT"         : "."
+  }
+}
