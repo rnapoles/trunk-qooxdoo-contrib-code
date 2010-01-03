@@ -318,7 +318,7 @@ qx.Class.define("cometd.chat.Application",
       {
         if ( data.successful ) 
         {
-          this._subscription = this._cometd.subscribe("/chat/demo", "_onChatMessage", this);
+          this._subscription = this._cometd.subscribe("/chat/demo", this._onChatMessage, this);
           this._cometd.publish("/chat/demo", {
                 user : this._username,
                 join : true,
