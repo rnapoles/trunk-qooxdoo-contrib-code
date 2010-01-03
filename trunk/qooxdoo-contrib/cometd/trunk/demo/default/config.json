@@ -30,7 +30,7 @@
   "let" :
   {
     "APPLICATION"  : "cometd.chat",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/0.9-pre",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
