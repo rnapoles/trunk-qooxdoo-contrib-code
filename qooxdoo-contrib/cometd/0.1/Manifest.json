@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "Cometd",
+
+    "summary" : "Cometd Contribution",
+    "description" : "A qooxdoo wrapper for the cometd server-push library.",
+    
+    "homepage" : "http://contrib.qooxdoo.org/project/cometd",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "info@bibliograph.org"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.0","trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "cometd",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}
+
