@@ -1,23 +1,29 @@
 /*******************************************************************************
- * 
- * Copyright:
- * 
- * License:
- * 
- * Authors:
- * 
+   Copyright:
+     The authors of this code
+     
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Christian Boulanger (cboulanger)
+     * 
  ******************************************************************************/
 
 /******************************************************************************* 
 #asset(cometd/*)
 #require(cometd/*)
 #require(qx.event.message.*)
+#ignore(org.cometd.*)
 ******************************************************************************/
 
 /**
  * This is the main application class of your custom application "cometd"
  */
-qx.Class.define("cometd.chat.Application", {
+qx.Class.define("cometd.chat.Application", 
+{
 	extend : qx.application.Standalone,
 
 	/*
@@ -238,7 +244,12 @@ qx.Class.define("cometd.chat.Application", {
       {
         var list = "";
         for (var i in message.data)
-          list += message.data[i] + "<br/>";
+        {
+          if ( typeof message.data[i] == "string" )
+          {
+            list += message.data[i] + "<br/>";
+          }
+        }
         this._membersHtml.setHtml(list);
       } 
       else 
@@ -307,7 +318,7 @@ qx.Class.define("cometd.chat.Application", {
       {
         if ( data.successful ) 
         {
-          this._subscription = this._cometd.subscribe("/chat/demo", this, "_onChatMessage");
+          this._subscription = this._cometd.subscribe("/chat/demo", "_onChatMessage", this);
           this._cometd.publish("/chat/demo", {
                 user : this._username,
                 join : true,
