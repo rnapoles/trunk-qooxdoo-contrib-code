@@ -51,6 +51,41 @@ qx.Class.define("dialog.demo.Application",
         qx.log.appender.Console;
       }
     
+      
+      /*
+       * create shortcut commands
+       */
+      dialog.alert = function( message, callback )
+      {
+        (new dialog.Alert({
+          "message" : message,
+          "callback" : callback || null
+        })).show();      
+      }      
+      dialog.confirm = function( message, callback )
+      {
+        (new dialog.Confirm({
+          "message" : message,
+          "callback" : callback || null
+        })).show();      
+      }      
+      dialog.prompt = function( message, callback )
+      {
+        (new dialog.Prompt({
+          "message" : message,
+          "callback" : callback || null
+        })).show();      
+      }
+      dialog.select = function( message, options, callback )
+      {
+        (new dialog.Select({
+          "message" : message,
+          "allowCancel" : true,
+          "options" : options,
+          "callback" : callback
+        })).show();      
+      }      
+      
       /*
        * button data
        */
