@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2009 ACME Corporation -or- Your Name, http://www.example.com
+     The authors of this code
      
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -16,14 +16,16 @@
 /* ************************************************************************
 
 #asset(cometd/*)
+#ignore(org.cometd.*)
 
 ************************************************************************ */
 
 /**
- * This is the main class of contribution "cometd-qx"
+ * This is is a thin wrapper to the cometd client from the dojo toolkit 
+ * (see http://cometdproject.dojotoolkit.org).
+ * Note that the method signatures of some of the functions differ to make 
+ * the API closer to qooxdoo conventions.
  * 
- * TODO: Replace the sample code of a custom button with the actual code of 
- * your contribution.
  */
 qx.Class.define("cometd.Client",
 {
@@ -243,14 +245,16 @@ qx.Class.define("cometd.Client",
     
     /**
      * Adds a listener for bayeux messages, performing the given callback in the given scope
-     * when a message for the given channel arrives.
+     * when a message for the given channel arrives. Note this method has a different
+     * signature to the cometd.addListener() method to be closer to qooxdoo usage
+     * 
      * @param channel the channel the listener is interested to
-     * @param scope the scope of the callback, may be omitted
      * @param callback the callback to call when a message is sent to the channel
-     * @returns the subscription handle to be passed to {@link #removeListener(object)}
+     * @param scope the scope of the callback, may be omitted
+     * @return the subscription handle to be passed to {@link #removeListener(object)}
      * @see #removeListener(object)
      */
-    addListener : function(channel, scope, callback)
+    addListener : function(channel, callback, scope)
     {
         return this.cometd.addListener(channel, scope, callback);
     },
@@ -275,14 +279,16 @@ qx.Class.define("cometd.Client",
     
     /**
      * Subscribes to the given channel, performing the given callback in the given scope
-     * when a message for the channel arrives.
+     * when a message for the channel arrives.Note this method has a different
+     * signature to the cometd.subscribe() method to be closer to qooxdoo usage
+     * 
      * @param channel the channel to subscribe to
-     * @param scope the scope of the callback, may be omitted
      * @param callback the callback to call when a message is sent to the channel
-     * @param subscribeProps an object to be merged with the subscribe message
+     * @param scope the scope of the callback, may be omitted
+     * @param subscribeProps an object to be merged with the subscribe message, may be omitted
      * @return the subscription handle to be passed to {@link #unsubscribe(object)}
      */
-    subscribe : function(channel, scope, callback, subscribeProps)
+    subscribe : function(channel, callback, scope, subscribeProps)
     {
        return this.cometd.subscribe(channel, scope, callback, subscribeProps);
     },
