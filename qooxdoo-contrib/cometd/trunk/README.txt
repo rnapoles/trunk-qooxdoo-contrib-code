@@ -23,12 +23,11 @@ has to be generated before it can be used.
 Project State
 -------------
 09/10/04 First proof-of-concept release
+10/01/03 0.1 release
 
 Todo
 ----
 - The contribution still depends on the dojo base library, this needs to be ported
   to work with the qooxdoo transport API.
 - At the moment, the required libraries need to be manually imported in index.html.
-  Need to find a way to programmatically load them at load time. 
-
- 
+  Need to find a way to programmatically load them at load time.  
