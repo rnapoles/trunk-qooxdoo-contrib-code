@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- 
+
+	QxTransformer
+	Converts QXML to Javascript
+	
+	License: LGPL
+	Autors: Siarhei Barysiuk <s.barysiuk@gmail.com>	
+			Christian Boulanger <info@bibliograph.org>
+			
+	define transformer's config parameters
+
+ -->
+
+<transformer-config>
+
+		<templates-mapping-path>templates-mapping.xml</templates-mapping-path>
+		<tags-path>tags.xml</tags-path>
+
+</transformer-config>
+

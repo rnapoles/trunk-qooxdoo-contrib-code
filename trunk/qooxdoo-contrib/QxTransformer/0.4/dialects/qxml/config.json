@@ -1,0 +1,10 @@
+{
+    "dialect": "qxml",
+    "version": "0.8",
+    "author": "Siarhei Barysiuk",
+    "namespaces": {
+        "qx": "http://www.qxtransformer.org/qooxdoo",
+        "qxt": "http://www.qxtransformer.org/extension"
+    },
+    "classNameAttribute": "className"
+}

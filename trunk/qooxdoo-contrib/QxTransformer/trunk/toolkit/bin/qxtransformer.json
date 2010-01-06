@@ -1,0 +1,22 @@
+{
+    "name"    : "qxtransformer build jobs",
+    
+    "let" :
+    {
+        "PYTHON" : "python",
+        "QXTRANSFORMER" : "qxtransformer.py",
+        "QXT_VERBOSE": "main:INFO;dev:INFO;",
+        "QXT_DIALECTS_CONFIG": "dialect.json"
+    },
+    
+    "export" : ["transform"],
+    
+    "jobs" : {
+        
+        "transform" : {
+            "shell": {
+                "command" : "${PYTHON} ${QXTRANSFORMER_PATH}/bin/${QXTRANSFORMER} --dir source/class --out source/class -v '${QXT_VERBOSE}' -D '${QXT_DIALECTS_CONFIG}'"
+            }
+        }
+    }
+}

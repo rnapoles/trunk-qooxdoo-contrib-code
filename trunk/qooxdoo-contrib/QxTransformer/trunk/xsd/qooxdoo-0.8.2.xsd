@@ -1,0 +1,1164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:qx="http://www.qxtransformer.org/qooxdoo/0.8" xmlns:qxt="http://www.qxtransformer.org/qooxdoo/0.4" targetNamespace="http://www.qxtransformer.org/qooxdoo/0.8" attributeFormDefault="unqualified" elementFormDefault="qualified"><xsd:attributeGroup name="qx.ui.container.Stack"><xsd:attribute name="selected"><xsd:annotation><xsd:documentation>&lt;p&gt;The selected child&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="dynamic"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the size of the widget depends on the selected child. When
+disabled (default) the size is configured to the largest child.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.core.AbstractScrollArea"><xsd:attribute name="scrollbar"><xsd:annotation><xsd:documentation>&lt;p&gt;Group property, to set the overflow of both scroll bars.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="scrollbarX"><xsd:annotation><xsd:documentation>&lt;p&gt;The policy, when the horizontal scrollbar should be shown.
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;auto&lt;/b&gt;: Show scrollbar on demand&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;on&lt;/b&gt;: Always show the scrollbar&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;off&lt;/b&gt;: Never show the scrollbar&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="scrollbarY"><xsd:annotation><xsd:documentation>&lt;p&gt;The policy, when the horizontal scrollbar should be shown.
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;auto&lt;/b&gt;: Show scrollbar on demand&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;on&lt;/b&gt;: Always show the scrollbar&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;off&lt;/b&gt;: Never show the scrollbar&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tabview.Page"><xsd:attribute name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label/caption/text of the Page&amp;#8217;s button.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;Any &lt;span class="caps"&gt;URI&lt;/span&gt; String supported by qx.ui.basic.Image to display an icon in Page&amp;#8217;s button.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menu.CheckBox"><xsd:attribute name="checked"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the button is checked&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The value of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.ListItem"><xsd:attribute name="manager"><xsd:annotation><xsd:documentation>&lt;p&gt;The assigned qx.ui.form.RadioGroup which handles the switching between registered buttons&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;Fires a &amp;#8220;changeValue&amp;#8221; (qx.event.type.Data) event&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.ToggleButton"><xsd:attribute name="checked"><xsd:annotation><xsd:documentation>&lt;p&gt;Boolean value signals if the button is checked&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The value of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tabview.TabView"><xsd:attribute name="selected"><xsd:annotation><xsd:documentation>&lt;p&gt;The selected page inside the TabView.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="barPosition"><xsd:annotation><xsd:documentation>&lt;p&gt;This property defines on which side of the TabView the bar should be positioned.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.splitpane.Pane"><xsd:attribute name="orientation"><xsd:annotation><xsd:documentation>&lt;p&gt;The orientation of the splitpane control.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.popup.Popup"><xsd:attribute name="autoHide"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether to let the system decide when to hide the popup. Setting
+this to false gives you better control but it also requires you
+to handle the closing of the popup.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.Basic"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.Grow"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.ComboBox"><xsd:attribute name="format"><xsd:annotation><xsd:documentation>&lt;p&gt;Formatter to format &lt;code&gt;TextField&lt;/code&gt; value when &lt;code&gt;ListItem&lt;/code&gt;
+is selected. Uses the default formatter {@link qx.ui.form.ComboBox#__defaultFormat}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.groupbox.GroupBox"><xsd:attribute name="legendPosition"><xsd:annotation><xsd:documentation>&lt;p&gt;Property for setting the position of the legend.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.RadioGroup"><xsd:attribute name="wrap"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the selection should wrap arond. This means that the successor of
+the last item is the first item.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="selected"><xsd:annotation><xsd:documentation>&lt;p&gt;The currently selected item of the radio group&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="enabled"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the radio group is enabled&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the radio group. Mainly used for seralization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.Button"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The value of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.SplitButton"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="show"><xsd:annotation><xsd:documentation>&lt;p&gt;Configure the visibility of the sub elements/widgets.
+Possible values: both, text, icon&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The value of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label/caption/text of the qx.ui.basic.Atom instance&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="menu"><xsd:annotation><xsd:documentation>&lt;p&gt;The menu instance to show when clicking on the button&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;Any &lt;span class="caps"&gt;URI&lt;/span&gt; String supported by qx.ui.basic.Image to display a icon&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.control.DateChooser"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="shownMonth"><xsd:annotation><xsd:documentation>&lt;p&gt;The currently shown month. 0 = january, 1 = february, and so on.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="date"><xsd:annotation><xsd:documentation>&lt;p&gt;The currently selected date.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="shownYear"><xsd:annotation><xsd:documentation>&lt;p&gt;The currently shown year.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.MenuButton"><xsd:attribute name="showArrow"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the button should show an arrow to indicate the menu behind it&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.control.ColorPopup"><xsd:attribute name="blue"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric blue value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="green"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric green value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The hex value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="red"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric red value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tree.AbstractTreeItem"><xsd:attribute name="indent"><xsd:annotation><xsd:documentation>&lt;p&gt;The number of pixel to indent the tree item for each level.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="parent"><xsd:annotation><xsd:documentation>&lt;p&gt;The parent tree folder.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="openSymbolMode"><xsd:annotation><xsd:documentation>&lt;p&gt;Controls, when to show the open symbol. If the mode is &amp;#8220;auto&amp;#8221; , the open
+symbol is shown only if the item has child items.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label/caption/text&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="open"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the tree item is opened.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;Any &lt;span class="caps"&gt;URI&lt;/span&gt; String supported by qx.ui.basic.Image to display a icon&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.RadioButton"><xsd:attribute name="group"><xsd:annotation><xsd:documentation>&lt;p&gt;The assigned qx.ui.form.RadioGroup which handles the switching between registered buttons&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="checked"><xsd:annotation><xsd:documentation>&lt;p&gt;Boolean value signals if the button is checked&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menubar.Button"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.Spinner"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="numberFormat"><xsd:annotation><xsd:documentation>&lt;p&gt;Controls the display of the number in the textfield&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="min"><xsd:annotation><xsd:documentation>&lt;p&gt;minimal value of the Range object&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="max"><xsd:annotation><xsd:documentation>&lt;p&gt;maximal value of the Range object&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="pageStep"><xsd:annotation><xsd:documentation>&lt;p&gt;The amount to increment on each pageup/pagedown keypress&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="editable"><xsd:annotation><xsd:documentation>&lt;p&gt;Controls whether the textfield of the spinner is editable or not&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The value of the spinner.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="singleStep"><xsd:annotation><xsd:documentation>&lt;p&gt;The amount to increment on each event (keypress or mousedown)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="wrap"><xsd:annotation><xsd:documentation>&lt;p&gt;whether the value should wrap around&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menu.AbstractButton"><xsd:attribute name="menu"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether a sub menu should be shown and which one&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label text of the button&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;The icon to use&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.SelectBox"><xsd:attribute name="selected"><xsd:annotation><xsd:documentation>&lt;p&gt;The selected item inside the list.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.VBox"><xsd:attribute name="spacing"><xsd:annotation><xsd:documentation>&lt;p&gt;Vertical spacing between two children&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="alignY"><xsd:annotation><xsd:documentation>&lt;p&gt;Vertical alignment of the whole children block. The vertical
+alignment of the child is completely ignored in VBoxes (
+{@link qx.ui.core.LayoutItem#alignY}).&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="alignX"><xsd:annotation><xsd:documentation>&lt;p&gt;Horizontal alignment of each child. Can be overridden through
+{@link qx.ui.core.LayoutItem#alignX}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="separator"><xsd:annotation><xsd:documentation>&lt;p&gt;Separator lines to use between the objects&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="reversed"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the actual children list should be layouted in reversed order.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menu.RadioButton"><xsd:attribute name="checked"><xsd:annotation><xsd:documentation>&lt;p&gt;Boolean value signals if the button is checked&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The value of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="group"><xsd:annotation><xsd:documentation>&lt;p&gt;The assigned qx.ui.form.RadioGroup which handles the switching between registered buttons&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.embed.Canvas"><xsd:attribute name="canvasHeight"><xsd:annotation><xsd:documentation>&lt;p&gt;The internal height of the canvas coordinates&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="syncDimension"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether canvas and widget coordinates should be synchronized&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="canvasWidth"><xsd:annotation><xsd:documentation>&lt;p&gt;The internal with of the canvas coordinates&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.AbstractField"><xsd:attribute name="readOnly"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the field is read only&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="textAlign"><xsd:annotation><xsd:documentation>&lt;p&gt;Alignment of the text&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.Canvas"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.Button"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menu.Menu"><xsd:attribute name="selectedButton"><xsd:annotation><xsd:documentation>&lt;p&gt;The currently selected button&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="openedButton"><xsd:annotation><xsd:documentation>&lt;p&gt;The currently opened button (sub menu is visible)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="openInterval"><xsd:annotation><xsd:documentation>&lt;p&gt;Interval in ms after which sub menus should be openend&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="spacingY"><xsd:annotation><xsd:documentation>&lt;p&gt;The spacing between each menu button&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="iconColumnWidth"><xsd:annotation><xsd:documentation>&lt;p&gt;Default icon column width if no icons are rendered&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="spacingX"><xsd:annotation><xsd:documentation>&lt;p&gt;The spacing between each cell of the menu buttons&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="opener"><xsd:annotation><xsd:documentation>&lt;p&gt;Widget that opened the menu&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="arrowColumnWidth"><xsd:annotation><xsd:documentation>&lt;p&gt;Default arrow column width if no sub menus are rendered&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="closeInterval"><xsd:annotation><xsd:documentation>&lt;p&gt;Interval in ms after which sub menus should be closed&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.DateField"><xsd:attribute name="dateFormat"><xsd:annotation><xsd:documentation>&lt;p&gt;The formatter, which converts the selected date to a string. *&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.control.ColorSelector"><xsd:attribute name="blue"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric blue value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="hue"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric hue value.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="saturation"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric saturation value.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="brightness"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric brightness value.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="green"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric green value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="red"><xsd:annotation><xsd:documentation>&lt;p&gt;The numeric red value of the selected color.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tree.TreeFile"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.window.Window"><xsd:attribute name="status"><xsd:annotation><xsd:documentation>&lt;p&gt;The text of the statusbar&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="showStatusbar"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the statusbar be shown&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowMaximize"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the user have the ability to maximize the window&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowMinimize"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the user have the ability to minimize the window&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="showMinimize"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the minimize button be shown&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="caption"><xsd:annotation><xsd:documentation>&lt;p&gt;The text of the caption&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="showMaximize"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the maximize button be shown&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="modal"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the window be modal (this disables minimize and maximize buttons)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowClose"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the user have the ability to close the window&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="active"><xsd:annotation><xsd:documentation>&lt;p&gt;If the window is active, only one window in a single qx.ui.window.Manager could
+ have set this to true at the same time.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="showClose"><xsd:annotation><xsd:documentation>&lt;p&gt;Should the close button be shown&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;The icon of the caption&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.core.Spacer"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.AbstractSelectBox"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="maxListHeight"><xsd:annotation><xsd:documentation>&lt;p&gt;The maximum height of the list popup. Setting this value to
+&lt;code&gt;null&lt;/code&gt; will set cause the list to be auto-sized.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tree.Tree"><xsd:attribute name="rootOpenClose"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the Root should have an open/close button.  This may also be
+ used in conjunction with the hideNode property to provide for virtual root
+ nodes.  In the latter case, be very sure that the virtual root nodes are
+ expanded programatically, since there will be no open/close button for the
+ user to open them.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="openMode"><xsd:annotation><xsd:documentation>&lt;p&gt;Control whether clicks or double clicks should open or close the clicked
+folder.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="hideRoot"><xsd:annotation><xsd:documentation>&lt;p&gt;Hide the root (Tree) node.  This differs from the visibility property in
+that this property hides &lt;strong&gt;only&lt;/strong&gt; the root node, not the node&amp;#8217;s children.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="root"><xsd:annotation><xsd:documentation>&lt;p&gt;The root tree item of the tree to display&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.groupbox.CheckGroupBox"></xsd:attributeGroup><xsd:attributeGroup name="qx.event.Command"><xsd:attribute name="enabled"><xsd:annotation><xsd:documentation>&lt;p&gt;whether the command should be respected/enabled&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="shortcut"><xsd:annotation><xsd:documentation>&lt;p&gt;The command shortcut&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.container.Resizer"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.CheckBox"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menu.Button"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.core.LayoutItem"><xsd:attribute name="allowGrowX"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the item can grow horizontally.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowGrowY"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the item can grow vertically.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="maxWidth"><xsd:annotation><xsd:documentation>&lt;p&gt;The user provided maximal width.&lt;/p&gt;
+
+&lt;p&gt;Also take a look at the related properties {@link #width} and {@link #minWidth}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="marginBottom"><xsd:annotation><xsd:documentation>&lt;p&gt;Margin of the widget (bottom)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="minHeight"><xsd:annotation><xsd:documentation>&lt;p&gt;The user provided minimal height.&lt;/p&gt;
+
+&lt;p&gt;Also take a look at the related properties {@link #height} and {@link #maxHeight}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="marginLeft"><xsd:annotation><xsd:documentation>&lt;p&gt;Margin of the widget (left)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="maxHeight"><xsd:annotation><xsd:documentation>&lt;p&gt;The user provided maximum height.&lt;/p&gt;
+
+&lt;p&gt;Also take a look at the related properties {@link #height} and {@link #minHeight}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="height"><xsd:annotation><xsd:documentation>&lt;p&gt;The item&amp;#8217;s preferred height.&lt;/p&gt;
+
+&lt;p&gt;The computed height may differ from the given height due to
+stretching. Also take a look at the related properties
+{@link #minHeight} and {@link #maxHeight}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="minWidth"><xsd:annotation><xsd:documentation>&lt;p&gt;The user provided minimal width.&lt;/p&gt;
+
+&lt;p&gt;Also take a look at the related properties {@link #width} and {@link #maxWidth}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="width"><xsd:annotation><xsd:documentation>&lt;p&gt;The item&amp;#8217;s preferred width.&lt;/p&gt;
+
+&lt;p&gt;The computed width may differ from the given width due to
+stretching. Also take a look at the related properties
+{@link #minWidth} and {@link #maxWidth}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="alignY"><xsd:annotation><xsd:documentation>&lt;p&gt;Vertical alignment of the item in the parent layout.&lt;/p&gt;
+
+&lt;p&gt;Note: Item alignment is only supported by {@link LayoutItem} layouts where
+it would have a visual effect. Except for {@link Spacer}, which provides
+blank space for layouts, all classes that inherit {@link LayoutItem} support alignment.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="alignX"><xsd:annotation><xsd:documentation>&lt;p&gt;Horizontal alignment of the item in the parent layout.&lt;/p&gt;
+
+&lt;p&gt;Note: Item alignment is only supported by {@link LayoutItem} layouts where
+it would have a visual effect. Except for {@link Spacer}, which provides
+blank space for layouts, all classes that inherit {@link LayoutItem} support alignment.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="marginRight"><xsd:annotation><xsd:documentation>&lt;p&gt;Margin of the widget (right)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowShrinkX"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the item can shrink horizontally.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowShrinkY"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the item can shrink vertically.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowStretchY"><xsd:annotation><xsd:documentation>&lt;p&gt;Growing and shrinking in the vertical direction&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="allowStretchX"><xsd:annotation><xsd:documentation>&lt;p&gt;Growing and shrinking in the horizontal direction&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="margin"><xsd:annotation><xsd:documentation>&lt;p&gt;The &amp;#8216;margin&amp;#8217; property is a shorthand property for setting &amp;#8216;marginTop&amp;#8217;,
+&amp;#8216;marginRight&amp;#8217;, &amp;#8216;marginBottom&amp;#8217; and &amp;#8216;marginLeft&amp;#8217; at the same time.&lt;/p&gt;
+
+&lt;p&gt;If four values are specified they apply to top, right, bottom and left respectively.
+If there is only one value, it applies to all sides, if there are two or three,
+the missing values are taken from the opposite side.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="marginTop"><xsd:annotation><xsd:documentation>&lt;p&gt;Margin of the widget (top)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tree.TreeFolder"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.groupbox.RadioGroupBox"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.TextArea"><xsd:attribute name="wrap"><xsd:annotation><xsd:documentation>&lt;p&gt;Controls whether text wrap is activated or not.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.container.Scroll"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.List"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the list. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="enableInlineFind"><xsd:annotation><xsd:documentation>&lt;p&gt;Controls whether the inline-find feature is activated or not&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="spacing"><xsd:annotation><xsd:documentation>&lt;p&gt;Spacing between the items&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="orientation"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the list should be rendered horizontal or vertical.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.core.Variant"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.core.Widget"><xsd:attribute name="droppable"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the widget acts as a target for drag&amp;amp;drop operations&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="appearance"><xsd:annotation><xsd:documentation>&lt;p&gt;The appearance ID. This ID is used to identify the appearance theme
+entry to use for this widget. This controls the styling of the element.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="keepActive"><xsd:annotation><xsd:documentation>&lt;p&gt;If this property if enabled, the widget and all of its child widgets
+will never get activated. The activation keeps at the currently
+activated widget.&lt;/p&gt;
+
+&lt;p&gt;This is mainly useful for widget authors. Please use with caution!&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="font"><xsd:annotation><xsd:documentation>&lt;p&gt;The widget&amp;#8217;s font. The value is either a font name defined in the font
+theme or an instance of {@link qx.bom.Font}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="shadow"><xsd:annotation><xsd:documentation>&lt;p&gt;The decorator used to render the widget&amp;#8217;s outline/shadow. The decorator&amp;#8217;s
+insets are interpreted as the amount of pixels the shadow extends the
+widget&amp;#8217;s size.&lt;/p&gt;
+
+&lt;p&gt;Note that shadows work only properly in top level widgets like menus, windows
+or tooltips. If used in inner widgets the shadow may not be cut by the
+parent widget.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="tabIndex"><xsd:annotation><xsd:documentation>&lt;p&gt;Defines the tab index of an widget. If widgets with tab indexes are part
+of the current focus root these elements are sorted in first priority. Afterwards
+the sorting continues by rendered position, zIndex and other criteria.&lt;/p&gt;
+
+&lt;p&gt;Please note: The value must be between 1 and 32000.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="cursor"><xsd:annotation><xsd:documentation>&lt;p&gt;Mapping to native style property cursor.&lt;/p&gt;
+
+&lt;p&gt;The name of the cursor to show when the mouse pointer is over the widget.
+This is any valid CSS2 cursor name defined by W3C.&lt;/p&gt;
+
+&lt;p&gt;The following values are possible crossbrowser:
+&lt;ul&gt;&lt;li&gt;default&lt;/li&gt;
+&lt;li&gt;crosshair&lt;/li&gt;
+&lt;li&gt;pointer&lt;/li&gt;
+&lt;li&gt;move&lt;/li&gt;
+&lt;li&gt;n-resize&lt;/li&gt;
+&lt;li&gt;ne-resize&lt;/li&gt;
+&lt;li&gt;e-resize&lt;/li&gt;
+&lt;li&gt;se-resize&lt;/li&gt;
+&lt;li&gt;s-resize&lt;/li&gt;
+&lt;li&gt;sw-resize&lt;/li&gt;
+&lt;li&gt;w-resize&lt;/li&gt;
+&lt;li&gt;nw-resize&lt;/li&gt;
+&lt;li&gt;text&lt;/li&gt;
+&lt;li&gt;wait&lt;/li&gt;
+&lt;li&gt;help &lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="paddingBottom"><xsd:annotation><xsd:documentation>&lt;p&gt;Padding of the widget (bottom)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="paddingTop"><xsd:annotation><xsd:documentation>&lt;p&gt;Padding of the widget (top)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="backgroundColor"><xsd:annotation><xsd:documentation>&lt;p&gt;The background color the rendered widget.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="textColor"><xsd:annotation><xsd:documentation>&lt;p&gt;The text color the rendered widget.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="opacity"><xsd:annotation><xsd:documentation>&lt;p&gt;Mapping to native style property opacity.&lt;/p&gt;
+
+&lt;p&gt;The uniform opacity setting to be applied across an entire object. Behaves like the new &lt;span class="caps"&gt;CSS&lt;/span&gt;-3 Property.
+ Any values outside the range 0.0 (fully transparent) to 1.0 (fully opaque) will be clamped to this range.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="contextMenu"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether to show a context menu and which one&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="focusable"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the widget is focusable e.g. rendering a focus border and visualize
+as active element.&lt;/p&gt;
+
+&lt;p&gt;See also {#isTabable} which allows runtime checks for &lt;code&gt;isChecked&lt;/code&gt;
+or other stuff to test whether the widget is reachable via the &lt;span class="caps"&gt;TAB&lt;/span&gt; key.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="keepFocus"><xsd:annotation><xsd:documentation>&lt;p&gt;If this property if enabled, the widget and all of its child widgets
+will never get focused. The focus keeps at the currently
+focused widget.&lt;/p&gt;
+
+&lt;p&gt;This only works for widgets which are not {@link focusable}.&lt;/p&gt;
+
+&lt;p&gt;This is mainly useful for widget authors. Please use with caution!&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="toolTip"><xsd:annotation><xsd:documentation>&lt;p&gt;Contains the tooltip object connected to the widget.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="padding"><xsd:annotation><xsd:documentation>&lt;p&gt;The &amp;#8216;padding&amp;#8217; property is a shorthand property for setting &amp;#8216;paddingTop&amp;#8217;,
+&amp;#8216;paddingRight&amp;#8217;, &amp;#8216;paddingBottom&amp;#8217; and &amp;#8216;paddingLeft&amp;#8217; at the same time.&lt;/p&gt;
+
+&lt;p&gt;If four values are specified they apply to top, right, bottom and left respectively.
+If there is only one value, it applies to all sides, if there are two or three,
+the missing values are taken from the opposite side.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="visibility"><xsd:annotation><xsd:documentation>&lt;p&gt;Controls the visibility. Valid values are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;visible&lt;/b&gt;: Render the widget&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;hidden&lt;/b&gt;: Hide the widget but don't relayout the widget's parent.&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;excluded&lt;/b&gt;: Hide the widget and relayout the parent as if the
+    widget was not a child of its parent.&lt;/li&gt;
+&lt;/ul&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="anonymous"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the widget is anonymous.&lt;/p&gt;
+
+&lt;p&gt;Anonymous widgets are ignored in the event hierarchy. This is useful
+for combined widgets where the internal structure do not have a custom
+appearance with a different styling from the element around. This is
+especially true for widgets like checkboxes or buttons where the text
+or icon are handled synchronously for state changes to the outer widget.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="selectable"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the widget contains content which may be selected by the user.&lt;/p&gt;
+
+&lt;p&gt;Normally only useful for forms fields, longer texts/documents, editors, etc.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="decorator"><xsd:annotation><xsd:documentation>&lt;p&gt;The decorator property points to an object, which is responsible
+for drawing the widget&amp;#8217;s decoration, e.g. border, background or shadow&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="zIndex"><xsd:annotation><xsd:documentation>&lt;p&gt;The z-index property sets the stack order of an element. An element with
+greater stack order is always in front of another element with lower stack order.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="paddingLeft"><xsd:annotation><xsd:documentation>&lt;p&gt;Padding of the widget (left)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="enabled"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the widget is enabled. Disabled widgets are usually grayed out
+and do not process user created events. While in the disabled state most
+user input events are blocked. Only the {@link #mouseover} and
+{@link #mouseout} events will be dispatched.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="draggable"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the widget acts as a source for drag&amp;amp;drop operations&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="paddingRight"><xsd:annotation><xsd:documentation>&lt;p&gt;Padding of the widget (right)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.SplitButton"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.tooltip.ToolTip"><xsd:attribute name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label/caption/text of the ToolTip&amp;#8217;s atom.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="rich"><xsd:annotation><xsd:documentation>&lt;p&gt;Switches between rich &lt;span class="caps"&gt;HTML&lt;/span&gt; and text content. The text mode (&lt;code&gt;false&lt;/code&gt;) supports
+advanced features like ellipsis when the available space is not
+enough. &lt;span class="caps"&gt;HTML&lt;/span&gt; mode (&lt;code&gt;true&lt;/code&gt;) supports multi-line content and all the
+markup features of &lt;span class="caps"&gt;HTML&lt;/span&gt; content.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="showTimeout"><xsd:annotation><xsd:documentation>&lt;p&gt;Interval after the tooltip is shown (in milliseconds)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="hideTimeout"><xsd:annotation><xsd:documentation>&lt;p&gt;Interval after the tooltip is hidden (in milliseconds)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;Any &lt;span class="caps"&gt;URI&lt;/span&gt; String supported by qx.ui.basic.Image to display an icon in ToolTips&amp;#8217;s atom.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.Grid"><xsd:attribute name="spacingY"><xsd:annotation><xsd:documentation>&lt;p&gt;The vertical spacing between grid cells.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="spacingX"><xsd:annotation><xsd:documentation>&lt;p&gt;The horizontal spacing between grid cells.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.CheckBox"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.menubar.MenuBar"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.ToolBar"><xsd:attribute name="spacing"><xsd:annotation><xsd:documentation>&lt;p&gt;The spacing between every child of the toolbar&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="openMenu"><xsd:annotation><xsd:documentation>&lt;p&gt;Holds the currently open menu (when the toolbar is used for menus)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="show"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether icons, labels, both or none should be shown.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.core.Object"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.embed.Html"><xsd:attribute name="cssClass"><xsd:annotation><xsd:documentation>&lt;p&gt;The css classname for the html embed.
+&lt;b&gt;&lt;span class="caps"&gt;IMPORTANT&lt;/span&gt;&lt;/b&gt; Paddings and borders does not work
+in the css class. These ttyles coause conflicts with
+the layout engine.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="html"><xsd:annotation><xsd:documentation>&lt;p&gt;Any text string which can contain &lt;span class="caps"&gt;HTML&lt;/span&gt;, too&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.MenuButton"><xsd:attribute name="menu"><xsd:annotation><xsd:documentation>&lt;p&gt;The menu instance to show when clicking on the button&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.RadioButton"><xsd:attribute name="group"><xsd:annotation><xsd:documentation>&lt;p&gt;The assigned {@link qx.ui.form.RadioGroup} which handles the switching between registered buttons&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.Slider"><xsd:attribute name="name"><xsd:annotation><xsd:documentation>&lt;p&gt;The name of the widget. Mainly used for serialization proposes.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="pageStep"><xsd:annotation><xsd:documentation>&lt;p&gt;The amount to increment on each event. Typically corresponds
+to the user pressing &lt;code&gt;PageUp&lt;/code&gt; or &lt;code&gt;PageDown&lt;/code&gt;.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="maximum"><xsd:annotation><xsd:documentation>&lt;p&gt;The maximum slider value (may be negative). This value must be larger
+than {@link #minimum}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="value"><xsd:annotation><xsd:documentation>&lt;p&gt;The current slider value.&lt;/p&gt;
+
+&lt;p&gt;Strictly validates according to {@link #minimum} and {@link #maximum}.
+Do not apply any value correction to the incoming value. If you depend
+on this, please use {@link #slideTo} instead.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="singleStep"><xsd:annotation><xsd:documentation>&lt;p&gt;The amount to increment on each event. Typically corresponds
+to the user pressing an arrow key.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="minimum"><xsd:annotation><xsd:documentation>&lt;p&gt;The minimum slider value (may be negative). This value must be smaller
+than {@link #maximum}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="knobFactor"><xsd:annotation><xsd:documentation>&lt;p&gt;Factor to apply to the width/height of the knob in relation
+to the dimension of the underlying area.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="orientation"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the slider is horizontal or vertical.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.basic.Atom"><xsd:attribute name="center"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the content should be rendered centrally when to much space
+is available. Affects both axis.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="show"><xsd:annotation><xsd:documentation>&lt;p&gt;Configure the visibility of the sub elements/widgets.
+Possible values: both, text, icon&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="iconPosition"><xsd:annotation><xsd:documentation>&lt;p&gt;The position of the icon in relation to the text.
+Only useful/needed if text and icon is configured and &amp;#8216;show&amp;#8217; is configured as &amp;#8216;both&amp;#8217; (default)&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label/caption/text of the qx.ui.basic.Atom instance&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="rich"><xsd:annotation><xsd:documentation>&lt;p&gt;Switches between rich &lt;span class="caps"&gt;HTML&lt;/span&gt; and text content. The text mode (&lt;code&gt;false&lt;/code&gt;) supports
+advanced features like ellipsis when the available space is not
+enough. &lt;span class="caps"&gt;HTML&lt;/span&gt; mode (&lt;code&gt;true&lt;/code&gt;) supports multi-line content and all the
+markup features of &lt;span class="caps"&gt;HTML&lt;/span&gt; content.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="gap"><xsd:annotation><xsd:documentation>&lt;p&gt;The space between the icon and the label&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="icon"><xsd:annotation><xsd:documentation>&lt;p&gt;Any &lt;span class="caps"&gt;URI&lt;/span&gt; String supported by qx.ui.basic.Image to display a icon&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.toolbar.Part"><xsd:attribute name="spacing"><xsd:annotation><xsd:documentation>&lt;p&gt;The spacing between every child of the toolbar&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="show"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether icons, labels, both or none should be shown.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.basic.Label"><xsd:attribute name="content"><xsd:annotation><xsd:documentation>&lt;p&gt;Contains the &lt;span class="caps"&gt;HTML&lt;/span&gt; or text content. Interpretation depends on the value
+of {@link #rich}. In text mode entities and other &lt;span class="caps"&gt;HTML&lt;/span&gt; special content
+is not supported. But it is possible to use unicode escape sequences
+to insert symbols and other non &lt;span class="caps"&gt;ASCII&lt;/span&gt; characters.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="rich"><xsd:annotation><xsd:documentation>&lt;p&gt;Switches between rich &lt;span class="caps"&gt;HTML&lt;/span&gt; and text content. The text mode (&lt;code&gt;false&lt;/code&gt;) supports
+advanced features like ellipsis when the available space is not
+enough. &lt;span class="caps"&gt;HTML&lt;/span&gt; mode (&lt;code&gt;true&lt;/code&gt;) supports multi-line content and all the
+markup features of &lt;span class="caps"&gt;HTML&lt;/span&gt; content.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="textAlign"><xsd:annotation><xsd:documentation>&lt;p&gt;Control the text alignment&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.basic.Image"><xsd:attribute name="scale"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the image should be scaled to the given dimensions&lt;/p&gt;
+
+&lt;p&gt;This is disabled by default because it prevents the usage
+of image clipping when enabled.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="source"><xsd:annotation><xsd:documentation>&lt;p&gt;The &lt;span class="caps"&gt;URL&lt;/span&gt; of the image&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.container.SlideBar"><xsd:attribute name="orientation"><xsd:annotation><xsd:documentation>&lt;p&gt;Orientation of the bar&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.Dock"><xsd:attribute name="sort"><xsd:annotation><xsd:documentation>&lt;p&gt;The way the widgets should be displayed (in conjunction with their
+position in the childrens array).&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="separatorY"><xsd:annotation><xsd:documentation>&lt;p&gt;Separator lines to use between the vertical objects&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="separatorX"><xsd:annotation><xsd:documentation>&lt;p&gt;Separator lines to use between the horizontal objects&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="connectSeparators"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether separators should be collapsed so when a spacing is
+configured the line go over into each other&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="spacingY"><xsd:annotation><xsd:documentation>&lt;p&gt;Vertical spacing between two children&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="spacingX"><xsd:annotation><xsd:documentation>&lt;p&gt;Horizontal spacing between two children&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.embed.Iframe"><xsd:attribute name="source"><xsd:annotation><xsd:documentation>&lt;p&gt;Source &lt;span class="caps"&gt;URL&lt;/span&gt; of the iframe.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="frameName"><xsd:annotation><xsd:documentation>&lt;p&gt;Name of the iframe.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.layout.HBox"><xsd:attribute name="spacing"><xsd:annotation><xsd:documentation>&lt;p&gt;Horizontal spacing between two children&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="alignY"><xsd:annotation><xsd:documentation>&lt;p&gt;Vertical alignment of each child. Can be overridden through
+{@link qx.ui.core.LayoutItem#alignY}.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="alignX"><xsd:annotation><xsd:documentation>&lt;p&gt;Horizontal alignment of the whole children block. The horizontal
+alignment of the child is completely ignored in HBoxes (
+{@link qx.ui.core.LayoutItem#alignX}).&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="separator"><xsd:annotation><xsd:documentation>&lt;p&gt;Separator lines to use between the objects&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="reversed"><xsd:annotation><xsd:documentation>&lt;p&gt;Whether the actual children list should be layouted in reversed order.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.TextField"><xsd:attribute name="maxLength"><xsd:annotation><xsd:documentation>&lt;p&gt;Maximum number of characters in the text field.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:attributeGroup name="qx.ui.form.RepeatButton"><xsd:attribute name="timerDecrease"><xsd:annotation><xsd:documentation>&lt;p&gt;Decrease of the timer on each interval (for the next interval) until minTimer reached.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="interval"><xsd:annotation><xsd:documentation>&lt;p&gt;Interval used after the first run of the timer. Usually a smaller value
+than the &amp;#8220;firstInterval&amp;#8221; property value to get a faster reaction.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="firstInterval"><xsd:annotation><xsd:documentation>&lt;p&gt;Interval used for the first run of the timer. Usually a greater value
+than the &amp;#8220;interval&amp;#8221; property value to a little delayed reaction at the first
+time.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute><xsd:attribute name="minTimer"><xsd:annotation><xsd:documentation>&lt;p&gt;This configures the minimum value for the timer interval.&lt;/p&gt;</xsd:documentation></xsd:annotation></xsd:attribute></xsd:attributeGroup><xsd:group name="allGroup"><xsd:choice><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:stack"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:page"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:composite"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:menuCheckBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:listItem"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toggleButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:tabView"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:split"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:popup"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:basic"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:grow"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:comboBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:groupBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:radioGroup"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:button"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:splitButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:dateChooser"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBarMenuButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:colorPopup"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:radioButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:menuBarButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:spinner"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:selectBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:vbox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:menuRadioButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:embedCanvas"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:canvas"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBarButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:menu"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:dateField"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:colorSelector"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:treeFile"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:window"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:spacer"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:tree"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:checkGroupBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:command"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:resizer"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBarCheckBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:menuButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:treeFolder"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:radioGroupBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:textarea"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:scroll"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:list"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qxt:variant"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBarSplitButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolTip"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:grid"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:checkBox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:menuBar"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBar"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:embedHtml"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:formMenuButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBarRadioButton"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:slider"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:atom"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:toolBarPart"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:label"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:image"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:slideBar"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:dock"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:embedIframe"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:hbox"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:textField"></xsd:element><xsd:element minOccurs="0" maxOccurs="unbounded" ref="qx:repeatButton"></xsd:element></xsd:choice></xsd:group><xsd:element name="stack"><xsd:annotation><xsd:documentation>&lt;p&gt;The stack container puts its child widgets on top of each other and only the
+topmost widget is visible.&lt;/p&gt;
+
+&lt;p&gt;This is used e.g. in the tab view widget. Which widget is visible can be
+controlled by using the {@link #selected} property.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  // create stack container
+  var stack = new qx.ui.container.Stack();
+
+  // add some children
+  stack.add(new qx.ui.core.Widget().set({
+   backgroundColor: "red"
+  }));
+  stack.add(new qx.ui.core.Widget().set({
+   backgroundColor: "green"
+  }));
+  stack.add(new qx.ui.core.Widget().set({
+   backgroundColor: "blue"
+  }));
+
+  // select green widget
+  stack.setSelected(stack.getChildren()[1]);
+
+  this.getRoot().add(stack);
+&lt;/pre&gt;
+
+&lt;p&gt;This example creates an stack with three children. Only the selected &amp;#8220;green&amp;#8221;
+widget is visible.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Stack" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.container.Stack"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="page"><xsd:annotation><xsd:documentation>&lt;p&gt;A page is the wax to add content to a {@link TabView}. Each page
+get a button to switch to the page. Only one page is visible at
+each time.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.tabview.Page"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="composite"><xsd:annotation><xsd:documentation>&lt;p&gt;The Composite is a generic container widget.&lt;/p&gt;
+
+&lt;p&gt;It exposes all methods to set layouts and to manage child widgets
+as public methods. You must configure this widget with a layout manager to
+define the way the widget&amp;#8217;s children are positioned.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  // create the composite
+  var composite = new qx.ui.container.Composite()
+
+  // configure it with a horizontal box layout with a spacing of '5'
+  composite.setLayout(new qx.ui.layout.HBox(5));
+
+  // add some children
+  composite.add(new qx.ui.basic.Label("Name: "));
+  composite.add(new qx.ui.form.TextField());
+
+  this.getRoot().add(composite);
+&lt;/pre&gt;
+
+&lt;p&gt;This example horizontally groups a label and text field by using a
+Composite configured with a horizontal box layout as a container.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Composite" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="menuCheckBox"><xsd:annotation><xsd:documentation>&lt;p&gt;Renders a special checkbox button inside a menu. The button behaves like
+a normal {@link qx.ui.form.CheckBox} and shows a check icon when
+checked; normally shows no icon when not checked (depends on the theme).&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.menu.CheckBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.menu.AbstractButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="listItem"><xsd:annotation><xsd:documentation>&lt;p&gt;A item for a list. Could be added to all List like widgets but also
+to the {@link qx.ui.form.SelectBox} and {@link qx.ui.form.ComboBox}.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.ListItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toggleButton"><xsd:annotation><xsd:documentation>&lt;p&gt;A toggle Button widget&lt;/p&gt;
+
+&lt;p&gt;If the user presses the button by clicking on it pressing the enter or
+space key, the button toggles between the pressed an not pressed states.
+There is no execute event, only a {@link qx.ui.form.ToggleButton#change} event.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.ToggleButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="tabView"><xsd:annotation><xsd:documentation>&lt;p&gt;A tab view is a multi page view where only one page is visible
+at each moment. It is possible to switch the pages using the
+buttons rendered by each page.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.tabview.TabView"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="split"><xsd:annotation><xsd:documentation>&lt;p&gt;A split panes divides a area into two panes. The ratio between the two
+panes is configurable by the user using the splitter.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.splitpane.Pane"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="popup"><xsd:annotation><xsd:documentation>&lt;p&gt;Popups are widgets, which can be placed on top of the application.
+They are automatically added to the application root.&lt;/p&gt;
+
+&lt;p&gt;Popups are used to display menus, the lists of combo or select boxes,
+tooltips, etc.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.popup.Popup"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="basic"><xsd:annotation><xsd:documentation>&lt;p&gt;A basic layout, which supports positioning of child widgets by absolute
+left/top coordinates. This layout is very simple but should also
+perform best.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Basic positioning using &lt;code&gt;left&lt;/code&gt; and &lt;code&gt;top&lt;/code&gt; properties&lt;/li&gt;
+&lt;li&gt;Respects minimum and maximum dimensions without skrinking/growing&lt;/li&gt;
+&lt;li&gt;Margins for top and left side (including negative ones)&lt;/li&gt;
+&lt;li&gt;Respects right and bottom margins in the size hint&lt;/li&gt;
+&lt;li&gt;Auto-sizing&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;left&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: The left coordinate in pixel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;top&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: The top coordinate in pixel&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Details&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The default location of any widget is zero for both
+&lt;code&gt;left&lt;/code&gt; and &lt;code&gt;top&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the basic layout.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var container = new qx.ui.container.Composite(new qx.ui.layout.Basic());
+
+// simple positioning
+container.add(new qx.ui.core.Widget(), {left: 10, top: 10});
+container.add(new qx.ui.core.Widget(), {left: 100, top: 50});
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/basic"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.Basic"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="grow"><xsd:annotation><xsd:documentation>&lt;p&gt;The grow layout stretches all children to the full available size
+but still respects limits configured by min/max values.&lt;/p&gt;
+
+&lt;p&gt;It will place all children over each other with the top and left coordinates
+set to &lt;code&gt;0&lt;/code&gt;. The {@link qx.ui.container.Stack} and the
+{@link qx.ui.core.ScrollPane} are using this layout.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Auto-sizing&lt;/li&gt;
+&lt;li&gt;Respects minimum and maximum child dimensions&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;None&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var layout = new qx.ui.layout.Grow();
+
+var w1 = new qx.ui.core.Widget();
+var w2 = new qx.ui.core.Widget();
+var w3 = new qx.ui.core.Widget();
+
+var container = new qx.ui.container.Composite(layout);
+container.add(w1);
+container.add(w2);
+container.add(w3);
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/Grow"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.Grow"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="comboBox"><xsd:annotation><xsd:documentation>&lt;p&gt;Basically a text fields which allows a selection from a list of
+preconfigured options. Allows custom user input. Public &lt;span class="caps"&gt;API&lt;/span&gt; is value
+oriented.&lt;/p&gt;
+
+&lt;p&gt;To work with selections without custom input the ideal candidates are
+the {@link SelectBox} or the {@link RadioGroup}.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.ComboBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.AbstractSelectBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="groupBox"><xsd:annotation><xsd:documentation>&lt;p&gt;Group boxes are used to group a set of form elements.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.groupbox.GroupBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="radioGroup"><xsd:annotation><xsd:documentation>&lt;p&gt;The radio group handles a collection of items from which only one item
+can be selected. Selection another item will deselect the previously selected
+item.&lt;/p&gt;
+
+&lt;p&gt;This class is e.g. used to create radio groups or {@link qx.ui.form.RadioButton}
+or {@link qx.ui.toolbar.RadioButton} instances.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.RadioGroup"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="button"><xsd:annotation><xsd:documentation>&lt;p&gt;A Button widget which supports various states and allows it to be used
+via the mouse and the keyboard.&lt;/p&gt;
+
+&lt;p&gt;If the user presses the button by clicking on ito pressing the &lt;code&gt;Enter&lt;/code&gt; or
+&lt;code&gt;Space&lt;/code&gt; key, the button fires an {@link qx.ui.core.MExecutable#execute} event.&lt;/p&gt;
+
+&lt;p&gt;If the {@link qx.ui.core.MExecutable#command} property is set, the
+command is executed as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  var button = new qx.ui.form.Button("Hello World");
+
+  button.addListener("execute", function(e) {
+    alert("Button was clicked");
+  }, this);
+
+  this.getRoot.add(button);
+&lt;/pre&gt;
+
+&lt;p&gt;This example creates a button with the label &amp;#8220;Hello World&amp;#8221; and atached an
+event listener to the {@link #execute} event.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/button" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="splitButton"><xsd:annotation><xsd:documentation>&lt;p&gt;A button which acts as a normal button and shows a menu on one
+of the sides to open something like a history list.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.SplitButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="dateChooser"><xsd:annotation><xsd:documentation>&lt;p&gt;A &lt;strong&gt;date chooser&lt;/strong&gt; is a small calendar including a navigation bar to switch the shown
+month. It includes a column for the calendar week and shows one month. Selecting
+a date is as easy as clicking on it.&lt;/p&gt;
+
+&lt;p&gt;To be conform with all form widgets, the {@link qx.ui.form.IFormElement} interface
+is implemented.&lt;/p&gt;
+
+&lt;p&gt;The following example creates and adds a date chooser to the root element.
+A listener alerts the user if a new date is selected.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var chooser = new qx.ui.control.DateChooser();
+this.getRoot().add(chooser, { left : 20, top: 20});
+
+chooser.addListener("changeValue", function(e) {
+  alert(e.getData());
+});
+&lt;/pre&gt;
+
+&lt;p&gt;Additionally to a selection event a execute event is available which is
+fired by doubleclick or taping the space / enter key. With this event you
+can for example save the selection and close the date chooser.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.control.DateChooser"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBarMenuButton"><xsd:annotation><xsd:documentation>&lt;p&gt;The button to fill the menubar&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.MenuButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.menubar.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.MenuButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="colorPopup"><xsd:annotation><xsd:documentation>&lt;p&gt;A popup which contains paletts of colors and the possibility to open the
+Colorselector to choose a color.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.control.ColorPopup"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.popup.Popup"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="radioButton"><xsd:annotation><xsd:documentation>&lt;p&gt;Radio buttons can be used in radio groups to allow to the user to select
+exactly one item from a list. Radio groups are established by adding
+radio buttons to a radio manager {@link qx.ui.form.RadioGroup}.&lt;/p&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  var container = new qx.ui.container.Composite(new qx.ui.layout.VBox);
+
+  var female = new qx.ui.form.RadioButton("female");
+  var male = new qx.ui.form.RadioButton("male");
+
+  var mgr = new qx.ui.form.RadioGroup;
+  mgr.add(female, male);
+
+  container.add(male);
+  container.add(female);
+&lt;/pre&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.RadioButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="menuBarButton"><xsd:annotation><xsd:documentation>&lt;p&gt;A menubar button&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.menubar.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.MenuButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="spinner"><xsd:annotation><xsd:documentation>&lt;p&gt;A &lt;strong&gt;spinner&lt;/strong&gt; is a control that allows you to adjust a numerical value,
+typically within an allowed range. An obvious example would be to specify the
+month of a year as a number in the range 1 &amp;#8211; 12.&lt;/p&gt;
+
+&lt;p&gt;To do so, a spinner encompasses a field to display the current value (a
+textfield) and controls such as up and down buttons to change that value. The
+current value can also be changed by editing the display field directly, or
+using mouse wheel and cursor keys.&lt;/p&gt;
+
+&lt;p&gt;An optional {@link #numberFormat} property allows you to control the format of
+how a value can be entered and will be displayed.&lt;/p&gt;
+
+&lt;p&gt;A brief, but non-trivial example:&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var s = new qx.ui.form.Spinner();
+s.set({
+  max: 3000,
+  min: -3000
+});
+var nf = new qx.util.format.NumberFormat();
+nf.setMaximumFractionDigits(2);
+s.setNumberFormat(nf);
+&lt;/pre&gt;
+
+&lt;p&gt;A spinner instance without any further properties specified in the
+constructor or a subsequent &lt;strong&gt;set&lt;/strong&gt; command will appear with default
+values and behaviour.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.Spinner"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="selectBox"><xsd:annotation><xsd:documentation>&lt;p&gt;A form widget which allows a single selection. Looks somewhat like
+a normal button, but opens a list of items to select when clicking on it.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.SelectBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.AbstractSelectBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="vbox"><xsd:annotation><xsd:documentation>&lt;p&gt;A vertical box layout.&lt;/p&gt;
+
+&lt;p&gt;The vertical box layout lays out widgets in a vertical column, from top
+to bottom.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Minimum and maximum dimensions&lt;/li&gt;
+&lt;li&gt;Priorized growing/shrinking (flex)&lt;/li&gt;
+&lt;li&gt;Margins (with vertical collapsing)&lt;/li&gt;
+&lt;li&gt;Auto sizing (ignoring percent values)&lt;/li&gt;
+&lt;li&gt;Percent heights (not size hint relevant)&lt;/li&gt;
+&lt;li&gt;Alignment (Children property {@link qx.ui.core.LayoutItem#alignY} is ignored)&lt;/li&gt;
+&lt;li&gt;Vertical spacing (collapsed with margins)&lt;/li&gt;
+&lt;li&gt;Reversed children layout (starting from last to first)&lt;/li&gt;
+&lt;li&gt;Horizontal children stretching (respecting size hints)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;flex&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: Indicates the flexibility
+  of the item, which indicates
+  how an item's container distributes remaining empty space among
+  its children. Flexible elements grow and shrink to fit their given
+  space. Elements with larger flex values will be made larger than
+  elements with lower flex values, at the ratio determined by the
+  two elements. The actual value is not relevant unless there are
+  other flexible elements within the same container. Once the
+  default sizes of elements in a box are calculated, the remaining
+  space in the box is divided among the flexible elements, according
+  to their flex ratios. Specifying a flex value of 0 has the same
+  effect as leaving the flex attribute out entirely.
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;height&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: Defines a percent
+  height for the item. The percent height,
+  when specified, is used instead of the height defined by the size hint.
+  The minimum and maximum height still takes care of the elements limitations.
+  It has no influence on the layout's size hint. Percents are mainly useful for
+  widgets which are sized by the outer hierarchy.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the grid layout.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var layout = new qx.ui.layout.VBox();
+layout.setSpacing(4); // apply spacing
+
+var container = new qx.ui.container.Composite(layout);
+
+container.add(new qx.ui.core.Widget());
+container.add(new qx.ui.core.Widget());
+container.add(new qx.ui.core.Widget());
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/Box"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.
+
+&lt;p&gt;&lt;strong&gt;Copyright Notes&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Description of flex property by &lt;a href="http://developer.mozilla.org/en/docs/XUL:Attribute:flex"&gt;Mozilla&lt;/a&gt;
+licensed under the
+&lt;a href="http://creativecommons.org/licenses/by-sa/2.5/"&gt;CC Attribution-Sharealike License&lt;/a&gt;.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.VBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="menuRadioButton"><xsd:annotation><xsd:documentation>&lt;p&gt;Renders a special radio button inside a menu. The button behaves like
+a normal {@link qx.ui.form.RadioButton} and shows a radio icon when
+checked; normally shows no icon when not checked (depends on the theme).&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.menu.RadioButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.menu.AbstractButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="embedCanvas"><xsd:annotation><xsd:documentation>&lt;p&gt;The Canvas widget embeds the &lt;span class="caps"&gt;HMTL&lt;/span&gt; canvas element
+[&lt;a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas.html#the-canvas"&gt;W3C-HTML5&lt;/a&gt;]&lt;/p&gt;
+
+&lt;p&gt;Note: This widget does not work in Internet Explorer!&lt;/p&gt;
+
+&lt;p&gt;To paint something on the canvas and keep the content updated on resizes you
+either have to override the {@link #_draw} method or redraw the content on
+the {@link #redraw} event. The drawing context can be obtained by {@link #getCanvas2d}.&lt;/p&gt;
+
+&lt;p&gt;Note that this widget operates on two different coordinate systems. The canvas
+has its own coordinate system for drawing operations. This canvas coordinate
+system is scaled to fit actual size of the &lt;span class="caps"&gt;DOM&lt;/span&gt; element. Each time the size of
+the canvas dimensions is changed a redraw is required. In this case the
+protected method {@link #_draw} is called and the event {@link #redraw}
+is fired. You can synchronize the internal canvas dimension with the
+&lt;span class="caps"&gt;CSS&lt;/span&gt; dimension of the canvas element by setting {@link #syncDimension} to
+&lt;code&gt;true&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the canvas widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var canvas = new qx.ui.embed.Canvas().set({
+  canvasWidth: 200,
+  canvasHeight: 200,
+  syncDimension: true
+});
+canvas.addListener("redraw", function(e)
+{
+  var data = e.getData();
+  var width = data.width;
+  var height = data.height;
+  var ctx = data.context;
+
+  ctx.fillStyle = "rgb(200,0,0)";
+  ctx.fillRect (20, 20, width-5, height-5);
+
+  ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
+  ctx.fillRect (70, 70, 105, 100);
+}, this);
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/canvas" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.embed.Canvas"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="canvas"><xsd:annotation><xsd:documentation>&lt;p&gt;The Canvas is an extended Basic layout.&lt;/p&gt;
+
+&lt;p&gt;It is possible to position a widget relative to the right or bottom edge of
+the available space. It further supports stretching between left and right
+or top and bottom e.g. &lt;code&gt;left=20&lt;/code&gt; and &lt;code&gt;right=20&lt;code&gt; would
+keep a margin of 20 pixels to both edges. The Canvas layout has support for
+percent dimensions and locations.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Pixel dimensions and locations&lt;/li&gt;
+&lt;li&gt;Percent dimensions and locations&lt;/li&gt;
+&lt;li&gt;Stretching between left+right and top+bottom&lt;/li&gt;
+&lt;li&gt;Minimum and maximum dimensions&lt;/li&gt;
+&lt;li&gt;Children are automatically shrunk to their minimum dimensions if not enough space is available&lt;/li&gt;
+&lt;li&gt;Auto sizing (ignoring percent values)&lt;/li&gt;
+&lt;li&gt;Margins (also negative ones)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;left&lt;/strong&gt; &lt;em&gt;(Integer|String)&lt;/em&gt;: The left coordinate in pixel or as a percent string e.g. &lt;code&gt;20&lt;/code&gt; or &lt;code&gt;30%&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;top&lt;/strong&gt; &lt;em&gt;(Integer|String)&lt;/em&gt;: The top coordinate in pixel or as a percent string e.g. &lt;code&gt;20&lt;/code&gt; or &lt;code&gt;30%&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;right&lt;/strong&gt; &lt;em&gt;(Integer|String)&lt;/em&gt;: The right coordinate in pixel or as a percent string e.g. &lt;code&gt;20&lt;/code&gt; or &lt;code&gt;30%&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;bottom&lt;/strong&gt; &lt;em&gt;(Integer|String)&lt;/em&gt;: The bottom coordinate in pixel or as a percent string e.g. &lt;code&gt;20&lt;/code&gt; or &lt;code&gt;30%&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;width&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: A percent width e.g. &lt;code&gt;40%&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;height&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: A percent height e.g. &lt;code&gt;60%&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Notes&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Stretching (&lt;code&gt;left&lt;/code&gt;-&gt;&lt;code&gt;right&lt;/code&gt; or &lt;code&gt;top&lt;/code&gt;-&gt;&lt;code&gt;bottom&lt;/code&gt;)
+  has a higher priority than the preferred dimensions&lt;/li&gt;
+&lt;li&gt;Stretching has a lower priority than the min/max dimensions.&lt;/li&gt;
+&lt;li&gt;Percent values have no influence on the size hint of the layout.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the canvas layout.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var container = new qx.ui.container.Composite(new qx.ui.layout.Canvas());
+
+// simple positioning
+container.add(new qx.ui.core.Widget(), {top: 10, left: 10});
+
+// strech vertically with 10 pixel distance to the parent's top
+// and bottom border
+container.add(new qx.ui.core.Widget(), {top: 10, left: 10, bottom: 10});
+
+// percent positioning and size
+container.add(new qx.ui.core.Widget(), {left: "50%", top: "50%", width: "25%", height: "40%"});
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/canvas"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.Canvas"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBarButton"><xsd:annotation><xsd:documentation>&lt;p&gt;The normal toolbar button. Like a normal {@link qx.ui.form.Button}
+but with a style matching the toolbar and without keyboard support.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="menu"><xsd:annotation><xsd:documentation>&lt;p&gt;The menu is a popup like control which supports buttons. It comes
+with full keyboard navigation and an improved timeout based mouse
+control behavior.&lt;/p&gt;
+
+&lt;p&gt;This class is the container for all derived instances of
+{@link qx.ui.menu.AbstractButton}.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.menu.Menu"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="dateField"><xsd:annotation><xsd:documentation>&lt;p&gt;A &lt;strong&gt;date field&lt;/strong&gt; is like a combo box with the date as popup. As button to
+open the calendeer a calender icon is shown at the right to the textfield.&lt;/p&gt;
+
+&lt;p&gt;To be conform with all form widgets, the {@link qx.ui.form.IFormElement} interface
+is implemented.&lt;/p&gt;
+
+&lt;p&gt;The following example creates a date field and sets the current
+date as selected.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var dateField = new qx.ui.form.DateField();
+this.getRoot().add(dateField, {top: 20, left: 20});
+dateField.setDate(new Date());
+&lt;/pre&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.DateField"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.ComboBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.AbstractSelectBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="colorSelector"><xsd:annotation><xsd:documentation>&lt;p&gt;A typical color selector as known from native applications.&lt;/p&gt;
+
+&lt;p&gt;Includes support for &lt;span class="caps"&gt;RGB&lt;/span&gt; and &lt;span class="caps"&gt;HSB&lt;/span&gt; color areas.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.control.ColorSelector"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="treeFile"><xsd:annotation><xsd:documentation>&lt;p&gt;The tree file is a leaf tree item. It cannot contain any nested tree items.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.tree.TreeFile"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.tree.AbstractTreeItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="window"><xsd:annotation><xsd:documentation>&lt;p&gt;A window widget&lt;/p&gt;
+
+&lt;p&gt;More information can be found in the package description {@link qx.ui.window}.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.window.Window"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="spacer"><xsd:annotation><xsd:documentation>&lt;p&gt;A Spacer is a &amp;#8220;virtual&amp;#8221; widget, which can be placed into any layout and takes
+the space a normal widget of the same size would take.&lt;/p&gt;
+
+&lt;p&gt;Spacers are invisible and very light weight because they don&amp;#8217;t require any
+&lt;span class="caps"&gt;DOM&lt;/span&gt; modifications.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  var container = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+  container.add(new qx.ui.core.Widget());
+  conainer.add(new qx.ui.core.Spacer(50));
+  container.add(new qx.ui.core.Widget());
+&lt;/pre&gt;
+
+&lt;p&gt;This example places two widgets and a spacer into a container with a
+horizontal box layout. In this scenario the spacer creates an empty area of
+50 pixel width between the two widgets.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Spacer" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.core.Spacer"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="tree"><xsd:annotation><xsd:documentation>&lt;p&gt;The Tree class implements a tree widget, with collapsable and expandable
+container nodes and terminal leaf nodes. You instantiate a Tree object and
+then assign the tree a root folder using the {@link #root} property.&lt;/p&gt;
+
+&lt;p&gt;If you don&amp;#8217;t want to show the root item, you can hide it with the
+{@link #hideRoot} property.&lt;/p&gt;
+
+&lt;p&gt;The handling of &lt;b&gt;selections&lt;/b&gt; within a tree is somewhat distributed
+between the root tree object and the attached {@link
+qx.ui.tree.SelectionManager TreeSelectionManager}. To get the
+currently selected element of a tree use the tree {@link #getSelectedItem
+getSelectedItem} method and tree {@link #setSelectedItem
+setSelectedItem} to set it. The TreeSelectionManager handles more
+coars-grained issues like providing selectAll()/deselectAll() methods.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.tree.Tree"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.AbstractScrollArea"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="checkGroupBox"><xsd:annotation><xsd:documentation>&lt;p&gt;A group box, which has a check box near the legend.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.groupbox.CheckGroupBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.groupbox.GroupBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="command"><xsd:annotation><xsd:documentation>&lt;p&gt;Commands can be used to globally define keyboard shortcuts. They could
+also be used to assign a execution of a command sequence to multiple
+widgets. It is possible to use the same Command in a MenuButton and
+ToolBarButton for example.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.event.Command"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="resizer"><xsd:annotation><xsd:documentation>&lt;p&gt;The Resizer is a resizable container widget.&lt;/p&gt;
+
+&lt;p&gt;It allows to be resized (not moved), normally in
+the right and/or bottom directions. It is an alternative to splitters.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  var resizer = new qx.ui.container.Resizer().set({
+    width: 200,
+    height: 100
+  });
+
+  resizer.setLayout(new qx.ui.layout.Canvas());
+  var text = new qx.ui.form.TextArea("Resize me\nI'm resizable");
+  resizer.add(text, {edge: 0});
+
+  this.getRot().add(resizer);
+&lt;/pre&gt;
+
+&lt;p&gt;This example creates a resizer, configures it with a canvas layout and
+adds a text area to it.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Resizer" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.container.Resizer"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBarCheckBox"><xsd:annotation><xsd:documentation>&lt;p&gt;A button which is toggle-able for toolbars.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.CheckBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.ToggleButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="menuButton"><xsd:annotation><xsd:documentation>&lt;p&gt;The real menu button class which supports a command and an icon. All
+other features are inherited from the {@link qx.ui.menu.AbstractButton}
+class.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.menu.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.menu.AbstractButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="treeFolder"><xsd:annotation><xsd:documentation>&lt;p&gt;The tree folder is a tree element, which can have nested tree elements.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.tree.TreeFolder"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.tree.AbstractTreeItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="radioGroupBox"><xsd:annotation><xsd:documentation>&lt;p&gt;A group box, which has a radio button near the legend.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.groupbox.RadioGroupBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.groupbox.GroupBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="textarea"><xsd:annotation><xsd:documentation>&lt;p&gt;The TextField is a multi-line text input field.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.TextArea"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.AbstractField"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="scroll"><xsd:annotation><xsd:documentation>&lt;p&gt;Container, which allows vertical and horizontal scrolling if the contents is
+larger than the container.&lt;/p&gt;
+
+&lt;p&gt;Note that this class can only have one child widget. This container has a
+fixed layout, which cannot be changed.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  // create scroll container
+  var scroll = new qx.ui.container.Scroll().set({
+    width: 300,
+    height: 200
+  });
+
+  // add a widget which is larger than the container
+  scroll.add(new qx.ui.core.Widget().set({
+    width: 600,
+    minWidth: 600,
+    height: 400,
+    minHeight: 400
+  });
+
+  this.getRoot().add(scroll);
+&lt;/pre&gt;
+
+&lt;p&gt;This example creates a scroll container and adds a widget, which is larger
+than the container. This will cause the container to display vertical
+and horizontal toolbars.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Scroll" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.container.Scroll"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.AbstractScrollArea"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="list"><xsd:annotation><xsd:documentation>&lt;p&gt;A list of items. Displayes a automatically scrolling list for all
+added {@link qx.ui.form.ListItem} instances. Supports various
+selection options: single, multi, ...&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.List"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.AbstractScrollArea"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="variant"><xsd:annotation><xsd:documentation>&lt;p&gt;Manage variants of source code. May it be for different debug options,
+browsers or other environment flags.&lt;/p&gt;
+
+&lt;p&gt;Variants enable the selection and removal of code from the build version.
+A variant consists of a collection of states from which exactly one is active
+at load time of the framework. The global map &lt;code&gt;qxvariants&lt;/code&gt; can be
+used to select a variant before the Framework is loaded.&lt;/p&gt;
+
+&lt;p&gt;Depending on the selected variant a specific code
+path can be chosen using the &lt;code&gt;select&lt;/code&gt; method. The generator is
+able to set a variant and remove all code paths which are
+not selected by the variant.&lt;/p&gt;
+
+&lt;p&gt;Variants are used to implement browser optimized builds and to remove
+debugging code from the build version. It is very similar to conditional
+compilation in C/C++.&lt;/p&gt;
+
+&lt;p&gt;Here is a list of pre-defined variant names, the possible values they take,
+and their system default:
+&lt;table&gt;
+ &lt;tr&gt;
+ &lt;th&gt;Variant name&lt;/th&gt;&lt;th&gt;Possible values&lt;/th&gt;&lt;th&gt;System default&lt;/th&gt;
+ &lt;/tr&gt;&lt;tr&gt;
+ &lt;td&gt;qx.client          &lt;td&gt;[ &amp;#8220;gecko&amp;#8221;, &amp;#8220;mshtml&amp;#8221;, &amp;#8220;opera&amp;#8221;, &amp;#8220;webkit&amp;#8221; ]   &lt;td&gt;&amp;lt;auto-detected&amp;gt;
+ &lt;/tr&gt;&lt;tr&gt;
+ &lt;td&gt;qx.debug                   &lt;td&gt;[ &amp;#8220;on&amp;#8221;, &amp;#8220;off&amp;#8221; ]                    &lt;td&gt;&amp;#8220;on&amp;#8221;
+ &lt;/tr&gt;&lt;tr&gt;
+ &lt;td&gt;qx.aspects                 &lt;td&gt;[ &amp;#8220;on&amp;#8221;, &amp;#8220;off&amp;#8221; ]                    &lt;td&gt;&amp;#8220;off&amp;#8221;
+ &lt;/tr&gt;&lt;tr&gt;
+ &lt;td&gt;qx.dynlocale     &lt;td&gt;[ &amp;#8220;on&amp;#8221;, &amp;#8220;off&amp;#8221; ]                    &lt;td&gt;&amp;#8220;on&amp;#8221;
+ &lt;/tr&gt;
+&lt;/table&gt;&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.core.Variant"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBarSplitButton"><xsd:annotation><xsd:documentation>&lt;p&gt;A button which acts as a normal button and shows a menu on one
+of the sides to open something like a history list.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.SplitButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.SplitButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolTip"><xsd:annotation><xsd:documentation>&lt;p&gt;A Tooltip provides additional information for widgets when the user hovers over a widget.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.tooltip.ToolTip"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.popup.Popup"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.container.Composite"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="grid"><xsd:annotation><xsd:documentation>&lt;p&gt;The grid layout manager arranges the items in a two dimensional
+grid. Widgets can be placed into the grid&amp;#8217;s cells and may span multiple rows
+and columns.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Flex values for rows and columns&lt;/li&gt;
+&lt;li&gt;Minimal and maximal column and row sizes&lt;/li&gt;
+&lt;li&gt;Manually setting of column and row sizes&lt;/li&gt;
+&lt;li&gt;Horizontal and vertical alignment&lt;/li&gt;
+&lt;li&gt;Horizontal and vertical spacing&lt;/li&gt;
+&lt;li&gt;Column and row spans&lt;/li&gt;
+&lt;li&gt;Auto-sizing&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;row&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: The row of the cell the
+  widget should occupy. Each cell can only contain one widget. This layout
+  property is mandatory.
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;column&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: The column of the cell the
+  widget should occupy. Each cell can only contain one widget. This layout
+  property is mandatory.
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;rowSpan&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: The number of rows, the
+  widget should span, starting from the row specified in the &lt;code&gt;row&lt;/code&gt;
+  property. The cells in the spanned rows must be empty as well.
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;colSpan&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: The number of columns, the
+  widget should span, starting from the column specified in the &lt;code&gt;column&lt;/code&gt;
+  property. The cells in the spanned columns must be empty as well.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the grid layout.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var layout = new qx.ui.layout.Grid();
+layout.setRowFlex(0, 1); // make row 0 flexible
+layout.setColumnWidth(1, 200); // set with of column 1 to 200 pixel
+
+var container = new qx.ui.container.Composite(layout);
+container.add(new qx.ui.core.Widget(), {row: 0, column: 0});
+container.add(new qx.ui.core.Widget(), {row: 0, column: 1});
+container.add(new qx.ui.core.Widget(), {row: 1, column: 0, rowSpan: 2});
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/Grid"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.Grid"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="checkBox"><xsd:annotation><xsd:documentation>&lt;p&gt;A check box widget with an optional label.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.CheckBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.ToggleButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="menuBar"><xsd:annotation><xsd:documentation>&lt;p&gt;Container for menubar buttons to display a classic application menu.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.menubar.MenuBar"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.toolbar.ToolBar"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBar"><xsd:annotation><xsd:documentation>&lt;p&gt;The Toolbar class is the main part of the toolbar widget.&lt;/p&gt;
+
+&lt;p&gt;It can handle added {@link Button}s, {@link CheckBox}es, {@link RadioButton}s
+and {@link Separator}s in its {@link #add} method. The {@link #addSpacer} method
+adds a spacer at the current toolbar position. This means that the widgets
+added after the method call of {@link #addSpacer} are aligned to the right of
+the toolbar.&lt;/p&gt;
+
+&lt;p&gt;For more details on the documentation of the toolbar widget, take a look at the
+documentation of the {@link qx.ui.toolbar}-Package.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.ToolBar"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="embedHtml"><xsd:annotation><xsd:documentation>&lt;p&gt;The Html widget embeds plain &lt;span class="caps"&gt;HTML&lt;/span&gt; code into the application&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the canvas widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var html = new qx.ui.embed.Html();
+html.setHtml("&lt;h1&gt;Hello World&lt;/h1&gt;");
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/html" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.embed.Html"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="formMenuButton"><xsd:annotation><xsd:documentation>&lt;p&gt;A button which opens the connected menu when clicking on it.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.MenuButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBarRadioButton"><xsd:annotation><xsd:documentation>&lt;p&gt;Radio buttons are used to manage a single selection. Radio buttons only
+make sense used in a group of two or more of them. They are managed (connected)
+to a {qx.ui.form.RadioGroup} to handle the selection.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.RadioButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.toolbar.CheckBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.ToggleButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="slider"><xsd:annotation><xsd:documentation>&lt;p&gt;The Slider widget provides a vertical or horizontal slider.&lt;/p&gt;
+
+&lt;p&gt;The Slider is the classic widget for controlling a bounded value.
+It lets the user move a slider handle along a horizontal or vertical
+groove and translates the handle&amp;#8217;s position into an integer value
+within the defined range.&lt;/p&gt;
+
+&lt;p&gt;The Slider has very few of its own functions; most of the functionality
+is in {@link BaseSlider}. The most useful functions are slideTo()
+to set the slider directly to some value; setSingleStep(), setPageStep()
+to set the steps; and setMinimum() and setMaximum() to define the
+range of the slider.&lt;/p&gt;
+
+&lt;p&gt;A slider accepts focus on Tab and provides both a mouse wheel and
+a keyboard interface. The keyboard interface is the following:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Left/Right move a horizontal slider by one single step.&lt;/li&gt;
+&lt;li&gt;Up/Down move a vertical slider by one single step.&lt;/li&gt;
+&lt;li&gt;PageUp moves up one page.&lt;/li&gt;
+&lt;li&gt;PageDown moves down one page.&lt;/li&gt;
+&lt;li&gt;Home moves to the start (mininum).&lt;/li&gt;
+&lt;li&gt;End moves to the end (maximum).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here are the main properties of the class:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;value&lt;/code&gt;: The bounded integer that BaseSlider maintains.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;minimum&lt;/code&gt;: The lowest possible value.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;maximum&lt;/code&gt;: The highest possible value.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;singleStep&lt;/code&gt;: The smaller of two natural steps that an abstract sliders provides and typically corresponds to the user pressing an arrow key.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pageStep&lt;/code&gt;: The larger of two natural steps that an abstract slider provides and typically corresponds to the user pressing PageUp or PageDown.&lt;/li&gt;
+&lt;/ol&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.Slider"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="atom"><xsd:annotation><xsd:documentation>&lt;p&gt;A multi-purpose widget, which combines a label with an icon.&lt;/p&gt;
+
+&lt;p&gt;The intended purpose of qx.ui.basic.Atom is to easily align the common icon-text
+combination in different ways.&lt;/p&gt;
+
+&lt;p&gt;This is useful for all types of buttons, tooltips, ...&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  var atom = new qx.ui.basic.Atom("Icon Right", "icon/32/actions/go-next.png");
+  this.getRoot().add(atom);
+&lt;/pre&gt;
+
+&lt;p&gt;This example creates an atom with the label &amp;#8220;Icon Right&amp;#8221; and an icon.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Atom" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="toolBarPart"><xsd:annotation><xsd:documentation>&lt;p&gt;A part is a container for multiple toolbar buttons. Each part comes
+with a handle which may be used in later versions to drag the part
+around and move it to another position. Currently mainly used
+for structuring large toolbars beyond the capabilities of the
+{@link Separator}.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.toolbar.Part"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="label"><xsd:annotation><xsd:documentation>&lt;p&gt;The label class brings typical text content to the widget system.&lt;/p&gt;
+
+&lt;p&gt;It supports simple text nodes and complex &lt;span class="caps"&gt;HTML&lt;/span&gt; (rich). The default
+content mode is for text only. The mode is changeable through the property
+{@link #rich}.&lt;/p&gt;
+
+&lt;p&gt;The label supports heightForWidth when used in &lt;span class="caps"&gt;HTML&lt;/span&gt; mode. This means
+that multi line &lt;span class="caps"&gt;HTML&lt;/span&gt; automatically computes the correct preferred height.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  // a simple text label without wrapping and markup support
+  var label1 = new qx.ui.basic.Label("Simple text label");
+  this.getRoot().add(label1, {left:20, top:10});
+
+  // a HTML label with automatic line wrapping
+  var label2 = new qx.ui.basic.Label().set({
+    content: "A &lt;b&gt;long label&lt;/b&gt; text with auto-wrapping. This also may contain &lt;b&gt;rich HTML&lt;/b&gt; markup.",
+    rich : true,
+    width: 120
+  });
+  this.getRoot().add(label2, {left:20, top:50});
+&lt;/pre&gt;
+
+&lt;p&gt;The first label in this example is a basic text only label. As such no
+automatic wrapping is supported. The second label is a long label containing
+&lt;span class="caps"&gt;HTML&lt;/span&gt; markup with automatic line wrapping.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Label" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.basic.Label"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="image"><xsd:annotation><xsd:documentation>&lt;p&gt;The image class displays an image file&lt;/p&gt;
+
+&lt;p&gt;This class supports image clipping, which means that multiple images can be combined
+into one large image and only the relevant part is shown.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  var image = new qx.ui.basic.Image("icon/32/actions/format-justify-left.png");
+
+  this.getRoot().add(image);
+&lt;/pre&gt;
+
+&lt;p&gt;This example create a widget to display the image
+&lt;code&gt;icon/32/actions/format-justify-left.png&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/Image" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.basic.Image"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="slideBar"><xsd:annotation><xsd:documentation>&lt;p&gt;Container, which provides scrolling in one dimension (vertical or horizontal).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+  // create slide bar container
+  slideBar = new qx.ui.container.SlideBar().set({
+    width: 300
+  });
+
+  // set layout
+  slideBar.setLayout(new qx.ui.layout.HBox());
+
+  // add some widgets
+  for (var i=0; i&lt;10; i++)
+  {
+    slideBar.add((new qx.ui.core.Widget()).set({
+      backgroundColor : (i % 2 == 0) ? "red" : "blue",
+      width : 60
+    }));
+  }
+
+  this.getRoot().add(slideBar);
+&lt;/pre&gt;
+
+&lt;p&gt;This example creates a SlideBar and add some widgets with alternating
+background colors. Since the content is larger than the container, two
+scroll buttons at the left and the right edge are shown.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/SlideBar" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.container.SlideBar"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="dock"><xsd:annotation><xsd:documentation>&lt;p&gt;Docks children to one of the edges.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Percent width for left/right/center attached children&lt;/li&gt;
+&lt;li&gt;Percent height for top/bottom/center attached children&lt;/li&gt;
+&lt;li&gt;Minimum and maximum dimensions&lt;/li&gt;
+&lt;li&gt;Prioritized growing/shrinking (flex)&lt;/li&gt;
+&lt;li&gt;Auto sizing&lt;/li&gt;
+&lt;li&gt;Margins and Spacings&lt;/li&gt;
+&lt;li&gt;Alignment in orthogonal axis (e.g. alignX of north attached)&lt;/li&gt;
+&lt;li&gt;Different sort options for children&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;edge&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: The edge where the layout item
+  should be docked. This may be one of &lt;code&gt;north&lt;/code&gt;, &lt;code&gt;east&lt;/code&gt;,
+  &lt;code&gt;south&lt;/code&gt;, &lt;code&gt;west&lt;/code&gt; or &lt;code&gt;center&lt;/code&gt;. (Required)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;width&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: Defines a percent
+  width for the item. The percent width,
+  when specified, is used instead of the width defined by the size hint.
+  This is only supported for children added to the north or south edge or
+  are centered in the middle of the layout.
+  The minimum and maximum width still takes care of the elements limitations.
+  It has no influence on the layout's size hint. Percents are mainly useful for
+  widgets which are sized by the outer hierarchy.
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;height&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: Defines a percent
+  height for the item. The percent height,
+  when specified, is used instead of the height defined by the size hint.
+  This is only supported for children added to the west or east edge or
+  are centered in the middle of the layout.
+  The minimum and maximum height still takes care of the elements limitations.
+  It has no influence on the layout's size hint. Percents are mainly useful for
+  widgets which are sized by the outer hierarchy.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var layout = new qx.ui.layout.Dock();
+
+var w1 = new qx.ui.core.Widget();
+var w2 = new qx.ui.core.Widget();
+var w3 = new qx.ui.core.Widget();
+
+w1.setHeight(200);
+w2.setWidth(150);
+
+var container = new qx.ui.container.Composite(layout);
+container.add(w1, {edge:"north"});
+container.add(w2, {edge:"west"});
+container.add(w3, {edge:"center"});
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Detailed Description&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Using this layout, items may be &amp;#8220;docked&amp;#8221; to a specific side
+of the available space. Each displayed item reduces the available space
+for the following children. Priorities depend on the position of
+the child in the internal children list.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/Dock"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.Dock"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="embedIframe"><xsd:annotation><xsd:documentation>&lt;p&gt;Container widget for internal frames (iframes).
+An iframe can display any &lt;span class="caps"&gt;HTML&lt;/span&gt; page inside the widget.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the widget.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var document = this.getRoot();
+var iframe = new qx.ui.embed.Iframe("http://www.qooxdoo.org");
+document.add(iframe);
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/widget/iframe" target="_blank"&gt;
+Documentation of this widget in the qooxdoo wiki.&lt;/a&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.embed.Iframe"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="hbox"><xsd:annotation><xsd:documentation>&lt;p&gt;A horizontal box layout.&lt;/p&gt;
+
+&lt;p&gt;The horizontal box layout lays out widgets in a horizontal row, from left
+to right.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Minimum and maximum dimensions&lt;/li&gt;
+&lt;li&gt;Priorized growing/shrinking (flex)&lt;/li&gt;
+&lt;li&gt;Margins (with horizontal collapsing)&lt;/li&gt;
+&lt;li&gt;Auto sizing (ignoring percent values)&lt;/li&gt;
+&lt;li&gt;Percent widths (not size hint relevant)&lt;/li&gt;
+&lt;li&gt;Alignment (Children property {@link qx.ui.core.LayoutItem#alignX} is ignored)&lt;/li&gt;
+&lt;li&gt;Horizontal spacing (collapsed with margins)&lt;/li&gt;
+&lt;li&gt;Reversed children layout (starting from last to first)&lt;/li&gt;
+&lt;li&gt;Vertical children stretching (respecting size hints)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Item Properties&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;flex&lt;/strong&gt; &lt;em&gt;(Integer)&lt;/em&gt;: Indicates the flexibility
+  of the item, which indicates
+  how an item's container distributes remaining empty space among
+  its children. Flexible elements grow and shrink to fit their given
+  space. Elements with larger flex values will be made larger than
+  elements with lower flex values, at the ratio determined by the
+  two elements. The actual value is not relevant unless there are
+  other flexible elements within the same container. Once the
+  default sizes of elements in a box are calculated, the remaining
+  space in the box is divided among the flexible elements, according
+  to their flex ratios. Specifying a flex value of 0 has the same
+  effect as leaving the flex attribute out entirely.
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;width&lt;/strong&gt; &lt;em&gt;(String)&lt;/em&gt;: Defines a percent
+  width for the item. The percent width,
+  when specified, is used instead of the width defined by the size hint.
+  The minimum and maximum width still takes care of the elements limitations.
+  It has no influence on the layout's size hint. Percents are mainly useful for
+  widgets which are sized by the outer hierarchy.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is a little example of how to use the grid layout.&lt;/p&gt;
+
+&lt;pre class="javascript"&gt;
+var layout = new qx.ui.layout.HBox();
+layout.setSpacing(4); // apply spacing
+
+var container = new qx.ui.container.Composite(layout);
+
+container.add(new qx.ui.core.Widget());
+container.add(new qx.ui.core.Widget());
+container.add(new qx.ui.core.Widget());
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;External Documentation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;a href="http://qooxdoo.org/documentation/0.8/layout/Box"&gt;
+Extended documentation&lt;/a&gt; and links to demos of this layout in the qooxdoo wiki.
+
+&lt;p&gt;&lt;strong&gt;Copyright Notes&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Description of flex property by &lt;a href="http://developer.mozilla.org/en/docs/XUL:Attribute:flex"&gt;Mozilla&lt;/a&gt;
+licensed under the
+&lt;a href="http://creativecommons.org/licenses/by-sa/2.5/"&gt;CC Attribution-Sharealike License&lt;/a&gt;.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.layout.HBox"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.layout.Abstract"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="textField"><xsd:annotation><xsd:documentation>&lt;p&gt;The TextField is a single-line text input field.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.TextField"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.AbstractField"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="repeatButton"><xsd:annotation><xsd:documentation>&lt;p&gt;The RepeatButton is a special button, which fires repeatedly {@link execute}
+events, while the mouse button is pressed on the button. The initial delay
+and the interval time can be set using the properties {@link #firstInterval}
+and {@link #interval}. The {@link execute} events will be fired in a shorter
+amount of time if the mouse button is hold, until the min {@link #minTimer}
+is reached. The {@link #timerDecrease} property sets the amount of milliseconds
+which will decreased after every firing.&lt;/p&gt;</xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence><xsd:attributeGroup ref="qx:qx.ui.form.RepeatButton"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.form.Button"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.basic.Atom"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.Widget"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.ui.core.LayoutItem"></xsd:attributeGroup><xsd:attributeGroup ref="qx:qx.core.Object"></xsd:attributeGroup></xsd:complexType></xsd:element><xsd:element name="application"><xsd:annotation><xsd:documentation></xsd:documentation></xsd:annotation><xsd:complexType><xsd:sequence><xsd:group ref="qx:allGroup"></xsd:group></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>

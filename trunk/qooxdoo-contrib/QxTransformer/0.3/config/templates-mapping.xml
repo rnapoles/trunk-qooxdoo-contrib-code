@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!-- 
+
+	QxTransformer
+	Converts QXML to Javascript
+	
+	License: LGPL
+	Autors: Siarhei Barysiuk <s.barysiuk@gmail.com>	
+			Christian Boulanger <info@bibliograph.org>
+			
+	mapping of templates
+	each widget or attribute has template for processing
+	define relation between widget(or attribute) and template in this file
+
+ -->
+
+
+<templates-mapping>
+<widgets>
+	<!-- default content template and add template
+		you can define default templates for specific
+		version of qooxdoo-->	
+	<default-content-template>defaultContentWidgetHandler</default-content-template>
+	<default-add-template>defaultAddWidgetHandler</default-add-template>
+	
+    <!-- these widgets must be ignored by the parser -->
+	<group name="ignoredWidgets" contentTemplate="emptyWidgetHandler">
+    <widget name="qx:eventHandler"/> 
+    <widget name="qx:virtualTreeColumn"/>   
+    <widget name="qxt:method"/>
+    <widget name="qxt:constructor"/>
+    <widget name="qxt:destructor"/>   
+	</group>
+
+  <!-- these widgets need special handling -->
+  <!-- todo: which ones should have qxt namespace?? -->
+	<group name="specialWidgets">
+		<widget name="qx:eventListener" contentTemplate="eventListenerContentWidgetHandler"/>
+		<widget name="qx:globalEventListener" contentTemplate="globalEventListenerContentWidgetHandler"/>
+		<widget name="qx:messageSubscriber" contentTemplate="messageSubscriberContentWidgetHandler"/>
+		<widget name="qx:form" contentTemplate="formContentWidgetHandler"/>		
+		<widget name="qxt:script" contentTemplate="scriptContentWidgetHandler"/>
+		<widget name="qx:style"/>
+		<widget name="qx:param"/>
+		<widget name="qx:xml2json" contentTemplate="xml2jsonContentWidgetHandler"/>
+	</group>
+
+    <!-- these widgets are part of a grid layout -->
+	<group name="gridLayoutElements">
+		<widget name="qx:gridLayout" contentTemplate="gridLayoutContentWidgetHandler"/>
+		<widget name="qx:gridLayoutRow" contentTemplate="gridLayoutRowContentWidgetHandler"/>
+		<widget name="qx:gridLayoutColumn" contentTemplate="gridLayoutColumnContentWidgetHandler"/>
+		<widget name="qx:gridLayoutCell" contentTemplate="gridLayoutCellContentWidgetHandler"/>
+	</group>
+
+    <!-- these widgets have no parent -->
+	<group name="withoutParentWidgets" addTemplate="emptyWidgetHandler">
+		<widget name="qx:radioManager"/>
+		<widget name="qx:command"/>
+		<widget name="qx:toolTip"/>
+		<widget name="qx:color"/>
+		<widget name="qx:border"/>
+		<widget name="qx:dataProvider"/>
+		<widget name="qx:messageTransport"/>
+	</group>
+	
+	<!-- these widgets must be added directly to the document -->
+	<group name="addToDocumentWidgets" addTemplate="addToDocumentAddHandler">
+	</group>
+
+	<!-- menu widgets which need to be attached to menu elements -->
+	<group name="setMenuWidgets" addTemplate="setMenuAddWidgetHandler">
+		<widget name="qx:menu"/>
+		<widget name="qx:command"/>
+	</group>
+
+	<!-- for this handler modifiers can be used -->
+	<group name="modifiedAddGroup" addTemplate="modifiedAddWidgetHandler">
+		<widget name="qx:buttonViewButton"/>
+		<widget name="qx:buttonViewPage"/>
+		<widget name="qx:tabViewButton"/>
+		<widget name="qx:tabViewPage"/>
+	</group>
+    
+    <!-- these widgets need to set manager a manger which is the parent node
+         and then they need to be added to the grandparent node
+    -->
+    <group name="setManagerGroup" addTemplate="setManagerAddWidgetHandler">
+		<widget name="qx:radioButton"/>
+		<widget name="qx:menuRadioButton"/>		
+		<widget name="qx:toolBarRadioButton"/>
+	</group>
+    
+	<!-- single widgets -->
+	<widget name="qx:toolTip" addTemplate="setToolTipAddWidgetHandler" />
+	<widget name="qx:label" contentTemplate="labelContentWidgetHandler" />
+	<widget name="qx:virtualTree" contentTemplate="virtualTreeContentWidgetHandler" />
+	<widget name="qx:listView" contentTemplate="listViewContentWidgetHandler"/>
+	<widget name="qx:table" contentTemplate="tableContentWidgetHandler"/>    
+	
+	<!-- split panes group -->
+	<group name="splitPanesGroup" contentTemplate="paneContentWidgetHandler">
+		<widget name="qx:topPane" addTemplate="emptyWidgetHandler" />
+		<widget name="qx:bottomPane" addTemplate="emptyWidgetHandler"/>
+		<widget name="qx:leftPane" addTemplate="emptyWidgetHandler"  contentTemplate="paneContentWidgetHandler"/>
+		<widget name="qx:rightPane" addTemplate="emptyWidgetHandler"/>
+	</group>
+	
+	
+    <!-- qxtransformer extensions-->
+    <group name="extension" addTemplate="emptyWidgetHandler">
+	    <widget name="qxt:broadcaster" contentTemplate="broadcasterContentWidgetTemplate"/>
+			<widget name="qxt:observer" contentTemplate="observerWidgetContentTemplate"/>
+			<widget name="qxt:observer-property" contentTemplate="observerPropertyWidgetContentTemplate"/>
+			<widget name="qxt:bindingProvider" contentTemplate="bindingProviderContentWidgetHandler"/>
+    </group>
+    
+    <!-- qooxdoo component library (qcl), todo: change prefix from qx to qcl -->
+    <group name="qcl" addTemplate="emptyWidgetHandler">
+	    <widget name="qx:security" 		contentTemplate="securityWidgetContentTemplate"/>
+			<widget name="qx:permission" 	contentTemplate="securityPermissionWidgetContentTemplate"/>
+			<widget name="qx:updater" 		contentTemplate="securityUpdaterWidgetContentTemplate"/>
+			<widget name="qx:condition" 	contentTemplate="securityConditionWidgetContentTemplate"/>
+			<widget name="qx:dependency" 	contentTemplate="securityDependencyWidgetContentTemplate"/>
+			<widget name="qx:userManager" />
+			<widget name="qx:configManager" />
+			<widget name="qx:configChangeEventListener" contentTemplate="configChangeListenerContentWidgetHandler"/>
+    </group>    
+    
+    <!-- these widgets need to be wrapped to fix firefox bug 
+        this is working but not in a grid layout, so disable it    
+    -->
+    <!--group name="fixFirefoxMissingCaretBugGroup" 
+        addTemplate="fixFirefoxMissingCaretBugAddWidgetHandler">
+        <widget name="qx:textField"/>
+        <widget name="qx:passwordField"/>
+        <widget name="qx:textArea"/>
+    </group-->
+
+</widgets>
+
+<attributes>
+	<!-- default template for attributes -->
+	<default-attribute-template>defaultAttributeHandler</default-attribute-template>
+	<!-- attributes which contain values separated by comma-->
+	<group name="commaSeparatedValues" attributeTemplate="CSVAttributeHandler">
+		<attribute name="location"/>
+		<attribute name="dimension"/>
+	</group>	
+	<!-- groups for attributes -->		
+	<group name="specialAttributes" attributeTemplate="emptyAttributeHandler">
+    <attribute name="id" />
+		<attribute name="scope" />
+		<attribute name="description"/>
+		<attribute name="className"/>
+    <attribute name="title"/>
+    <attribute name="authors"/>
+    <attribute name="parentId"/>
+	</group>
+
+	<attribute name="padding" attributeTemplate="paddingAttributeHandler"/>
+	<attribute name="style" attributeTemplate="styleAttributeHandler"/>
+	<attribute name="tooltip" attributeTemplate="tooltipAttributeHandler"/>
+	
+	<!-- special attributes -->
+	<group name="observerProps">
+		<attribute name="qxt:observes" attributeTemplate="observesAttributeHandler"/>
+		<attribute name="qxt:observedProperties" attributeTemplate="emptyAttributeHandler"/>
+		<attribute name="qxt:parent" attributeTemplate="emptyAttributeHandler"/>
+		<attribute name="qxt:position" attributeTemplate="emptyAttributeHandler"/>
+	</group>
+	
+	<!-- security attributes -->
+	<group name="security">
+		<attribute name="enableOnPermission" attributeTemplate="enableOnPermissionAttributeHandler"/>
+		<attribute name="displayOnPermission" attributeTemplate="displayOnPermissionAttributeHandler"/>
+	</group>
+	
+	<!-- attribute that should be translated -->
+	<group name="attributesForTranslation">
+		<attribute name="text" />
+		<attribute name="label" />		
+		<attribute name="legend" />		
+		<attribute name="tooltip" />		
+		<attribute name="caption" />		
+	</group>	
+</attributes>
+
+</templates-mapping>

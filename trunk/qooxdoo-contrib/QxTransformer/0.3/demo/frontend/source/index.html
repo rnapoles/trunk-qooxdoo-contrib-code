@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Showcase</title>
+    <script type="text/javascript">    
+    	//qxsettings={};
+      //qxsettings["qx.debug"]="on";
+      //qxsettings["qx.propertyDebugLevel"]=2; 
+    </script>
+    <script type="text/javascript" src="script/showcase.js"></script>
+    <script type="text/javascript">    
+      // only supply log messages for in source version
+   		if (qx.IS_SOURCE) {
+      	qx.log.Logger.ROOT_LOGGER.setMinLevel(qx.log.Logger.LEVEL_DEBUG);
+      }	else {
+      	qx.log.Logger.ROOT_LOGGER.setMinLevel(qx.log.Logger.LEVEL_ERROR);
+      };
+    </script>    
+  </head>
+</html>

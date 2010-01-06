@@ -1,0 +1,973 @@
+# French
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: qooxdoo showcase\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-03-26 13:57+0200\n"
+"PO-Revision-Date: 2006-12-20 10:58+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: source/class/showcase/Application.js:130
+msgid "Loading, please wait..."
+msgstr ""
+
+#: source/class/showcase/Application.js:168
+msgid "Error"
+msgstr ""
+
+#: source/class/showcase/Application.js:212
+#: source/class/showcase/FormWindow.js:208
+#: source/class/showcase/LoginWindow.js:127
+msgid "Cancel"
+msgstr ""
+
+#: source/class/showcase/Application.js:226
+msgid "Form"
+msgstr ""
+
+#: source/class/showcase/Application.js:242
+msgid "Some controls"
+msgstr ""
+
+#: source/class/showcase/Application.js:258
+#: source/class/showcase/FormWindow.js:96
+msgid "Name"
+msgstr ""
+
+#: source/class/showcase/Application.js:265
+#: source/class/showcase/FormWindow.js:103
+msgid "Amount"
+msgstr ""
+
+#: source/class/showcase/Application.js:272
+#: source/class/showcase/FormWindow.js:110
+msgid "Type"
+msgstr ""
+
+#: source/class/showcase/Application.js:277
+#: source/class/showcase/FormWindow.js:115
+msgid "CD"
+msgstr ""
+
+#: source/class/showcase/Application.js:280
+#: source/class/showcase/FormWindow.js:118
+msgid "Clock"
+msgstr ""
+
+#: source/class/showcase/Application.js:283
+#: source/class/showcase/Application.js:337
+#: source/class/showcase/FormWindow.js:121
+#: source/class/showcase/FormWindow.js:175
+msgid "Modem"
+msgstr ""
+
+#: source/class/showcase/Application.js:286
+#: source/class/showcase/Application.js:1244
+#: source/class/showcase/FormWindow.js:124
+msgid "Network"
+msgstr ""
+
+#: source/class/showcase/Application.js:289
+#: source/class/showcase/FormWindow.js:127
+msgid "PDA"
+msgstr ""
+
+#: source/class/showcase/Application.js:292
+#: source/class/showcase/FormWindow.js:130
+msgid "Printer"
+msgstr ""
+
+#: source/class/showcase/Application.js:295
+#: source/class/showcase/FormWindow.js:133
+msgid "TV"
+msgstr ""
+
+#: source/class/showcase/Application.js:300
+#: source/class/showcase/FormWindow.js:138
+msgid "Email"
+msgstr ""
+
+#: source/class/showcase/Application.js:307
+#: source/class/showcase/FormWindow.js:145
+msgid "Comment"
+msgstr ""
+
+#: source/class/showcase/Application.js:314
+#: source/class/showcase/FormWindow.js:152
+msgid "Some settings"
+msgstr ""
+
+#: source/class/showcase/Application.js:321
+#: source/class/showcase/FormWindow.js:159
+msgid "Permit others to view my favorites"
+msgstr ""
+
+#: source/class/showcase/Application.js:324
+#: source/class/showcase/FormWindow.js:162
+msgid "Use the very high bitrate"
+msgstr ""
+
+#: source/class/showcase/Application.js:328
+#: source/class/showcase/FormWindow.js:166
+msgid "Network Speed"
+msgstr ""
+
+#: source/class/showcase/Application.js:341
+#: source/class/showcase/FormWindow.js:179
+msgid "DSL"
+msgstr ""
+
+#: source/class/showcase/Application.js:346
+#: source/class/showcase/FormWindow.js:184
+msgid "Direct Link"
+msgstr ""
+
+#: source/class/showcase/Application.js:355
+#: source/class/showcase/Application.js:410
+#: source/class/showcase/Application.js:920
+#: source/class/showcase/Application.js:1175
+#: source/class/showcase/Application.js:1405
+#: source/class/showcase/Application.js:1569
+#: source/class/showcase/Application.js:1637
+#: source/class/showcase/Application.js:1815
+#: source/class/showcase/Application.js:2213
+msgid "QxTransformer info"
+msgstr ""
+
+#: source/class/showcase/Application.js:371
+msgid "Tooltip"
+msgstr ""
+
+#: source/class/showcase/Application.js:383
+#: source/class/showcase/Application.js:390
+#: source/class/showcase/Application.js:399
+msgid "Hover me"
+msgstr ""
+
+#: source/class/showcase/Application.js:387
+msgid "Look at this"
+msgstr ""
+
+#: source/class/showcase/Application.js:396
+msgid "Images are also possible"
+msgstr ""
+
+#: source/class/showcase/Application.js:420
+msgid "Menu and Toolbar"
+msgstr ""
+
+#: source/class/showcase/Application.js:437
+msgid "File"
+msgstr ""
+
+#: source/class/showcase/Application.js:444
+#: source/class/showcase/Application.js:737
+msgid "New"
+msgstr ""
+
+#: source/class/showcase/Application.js:447
+msgid "Open"
+msgstr ""
+
+#: source/class/showcase/Application.js:450
+msgid "Save"
+msgstr ""
+
+#: source/class/showcase/Application.js:453
+msgid "Save as"
+msgstr ""
+
+#: source/class/showcase/Application.js:456
+msgid "Close"
+msgstr ""
+
+#: source/class/showcase/Application.js:459
+msgid "Restore last saved"
+msgstr ""
+
+#: source/class/showcase/Application.js:462
+#: source/class/showcase/Application.js:953
+#: source/class/showcase/Application.js:1270
+msgid "Edit"
+msgstr ""
+
+#: source/class/showcase/Application.js:469
+#: source/class/showcase/Application.js:2100
+msgid "Undo"
+msgstr ""
+
+#: source/class/showcase/Application.js:472
+#: source/class/showcase/Application.js:2106
+msgid "Redo"
+msgstr ""
+
+#: source/class/showcase/Application.js:478
+#: source/class/showcase/Application.js:752
+#: source/class/showcase/Application.js:2031
+#: source/class/showcase/Application.js:2115
+msgid "Cut"
+msgstr ""
+
+#: source/class/showcase/Application.js:481
+#: source/class/showcase/Application.js:743
+#: source/class/showcase/Application.js:2037
+#: source/class/showcase/Application.js:2121
+msgid "Copy"
+msgstr ""
+
+#: source/class/showcase/Application.js:484
+#: source/class/showcase/Application.js:761
+#: source/class/showcase/Application.js:2034
+#: source/class/showcase/Application.js:2127
+msgid "Paste"
+msgstr ""
+
+#: source/class/showcase/Application.js:488
+#: source/class/showcase/Application.js:2133
+msgid "Delete"
+msgstr ""
+
+#: source/class/showcase/Application.js:495
+#: source/class/showcase/Application.js:2142
+msgid "Select All"
+msgstr ""
+
+#: source/class/showcase/Application.js:498
+#: source/class/showcase/Application.js:957
+msgid "Find"
+msgstr ""
+
+#: source/class/showcase/Application.js:501
+msgid "Find Again"
+msgstr ""
+
+#: source/class/showcase/Application.js:505
+#: source/class/showcase/Application.js:655
+msgid "View"
+msgstr ""
+
+#: source/class/showcase/Application.js:512
+msgid "File List"
+msgstr ""
+
+#: source/class/showcase/Application.js:515
+msgid "Syntax Highlighting"
+msgstr ""
+
+#: source/class/showcase/Application.js:519
+msgid "Statusbar"
+msgstr ""
+
+#: source/class/showcase/Application.js:526
+msgid "Printer Font"
+msgstr ""
+
+#: source/class/showcase/Application.js:535
+msgid "Tahoma, 11pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:539
+msgid "Tahoma, 12pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:543
+msgid "Tahoma, 13pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:547
+msgid "Tahoma, 14pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:551
+msgid "Tahoma, 15pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:556
+msgid "Editor Font"
+msgstr ""
+
+#: source/class/showcase/Application.js:565
+msgid "Verdana, 11pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:569
+msgid "Verdana, 12pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:574
+msgid "Verdana, 13pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:578
+msgid "Verdana, 14pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:582
+msgid "Verdana, 15pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:586
+msgid "Export Font"
+msgstr ""
+
+#: source/class/showcase/Application.js:595
+msgid "Courier, 11pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:600
+msgid "Courier, 12pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:604
+msgid "Courier, 13pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:608
+msgid "Courier, 14pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:612
+msgid "Courier, 15pt"
+msgstr ""
+
+#: source/class/showcase/Application.js:619
+msgid "Advanced"
+msgstr ""
+
+#: source/class/showcase/Application.js:626
+#: source/class/showcase/Application.js:636
+msgid "First"
+msgstr ""
+
+#: source/class/showcase/Application.js:629
+#: source/class/showcase/Application.js:639
+msgid "Second"
+msgstr ""
+
+#: source/class/showcase/Application.js:642
+#: source/class/showcase/Application.js:645
+msgid "Third"
+msgstr ""
+
+#: source/class/showcase/Application.js:648
+msgid "Options"
+msgstr ""
+
+#: source/class/showcase/Application.js:662
+msgid "New Window"
+msgstr ""
+
+#: source/class/showcase/Application.js:668
+msgid "Window Mode"
+msgstr ""
+
+#: source/class/showcase/Application.js:677
+msgid "Overlapping"
+msgstr ""
+
+#: source/class/showcase/Application.js:681
+msgid "Split Horizontally"
+msgstr ""
+
+#: source/class/showcase/Application.js:686
+msgid "Split Vertically"
+msgstr ""
+
+#: source/class/showcase/Application.js:693
+msgid "Next Window"
+msgstr ""
+
+#: source/class/showcase/Application.js:696
+msgid "Previous Window"
+msgstr ""
+
+#: source/class/showcase/Application.js:702
+msgid "Editor Preferences..."
+msgstr ""
+
+#: source/class/showcase/Application.js:705
+msgid "Editor Extensions"
+msgstr ""
+
+#: source/class/showcase/Application.js:708
+msgid "Framework Preferences"
+msgstr ""
+
+#: source/class/showcase/Application.js:711
+#: source/class/showcase/Application.js:718
+#: source/class/showcase/LoginWindow.js:135
+msgid "Help"
+msgstr ""
+
+#: source/class/showcase/Application.js:721
+msgid "About"
+msgstr ""
+
+#: source/class/showcase/Application.js:774
+msgid "Check"
+msgstr ""
+
+#: source/class/showcase/Application.js:782
+#: source/class/showcase/Application.js:807
+msgid "Radio1"
+msgstr ""
+
+#: source/class/showcase/Application.js:786
+#: source/class/showcase/Application.js:811
+msgid "Radio2"
+msgstr ""
+
+#: source/class/showcase/Application.js:790
+#: source/class/showcase/Application.js:815
+msgid "Radio3"
+msgstr ""
+
+#: source/class/showcase/Application.js:797
+msgid "Radio Dropdown"
+msgstr ""
+
+#: source/class/showcase/Application.js:861
+msgid "Show Icons and Label"
+msgstr ""
+
+#: source/class/showcase/Application.js:866
+msgid "Show Icons"
+msgstr ""
+
+#: source/class/showcase/Application.js:870
+#: source/class/showcase/Application.js:1556
+msgid "Show Label"
+msgstr ""
+
+#: source/class/showcase/Application.js:886
+msgid "Left Aligned"
+msgstr ""
+
+#: source/class/showcase/Application.js:891
+msgid "Centered"
+msgstr ""
+
+#: source/class/showcase/Application.js:895
+msgid "Right Aligned"
+msgstr ""
+
+#: source/class/showcase/Application.js:911
+msgid "22px"
+msgstr ""
+
+#: source/class/showcase/Application.js:916
+msgid "32px"
+msgstr ""
+
+#: source/class/showcase/Application.js:930
+msgid "Tabs"
+msgstr ""
+
+#: source/class/showcase/Application.js:960
+msgid "Backup"
+msgstr ""
+
+#: source/class/showcase/Application.js:966
+msgid "Place bar on top"
+msgstr ""
+
+#: source/class/showcase/Application.js:976
+msgid "Align tabs to left"
+msgstr ""
+
+#: source/class/showcase/Application.js:993
+msgid "Search for Files"
+msgstr ""
+
+#: source/class/showcase/Application.js:997
+msgid "Search the Web"
+msgstr ""
+
+#: source/class/showcase/Application.js:1000
+msgid "Search in Mails"
+msgstr ""
+
+#: source/class/showcase/Application.js:1015
+#: source/class/showcase/Application.js:1033
+#: source/class/showcase/Application.js:1051
+#: source/class/showcase/Application.js:2148
+msgid "Search"
+msgstr ""
+
+#: source/class/showcase/Application.js:1082
+msgid "Display"
+msgstr ""
+
+#: source/class/showcase/Application.js:1089
+msgid "Colorize"
+msgstr ""
+
+#: source/class/showcase/Application.js:1095
+msgid "Icons"
+msgstr ""
+
+#: source/class/showcase/Application.js:1101
+msgid "Applications"
+msgstr ""
+
+#: source/class/showcase/Application.js:1107
+msgid "System"
+msgstr ""
+
+#: source/class/showcase/Application.js:1126
+msgid "Top"
+msgstr ""
+
+#: source/class/showcase/Application.js:1131
+msgid "Right"
+msgstr ""
+
+#: source/class/showcase/Application.js:1136
+msgid "Bottom"
+msgstr ""
+
+#: source/class/showcase/Application.js:1141
+msgid "Left"
+msgstr ""
+
+#: source/class/showcase/Application.js:1186
+msgid "Trees"
+msgstr ""
+
+#: source/class/showcase/Application.js:1202
+msgid "Tree"
+msgstr ""
+
+#: source/class/showcase/Application.js:1217
+msgid "Root"
+msgstr ""
+
+#: source/class/showcase/Application.js:1225
+msgid "Desktop"
+msgstr ""
+
+#: source/class/showcase/Application.js:1230
+#: source/class/showcase/Application.js:1247
+msgid "Files"
+msgstr ""
+
+#: source/class/showcase/Application.js:1233
+msgid "Workspace"
+msgstr ""
+
+#: source/class/showcase/Application.js:1236
+msgid "Windows (C:)"
+msgstr ""
+
+#: source/class/showcase/Application.js:1240
+msgid "Documents (D:)"
+msgstr ""
+
+#: source/class/showcase/Application.js:1250
+#: source/class/showcase/Application.js:1262
+msgid "Trash"
+msgstr ""
+
+#: source/class/showcase/Application.js:1253
+msgid "Inbox"
+msgstr ""
+
+#: source/class/showcase/Application.js:1256
+msgid "Presets"
+msgstr ""
+
+#: source/class/showcase/Application.js:1259
+msgid "Sent"
+msgstr ""
+
+#: source/class/showcase/Application.js:1267
+msgid "Data"
+msgstr ""
+
+#: source/class/showcase/Application.js:1273
+msgid "Chat"
+msgstr ""
+
+#: source/class/showcase/Application.js:1276
+msgid "Pustefix"
+msgstr ""
+
+#: source/class/showcase/Application.js:1279
+msgid "TINC"
+msgstr ""
+
+#: source/class/showcase/Application.js:1282
+msgid "Announce"
+msgstr ""
+
+#: source/class/showcase/Application.js:1285
+msgid "Devel"
+msgstr ""
+
+#: source/class/showcase/Application.js:1288
+msgid "Lists"
+msgstr ""
+
+#: source/class/showcase/Application.js:1291
+msgid "Relations"
+msgstr ""
+
+#: source/class/showcase/Application.js:1294
+msgid "Company"
+msgstr ""
+
+#: source/class/showcase/Application.js:1297
+msgid "Questions"
+msgstr ""
+
+#: source/class/showcase/Application.js:1300
+msgid "Internal"
+msgstr ""
+
+#: source/class/showcase/Application.js:1303
+msgid "Products"
+msgstr ""
+
+#: source/class/showcase/Application.js:1306
+msgid "Press"
+msgstr ""
+
+#: source/class/showcase/Application.js:1309
+msgid "Development"
+msgstr ""
+
+#: source/class/showcase/Application.js:1312
+msgid "Competition"
+msgstr ""
+
+#: source/class/showcase/Application.js:1315
+msgid "Personal"
+msgstr ""
+
+#: source/class/showcase/Application.js:1318
+msgid "Bugs"
+msgstr ""
+
+#: source/class/showcase/Application.js:1321
+msgid "Family"
+msgstr ""
+
+#: source/class/showcase/Application.js:1324
+msgid "Projects"
+msgstr ""
+
+#: source/class/showcase/Application.js:1327
+msgid "Holiday"
+msgstr ""
+
+#: source/class/showcase/Application.js:1330
+msgid "Big"
+msgstr ""
+
+#: source/class/showcase/Application.js:1333
+msgid "Spam"
+msgstr ""
+
+#: source/class/showcase/Application.js:1361
+msgid "Control"
+msgstr ""
+
+#: source/class/showcase/Application.js:1372
+msgid "Current Folder: "
+msgstr ""
+
+#: source/class/showcase/Application.js:1386
+msgid "Use double click?"
+msgstr ""
+
+#: source/class/showcase/Application.js:1395
+msgid "Use tree lines?"
+msgstr ""
+
+#: source/class/showcase/Application.js:1415
+msgid "List"
+msgstr ""
+
+#: source/class/showcase/Application.js:1435
+msgid "Item No 1."
+msgstr ""
+
+#: source/class/showcase/Application.js:1438
+msgid "Item No 2."
+msgstr ""
+
+#: source/class/showcase/Application.js:1441
+msgid "Item No 3."
+msgstr ""
+
+#: source/class/showcase/Application.js:1444
+msgid "Item No 4."
+msgstr ""
+
+#: source/class/showcase/Application.js:1508
+msgid "Enable Multi-Selection"
+msgstr ""
+
+#: source/class/showcase/Application.js:1518
+msgid "Enable Drag-Selection"
+msgstr ""
+
+#: source/class/showcase/Application.js:1528
+msgid "Allow Deselection"
+msgstr ""
+
+#: source/class/showcase/Application.js:1538
+msgid "Enable Inline Find"
+msgstr ""
+
+#: source/class/showcase/Application.js:1560
+msgid "Show Icon"
+msgstr ""
+
+#: source/class/showcase/Application.js:1564
+msgid "Show Both"
+msgstr ""
+
+#: source/class/showcase/Application.js:1578
+msgid "ListView+Table"
+msgstr ""
+
+#: source/class/showcase/Application.js:1596
+msgid "ListView"
+msgstr ""
+
+#: source/class/showcase/Application.js:1648
+msgid "Split Pane"
+msgstr ""
+
+#: source/class/showcase/Application.js:1689
+#: source/class/showcase/Application.js:1709
+msgid "QxTransformer"
+msgstr ""
+
+#: source/class/showcase/Application.js:1692
+msgid "qooxdoo"
+msgstr ""
+
+#: source/class/showcase/Application.js:1695
+msgid "Ajaxian"
+msgstr ""
+
+#: source/class/showcase/Application.js:1698
+msgid "Mozilla Developer News"
+msgstr ""
+
+#: source/class/showcase/Application.js:1726
+msgid "QxTransformer_extension_showcase"
+msgstr ""
+
+#: source/class/showcase/Application.js:1729
+msgid "Macros"
+msgstr ""
+
+#: source/class/showcase/Application.js:1749
+#: source/class/showcase/Application.js:1786
+msgid "Username"
+msgstr ""
+
+#: source/class/showcase/Application.js:1758
+#: source/class/showcase/Application.js:1795
+#: source/class/showcase/LoginWindow.js:102
+msgid "Password"
+msgstr ""
+
+#: source/class/showcase/Application.js:1766
+msgid "Include"
+msgstr ""
+
+#: source/class/showcase/Application.js:1803
+msgid "Use external class"
+msgstr ""
+
+#: source/class/showcase/Application.js:1807
+msgid "new showcase.LoginWindow()"
+msgstr ""
+
+#: source/class/showcase/Application.js:1831
+msgid "Broadcaster/Observer Functionality"
+msgstr ""
+
+#: source/class/showcase/Application.js:1839
+msgid "Simple with one property"
+msgstr ""
+
+#: source/class/showcase/Application.js:1849
+msgid "Enable"
+msgstr ""
+
+#: source/class/showcase/Application.js:1858
+msgid "Simple label"
+msgstr ""
+
+#: source/class/showcase/Application.js:1871
+msgid "Advanced broadcaster"
+msgstr ""
+
+#: source/class/showcase/Application.js:1881
+msgid "Generate broadcast event"
+msgstr ""
+
+#: source/class/showcase/Application.js:1907
+msgid "Simple label 1"
+msgstr ""
+
+#: source/class/showcase/Application.js:1944
+msgid "Localization"
+msgstr ""
+
+#: source/class/showcase/Application.js:1968
+msgid "Choose a locale: "
+msgstr ""
+
+#: source/class/showcase/Application.js:2025
+msgid "Localized ComboBox:"
+msgstr ""
+
+#: source/class/showcase/Application.js:2046
+msgid "A date: "
+msgstr ""
+
+#: source/class/showcase/Application.js:2154
+msgid "Search Again"
+msgstr ""
+
+#: source/class/showcase/Application.js:2159
+msgid "Command Menu (keyboard shortcuts)"
+msgstr ""
+
+#: source/class/showcase/Application.js:2173
+msgid "Open Locale Info Window"
+msgstr ""
+
+#: source/class/showcase/Application.js:2222
+#: source/class/showcase/LoginWindow.js:140
+msgid "Show source"
+msgstr ""
+
+#: source/class/showcase/Application.js:2230
+msgid "Show Locale Info Window source"
+msgstr ""
+
+#: source/class/showcase/Application.js:2237
+msgid "Basic Colors"
+msgstr ""
+
+#: source/class/showcase/Application.js:2237
+msgid "Recent Colors"
+msgstr ""
+
+#: source/class/showcase/Application.js:2237
+msgid "Template Colors"
+msgstr ""
+
+#: source/class/showcase/FormWindow.js:47
+msgid "Submit Form"
+msgstr ""
+
+#: source/class/showcase/FormWindow.js:80
+msgid "Some controls bound to a form"
+msgstr ""
+
+#: source/class/showcase/FormWindow.js:192
+msgid "Submit"
+msgstr ""
+
+#: source/class/showcase/FormWindow.js:200
+msgid "Reset"
+msgstr ""
+
+#: source/class/showcase/FormWindow.js:216
+msgid "Show Source"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:46
+msgid "Locale Information"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:59
+msgid "Locale information"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:77
+msgid "Locale:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:84
+msgid "Territory code:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:91
+msgid "Date format short:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:98
+msgid "Date short:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:105
+msgid "Date format medium:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:112
+msgid "Date medium:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:119
+msgid "Date format long:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:126
+msgid "Date long:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:133
+msgid "Date format full:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:140
+msgid "Date full:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:147
+msgid "Time format short:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:154
+msgid "Time short:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:161
+msgid "Time format long:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:168
+msgid "Time long:"
+msgstr ""
+
+#: source/class/showcase/LocaleInfoWindow.js:175
+msgid "Week start:"
+msgstr ""
+
+#: source/class/showcase/LoginWindow.js:46
+#: source/class/showcase/LoginWindow.js:118
+msgid "Login"
+msgstr ""
+
+#: source/class/showcase/LoginWindow.js:69
+msgid "Please log in."
+msgstr ""
+
+#: source/class/showcase/LoginWindow.js:89
+msgid "User Name"
+msgstr ""

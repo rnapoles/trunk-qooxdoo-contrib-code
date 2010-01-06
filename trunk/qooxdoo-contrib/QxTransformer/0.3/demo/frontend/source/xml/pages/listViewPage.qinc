@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<qx:buttonViewButton id="listview" text="ListView+Table"
+		icon="icon/32/actions/view-pane-icon.png" />
+
+	<qx:buttonViewPage button="listview" backgroundColor="#EBE9ED">
+
+		<qx:horizontalBoxLayout 
+			width="auto" height="100%" 
+			spacing="10" padding="10">
+
+			<qx:tabView dimension="100%,100%">
+
+				
+				<qx:tabViewButton id="listview_tabViewButton"
+							
+				label="ListView" checked="true"
+/>
+					<qx:tabViewPage button="listview_tabViewButton"
+											  backgroundColor="#EBE9ED">
+					<!-- listview data can be declared ahead or inline -->
+			<qx:xml2json 
+				
+					id="listViewData" 
+					prettyPrint="false">
+				<data>
+					<name>
+						<html>E-Mail</html>
+						<icon>icon/16/apps/internet-email-client.png</icon>
+						<iconWidth>16</iconWidth>
+						<iconHeight>16</iconHeight>
+					</name>
+					<size>
+						<text>200kb</text>
+					</size>
+					<type>
+						<text>Icon</text>
+					</type>
+					<modified>
+						<text>March 2007</text>
+					</modified>
+					<rights>
+						<text>-rw-r--r--</text>
+					</rights>
+				</data>
+				<data>
+					<name>
+						<html>E-Mail2</html>
+						<icon>icon/16/apps/internet-email-client.png</icon>
+						<iconWidth>16</iconWidth>
+						<iconHeight>16</iconHeight>
+					</name>
+					<size>
+						<text>300kb</text>
+					</size>
+					<type>
+						<text>PDF</text>
+					</type>
+					<modified>
+						<text>March 2007</text>
+					</modified>
+					<rights>
+						<text>-rw-r--r--</text>
+					</rights>
+				</data>
+			</qx:xml2json>
+
+			<qx:listView  id='lview'
+				
+				data="listViewData.data"
+
+				backgroundColor="white" 
+
+				width="100%" height="100%">
+
+				<!-- start: header of list view -->
+				<qx:listViewColumn label="Name" width="120"
+					type="iconHtml" id="name" />
+
+				<qx:listViewColumn label="Size" width="50" type="text"
+					id="size" />
+
+				<qx:listViewColumn label="Type" width="80" type="text"
+					id="type" />
+
+				<qx:listViewColumn label="Last Modified" width="150"
+					type="text" id="modified" />
+
+				<qx:listViewColumn label="Rights" width="80" type="text"
+					id="rights" />
+				<!-- end: header of list view -->
+
+				
+			</qx:listView>
+			
+			</qx:tabViewPage>
+
+			<!--
+			
+			<qx:tabViewButton 
+				
+					id="table_tabViewButton" 
+					checked="true"
+				
+					label="Table"/>
+
+			
+					
+					<qx:tabViewPage button="table_tabViewButton"
+				
+											  backgroundColor="threedface">
+											  
+					
+			
+						<qx:verticalBoxLayout width="100%" height="100%" spacing="2">
+			
+				
+							<qx:horizontalBoxLayout width="100%" height="auto">
+							
+					
+							<- search options ->		
+							
+					
+								<qx:toolBar width="100%" height="30" id="searchOptions">
+
+						
+									<qx:atom 
+							
+												icon="icon/16/actions/edit-find.png" label="Search"
+							
+												padding="2" 
+												horizontalAlign="center" 
+												verticalAlign="middle" />
+						
+						
+										<qx:radioManager id="searchType" >
+							
+										<qx:toolBarRadioButton text="All" checked="true" />
+							
+										<qx:toolBarRadioButton text="Animals" />
+							
+										<qx:toolBarRadioButton text="Plants"  />
+							
+										<qx:toolBarRadioButton text="Humans"  />
+						
+										</qx:radioManager>
+						
+						
+										<qx:toolBarSeparator/>
+						
+						
+										<qx:radioManager id="searchScope">
+							
+										<qx:toolBarRadioButton text="Europe only"  />
+							
+										<qx:toolBarRadioButton text="The World" checked="true"/>
+						
+										</qx:radioManager>
+
+					
+										</qx:toolBar>
+				
+				
+										</qx:horizontalBoxLayout>
+				
+				
+										<- search bar ->
+				
+										<qx:horizontalBoxLayout width="100%" height="30" spacing="5">
+				
+					
+										<qx:textField id="searchText" width="1*" />
+					
+					
+										<qx:button label="Search" icon="icon/16/actions/zoom.png">
+						
+										<qx:eventListener type="execute" dispatchMessage="showcase.updateSearchResults" />
+					
+										</qx:button>
+				
+				
+										</qx:horizontalBoxLayout>
+			
+				
+										<- result table ->
+				
+										<qx:table 
+					
+										id="searchResultTable" 
+					
+										tableModel="simple"
+					
+										width="100%" height="1*" 
+					
+										border="inset-thin">
+						
+					
+										<qx:tableColumn label="Type" width="10%"/>
+					
+										<qx:tableColumn label="Description" width="80%"/>
+					
+										<qx:tableColumn label="Number" width="10%"/>
+					
+					
+										<qx:eventListener type="appear" dispatchMessage="showcase.updateSearchResults" />
+					
+					
+										<qx:messageSubscriber filter="showcase.updateSearchResults">
+						
+										<![CDATA[
+							
+										var data=[];
+							
+										for ( var i=0; i<500; i++)
+							
+										{
+								
+										data.push(["foo " + i,"bar " + Math.floor(Math.random()*100),Math.floor(Math.random()*1000)]);
+						
+										}
+							
+										this.getTableModel().setData(data);
+						
+										]]>
+					
+										</qx:messageSubscriber>
+				
+				
+										</qx:table>
+				
+			
+										</qx:verticalBoxLayout>						
+	
+			
+										</qx:tabViewPage>-->					
+
+			</qx:tabView>
+
+			<qx:groupBox legend="QxTransformer info"
+					width="285" height="auto">
+					
+					<qx:label top="0">
+						<a href="source/xml/pages/listViewPage.qinc" 
+                        		target="_blank">ButtonViewPage XML Source</a>
+                    </qx:label>    		
+				</qx:groupBox>
+		</qx:horizontalBoxLayout>
+
+	</qx:buttonViewPage>
+
+</qxt:include-definition>

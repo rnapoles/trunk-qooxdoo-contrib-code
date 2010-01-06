@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:macro-definitions
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo">
+	<qxt:define-macro name="loginPanel">
+
+		<qx:gridLayoutRow height="20" width="100%">
+			<qx:gridLayoutCell>
+				<qx:label text="$labelName" />
+			</qx:gridLayoutCell>
+			<qx:gridLayoutCell>
+				<qx:textField width="100%" height="100%"
+					      id="$fieldId"/>
+			</qx:gridLayoutCell>
+		</qx:gridLayoutRow>
+
+	</qxt:define-macro>
+</qxt:macro-definitions>

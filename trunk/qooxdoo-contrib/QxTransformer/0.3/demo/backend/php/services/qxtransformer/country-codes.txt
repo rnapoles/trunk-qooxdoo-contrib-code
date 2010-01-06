@@ -1,0 +1,238 @@
+AW	Aruba
+AF	Afghanistan
+AO	Angola
+AI	Anguilla
+AL	Albania
+AD	Andora
+AN	Netherlands Antilles
+AE	United Arab Emirates
+AR	Argentina
+AM	Armenia
+AS	American Samoa
+AQ	Antarctica
+TF	French Southern Territories
+AG	Antigua And Barbuda
+AU	Australia
+AT	Austria
+AZ	Azerbaijan
+BI	Burundi
+BE	Belgium
+BJ	Benin
+BF	Burkina Faso
+BD	Bangladesh
+BG	Bulgaria
+BH	Bahrain
+BS	Bahamas
+BA	Bosnia And Herzegovina
+BY	Belarus
+BZ	Belize
+BM	Bermuda
+BO	Bolivia
+BR	Brazil
+BB	Barbados
+BN	Brunei Darussalam
+BT	Bhutan
+BV	Bouvet Island
+BW	Botswana
+CF	Central African Republic
+CA	Canada
+CC	Cocos (Keeling) Islands
+CH	Switzerland
+CL	Chile
+CN	China
+CI	Cote D'ivoire
+CM	Cameroon
+CG	Congo
+CK	Cook Islands
+CO	Colombia
+KM	Comoros
+CV	Cape Verde
+CR	Costa Rica
+CU	Cuba
+CX	Christmas Island
+KY	Cayman Islands
+CY	Cyprus
+CZ	Czech Republic
+DE	Germany
+DJ	Djibouti
+DM	Dominica
+DK	Denmark
+DO	Dominican Republic
+DZ	Algeria
+EC	Ecuador
+EG	Egypt
+ER	Eritrea
+EH	Western Sahara
+ES	Spain
+EE	Estonia
+ET	Ethiopia
+FI	Finland
+FJ	Fiji
+FK	Falkland Islands (Malvinas)
+FR	France
+FO	Faroe Islands
+FM	Micronesia, Federated States Of
+GA	Gabon
+GB	United Kingdom
+GE	Georgia
+GH	Ghana
+GI	Gibraltar
+GN	Guinea
+GP	Guadeloupe
+GM	Gambia
+GW	Guinea-bissau
+GQ	Equatorial Guinea
+GR	Greece
+GD	Grenada
+GL	Greenland
+GT	Guatemala
+GF	French Guiana
+GU	Guam
+GY	Guyana
+HK	Hong Kong
+HM	Heard And Mc Donald Islands
+HN	Honduras
+HR	Croatia (Local name: Hrvatska)
+HT	Haiti
+HU	Hungary
+ID	Indonesia
+IN	India
+IO	British Indian Ocean Territory
+IE	Ireland
+IR	Iran (Islamic Republic Of)
+IQ	Iraq
+IS	Iceland
+IL	Israel
+IT	Italy
+JM	Jamaica
+JO	Jordan
+JP	Japan
+KZ	Kazakhstan
+KE	Kenya
+KG	Kyrgyzstan
+KH	Cambodia
+KI	Kiribati
+KN	Saint Kitts and Nevis
+KR	Korea, Republic Of
+KW	Kuwait
+LA	Lao People's Democratic Republic
+LB	Lebanon
+LR	Liberia
+LY	Libyan Arab Jamahiriya
+LC	Saint Lucia
+LI	Liechtenstein
+LK	Sri Lanka
+LS	Lesotho
+LT	Lithuania
+LU	Luxembourg
+LV	Latvia
+MO	Macau
+MA	Morocco
+MC	Monaco
+MD	Moldova, Republic Of
+MG	Madagascar
+MV	Maldives
+MX	Mexico
+MH	Marshall Islands
+MK	Macedonia, The Former Yugoslav Republic Of
+ML	Mali
+MT	Malta
+MM	Myanmar
+MN	Mongolia
+MP	Northern Mariana Islands
+MZ	Mozambique
+MR	Mauritania
+MS	Montserrat
+MQ	Martinique
+MU	Mauritius
+MW	Malawi
+MY	Malaysia
+YT	Mayotte
+NA	Namibia
+NC	New Caledonia
+NE	Niger
+NF	Norfolk Island
+NG	Nigeria
+NI	Nicaragua
+NU	Niue
+NL	Netherlands
+NO	Norway
+NP	Nepal
+NR	Nauru
+NZ	New Zealand
+OM	Oman
+PK	Pakistan
+PA	Panama
+PN	Pitcairn
+PE	Peru
+PH	Philippines
+PW	Palau
+PG	Papua New Guinea
+PL	Poland
+PR	Puerto Rico
+KP	Korea, Democratic People's Republic Of
+PT	Portugal
+PY	Paraguay
+PF	French Polynesia
+QA	Qatar
+RE	Reunion
+RO	Romania
+RU	Russian Federation
+RW	Rwanda
+SA	Saudi Arabia
+CS	Serbia and Montenegro (Formerly Yugoslavia)
+SD	Sudan
+SN	Senegal
+SG	Singapore
+GS	South Georgia and The South Sandwich Islands
+SH	St. Helena
+SJ	Svalbard and Jan Mayen Islands
+SB	Solomon Islands
+SL	Sierra Leone
+SV	El Salvador
+SM	San Marino
+SO	Somalia
+PM	St. Pierre and Miquelon
+ST	Sao Tome And Principe
+SR	Suriname
+SK	Slovakia (Slovak Republic)
+SI	Slovenia
+SE	Sweden
+SZ	Swaziland
+SC	Seychelles
+SY	Syrian Arab Republic
+TC	Turks And Caicos Islands
+TD	Chad
+TG	Togo
+TH	Thailand
+TJ	Tajikistan
+TK	Tokelau
+TM	Turkmenistan
+TL	Timor-Leste
+TO	Tonga
+TT	Trinidad And Tobago
+TN	Tunisia
+TR	Turkey
+TV	Tuvalu
+TW	Taiwan, Province Of China
+TZ	Tanzania, United Republic Of
+UG	Uganda
+UA	Ukraine
+UM	United States Minor Outlying Islands
+UY	Uruguay
+US	United States
+UZ	Uzbekistan
+VA	Vatican City State (Holy See)
+VC	Saint Vincent and The Grenadines
+VE	Venezuela
+VG	Virgin Islands (British)
+VI	Virgin Islands (U.S.)
+VN	Viet Nam
+VU	Vanuatu
+WF	Wallis And Futuna Islands
+WS	Samoa
+YE	Yemen
+YU	Yugoslavia
+ZA	South Africa
+ZM	Zambia
+ZW	Zimbabwe

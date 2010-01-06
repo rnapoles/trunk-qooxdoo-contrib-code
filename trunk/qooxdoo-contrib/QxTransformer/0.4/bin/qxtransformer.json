@@ -1,0 +1,20 @@
+{
+    "name"    : "qxtransformer build jobs",
+    
+    "let" :
+    {
+        "PYTHON" : "python",
+        "QXTRANSFORMER" : "qxtransformer.py"
+    },
+    
+    "export" : ["transform"],
+    
+    "jobs" : {
+        
+        "transform" : {
+            "shell": {
+                "command" : "${PYTHON} ${QXTRANSFORMER_PATH}/bin/${QXTRANSFORMER} --dir source/xml --out source/class -v 'main:INFO;dev:INFO;'"
+            }
+        }
+    }
+}

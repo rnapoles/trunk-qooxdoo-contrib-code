@@ -1,0 +1,8 @@
+{
+    "dialect": "qcl",
+    "version": "0.2",
+    "author": "Christian Boulanger"
+    ,"namespaces": {
+      "qcl": "http://www.qooxdoo.org/contrib/qcl/trunk"
+    }
+}

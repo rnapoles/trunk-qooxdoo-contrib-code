@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition 
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<!-- Localization -->
+	<qx:buttonViewButton 
+		id="localization" 
+		text="Localization"
+		icon="icon/32/apps/accessories-archiver.png" />
+
+	<qx:buttonViewPage 
+		button="localization"
+		backgroundColor="#EBE9ED">
+
+		<qx:horizontalBoxLayout width="100%" height="100%" spacing="10">
+
+			<qx:verticalBoxLayout width="1*" padding="10" spacing="10">
+			
+				
+			<!-- locales selection -->
+				
+				
+			<qx:horizontalBoxLayout spacing="5" height="auto">
+					
+			<qx:label text="Choose a locale: "/>
+					
+			<qx:comboBox width="50">
+						
+			<qx:eventListener type="beforeAppear">
+						
+			<![CDATA[
+							
+			// populate - Todo: add attributes "populateTextFrom", "populateTextValueFrom"
+				      
+			var locales = qx.locale.Manager.getInstance().getAvailableLocales().sort();				
+				     
+			for (var i=0; i<locales.length; i++) {
+				        
+			this.add(new qx.ui.form.ListItem(locales[i]));
+				     
+			}
+				     
+			// set default item - Todo: add attribute "setDefaultItem"
+				      
+			var defaultListItem = this.getList().findStringExact(qx.locale.Manager.getInstance().getLocale());
+				      
+			if (defaultListItem) {
+				       
+			this.setSelected(defaultListItem);
+				      
+			}
+						
+			]]>
+						
+			</qx:eventListener>
+						
+			<qx:eventListener type="changeSelected">
+							
+			<![CDATA[
+			        
+			var locale = event.getData().getLabel();
+			        
+			qx.locale.Manager.getInstance().setLocale(locale);
+			        
+			]]>
+						
+			</qx:eventListener>
+					
+			</qx:comboBox>
+				
+			</qx:horizontalBoxLayout>
+
+				
+			<!-- Localized ComboBox -->
+				
+			<qx:horizontalBoxLayout height="auto" spacing="3" verticalChildrenAlign="middle">
+					
+			<qx:label text="Localized ComboBox:" />
+					
+			<qx:comboBox >
+						
+			<qx:listItem text="Cut"/>
+						
+			<qx:listItem text="Paste"/>
+						
+			<qx:listItem text="Copy"/>
+					
+			</qx:comboBox>
+				
+			</qx:horizontalBoxLayout>				
+			
+				
+			<!-- Localized Date -->
+				
+			
+			<qx:horizontalBoxLayout height="auto" spacing="3" verticalChildrenAlign="middle">
+					
+			<qx:label text="A date: "/>
+					
+			<qx:textField id="localizedDate" width="130" height="20" />					
+					
+			<qx:dateChooserButton width="20" targetWidget="localizedDate"	/>
+				
+			</qx:horizontalBoxLayout>
+				
+				
+			<!-- date chooser -->
+				
+			<qx:dateChooser width="auto" height="auto" />
+				
+				
+			<!-- Localized Menu -->
+				
+			<qx:menu>
+				
+					
+			<!-- messsage subscriptions -->
+					
+			<qx:messageSubscriber filter="showcase.toggle-localized-menu">
+						
+			<![CDATA[					
+			        
+			if (this.isSeeable()) {
+			          
+			this.hide();
+			        
+			}
+			       
+			else
+			        
+			{
+			          
+			var sender = message.getSender();
+			          
+			var el = sender.getElement();
+			          
+			this.setLeft(qx.html.Location.getPageBoxLeft(el));
+			         
+			this.setTop(qx.html.Location.getPageBoxBottom(el));
+			          
+			this.show();
+			       
+			}		
+			      
+			]]>
+			    
+			</qx:messageSubscriber>					
+				
+					
+			<!-- children -->
+					
+			<qx:menuButton label="Undo">
+						
+			<qx:command shortcut="Ctrl+Z" />
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Redo">
+						
+			<qx:command shortcut="Ctrl+Y" />
+						
+					
+			<qx:menuSeparator />
+					
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Cut" icon="icon/16/actions/edit-cut.png" >
+						
+			<qx:command shortcut="Ctrl+C" />
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Copy" icon="icon/16/actions/edit-copy.png">
+						
+			<qx:command shortcut="Ctrl+C" />
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Paste" icon="icon/16/actions/edit-paste.png">
+						
+			<qx:command shortcut="Ctrl+V" />
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Delete" icon="icon/16/actions/edit-delete.png">
+						
+			<qx:command shortcut="Del" />
+					
+			</qx:menuButton>
+					
+					
+			<qx:menuSeparator />
+					
+					
+			<qx:menuButton label="Select All">
+						
+			<qx:command shortcut="Ctrl+A" />
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Search">
+						
+			<qx:command shortcut="Ctrl+F" />
+					
+			</qx:menuButton>
+					
+			<qx:menuButton label="Search Again">
+						
+			<qx:command shortcut="F3" />
+					
+			</qx:menuButton>
+				
+			
+			</qx:menu>
+				
+				
+			<qx:button 
+					
+			label="Command Menu (keyboard shortcuts)"
+					
+			onModedown ="event.setPropagationStopped(true);">
+					
+			<qx:eventListener type="click" dispatchMessage="showcase.toggle-localized-menu" />
+			  
+			</qx:button>
+
+				
+				<!-- open locale info window button -->				
+				
+			<qx:button label="Open Locale Info Window">
+						
+			<qx:eventListener type="execute">
+							
+			// open locale info window and renew it whenever the locale changes
+							
+			if (! window.localeInfoWindow || !localeInfoWindow.getWidget().isSeeable() )
+							
+			{
+								
+			localeInfoWindow = new showcase.LocaleInfoWindow();
+								
+			qx.locale.Manager.getInstance().addEventListener("changeLocale", function(){
+									
+			localeInfoWindow.getWidget().setDisplay(false);
+									
+			localeInfoWindow.dispose();
+									
+			localeInfoWindow = new showcase.LocaleInfoWindow();
+								
+			});
+							
+			}
+						
+			</qx:eventListener>
+				
+			</qx:button>
+				
+			
+			</qx:verticalBoxLayout>
+			
+			
+			<qx:verticalBoxLayout width="auto" height="100%" spacing="10">
+			
+				
+			<!-- Color Selector -->
+				
+			<qx:colorSelector width="auto" height="auto" />
+			
+				
+			<!-- QxTransformer Info -->
+	      
+			<qx:groupBox
+					
+			legend="QxTransformer info"
+	        
+			dimension="auto,auto">
+	        
+			<qx:horizontalBoxLayout spacing="5" dimension="auto,auto">
+						
+			<qx:button label="Show source"
+								
+			onClick='window.open("source/xml/pages/localizationPage.qinc");' />
+		        
+			<qx:button label="Show Locale Info Window source"
+								
+			onClick='window.open("source/xml/showcase.LocaleInfoWindow.qxml");' />
+					
+			</qx:horizontalBoxLayout>
+        
+			</qx:groupBox> 
+			
+			</qx:verticalBoxLayout>
+		
+		
+			</qx:horizontalBoxLayout>
+
+		
+			<!-- color popup widget -->
+		
+			<qx:xml2json 
+			id="mytables">
+		
+			<core>
+				
+			<label>javascript:this.tr("Basic Colors")</label>
+				
+			<values>#000</values>
+				
+			<values>#333</values>
+				
+			<values>#666</values>
+				
+			<values>#999</values>
+				
+			<values>#CCC</values>
+				
+			<values>#FFF</values>
+				
+			<values>red</values>
+				
+			<values>blue</values>
+			
+			<values>yellow</values>
+			
+			<values>teal</values>
+				
+			<values>maroon</values>
+	
+			</core>
+			
+			<template>
+				
+			<label>javascript:this.tr("Template Colors")</label>
+			
+				
+			<values>#B07B30</values>
+				
+			<values>#B07BC9</values>
+				
+			<values>#E3AEC9</values>
+				
+			<values>#7A2A53</values>
+			
+			</template>
+			
+			<recent>
+				
+			<label>javascript:this.tr("Recent Colors")</label>
+				
+			<values>rgb(122,195,134)</values>
+				
+			<values>orange</values>
+			
+			</recent>
+		
+			</qx:xml2json>
+		
+		
+			<qx:colorPopup 
+			
+			tables="mytables" value="#23F3C1">
+			
+			<qx:messageSubscriber filter="showcase.open-color-popup">
+					
+			<![CDATA[
+        		
+			this.show();
+        		
+			this.centerToBrowser();
+        	
+			]]>
+			
+			</qx:messageSubscriber>
+		
+			</qx:colorPopup>
+
+	</qx:buttonViewPage>
+
+</qxt:include-definition>

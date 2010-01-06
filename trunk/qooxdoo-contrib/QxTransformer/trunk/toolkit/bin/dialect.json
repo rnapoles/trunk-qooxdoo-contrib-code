@@ -1,0 +1,19 @@
+/*
+    default dialect configuration file. Includes only qxml dialect without 
+    any additional dialect extensions. You can create an own dialect file 
+    configuration and add add dialect extensions to the main dialect. 
+    For more information see documentation.
+    
+    You can use absolute or relative paths. All relative paths are relative 
+    from 'bin' toolkit folder. 
+*/
+{
+    //show priority of dialects. Next dialect overrides previous one.
+    "dialects": ["qxml","qcl"],
+    "qxml": {
+        "path": "../dialects/qxml"
+    },
+    "qcl" : {
+        "path" : "../../dialect/qcl"
+    }
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+<qx:groupBox
+        legend="Include"
+        icon="icon/16/apps/preferences.png"
+        dimension="auto,auto">
+	<qx:gridLayout 
+		width="300" height="100%"
+		verticalSpacing="2" horizontalSpacing="5">
+		
+		<qx:gridLayoutColumn
+			width="50"
+			horizontalAlignment="right"
+			verticalAlignment="top"/>
+
+		<qx:gridLayoutColumn
+			width="250"
+			horizontalAlignment="left"
+			verticalAlignment="top"/>
+
+		<qxt:use-macro src="/macros/macros.qinc" name="loginPanel"
+				labelName="Username"
+				fieldId="userNameTextField2"/>
+
+		<qxt:use-macro src="/macros/macros.qinc" name="loginPanel"
+				labelName="Password"
+				fieldId="passwordTextField2"/>
+
+
+	</qx:gridLayout>
+</qx:groupBox>
+</qxt:include-definition>
+

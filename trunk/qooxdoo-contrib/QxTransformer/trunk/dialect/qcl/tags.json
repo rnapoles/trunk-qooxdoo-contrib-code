@@ -1,0 +1,172 @@
+{
+
+
+ /*-------------------------------------------------------------------------
+  access control
+ -------------------------------------------------------------------------*/
+  
+
+  
+  /**
+   * This is the parent node for permissions.
+   */
+  "qcl:access": {
+    "body": {
+        "*":"body/qcl/access/access.mako"
+    },
+    "add": {
+        "*":""
+    }
+  },     
+  
+  /**
+   * A permission object, can have qcl:conditions as children
+   */
+  "qcl:permission": {
+    "body": {
+        "*":"body/qcl/access/permission.mako"
+    },
+    "add": {
+        "*":""
+    }
+  },    
+  
+  /**
+   * Adds a condition function to a permission object
+   */
+  "qcl:condition": {
+    "body": {
+        "*":"body/qcl/access/condition.mako"
+    },
+    "add": {
+        "*":""
+    }
+  },      
+  
+  /**
+   * Adds an updater to a permission
+   */
+  "qcl:updater": {
+    "body": {
+        "*":"body/qcl/access/updater.mako"
+    },
+    "add": {
+        "*":""
+    }
+  },
+  
+  /**
+  * Adds a dependency to a permission
+  */
+ "qcl:dependency": {
+   "body": {
+       "*":"body/qcl/access/dependency.mako"
+   },
+   "add": {
+       "*":""
+   }
+ },     
+     
+  
+  /*-------------------------------------------------------------------------
+  databinding
+ -------------------------------------------------------------------------*/
+
+ 
+ /**
+  * binds a property of a target object to a property of the 
+  * object represented by the node parent, or to a config value
+  * (bi-directional) binding 
+  */    
+"qcl:bind": {
+     "body": {
+         "*":"body/qcl/bind.mako"
+     },
+     "add": {
+         "*":""
+     }
+ },
+
+ /**
+  * The qcl:observe extends qx:observe by the possibility of binding
+  * a property of the object represented by the parent node to 
+  * a config value, or a permission state.
+  */    
+ "qcl:observe": {
+   "body": {
+       "*":"body/qcl/observe.mako"
+   },
+   "add": {
+       "*":""
+   }
+ },    
+ 
+ /**
+  * A widget controller (currently only list-type widgets)
+  */
+ "qcl:controller": {
+   "body": {
+     "qx:list":"body/qcl/listController.mako",
+     "qx:comboBox":"body/qcl/listController.mako",
+     "qx:selectBox":"body/qcl/listController.mako",
+     "qx:tree":"body/qcl/treeController.mako"
+   },
+   "add" : { "*":"" }
+ },
+ 
+ /**
+  * A marshaller for the TreeVirtual widget
+  */
+ "qcl:treeVirtualMarshaler": {
+      "extends" : "qx:widget",
+      "add" : { "*":"" }, 
+      "data": {
+        "props": {
+            "class": "qcl.data.marshal.TreeVirtual"
+        }
+    }
+  },
+
+  "qcl:tableMarshaler": {
+    "extends" : "qx:widget",
+    "add" : { "*":"" }, 
+    "data": {
+      "props": {
+          "class": "qcl.data.marshal.Table"
+      }
+  }
+},    
+  
+  "qcl:jsonRpcStore": {
+    "extends" : "qx:widget",
+    "add" : { "*":"" }, 
+      "data": {
+        "props": {
+            "class": "qcl.data.store.JsonRpc",
+            "constructor-args":"url,serviceName,marshaler"
+        }
+    }
+  },
+  
+  "qcl:treeVirtualController": {
+    "extends" : "qx:widget",
+    "add" : { "*":"" }, 
+    "data": {
+      "props": {
+          "class": "qcl.data.controller.TreeVirtual",
+          "constructor-args":"target,store"
+      }
+    }
+  },
+  
+  "qcl:tableController": {
+    "extends" : "qx:widget",
+    "add" : { "*":"" }, 
+    "data": {
+      "props": {
+          "class": "qcl.data.controller.Table",
+          "constructor-args":"target,store"
+      }
+    }
+  }
+}

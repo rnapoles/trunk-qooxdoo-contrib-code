@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<qx:buttonViewButton id="qxTransformer" text="QxTransformer"
+		icon="icon/32/apps/preferences-desktop-wallpaper.png" />
+
+	<qx:buttonViewPage button="qxTransformer"
+		backgroundColor="#EBE9ED">
+
+
+
+		<qx:horizontalBoxLayout spacing="10">
+
+
+
+			<qx:verticalBoxLayout 
+				padding="10" spacing="10"
+				width="500">
+
+				<qx:label text="QxTransformer_extension_showcase" />
+
+				<qx:groupBox legend="Macros"
+					icon="icon/16/apps/preferences.png" dimension="auto,auto">
+
+					<qx:gridLayout width="300" height="100%"
+						verticalSpacing="2" horizontalSpacing="5">
+
+						<qx:gridLayoutColumn width="50"
+							horizontalAlignment="right" verticalAlignment="top" />
+
+						<qx:gridLayoutColumn width="250"
+							horizontalAlignment="left" verticalAlignment="top" />
+
+						<qxt:use-macro src="/macros/macros.qinc"
+							name="loginPanel" labelName="Username"
+							fieldId="userNameTextField" />
+
+						<qxt:use-macro src="/macros/macros.qinc"
+							name="loginPanel" labelName="Password"
+							fieldId="passwordTextField" />
+
+					</qx:gridLayout>
+
+				</qx:groupBox>
+
+				<qxt:include src="/pages/groupInclude.qinc" />
+
+				<!-- use external generated class -->
+
+				<qx:groupBox legend="Use external class"
+					dimension="285,60">
+					<qx:button label="new showcase.LoginWindow()"
+						onClick="new showcase.LoginWindow()" />
+				</qx:groupBox>
+
+				<!-- show source -->
+				<qx:groupBox
+		                legend="QxTransformer info"
+		                width="285" height="60">
+		                    <qx:label top="00">
+		                        <a href="source/xml/pages/qxtransformerPage.qinc" 
+		                        	target="_blank">ButtonViewPage XML Source</a>
+		                     </qx:label>                   
+		            </qx:groupBox> 
+				
+			</qx:verticalBoxLayout>
+
+
+
+			<qx:verticalBoxLayout padding="10" spacing="5" width="400">
+
+
+
+				<qx:groupBox legend="Broadcaster/Observer Functionality"
+					icon="icon/16/apps/preferences.png" dimension="auto,auto">
+
+
+
+					<qx:verticalBoxLayout padding="10">
+
+
+
+						<!-- simple broadcaster with one property -->
+
+						<qx:groupBox legend="Simple with one property"
+							icon="icon/16/apps/preferences.png" dimension="auto,auto">
+
+							<qx:verticalBoxLayout padding="10">
+
+								<!-- simple broadcaster -->
+
+								<qxt:broadcaster id="simpleBroadcaster"
+									enabled="true" />
+
+
+
+								<qx:checkBox text="Enable"
+									checked="true"
+									onChangeChecked="simpleBroadcaster.setEnabled(event.getData());" />
+
+
+
+								<qx:label text="Simple label"
+									qxt:observes="simpleBroadcaster" />
+
+
+
+								<qx:textField
+									value="Simple text field">
+
+									<qxt:observer
+										element="simpleBroadcaster">
+
+										<qxt:observer-property
+											name="enabled" />
+
+									</qxt:observer>
+
+								</qx:textField>
+
+							</qx:verticalBoxLayout>
+
+						</qx:groupBox>
+
+
+
+						<!-- advanced broacaster/observer -->
+
+						<qx:groupBox legend="Advanced broadcaster"
+							icon="icon/16/apps/preferences.png" dimension="auto,auto">
+
+
+
+							<qx:verticalBoxLayout padding="10">
+
+								<!-- broadcaster with advanced property -->
+
+								<qxt:broadcaster id="extBroadcaster"
+									className="MyBroadcaster" enabled="true">
+
+									<qxt:broadcaster-property
+										name="value" init="Hello world!" check="String"
+										event="valueChangedEvent" />
+
+									<qxt:broadcaster-property
+										name="text" init="Hello world!" check="String" />
+
+								</qxt:broadcaster>
+
+
+
+								<qx:checkBox
+									text="Generate broadcast event" checked="false">
+
+									<qx:eventListener
+										type="changeChecked">
+
+										extBroadcaster.setEnabled(event.getData());
+
+										if(event.getData()){
+
+											extBroadcaster.setValue('Enabled');
+
+											extBroadcaster.setText('Enabled');
+
+										} else{
+
+											extBroadcaster.setValue('Disabled');
+
+											extBroadcaster.setText('Disabled');
+
+										}
+
+									</qx:eventListener>
+
+								</qx:checkBox>
+
+
+
+								<qx:label text="Simple label 1"
+									qxt:observes="extBroadcaster"
+									qxt:observedProperties="enabled,text" />
+
+
+
+								<qx:textField value="Text field 1">
+
+									<qxt:observer
+										element="extBroadcaster">
+
+										<qxt:observer-property
+											name="value" />
+
+									</qxt:observer>
+
+								</qx:textField>
+
+
+
+								<qx:textField value="Text field 2">
+
+									<qxt:observer
+										element="extBroadcaster">
+
+										<qxt:observer-property
+											name="text" onBroadcast="this.setValue(event.getData());" />
+
+									</qxt:observer>
+
+								</qx:textField>
+
+
+
+								<qx:textField value="Text field 3">
+
+									<qxt:observer
+										element="extBroadcaster">
+
+										<qxt:observer-property
+											name="enabled" />
+
+										<qxt:observer-property
+											name="value" />
+
+									</qxt:observer>
+
+								</qx:textField>
+
+
+
+							</qx:verticalBoxLayout>
+
+						</qx:groupBox>
+
+
+
+					</qx:verticalBoxLayout>
+
+				</qx:groupBox>
+
+			</qx:verticalBoxLayout>
+
+
+
+		</qx:horizontalBoxLayout>
+
+	</qx:buttonViewPage>
+
+</qxt:include-definition>

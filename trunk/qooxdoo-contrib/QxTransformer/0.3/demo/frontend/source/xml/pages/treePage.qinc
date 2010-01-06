@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<!-- Pane 5: Tree -->
+
+	<qx:buttonViewButton id="tree_buttonViewButton" text="Trees"
+		icon="icon/32/actions/view-pane-tree.png" />
+
+	<qx:buttonViewPage button="tree_buttonViewButton"
+		backgroundColor="#EBE9ED">
+
+		<qx:horizontalBoxLayout dimension="100%,100%" padding="10">
+
+			<qx:tabView dimension="100%,100%">
+
+				<!-- Simple Tree -->
+
+				<qx:tabViewButton id="tree_tabViewButton" label="Tree"
+					checked="true" />
+
+				<qx:tabViewPage button="tree_tabViewButton"
+					backgroundColor="#EBE9ED">
+
+					<qx:horizontalBoxLayout width="auto" height="100%"
+						padding="10" spacing="10">
+
+						<qx:tree id="simpleTreeWidget" label="Root"
+							backgroundColor="white" border="inset" overflow="scrollY"
+							height="100%" width="100%">
+
+							<!-- folder nodes -->
+
+							<qx:treeFolder label="Desktop"
+								icon="icon/16/actions/go-home.png"
+								iconSelected="icon/16/actions/go-home.png">
+								<qx:treeFolder label="Files" />
+								<qx:treeFolder label="Workspace">
+									<qx:treeFile label="Windows (C:)"
+										icon="icon/16/devices/drive-harddisk.png" />
+									<qx:treeFile label="Documents (D:)"
+										icon="icon/16/devices/drive-harddisk.png" />
+								</qx:treeFolder>
+								<qx:treeFolder label="Network" />
+								<qx:treeFolder label="Files" />
+								<qx:treeFolder label="Trash" />
+							</qx:treeFolder>
+
+							<qx:treeFolder label="Inbox">
+								<qx:treeFolder label="Presets" />
+								<qx:treeFolder label="Sent" />
+								<qx:treeFolder label="Trash"
+									icon="icon/16/places/user-trash.png"
+									iconSelected="icon/16/places/user-trash.png" />
+								<qx:treeFolder label="Data" />
+								<qx:treeFolder label="Edit">
+									<qx:treeFolder label="Chat" />
+									<qx:treeFolder label="Pustefix" />
+									<qx:treeFolder label="TINC">
+										<qx:treeFolder label="Announce" />
+										<qx:treeFolder label="Devel" />
+									</qx:treeFolder>
+								</qx:treeFolder>
+								<qx:treeFolder label="Lists">
+									<qx:treeFolder label="Relations" />
+									<qx:treeFolder label="Company" />
+									<qx:treeFolder label="Questions" />
+									<qx:treeFolder label="Internal" />
+									<qx:treeFolder label="Products" />
+									<qx:treeFolder label="Press" />
+									<qx:treeFolder label="Development" />
+									<qx:treeFolder label="Competition" />
+								</qx:treeFolder>
+								<qx:treeFolder label="Personal">
+									<qx:treeFolder label="Bugs" />
+									<qx:treeFolder label="Family" />
+									<qx:treeFolder label="Projects" />
+									<qx:treeFolder label="Holiday" />
+								</qx:treeFolder>
+								<qx:treeFolder id="bigFolder"
+									scope="application" label="Big" />
+								<qx:treeFolder label="Spam" />
+							</qx:treeFolder>
+
+							<!-- events -->
+							<qx:eventListener type="changeSelection"
+								dispatchMessage="treeSelectionChanged" />
+
+							<qx:messageSubscriber
+								filter="useDoubleClick">
+								this.setUseDoubleClick(message.getData());
+							</qx:messageSubscriber>
+
+							<qx:messageSubscriber
+								filter="useTreeLines">
+								this.setUseTreeLines(message.getData());
+							</qx:messageSubscriber>
+
+						</qx:tree>
+
+						<qxt:script>
+							<![CDATA[
+						      for (var i=0; i<50; i++) {
+						        this.bigFolder.add(new qx.ui.tree.TreeFolder("Item " + i));
+						      }
+						]]>
+						</qxt:script>
+
+						<qx:groupBox legend="Control" width="auto"
+							height="auto">
+
+							<qx:verticalBoxLayout width="auto"
+								height="auto" paddingRight="12">
+
+								<qx:atom label="Current Folder: " />
+
+								<qx:textField readOnly="true"
+									marginBottom="20">
+									<qx:messageSubscriber
+										filter="treeSelectionChanged">
+										this.setValue(message.getData()[0]._labelObject.getText());
+									</qx:messageSubscriber>
+								</qx:textField>
+
+								<qx:checkBox text="Use double click?">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="useDoubleClick" />
+								</qx:checkBox>
+
+								<qx:checkBox text="Use tree lines?"
+									checked="true">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="useTreeLines" />
+								</qx:checkBox>
+
+							</qx:verticalBoxLayout>
+
+						</qx:groupBox>
+
+						<qx:groupBox
+		                legend="QxTransformer info"
+		                width="285" height="60">
+		                    <qx:label top="00">
+		                        <a href="source/xml/pages/treePage.qinc" 
+		                        	target="_blank">ButtonViewPage XML Source</a>
+		                     </qx:label>                   
+		            </qx:groupBox>  	
+
+					</qx:horizontalBoxLayout>
+
+				</qx:tabViewPage>
+
+				<!-- virtual tree -->
+				<!--
+				<qx:tabViewButton id="virtualTree_tabViewButton"
+					label="VirtualTree" />
+
+				<qx:tabViewPage button="virtualTree_tabViewButton"
+					backgroundColor="threedface">
+
+					<qx:horizontalBoxLayout 
+						width="100%" height="100%" spacing="10">
+
+						<qx:verticalBoxLayout 
+							height="auto"	width="1*">
+
+							<qx:virtualTree 
+								id="virtualTreeWidget"
+								width="100%" height="100%"
+								alwaysShowOpenCloseSymbol="true">
+
+								<qx:virtualTreeColumn heading="Tree"
+									width="1*" minWidth="180" />
+								<qx:virtualTreeColumn
+									heading="Permissions" />
+								<qx:virtualTreeColumn
+									heading="Last Accessed" />
+
+								<-event handlers->
+
+								<qx:eventListener type="changeSelection"
+									dispatchMessage="vt-change-selection" />
+								<qx:eventListener
+									type="treeOpenWhileEmpty"
+									dispatchMessage="vt-tree-open-while-empty" />
+
+								<qx:messageSubscriber
+									filter="vt-use-tree-lines">
+									this.setUseTreeLines(message.getData());
+								</qx:messageSubscriber>
+								<qx:messageSubscriber
+									filter="vt-exclude-tree-lines">
+									this.setExcludeFirstLevelTreeLines(message.getData());
+								</qx:messageSubscriber>
+								<qx:messageSubscriber
+									filter="vt-show-open-close">
+									this.setAlwaysShowOpenCloseSymbol(message.getData());
+								</qx:messageSubscriber>
+								<qx:messageSubscriber
+									filter="vt-open-selects-row">
+									this.setOpenCloseClickSelectsRow(message.getData());
+								</qx:messageSubscriber>
+								<qx:messageSubscriber
+									filter="vt-disable">
+									this.setEnabled(!
+									message.getData());
+								</qx:messageSubscriber>
+								<qx:messageSubscriber
+									filter="vt-display-cell-focus">
+									<![CDATA[
+									if (message.getData()) {
+										this.setCellFocusAttributes( {
+											backgroundColor : "blue" 
+										}); 
+									} else {
+										this.setCellFocusAttributes( {
+											backgroundColor : "transparent" 
+										}); 
+									};
+									]]>
+								</qx:messageSubscriber>
+
+							</qx:virtualTree>
+
+							<- setting up tree data todo: external data->
+
+							<qxt:script>
+								<![CDATA[
+
+						    // tree data model
+						    // "this" in <qxt:script> refers to showcase.Application instance
+						    
+						    var dataModel = virtualTreeWidget.getDataModel();
+	    					var te1 = dataModel.addBranch(null, "Desktop", true);
+	   						dataModel.setState(te1,{
+	              	labelStyle :"background-color: red;color: white;font-weight: bold;"
+	              });
+	              dataModel.addBranch(te1, "Files", true);
+						    te1_1 = dataModel.addBranch(te1, "Workspace", true);
+						    te = dataModel.addLeaf(te1_1, "Windows (C:)");
+						    dataModel.setColumnData(te, 1, "-rwxr-xr-x");
+						    dataModel.setColumnData(te, 2, "2007-01-30 22:54:03");
+						    te = dataModel.addLeaf(te1_1, "Documents (D:)");
+						    dataModel.setColumnData(te, 1, "-rwxr-xr-x");
+						    dataModel.setColumnData(te, 2, "2007-01-30 22:54:03");
+						    dataModel.addBranch(te1, "Network", true);
+								te = dataModel.addBranch(te1, "Trash", true);
+							
+								dataModel.setState(te,
+								{
+									cellStyle : "background-color: cyan;"
+			          });
+			          
+								var te2 = dataModel.addBranch(null, "Inbox", true);
+		    				te = dataModel.addBranch(te2, "Spam", false);
+						    for (var i = 1; i < 3000; i++)
+						    {
+						      dataModel.addLeaf(te, "Spam Message #" + i);
+						    }
+						    dataModel.addBranch(te2, "Sent", false);
+						    dataModel.addBranch(te2, "Trash", false);
+						    dataModel.addBranch(te2, "Data", false);
+						    dataModel.addBranch(te2, "Edit", false);
+						
+						    dataModel.setData();
+						    					    
+								]]>
+							</qxt:script>
+
+						</qx:verticalBoxLayout>
+
+						<qx:verticalBoxLayout 
+							height="auto"	width="1*">
+							<- 
+								control box, events are attached to controls.
+								in message subscribers, to avoid having to work with closures, you can 
+								retrieve the widget that originally dispatched the message with message.getSender
+							->
+							<qx:groupBox legend="Control" width="auto"
+								height="auto">
+
+								<qx:atom label="Current Selection: "
+									left="0" top="6" />
+								<qx:textField left="4" right="0"
+									top="20" readOnly="true">
+									<qx:messageSubscriber
+										filter="vt-change-selection">
+										<![CDATA[
+										var nodes = message.getData(); 
+										var tree =	message.getSender();
+										this.setValue(tree.getHierarchy(nodes[0].nodeId).join('/'));
+										]]>
+									</qx:messageSubscriber>
+								</qx:textField>
+
+								<qx:button label="Remove" top="42"
+									left="0" enabled="false">
+									<qx:messageSubscriber
+										filter="vt-change-selection">
+										this.setEnabled(true);
+									</qx:messageSubscriber>
+									<qx:eventListener type="execute">
+										<![CDATA[
+						        selectedNodes = virtualTreeWidget.getSelectedNodes();
+						        for (var i = 0; i < selectedNodes.length; i++)
+						        {
+						          dataModel.prune(selectedNodes[i].nodeId, true);
+						          dataModel.setData();
+						        };
+						        ]]>
+									</qx:eventListener>
+								</qx:button>
+
+								<qx:checkBox label="Use tree lines?"
+									top="80" left="0" checked="true">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="vt-use-tree-lines" />
+								</qx:checkBox>
+
+								<qx:checkBox
+									label="Exclude first-level tree lines?" top="100" left="0"
+									checked="false">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="vt-exclude-tree-lines" />
+								</qx:checkBox>
+
+								<qx:checkBox
+									label="Always show open/close symbol?" top="120" left="0"
+									checked="true">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="vt-show-open-close" />
+								</qx:checkBox>
+
+								<qx:checkBox
+									label="Remove open/close if found empty?" top="140" left="0"
+									checked="true">
+									<qx:messageSubscriber
+										filter="vt-tree-open-while-empty">
+										<![CDATA[
+										if (this.getChecked()) { 
+											var node =	message.getData(); 
+											var tree =  message.getSender();
+											tree.setState(node.nodeId, { bHideOpenClose : true }); 
+										};
+										]]>
+									</qx:messageSubscriber>
+								</qx:checkBox>
+
+								<qx:checkBox
+									label="Open/close click selects row?" top="160" left="0"
+									checked="false">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="vt-open-selects-row" />
+								</qx:checkBox>
+
+								<qx:checkBox label="Disable the tree?"
+									top="180" left="0" checked="false">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="vt-disable" />
+								</qx:checkBox>
+
+								<qx:checkBox
+									label="Display a cell focus indicator?" top="200" left="0"
+									checked="false">
+									<qx:eventListener
+										type="changeChecked" dispatchMessage="vt-display-cell-focus" />
+								</qx:checkBox>
+
+							</qx:groupBox>
+
+						</qx:verticalBoxLayout>
+						
+					</qx:horizontalBoxLayout>
+
+				</qx:tabViewPage>
+-->				
+			</qx:tabView>
+
+		</qx:horizontalBoxLayout>
+
+	</qx:buttonViewPage>
+
+</qxt:include-definition>

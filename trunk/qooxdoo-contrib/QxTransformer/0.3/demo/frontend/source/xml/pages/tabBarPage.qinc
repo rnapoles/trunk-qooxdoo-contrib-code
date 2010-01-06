@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<!-- Pane 4: Toolbar -->
+	<qx:buttonViewButton id="menu_tabs" text="Tabs"
+		icon="icon/32/places/user-desktop.png" />
+
+	<qx:buttonViewPage button="menu_tabs" backgroundColor="#EBE9ED">
+
+		<qx:verticalBoxLayout width="100%" height="90%">
+
+			<qx:horizontalBoxLayout padding="10" spacing="10"
+				width="100%" height="1*">
+
+				<qx:tabView id="tabView1" width="1*">
+
+					<qx:tabViewButton id="tabEdit" label="Edit"
+						checked="true" />
+					<qx:tabViewButton id="tabFind" label="Find" />
+					<qx:tabViewButton id="tabBackup" label="Backup" />
+
+					<qx:tabViewPage button="tabEdit">
+
+						<qx:checkBox text="Place bar on top" top="0"
+							checked="true"
+							onChangeChecked="tabView1.setPlaceBarOnTop(event.getData());" />
+						<qx:checkBox text="Align tabs to left" top="20"
+							checked="true"
+							onChangeChecked="tabView1.setAlignTabsToLeft(event.getData());" />
+
+						<qx:tabView id="tabView2" left="0" top="50"
+							right="0" bottom="0">
+
+							<qx:tabViewButton id="tabSearchFiles"
+								checked="true" label="Search for Files"
+								icon="icon/16/actions/document-open.png" />
+							<qx:tabViewButton id="tabSearchWeb"
+								label="Search the Web"
+								icon="icon/16/categories/applications-internet.png" />
+							<qx:tabViewButton id="tabSearchMails"
+								label="Search in Mails"
+								icon="icon/16/apps/internet-email-client.png" />
+
+							<qx:tabViewPage button="tabSearchFiles"
+								top="2" left="0" width="140">
+								<qx:textField value="Files..." left="0"
+									width="140" />
+								<qx:button label="Search"
+									icon="icon/16/actions/edit-find.png" left="150"
+									onClick="doSearch" />
+							</qx:tabViewPage>
+
+							<qx:tabViewPage button="tabSearchWeb"
+								top="2" left="0" width="140">
+								<qx:textField value="Web..." left="0"
+									width="140" />
+								<qx:button label="Search"
+									icon="icon/16/actions/edit-find.png" left="150"
+									onClick="doSearch" />
+							</qx:tabViewPage>
+
+							<qx:tabViewPage button="tabSearchMails"
+								top="2" left="0" width="140">
+								<qx:textField value="Mails..." left="0"
+									width="140" />
+								<qx:button label="Search"
+									icon="icon/16/actions/edit-find.png" left="150"
+									onClick="doSearch" />
+							</qx:tabViewPage>
+
+							<!-- event handler, is a method of the showcase.Application class and is called 
+								in the buttons above by onClick="doSearch" -->
+							<qx:eventHandler name="doSearch">
+								alert("Searching...");
+							</qx:eventHandler>
+
+						</qx:tabView>
+
+					</qx:tabViewPage>
+
+					<qx:tabViewPage button="tabFind">
+
+						<qx:textField value="Find Anywhere" />
+
+					</qx:tabViewPage>
+
+					<qx:tabViewPage button="tabBackup">
+
+						<qx:textField value="Backup Input" />
+
+					</qx:tabViewPage>
+
+				</qx:tabView>
+
+				<!-- second tab widget: button view -->
+
+				<qx:buttonView id="buttonView1" width="1*"
+					barPosition="left"
+					onAppear='this.getBar().setHorizontalChildrenAlign("center");this.getBar().setVerticalChildrenAlign("bottom");'>
+
+					<qx:buttonViewButton id="displayButton"
+						label="Display" icon="icon/16/devices/video-display.png"
+						iconPosition="left" horizontalChildrenAlign="left" checked="true" />
+					<qx:buttonViewButton id="colorizeButton"
+						label="Colorize" icon="icon/16/actions/format-color.png"
+						iconPosition="left" horizontalChildrenAlign="left" />
+					<qx:buttonViewButton id="iconsButton" label="Icons"
+						icon="icon/16/apps/preferences-desktop-theme.png"
+						iconPosition="left" horizontalChildrenAlign="left" />
+					<qx:buttonViewButton id="applicationsButton"
+						label="Applications" icon="icon/16/actions/system-run.png"
+						iconPosition="left" horizontalChildrenAlign="left" />
+					<qx:buttonViewButton id="systemsButton"
+						label="System" icon="icon/16/devices/video-display.png"
+						iconPosition="left" horizontalChildrenAlign="left" />
+
+					<qx:buttonViewPage button="displayButton">
+						<qx:textField value="Display Input" />
+						<qx:radioManager
+							onChangeSelected="buttonView1.setBarPosition(event.getData().getValue())">
+							<qx:radioButton text="Top" value="top"
+								top="50" />
+							<qx:radioButton text="Right" value="right"
+								top="70" />
+							<qx:radioButton text="Bottom" value="bottom"
+								top="90" />
+							<qx:radioButton text="Left" value="left"
+								top="110" checked="true" />
+						</qx:radioManager>
+					</qx:buttonViewPage>
+
+					<qx:buttonViewPage button="colorizeButton">
+						<qx:textField value="Paint Input" />
+					</qx:buttonViewPage>
+
+					<qx:buttonViewPage button="iconsButton">
+						<qx:textField value="Icons Input" />
+					</qx:buttonViewPage>
+
+					<qx:buttonViewPage button="applicationsButton">
+						<qx:textField value="Applications Input" />
+					</qx:buttonViewPage>
+
+					<qx:buttonViewPage button="systemsButton">
+						<qx:textField value="Systems Input" />
+					</qx:buttonViewPage>
+
+				</qx:buttonView>
+
+			</qx:horizontalBoxLayout>
+
+			<qx:groupBox legend="QxTransformer info" left="20"
+	height="auto" width="300">
+				<qx:label top="0">
+					<a href="source/xml/pages/tabBarPage.qinc" 
+                         target="_blank">ButtonViewPage XML Source</a>
+                </qx:label>   		
+			</qx:groupBox>
+
+		</qx:verticalBoxLayout>
+
+	</qx:buttonViewPage>
+
+</qxt:include-definition>

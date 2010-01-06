@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:root xmlns:qx="http://www.qxtransformer.org/qooxdoo" qooxdooVersion="0.7">
+
+	<qx:widget 
+		namespace="showcase" 
+		className="LoginWindow"
+		title="Login Widget" 
+		authors="Christian Boulanger"
+		translate="true">
+
+		<qx:window 
+			id="loginWindow" 
+			width="400" 
+			caption="Login" 
+			modal="false" 
+			showMinimize="false"
+			showMaximize="false" 
+			showClose="false" display="true"
+			onAppear="this.centerToBrowser()">
+
+			<qx:fieldSet width="100%" height="100%">
+
+				<qx:verticalBoxLayout spacing="5">
+
+					<!--  label -->
+
+					<qx:atom height="30" label="Please log in."
+						icon="icon/16/actions/encrypt.png" iconPosition="left" />
+
+					<!-- input fields -->
+
+					<qx:gridLayout
+						width="100%"
+						verticalSpacing="2" 
+						horizontalSpacing="5">
+
+						<!-- columns -->
+						<qx:gridLayoutColumn 
+							width="100"
+							horizontalAlignment="right" 
+							verticalAlignment="top" />
+
+						<qx:gridLayoutColumn 
+							width="300"
+							horizontalAlignment="left" 
+							verticalAlignment="top" />
+
+						<!-- user name-->
+						<qx:gridLayoutRow 
+							height="25">
+
+							<qx:gridLayoutCell>
+								<qx:label text="User Name" />
+							</qx:gridLayoutCell>
+
+							<qx:gridLayoutCell>
+
+								<qx:verticalBoxLayout width="100%" overflow="auto">
+									<qx:textField width="auto"/>
+								</qx:verticalBoxLayout>
+							</qx:gridLayoutCell>
+
+						</qx:gridLayoutRow>
+
+						<!-- password -->
+
+						<qx:gridLayoutRow height="25">
+
+							<qx:gridLayoutCell>
+								<qx:label text="Password" />
+							</qx:gridLayoutCell>
+
+							<qx:gridLayoutCell>
+
+								<qx:verticalBoxLayout overflow="auto" width="100%">
+									<qx:passwordField width="auto"/>
+
+								</qx:verticalBoxLayout>
+							</qx:gridLayoutCell>
+
+						</qx:gridLayoutRow>
+
+						<!-- buttons -->
+
+						<qx:gridLayoutRow height="20">
+
+							<qx:gridLayoutCell />
+
+							<qx:gridLayoutCell>
+
+								<qx:horizontalBoxLayout spacing="5">
+
+									<qx:button label="Login">
+										<qx:eventListener
+											type="execute">
+											alert ("trying to login!!");
+										</qx:eventListener>
+									</qx:button>
+
+									<qx:button label="Cancel"
+										onExecute="loginWindow.close()" />
+
+
+
+									<qx:button label="Help">
+										<qx:eventListener type="execute"
+											delegate="helpEventHandler" />
+									</qx:button>
+
+									<qx:eventHandler
+										name="helpEventHandler">
+
+										alert("HelpEventHandler called!");
+
+									</qx:eventHandler>
+
+
+
+									<qx:button 
+										label="Show source"
+										onClick='window.open("source/xml/showcase.LoginWindow.qxml");'/>
+
+								</qx:horizontalBoxLayout>
+
+							</qx:gridLayoutCell>
+
+						</qx:gridLayoutRow>
+
+					</qx:gridLayout>
+
+				</qx:verticalBoxLayout>
+
+			</qx:fieldSet>
+
+		</qx:window>
+
+	</qx:widget>
+
+</qx:root>

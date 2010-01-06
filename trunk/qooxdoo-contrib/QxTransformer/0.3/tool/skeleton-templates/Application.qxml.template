@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:root 
+		xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+		xmlns:qxt="http://www.qxtransformer.org/extension"
+		qooxdooVersion="$$QOOXDOO_VERSION$$">
+
+	<qx:application 
+		title="$$NAMESPACE_NAME$$ application" 
+		namespace="$$NAMESPACE_NAME$$"
+		authors=""
+		translate="true">
+		
+		<!-- add your code here -->
+		
+	</qx:application>
+	
+</qx:root>	

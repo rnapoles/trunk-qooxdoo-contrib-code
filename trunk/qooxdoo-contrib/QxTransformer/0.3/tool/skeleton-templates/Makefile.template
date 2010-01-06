@@ -1,0 +1,78 @@
+################################################################################
+#  QxTransformer ver. 0.3
+#  http://qxtransformer.org 
+#   
+#  License:
+#    LGPL: http://www.gnu.org/licenses/lgpl.html
+#   
+#  Authors:
+#	   * Siarhei Barysiuk (s_barysiuk)
+#	   * Christian Boulanger (cboulanger)
+#
+################################################################################
+
+
+################################################################################
+#  HOW-TO
+#
+#  You can use all syntax of make files of qooxdoo framework.
+#  QxTransformer adds one action:
+#
+#  make transform
+#   
+#  Run 'transform' action if you want to convert xml files of your application 
+#  to javascript classes. 
+#  
+################################################################################
+
+
+
+################################################################################
+# SETTINGS
+################################################################################
+
+
+#MAIN_PROPERTIES
+
+$$MAIN_PROPERTIES$$
+
+#CUSTOM_PROPERTIES
+$$CUSTOM_PROPERTIES$$
+
+#NATIVE_PROPETIES
+$$NATIVE_PROPETIES$$
+
+# In additional QxTransformer uses some own classes and define additional
+# APPLICATION_ADDITIONAL_CLASS_PATH variable.
+# For more details see $(QXTRANSFORMER_PATH)/tool/qxtransformer.mk
+#-------------------------------------------------------------------------------
+
+# Settings for QxTransformer application
+
+# Path to folder which contains your own classes and where 
+# auto-generated classes shall be put
+
+QX_APPLICATION_CLASS_PATH = ./source/class
+
+# Path to folder which contains xml files of your application, macros,
+# includes, etc.
+
+QX_APPLICATION_XML_PATH = ./source/xml
+
+# Full path to project dir
+
+QX_APPLICATION_PROJECT_DIR = $$(pwd)/source/xml
+
+
+################################################################################
+# INTERNALS (PLEASE DO NOT CHANGE)
+################################################################################
+
+ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)
+	include $(QOOXDOO_PATH)/frontend/framework/tool/make/targets.mk
+	include $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
+	include $(QXTRANSFORMER_PATH)/tool/qxtransformer.mk
+endif
+
+error:
+	@echo "  * Please configure QOOXDOO_PATH"
