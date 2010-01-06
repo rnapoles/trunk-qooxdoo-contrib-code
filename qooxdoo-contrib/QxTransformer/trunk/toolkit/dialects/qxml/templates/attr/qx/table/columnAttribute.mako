@@ -1,0 +1,16 @@
+<%namespace name="utils" file="../../../utils/utils.mako"/>\
+<%namespace name="attr" file="../../../utils/attribute.mako"/>\
+\
+% if attr.attrName() in utils.prop("attributesTable"):
+${utils.parentRawAttrib("id")}.getTableModel().setColumn${attr.attrName()}(${self.columnNumber()}, ${attr.attrValue()});\
+% endif
+% if attr.attrName() in utils.prop("attributes"):
+${utils.parentRawAttrib("id")}.getTableColumnModel().setColumn${attr.attrName()}(${self.columnNumber()}, ${attr.attrValue()});\
+% endif
+% if attr.attrName() in utils.prop("attributesRenderersEditors"):
+${utils.parentRawAttrib("id")}.getTableColumnModel().set${attr.attrName()}(${self.columnNumber()}, new ${attr.attrValue()});\
+% endif
+\
+<%def name="columnNumber()"><%
+    return "%.0f" %utils.xpath("count(./preceding-sibling::qx:tableColumn)")
+%></%def>

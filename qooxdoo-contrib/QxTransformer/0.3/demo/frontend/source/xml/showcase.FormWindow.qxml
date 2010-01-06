@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:root 
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo" 
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+	qooxdooVersion="0.7">
+
+	<qx:widget 
+		namespace="showcase" className="FormWindow"
+		title="Form Window" authors="Christian Boulanger"
+		translate="true">
+
+		<qx:window 
+			id="formWindow" 
+			width="auto" height="auto" 
+			caption="Submit Form"
+			modal="false" showMinimize="false" showMaximize="false"
+			showClose="false" display="true" onAppear="this.centerToBrowser()">
+
+			<!-- form  -->
+
+			<qx:form 
+				id="formControl" 
+				method="post" 
+				action="../../backend/php/post.php"
+				onSubmit="confirm('Do you really want to submit the form?')"
+				onReset="confirm('Do you really want to reset the form?')">
+				
+				<qx:eventListener type="dataSent">
+					alert (event.getData());
+				</qx:eventListener>
+
+				<qx:verticalBoxLayout spacing="5" padding="5">
+
+					<qx:groupBox legend="Some controls bound to a form"
+						icon="icon/16/apps/preferences.png" dimension="auto,auto">
+
+						<qx:gridLayout dimension="259,auto"
+							verticalSpacing="4" horizontalSpacing="6">
+
+							<qx:gridLayoutColumn width="70"
+								verticalAlignment="middle" />
+							<qx:gridLayoutColumn width="180" />
+
+							<qx:gridLayoutRow height="20">
+								<qx:gridLayoutCell>
+									<qx:label text="Name" />
+								</qx:gridLayoutCell>
+								<qx:gridLayoutCell>
+									<qx:textField qxt:name="username" />
+								</qx:gridLayoutCell>
+							</qx:gridLayoutRow>
+
+							<qx:gridLayoutRow height="20">
+								<qx:gridLayoutCell>
+									<qx:label text="Amount" />
+								</qx:gridLayoutCell>
+								<qx:gridLayoutCell>
+									<qx:spinner min="0" max="10"
+										value="0" qxt:name="amount" />
+								</qx:gridLayoutCell>
+							</qx:gridLayoutRow>
+
+							<qx:gridLayoutRow height="20">
+								<qx:gridLayoutCell>
+									<qx:label text="Type" />
+								</qx:gridLayoutCell>
+								<qx:gridLayoutCell>
+									<qx:comboBox qxt:name="ctype">
+										<qx:listItem text="CD"
+											value="cd" />
+										<qx:listItem text="Clock"
+											value="clock" />
+										<qx:listItem text="Modem"
+											value="modem" />
+										<qx:listItem text="Network"
+											value="network" />
+										<qx:listItem text="PDA"
+											value="pda" />
+										<qx:listItem text="Printer"
+											value="printer" />
+										<qx:listItem text="TV"
+											value="tv" />
+									</qx:comboBox>
+								</qx:gridLayoutCell>
+							</qx:gridLayoutRow>
+
+							<qx:gridLayoutRow height="20">
+								<qx:gridLayoutCell>
+									<qx:label text="Email" />
+								</qx:gridLayoutCell>
+								<qx:gridLayoutCell>
+									<qx:textField qxt:name="email"/>
+								</qx:gridLayoutCell>
+							</qx:gridLayoutRow>
+
+							<qx:gridLayoutRow height="70">
+								<qx:gridLayoutCell>
+									<qx:label text="Comment"
+										verticalAlign="top" />
+								</qx:gridLayoutCell>
+								<qx:gridLayoutCell>
+									<qx:textArea qxt:name="comment"/>
+								</qx:gridLayoutCell>
+							</qx:gridLayoutRow>
+
+						</qx:gridLayout>
+
+					</qx:groupBox>
+
+					<qx:groupBox legend="Some settings"
+						dimension="285,auto">
+						<qx:verticalBoxLayout>
+							<qx:checkBox
+								text="Permit others to view my favorites" qxt:name="favorites"/>
+							<qx:checkBox
+								text="Use the very high bitrate" checked="true" qxt:name="highBitrate" />
+						</qx:verticalBoxLayout>
+					</qx:groupBox>
+
+					<qx:groupBox legend="Network Speed"
+						icon="icon/16/categories/applications-internet.png"
+						dimension="285,auto">
+						<qx:verticalBoxLayout>
+							<qx:radioManager qxt:name="speed">
+								<qx:radioButton text="Modem" value="modem" />
+								<qx:radioButton text="DSL" value="dsl" checked="true" />
+								<qx:radioButton text="Direct Link" value="direct" />
+							</qx:radioManager>
+						</qx:verticalBoxLayout>
+					</qx:groupBox>
+
+					<qx:horizontalBoxLayout spacing="5">
+						<qx:button label="Submit"
+							onClick="formControl.submit()" />
+						<qx:button label="Reset"
+							onClick="formControl.reset()" />
+						<qx:button label="Cancel"
+							onClick="formWindow.hide()" />
+						<qx:button label="Show Source"
+							onClick='window.open("../source/xml/showcase.FormWindow.qxml");' />
+					</qx:horizontalBoxLayout>
+
+				</qx:verticalBoxLayout>
+
+			</qx:form>
+
+		</qx:window>
+
+	</qx:widget>
+
+</qx:root>

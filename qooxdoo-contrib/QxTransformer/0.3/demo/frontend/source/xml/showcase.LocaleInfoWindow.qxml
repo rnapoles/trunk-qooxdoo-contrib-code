@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:root xmlns:qx="http://www.qxtransformer.org/qooxdoo" qooxdooVersion="0.7">
+
+	<qx:widget 
+		namespace="showcase" 
+		className="LocaleInfoWindow"
+		title="Locale Info Window" 
+		authors="Christian Boulanger"
+		translate="true">
+
+		<!-- Info Box -->				
+		<qx:window 
+			id="localeInfoWindow"
+			caption="Locale Information" 
+			icon="icon/16/actions/edit-find.png"
+      dimension="auto,auto"
+      onAppear="this.centerToBrowser();"
+			allowMinimize="false" allowMaximize="false"
+      display="true">
+					
+			<!-- children -->			
+			<qx:groupBox 
+				legend="Locale information"
+				left="0" top="0"
+				width="400" height="auto" margin="4">
+				
+				<qx:gridLayout 
+					width="100%" height="100%">
+					
+					<qx:gridLayoutColumn width="50%"/>
+					<qx:gridLayoutColumn width="50%"/>
+					
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Locale:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Manager.getInstance().getLocale()" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Territory code:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Manager.getInstance().getTerritory()" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date format short:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getDateFormat('short')" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date short:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:(new qx.util.format.DateFormat(qx.locale.Date.getDateFormat('short'))).format(new Date())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date format medium:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getDateFormat('medium')" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date medium:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:(new qx.util.format.DateFormat(qx.locale.Date.getDateFormat('medium'))).format(new Date())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date format long:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getDateFormat('long')" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date long:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:(new qx.util.format.DateFormat(qx.locale.Date.getDateFormat('long'))).format(new Date())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date format full:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getDateFormat('full')" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Date full:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:(new qx.util.format.DateFormat(qx.locale.Date.getDateFormat('full'))).format(new Date())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Time format short:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getTimeFormat('short')" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Time short:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:(new qx.util.format.DateFormat(qx.locale.Date.getTimeFormat('short'))).format(new Date())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Time format long:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getTimeFormat('long')" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Time long:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:(new qx.util.format.DateFormat(qx.locale.Date.getTimeFormat('long'))).format(new Date())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="Week start:" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.locale.Date.getDayName('wide', qx.locale.Date.getWeekStart())" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+					<qx:gridLayoutRow height="20">
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:this.tr('Format of %1:', 10000.12)" />
+						</qx:gridLayoutCell>
+						<qx:gridLayoutCell>
+							<qx:label text="javascript:qx.util.format.NumberFormat.getInstance().format(10000.12)" />
+						</qx:gridLayoutCell>
+					</qx:gridLayoutRow>
+
+				</qx:gridLayout>
+			
+			</qx:groupBox>
+			
+		</qx:window>			
+
+	</qx:widget>
+
+</qx:root>

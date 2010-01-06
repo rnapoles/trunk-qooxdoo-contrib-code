@@ -1,0 +1,1009 @@
+{
+    /*
+        Base tag config. Please extend all your configs from this one.
+    */
+    "base": {
+        "attributes": {
+            "id":"",
+            "*" : "attr/default.mako",
+            "qxt:*" : ""
+        },
+        "add": {
+            "qxt:variant": "add/noParent.mako"
+        },
+        "data": {
+            "props":{},
+            "attr": {}
+        }
+    },
+    
+    "qx:application": {
+        "extends" : "base",
+        "body" : {
+            "*": "body/qx/application.mako"
+        },
+        //do not need to add qx:application to any parent,
+        // it's a top level widget, so template is null
+        //also this structure can be ommited
+        "add" : {
+            "*": ""
+        },
+        "data": {
+            "attr": {
+                //default value for "extend" attribute
+                //will be used if user doen't provide extend among other
+                //tag's attributes explicitly
+                "extend":"qx.application.Standalone"
+            }
+        }
+    },
+
+    "qx:widget": {
+        "extends": "base",
+        "body": {
+            "*":"body/qx/widget.mako"
+        },
+        "add": {
+            "qx:application": "add/qx/application.mako",
+            "*":"add/defaultWithPosition.mako",
+            "layout" : "add/noParent.mako",
+            //qx:split and all derived
+            "qx:split": "add/qx/split.mako"
+        },
+        "data":{
+            "props": {
+                "class": "qx.ui.core.Widget"
+            }        
+        }
+    },
+    
+    /**
+        Containers group.
+    **/
+    "container": {
+        "extends": "qx:widget",
+        "body": {
+            "*":"body/qx/container.mako"
+        }    
+    },
+    
+    "qx:composite": {
+        "extends": "container",
+        "data": {
+            "props": {
+                //"constructor-args": "layout",
+                "class": "qx.ui.container.Composite"
+            }
+        }
+    },
+    
+    "qx:resizer": {
+        "extends": "qx:composite",
+        "data": {
+            "props": {
+                //"constructor-args": "layout",
+                "class": "qx.ui.container.Resizer"
+            }
+        }
+    },
+    
+    "qx:scroll": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.container.Scroll"
+            }
+        }
+    },
+    
+    "qx:slideBar": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "constructor-args": "orientation",
+                "class": "qx.ui.container.SlideBar"
+            }
+        }
+    },
+    
+    "qx:stack": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.container.Stack"
+            }
+        }
+    },
+    
+    /**
+        Layouts
+    **/
+    
+    "layout": {
+        "extends": "qx:widget",
+        "add": {
+            //set any layout as setLayout for window
+            "qx:window": "add/setLayout.mako",
+            "groupBox": "add/setLayout.mako",
+            "qx:slideBar": "add/setLayout.mako",
+            "qx:page": "add/setLayout.mako"
+        }
+    },
+
+    "qx:basic": {
+        "extends": "layout",
+        "data":{
+            "props": {
+                "class": "qx.ui.layout.Basic"
+            }
+
+        }
+    },
+
+    "qx:canvas": {
+        "extends": "layout",
+        "data": {
+            "props": {
+                "class": "qx.ui.layout.Canvas"
+            }			
+        }
+    },
+
+    "qx:hbox": {
+        "extends": "layout",
+        "data":{
+            "props": {
+                "class": "qx.ui.layout.HBox",
+                "constructor-args": "spacing,alignX,separator"
+            }
+        }
+    },
+
+    "qx:vbox": {
+        "extends": "layout",
+        "data":{
+            "props": {
+                "class": "qx.ui.layout.VBox",
+                "constructor-args": "spacing,alignY,separator"
+            }
+        }
+    },
+
+    "qx:dock": {
+        "extends": "layout",
+        "data":{
+            "props": {
+                "class": "qx.ui.layout.Dock",
+                "constructor-args": "spacingX,spacingY,separatorX,separatorY"
+            }
+        }
+    },
+    
+    "qx:grow": {
+        "extends": "layout",
+        "data":{
+            "props": {
+                "class": "qx.ui.layout.Grow"
+            }
+        }
+    },
+    
+    // GRID LAYOUT
+    "qx:grid": {
+        "extends": "layout",
+        "data":{
+            "props": {
+                "class": "qx.ui.layout.Grid",
+                "constructor-args": "spacingX,spacingY"
+            }
+        }
+    },
+
+    "qx:row": {
+        "body" : {
+            "qx:grid":"body/qx/grid/row.mako"
+        },
+        "attributes": {
+            "id":"",
+            "qxt:*":"",
+            "*": "attr/grid/rowAttribute.mako"
+        }
+    },
+
+    "qx:column": {
+        "body" : {
+            "qx:grid":"body/qx/grid/column.mako"
+        },
+        "attributes": {
+            "id":"",
+            "qxt:*":"",
+            "*": "attr/grid/columnAttribute.mako"
+        }
+    },
+
+    // vertical/horizontal split pane
+    "qx:split": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.splitpane.Pane",
+                "constructor-args": "orientation"
+            }
+        }
+    },
+    "qx:vsplit": {
+        "extends": "qx:split",
+        "data":{
+            "attr":{
+                "orientation": "vertical"
+            }
+        }
+    },
+    "qx:hsplit": {
+        "extends": "qx:split",
+        "data":{
+            "attr":{
+                "orientation": "horizontal"
+            }
+        }
+    },
+    "qx:spacer": {
+        "extends": "qx:widget",
+        "body":{
+            "qx:toolBar": "body/qx/toolbar/spacer.mako"
+        },
+        "data": {
+            "props" : {
+                "class": "qx.ui.core.Spacer",
+                "constructor-args": "width,height"
+            }
+        }
+    },
+    
+    //tab view
+    
+    "qx:tabView": {
+        "extends":"qx:widget",
+        "data": {
+            "props" : {
+                "class": "qx.ui.tabview.TabView",
+                "constructor-args": "barPosition"
+            }
+        }
+    },
+    
+    "qx:page": {
+        "extends":"qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "qx:tabView": "add/default.mako"
+        },
+        "data": {
+            "props" : {
+                "class": "qx.ui.tabview.Page",
+                "constructor-args": "barPosition"
+            }
+        }
+    },
+    
+    /*------------------------------------------------------------------------- 
+    Widgets
+    -------------------------------------------------------------------------*/
+    "qx:atom": {
+        "extends": "qx:widget",
+        //will use "body" structure from "qx:widget"
+        //will be use "add" structure from "qx:widget"
+        "data": {
+            "props": {
+                "class":"qx.ui.basic.Atom",
+                "constructor-args":"label,icon"
+            }
+        }
+    },
+
+    "qx:image": {
+        "extends": "qx:widget",
+        //will use "body" structure from "qx:widget"
+        //will be use "add" structure from "qx:widget"
+        "data": {
+            "props": {
+                "class":"qx.ui.basic.Image",
+                //attributes which will be passed to constructor
+                "constructor-args": "source"
+            }
+        }
+    },
+
+    "qx:button": {
+        "extends": "qx:widget",
+        //will use "body" structure from "qx:widget"
+        //will be use "add" structure from "qx:widget"
+        "data": {
+            "props": {
+                "class":"qx.ui.form.Button",
+                //attributes which will be passed to constructor
+                "constructor-args": "label,icon,command"
+            }
+        }
+    },
+
+    "qx:toggleButton": {
+        "extends": "qx:widget",
+        //will use "body" structure from "qx:widget"
+        //will be use "add" structure from "qx:widget"
+        "data": {
+            "props": {
+                "class":"qx.ui.form.ToggleButton",
+                //attributes which will be passed to constructor
+                "constructor-args": "label,icon"
+            }
+        }
+    },
+
+    "qx:repeatButton": {
+        "extends": "qx:widget",
+        //will use "body" structure from "qx:widget"
+        //will be use "add" structure from "qx:widget"
+        "data": {
+            "props": {
+                "class":"qx.ui.form.RepeatButton",
+                //attributes which will be passed to constructor
+                "constructor-args": "label,icon"
+            }
+        }
+    },
+
+    "qx:label": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class":"qx.ui.basic.Label",
+                "constructor-args": "content"
+            }
+        }
+    },
+
+    "qx:window": {
+        "extends":"qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.window.Window",
+                "constructor-args": "caption,icon"
+            }
+        }
+    },
+    
+    "qx:popup": {
+        "extends":"container",
+        "noextends": ["add"],
+        "add": {
+            "*":""
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.popup.Popup",
+                "constructor-args": "layout"
+            }
+        }
+    },
+    
+    "qx:toolTip": {
+        "extends":"qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":"add/setToolTip.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.tooltip.ToolTip",
+                "constructor-args": "label,icon"
+            }
+        }
+    },
+    
+    "qx:embedCanvas": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.embed.Canvas",
+                "constructor-args": "canvasWidth,canvasHeight"
+            }
+        }
+    },
+
+    "qx:embedHtml": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.embed.Html",
+                "constructor-args": "html"
+            }
+        }
+    },
+
+    "qx:embedIframe": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.embed.Iframe",
+                "constructor-args": "source"
+            }
+        }
+    },
+    
+    /*-------------------------------------------------------------------------
+    Tree
+    -------------------------------------------------------------------------*/
+    
+    "qx:tree": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class":"qx.ui.tree.Tree"
+            }
+        }
+    },
+    
+    "qx:treeFolder": {
+        "extends": "qx:widget",
+        "add": {
+            "qx:tree": "add/setRoot.mako",
+            "qx:treeFolder": "add/default.mako",
+            "*":""
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.tree.TreeFolder",
+                "constructor-args": "label"
+            }
+        }
+    },
+    
+    "qx:treeFile": {
+        "extends": "qx:widget",
+        "add": {
+            "qx:tree": "add/setRoot.mako",
+            "qx:treeFolder": "add/default.mako",
+            "*":""
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.tree.TreeFile",
+                "constructor-args":"label"
+            }
+        }
+    },
+   
+    // group boxes
+    "groupBox": {
+        "extends":"qx:widget"
+    },
+    
+    "qx:groupBox": {
+        "extends":"groupBox",
+        "data": {
+            "props":{
+                "class": "qx.ui.groupbox.GroupBox",
+                "constructor-args":"legend,icon"
+            }
+        }
+    },
+    
+    "qx:radioGroupBox": {
+        "extends":"qx:groupBox",
+        "data": {
+            "props":{
+                "class": "qx.ui.groupbox.RadioGroupBox"
+            }
+        }
+    },
+    
+    "qx:checkGroupBox": {
+        "extends":"qx:groupBox",
+        "data": {
+            "props":{
+                "class": "qx.ui.groupbox.CheckGroupBox"
+            }
+        }
+    },
+    
+    /*-------------------------------------------------------------------------
+    MENU
+    -------------------------------------------------------------------------*/
+    "qx:menu": {
+        "extends": "qx:widget",
+        "add": {
+            "qx:menuButton":"add/setMenu.mako",
+            "qx:menuCheckBox":"add/setMenu.mako",
+            "qx:menuRadioButton":"add/setMenu.mako",
+            "qx:menuBarButton":"add/setMenu.mako",
+            "qx:splitButton":"add/setMenu.mako",
+            "qx:toolBarSplitButton":"add/setMenu.mako",
+            "qx:toolBarButton":"add/setMenu.mako",
+            "qx:toolBarMenuButton":"add/setMenu.mako",
+            "qx:formMenuButton":"add/setMenu.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.menu.Menu"
+            }
+        }
+    },
+    
+    "qx:contextMenu": {
+        "extends": "qx:menu",
+        "noextends": ["add"],
+        "add": {
+            "*":"add/setContextMenu.mako"
+        }
+    },
+    
+    "qx:menuButton": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":"",
+            "qx:menu": "add/default.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.menu.Button",
+                "constructor-args": "label,icon,command,menu"
+            }
+        }
+    },
+    
+    "qx:menuCheckBox": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*": "",
+            "qx:menu": "add/default.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.menu.CheckBox",
+                "constructor-args": "label,icon"
+            }
+        }
+    },
+    
+    "qx:menuRadioButton": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*": "",
+            "qx:menu": "add/default.mako",
+            "qx:radioGroup": "add/qx/radioGroup.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.menu.RadioButton",
+                "constructor-args": "label,icon"
+            }
+        }
+    },
+    
+    "qx:menuBar": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.menubar.MenuBar"
+            }
+        }
+    },
+    
+    "qx:menuBarButton": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":"",
+            "qx:menuBar": "add/default.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.menubar.Button",
+                "constructor-args": "label,icon,menu"
+            }
+        }
+    },
+    
+    "qx:command": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        //TODO: probably there are more possible parents here
+        "add": {
+            "*":"",
+            "qx:menuButton": "add/setCommand.mako",
+            "qx:tollBarButton": "add/setCommand.mako"
+        },
+        "data": {
+            "props":{
+                "class":"qx.event.Command",
+                "constructor-args": "shortcut"
+            }
+        }
+    },
+    
+    /*-------------------------------------------------------------------------
+    TOOLBAR
+    -------------------------------------------------------------------------*/    
+    
+    "qx:toolBar": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.ToolBar"
+            }
+        }
+    },
+    
+    "qx:toolBarPart": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":"",
+            "qx:toolBar": "add/default.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.Part"
+            }
+        }
+    },
+    
+    "qx:toolBarSplitButton": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":"",
+            "qx:toolBar": "add/default.mako",
+            "qx:toolBarPart": "add/default.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.SplitButton",
+                "constructor-args": "label,icon,menu,command"
+            }
+        }
+    },
+    
+    "toolBarControl": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":"",
+            "qx:toolBar": "add/default.mako",
+            "qx:toolBarPart": "add/default.mako"
+        }
+    },
+    
+    "qx:toolBarButton": {
+        "extends": "toolBarControl",
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.Button",
+                "constructor-args": "label,icon,command"
+            }
+        }
+    },
+    
+    "qx:toolBarMenuButton": {
+        "extends": "toolBarControl",
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.MenuButton",
+                "constructor-args": "label,icon,command"
+            }
+        }
+    },
+    
+    "qx:toolBarCheckBox": {
+        "extends": "toolBarControl",
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.CheckBox",
+                "constructor-args": "label,icon,command"
+            }
+        }
+    },
+    
+    "qx:toolBarRadioButton": {
+        "extends": "toolBarControl",
+        "add": {
+            "qx:radioGroup": "add/qx/radioGroup.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.toolbar.RadioButton",
+                "constructor-args": "label,icon,command"
+            }
+        }
+    },
+    
+    "qx:separator" : {
+        "extends": "base",
+        "body": {
+            "qx:toolBarPart": "body/qx/separator.mako",
+            "qx:toolBar": "body/qx/separator.mako",
+            "qx:menu": "body/qx/separator.mako"
+        }
+    },
+
+    /*-------------------------------------------------------------------------
+    
+    Form controls
+    
+    -------------------------------------------------------------------------*/
+    
+    "qx:textarea": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.TextArea",
+                "constructor-args":"value"
+            }
+        }
+    },
+    
+    "qx:textField": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.TextField",
+                "constructor-args":"value"
+            }
+        }
+    },
+    
+    "qx:checkBox": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.CheckBox",
+                "constructor-args":"label"
+            }
+        }
+    },
+    
+    "qx:comboBox": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.ComboBox"
+            }
+        }	
+    },
+    
+    "qx:list": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.List"
+            }
+        }
+    },
+    
+    "qx:selectBox": {
+         "extends": "qx:widget",
+            "data": {
+                "props": {
+                    "class": "qx.ui.form.SelectBox"
+                }
+            }
+    },
+    
+    "qx:listItem": {
+        "extends": "qx:widget",
+        "add": {
+            "qx:comboBox": "add/default.mako",
+            "qx:list": "add/default.mako",
+            "qx:selectBox": "add/default.mako",
+            "*":""
+        },
+        "attributes": {
+            "selected": "attr/selected.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.form.ListItem",
+                "constructor-args":"label,icon,value"
+            }
+        }	
+    },
+    
+    "qx:radioButton": {
+        "extends": "qx:widget",
+        "add": {
+            "qx:radioGroup": "add/qx/radioGroup.mako"
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.form.RadioButton",
+                "constructor-args":"label"
+            }
+        }
+    },
+    
+    "qx:radioGroup": {
+        "extends": "qx:widget",
+        "noextends": ["add"],
+        "add": {
+            "*":""
+        },
+        "data": {
+            "props": {
+                "class": "qx.ui.form.RadioGroup"
+            }
+        }
+    },
+    
+    "qx:slider": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.Slider",
+                "constructor-args":"orientation"
+            }
+        }
+    },
+    
+    "qx:splitButton": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.SplitButton",
+                "constructor-args":"label,icon,menu,command"
+            }
+        }
+    },
+    
+    "qx:formMenuButton": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.MenuButton",
+                "constructor-args": "label,icon,command,menu"
+            }
+        }
+    },
+    
+    "qx:spinner": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.Spinner",
+                "constructor-args": "min,value,max"
+            }
+        }
+    },
+
+    /**
+    Components
+    **/
+    // COMPONENTS
+
+    "qx:colorPopup": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.control.ColorPopup"
+            }
+        }
+    },
+    
+    
+    "qx:colorSelector": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.control.ColorSelector"
+            }
+        }
+    },
+    
+    "qx:dateChooser": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.control.DateChooser",
+                "constructor-args":"data"
+            }
+        }
+    },
+    
+    "qx:dateField": {
+        "extends": "qx:widget",
+        "data": {
+            "props": {
+                "class": "qx.ui.form.DateField"
+            }
+        }
+    },
+    
+    /*------------------------------------------------------------------------- 
+	Other
+    
+    -------------------------------------------------------------------------*/
+    "qxt:listener": {
+        "body": {
+            "*": "body/qxt/listener.mako"
+        },
+        "add": {
+            "*": ""
+        },
+        "data": {
+        }
+    },
+    
+    "qxt:subscriber": {
+        "body": {
+            "*": "body/qxt/subscriber.mako"
+        },
+        "add": {
+            "*": ""
+        },
+        "data": {
+        }
+    },
+
+    "qxt:script": {
+        "body": {
+            "*": "body/qxt/script.mako"
+        },
+        "add": {
+            "*": ""
+        },
+        "data": {
+        }
+    },
+
+    //qxt:variant
+    "qxt:variant": {
+        "body": {
+            "*": "body/qxt/variant/variant.mako"
+        },
+        "add": {
+            "*": ""
+        },
+        "data": {
+            "props": {
+                "class": "qx.core.Variant",
+                "method": "isSet"
+            }
+        }
+    },
+
+    "qxt:if": {
+        "extends": "qxt:variant",
+        "body": {
+            "qxt:variant": "body/qxt/variant/if.mako",
+            "*":""
+        }
+    },
+
+    "qxt:elsif": {
+        "extends": "qxt:variant",
+        "body": {
+            "qxt:variant": "body/qxt/variant/elsif.mako",
+            "*":""
+        }
+    },
+    
+    "qxt:else": {
+        "extends": "qxt:variant",
+        "body": {
+            "qxt:variant": "body/qxt/variant/else.mako",
+            "*":""
+        }
+    },
+
+    "qxt:property": {
+        "body": {
+            "*":"body/qxt/property.mako"
+        },
+        "add": {
+            "*":""
+        }
+    }
+}

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	
+	QxTransformer
+	Converts QXML to Javascript
+	
+	License: GLPL
+	Autors: Siarhei Barysiuk <s.barysiuk@gmail.com>	
+	Christian Boulanger <info@bibliograph.org>
+	
+	translates qxml tags to class names
+	
+-->
+
+<!DOCTYPE stylesheet [
+	<!ENTITY CR '&#13;&#10;'>
+]>
+
+<tags>
+
+
+	<!-- basic widgets -->
+  <taggroup name="basic" description="Basic widgets">
+  
+  	<tag name="qx:atom" version="0.7" class="qx.ui.basic.Atom"
+  		args="label,icon" />
+  	<tag name="qx:horizontalSpacer" version="0.7"
+  		class="qx.ui.basic.HorizontalSpacer" />
+  	<tag name="qx:image" version="0.7" class="qx.ui.basic.Image"
+  		args="source" />
+  	<tag name="qx:label" version="0.7" class="qx.ui.basic.Label"
+  		args="text" />
+  	<tag name="qx:inline" version="0.7" class="qx.ui.basic.Inline"
+  		args="id" />
+  
+  	<tag name="qx:terminator" version="0.7"
+  		class="qx.ui.basic.Terminator" />
+  	<tag name="qx:verticalSpacer" version="0.7"
+  		class="qx.ui.basic.VerticalSpacer" />
+      
+  </taggroup>
+
+	<!-- layouts -->
+  <taggroup name="layout" description="Layout widgets">
+  	<tag name="qx:boxLayout" version="0.7"
+  		class="qx.ui.layout.BoxLayout" />
+  	<tag name="qx:canvasLayout" version="0.7"
+  		class="qx.ui.layout.CanvasLayout" />
+  	<tag name="qx:dockLayout" version="0.7"
+  		class="qx.ui.layout.DockLayout" />
+  	<tag name="qx:flowLayout" version="0.7"
+  		class="qx.ui.layout.FlowLayout" />
+  	<tag name="qx:horizontalBoxLayout" version="0.7"
+  		class="qx.ui.layout.HorizontalBoxLayout" />
+  	<tag name="qx:verticalBoxLayout" version="0.7"
+  		class="qx.ui.layout.VerticalBoxLayout" />
+  	<tag name="qx:gridLayout" version="0.7"
+  		class="qx.ui.layout.GridLayout" />
+  </taggroup>
+  
+	<!-- form controls -->
+  <taggroup name="form" description="Form widgets">
+  	<tag name="qx:button" version="0.7" class="qx.ui.form.Button"
+  		args="label,icon" />
+  	<tag name="qx:checkBox" version="0.7" class="qx.ui.form.CheckBox"
+  		args="text,value,name" />
+  
+  	<tag name="qx:comboBox" version="0.7" class="qx.ui.form.ComboBox" />
+  	<tag name="qx:comboBoxEx" version="0.7"
+  		class="qx.ui.form.ComboBoxEx" />
+  
+  	<tag name="qx:InputCheckSymbol" version="0.7"
+  		class="qx.ui.form.InputCheckSymbol" />
+  
+  	<tag name="qx:list" version="0.7" class="qx.ui.form.List" />
+  	<tag name="qx:listItem" version="0.7" class="qx.ui.form.ListItem"
+  		args="text,icon,value" />
+  
+  	<tag name="qx:radioButton" version="0.7"
+  		class="qx.ui.form.RadioButton" args="text,value,name" />
+  	<tag name="qx:radioManager" version="0.7"
+  		class="qx.ui.selection.RadioManager" args="name" />
+  
+  	<tag name="qx:passwordField" version="0.7"
+  		class="qx.ui.form.PasswordField" />
+  	<tag name="qx:textField" version="0.7" class="qx.ui.form.TextField" />
+  	<tag name="qx:textArea" version="0.7" class="qx.ui.form.TextArea" />
+  
+  	<tag name="qx:spinner" version="0.7" class="qx.ui.form.Spinner"
+  		args="min,value,max" />
+  
+  	<tag name="qx:repeatButton" version="0.7"
+  		class="qx.ui.form.RepeatButton" />
+  </taggroup>
+  
+	<!-- listview and table widgets -->
+	<taggroup name="table" description="Table Widgets">
+    <tag name="qx:listView"  version="0.7"	class="qx.ui.listview.ListView" 
+  		args="data,columns"/> 
+  	<tag name="qx:table" version="0.7" class="qx.ui.table.Table" />
+  </taggroup>
+
+	<!-- groupbox widgets -->
+  <taggroup name="groupbox" description="Groupbox widgets">
+  	<tag name="qx:fieldSet" version="0.7"
+  		class="qx.ui.groupbox.GroupBox" args="legend,icon"  />
+  	<tag name="qx:groupBox" version="0.7"
+  		class="qx.ui.groupbox.GroupBox" args="legend,icon" />
+  	<tag name="qx:checkGroupBox" version="0.7"
+  		class="qx.ui.groupbox.CheckGroupBox" />
+  	<tag name="qx:radioGroupBox" version="0.7"
+  		class="qx.ui.groupbox.RadioGroupBox" />
+  </taggroup>
+
+	<!-- Popup widgets -->
+  <taggroup name="popup" description="Popup Widgets">
+  	<tag name="qx:popup" version="0.7" class="qx.ui.popup.Popup" />
+  	<tag name="qx:popupAtom" version="0.7" class="qx.ui.popup.PopupAtom"
+  		args="label,icon" />
+  	<tag name="qx:toolTip" version="0.7" class="qx.ui.popup.ToolTip"
+  		args="label,icon" />
+  </taggroup>
+  
+	<!-- Menu widgets -->
+  <taggroup name="menu" description="Menu Widgets">
+  	<tag name="qx:menuBar" version="0.7" class="qx.ui.menubar.MenuBar" />
+  	<tag name="qx:menuBarButton" version="0.7"
+  		class="qx.ui.menu.menubar.Button" args="text" />
+  	<tag name="qx:menu" version="0.7" class="qx.ui.menu.Menu" />
+  	<tag name="qx:menuLayout" version="0.7" class="qx.ui.menu.Layout" />
+  	<tag name="qx:menuButton" version="0.7" class="qx.ui.menu.Button"
+  		args="text,icon" />
+  	<tag name="qx:menuCheckBox" version="0.7"
+  		class="qx.ui.menu.CheckBox" args="text" />
+  	<tag name="qx:menuRadioButton" version="0.7"
+  		class="qx.ui.menu.RadioButton" args="text" />
+  	<tag name="qx:menuSeparator" version="0.7"
+  		class="qx.ui.menu.Separator" />
+  </taggroup>
+
+	<!-- tab view widgets -->
+  <taggroup name="tabview" description="Tab View Widgets">
+  	<tag name="qx:tabView" version="0.7"
+  		class="qx.ui.pageview.tabview.TabView" />
+  	<tag name="qx:tabViewButton" version="0.7"
+  		class="qx.ui.pageview.tabview.Button" args="label,icon"
+  		parent="qx:tabView" modifier=".getBar()" />
+  	<tag name="qx:tabViewPage" version="0.7"
+  		class="qx.ui.pageview.tabview.Page" args="button" parent="qx:tabView"
+  		modifier=".getPane()" />
+  </taggroup>
+  
+	<!-- button view widgets -->
+  <taggroup name="buttonview" description="Button View Widgets">
+    <tag name="qx:buttonView" version="0.7"
+  		class="qx.ui.pageview.buttonview.ButtonView" />
+  	<tag name="qx:buttonViewButton" version="0.7"
+  		class="qx.ui.pageview.buttonview.Button" args="text,icon"
+  		parent="qx:buttonView" modifier=".getBar()" />
+  	<tag name="qx:buttonViewPage" version="0.7"
+  		class="qx.ui.pageview.buttonview.Page" args="button"
+  		parent="qx:buttonView" modifier=".getPane()" />
+  </taggroup>
+
+	<!-- radio view widgets -->
+  <taggroup name="radioview" description="Radio View Widgets">
+  	<tag name="qx:radioView" version="0.7"
+  		class="qx.ui.pageview.radioview.RadioView" />
+  	<tag name="qx:radioViewradio" version="0.7"
+  		class="qx.ui.pageview.radioview.Bar" />
+  	<tag name="qx:radioViewButton" version="0.7"
+  		class="qx.ui.pageview.radioview.Button" />
+  	<tag name="qx:radioViewPage" version="0.7"
+  		class="qx.ui.pageview.radioview.Page" />
+  	<tag name="qx:radioViewPane" version="0.7"
+  		class="qx.ui.pageview.radioview.Pane" />
+  </taggroup>
+
+	<!-- tool bar widgets -->
+  <taggroup name="toolbar" description="Tool Bar Widgets">  
+  	<tag name="qx:toolBar" version="0.7" class="qx.ui.toolbar.ToolBar" />
+  	<tag name="qx:toolBarButton" version="0.7"
+  		class="qx.ui.toolbar.Button" args="text,icon" />
+  	<tag name="qx:toolBarCheckBox" version="0.7"
+  		class="qx.ui.toolbar.CheckBox" args="text,icon" />
+  	<tag name="qx:toolBarMenuButton" version="0.7"
+  		class="qx.ui.toolbar.MenuButton" args="text" />
+  	<tag name="qx:toolBarPart" version="0.7" class="qx.ui.toolbar.Part" />
+  	<tag name="qx:toolBarPartHandle" version="0.7"
+  		class="qx.ui.toolbar.PartHandle" />
+  	<tag name="qx:toolBarRadioButton" version="0.7"
+  		class="qx.ui.toolbar.RadioButton" args="text,icon" />
+  	<tag name="qx:toolBarSeparator" version="0.7"
+  		class="qx.ui.toolbar.Separator" />
+  </taggroup>
+
+	<!-- tree widgets -->
+  <taggroup name="tree" description="Tree Widgets">
+  	<tag name="qx:tree" version="0.7" class="qx.ui.tree.Tree"
+  		args="label" eventLocationModifier=".getManager()" />
+  	<tag name="qx:treeFile" version="0.7" class="qx.ui.tree.TreeFile"
+  		args="label" />
+  	<tag name="qx:treeFolder" version="0.7"
+  		class="qx.ui.tree.TreeFolder" args="label" />
+  	<tag name="qx:virtualTree" version="0.7"
+  		class="qx.ui.treevirtual.TreeVirtual" />
+  </taggroup>
+
+	<!-- gallery -->
+  <taggroup name="gallery" description="Gallery Widgets">  
+  	<tag name="qx:gallery" version="0.7" class="qx.ui.embed.Gallery" />
+  	<tag name="qx:galleryList" version="0.7"
+  		class="qx.ui.embed.GalleryList" />
+  </taggroup>
+  
+	<!-- window widgets -->
+  <taggroup name="window" description="Window Widgets">
+  	<tag name="qx:window" class="qx.ui.window.Window" version="0.7"
+  		args="caption" />
+  	<tag name="qx:nativeWindow" version="0.7"
+  		class="qx.client.NativeWindow" />
+  </taggroup>
+
+	<!-- components -->
+  <taggroup name="components" description="Component Widgets">
+  	<tag name="qx:colorSelector" version="0.7"
+  		class="qx.ui.component.ColorSelector" args="tables" />
+  	<tag name="qx:colorPopup" version="0.7"
+  		class="qx.ui.component.ColorPopup" args="tables" />
+  	<tag name="qx:dateChooserButton" version="0.7"
+  		class="qx.ui.component.DateChooserButton" />
+  	<tag name="qx:dateChooser" version="0.7"
+  		class="qx.ui.component.DateChooser" />
+  	<tag name="qx:propertyEditor" version="0.7"
+  		class="qcl.databinding.simple.PropertyEditor" />
+  </taggroup>
+
+	<!-- embedding of elements -->
+  <taggroup name="embed" description="Embedding Widgets">
+  	<tag name="qx:flash" version="0.7" class="qx.ui.embed.Flash" />
+  	<tag name="qx:iframe" version="0.7" class="qx.ui.embed.Iframe"
+              args="source"/>
+  	<tag name="qx:html" version="0.7" class="qx.ui.embed.HtmlEmbed" />
+  	<tag name="qx:iconHtml" version="0.7"
+  		class="qx.ui.embed.IconHtmlEmbed" />
+  	<tag name="qx:link" version="0.7" class="qx.ui.embed.LinkEmbed"
+  		args="html,uri,target" />
+  	<tag name="qx:text" version="0.7" class="qx.ui.embed.TextEmbed"
+  		args="text" />
+  	<tag name="qx:node" version="0.7" class="qx.ui.embed.NodeEmbed" />
+	</taggroup>
+  
+	<!-- split panes -->
+	<taggroup name="splitpane" description="Splitpane Widgets">
+    <tag name="qx:horizontalSplitPane" version="0.7" class="qx.ui.splitpane.HorizontalSplitPane"
+  			args="firstSize,secondSize"/>
+  	<tag name="qx:verticalSplitPane" version="0.7" class="qx.ui.splitpane.VerticalSplitPane"
+  			args="firstSize,secondSize"/>
+  </taggroup>
+
+	<!-- other objects -->
+  <taggroup name="misc" description="Miscellaneous">  
+  	<tag name="qx:command" version="0.7" class="qx.client.Command" 
+  		args="shortcut"/>
+  </taggroup>
+
+	<!-- qcl databinding, messagebus -->
+  <taggroup name="qcl" description="QCL: databinding, security, messagebus">
+  	<tag name="qx:dataProvider" version="0.7"
+  		class="qcl.databinding.simple.DataProvider" />
+  	<tag name="qx:messageTransport" version="0.7"
+  		class="qcl.databinding.simple.MessageTransport" args="filter,mode" />
+      
+  	<!-- security -->
+  	<tag name="qx:userManager" version="0.7"
+  		class="qcl.auth.user.Manager" type="singleton"/>
+  		
+  	<!-- configuration -->	
+  	<tag name="qx:configManager" version="0.7"
+  		class="qcl.config.Manager" type="singleton"/>
+  </taggroup>     
+		
+</tags>

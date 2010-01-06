@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	<!-- Pane 3: Toolbar -->
+	
+	<qx:buttonViewButton id="menu_toolbar" text="Menu and Toolbar"
+		icon="icon/32/devices/video-display.png"
+		xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+		xmlns:qxt="http://www.qxtransformer.org/extension" />
+
+	<qx:buttonViewPage button="menu_toolbar" backgroundColor="#EBE9ED">
+
+		<qx:verticalBoxLayout 
+			width="100%" height="100%"
+			padding="10" id="layoutChangeArea"
+			scope="global">
+
+			<qx:toolBar width="100%">
+
+				<qx:toolBarMenuButton text="File">
+					<qx:menu>
+						<qx:menuButton text="New"
+							icon="icon/16/actions/document-new.png" />
+						<qx:menuButton text="Open"
+							icon="icon/16/actions/document-open.png" />
+						<qx:menuButton text="Save"
+							icon="icon/16/actions/document-save.png" />
+						<qx:menuButton text="Save as"
+							icon="icon/16/actions/document-save-as.png" />
+						<qx:menuButton text="Close"
+							icon="icon/16/actions/stop.png" />
+						<qx:menuButton text="Restore last saved"
+							icon="icon/16/actions/view-refresh.png" />
+					</qx:menu>
+				</qx:toolBarMenuButton>
+
+				<qx:toolBarMenuButton text="Edit">
+					<qx:menu>
+						<qx:menuButton text="Undo"
+							icon="icon/16/actions/edit-undo.png" />
+						<qx:menuButton text="Redo"
+							icon="icon/16/actions/edit-redo.png" />
+						<qx:menuSeparator />
+						<qx:menuButton text="Cut"
+							icon="icon/16/actions/edit-cut.png" />
+						<qx:menuButton text="Copy"
+							icon="icon/16/actions/edit-copy.png" />
+						<qx:menuButton text="Paste"
+							icon="icon/16/actions/edit-paste.png" enabled="false" />
+						<qx:menuButton text="Delete"
+							icon="icon/16/actions/edit-delete.png" enabled="false" />
+						<qx:menuSeparator />
+						<qx:menuButton text="Select All" />
+						<qx:menuButton text="Find"
+							icon="icon/16/actions/edit-find.png" />
+						<qx:menuButton text="Find Again"
+							enabled="false" />
+					</qx:menu>
+				</qx:toolBarMenuButton>
+
+				<qx:toolBarMenuButton text="View">
+					<qx:menu>
+						<qx:menuCheckBox text="File List" />
+						<qx:menuCheckBox text="Syntax Highlighting"
+							checked="true" />
+						<qx:menuCheckBox text="Statusbar"
+							checked="true" />
+						<qx:menuSeparator />
+						<qx:menuButton text="Printer Font">
+							<qx:menu>
+								<qx:radioManager>
+									<qx:menuRadioButton
+										text="Tahoma, 11pt" />
+									<qx:menuRadioButton
+										text="Tahoma, 12pt" />
+									<qx:menuRadioButton
+										text="Tahoma, 13pt" />
+									<qx:menuRadioButton
+										text="Tahoma, 14pt" />
+									<qx:menuRadioButton
+										text="Tahoma, 15pt" checked="true" />
+								</qx:radioManager>
+							</qx:menu>
+						</qx:menuButton>
+						<qx:menuButton text="Editor Font">
+							<qx:menu>
+								<qx:radioManager>
+									<qx:menuRadioButton
+										text="Verdana, 11pt" />
+									<qx:menuRadioButton
+										text="Verdana, 12pt" checked="true" />
+									<qx:menuRadioButton
+										text="Verdana, 13pt" />
+									<qx:menuRadioButton
+										text="Verdana, 14pt" />
+									<qx:menuRadioButton
+										text="Verdana, 15pt" />
+								</qx:radioManager>
+							</qx:menu>
+						</qx:menuButton>
+						<qx:menuButton text="Export Font">
+							<qx:menu>
+								<qx:radioManager>
+									<qx:menuRadioButton
+										text="Courier, 11pt" checked="true" />
+									<qx:menuRadioButton
+										text="Courier, 12pt" />
+									<qx:menuRadioButton
+										text="Courier, 13pt" />
+									<qx:menuRadioButton
+										text="Courier, 14pt" />
+									<qx:menuRadioButton
+										text="Courier, 15pt" />
+								</qx:radioManager>
+							</qx:menu>
+						</qx:menuButton>
+						<qx:menuSeparator />
+						<qx:menuButton text="Advanced">
+							<qx:menu>
+								<qx:menuButton text="First" />
+								<qx:menuButton text="Second">
+									<qx:menu>
+										<qx:menuButton text="First" />
+										<qx:menuButton text="Second" />
+										<qx:menuButton text="Third" />
+									</qx:menu>
+								</qx:menuButton>
+								<qx:menuButton text="Third" />
+							</qx:menu>
+						</qx:menuButton>
+					</qx:menu>
+				</qx:toolBarMenuButton>
+
+				<qx:toolBarMenuButton text="Options">
+					<qx:menu>
+						<qx:menuButton text="View">
+							<qx:menu>
+								<qx:menuButton text="New Window" />
+								<qx:menuSeparator />
+								<qx:menuButton text="Window Mode">
+									<qx:menu>
+										<qx:radioManager
+											name="windowMode">
+											<qx:menuRadioButton
+												text="Overlapping" />
+											<qx:menuRadioButton
+												text="Split Horizontally" checked="true" />
+											<qx:menuRadioButton
+												text="Split Vertically" />
+										</qx:radioManager>
+									</qx:menu>
+								</qx:menuButton>
+								<qx:menuSeparator />
+								<qx:menuButton text="Next Window" />
+								<qx:menuButton text="Previous Window" />
+							</qx:menu>
+						</qx:menuButton>
+						<qx:menuSeparator />
+						<qx:menuButton text="Editor Preferences..."
+							icon="icon/16/apps/preferences.png" />
+						<qx:menuButton text="Editor Extensions"
+							icon="icon/16/apps/accessories-disk-usage.png" />
+						<qx:menuButton text="Framework Preferences" />
+					</qx:menu>
+				</qx:toolBarMenuButton>
+
+				<qx:toolBarMenuButton text="Help">
+					<qx:menu>
+						<qx:menuButton text="Help"
+							icon="icon/16/actions/help-about.png" />
+						<qx:menuButton text="About"
+							icon="icon/16/actions/system-run.png" />
+					</qx:menu>
+				</qx:toolBarMenuButton>
+
+			</qx:toolBar>
+
+			<!-- toolbar -->
+			<qx:horizontalBoxLayout 
+				width="100%" height="auto" 
+	>
+
+				<qx:toolBar 
+					id="toolBar"
+					width="auto" height="auto" >
+
+					<qx:toolBarPart>
+						<qx:toolBarButton text="New"
+							icon="icon/22/actions/document-new.png" />
+						<qx:toolBarSeparator />
+						<qx:toolBarButton text="Copy"
+							icon="icon/22/actions/edit-copy.png">
+							<qx:eventListener type="execute"
+								dispatchMessage="clipboard-has-content" />
+						</qx:toolBarButton>
+						<qx:toolBarButton text="Cut"
+							icon="icon/22/actions/edit-cut.png" id="cutButton">
+							<qx:eventListener type="execute"
+								dispatchMessage="clipboard-has-content" />
+						</qx:toolBarButton>
+						<qx:toolBarButton text="Paste"
+							icon="icon/22/actions/edit-paste.png" enabled="false">
+							<qx:globalEventListener
+								type="clipboard-has-content">
+								this.setEnabled(true);
+							</qx:globalEventListener>
+						</qx:toolBarButton>
+					</qx:toolBarPart>
+
+					<qx:toolBarPart>
+						<qx:toolBarCheckBox text="Check"
+							icon="icon/22/actions/edit-add.png" />
+						<qx:toolBarSeparator />
+						<qx:radioManager>
+							<qx:toolBarRadioButton text="Radio1"
+								icon="icon/22/actions/view-pane-column.png" />
+							<qx:toolBarRadioButton text="Radio2"
+								icon="icon/22/actions/view-pane-detailed.png" />
+							<qx:toolBarRadioButton text="Radio3"
+								icon="icon/22/actions/view-pane-icon.png" />
+						</qx:radioManager>
+					</qx:toolBarPart>
+
+					<qx:toolBarPart>
+						<qx:toolBarMenuButton text="Radio Dropdown"
+							icon="icon/22/actions/view-pane-column.png">
+							<qx:menu>
+								<qx:radioManager>
+									<qx:menuRadioButton text="Radio1" />
+									<qx:menuRadioButton text="Radio2" />
+									<qx:menuRadioButton text="Radio3" />
+								</qx:radioManager>
+							</qx:menu>
+						</qx:toolBarMenuButton>
+					</qx:toolBarPart>
+
+					<!-- global event listener to catch layout change  -->
+					<qx:messageSubscriber filter="changeLayout">
+						<![CDATA[
+								var value = message.getData().getValue();
+								this.forEachChild( function(){
+									this.forEachChild( function(){
+										if( parseInt(value) && this.setIcon ) {
+											var o = parseInt(value) == 22 ? 32 : 22;
+											this.setIcon(this.getIcon().replace(o, parseInt(value)));
+										} else if( this.setShow ) {
+											this.setShow(value);
+										};
+									});
+								});
+						]]>
+					</qx:messageSubscriber>
+
+				</qx:toolBar>
+
+				<!-- global event listener to catch alignment change -->
+				<qx:messageSubscriber filter="changeAlignment">
+					this.setHorizontalChildrenAlign(message.getData().getValue());
+				</qx:messageSubscriber>
+
+			</qx:horizontalBoxLayout>
+
+			<qx:horizontalBoxLayout spacing="10" marginTop="20"
+				dimension="auto,auto">
+
+				<!-- change layout -->
+
+				<qx:verticalBoxLayout dimension="auto,auto">
+					<qx:radioManager>
+						<qx:eventListener type="changeSelected"
+							dispatchMessage="changeLayout" />
+						<qx:radioButton text="Show Icons and Label"
+							value="both" checked="true" />
+						<qx:radioButton text="Show Icons" value="icon" />
+						<qx:radioButton text="Show Label" value="label" />
+					</qx:radioManager>
+				</qx:verticalBoxLayout>
+
+
+				<!-- alignment -->
+
+				<qx:verticalBoxLayout dimension="auto,auto">
+					<qx:radioManager>
+						<qx:eventListener type="changeSelected"
+							dispatchMessage="changeAlignment" />
+						<qx:radioButton text="Left Aligned" value="left"
+							checked="true" />
+						<qx:radioButton text="Centered" value="center" />
+						<qx:radioButton text="Right Aligned"
+							value="right" />
+					</qx:radioManager>
+				</qx:verticalBoxLayout>
+
+
+				<!-- icon size -->
+
+				<qx:verticalBoxLayout dimension="auto,auto">
+					<qx:radioManager>
+						<qx:eventListener type="changeSelected"
+							dispatchMessage="changeLayout" />
+						<qx:radioButton text="22px" value="22px"
+							checked="true" />
+						<qx:radioButton text="32px" value="32px" />
+					</qx:radioManager>
+				</qx:verticalBoxLayout>
+
+				<qx:groupBox legend="QxTransformer info"
+					width="285" height="auto">
+					
+					<qx:label top="0">
+						<a href="source/xml/pages/toolbarPage.qinc" 
+                        		target="_blank">ButtonViewPage XML Source</a>
+                    </qx:label>    		
+				</qx:groupBox>
+
+			</qx:horizontalBoxLayout>
+
+		</qx:verticalBoxLayout>
+
+	</qx:buttonViewPage>
+	
+</qxt:include-definition>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- Pane 2: Tooltip -->
+    <qx:buttonViewButton
+        id="tooltip"
+        icon="icon/32/actions/system-run.png"
+        label="Tooltip"/>
+                
+            <qx:buttonViewPage
+                button="tooltip"
+                backgroundColor="#EBE9ED">
+
+                <qx:horizontalBoxLayout
+                	padding="10"
+      				spacing="10">
+      				
+      				<qx:atom 
+      					label="Hover me"
+      					icon="icon/32/actions/system-run.png"
+      					padding="5"
+      					border="outset"
+      					backgroundColor="#BDD2EF"
+      					tooltip="Look at this" />
+      					
+      				<qx:atom
+						label="Hover me"
+						icon="icon/32/apps/accessories-archiver.png"
+						padding="5"
+						border="outset"
+						backgroundColor="#D1DFAD">
+						<qx:toolTip 
+							label="Images are also possible"
+							icon="icon/16/actions/help-about.png" />
+					</qx:atom>
+					
+					<qx:atom
+						label="Hover me"
+						icon="icon/32/apps/accessories-disk-usage.png"
+						padding="5"
+						border="outset"
+						backgroundColor="#D1A4AD">
+						<qx:toolTip 
+							icon="icon/32/apps/accessories-disk-usage.png" 
+							showInterval="50">
+							Such a great tooltip with a show timeout of 50ms. And <br/>
+							<b>H</b>
+							<span style="color:red">T</span>
+							<i>M</i><u>L</u>
+						</qx:toolTip>
+					</qx:atom>
+					
+					<qx:groupBox
+		                legend="QxTransformer info"
+		                width="285" height="60">
+		                    <qx:label top="00">
+		                        <a href="source/xml/pages/tooltipPage.qinc" 
+		                        	target="_blank">ButtonViewPage XML Source</a>
+		                     </qx:label>                   
+		            </qx:groupBox>  
+		                   
+    			</qx:horizontalBoxLayout>                        
+               
+            </qx:buttonViewPage>
+</qxt:include-definition>
+

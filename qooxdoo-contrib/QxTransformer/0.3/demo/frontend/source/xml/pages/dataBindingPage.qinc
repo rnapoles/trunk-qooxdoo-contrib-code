@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<!-- Databinding -->
+	
+	<qx:buttonViewButton
+	    id="dataBinding"
+	    text="Databinding"
+	    icon="icon/32/actions/view-pane-detailed.png"/>
+	    
+	<qx:buttonViewPage
+	    button="dataBinding"
+	    backgroundColor="threedface">
+	    
+	    <qx:horizontalBoxLayout 
+	    	width="auto" height="100%" padding="10" spacing="10">
+	    	
+	    	<qx:list id="dbListWidget"
+	    		height="100%" width="150" overflow="scrollY"
+	    		
+	    		dataBinding="true"
+					serviceUrl="../../backend/php/services/index.php"
+					serviceName="qxtransformer.showcase"
+					serviceMethodUpdateClient="getListItems">
+					
+					<qx:listItem text="-- no data --"/>
+					
+				</qx:list>
+			
+				<qx:verticalBoxLayout width="auto" height="auto" spacing="10">
+					
+					<qx:button label="Get List from Server" onClick="dbListWidget.updateClient()" />
+
+					<!-- update label from server -->
+					
+					<qx:label
+						text="Server time"
+						id="timeLabel"
+						border="inset"
+						width="100%"
+						
+						dataBinding="true"
+						serviceUrl="../../backend/php/services/index.php"
+						serviceName="qxtransformer.showcase"
+						serviceMethodUpdateClient="getServerTime"/>
+
+					<qx:button label="Get Time on Server" onClick="timeLabel.updateClient()" />
+
+					<!-- echos message on server -->					
+					
+					<qx:label text="Echo message on the server"/>
+					
+					<qx:textField
+						id="echoMessage"
+						value="Type new text here and press submit"
+						width="100%"
+						focused="true"
+						
+						dataBinding="true"
+						bindName="echoMessage"
+						serviceUrl="../../backend/php/services/index.php"
+						serviceName="qxtransformer.showcase"
+						serviceMethodUpdateServer="echo"
+						
+						onAppear="this.selectAll()"
+						onDataSent="alert(event.getData()); this.setValue(''); this.setFocused(true);"/>
+					
+					<qx:button label="Submit" onClick="echoMessage.updateServer()" />
+					
+         	<qx:label text="Simple submit form in new window:"/>
+
+          <qx:button label="Open Window" onClick="new showcase.FormWindow;" />
+						
+		    </qx:verticalBoxLayout>
+		    
+		    <!-- elements bound to a data provider -->
+		    	    
+		    <qx:dataProvider 
+	    		id="dataProvider1"
+					serviceUrl="../../backend/php/services/index.php"
+					serviceName="qxtransformer.showcase"
+					serviceMethodUpdateServer="saveFormData"
+					serviceMethodUpdateClient="getFormData"
+					onDataSent="alert(event.getData())"
+					onDataReceived="alert('Form updated.')"/>		    	
+	    
+		    <qx:verticalBoxLayout 
+		    	width="auto" height="auto" 
+		    	spacing="10">
+        
+            <qx:groupBox
+                legend="Some controls bound to a data provider"
+                icon="icon/16/apps/preferences.png"
+                dimension="auto,auto">
+                
+                <qx:gridLayout
+                    dimension="259,auto"
+                    verticalSpacing="4"
+                    horizontalSpacing="6">
+                    
+                    <qx:gridLayoutColumn 
+                        width="70"
+                        verticalAlignment="middle"/>
+                    <qx:gridLayoutColumn 
+                        width="180"/>
+                        
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Name" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:textField 
+                            	bindName="username"
+                            	dataProvider="dataProvider1"
+                            />
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>
+                    
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Amount" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:spinner 
+                            	min="0" max="10" value="0" 
+                            	bindName="amount"
+                            	dataProvider="dataProvider1"/>
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>
+                    
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Type" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:comboBox 
+															bindName="ctype"
+                            	dataProvider="dataProvider1">
+                                <qx:listItem text="CD" value="cd"/>
+                                <qx:listItem text="Clock" value="clock"/>
+                                <qx:listItem text="Modem" value="modem"/>
+                                <qx:listItem text="Network" value="network"/>
+                                <qx:listItem text="PDA" value="pda"/>
+                                <qx:listItem text="Printer" value="printer"/>
+                                <qx:listItem text="TV" value="tv"/>
+                            </qx:comboBox>
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>                            
+                    
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Email" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:textField 
+                            	bindName="email" 
+                            	dataProvider="dataProvider1"/>
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>                            
+
+                    <qx:gridLayoutRow height="70">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Comment" 
+                                verticalAlign="top"/>
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:textArea 
+                            	bindName="comment"
+                            	dataProvider="dataProvider1"/>
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>
+
+                </qx:gridLayout>
+            
+            </qx:groupBox>
+            
+            <qx:groupBox
+                legend="Some settings"
+                dimension="285,auto">
+                <qx:verticalBoxLayout>
+                    <qx:checkBox 
+                    	text="Permit others to view my favorites"
+                     	bindName="favorites"
+                     	dataProvider="dataProvider1"/>
+                    <qx:checkBox 
+                    	text="Use the very high bitrate" 
+                    	checked="true"
+                     	bindName="highBitrate"
+                     	dataProvider="dataProvider1"/>
+                </qx:verticalBoxLayout>
+            </qx:groupBox>
+            
+            <qx:groupBox
+                legend="Network Speed"
+                icon="icon/16/categories/applications-internet.png"
+                dimension="285,auto">
+                <qx:verticalBoxLayout>
+                    <qx:radioManager
+                      	bindName="speed"
+                      	dataProvider="dataProvider1">
+                        <qx:radioButton text="Modem" value="modem"/>
+                        <qx:radioButton text="DSL" value="dsl" checked="true"/>
+                        <qx:radioButton text="Direct Link" value="direct"/>
+                    </qx:radioManager>
+                </qx:verticalBoxLayout>
+            </qx:groupBox>                    
+            
+            <qx:horizontalBoxLayout spacing="5" height="auto">
+	            <qx:button label="Submit" onClick="dataProvider1.submit()" />
+            	<qx:button label="Clear" onClick="dataProvider1.reset()" />
+            	<qx:button label="Restore from Server" onClick="dataProvider1.updateClient()" />
+            </qx:horizontalBoxLayout>
+
+
+            
+        </qx:verticalBoxLayout>
+					
+        <qx:verticalBoxLayout width="auto" height="auto" spacing="10">
+					
+	        <qx:groupBox
+  	        legend="Autocomplete behavior"
+	          dimension="350,auto">
+	          
+	          <qx:verticalBoxLayout width="100%" height="auto" spacing="5">
+	          
+	          	<qx:label><span>Type into the input widgets to see autocomplete<br/>behavior with country names.<br/>Try ";" as a separator.</span></qx:label>
+	          
+							<qx:textField
+								width="100%"
+								autoComplete="true"
+								separator=";"
+								serviceUrl="../../backend/php/services/index.php"
+								serviceName="qxtransformer.showcase"
+								serviceMethodAutoComplete="getAutoCompleteValues"/>
+
+							<qx:textArea
+								width="100%"
+								autoComplete="true"
+								separator=";"
+								serviceUrl="../../backend/php/services/index.php"
+								serviceName="qxtransformer.showcase"
+								serviceMethodAutoComplete="getAutoCompleteValues"/>
+
+							<qx:atom 
+								id="flagLabel"
+								height="64"/>
+								
+							<qx:label>
+								<span>Type at least one letter and choose from country list:</span>
+							</qx:label>
+
+							<qx:comboBox
+								width="100%"
+								editable="true"
+								autoComplete="true"
+								serviceUrl="../../backend/php/services/index.php"
+								serviceName="qxtransformer.showcase"
+								serviceMethodAutoComplete="getAutoCompleteValues">
+								<qx:eventListener type="changeSelected">
+									if ( event.getData() )
+									{
+										flagLabel.setIcon(event.getData().getIcon());
+									}
+								</qx:eventListener>
+								</qx:comboBox>
+							</qx:verticalBoxLayout>
+							
+					</qx:groupBox>
+											
+	        <qx:groupBox
+	             legend="QxTransformer info"
+	             dimension="285,60">
+						<qx:button label="Show source"
+							onClick='window.open("../source/xml/pages/dataBindingPage.qinc");' />
+	         </qx:groupBox>  					
+				
+				</qx:verticalBoxLayout>			         
+       
+		</qx:horizontalBoxLayout>
+
+	</qx:buttonViewPage>
+	
+</qxt:include-definition>
+		

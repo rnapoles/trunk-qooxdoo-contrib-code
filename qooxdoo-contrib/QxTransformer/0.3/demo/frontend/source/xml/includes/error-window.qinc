@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- error window -->		
+	<qx:window 
+		id="errorWindow" 
+		width="400" height="100" 
+		caption="Error" modal="true"
+		showMinimize="false" showMaximize="false" showClose="false" 
+		onAppear="this.centerToBrowser()">
+
+		<!-- events and messages -->
+		
+		<qx:messageSubscriber filter="error-*">
+			message.getData() == false ? this.hide() : this.show();
+		</qx:messageSubscriber>
+		
+		<!-- content -->
+		
+		<qx:verticalBoxLayout 
+			spacing="5" padding="5" 
+			width="100%" height="100%">
+
+			<qx:textArea height="1*" width="100%"> 
+				<qx:messageSubscriber filter="error-*">
+					this.setValue(message.getData());
+				</qx:messageSubscriber>
+			</qx:textArea>								
+			
+			<qx:horizontalBoxLayout 
+				width="100%" height="auto" horizontalChildrenAlign="center">
+				<qx:button label="Cancel" onExecute="errorWindow.hide();" />
+			</qx:horizontalBoxLayout>
+			
+		</qx:verticalBoxLayout>	
+
+	</qx:window>
+	
+</qxt:include-definition>	

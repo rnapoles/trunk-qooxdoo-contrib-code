@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- loading indicator -->
+	<qx:popup
+		height="auto" width="auto" autoHide="false"
+		onAppear="this.centerToBrowser()">
+			<qx:atom
+				border="outset-thin"
+				padding="10"
+				label="Loading, please wait..." 
+				backgroundColor="white">
+				
+				<qx:messageSubscriber filter="datamanager-rpc-*">
+					<![CDATA[
+					var status = message.getName();
+					var timestamp = message.getData()
+					var queue = this.getUserData("queue") || [];
+					switch ( status )
+					{
+					  case "datamanager-rpc-start":
+					    queue.push(timestamp);
+					    break;
+					  
+					  case "datamanager-rpc-end":
+					    for (var i=0; i<queue.length; i++)
+					    {
+					      if (queue[i]==timestamp)
+					      {
+					        queue.splice(i,1);
+					      }
+					    }
+					    break; 
+					}
+					this.setUserData("queue",queue);
+					if (queue.length) {
+						this.getParent().show();
+					} else {
+						this.getParent().hide();
+					}
+					]]>
+				</qx:messageSubscriber>					
+		</qx:atom>
+		
+	</qx:popup>		
+	
+</qxt:include-definition>
+	

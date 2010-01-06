@@ -1,0 +1,7 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>$$NAMESPACE_NAME$$ application</title>
+    <script type="text/javascript" src="script/$$NAMESPACE_NAME$$.js"></script>
+  </head>
+</html>

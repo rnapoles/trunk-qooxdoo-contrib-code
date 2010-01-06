@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    <![CDATA[
+    qxtransformer - xml->javascript converter
+
+    http://qxtransformer.org
+    http://qooxdoo.org
+
+    Copyright:
+      2008 Siarhei Barysiuk and Christian Boulanger
+
+    License:
+      LGPL: http://www.gnu.org/licenses/lgpl.html
+      EPL: http://www.eclipse.org/org/documents/epl-v10.php
+
+    Authors:
+      * Siarhei Barysiuk (sbarysiuk)
+    ]]>
+-->
+<qx:application 
+    xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+    xmlns:qxt="http://www.qxtransformer.org/extension"
+    className="addressbook.Application"
+    extend="addressbook.InitApplication"
+    author="Siarhei Barysiuk">
+    
+    <qx:composite margin="5">
+        <qx:grid spacingX="5" spacingY="3">
+            <qx:column width="150"/>
+            <qx:column width="150"/>
+            <qx:column width="300"/>
+            <!-- group -->
+            <qx:composite qxt:row="0" qxt:column="0">
+                <qx:hbox>
+                    <qx:atom label="Groups" icon="addressbook/users.png" appearance="groupbox/legend"/>
+                    <qx:spacer qxt:flex="1"/>
+                    <qx:image id="addGroupBtn" qxt:scope="this" source="icon/16/actions/list-add.png">
+                        <qxt:listener type="click" self="this" delegate="toggleGroupForm"/>
+                    </qx:image>
+                </qx:hbox>
+            </qx:composite>
+            <qx:list id="groupList" qxt:scope="this" qxt:row="1" qxt:column="0" selectionMode="single">
+                <qx:contextMenu>
+                    <qx:menuButton label="Edit" icon="addressbook/pencil.png">
+                        <qxt:listener type="execute" dispatchMessage="ab.edit.group"/>
+                    </qx:menuButton>
+                    <qx:menuButton label="Delete" icon="icon/16/actions/edit-delete.png">
+                        <qxt:listener type="execute" dispatchMessage="ab.delete.group"/>
+                    </qx:menuButton>
+                </qx:contextMenu>
+                <qxt:listener type="changeSelection" dispatchMessage="ab.select.group"/>
+            </qx:list>
+            
+            <qx:textField id="groupNameTF" qxt:scope="this" value="..." qxt:row="3" qxt:column="0" visibility="hidden">
+                <qxt:listener type="keyup">
+                    <![CDATA[
+                        if(e.getKeyIdentifier()=="Enter") {
+                            this.hide();
+                            qx.event.message.Bus.getInstance().dispatch(new qx.event.message.Message("ab.add.group"));
+                        }
+                    ]]>
+                </qxt:listener>
+                
+            </qx:textField>
+            
+            <!-- people -->
+            <qx:composite qxt:row="0" qxt:column="1">
+                <qx:hbox>
+                    <qx:atom label="Contacts" icon="addressbook/user_a.png"  appearance="groupbox/legend"/>
+                    <qx:spacer qxt:flex="1"/>
+                    <qx:image id="addContactBtn" qxt:scope="this" source="icon/16/actions/list-add.png" enabled="false">
+                        <qxt:listener type="click" dispatchMessage="ab.add.contact.mode.new"/>
+                        <qxt:subscriber name="ab.select.group">
+                            <![CDATA[
+                                 var selectedItems = m.getData().getData()
+                                 if(selectedItems && selectedItems.length>0) this.setEnabled(true);
+                            ]]>
+                        </qxt:subscriber>
+                    </qx:image>
+                </qx:hbox>
+            </qx:composite>
+            <qx:list id="contactList" qxt:scope="this" qxt:row="1" qxt:column="1" selectionMode="single">
+                <qx:contextMenu>
+                    <qx:menuButton label="Edit" icon="addressbook/pencil.png">
+                        <qxt:listener type="execute" dispatchMessage="ab.add.contact.mode.edit"/>
+                    </qx:menuButton>
+                    <qx:menuButton label="Delete" icon="icon/16/actions/edit-delete.png">
+                        <qxt:listener type="execute" dispatchMessage="ab.delete.contact"/>
+                    </qx:menuButton>
+                </qx:contextMenu>
+                <qxt:listener type="changeSelection" dispatchMessage="ab.select.contact"/>
+            </qx:list>
+            
+            <!-- information -->
+            <qx:stack id="stack" qxt:scope="this" qxt:row="0" qxt:column="2" qxt:rowSpan="3" qxt:colSpan="1">
+                <qx:groupBox legend="Information" icon="addressbook/contact.png" >
+                    <qx:grid spacingX="3" spacingY="3">
+                        <qx:column/>
+                        <qx:column flex="1"/>
+                        
+                        <qx:label id="nameLb" qxt:scope="this" content="----- -----" font="{js}qx.bom.Font.fromString('20px sans-serif')"
+                                    qxt:row="0" qxt:column="0" qxt:rowSpan="1" qxt:colSpan="2">
+                            <qxt:listener type="dblclick" dispatchMessage="ab.add.contact.mode.edit"/>
+                        </qx:label>
+                        
+                        <qx:spacer width="5" height="5" qxt:row="1" qxt:column="0" qxt:rowSpan="1" qxt:colSpan="2"/>
+                        
+                        <qx:label content="Phone: " qxt:row="2" qxt:column="0" padding="3"/>
+                        <qx:label id="phoneLb" qxt:scope="this" content="-----" qxt:row="2" qxt:column="1"/>
+                        
+                        <qx:label content="E-mail: " qxt:row="3" qxt:column="0"  padding="3"/>
+                        <qx:label id="emailLb" qxt:scope="this" content="-----" qxt:row="3" qxt:column="1"/>
+                        
+                        <qx:label content="Web Site: " qxt:row="4" qxt:column="0" padding="3"/>
+                        <qx:label id="webSiteLb" qxt:scope="this" content="-----" qxt:row="4" qxt:column="1"/>
+                        
+                        
+                     </qx:grid>
+                </qx:groupBox>
+                
+                <qx:groupBox legend="Edit information" icon="addressbook/contact.png" >
+                    <qx:grid spacingX="3" spacingY="3">
+                         <qx:column/>
+                         <qx:column flex="1"/>
+                         
+                          <qx:row/>
+                          <qx:row/>
+                          <qx:row/>
+                          <qx:row/>
+                          <qx:row flex="1"/>
+                         
+                         
+                         <qx:textField id="nameTF" qxt:scope="this" value="----- -----" qxt:row="0" qxt:column="0" qxt:rowSpan="1" qxt:colSpan="2" font="{js}qx.bom.Font.fromString('20px sans-serif')"/>
+                         
+                         <qx:spacer width="5" height="5" qxt:row="1" qxt:column="0" qxt:rowSpan="1" qxt:colSpan="2"/>
+                         
+                         <qx:label content="Phone: " qxt:row="2" qxt:column="0" padding="3"/>
+                         <qx:textField id="phoneTF" qxt:scope="this" value="-----" qxt:row="2" qxt:column="1"/>
+                         
+                         <qx:label content="E-mail: " qxt:row="3" qxt:column="0"  padding="3"/>
+                         <qx:textField id="emailTF" qxt:scope="this" value="-----" qxt:row="3" qxt:column="1"/>
+                         
+                         <qx:label content="Web Site: " qxt:row="4" qxt:column="0" padding="3"/>
+                         <qx:textField id="webSiteTF" qxt:scope="this" value="-----" qxt:row="4" qxt:column="1"/>
+                         
+                         <qx:composite qxt:row="5" qxt:column="1">
+                             <qx:hbox spacing="5">
+                                 <qx:spacer qxt:flex="1"/>
+                                 <qx:button label="Ok">
+                                     <qxt:listener type="execute" dispatchMessage="ab.add.contact.ok"/>
+                                  </qx:button>                                     
+                                 <qx:button label="Cancel">
+                                     <qxt:listener type="execute" dispatchMessage="ab.add.contact.cancel"/>
+                                 </qx:button>
+                             </qx:hbox>
+                         </qx:composite>
+                    </qx:grid>
+                </qx:groupBox>
+            </qx:stack>
+            
+        </qx:grid>
+    </qx:composite>
+    
+    <qxt:script>
+        <![CDATA[
+        qx.event.message.Bus.getInstance().dispatch("ab.load.group",{});
+        ]]>
+    </qxt:script>
+</qx:application>

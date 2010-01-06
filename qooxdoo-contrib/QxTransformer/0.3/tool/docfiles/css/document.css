@@ -1,0 +1,95 @@
+body {
+	width:800px;
+	font-size:14px;
+	color: #666666;
+}
+h1 {
+	font-size:18px;
+}
+
+.bordered {
+	border: dashed 1px #d0d0d0;
+}
+
+.generalInfo {
+	padding: 2px;
+	width:585px;	
+}
+.generalInfo span {
+	color: #4e80ae;
+}
+
+
+.navigation {
+	margin-left:2px;
+	padding: 2px;
+	width: 200px;
+	background-color:#fffccc;
+}
+ul.navList {
+	padding-left:10px;
+}
+
+ul.navList li {
+	list-style-type:none;
+	padding-left:21px;
+}
+.icon{
+	width:16px;
+	height:16px;
+}
+.include-icon{
+	background-image:url(./images/brick.png);
+	background-repeat:no-repeat;
+}
+.parameter-icon {
+	background-image:url(./images/parameter.png);
+	background-repeat:no-repeat;
+
+}
+.variable-icon {
+	background-image:url(./images/variable.png);
+	background-repeat:no-repeat;
+
+}
+.template-icon {
+	background-image:url(./images/template.png);
+	background-repeat:no-repeat;
+}
+.code-icon {
+	background-image:url(./images/page_white_code.png);
+	background-repeat:no-repeat;
+}
+div.line {
+	clear:both;
+}
+div.line div {
+	float:left;
+}
+.caption {
+	width:750px;
+}
+.caption span{
+	padding-left:21px;
+	font-weight: bold;
+}
+.section {
+	margin-top:2px;
+	padding :2px;
+}
+a {
+	color:#4e80ae;
+}
+.entry{
+	padding-left:40px;
+	margin-bottom:5px;
+	background-color:#FBFBFB;
+}
+.entry .line span{
+	padding-left:21px;
+	display:block;
+}
+.entry div{
+	padding-top:5px;
+}
+

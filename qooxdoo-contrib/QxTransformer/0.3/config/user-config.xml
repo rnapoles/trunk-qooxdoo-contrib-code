@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- 
+
+	QxTransformer
+	Converts QXML to Javascript
+	
+	License: LGPL
+	Autors: Siarhei Barysiuk <s.barysiuk@gmail.com>	
+			Christian Boulanger <info@bibliograph.org>
+			
+	example of user config file 
+
+ -->
+
+<config>
+    <!-- version of qooxdoo library -->
+	<qooxdooVersion>0.7</qooxdooVersion>
+    
+    <!-- namespace and name of application class -->
+    <applicationNamespace>custom</applicationNamespace>
+    
+    <project-root-dir></project-root-dir>
+
+</config>
+

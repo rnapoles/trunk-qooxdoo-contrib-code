@@ -1,0 +1,37 @@
+{
+  "info" : 
+  {
+    "name" : "QxTransformer",
+
+    "summary" : "QxTransformer Contribution",
+    "description" : "An XML to JavaScript converter to create qooxdoo GUIs from a declarative syntax based on XML.",
+    
+    "homepage" : "http://www.qxtransformer.org",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Siarhei Barysiuk (sbarysiuk)",
+        "email" : "s.barysiuk@qxtransformer.org"
+      },    
+      {
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "c.boulanger@qxtransformer.org"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.0","trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "rpcconsole",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}

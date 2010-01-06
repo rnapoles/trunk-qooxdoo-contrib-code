@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<!-- Pane 1: Form -->
+    <qx:buttonViewButton
+        id="form"
+        text="Form"
+        icon="icon/32/apps/accessories-text-editor.png" 
+        checked="true" />
+        
+    <qx:buttonViewPage
+        button="form"
+        backgroundColor="#EBE9ED">
+        
+        <qx:horizontalBoxLayout spacing="10">
+        
+        <qx:verticalBoxLayout padding="10" >
+        
+            <qx:groupBox
+                legend="Some controls"
+                icon="icon/16/apps/preferences.png"
+                dimension="auto,auto">
+                
+                <qx:gridLayout
+                    dimension="259,auto"
+                    verticalSpacing="4"
+                    horizontalSpacing="6">
+                    
+                    <qx:gridLayoutColumn 
+                        width="70"
+                        verticalAlignment="middle"/>
+                    <qx:gridLayoutColumn 
+                        width="180"/>
+                        
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Name" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:textField />
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>
+                    
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Amount" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:spinner min="0" max="10" value="0"/>
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>
+                    
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Type" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:comboBox>
+                                <qx:listItem text="CD" />
+                                <qx:listItem text="Clock" />
+                                <qx:listItem text="Modem" />
+                                <qx:listItem text="Network" />
+                                <qx:listItem text="PDA" />
+                                <qx:listItem text="Printer" />
+                                <qx:listItem text="TV" />
+                            </qx:comboBox>
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>                            
+                    
+                    <qx:gridLayoutRow height="20">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Email" />
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:textField />
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>                            
+
+                    <qx:gridLayoutRow height="70">
+                        <qx:gridLayoutCell>
+                            <qx:label text="Comment" 
+                                verticalAlign="top"/>
+                        </qx:gridLayoutCell>
+                        <qx:gridLayoutCell>
+                            <qx:textArea />
+                        </qx:gridLayoutCell>
+                    </qx:gridLayoutRow>
+
+                </qx:gridLayout>
+            
+            </qx:groupBox>
+            
+            <qx:groupBox
+                legend="Some settings"
+                dimension="285,auto">
+                <qx:verticalBoxLayout>
+                    <qx:checkBox text="Permit others to view my favorites"/>
+                    <qx:checkBox text="Use the very high bitrate" checked="true"/>
+                </qx:verticalBoxLayout>
+            </qx:groupBox>
+            
+            <qx:groupBox
+                legend="Network Speed"
+                icon="icon/16/categories/applications-internet.png"
+                dimension="285,auto">
+                <qx:verticalBoxLayout>
+                    <qx:radioManager>
+                        <qx:radioButton text="Modem"/>
+                        <qx:radioButton text="DSL" checked="true"/>
+                        <qx:radioButton text="Direct Link"/>
+                    </qx:radioManager>
+                </qx:verticalBoxLayout>
+            </qx:groupBox>                    
+            
+        </qx:verticalBoxLayout>
+        
+        <qx:verticalBoxLayout padding="10" left="300">
+
+            <qx:groupBox
+                legend="QxTransformer info"
+                width="285" height="auto">
+    
+                    <qx:label top="0">
+                        <a href="source/xml/showcase.Application.qxml" 
+                        	target="_blank">ButtonView Frame XML Source</a>
+                     </qx:label>
+                     
+                    <qx:label top="20">
+                        <a href="source/xml/pages/formPage.qinc" 
+                        	target="_blank">ButtonViewPage XML Source</a>
+                     </qx:label>
+
+            </qx:groupBox>                  
+        
+        </qx:verticalBoxLayout>
+        
+        </qx:horizontalBoxLayout>
+        
+    </qx:buttonViewPage>
+    
+</qxt:include-definition>

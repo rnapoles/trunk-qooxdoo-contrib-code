@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- Pane 6: List -->
+	<qx:buttonViewButton
+		id="list"
+		text="List"
+		icon="icon/32/actions/view-pane-detailed.png"/>
+                
+    <qx:buttonViewPage
+			button="list" backgroundColor="#EBE9ED">
+
+      <qx:horizontalBoxLayout
+	      padding="10" 
+				spacing="10"
+				width="auto"
+        height="100%">
+
+				<qx:list id="list"
+				    height="100%"
+				    width="150"
+				    overflow="scrollY">
+
+					<qx:listItem icon="icon/16/places/folder.png"
+						     text="Item No 1."/>
+					<qx:listItem icon="icon/16/devices/drive-harddisk.png"
+						     text="Item No 2."/>
+					<qx:listItem icon="icon/16/apps/accessories-tip.png"
+						     text="Item No 3."/>
+					<qx:listItem icon="icon/16/devices/scanner.png"
+						     text="Item No 4." enabled="false"/>
+					
+					
+					<qx:globalEventListener type="ls-enable-multi-selection">					
+							this.getManager().setMultiSelection(event.getData());
+					</qx:globalEventListener>
+					<qx:globalEventListener type="ls-enable-drag-selection">					
+							this.getManager().setDragSelection(event.getData());
+					</qx:globalEventListener>
+					<qx:globalEventListener type="ls-allow-selection">					
+							this.getManager().setCanDeselect(event.getData());
+					</qx:globalEventListener>
+					<qx:globalEventListener type="ls-enable-inline-find">					
+							this.setEnableInlineFind(event.getData());
+					</qx:globalEventListener>
+					<qx:globalEventListener type="ls-change-view"><![CDATA[					
+							for (var i=0; i<this.getChildrenLength(); i++) {
+					          this.getChildren()[i].setShow(event.getData().getValue());
+					        }]]>
+					</qx:globalEventListener>
+				</qx:list>
+				<qxt:script><![CDATA[
+						var item;
+				      for (var i=1; i<=10; i++)
+				      {
+				        var iconName;
+				        switch(parseInt(Math.random() * 5))
+				        {
+				          case 0:
+				            iconName = "places/folder.png"; break;
+				          case 1:
+				            iconName = "devices/drive-harddisk.png"; break;
+				          case 2:
+				            iconName = "actions/encrypt.png"; break;
+				          case 3:
+				            iconName = "devices/scanner.png"; break;
+				          case 4:
+				            iconName = "apps/accessories-alarm.png"; break;
+				        }
+				        item = new qx.ui.form.ListItem("Item No " + i, "icon/16/" + iconName);
+				        if (!(i % 4)) (item.setEnabled(false));
+				        list.add(item);
+      				}]]>
+					</qxt:script>
+				
+				<qx:verticalBoxLayout
+					width="auto"
+        			height="auto">
+        			
+        			<qx:checkBox text="Enable Multi-Selection" checked="true">
+        				<qx:eventListener type="changeChecked" 
+	    					dispatchGlobalEvent="ls-enable-multi-selection"/>
+        			</qx:checkBox>
+        			<qx:checkBox text="Enable Drag-Selection" checked="true">
+        				<qx:eventListener type="changeChecked" 
+	    					dispatchGlobalEvent="ls-enable-drag-selection"/>
+        			</qx:checkBox>
+      				<qx:checkBox text="Allow Deselection" checked="true">
+      					<qx:eventListener type="changeChecked" 
+	    					dispatchGlobalEvent="ls-allow-selection"/>
+      				</qx:checkBox>
+      				<qx:checkBox text="Enable Inline Find" checked="true">
+      					<qx:eventListener type="changeChecked" 
+	    					dispatchGlobalEvent="ls-enable-inline-find"/>
+      				</qx:checkBox>
+      				
+      				<qx:radioManager>
+      					<qx:eventListener type="changeSelected" dispatchGlobalEvent="ls-change-view"/>
+      					<qx:radioButton text="Show Label" value="label"/>
+      					<qx:radioButton text="Show Icon" value="icon"/>
+      					<qx:radioButton text="Show Both" value="both" checked="true"/>
+      				</qx:radioManager>
+      				
+				</qx:verticalBoxLayout>
+			
+				<qx:groupBox
+             legend="QxTransformer info"
+             dimension="285,60">
+             <qx:label top="00">
+                 <a href="source/xml/pages/listPage.qinc" 
+                 	target="_blank">ButtonViewPage XML Source</a>
+              </qx:label>                 
+         </qx:groupBox>  
+		                   
+			</qx:horizontalBoxLayout>                        
+               
+	</qx:buttonViewPage>
+
+</qxt:include-definition>
+

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:root xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+	qooxdooVersion="0.7">
+
+	<!-- application -->
+
+	<qx:application 
+		title="QxTransformer Showcase" 
+		namespace="showcase"
+		authors="Siarhei Barysiuk and Christian Boulanger"
+		translate="true">
+
+
+		<!-- popup windows -->
+		<qxt:include src="/includes/loading-popup.qinc" />
+		<qxt:include src="/includes/error-window.qinc" />
+
+		<!-- top-level widget: buttonView -->
+		<qx:buttonView 
+			id="buttonView" 
+			location="10,10" 
+			right="10" bottom="10">
+
+			<!-- Form -->
+			<qxt:include src="/pages/formPage.qinc" />
+
+			<!-- Tooltip -->
+			<qxt:include src="/pages/tooltipPage.qinc" />
+
+			<!-- Toolbar -->
+			<qxt:include src="/pages/toolbarPage.qinc" />
+
+			<!-- Tabs -->
+			<qxt:include src="/pages/tabBarPage.qinc" />
+
+			<!-- Tree -->
+			<qxt:include src="/pages/treePage.qinc" />
+
+			<!-- List -->
+			<qxt:include src="/pages/listPage.qinc" />
+
+			<!-- ListView and Table -->
+			<qxt:include src="/pages/listViewPage.qinc" />
+
+			<!-- SplitPane -->
+			<qxt:include src="/pages/splitPanePage.qinc" />
+
+			<!-- QxTransformer macro and include features -->
+			<qxt:include src="/pages/qxtransformerPage.qinc" />
+
+			<!-- QxTransformer databinding features -->
+			<!--<qxt:include src="/pages/dataBindingPage.qinc" />-->
+
+
+			<!-- message bus examples -->
+			<!--<qxt:include src="/pages/messagebusPage.qinc" />-->
+
+			<!-- localization -->
+			<qxt:include src="/pages/localizationPage.qinc" />
+
+			<!-- Todo: implement remaining showcase pages -->
+
+			<!-- Pane 11: Native Window 
+				<qx:buttonViewButton
+				id="nativewindow"
+				text="Native Window"
+				icon="icon/32/actions/view-pane-text.png"/>
+				
+				<qx:buttonViewPage
+				button="nativewindow">
+				
+				<qx:label text="Native Window pane!!"/>
+				
+				</qx:buttonViewPage>     
+			-->
+			<!-- Pane 12: Internal Window 
+				<qx:buttonViewButton
+				id="internalWindow"
+				text="Internal Window"
+				icon="icon/32/apps/preferences-desktop-theme.png"/>
+				
+				<qx:buttonViewPage
+				button="internalWindow">
+				
+				<qx:label text="Internal Window pane!!"/>
+				
+				</qx:buttonViewPage>     
+			-->
+			<!-- Pane 13: Themes
+				<qx:buttonViewButton
+				id="Themes"
+				text="Themes"
+				icon="icon/32/apps/preferences-desktop-wallpaper.png"/>
+				
+				<qx:buttonViewPage
+				button="Themes">
+				
+				<qx:label text="Themes pane!!"/>
+				
+				</qx:buttonViewPage>     
+			-->
+
+		</qx:buttonView>
+
+		<!--<qxt:script>
+				<![CDATA[
+				// simple browser back/forward button management
+				// state is simply number of buttonview button
+	
+				// get initial state
+				var state = qx.client.History.getInstance().getState();
+				
+				// listen for state changes and focus on button
+				qx.client.History.getInstance().addEventListener("request", function(e) { 
+					var	index = e.getData();
+					buttonview.getBar().getChildren()[index].setChecked(true);
+				}, this);
+	
+				// listen for selection change in the buttonView
+				buttonView.getBar().getManager().addEventListener("changeSelected", function(e) { 
+					var selectedChild = e.getData();
+					var index = selectedChild.getParent().indexOf(selectedChild);
+					qx.client.History.getInstance().addToHistory(index, "QxTransformer Showcase " + selectedChild.getLabel() );
+				}, this); 
+				]]>
+		</qxt:script>-->
+
+	</qx:application>
+
+</qx:root>

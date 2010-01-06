@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+
+	<!-- Message Bus Examples -->
+
+	<qx:buttonViewButton
+	    id="messagebusButton"
+	    text="Message Bus"
+	    icon="icon/32/apps/accessories-alarm.png"/>
+	    
+	<qx:buttonViewPage
+	    button="messagebusButton"
+	    backgroundColor="threedface">
+	    
+	    <qx:horizontalBoxLayout 
+	    	width="auto" height="100%"
+	    	padding="10" spacing="10">
+
+		    <qx:verticalBoxLayout 
+		    	width="auto" height="auto" 
+		    	spacing="10" padding="10" >
+
+		    	<qx:groupBox
+                legend="Last message dispatched"
+                dimension="285,auto">
+                
+            <qx:verticalBoxLayout spacing="10" width="auto">
+			    	
+				    	<qx:atom 
+				    		label="No message yet"
+				    		padding="2"
+				    		width="250"
+				    		border="inset">
+				    		<qx:messageSubscriber filter="*">
+					    		this.setLabel( message.getName() + "(" + message.getData() + ")" );
+								</qx:messageSubscriber>
+							</qx:atom>
+			    	
+			    	</qx:verticalBoxLayout>
+			    	
+			    </qx:groupBox>
+
+		    	<qx:groupBox
+                legend="Message dispatchers and subscribers"
+                dimension="285,auto">
+                
+            <qx:verticalBoxLayout spacing="10">
+
+				    	<qx:button label="Dispatch \'showcase.message.foo\' message">
+				    		<qx:eventListener type="click" dispatchMessage="showcase.message.foo"/>
+				    	</qx:button>
+				    	
+				    	<qx:button label="Dispatch \'showcase.message.bar\' message">
+				    		<qx:eventListener type="click" dispatchMessage="showcase.message.bar"/>
+				    	</qx:button>
+
+				    	<qx:button label="Dispatch \'showcase.baz.test\' message">
+				    		<qx:eventListener type="click" dispatchMessage="showcase.baz.test"/>
+				    	</qx:button>
+				    	
+				    	<qx:button label="Dispatch \'nobody.listens\' message">
+				    		<qx:eventListener type="click" dispatchMessage="nobody.listens"/>
+				    	</qx:button>
+				    	
+				    	<qx:textField width="250" value="Type something here" onAppear="this.selectAll(); this.setFocused(true)">
+				    		<qx:eventListener type="input" dispatchMessage="user-types"/>
+				    	</qx:textField>
+				    	
+				    	<qx:atom 
+				    		icon="icon/16/actions/media-playback-stop.png"
+				    		label="Atom subscribed to \'showcase.*\'"
+				    		padding="2"
+				    		border="inset">
+				    		<qx:messageSubscriber filter="showcase.*">
+					    		this.setIcon(this.getIcon()=="icon/16/actions/media-playback-stop.png" ? "icon/16/actions/media-playback-start.png" : "icon/16/actions/media-playback-stop.png");
+								</qx:messageSubscriber>
+							</qx:atom>
+
+				    	<qx:atom 
+				    		icon="icon/16/actions/media-playback-start.png"
+				    		label="Atom subscribed to \'showcase.message.*\'"
+				    		padding="2"
+				    		border="inset">
+				    		<qx:messageSubscriber filter="showcase.message.*">
+					    		this.setIcon(this.getIcon()=="icon/16/actions/media-playback-stop.png" ? "icon/16/actions/media-playback-start.png" : "icon/16/actions/media-playback-stop.png");
+								</qx:messageSubscriber>
+							</qx:atom>
+							
+				    	<qx:atom 
+				    		icon="icon/16/actions/media-playback-stop.png"
+				    		label="Atom subscribed to \'showcase.baz.test\'"
+				    		padding="2"
+				    		border="inset">
+				    		<qx:messageSubscriber filter="showcase.baz.test">
+					    		this.setIcon(this.getIcon()=="icon/16/actions/media-playback-stop.png" ? "icon/16/actions/media-playback-start.png" : "icon/16/actions/media-playback-stop.png");
+								</qx:messageSubscriber>
+							</qx:atom>							
+			    	
+			    	</qx:verticalBoxLayout>
+			    	
+			    </qx:groupBox>
+			    
+			   </qx:verticalBoxLayout>
+
+	    	
+        <!-- message transport -->
+        
+		    <qx:verticalBoxLayout 
+		    	width="auto" height="auto" 
+		    	spacing="10" padding="10" >
+		    	
+		      <qx:messageTransport 
+		      	id="messageTransport1"
+		      	filter="showcase.transport.*"
+		      	mode="forward"
+						serviceUrl="../../backend/php/services/index.php"
+						serviceName="qxtransformer.showcase"
+						serviceMethod="echoClientMessage">
+					</qx:messageTransport>	 		    	
+		    	
+		    	<qx:groupBox
+                legend="Message transport client to server"
+                dimension="285,auto">
+                
+            <qx:verticalBoxLayout spacing="10">
+            
+            	<qx:label><span>Server echos message name, <br/>prepending ´server.´</span></qx:label>
+
+				    	<qx:button label="Dispatch \'showcase.transport.test1\' message">
+				    		<qx:eventListener type="click" dispatchMessage="showcase.transport.test1"/>
+				    	</qx:button>
+				    	
+				    	<qx:button label="Dispatch \'showcase.transport.test2\' message">
+				    		<qx:eventListener type="click" dispatchMessage="showcase.transport.test2"/>
+				    	</qx:button>
+			    	
+			    	</qx:verticalBoxLayout>
+			    	
+			    </qx:groupBox>
+		    	
+		    	<qx:messageSubscriber filter="server.showcase.*">
+		    		alert(message.getName() + " arrived from ther server!");
+					</qx:messageSubscriber>
+		    			    	
+		    	<!--  server-to-client message transport -->
+		    	
+		       <qx:messageTransport 
+		       		id="messageTransport2"
+		       		filter="*"
+		       		mode="poll"
+		       		interval="0"
+		       		enabled="false"
+							serviceUrl="../../backend/php/services/index.php"
+							serviceName="qxtransformer.showcase"
+							serviceMethod="getServerMessages">
+							<qx:messageSubscriber filter="showcase.serverMessages.enable">
+								this.setEnabled(message.getData());
+							</qx:messageSubscriber>
+							<qx:messageSubscriber filter="showcase.serverMessages.interval">
+								this.setInterval(message.getData());
+							</qx:messageSubscriber>
+					 </qx:messageTransport> 		    	
+		    	
+		    	<qx:groupBox
+                legend="Message transport server to client"
+                dimension="285,auto">
+
+						<qx:verticalBoxLayout spacing="5">
+						                
+            	<qx:label>
+            		<span>Polling the server in intervals and <br/>dispatching incoming messages</span>
+            	</qx:label>
+		    	
+				    	<qx:checkBox
+				    		text="Poll server events" 
+				    		checked="false">
+				    		<qx:eventListener type="changeChecked" dispatchMessage="showcase.serverMessages.enable"/>
+				    	</qx:checkBox>
+
+							<qx:label text="Polling interval in ms. (greater than 0)"/>
+	
+		          <qx:spinner
+		          	min="0" max="20000" value="0" incrementAmount="2000">
+		          	<qx:eventListener type="change" dispatchMessage="showcase.serverMessages.interval"/>
+							</qx:spinner>
+
+							<qx:label> 
+								<span>Label responding to showcase.setTime<br/>message dispatched by server:</span>
+							</qx:label>
+
+							<qx:label
+								text="Server time"
+								width="100"
+								border="inset">
+								<qx:messageSubscriber filter="showcase.setTime">
+									this.setText(message.getData());
+								</qx:messageSubscriber>
+							</qx:label>
+							
+						</qx:verticalBoxLayout>
+						
+					</qx:groupBox>
+					
+        <qx:groupBox
+             legend="QxTransformer info"
+             dimension="285,60">
+             <qx:label top="00">
+                 <a href="../source/xml/pages/messagebusPage.qinc" 
+                 	target="_blank">Message bus page XML source</a>
+              </qx:label>
+         </qx:groupBox>  					
+							    	
+		    </qx:verticalBoxLayout>        
+       
+		</qx:horizontalBoxLayout>
+
+	</qx:buttonViewPage>
+	
+</qxt:include-definition>
+		

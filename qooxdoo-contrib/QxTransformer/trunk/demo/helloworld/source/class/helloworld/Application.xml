@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:application 
+    xmlns:qx="http://www.qxtransformer.org/qooxdoo/0.8"
+    xmlns:qxt="http://www.qxtransformer.org/extension/0.4"
+    className="helloworld.Application"
+    author="Siarhei Barysiuk">
+    
+    <!-- Enable logging in debug variant -->
+    <qxt:variant name="qx.debug">
+        <qxt:if value="on">
+            <qxt:script>
+                <![CDATA[
+                // support native logging capabilities, e.g. Firebug for Firefox
+                qx.log.appender.Native;
+                // support additional cross-browser console. Press F7 to toggle visibility
+                qx.log.appender.Console;
+                ]]>
+            </qxt:script>
+        </qxt:if>
+    </qxt:variant>
+    
+    <!-- Create a button, add it to the application root at fixed coordinates -->
+    <qx:button label="First Label" icon="helloworld/test.png"
+        qxt:left="100" qxt:top="50">
+        
+        <!-- Add an event listener -->
+        <qxt:listener type="execute">
+            <![CDATA[
+                alert("Hello World!")
+            ]]>
+        </qxt:listener>
+    </qx:button>
+    
+</qx:application>
