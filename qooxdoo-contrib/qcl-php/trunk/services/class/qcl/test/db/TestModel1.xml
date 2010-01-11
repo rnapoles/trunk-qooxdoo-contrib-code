@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema include="qcl/data/model/xmlSchema/DbModel.xml">
+
+  <model 
+    table="model1" 
+    name="qcl.db.TestModel1" 
+    extends="qcl.data.model.xmlSchema.DbModel">
+
+    <!-- model definition -->
+    <definition>
+
+      <!-- model properties -->
+      <properties>
+        <property name="namedId" type="string" index="yes">
+          <sql>varchar(50) NOT NULL</sql>
+        </property>
+        
+        <property name="parentId" type="int">
+          <sql>int(11) NOT NULL</sql>
+        </property>
+
+      </properties>
+
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="namedId" />
+        </index>
+      </indexes> 
+
+    </definition>
+
+    <!-- linked tables --> 
+    <links 
+      localKey="id"
+      foreignKey="model1id">
+      
+      <!-- link 
+       name="parent"
+       type="1:1" 
+       foreignKey="parentId"
+       model="qcl.db.Model1"/>  -->
+         
+      <link 
+        name="model2" 
+        type="n:n">
+        <linkedModel
+          path="qcl/data/db/test/TestModel2.php" 
+          class="TestModel2" />
+      </link>  
+    
+    </links>
+
+  </model>
+  
+</schema>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/data/model/xmlSchema/DbModel.xml">
+   
+  <!-- 
+    A model that registers the link between classes and schemas    
+   -->
+  <model 
+    table="schemas"
+    name="qcl.data.datasource.registry.Model"
+    extends="qcl.data.model.xmlSchema.DbModel">
+    <definition>
+      <properties>
+         <property name="namedId" type="string" unique="true"> 
+          <sql>varchar(50) NOT NULL</sql>
+        </property>      
+         <property name="class" type="string">
+          <sql>varchar(255) NOT NULL</sql> 
+        </property>    
+         <property name="title" type="string">
+          <sql>varchar(255) NOT NULL</sql> 
+        </property> 
+         <property name="description" type="string">
+          <sql>varchar(20) NULL</sql>
+        </property>             
+        <property name="active" type="boolean">
+          <sql> tinyint(1) NOT NULL default '1'</sql>
+        </property>
+      </properties>
+    </definition>
+  </model>
+</schema>
