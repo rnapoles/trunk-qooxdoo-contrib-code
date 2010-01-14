@@ -24,15 +24,21 @@ var mySim = new simulation.Simulation(baseConf,args);
 
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
-var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
+
 var locators = {
-  menuButton : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton",
-  syntaxHighlightingButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[0]/qx.ui.form.ToggleButton',
-  editorTextArea : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/[@classname="playground.EditorContainer"]/qx.ui.form.TextArea',
-  runButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]',
+  menuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton',
+  syntaxHighlightingButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[0]/qx.ui.form.ToggleButton',
+  editorTextArea : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/[@classname="playground.view.Editor"]/qx.ui.form.TextArea',
+  runButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[0]',
   playgroundApplication : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Scroll/qx.ui.root.Inline',
-  logButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.CheckBox',
-  sampleMenuButton : 'qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton'
+  logButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/qx.ui.toolbar.CheckBox',
+  sampleMenuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton'
+};
+
+var getLogHtml = function()
+{
+  var logWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/child[1]/[@classname="playground.view.Log"]/qx.ui.embed.Html');
+  return logWidget.getContentElement().getDomElement().innerHTML;
 };
 
 var getSampleNames = function()
@@ -52,6 +58,7 @@ simulation.Simulation.prototype.isSampleLoaded = function(sample)
   var log = "Checking if " + sample + " was loaded.";   
   print(log);  
   var tmp = "Starting application '" + sample + "'";
+  var logHtml = selWin + ".qx.Simulation.getLogHtml()";
   var check = logHtml + '.indexOf("' + tmp + '") > 0';
   var isLoaded = this.getEval(check, log);
   if (isLoaded == "true") {
@@ -65,6 +72,7 @@ simulation.Simulation.prototype.isSampleStarted = function(sample)
   var sampleStarted = false;
   var log = "Checking if sample " + sample + " was started successfully.";
   print(log);
+  var logHtml = selWin + ".qx.Simulation.getLogHtml()";
   var check = logHtml + ".indexOf('Successfully started') > 0";
   var isStarted = this.getEval(check, log);  
   if (isStarted == "true") {
@@ -232,6 +240,9 @@ simulation.Simulation.prototype.runTest = function()
    
   // Open log pane
   this.qxClick(locators["logButton"], "", 'Opening log pane');
+  
+  // Add log html getter
+  this.addOwnFunction("getLogHtml", getLogHtml);
   
   // Load the first sample again to make sure we get the english log output.
   this.qxClick(locators["runButton"], '', 'Pressing Run button');
