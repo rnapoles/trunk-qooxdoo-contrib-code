@@ -36,7 +36,9 @@ qx.Class.define("bug3323.Application",
 
       var htmlElement = document.getElementById("isle");
       var inlineIsle = new qx.ui.root.Inline(htmlElement, true, true);
-
+      inlineIsle.add(new qx.ui.form.TextField(), {left: 20, top: 20});
+      inlineIsle.add(new qx.ui.form.TextField(), {left: 20, top: 70});
+      
       var blocker = new qx.ui.core.Blocker(inlineIsle);
       blocker.setColor("#90c4f9");
       blocker.setOpacity(0.6);
@@ -82,7 +84,7 @@ qx.Class.define("bug3323.Application",
       loginPanel.add(groupBox);
       loginPanel.setZIndex(300);
 
-      this.getRoot().add(loginPanel, {left: 50, top: 50});
+      this.getRoot().add(loginPanel, {left: 200, top: 50});
       
       button.focus();
     }
