@@ -1,0 +1,58 @@
+{
+  "name"    : "Persist",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+  
+
+  "export" :
+  [
+    "api",
+    "clean",
+    "distclean",
+    "fix",
+    "info,
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "persist",
+    "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.0.1-pre",
+    //"QXTHEME"      : "persist.theme.modern.Theme",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.test.*", "persist.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",
+    "ROOT"         : "."
+  },
+  
+
+  "jobs" :
+  {
+
+    "source-script" :
+    {
+      /*
+       * external javascript library
+       */
+      "add-script" :
+      [ 
+        {
+          "uri" : "resource/persist/persist-all-min.js"
+        }
+      ]
+    }
+  }
+}
