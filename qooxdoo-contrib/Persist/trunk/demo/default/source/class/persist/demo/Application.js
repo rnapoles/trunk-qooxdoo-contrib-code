@@ -67,21 +67,24 @@ qx.Class.define("persist.demo.Application",
       text.set({
         width : 300,
         height : 50,
-        placeholder :"Enter a string to store locally in the broser."
+        placeholder :"Enter a string to store locally in the broser.",
+        liveUpdate : true
       });
       this.getRoot().add(text,{top:50,left:50});
       text.addListener("appear", function(){
-        store.get("text",function(value){
-          if (value)
+        store.load("text", function(success, value){
+          this.info("Retrieved: " + value);
+          if ( success )
           {
-            text.setValue(value);
+            text.setValue( value );
           }
-        })
+        },this);
       },this);
-      text.addListener("changeValue",function(value){
-        store.set("text",value);
+      text.addListener("changeValue",function(e){
+        var value = e.getData();
+        store.save("text",value);
       },this);
-      this.getRoot().add(new qx.ui.basic.Label("Enter a value and reload the browser"), {
+      this.getRoot().add(new qx.ui.basic.Label("Enter a string and reload the browser. The string will be stored locally."), {
         top: 110, left: 50
       });
     }

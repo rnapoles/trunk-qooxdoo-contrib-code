@@ -38,7 +38,7 @@
     "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   },
-
+  
   "jobs" :
   {
     "libraries" : 
@@ -49,6 +49,24 @@
           "manifest" : "../../Manifest.json"
         }
       ]
-    }
+    },
+    "source-script" :
+    {
+      "add-script" :
+      [ 
+        {
+          "uri" : "persist:resource/persist/persist-all-min.js"
+        }
+      ]
+    },
+    "build-script" :
+    {
+      "add-script" :
+      [ 
+        {
+          "uri" : "persist:resource/persist/persist-all-min.js"
+        }
+      ]
+    }    
   }
 }
