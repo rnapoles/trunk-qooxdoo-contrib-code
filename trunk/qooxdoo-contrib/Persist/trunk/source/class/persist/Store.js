@@ -15,6 +15,7 @@
 
 /* ************************************************************************
 #ignore(Persist.Store)
+#asset(persist/*)
 ************************************************************************ */
 /**
  * This is a thin wrapper around the persistjs library
@@ -65,24 +66,40 @@ qx.Class.define("persist.Store",
     /**
      * Fetches the value stored under the given key and calls the callback
      * function with the value. The callback is necessary for cross-browser
-     * compatibility
+     * compatibility. It is called with the following signature:
+     * (success {Boolean}, value {String}). success will contain true if the
+     * value could be retrieved and false if not. 
      * 
      * @param key {String}
-     * @param callback {Function}
+     * @param callback {Function} The callback function
+     * @param scope {Object} The scope of the callback
      */
-    get : function( key, callback )
+    load : function( key, callback, scope )
     {
-      this.__store.get( key, callback );
+      this.__store.get( key, callback, scope );
     },
     
     /**
      * Saves the given value to the store under the given key
      * @param key {String}
      * @param value {String}
+     * @param callback {Function} The callback function
+     * @param scope {Object} The scope of the callback 
      */
-    set : function ( key, value )
+    save : function ( key, value, callback, scope )
     {
-      this.__store.set( key, value );
-    }
+      this.__store.set( key, value, callback, scope );
+    },
+    
+    /**
+     * Removes the given key in the store
+     * @param key {String}
+     * @param callback {Function} The callback function
+     * @param scope {Object} The scope of the callback 
+     */
+    remove : function ( key, callback, scope )
+    {
+      this.__store.set( key, callback, scope );
+    }    
   }
 });
