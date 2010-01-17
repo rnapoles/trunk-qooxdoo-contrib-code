@@ -23,7 +23,7 @@ The demo allows to open multiple windows with independent consoles, and to
 load test data from a given url. You can use this application to debug the backend 
 of applications which live both on the same or on a different domain.
 
-Example test data is loaded from script/rpcconsole.testData.js, but
+Example test data is loaded from resource/rpcconsole/demo/testData.js, but
 you can override this with adding '?testDataUrl=http://path/to/my/testData.js' 
 to the build or source URL of this app. To change the default server url,
 add '?serverUrl=http://path/to/my/server/'. To automatically start a test after
@@ -131,4 +131,8 @@ testName1 :
 }
 
 or run all test or a selection of tests by the runTests() method. 
+
+Known issues:
+-------------
+- source version of demo does not work in Chrome/Mac
 

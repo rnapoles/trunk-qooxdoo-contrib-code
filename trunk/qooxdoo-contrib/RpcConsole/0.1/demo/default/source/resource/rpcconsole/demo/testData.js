@@ -150,7 +150,7 @@ qx.core.Init.getApplication().setTestData(
   loadIntrospectionTests : {
     label : "Load introspection tests",
     execute : function(){
-      this.loadTestData("script/rpcconsole.testIntrospection.js");
+      this.loadTestData("resource/rpcconsole/demo/testIntrospection.js");
     }
   },  
   

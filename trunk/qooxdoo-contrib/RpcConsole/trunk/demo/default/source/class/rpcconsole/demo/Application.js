@@ -55,8 +55,8 @@ qx.Class.define("rpcconsole.demo.Application",
     */
     desktop   : null,
     counter   : 1,
-    serverUrl : "../../../../../RpcPhp/1.0.1/services/index.php",
-    testDataUrl : "script/rpcconsole.testData.js",
+    serverUrl : "../../../../../RpcPhp/1.1.0/services/index.php",
+    testDataUrl : "resource/rpcconsole/demo/testData.js",
 
     /*
     -------------------------------------------------------------------------
@@ -548,7 +548,7 @@ qx.Class.define("rpcconsole.demo.Application",
     loadTestData : function( testDataUrl, callback, context )
     {
       this.__testDataUrl = testDataUrl;
-      new qx.io2.ScriptLoader().load( 
+      new qx.io.ScriptLoader().load( 
         testDataUrl+"?"+(new Date).getTime(),  // disable caching of script file
         callback, context  
       );
