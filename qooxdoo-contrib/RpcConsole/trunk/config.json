@@ -32,11 +32,9 @@
     "APPLICATION"  : "rpcconsole",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Application",
     "QOOXDOO_PATH" : "../../qooxdoo/trunk",
-    //"QXTHEME"      : "rpcconsole.theme.modern.Theme",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "rpcconsole.demo.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   }
 }

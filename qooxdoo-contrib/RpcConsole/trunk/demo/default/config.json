@@ -34,10 +34,9 @@
 //    "QXTHEME"      : "rpcconsole.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "cache",
     "ROOT"         : "."
   },
-  
+ 
 
   "jobs" :
   {
@@ -53,13 +52,13 @@
         }         
       ]
     },
-    
-    "build-files":
+    // download contrib code to location that is accessible to web server in source version
+    "source-script":
     {
-      "copy-files" :
+      "cache" :
       {
-        "files"     : [ "script/rpcconsole.testData.js","script/rpcconsole.testIntrospection.js" ]
-      }      
-    } 
+        "downloads" : "cache-downloads"
+      }
+    }
   }
 }
