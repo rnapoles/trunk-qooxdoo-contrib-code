@@ -36,14 +36,14 @@
     "LOCALES"      : [ "en" ],
     "ROOT"         : "."
   },
- 
+  
 
   "jobs" :
   {
     "libraries" : 
     {
       "library" :
-      [
+      [   
         {
           "manifest" : "../../Manifest.json"
         },
@@ -52,6 +52,7 @@
         }         
       ]
     },
+    
     // download contrib code to location that is accessible to web server in source version
     "source-script":
     {
@@ -59,6 +60,6 @@
       {
         "downloads" : "cache-downloads"
       }
-    }
+    } 
   }
 }

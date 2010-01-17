@@ -1,12 +1,12 @@
 {
   "info" : 
   {
-    "name" : "RpcConsole Demo",
+    "name" : "RpcConsole",
 
-    "summary" : "RpcConsole Demo",
-    "description" : "This is the demo for the RpcConsole contribution",
+    "summary" : "RpcConsole Contribution",
+    "description" : "A simple frontend to test the backend JSONRPC server.",
     
-    "homepage" : "http://demo.qooxdoo.org/contrib/RpcConsole",
+    "homepage" : "http://contrib.qooxdoo.org/project/RpcConsole",
 
     "license" : "LGPL/EPL",
     "authors" : 
@@ -23,12 +23,12 @@
   
   "provides" : 
   {
-    "namespace"   : "rpcconsole.demo",
+    "namespace"   : "rpcconsole",
     "encoding"    : "utf-8",
     "class"       : "source/class",
     "resource"    : "source/resource",
     "translation" : "source/translation",
-    "type"        : "application"
+    "type"        : "contribution"
   }
 }
 

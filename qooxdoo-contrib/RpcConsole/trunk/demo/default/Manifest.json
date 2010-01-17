@@ -4,7 +4,7 @@
     "name" : "RpcConsole Demo",
 
     "summary" : "RpcConsole Demo",
-    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    "description" : "This is the demo for the RpcConsole contribution",
     
     "homepage" : "http://demo.qooxdoo.org/contrib/RpcConsole",
 
@@ -12,8 +12,8 @@
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "c.boulanger@qxtransformer.org"
       }
     ],
 
@@ -31,4 +31,3 @@
     "type"        : "application"
   }
 }
-

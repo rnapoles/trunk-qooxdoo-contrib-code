@@ -35,6 +35,7 @@
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "rpcconsole.demo.*"],
     "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",    
     "ROOT"         : "."
   }
 }
