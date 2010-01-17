@@ -33,12 +33,21 @@ qx.Class.define("persist.Store",
 
   /**
    * Contructor. Creates a new browser store
-   * @param name {String}
+   * @param name {String} Identifying name of the store. 
+   * @param expires {Integer|undefined} Optional expiration in days, defaults
+   *   to one year
+   * @param domain {String|undefined} Optional domain, defaults to current 
+   *   domain
+   * @param path {String|undefined} Optional path, defaults to '/'
    */
-  construct : function( name )
+  construct : function( name, expires, domain, path )
   {
     this.base(arguments);
-    this.__store = new Persist.Store(name);
+    this.__store = new Persist.Store(name, {
+      'expires' : expires,
+      'domain'  : domain,
+      'path'    : path
+    });
   },
 
 
