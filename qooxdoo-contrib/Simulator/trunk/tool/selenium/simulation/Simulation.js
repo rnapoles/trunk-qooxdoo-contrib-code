@@ -1107,6 +1107,9 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
       if (ex instanceof targetWin.qx.core.WindowError) {
         exString = ex.toString() + " in " + ex.getUri() + " line " + ex.getLineNumber();
       }
+      else if (ex instanceof targetWin.qx.core.GlobalError) {
+        exString = ex.toString();
+      }
       else {
         exString = ex.name + ": " + ex.message;
         if (ex.fileName) {
