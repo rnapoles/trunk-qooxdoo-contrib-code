@@ -46,7 +46,7 @@ qx.Class.define("tileview.TileView",
 
     _applyOrientation : function (value)
     {
-      this.getChildrenContainer().setAllowStretchY(false);
+      this.getChildrenContainer().setAllowShrinkY(false);
     }
   }
 });
