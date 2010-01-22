@@ -58,8 +58,8 @@ qx.Class.define("bug3267.Application",
       with(btn_i) {
         set({width: 160, padding: 3});
         setLayoutProperties({top: 70, left: 200});
-        addListener("click", function(e) {
-          this.debug("click");
+        addListener("execute", function(e) {
+          this.debug("execute");
           cbPsq.focus();
         }, this);
       }
