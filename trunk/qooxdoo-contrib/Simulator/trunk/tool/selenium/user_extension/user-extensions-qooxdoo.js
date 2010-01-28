@@ -713,11 +713,17 @@ Selenium.prototype.getQxObjectFunction = function(locator, functionName)
  */
 Selenium.prototype.getQxWidgetByLocator = function(locator)
 {
+  // Remove iframe qx object reference stored by previous locator
+  this.page()._iframeQxObject = null;
   var element = this.page().findElement(locator);
   if (!element) {
     throw new SeleniumError("No such object: " + locator);
   }
   var qx = this.getQxGlobalObject();
+  // If the locator crosses frame boundaries, use the target frame's qx
+  if (this.page()._iframeQxObject) {
+    qx = this.page()._iframeQxObject;
+  }
   
   if (element.wrappedJSObject) {
     element = element.wrappedJSObject;
@@ -796,6 +802,21 @@ Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
     }
   }
   return null;
+};
+
+
+/**
+ * Searches the table identified by the given locator for a column with the 
+ * given name and returns the column index.
+ * 
+ * @param {String} A locator that returns the table to be searched
+ * @param {String} name The column name to be searched for
+ * @return {Integer|null} The found column index
+ */
+Selenium.prototype.getQxTableColumnIndexByNameLocator = function(locator, name)
+{
+  var table = this.getQxWidgetByLocator(locator);
+  return this.getQxTableColumnIndexByName(table, name);
 };
 
 
@@ -2130,6 +2151,9 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   if ((node.classname.indexOf("Iframe") + 6 == node.classname.length) && node.getWindow) {
     LOG.debug("getQxNodeDescendants: using getWindow() to retrieve descendants");
     try {
+      // store a reference to the iframe's qx object. This is used by 
+      // Selenium.getQxWidgetByLocator
+      this._iframeQxObject = node.getWindow().qx;
       descArr = descArr.concat(node.getWindow().qx.core.Init.getApplication().getRoot());
     } 
     catch (ex) {
