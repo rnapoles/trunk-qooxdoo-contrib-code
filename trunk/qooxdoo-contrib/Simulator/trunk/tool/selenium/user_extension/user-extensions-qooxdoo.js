@@ -1355,37 +1355,42 @@ PageBot.prototype.locateElementByQxidv = function(qxLocator, inDocument, inWindo
  
   var id = qxLocator.substr(qxLocator.indexOf("=") + 1);
   
+  // In some cases there are multiple widgets with the same id value on their
+  // container or content elements, so we use XPath to find them all.
   try {
-    var element = inDocument.getElementById(id);
-  }
-  catch(ex) {
-    LOG.error("qxidv Locator: Couldn't find an element with the ID " + id + ": " + ex);
+    var xpath = '//*[@id="' + id + '"]';
+    var result = eval_xpath(xpath, inDocument, {});
+  } catch(ex) {
+    LOG.error("qxidv Locator: Error during XPath processing: " + ex);
     return null;
   }
   
-  if (element.wrappedJSObject) {
-    element = element.wrappedJSObject;
+  if (!result.length > 0) {
+    LOG.error("qxidv Locator: Couldn't find an element with the ID " + id);
+    return null;
   }
   
   var qx = inWindow.qx;
   
-  try {
-    var qxWidget = qx.ui.core.Widget.getWidgetByElement(element);
-  }
-  catch(ex) {
-    LOG.error("qxidv Locator: Couldn't find a widget for the HTML element with the ID " + id + ": " + ex);
-    return null;
+  for (var i=0,l=result.length; i<l; i++) {
+    var element = result[i];
+    if (element.wrappedJSObject) {
+      element = element.wrappedJSObject;
+    }
+    try {
+      var qxWidget = qx.ui.core.Widget.getWidgetByElement(element);
+      if (qxWidget.isSeeable()) {
+        return element;
+      }
+    } catch(ex) {
+      continue;
+    }
+    
   }
   
-  if (qxWidget.isSeeable()) {
-    return element;
-  } else {
-    LOG.info("qxidv Locator: The element with the ID " + id + " belongs to an invisible qooxdoo widget!");
-    return null;
-  }
-  
+  LOG.error("qxidv Locator: Couldn't find a visible widget for the HTML element with the ID " + id);
+  return null;
 };
-
 
 /**
  * Returns the client document instance or null if Init.getApplication() returned null. 
