@@ -32,7 +32,11 @@ var locators = {
   runButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[0]',
   playgroundApplication : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Scroll/qx.ui.root.Inline',
   logButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/qx.ui.toolbar.CheckBox',
-  sampleMenuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton'
+  sampleMenuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton',
+  gitHubButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[3]',
+  gistMenu : 'qxh=[@classname="playground.view.gist.GistMenu"]',
+  gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
+  gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]'
 };
 
 var getLogHtml = function()
@@ -128,20 +132,22 @@ simulation.Simulation.prototype.getCodeMirrorActive = function()
 simulation.Simulation.prototype.checkEdit = function(sampleName)
 {
   try {
-    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
     var newButtonLabel = "Simulator was here";
-    var playAreaCode = new String(this.__sel.qxObjectExecFunction(locators["editorTextArea"], 'getValue'));
+    var playAreaCode = new String(this.__sel.qxObjectExecFunction(locators.editorTextArea, 'getValue'));
     var modifiedCode = playAreaCode.replace(/First Button/, newButtonLabel);
-    this.__sel.type(locators["editorTextArea"], modifiedCode);
-    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
-    this.qxClick(locators["runButton"], '', 'Pressing Run button');
+    this.__sel.type(locators.editorTextArea, modifiedCode);
+    this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
+    this.qxClick(locators.runButton, '', 'Pressing Run button');
   } catch(ex) {
     this.log("Could not edit sample " + sampleName + ": " + ex, "error");
     return;
   }
+  
+  var modifiedSampleName = sampleName + " (modified)";
 
-  var sampleLoaded = this.isSampleLoaded(sampleName);
-  var sampleStarted = this.isSampleStarted(sampleName);
+  var sampleLoaded = this.isSampleLoaded(modifiedSampleName);
+  var sampleStarted = this.isSampleStarted(modifiedSampleName);
 
   this.logGlobalErrors();
   this.clearGlobalErrorStore();  
@@ -152,7 +158,7 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
   }
   
   try {
-    var playAppButtonLoc = locators["playgroundApplication"] + '/qx.ui.form.Button';
+    var playAppButtonLoc = locators.playgroundApplication + '/qx.ui.form.Button';
     var playAppButtonLabel = new String(this.__sel.qxObjectExecFunction(playAppButtonLoc, 'getLabel'));
     if (playAppButtonLabel == newButtonLabel) {
       this.log("Successfully ran modified sample " + sampleName, "info");
@@ -191,7 +197,7 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
   }
   
   try {
-    var playAppButtonLoc = locators["playgroundApplication"] + '/qx.ui.form.Button';
+    var playAppButtonLoc = locators.playgroundApplication + '/qx.ui.form.Button';
     var playAppButtonLabel = new String(this.__sel.qxObjectExecFunction(playAppButtonLoc, 'getLabel'));
     if (playAppButtonLabel.indexOf(newButtonLabel) >= 0) {
       this.log("Successfully ran sample code from URL", "info");
@@ -207,11 +213,17 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
 
 simulation.Simulation.prototype.checkSyntaxHighlighting = function()
 {
+  var browser = this.getConfigSetting("testBrowser").toLowerCase();
+  if( browser.indexOf("firefox") >= 0 && browser.indexOf("1.5") >= 0 ) {
+    this.log("Skipping syntax highlighting check in Firefox 1.5", "info");
+    return;
+  }
+  
   // Check if syntax highlighting is on
   if (this.getCodeMirrorActive()) {
     this.log("Syntax highlighting is active", "info");
     // Turn off syntax highlighting
-    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
     Packages.java.lang.Thread.sleep(500);
     if (this.getCodeMirrorActive()) {
       this.log("Syntax highlighting was not deactivated!", "error");
@@ -219,7 +231,7 @@ simulation.Simulation.prototype.checkSyntaxHighlighting = function()
       this.log("Syntax highlighting deactivated correctly", "info");
     }
     // And turn it on again
-    this.qxClick(locators["syntaxHighlightingButton"], '', 'Deactivating syntax highlighting');
+    this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
     Packages.java.lang.Thread.sleep(500);
     if (this.getCodeMirrorActive()) {
       this.log("Syntax highlighting reactivated correctly", "info");
@@ -239,13 +251,13 @@ simulation.Simulation.prototype.runTest = function()
   this.runScript(setLocale, "Setting application locale to EN");    
    
   // Open log pane
-  this.qxClick(locators["logButton"], "", 'Opening log pane');
+  this.qxClick(locators.logButton, "", 'Opening log pane');
   
   // Add log html getter
   this.addOwnFunction("getLogHtml", getLogHtml);
   
   // Load the first sample again to make sure we get the english log output.
-  this.qxClick(locators["runButton"], '', 'Pressing Run button');
+  this.qxClick(locators.runButton, '', 'Pressing Run button');
 
   this.addOwnFunction("getSampleNames", getSampleNames);  
   var sampleNames = this.getEval(selWin + ".qx.Simulation.getSampleNames();", "Getting sample names");
@@ -257,35 +269,39 @@ simulation.Simulation.prototype.runTest = function()
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
   
-  var sampleMenuLocator = locators["sampleMenuButton"] + '/qx.ui.menu.Menu';
+  locators.sampleMenuLocator = locators.sampleMenuButton + '/qx.ui.menu.Menu';
   
   // Click the menu button so the menu is created
-  this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
-  var sampleMenuFirstChild = this.__sel.qxObjectExecFunction(sampleMenuLocator + '/child[0]', 'toString');
+  this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
+  var sampleMenuFirstChild = this.__sel.qxObjectExecFunction(locators.sampleMenuLocator + '/child[0]', 'toString');
   
   if (sampleMenuFirstChild.indexOf("MenuSlideBar") > 0) {
-    sampleMenuLocator += '/qx.ui.menu.MenuSlideBar';
+    locators.sampleMenuLocator += '/qx.ui.menu.MenuSlideBar';
   }
   // Close the menu
-  this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
+  this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
   
-  var browser = this.getConfigSetting("testBrowser").toLowerCase();
-  
-  if( browser.indexOf("firefox") >= 0 && browser.indexOf("1.5") >= 0 ) {
-    this.log("Skipping syntax highlighting check in Firefox 1.5", "info");
-  } else {
-    this.checkSyntaxHighlighting();
-  }
+  this.checkSyntaxHighlighting();
   
   this.checkEdit(sampleArr[0]);
   
+  this.checkSampleLoad(sampleArr);
+  
+  this.checkGistFromList();
+  
+  //this.checkGistFromUrl();
+  
+};
+
+simulation.Simulation.prototype.checkSampleLoad = function(sampleArr)
+{
   // Select and check each sample
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
       this.__sel.chooseOkOnNextConfirmation();
       print("Selecting next sample: " + sampleArr[i]);
-      this.qxClick(locators["sampleMenuButton"], '', 'Clicking menu button');
-	    this.qxClick(sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
+      this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
+      this.qxClick(locators.sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
 
       try {
         this.__sel.getConfirmation();
@@ -293,8 +309,8 @@ simulation.Simulation.prototype.runTest = function()
         // An exception here just means there was no dialog box
       }    
       
-	    Packages.java.lang.Thread.sleep(2000);
-	  
+      Packages.java.lang.Thread.sleep(2000);
+    
       var sampleLoaded = this.isSampleLoaded(sampleArr[i]);
       var sampleStarted = this.isSampleStarted(sampleArr[i]);
 
@@ -310,7 +326,71 @@ simulation.Simulation.prototype.runTest = function()
       }
     }
   }
+};
+
+simulation.Simulation.prototype.checkGistFromList = function()
+{
+  this.qxClick(locators.gitHubButton, "", "Clicking Gist button");
   
+  var filterActive = String(this.__sel.qxObjectExecFunction(locators.gistMenu + "/child[1]", "getValue"));
+  if (filterActive == "true") {
+    this.log("Gist filter is active", "info");
+  }
+  else {
+    this.qxClick(locators.gistMenu + "/child[1]", "", "Activating Gist filter");
+  }
+  
+  this.qxType(locators.gistUserNameField, "wittemann");
+  
+  //this.qxClick(locators.gitHubButton, "", "Clicking Gist button to start loading");
+  this.__sel.keyPress(locators.gistUserNameField, "13");
+  
+  var checkGistReady = function()
+  {
+    try {
+      var item = selenium.getQxWidgetByLocator('qxh=[@classname="playground.view.gist.GistMenu"]/child[4]');
+      if (item.getLabel().toString().indexOf("[qx]") >= 0) {
+        return true;
+      }
+    } catch(ex) {
+      return false;
+    } 
+  };
+  
+  this.addOwnFunction("checkGistReady", checkGistReady);
+  
+  var gistReady = this.waitForCondition("selenium.browserbot.getCurrentWindow().qx.Simulation.checkGistReady()", 20000, "Waiting for Gists to load", "error");
+  
+  if (!gistReady) {
+    return;
+  }
+  
+  var gistLabel = this.__sel.qxObjectExecFunction(locators.gistMenu + '/child[5]', "getLabel");
+  this.log("Found a Gist with the label " + gistLabel, "info");
+  this.qxClick(locators.gistMenu + '/child[5]', "", "Selecting Gist");
+  
+  Packages.java.lang.Thread.sleep(3000);
+  
+  var sampleLoaded = this.isSampleLoaded(gistLabel);
+  var sampleStarted = this.isSampleStarted(gistLabel);
+
+  this.logGlobalErrors();
+  this.clearGlobalErrorStore();  
+
+  if (sampleLoaded && sampleStarted) {
+    //print("Gist " + gistLabel + " loaded and started.");
+    this.log("Gist " + gistLabel + " started without errors.", "info");
+  }
+  else {
+    this.log("Gist " + gistLabel + " did not load and/or start correctly.", "error");        
+  }
+  
+};
+
+simulation.Simulation.prototype.checkGistFromUrl = function()
+{
+  var url = this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "#gist=279900";
+  this.__sel.open(url);
 };
 
 
