@@ -868,9 +868,31 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
   // Now add the extra components to the locator to find the clipper itself.
   // This is the real object that we want to click on.
+  
+  var element = null;
+  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper";
+  if (locator.indexOf("qxh=") == 0) {
+    var innerLocator = locator + "/" + subLocator;
+    // Now add the extra components to the locator to find the header cell itself.
+    // This is the real object that we want to click on.
+    element = this.page().findElement(innerLocator);      
+  }
+  else {
+    var qxhParts = subLocator.split('/');
+    try {
+      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxObject, qxhParts);
+    } catch(ex) {
+      throw new SeleniumError("qxTableHeaderClick couldn't find header cell widget: " + ex);
+    }
+    element = qxResultObject.getContentElement().getDomElement();
+  }
+  
+  /* 
   element = this.page().findElement(locator + 
     "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper"
   );
+  */
+  
   if (!element) {
     throw new SeleniumError("Could not find clipper child of the table");
   }
@@ -984,8 +1006,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
     LOG.debug("Calling selenium doContextMenuAt with X,Y=" + coordsXY[0] 
       + "," + coordsXY[1]);
-    this.doContextMenuAt(locator + "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper",
-      coordsXY[0] + "," + coordsXY[1] );
+    this.doContextMenuAt(innerLocator, coordsXY[0] + "," + coordsXY[1] );
   }
 
   // If requested, also do a double-click request:
@@ -997,8 +1018,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
     LOG.debug("Calling selenium doDoubleClickAt with X,Y=" + coordsXY[0] + "," 
       + coordsXY[1]);
-    this.doDoubleClickAt(locator + "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper",
-      coordsXY[0] + "," + coordsXY[1] );
+    this.doDoubleClickAt(innerLocator, coordsXY[0] + "," + coordsXY[1] );
   }
 
 };
@@ -1080,10 +1100,24 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
     LOG.info("No column given, using column index 0.");
   }
   
-  var headerCellLocator = locator + "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.container.Composite/qx.ui.table.pane.Clipper/qx.ui.table.pane.Header/child[" + col + "]";
-  // Now add the extra components to the locator to find the header cell itself.
-  // This is the real object that we want to click on.
-  element = this.page().findElement(headerCellLocator);
+  var element = null;
+  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.container.Composite/qx.ui.table.pane.Clipper/qx.ui.table.pane.Header/child[" + col + "]";
+  if (locator.indexOf("qxh=") == 0) {
+    var headerCellLocator = locator + "/" + subLocator;
+    // Now add the extra components to the locator to find the header cell itself.
+    // This is the real object that we want to click on.
+    element = this.page().findElement(headerCellLocator);      
+  }
+  else {
+    var qxhParts = subLocator.split('/');
+    try {
+      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxObject, qxhParts);
+    } catch(ex) {
+      LOG.error("qxTableHeaderClick couldn't find header cell widget: " + ex);
+    }
+    element = qxResultObject.getContentElement().getDomElement();
+  }
+  
   if (!element) {
     throw new SeleniumError("Could not find the header cell with the index " + col);
   }
