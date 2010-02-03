@@ -42,6 +42,12 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
         else:
             return self.do_command("qxTableClick", [locator, opts,])
 
+    def qxTableHeaderClick(self, locator, opts=None):
+        if opts==None:
+            return self.do_command("qxTableHeaderClick", [locator,])
+        else:
+            return self.do_command("qxTableHeaderClick", [locator, opts,])
+    
     def qxTableGetRows(self, locator):
         return self.do_command("getQxTableRows", [locator,])
 
