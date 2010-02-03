@@ -46,11 +46,23 @@ public class QxSelenium extends DefaultSelenium
     return this.commandProcessor.doCommand("qxTableClick", 
       new String[] {locator, });
   }
+  
 
   public String qxTableClick(String locator, String opts) {
     return this.commandProcessor.doCommand("qxTableClick", 
       new String[] {locator, opts, });
   }
+  
+  public String qxTableHeaderClick(String locator) {
+    return this.commandProcessor.doCommand("qxTableHeaderClick", 
+      new String[] {locator, });
+  }
+  
+
+  public String qxTableHeaderClick(String locator, String opts) {
+    return this.commandProcessor.doCommand("qxTableHeaderClick", 
+      new String[] {locator, opts, });
+  }  
 
   public String getViewport() {
     return this.commandProcessor.doCommand("getViewport", new String[] {});

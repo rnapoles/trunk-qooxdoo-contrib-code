@@ -1003,6 +1003,110 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
 };
 
+/**
+ * Uses the standard qx locators to find a table, and then processes a click on 
+ * one of the column header cells. Note, your locator should only find the table 
+ * itself, and not the clipper child of the table. We'll add the extra 
+ * Composite/Scroller/Clipper to the locator as required.
+ *
+ * <p>
+ * The column to click can be located using the index, ID or name by specifying 
+ * one of the col, colId or colName parameters.
+ * 
+ * <p>
+ * mousedown, mouseup will be fired instead of only click
+ * in addition to to doQxClick the x-/y-coordinates of the located element will 
+ * be determined.
+ * TODO: implement it like doFooAt, where additional coordinates will be added 
+ * to the element-coords
+ * <p>
+ * eventParams example: button=left|right|middle, clientX=300, shiftKey=true
+ * for a full list of properties see "function 
+ * Selenium.prototype.qx.triggerMouseEventQx"
+ *
+ * @type member
+ * @param locator {var} an element locator
+ * @param col {var} index of the table header column to click
+ * @param colId {var} ID of the column to click
+ * @param colName {var} Name of the column to click
+ * @param eventParams {var} additional parameter for the mouse-event to set. 
+ * e.g. clientX.
+ * If no eventParams are set, defaults will be: left mousebutton, all keys false
+ * and all coordinates 0
+ * @return {void}
+ */
+Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
+{
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
+    }
+  }
+  else {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  
+  var additionalParamsForClick = {};
+  if (eventParams && eventParams !== "") {
+    var paramPairs = eventParams.split(",");
+
+    for (var i = 0; i < paramPairs.length; i++) {
+      var onePair = paramPairs[i];
+      var nameAndValue = onePair.split("=");
+
+      // rz: using String.trim from htmlutils.js of selenium to get rid of
+      // whitespace
+      var name = new String(nameAndValue[0]).trim();
+      var value = new String(nameAndValue[1]).trim();
+      additionalParamsForClick[name] = value;
+    }
+  }
+  
+  var col = 0;
+  if (additionalParamsForClick["col"]) {
+    col = Number(additionalParamsForClick["col"]);
+  } else if (additionalParamsForClick["colId"]) {
+    // get column index by columnID
+    var model = qxObject.getTableModel();
+    col = Number(model.getColumnIndexById(additionalParamsForClick["colId"]));
+    LOG.debug("Got column index " + col + " from colId");
+  } else if (additionalParamsForClick["colName"]) {
+    // get column index by columnName
+    col = Number(this.getQxTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
+    LOG.debug("Got column index " + col + " from colName");
+  } else {
+    LOG.info("No column given, using column index 0.");
+  }
+  
+  var headerCellLocator = locator + "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.container.Composite/qx.ui.table.pane.Clipper/qx.ui.table.pane.Header/child[" + col + "]";
+  // Now add the extra components to the locator to find the header cell itself.
+  // This is the real object that we want to click on.
+  element = this.page().findElement(headerCellLocator);
+  if (!element) {
+    throw new SeleniumError("Could not find the header cell with the index " + col);
+  }
+  
+  var coords = getClientXY(element);
+  var headerCellX = coords[0];
+  var headerCellY = coords[1];
+  
+  var headerCellWidth = qxObject.getTableColumnModel().getColumnWidth(col);
+  var headerCellHeight = qxObject.getHeaderCellHeight();
+  
+  var clientX = headerCellX + Math.ceil(headerCellWidth / 2);
+  var clientY = headerCellY + Math.ceil(headerCellHeight / 2);
+  
+  var newEventParamString = eventParams + ",clientX=" + clientX
+    + ",clientY=" + clientY;
+  LOG.debug("newEventParamString=" + newEventParamString);
+
+  // Click the cell header
+  this.clickElementQx(element, newEventParamString);
+  
+};
+
 
 /**
  * Get all children of a widget that are instances of the given class(es).
