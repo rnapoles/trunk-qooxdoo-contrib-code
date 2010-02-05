@@ -8,7 +8,7 @@
   <packaging>pom</packaging>
 
   <name>Sushi</name>
-  <version>1.3.20</version>
+  <version>1.3.21-SNAPSHOT</version>
   <url>http://qooxdoo.org/contrib/project/qwt</url>
 
   <modules>
@@ -74,9 +74,9 @@
   </contributors>
 
   <scm>
-    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.20</connection>
-    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.20</developerConnection>
-    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/tags/sushi-1.3.20</url>
+    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/sushi</connection>
+    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/sushi</developerConnection>
+    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/sushi</url>
   </scm>
 
   <profiles>
