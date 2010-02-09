@@ -9,7 +9,8 @@ var baseConf = {
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/test/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
-  'getAutLog' : false
+  'getAutLog' : false,
+  'runAll' : false
 };
 
 var args = arguments ? arguments : "";
@@ -33,6 +34,18 @@ var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' 
 // HTML content of the result iframe
 var testResultHTML = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
 var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
+
+
+simulation.Simulation.prototype.runTest = function()
+{
+  if (this.getConfigSetting("runAll")) {
+    this.runAllTests();
+  }
+  else {
+    this.runTestsSteps();
+  }
+}
+
 
 /**
  * Runs a function in the AUT context that reads the available test packages
@@ -134,6 +147,15 @@ simulation.Simulation.prototype.removeIgnored = function(packagesOld)
   return packages;
 };
 
+
+/**
+ * Runs all tests at once. Ignore/include lists are not processed.
+ */
+simulation.Simulation.prototype.runAllTests = function()
+{
+  this.runPackage("[all tests]");
+};
+
 /**
  * Determines which test packages should be run and processes them.
  * 
@@ -193,7 +215,10 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
   var elapsedTotal = 0;
   for (var i=0; i<packages.length; i++) {
-    this.processPackage(packages[i]);
+    this.loadPackage(packages[i]);
+    if (!this.testFailed) {
+      this.runPackage(packages[i]);
+    }
   }
 
 };
@@ -204,29 +229,15 @@ simulation.Simulation.prototype.runTestsSteps = function()
  * @param packageName {String} The name of the package to be processed
  * @return void
  */
-simulation.Simulation.prototype.processPackage = function(packageName)
+simulation.Simulation.prototype.runPackage = function(packageName)
 {
-  if (this.getConfigSetting("debug")) {
-    print("Loading package: " + packageName);
-  }
-  // Enter the test app URI with the current package's name after 'testclass='.
-  this.qxType("xpath=//input", this.autUri + packageName);
-  this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");
-
-  var isAutReady = this.waitForCondition(isStatusReady, 120000,
-                   "Waiting for test package " + packageName + " to load");
-
-  var testAppWindow = selWin + "." + qxAppInst + ".iframe.getWindow()";
-  this.addGlobalErrorHandler(testAppWindow);
-
-  if (!isAutReady) {
-    this.testFailed = true;
-    return;
-  }
-
   if (this.getConfigSetting("debug")) {
     print("Starting tests in package " + packageName);
   }
+  
+  var testAppWindow = selWin + "." + qxAppInst + ".iframe.getWindow()";
+  this.addGlobalErrorHandler(testAppWindow);
+  
   var packageStartDate = new Date();
 
   this.runScript(qxAppInst + '.runTest();', "Calling runTest");
@@ -253,6 +264,31 @@ simulation.Simulation.prototype.processPackage = function(packageName)
     if (isPackageDone) {
       this.logTestDuration(packageStartDate, "Test package " + packageName);
     }
+  }
+};
+
+
+/**
+ * Loads a test package.
+ * 
+ * @param packageName {String} The name of the package to be processed
+ * @return void
+ */
+simulation.Simulation.prototype.loadPackage = function(packageName)
+{
+  if (this.getConfigSetting("debug")) {
+    print("Loading package: " + packageName);
+  }
+  // Enter the test app URI with the current package's name after 'testclass='.
+  this.qxType("xpath=//input", this.autUri + packageName);
+  this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");
+
+  var isAutReady = this.waitForCondition(isStatusReady, 120000,
+                   "Waiting for test package " + packageName + " to load");
+
+  if (!isAutReady) {
+    this.testFailed = true;
+    return;
   }
 
 };
@@ -390,7 +426,7 @@ simulation.Simulation.prototype.logAutLog = function()
 
   try {
     mySim.addGlobalErrorHandler();
-    mySim.runTestsSteps();
+    mySim.runTest();
   }
   catch(ex) {
     var msg = "Unexpected error while running tests!";
