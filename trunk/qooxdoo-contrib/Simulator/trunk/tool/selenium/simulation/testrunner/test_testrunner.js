@@ -39,7 +39,7 @@ var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
 simulation.Simulation.prototype.runTest = function()
 {
   if (this.getConfigSetting("runAll")) {
-    this.runAllTests();
+    this.runPackage("[all tests]");
   }
   else {
     this.runTestsSteps();
@@ -149,14 +149,6 @@ simulation.Simulation.prototype.removeIgnored = function(packagesOld)
 
 
 /**
- * Runs all tests at once. Ignore/include lists are not processed.
- */
-simulation.Simulation.prototype.runAllTests = function()
-{
-  this.runPackage("[all tests]");
-};
-
-/**
  * Determines which test packages should be run and processes them.
  * 
  * @return void
@@ -240,6 +232,9 @@ simulation.Simulation.prototype.runPackage = function(packageName)
   
   var packageStartDate = new Date();
 
+  var topTreeNodeLoc = 'qxh=child[1]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tree.Tree/qx.ui.tree.TreeFolder/qx.ui.tree.TreeFolder';
+  this.qxClick(topTreeNodeLoc, "", "Selecting top node in tree");
+  
   this.runScript(qxAppInst + '.runTest();', "Calling runTest");
 
   var isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
