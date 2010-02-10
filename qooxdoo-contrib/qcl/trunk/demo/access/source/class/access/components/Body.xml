@@ -13,7 +13,11 @@
           <qx:groupBox qxt:flex="1" legend="User Data">
             <qx:vbox spacing="5">
 
-              <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
+              <qx:label 
+                rich="true" 
+                qxt:flex="1" 
+                width="200" allowStretchX="true">
+                
                 <qxt:property name="value">
                   <![CDATA[
                   <h4>Login data </h4>
@@ -40,35 +44,35 @@
                 <qx:label value="Username:" qxt:row="0" qxt:column="0"/>
                 <qx:label qxt:row="0" qxt:column="1">
                   <qxt:observe 
-                    property="value" 
+                    path="value" 
                     source="this.getApplication().getUserManager()" 
-                    sourceProp="activeUser.username" />
+                    sourcePath="activeUser.username" />
                 </qx:label >
                 
                 <qx:label value="Full name:" qxt:row="1" qxt:column="0"/>
                 <qx:label qxt:row="1" qxt:column="1">
                   <qxt:observe 
-                    property="value" 
+                    path="value" 
                     source="this.getApplication().getUserManager()" 
-                    sourceProp="activeUser.fullname" />                
+                    sourcePath="activeUser.fullname" />                
                 </qx:label >
 
                 
                 <qx:label value="Permissions:" qxt:row="2" qxt:column="0"/>
                 <qx:label qxt:row="2" qxt:column="1" rich="true">
                   <qxt:observe 
-                    property="value" 
+                    path="value" 
                     source="this.getApplication().getUserManager()" 
-                    sourceProp="activeUser"
+                    sourcePath="activeUser"
                     converter="function(activeUser){return activeUser ? activeUser.getPermissionNames().join('&lt;br /&gt;') : ''}" />                
                 </qx:label>
                 
                 <qx:label value="Session id:" qxt:row="3" qxt:column="0"/>
                 <qx:label qxt:row="3" qxt:column="1">
                   <qxt:observe 
-                    property="value" 
+                    path="value" 
                     source="this.getApplication()" 
-                    sourceProp="sessionId" />                
+                    sourcePath="sessionId" />                
                 </qx:label>                
                 
               </qx:grid>
@@ -80,57 +84,47 @@
             <qx:vbox spacing="5">
             
               <qx:button label="Permission 'viewRecord' (Anyone)" >
-                <qcl:observe property="enabled" permission="viewRecord" />
+                <qcl:observe path="enabled" permission="viewRecord" />
                 <qxt:listener event="execute">
                   this.getApplication().alert("View record!");               
                 </qxt:listener>
               </qx:button>
             
               <qx:button label="Permission 'createRecord' (All authenticated)" >
-                <qcl:observe property="enabled" permission="createRecord" />
+                <qcl:observe path="enabled" permission="createRecord" />
                 <qxt:listener event="execute">
-                  (new qcl.ui.dialog.Select({
-                    message : "Select the type of record to create:",
-                    options : [
+                  dialog.select(
+                    "Select the type of record to create:", [
                       { label:"Database record", value:"database" },
                       { label:"World record", value:"world" },
                       { label:"Pop record", value:"pop" }
-                    ],
-                    allowCancel : true,
-                    callback : function(result){
-                      (new qcl.ui.dialog.Alert({
-                        message  : "You selected: '" + result + "'"
-                      })).show();
+                    ], function(result){
+                      dialog.alert("You selected: '" + result + "'");
                     }
-                  })).show();
+                  );
                 </qxt:listener>                  
               </qx:button>
               
               <qx:button label="Permission 'manageConfig' (All authenticated))" >
-                <qcl:observe property="enabled" permission="createRecord" />
+                <qcl:observe path="enabled" permission="createRecord" />
                 <qxt:listener event="execute">
-                  this.getApplication().alert("Nothing here!");                  
+                  dialog.alert("Nothing here!");                  
                 </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'deleteRecord' (Manager only)" >
-                <qcl:observe property="enabled" permission="deleteRecord" />
+                <qcl:observe path="enabled" permission="deleteRecord" />
                 <qxt:listener event="execute">
-                  (new qcl.ui.dialog.Confirm({
-                    message  : "Do you really want to delete the record?",
-                    callback : function(result){
-                      (new qcl.ui.dialog.Alert({
-                        message  : result ? "Record will be deleted" : "Record won't be deleted"
-                      })).show();
-                    }                   
-                  })).show();
+                  dialog.confirm("Do you really want to delete the record?",function(result){
+                    dialog.alert(result ? "Record will be deleted" : "Record won't be deleted");
+                  });
                 </qxt:listener>                
               </qx:button>
               
               <qx:button label="Permission 'manageUsers' (Admin only)" >
-                <qcl:observe property="enabled" permission="manageUsers" />
+                <qcl:observe path="enabled" permission="manageUsers" />
                 <qxt:listener event="execute">
-                  this.getApplication().alert("Manage Users!");
+                  dialog.alert("Manage Users!");
                 </qxt:listener>
               </qx:button>
               
@@ -165,15 +159,15 @@
               </qcl:access>
               
               <qx:button label="Permission 'createRecord' and condition 1" >
-                <qcl:observe property="enabled" permission="createRecordCondition1" />
+                <qcl:observe path="enabled" permission="createRecordCondition1" />
               </qx:button>           
 
               <qx:button label="Permission 'createRecord' and condition 1,2" >
-                <qcl:observe property="enabled" permission="createRecordCondition2" />
+                <qcl:observe path="enabled" permission="createRecordCondition2" />
               </qx:button>         
               
               <qx:button label="Permission 'createRecord' and condition 1,2,3" >
-                <qcl:observe property="enabled" permission="createRecordCondition3" />
+                <qcl:observe path="enabled" permission="createRecordCondition3" />
               </qx:button>       
               
               <qx:spacer />
@@ -184,7 +178,9 @@
                   <qcl:updater 
                     target="this.getApplication()" 
                     event="changeServer" />
-                  <qcl:condition>return this.getApplication().getServer()=="qcl";</qcl:condition>
+                  <qcl:condition>
+                    return this.getApplication().getServer()=="qcl";
+                  </qcl:condition>
                 </qcl:permission>                              
               </qcl:access>
                                                      
@@ -220,11 +216,11 @@
                   administrator only.
                  -->
                 <qx:label value="adminValue" qxt:row="0" qxt:column="0">
-                  <qcl:observe property="enabled" permission="changeAdminValue" />
+                  <qcl:observe path="enabled" permission="changeAdminValue" />
                 </qx:label>
                 <qx:textField qxt:row="0" qxt:column="1">
-                  <qcl:observe property="enabled" permission="changeAdminValue" />
-                  <qcl:bind property="value" config="adminValue"  />
+                  <qcl:observe path="enabled" permission="changeAdminValue" />
+                  <qcl:bind path="value" config="adminValue"  />
                 </qx:textField>
                 
                 <!-- 
@@ -234,30 +230,30 @@
                 
                 <!-- text value -->
                 <qx:label value="userValue" qxt:row="1" qxt:column="0">
-                  <qcl:observe property="enabled" permission="changeConfig" />
+                  <qcl:observe path="enabled" permission="changeConfig" />
                 </qx:label>
                 <qx:textField qxt:row="1" qxt:column="1">
-                  <qcl:observe property="enabled" permission="changeConfig" />
-                  <qcl:bind property="value" config="userValue"  />              
+                  <qcl:observe path="enabled" permission="changeConfig" />
+                  <qcl:bind path="value" config="userValue"  />              
                 </qx:textField>
                 
                 <!-- boolean value -->
                 <qx:label value="boolValue" qxt:row="2" qxt:column="0">
-                  <qcl:observe property="enabled" permission="changeConfig"/>
+                  <qcl:observe path="enabled" permission="changeConfig"/>
                 </qx:label>
                 
                 <qx:checkBox qxt:row="2" qxt:column="1">
-                  <qcl:observe property="enabled" permission="changeConfig"/>
-                  <qcl:bind property="value" config="boolValue"  />
+                  <qcl:observe path="enabled" permission="changeConfig"/>
+                  <qcl:bind path="value" config="boolValue"  />
                 </qx:checkBox>
                 
                 <!-- integer value  -->
                 <qx:label value="intValue" qxt:row="3" qxt:column="0">
-                  <qcl:observe property="enabled" permission="changeConfig"/>
+                  <qcl:observe path="enabled" permission="changeConfig"/>
                 </qx:label>
                 <qx:slider orientation="horizontal" minimum="0" maximum="10" value="0"
                    qxt:row="3" qxt:column="1"> 
-                   <qcl:bind property="value" config="intValue" />
+                   <qcl:bind path="value" config="intValue" />
                 </qx:slider>
 
               </qx:grid>

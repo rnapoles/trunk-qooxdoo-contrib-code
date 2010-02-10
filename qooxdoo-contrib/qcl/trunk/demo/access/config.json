@@ -7,7 +7,7 @@
       "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
     },
     {
-      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
+     "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
     }
   ],
 
@@ -42,15 +42,12 @@
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "cache",
     "ROOT"         : ".",
     
-    /*
-     * QxTransformer
-     */
+    // QxTransformer
     "PYTHON"       : "/opt/local/bin/python2.5",
-    "QXTRANSFORMER_PATH": "../../../../qooxdoo/qxtransformer/toolkit"
-    
+    "CONTRIB_PATH" : "contrib",
+    "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
   },
   
   "jobs" :
@@ -59,26 +56,39 @@
     {
       "library" :
       [
-        /*
-         * qcl-js
-         */
-        {
-          "manifest" : "contrib://qcl/trunk/frontend/Manifest.json"
-        },
-        /*
-         * qcl-php
-         */
-        {
-          "manifest" : "contrib://qcl/trunk/backend/php/Manifest.json"
-        },
-        /*
-         * json-rpc server
-         */
-        {
-          "manifest" : "contrib://RpcPhp/trunk/Manifest.json"
-        }          
+       // QxTransformer
+       {
+         "manifest" : "contrib://QxTransformer/trunk/Manifest.json" 
+       },  
+       // qcl-js
+       {
+         "manifest" : "contrib://qcl/trunk/Manifest.json"
+       },
+       // qcl-php
+       {
+         "manifest" : "contrib://qcl-php/trunk/Manifest.json"
+       },
+       // PHP JSON-RPC server
+       {
+         "manifest" : "contrib://RpcPhp/1.1.0/Manifest.json"
+       },     
+       // Dialogs 
+       {
+         "manifest" : "contrib://Dialog/0.1/Manifest.json"
+       }      
       ]
     },
+    
+    // download contrib code to location that is accessible to 
+    // web server in source version
+    "source-script":
+    {
+      "cache" :
+      {
+        "downloads" : "${CONTRIB_PATH}"
+      } 
+    },
+        
     "common" :
     {
       "settings" :

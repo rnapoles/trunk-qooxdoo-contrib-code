@@ -27,7 +27,7 @@ host = localhost
 
 ;; database.port
 ;; the port on which the database listens for requests, ususally 3306
-port = 8889
+port = 3306
 
 ;; database.username and database.userpassw
 ;; The name and password of the user which is used to do normal database insertion

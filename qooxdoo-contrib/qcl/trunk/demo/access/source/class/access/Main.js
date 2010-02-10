@@ -20,11 +20,7 @@
 /* ************************************************************************
 #asset(access/*)
 #asset(qx/*)
-#require(qcl.ui.dialog.Alert)
-#require(qcl.ui.dialog.Confirm)
-#require(qcl.ui.dialog.Login)
-#require(qcl.ui.dialog.Form)
-#require(qcl.ui.dialog.Select)
+#require(qcl.application.*)
 ************************************************************************ */
 
 /**
@@ -33,16 +29,40 @@
 qx.Class.define("access.Main",
 {
   extend : qx.application.Standalone,
-  include : [ qcl.application.MApplication ],
 
   properties :
   {
+    /**
+     * The backend server used
+     * @type 
+     */
     server :
     {
-      check    : "String",
+      check    : ["rpcphp","qcl"],
+      init     : "rpcphp",
       nullable : false,
       apply    : "_applyServer",
       event    : "changeServer"
+    },
+    
+    /**
+     * The application manager
+     * @type 
+     */
+    appManager :
+    {
+      check    : "qcl.application.AppManager",
+      nullable : false
+    },
+    
+    /**
+     * Flag to indicate if we have an authenticated user
+     * @type 
+     */
+    authenicatedUser :
+    {
+      check    : "Boolean",
+      init     : false
     }
   },
 
@@ -67,41 +87,45 @@ qx.Class.define("access.Main",
       this.info("Starting Application...");
 
       /*
+       * application manager
+       */
+      var appMgr = new qcl.application.AppManager();
+      this.setManager(appMgr);
+      
+      /*
        * Setup authentication and config without
        * setting the service methods
        */
-      this.setupAuthentication();
-      this.setupConfig();
+      appMgr.setupAuthentication();
+      appMgr.setupConfig();
 
       /*
        * setup server state, this will configure
        * the service methods and start auth/config
        */
-      if (!this.getState("server")) {
+      if (!mgr.getState("server")) {
         this.setServer("qcl");
       } else {
-        this.updateState("server");
+        appMgr.updateState("server");
       }
-
+      
       /*
-       * pre-configure login popup singleton for later use
+       * bind the authentication state to a local boolean
+       * property, which will be false if there is no user logged 
+       * in (initial state) or the user is anonymous (after the backend
+       * has connected) and true when a real login has occurred 
        */
-      this._loginPopup = new qcl.ui.dialog.Login({
-        callback    : this.checkLogin,
-        allowCancel : true,
-        image       : "access/qooxdoo-logo.gif",
-        text        : "<h3>QCL Login Widget</h3><p>Enter any of the username/password combinations <br/>from the first group box.</p>"
+      mgr.getUserManager().bind("activeUser",this,"authenticatedUser",{
+        converter : function(activeUser){ 
+          return ( ! activeUser || activeUser.isAnonymous() ? false : true ) 
+        }
       });
 
       /*
-       * allow remote user interaction
+       * Greet the visitor!
        */
-      qcl.ui.dialog.Dialog.allowServerControl(true);
-
-      /*
-       * Greet the user!
-       */
-      this.alert("Welcome to the Access Demo Application!");
+      dialog.Dialog.init(); // creates the shorthand methods like dialog.alert()
+      dialog.alert("Welcome to the Access Demo Application!");
     },
 
 
@@ -121,7 +145,8 @@ qx.Class.define("access.Main",
      */
     checkLogin : function(username, password, callback, context)
     {
-      qx.core.Init.getApplication().authenticate(username, password, function(data)
+      var appMgr = qx.core.Init.getApplication().getAppManager(); 
+      appMgr.authenticate(username, password, function(data)
       {
         if (data.error) {
           callback.call(context, false, data.error);
@@ -136,7 +161,7 @@ qx.Class.define("access.Main",
           /*
            * load configuration data for this user
            */
-          qx.core.Init.getApplication().loadConfig();
+          appMgr.loadConfig();
         }
       },
       this);
@@ -150,15 +175,16 @@ qx.Class.define("access.Main",
      */
     logoutUser : function()
     {
+      var appMgr = qx.core.Init.getApplication().getAppManager(); 
       /*
        * call parent method to log out
        */
-      this.logout(function()
+      appMgr.logout(function()
       {
         /*
          * load configuration data for anonymous
          */
-        this.loadConfig();
+        appMgr.loadConfig();
       },
       this);
     },
@@ -173,35 +199,36 @@ qx.Class.define("access.Main",
      */
     _applyServer : function(version, old)
     {
+      var appMgr = qx.core.Init.getApplication().getAppManager();
       /*
        * remove the session of the other server if exists
        */
       if (old) {
-        this.removeState('sessionId');
+        appMgr.removeState('sessionId');
       }
 
       /*
-       * set the state
+       * save the state in the URL hash
        */
-      this.setState("server", version);
+      appMgr.setState("server", version);
 
       /*
        * set the new values according to server version
        */
       switch(version)
       {
-        case "1.0":
-          this.setServerUrl("../services/index.php");
-          this.getAuthStore().setServiceName("access.SimpleAuthController");
-          this.getConfigStore().setServiceName("access.SimpleConfigController");
-          this.info("Server: changed to 1.0 version.");
+        case "rpcphp":
+          appMgr.setServerUrl("../services/server_rpcphp.php");
+          appMgr.getAuthStore().setServiceName("access.SimpleAuthController");
+          appMgr.getConfigStore().setServiceName("access.SimpleConfigController");
+          dialog.alert("Using RpcPhp server now with mockup data.");
           break;
 
         case "qcl":
-          this.setServerUrl("../services/server.php");
-          this.getAuthStore().setServiceName("access.AuthController");
-          this.getConfigStore().setServiceName("access.ConfigController");
-          this.info("Server: changed to trunk version.");
+          appMgr.setServerUrl("../services/server_qcl.php");
+          appMgr.getAuthStore().setServiceName("access.AuthController");
+          appMgr.getConfigStore().setServiceName("access.ConfigController");
+          dialog.alert("Using qcl server now with real database backend.");
           break;
 
         default:
@@ -211,9 +238,9 @@ qx.Class.define("access.Main",
       /*
        * re-authenticate and load new config values
        */
-      this.startAuthentication(function() {
-        this.loadConfig();
-      }, this);
+      appMgr.startAuthentication(function() {
+        appMgr.loadConfig();
+      }, appMgr);
     }
   }
 });
