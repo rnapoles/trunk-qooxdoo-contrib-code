@@ -23,7 +23,7 @@
 ************************************************************************ */
 
 /**
- * A mixin for an application instance that provides synchronization between
+ * A mixin the qcl.application.AppManager singleton that provides synchronization between
  * the application's properties and the application state saved in the URL hash.
  * The syntax is the similar to the URL GET parameters, i.e. state values are
  * saved as key-value pairs. You can freely choose the characters that represent
@@ -54,8 +54,10 @@
  * members: {
  * ...
  *   _applyMyProperty : function( value, old )
- *   {
- *     this.setState("myProperty",value);
+ *   { 
+ *     // provided that this.getManager() returns an instance of
+ *     // qcl.application.AppManager
+ *     this.getManager().setState("myProperty",value);
  *   }
  * ...
  * 
@@ -86,7 +88,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     stateSeparatorChar :
     {
       check : "String",
-      init : "~~~",
+      init : ";",
       nullable : false 
     },
     
@@ -98,7 +100,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     stateDefineChar :
     {
       check : "String",
-      init : "~",
+      init : ":",
       nullable : false
     },
     
