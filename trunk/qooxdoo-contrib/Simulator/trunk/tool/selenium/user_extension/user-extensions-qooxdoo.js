@@ -793,17 +793,17 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
  */
 Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
 {
-  var model = table.getTableModel();
-  var colCount = model.getColumnCount();
-  for (var i=0; i<colCount; i++) {
-    var colName = model.getColumnName(i);
-    if (colName == name) {
+  var columnModel = table.getTableColumnModel();
+  var columnArray = columnModel.getVisibleColumns();
+  var tableModel = table.getTableModel();
+  for (var i=0,l=columnArray.length; i<l; i++) {
+    var columnName = tableModel.getColumnName(columnArray[i]);
+    if (columnName == name) {
       return i;
     }
   }
   return null;
 };
-
 
 /**
  * Searches the table identified by the given locator for a column with the 
@@ -819,6 +819,50 @@ Selenium.prototype.getQxTableColumnIndexByNameLocator = function(locator, name)
   return this.getQxTableColumnIndexByName(table, name);
 };
 
+
+Selenium.prototype.__getParameterMap = function(eventParams)
+{
+  var additionalParamsForClick = {};
+  if (eventParams && eventParams !== "") {
+    var paramPairs = eventParams.split(",");
+
+    for (var i = 0; i < paramPairs.length; i++) {
+      var onePair = paramPairs[i];
+      var nameAndValue = onePair.split("=");
+
+      // rz: using String.trim from htmlutils.js of selenium to get rid of
+      // whitespace
+      var name = new String(nameAndValue[0]).trim();
+      var value = new String(nameAndValue[1]).trim();
+      additionalParamsForClick[name] = value;
+    }
+  }
+  return additionalParamsForClick;
+};
+
+Selenium.prototype.__getColumnIdFromParameters = function(additionalParamsForClick, qxObject)
+{
+  if (additionalParamsForClick["col"]) {
+    return Number(additionalParamsForClick["col"]);
+  }
+  if (additionalParamsForClick["colId"]) {
+    // get column index by columnID
+    var model = qxObject.getTableModel();
+    var col = Number(model.getColumnIndexById(additionalParamsForClick["colId"]));
+    LOG.debug("Got column index " + col + " from colId");
+    return col;
+  } 
+  if (additionalParamsForClick["colName"]) {
+    // get column index by columnName
+    col = Number(this.getQxTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
+    LOG.debug("Got column index " + col + " from colName");
+    return col;
+  } 
+  else {
+    LOG.warn("No column specified, using column index 0.");
+    return 0;
+  }  
+};
 
 /**
  * Uses the standard qx locators to find a table, and then processes a click on 
@@ -858,9 +902,11 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
   var qxObject = this.getQxWidgetByLocator(locator);
   
   if (qxObject) {
+    /*
     if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
       throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
     }
+    */
   }
   else {
     throw new SeleniumError("No qooxdoo object found for locator: " + locator);
@@ -901,38 +947,11 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
   var coordsXY = getClientXY(element);
   LOG.debug("computed coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
 
-  var additionalParamsForClick = {};
-  if (eventParams && eventParams !== "") {
-    var paramPairs = eventParams.split(",");
-
-    for (var i = 0; i < paramPairs.length; i++) {
-      var onePair = paramPairs[i];
-      var nameAndValue = onePair.split("=");
-
-      // rz: using String.trim from htmlutils.js of selenium to get rid of
-      // whitespace
-      var name = new String(nameAndValue[0]).trim();
-      var value = new String(nameAndValue[1]).trim();
-      additionalParamsForClick[name] = value;
-    }
-  }
+  var additionalParamsForClick = this.__getParameterMap(eventParams);
+  
   
   var row = Number(additionalParamsForClick["row"]);
-  var col = 0;
-  if (additionalParamsForClick["col"]) {
-    col = Number(additionalParamsForClick["col"]);
-  } else if (additionalParamsForClick["colId"]) {
-    // get column index by columnID
-    var model = qxObject.getTableModel();
-    col = Number(model.getColumnIndexById(additionalParamsForClick["colId"]));
-    LOG.debug("Got column index " + col + " from colId");
-  } else if (additionalParamsForClick["colName"]) {
-    // get column index by columnName
-    col = Number(this.getQxTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
-    LOG.debug("Got column index " + col + " from colName");
-  } else {
-    LOG.info("No column given, using column index 0.");
-  }
+  var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);  
   
   LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
 
@@ -999,26 +1018,14 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
   // If requested, also do a context menu request:
   if (doContextMenu) {
-    // subtract out the original element position:
-    var origcoordsXY = getClientXY(element);
-    coordsXY[0] = coordsXY[0] - origcoordsXY[0];
-    coordsXY[1] = coordsXY[1] - origcoordsXY[1];
-
-    LOG.debug("Calling selenium doContextMenuAt with X,Y=" + coordsXY[0] 
-      + "," + coordsXY[1]);
-    this.doContextMenuAt(innerLocator, coordsXY[0] + "," + coordsXY[1] );
+    LOG.debug("Right clicking table cell with params: " + newEventParamString);
+    this.clickElementQx(element, newEventParamString + ",button=right");
   }
 
   // If requested, also do a double-click request:
   if (doDoubleClick) {
-    // subtract out the original element position:
-    var origcoordsXY = getClientXY(element);
-    coordsXY[0] = coordsXY[0] - origcoordsXY[0];
-    coordsXY[1] = coordsXY[1] - origcoordsXY[1];
-
-    LOG.debug("Calling selenium doDoubleClickAt with X,Y=" + coordsXY[0] + "," 
-      + coordsXY[1]);
-    this.doDoubleClickAt(innerLocator, coordsXY[0] + "," + coordsXY[1] );
+    LOG.debug("Double clicking table cell with params: " + newEventParamString);
+    this.clickElementQx(element, newEventParamString + ",double=true");
   }
 
 };
@@ -1060,45 +1067,20 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
   var qxObject = this.getQxWidgetByLocator(locator);
   
   if (qxObject) {
+    /*
     if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
       throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
     }
+    */
   }
   else {
     throw new SeleniumError("No qooxdoo object found for locator: " + locator);
   }
   
-  var additionalParamsForClick = {};
-  if (eventParams && eventParams !== "") {
-    var paramPairs = eventParams.split(",");
-
-    for (var i = 0; i < paramPairs.length; i++) {
-      var onePair = paramPairs[i];
-      var nameAndValue = onePair.split("=");
-
-      // rz: using String.trim from htmlutils.js of selenium to get rid of
-      // whitespace
-      var name = new String(nameAndValue[0]).trim();
-      var value = new String(nameAndValue[1]).trim();
-      additionalParamsForClick[name] = value;
-    }
-  }
+  var additionalParamsForClick = this.__getParameterMap(eventParams);
   
-  var col = 0;
-  if (additionalParamsForClick["col"]) {
-    col = Number(additionalParamsForClick["col"]);
-  } else if (additionalParamsForClick["colId"]) {
-    // get column index by columnID
-    var model = qxObject.getTableModel();
-    col = Number(model.getColumnIndexById(additionalParamsForClick["colId"]));
-    LOG.debug("Got column index " + col + " from colId");
-  } else if (additionalParamsForClick["colName"]) {
-    // get column index by columnName
-    col = Number(this.getQxTableColumnIndexByName(qxObject, additionalParamsForClick["colName"]));
-    LOG.debug("Got column index " + col + " from colName");
-  } else {
-    LOG.info("No column given, using column index 0.");
-  }
+  var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);
+  LOG.debug("Clicking table header column " + col);
   
   var element = null;
   var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.container.Composite/qx.ui.table.pane.Clipper/qx.ui.table.pane.Header/child[" + col + "]";
@@ -1114,6 +1096,7 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
       qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxObject, qxhParts);
     } catch(ex) {
       LOG.error("qxTableHeaderClick couldn't find header cell widget: " + ex);
+      return null;
     }
     element = qxResultObject.getContentElement().getDomElement();
   }
@@ -1126,11 +1109,12 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
   var headerCellX = coords[0];
   var headerCellY = coords[1];
   
-  var headerCellWidth = qxObject.getTableColumnModel().getColumnWidth(col);
   var headerCellHeight = qxObject.getHeaderCellHeight();
   
-  var clientX = headerCellX + Math.ceil(headerCellWidth / 2);
+  var clientX = headerCellX + 5;
   var clientY = headerCellY + Math.ceil(headerCellHeight / 2);
+  
+  LOG.debug("Header cell adjusted X position: " + clientX);
   
   var newEventParamString = eventParams + ",clientX=" + clientX
     + ",clientY=" + clientY;
