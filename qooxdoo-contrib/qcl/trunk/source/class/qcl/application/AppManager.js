@@ -19,51 +19,26 @@
 
 /* ************************************************************************
 #require(qcl.application.*)
-#require(qx.*)
 ************************************************************************ */
 
 /**
- * A mixin for an application instance that provides methods concerning 
- * application state, a cross-window clipboard, history support.
- *
+ * A application manager that provides methods for:
+ * <ul>
+ * <li>application state saved in the URL / history support</li>
+ * <li>authentication with backend</li>
+ * <li>synchronization of configuration values with backend</li>
+ * <li>generic json-rpc backend communication</li>
+ * <li>addressing widgets by unique ids</li>
+ * <li>cross-window clipboard</li>
+ * </ul>
  */
-qx.Mixin.define("qcl.application.MApplication",
+qx.Class.define("qcl.application.AppManager",
 {
-
+  
   include : [ 
     qcl.application.MApplicationState
   ],
   
-  /*
-  *****************************************************************************
-     CONSTRUCTOR
-  *****************************************************************************
-  */  
-
-  construct : function()
-  {
-    
-    /*
-     * cache for widget ids
-     */
-    this._widgetById = {};
-    
-    /*
-     * Mixins
-     */
-    qx.Class.include( qx.core.Object, qcl.application.MGetApplication );
-    qx.Class.include( qx.core.Object, qcl.application.MWidgetId );
-    
-    /*
-     * session id
-     */
-    var sid =  this.getState("sessionId");
-    if ( sid )
-    {
-      this.setSessionId( sid );  
-    }
-    
-  },
  
   /*
   *****************************************************************************
@@ -116,8 +91,7 @@ qx.Mixin.define("qcl.application.MApplication",
      
      /**
       * The RPC object that is shared by all methods that require access
-      * to the backend. Needs to be set by the parent constructor and must be
-      * a subclass of 
+      * to the backend.
       */
      rpcObject : 
      {
@@ -136,7 +110,7 @@ qx.Mixin.define("qcl.application.MApplication",
      },
      
      /**
-      * The data store used for authentication
+      * The data store used for authentication.
       */
      authStore :
      {
@@ -146,7 +120,6 @@ qx.Mixin.define("qcl.application.MApplication",
 
      /**
       * The user manager
-      * @todo create interface
       */
      userManager :
      {
@@ -163,7 +136,7 @@ qx.Mixin.define("qcl.application.MApplication",
        nullable : true
      },
      
-     /**
+    /**
      * The data store used for authentication
      * @todo create interface
      */
@@ -171,7 +144,48 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       check : "qcl.config.Manager",
       nullable : true
-    }     
+    },
+    
+    /**
+     * Allow dialogs initiated by the server
+     */
+    allowServerDialogs :
+    {
+      check : "Boolean",
+      init : false,
+      apply : "_applyAllowServerDialogs"
+    }
+  },
+
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */  
+
+  construct : function()
+  {
+    
+    /*
+     * cache for widget ids
+     */
+    this._widgetById = {};
+    
+    /*
+     * Mixins
+     */
+    qx.Class.include( qx.core.Object, qcl.application.MGetApplication );
+    qx.Class.include( qx.core.Object, qcl.application.MWidgetId );
+    
+    /*
+     * session id
+     */
+    var sid =  this.getState("sessionId");
+    if ( sid )
+    {
+      this.setSessionId( sid );  
+    }
+    
   },
   
   /*
@@ -224,6 +238,24 @@ qx.Mixin.define("qcl.application.MApplication",
       }
       this.getRpcObject().setUrl(url);
     },
+    
+    /**
+     * Turns remote server control on or off. If turned on, you can trigger the
+     * display of dialogs using messages which can come from the server.
+     * @see #_onServerDialog
+     */
+    _applyAllowServerDialogs : function( value, old )
+    {
+      var messageName = "qcl.ui.dialog.Dialog.createDialog";
+      if ( value )
+      {
+        qx.event.message.Bus.getInstance().subscribe( messageName, this._onServerDialog,this);
+      }
+      else
+      {
+        qx.event.message.Bus.getInstance().unsubscribe( messageName, this._onServerDialog,this);
+      }
+    },        
     
     /*
     ---------------------------------------------------------------------------
@@ -347,6 +379,50 @@ qx.Mixin.define("qcl.application.MApplication",
       this._appStore.setServiceName(serviceName);
       this._appStore.execute( serviceMethod, params, callback, context);
     },
+    
+
+    
+    /**
+     * Handles the message. The message data has to be a map with of the following
+     * structure: <pre>
+     * {
+     *   type : "(alert|confirm|form|login|select|wizard)",
+     *   properties : { the dialog properties WITHOUT a callback },
+     *   service : "the.name.of.the.rpc.service",
+     *   method : "serviceMethod",
+     *   params : [ the, parameters, passed, to, the, service, method ]
+     * }
+     * </pre>
+     */
+    _onServerDialog : function( message )
+    {
+      var data = message.getData();
+      if ( data.service )
+      {
+        data.properties.callback = function( result )
+        {
+          /*
+           * push the result to the beginning of the parameter array
+           */
+          if ( ! data.params || ! data.params instanceof Array )
+          {
+            data.params = [];
+          }
+          data.params.unshift(result);
+          
+          /*
+           * send request back to server
+           */
+          this.executeService( 
+              data.service, data.method, data.params 
+          );
+        }
+      }
+      var widget = dialog.Dialog.getInstanceByType(data.type);
+      widget.set( data.properties );
+      widget.show();
+    }
+  },        
     
     /*
     ---------------------------------------------------------------------------

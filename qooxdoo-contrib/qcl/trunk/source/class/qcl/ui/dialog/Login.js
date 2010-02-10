@@ -22,7 +22,7 @@
  */
 qx.Class.define("qcl.ui.dialog.Login",
 {
-  extend : qcl.ui.dialog.Dialog,
+  extend : dialog.Dialog,
   
   
   /*

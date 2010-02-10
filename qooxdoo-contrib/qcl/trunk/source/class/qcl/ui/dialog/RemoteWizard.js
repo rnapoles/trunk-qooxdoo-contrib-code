@@ -24,7 +24,7 @@
  */
 qx.Class.define("qcl.ui.dialog.RemoteWizard",
 {
-  extend : qcl.ui.dialog.Wizard,
+  extend : dialog.Wizard,
   
   /*
   *****************************************************************************
