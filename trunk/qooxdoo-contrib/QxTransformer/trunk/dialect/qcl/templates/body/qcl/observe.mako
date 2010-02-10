@@ -9,23 +9,23 @@
   changes (use qcl:bind for this).
   @see qx:observe
   @see qcl:bind
-  @attr property {String}
+  @attr path {String}
   @attr permission {String} 
   @attr source {Object} The source object to observe 
-  @attr sourceProp {String} The source property path to follow
+  @attr sourcePath {String} The source path path to follow
   @attr config {String}
   @attr converter {Function|null}
   @attr onSetOk {Function|null} 
   @attr onSetFail {Function|null}
   === example ===
   <qcl:observe 
-    property="foo" 
-    source="widget" sourceProp="bar"
+    path="foo" 
+    source="widget" sourcePath="bar"
     converter="function(data,model){return data;}"
     onSetOk="function(source,targe,data){}"
     onSetFail="function(source,targe,data){}" />  
-  <qcl:observe property="foo" permission="permissions.bar.baz" />
-  <qcl:observe property="foo" config="config.foo.bar" />
+  <qcl:observe path="foo" permission="permissions.bar.baz" />
+  <qcl:observe path="foo" config="config.foo.bar" />
   === result ===
   widget.bind("bar",parentNodeWidget,"foo",{
     converter:function(data,model){return data;},
@@ -38,13 +38,13 @@
   }); 
 </%doc>
 % if utils.rawAttrib("permission") is not None:
-qcl.access.permission.Manager.getInstance().create(${utils.attrib("permission")}).bind("state",${utils.parentRawAttrib("id")},${utils.attrib("property")},\
+qcl.access.permission.Manager.getInstance().create(${utils.attrib("permission")}).bind("state",${utils.parentRawAttrib("id")},${utils.attrib("path")},\
 {${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
 % elif utils.rawAttrib("config") is not None:
 qcl.config.Manager.getInstance().addListener("ready",function(){       
-  qcl.config.Manager.getInstance().bindValue(${utils.attrib("config")},${utils.parentRawAttrib("id")}, ${utils.attrib("property")},false );      
+  qcl.config.Manager.getInstance().bindValue(${utils.attrib("config")},${utils.parentRawAttrib("id")}, ${utils.attrib("path")},false );      
 });
 % else:
-${utils.rawAttrib("source")}.bind(${utils.attrib("sourceProp")},${utils.parentRawAttrib("id")},${utils.attrib("property")},\
+${utils.rawAttrib("source")}.bind(${utils.attrib("sourcePath")},${utils.parentRawAttrib("id")},${utils.attrib("path")},\
 {${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
 % endif
