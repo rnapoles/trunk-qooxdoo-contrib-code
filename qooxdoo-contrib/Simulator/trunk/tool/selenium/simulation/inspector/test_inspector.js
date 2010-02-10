@@ -10,8 +10,7 @@ var baseConf = {
   'autPath' : '/qx/trunk/qooxdoo/component/inspector/build/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
-  'inspectedApplication' : '/qx/trunk/qooxdoo/application/feedreader/build/',
-  'expectedWindows' : "inspector.objects.ObjectsWindow,inspector.widgets.WidgetsWindow,inspector.property.PropertyWindow,inspector.console.ConsoleWindow"
+  'inspectedApplication' : '/qx/trunk/qooxdoo/application/feedreader/build/'
 };
 
 var args = arguments ? arguments : "";
@@ -26,8 +25,18 @@ load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
 
 var mySim = new simulation.Simulation(baseConf,args);
 
+mySim.locators = {
+  inspectorToolBar : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar",
+  inspectedAppRoot : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application",
+  windowWidgets : "qxh=[@classname=inspector.widgets.WidgetsWindow]",
+  windowProperty : "qxh=[@classname=inspector.property.PropertyWindow]",
+  windowObjects : "qxh=[@classname=inspector.objects2.Window]",
+  windowConsole : "qxh=[@classname=inspector.console.ConsoleWindow]"
+};
+
 var selWin = 'selenium.qxStoredVars["autWindow"]';
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
+
 
 simulation.Simulation.prototype.addAppChecker = function()
 {
@@ -45,69 +54,39 @@ simulation.Simulation.prototype.addAppChecker = function()
   this.addOwnFunction("checkApp", checkApp);
 };
 
-simulation.Simulation.prototype.addWindowChecker = function()
-{
-  checkWindows = function(expectedWindows) {
-    var windowClassNames = expectedWindows.split(",");
-    var foundWindows = [];
-    var kids = selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication().getRoot().getChildren();
-    for (var i=0,l=kids.length; i<l; i++) {
-      for (var j=0,m=windowClassNames.length; j<m; j++) {
-        var kidName = kids[i].classname;
-        var windowClassName = windowClassNames[j];
-        if (kidName == windowClassName) {
-         foundWindows.push(kidName);
-        }
-      }
-    }
-    return foundWindows.join(",");
-  };
-  
-  this.addOwnFunction("checkWindows", checkWindows);
-};
-
 simulation.Simulation.prototype.checkWindows = function()
 {
-  this.addWindowChecker();
-  var expectedWindows = this.getConfigSetting("expectedWindows");
-  var callCheckWindows = selWin + ".qx.Simulation.checkWindows('" + expectedWindows + "');";
-  var foundWindows = this.getEval(callCheckWindows, "Checking inspector windows");
-  
-  var foundArray = String(foundWindows).split(",");
-  var expectedArray = expectedWindows.split(",");
-  
-  if (this.getConfigSetting("debug")) {
-    print("Expected windows: " + expectedWindows);
-    print("Found windows: " + String(foundWindows));
-  }
-  
-  function filterArr(item) {
-    for (var i=0; i<foundArray.length; i++) {
-      if (item == foundArray[i]) {
-        return false;
+  for (locName in this.locators) {
+    if (locName.indexOf("window") == 0) {
+      try {
+        this.__sel.qxClick(this.locators[locName]);
+        this.log("Found window " + locName.substr(6), "info");
+      } catch (ex) {
+        this.log("Error while checking window " + locName.substr(6) + ": " + ex, "error");
       }
     }
-    return true;
   }
+};
+
+simulation.Simulation.prototype.testInspectWidget = function()
+{
+  var selectedWidgetOld = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar + "/child[8]", "getValue"));
   
-  missingArray = expectedArray.filter(filterArr);
+  this.qxClick(this.locators.inspectorToolBar + '/[@label="Inspect widget"]', "", "Clicking Inspect widget button");
+  Packages.java.lang.Thread.sleep(2000);
+  this.qxClick(this.locators.inspectedAppRoot + '/qx.ui.core.Widget', "clientX=200,clientY=200", "Clicking in inspected application");
+  Packages.java.lang.Thread.sleep(100000000);
   
-  if (missingArray.length > 0) {
-    this.log("Expected window(s) not present: " + missingArray.join(","), "error");
-  }
-  else {
-    this.log("Found all expected Inspector window objects: " + expectedWindows, "info");
+  var selectedWidget = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar + "/child[8]", "getValue"));
+  if (selectedWidget == selectedWidgetOld) {
+    this.log("No new widget selected!", "error");
+  } else {
+    this.log("Inspect widget found: " + selectedWidget, "info");
   }
 };
 
 simulation.Simulation.prototype.runTest = function()
-{
-  this.locators = {
-    inspectorToolBar : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar",
-    inspectedAppRoot : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application",
-    feedReaderAddFeed : "/qx.ui.container.Composite/[@classname=\"feedreader.view.ToolBar\"]/qx.ui.toolbar.Part/qx.ui.toolbar.Button"
-  };
-  
+{  
   var inspectedAppPath = this.getConfigSetting("inspectedApplication");
   if (this.getConfigSetting("debug")) {
     print("Loading application " + inspectedAppPath + " in Inspector");
@@ -130,12 +109,15 @@ simulation.Simulation.prototype.runTest = function()
 
   this.checkWindows();
   
+  // TODO: reload - workaround for inspector bug
+  
   var toolbarEnabled = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar, "getEnabled"));
   if (toolbarEnabled == "false") {
     this.log("Inspector toolbar is disabled!", "error");
   }
   else {
     this.log("Inspector toolbar is enabled.", "info");
+    //this.testInspectWidget();
   }
   
 };
