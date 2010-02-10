@@ -12,7 +12,7 @@
     <qx:hbox spacing="5">
        <qx:button label="SVN">
         <qxt:listener event="execute">
-          window.open("https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/qcl/trunk/application/access/");
+          window.open("https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/qcl/trunk/demo/access/");
         </qxt:listener>            
        </qx:button> 
        <qx:button label="Tutorial">

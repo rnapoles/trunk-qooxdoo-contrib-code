@@ -44,6 +44,14 @@
       "library" :
       [
        /*
+        * Dialog
+        */
+       {
+         //"manifest" : "contrib://Dialog/trunk/Manifest.json"
+         "manifest" : "../../../../Dialog/trunk/Manifest.json"
+       },
+
+       /*
         * qcl-js
         */
        {

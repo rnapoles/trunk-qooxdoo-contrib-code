@@ -9,6 +9,13 @@
   extend="access.Main">
 
   <!-- main layout -->
+  
+  <qcl:loginDialog 
+    callback="{js}this.checkLogin"
+    message="Please log in."
+    text="qcl demo application"
+    />
+          
   <qx:composite qxt:edge="0">
     <qx:vbox>
       
