@@ -6,24 +6,25 @@
   parent node to a property of the target object. To set up 
   the reverse binding, use qx:bind.
   @see qxt:bind
+  @attr path {String}
   @attr source {Object} 
-  @attr sourceProp {String}
+  @attr sourcePath {String}
   @attr converter {Function|null}
   @attr onSetOk {Function|null} 
   @attr onSetFail {Function|null}
   === example ===
   <qxt:observe 
-    property="foo" 
+    path="foo" 
     target="target" targetProp="bar"
     converter="function(data,model){return data;}"
-    onSetOk="function(source,targe,data){}"
-    onSetFail="function(source,targe,data){}" />  
+    onSetOk="function(source,target,data){}"
+    onSetFail="function(source,target,data){}" />  
   === result ===
   target.bind("bar",parentNodeWidget,"foo",{
     converter:function(data,model){return data;},
-    onSetOk:function(source,targe,data){},
-    onSetFail:function(source,targe,data){}}
+    onSetOk:function(source,target,data){},
+    onSetFail:function(source,target,data){}}
   );
 </%doc>
-${utils.rawAttrib("source")}.bind(${utils.attrib("sourceProp")},${utils.parentRawAttrib("id")},${utils.attrib("property")},{\
+${utils.rawAttrib("source")}.bind(${utils.attrib("sourcePath")},${utils.parentRawAttrib("id")},${utils.attrib("path")},{\
 ${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});

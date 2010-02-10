@@ -8,20 +8,20 @@
   See also qcl:observe for unidirectional binding. 
   @see qx:bind
   @see qcl:observe  
-  @attr property {String}
+  @attr path {String}
   @attr target {Object} 
-  @attr targetProp {String}
+  @attr targetPath {String}
   @attr config {String}
   @attr converter {Function|null}
   @attr onSetOk {Function|null} 
   @attr onSetFail {Function|null}
   === example ===
   <qcl:bind 
-    property="foo" target="widget" targetProp="bar" 
+    path="foo" target="widget" targetPath="bar" 
     converter="function(data,model){return data;}"
     onSetOk="function(source,targe,data){}"
     onSetFail="function(source,targe,data){}" />
-  <qcl:bind property="foo" config="config.foo.bar" />
+  <qcl:bind path="foo" config="config.foo.bar" />
   === result ===
   parent.bind("foo",widget,"bar",{
     converter:function(data,model){return data;},
@@ -34,10 +34,10 @@
 </%doc>
 % if utils.rawAttrib("config") is not None:
 qcl.config.Manager.getInstance().addListener("ready",function(){       
-  qcl.config.Manager.getInstance().bindValue(${utils.attrib("config")},${utils.parentRawAttrib("id")}, ${utils.attrib("property")},true );      
+  qcl.config.Manager.getInstance().bindValue(${utils.attrib("config")},${utils.parentRawAttrib("id")}, ${utils.attrib("path")},true );      
 });
 % else:
-${utils.parentRawAttrib("id")}.bind(${utils.attrib("property")},${utils.rawAttrib("target")},${utils.attrib("targetProp")},{\
+${utils.parentRawAttrib("id")}.bind(${utils.attrib("path")},${utils.rawAttrib("target")},${utils.attrib("targetPath")},{\
 ${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
 % endif
    
