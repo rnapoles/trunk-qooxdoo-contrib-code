@@ -23,6 +23,6 @@
  * require a database
  */
 define("RPCPHP_PATH", "../../../../../RpcPhp/1.1.0");
-require_once RPCPHP_PATH . "/services.index.php";
+require_once RPCPHP_PATH . "/services/index.php";
 
 ?>

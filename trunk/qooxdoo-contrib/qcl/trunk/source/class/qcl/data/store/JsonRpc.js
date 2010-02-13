@@ -119,7 +119,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
     }
     else if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) )
     {
-      this.__rpc = this.getApplication().getRpcObject();
+      this.__rpc = this.getApplication().getRpcManager().getRpcObject();
     }
     else
     {
@@ -428,53 +428,25 @@ qx.Class.define("qcl.data.store.JsonRpc",
    },
     
    /**  
-    * Register store with server. If the application has a central
-    * event store, register with this store.
+    * Register store with with with RpcManager
     */    
-   registerStore : function()
+   register : function()
    {
-     /*
-      * register with server
-      */
-     this.load("register",[ this.getStoreId() ],function(data){
-       //this.info(data);
-     }, this );  
-
-     /*
-      * register with event store
-      */
      if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
-         && this.getApplication().getEventStore()
-         && this.getApplication().getEventStore() != this 
      ){
-        this.getApplication().getEventStore().getProxiedStores().push(this);
+        this.getApplication().getRpcManager().registerStore(this);
      }
    },
 
    /**  
     * Unegister store from server and from event store, if exists 
     */    
-   unregisterStore : function()
+   unregister : function()
    {
-      /*
-       * unregister from server
-       */
-      this.load("unregister",[ this.getProxiedStores() ],function(data){
-        //this.info(data);
-      }, this );  
-
-      /*
-       * unregister from event store
-       */
-      if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
-          && this.getApplication().getEventStore()
-          && this.getApplication().getEventStore() != this 
-      ){
-        qx.lang.Array.remove( 
-          this.getApplication().getEventStore().getProxiedStores(),
-          this
-        );
-      }
+     if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
+     ){
+        this.getApplication().getRpcManager().unregisterStore(this);
+     }
    },
    
     
@@ -564,7 +536,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
             qx.Class.getByName( app.classname ), 
             qcl.application.MApplication ) )
       {
-        rpc.setUrl( this.getApplication().getServerUrl() );
+        rpc.setUrl( this.getApplication().getRpcManager().getServerUrl() );
       }
       else
       {
@@ -582,9 +554,9 @@ qx.Class.define("qcl.data.store.JsonRpc",
        */
       if( qx.Class.hasMixin( 
             qx.Class.getByName( app.classname ), 
-            qcl.application.MApplicationState ) )
+            qcl.application.MApplication ) )
       {
-        rpc.setServerData( app.getStates() );  
+        rpc.setServerData( app.getStateManager().getStates() );  
       }
 
       return rpc;
@@ -612,22 +584,18 @@ qx.Class.define("qcl.data.store.JsonRpc",
        */
       qx.core.Init.getApplication().getRoot().setGlobalCursor("wait");
       this.__requestCounter++;
-      
-      /*
-       * tag the current object instance for closures
-       */
-      var _this = this;
+     
 
       /*
        * create callback function
        */
-      var callbackFunc = function( result, ex, id ) 
+      var callbackFunc = qx.lang.Function.bind( function( result, ex, id ) 
       { 
         try{
         /*
          * decrement counter and reset cursor
          */
-        if ( --_this.__requestCounter < 1)
+        if ( --this.__requestCounter < 1)
         {
           qx.core.Init.getApplication().getRoot().setGlobalCursor("default");
         }
@@ -635,12 +603,12 @@ qx.Class.define("qcl.data.store.JsonRpc",
         /*
          * save data for debugging etc.
          */
-        _this._responseData = result;
+        this._responseData = result;
 
         /*
          * show that no request is underway
          */
-        _this.__opaqueCallRef = null ;      
+        this.__opaqueCallRef = null ;      
 
         /*
          * check for error
@@ -661,7 +629,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
              */
             if ( result.messages || result.events ) 
             {
-              _this.__handleEventsAndMessages( _this, result );
+              this.__handleEventsAndMessages( this, result );
             }              
             data = result.data; 
           }
@@ -678,17 +646,17 @@ qx.Class.define("qcl.data.store.JsonRpc",
             /*
              * create the class
              */
-            _this.getMarshaler().toClass( data, true);
+            this.getMarshaler().toClass( data, true);
        
             /*
              * set the initial data
              */
-            _this.setModel( _this.getMarshaler().toModel(data) );
+            this.setModel( this.getMarshaler().toModel(data) );
              
             /*
              * fire 'loaded' event only if we creat a model
              */
-            _this.fireDataEvent( "loaded", _this.getModel() );             
+            this.fireDataEvent( "loaded", this.getModel() );             
           }
            
           /*
@@ -706,26 +674,26 @@ qx.Class.define("qcl.data.store.JsonRpc",
           /* 
            * dispatch error event  
            */
-          _this.fireDataEvent( "error", ex );
+          this.fireDataEvent( "error", ex );
           
           /*
            * handle event
            */
-          _this._handleError( ex, id );
+          this._handleError( ex, id );
           
           /*
            * notify that data has been received but failed
            */
-          _this.fireDataEvent("loaded",null);
+          this.fireDataEvent("loaded",null);
         }
         
         }catch(e){console.warn(e)}
-      }     
+      }, this );    
 
       /*
        * send request 
        */
-      params2 = [ callbackFunc, serviceMethod ].concat( params || [] );
+      var params2 = [ callbackFunc, serviceMethod ].concat( params || [] );
       this.__opaqueCallRef = rpc.callAsync.apply( rpc, params2 );
 
     },

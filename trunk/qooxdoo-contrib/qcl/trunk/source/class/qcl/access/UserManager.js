@@ -24,9 +24,8 @@
 /**
  * This manager (singleton) manages users
  */
-qx.Class.define("qcl.access.user.Manager",
+qx.Class.define("qcl.access.UserManager",
 {
-  type : "singleton",
 	extend : qcl.access.AbstractManager,
 
   /*
@@ -38,6 +37,7 @@ qx.Class.define("qcl.access.user.Manager",
   construct : function()
   {
 		this.base(arguments);
+    this._managedObjectClassName = "qcl.access.User";
   },
 
 
@@ -81,7 +81,7 @@ qx.Class.define("qcl.access.user.Manager",
 		/**
 		 * get user object by login name
 		 * @param username {String}
-		 * @return {qcl.access.user.User}
+		 * @return {qcl.access.User}
 		 */
 		getByUsername : function ( username )
 		{
@@ -98,7 +98,7 @@ qx.Class.define("qcl.access.user.Manager",
 		    /*
 		     * create user
 		     */
-		    var user = qcl.access.user.Manager.getInstance().create( model.getUsername() );
+		    var user = this.create( model.getUsername() );
 		    
 		    /*
 		     * set user data
@@ -125,15 +125,25 @@ qx.Class.define("qcl.access.user.Manager",
 				oldUserObj.revokePermissions();
 			}
 			
-			if ( userObj instanceof qcl.access.user.User )
+			if ( userObj instanceof qcl.access.User )
 			{
-				userObj.broadcastPermissions();
+				userObj.grantPermissions();
 			}
 			else if( userObj !== null )
 			{
-				this.error ( "activeUser property must be null or of type qcl.access.user.User ");
+				this.error ( "activeUser property must be null or of type qcl.access.User ");
 			}
 		},
+    
+    /**
+     * Creates or returns already created user with the given named id
+     * @param namedId {String}
+     * @return {qcl.access.User}
+     */
+    create : function( namedId )
+    {
+      return this.base(arguments, namedId );
+    },
 		
 		/**
 		 * removes all permission, role and user information
@@ -141,7 +151,6 @@ qx.Class.define("qcl.access.user.Manager",
 		logout : function()
 		{
 		  this.setActiveUser(null);
-			qx.event.message.Bus.dispatch("qcl.access.messages.logout");
 		}
   }
 });

@@ -18,13 +18,13 @@
  ************************************************************************ */
 
 /* ************************************************************************
-#require(qcl.access.user.Manager)
+#require(qcl.access.UserManager)
  ************************************************************************ */
 
 /**
  * A user object
  */
-qx.Class.define("qcl.access.user.User",
+qx.Class.define("qcl.access.User",
 {
   extend : qx.core.Object,
 
@@ -38,7 +38,7 @@ qx.Class.define("qcl.access.user.User",
   {
     this.base(arguments);
     this.setNamedId(vName);
-    this._manager = qcl.access.user.Manager.getInstance();
+    this._manager = qx.core.Init.getApplication().getAccessManager().getUserManager();
     this._manager.add(this);
   
     this.setPermissions([]);
@@ -112,6 +112,8 @@ qx.Class.define("qcl.access.user.User",
   members :
   {
 
+    _manager : null,
+    
     _applyNamedId : function( value, old )
     {
       this.setUsername( value );
@@ -119,7 +121,7 @@ qx.Class.define("qcl.access.user.User",
     
     /**
      * Check if user has the given permission
-     * @param permissionRef {String|qcl.access.permission.Permission} name of permission object or object reference
+     * @param permissionRef {String|qcl.access.Permission} name of permission object or object reference
      * @return {Boolean} Whether user has permission
      */
     hasPermission : function( permissionRef )
@@ -129,7 +131,7 @@ qx.Class.define("qcl.access.user.User",
       for ( var i=0; i<perms.length; i++ )
       {
         var permission = perms[i];
-        if ( permissionRef instanceof qcl.access.permission.Permission 
+        if ( permissionRef instanceof qcl.access.Permission 
             && permissionRef === permission ) return true;
         else if ( permissionRef == permission.getNamedId() ) return true;
       };
@@ -159,19 +161,20 @@ qx.Class.define("qcl.access.user.User",
      */
     addPermissionsByName : function( names )
     {
+      var permMgr = qx.core.Init.getApplication().getAccessManager().getPermissionManager();
       for( var i=0; i < names.length; i++)
       {
         this.getPermissions().push(
-          qcl.access.permission.Manager.getInstance().create( names[i] ) 
+          permMgr.create( names[i] ) 
         );
       }
       this.fireDataEvent("changePermissions",this.getPermissions());
     },
 
     /**
-     * Broadcasts user permissions through message bus
+     * Grant all permissions that the user has.
      */
-    broadcastPermissions : function()
+    grantPermissions : function()
     {
       var perms = this.getPermissions();
       for (var name in perms)
@@ -181,7 +184,7 @@ qx.Class.define("qcl.access.user.User",
     },
 
     /**
-     * revokes user permissions through message bus
+     * Revoke all permissions of the particular user
      */
     revokePermissions : function()
     {

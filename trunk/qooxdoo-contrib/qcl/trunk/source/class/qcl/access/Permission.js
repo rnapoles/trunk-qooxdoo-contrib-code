@@ -18,7 +18,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-#require(qcl.access.permission.Manager)
+#require(qcl.access.PermissionManager)
 ************************************************************************ */
 
 /**
@@ -28,7 +28,7 @@
  * if the "granted" property AND all of these conditions return true, the "state" 
  * property will be true.
  */
-qx.Class.define("qcl.access.permission.Permission",
+qx.Class.define("qcl.access.Permission",
 {
   extend : qx.core.Object,
 
@@ -44,7 +44,7 @@ qx.Class.define("qcl.access.permission.Permission",
     this.setNamedId(vName);
     this.__conditions = [];
     this.__state = false;
-    this._manager = qcl.access.permission.Manager.getInstance();
+    this._manager = qx.core.Init.getApplication().getAccessManager().getPermissionManager();
     this._manager.add(this);
   },
 
@@ -109,6 +109,9 @@ qx.Class.define("qcl.access.permission.Permission",
 
   members :
   {
+    
+    _manager : null,
+    
     /**
      * get all conditions
      * @return {Array}
@@ -164,8 +167,8 @@ qx.Class.define("qcl.access.permission.Permission",
       for (var i=0; i<conditions.length; i++)
       {
         if (  conditionFunc 
-            && typeof conditionsFunc == "object" 
-            && conditions[i].condition == conditionsFunc 
+            && typeof conditionFunc == "object" 
+            && conditions[i].condition == conditionFunc 
             && conditions[i].context == (context || null)) 
         {
           return true;
@@ -189,7 +192,7 @@ qx.Class.define("qcl.access.permission.Permission",
 
       for (var i=0; i<conditions.length; i++)
       {
-        if (conditions[i].condition == conditionsFunc 
+        if (conditions[i].condition == conditionFunc 
             && conditions[i].context == (context || null)) 
         {
           conditions.splice(i, 1);

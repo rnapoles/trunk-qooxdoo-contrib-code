@@ -20,12 +20,12 @@
         <qxt:observe 
           path="visibility" 
           source="this.getApplication()"
-          sourcePath="authenticatedUser"
-          converter="function(v){v?'excluded':'visible'}" />
+          sourcePath="accessManager.authenticatedUser"
+          converter="function(v){return v?'excluded':'visible'}" />
           
         <!-- show login popup on button click -->          
         <qxt:listener type="execute">
-          this.getApplication().getAppManager().getWidgetById("loginPopup").show();
+          this.getApplication().getWidgetById("loginDialog").show();
         </qxt:listener>
         
       </qx:toolBarButton>
@@ -35,16 +35,16 @@
         label="Logout" icon="icon/16/actions/application-exit.png"
         visibility="excluded">
         
-        <!-- show button only when other button is not visible and the other way round -->
+        <!-- show button only when user is logged in -->
         <qxt:observe 
           path="visibility" 
-          source="loginButton"
-          sourcePath="visibility"
-          converter="function(visibility){ return ( visibility == 'visible' ) ? 'excluded' : 'visible' }" />
-          
+          source="this.getApplication()"
+          sourcePath="accessManager.authenticatedUser"
+          converter="function(v){return v?'visible':'excluded'}" />
+                    
         <!-- logout user on button click -->
         <qxt:listener type="execute">
-          this.getApplication().getAppManager().logoutUser();
+          this.getApplication().logout();
         </qxt:listener>
         
       </qx:toolBarButton>
@@ -56,7 +56,7 @@
         <qxt:observe 
           path="label" 
           source="this.getApplication()"
-          sourcePath="appManager.userManager.activeUser.fullname" />
+          sourcePath="accessManager.userManager.activeUser.fullname" />
       
       </qx:atom>
     </qx:toolBarPart>
@@ -68,11 +68,11 @@
           <qx:radioGroup>
             <qx:menuRadioButton label="Use RpcPhp server" model="qcl"/>
             <qx:menuRadioButton label="Use qcl server" model="qcl"/>
-            <qxt:bind 
+            <!-- <qxt:bind 
               path="selection[0].model" 
-              target="this.application()"
+              target="this.getApplication()"
               targetPath="server"
-             />
+             /> -->
           </qx:radioGroup>
         </qx:menu>
       </qx:toolBarMenuButton>
