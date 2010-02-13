@@ -23,14 +23,13 @@
 ************************************************************************ */
 
 /**
- * A mixin the qcl.application.AppManager singleton that provides synchronization between
- * the application's properties and the application state saved in the URL hash.
+ * Provides synchronization between the application's properties and the 
+ * application state saved in the URL hash.
  * The syntax is the similar to the URL GET parameters, i.e. state values are
  * saved as key-value pairs. You can freely choose the characters that represent
  * the "equal" and "ampersand" characters (including those), however the default
- * are "~~~" and "~"   #key1~value1~~~key2~value2~~~key3~value3 etc. because they
- * result in nicely readable URI strings (some browsers aggressively percent-encode
- * the URI string even when there are no ambiguities to be avoided). 
+ * are "~" and "~~~"   #key1~value1~~~key2~value2~~~key3~value3 etc. (The reason
+ * for the tilde is that it is not percent-encoded).
  *  
  * Any change to the state values (for example, by using the back or forward 
  * buttons or by manually changing the URL) will update a corresponding property, 
@@ -55,17 +54,17 @@
  * ...
  *   _applyMyProperty : function( value, old )
  *   { 
- *     // provided that this.getManager() returns an instance of
- *     // qcl.application.AppManager
- *     this.getManager().setState("myProperty",value);
+ *     qx.core.Init.getApplication().getStateManager().setState("myProperty",value);
  *   }
  * ...
  * 
  * Properties can also be boolean or integer and will be automatically converted
  * when the state changes.
  */
-qx.Mixin.define("qcl.application.MApplicationState",
+qx.Class.define("qcl.application.StateManager",
 {
+  
+  extend : qx.core.Object,
 
   /*
   *****************************************************************************
@@ -88,7 +87,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     stateSeparatorChar :
     {
       check : "String",
-      init : ";",
+      init : "~~~",
       nullable : false 
     },
     
@@ -100,7 +99,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
     stateDefineChar :
     {
       check : "String",
-      init : ":",
+      init : "~",
       nullable : false
     },
     
@@ -126,7 +125,7 @@ qx.Mixin.define("qcl.application.MApplicationState",
 
   construct : function()
   {
-    
+    this.base(arguments);
     /*
      * initialize history stacks
      */
@@ -426,20 +425,21 @@ qx.Mixin.define("qcl.application.MApplicationState",
     },
     
     /**
-     * Sets an application property, if exists, casting
-     * values to the correct type, if necessary
+     * Sets a property of the main application instance, if it exists, 
+     * casting values to the correct type, if necessary
      * @param name
      * @param value
      * @return {void}
      */
     _set : function ( name, value )
     {
-      var clazz = qx.Class.getByName( this.classname );
+      var app = qx.core.Init.getApplication();
+      var clazz = qx.Class.getByName( app.classname );
       
       if ( qx.Class.hasProperty( clazz, name ) )
       { 
-
-        switch( qx.Class.getPropertyDefinition( clazz, name ).check )
+        var type = qx.Class.getPropertyDefinition( clazz, name ).check;
+        switch( type )
         {
           case "Integer":
             if ( isNaN( parseInt( value )  ) )
@@ -457,10 +457,10 @@ qx.Mixin.define("qcl.application.MApplicationState",
             break;
             
           default:
-            this.error( "Cannot set application property for state " +  name + ": invalid type");
+            this.error( "Cannot set application property for state '" +  name + "': invalid type '" + type +"'");
             
         }
-        this.set( name, value );
+        app.set( name, value );
       }      
     },
     

@@ -11,6 +11,8 @@
   <!-- main layout -->
   
   <qcl:loginDialog 
+    image="access/qooxdoo-logo.gif"
+    widgetId="loginDialog"
     callback="{js}this.checkLogin"
     message="Please log in."
     text="qcl demo application"

@@ -57,6 +57,7 @@ qx.Class.define("qcl.access.AbstractManager",
     */
     _index : null,
     _objects : null,
+    _managedObjectClassName : null,
     
     /*
     ---------------------------------------------------------------------------
@@ -205,17 +206,13 @@ qx.Class.define("qcl.access.AbstractManager",
 			
 			var obj = this.getObject(name); 
 			if ( ! obj )
-			{
-				/* 
-				 * create new instance of the class that the manager manages
-				 * type information is in this classes classname
-				 * (qcl.access.**type**.Manager) 
-				 */
-				var type = this.classname.substr(0,this.classname.lastIndexOf(".")); // chop of "Manager" part
-				var typeLower = type.substr(type.lastIndexOf(".")+1);
-				var typeUpper = typeLower.substr(0,1).toUpperCase() + typeLower.substr(1);
-				var clazz = qcl.access[typeLower][typeUpper];
-				obj = new clazz(name); // this automatically adds the new object to the manage
+			{ 
+        // FIXME FIXME FIXME
+        eval("obj = new " + this._managedObjectClassName + "(name);" );
+        if ( ! obj )
+        {
+          this.error("The _managedObjectClassName property is not set!");
+        }
 			}
 			return obj;
 		},
@@ -226,7 +223,7 @@ qx.Class.define("qcl.access.AbstractManager",
 		deleteAll : function()
 		{
 			var objects = this.getAll();
-			for ( hashCode in objects )
+			for ( var hashCode in objects )
 			{
 				if ( objects[hashCode] )
 				{

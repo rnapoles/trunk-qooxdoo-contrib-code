@@ -25,9 +25,9 @@
 /**
  * This clipboard singleton manages all clipboard operations of the application
  */
-qx.Class.define("qcl.application.Clipboard",
+qx.Class.define("qcl.application.ClipboardManager",
 {
-  type : "singleton",
+  
   extend : qx.core.Object,
 
 

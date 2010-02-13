@@ -45,16 +45,16 @@
                 <qx:label qxt:row="0" qxt:column="1">
                   <qxt:observe 
                     path="value" 
-                    source="this.getApplication().getUserManager()" 
-                    sourcePath="activeUser.username" />
+                    source="this.getApplication()" 
+                    sourcePath="accessManager.userManager.activeUser.username" />
                 </qx:label >
                 
                 <qx:label value="Full name:" qxt:row="1" qxt:column="0"/>
                 <qx:label qxt:row="1" qxt:column="1">
                   <qxt:observe 
                     path="value" 
-                    source="this.getApplication().getUserManager()" 
-                    sourcePath="activeUser.fullname" />                
+                    source="this.getApplication()" 
+                    sourcePath="accessManager.userManager.activeUser.fullname" />                
                 </qx:label >
 
                 
@@ -62,8 +62,8 @@
                 <qx:label qxt:row="2" qxt:column="1" rich="true">
                   <qxt:observe 
                     path="value" 
-                    source="this.getApplication().getUserManager()" 
-                    sourcePath="activeUser"
+                    source="this.getApplication()" 
+                    sourcePath="accessManager.userManager.activeUser"
                     converter="function(activeUser){return activeUser ? activeUser.getPermissionNames().join('&lt;br /&gt;') : ''}" />                
                 </qx:label>
                 
@@ -86,7 +86,7 @@
               <qx:button label="Permission 'viewRecord' (Anyone)" >
                 <qcl:observe path="enabled" permission="viewRecord" />
                 <qxt:listener event="execute">
-                  this.getApplication().alert("View record!");               
+                  dialog.alert("View record!");               
                 </qxt:listener>
               </qx:button>
             
@@ -129,31 +129,31 @@
               </qx:button>
               
               <qx:checkBox id="condition1CheckBox" label="Condition 1">
-                <qxt:listener event="changeValue" dispatchEvent="conditionsHaveChanged" />
+                <qxt:listener event="changeValue" dispatchMessage="conditionsHaveChanged" />
               </qx:checkBox>
               <qx:checkBox id="condition2CheckBox" label="Condition 2">
-                <qxt:listener event="changeValue" dispatchEvent="conditionsHaveChanged" />
+                <qxt:listener event="changeValue" dispatchMessage="conditionsHaveChanged" />
               </qx:checkBox>
               <qx:checkBox id="condition3CheckBox" label="Condition 3" >
-                <qxt:listener event="changeValue" dispatchEvent="conditionsHaveChanged" />
+                <qxt:listener event="changeValue" dispatchMessage="conditionsHaveChanged" />
               </qx:checkBox>
               
               <qcl:access>
                 <qcl:permission name="createRecordCondition1" granted="true">
                   <qcl:dependency permission="createRecord" />
-                  <qcl:updater event="conditionsHaveChanged" />
+                  <qcl:updater message="conditionsHaveChanged" />
                   <qcl:condition>return condition1CheckBox.getValue()==true;</qcl:condition>
                 </qcl:permission>
                 
                 <qcl:permission name="createRecordCondition2" granted="true">
                   <qcl:dependency permission="createRecordCondition1" />
-                  <qcl:updater event="conditionsHaveChanged" />
+                  <qcl:updater message="conditionsHaveChanged" />
                   <qcl:condition>return condition2CheckBox.getValue()==true;</qcl:condition>
                 </qcl:permission>
                 
                 <qcl:permission name="createRecordCondition3" granted="true">
                   <qcl:dependency permission="createRecordCondition2" />
-                  <qcl:updater event="conditionsHaveChanged" />
+                  <qcl:updater message="conditionsHaveChanged" />
                   <qcl:condition>return condition3CheckBox.getValue()==true;</qcl:condition>
                 </qcl:permission>                                
               </qcl:access>

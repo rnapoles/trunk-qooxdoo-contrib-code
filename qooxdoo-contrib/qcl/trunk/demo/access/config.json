@@ -46,7 +46,8 @@
     
     // QxTransformer
     "PYTHON"       : "/opt/local/bin/python2.5",
-    "CONTRIB_PATH" : "contrib",
+    //"CONTRIB_PATH" : "contrib",
+    "CONTRIB_PATH" : "../../../..",
     "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
   },
   
