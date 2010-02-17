@@ -205,11 +205,19 @@ Copyright (c) 2009 by OETIKER+PARTNER AG. All rights reserved.
 
 =head1 LICENSE
 
-At your choice, either LGPL: http://www.gnu.org/licenses/lgpl.html
-or  EPL: http://www.eclipse.org/org/documents/epl-v10.php
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-This software, the Qooxdoo RPC Perl backend, is licensed under the same
-terms as Qooxdoo itself, as included in `LICENSE.Qooxdoo'
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 =head1 AUTHOR
 
@@ -217,7 +225,7 @@ S<Tobias Oetiker E<lt>tobi@oetiker.chE<gt>>
 
 =head1 HISTORY
 
- 2009-12-23 to 1.0 first version
+ 2009-12-23 to 1.0 first version for remOcular
 
 =cut
 
