@@ -1,0 +1,46 @@
+{
+  "info" : 
+  {
+    "name" : "contribDemobrowser",
+
+    "summary" : "A GUI for contrib library demos",
+    "description" : "The contribDemobrowser inherits from qooxdoo's framework Demobrowser, displaying demo applications for contrib libraries.",
+    
+    "homepage" : "http://some.homepage.url/",
+
+    "license" : "SomeLicense",
+    "authors" : 
+    [
+      {
+        "name" : "Thomas Herchenroeder (thron7)",
+        "email" : "thron7@users.sourceforge.net"
+      },
+      {
+        "name" : "Fabian Jakobs (fjakobs)",
+        "email" : "fabian.jakobs@1und1.de"
+      },
+      {
+        "name" : "Martin Wittemann (martinwittemann)",
+        "email" : "martin.wittemann@1und1.de"
+      },
+      {
+        "name" : "Daniel Wagner (d_wagner)",
+        "email" : "daniel.wagner@1und1.de"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.1-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "contribdemobrowser",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+

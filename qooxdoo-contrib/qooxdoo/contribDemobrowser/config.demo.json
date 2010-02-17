@@ -1,0 +1,9 @@
+{
+  "libraries" :
+  {
+    "*" : {
+      "versions" : ["*"],
+      "qooxdoo-versions" : ["*"]
+    }
+  }
+}
