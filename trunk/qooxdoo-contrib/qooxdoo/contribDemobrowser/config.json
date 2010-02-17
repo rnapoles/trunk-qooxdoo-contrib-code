@@ -1,0 +1,171 @@
+{
+  "name"    : "contribdemobrowser",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "build",
+    "distclean",
+    "fix",
+    "info",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "contribdemobrowser",
+    "QOOXDOO_PATH" : "../trunk",
+    "QXTHEME"      : "contribdemobrowser.theme.Theme",
+    "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",
+    "ROOT"         : "."
+  },
+
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [
+        {
+          "manifest" : "../trunk/application/demobrowser/Manifest.json"
+        }
+      ]
+    },
+    
+    // -- Source jobs ----------------------------------------------------------
+
+    "source-data" :
+    {
+      "desc"    : "generates the source version of all valid demos and the index file (demodata.json) for the demobrowser",
+
+      "extend" : ["common"],
+
+      "shell" :
+      {
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-source -d ."
+      }
+    },
+
+    "source" :
+    {
+      "desc"    : "create source version of Demobrowser",
+      
+      "extend" : ["common"],
+      
+      "copy-files" :
+      {
+        "source" : "source/resource/${APPLICATION}",
+        
+        "files" : [ "welcome.html" ],
+
+        "target" : "source/demo"
+      },
+
+      "run" :
+      [
+        // preparations
+        "source-data"
+      ]
+    },
+
+
+    // -- Build jobs -----------------------------------------------------------
+
+    "build-data" :
+    {
+      "desc"    : "generates the build version of all valid demos and the index file (demodata.json) for the demobrowser",
+
+      "extend" : ["common"],
+
+      "shell" :
+      {
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build -d ."
+      }
+    },
+    
+    "build-copy" :
+    {
+    
+    "copy-files" :
+      {
+        "source" : "source/resource/${APPLICATION}",
+        
+        "files" : [ "welcome.html" ],
+
+        "target" : "build/demo"
+      }
+    
+    },
+
+    "build" :
+    {
+      "desc"    : "create build version of Demobrowser",
+
+      "run" :
+      [
+        // preparations
+        "build-data",
+        "build-copy"
+      ]
+    },
+    
+    
+    // -- Clean jobs -----------------------------------------------------------
+    
+    "clean-demos" :
+    {
+      "desc" : "deletes demo artifacts",
+    
+      "clean-files" :
+      {
+        "Cleaning up demos in build path" :
+        [
+          "build/demo/*",
+          "build/script/demodata.json"
+        ],
+        
+        "Cleaning up demos in source path" :
+        [
+          "source/demo/*",
+          "source/script/demodata.json"
+        ]
+      }
+    },
+    
+    "clean" : 
+    {
+    
+      "run" : ["clean-demos"]
+    
+    },
+    
+    "distclean" :
+    {
+    
+      "run" : ["clean-demos"]
+    
+    }
+    
+  }
+
+}
