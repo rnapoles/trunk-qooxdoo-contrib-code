@@ -340,9 +340,10 @@ simulation.Simulation.prototype.checkGistFromList = function()
     this.qxClick(locators.gistMenu + "/child[1]", "", "Activating Gist filter");
   }
   
+  // Loading the gist list won't work unless the text field's list item is 
+  // focused (qx bug #3456), so we click it first.
+  this.qxClick(locators.gistUserNameField, "");
   this.qxType(locators.gistUserNameField, "wittemann");
-  
-  //this.qxClick(locators.gitHubButton, "", "Clicking Gist button to start loading");
   this.__sel.keyPress(locators.gistUserNameField, "13");
   
   var checkGistReady = function()
