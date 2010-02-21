@@ -114,7 +114,7 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
     }
     else
     {
-      $this->raiseError("Invalid parameters.");
+      qcl_data_db_Manager::raiseError("Invalid parameters.");
     }
 
     if ( ! $dsn )

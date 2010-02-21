@@ -33,6 +33,7 @@ require_once "qcl/server/Server.php";
 require_once "qcl/config/Manager.php";
 require_once "qcl/event/message/Bus.php";
 
+
 /**
  * Application class. All public methods of this class and of its subclasses
  * should be statically callable and work with an sigleton instance of this
@@ -124,6 +125,7 @@ class qcl_application_Application
      * @todo this can be removed once qcl_data_db_SimpleModel does
      * automatic table creation.
      */
+
      require_once "qcl/data/persistence/db/Setup.php";
      qcl_data_persistence_db_Setup::setup();
 
@@ -190,7 +192,7 @@ class qcl_application_Application
     }
 
     /*
-     * PHP5.3
+     * PHP 5.3
      */
     if ( defined("INI_SCANNER_RAW") )
     {
