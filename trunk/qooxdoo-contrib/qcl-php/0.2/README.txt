@@ -5,7 +5,7 @@ A qooxdoo-compatible javascript library tightly interoperating with
 a PHP json-rpc backend, providing features  that are commonly needed 
 for web  application development.
 
-The trunk version works with:
+The 0.2 version of the backend works with:
 
 - qooxdoo 0.8-1.0
 - PHP4/5 
