@@ -50,7 +50,7 @@ class PostRpcServer extends JsonRpcServer
   {
     if ( ! is_object( $GLOBALS[__CLASS__] ) )
     {
-      $GLOBALS[__CLASS__] =& new PostRpcServer;
+      $GLOBALS[__CLASS__] = new PostRpcServer;
     }
     return $GLOBALS[__CLASS__];
   }
@@ -60,7 +60,7 @@ class PostRpcServer extends JsonRpcServer
    */
   function run()
   {
-    $_this =& PostRpcServer::getInstance();
+    $_this = PostRpcServer::getInstance();
     $_this->start();
   }
 

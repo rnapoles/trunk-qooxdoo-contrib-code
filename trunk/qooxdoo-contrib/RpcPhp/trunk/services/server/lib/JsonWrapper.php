@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname(__FILE__) ."/JSON.phps";
-
 /**
  * Wrapper around php json-extension to provide a unified interface
  * for a JSON encoder/decoder. This allows to use different implementations
@@ -12,26 +10,15 @@ class JsonWrapper
 {
   var $_json = null;
 
-  /**
-   * PHP 4 constructor. Will only be called under PHP4 and will use
-   * the slow php-only encoder if the json extension is not loaded
-   */
-  function JsonWrapper()
-	{
-	  if ( ! function_exists("json_encode" ) )
-    {
-      $this->useJsonClass();
-    }
-	}
-
 	/**
 	 * Forces the use of the slow php-only encoder/decoder, which is
-	 * necessary under PHP4 or PHP5 if you want to encode dates.
+	 * necessary if you want to encode dates.
 	 * @return void
 	 */
 	function useJsonClass()
 	{
-    $this->_json = new JSON;
+	  require_once dirname(__FILE__) ."/JSON.phps";
+	  $this->_json = new JSON;
 	}
 
 	/**

@@ -90,14 +90,7 @@ if ( ! defined("servicePathPrefix") )
  */
 if ( ! defined("RpcMethodSignatureMode") )
 {
-  if ( phpversion() >= 5 )
-  {
     define( "RpcMethodSignatureMode", "check" );
-  }
-  else
-  {
-    define( "RpcMethodSignatureMode", "array" );
-  }
 }
 
 /**
@@ -137,16 +130,14 @@ if (! defined("JsonRpcDebugFile"))
 
 /**
  * Whether the server should include a package index file before instantiating
- * a service class file. By default, if a file named "__index__.php" (similar to
+ * a service class file. It could be a file named "__index__.php" (similar to
  * python) exists in the same directory as the service class script file, it is
  * included before the service class file is included. This is useful, for example,
  * to sort out complex include dependencies before a class is instantiated.
- * If you don't want this behavior, set the JsonRpcPackageIndexFile constant
- * to null in your global_settings.php file.
  */
 if (! defined("JsonRpcPackageIndexFile") )
 {
-  define("JsonRpcPackageIndexFile", "__index__.php" );
+  define("JsonRpcPackageIndexFile", null );
 }
 
 /**
@@ -282,8 +273,8 @@ class AbstractServer
      * Use servicePathPrefix constant for backwards compatibility
      */
     $this->servicePaths = array (
-      dirname(__FILE__) . "/services",
-      servicePathPrefix
+    dirname(__FILE__) . "/services",
+    servicePathPrefix
     );
 
     /**
@@ -381,7 +372,7 @@ class AbstractServer
 
   /**
    * Setter for server data
-   * @param array $serverData
+   * @param stdClass $serverData
    * @return void
    */
   function setServerData( $serverData )
@@ -402,7 +393,11 @@ class AbstractServer
     }
     elseif ( is_object( $this->serverData ) )
     {
-      return $this->serverData->$key;
+      if ( isset( $this->serverData->$key ) )
+      {
+        return $this->serverData->$key;
+      }
+      return null;
     }
     trigger_error("Invalid parameter.");
   }
@@ -468,7 +463,7 @@ class AbstractServer
     {
       trigger_error("The error behavior object must subclass AbstractErrorBehvior");
     }
-    $this->errorBehavior =& $object;
+    $this->errorBehavior = $object;
   }
 
   /**
@@ -481,22 +476,24 @@ class AbstractServer
   }
 
   /**
-   * Start the server
+   * Start the server.
    */
   function start()
   {
 
     /**
      * error behavior
+     * @todo this could be rewritten using interfaces
      */
     $errorBehavior =& $this->getErrorBehavior();
-    if ( ! $errorBehavior )
+    if ( ! is_a( $errorBehavior, "AbstractError" ) )
     {
-      trigger_error("No error behavior!");
+      trigger_error("No valid error behavior instance!");
     }
 
     /**
      * accessibility behavior
+     * @todo this could be rewritten using interfaces
      */
     $accessibilityBehavior =& $this->getAccessibilityBehavior();
     if ( ! $accessibilityBehavior )
@@ -511,8 +508,9 @@ class AbstractServer
     $input = $this->getInput();
     if ( ! $input )
     {
-      $this->sendErrorAndExit();
+      throw new AbstractError("No input");
     }
+
     $this->input = $input;
 
     /*
@@ -522,7 +520,7 @@ class AbstractServer
     $method     = $input->method;
     $params     = $input->params;
     $id         = $input->id;
-    $serverData = (array) $input->server_data;
+    $serverData = isset( $input->server_data ) ? $input->server_data : null;
 
     /*
      * configure this service request properties
@@ -537,7 +535,7 @@ class AbstractServer
      * Ok, it looks like a valid request, so we'll return an
      * error object if we encounter errors from here on out.
      */
-    $errorBehavior->SetId( $this->id);
+    $errorBehavior->setId( $this->id );
 
     $this->debug("Service request: $service.$method");
     $this->debug("Parameters: " . var_export($params,true) );
@@ -610,39 +608,39 @@ class AbstractServer
     /*
      * Errors from here on out will be Application-generated
      */
-    $this->setErrorOrigin( JsonRpcError_Origin_Application );
+    $this->getErrorBehavior()->setOrigin( JsonRpcError_Origin_Application );
 
     /*
      * start the service method and get its output
      */
     $this->debug("Starting Service method {$this->serviceClass}.$method");
-    $this->output = $this->callServiceMethod( &$serviceObject, $method, $params );
+    $result = $this->callServiceMethod( $serviceObject, $method, $params );
     $this->debug("Done. " );
-    //$this->debug("Result:" . var_export($this->output,true) );
 
     /*
      * See if the result of the function was actually an error
      */
-    if ( is_a( $this->output, "JsonRpcError" ) )
+    if ( is_a( $result, "AbstractError" ) )
     {
       /*
-       * Yup, it was.  Return the error
+       * Yup, it was. Set the origin to application and return the error
        */
-      $this->output->SendAndExit();
+      $result->setId( $this->getId() );
+      $result->setOrigin( JsonRpcError_Origin_Application );
+      $result->sendAndExit();
       /* never gets here */
     }
 
     /*
      * Give 'em what they came for!
      */
-    $response = $this->formatOutput( $this->output );
-    //$this->debug( "Formatted response: " . $response );
+    $this->output = $this->formatOutput( $result );
 
     /*
      * send reply
      */
-    $this->debug("Sending response to client ...");
-    $this->sendReply( $response, $this->scriptTransportId );
+    $this->debug("Sending output to client ...");
+    $this->sendReply( $this->output );
   }
 
   /**
@@ -673,21 +671,19 @@ class AbstractServer
       /*
        * There's some illegal character in the service name
        */
-      $this->setError(
-      JsonRpcError_IllegalService,
-          "Illegal character found in service name."
-          );
-          return false;
+      throw new AbstractError(
+        "Illegal character found in service name.",
+        JsonRpcError_IllegalService
+      );
     }
 
     /* Now ensure there are no double dots */
     if (strstr($service, "..") !== false)
     {
-      $this->setError(
-      JsonRpcError_IllegalService,
-          "Illegal use of two consecutive dots in service name"
-          );
-          return false;
+      throw new AbstractError(
+        "Illegal use of two consecutive dots in service name",
+      JsonRpcError_IllegalService
+      );
     }
 
     /*
@@ -770,7 +766,7 @@ class AbstractServer
 
     $serviceName = implode( ".", $serviceComponents );
     $this->SetError(
-      JsonRpcError_ServiceNotFound,
+    JsonRpcError_ServiceNotFound,
       "Service `$serviceName` not found."
     );
     return false;
@@ -829,12 +825,12 @@ class AbstractServer
      * class name was not found
      */
     $this->SetError(
-      JsonRpcError_ClassNotFound,
+    JsonRpcError_ClassNotFound,
       "Service class `" .
-      $serviceName .
+    $serviceName .
       "` not found."
-    );
-    return false;
+      );
+      return false;
   }
 
   /**
@@ -886,11 +882,10 @@ class AbstractServer
       $this->debug("Checking accessibility...");
       if ( ! $this->accessibilityBehavior->checkAccessibility( &$serviceObject, $method ) )
       {
-        $this->setError(
-          $this->accessibilityBehavior->getErrorNumber(),
-          $this->accessibilityBehavior->getErrorMessage()
+        throw new AbstractError(
+          $this->accessibilityBehavior->getErrorMessage(),
+          $this->accessibilityBehavior->getErrorNumber()
         );
-        $this->sendErrorAndExit();
       }
     }
   }
@@ -905,14 +900,10 @@ class AbstractServer
   {
     if ( ! method_exists( $serviceObject, $method ) )
     {
-      $this->setError(
-        JsonRpcError_MethodNotFound,
-         "Method `" . $method . "` not found " .
-         "in service class `" .
-        $this->getService() .
-         "`."
-         );
-        return false;
+      throw new AbstractError(
+        "Method `" . $method . "` not found in service class `" . $this->getService() . "`.",
+        JsonRpcError_MethodNotFound
+      );
     }
     return true;
   }
@@ -930,25 +921,82 @@ class AbstractServer
   function callServiceMethod( $serviceObject, $method, $params )
   {
     $errorBehavior =& $this->getErrorBehavior();
-
-    /*
-     * PHP 4 - Error will be caught by set_error_handler,
-     * if set up.
-     */
-    if ( phpversion() < 5 )
+    try
     {
-      $result = $serviceObject->$method( $params, $errorBehavior );
+      /*
+       * Allow new-style signature while ensuring compatibility to
+       * the 1.0 style: Check the method signature through the PHP5
+       * reflection API. If the first parameter is called 'params',
+       * assume that the 1.0 signature is used.
+       */
+      if ( RpcMethodSignatureMode == "check" )
+      {
+        $methodObj = new ReflectionMethod(
+        get_class( $serviceObject ), $method
+        );
+        $parameters = $methodObj->getParameters();
+        if ( count($parameters) )
+        {
+          if ( $parameters[0]->getName() == "params" )
+          {
+            $mode = "array";
+          }
+          else
+          {
+            $mode = "args";
+          }
+        }
+        else
+        {
+          $mode = "args";
+        }
+      }
+      else
+      {
+        $mode = RpcMethodSignatureMode;
+      }
+
+      switch ( $mode )
+      {
+        /*
+         * the old-style method signature. we pass the parameter array
+         * and the error behavior object to the method.
+         */
+        case "array":
+          $result = $serviceObject->$method(
+          $params,        /* parameters */
+          $errorBehavior  /* the error object */
+          );
+          break;
+
+          /*
+           * The new signature which will become the default in a future version:
+           * the rpc parameters are passed as "normal" arguments to the method,
+           * passing of the error object is no longer necessary.
+           */
+        case "args" :
+          $result = call_user_func_array( array( $serviceObject, $method), $params );
+          break;
+
+        default:
+          trigger_error("Invalid signature mode '$mode'."  );
+      }
+
     }
-
-    /*
-     * PHP5: JsonRpcErrors can be thrown manually, also, we can
-     * check the service method signature via introspection.
-     * To not raise a parse error in PHP4, the code is included in
-     * an external script
-     */
-    else
+    catch ( AbstractError $exception)
     {
-      require dirname(__FILE__) . "/lib/callServiceMethod.php5";
+      $result = $exception;
+      $result->setId( $this->getId() );
+    }
+    catch ( Exception $exception )
+    {
+      $result = new AbstractError(
+        "PHP Script Error: "  . $exception->getMessage() . "in " . $exception->getFile() . ", line " . $exception->getLine(),
+        JsonRpcError_ScriptError,
+        null,
+        JsonRpcError_Origin_Application
+      );
+      $this->log( $exception->getTraceAsString() );
     }
     return $result;
   }
@@ -962,52 +1010,6 @@ class AbstractServer
   function formatOutput( $output )
   {
     return $output;
-  }
-
-
-  /**
-   * Sets the origin of an error
-   * @param int $origin
-   * @return void
-   */
-  function setErrorOrigin( $origin )
-  {
-    $errorBehavior =& $this->getErrorBehavior();
-    $errorBehavior->SetOrigin( $origin );
-  }
-
-  /**
-   * Configures the jsonrpc error with error code
-   * and error message
-   * @param string $code
-   * @param string $message
-   * @return void
-   */
-  function setError( $code, $message )
-  {
-    $errorBehavior =& $this->getErrorBehavior();
-    $errorBehavior->SetError( $code, $message );
-  }
-
-  /**
-   * Called when a jsonrpc error has been set. Will send the
-   * the last configured error to the client and exit the script
-   * @return void
-   */
-  function sendErrorAndExit()
-  {
-    $errorBehavior =& $this->getErrorBehavior();
-    if ( $errorBehavior )
-    {
-      $this->debug("Error: " . $errorBehavior->GetErrorMessage() );
-      $this->errorBehavior->SendAndExit();
-    }
-    else
-    {
-      echo "An unknown error occurred.";
-      exit;
-    }
-
   }
 
   /*
@@ -1047,10 +1049,10 @@ class AbstractServer
       /*
        * Otherwise, we need to add a call to a qooxdoo-specific function
        */
+      header("Content-Type: application/javascript");
       $reply =
-            "qx.io.remote.transport.Script._requestFinished(" .
-      $scriptTransportId . ", " . $reply .
-            ");";
+        "qx.io.remote.transport.Script._requestFinished(" .
+        $scriptTransportId . ", " . $reply . ");";
       print $reply;
     }
 

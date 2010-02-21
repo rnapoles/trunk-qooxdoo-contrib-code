@@ -1,13 +1,27 @@
 <?php
+/*
+ * qooxdoo - the new era of web development
+ *
+ * http://qooxdoo.org
+ *
+ * Copyright:
+ *   2006-2009 Derrell Lipman, Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Derrell Lipman (derrell)
+ *  * Christian Boulanger (cboulanger) Error-Handling and OO-style rewrite
+ */
 
 /**
- * global settings
+ * PHP JSON-RPC server for qooxdoo
+ * This file contains global settings for the server. See AbstractServer.php and
+ * JsonRpcServer.php for an explanation of the constants.
  */
-
-/*
- * set error level
- */
-error_reporting( E_ALL ^ E_NOTICE /* ^ E_WARNING */ );
 
 /*
  * default accessibility mode for the services, defaults to "domain"
@@ -31,20 +45,24 @@ define( "defaultAccessibility", "public" );
 //define("JsonRpcMethodPrefix",  "method_");
 
 /*
- * signature mode, defaults to "array" in PHP4 and "check" in PHP5
+ * signature mode, defaults to "check"
  */
 //define( "RpcMethodSignatureMode", "check" );
 
-
+/*
+ * Whether to encode and decode Date objects the "qooxdoo way"
+ * See JsonRpcServer.php
+ */
+//define( "handleQooxdooDates", false );
 
 /*
- * turn debugging on
+ * turn debugging on or off, defaults to false
  */
-define( "JsonRpcDebug", false );
+//define( "JsonRpcDebug", false );
 
 /*
  * log file
  */
-define( "JsonRpcDebugFile", "/tmp/jsonrpc.log");
+//define( "JsonRpcDebugFile", "/tmp/jsonrpc.log");
 
 ?>

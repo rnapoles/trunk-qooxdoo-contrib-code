@@ -33,19 +33,27 @@ class JsonRpcError extends AbstractError
 {
 
   /**
-   * The id of the request
-   * @var int
-   */
-  var $id;
-
-  /**
    * The id of the request if script transport is used
    */
-  var $scriptTransportId = ScriptTransport_NotInUse;
+  private $scriptTransportId = ScriptTransport_NotInUse;
 
-  function SetScriptTransportId($id)
+  /**
+   * Setter for script transport id
+   * @param $id
+   * @return unknown_type
+   */
+  public function setScriptTransportId($id)
   {
     $this->scriptTransportId = $id;
+  }
+
+  /**
+   * Getter for script transport id
+   * @return int
+   */
+  public function getScriptTransportId()
+  {
+    return $this->scriptTransportId;
   }
 
   /**
@@ -53,12 +61,12 @@ class JsonRpcError extends AbstractError
    * @param array $optional_data An optional array of key=>value pairs that should be included
    * in the array response. Must not contain the keys "error" and "id"
    */
-  function SendAndExit( $optional_data=array() )
+  public function sendAndExit( $optional_data=array() )
   {
     $ret = array_merge(
       array(
-        "error" => $this->data,
-         "id"   => $this->id
+        "error" => $this->getData(),
+         "id"   => $this->getId()
       ),
       $optional_data
     );
@@ -68,11 +76,11 @@ class JsonRpcError extends AbstractError
     if ( handleQooxdooDates )
     {
       $json->useJsonClass();
-      $this->SendReply($json->encode($ret), $this->scriptTransportId);
+      $this->sendReply( $json->encode($ret) );
     }
     else
     {
-      $this->SendReply($json->encode($ret), $this->scriptTransportId);
+      $this->sendReply( $json->encode($ret) );
     }
     exit;
   }
@@ -83,8 +91,10 @@ class JsonRpcError extends AbstractError
    * @param $scriptTransportId
    * @return unknown_type
    */
-  function SendReply($reply, $scriptTransportId)
+  public function sendReply( $reply )
   {
+    $scriptTransportId = $this->getScriptTransportId();
+
     /* If not using ScriptTransport... */
     if ($scriptTransportId == ScriptTransport_NotInUse)
     {
@@ -94,10 +104,10 @@ class JsonRpcError extends AbstractError
     else
     {
         /* Otherwise, we need to add a call to a qooxdoo-specific function */
+        header("Content-Type: application/javascript");
         $reply =
             "qx.io.remote.transport.Script._requestFinished(" .
-            $scriptTransportId . ", " . $reply .
-            ");";
+            $scriptTransportId . ", " . $reply . ");";
         print $reply;
     }
   }
