@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data>
+    <records>
+      <record>
+        <property name="name">User 1</property>
+        <property name="namedId">user1</property>
+        <property name="password">user1</property>
+        <property name="active">1</property>
+      </record>
+      <record>
+        <property name="name">User 2</property>
+        <property name="namedId">user2</property>
+        <property name="password">user2</property>
+        <property name="active">1</property>
+      </record>      
+      <record>
+        <property name="name">User 3</property>
+        <property name="namedId">user3</property>
+        <property name="password">user3</property>
+        <property name="active">1</property>
+      </record>
+      <record>
+        <property name="name">Administrator</property>
+        <property name="namedId">admin</property>
+        <property name="password">admin</property>
+        <property name="active">1</property>
+      </record>
+    </records>
+  </data>
+</root>

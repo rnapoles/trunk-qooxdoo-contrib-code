@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/data/model/xmlSchema/DbModel.xml">
+  
+  <model 
+    name="qcl.config.Db"
+    extends="qcl.data.model.xmlSchema.DbModel"
+    table="config">
+ 
+    <!-- model definition -->
+    <definition>
+    
+      <!-- properties -->
+      <properties>
+        <property name="namedId" type="string">
+          <sql>varchar(100) NOT NULL</sql>
+        </property>
+        <property name="type" type="string">
+          <sql>varchar(20) NOT NULL</sql>
+        </property>
+        <property name="value" type="string">
+          <sql>tinytext NOT NULL</sql>
+        </property>
+        <property name="userId" type="int">
+          <sql>int(11) NULL</sql>
+        </property>        
+        <property name="permissionWrite" type="string">
+          <sql>varchar(50) NULL</sql>
+        </property>
+        
+      </properties>
+      
+      <!-- metadata -->
+      <propertyGroups>
+        <propertyGroup name="metaData">
+          <property name="namedId"/>
+          <property name="userId"/>
+        </propertyGroup>
+      </propertyGroups>      
+
+    </definition>
+  </model>
+</schema>

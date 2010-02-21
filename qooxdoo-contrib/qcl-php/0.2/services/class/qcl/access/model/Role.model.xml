@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schema
+  include="qcl/data/model/xmlSchema/DbModel.xml">
+  
+  <model 
+    table="roles"
+    type="qcl.type.Role"
+    name="qcl.access.model.Role"
+    extends="qcl.data.model.xmlSchema.DbModel">
+     
+    <definition>
+    
+      <!-- properties -->
+      <properties>
+        <property name="namedId" type="string" index="yes" unique="yes">
+          <sql>varchar(50) NOT NULL</sql> 
+        </property>
+        <property name="name" type="string">
+          <sql> varchar(255) NOT NULL default ''</sql>
+        </property>
+        <property name="active" type="bool">
+          <sql>tinyint(1) default 0</sql>
+        </property>        
+      </properties>
+ 
+    </definition>
+    
+    <!-- links to other models -->
+    <links
+        localKey="id"
+        foreignKey="roleId">
+      <link 
+        name="permission"
+        jointable="link_roles_permissions"
+        model="qcl.access.model.Permission" />    
+      <link 
+        name="user"
+        jointable="link_roles_users" 
+        model="qcl.access.model.User" />
+    </links>
+  </model>
+</schema>
