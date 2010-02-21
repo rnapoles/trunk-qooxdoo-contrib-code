@@ -726,18 +726,19 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function raiseError( $message, $number=null, $file=null, $line=null )
   {
+
     if ( $file and $line )
     {
       $message .= " in $file, line $line.";
     }
     $logger =& qcl_log_Logger::getInstance();
-    $logger->writeLog(
-      "\n\n### Error in " . get_class($this) . " ###\n" .
+    $msg = "\n\n### Error in " . get_class($this) . " ###\n" .
       $message . "\n" .
       "Backtrace:\n" .
       $this->backtrace() .
-      "\n"
-    );
+      "\n";
+
+    $logger->writeLog( $msg );
     $this->userNotice( $message, $number );
   }
 

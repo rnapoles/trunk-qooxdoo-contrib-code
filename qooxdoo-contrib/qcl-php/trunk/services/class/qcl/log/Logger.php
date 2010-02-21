@@ -211,6 +211,7 @@ class qcl_log_Logger
     {
       error_log( "qcl: " . $message );
     }
+
   }
 
   /**
