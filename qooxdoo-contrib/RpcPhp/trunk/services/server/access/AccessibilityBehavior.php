@@ -64,20 +64,12 @@ class AccessibilityBehavior
   var $server;
 
   /**
-   * PHP4 Constructor
-   */
-  function AccessibilityBehavior( $server )
-  {
-    $this->__construct( &$server );
-  }
-
-  /**
    * PHP 5 Constructor
    * @param AbstractServer $server
    */
   function __construct( $server )
   {
-    $this->server =& $server;
+    $this->server = $server;
   }
 
   /**

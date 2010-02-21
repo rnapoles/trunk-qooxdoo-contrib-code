@@ -37,10 +37,12 @@
  */
 
 require_once dirname(__FILE__) . "/AbstractServer.php";
-if ( phpversion() >= 5 )
-{
-  require_once dirname(__FILE__) . "/ServiceIntrospection.php";
-}
+
+/*
+ * include Service introspection class by default
+ */
+require_once dirname(__FILE__) . "/ServiceIntrospection.php";
+
 
 /*
  * include JsonRpcError class. If you want to use your own class, include a
@@ -90,10 +92,12 @@ if (! defined("JsonRpcErrorHandling"))
  * the request so we know whether we can use the built-in decoder, and we
  * provide some way to should keep track of whether any Dates are included in
  * the response, so we can decide whether to use the built-in encoder.)
+ *
+ * Modification: CB - turn date handling off by default
  */
 if ( ! defined("handleQooxdooDates") )
 {
-  define( "handleQooxdooDates", true );
+  define( "handleQooxdooDates", false );
 }
 
 
@@ -118,11 +122,11 @@ class JsonRpcServer extends AbstractServer
    * Return singleton instance of the server
    * return JsonRpcServer
    */
-  function &getInstance()
+  function getInstance()
   {
-    if ( ! is_object( $GLOBALS['JsonRpcServerInstance'] ) )
+    if ( ! isset( $GLOBALS['JsonRpcServerInstance'] ) )
     {
-      $GLOBALS['JsonRpcServerInstance'] =& new JsonRpcServer;
+      $GLOBALS['JsonRpcServerInstance'] = new JsonRpcServer;
     }
     return $GLOBALS['JsonRpcServerInstance'];
   }
@@ -133,7 +137,7 @@ class JsonRpcServer extends AbstractServer
    */
   function run()
   {
-    $_this =& JsonRpcServer::getInstance();
+    $_this = JsonRpcServer::getInstance();
     $_this->start();
   }
 
@@ -143,7 +147,7 @@ class JsonRpcServer extends AbstractServer
   function start()
   {
     /*
-     * Setup php4-style error handling. The main idea is to keep PHP from
+     * Setup error handling to keep PHP from
      * messing up the JSONRPC response if a parsing or runtime error occurs,
      * and to allow the client application to handle those errors nicely
      */
@@ -151,7 +155,22 @@ class JsonRpcServer extends AbstractServer
     {
       $this->setupErrorHandling();
     }
-    parent::start();
+
+    /*
+     * normal error handling for the server code,
+     * application code will be handled in callServiceMethod()
+     */
+    try
+    {
+      parent::start();
+    }
+    catch( Exception $e )
+    {
+      $msg = $e->getMessage() . "in " . $e->getFile() . ", line " . $e->getLine();
+      $jsonRpcError =  $this->getErrorBehavior();
+      $jsonRpcError->setError( $e->getCode(), $msg );
+      $jsonRpcError->sendAndExit();
+    }
   }
 
   /**
@@ -164,13 +183,13 @@ class JsonRpcServer extends AbstractServer
     /*
      * Create a new instance of the json and error object
      */
-    $this->json  =& new JsonWrapper();
+    $this->json  = new JsonWrapper();
 
     /*
      * set error behavior
      */
-    $errorBehavior =& new JsonRpcError;
-    $this->setErrorBehavior( &$errorBehavior );
+    $errorBehavior = new JsonRpcError;
+    $this->setErrorBehavior( $errorBehavior );
 
     /*
      * Assume (default) we're not using ScriptTransport
@@ -183,64 +202,10 @@ class JsonRpcServer extends AbstractServer
      */
     if ( ! $this->getAccessibilityBehavior() )
     {
-      $accessibilityBehavior =& new AccessibilityBehavior( &$this );
-      $this->setAccessibilityBehavior( &$accessibilityBehavior );
+      $accessibilityBehavior = new AccessibilityBehavior( $this );
+      $this->setAccessibilityBehavior( $accessibilityBehavior );
     }
     $this->debug("Server initialized.");
-  }
-
-
-  /**
-   * Setup a PHP4-style error handling
-   * see http://forums.knownhost.com/showthread.php?p=5290
-   */
-  function setupErrorHandling()
-  {
-
-    //This may seem counterintuitive since our goal is to
-    //hide errors from users, but our output buffer callback will
-    //need to see everything in order to catch the bad stuff.
-    ini_set('display_errors', 'On');
-
-    /*
-     * start buffering to catch errors with handler function
-     */
-    ob_start( array($this,"jsonrpc_catch_errors") );
-
-    /*
-     * This will not always work, so do some more hacking to
-     * comment out uncaught errors. You'll need to examine the
-     * http response to see the uncaught errors!
-     */
-    ini_set('error_prepend_string', '<phpfatalerror>');
-    ini_set('error_append_string', '</phpfatalerror>');
-
-    /*
-     * error handler function for php jsonrpc
-     */
-    set_error_handler( array($this,"jsonRpcErrorHandler") );
-  }
-
-
-
-  /**
-   * Returns server data component of request
-   * @return mixed
-   */
-  function getServerData( $key= null)
-  {
-    if ( is_null( $key ) )
-    {
-      return $this->input->server_data;
-    }
-    elseif ( is_string( $key ) )
-    {
-      return $this->input->server_data->$key;
-    }
-    else
-    {
-      trigger_error("Invalid parameter");
-    }
   }
 
   /**
@@ -249,10 +214,10 @@ class JsonRpcServer extends AbstractServer
    * @param int $id
    * @return void
    */
-  function setScriptTransportId ( $id)
+  function setScriptTransportId ( $id )
   {
-    $this->scriptTransportId = $_GET["_ScriptTransport_id"];
-    $errorBehavior =& $this->getErrorBehavior();
+    $this->scriptTransportId = $id;
+    $errorBehavior = $this->getErrorBehavior();
     $errorBehavior->SetScriptTransportId( $id );
   }
 
@@ -311,11 +276,7 @@ class JsonRpcServer extends AbstractServer
            * This request was not issued with JSON-RPC so echo the error rather
            * than issuing a JsonRpcError response.
            */
-          $this->setError(
-          null,
-                "JSON-RPC request expected; " .
-                "unexpected data received"
-                );
+          throw new JsonRpcError("JSON-RPC request expected; unexpected data received");
       }
     }
     else if (
@@ -339,8 +300,7 @@ class JsonRpcServer extends AbstractServer
        * This request was not issued with JSON-RPC so echo the error rather than
        * issuing a JsonRpcError response.
        */
-      $this->setError( JsonRpcError_Unknown, "Services require JSON-RPC<br>" );
-      return false;
+      throw new JsonRpcError( "Services require JSON-RPC" );
     }
 
     /*
@@ -355,13 +315,31 @@ class JsonRpcServer extends AbstractServer
        * This request was not issued with JSON-RPC so echo the error rather than
        * issuing a JsonRpcError response.
        */
-      $this->setError(
-      JsonRpcError_Unknown,
-          "JSON-RPC request expected; service, method or params missing<br>"
-          );
-          return false;
+      throw new JsonRpcError( "JSON-RPC request expected; service, method or params missing");
     }
     return $input;
+  }
+
+  /**
+   * Overridden to provide jsonrpc error handling.
+   * @param object $serviceObject
+   * @param string $method
+   * @param array $params
+   * @return mixed
+   */
+  function callServiceMethod( $serviceObject, $method, $params )
+  {
+    $result = parent::callServiceMethod( $serviceObject, $method, $params );
+    /*
+     * See if the result of the function was actually an error, and if
+     * yes, add the script transport id.
+     */
+    if ( is_a( $result, "JsonRpcError" ) )
+    {
+      $result->setScriptTransportId($this->getErrorBehavior()->getScriptTransportId() );
+    }
+
+    return $result;
   }
 
   /**
@@ -381,57 +359,40 @@ class JsonRpcServer extends AbstractServer
   }
 
   /**
-   * error handling callback function
-   * php4 cannot handle all errors, that's why we have to use a
-   * workaround using output buffering (see post by
-   * smp at ncoastsoft dot com at
-   *   http://www.php.net/manual/en/function.set-error-handler.php
-   * and http://forums.knownhost.com/showthread.php?p=5290
+   * Setup a PHP4-style error handling
+   * see http://forums.knownhost.com/showthread.php?p=5290
    */
-  function jsonrpc_catch_errors( $buffer )
+  function setupErrorHandling()
   {
-    if (preg_match("|(<phpfatalerror>)(.+)(</phpfatalerror>)|", $buffer, $regs) )
-    {
-      /*
-       * parse error string from PHP error message
-       */
-      $err = html_entity_decode(preg_replace("/<.*?>/","",$regs[2]));
 
-      /*
-       * log error message
-       */
-      JsonRpcServer::logError("*** Error: $err");
-
-      /*
-       * return error formatted as a JSONRPC error response
-       */
-      return
-        '{' .
+    /*
+     * This will not always work, so do some more hacking to
+     * comment out uncaught errors. You'll need to examine the
+     * http response to see the uncaught errors!
+     */
+    ini_set('error_prepend_string', '/*');
+    ini_set('error_append_string', '*/{' .
         '  error:' .
         '  {' .
         '    "origin":' . JsonRpcError_Origin_Server . ',' .
         '    "code":' .  JsonRpcError_ScriptError . ',' .
-        '    "message":"Fatal PHP Error: '. addslashes($err) .
+        '    "message":"Fatal PHP Error. See response content for error description ' .
         ' "}' .
-        '}';
+        '}'
+    );
 
-    }
-    else
-    {
-      /*
-       * Buffer does not contain a php error message, so return
-       * it unmodified.
-       */
-      return $buffer;
-    }
+    /*
+     * error handler function for php jsonrpc
+     */
+    set_error_handler( array($this,"jsonRpcErrorHandler") );
   }
-
 
   /**
    * jsonrpc error handler to output json error response messages
    */
   function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
   {
+
     /*
      * Determine error type
      * @todo: remove those which are not captured by set_error_handler()
@@ -446,28 +407,8 @@ class JsonRpcServer extends AbstractServer
         $errtype= "Warning";
         break;
 
-      case E_PARSE:
-        $errtype= "Parse Error";
-        break;
-
       case E_NOTICE:
         $errtype= "Notice";
-        break;
-
-      case E_CORE_ERROR:
-        $errtype= "Core Error";
-        break;
-
-      case E_CORE_WARNING:
-        $errtype= "Core Warning";
-        break;
-
-      case E_COMPILE_ERROR:
-        $errtype= "Compile Error";
-        break;
-
-      case E_COMPILE_WARNING:
-        $errtype= "Compile Warning";
         break;
 
       case E_USER_ERROR:
@@ -487,6 +428,10 @@ class JsonRpcServer extends AbstractServer
         break;
 
       case E_RECOVERABLE_ERROR:
+        $errtype= "Recoverable Error";
+        break;
+
+      case E_DEPRECATED:
         $errtype= "Recoverable Error";
         break;
 
@@ -514,8 +459,8 @@ class JsonRpcServer extends AbstractServer
     /*
      * return jsonified error message
      */
-    $this->setError($errno, $errmsg);
-    $this->sendErrorAndExit();
+    $this->getErrorBehavior()->setError($errno, $errmsg);
+    $this->getErrorBehavior()->sendAndExit();
 
     // never gets here
   }
@@ -529,6 +474,5 @@ class JsonRpcServer extends AbstractServer
   {
     @error_log( $msg . "\n", 3, JsonRpcDebugFile );
   }
-
 }
 ?>

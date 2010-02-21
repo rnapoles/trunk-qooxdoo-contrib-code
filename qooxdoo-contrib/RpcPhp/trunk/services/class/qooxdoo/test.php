@@ -15,6 +15,7 @@
    * Authors:
    *  * Derrell Lipman (derrell)
    */
+require_once "server/lib/JSON.phps";
 
 /*
  * This is the standard qooxdoo test class.  There are tests for each of the
@@ -250,47 +251,13 @@ class class_test extends ServiceIntrospection
         return $obj;
     }
 
-    // utility function used by method_getError()
-    function getErrorThrown($params)
+    function method_getError($params, $error)
     {
         // In this example we don't use the provided $error object.
         // Instead, we throw a new error. This could be done from any depth
         // of recursion or function call graph without having to pass around
         // the $error object.
-        // CB: using eval here to make it PHP4-compatible
-        eval('
-          throw new JsonRpcError(1000, "This is an application-provided error");
-        ');
-    }
-
-    // utility function used by method_getError()
-    function getErrorTraditional($params, $error)
-    {
-        // Here we demonstrate the traditional method of returning the
-        // provided $error object after specifying the error code and message.
-        $error->SetError(42, "This is an application-provided error");
-
-        // just for fun, test the GetError() method too
-        $errorInfo = $error->GetError();
-
-        // override the previous error message with a new one.
-        $error->SetError($errorInfo["code"],
-                         "origin=" . $errorInfo["origin"] .
-                         ", code=" . $errorInfo["code"] .
-                         ", message=" . $errorInfo["message"]);
-        return $error;
-    }
-
-    function method_getError($params, $error)
-    {
-        if ( count($params) > 0 && $params[0] and phpversion() >= 5 )
-        {
-            return $this->getErrorThrown($params);
-        }
-        else
-        {
-            return $this->getErrorTraditional($params, $error);
-        }
+       throw new JsonRpcError("This is an application-provided error thrown on purpose.",1000);
     }
 }
 

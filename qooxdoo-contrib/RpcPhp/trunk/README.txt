@@ -1,6 +1,6 @@
 ===== RpcPhp =====
 
-qooxdoo RPC server in PHP (4.3-5.3)
+qooxdoo RPC server in PHP (5.2-5.3)
 
 Authors:
  * Derrell Lipman (derrell)
@@ -46,8 +46,22 @@ For more information see
   * http://qooxdoo.org/documentation/RPC
   * http://qooxdoo.org/documentation/RPC_PHP
   
-PHP version info:
+Important Changes since version 1.1.0:
 
-Version 1.2 supports PHP versions 4.3 up to 5.3, which sometimes results
-in wierd hybrid coding style, and can only be achieved by suppressing
-deprecation messages. 
+- PHP4 support has been dropped, it now supports PHP 5.2-5.3 only.
+
+- The handleQooxdooDates constant has been changed to false as default value.
+  This means that by default, the json response doesn't encode dates as
+  javascript objects.
+
+- The error behavior has changed. We now fully rely on native PHP exceptions 
+  for handling errors, except for uncatchable errors, which are trapped
+  by set_error_handler() and ini_set('error_(pre|ap)pend_string', ...).
+
+- The signature of JsonRpcError has been changed. In previous versions,
+  it was (int $code, string $message, int $origin). Now it behaves like a 
+  normal PHP Exception and the signature is (string $message, int $code, 
+  Exception $previous, int $origin). Please update your code accordingly.
+
+
+

@@ -17,14 +17,6 @@
  *  * Derrell Lipman (derrell)
  */
 
-/*
- * PHP4-Compatibility
- */
-if( phpversion() < 5 )
-{
-  require dirname(__FILE__) . "/Exception.php4";
-}
-
 /**
  * JSON-RPC error origins
  */
@@ -129,42 +121,39 @@ class AbstractError extends Exception
    * The error data
    * @var array
    */
-  var $data;
+  private $data;
 
   /**
-   * The server to which this behavior is attached
-   * @var AbstractServer
+   * The id of the request
+   * @var int
    */
-  var $server;
+  private $id;
 
   /**
-   * PHP4 constructor
-   * @param AbstractServer $server
+   * Constructor. Careful: signature has changed compared to < 1.2
+   * @param string $message
+   * @param int $code
+   * @param Exception $previous
+   * @param int $origin
    */
-  function AbstractError( $code = JsonRpcError_Unknown,
-                          $message = "Unspecified error",
-                          $origin = JsonRpcError_Origin_Application )
-  {
-    $this->__construct( $code, $message, $origin );
-  }
-
-  /**
-   * PHP5 constructor
-   * @param AbstractServer $server
-   * @return unknown_type
-   */
-  function __construct( $code = JsonRpcError_Unknown,
-                        $message = "Unspecified error",
+  function __construct( $message = "Unspecified error",
+                        $code = JsonRpcError_Unknown,
+                        $previous = null,
                         $origin = JsonRpcError_Origin_Application )
   {
     /*
      * save error data
      */
     $this->data = array(
-        "origin"  => $origin,
+        "message" => $message,
         "code"    => $code,
-        "message" => $message
+        "origin"  => $origin
     );
+
+    /*
+     * call parent constructor
+     */
+    parent::__construct( $message, $code, $previous );
   }
 
   /**
@@ -172,9 +161,18 @@ class AbstractError extends Exception
    * @param int $origin
    * @return void
    */
-  function SetOrigin($origin)
+  public function setOrigin($origin)
   {
     $this->data["origin"] = $origin;
+  }
+
+  /**
+   * Getter for origin code
+   * @return int
+   */
+  public function getOrigin($origin)
+  {
+    return $this->data["origin"];
   }
 
   /**
@@ -183,7 +181,7 @@ class AbstractError extends Exception
    * @param $message
    * @return void
    */
-  function SetError($code, $message)
+  public function setError( $code, $message )
   {
     $this->data["code"] = $code;
     $this->data["message"] = $message;
@@ -191,29 +189,50 @@ class AbstractError extends Exception
 
   /**
    * Getter for error message
+   * @deprecated Use getMessage()
    * @return string
    */
-  function GetErrorMessage()
+  function getErrorMessage()
   {
-    return $this->data["message"];
+    return $this->getMessage();
+  }
+
+  /**
+   * Getter for error data
+   * @deprecated Use getData()
+   * @return array
+   */
+  function getError()
+  {
+      return $this->data;
   }
 
   /**
    * Getter for error data
    * @return array
    */
-  function GetError()
+  function getData()
   {
       return $this->data;
   }
 
   /**
    * Getter for error code
+   * @deprecated use getCode()
    * @return int
    */
-  function GetErrorCode()
+  function getErrorCode()
   {
-    return $this->data["code"];
+    return $this->getCode();
+  }
+
+  /**
+   * Getter for request id
+   * @return int
+   */
+  public function getId()
+  {
+    return $this->id;
   }
 
   /**
@@ -221,16 +240,15 @@ class AbstractError extends Exception
    * @param $id
    * @return void
    */
-  function SetId($id)
+  public function setId($id)
   {
     $this->id = $id;
   }
 
-
   /**
    * Returns the error data to the client and exits the script
    */
-  function SendAndExit()
+  public function sendAndExit()
   {
     trigger_error("Not implemented.");
   }

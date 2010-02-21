@@ -27,7 +27,7 @@ class class_system extends ServiceIntrospection
    */
   function &getInstance( $class = __CLASS__ )
   {
-     if ( ! $GLOBALS[$class] )
+     if ( ! isset( $GLOBALS[$class] ) )
      {
        $GLOBALS[$class] = new $class();
      }
