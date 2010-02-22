@@ -26,11 +26,24 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
+var locators = {
+  articleView : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname="feedreader.view.Article"]',
+  feedTree : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.tree.Tree',
+  reloadButton : 'qxh=app:[@classname="feedreader.view.ToolBar"]/qx.ui.toolbar.Part/child[3]',
+  firstFeed : 'qxh=app:qx.ui.tree.Tree/child[0]/child[0]/child[0]',
+  firstFeedItem : 'qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]',
+  preferencesButton : 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]',
+  preferencesWindow : 'qxh=[@classname="feedreader.view.PreferenceWindow"]',
+  buttonItalian : 'qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]',
+  buttonOk : 'qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]',
+  addFeedButton : 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]',
+  feedWindow : 'qxh=[@classname="feedreader.view.AddFeedWindow"]',
+  feedWindowButton : 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button'
+};
 
 simulation.Simulation.prototype.checkArticle = function()
 {
-  var articleLocator = 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname="feedreader.view.Article"]';
-  var articleScript = 'selenium.getQxObjectFunction(\'' + articleLocator + '\', "getArticle")';
+  var articleScript = 'selenium.getQxObjectFunction(\'' + locators.articleView + '\', "getArticle")';
   //var articleScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
   var article = this.getEval(articleScript, "Checking for article");
 
@@ -72,8 +85,7 @@ simulation.Simulation.prototype.checkFeeds = function()
 mySim.runTest = function()
 {
   var feedLoadTimeout = 30000;
-  var treeLocator = "qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.tree.Tree";
-  var tree = 'selenium.getQxWidgetByLocator("' + treeLocator + '")';  
+  var tree = 'selenium.getQxWidgetByLocator("' + locators.feedTree + '")';  
   
   var lastFeedNum = this.getEval(tree + '.getItems().length - 1', "Getting last feed's number");
   
@@ -83,7 +95,7 @@ mySim.runTest = function()
     this.__sel.waitForCondition(isLastFeedLoaded, feedLoadTimeout.toString());
   } catch(ex) {
     this.log("Feeds not loaded after 30 seconds, clicking reload", "info");
-    this.qxClick('qxh=app:[@classname="feedreader.view.ToolBar"]/qx.ui.toolbar.Part/child[3]', "", "Clicking reload button");
+    this.qxClick(locators.reloadButton, "", "Clicking reload button");
     this.waitForCondition(isLastFeedLoaded, feedLoadTimeout, "Waiting for feeds to load");
   }
   
@@ -96,9 +108,9 @@ mySim.runTest = function()
   
   this.getEval(tree + ".resetSelection()", "Resetting tree selection");
     
-  this.qxClick("qxh=app:qx.ui.tree.Tree/child[0]/child[0]/child[0]", "", "Selecting first feed from list");  
+  this.qxClick(locators.firstFeed, "", "Selecting first feed from list");  
   
-  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "", "Selecting first feed item.");
+  this.qxClick(locators.firstFeedItem, "", "Selecting first feed item.");
   
   this.checkArticle();
   
@@ -108,32 +120,30 @@ mySim.runTest = function()
 
   // Use the preferences window to change the application language  
   // Click the preferences button, then check if the prefs window opened.  
-  this.qxClick("qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]", "", "Clicking Preferences button.");
+  this.qxClick(locators.preferencesButton, "", "Clicking Preferences button.");
   Packages.java.lang.Thread.sleep(2000);
 
-  var prefWindowLocator = 'qxh=[@classname="feedreader.view.PreferenceWindow"]';
-  var prefWindowScript = 'selenium.getQxWidgetByLocator(\'' + prefWindowLocator + '\')';
+  var prefWindowScript = 'selenium.getQxWidgetByLocator(\'' + locators.preferencesWindow + '\')';
   var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
   this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
   Packages.java.lang.Thread.sleep(2000);
 
   // Click the "Italiano" radio button.
-  var radioItalian = 'qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]';
+  var radioItalian = locators.buttonItalian;
   this.qxClick(radioItalian, "", "Selecting language");
   Packages.java.lang.Thread.sleep(2000);
   // Click again just to be sure (bug #2193).
   this.qxClick(radioItalian, "", "Selecting language");
   
-  // Click the "OK" button 
-  var buttonOk = 'qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]';  
-  this.qxClick(buttonOk, "", "Clicking OK.");    
+  // Click the "OK" button   
+  this.qxClick(locators.buttonOk, "", "Clicking OK.");    
   Packages.java.lang.Thread.sleep(2000);
   
   // Check if the preferences window closed. Click "OK" again if it isn't.
   var prefWinVis = this.getEval(isPrefWindowVisible, "Checking if preferences window is visible");
   // getEval returns an object, not a boolean
   if (String(prefWinVis) != "false") {
-    this.qxClick(buttonOk, "", "Clicking OK again.");
+    this.qxClick(locators.buttonOk, "", "Clicking OK again.");
     Packages.java.lang.Thread.sleep(2000);
   }
   
@@ -151,11 +161,10 @@ mySim.runTest = function()
   
   // Add a new feed
   // Click "Add Feed"
-  this.qxClick('qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]', "", "Clicking Add Feed button");
+  this.qxClick(locators.addFeedButton, "", "Clicking Add Feed button");
   Packages.java.lang.Thread.sleep(2000);
   
-  var feedWindowLocator = 'qxh=[@classname="feedreader.view.AddFeedWindow"]';
-  var feedWindowScript = 'selenium.getQxWidgetByLocator(\'' + feedWindowLocator + '\')';  
+  var feedWindowScript = 'selenium.getQxWidgetByLocator(\'' + locators.feedWindow + '\')';  
   var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
   this.waitForCondition(isFeedWindowVisible, 10000, "Waiting for Add Feed window to open.");
   Packages.java.lang.Thread.sleep(2000);
@@ -177,14 +186,14 @@ mySim.runTest = function()
   var setFeedUrl = feedWindowScript + ".getChildren()[0].getChildren()[3].setValue('http://rss.golem.de/rss.php?feed=ATOM1.0')";  
   this.getEval(setFeedUrl, "Setting feed URL");
 
-  this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "", "Clicking 'Add'.");
+  this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   Packages.java.lang.Thread.sleep(2000);
   
   // Check if the Add Feed Window closed.
   var feedWinVis = this.getEval(isFeedWindowVisible, "Waiting for Add Feed window to close.");
   if (String(feedWinVis) == "true") {
     print("Add Feed Window still visible, clicking again.");
-    this.qxClick('qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button', "", "Clicking 'Add'.");
+    this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   }
 
   var isFeedWindowHidden = feedWindowScript + ".getVisibility() == 'hidden'";  
@@ -215,7 +224,7 @@ mySim.runTest = function()
   var treeLastSelect = tree + ".addToSelection(" + tree + ".getItems()[" + newLastFeedNum + "])";
   this.getEval(treeLastSelect, "Selecting new feed.");      
   
-  this.qxClick('qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]', "", "Selecting first item from new feed.");  
+  this.qxClick(locators.firstFeedItem, "", "Selecting first item from new feed.");  
   
   this.checkArticle();
 };
