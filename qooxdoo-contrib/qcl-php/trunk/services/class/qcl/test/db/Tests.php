@@ -13,18 +13,18 @@ class class_qcl_data_db_test_Tests extends qcl_data_datasource_Manager
     require_once "qcl/data/db/test/TestModel1.php";
     require_once "qcl/data/db/test/TestModel2.php";
     
-    $logger =& $this->getLogger();
+    $logger = $this->getLogger();
     $logger->setFilterEnabled("propertyModel",true);
     
-    $model1 =& new TestModel1(&$this);
+    $model1 = new TestModel1($this);
     $model1->create("foo");
     
-    $model2 =& new TestModel2(&$this);
+    $model2 = new TestModel2($this);
     $model2->create("bar");
     
     $this->debug($model->linkNodes);
     
-    $model1->linkWith(&$model2);
+    $model1->linkWith($model2);
     
     
     $this->debug($model2->schemaXml->asXml() );
@@ -43,21 +43,21 @@ class class_qcl_data_db_test_Tests extends qcl_data_datasource_Manager
   function method_testExport($params)
   {
     list($modelName) = $params;
-    $model =& $this->getNew($modelName);
+    $model = $this->getNew($modelName);
     $model->export();
   }
   
   function method_testExportLinkData($params)
   {
     list($modelName) = $params;
-    $model =& $this->getNew($modelName);
+    $model = $this->getNew($modelName);
     $model->exportLinkData();
   }  
 
   function method_testImportLinkData($params)
   {
     list($modelName) = $params;
-    $model =& $this->getNew($modelName);
+    $model = $this->getNew($modelName);
     $model->importLinkData();
   }    
   

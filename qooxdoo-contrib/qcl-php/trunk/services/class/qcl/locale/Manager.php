@@ -16,14 +16,13 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/locale/QooxdooModel.php";
-require_once "qcl/core/StaticClass.php";
 
 /**
  * Manages locales and translations. uses a gettext model by default
  * extending controllers should set the "locale" model before calling the
  * parent constructor if they want to use a different locale model.
  */
-class qcl_locale_Manager  extends qcl_core_StaticClass
+class qcl_locale_Manager  extends qcl_core_Object
 {
 
 	//-------------------------------------------------------------
@@ -61,8 +60,8 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
   	 */
   	if ( ! $this->localeModel )
     {
-      $controller =& qcl_server_Server::getController();
-      $this->localeModel =& new qcl_locale_QooxdooModel( $controller );
+      $controller = qcl_server_Server::getController();
+      $this->localeModel = new qcl_locale_QooxdooModel( $controller );
     }
 
     /*
@@ -73,18 +72,18 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
 	}
 
 	/**
-	 * Static function to return singleton instance
+	 * function to return singleton instance
 	 */
-  function &getInstance( $className = __CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $className );
+    return qcl_getInstance( __CLASS__ );
   }
 
   /**
    * returns the locale model
    * @return qcl_locale_QooxdooModel
    */
-  function &getLocaleModel()
+  function getLocaleModel()
   {
     return $this->localeModel;
   }
@@ -97,7 +96,7 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
    */
 	function setLocale($locale=null)
 	{
-		$localeModel =& $this->getLocaleModel();
+		$localeModel = $this->getLocaleModel();
     $locale =  either(
       $locale,
       $this->getUserLocale(),
@@ -113,7 +112,7 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
    */
   function getUserLocale()
   {
-    $localeModel =& $this->getLocaleModel();
+    $localeModel = $this->getLocaleModel();
     $browser_locales = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"] );
     $locale = null;
     foreach ( $browser_locales as $brlc )
@@ -151,7 +150,7 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
    */
   function getAvailableLocales()
   {
-    $localeModel =& $this->getLocaleModel();
+    $localeModel = $this->getLocaleModel();
     return $localeModel->getAvailableLocales();
   }
 
@@ -164,7 +163,7 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
    */
   function tr ( $messageId, $varargs=array() )
   {
-		$localeModel =& $this->getLocaleModel();
+		$localeModel = $this->getLocaleModel();
     $translation =  either( $localeModel->translate( $messageId ), $messageId );
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);
@@ -182,7 +181,7 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
    */
   function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
-    $localeModel =& $this->getLocaleModel();
+    $localeModel = $this->getLocaleModel();
     $translation =  either(
       $localeModel->trn( $singularMessageId, $pluralMessageId, $count, $varargs ),
       $count > 1 ? $pluralMessageId : $singularMessageId
@@ -198,7 +197,7 @@ class qcl_locale_Manager  extends qcl_core_StaticClass
   function logLocaleInfo()
   {
     // todo: check access
-    $localeModel =& $this->getLocaleModel();
+    $localeModel = $this->getLocaleModel();
 
     $this->info( "Locale information: ");
     $this->info( "  Available locales: " . implode(",", $localeModel->getAvailableLocales() ) . " ... ");

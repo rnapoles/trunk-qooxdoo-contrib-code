@@ -63,7 +63,7 @@ class qcl_event_type_Event
    * Returns target object, if exists.
    * @return qcl_core_Object
    */
-  function &getTarget()
+  function getTarget()
   {
     if ( $this->targetId )
     {

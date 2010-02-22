@@ -138,11 +138,11 @@ class String
    * Copies the value of another String object
    * @param String $data
    */
-  function copyValueOf( &$data )
+  function copyValueOf( $data )
   {
     if ( is_a($data, 'String') )
     {
-      $this->_copyValueOfString( &$data );
+      $this->_copyValueOfString( $data );
     }
   }
 
@@ -152,7 +152,7 @@ class String
    * @param object String object reference.
    * @return void
    */
-  function _copyValueOfString( &$data )
+  function _copyValueOfString( $data )
   {
     $this->set( $data->get() );
   }

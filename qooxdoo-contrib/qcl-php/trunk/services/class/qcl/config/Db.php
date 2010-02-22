@@ -49,9 +49,9 @@ class qcl_config_Db
    * @static
    * @return qcl_config_Db
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance( __CLASS__  );
   }
 
 	/**
@@ -78,7 +78,7 @@ class qcl_config_Db
 		/*
 		 * check permission
 		 */
-    $activeUser  =& qcl_access_Manager::getActiveUser();
+    $activeUser  = qcl_access_Manager::getActiveUser();
 
     //$activeUser->requirePermission("qcl.config.permissions.manage");
 
@@ -151,9 +151,9 @@ class qcl_config_Db
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_User
    */
-  function &getUserModel( $id=null )
+  function getUserModel( $id=null )
   {
-    $userModel =& qcl_access_model_User::getInstance();
+    $userModel = qcl_access_model_User::getInstance();
     if ( $id ) $userModel->load( $id );
     return $userModel;
   }
@@ -162,7 +162,7 @@ class qcl_config_Db
    * Returns active user object instance
    * @return qcl_access_model_User
    */
-  function &getActiveUser()
+  function getActiveUser()
   {
     return qcl_access_Manager::getActiveUser();
   }
@@ -174,7 +174,7 @@ class qcl_config_Db
 	 */
 	function delete( $ids=null )
 	{
-    $activeUser =& qcl_access_Manager::getActiveUser();
+    $activeUser = qcl_access_Manager::getActiveUser();
 
     /*
      * get key name
@@ -227,7 +227,7 @@ class qcl_config_Db
      */
 	  if ( $userId === false )
 	  {
-      $userModel =& $this->getActiveUser();
+      $userModel = $this->getActiveUser();
       $userId = $userModel->getId();
 
 	  }
@@ -238,7 +238,7 @@ class qcl_config_Db
      */
 	  else
 	  {
-	    $userModel =& $this->getUserModel( $userId );
+	    $userModel = $this->getUserModel( $userId );
 	  }
 
 	  /*
@@ -370,16 +370,16 @@ class qcl_config_Db
      */
     if ( $userId )
     {
-      $userModel =& $this->getUserModel( $id );
+      $userModel = $this->getUserModel( $id );
     }
     elseif ( $userId === false )
     {
-      $userModel =& $this->getActiveUser();
+      $userModel = $this->getActiveUser();
       $userId = $userModel->getId();
     }
     else
     {
-      $userModel =& $this->getActiveUser();
+      $userModel = $this->getActiveUser();
     }
     $username = $userModel->username();
 
@@ -562,7 +562,7 @@ class qcl_config_Db
 	 */
 	function getAccessibleKeys( $mask=null )
 	{
-    $activeUser =& qcl_access_Manager::getActiveUser();
+    $activeUser = qcl_access_Manager::getActiveUser();
 
     /*
      * no accessible keys if no active user

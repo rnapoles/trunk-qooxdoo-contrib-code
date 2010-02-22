@@ -46,7 +46,7 @@ class qcl_data_persistence_db_Object
      * create the actual model object that will be used to store
      * the data
      */
-    $this->_dbModel =& new qcl_data_persistence_db_Model;
+    $this->_dbModel = new qcl_data_persistence_db_Model;
   }
 
   /**

@@ -39,9 +39,9 @@ class qcl_access_model_Session
    * @static
    * @return qcl_access_model_Session
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance(__CLASS__);
   }
 
 
@@ -60,7 +60,7 @@ class qcl_access_model_Session
 	 */
   function registerSession( $sessionId, $userId, $ip )
   {
-    $controller =& $this->getController();
+    $controller = $this->getController();
 
     /*
      * if session id is present but linked to a different IP
@@ -101,7 +101,7 @@ class qcl_access_model_Session
      * @todo unhardcode timeout
      * @todo build this into the model code
      */
-    $activeUser =& qcl_access_Manager::getActiveUser();
+    $activeUser = qcl_access_Manager::getActiveUser();
     if( ! $activeUser ) return;
     $userTable =  $activeUser->getTableName();
     $this->deleteWhere("
@@ -116,10 +116,10 @@ class qcl_access_model_Session
      * management
      */
     require_once "qcl/event/message/Bus.php";
-    $msgModel   =& qcl_event_message_Bus::getModel();
+    $msgModel   = qcl_event_message_Bus::getModel();
     if ( $msgModel )
     {
-      $sessTable  =& $this->getTableName();
+      $sessTable  = $this->getTableName();
       $msgModel->deleteWhere("
         markedDeleted = 1 OR
         sessionId NOT IN ( SELECT sessionId FROM `$sessTable` )
@@ -165,7 +165,7 @@ class qcl_access_model_Session
     /*
      * delete messages belonging to session
      */
-    $msgModel   =& qcl_event_message_Bus::getModel();
+    $msgModel   = qcl_event_message_Bus::getModel();
     $msgModel->updateWhere(
       array('markedDeleted' => 1),
       array('sessionId' => $sessionId)

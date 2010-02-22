@@ -58,7 +58,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function run()
   {
-    $_this =& qcl_server_JsonRpc::getInstance();
+    $_this = qcl_server_JsonRpc::getInstance();
     $_this->start();
   }
 
@@ -66,20 +66,16 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Return singleton instance of the server
    * return JsonRpcServer
    */
-  function &getInstance()
+  function getInstance()
   {
-    if ( ! is_object( $GLOBALS[__CLASS__] ) )
-    {
-      $GLOBALS[__CLASS__] =& new qcl_server_JsonRpc;
-    }
-    return $GLOBALS[__CLASS__];
+    return qcl_getInstance( __CLASS__ );
   }
 
   /**
    * Returns the current controller instance, if any.
    * @return qcl_data_controller_Controller
    */
-  function &getController()
+  function getController()
   {
     return $this->_controller;
   }
@@ -133,12 +129,12 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @override
    * @see JsonRpcServer::getServiceObject()
    */
-  function &getServiceObject( $className )
+  function getServiceObject( $className )
   {
     /*
      * get service object from parent method
      */
-    $serviceObject =& parent::getServiceObject( $className );
+    $serviceObject = parent::getServiceObject( $className );
 
     /*
      * Check if service has been aborted in the constructor.
@@ -161,7 +157,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * store service object
      */
-    $this->_controller =& $serviceObject;
+    $this->_controller = $serviceObject;
 
     return $serviceObject;
   }
@@ -178,7 +174,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       return true;
     }
-    return parent::checkServiceMethod( &$serviceObject, $method );
+    return parent::checkServiceMethod( $serviceObject, $method );
   }
 
   /**
@@ -189,7 +185,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function checkAccessibility( $serviceObject, $method )
   {
-    qcl_access_Manager::controlAccess( $serviceObject, $method );
+    qcl_access_Manager::getInstance()->controlAccess( $serviceObject, $method );
   }
 
   /**
@@ -203,7 +199,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * response object
      */
-    $response =& qcl_server_Response::getInstance();
+    $response = qcl_server_Response::getInstance();
 
     /*
      * request id
@@ -214,7 +210,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * events and messages
      */
-    if ( qcl_application_Application::getIniValue("service.event_transport") == "on" )
+    if ( qcl_application_Application::getInstance()->getIniValue("service.event_transport") == "on" )
     {
       $events    = qcl_event_Dispatcher::getServerEvents();
       $response->setEvents( $events );
@@ -254,7 +250,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * authentication
      */
     $sessionId = $_REQUEST['sessionId'];
-    $userController =& qcl_access_Manager::getAccessController();
+    $userController = qcl_access_Manager::getAccessController();
     if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {
@@ -276,8 +272,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * Check active user
      * @todo add config key to allow anonymous uploads
      */
-    $activeUser  =& $userController->getActiveUser();
-    //$configModel =& $userController->getConfigModel();
+    $activeUser  = $userController->getActiveUser();
+    //$configModel = $userController->getConfigModel();
     if ( $activeUser->isAnonymous() )
     {
       $this->abort( "Anonymous uploads are not permitted.");
@@ -378,7 +374,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * authentication
      */
-    $userController =& $this->getUserController();
+    $userController = $this->getUserController();
     if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {
@@ -400,8 +396,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * Check active user
      * @todo add config key to allow anonymous downloads
      */
-    $activeUser  =& $userController->getActiveUser();
-    //$configModel =& $userController->getConfigModel();
+    $activeUser  = $userController->getActiveUser();
+    //$configModel = $userController->getConfigModel();
     if ( $activeUser->isAnonymous() )
     {
       $this->abort( "Anonymous downloads are not permitted.");
@@ -417,8 +413,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * get datasource model
      */
     require_once "qcl/data/datasource/Manager.php";
-    $dsController =& new qcl_data_datasource_Manager( &$this );
-    $dsModel      =& $dsController->getDatasourceModel( $datasource );
+    $dsController = new qcl_data_datasource_Manager( $this );
+    $dsModel      = $dsController->getDatasourceModel( $datasource );
     if ( ! $dsModel->isFileStorage() )
     {
       $this->abort( "'$datasource' is not a file storage!");
@@ -437,12 +433,12 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * get file
      */
-    $folder =& $dsModel->getFolderObject();
+    $folder = $dsModel->getFolderObject();
     if ( ! $folder->has( $filename ) )
     {
       $this->abort( "File '$filename' does not exist in storage '$datasource'" );
     }
-    $file =& $folder->get( $filename );
+    $file = $folder->get( $filename );
 
     /*
      * send headers

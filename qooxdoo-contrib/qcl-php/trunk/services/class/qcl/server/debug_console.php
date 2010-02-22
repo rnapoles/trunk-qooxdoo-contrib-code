@@ -81,7 +81,7 @@ if ( count( $_POST ) )
         exit;
       }
 
-      $json   = new JsonWrapper( &$this );
+      $json   = new JsonWrapper( $this );
       $params = $json->decode( "[" . stripslashes( $_POST['data'] ) . "]" );
       if ( ! is_array($params) )
       {

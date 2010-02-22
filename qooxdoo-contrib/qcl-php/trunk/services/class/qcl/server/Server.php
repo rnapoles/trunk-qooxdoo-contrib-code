@@ -33,13 +33,9 @@ class qcl_server_Server extends qcl_core_Object
    * Returns the singleton instance of this class
    * @return qcl_server_Server
    */
-  function &getInstance( )
+  function getInstance( )
   {
-    if ( ! isset( $GLOBALS[__CLASS__] ) )
-    {
-      $GLOBALS[__CLASS__] =& new qcl_server_Server;
-    }
-    return $GLOBALS[__CLASS__];
+    return qcl_getInstance( __CLASS__ );
   }
 
   /**
@@ -58,7 +54,7 @@ class qcl_server_Server extends qcl_core_Object
     if ( isset( $_REQUEST['service'] )  )
     {
       require_once "services/server/PostRpcServer.php";
-      $serverObj =& PostRpcServer::getInstance();
+      $serverObj = PostRpcServer::getInstance();
     }
 
     /*
@@ -67,7 +63,7 @@ class qcl_server_Server extends qcl_core_Object
     else
     {
       require "qcl/server/JsonRpc.php";
-      $serverObj =& qcl_server_JsonRpc::getInstance();
+      $serverObj = qcl_server_JsonRpc::getInstance();
     }
 
     /*
@@ -78,8 +74,8 @@ class qcl_server_Server extends qcl_core_Object
     /*
      * save and start server
      */
-    $server =& qcl_server_Server::getInstance();
-    $server->serverObject =& $serverObj;
+    $server = qcl_server_Server::getInstance();
+    $server->serverObject = $serverObj;
     $serverObj->start();
   }
 
@@ -88,9 +84,9 @@ class qcl_server_Server extends qcl_core_Object
    * Returns the current server object
    * @return qcl_server_JsonRpc|null
    */
-  function &getServerObject()
+  function getServerObject()
   {
-    $_this =& qcl_server_Server::getInstance();
+    $_this = qcl_server_Server::getInstance();
     return $_this->serverObject;
   }
 
@@ -98,9 +94,9 @@ class qcl_server_Server extends qcl_core_Object
    * Returns the current controller object
    * @return qcl_data_controller_Controller
    */
-  function &getController()
+  function getController()
   {
-    $serverObj =& qcl_server_Server::getServerObject();
+    $serverObj = qcl_server_Server::getServerObject();
     return $serverObj->getController();
   }
 
@@ -111,7 +107,7 @@ class qcl_server_Server extends qcl_core_Object
    */
   function getServerData( $key=null )
   {
-    $serverObj =& qcl_server_Server::getServerObject();
+    $serverObj = qcl_server_Server::getServerObject();
     return $serverObj->getServerData( $key );
   }
 
@@ -132,9 +128,9 @@ class qcl_server_Server extends qcl_core_Object
    */
   function abort( $message )
   {
-    $serverObj =& qcl_server_Server::getServerObject();
-    $serverObj->setError( null, $message );
-    $serverObj->sendErrorAndExit();
+    $serverObj = qcl_server_Server::getServerObject();
+    $serverObj->getErrorBehavior()->setError( null, $message );
+    $serverObj->getErrorBehavior()->sendAndExit();
     exit;
   }
 
@@ -145,7 +141,7 @@ class qcl_server_Server extends qcl_core_Object
    */
   function forceResponse( $data )
   {
-    $serverObj =& qcl_server_Server::getServerObject();
+    $serverObj = qcl_server_Server::getServerObject();
     echo $serverObj->json->encode( $data );
     exit;
   }

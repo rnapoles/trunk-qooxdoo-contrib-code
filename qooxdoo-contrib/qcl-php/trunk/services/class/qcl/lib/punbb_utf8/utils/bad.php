@@ -247,7 +247,7 @@ define('UTF8_BAD_SEQINCOMPLETE',7);
 * @package utf8
 * @subpackage bad
 */
-function utf8_bad_identify($str, &$i) {
+function utf8_bad_identify($str, $i) {
 
     $mState = 0;     // cached expected number of octets after the current octet
                      // until the beginning of the next UTF8 character sequence

@@ -40,9 +40,9 @@ class qcl_access_model_User extends qcl_access_model_Common
    * @static
    * @return qcl_access_model_User
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -84,7 +84,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * role model
      */
-    $roleModel  =& qcl_access_model_Role::getInstance();
+    $roleModel  = qcl_access_model_Role::getInstance();
     $roleModel->load(1); // the anonymous role is ALWAYS the first role defined
     if ( $roleModel->foundNothing() )
     {
@@ -93,7 +93,7 @@ class qcl_access_model_User extends qcl_access_model_Common
 
     $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
     $this->create($username);
-    $this->linkWith(&$roleModel);
+    $this->linkWith($roleModel);
     $this->set("anonymous",true);
     $this->set("name",$this->tr("Anonymous User"));
     $this->save();
@@ -148,7 +148,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * delete config data
      */
-    $configModel =& qcl_application_Application::getConfigModel();
+    $configModel = qcl_application_Application::getConfigModel();
     $configModel->deleteByUserId( $this->getId() );
 
     /*
@@ -173,7 +173,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * models
      */
-    $permModel =& qcl_access_model_Permission::getInstance();
+    $permModel = qcl_access_model_Permission::getInstance();
 
     /*
      * get all permissions of the user
@@ -210,7 +210,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
    function hasRole($role)
    {
-     $roleModel =& $this->linkedRoleModel();
+     $roleModel = $this->linkedRoleModel();
      do
      {
        if ( $roleModel->getNamedId() == $role ) return true;
@@ -226,9 +226,9 @@ class qcl_access_model_User extends qcl_access_model_Common
    * @param string|array $properties
    * @return qcl_access_model_Role
    */
-  function &linkedRoleModel($properties="*")
+  function linkedRoleModel($properties="*")
   {
-    $roleModel  =& qcl_access_model_Role::getInstance();
+    $roleModel  = qcl_access_model_Role::getInstance();
     $roleModel->findByLinkedModel( $this, null, $properties );
     return $roleModel;
   }
@@ -240,7 +240,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   function getRoles( $prop="namedId" )
   {
-    $roleModel  =& $this->linkedRoleModel($prop);
+    $roleModel  = $this->linkedRoleModel($prop);
     return $roleModel->values();
   }
 
@@ -257,7 +257,7 @@ class qcl_access_model_User extends qcl_access_model_Common
   function getPermissions( $prop="namedId" )
   {
     $permissions =  array();
-    $roleModel =& $this->linkedRoleModel();
+    $roleModel = $this->linkedRoleModel();
     if ( $roleModel->foundSomething() )
     {
       do

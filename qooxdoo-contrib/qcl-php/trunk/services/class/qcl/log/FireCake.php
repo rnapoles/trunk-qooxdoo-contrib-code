@@ -121,7 +121,7 @@ class FireCake
    * @static
    * @return void
    */
-  function &getInstance($class = null)
+  function getInstance($class = null)
   {
     static $instance = array();
     if (!empty($class)) {

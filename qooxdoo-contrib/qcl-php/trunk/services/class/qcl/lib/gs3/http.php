@@ -127,7 +127,7 @@ class http_class
 		return($this->error=$error);
 	}
 
-	Function SetPHPError($error, &$php_error_message)
+	Function SetPHPError($error, $php_error_message)
 	{
 		if(IsSet($php_error_message)
 		&& strlen($php_error_message))
@@ -331,7 +331,7 @@ class http_class
 		return(feof($this->connection));
 	}
 
-	Function Resolve($domain, &$ip, $server_type)
+	Function Resolve($domain, $ip, $server_type)
 	{
 		if(ereg('^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$',$domain))
 			$ip=$domain;
@@ -531,7 +531,7 @@ class http_class
 
 	/* Public methods */
 
-	Function GetRequestArguments($url, &$arguments)
+	Function GetRequestArguments($url, $arguments)
 	{
 		if(strlen($this->error))
 			return($this->error);
@@ -696,7 +696,7 @@ class http_class
 		return($error);
 	}
 
-	Function PickCookies(&$cookies,$secure)
+	Function PickCookies($cookies,$secure)
 	{
 		if(IsSet($this->cookies[$secure]))
 		{
@@ -732,7 +732,7 @@ class http_class
 		}
 	}
 
-	Function GetFileDefinition($file, &$definition)
+	Function GetFileDefinition($file, $definition)
 	{
 		$name="";
 		if(IsSet($file["FileName"]))
@@ -936,7 +936,7 @@ class http_class
 		return("");
 	}
 
-	Function ConnectFromProxy($arguments, &$headers)
+	Function ConnectFromProxy($arguments, $headers)
 	{
 		if(!$this->PutLine('CONNECT '.$this->host_name.':'.($this->host_port ? $this->host_port : 443).' HTTP/1.0')
 		|| (strlen($this->user_agent)
@@ -1424,7 +1424,7 @@ class http_class
 		return("");
 	}
 
-	Function ReadReplyHeadersResponse(&$headers)
+	Function ReadReplyHeadersResponse($headers)
 	{
 		$headers=array();
 		if(strlen($this->error))
@@ -1551,7 +1551,7 @@ class http_class
 		return("");
 	}
 
-	Function Redirect(&$headers)
+	Function Redirect($headers)
 	{
 		if($this->follow_redirect)
 		{
@@ -1590,7 +1590,7 @@ class http_class
 		return("");
 	}
 
-	Function Authenticate(&$headers, $proxy, &$proxy_authorization, &$user, &$password, &$realm, &$workstation)
+	Function Authenticate($headers, $proxy, $proxy_authorization, $user, $password, $realm, $workstation)
 	{
 		if($proxy)
 		{
@@ -1818,7 +1818,7 @@ class http_class
 		return("");
 	}
 	
-	Function ReadReplyHeaders(&$headers)
+	Function ReadReplyHeaders($headers)
 	{
 		if(strlen($error=$this->ReadReplyHeadersResponse($headers)))
 			return($error);
@@ -1849,7 +1849,7 @@ class http_class
 		return("");
 	}
 
-	Function ReadReplyBody(&$body,$length)
+	Function ReadReplyBody($body,$length)
 	{
 		$body="";
 		if(strlen($this->error))
@@ -1883,7 +1883,7 @@ class http_class
 		return("");
 	}
 
-	Function SaveCookies(&$cookies, $domain='', $secure_only=0, $persistent_only=0)
+	Function SaveCookies($cookies, $domain='', $secure_only=0, $persistent_only=0)
 	{
 		$now=gmdate("Y-m-d H-i-s");
 		$cookies=array();
@@ -1924,12 +1924,12 @@ class http_class
 		}
 	}
 
-	Function SavePersistentCookies(&$cookies, $domain='', $secure_only=0)
+	Function SavePersistentCookies($cookies, $domain='', $secure_only=0)
 	{
 		$this->SaveCookies($cookies, $domain, $secure_only, 1);
 	}
 
-	Function GetPersistentCookies(&$cookies, $domain='', $secure_only=0)
+	Function GetPersistentCookies($cookies, $domain='', $secure_only=0)
 	{
 		$this->SavePersistentCookies($cookies, $domain, $secure_only);
 	}

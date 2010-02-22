@@ -43,11 +43,9 @@ class qcl_event_message_Bus
    * Returns a singleton instance of this class
    * @return qcl_event_message_Bus
    */
-  function &getInstance( )
+  function getInstance( )
   {
-    $clazz = __CLASS__;
-    if ( ! is_object( $GLOBALS[$clazz] ) ) $GLOBALS[$clazz] =& new $clazz;
-    return $GLOBALS[$clazz];
+    return qcl_getInstance( __CLASS__ );
   }
 
   /**
@@ -58,17 +56,17 @@ class qcl_event_message_Bus
   function setModel( $messageModel )
   {
     //@todo check model
-    $_this =& qcl_event_message_Bus::getInstance();
-    $_this->_messageModel =& $messageModel;
+    $_this = qcl_event_message_Bus::getInstance();
+    $_this->_messageModel = $messageModel;
   }
 
   /**
    * Returns the message data model. Can be called statically
    * @return qcl_event_message_db_Message
    */
-  function &getModel()
+  function getModel()
   {
-    $_this =& qcl_event_message_Bus::getInstance();
+    $_this = qcl_event_message_Bus::getInstance();
     return $_this->_messageModel;
   }
 
@@ -85,13 +83,13 @@ class qcl_event_message_Bus
   function addSubscriber( $filter, $subscriber, $method )
   {
 
-    $_this =& qcl_event_message_Bus::getInstance();
+    $_this = qcl_event_message_Bus::getInstance();
     if ( ! $filter or ! $method or ! is_a( $subscriber, "qcl_core_Object" ) )
     {
       $_this->raiseError("Invalid parameter.");
     }
 
-    $message_db =& $_this->__message_db;
+    $message_db = $_this->__message_db;
 
     /*
      * object id
@@ -148,8 +146,8 @@ class qcl_event_message_Bus
     /*
      * search message database
      */
-    $_this =& qcl_event_message_Bus::getInstance();
-    $message_db =& $_this->__message_db;
+    $_this = qcl_event_message_Bus::getInstance();
+    $message_db = $_this->__message_db;
     $index = array_search ( $name, $message_db['filters'] );
 
     /*
@@ -160,7 +158,7 @@ class qcl_event_message_Bus
       foreach ( $message_db['data'][$index] as $subscriberData )
       {
         list( $subscriberId, $method ) = $subscriberData;
-        $subscriber =& $_this->getObjectById( $subscriberId );
+        $subscriber = $_this->getObjectById( $subscriberId );
         $subscriber->$method( $message );
       }
       return true;
@@ -175,9 +173,9 @@ class qcl_event_message_Bus
       /*
        * get ids of sessions
        */
-      $sessionModel =& qcl_access_Manager::getSessionModel();
+      $sessionModel = qcl_access_Manager::getSessionModel();
       $sessionIds = $sessionModel->findValues("sessionId");
-      $msgModel =& $_this->getModel();
+      $msgModel = $_this->getModel();
 
       foreach( $sessionIds as $sessionId )
       {
@@ -203,10 +201,10 @@ class qcl_event_message_Bus
    */
   function dispatchMessage( $sender, $name, $data )
   {
-    $_this =& qcl_event_message_Bus::getInstance();
+    $_this = qcl_event_message_Bus::getInstance();
     require_once "qcl/event/message/Message.php";
-    $message =& new qcl_event_message_Message( $name, $data );
-    if ( $sender) $message->setSender( &$sender );
+    $message = new qcl_event_message_Message( $name, $data );
+    if ( $sender) $message->setSender( $sender );
     return $_this->dispatch( $message );
   }
 
@@ -220,10 +218,10 @@ class qcl_event_message_Bus
    */
   function dispatchServerMessage( $sender, $name, $data )
   {
-    $_this =& qcl_event_message_Bus::getInstance();
+    $_this = qcl_event_message_Bus::getInstance();
     require_once "qcl/event/message/ServerMessage.php";
-    $message =& new qcl_event_message_ServerMessage( $name, $data );
-    if ( $sender) $message->setSender( &$sender );
+    $message = new qcl_event_message_ServerMessage( $name, $data );
+    if ( $sender) $message->setSender( $sender );
     return $_this->dispatch( $message );
   }
 
@@ -236,10 +234,10 @@ class qcl_event_message_Bus
    */
   function broadcastServerMessage ( $sender, $name, $data )
   {
-    $_this =& qcl_event_message_Bus::getInstance();
+    $_this = qcl_event_message_Bus::getInstance();
     require_once "qcl/event/message/ServerMessage.php";
-    $message =& new qcl_event_message_ServerMessage( $name, $data );
-    if ( $sender) $message->setSender( &$sender );
+    $message = new qcl_event_message_ServerMessage( $name, $data );
+    if ( $sender) $message->setSender( $sender );
     return $_this->dispatch( $message );
   }
 
@@ -252,8 +250,8 @@ class qcl_event_message_Bus
    */
   function getServerMessages( $sessionId )
   {
-    $_this    =& qcl_event_message_Bus::getInstance();
-    $msgModel =& $_this->getModel();
+    $_this    = qcl_event_message_Bus::getInstance();
+    $msgModel = $_this->getModel();
 
     /*
      * get messages that have been stored for session id

@@ -78,9 +78,9 @@ class qcl_data_datasource_type_db_Model
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_type_db_Model
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -149,7 +149,7 @@ class qcl_data_datasource_type_db_Model
    * @todo unhardcode type mysql
    * @return qcl_data_db_type_Mysql
    */
-  function &getDatasourceConnection()
+  function getDatasourceConnection()
   {
     if ( ! $this->datasourceConnectionObj )
     {
@@ -160,9 +160,9 @@ class qcl_data_datasource_type_db_Model
       //$this->debug("Datasource model connecting to ");
       //$this->debug($dsn);
 
-      $db =& qcl_data_db_Manager::createAdapter( $dsn );
+      $db = qcl_data_db_Manager::createAdapter( $dsn );
 
-      $this->datasourceConnectionObj =& $db;
+      $this->datasourceConnectionObj = $db;
     }
     return $this->datasourceConnectionObj;
   }
@@ -269,7 +269,7 @@ class qcl_data_datasource_type_db_Model
      */
     if ( $options['dsn'] )
     {
-      $db = new qcl_data_db_type_Mysql( $options['dsn'], &$this );
+      $db = new qcl_data_db_type_Mysql( $options['dsn'], $this );
       //$this->info("Using custom dsn:" . print_r($options,true) );
     }
     else

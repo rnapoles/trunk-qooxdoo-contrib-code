@@ -71,11 +71,9 @@ class qcl_server_Response
    * Returns a singleton instance of this class
    * @return qcl_data_Result
    */
-  function &getInstance( )
+  public static function getInstance( )
   {
-    $clazz = __CLASS__;
-    if ( ! is_object( $GLOBALS[ $clazz ] ) ) $GLOBALS[ $clazz ] =& new $clazz;
-    return $GLOBALS[ $clazz ];
+    return qcl_getInstance(__CLASS__);
   }
 
   /**

@@ -49,7 +49,7 @@ class qcl_io_filesystem_Resource extends qcl_data_model_Abstract
     /*
      * parent constructor takes care of controller
      */
-    parent::__construct( &$controller );
+    parent::__construct( $controller );
 
     /*
      * check resource path

@@ -61,9 +61,9 @@ class qcl_access_Controller
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_User
    */
-  function &getUserModel( $id=null )
+  function getUserModel( $id=null )
   {
-    $userModel =& qcl_access_model_User::getInstance();
+    $userModel = qcl_access_model_User::getInstance();
     if ( $id ) $userModel->load( $id );
     return $userModel;
   }
@@ -73,9 +73,9 @@ class qcl_access_Controller
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_Permission
    */
-  function &getPermissionModel( $id = null)
+  function getPermissionModel( $id = null)
   {
-    $permModel =& qcl_access_model_Permission::getInstance();
+    $permModel = qcl_access_model_Permission::getInstance();
     if ( $id ) $permModel->load( $id );
     return $permModel;
   }
@@ -85,9 +85,9 @@ class qcl_access_Controller
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_Role
    */
-  function &getRoleModel( $id=null )
+  function getRoleModel( $id=null )
   {
-    $roleModel =& qcl_access_model_Role::getInstance();
+    $roleModel = qcl_access_model_Role::getInstance();
     if ( $id ) $roleModel->load( $id );
     return $roleModel;
   }
@@ -96,7 +96,7 @@ class qcl_access_Controller
    * Gets the role data model
    * @return qcl_access_model_Role
    */
-  function &getConfigModel()
+  function getConfigModel()
   {
     return qcl_config_Manager::getModel();
   }
@@ -140,7 +140,7 @@ class qcl_access_Controller
       else
       {
         $userId = qcl_util_registry_Session::get("activeUserId");
-        $userModel =& $this->getUserModel( $userId );
+        $userModel = $this->getUserModel( $userId );
         $this->setActiveUser( $userModel );
 
         /*
@@ -333,7 +333,7 @@ class qcl_access_Controller
     /*
      * check whether anyone is logged in
      */
-    $activeUser =& $this->getActiveUser();
+    $activeUser = $this->getActiveUser();
 
     if ( ! $activeUser )
     {
@@ -387,7 +387,7 @@ class qcl_access_Controller
     /*
      * create a new guest user
      */
-    $userModel =& $this->getUserModel();
+    $userModel = $this->getUserModel();
     $userModel->createAnonymous();
     $this->setActiveUser( $userModel );
 
@@ -446,7 +446,7 @@ class qcl_access_Controller
         /*
          * reset the timestamp of the user
          */
-        $activeUser =& $this->getActiveUser();
+        $activeUser = $this->getActiveUser();
         $activeUser->resetLastAction();
       }
 
@@ -498,7 +498,7 @@ class qcl_access_Controller
 
         if ( $this->isValidUserSession( $sessionId ) )
         {
-          $activeUser =& $this->getActiveUser();
+          $activeUser = $this->getActiveUser();
           $username = $activeUser->username();
           $logMsg = "Continuing session: $username ($sessionId).";
         }
@@ -537,7 +537,7 @@ class qcl_access_Controller
      * access data
      * @todo rename security -> access
      */
-    $activeUser =& $this->getActiveUser();
+    $activeUser = $this->getActiveUser();
     $permissions = $activeUser->getPermissions();
     $this->setResult( "permissions", $permissions );
 
@@ -581,7 +581,7 @@ class qcl_access_Controller
     /*
      * check if user is already logged in
      */
-    $activeUser =& $this->getActiveUser();
+    $activeUser = $this->getActiveUser();
 
     /*
      * user is already logged in
@@ -619,9 +619,9 @@ class qcl_access_Controller
        * save a copy of the current user model as
        * the new active user
        */
-      $userModel =& $this->getUserModel( $userId );
+      $userModel = $this->getUserModel( $userId );
       $this->setActiveUser( $userModel );
-      $activeUser =& $this->getActiveUser();
+      $activeUser = $this->getActiveUser();
 
       /*
        * save the user id in the session
@@ -648,8 +648,8 @@ class qcl_access_Controller
     /*
      * models
      */
-    $configModel =& $this->getConfigModel();
-    $activeUser  =& $this->getActiveUser();
+    $configModel = $this->getConfigModel();
+    $activeUser  = $this->getActiveUser();
 
     /*
      * timeout
@@ -722,7 +722,7 @@ class qcl_access_Controller
    * Returns active user object
    * @return qcl_access_model_User
    */
-  function &getActiveUser()
+  function getActiveUser()
   {
     return qcl_access_Manager::getActiveUser();
   }
@@ -746,7 +746,7 @@ class qcl_access_Controller
   function fireServerEvent ( $type )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::fireServerEvent( &$this, $type, $data );
+    qcl_event_Dispatcher::fireServerEvent( $this, $type, $data );
   }
 
   /**
@@ -758,7 +758,7 @@ class qcl_access_Controller
   function fireServerDataEvent ( $type, $data )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::fireServerDataEvent( &$this, $type, $data );
+    qcl_event_Dispatcher::fireServerDataEvent( $this, $type, $data );
   }
 }
 ?>

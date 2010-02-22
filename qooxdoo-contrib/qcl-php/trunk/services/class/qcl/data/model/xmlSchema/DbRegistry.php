@@ -35,9 +35,9 @@ class qcl_data_model_xmlSchema_DbRegistry
    * @return qcl_data_model_xmlSchema_DbRegistry
    * @see class/qcl/core/qcl_core_Object#getInstance($class)
    */
-  function &getInstance()
+  function getInstance()
   {
-    return parent::getInstance(__CLASS__);
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -63,7 +63,7 @@ class qcl_data_model_xmlSchema_DbRegistry
    */
   function registerInitialized( $datasourceModel, $table, $class, $timestamp )
   {
-    $_this =& qcl_data_model_xmlSchema_DbRegistry::getInstance();
+    $_this = qcl_data_model_xmlSchema_DbRegistry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
     $_this->data[$datasource][$table][$class] = $timestamp;
     $_this->save();
@@ -88,7 +88,7 @@ class qcl_data_model_xmlSchema_DbRegistry
    */
   function isInitialized( $datasourceModel, $table, $class=null, $timestamp=null )
   {
-    $_this =& qcl_data_model_xmlSchema_DbRegistry::getInstance();
+    $_this = qcl_data_model_xmlSchema_DbRegistry::getInstance();
     $datasource = $_this->_getDatasourceName( $datasourceModel );
     return ( $timestamp and $class ) ?
       ( $_this->data[$datasource][$table][$class] == $timestamp) :

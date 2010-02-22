@@ -47,15 +47,15 @@ class qcl_log_Logger
    * Returns singleton instance
    * @return qcl_log_Logger
    */
-  function &getInstance()
+  public static function getInstance()
   {
-    $clazz = __CLASS__;
-    if ( ! isset( $GLOBALS[ $clazz ] ) )
+    $_this = qcl_getInstance( __CLASS__ );
+    if ( ! $_this->__filtersRegistered )
     {
-      $GLOBALS[ $clazz ] =& new $clazz;
-      $GLOBALS[ $clazz ]->_registerInitialFilters();
+      $_this->__filtersRegistered = true;
+      $_this->_registerInitialFilters();
     }
-    return $GLOBALS[ $clazz ];
+    return $_this;
   }
 
   /**
@@ -80,7 +80,7 @@ class qcl_log_Logger
    */
   function registerFilter( $filter, $description=null, $state=true )
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
 
     if ( ! $filter )
     {
@@ -100,7 +100,7 @@ class qcl_log_Logger
    */
   function filterByClass($classes)
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
     $_this->classFilters = $classes;
   }
 
@@ -111,7 +111,7 @@ class qcl_log_Logger
    */
   function isRegistered($filter)
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
     return isset( $_this->filters[$filter]);
   }
 
@@ -123,7 +123,7 @@ class qcl_log_Logger
    */
   function setFilterEnabled( $filter, $value )
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
 
     if ( ! $_this->filters[$filter] )
     {
@@ -145,7 +145,7 @@ class qcl_log_Logger
    */
   function log( $msg, $filters="debug" )
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
 
     /**
      * filter by classes
@@ -221,7 +221,7 @@ class qcl_log_Logger
    */
   function info ( $msg )
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
     $_this->log ( $msg, "info" );
   }
 
@@ -233,7 +233,7 @@ class qcl_log_Logger
    */
   function warn ( $msg )
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
     $_this->log ( "*** WARNING *** " . $msg, "warn" );
   }
 
@@ -244,7 +244,7 @@ class qcl_log_Logger
    */
   function error ( $msg )
   {
-    $_this =& qcl_log_Logger::getInstance();
+    $_this = qcl_log_Logger::getInstance();
     $_this->log ( "### ERROR ### " . $msg, "error" );
   }
 

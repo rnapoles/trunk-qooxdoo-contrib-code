@@ -19,14 +19,14 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
  {
     //$this->debug("Testing SimpleXml storage ...");
 
-    $logger =& $this->getLogger();
+    $logger = $this->getLogger();
 
     $logger->setFilterEnabled("xml",true);
     $logger->setFilterEnabled("persistence",true);
 
     $testfile = realpath("../var/tmp/test.xml");
 
-    $parser =& new qcl_data_xml_Storage( $testfile );
+    $parser = new qcl_data_xml_Storage( $testfile );
     //$parser->setOwnedBySessionId( $this->getSessionId() );
 
     //$this->debug("Deleting original xml file...");
@@ -36,16 +36,16 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
     $parser->createFile();
 
     //$this->debug("Creating document tree...");
-    $doc =& $parser->getDocument();
+    $doc = $parser->getDocument();
 
-    $record  =& $doc->addChild("record");
+    $record  = $doc->addChild("record");
     $record->addAttribute("id","first record");
-    $child   =& $record->addChild("child","boo!");
+    $child   = $record->addChild("child","boo!");
     $child->addAttribute("id","child or first record");
 
-    $record2 =& $doc->addChild("record");
+    $record2 = $doc->addChild("record");
     $record2->addAttribute("id","second record");
-    $child2  =& $record2->addChild("child");
+    $child2  = $record2->addChild("child");
     $child2->addAttribute("id","child of second record");
 
 
@@ -66,7 +66,7 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
     $parser->saveToFile();
 
     //$this->debug("Retrieving stored document from cache ...");
-    $parser2 =& new qcl_data_xml_Storage( $testfile );
+    $parser2 = new qcl_data_xml_Storage( $testfile );
     //$parser2->setOwnedBySessionId( $this->getSessionId() );
     $parser2->load();
 

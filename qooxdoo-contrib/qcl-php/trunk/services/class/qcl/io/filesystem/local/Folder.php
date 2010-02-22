@@ -87,10 +87,10 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * @param string $name
    * @return qcl_io_filesystem_local_File | false
    */
-  function &createOrGetFile( $name )
+  function createOrGetFile( $name )
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
-    $fileObj =& new qcl_io_filesystem_local_File( $resourcePath );
+    $fileObj = new qcl_io_filesystem_local_File( $resourcePath );
     if ( ! $fileObj->exists() )
     {
       $fileObj->create();
@@ -108,10 +108,10 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * @param string $name
    * @return qcl_io_filesystem_local_Folder | false
    */
-  function &createOrGetFolder( $name )
+  function createOrGetFolder( $name )
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
-    $folderObj =& new qcl_io_filesystem_local_Folder( $resourcePath );
+    $folderObj = new qcl_io_filesystem_local_Folder( $resourcePath );
     if ( ! $folderObj->exists() )
     {
       $folderObj->create();
@@ -140,7 +140,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * Returns the file or folder with the name if it exists
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function &get( $name )
+  function get( $name )
   {
     $filePath     = $this->filePath() . "/" . $name;
 
@@ -171,7 +171,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * Gets the next entry in the folder
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function &next()
+  function next()
   {
     /*
      * check if dir has been opened

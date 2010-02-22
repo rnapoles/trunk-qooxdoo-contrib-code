@@ -53,7 +53,7 @@ class qcl_server_Service
    * Returns the server object
    * @return qcl_server_Server
    */
-  function &getServer()
+  function getServer()
   {
     return qcl_server_Server::getInstance();
   }
@@ -69,7 +69,7 @@ class qcl_server_Service
    */
   function getIniValue($path)
   {
-    return qcl_application_Application::getIniValue($path);
+    return qcl_application_Application::getInstance()->getIniValue($path);
   }
 
   /**

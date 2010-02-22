@@ -43,11 +43,9 @@ class qcl_event_Dispatcher
    * Returns a singleton instance of this class
    * @return qcl_event_Dispatcher
    */
-  function &getInstance( )
+  function getInstance( )
   {
-    $clazz = __CLASS__;
-    if ( ! is_object( $GLOBALS[$clazz] ) ) $GLOBALS[$clazz] =& new $clazz;
-    return $GLOBALS[$clazz];
+    return qcl_getInstance( __CLASS__ );
   }
 
  /**
@@ -63,7 +61,7 @@ class qcl_event_Dispatcher
   function addListener( $target, $type, $listener, $method )
   {
 
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
 
     /*
      * target object id
@@ -93,7 +91,7 @@ class qcl_event_Dispatcher
     /*
      * event database
      */
-    $event_db =& $_this->__event_db[$targetObjectId];
+    $event_db = $_this->__event_db[$targetObjectId];
     if ( ! $event_db )
     {
       $event_db = array(
@@ -134,7 +132,7 @@ class qcl_event_Dispatcher
    */
   function dispatch ( $target, $event )
   {
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
 
     /*
      * event
@@ -143,7 +141,7 @@ class qcl_event_Dispatcher
     {
       $_this->raiseError("Invalid argument, must be a qcl_event_type_Event or subclass.");
     }
-    $event->setTarget(&$target);
+    $event->setTarget($target);
 
     /*
      * target object id
@@ -158,7 +156,7 @@ class qcl_event_Dispatcher
      * search message database
      */
     $type = $event->getType();
-    $event_db =& $_this->__event_db[$targetObjectId];
+    $event_db = $_this->__event_db[$targetObjectId];
 
     if ( ! is_array( $event_db ) )
     {
@@ -183,7 +181,7 @@ class qcl_event_Dispatcher
     foreach ( $event_db['data'][$index] as $listenerData )
     {
       list( $listenerObjectId, $method ) = $listenerData;
-      $listenerObject =& $_this->getObjectById( $listenerObjectId );
+      $listenerObject = $_this->getObjectById( $listenerObjectId );
       $listenerObject->$method($event);
     }
   }
@@ -196,10 +194,10 @@ class qcl_event_Dispatcher
    */
   function fireEvent( $target, $type )
   {
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/Event.php";
-    $event =& new qcl_event_type_Event( $type );
-    $_this->dispatch( &$target, &$event );
+    $event = new qcl_event_type_Event( $type );
+    $_this->dispatch( $target, $event );
   }
 
   /**
@@ -211,10 +209,10 @@ class qcl_event_Dispatcher
    */
   function fireDataEvent( $target, $type, $data )
   {
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/DataEvent.php";
-    $event =& new qcl_event_type_DataEvent( $type, $data );
-    $_this->dispatch( &$target, &$event );
+    $event = new qcl_event_type_DataEvent( $type, $data );
+    $_this->dispatch( $target, $event );
   }
 
   /**
@@ -227,10 +225,10 @@ class qcl_event_Dispatcher
    */
   function fireServerEvent( $target, $type )
   {
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/ServerEvent.php";
-    $event =& new qcl_event_type_ServerEvent( $type );
-    $_this->dispatch( &$target, &$event );
+    $event = new qcl_event_type_ServerEvent( $type );
+    $_this->dispatch( $target, $event );
     $_this->__serverEvents[] = array(
       'type' => $event->getType()
     );
@@ -247,10 +245,10 @@ class qcl_event_Dispatcher
    */
   function fireServerDataEvent( $target, $type, $data )
   {
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/ServerDataEvent.php";
-    $event =& new qcl_event_type_ServerDataEvent( $type, $data );
-    $_this->dispatch( &$target, &$event );
+    $event = new qcl_event_type_ServerDataEvent( $type, $data );
+    $_this->dispatch( $target, $event );
     $_this->__serverEvents[] = array(
       'type'  => $event->getType(),
       'data'  => $event->getData()
@@ -263,7 +261,7 @@ class qcl_event_Dispatcher
    */
   function getServerEvents()
   {
-    $_this =& qcl_event_Dispatcher::getInstance();
+    $_this = qcl_event_Dispatcher::getInstance();
     return $_this->__serverEvents;
   }
 }

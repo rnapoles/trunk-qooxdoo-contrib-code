@@ -45,7 +45,7 @@ class qcl_application_plugin_Db extends qcl_data_model_xmlSchema_DbModel
   {
     $this->info("*** Initializing plugins." );
 
-    $controller   =& $this->getController();
+    $controller   = $this->getController();
     $plugin_path  =  $controller->getIniValue("service.plugin_path");
 
     // repopulate plugins table
@@ -60,7 +60,7 @@ class qcl_application_plugin_Db extends qcl_data_model_xmlSchema_DbModel
       {
         require_once ($file);
         $class  = "{$dir}_plugin";
-        $plugin = new $class ( &$controller );
+        $plugin = new $class ( $controller );
         $active = $plugin->initialize();
         $error  = $plugin->getError();
 

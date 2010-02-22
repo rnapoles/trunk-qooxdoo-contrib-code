@@ -119,7 +119,7 @@ class qcl_data_controller_Controller
    */
   function hasRole( $role )
   {
-    $activeUser =& qcl_access_Manager::getActiveUser();
+    $activeUser = qcl_access_Manager::getActiveUser();
     return $activeUser->hasRole( $role );
   }
 
@@ -134,7 +134,7 @@ class qcl_data_controller_Controller
    * @param string $datasource
    * @return qcl_data_datasource_type_db_Model
    */
-  function &getDatasourceModel( $datasource )
+  function getDatasourceModel( $datasource )
   {
     require_once "qcl/data/datasource/Manager.php";
     return qcl_data_datasource_Manager::getDatasourceModel( $datasource );
@@ -167,7 +167,7 @@ class qcl_data_controller_Controller
    */
   function setResultObject( $resultObject )
   {
-    $this->_resultObject =& $resultObject;
+    $this->_resultObject = $resultObject;
   }
 
   /**
@@ -177,7 +177,7 @@ class qcl_data_controller_Controller
    * @param mixed $value
    * @deprecated Work with result object instead
    */
-  function set ( $key, $value )
+  function set ( $key, $value=null )
   {
     $this->_resultObject->set( $key, $value );
   }
@@ -199,7 +199,7 @@ class qcl_data_controller_Controller
    * @return qcl_data_Result
    * @deprecated Work with result object instead
    */
-  function &result()
+  function result()
   {
     return $this->_resultObject;
   }

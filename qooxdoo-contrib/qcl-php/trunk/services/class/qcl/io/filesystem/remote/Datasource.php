@@ -58,7 +58,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_data_datasource_type_db_Mo
       $resourcePath = $this->getType() . "://" . $this->getResourcePath();
       define("S3_KEY",     $this->getUsername() );
       define('S3_PRIVATE', $this->getPassword() );
-      $this->folderObj =& new qcl_io_filesystem_remote_Folder( $resourcePath);
+      $this->folderObj = new qcl_io_filesystem_remote_Folder( $resourcePath);
     }
   }
 
@@ -67,7 +67,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_data_datasource_type_db_Mo
    * @param string $filename
    * @var qcl_io_filesystem_remote_File
    */
-  function &getFile($filename)
+  function getFile($filename)
   {
     if ( $this->folderObj )
     {
@@ -79,7 +79,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_data_datasource_type_db_Mo
   /**
    * Returns the folder object of the datasource
    */
-  function &getFolderObject()
+  function getFolderObject()
   {
     if ( $this->folderObj )
     {

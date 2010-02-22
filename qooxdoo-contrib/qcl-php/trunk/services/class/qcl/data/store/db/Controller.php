@@ -41,7 +41,7 @@ class qcl_data_store_db_Controller
 
     $this->cleanUp();
 
-    $storeModel =& qcl_data_store_db_StoreModel::getInstance();
+    $storeModel = qcl_data_store_db_StoreModel::getInstance();
     $storeModel->insert( array(
       "storeId"      => $storeId,
       "storeService" => either( $serviceName, $this->className() ),
@@ -62,8 +62,8 @@ class qcl_data_store_db_Controller
   function method_unregister( $storeIds )
   {
     $this->info("Unregistering store $storeIds ",__CLASS__,__LINE__);
-    $storeModel =& qcl_data_store_db_StoreModel::getInstance();
-    $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
+    $storeModel = qcl_data_store_db_StoreModel::getInstance();
+    $eventStore = qcl_data_store_db_EventStoreModel::getInstance();
 
     foreach( (array) $storeIds as $storeId )
     {
@@ -87,9 +87,9 @@ class qcl_data_store_db_Controller
   function method_unregisterAll()
   {
     $this->info("Unregistering all stores.");
-    $storeModel =& qcl_data_store_db_StoreModel::getInstance();
+    $storeModel = qcl_data_store_db_StoreModel::getInstance();
     $storeModel->truncate();
-    $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
+    $eventStore = qcl_data_store_db_EventStoreModel::getInstance();
     $eventStore->truncate();
     return array(
       'statusText' => "All stores unregistered."
@@ -152,8 +152,8 @@ class qcl_data_store_db_Controller
    */
   function addToEventQueue( $event, $storeId=null )
   {
-    $storeModel =& qcl_data_store_db_StoreModel::getInstance();
-    $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
+    $storeModel = qcl_data_store_db_StoreModel::getInstance();
+    $eventStore = qcl_data_store_db_EventStoreModel::getInstance();
 
     /*
      * if a store id is given, add an event for each store except the
@@ -211,7 +211,7 @@ class qcl_data_store_db_Controller
   {
     $events = array();
 
-    $eventStore =& qcl_data_store_db_EventStoreModel::getInstance();
+    $eventStore = qcl_data_store_db_EventStoreModel::getInstance();
     $eventStore->findBy("storeId", $storeId );
 
     if ( $eventStore->foundSomething() ) do
@@ -235,12 +235,12 @@ class qcl_data_store_db_Controller
    */
   function cleanUp()
   {
-    $storeModel =& qcl_data_store_db_StoreModel::getInstance();
+    $storeModel = qcl_data_store_db_StoreModel::getInstance();
     $prefix = $storeModel->getTablePrefix();
 
     $storeModel->deleteWhere("sessionId NOT IN (SELECT sessionId FROM {$prefix}sessions)");
 
-    $eventStoreModel =& qcl_data_store_db_EventStoreModel::getInstance();
+    $eventStoreModel = qcl_data_store_db_EventStoreModel::getInstance();
     $eventStoreModel->deleteWhere("storeId NOT IN (SELECT storeId FROM {$prefix}stores)");
 
   }

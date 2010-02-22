@@ -56,7 +56,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * @param string $name
    * @return qcl_io_filesystem_remote_File|false
    */
-  function &createOrGetFile( $name )
+  function createOrGetFile( $name )
   {
     /*
      * create file if it doesn't exist
@@ -81,13 +81,13 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * @param string $name
    * @return qcl_io_filesystem_remote_Folder|false
    */
-  function &createOrGetFolder( $name )
+  function createOrGetFolder( $name )
   {
     /*
      * create directory if it doesn't exist
      */
     $resourcePath = $this->resourcePath() . $name ."/";
-    $folderObj =& new qcl_io_filesystem_remote_Folder( $resourcePath );
+    $folderObj = new qcl_io_filesystem_remote_Folder( $resourcePath );
     if ( ! $folderObj->exists() )
     {
       $folderObj->create();
@@ -107,7 +107,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function has( $name )
   {
-    $file =& $this->get($name);
+    $file = $this->get($name);
     if ( $file->open() )
     {
       $file->close();
@@ -120,7 +120,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * Returns the file or folder with the name if it exists
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function &get( $name )
+  function get( $name )
   {
     $resourcePath = $this->resourcePath() . $name;
 
@@ -151,7 +151,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * Gets the next entry in the folder
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function &next()
+  function next()
   {
     /*
      * check if dir has been opened

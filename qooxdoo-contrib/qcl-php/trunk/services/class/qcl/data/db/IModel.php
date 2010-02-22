@@ -34,7 +34,7 @@ interface qcl_data_db_IModel
    * Returns the database adapter object for this model
    * @return qcl_data_db_IAdapter
    */
-  function &db();
+  function db();
 
   /**
    * Returns the name of the main table that is used by this model
