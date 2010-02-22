@@ -30,7 +30,7 @@
 function utf8_byte_position() {
 
     $args = func_get_args();
-    $str =& array_shift($args);
+    $str = array_shift($args);
     if (!is_string($str)) return false;
 
     $result = array();
@@ -128,7 +128,7 @@ function utf8_byte_position() {
 * @package utf8
 * @subpackage position
 */
-function utf8_locate_current_chr( &$str, $idx ) {
+function utf8_locate_current_chr( $str, $idx ) {
 
     if ($idx <= 0) return 0;
 
@@ -156,7 +156,7 @@ function utf8_locate_current_chr( &$str, $idx ) {
 * @package utf8
 * @subpackage position
 */
-function utf8_locate_next_chr( &$str, $idx ) {
+function utf8_locate_next_chr( $str, $idx ) {
 
     if ($idx <= 0) return 0;
 

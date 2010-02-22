@@ -118,7 +118,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
     /*
      * call parent constructor
      */
-    parent::__construct( &$controller );
+    parent::__construct( $controller );
 
     /*
      * if $controller parameter is a datasource model,
@@ -127,7 +127,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
      */
     if ( is_null( $datasourceModel ) and is_a( $controller, "qcl_data_datasource_type_db_Model" ) )
     {
-      $datasourceModel =& $controller;
+      $datasourceModel = $controller;
     }
 
     /*
@@ -144,7 +144,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
     /*
      *  initialize the model
      */
-    $this->initialize( &$datasourceModel );
+    $this->initialize( $datasourceModel );
 
   }
 
@@ -173,11 +173,11 @@ class qcl_data_model_Abstract extends qcl_core_Object
  	{
 		if ( is_a( $controller,"qcl_data_controller_Controller" ) )
 		{
-			$this->_controller =& $controller;
+			$this->_controller = $controller;
 		}
 		elseif ( is_a( $controller,"qcl_data_model_Abstract" ) )
 		{
-		  $this->_controller =& $controller->getController();
+		  $this->_controller = $controller->getController();
 		}
     else
     {
@@ -195,15 +195,15 @@ class qcl_data_model_Abstract extends qcl_core_Object
  	 * @return qcl_data_controller_Controller
  	 *
  	 */
-  function &getController()
+  function getController()
   {
     if ( $this->_controller )
     {
-      $controller =& $this->_controller;
+      $controller = $this->_controller;
     }
     else
     {
-      $controller =& qcl_application_Application::getController();
+      $controller = qcl_application_Application::getController();
     }
 //    if ( ! is_a( $controller,"qcl_data_controller_Controller" ) )
 //    {
@@ -216,7 +216,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Returns the controller object
    * @return qcl_data_controller_Controller
    */
-  function &controller()
+  function controller()
   {
     return $this->getController();
   }
@@ -225,7 +225,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * Returns the server object
    */
-  function &server()
+  function server()
   {
     return qcl_server_Server::getServerObject();
   }
@@ -244,7 +244,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
   {
     if ( is_object ( $datasource ) and is_a( $datasource, "qcl_data_datasource_type_db_Model") )
     {
-      $this->datasourceModel =& $datasource;
+      $this->datasourceModel = $datasource;
     }
     else
     {
@@ -256,7 +256,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Retrieves the datasource object
    * @return qcl_data_datasource_type_db_Model
    */
-  function &getDatasourceModel()
+  function getDatasourceModel()
   {
     return $this->datasourceModel;
   }
@@ -957,7 +957,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param int $id if given, find and update property recordId
    * @return qcl_data_model_Abstract
    */
-  function &set( $first, $value=null, $id=null )
+  function set( $first, $value=null, $id=null )
   {
     if ( is_array($first) )
     {
@@ -1028,7 +1028,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array[optional] $diff Array that needs to be passed by reference that will contain a list of parameters that differ
    * @return bool True if all property values are identical, false if not
    */
-  function compareSharedProperties ( $that, &$diff )
+  function compareSharedProperties ( $that, $diff )
   {
     $diff = array();
     $properties = array_intersect(

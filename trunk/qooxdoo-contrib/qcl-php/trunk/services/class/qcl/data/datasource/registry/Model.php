@@ -33,9 +33,9 @@ class qcl_data_datasource_registry_Model
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_registry_Model
    */
-  function &getInstance()
+  function getInstance()
   {
-    return parent::getInstance(__CLASS__);
+    return qcl_getInstance(__CLASS__);
   }
 
   /**

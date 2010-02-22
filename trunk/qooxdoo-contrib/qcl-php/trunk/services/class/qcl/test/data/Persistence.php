@@ -24,7 +24,7 @@ class class_qcl_data_persistence_Tests
   function method_testPersistence()
   {
     $sessionId = $this->skipAuthentication ? null : qcl_access_Manager::getSessionId();
-    $obj =& new TestPersistence("TestPersistence", null, $sessionId );
+    $obj = new TestPersistence("TestPersistence", null, $sessionId );
     $this->info('Initialized $obj->foo = ' . $obj->foo);
     $obj->foo = rand(0,100);
     $this->info('Changing $obj->foo = ' . $obj->foo);
@@ -33,9 +33,9 @@ class class_qcl_data_persistence_Tests
 
   function method_testPersistenceLocking()
   {
-    $obj1 =& new TestPersistence(&$this,"TestPersistence");
+    $obj1 = new TestPersistence($this,"TestPersistence");
     $obj1->getWriteLock();
-    $obj2 =& new TestPersistence(&$this,"TestPersistence");
+    $obj2 = new TestPersistence($this,"TestPersistence");
     $obj2->getWriteLock();
     return $this->result();
   }
@@ -45,7 +45,7 @@ class class_qcl_data_persistence_Tests
     $id       = $params[0];
     $continue = $params[1];
 
-    $test =& new TestPersistence(&$this,$id);
+    $test = new TestPersistence($this,$id);
 
     /*
      * continue or abort?

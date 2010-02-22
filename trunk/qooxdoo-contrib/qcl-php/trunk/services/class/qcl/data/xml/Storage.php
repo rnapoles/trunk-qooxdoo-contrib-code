@@ -188,7 +188,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
        */
       else
       {
-        $fileOrString =& qcl_io_filesystem_Resource::createInstance( "file://" . $fileOrString );
+        $fileOrString = qcl_io_filesystem_Resource::createInstance( "file://" . $fileOrString );
       }
     }
 
@@ -201,7 +201,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
     {
       if ( is_qcl_file( $fileOrString ) )
       {
-        $this->file =& $fileOrString;
+        $this->file = $fileOrString;
         $this->cacheId = $this->file->resourcePath() . ( phpversion() <5 ? ".php4":"");
       }
       else
@@ -300,10 +300,10 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * Loads xml from  file
    * @return SimpleXmlElement
    **/
-  function &load()
+  function load()
   {
 
-    $file       =& $this->file;
+    $file       = $this->file;
     $cacheId     = $this->cacheId;
 
     /*
@@ -334,7 +334,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
        */
       if ( ! $this->doNotCache )
       {
-        $cacheObj =& $this->getCacheObject( $cacheId );
+        $cacheObj = $this->getCacheObject( $cacheId );
 
 
         if ( ! $cacheObj->isNew() )
@@ -392,7 +392,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
                 if ( is_object( $doc ) )
                 {
                   $this->hasChanged = false;
-                  $this->doc =& $doc;
+                  $this->doc = $doc;
                   return $doc;
                 }
               }
@@ -425,12 +425,12 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
       /*
        * use simplexml backport library
        */
-      $this->__impl =& new XMLParser;
+      $this->__impl = new XMLParser;
 
       /*
        * prohibited tag names
        */
-      $xmlTag =& new SimpleXMLElement('dummy');
+      $xmlTag = new SimpleXMLElement('dummy');
       $this->invalidTags = $xmlTag->invalidTags;
 
       /*
@@ -445,12 +445,12 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
       {
         $path = $file->filePath();
         $this->log("Loading document from file $path...","xml");
-        $this->doc =& $this->__impl->load_file($path);
+        $this->doc = $this->__impl->load_file($path);
       }
       elseif ( is_string ( $this->xml ) )
       {
         $this->log("Loading document from string... " . substr( $this->xml,0,30) . "...", "xml" );
-        $this->doc =& $this->__impl->load_string( $this->xml );
+        $this->doc = $this->__impl->load_string( $this->xml );
         //$this->log($this->doc->asXML()); die;
       }
       else
@@ -511,7 +511,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * or the session.
    * @return qcl_data_xml_Cache
    */
-  function &getCacheObject( $cacheId )
+  function getCacheObject( $cacheId )
   {
     if ( ! $cacheId )
     {
@@ -520,7 +520,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
 
     if ( ! $this->_cacheObj )
     {
-      $this->_cacheObj =& new qcl_data_xml_Cache( $cacheId, $this->userId, $this->sessionId );
+      $this->_cacheObj = new qcl_data_xml_Cache( $cacheId, $this->userId, $this->sessionId );
     }
     return $this->_cacheObj;
   }
@@ -536,7 +536,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    */
   function save()
   {
-    $cacheObj =& $this->getCacheObject( $this->cacheId );
+    $cacheObj = $this->getCacheObject( $this->cacheId );
 
     /*
      * store modification date
@@ -568,7 +568,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    */
   function delete()
   {
-    $cacheObj =& $this->getCacheObject( $this->cacheId );
+    $cacheObj = $this->getCacheObject( $this->cacheId );
     $cacheObj->delete();
     $this->deleteCachedObject();
   }
@@ -577,7 +577,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * get the root of the document alias for getDocument
    * return SimpleXmlElement
    */
-  function &getRoot()
+  function getRoot()
   {
     return $this->getDocument();
   }
@@ -586,7 +586,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * get document root node
    * @return SimpleXmlElement
    */
-  function &getDocument()
+  function getDocument()
   {
     return $this->doc;
   }
@@ -627,7 +627,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * @param mixed $pathOrNode (string) simplified xpath or (object) node
    * @return object node object or NULL if path does not exist
    */
-  function &getNode( $pathOrNode )
+  function getNode( $pathOrNode )
   {
 
     /*
@@ -680,7 +680,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
      */
     else
     {
-      $tmp =& $this->getDocument();
+      $tmp = $this->getDocument();
 
       $parts = explode("/", $path );
       foreach ( $parts as $part )
@@ -703,14 +703,14 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
         /*
          * get node object
          */
-        $tmp =& $tmp->$part;
+        $tmp = $tmp->$part;
 
         /*
          * result is nodeset
          */
         if ( is_array($tmp) )
         {
-          $tmp =& $tmp[$n-1];
+          $tmp = $tmp[$n-1];
         }
 
         /*
@@ -758,7 +758,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
   {
     if ( is_string($pathOrNode) )
     {
-      $node =& $this->getNode(&$pathOrNode);
+      $node = $this->getNode($pathOrNode);
       if ( ! $node )
       {
         return null;
@@ -766,7 +766,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
     }
     elseif ( qcl_data_xml_Storage::isNode($pathOrNode) )
     {
-      $node =& $pathOrNode;
+      $node = $pathOrNode;
     }
     else
     {
@@ -794,7 +794,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
   {
     if ( is_string( $pathOrNode ) )
     {
-      $node =& $this->getNode(&$pathOrNode);
+      $node = $this->getNode($pathOrNode);
       if ( ! $node )
       {
         return null;
@@ -802,7 +802,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
     }
     elseif ( qcl_data_xml_Storage::isNode( $pathOrNode ) )
     {
-      $node =& $pathOrNode;
+      $node = $pathOrNode;
     }
     else
     {
@@ -825,7 +825,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    */
   function setData($pathOrNode,$value)
   {
-    $node =& $this->getNode(&$pathOrNode);
+    $node = $this->getNode($pathOrNode);
 
     if ( ! $node )
     {
@@ -854,7 +854,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    */
   function setAttribute($pathOrNode,$name, $value)
   {
-    $node =& $this->getNode($pathOrNode);
+    $node = $this->getNode($pathOrNode);
 
     if ( ! $node )
     {
@@ -884,7 +884,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * @return SimpleXmlElement or null if not found;
    *  @todo rename to nodeGetChildNodeByAttribute()
    */
-  function &getChildNodeByAttribute( $node, $name, $value )
+  function getChildNodeByAttribute( $node, $name, $value )
   {
     if ( ! qcl_data_xml_Storage::isNode($node) )
     {
@@ -894,7 +894,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
     /*
      * iterate through children
      */
-    $children =& $node->children();
+    $children = $node->children();
 
     /*
      * PHP4
@@ -1040,13 +1040,13 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
   {
     if ( is_a( $parentXml, "qcl_data_xml_Storage" ) )
     {
-      $doc       =& $this->getDocument();
-      $parentDoc =& $parentXml->getDocument();
+      $doc       = $this->getDocument();
+      $parentDoc = $parentXml->getDocument();
 
       $this->log("Extending document ...","xml");
       //$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
 
-      $this->_extend(&$doc, &$parentDoc);
+      $this->_extend($doc, $parentDoc);
 
       //$this->debug("Result: \n\n". $this->asXml() );
 
@@ -1146,7 +1146,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
        * the current source child node to be
        * added to the parent
        */
-      $sourceChild =& $sourceChildren[$i];
+      $sourceChild = $sourceChildren[$i];
 
       /*
        * PHP4 hack
@@ -1181,7 +1181,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
         /*
          * else, we need to have a closer look
          */
-        $targetChildren =& $target->$tag;
+        $targetChildren = $target->$tag;
         $tChildren = array();
 
         /*
@@ -1189,11 +1189,11 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
          */
         if( phpversion() < 5 and ! is_array($targetChildren) )
         {
-          $tChildren[0] =& $targetChildren;
+          $tChildren[0] = $targetChildren;
         }
         else
         {
-          $tChildren =& $targetChildren;
+          $tChildren = $targetChildren;
         }
 
         /*
@@ -1203,7 +1203,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
         for ( $j=0; $j<count($tChildren); $j++ )
         {
 
-          $targetChild =& $tChildren[$j];
+          $targetChild = $tChildren[$j];
 
             //$this->debug("*** $j. target child node <$tag " . $this->serializeAttributes($targetChild) . ">" );
           /*
@@ -1236,7 +1236,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
                * extend the node
                */
                 //$this->debug("Extending <$tag extends='$extends'> with <$tag name='$srcChildName'>.");
-              $this->_extend( &$targetChild, &$sourceChild );
+              $this->_extend( $targetChild, $sourceChild );
 
               /*
                * add missing attributes
@@ -1261,7 +1261,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
                * extend the node
                */
                 //$this->debug("Extending <$tag> with tag with identical attributes.");
-              $this->_extend( &$targetChild, &$sourceChild );
+              $this->_extend( $targetChild, $sourceChild );
               $copy = false; break ;
             }
 
@@ -1283,7 +1283,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
              * extend node without attributes
              */
               //$this->debug("Extending <$tag>.");
-            $this->_extend( &$targetChild, &$sourceChild );
+            $this->_extend( $targetChild, $sourceChild );
             $copy = false; break;
           }
 
@@ -1309,8 +1309,8 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
         /*
          * add source child to target node
          */
-        $cdata = trim( $this->getData(&$sourceChild) );
-        $newTargetChild =& $target->addChild( $tag, $cdata );
+        $cdata = trim( $this->getData($sourceChild) );
+        $newTargetChild = $target->addChild( $tag, $cdata );
 
           //$this->debug("Creating single node <$tag>$cdata</$tag>.");
 
@@ -1326,7 +1326,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
         if ( count( $sourceChild->children() ) )
         {
             //$this->debug("Adding children to new node...");
-          $this->_extend( &$newTargetChild, &$sourceChild );
+          $this->_extend( $newTargetChild, $sourceChild );
         }
         else
         {

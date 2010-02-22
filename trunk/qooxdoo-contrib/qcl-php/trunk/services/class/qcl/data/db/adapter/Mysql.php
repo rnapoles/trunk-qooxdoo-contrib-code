@@ -35,7 +35,7 @@ class qcl_data_db_adapter_Mysql
 	 * @param bool $abortQuietly if true, do not throw an error if no connection can be made
 	 * @return mixed DB object on success, false on error
 	 */
-	function &connect( $dsn=null )
+	function connect( $dsn=null )
 	{
 		/*
 		 * get or set dsn information
@@ -55,7 +55,7 @@ class qcl_data_db_adapter_Mysql
     //$this->debug( "Connecting to " . ( is_array($dsn ) ? print_r($dsn,true) : $dsn ) );
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
     {
-      $db =& DB::connect( $dsn );
+      $db = DB::connect( $dsn );
     }
 		else
     {
@@ -81,7 +81,7 @@ class qcl_data_db_adapter_Mysql
 		/*
 		 * set encoding
 		 */
-		if ( $controller =& $this->getController() )
+		if ( $controller = $this->getController() )
 		{
 			$encoding = $controller->getIniValue("database.encoding");
 		}
@@ -103,7 +103,7 @@ class qcl_data_db_adapter_Mysql
 		/*
 		 * save database handler and return it
 		 */
-		$this->db =& $db;
+		$this->db = $db;
  		return $db;
 	}
 

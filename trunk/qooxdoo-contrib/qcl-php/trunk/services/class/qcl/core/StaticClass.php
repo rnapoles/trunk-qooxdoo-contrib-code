@@ -21,17 +21,19 @@ class qcl_core_StaticClass extends qcl_core_Object
 {
 
   /**
-   * If the static class is used as a singleton,
-   * it needs to implement its own getInstance()
-   * method or call getInstance(__CLASS__)
+   * Prohibit instantiation
    */
-  function &getInstance($class=null)
+  function __construct()
   {
-    if ( is_null($class) )
-    {
-      qcl_core_Object::raiseError("Static classes must implement their own getInstance() method or call 'getInstance(__CLASS__)'.");
-    }
-    return parent::getInstance($class);
+    qcl_application_Application::getInstance()->raiseError("A static class cannot be instantiated!");
+  }
+
+  /**
+   * Prohibit singleton use
+   */
+  function getInstance($class=null)
+  {
+    qcl_application_Application::getInstance()->raiseError("A static class cannot be used as a singleton!");
   }
 }
 ?>

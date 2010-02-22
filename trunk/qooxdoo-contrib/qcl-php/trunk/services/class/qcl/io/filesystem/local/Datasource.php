@@ -45,7 +45,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_type_db_Mod
   function initializeModels( $datasource )
   {
     $resourcePath = $this->getType() . "://" . $this->getResourcePath();
-    $this->folderObj =& new qcl_io_filesystem_local_Folder( $resourcePath );
+    $this->folderObj = new qcl_io_filesystem_local_Folder( $resourcePath );
   }
 
   /**
@@ -53,7 +53,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_type_db_Mod
    * @param string $filename
    * @var qcl_io_filesystem_local_File
    */
-  function &getFileObject($filename)
+  function getFileObject($filename)
   {
     return $this->folderObj->get($filename);
   }
@@ -62,7 +62,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_type_db_Mod
    * Returns the folder object
    * @var qcl_io_filesystem_local_Folder
    */
-  function &getFolderObject()
+  function getFolderObject()
   {
     return $this->folderObj;
   }

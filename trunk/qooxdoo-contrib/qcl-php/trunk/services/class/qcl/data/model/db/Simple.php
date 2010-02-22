@@ -82,7 +82,7 @@ class qcl_data_model_db_Simple
     }
     $this->setTableName( $this->getTablePrefix() . $this->table() );
 
-    parent::__construct(&$controller);
+    parent::__construct($controller);
   }
 
   /**

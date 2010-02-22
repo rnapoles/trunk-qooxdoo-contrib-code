@@ -190,7 +190,7 @@ class gs3_IO {
         $http->redirection_limit=5;
         $http->exclude_address="";
         $http->protocol_version="1.1";
-        $this->http = &$http;
+        $this->http = $http;
         $this->contructed = true;
         $this->position=0;
         $this->buffer="";
@@ -202,7 +202,7 @@ class gs3_IO {
      *
      *
      */
-    function stream_open($path, $mode, $options, &$opened_path) {
+    function stream_open($path, $mode, $options, $opened_path) {
         if ($this->getPathNumberOfComponents($path)  != 2) {
             trigger_error("$path is not a valid amazon s3 file path. A file *must* be inside of a bucket",E_USER_NOTICE);
             return false;
@@ -231,7 +231,7 @@ class gs3_IO {
         }    
         $this->reqFile = $path;
         $this->initialize($path,$rmethod,$url);
-        $http=&$this->http;        
+        $http=$this->http;        
         $this->path  = $url; 
         if ($this->tOpen) {
             /* the file was opened for read, so exit, because file is do when the file is closed */
@@ -265,7 +265,7 @@ class gs3_IO {
      */
     function stream_seek($offset, $whence) {
         $l= $this->bufActSize; 
-        $p=&$this->position;
+        $p=$this->position;
         switch ($whence) {
             case SEEK_SET: $newPos = $offset; break;
             case SEEK_CUR: $newPos = $p + $offset; break;
@@ -284,9 +284,9 @@ class gs3_IO {
      */     
     function stream_write($data){
         if (!$this->tOpen) return false;
-        $v=&$this->buffer;
+        $v=$this->buffer;
         $l=strlen($data);
-        $p=&$this->position;
+        $p=$this->position;
         $v = substr($v, 0, $p) . $data . substr($v, $p += $l);
         return $l;
     }
@@ -328,11 +328,11 @@ class gs3_IO {
      *    @return bool
      */
     function stream_close() {
-        $http = &$this->http;
+        $http = $this->http;
         $r = true;
         if ($this->tOpen) {
             $http->GetRequestArguments($this->path,$arguments);  /* parse arguments */
-            $arguments["Body"]=&$this->buffer;
+            $arguments["Body"]=$this->buffer;
             $arguments['Headers']['Content-Type'] = isset($content_type) ? $content_type : $this->getMimeOfFileType($this->path);
             $arguments['Headers']['Content-Length'] = strlen( $arguments["Body"] );
             if ($this->tAcl) $arguments['Headers']['x-amz-acl'] = $this->accessId2String( $this->tAcl );
@@ -366,7 +366,7 @@ class gs3_IO {
 
         $this->initialize($path,'HEAD',$url);
  
-        $http=&$this->http;
+        $http=$this->http;
         $http->GetRequestArguments($url,$arguments);  /* parse arguments */
         $this->getS3AuthCode('HEAD',$arguments);    
         $e=$this->Process($arguments, $headers);
@@ -405,7 +405,7 @@ class gs3_IO {
             return false;
         }
         $this->initialize($name,'PUT',$url);
-        $http=&$this->http;
+        $http=$this->http;
         /*
          *    Parse the request URL into parts that
          *    the httpclient object could process
@@ -432,7 +432,7 @@ class gs3_IO {
             return false;
         }
         $this->initialize($name,'DELETE',$url);
-        $http=&$this->http;
+        $http=$this->http;
         $http->GetRequestArguments($url,$arguments);  /* parse arguments */
         $this->getS3AuthCode('DELETE',$arguments);
     
@@ -451,7 +451,7 @@ class gs3_IO {
             return false;
         }
         $this->initialize($name,'DELETE',$url);
-        $http=&$this->http;
+        $http=$this->http;
         $http->GetRequestArguments($url,$arguments);  /* parse arguments */
         $this->getS3AuthCode('DELETE',$arguments);
     
@@ -474,7 +474,7 @@ class gs3_IO {
 
 
         $this->initialize($path,'GET',$url);
-        $http=&$this->http;
+        $http=$this->http;
         $http->GetRequestArguments($url,$arguments);  /* parse arguments */
         $this->getS3AuthCode('GET',$arguments);    
         $e=$this->Process($arguments, $headers);
@@ -490,8 +490,8 @@ class gs3_IO {
             
             $xml = xml_parser_create(); 
             xml_parser_set_option($xml,XML_OPTION_CASE_FOLDING,true);
-            xml_set_element_handler($xml, array(&$this,"_dirStart"),array(&$this,"_dirEnd") ); 
-            xml_set_character_data_handler($xml,array(&$this,"_dirData") );
+            xml_set_element_handler($xml, array($this,"_dirStart"),array($this,"_dirEnd") ); 
+            xml_set_character_data_handler($xml,array($this,"_dirData") );
             xml_parse($xml,$response, true);
             xml_parser_free($xml);
             
@@ -528,14 +528,14 @@ class gs3_IO {
      *    Handle start of XML tags
      *
      */
-    function _dirStart(&$parser,&$name,&$attribs){
+    function _dirStart($parser,$name,$attribs){
         $this->actualTag = $name;
     }
     /**
      *    Handle end of XML tags
      *
      */
-    function _dirEnd(&$parser,&$name){
+    function _dirEnd($parser,$name){
         $this->actualTag = "";
     }
     /**
@@ -543,7 +543,7 @@ class gs3_IO {
      *
      *    Save in an array when TAG == "KEY"
      */
-    function _dirData(&$parser,&$data){
+    function _dirData($parser,$data){
         if ($this->actualTag=="KEY") $this->dirList[] = $data;
     } 
     
@@ -552,10 +552,10 @@ class gs3_IO {
      *    Initialize a the httpclient
      *    @param string $name file name
      *    @param string $rmethod What to do.. PUT, GET, DELETE...
-     *    @param string &$url By reference function with get the URL 
+     *    @param string $url By reference function with get the URL 
      *    @access private 
      */
-    function initialize($name,$rmethod, &$url) {
+    function initialize($name,$rmethod, $url) {
         /*
          *    Call class contructor
          */
@@ -563,7 +563,7 @@ class gs3_IO {
         /*
          *    Reference the httpclient object
          */
-        $http = &$this->http;
+        $http = $this->http;
         /*
          * The calling method for create something is PUT 
          */
@@ -580,10 +580,10 @@ class gs3_IO {
      *
      *    @access private
      *    @param array $arguments 
-     *    @param array &$gHeaders 
+     *    @param array $gHeaders 
      */
-    function Process($arguments,&$gHeaders) {
-        $http = &$this->http;
+    function Process($arguments,$gHeaders) {
+        $http = $this->http;
         /* open */
         $http->Open($arguments); 
         /* send request */
@@ -620,9 +620,9 @@ class gs3_IO {
      *    @param string $ReqMethod the kind of Request method (PUT, DELETE, GET, POST)
      *    @param array $args The httpclient arguments   
      */
-    function getS3AuthCode($ReqMethod, &$args) {
+    function getS3AuthCode($ReqMethod, $args) {
         
-        $headers = &$args['Headers'];
+        $headers = $args['Headers'];
         $headers['Date'] = gmdate("D, d M Y G:i:s T");
         
         /* 
@@ -634,7 +634,7 @@ class gs3_IO {
         $stringToSign = $ReqMethod."\n$md5\n$type\n".$headers['Date']."\n".$access;
         $stringToSign.= $args['RequestURI'];
         //die($stringToSign);
-        $hasher =& new Crypt_HMAC(S3_PRIVATE, "sha1");
+        $hasher = new Crypt_HMAC(S3_PRIVATE, "sha1");
         $signature = $this->hex2b64($hasher->hash($stringToSign));
         
 

@@ -15,7 +15,6 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/StaticClass.php";
 
 /*
  * constants for getDefaultDsn method
@@ -29,16 +28,16 @@ define ("qcl_data_db_ADMIN_ACCESS", true);
  * Database manager singleton, providing global access to a database object
  * with a unified API
  */
-class qcl_data_db_Manager extends qcl_core_StaticClass
+class qcl_data_db_Manager extends qcl_core_Object
 {
   /**
    * Returns singleton instance of the class. Must be called
    * statically.
    * @return qcl_data_db_Manager
    */
-  function &getInstance()
+  function getInstance()
   {
-    return parent::getInstance(__CLASS__);
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -47,7 +46,7 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
    */
   function getDbType()
   {
-    return qcl_application_Application::getIniValue("database.type");
+    return qcl_application_Application::getInstance()->getIniValue("database.type");
   }
 
   /**
@@ -63,22 +62,22 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
     {
       if ( $adminaccess )
       {
-        return qcl_application_Application::getIniValue("database.admin_userdb");
+        return qcl_application_Application::getInstance()->getIniValue("database.admin_userdb");
       }
       else
       {
-        return qcl_application_Application::getIniValue("database.user_userdb");
+        return qcl_application_Application::getInstance()->getIniValue("database.user_userdb");
       }
     }
     else
     {
       if ( $adminaccess )
       {
-        return qcl_application_Application::getIniValue("database.admin_admindb");
+        return qcl_application_Application::getInstance()->getIniValue("database.admin_admindb");
       }
       else
       {
-        return qcl_application_Application::getIniValue("database.user_admindb");
+        return qcl_application_Application::getInstance()->getIniValue("database.user_admindb");
       }
     }
   }
@@ -98,7 +97,7 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
    *
    * @return qcl_data_db_type_Abstract
    */
-  function &createAdapter( $first=false, $adminaccess=false )
+  function createAdapter( $first=false, $adminaccess=false )
   {
     /*
      * if first argument is boolean, get dsn from ini values,
@@ -133,7 +132,7 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
     if ( $__dbcache[$cacheId] )
     {
       //$this->debug("Using cached db object for $cacheId");
-      $db =& $__dbcache[$cacheId];
+      $db = $__dbcache[$cacheId];
     }
 
     /*
@@ -155,7 +154,7 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
       /*
        * adapter
        */
-      $db =& new $class( $dsn );
+      $db = new $class( $dsn );
       //$this->debug("Created new $class adapter... for '$dsn'.");
 
       /*
@@ -169,7 +168,7 @@ class qcl_data_db_Manager extends qcl_core_StaticClass
       /*
        * save adapter
        */
-      $__dbcache[$cacheId] =& $db;
+      $__dbcache[$cacheId] = $db;
     }
 
     return $db;

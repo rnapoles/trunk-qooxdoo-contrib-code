@@ -8,7 +8,7 @@ class class_qcl_config_Test extends qcl_access_SessionController
 
   function method_test()
   {
-    $configModel =& qcl_config_Db::getInstance();
+    $configModel = qcl_config_Db::getInstance();
 
     $configModel->createKeyIfNotExists("qcl.test.global","string");
     $configModel->set("qcl.test.global","Blah!");
@@ -34,7 +34,7 @@ class class_qcl_config_Test extends qcl_access_SessionController
   function method_testAccessibleKeys( $params )
   {
     $mask = either( $params[0], null );
-    $configModel =& qcl_config_Db::getInstance();
+    $configModel = qcl_config_Db::getInstance();
     $this->set( array(
       "config" =>  $configModel->getAccessibleKeys( $mask )
     ) );

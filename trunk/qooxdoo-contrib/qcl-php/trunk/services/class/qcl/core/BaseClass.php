@@ -125,7 +125,7 @@ class qcl_core_BaseClass
      * PHP5 mixins
      */
     $mthd = strtolower($method);
-    if ( $this->_mixinlookup[ $mthd ] )
+    if ( isset( $this->_mixinlookup[ $mthd ] ) )
     {
       $elems = array();
       for ($i=0; $i<count( $arguments ); $i++)

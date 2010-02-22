@@ -7,10 +7,10 @@ class class_Test extends qcl_access_SessionController
   function method_getIniValue($params)
   {
     list($key) = $params;
-    $value = qcl_application_Application::getIniValue($key);
+    $value = qcl_application_Application::getInstance()->getIniValue($key);
     if ( ! $value )
     {
-      qcl_application_Application::raiseError("'$key' is empty or not set.");
+      qcl_application_Application::getInstance()->raiseError("'$key' is empty or not set.");
     }
     return $value;
   }
@@ -23,7 +23,7 @@ class class_Test extends qcl_access_SessionController
   function method_testTranslation( $params )
   {
     list($text) = $params;
-    $lm =& qcl_application_Application::getLocaleManager();
+    $lm = qcl_application_Application::getLocaleManager();
     $lm->setLocale("de");
     $lm->logLocaleInfo();
     return( "Translation of '$text': '" . $lm->tr($text) . "'.");

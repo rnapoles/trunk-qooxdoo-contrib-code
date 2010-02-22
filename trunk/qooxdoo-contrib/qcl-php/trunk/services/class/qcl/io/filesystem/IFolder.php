@@ -30,14 +30,14 @@ class qcl_io_filesystem_IFolder extends qcl_io_filesystem_IResource
    * @param string $name
    * @return qcl_io_filesystem_local_File
    */
-  function &createOrGetFile( $name ) {}
+  function createOrGetFile( $name ) {}
 
   /**
    * Creates a folder resource if it doesn't exist. Return resource
    * @param string $name
    * @return qcl_io_filesystem_local_Folder
    */
-  function &createOrGetFolder( $name ) {}
+  function createOrGetFolder( $name ) {}
 
   /**
    * Returns the file or folder with the name

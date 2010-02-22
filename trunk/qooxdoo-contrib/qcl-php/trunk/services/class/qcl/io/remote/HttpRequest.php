@@ -59,7 +59,7 @@ class qcl_io_remote_HttpRequest
    */
   function __construct( $controller, $url=null, $method = "POST" )
   {
-    parent::__construct( &$controller);
+    parent::__construct( $controller);
     $this->setUrl($url);
     $this->setMethod($method);
   }

@@ -41,7 +41,7 @@ require_once "qcl/event/message/Bus.php";
  *
  */
 class qcl_application_Application
-  extends qcl_core_StaticClass
+  extends qcl_core_Object
 {
   /**
    * The server instance
@@ -68,29 +68,27 @@ class qcl_application_Application
 
   /**
    * Return the application singleton instance. Extending classes
-   * must define this method and call parent::getInstance(__CLASS__);
+   * must define this method and call parent::getInstance();
+   *
    * A subclass will share the singleton with this class, so that qcl
    * classes calling methods of this class will work with the subclasses
    * instance.
+   *
    * @param string class name
    * @return qcl_application_Application
    */
-  function &getInstance( $class = __CLASS__ )
+  function getInstance( )
   {
-    if ( ! isset( $GLOBALS['QCL_APPLICATION_INSTANCE'] ) or ! is_object( $GLOBALS['QCL_APPLICATION_INSTANCE'] ) )
-    {
-      $GLOBALS['QCL_APPLICATION_INSTANCE'] =& new $class;
-    }
-    return $GLOBALS['QCL_APPLICATION_INSTANCE'];
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
    * Return the current server instance. Can be called statically.
    * @return AbstractServer
    */
-  function &getServer()
+  function getServer()
   {
-    $server =& qcl_server_Server::getInstance();
+    $server = qcl_server_Server::getInstance();
     return $server->serverObject;
   }
 
@@ -99,9 +97,9 @@ class qcl_application_Application
    * @return qcl_data_controller_Controller
    * @deprecated Get directly from server
    */
-  function &getController()
+  function getController()
   {
-    $server =& qcl_server_Server::getInstance();
+    $server = qcl_server_Server::getInstance();
     return $server->getController();
   }
 
@@ -169,16 +167,11 @@ class qcl_application_Application
   function getIniConfig()
   {
     /*
-     * get singleton instance
-     */
-    $_this =& qcl_application_Application::getInstance();
-
-    /*
      * return config array if already parsed
      */
-    if ( is_array( $_this->_ini ) )
+    if ( is_array( $this->_ini ) )
     {
-      return $_this->_ini;
+      return $this->_ini;
     }
 
     /*
@@ -187,7 +180,7 @@ class qcl_application_Application
     $ini_path = dirname( $_SERVER["SCRIPT_FILENAME"] ). "/" . QCL_SERVICE_CONFIG_FILE;
     if ( ! file_exists( $ini_path) )
     {
-      $_this->warn("Configuration file '$ini_path' not found for " . get_class($_this) . " ." );
+      $this->warn("Configuration file '$ini_path' not found for " . get_class($this) . " ." );
       return array();
     }
 
@@ -196,7 +189,7 @@ class qcl_application_Application
      */
     if ( defined("INI_SCANNER_RAW") )
     {
-      $_this->_ini = parse_ini_file ( $ini_path, true, INI_SCANNER_RAW );
+      $this->_ini = parse_ini_file ( $ini_path, true, INI_SCANNER_RAW );
     }
 
     /*
@@ -204,17 +197,17 @@ class qcl_application_Application
      */
     else
     {
-      $_this->_ini = parse_ini_file ( $ini_path, true );
+      $this->_ini = parse_ini_file ( $ini_path, true );
     }
 
-    return $_this->_ini;
+    return $this->_ini;
   }
 
   /**
    * Returns a configuration value of the pattern "foo.bar.baz"
    * This retrieves the values set in the service.ini.php file.
    */
-  function getIniValue($path)
+  function getIniValue( $path )
   {
     /*
      * if called recursively
@@ -224,9 +217,8 @@ class qcl_application_Application
       $path= $path[1];
     }
 
-    $_this =& qcl_application_Application::getInstance();
     $parts   = explode(".",$path);
-    $value   = $_this->getIniConfig();
+    $value   = $this->getIniConfig();
 
     /*
      * traverse array
@@ -243,7 +235,7 @@ class qcl_application_Application
     {
       $value = trim( preg_replace_callback(
         '/\$\{([^}]+)\}/',
-        array(&$_this,"getIniValue"), $value
+        array($this,"getIniValue"), $value
       ) );
     }
 
@@ -252,102 +244,15 @@ class qcl_application_Application
     return $value;
   }
 
-
   /**
    * Returns the config model singleton instance used by the application
    * @return qcl_config_Db
    */
-  function &getConfigModel()
+  function getConfigModel()
   {
     return qcl_config_Db::getInstance();
   }
 
-
-  //-------------------------------------------------------------
-  // logging
-  //-------------------------------------------------------------
-
-
-  /**
-   * Logs a message
-   */
-  function log( $msg, $filters)
-  {
-    if ( is_a($this,"qcl_application_Application") )
-    {
-      parent::log( $msg, $filters );
-    }
-    else
-    {
-      $_this = qcl_application_Application::getInstance();
-      $_this->log( $msg, $filters );
-    }
-  }
-
-  /**
-   * Logs a debug message, which will always be printed.
-   */
-  function debug( $msg, $class, $line )
-  {
-    if ( is_a($this,"qcl_application_Application") )
-    {
-      parent::debug( $msg, $class, $line );
-    }
-    else
-    {
-      $_this = qcl_application_Application::getInstance();
-      $_this->debug( $msg, $class, $line );
-    }
-  }
-
-  /**
-   * Logs an info message. Can be called statically
-   */
-  function info( $msg )
-  {
-    if ( is_a($this,"qcl_application_Application") )
-    {
-      parent::info( $msg );
-    }
-    else
-    {
-      $_this = qcl_application_Application::getInstance();
-      $_this->info( $msg, $filters );
-    }
-  }
-
-
-  /**
-   * Logs a warning
-   */
-  function warn( $msg )
-  {
-    if ( is_a($this,"qcl_application_Application") )
-    {
-      parent::warn( $msg );
-    }
-    else
-    {
-      $_this = qcl_application_Application::getInstance();
-      $_this->warn( $msg );
-    }
-  }
-
-  /**
-   * Raises an error, qcl-style. Can be called statically.
-   */
-  function raiseError( $msg )
-  {
-    if ( is_a($this,"qcl_application_Application") )
-    {
-      parent::raiseError( $msg );
-    }
-    else
-    {
-      $_this = qcl_application_Application::getInstance();
-      $_this->raiseError( $msg );
-    }
-  }
 
   //-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
@@ -359,7 +264,7 @@ class qcl_application_Application
    * controller, override this method
    * @return qcl_locale_Manager
    */
-  function &getLocaleManager()
+  function getLocaleManager()
   {
     require_once "qcl/locale/Manager.php";
     return qcl_locale_Manager::getInstance();
@@ -379,7 +284,7 @@ class qcl_application_Application
       $varargs = func_get_args();
       array_shift($varargs);
     }
-    $manager =& qcl_application_Application::getLocaleManager();
+    $manager = qcl_application_Application::getLocaleManager();
     return $manager->tr($msgId, $varargs);
   }
 
@@ -395,10 +300,9 @@ class qcl_application_Application
    */
   function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
-    $manager =& qcl_application_Application::getLocaleManager();
+    $manager = qcl_application_Application::getLocaleManager();
     return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
   }
-
 
 }
 ?>

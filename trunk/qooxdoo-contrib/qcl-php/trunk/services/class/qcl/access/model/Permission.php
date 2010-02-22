@@ -32,9 +32,9 @@ class qcl_access_model_Permission extends qcl_access_model_Common
    * @static
    * @return qcl_access_model_Permission
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -47,7 +47,7 @@ class qcl_access_model_Permission extends qcl_access_model_Common
  	{
  	 	if ( ! $roleId )
  		{
-      $roleModel  =& qcl_access_model_Role::getInstance();
+      $roleModel  = qcl_access_model_Role::getInstance();
    	  $roleId	    =  $roleModel->createIfNotExists("qcl.roles.Unassigned");
  		}
  		return parent::create( $namedId, $roleId );

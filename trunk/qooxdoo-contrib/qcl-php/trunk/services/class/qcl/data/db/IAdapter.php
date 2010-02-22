@@ -89,7 +89,7 @@ interface qcl_data_db_IAdapter
    * argument provided, with the dsn set by qcl_data_db_IAdapter::setDsn()
    * @return object Adapter object or false if no connection was possible
    */
-  function &connect( $dsn=null );
+  function connect( $dsn=null );
 
   /**
    * Queries database

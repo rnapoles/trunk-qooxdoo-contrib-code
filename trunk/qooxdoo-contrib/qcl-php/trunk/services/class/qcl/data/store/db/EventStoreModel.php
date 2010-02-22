@@ -36,9 +36,9 @@ class qcl_data_store_db_EventStoreModel
    * @static
    * @return qcl_data_store_db_StoreModel
    */
-  function &getInstance()
+  function getInstance()
   {
-    return parent::getInstance( __CLASS__ );
+    return qcl_getInstance(__CLASS__);
   }
 }
 ?>

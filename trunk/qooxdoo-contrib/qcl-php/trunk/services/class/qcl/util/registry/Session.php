@@ -30,13 +30,9 @@ class qcl_util_registry_Session
    * Returns a singleton instance of this class
    * @return qcl_util_registry_Session
    */
-  function &getInstance( )
+  function getInstance( )
   {
-    if ( ! is_object( $GLOBALS[__CLASS__] ) )
-    {
-      $GLOBALS[__CLASS__] =& new qcl_util_registry_Session;
-    }
-    return $GLOBALS[__CLASS__];
+    return qcl_getInstance( __CLASS__ );
   }
 
   /**

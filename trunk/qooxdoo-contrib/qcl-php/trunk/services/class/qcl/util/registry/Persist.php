@@ -31,9 +31,9 @@ class qcl_util_registry_Persist
    * Returns a singleton instance of this class
    * @return qcl_util_registry_Request
    */
-  function &getInstance()
+  function getInstance()
   {
-    return parent::getInstance(__CLASS__);
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -51,7 +51,7 @@ class qcl_util_registry_Persist
    */
   function reset()
   {
-    $_this =& qcl_util_registry_Persist::getInstance();
+    $_this = qcl_util_registry_Persist::getInstance();
     $_this->registry = array();
     $_this->save();
   }
@@ -64,7 +64,7 @@ class qcl_util_registry_Persist
    */
   function set( $key, $value )
   {
-    $_this =& qcl_util_registry_Persist::getInstance();
+    $_this = qcl_util_registry_Persist::getInstance();
     $_this->registry[$key] = $value;
     $_this->save();
   }
@@ -77,7 +77,7 @@ class qcl_util_registry_Persist
    */
   function get( $key )
   {
-    $_this =& qcl_util_registry_Persist::getInstance();
+    $_this = qcl_util_registry_Persist::getInstance();
     return $_this->registry[$key];
   }
 
@@ -90,7 +90,7 @@ class qcl_util_registry_Persist
    */
   function has( $key )
   {
-    $_this =& qcl_util_registry_Persist::getInstance();
+    $_this = qcl_util_registry_Persist::getInstance();
     return isset( $_this->registry[$key] );
   }
 }

@@ -137,7 +137,7 @@ class XMLParser
    * @param string $xml
    * @return object parsed object
    */
-  function &load_string($xml)
+  function load_string($xml)
   {
     $this->xml = $xml;
     $this->Parse();
@@ -150,7 +150,7 @@ class XMLParser
    * @param $file
    * @return object
    */
-  function &load_file($file)
+  function load_file($file)
   {
     if ( @is_file($file) )
     {
@@ -253,7 +253,7 @@ class XMLParser
       // otherwise references won't work with nested arrays
       // this is pretty a hack! (even works with 4.4.x)
       // thanks to chat~kaptain524 at neverbox dot com at php.net
-      $r =& $this->document;
+      $r = $this->document;
     }
     //If it isn't root level, use the stack to find the parent
     else
@@ -263,18 +263,18 @@ class XMLParser
 
       //Add the child
       eval('
-              $parentNode =& $this->'.$parent.';
-              $child =& $parentNode->_AddChild($name, $attrs, '.count($this->stack).', $this->cleanTagNames);
+              $parentNode = $this->'.$parent.';
+              $child = $parentNode->_AddChild($name, $attrs, '.count($this->stack).', $this->cleanTagNames);
             ');
 
       //Added: Set id and parent id
       $child->tagParentId = $parentNode->tagId;
 
       //Added: Save reference to node in numeric index
-      $this->nodeIndex[$child->tagId] =& $child;
+      $this->nodeIndex[$child->tagId] = $child;
 
       //Added: create index of tag names
-      $this->tagIndex[$name][] =& $child;
+      $this->tagIndex[$name][] = $child;
 
       //Added: create index of attributes.
       if ( count ( $this->indexedAttributes ) )
@@ -284,7 +284,7 @@ class XMLParser
           if ( isset($attrs[$attrName]) )
           {
             $value = $attrs[$attrName];
-            $this->attributeIndex[$attrName][$value][] =& $child;
+            $this->attributeIndex[$attrName][$value][] = $child;
           }
         }
       }
@@ -483,7 +483,7 @@ class SimpleXMLElement
   /**
    * added: simplexml method to access attributes
    */
-  function &attributes()
+  function attributes()
   {
     return $this->tagAttrs;
   }
@@ -491,7 +491,7 @@ class SimpleXMLElement
   /**
    * added: PHP5 simplexml method to access children
    */
-  function &children()
+  function children()
   {
     return $this->tagChildren;
   }
@@ -538,9 +538,9 @@ class SimpleXMLElement
    * @param string $namespace (not yet supported)
    * @return SimpleXMLElement
    */
-  function &addChild($name, $value=null , $namespace=null)
+  function addChild($name, $value=null , $namespace=null)
   {
-    $child =& $this->_AddChild($name,array(),$this->tagParents+1);
+    $child = $this->_AddChild($name,array(),$this->tagParents+1);
     //$child->tagNamespace = $namespace;
     if ($value) $child->setCDATA($value);
     return $child;
@@ -552,7 +552,7 @@ class SimpleXMLElement
    * @param object $childNode
    * @return boolean true if node was removed
    */
-  function &removeChild($childNode)
+  function removeChild($childNode)
   {
     if ( ! is_a( $childNode,"SimpleXMLElement"  ) )
     {
@@ -586,7 +586,7 @@ class SimpleXMLElement
    * @param bool $cleanTagName
    * @return SimpleXMLElement
    */
-  function &_AddChild($name, $attrs, $parents, $cleanTagName = true)
+  function _AddChild($name, $attrs, $parents, $cleanTagName = true)
   {
     //If the tag is a reserved name, output an error
     if(in_array($name, $this->invalidTags ))
@@ -617,7 +617,7 @@ class SimpleXMLElement
     //Changed: If tag name being added doesn't exist, add child directly
     if( !isset($this->$name) )
     {
-      $this->$name =& $child;
+      $this->$name = $child;
     }
 
     //Changed: if it exists, check if it is an array
@@ -626,13 +626,13 @@ class SimpleXMLElement
       if ( is_array($this->$name) )
       {
         // if yes, append to array
-        $this->{$name}[] =& $child;
+        $this->{$name}[] = $child;
       }
       else
       {
         // if no, convert into array
         $tmp = $this->$name; // note: this MUST be copy by value, not by reference
-        $this->$name = array(&$tmp,&$child);
+        $this->$name = array($tmp,$child);
 
         // this messes up the references in tag children, this is
         // why we need this hack
@@ -640,7 +640,7 @@ class SimpleXMLElement
         {
           if ( $this->tagChildren[$i]===$this->$name )
           {
-            $this->tagChildren[$i] =& $this->tagChildren[$i][0];
+            $this->tagChildren[$i] = $this->tagChildren[$i][0];
           }
         }
 
@@ -648,7 +648,7 @@ class SimpleXMLElement
       }
     }
     //Add the reference to the children array member
-    $this->tagChildren[] =& $child;
+    $this->tagChildren[] = $child;
     return $child;
   }
 
@@ -852,7 +852,7 @@ class SimpleXMLElement
     $dom = domxml_open_mem(
       $this->asXML(),
       DOMXML_LOAD_RECOVERING,
-      &$error
+      $error
     );
 
     if ( ! $dom )
@@ -864,8 +864,8 @@ class SimpleXMLElement
     /*
      * create new context and evaluate the xpath expression
      */
-    $xpCxt =& $this->dom->xpath_new_context();
-    $xpObj =& $xpCxt->xpath_eval_expression( $expr );
+    $xpCxt = $this->dom->xpath_new_context();
+    $xpObj = $xpCxt->xpath_eval_expression( $expr );
     if ( ! $xpObj ) return null;
 
     /*
@@ -874,12 +874,12 @@ class SimpleXMLElement
     $nodeSetArray=array();
     foreach ( $xpObj->nodeset as $node)
     {
-      $doc =& domxml_new_doc("1.0");
+      $doc = domxml_new_doc("1.0");
       $doc->append_child( $node->clone_node( true ) );
       $xmlString = $doc->dump_mem( 2,"utf-8");
       $parser = new XMLParser($xmlString);
       $parser->Parse();
-      $nodeSetArray[] =& $parser->document;
+      $nodeSetArray[] = $parser->document;
     }
     return $nodeSetArray;
   }

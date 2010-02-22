@@ -83,11 +83,11 @@ class qcl_access_SessionController
        * get user from session. if session data is invalid,
        * do not authenticate
        */
-      $userId =& $this->getUserIdFromSession( $sessionId );
+      $userId = $this->getUserIdFromSession( $sessionId );
 
       if ( $userId )
       {
-        $userModel =& $this->getUserModel( $userId );
+        $userModel = $this->getUserModel( $userId );
         $this->setActiveUser( $userModel );
 
         /*
@@ -197,7 +197,7 @@ class qcl_access_SessionController
    * Returns the session model singleton instance
    * @return qcl_access_model_Session
    */
-  function &getSessionModel()
+  function getSessionModel()
   {
     return qcl_access_Manager::getSessionModel();
   }
@@ -210,7 +210,7 @@ class qcl_access_SessionController
    */
   function sessionExists( $sessionId )
   {
-    $sessionModel =& $this->getSessionModel();
+    $sessionModel = $this->getSessionModel();
     return $sessionModel->exists( array(
       'sessionId' => $sessionId
     ) );
@@ -226,8 +226,8 @@ class qcl_access_SessionController
     /*
      * models
      */
-    $activeUser   =& $this->getActiveUser();
-    $sessionModel =& $this->getSessionModel();
+    $activeUser   = $this->getActiveUser();
+    $sessionModel = $this->getSessionModel();
 
     /*
      * register current session
@@ -253,7 +253,7 @@ class qcl_access_SessionController
   function unregisterSession()
   {
     $sessionId = $this->getSessionId();
-    $sessionModel =& $this->getSessionModel();
+    $sessionModel = $this->getSessionModel();
     $sessionModel->unregisterSession( $sessionId );
   }
 
@@ -263,7 +263,7 @@ class qcl_access_SessionController
    */
   function cleanUp()
   {
-    $sessionModel =& $this->getSessionModel();
+    $sessionModel = $this->getSessionModel();
     $sessionModel->cleanUp();
   }
 
@@ -275,8 +275,8 @@ class qcl_access_SessionController
   function terminate()
   {
 
-    $sessionModel =& $this->getSessionModel();
-    $activeUser   =& $this->getActiveUser();
+    $sessionModel = $this->getSessionModel();
+    $activeUser   = $this->getActiveUser();
     $sessionId = $this->getSessionId();
     $username  = $activeUser->username();
     $this->info("Session #$sessionId ($username) is terminated.");
@@ -296,7 +296,7 @@ class qcl_access_SessionController
     /*
      * look if session exists
      */
-    $sessionModel =& $this->getSessionModel();
+    $sessionModel = $this->getSessionModel();
     $sessionModel->findBy( "sessionId", $sessionId );
 
     /*
@@ -310,7 +310,7 @@ class qcl_access_SessionController
         $this->setError("Session $sessionId is not connected with a user id!");
         return false;
       }
-      $userModel =& $this->getUserModel();
+      $userModel = $this->getUserModel();
       if ( ! $userModel->exists( array("id" => $activeUserId ) ) )
       {
         $this->setError("Session $sessionId refers to a non-existing user.");
@@ -340,7 +340,7 @@ class qcl_access_SessionController
     /*
      * get user id from parent session
      */
-    $sessionModel =& $this->getSessionModel();
+    $sessionModel = $this->getSessionModel();
     $sessionModel->findBy("sessionId",$parentSessionId);
     if ( $sessionModel->foundNothing() )
     {

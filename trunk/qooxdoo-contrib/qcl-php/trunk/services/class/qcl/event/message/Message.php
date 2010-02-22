@@ -74,7 +74,7 @@ class qcl_event_message_Message
    * Returns the sender object
    * @return qcl_core_Object
    */
-  function &getSender()
+  function getSender()
   {
     return $this->getObjectById( $this->getSenderId() );
   }

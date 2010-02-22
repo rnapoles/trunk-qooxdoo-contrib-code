@@ -172,7 +172,7 @@ class qcl_util_system_Shell extends qcl_core_Object
     return $output;
  	}
 
- 	function runExternal($cmd,&$code) {
+ 	function runExternal($cmd,$code) {
  	  $descriptorspec = array(
  	  0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
  	  1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
@@ -221,7 +221,7 @@ class qcl_util_system_Shell extends qcl_core_Object
  	  return $output;
  	}
 
-  function cmd_exec($cmd, &$stdout, &$stderr)
+  function cmd_exec($cmd, $stdout, $stderr)
   {
     $outfile = tempnam( null, "cmd");
     $errfile = tempnam( null, "cmd");

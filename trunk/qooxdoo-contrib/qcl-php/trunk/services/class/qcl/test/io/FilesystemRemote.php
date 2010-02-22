@@ -13,21 +13,21 @@ class class_qcl_io_filesystem_remote_Tests extends qcl_data_controller_Controlle
 
     function method_testCreate()
     {
-      $topDir =& new qcl_io_filesystem_local_Folder(  "file://" . $this->tmpDir() . "test" );
-      $file1  =& $topDir->createOrGetFile("file1");
-      $file2  =& $topDir->createOrGetFile("file2");
-      $dir1   =& $topDir->createOrGetFolder("dir1");
+      $topDir = new qcl_io_filesystem_local_Folder(  "file://" . $this->tmpDir() . "test" );
+      $file1  = $topDir->createOrGetFile("file1");
+      $file2  = $topDir->createOrGetFile("file2");
+      $dir1   = $topDir->createOrGetFolder("dir1");
 
-      $file3 =& $dir1->createOrGetFile("file3");
+      $file3 = $dir1->createOrGetFile("file3");
       $file3->rename("file3b");
       $file3->delete();
     }
 
     function method_testDirContents()
     {
-      $topDir =& new qcl_io_filesystem_remote_Folder( "s3://fulltext.panya.de/" );
+      $topDir = new qcl_io_filesystem_remote_Folder( "s3://fulltext.panya.de/" );
       $topDir->open();
-      while ( $resource =& $topDir->next() )
+      while ( $resource = $topDir->next() )
       {
         $this->info( $resource->basename() . ": " . $resource->className() );
       }
@@ -36,7 +36,7 @@ class class_qcl_io_filesystem_remote_Tests extends qcl_data_controller_Controlle
 
   function method_testFileDownload ( $params )
   {
-    $fileObj =& new qcl_io_filesystem_remote_File( "s3://fulltext.panya.de/Acker1999.pdf");
+    $fileObj = new qcl_io_filesystem_remote_File( "s3://fulltext.panya.de/Acker1999.pdf");
 
     $filename=$fileObj->basename();
     header("Content-Type: application/octet-stream");

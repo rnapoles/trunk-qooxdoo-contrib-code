@@ -98,12 +98,12 @@ class qcl_data_db_adapter_Abstract
 	   */
     if ( is_a( $master,"qcl_data_model_Abstract" ) )
     {
-      $this->_model  =& $master;
-      $this->_controller =& $master->getController();
+      $this->_model  = $master;
+      $this->_controller = $master->getController();
     }
 	  elseif ( is_a( $master,"qcl_data_controller_Controller" ) )
     {
-      $this->_controller =& $master;
+      $this->_controller = $master;
     }
 	  elseif ( ! is_null( $master ) )
 	  {
@@ -120,7 +120,7 @@ class qcl_data_db_adapter_Abstract
    * Getter for model
    * @return qcl_data_db_IModel
    */
-  function &getModel()
+  function getModel()
   {
     return $this->_model;
   }
@@ -129,7 +129,7 @@ class qcl_data_db_adapter_Abstract
    * Getter for controller
    * @return qcl_data_controller_Controller
    */
-  function &getController()
+  function getController()
   {
     return $this->_controller;
   }
@@ -149,7 +149,7 @@ class qcl_data_db_adapter_Abstract
 	  if ( is_string($dsn) or is_array($dsn) )
 		{
 			$this->setDsn($dsn);
- 			$this->db =& $this->connect();
+ 			$this->db = $this->connect();
  			if ( ! $this->db )
  			{
  			  $this->raiseError($this->getError());

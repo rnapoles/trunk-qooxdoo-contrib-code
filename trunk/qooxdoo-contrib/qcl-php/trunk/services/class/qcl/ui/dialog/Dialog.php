@@ -33,7 +33,7 @@ class qcl_ui_dialog_Dialog
     /*
      * if we have a database-based message transport, use this
      */
-    if ( qcl_application_Application::getIniValue("service.event_transport") == "on" )
+    if ( qcl_application_Application::getInstance()->getIniValue("service.event_transport") == "on" )
     {
       qcl_event_message_Bus::dispatchServerMessage(
         null, "qcl.ui.dialog.Dialog.createDialog", $data

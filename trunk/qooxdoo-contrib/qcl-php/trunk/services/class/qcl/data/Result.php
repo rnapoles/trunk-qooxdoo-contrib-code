@@ -50,7 +50,7 @@ class qcl_data_Result
    * @param $data
    * @return qcl_data_Result
    */
-  function &queryResultToModel( $data )
+  function queryResultToModel( $data )
   {
     if ( ! is_array( $data ) )
     {

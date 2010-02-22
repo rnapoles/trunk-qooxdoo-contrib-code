@@ -36,9 +36,9 @@ class qcl_event_message_db_Message
    * @static
    * @return qcl_event_message_db_Message
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance( __CLASS__ );
   }
 }
 ?>

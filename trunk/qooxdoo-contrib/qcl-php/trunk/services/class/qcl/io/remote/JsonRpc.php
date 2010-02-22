@@ -37,7 +37,7 @@ class qcl_io_remote_JsonRpc
   {
     if ( is_a( $arg, "qcl_data_controller_Controller" ) )
     {
-      parent::__construct( &$arg );
+      parent::__construct( $arg );
       $this->setUrl( $arg->getServerUrl() );
     }
     elseif ( is_string( $arg ) )

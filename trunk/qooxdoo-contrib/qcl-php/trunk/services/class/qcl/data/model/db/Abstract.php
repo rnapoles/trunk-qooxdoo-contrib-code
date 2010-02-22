@@ -73,7 +73,7 @@ class qcl_data_model_db_Abstract
      */
     if ( is_object( $datasourceModel ) )
     {
-      $this->setDatasourceModel( &$datasourceModel );
+      $this->setDatasourceModel( $datasourceModel );
     }
 
     /*
@@ -88,7 +88,7 @@ class qcl_data_model_db_Abstract
    * Returns the database connection object for this model
    * @return qcl_data_db_type_Abstract
    */
-  function &db()
+  function db()
   {
     return $this->db;
   }
@@ -116,12 +116,12 @@ class qcl_data_model_db_Abstract
     /*
      * try to get db handler from datasource object
      */
-    $dsModel =& $this->getDatasourceModel();
+    $dsModel = $this->getDatasourceModel();
     if ( is_object($dsModel)
           and $dsModel->isInstanceOf( "qcl_data_datasource_type_db_Model" ) )
     {
       //$this->debug( get_class($this) . ": Getting db object from datasource object...");
-      $db =& $dsModel->getDatasourceConnection();
+      $db = $dsModel->getDatasourceConnection();
     }
 
     /*
@@ -129,7 +129,7 @@ class qcl_data_model_db_Abstract
      */
     else
     {
-      $db =& qcl_data_db_Manager::createAdapter();
+      $db = qcl_data_db_Manager::createAdapter();
     }
 
     /*
@@ -143,7 +143,7 @@ class qcl_data_model_db_Abstract
     /*
      * store new connection
      */
-    $this->db =& $db;
+    $this->db = $db;
 
     return true;
   }
@@ -224,8 +224,8 @@ class qcl_data_model_db_Abstract
    */
   function getTablePrefix()
   {
-    $prefix = qcl_application_Application::getIniValue("database.tableprefix");
-    $dsModel =& $this->getDatasourceModel();
+    $prefix = qcl_application_Application::getInstance()->getIniValue("database.tableprefix");
+    $dsModel = $this->getDatasourceModel();
     if ( $dsModel )
     {
       $prefix = $dsModel->getTablePrefix();
@@ -427,7 +427,7 @@ class qcl_data_model_db_Abstract
             break;
           case 1:
             $alias="t2";
-            $model =& $this->getLinkedModelInstance( $link );
+            $model = $this->getLinkedModelInstance( $link );
             break;
         }
 
@@ -542,7 +542,7 @@ class qcl_data_model_db_Abstract
        * joined model
        */
       $joinedTable =  $this->getJoinedTable( $link );
-      $joinedModel =& $this->getLinkedModelInstance( $link );
+      $joinedModel = $this->getLinkedModelInstance( $link );
       $joinedLKey  =  $joinedModel->getLocalKey();
       $joinedFKey  =  $joinedModel->getForeignKey();
 

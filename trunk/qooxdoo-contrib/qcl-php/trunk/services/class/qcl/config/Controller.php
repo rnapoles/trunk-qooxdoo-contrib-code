@@ -95,7 +95,7 @@ class qcl_config_Controller
     /*
      * models
      */
-    $configModel =& $this->getConfigModel();
+    $configModel = $this->getConfigModel();
 
     require_once("qcl/data/xml/model.php");
     $path = "../var/tmp/config.xml";
@@ -103,12 +103,12 @@ class qcl_config_Controller
 
     $xmlModel = new qcl_data_xml_model($this);
     $xmlModel->load($path);
-    $doc =& $xmlModel->getDocument();
+    $doc = $xmlModel->getDocument();
 
-    $keysNode =& $doc->addChild("keys");
+    $keysNode = $doc->addChild("keys");
     foreach( $configModel->getAll() as $record )
     {
-      $keyNode =& $keysNode->addChild("key");
+      $keyNode = $keysNode->addChild("key");
       foreach( $record as $key => $value )
       {
         if( $key=="id" )

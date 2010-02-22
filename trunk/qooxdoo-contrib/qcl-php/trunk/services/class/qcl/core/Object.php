@@ -17,12 +17,6 @@
  */
 
 /*
- * Error reporting level. Global var $error_reporting needs to be
- * defined in global_settings.php or config.php
- */
-error_reporting( $error_reporting );
-
-/*
  * For constant definition for which a simple integer is sufficient,
  * use global variable $constId like so:
  * define("MY_CONSTANT", $constId++);
@@ -37,14 +31,7 @@ require_once "qcl/log/Logger.php";
 require_once "qcl/lang/String.php";         // String object similar to java
 require_once "qcl/lang/Utf8String.php";     // Class with methods to deal with Utf8 Strings
 require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
-
-/*
- * Version-dependent base class
- */
-if ( phpversion() < 5 )
-  require_once "qcl/core/BaseClassPHP4.php";
-else
-  require_once "qcl/core/BaseClassPHP5.php";
+require_once "qcl/core/BaseClass.php";      // Base class containing overloading stuff
 
 /**
  * path to log file
@@ -62,14 +49,6 @@ if ( ! defined( "QCL_LOG_FILE") )
   define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . "qcl.log" );
 }
 
-/**
- * JsonRpcClassPrefix from dispatcher script
- * @todo move elsewhere
- */
-if ( ! defined( "JsonRpcClassPrefix" ) )
-{
-  define( "JsonRpcClassPrefix" , "class_");
-}
 
 /**
  * Use as a a default argument to indicate that argument hasn't been supplied
@@ -102,7 +81,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @var array
    */
   var $include = array();
-
 
   /**
    * If this object produces a recoverable error, the error message will be stored here
@@ -194,20 +172,13 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function implementsInterface( $interface, $className = null )
   {
-    if ( phpversion() >= 5 )
+    if ( $className )
     {
-      if ( $className )
-      {
-        return in_array( $interface, class_implements( $className ) );
-      }
-      else
-      {
-        return in_array( $interface, class_implements( $this ) );
-      }
+      return in_array( $interface, class_implements( $className ) );
     }
     else
     {
-      trigger_error("implementsInterface not yet implemented for PHP4.");
+      return in_array( $interface, class_implements( $this ) );
     }
   }
 
@@ -239,7 +210,7 @@ class qcl_core_Object extends qcl_core_BaseClass
       {
         $object_db = array();
       }
-      $object_db[$this->_objectId] =& $this;
+      $object_db[$this->_objectId] = $this;
 
     }
     return $this->_objectId;
@@ -249,7 +220,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * Returns an object identified by its id.
    * @return qcl_core_Object
    */
-  function &getObjectById($objectId)
+  function getObjectById($objectId)
   {
     global $object_db;
     return $object_db[$objectId];
@@ -418,53 +389,6 @@ class qcl_core_Object extends qcl_core_BaseClass
   }
 
 
-  //-------------------------------------------------------------
-  // instance and singleton management
-  //-------------------------------------------------------------
-
-  /**
-   * Gets singleton instance. If you want to use this method on a static class that extends this class,
-   * you need to override this method like so: <pre>
-   * function &getInstance( $class=__CLASS__ )
-   * {
-   *   return parent::getInstance( $class );
-   * }
-   * </pre>
-   *
-   * The reason is that PHP cannot access the class name in static classes (which hasn't been resolved in PHP5!).
-   * You can also pass up to 3 arguments after the class name which will be passed
-   * to the constructor function
-   *
-   * @param string[optional, defaults to __CLASS__] $class Class name. Does not need to be provided in object instances.
-   * @param mixed[optional] $arg1
-   * @param mixed[optional] $arg2
-   * @param mixed[optional] $arg3
-   * @return object singleton  instance of class
-   */
-  function &getInstance( $class = __CLASS__, $arg1=null, $arg2=null, $arg3=null )
-  {
-    if ( ! $GLOBALS[$class] )
-     {
-       if ( phpversion() < 5 )
-       {
-         /*
-          * PHP5.3 will not respect error_reporting level here
-          * when parsing the code
-          * FIXME remove this, security hazard
-          */
-         eval('
-          $GLOBALS[$class] =& new $class( &$arg1, &$arg2, &$arg3 );
-         ');
-       }
-       else
-       {
-         $GLOBALS[$class] = new $class( $arg1, $arg2, $arg3 );
-       }
-     }
-     return $GLOBALS[$class];
-  }
-
-
   /**
    * Returns new instance of classname. If the calling object is a subclass
    * of qx_jsonrpc_controller, pass the object as constructor to the model class,
@@ -476,7 +400,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @deprecated Use native php code to instantiate classes, this will
    * be removed.
    */
-  function &getNew( $classname )
+  function getNew( $classname )
   {
     /*
      * convert dot-separated class names into php-style
@@ -503,21 +427,9 @@ class qcl_core_Object extends qcl_core_BaseClass
     }
 
     /*
-     * PHP 5.3 doesn't respect error_reporting here when
-     * parsing the code
-     * FIXME remove this, security hazard
+     * create new instance and return it
      */
-    if ( phpversion() < 5 )
-    {
-      eval('
-        $instance =& new $classname;
-      ');
-    }
-    else
-    {
-      $instance = new $classname;
-    }
-
+    $instance = new $classname;
     return $instance;
   }
 
@@ -531,14 +443,14 @@ class qcl_core_Object extends qcl_core_BaseClass
    */
   function setupLogger()
   {
-    $this->_logger =& qcl_log_Logger::getInstance();
+    $this->_logger = qcl_log_Logger::getInstance();
   }
 
   /**
    * Get logger object
    * @return qcl_log_Logger
    */
-  function &getLogger()
+  function getLogger()
   {
     return $this->_logger;
   }
@@ -731,7 +643,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     {
       $message .= " in $file, line $line.";
     }
-    $logger =& qcl_log_Logger::getInstance();
+    $logger = qcl_log_Logger::getInstance();
     $msg = "\n\n### Error in " . get_class($this) . " ###\n" .
       $message . "\n" .
       "Backtrace:\n" .
@@ -754,10 +666,10 @@ class qcl_core_Object extends qcl_core_BaseClass
      * if this is a jsonrpc request, we have an $error object
      * that the error can be passed to.
      */
-    $server =& qcl_server_Server::getServerObject();
+    $server = qcl_server_Server::getServerObject();
     if ( $server )
     {
-      $error  =& $server->getErrorBehavior();
+      $error  = $server->getErrorBehavior();
       $error->setError( $number, htmlentities( stripslashes( $message ) ) );
     }
     else

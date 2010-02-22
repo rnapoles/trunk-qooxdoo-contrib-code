@@ -19,12 +19,12 @@ class class_qcl_access_Tests extends qcl_access_Controller
   {
 
 
-    $logger =& $this->getLogger();
+    $logger = $this->getLogger();
     $logger->setFilterEnabled("propertyModel",true);
 
     $user = either ($params[0], "admin");
     //$this->debug("Testing user $user");
-    $userModel =& $this->getUserModel();
+    $userModel = $this->getUserModel();
     $userModel->findByNamedId($user);
 
     if ( $userModel->foundSomething() )
@@ -44,7 +44,7 @@ class class_qcl_access_Tests extends qcl_access_Controller
 
   function method_testRole()
   {
-    $roleModel =& $this->getRoleModel();
+    $roleModel = $this->getRoleModel();
     $roleModel->findByNamedId("qcl.roles.User");
 
     $this->info($roleModel->users('namedId'));
@@ -61,7 +61,7 @@ class class_qcl_access_Tests extends qcl_access_Controller
   function method_hasPermission($params)
   {
     list($username,$permission) = $params;
-    $userModel =& $this->getUserModel();
+    $userModel = $this->getUserModel();
     $userModel->findByNamedId($username);
     return $userModel->hasPermission($permission);
   }

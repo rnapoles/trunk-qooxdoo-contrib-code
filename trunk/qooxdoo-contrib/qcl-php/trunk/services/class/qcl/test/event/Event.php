@@ -13,11 +13,11 @@ class class_qcl_test_event_Event
 
     $object1 = new qcl_core_Object;
     $this->info("object1 -> #" . $object1->objectId() );
-    $object1->addListener("fooEvent", &$this, "handleFooEvent");
+    $object1->addListener("fooEvent", $this, "handleFooEvent");
 
     $object2 = new qcl_core_Object;
     $this->info("object2 -> #" . $object2->objectId() );
-    $object2->addListener("barEvent", &$this, "handleBarEvent");
+    $object2->addListener("barEvent", $this, "handleBarEvent");
 
     $object1->fireDataEvent("fooEvent", "Foo!");
     $object1->fireDataEvent("barEvent", "Bar!");

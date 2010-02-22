@@ -29,9 +29,9 @@ class qcl_access_model_Role extends qcl_access_model_Common
    * @static
    * @return qcl_access_model_Role
    */
-  function &getInstance( $class=__CLASS__ )
+  function getInstance()
   {
-    return parent::getInstance( $class );
+    return qcl_getInstance(__CLASS__);
   }
 
   /**
@@ -39,10 +39,10 @@ class qcl_access_model_Role extends qcl_access_model_Common
    * permissions that are connected to the current role
    * @return qcl_access_model_Permission
    */
-  function &linkedPermissionModel( $properties="*")
+  function linkedPermissionModel( $properties="*")
   {
-    $permModel =& qcl_access_model_Permission::getInstance();
-    $permModel->findByLinkedModel( &$this,null,$properties);
+    $permModel = qcl_access_model_Permission::getInstance();
+    $permModel->findByLinkedModel( $this,null,$properties);
     return $permModel;
   }
 
@@ -54,7 +54,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
   function getPermissions( $prop="namedId" )
   {
     $permissions = array();
-    $permModel =& $this->linkedPermissionModel();
+    $permModel = $this->linkedPermissionModel();
     if ( $permModel->foundSomething() )
     {
       do
@@ -77,10 +77,10 @@ class qcl_access_model_Role extends qcl_access_model_Common
    * users that are connected to the current role
    * @return qcl_access_model_User
    */
-  function &linkedUserModel( $properties="*")
+  function linkedUserModel( $properties="*")
   {
-    $controller =& $this->getController();
-    $userModel  =& $controller->getUserModel();
+    $controller = $this->getController();
+    $userModel  = $controller->getUserModel();
     $userModel->findByLinkedModel($this,null,$properties);
     return $userModel;
   }
@@ -92,7 +92,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
   function getUsers($prop="namedId")
   {
     $users = array();
-    $userModel =& $this->linkedUserModel($prop);
+    $userModel = $this->linkedUserModel($prop);
     if ( $userModel->foundSomething() )
     {
       do

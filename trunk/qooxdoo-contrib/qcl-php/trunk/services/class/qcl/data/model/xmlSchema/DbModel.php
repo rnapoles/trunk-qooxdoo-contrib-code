@@ -127,7 +127,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * parent method establishes database connection
      */
-    parent::initialize( &$datasourceModel );
+    parent::initialize( $datasourceModel );
 
 
     /*
@@ -301,20 +301,20 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $name
    * @return SimpleXmlElement
    */
-  function &getPropertyNode ( $name )
+  function getPropertyNode ( $name )
   {
     $this->getSchemaXml(); // make sure schema has been initialized
     if ( $this->hasAlias($name) )
     {
-      $node =& $this->propertyNodes[ $this->getAlias( $name) ];
+      $node = $this->propertyNodes[ $this->getAlias( $name) ];
       if ( ! $node )
       {
-        $node =& $this->propertyNodes[ $name ];
+        $node = $this->propertyNodes[ $name ];
       }
     }
     else
     {
-      $node =& $this->propertyNodes[ $name ];
+      $node = $this->propertyNodes[ $name ];
     }
     if ( ! $node )
     {
@@ -331,7 +331,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getPropertyType ( $name )
   {
-    $node  =& $this->getPropertyNode( $name );
+    $node  = $this->getPropertyNode( $name );
     $attrs =  $node->attributes();
     return (string) $attrs['type'];
   }
@@ -400,7 +400,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function findByLinkedNamedId( $namedId, $link, $orderBy=null, $properties="*" )
   {
-    $linkedModel =& $this->getLinkedModelInstance($link);
+    $linkedModel = $this->getLinkedModelInstance($link);
     $namedIdCol  =  $linkedModel->getColumnName("namedId");
     return $this->findWhere("t2.`$namedIdCol`='$namedId'", $orderBy, $properties, $link );
   }
@@ -416,7 +416,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function findByLinkedModel( $model, $orderBy=null, $properties="*", $distinct=false )
   {
-    $links = $this->getLinksByModel( &$model );
+    $links = $this->getLinksByModel( $model );
     $id    = $model->getId();
     return $this->findWhere("t2.id=$id", $orderBy, $properties, $links[0], null, $distinct );
   }
@@ -654,8 +654,8 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * the schema xml object and document
      */
-    $modelXml   =& $this->getSchemaXml();
-    $doc        =& $modelXml->getDocument();
+    $modelXml   = $this->getSchemaXml();
+    $doc        = $modelXml->getDocument();
 
     //$this->debug($doc->asXml());
 
@@ -710,7 +710,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * Now that we know we have a table, we need a database connection
      */
-    $db =& $this->db();
+    $db = $this->db();
     if ( ! $db )
     {
       $this->raiseError("Cannot setup schema - no database connection.");
@@ -767,16 +767,16 @@ class qcl_data_model_xmlSchema_DbModel
         require_once "qcl/data/model/xmlSchema/DbRegistry.php";
         if ( phpversion()<5 )
         {
-          $this->modelTableInfo =& qcl_data_model_xmlSchema_DbRegistry::getInstance();
+          $this->modelTableInfo = qcl_data_model_xmlSchema_DbRegistry::getInstance();
         }
         else
         {
           $this->modelTableInfo = qcl_data_model_xmlSchema_DbRegistry::getInstance();
         }
       }
-      $datasourceModel =& $this->getDatasourceModel();
+      $datasourceModel = $this->getDatasourceModel();
       $isInitialized   = $this->modelTableInfo->isInitialized(
-        &$datasourceModel,
+        $datasourceModel,
         $this->table(),
         $this->class,
         $this->schemaTimestamp
@@ -805,7 +805,7 @@ class qcl_data_model_xmlSchema_DbModel
      * Get admin access
      * FIXME
      */
-    $db =& $this->db();
+    $db = $this->db();
 
     /*
      * create main data table if necessary
@@ -905,7 +905,7 @@ class qcl_data_model_xmlSchema_DbModel
        */
       if ( ! $indexes )
       {
-        $indexes =& $doc->model->definition->indexes;
+        $indexes = $doc->model->definition->indexes;
 
         if ( $indexes )
         {
@@ -973,7 +973,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * contraints
      */
-    $constraints =& $this->schemaXml->getNode("/model/definition/constraints");
+    $constraints = $this->schemaXml->getNode("/model/definition/constraints");
     if ( $constraints )
     {
 
@@ -1026,7 +1026,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * indexes
      */
-    $indexes =& $doc->model->definition->indexes;
+    $indexes = $doc->model->definition->indexes;
     if ( $indexes )
     {
       $this->log("Creating indexes ...","propertyModel");
@@ -1233,11 +1233,11 @@ class qcl_data_model_xmlSchema_DbModel
                */
               if ( $shareDatasource != "no" and  $shareDatasource != "false" )
               {
-                $model =& new $modelName( &$this, &$datasourceModel );
+                $model = new $modelName( $this, $datasourceModel );
               }
               else
               {
-                $model =& new $modelName( &$this );
+                $model = new $modelName( $this );
               }
 
               /*
@@ -1276,9 +1276,9 @@ class qcl_data_model_xmlSchema_DbModel
                 /*
                  * get <links> node in target model
                  */
-                $targetSchemaXml =& $model->getSchemaXml();
-                $targetSchemaDoc =& $targetSchemaXml->getDocument();
-                $targetLinksNode =& $targetSchemaDoc->model->links;
+                $targetSchemaXml = $model->getSchemaXml();
+                $targetSchemaDoc = $targetSchemaXml->getDocument();
+                $targetLinksNode = $targetSchemaDoc->model->links;
 
                 if ( ! is_object($targetLinksNode) )
                 {
@@ -1296,7 +1296,7 @@ class qcl_data_model_xmlSchema_DbModel
                 }
                 if ( ! $found )
                 {
-                  $sourceModelNode =& $targetLinksNode->addChild("link");
+                  $sourceModelNode = $targetLinksNode->addChild("link");
 
                   /*
                    * The name of the association is the source table
@@ -1401,7 +1401,7 @@ class qcl_data_model_xmlSchema_DbModel
     if ( $this->modelTableInfo )
     {
       $this->modelTableInfo->registerInitialized(
-        &$datasourceModel,
+        $datasourceModel,
         $this->table(),
         $this->class,
         $this->schemaTimestamp
@@ -1435,8 +1435,8 @@ class qcl_data_model_xmlSchema_DbModel
   {
     $this->log("Setting up table associations ... ","propertyModel");
 
-    $schemaXml =& $this->getSchemaXml();
-    $links     =& $schemaXml->getNode("/model/links");
+    $schemaXml = $this->getSchemaXml();
+    $links     = $schemaXml->getNode("/model/links");
 
     //$this->debug( $links );
     if ( is_object($links) )
@@ -1464,7 +1464,7 @@ class qcl_data_model_xmlSchema_DbModel
    * link information
    * @return array
    */
-  function &getLinkNodes()
+  function getLinkNodes()
   {
     if ( ! $this->linkNodes )
     {
@@ -1478,7 +1478,7 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $name
    * @return SimpleXmlElement
    */
-  function &getLinkNode ( $name=null )
+  function getLinkNode ( $name=null )
   {
     if ( ! is_array( $this->linkNodes ) )
     {
@@ -1503,7 +1503,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getLinkTable( $name )
   {
-    $linkNode =& $this->getLinkNode( $name );
+    $linkNode = $this->getLinkNode( $name );
     //$this->debug("*** table " . $this->table() . ", link $name *** " . $linkNode->asXml() );
     $attrs = $linkNode->attributes();
     $tbl =  either( (string) $attrs['jointable'], (string) $attrs['joinTable'] );
@@ -1522,7 +1522,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getLinkedModelClass( $name )
   {
-    $linkNode =& $this->getLinkNode( $name );
+    $linkNode = $this->getLinkNode( $name );
     $attrs = $linkNode->attributes();
     $modelName = (string) $attrs['model'];
 
@@ -1545,13 +1545,13 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $Name of the link
    * @return qcl_data_model_xmlSchema_DbModel Model instance or false if no model could be found.
    */
-  function &getLinkedModelInstance( $name )
+  function getLinkedModelInstance( $name )
   {
     $modelClass =  $this->getLinkedModelClass( $name );
     if ( $modelClass )
     {
-      $controller =& $this->getController();
-      $dsModel    =& $this->getDatasourceModel();
+      $controller = $this->getController();
+      $dsModel    = $this->getDatasourceModel();
 
       /*
        * load model code
@@ -1562,7 +1562,7 @@ class qcl_data_model_xmlSchema_DbModel
        * create new model instance, passing controller and
        * datasource model to it
        */
-      $modelObj =& new $modelClass(&$controller,&$dsModel);
+      $modelObj = new $modelClass($controller,$dsModel);
       return $modelObj;
     }
     return false;
@@ -1576,7 +1576,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getJoinedTable( $name )
   {
-    $joinedModel =& $this->getLinkedModelInstance( $name );
+    $joinedModel = $this->getLinkedModelInstance( $name );
     return $joinedModel->getTableName();
   }
 
@@ -1683,14 +1683,14 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * database connection
      */
-    $db =& $this->db();
+    $db = $this->db();
 
     /*
      * context data
      */
     if ( is_a( $first,"qcl_data_model_xmlSchema_DbModel" ) )
     {
-      $links = $this->getLinksByModel( &$first );
+      $links = $this->getLinksByModel( $first );
     }
     elseif ( ! $first or ! is_string( $first ) )
     {
@@ -1740,11 +1740,11 @@ class qcl_data_model_xmlSchema_DbModel
      */
     if ( is_object($first) )
     {
-      $joinedModel =& $first;
+      $joinedModel = $first;
     }
     else
     {
-      $joinedModel =& $this->getLinkedModelInstance( $links[0] );
+      $joinedModel = $this->getLinkedModelInstance( $links[0] );
     }
 
     /*
@@ -1795,7 +1795,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function removeLink( $first, $linkedId, $localId=null )
   {
-    return $this->createLink( &$first, $linkedId, $localId, true);
+    return $this->createLink( $first, $linkedId, $localId, true);
   }
 
   /**
@@ -1804,9 +1804,9 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function linkWith()
   {
-    $params =& func_get_args();
+    $params = func_get_args();
     array_unshift( $params, "link" );
-    return call_user_func_array( array( &$this, "_modifyLink" ), $params);
+    return call_user_func_array( array( $this, "_modifyLink" ), $params);
   }
 
   /**
@@ -1816,9 +1816,9 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function unlinkFrom()
   {
-    $params =& func_get_args();
+    $params = func_get_args();
     array_unshift( $params, "unlink" );
-    return call_user_func_array( array( &$this, "_modifyLink" ), $params);
+    return call_user_func_array( array( $this, "_modifyLink" ), $params);
   }
 
   /**
@@ -1828,9 +1828,9 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function unlinkFromAll()
   {
-    $params =& func_get_args();
+    $params = func_get_args();
     array_unshift( $params, "unlinkFromAll" );
-    return call_user_func_array( array( &$this, "_modifyLink" ), $params);
+    return call_user_func_array( array( $this, "_modifyLink" ), $params);
   }
 
   /**
@@ -1843,19 +1843,19 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * database connection
      */
-    $db =& $this->db();
+    $db = $this->db();
 
     /*
      * parameters
      */
-    $params =& func_get_args();
+    $params = func_get_args();
     array_unshift( $params, "data" );
 
     /*
      * get data from generic method and return false if
      * there is no link
      */
-    $data = call_user_func_array( array( &$this, "_modifyLink" ), $params);
+    $data = call_user_func_array( array( $this, "_modifyLink" ), $params);
     if ( ! is_array($data) ) return false;
 
     /*
@@ -1898,12 +1898,12 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * database connection
      */
-    $db =& $this->db();
+    $db = $this->db();
 
     /*
      * action
      */
-    $action = $that  =& func_get_arg(0);
+    $action = $that  = func_get_arg(0);
 
     /*
      * this model
@@ -1923,7 +1923,7 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * remote model
        */
-      $that  =& func_get_arg($i);
+      $that  = func_get_arg($i);
       if ( ! is_a( $that, __CLASS__ ) )
       {
         $this->raiseError("Invalid parameter $i. Must be a " . __CLASS__  . " but is a '" . typeof( $that, true ) . "'.'" );
@@ -1940,7 +1940,7 @@ class qcl_data_model_xmlSchema_DbModel
        */
       if ( ! $links )
       {
-        $l =  $this->getLinksByModel( &$that );
+        $l =  $this->getLinksByModel( $that );
         if ( ! $l )
         {
           if ( $action == "data" ) return false;
@@ -2056,7 +2056,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * database connection
      */
-    $db =& $this->db();
+    $db = $this->db();
 
     /*
      * check dir
@@ -2069,7 +2069,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * links in model schema
      */
-    $linkNodes =& $this->getLinkNodes();
+    $linkNodes = $this->getLinkNodes();
     if ( ! count($linkNodes) ) return;
 
     /*
@@ -2094,15 +2094,15 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * create new xml file
        */
-      $dataXml =& new qcl_data_xml_Storage();
+      $dataXml = new qcl_data_xml_Storage();
       $dataXml->createIfNotExists($path);
       $dataXml->load($path);
 
       /*
        * create the main nodes
        */
-      $doc         =& $dataXml->getDocument();
-      $linksNode   =& $doc->addChild("links");
+      $doc         = $dataXml->getDocument();
+      $linksNode   = $doc->addChild("links");
       $linksNode->addAttribute("model", $this->name() );
 
       /*
@@ -2126,16 +2126,16 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * instantiate linked models
        */
-      $controller =& $this->getController();
+      $controller = $this->getController();
       foreach( $models as $modelName )
       {
-        $this->_models[$modelName] =& $controller->getNew( $modelName );
+        $this->_models[$modelName] = $controller->getNew( $modelName );
       }
 
       /*
        * link node
        */
-      $linkNode =& $linksNode->addChild("link");
+      $linkNode = $linksNode->addChild("link");
       $linkNode->addAttribute("name",$name);
 
       /*
@@ -2177,7 +2177,7 @@ class qcl_data_model_xmlSchema_DbModel
         if ( $id != $_id )
         {
           $id = $_id;
-          $originNode =& $linkNode->addChild("origin");
+          $originNode = $linkNode->addChild("origin");
           if ( $this->hasProperty("namedId") )
           {
             $originNode->addAttribute("namedId", $this->getNamedId() );
@@ -2191,7 +2191,7 @@ class qcl_data_model_xmlSchema_DbModel
         /*
          * data node, eithe
          */
-        $targetNode =& $originNode->addChild("target");
+        $targetNode = $originNode->addChild("target");
 
 
         /*
@@ -2218,13 +2218,13 @@ class qcl_data_model_xmlSchema_DbModel
              * link data
              * @todo share datasource, override getNew method
              */
-            $model =& $this->_models[$modelName];
+            $model = $this->_models[$modelName];
             $modelFk = $model->getForeignKey();
             $modelId = $row[ $modelFk ];
             $model->load( $modelId );
             if ( $model->foundSomething() )
             {
-              $modelNode =& $targetNode->addChild("model");
+              $modelNode = $targetNode->addChild("model");
               $modelNode->addAttribute("name", $modelName);
               if ( $model->hasProperty("namedId") )
               {
@@ -2248,7 +2248,7 @@ class qcl_data_model_xmlSchema_DbModel
          */
         else
         {
-          $model =& $this->_models[ $models[0] ];
+          $model = $this->_models[ $models[0] ];
           $modelFk = $model->getForeignKey();
           $modelId = $row[ $modelFk ];
           $model->load( $modelId );
@@ -2328,13 +2328,13 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * parse xml file
        */
-      $dataXml =& $this->parseXmlDataFile($path);
-      $dataDoc =& $dataXml->getDocument();
+      $dataXml = $this->parseXmlDataFile($path);
+      $dataDoc = $dataXml->getDocument();
 
       /*
        * main node
        */
-      $linksNode =& $dataDoc->links or $this->raiseError("No links node available.");
+      $linksNode = $dataDoc->links or $this->raiseError("No links node available.");
       $attrs = $linksNode->attributes();
       $mdl   =  (string) $attrs['model'];
 
@@ -2371,7 +2371,7 @@ class qcl_data_model_xmlSchema_DbModel
            * @todo check if model name fits with schema xml
            */
           $clazz = str_replace(".","_",$tModel);
-          $targetModel =& new $clazz();
+          $targetModel = new $clazz();
         }
         else
         {
@@ -2447,7 +2447,7 @@ class qcl_data_model_xmlSchema_DbModel
               if ( $targetModel->foundSomething() )
               {
                 //$this->info("Linking '{$this->name}' #$oNamedId/$oId' with '$tModel' #$tNamedId/$tId.");
-                $this->linkWith(&$targetModel);
+                $this->linkWith($targetModel);
               }
               else
               {
@@ -2498,8 +2498,8 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * defintion node
      */
-    $schemaXml  =& $this->getSchemaXml();
-    $definition =& $schemaXml->getNode("/model/definition");
+    $schemaXml  = $this->getSchemaXml();
+    $definition = $schemaXml->getNode("/model/definition");
     if ( ! $definition )
     {
       $this->raiseError("Model schema xml does not have a 'definition' node.");
@@ -2508,13 +2508,13 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * properties
      */
-    $properties =& $definition->properties;
+    $properties = $definition->properties;
     if ( ! is_object($properties) )
     {
       $this->raiseError("Model has no properties.");
     }
 
-    $children   =& $properties->children();
+    $children   = $properties->children();
     foreach ( $children as $propNode)
     {
       $attrs     = $propNode->attributes();
@@ -2557,7 +2557,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * aliases
      */
-    $aliases =& $definition->aliases;
+    $aliases = $definition->aliases;
     if ( $aliases )
     {
 
@@ -2569,7 +2569,7 @@ class qcl_data_model_xmlSchema_DbModel
          */
         $attrs    = $alias->attributes();
         $propName = (string) $attrs['for'];
-        $column   = qcl_data_xml_Storage::getData(&$alias);
+        $column   = qcl_data_xml_Storage::getData($alias);
 
         /*
          * store in alias map
@@ -2601,10 +2601,10 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * setup metadata array with shortcuts to property nodes
      */
-    $propGroups =& $definition->propertyGroups;
+    $propGroups = $definition->propertyGroups;
     if ( $propGroups )
     {
-      $metaDataNode =& qcl_data_xml_Storage::getChildNodeByAttribute($propGroups,"name","metaData");
+      $metaDataNode = qcl_data_xml_Storage::getChildNodeByAttribute($propGroups,"name","metaData");
       if ( $metaDataNode )
       {
         foreach ( $metaDataNode->children() as $metaDataPropNode )
@@ -2614,7 +2614,7 @@ class qcl_data_model_xmlSchema_DbModel
           //$this->debug("$name => " . gettype($this->propertyNodes[$name]) );
           if ( isset($this->propertyNodes[$name]) )
           {
-            $this->metaDataProperties[$name] =& $this->propertyNodes[$name];
+            $this->metaDataProperties[$name] = $this->propertyNodes[$name];
           }
         }
       }
@@ -2646,7 +2646,7 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $path path of schema xml file or null if default file is used
    * @return qcl_data_xml_Storage
    */
-  function &getSchemaXml($path=null)
+  function getSchemaXml($path=null)
   {
 
     /*
@@ -2681,7 +2681,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * get and return schema document
      */
-    $this->schemaXml =& $this->parseXmlSchemaFile( $filepath );
+    $this->schemaXml = $this->parseXmlSchemaFile( $filepath );
     return $this->schemaXml;
   }
 
@@ -2690,7 +2690,7 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $file
    * @return qcl_data_xml_Storage
    */
-  function &parseXmlSchemaFile($file)
+  function parseXmlSchemaFile($file)
   {
 
     /*
@@ -2703,7 +2703,7 @@ class qcl_data_model_xmlSchema_DbModel
      * load model schema xml file
      */
     $this->log("Parsing model schema file '$file'...","propertyModel");
-    $modelXml =& new qcl_data_xml_Storage( $file );
+    $modelXml = new qcl_data_xml_Storage( $file );
     $modelXml->doNotCache = $this->doNotCache;
     $modelXml->load();
 
@@ -2719,7 +2719,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * The document object
      */
-    $doc =& $modelXml->getDocument();
+    $doc = $modelXml->getDocument();
 
     /*
      * does the model schema inherit from another schema?
@@ -2732,7 +2732,7 @@ class qcl_data_model_xmlSchema_DbModel
       foreach( explode(",",$includeFiles) as $includeFile )
       {
         $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
-        $parentXml   =& $this->parseXmlSchemaFile( $includeFile );
+        $parentXml   = $this->parseXmlSchemaFile( $includeFile );
         $modelXml->extend($parentXml);
         //$this->debug($modelXml->asXml());
       }
@@ -2749,7 +2749,7 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $file
    * @return qcl_data_xml_Storage
    */
-  function &parseXmlDataFile( $file )
+  function parseXmlDataFile( $file )
   {
 
     /*
@@ -2762,13 +2762,13 @@ class qcl_data_model_xmlSchema_DbModel
      * load model schema xml file
      */
     $this->log("Parsing model data file '$file'...","propertyModel");
-    $dataXml =& new qcl_data_xml_Storage( $file );
+    $dataXml = new qcl_data_xml_Storage( $file );
     $dataXml->load();
 
     /*
      * The document object
      */
-    $doc =& $dataXml->getDocument();
+    $doc = $dataXml->getDocument();
 
     /*
      * does the  data inherit from another file?
@@ -2782,7 +2782,7 @@ class qcl_data_model_xmlSchema_DbModel
       foreach( explode(",",$includeFiles) as $includeFile )
       {
         $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
-        $parentXml   =& $this->parseXmlSchemaFile( $includeFile );
+        $parentXml   = $this->parseXmlSchemaFile( $includeFile );
         $dataXml->extend($parentXml);
         //$this->debug($dataXml->asXml());
       }
@@ -2804,14 +2804,14 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $path file path, defaults to the location of the inital data file
    * @return qcl_data_xml_Storage The xml document object
    */
-  function &export($path=null)
+  function export($path=null)
   {
 
     /*
      * schema document
      */
-    $schemaXml    =& $this->getSchemaXml();
-    $schemaXmlDoc =& $schemaXml->getDocument();
+    $schemaXml    = $this->getSchemaXml();
+    $schemaXmlDoc = $schemaXml->getDocument();
 
     /*
      * path of exported file
@@ -2827,25 +2827,25 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * create new xml file
      */
-    $dataXml =& new qcl_data_xml_Storage( $path );
+    $dataXml = new qcl_data_xml_Storage( $path );
     $dataXml->createFile();
 
     /*
      * create the main nodes
      */
-    $doc         =& $dataXml->getDocument();
-    $dataNode    =& $doc->addChild("data");
-    $recordsNode =& $dataNode->addChild("records");
+    $doc         = $dataXml->getDocument();
+    $dataNode    = $doc->addChild("data");
+    $recordsNode = $dataNode->addChild("records");
 
     /*
      * alias node
      */
-    $aliasNode =& $schemaXml->getNode("/model/definition/aliases");
+    $aliasNode = $schemaXml->getNode("/model/definition/aliases");
 
     /*
      * property groups in model schema
      */
-    $propGrpsNode =& $schemaXml->getNode("/model/definition/propertyGroups");
+    $propGrpsNode = $schemaXml->getNode("/model/definition/propertyGroups");
     //$this->debug($propGrpsNode->asXml());
 
     /*
@@ -2858,7 +2858,7 @@ class qcl_data_model_xmlSchema_DbModel
      * skipped
      */
     $propList     =  $this->properties();
-    $skipExpNode  =& $schemaXml->getChildNodeByAttribute(&$propGrpsNode,"name","skipExport");
+    $skipExpNode  = $schemaXml->getChildNodeByAttribute($propGrpsNode,"name","skipExport");
 
     foreach( $this->propertyNodes as $propNode )
     {
@@ -2882,7 +2882,7 @@ class qcl_data_model_xmlSchema_DbModel
 
     foreach($records as $record)
     {
-      $recordNode =& $recordsNode->addChild("record");
+      $recordNode = $recordsNode->addChild("record");
 
       /*
        * dump each column value
@@ -2912,9 +2912,9 @@ class qcl_data_model_xmlSchema_DbModel
           /*
            * otherwise, create property data node
            */
-          $propDataNode =& $recordNode->addChild("property");
+          $propDataNode = $recordNode->addChild("property");
           $propDataNode->addAttribute("name",$propName);
-          $dataXml->setData(&$propDataNode, $data);
+          $dataXml->setData($propDataNode, $data);
         }
       }
     }
@@ -2967,15 +2967,15 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * schema document
      */
-    $schemaXml    =& $this->getSchemaXml();
-    $schemaXmlDoc =& $this->schemaXml->getDocument();
+    $schemaXml    = $this->getSchemaXml();
+    $schemaXmlDoc = $this->schemaXml->getDocument();
 
     $this->info("Importing data from '$path' into {$this->name}...", "propertyModel" );
 
     /*
      * open xml data file and get record node
      */
-    $dataXml     =& $this->parseXmlDataFile($path);
+    $dataXml     = $this->parseXmlDataFile($path);
     $dataDoc     =  $dataXml->getDocument(); // don't use pass by reference here
     $recordsNode =  $dataXml->getNode("/data/records");
 
@@ -3062,9 +3062,9 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * setup fields
        */
-      $schemaXml  =& $this->getSchemaXml();
-      $xmlDoc     =& $schemaXml->getDocument();
-      $fieldsNode =& $schemaXml->getNode("/model/dataStructure/fields");
+      $schemaXml  = $this->getSchemaXml();
+      $xmlDoc     = $schemaXml->getDocument();
+      $fieldsNode = $schemaXml->getNode("/model/dataStructure/fields");
 
       if ( ! is_object( $fieldsNode ) )
       {
@@ -3169,13 +3169,13 @@ class qcl_data_model_xmlSchema_DbModel
    * @param string $name The bibliograph name of the field
    * @return SimpleXmlElement
    */
-  function &getFieldNode( $name )
+  function getFieldNode( $name )
   {
     if ( ! is_array( $this->fieldNode) )
     {
       $this->getFields();
     }
-    $node =& $this->fieldNode[$name];
+    $node = $this->fieldNode[$name];
     if ( ! is_object($node) )
     {
       $this->raiseError("No <field> node exists for '$name'.");
@@ -3192,7 +3192,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getFieldLabel( $name, $reftype = null )
   {
-    $node =& $this->getFieldNode( $name );
+    $node = $this->getFieldNode( $name );
     if ( is_object ($node->label ) )
     {
       return qcl_data_xml_Storage::getData( $node->label );
@@ -3225,7 +3225,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getFieldType( $name )
   {
-    $node  =& $this->getFieldNode( $name );
+    $node  = $this->getFieldNode( $name );
     $attrs = $node->attributes();
     return (string) $attrs['type'];
   }
@@ -3237,7 +3237,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function getFieldProperty( $name )
   {
-    $node  =& $this->getFieldNode( $name );
+    $node  = $this->getFieldNode( $name );
     $attrs = $node->attributes();
     return either( (string) $attrs['property'], $name ) ;
   }
@@ -3267,8 +3267,8 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function hasQueryOperators()
   {
-    $schemaXml =& $this->getSchemaXml();
-    $opNodes   =& $this->getNode("/model/queries/operators");
+    $schemaXml = $this->getSchemaXml();
+    $opNodes   = $this->getNode("/model/queries/operators");
     return is_object($opNodes) && count( $opNodes->operator );
   }
 
@@ -3294,15 +3294,15 @@ class qcl_data_model_xmlSchema_DbModel
 
     if ( ! is_array( $queryOperators[$type] ) )
     {
-      $schemaXml =& $this->getSchemaXml();
-      $operators =& $this->getNode("/model/queries/operators/operator");
+      $schemaXml = $this->getSchemaXml();
+      $operators = $this->getNode("/model/queries/operators/operator");
 
       foreach ( $operators as $operatorNode )
       {
         $attrs = $operatorNode->attributes();
         if ( (string) $attrs['type'] == $type )
         {
-          $queryOperators[$type][] =& $operatorNode;
+          $queryOperators[$type][] = $operatorNode;
         }
       }
     }
