@@ -260,15 +260,6 @@ simulation.Simulation = function(baseConf, args)
   if (!("logFile" in __config)) {
     var fname = __config.autName + "_" + this.startDate.getTime() + ".log";
     __config.logFile = fname; 
-  }
-
-  // Create QxSelenium instance.
-  try {
-    this.__sel = new QxSelenium(__config.selServer,__config.selPort,
-                                __config.testBrowser,__config.autHost);
-  }
-  catch(ex) {
-    throw new Error("Unable to create QxSelenium instance: " + ex);
   }  
 
 };
@@ -306,6 +297,15 @@ simulation.Simulation.prototype.startSession = function()
 {
   if (this.getConfigSetting("debug")) {
     print("Starting " + this.getConfigSetting("autName") + " session with browser " + this.getConfigSetting("testBrowser"));
+  }
+  
+  // Create QxSelenium instance.
+  try {
+    this.__sel = new QxSelenium(this.getConfigSetting("selServer"),this.getConfigSetting("selPort"),
+                                this.getConfigSetting("testBrowser"),this.getConfigSetting("autHost"));
+  }
+  catch(ex) {
+    throw new Error("Unable to create QxSelenium instance: " + ex);
   }
 
   try {
