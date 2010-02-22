@@ -71,14 +71,21 @@ simulation.Simulation.prototype.checkFeeds = function()
 
 mySim.runTest = function()
 {
-  var testPause = 360000;
+  var feedLoadTimeout = 30000;
   var treeLocator = "qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.tree.Tree";
   var tree = 'selenium.getQxWidgetByLocator("' + treeLocator + '")';  
   
   var lastFeedNum = this.getEval(tree + '.getItems().length - 1', "Getting last feed's number");
   
   var isLastFeedLoaded = tree + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";  
-  this.waitForCondition(isLastFeedLoaded, testPause, "Waiting for feeds to load");
+  
+  try {
+    this.__sel.waitForCondition(isLastFeedLoaded, feedLoadTimeout.toString());
+  } catch(ex) {
+    this.log("Feeds not loaded after 30 seconds, clicking reload", "info");
+    this.qxClick('qxh=app:[@classname="feedreader.view.ToolBar"]/qx.ui.toolbar.Part/child[3]', "", "Clicking reload button");
+    this.waitForCondition(isLastFeedLoaded, feedLoadTimeout, "Waiting for feeds to load");
+  }
   
   this.checkFeeds();
   
@@ -186,7 +193,13 @@ mySim.runTest = function()
   // Check if the new feed loaded.
   var newLastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");  
   var isNewLastFeedLoaded = tree + ".getItems()[" + newLastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
-  this.waitForCondition(isNewLastFeedLoaded, testPause, "Waiting for new feed to load.");
+  
+  try {
+    this.__sel.waitForCondition(isNewLastFeedLoaded, feedLoadTimeout.toString());    
+  } catch(ex) {
+    this.log("New feed not loaded after 30 seconds, waiting another 30 sec.", "info");
+    this.waitForCondition(isNewLastFeedLoaded, feedLoadTimeout, "Waiting for new feed to load.");
+  }
     
   var getNewLastFeedLabel = tree + ".getItems()[" + newLastFeedNum + "].getLabel()";
   var newLastFeedLabel = this.getEval(getNewLastFeedLabel, "Getting new feed's label");
