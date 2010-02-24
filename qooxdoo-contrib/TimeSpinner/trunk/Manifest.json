@@ -1,20 +1,28 @@
 {
   "info" : 
   {
-    "name" : "TileView",
+    "name" : "TimeSpinner",
 
-    "summary" : "TileView",
-    "description" : "Provides an enhanced list and list-item that look similar to the 'tiles' used by file explorers",
+    "summary" : "TimeSpinner",
+    "description" : "Provides a spinner widget for time.",
 
-    "keywords" : ["ui", "tile", "tileview", "list"],
-    "homepage" : "http://contrib.qooxdoo.org/TileView",
+    "keywords" : ["ui", "time", "timespinner", "spinner"],
+    "homepage" : "http://qooxdoo.org/contrib/project/timespinner",
 
     "license" : "LGPL/EPL",
     "authors" :
     [
       {
+        "name" : "Nathan Hadly",
+        "email" : "n.hadly@celcat.com"
+      },
+      {
         "name" : "Matthew Gregory (noggin182)",
         "email" : "matthew+qooxdoo@nogsnet.com"
+      },
+      {
+        "name" : "Johann Fridriksson",
+        "email" : "johann.fridriksson@gmail.com"
       }
     ],
 
@@ -24,7 +32,7 @@
 
   "provides" :
   {
-    "namespace"   : "tileview",
+    "namespace"   : "timespinner",
     "encoding"    : "utf-8",
     "class"       : "source/class",
     "resource"    : "source/resource",

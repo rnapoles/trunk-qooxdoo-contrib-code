@@ -16,7 +16,7 @@
   60 = 01:00
  */
  
-qx.Class.define("ctweb.ui.control.TimeSpinner",
+qx.Class.define("timespinner.TimeSpinner",
 {
   extend : qx.ui.core.Widget,
   implement : qx.ui.form.IFormElement,
@@ -59,7 +59,7 @@ qx.Class.define("ctweb.ui.control.TimeSpinner",
     }
     else if(typeof value === "string")
     {
-      this.setValue(ctweb.ui.control.TimeSpinner.intTimeFromString(value));
+      this.setValue(timespinner.TimeSpinner.intTimeFromString(value));
     }
     else
     {
@@ -537,7 +537,7 @@ qx.Class.define("ctweb.ui.control.TimeSpinner",
      
     _onTextChange : function(e)
     {      
-      var time = ctweb.ui.control.TimeSpinner.intTimeFromString(this.getChildControl("textfield").getValue());
+      var time = timespinner.intTimeFromString(this.getChildControl("textfield").getValue());
       
       if(time >-1)
       {
