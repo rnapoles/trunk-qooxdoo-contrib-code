@@ -12,9 +12,9 @@ For more information see
 
 Release Notes
 -------------
-?   - added new Qooxdoo::SessionLite module to use as a replacement for
+0.2 - added new Qooxdoo::SessionLite module to use as a replacement for
       CGI::Session. For file based sessions it has the advantage that it is
-      resistante against race conditions of multiple instances of the script
+      not prone to race conditions when multiple instances of the script
       modifying the stored data.
 
     - Compatibility with JSON-2.07 module  (patch by Niko Tyni) 
