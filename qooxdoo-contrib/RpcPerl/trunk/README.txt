@@ -7,7 +7,7 @@ Please refer to the manual page below for information about this module.
 For more information see
 
   * http://qooxdoo.org/documentation/RPC
-  * http://qooxdoo.org/documentation/RPC_Perl
+  * http://qooxdoo.org/documentation/1.0/rpc_perl
 
 
 Release Notes
@@ -16,6 +16,25 @@ Release Notes
       CGI::Session. For file based sessions it has the advantage that it is
       not prone to race conditions when multiple instances of the script
       modifying the stored data.
+
+    - handle utf8 properly by telling the JSON Module that we are dealing with  
+      utf8 data
+
+    - automatically map NULL to undef
+
+    - set the content type of the response to text/javascript (chrome complained 
+      about this)
+
+    - print some more error message into the webserver log in debug mode
+
+    - if we receive something looking like a JSON-RPC request but are not happy 
+      with it, responde with a proper JSON-RPC error message
+
+    - do not quit on every error just return as normal. In a fastcgi setup we   
+      want to  continue running whenever possible since this saves us the
+      startup delay
+
+    - un-escape incoming paramerter %xy -> chr(hex(xy))
 
     - Compatibility with JSON-2.07 module  (patch by Niko Tyni) 
       all new Testsuite (patch by Niko Tyni)
