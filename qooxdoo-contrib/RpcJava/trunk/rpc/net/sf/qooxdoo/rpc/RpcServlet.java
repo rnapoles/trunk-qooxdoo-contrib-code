@@ -268,8 +268,9 @@ public class RpcServlet extends HttpServlet {
     
     
     private String makeJavaScriptServerInfo(HttpServletRequest request) {
-        return "if (!qx || !qx.core || !qx.core.ServerSettings) {" +
-                 "qx.OO.defineClass(\"qx.core.ServerSettings\");" +
+        
+        return "if (!window.qx || !qx.core || !qx.core.ServerSettings) {" +
+                 "qx.Class.define(\"qx.core.ServerSettings\");" +
                 "}" +
                 "qx.core.ServerSettings.serverPathPrefix = \"" + getContextURL(request) + "\";" +
                 "qx.core.ServerSettings.serverPathSuffix = \";jsessionid=" + request.getSession().getId() + "\";" +
@@ -407,7 +408,7 @@ public class RpcServlet extends HttpServlet {
                     //System.out.println("Requested session id: " + request.getRequestedSessionId());
                     String res = handleRPC(request, requestString);
                     
-                    responseWriter.write("qx.io.remote.ScriptTransport._requestFinished(\"" +
+                    responseWriter.write("qx.io.remote.transport.Script._requestFinished(\"" +
                             jsTransportId + "\", " + res + ");");
                 }
             } catch (Exception e) {
