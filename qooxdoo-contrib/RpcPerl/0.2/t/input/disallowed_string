@@ -1,0 +1,2 @@
+_ScriptTransport_id=1
+_ScriptTransport_data={"service":"qooxdoo.test.less","method":"echo","id":1,"params":["Hello"],"server_data":null}
