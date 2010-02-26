@@ -613,17 +613,14 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * @param mixed $node
    * @return boolean
    */
-  function isNode( $node )
+  static function isNode( $node )
   {
     return ( is_a( $node, "SimpleXMLElement" ) );
   }
 
   /**
-   * Cross-version method to get to a node. If a valid node object is
-   * passed, return it. If a string is passed, treat it as a path to the
-   * node.
-   * PHP4: Path is not real xpath expression (only tag names and tag[3], no queries)
-   * Cannot be called statically.
+   * Returns a node. If a valid node object is passed, return it.
+   * If a string is passed, treat it as a path to the node.
    * @param mixed $pathOrNode (string) simplified xpath or (object) node
    * @return object node object or NULL if path does not exist
    */
@@ -664,86 +661,23 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
      * traverse object tree along the path
      *
      */
-    if ( phpversion() >= 5 )
+    $doc    = $this->getDocument();
+    $result = $doc->xpath( $path );
+    if ( is_array($result) )
     {
-      $doc    = $this->getDocument();
-      $result = $doc->xpath( $path );
-      if ( is_array($result) )
-      {
-        return $result[0];
-      }
-      return false;
+      return $result[0];
     }
-
-    /*
-     * PHP 4
-     */
-    else
-    {
-      $tmp = $this->getDocument();
-
-      $parts = explode("/", $path );
-      foreach ( $parts as $part )
-      {
-
-        /*
-         * parse content in square brackets
-         */
-        if ( ! strstr($part,"[") )
-        {
-          $n = 1;
-        }
-        else
-        {
-          preg_match("/(\w+)\[([0-9]+)\]/",$part,$matches);
-          $part = (string) $matches[1];
-          $n    = (int)    $matches[2];
-        }
-
-        /*
-         * get node object
-         */
-        $tmp = $tmp->$part;
-
-        /*
-         * result is nodeset
-         */
-        if ( is_array($tmp) )
-        {
-          $tmp = $tmp[$n-1];
-        }
-
-        /*
-         * no result
-         */
-        if (! is_object ($tmp) )
-        {
-          $this->error = "Path '$path' stuck at '$part' (". gettype($tmp) . ").";
-          return null;
-        }
-      }
-    }
-    return $tmp;
+    return false;
   }
 
   /**
    * Cross-version method to get the number of child nodes.
-   * Can be called statically
    * @param SimpleXmlElement $node
+   * @deprecated
    */
-  function nodeGetChildCount( $node )
+  static function nodeGetChildCount( $node )
   {
-    if ( phpversion() < 5 )
-    {
-      return count( $node->children() );
-    }
-    else
-    {
-      if ( strlen($node->asXml() ) == 0 ) return 0;
-      $count = 0;
-      foreach( $node->children() as $child ) $count++;
-      return $count;
-    }
+    return count( $node->children() );
   }
 
 
@@ -752,9 +686,9 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
    * method can be called statically only if a valid node is passed
    * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node
    * @return CDATA content or NULL if path does not exist
-   * @todo rename to nodeGetData()
+   * @deprectated no longer necessary in PHP5
    */
-  function getData($pathOrNode)
+  static function getData($pathOrNode)
   {
     if ( is_string($pathOrNode) )
     {
@@ -790,6 +724,10 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
   }
 
 
+  /**
+   * gets the attribute of a node
+   * @deprecated No longer neccessary in PHP5
+   */
   function nodeGetAttribute( $pathOrNode, $attribute )
   {
     if ( is_string( $pathOrNode ) )
@@ -806,7 +744,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
     }
     else
     {
-      qcl_data_xml_Storage::raiseError("Invalid parameter.");
+      $this->raiseError("Invalid parameter.");
     }
 
     /*
@@ -876,15 +814,16 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
   }
 
   /**
-   * gets the first child of a node that matches an attribute-value pair.
+   * Returns the first child of a node that matches an attribute-value pair.
    * can be called statically
    * @param object $node
    * @param string $name
    * @param string $value
    * @return SimpleXmlElement or null if not found;
-   *  @todo rename to nodeGetChildNodeByAttribute()
+   * @todo rename to nodeGetChildNodeByAttribute()
+   * @todo use XPath
    */
-  function getChildNodeByAttribute( $node, $name, $value )
+  static function getChildNodeByAttribute( $node, $name, $value )
   {
     if ( ! qcl_data_xml_Storage::isNode($node) )
     {
@@ -895,47 +834,22 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
      * iterate through children
      */
     $children = $node->children();
-
-    /*
-     * PHP4
-     */
-    if ( phpversion() < 5 )
+    foreach ( $children as $child )
     {
-      while ( list(,$child) = each($children) )
+      $attr = $child->attributes();
+      $tag  = $child->getName();
+        //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
+      if ( $child[$name] == $value )
       {
-        $attr = $child->attributes();
-        $tag  = $child->getName();
-          //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
-        if ( $attr[$name] == $value )
-        {
-          return $child;
-        }
+        return $child;
       }
     }
 
-    /*
-     * PHP 5
-     * @todo use xpath
-     */
-    else
-    {
-      foreach ( $children as $child )
-      {
-        $attr = $child->attributes();
-        $tag  = $child->getName();
-          //$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
-        if ( $child[$name] == $value )
-        {
-          return $child;
-        }
-      }
-
-    }
     return null;
   }
 
   /**
-   * removes a child node that that matches an attribute-value pair
+   * Removes a child node that that matches an attribute-value pair
    * can be called statically
    * @param object $node
    * @param string $name
@@ -948,7 +862,7 @@ class qcl_data_xml_Storage extends qcl_data_model_Abstract
   {
     if ( ! qcl_data_xml_Storage::isNode($node) )
     {
-      qcl_data_xml_Storage::raiseError("Invalid node.");
+      $this->raiseError("Invalid node.");
     }
 
     /*

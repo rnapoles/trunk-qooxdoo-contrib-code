@@ -124,7 +124,7 @@ class qcl_config_Controller
           $keyNode->addAttribute($key,$value);
         }
       }
-      $keyNode->setCDATA(htmlentities($record['value']));
+      $keyNode->setCDATA( htmlentities($record['value']) );
     }
     $this->Info($doc->asXml());
   }

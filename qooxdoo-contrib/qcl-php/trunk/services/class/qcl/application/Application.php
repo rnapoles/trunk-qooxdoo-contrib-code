@@ -47,24 +47,23 @@ class qcl_application_Application
    * The server instance
    * @var AbstractServer
    */
-  var $_server;
+  private $_server;
 
   /**
    * The intial configuration values, saved in the config.ini.php file
    * @var array
    */
-  var $_ini = null;
+  private $_ini = null;
 
   /**
    * Returns the version of the application. Can be called
    * statically. Must be implemented by the inheriting class
    * @return string
    */
-  function version()
+  public function version()
   {
-    return qcl_core_Object::notImplemented();
+    return $this->notImplemented();
   }
-
 
   /**
    * Return the application singleton instance. Extending classes
@@ -77,19 +76,50 @@ class qcl_application_Application
    * @param string class name
    * @return qcl_application_Application
    */
-  function getInstance( )
+  static function getInstance( )
   {
     return qcl_getInstance(__CLASS__);
+  }
+
+  /**
+   * Constructor
+   */
+  function __construct()
+  {
+    $this->setupErrorHandling();
+  }
+
+  /**
+   * Setup error handling to prevent PHP from messing up the json
+   * response.
+   */
+  function setupErrorHandling()
+  {
+    /*
+     * This will not always work, so do some more hacking to
+     * comment out uncaught errors. You'll need to examine the
+     * http response to see the uncaught errors!
+     */
+    ini_set('error_prepend_string', '/*');
+    ini_set('error_append_string', '*/{' .
+        '  error:' .
+        '  {' .
+        '    "origin":' . JsonRpcError_Origin_Server . ',' .
+        '    "code":' .  JsonRpcError_ScriptError . ',' .
+        '    "message":"Fatal PHP Error. See response content for error description ' .
+        ' "}' .
+        '}'
+    );
   }
 
   /**
    * Return the current server instance. Can be called statically.
    * @return AbstractServer
    */
-  function getServer()
+  public function getServer()
   {
     $server = qcl_server_Server::getInstance();
-    return $server->serverObject;
+    return $server->getServerObject();
   }
 
   /**
@@ -97,10 +127,49 @@ class qcl_application_Application
    * @return qcl_data_controller_Controller
    * @deprecated Get directly from server
    */
-  function getController()
+  public function getController()
   {
-    $server = qcl_server_Server::getInstance();
-    return $server->getController();
+    return $this->getServer()->getController();
+  }
+
+  /**
+   * Getter for configuration manager instance
+   * @return qcl_config_Manager
+   */
+  public function getConfigManager()
+  {
+    return qcl_config_Manager::getInstance();
+  }
+
+  /**
+   * Returns the config model singleton instance used by the application
+   * @return qcl_config_Db
+   */
+  public function getConfigModel()
+  {
+    return $this->getConfigManager()->getModel();
+  }
+
+  /**
+   * gets the locale controller and sets the default locale. default is
+   * a qcl_locale_Manager (see there). if you want to use a different
+   * controller, override this method
+   * @return qcl_locale_Manager
+   */
+  public function getLocaleManager()
+  {
+    require_once "qcl/locale/Manager.php";
+    return qcl_locale_Manager::getInstance();
+  }
+
+  /**
+   * Getter for access manager
+   * @return qcl_access_Manager
+   */
+  public function getAccessManager()
+  {
+    require_once "qcl/access/Manager.php";
+    return qcl_access_Manager::getInstance();
   }
 
 
@@ -109,13 +178,23 @@ class qcl_application_Application
   //-------------------------------------------------------------
 
   /**
+   * Static method to start the application
+   * @return void
+   */
+  public static function run()
+  {
+    $_this = self::getInstance();
+    $_this->start();
+  }
+
+  /**
    * Start the application. You MUST override this method in your
    * application class. In the overriding class, call getInstance()
    * to instantiate the application object, and then call this
    * method with 'parent::start()'.
    * @return unknown_type
    */
-  function start()
+  public function start()
   {
 
     /*
@@ -137,22 +216,24 @@ class qcl_application_Application
       * set the default models for config, session and messages. If you
       * want to use different models, set them before calling this method
       */
-     if ( ! qcl_config_Manager::getModel() )
+     if ( ! $this->getConfigManager()->getModel() )
      {
        require_once "qcl/config/Db.php";
-       qcl_config_Manager::setModel( qcl_config_Db::getInstance() );
+       $this->getConfigManager()->setModel( qcl_config_Db::getInstance() );
      }
-     if ( ! qcl_access_Manager::getSessionModel() )
+     if ( ! $this->getAccessManager()->getSessionModel() )
      {
        require_once "qcl/access/model/Session.php";
-       qcl_access_Manager::setSessionModel( qcl_access_model_Session::getInstance() );
+       $this->getAccessManager()->setSessionModel( qcl_access_model_Session::getInstance() );
      }
-     if ( ! qcl_event_message_Bus::getModel() )
+     if ( ! $this->getMessageBus()->getModel() )
      {
        require_once "qcl/event/message/db/Message.php";
-       qcl_event_message_Bus::setModel( qcl_event_message_db_Message::getInstance() );
+       $this->getMessageBus()->setModel( qcl_event_message_db_Message::getInstance() );
      }
   }
+
+
 
   //-------------------------------------------------------------
   // ini values
@@ -164,7 +245,7 @@ class qcl_application_Application
    * @todo re-implement old behavior that services can ovverride individual
    * settings by service directory
    **/
-  function getIniConfig()
+  public function getIniConfig()
   {
     /*
      * return config array if already parsed
@@ -207,7 +288,7 @@ class qcl_application_Application
    * Returns a configuration value of the pattern "foo.bar.baz"
    * This retrieves the values set in the service.ini.php file.
    */
-  function getIniValue( $path )
+  public function getIniValue( $path )
   {
     /*
      * if called recursively
@@ -243,66 +324,5 @@ class qcl_application_Application
 
     return $value;
   }
-
-  /**
-   * Returns the config model singleton instance used by the application
-   * @return qcl_config_Db
-   */
-  function getConfigModel()
-  {
-    return qcl_config_Db::getInstance();
-  }
-
-
-  //-------------------------------------------------------------
-  // translation (modeled after qooxdoo syntax)
-  //-------------------------------------------------------------
-
-  /**
-   * gets the locale controller and sets the default locale. default is
-   * a qcl_locale_Manager (see there). if you want to use a different
-   * controller, override this method
-   * @return qcl_locale_Manager
-   */
-  function getLocaleManager()
-  {
-    require_once "qcl/locale/Manager.php";
-    return qcl_locale_Manager::getInstance();
-  }
-
-  /**
-   * Translates a message. Can be called statically.
-   * @return  String
-   * @param   String  $msgId    Message id of the string to be translated
-   * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
-   * or as parameters
-   */
-  function tr( $msgId, $varargs=null )
-  {
-    if ( ! is_array($varargs) )
-    {
-      $varargs = func_get_args();
-      array_shift($varargs);
-    }
-    $manager = qcl_application_Application::getLocaleManager();
-    return $manager->tr($msgId, $varargs);
-  }
-
-  /**
-   * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
-   * Can be called statically.
-   *
-   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
-   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
-   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
-   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
-   * @return string
-   */
-  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
-  {
-    $manager = qcl_application_Application::getLocaleManager();
-    return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
-  }
-
 }
 ?>

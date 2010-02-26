@@ -39,18 +39,16 @@ class qcl_data_datasource_Manager
    * cache for datasource model objects
    * @var array
    */
-  var $datasourceModels = array();
+  private $datasourceModels = array();
 
   /**
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_Manager
    */
-  function getInstance()
+  static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }
-
-
 
   /**
    * Retrieves and initializes the datasource model object for a
@@ -60,10 +58,8 @@ class qcl_data_datasource_Manager
    * @param string $name
    * @return qcl_data_datasource_type_db_Model
    */
-  function getDatasourceModel( $name )
+  public function getModel( $name )
   {
-
-    $_this = qcl_data_datasource_Manager::getInstance();
 
     if ( ! $name or !is_string($name) )
     {
@@ -73,13 +69,13 @@ class qcl_data_datasource_Manager
     /*
      * create model object if it hasn't been created already
      */
-    if ( ! $_this->datasourceModels[$name] )
+    if ( ! $this->datasourceModels[$name] )
     {
 
       /*
        * get datasource model specific to the datasource
        */
-      $dsModel = $_this->getDatasourceModelByName( $name );
+      $dsModel = $this->getDatasourceModelByName( $name );
 
       /*
        * initialize the models that belong to the name
@@ -89,20 +85,20 @@ class qcl_data_datasource_Manager
       /*
        * save reference to the object
        */
-      $_this->datasourceModels[$name] = $dsModel;
+      $this->datasourceModels[$name] = $dsModel;
     }
 
     /*
      * return cached model object
      */
-    return $_this->datasourceModels[$name];
+    return $this->datasourceModels[$name];
   }
 
   /**
-   * gets storage object
+   * Getter for  storage object
    * @return qcl_data_datasource_registry_Model
    */
-  function getRegistry()
+  public function getRegistry()
   {
     $registry = qcl_data_datasource_registry_Model::getInstance();
     return $registry;
@@ -115,11 +111,10 @@ class qcl_data_datasource_Manager
    * @param string $title Descriptive title of the datasource
    * @param string $description Long description
    */
-  function registerSchema( $schemaName, $class, $title=null, $description=null )
+  public function registerSchema( $schemaName, $class, $title=null, $description=null )
   {
-    $_this = qcl_data_datasource_Manager::getInstance();
-    $_this->log("Registering class '$class' for schema '$schemaName'", QCL_LOG_DATASOURCE);
-    $registry = $_this->getRegistry();
+    $this->log("Registering class '$class' for schema '$schemaName'", QCL_LOG_DATASOURCE);
+    $registry = $this->getRegistry();
     if ( ! $title ) $title = $schemaName;
     $registry->register( $schemaName, $class, $title, $description );
   }
@@ -128,11 +123,10 @@ class qcl_data_datasource_Manager
    * Unregister datasource. Can be called statically.
    * @param string $name Name of datasource schema
    */
-  function unregisterSchema( $schemaName )
+  public function unregisterSchema( $schemaName )
   {
-    $_this = qcl_data_datasource_Manager::getInstance();
-    $_this->log("Unregistering class '$class'", QCL_LOG_DATASOURCE);
-    $registry = $_this->getRegistry();
+    $this->log("Unregistering class '$class'", QCL_LOG_DATASOURCE);
+    $registry = $this->getRegistry();
     $registry->unregister( $schemaName );
   }
 
@@ -141,17 +135,15 @@ class qcl_data_datasource_Manager
    *
    * @return array
    */
-  function getSchemaList()
+  public function getSchemaList()
   {
-    $_this = qcl_data_datasource_Manager::getInstance();
-    $registry = $_this->getRegistry();
+    $registry = $this->getRegistry();
     return $registry->schemaList();
   }
 
-  function getSchemaData( $schema )
+  public function getSchemaData( $schema )
   {
-    $_this = qcl_data_datasource_Manager::getInstance();
-    $registry = $_this->getRegistry();
+    $registry = $this->getRegistry();
     $registry->findByNamedId( $schema );
     if ( $registry->foundSomething() )
     {
@@ -172,10 +164,9 @@ class qcl_data_datasource_Manager
    * @param array $options Optional map overriding default values
    * @return qcl_data_datasource_type_db_Model
    */
-  function create( $datasource, $schemaName, $options=array() )
+  public function create( $datasource, $schemaName, $options=array() )
   {
-    $_this = qcl_data_datasource_Manager::getInstance();
-    $dsModel = $_this->getSchemaModel( $schemaName );
+    $dsModel = $this->getSchemaModel( $schemaName );
     $dsModel->create( $datasource, $options );
     return $dsModel;
   }
@@ -185,7 +176,7 @@ class qcl_data_datasource_Manager
    * @param $datasource
    * @return bool
    */
-  function exists( $datasource )
+  public function exists( $datasource )
   {
     $dsModel = qcl_data_datasource_type_db_Model::getInstance();
     $dsModel->findByNamedId( $datasource );
@@ -197,7 +188,7 @@ class qcl_data_datasource_Manager
    * @param $datasource
    * @return void
    */
-  function delete( $datasource )
+  public function delete( $datasource )
   {
     $dsModel = qcl_data_datasource_type_db_Model::getInstance();
     $dsModel->deleteBy("namedId", $datasource );
@@ -208,7 +199,7 @@ class qcl_data_datasource_Manager
    * @param string $schemaName
    * @return string
    */
-  function getClassForSchema( $schemaName )
+  public function getClassForSchema( $schemaName )
   {
     if ( ! $schemaName )
     {
@@ -228,7 +219,7 @@ class qcl_data_datasource_Manager
    * @param string $dsSchemaName
    * @return qcl_data_datasource_type_db_Model
    */
-  function getSchemaModel( $dsSchemaName )
+  public function getSchemaModel( $dsSchemaName )
   {
     $class = $this->getClassForSchema($dsSchemaName);
 
@@ -243,7 +234,7 @@ class qcl_data_datasource_Manager
    * @param string $name name of the datasource, must be in the datasources table
    * @return qcl_data_datasource_type_db_Model
    */
-  function getDatasourceModelByName($name)
+  public function getDatasourceModelByName($name)
   {
 
     if ( empty($name) )

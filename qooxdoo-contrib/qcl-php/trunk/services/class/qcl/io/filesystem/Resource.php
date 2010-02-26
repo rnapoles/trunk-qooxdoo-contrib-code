@@ -87,7 +87,7 @@ class qcl_io_filesystem_Resource extends qcl_data_model_Abstract
    * @param string $resourcePath
    * @return qcl_io_filesystem_IResource
    */
-  function createInstance( $resourcePath )
+  static function createInstance( $resourcePath )
   {
     /*
      * check resource path.

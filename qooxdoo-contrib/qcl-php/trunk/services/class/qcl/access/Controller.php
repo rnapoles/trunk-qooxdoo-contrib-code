@@ -101,6 +101,14 @@ class qcl_access_Controller
     return qcl_config_Manager::getModel();
   }
 
+  /**
+   * Getter for access manager
+   * @return qcl_access_Manager
+   */
+  function getAccessManager()
+  {
+    return qcl_access_Manager::getInstance();
+  }
 
   /**
    * Checks if the requesting client is an authenticated user.
@@ -701,7 +709,7 @@ class qcl_access_Controller
       session_id( $sessionId );
       session_start();
     }
-    qcl_access_Manager::setSessionId( $sessionId );
+    $this->getAccessManager()->setSessionId( $sessionId );
   }
 
   /**
@@ -724,7 +732,7 @@ class qcl_access_Controller
    */
   function getActiveUser()
   {
-    return qcl_access_Manager::getActiveUser();
+    return $this->getAccessManager()->getActiveUser();
   }
 
   /**
@@ -735,7 +743,7 @@ class qcl_access_Controller
    */
   function setActiveUser( $userObject )
   {
-    qcl_access_Manager::setActiveUser( $userObject );
+    $this->getAccessManager()->setActiveUser( $userObject );
   }
 
   /**
@@ -746,7 +754,7 @@ class qcl_access_Controller
   function fireServerEvent ( $type )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::fireServerEvent( $this, $type, $data );
+    $this->getEventDispatcher()->fireServerEvent( $this, $type, $data );
   }
 
   /**
@@ -758,7 +766,7 @@ class qcl_access_Controller
   function fireServerDataEvent ( $type, $data )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::fireServerDataEvent( $this, $type, $data );
+    $this->getEventDispatcher()->fireServerDataEvent( $this, $type, $data );
   }
 }
 ?>

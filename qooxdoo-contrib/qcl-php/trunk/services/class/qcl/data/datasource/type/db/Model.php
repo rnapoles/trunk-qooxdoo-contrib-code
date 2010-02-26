@@ -160,7 +160,7 @@ class qcl_data_datasource_type_db_Model
       //$this->debug("Datasource model connecting to ");
       //$this->debug($dsn);
 
-      $db = qcl_data_db_Manager::createAdapter( $dsn );
+      $db = qcl_data_db_Manager::getInstance()->createAdapter( $dsn );
 
       $this->datasourceConnectionObj = $db;
     }

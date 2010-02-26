@@ -29,19 +29,19 @@ class qcl_data_persistence_db_Setup
   /**
    * File with model schema
    */
-  var $schemaXmlPath = "qcl/data/persistence/db/Model.xml";
+  public $schemaXmlPath = "qcl/data/persistence/db/Model.xml";
 
   /**
    * Flag to prevent caching
    */
-  var $doNotCache = true;
+  public $doNotCache = true;
 
   /**
    * Create an instance of this object to create the
-   * persistentObject table in the database. Can be called
-   * statically.
+   * persistentObject table in the database.
+   * Must be called statically
    */
-  function setup()
+  static function setup()
   {
     /*
      * check once per request if table has been setup.
@@ -50,7 +50,7 @@ class qcl_data_persistence_db_Setup
     {
       require_once "qcl/data/db/Manager.php";
       $prefix = qcl_application_Application::getInstance()->getIniValue("database.tableprefix");
-      $db = qcl_data_db_Manager::createAdapter();
+      $db = qcl_data_db_Manager::getInstance()->createAdapter();
       $db->execute("
         CREATE TABLE IF NOT EXISTS `{$prefix}persistentObjects` (
           `id` int(11) NOT NULL auto_increment,

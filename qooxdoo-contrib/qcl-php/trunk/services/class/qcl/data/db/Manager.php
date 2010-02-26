@@ -30,12 +30,19 @@ define ("qcl_data_db_ADMIN_ACCESS", true);
  */
 class qcl_data_db_Manager extends qcl_core_Object
 {
+
+  /**
+   * Cache of database connections
+   * @var array
+   */
+  private $cache = array();
+
   /**
    * Returns singleton instance of the class. Must be called
    * statically.
    * @return qcl_data_db_Manager
    */
-  function getInstance()
+  static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }
@@ -44,9 +51,9 @@ class qcl_data_db_Manager extends qcl_core_Object
    * Returns the type of the database. Can be called statically.
    * @return string
    */
-  function getDbType()
+  public function getDbType()
   {
-    return qcl_application_Application::getInstance()->getIniValue("database.type");
+    return $this->getApplication()->getIniValue("database.type");
   }
 
   /**
@@ -56,36 +63,35 @@ class qcl_data_db_Manager extends qcl_core_Object
    * @see qcl_data_db_Manager::connect()
    * @return string
    */
-  function getDefaultDsn( $userdata=false, $adminaccess=false )
+  public function getDefaultDsn( $userdata=false, $adminaccess=false )
   {
     if ( $userdata )
     {
       if ( $adminaccess )
       {
-        return qcl_application_Application::getInstance()->getIniValue("database.admin_userdb");
+        return $this->getApplication()->getIniValue("database.admin_userdb");
       }
       else
       {
-        return qcl_application_Application::getInstance()->getIniValue("database.user_userdb");
+        return $this->getApplication()->getIniValue("database.user_userdb");
       }
     }
     else
     {
       if ( $adminaccess )
       {
-        return qcl_application_Application::getInstance()->getIniValue("database.admin_admindb");
+        return $this->getApplication()->getIniValue("database.admin_admindb");
       }
       else
       {
-        return qcl_application_Application::getInstance()->getIniValue("database.user_admindb");
+        return $this->getApplication()->getIniValue("database.user_admindb");
       }
     }
   }
 
 
   /**
-   * Creates and caches a database connection object (adapter). Can
-   * be called statically.
+   * Creates and caches a database connection object (adapter).
    *
    * @param mixed $first [optional] If string, treat as dsn. If boolean, whether
    * to use the userdata database (true) or the database containing
@@ -97,7 +103,7 @@ class qcl_data_db_Manager extends qcl_core_Object
    *
    * @return qcl_data_db_type_Abstract
    */
-  function createAdapter( $first=false, $adminaccess=false )
+  public function createAdapter( $first=false, $adminaccess=false )
   {
     /*
      * if first argument is boolean, get dsn from ini values,
@@ -105,7 +111,7 @@ class qcl_data_db_Manager extends qcl_core_Object
      */
     if ( ! $first or is_bool( $first ) )
     {
-      $dsn = qcl_data_db_Manager::getDefaultDsn( $first, $adminaccess );
+      $dsn = $this->getDefaultDsn( $first, $adminaccess );
     }
     elseif ( is_string( $first ) or is_array( $first ) )
     {
@@ -113,12 +119,12 @@ class qcl_data_db_Manager extends qcl_core_Object
     }
     else
     {
-      qcl_data_db_Manager::raiseError("Invalid parameters.");
+      $this->raiseError("Invalid parameters.");
     }
 
     if ( ! $dsn )
     {
-      qcl_data_db_Manager::raiseError("No dsn information available.");
+      $this->raiseError("No dsn information available.");
     }
 
     /*
@@ -127,12 +133,10 @@ class qcl_data_db_Manager extends qcl_core_Object
     $cacheId = is_array($dsn) ? implode(",", array_values($dsn) ) : $dsn;
     //$this->debug("Cache id '$cacheId'");
 
-    global $__dbcache;
-
-    if ( $__dbcache[$cacheId] )
+    if ( $this->cache[$cacheId] )
     {
       //$this->debug("Using cached db object for $cacheId");
-      $db = $__dbcache[$cacheId];
+      $db = $this->cache[$cacheId];
     }
 
     /*
@@ -143,7 +147,7 @@ class qcl_data_db_Manager extends qcl_core_Object
       /*
        * type and class of database adapter
        */
-      $type = qcl_data_db_Manager::getDbType();
+      $type = $this->getDbType();
       $class = "qcl_data_db_adapter_" . strtoupper($type[0]) . substr( $type, 1 );
 
       /*
@@ -162,13 +166,13 @@ class qcl_data_db_Manager extends qcl_core_Object
        */
       if ( $db->error )
       {
-        qcl_data_db_Manager::raiseError( $db->error );
+        $this->raiseError( $db->error );
       }
 
       /*
        * save adapter
        */
-      $__dbcache[$cacheId] = $db;
+      $this->cache[$cacheId] = $db;
     }
 
     return $db;

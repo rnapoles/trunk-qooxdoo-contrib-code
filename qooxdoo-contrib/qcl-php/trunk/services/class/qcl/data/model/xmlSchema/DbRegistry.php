@@ -35,7 +35,7 @@ class qcl_data_model_xmlSchema_DbRegistry
    * @return qcl_data_model_xmlSchema_DbRegistry
    * @see class/qcl/core/qcl_core_Object#getInstance($class)
    */
-  function getInstance()
+  static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }
@@ -53,7 +53,6 @@ class qcl_data_model_xmlSchema_DbRegistry
 
   /**
    * Register initialization timestamp for table and datasource.
-   * Can be called statically.
    *
    * @param qcl_data_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
@@ -61,19 +60,18 @@ class qcl_data_model_xmlSchema_DbRegistry
    * @param int $timestamp
    * @return void
    */
-  function registerInitialized( $datasourceModel, $table, $class, $timestamp )
+  public function registerInitialized( $datasourceModel, $table, $class, $timestamp )
   {
-    $_this = qcl_data_model_xmlSchema_DbRegistry::getInstance();
-    $datasource = $_this->_getDatasourceName( $datasourceModel );
-    $_this->data[$datasource][$table][$class] = $timestamp;
-    $_this->save();
+    $datasource = $this->_getDatasourceName( $datasourceModel );
+    $this->data[$datasource][$table][$class] = $timestamp;
+    $this->save();
     if ( $datasourceModel )
     {
-      $_this->info("Registered table '$table' for class '$class' and datasource '$datasource' as initialized (timestamp $timestamp).");
+      $this->info("Registered table '$table' for class '$class' and datasource '$datasource' as initialized (timestamp $timestamp).");
     }
     else
     {
-       $_this->info("Registered table '$table' class '$class' as initialized (timestamp $timestamp).");
+       $this->info("Registered table '$table' class '$class' as initialized (timestamp $timestamp).");
     }
   }
 
@@ -86,13 +84,12 @@ class qcl_data_model_xmlSchema_DbRegistry
    * @param string $timestamp Optional timpstamp value to check
    * @return bool
    */
-  function isInitialized( $datasourceModel, $table, $class=null, $timestamp=null )
+  public function isInitialized( $datasourceModel, $table, $class=null, $timestamp=null )
   {
-    $_this = qcl_data_model_xmlSchema_DbRegistry::getInstance();
-    $datasource = $_this->_getDatasourceName( $datasourceModel );
+    $datasource = $this->_getDatasourceName( $datasourceModel );
     return ( $timestamp and $class ) ?
-      ( $_this->data[$datasource][$table][$class] == $timestamp) :
-      isset( $_this->data[$datasource][$table] );
+      ( $this->data[$datasource][$table][$class] == $timestamp) :
+      isset( $this->data[$datasource][$table] );
   }
 
   /**
@@ -100,7 +97,7 @@ class qcl_data_model_xmlSchema_DbRegistry
    * @param qcl_data_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @return string
    */
-  function _getDatasourceName( $datasourceModel )
+  private function _getDatasourceName( $datasourceModel )
   {
     if ( is_null( $datasourceModel )  )
     {

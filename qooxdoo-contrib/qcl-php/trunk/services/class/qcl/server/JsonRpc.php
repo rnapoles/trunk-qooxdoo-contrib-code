@@ -51,7 +51,8 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * The called controller object
    * @var qcl_data_controller_Controller
    */
-  var $_controller;
+  private $_controller;
+
 
   /**
    * Starts a singleton instance of the server. Must be called statically.
@@ -78,6 +79,42 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function getController()
   {
     return $this->_controller;
+  }
+
+  /**
+   * Getter for the access manager
+   * @return qcl_access_Manager
+   */
+  function getAccessManager()
+  {
+    return qcl_access_Manager::getInstance();
+  }
+
+  /**
+   * Getter for response object
+   * @return qcl_server_Response
+   */
+  function getResponseObject()
+  {
+    return qcl_server_Response::getInstance();
+  }
+
+  /**
+   * Getter for application
+   * @return qcl_application_Application
+   */
+  function getApplication()
+  {
+    return qcl_application_Application::getInstance();
+  }
+
+  /**
+   * Getter for event dispatcher
+   * @return qcl_event_Dispatcher
+   */
+  function getEventDispatcher()
+  {
+    return qcl_event_Dispatcher::getInstance();
   }
 
   /**
@@ -168,8 +205,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function checkServiceMethod( $serviceObject, $method )
   {
-    if ( phpversion() > 5
-      and method_exists( $serviceObject, "hasMixinMethod" )
+    if ( method_exists( $serviceObject, "hasMixinMethod" )
       and $serviceObject->hasMixinMethod( $method ) )
     {
       return true;
@@ -185,7 +221,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function checkAccessibility( $serviceObject, $method )
   {
-    qcl_access_Manager::getInstance()->controlAccess( $serviceObject, $method );
+    $this->getAccessManager()->controlAccess( $serviceObject, $method );
   }
 
   /**
@@ -199,7 +235,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * response object
      */
-    $response = qcl_server_Response::getInstance();
+    $response = $this->getResponseObject();
 
     /*
      * request id
@@ -210,9 +246,9 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * events and messages
      */
-    if ( qcl_application_Application::getInstance()->getIniValue("service.event_transport") == "on" )
+    if ( $this->getApplication()->getIniValue("service.event_transport") == "on" )
     {
-      $events    = qcl_event_Dispatcher::getServerEvents();
+      $events    = $this->getEventDispatcher()->getServerEvents();
       $response->setEvents( $events );
       $sessionId = qcl_access_Manager::getSessionId();
       $messages  = qcl_event_message_Bus::getServerMessages( $sessionId );

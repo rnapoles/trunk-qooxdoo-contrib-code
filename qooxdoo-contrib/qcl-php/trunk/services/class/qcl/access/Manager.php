@@ -29,24 +29,24 @@ class qcl_access_Manager
    * The currently active user or null
    * @var qcl_access_model_User
    */
-  var $_activeUser;
+  private $_activeUser;
 
   /**
    * The access controller object
    * @var qcl_access_Controller
    */
-  var $_accessController;
+  private $_accessController;
 
   /**
    * The current session id
    */
-  var $_sessionId;
+  private $_sessionId;
 
   /**
    * The session model
    * @var qcl_access_model_Session
    */
-  var $_sessionModel;
+  private $_sessionModel;
 
   /**
    * Returns a singleton instance of this class
@@ -63,20 +63,18 @@ class qcl_access_Manager
    * @param $sessionId
    * @return void
    */
-  function setSessionId( $sessionId )
+  public function setSessionId( $sessionId )
   {
-    $_this = qcl_access_Manager::getInstance();
-    $_this->_sessionId = $sessionId;
+    $this->_sessionId = $sessionId;
   }
 
   /**
    * Returns the session id. Can be called statically.
    * @return string
    */
-  function getSessionId()
+  public function getSessionId()
   {
-    $_this = qcl_access_Manager::getInstance();
-    return $_this->_sessionId;
+    return $this->_sessionId;
   }
 
   /**
@@ -84,10 +82,9 @@ class qcl_access_Manager
    * called statically
    * @return qcl_access_model_Session
    */
-  function getSessionModel()
+  public function getSessionModel()
   {
-    $_this = qcl_access_Manager::getInstance();
-    return $_this->_sessionModel;
+    return $this->_sessionModel;
   }
 
   /**
@@ -96,20 +93,27 @@ class qcl_access_Manager
    * @param qcl_access_model_Session
    * @return void
    */
-  function setSessionModel( $sessionModel )
+  public function setSessionModel( $sessionModel )
   {
-    $_this = qcl_access_Manager::getInstance();
-    $_this->_sessionModel = $sessionModel;
+    $this->_sessionModel = $sessionModel;
   }
 
   /**
    * Returns active user object. Can be called statically.
    * @return qcl_access_model_User
    */
-  function getActiveUser()
+  public function getActiveUser()
   {
-    $_this = qcl_access_Manager::getInstance();
-    return $_this->_activeUser;
+    return $this->_activeUser;
+  }
+
+  /**
+   * Getter for server object
+   * @return unknown_type
+   */
+  public function getServer()
+  {
+    return $this->getApplication()->getServer();
   }
 
 
@@ -119,16 +123,15 @@ class qcl_access_Manager
    * @param qcl_access_model_User $userObject A user object or null to logout.
    * @return void
    */
-  function setActiveUser( $userObject )
+  public function setActiveUser( $userObject )
   {
     if ( is_a( $userObject, "qcl_core_Object" ) )
     {
-      $_this = qcl_access_Manager::getInstance();
-      $_this->_activeUser = $userObject->cloneObject();
+      $this->_activeUser = $userObject->cloneObject();
     }
     elseif ( is_null ( $userObject ) )
     {
-      $_this->_activeUser  = null;
+      $this->_activeUser  = null;
     }
     else
     {
@@ -141,16 +144,15 @@ class qcl_access_Manager
    * Returns the current access controller instance, if any.
    * @return qcl_access_SessionController
    */
-  function getAccessController()
+  public function getAccessController()
   {
-    $_this = qcl_access_Manager::getInstance();
-    if ( ! $_this->_accessController )
+    if ( ! $this->_accessController )
     {
       require_once "qcl/access/SessionController.php";
       require_once "qcl/data/persistence/db/Object.php"; // @todo fix this dependency
-      $_this->_accessController = new qcl_access_SessionController( $this );
+      $this->_accessController = new qcl_access_SessionController( $this );
     }
-    return $_this->_accessController;
+    return $this->_accessController;
   }
 
   /**
@@ -169,7 +171,7 @@ class qcl_access_Manager
    * @param $method
    * @return void
    */
-  function controlAccess( $serviceObject, $method )
+  public function controlAccess( $serviceObject, $method )
   {
     $accessController = $this->getAccessController();
 
@@ -182,7 +184,7 @@ class qcl_access_Manager
        * abort request
        */
       $this->warn( $accessController->getError() );
-      qcl_server_Server::abort( qcl_application_Application::tr("Access was denied ...") );
+      $this->getServer()->abort( qcl_application_Application::tr("Access was denied ...") );
       exit;
     }
   }
@@ -192,15 +194,14 @@ class qcl_access_Manager
    * @return void
    * @param $permission String
    */
-  function requirePermission ( $permission )
+  public function requirePermission ( $permission )
   {
-    $_this = qcl_access_Manager::getInstance();
-    if ( ! $_this->hasPermission( $permission ) )
+    if ( ! $this->hasPermission( $permission ) )
     {
-      $activeUser = $_this->getActiveUser();
+      $activeUser = $this->getActiveUser();
       $userName  = $activeUser ? $activeUser->username() : "";
       qcl_application_Application::getInstance()->warn("Not allowed. User '$userName' does not have permission '$permission'" );
-      qcl_server_Server::abort( $this->tr("Not allowed.") );
+      $this->getServer()->abort( $this->tr("Not allowed.") );
     }
   }
 
@@ -209,10 +210,9 @@ class qcl_access_Manager
    * @return boolean
    * @param $permission String
    */
-  function hasPermission ( $permission )
+  public function hasPermission ( $permission )
   {
-    $_this = qcl_access_Manager::getInstance();
-    $controller = qcl_server_Server::getController();
+    $controller = $this->getServer()->getController();
 
     /*
      * check if this permission has a local alias

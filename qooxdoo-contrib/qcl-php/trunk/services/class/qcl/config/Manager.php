@@ -23,14 +23,14 @@
 class qcl_config_Manager extends qcl_core_Object
 {
 
-  var $configModel = null;
+  private $configModel = null;
 
   /**
    * Returns singleton instance of the class. Must be called
    * statically
    * @return qcl_config_Manager
    */
-  function getInstance()
+  static function getInstance()
   {
     return qcl_getInstance( __CLASS__  );
   }
@@ -40,20 +40,18 @@ class qcl_config_Manager extends qcl_core_Object
    * @param qcl_config_IConfig $configModel
    * @return void
    */
-  function setModel($configModel)
+  public function setModel($configModel)
   {
-    $_this = qcl_config_Manager::getInstance();
-    $_this->configModel = $configModel;
+    $this->configModel = $configModel;
   }
 
   /**
    * Getter for the config model
    * @return qcl_config_IConfig
    */
-  function getModel()
+  public function getModel()
   {
-    $_this = qcl_config_Manager::getInstance();
-    return $_this->configModel;
+    return $this->configModel;
   }
 }
 ?>
