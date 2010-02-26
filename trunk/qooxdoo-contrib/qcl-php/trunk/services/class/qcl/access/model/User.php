@@ -28,29 +28,52 @@ require_once "qcl/access/model/Common.php";
 class qcl_access_model_User extends qcl_access_model_Common
 {
 
-   var $schemaXmlPath  = "qcl/access/model/User.model.xml";
+  /**
+   * The path to the schema file
+   * @var string
+   */
+   public $schemaXmlPath  = "qcl/access/model/User.model.xml";
 
   /**
-   * names that cannot be used as namedIS
+   * names that cannot be used as namedId
    */
-  var $reservedNames = array("default","admin","global");
+  public $reservedNames = array("default","admin","global");
 
   /**
    * Returns singleton instance.
    * @static
    * @return qcl_access_model_User
    */
-  function getInstance()
+  static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
+  }
+
+  /**
+   * Getter for permission model instance
+   * @return qcl_access_model_Permission
+   */
+  public function getPermissionModel()
+  {
+    return qcl_access_model_Permission::getInstance();
+  }
+
+  /**
+   * Getter for role model instance
+   * @return qcl_access_model_Role
+   */
+  public function getRoleModel()
+  {
+    return qcl_access_model_Role::getInstance();
   }
 
   /**
    * Return the username (login name) of the current user.
    * Alias of getNamedId()
    * @return string
+   * @todo rename to getUsername()
    */
-  function username()
+  public function username()
   {
     return $this->getNamedId();
   }
@@ -60,12 +83,12 @@ class qcl_access_model_User extends qcl_access_model_Common
    * @return bool True if user name is guest
    * @todo we need some more sophisticated stuff here
    */
-  function isAnonymous()
+  public function isAnonymous()
   {
     return $this->get("anonymous")==true;
   }
 
-  function isAdmin()
+  public function isAdmin()
   {
     return ( $this->hasRole("qcl.roles.Administrator") );
   }
@@ -74,7 +97,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    * Creates a new anonymous guest user
    * @return void
    */
-  function createAnonymous()
+  public function createAnonymous()
   {
     /*
      * purge inactive guests
@@ -101,24 +124,23 @@ class qcl_access_model_User extends qcl_access_model_Common
 
   /**
    * Purge all anonymous guests that are inactive for more than
-   * one hour. Can be called statically
+   * one hour.
    * @todo unhardcode timeout
    */
-  function purgeInactiveGuestUsers()
+  public function purgeInactiveGuestUsers()
   {
     $u = QCL_ANONYMOUS_USER_PREFIX;
     $l = strlen($u);
-    $_this = qcl_access_model_User::getInstance();
-    $_this->findWhere("
+    $this->findWhere("
       SUBSTR(`username`,1,$l) = '$u' AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
         OR `lastAction` IS NULL )
     ",null,"id");
-    $ids = $_this->values();
+    $ids = $this->values();
 
     if ( count( $ids ) )
     {
-      $_this->delete( $ids );
+      $this->delete( $ids );
     }
   }
 
@@ -134,13 +156,12 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * if argument is array, delete list of ids
      */
-    if ( is_array( $ids) )
+    if ( is_array( $ids ) )
     {
-      $_this = qcl_access_model_User::getInstance();
       foreach($ids as $id )
       {
-        $_this->load($id);
-        $_this->delete();
+        $this->load($id);
+        $this->delete();
       }
       return;
     }
@@ -148,7 +169,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * delete config data
      */
-    $configModel = qcl_application_Application::getConfigModel();
+    $configModel = $this->getApplication()->getConfigModel();
     $configModel->deleteByUserId( $this->getId() );
 
     /*
@@ -163,7 +184,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    * myapp.permissions.canDoFoo
    * @param string $requestedPermission the permission to check
    */
-  function hasPermission( $requestedPermission )
+  public function hasPermission( $requestedPermission )
   {
     if ( ! $this->foundSomething() )
     {
@@ -173,7 +194,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * models
      */
-    $permModel = qcl_access_model_Permission::getInstance();
+    $permModel = $this->getPermissionModel();
 
     /*
      * get all permissions of the user
@@ -228,7 +249,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   function linkedRoleModel($properties="*")
   {
-    $roleModel  = qcl_access_model_Role::getInstance();
+    $roleModel  = $this->getRoleModel();
     $roleModel->findByLinkedModel( $this, null, $properties );
     return $roleModel;
   }

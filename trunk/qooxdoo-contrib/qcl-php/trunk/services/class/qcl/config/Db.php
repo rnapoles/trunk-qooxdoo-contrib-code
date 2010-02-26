@@ -54,6 +54,7 @@ class qcl_config_Db
     return qcl_getInstance( __CLASS__  );
   }
 
+
 	/**
 	 * creates a config property, overwriting any previous entry
 	 * requires permission "qcl.config.permissions.manage"
@@ -78,7 +79,7 @@ class qcl_config_Db
 		/*
 		 * check permission
 		 */
-    $activeUser  = qcl_access_Manager::getActiveUser();
+    $activeUser  = $this->getAccessManager()->getActiveUser();
 
     //$activeUser->requirePermission("qcl.config.permissions.manage");
 
@@ -158,14 +159,6 @@ class qcl_config_Db
     return $userModel;
   }
 
-  /**
-   * Returns active user object instance
-   * @return qcl_access_model_User
-   */
-  function getActiveUser()
-  {
-    return qcl_access_Manager::getActiveUser();
-  }
 
 	/**
 	 * Deletes a config key dependent on permissions
@@ -174,7 +167,7 @@ class qcl_config_Db
 	 */
 	function delete( $ids=null )
 	{
-    $activeUser = qcl_access_Manager::getActiveUser();
+    $activeUser = $this->getActiveUser();
 
     /*
      * get key name
@@ -227,8 +220,8 @@ class qcl_config_Db
      */
 	  if ( $userId === false )
 	  {
-      $userModel = $this->getActiveUser();
-      $userId = $userModel->getId();
+      $userModel = $this->getApplication()->getAccessManager()->getActiveUser();
+      $userId = $userModel? $userModel->getId() : null;
 
 	  }
 
@@ -562,7 +555,7 @@ class qcl_config_Db
 	 */
 	function getAccessibleKeys( $mask=null )
 	{
-    $activeUser = qcl_access_Manager::getActiveUser();
+    $activeUser = $this->getActiveUser();
 
     /*
      * no accessible keys if no active user

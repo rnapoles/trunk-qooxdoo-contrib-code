@@ -31,33 +31,34 @@ class qcl_data_model_db_Abstract
   /**
    * The datasource object instance
    * @var qcl_data_db_type_Mysql
-   * @todo should be a private property
+   * @todo make this a private property
    */
-  var $db;
+  public $db;
 
   /**
    * the name of the table in the database that holds the
    * data of this model
    * @var string
+   * @todo make this private
    */
-  var $table;
+  public $table;
 
   /**
    * the local key of this table, usually the id property. acces with ::getLocalKey()
    * @var string
-   * @access private
+   * @todo make this private
    */
-  var $localKey;
+  public $localKey;
 
   /**
    * The foreign key of this table in other tables that link to this model.
    * This MUST always be the same key, one model cannot have different foreign key names.
    * Access with ::getForeignKey()
    *
-   * @access private
+   * @todo make this private
    * @var string
    */
-  var $foreignKey;
+  public $foreignKey;
 
 
   /**
@@ -102,7 +103,14 @@ class qcl_data_model_db_Abstract
     return $this->table;
   }
 
-
+  /**
+   * Getter for database manager singleton object
+   * @return qcl_data_db_Manager
+   */
+  public function getManager()
+  {
+    return qcl_data_db_Manager::getInstance();
+  }
 
   /**
    * Connects to database. if this model is connected to
@@ -129,7 +137,7 @@ class qcl_data_model_db_Abstract
      */
     else
     {
-      $db = qcl_data_db_Manager::createAdapter();
+      $db = $this->getManager()->createAdapter();
     }
 
     /*
@@ -652,7 +660,10 @@ class qcl_data_model_db_Abstract
    */
   function load( $id, $requestId=null )
   {
-    $this->checkInt( $id ) ;
+    if ( ! is_int($id) )
+    {
+      $this->raiseError("Invalid id.");
+    }
     return $this->findById( $id );
   }
 

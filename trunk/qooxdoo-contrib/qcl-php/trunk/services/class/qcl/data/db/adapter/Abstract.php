@@ -302,16 +302,13 @@ class qcl_data_db_adapter_Abstract
     return $this->database;
   }
 
-
 	/**
 	 * Setup the logger object
 	 */
   function setupLogger()
   {
-    parent::setupLogger();
-    qcl_log_Logger::registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
-    qcl_log_Logger::registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false);
-
+    $this->getLogger()->registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
+    $this->getLogger()->registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false);
   }
 }
 ?>

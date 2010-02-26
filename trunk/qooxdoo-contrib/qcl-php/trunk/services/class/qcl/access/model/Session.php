@@ -44,9 +44,17 @@ class qcl_access_model_Session
     return qcl_getInstance(__CLASS__);
   }
 
+  /**
+   * Getter for access manager
+   * @return unknown_type
+   */
+  function getAccessManager()
+  {
+    return qcl_access_Manager::getInstance();
+  }
 
 	//-------------------------------------------------------------
-  // public methods
+  // API methods
   //-------------------------------------------------------------
 
 	/**
@@ -101,7 +109,7 @@ class qcl_access_model_Session
      * @todo unhardcode timeout
      * @todo build this into the model code
      */
-    $activeUser = qcl_access_Manager::getActiveUser();
+    $activeUser = $this->getAccessManager()->getActiveUser();
     if( ! $activeUser ) return;
     $userTable =  $activeUser->getTableName();
     $this->deleteWhere("

@@ -27,26 +27,43 @@ class qcl_server_Server extends qcl_core_Object
    * The actual server object
    * @var AbstractServer
    */
-  var $serverObject;
+  private $serverObject;
 
   /**
    * Returns the singleton instance of this class
    * @return qcl_server_Server
    */
-  function getInstance( )
+  static function getInstance( )
   {
     return qcl_getInstance( __CLASS__ );
   }
 
   /**
+   * Static method to start the application
+   * @return void
+   */
+  public static function run( $servicePaths )
+  {
+    $_this = self::getInstance();
+    $_this->start( $servicePaths );
+  }
+
+  /**
    * Start a server that handles the request type (JSONRPC, POST, ...).
-   * Can be called statically.
    * @param array $servicePaths An array of paths to the services used
    * by the server
    * @return void
    */
-  function start( $servicePaths )
+  public function start( $servicePaths )
   {
+
+    /**
+     * Check service classes
+     */
+    if ( ! is_array( $servicePaths) )
+    {
+      $this->raiseError("You must supply an array of paths to the service classes.");
+    }
 
     /*
      * if POST request, use post request server extension
@@ -74,30 +91,27 @@ class qcl_server_Server extends qcl_core_Object
     /*
      * save and start server
      */
-    $server = qcl_server_Server::getInstance();
-    $server->serverObject = $serverObj;
+    $this->serverObject = $serverObj;
     $serverObj->start();
   }
 
 
   /**
    * Returns the current server object
-   * @return qcl_server_JsonRpc|null
+   * @return qcl_server_JsonRpc
    */
-  function getServerObject()
+  public function getServerObject()
   {
-    $_this = qcl_server_Server::getInstance();
-    return $_this->serverObject;
+    return $this->serverObject;
   }
 
   /**
    * Returns the current controller object
    * @return qcl_data_controller_Controller
    */
-  function getController()
+  public function getController()
   {
-    $serverObj = qcl_server_Server::getServerObject();
-    return $serverObj->getController();
+    return $this->getController();
   }
 
   /**
@@ -105,10 +119,9 @@ class qcl_server_Server extends qcl_core_Object
    * @param string $key If given, return only the value of the given key
    * @return string|array
    */
-  function getServerData( $key=null )
+  public function getServerData( $key=null )
   {
-    $serverObj = qcl_server_Server::getServerObject();
-    return $serverObj->getServerData( $key );
+    return $this->getServerObj()->getServerData( $key );
   }
 
   /**
@@ -116,7 +129,7 @@ class qcl_server_Server extends qcl_core_Object
    * top including script.
    * @return string
    */
-  function getUrl()
+  public function getUrl()
   {
     return "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
   }
@@ -126,9 +139,9 @@ class qcl_server_Server extends qcl_core_Object
    * @param $message
    * @return void
    */
-  function abort( $message )
+  public function abort( $message )
   {
-    $serverObj = qcl_server_Server::getServerObject();
+    $serverObj = $this->getServerObject();
     $serverObj->getErrorBehavior()->setError( null, $message );
     $serverObj->getErrorBehavior()->sendAndExit();
     exit;
@@ -139,10 +152,10 @@ class qcl_server_Server extends qcl_core_Object
    * @param $data
    * @return void
    */
-  function forceResponse( $data )
+  public function forceResponse( $data )
   {
-    $serverObj = qcl_server_Server::getServerObject();
-    echo $serverObj->json->encode( $data );
+    $json = new JsonWrapper();
+    echo $json->encode( $data );
     exit;
   }
 
@@ -151,7 +164,7 @@ class qcl_server_Server extends qcl_core_Object
    * statically.
    * @return string
    */
-  function getRemoteIp()
+  public function getRemoteIp()
   {
     return $_SERVER['REMOTE_ADDR'];
   }

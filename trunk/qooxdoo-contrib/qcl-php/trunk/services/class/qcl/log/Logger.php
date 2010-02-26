@@ -30,9 +30,12 @@ if ( ! defined("QCL_LOG_SHOW_CLASS_NAME") )
 class qcl_log_Logger
 {
 
-  var $filters = null;
+  /**
+   * Filters for the logger
+   * @var array
+   */
+  private $filters = array();
 
-  var $classFilters = array();
 
   /**
    * Constructor
@@ -40,7 +43,7 @@ class qcl_log_Logger
    */
   function __construct()
   {
-    $this->_class = get_class($this);
+     $this->_registerInitialFilters();
   }
 
   /**
@@ -49,20 +52,14 @@ class qcl_log_Logger
    */
   public static function getInstance()
   {
-    $_this = qcl_getInstance( __CLASS__ );
-    if ( ! $_this->__filtersRegistered )
-    {
-      $_this->__filtersRegistered = true;
-      $_this->_registerInitialFilters();
-    }
-    return $_this;
+    return qcl_getInstance( __CLASS__ );
   }
 
   /**
    * Internal method to setup initial filters
    * @return unknown_type
    */
-  function _registerInitialFilters()
+  private function _registerInitialFilters()
   {
     $this->registerFilter("debug",    "Verbose debugging, all messages",false);
     $this->registerFilter("info",     "Important messages", true);
@@ -78,41 +75,28 @@ class qcl_log_Logger
    * @param string $description Short description of what messages the filter is for.
    * @param bool[optional,default true] $state True if enabled, false if disabled
    */
-  function registerFilter( $filter, $description=null, $state=true )
+  public function registerFilter( $filter, $description=null, $state=true )
   {
-    $_this = qcl_log_Logger::getInstance();
-
     if ( ! $filter )
     {
       trigger_error("No filter given.");
     }
 
-    $_this->filters[$filter] = array(
+    $this->filters[$filter] = array(
       'enabled'     => $state,
       'description' => $description
     );
   }
 
-  /**
-   * Logs a message only in a given class. Can be called statically.
-   * @param $classes
-   * @return unknown_type
-   */
-  function filterByClass($classes)
-  {
-    $_this = qcl_log_Logger::getInstance();
-    $_this->classFilters = $classes;
-  }
 
   /**
    * Checks if a filter is registered. Can be called statically.
    * @param $filter
    * @return unknown_type
    */
-  function isRegistered($filter)
+  public function isRegistered($filter)
   {
-    $_this = qcl_log_Logger::getInstance();
-    return isset( $_this->filters[$filter]);
+    return isset( $this->filters[$filter]);
   }
 
   /**
@@ -121,11 +105,9 @@ class qcl_log_Logger
    * @param $value
    * @return unknown_type
    */
-  function setFilterEnabled( $filter, $value )
+  public function setFilterEnabled( $filter, $value )
   {
-    $_this = qcl_log_Logger::getInstance();
-
-    if ( ! $_this->filters[$filter] )
+    if ( ! $this->filters[$filter] )
     {
       trigger_error("Filter $filter does not exist.");
     }
@@ -133,7 +115,7 @@ class qcl_log_Logger
     {
       trigger_error("Value parameter must be boolean");
     }
-    $_this->filters[$filter]['enabled'] = $value;
+    $this->filters[$filter]['enabled'] = $value;
   }
 
   /**
@@ -143,20 +125,8 @@ class qcl_log_Logger
    * @param string|array $filters
    * @return message written to file
    */
-  function log( $msg, $filters="debug" )
+  public function log( $msg, $filters="debug" )
   {
-    $_this = qcl_log_Logger::getInstance();
-
-    /**
-     * filter by classes
-     */
-    if ( count( $_this->classFilters ) )
-    {
-      if ( ! in_array($_this->className(), $_this->classFilters) )
-      {
-        return;
-      }
-    }
 
     /*
      * convert non-scalar data to string
@@ -172,14 +142,14 @@ class qcl_log_Logger
     $found = false;
     foreach ( (array) $filters as $filter )
     {
-       if ( $_this->filters[$filter]  )
+       if ( $this->filters[$filter]  )
        {
          $found = true;
-         if ( $_this->filters[$filter]['enabled'] )
+         if ( $this->filters[$filter]['enabled'] )
          {
            $message = date( "y-m-j H:i:s" );
            $message .= ": " . $msg . "\n";
-           $_this->writeLog( $message );
+           $this->writeLog( $message );
            break;
          }
        }
@@ -221,8 +191,7 @@ class qcl_log_Logger
    */
   function info ( $msg )
   {
-    $_this = qcl_log_Logger::getInstance();
-    $_this->log ( $msg, "info" );
+    $this->log ( $msg, "info" );
   }
 
 
@@ -233,8 +202,7 @@ class qcl_log_Logger
    */
   function warn ( $msg )
   {
-    $_this = qcl_log_Logger::getInstance();
-    $_this->log ( "*** WARNING *** " . $msg, "warn" );
+    $this->log ( "*** WARNING *** " . $msg, "warn" );
   }
 
   /**
@@ -244,8 +212,7 @@ class qcl_log_Logger
    */
   function error ( $msg )
   {
-    $_this = qcl_log_Logger::getInstance();
-    $_this->log ( "### ERROR ### " . $msg, "error" );
+    $this->log ( "### ERROR ### " . $msg, "error" );
   }
 
 }

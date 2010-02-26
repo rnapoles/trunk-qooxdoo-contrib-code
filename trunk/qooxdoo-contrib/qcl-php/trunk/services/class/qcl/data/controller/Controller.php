@@ -45,7 +45,7 @@ class qcl_data_controller_Controller
    * The response data object
    * @var qcl_data_Result
    */
-  var $_resultObject;
+  private $_resultObject;
 
 
   //-------------------------------------------------------------
@@ -57,30 +57,21 @@ class qcl_data_controller_Controller
    * Alias of qcl_access_Manager::getSessionId()
    * @return string
    */
-  function getSessionId()
+  public function getSessionId()
   {
-    return qcl_access_Manager::getSessionId();
+    return $this->getAccessManager()->getSessionId();
   }
 
-  /**
-   * Returns the currently active user
-   * Alias of qcl_access_Manager::getActiveUser()
-   * @return string
-   */
-  function getActiveUser()
-  {
-    return qcl_access_Manager::getActiveUser();
-  }
 
   /**
    * Checks if active user has the given permission.
-   * Alias of qcl_access_Manager::hasPermission()
+   * Alias of $this->getAccessManager()->hasPermission()
    * @param $permission
    * @return bool
    */
-  function hasPermission( $permission )
+  public function hasPermission( $permission )
   {
-    return qcl_access_Manager::hasPermission( $permission );
+    return $this->getAccessManager()->hasPermission( $permission );
   }
 
   /**
@@ -93,7 +84,7 @@ class qcl_data_controller_Controller
    * @param string $permission
    * @return string|false Name of permission if alias exists, otherwise false
    */
-  function hasPermissionAlias( $permission )
+  public function hasPermissionAlias( $permission )
   {
     return false;
   }
@@ -102,24 +93,24 @@ class qcl_data_controller_Controller
   /**
    * Checks if active user has the given permission and aborts if
    * permission is not granted.
-   * Alias of qcl_access_Manager::requirePermission()
+   * Alias of $this->getAccessManager()->requirePermission()
    * @param string $permission
    * @return bool
    */
-  function requirePermission( $permission )
+  public function requirePermission( $permission )
   {
-    return qcl_access_Manager::requirePermission( $permission );
+    return $this->getActiveUser()->requirePermission( $permission );
   }
 
   /**
    * Checks if active user has the given role.
-   * Alias of qcl_access_Manager::getActiveUser()->hasRole()
+   * Alias of $this->getAccessManager()->getActiveUser()->hasRole()
    * @param string $role
    * @return bool
    */
-  function hasRole( $role )
+  public function hasRole( $role )
   {
-    $activeUser = qcl_access_Manager::getActiveUser();
+    $activeUser = $this->getActiveUser();
     return $activeUser->hasRole( $role );
   }
 
@@ -127,6 +118,15 @@ class qcl_data_controller_Controller
   // datasources
   //-------------------------------------------------------------
 
+  /**
+   * Getter for datasource manager object
+   * @return qcl_data_datasource_Manager
+   */
+  public function getDatasourceManager()
+  {
+    require_once "qcl/data/datasource/Manager.php";
+    return qcl_data_datasource_Manager::getInstance();
+  }
 
   /**
    * Returns the  datasource model with the datasource connection
@@ -134,10 +134,9 @@ class qcl_data_controller_Controller
    * @param string $datasource
    * @return qcl_data_datasource_type_db_Model
    */
-  function getDatasourceModel( $datasource )
+  public function getDatasourceModel( $datasource )
   {
-    require_once "qcl/data/datasource/Manager.php";
-    return qcl_data_datasource_Manager::getDatasourceModel( $datasource );
+    return $this->getDatasourceManager()->getModel( $datasource );
   }
 
 
@@ -152,7 +151,7 @@ class qcl_data_controller_Controller
    * @return void
    * @deprecated Work with result object instead
    */
-  function setResultClass( $clazz )
+  public function setResultClass( $clazz )
   {
     $path = str_replace("_", "/", $clazz ) . ".php";
     require_once $path;
@@ -165,7 +164,7 @@ class qcl_data_controller_Controller
    * @return void
    * @deprecated Work with result object instead
    */
-  function setResultObject( $resultObject )
+  public function setResultObject( $resultObject )
   {
     $this->_resultObject = $resultObject;
   }
@@ -177,7 +176,7 @@ class qcl_data_controller_Controller
    * @param mixed $value
    * @deprecated Work with result object instead
    */
-  function set ( $key, $value=null )
+  public function set ( $key, $value=null )
   {
     $this->_resultObject->set( $key, $value );
   }
@@ -189,7 +188,7 @@ class qcl_data_controller_Controller
    * @param mixed $value
    * @deprecated Work with result object instead
    */
-  function setResult ( $key, $value )
+  public function setResult ( $key, $value )
   {
     $this->_resultObject->set( $key, $value );
   }
@@ -199,7 +198,7 @@ class qcl_data_controller_Controller
    * @return qcl_data_Result
    * @deprecated Work with result object instead
    */
-  function result()
+  public function result()
   {
     return $this->_resultObject;
   }

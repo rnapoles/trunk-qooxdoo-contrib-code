@@ -72,34 +72,26 @@ class qcl_core_Object extends qcl_core_BaseClass
    * The class name of this object
    * @var string
    */
-  var $_class;
-
-  /**
-   * Array of class names that will be included as mixins.
-   * Note that the last defined property will be used, which
-   * overwrites any include values in parent-classes.
-   * @var array
-   */
-  var $include = array();
+  private $_class;
 
   /**
    * If this object produces a recoverable error, the error message will be stored here
    * for convenience
    * @var string
    */
-  var $error;
+  private $error;
 
   /**
    * wether this class is persistent. If true, it will be serialized at the
    * end of the request and can be unserialized with class_name::unserialize()
    */
-  var $isPersistent = false;
+  public $isPersistent = false;
 
   /**
    * whether this is a newly instantiated object. Will be turned to false
    * when retrieved from cache
    */
-  var $isNew = true;
+  public $isNew = true;
 
   /**
    * The (hopefully) globally unique id of this object.
@@ -108,19 +100,14 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @var string
    * @access private
    */
-  var $_objectId = null;
+  private $_objectId = null;
 
-  /**
-   * The logger object
-   * @var qcl_log_Logger
-   */
-  var $_logger;
 
   /**
    * Timestamp for script execution time measurement
    * @var float
    */
-  var $_timestamp;
+  private $_timestamp;
 
   /**
    * Class constructor. If the mixin class property contains
@@ -143,22 +130,6 @@ class qcl_core_Object extends qcl_core_BaseClass
      * class name
      */
     $this->_class = get_class($this);
-
-    /*
-     * apply mixins
-     */
-    if ( is_array( $this->include ) )
-    {
-      foreach( $this->include as $mixin )
-      {
-        $this->mixin( $mixin );
-      }
-    }
-
-    /*
-     * setup logger object
-     */
-    $this->setupLogger();
   }
 
   /**
@@ -182,6 +153,18 @@ class qcl_core_Object extends qcl_core_BaseClass
     }
   }
 
+  //-------------------------------------------------------------
+  // Getters
+  //-------------------------------------------------------------
+
+  /**
+   * Getter for application
+   * @return qcl_application_Application
+   */
+  public function getApplication()
+  {
+    return qcl_application_Application::getInstance();
+  }
 
   //-------------------------------------------------------------
   // Object id and class management
@@ -193,7 +176,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * This only works during one request, i.e. at runtime.
    * @return string
    */
-  function objectId()
+  public function objectId()
   {
     if ( ! $this->_objectId )
     {
@@ -219,8 +202,9 @@ class qcl_core_Object extends qcl_core_BaseClass
   /**
    * Returns an object identified by its id.
    * @return qcl_core_Object
+   * @todo rewrite without using a global variable
    */
-  function getObjectById($objectId)
+  public function getObjectById($objectId)
   {
     global $object_db;
     return $object_db[$objectId];
@@ -234,7 +218,7 @@ class qcl_core_Object extends qcl_core_BaseClass
   /**
    * make a copy of this object
    */
-  function cloneObject()
+  public function cloneObject()
   {
     return clone($this);
   }
@@ -244,8 +228,9 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @return string
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
+   * @todo move to function or util class?
    */
-  function getClassPath( $classname = null)
+  public function getClassPath( $classname = null)
   {
     /*
      * get my own classpath?
@@ -294,8 +279,9 @@ class qcl_core_Object extends qcl_core_BaseClass
    * returns the path to the directory containing the class
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
+   * @todo move to function or util class?
    */
-  function getClassDir($classname=null)
+  public function getClassDir($classname=null)
   {
     if ( $classname )
     {
@@ -313,11 +299,12 @@ class qcl_core_Object extends qcl_core_BaseClass
 
 
   /**
-   * load file for class
+   * Load file for class. Must be called statically.
    * @return string file path
    * @param $classname Object
+   * @todo move to function or util class
    */
-  function includeClassfile ( $classname )
+  static function includeClassfile ( $classname )
   {
     $path = qcl_core_Object::getClassPath( $classname );
 
@@ -341,7 +328,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * OO alias for get_class($this)
    * @return string
    */
-  function className()
+  public function className()
   {
     return get_class($this);
   }
@@ -350,7 +337,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * The currently executed function.
    * @return string
    */
-  function functionName()
+  public function functionName()
   {
     $backtrace = debug_backtrace();
     return $backtrace[1]['function'];
@@ -361,7 +348,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $method
    * return bool
    */
-  function hasMethod( $method )
+  public function hasMethod( $method )
   {
     return method_exists($this,$method);
   }
@@ -370,7 +357,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * OO alias for get_class_methods(get_class($this))
    * @return array
    */
-  function methods()
+  public function methods()
   {
     return get_class_methods( $this->className() );
   }
@@ -382,7 +369,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $class Class name. Can be java(script)-like separated by dots.
    * @return boolean
    */
-  function isInstanceOf( $class )
+  public function isInstanceOf( $class )
   {
     $class = str_replace(".","_",$class);
     return is_a( $this, $class );
@@ -392,7 +379,8 @@ class qcl_core_Object extends qcl_core_BaseClass
   /**
    * Returns new instance of classname. If the calling object is a subclass
    * of qx_jsonrpc_controller, pass the object as constructor to the model class,
-   * otherwise pass optional parameter
+   * otherwise pass optional parameter. Must be called statically.
+   *
    * @param string $classname PHP class name or dot-separated class name
    * @param qcl_data_controller_Controller[optional] $controller (optional) controller object
    * to be passed to the singleton constructor
@@ -400,7 +388,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @deprecated Use native php code to instantiate classes, this will
    * be removed.
    */
-  function getNew( $classname )
+  static function getNew( $classname )
   {
     /*
      * convert dot-separated class names into php-style
@@ -438,21 +426,12 @@ class qcl_core_Object extends qcl_core_BaseClass
   //-------------------------------------------------------------
 
   /**
-   * Setup logger object. This will get a reference to a global
-   * logger object singleton and attach it to the object.
-   */
-  function setupLogger()
-  {
-    $this->_logger = qcl_log_Logger::getInstance();
-  }
-
-  /**
    * Get logger object
    * @return qcl_log_Logger
    */
-  function getLogger()
+  public function getLogger()
   {
-    return $this->_logger;
+    return qcl_log_Logger::getInstance();
   }
 
   /**
@@ -461,9 +440,9 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param mixed $msg
    * @param string|array $filters
    */
-  function log ( $msg, $filters="debug" )
+  public function log ( $msg, $filters="debug" )
   {
-    $this->_logger->log( $msg, $filters );
+    $this->getLogger()->log( $msg, $filters );
   }
 
   /**
@@ -475,7 +454,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $class Optional class name
    * @param int $line Optional line number
    */
-  function debug($msg,$class=null,$line=null)
+  public function debug($msg,$class=null,$line=null)
   {
     if ( ! is_scalar($msg) ) $msg = print_r($msg,true);
     $m = ">>> DEBUG <<< ";
@@ -489,7 +468,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @return void
    * @param mixed $msg
    */
-  function info ( $msg )
+  public function info ( $msg )
   {
     $this->log ( $msg, "info" );
   }
@@ -500,19 +479,9 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @return void
    * @param $msg string
    */
-  function warn ( $msg )
+  public function warn ( $msg )
   {
     $this->log ( "*** WARNING *** " . $msg, "warn" );
-  }
-
-  /**
-   * Logs a message with of level "error"
-   * @return void
-   * @param $msg string
-   */
-  function error ( $msg )
-  {
-    $this->log ( "### ERROR ### " . $msg, "error" );
   }
 
   //-------------------------------------------------------------
@@ -524,7 +493,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * trace program execution
    * @return void
    */
-  function trace( $message )
+  public function trace( $message )
   {
 
     /*
@@ -567,7 +536,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * Returns the backtrace of invoked function calls
    * @return string list
    */
-  function backtrace()
+  public function backtrace()
   {
     $backtrace =  debug_get_backtrace(3);
     return $backtrace;
@@ -583,7 +552,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * getter for error message
    * @return string
    */
-  function getError()
+  public function getError()
   {
     return $this->error;
   }
@@ -592,7 +561,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * setter for error message
    * @return string
    */
-  function setError( $error )
+  public function setError( $error )
   {
     $this->error = $error;
   }
@@ -611,7 +580,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * addition data to be passed with the error response.
    * @return array
    */
-  function optionalErrorResponseData()
+  public function optionalErrorResponseData()
   {
     return array();
   }
@@ -621,7 +590,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string class name
    * @todo get class and method name from backtrace.
    */
-  function notImplemented( $class = __CLASS__ )
+  public function notImplemented( $class = __CLASS__ )
   {
     $this->raiseError( "Method (see backtrace) not implemented for class $class. You may have to subclass this class in order to use it." );
   }
@@ -636,14 +605,13 @@ class qcl_core_Object extends qcl_core_BaseClass
    * return void
    * FIXME
    */
-  function raiseError( $message, $number=null, $file=null, $line=null )
+  public function raiseError( $message, $number=null, $file=null, $line=null )
   {
-
     if ( $file and $line )
     {
       $message .= " in $file, line $line.";
     }
-    $logger = qcl_log_Logger::getInstance();
+    $logger = $this->getLogger();
     $msg = "\n\n### Error in " . get_class($this) . " ###\n" .
       $message . "\n" .
       "Backtrace:\n" .
@@ -660,36 +628,19 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $message
    * @return void
    */
-  function userNotice ( $message, $number=null )
+  public function userNotice ( $message, $number=null )
   {
-    /*
-     * if this is a jsonrpc request, we have an $error object
-     * that the error can be passed to.
-     */
-    $server = qcl_server_Server::getServerObject();
+    $server = $this->getApplication()->getServer();
     if ( $server )
     {
       $error  = $server->getErrorBehavior();
       $error->setError( $number, htmlentities( stripslashes( $message ) ) );
+      $error->$error->SendAndExit( $this->optionalErrorResponseData() );
     }
     else
     {
-      require RPCPHP_SERVER_PATH . "services/server/error/JsonRpcError.php";
-      require RPCPHP_SERVER_PATH . "services/server/lib/JsonWrapper.php";
-      $error = new JsonRpcError( $number, $message );
+      trigger_error($message);
     }
-
-    if ( is_a( $error, "JsonRpcError" ) )
-    {
-      $error->SendAndExit( $this->optionalErrorResponseData() );
-      // never gets here
-      exit;
-    }
-
-    /*
-     * otherwise trigger error
-     */
-    trigger_error($message);
   }
 
   //-------------------------------------------------------------
@@ -700,7 +651,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * Records a timestamp for this object
    * @return unknown_type
    */
-  function startTimer()
+  public function startTimer()
   {
     $this->_timestamp = microtime_float();
   }
@@ -710,7 +661,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param $debugmsg
    * @return unknown_type
    */
-  function timerAsSeconds($debugmsg=null)
+  public function timerAsSeconds($debugmsg=null)
   {
     $time_end = microtime_float();
     $seconds = round($time_end - $this->_timestamp,5);
@@ -726,6 +677,15 @@ class qcl_core_Object extends qcl_core_BaseClass
   //-------------------------------------------------------------
 
   /**
+   * Getter for message bus
+   * @return qcl_event_message_Bus
+   */
+  public function getMessageBus()
+  {
+    return qcl_event_message_Bus::getInstance();
+  }
+
+  /**
    * Adds a message subscriber. This works only for objects which have been
    * initialized during runtime. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
@@ -733,10 +693,10 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $filter
    * @param string $method Callback method of the current object
    */
-  function addSubscriber( $filter, $method )
+  public function addSubscriber( $filter, $method )
   {
     require_once "qcl/event/message/Bus.php";
-    qcl_event_message_Bus::addSubscriber( $filter, &$this, $method );
+    $this->getMessageBus()->addSubscriber( $filter, $this, $method );
   }
 
   /**
@@ -744,10 +704,10 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  function dispatchMessage ( $name, $data )
+  public function dispatchMessage ( $name, $data )
   {
     require_once "qcl/event/message/Bus.php";
-    qcl_event_message_Bus::dispatchMessage( &$this, $name, $data );
+    $this->getMessageBus()->dispatchMessage( $this, $name, $data );
   }
 
   /**
@@ -755,10 +715,10 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  function dispatchServerMessage ( $name, $data )
+  public function dispatchServerMessage ( $name, $data )
   {
     require_once "qcl/event/message/Bus.php";
-    qcl_event_message_Bus::dispatchServerMessage( &$this, $name, $data );
+    $this->getMessageBus()->dispatchServerMessage( $this, $name, $data );
   }
 
   /**
@@ -766,10 +726,19 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  function broadcastServerMessage ( $name, $data  )
+  public function broadcastServerMessage ( $name, $data  )
   {
     require_once "qcl/event/message/Bus.php";
-    qcl_event_message_Bus::broadcastServerMessage( &$this, $name, $data );
+    $this->getMessageBus()->broadcastServerMessage( $this, $name, $data );
+  }
+
+  /**
+   * Getter for event dispatcher
+   * @return qcl_event_Dispatcher
+   */
+  public function getEventDispatcher()
+  {
+    return qcl_event_Dispatcher::getInstance();
   }
 
   /**
@@ -780,10 +749,10 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string|qcl_core_Object $object The object or the object id retrieved by '$this->objectId()'
    * @param string $method callback method of the object
    */
-  function addListener( $type, $object, $method )
+  public function addListener( $type, $object, $method )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::addListener( &$this, $type, &$object, $method );
+    $this->getEventDispatcher()->addListener( $this, $type, $object, $method );
   }
 
   /**
@@ -792,20 +761,20 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param qcl_event_type_Event $event
    * @return bool Whether the event was dispatched or not.
    */
-  function dispatchEvent ( $event )
+  public function dispatchEvent ( $event )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::dispatchEvent( &$this, &$event );
+    $this->getEventDispatcher()->dispatchEvent( $this, $event );
   }
 
   /**
    * Fires an event
    * @param string $type Message Event type
    */
-  function fireEvent ( $type )
+  public function fireEvent ( $type )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::fireDataEvent( &$this, $type, $data );
+    $this->getEventDispatcher()->fireDataEvent( $this, $type, $data );
   }
 
   /**
@@ -813,10 +782,10 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param mixed $event Message Event type
    * @param mixed $data Data dispatched with event
    */
-  function fireDataEvent ( $type, $data )
+  public function fireDataEvent ( $type, $data )
   {
     require_once "qcl/event/Dispatcher.php";
-    qcl_event_Dispatcher::fireDataEvent( &$this, $type, $data );
+    $this->getEventDispatcher()->fireDataEvent( $this, $type, $data );
   }
 
   //-------------------------------------------------------------
@@ -824,19 +793,26 @@ class qcl_core_Object extends qcl_core_BaseClass
   //-------------------------------------------------------------
 
   /**
-   * translates a message
+   * Translates a message. Can be called statically.
    * @return  String
    * @param   String  $msgId    Message id of the string to be translated
    * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
    * or as parameters
    */
-  function tr( $msgId, $varargs=null )
+  public function tr( $msgId, $varargs=null )
   {
-    return qcl_application_Application::tr( $msgId, $varargs );
+    if ( ! is_array($varargs) )
+    {
+      $varargs = func_get_args();
+      array_shift($varargs);
+    }
+    $manager = $this->getApplication()->getLocaleManager();
+    return $manager->tr($msgId, $varargs);
   }
 
   /**
    * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+   * Can be called statically.
    *
    * @param string   $singularMessageId Message id of the singular form (may contain format strings)
    * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
@@ -844,9 +820,10 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
    * @return string
    */
-  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  public function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
-    return qcl_application_Application::trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() );
+    $manager = $this->getApplication()->getLocaleManager();
+    return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
   }
 
   //-------------------------------------------------------------
@@ -859,7 +836,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * value
    * @return string
    */
-  function toString()
+  public function toString()
   {
     return "[" . $this->className() . " instance #" . $this->objectId() . "]";
   }
@@ -868,53 +845,20 @@ class qcl_core_Object extends qcl_core_BaseClass
    * Serializes the object to a string that can be deserialized
    * @return string
    */
-  function serialize()
+  public function serialize()
   {
     return serialize( $this );
   }
 
   /**
    * Dumps a variable to a string representation
+   * @return string
    */
-  function dump()
+  public function dump()
   {
     return var_export( $this, true );
   }
 
-  //-------------------------------------------------------------
-  // Type checkign @todo move into qcl_util_Type class
-  //-------------------------------------------------------------
-
-  function checkType( $type, $var )
-  {
-    $ntype = gettype($var);
-    if ( $ntype != $type )
-    {
-      $this->raiseError("'$var' is of type '$ntype' and not of required type '$type'.");
-    }
-    else return $var;
-  }
-
-  function checkString( $var )
-  {
-    return $this->checkType("string",$var);
-  }
-
-  function checkBool( $var )
-  {
-    return $this->checkType("bool",$var);
-  }
-
-  function checkInt( $var )
-  {
-    if ( is_numeric($var) ) $var = (int) $var;
-    return $this->checkType("integer",$var);
-  }
-
-  function checkArray( $var )
-  {
-    return $this->checkType("array",$var);
-  }
 }
 
 /*

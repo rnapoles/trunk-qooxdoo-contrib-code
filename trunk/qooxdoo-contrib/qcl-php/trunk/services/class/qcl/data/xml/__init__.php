@@ -16,5 +16,5 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/log/Logger.php";
-qcl_log_Logger::registerFilter("xml","XML-related debugging.",false);
+qcl_log_Logger::getInstance()->registerFilter("xml","XML-related debugging.",false);
 ?>

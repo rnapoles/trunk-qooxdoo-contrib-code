@@ -31,19 +31,19 @@ class qcl_event_Dispatcher
    * @todo mover everything related to events and messages to event package
    * @var array
    */
-  var $__event_db = array();
+  private $__event_db = array();
 
   /**
    * Events that are forwarded to the client at the end of the request
    * @var array
    */
-  var $__serverEvents = array();
+  private $__serverEvents = array();
 
   /**
    * Returns a singleton instance of this class
    * @return qcl_event_Dispatcher
    */
-  function getInstance( )
+  static function getInstance( )
   {
     return qcl_getInstance( __CLASS__ );
   }
@@ -58,10 +58,8 @@ class qcl_event_Dispatcher
    * @param string $method callback method of the object
    * @todo move to external class
    */
-  function addListener( $target, $type, $listener, $method )
+  public function addListener( $target, $type, $listener, $method )
   {
-
-    $_this = qcl_event_Dispatcher::getInstance();
 
     /*
      * target object id
@@ -91,7 +89,7 @@ class qcl_event_Dispatcher
     /*
      * event database
      */
-    $event_db = $_this->__event_db[$targetObjectId];
+    $event_db = $this->__event_db[$targetObjectId];
     if ( ! $event_db )
     {
       $event_db = array(
@@ -130,16 +128,15 @@ class qcl_event_Dispatcher
    * @param qcl_event_type_Event $event
    * @return bool Whether the event was dispatched or not.
    */
-  function dispatch ( $target, $event )
+  public function dispatch ( $target, $event )
   {
-    $_this = qcl_event_Dispatcher::getInstance();
 
     /*
      * event
      */
     if ( ! is_a( $event,"qcl_event_type_Event" ) )
     {
-      $_this->raiseError("Invalid argument, must be a qcl_event_type_Event or subclass.");
+      $this->raiseError("Invalid argument, must be a qcl_event_type_Event or subclass.");
     }
     $event->setTarget($target);
 
@@ -148,7 +145,7 @@ class qcl_event_Dispatcher
      */
     if ( ! is_a( $target, "qcl_core_Object" ) )
     {
-      $_this->raiseError("Invalid target object");
+      $this->raiseError("Invalid target object");
     }
     $targetObjectId = $target->objectId();
 
@@ -156,11 +153,11 @@ class qcl_event_Dispatcher
      * search message database
      */
     $type = $event->getType();
-    $event_db = $_this->__event_db[$targetObjectId];
+    $event_db = $this->__event_db[$targetObjectId];
 
     if ( ! is_array( $event_db ) )
     {
-      $_this->setError("Object #$targetObjectId has no listeners.");
+      $this->setError("Object #$targetObjectId has no listeners.");
       return false;
     }
 
@@ -171,7 +168,7 @@ class qcl_event_Dispatcher
      */
     if ( $index === false )
     {
-      $_this->setError("Object #$targetObjectId has no listeners for event '$type'");
+      $this->setError("Object #$targetObjectId has no listeners for event '$type'");
       return false;
     }
 
@@ -181,7 +178,7 @@ class qcl_event_Dispatcher
     foreach ( $event_db['data'][$index] as $listenerData )
     {
       list( $listenerObjectId, $method ) = $listenerData;
-      $listenerObject = $_this->getObjectById( $listenerObjectId );
+      $listenerObject = $this->getObjectById( $listenerObjectId );
       $listenerObject->$method($event);
     }
   }
@@ -192,12 +189,11 @@ class qcl_event_Dispatcher
    * @param string $name
    * @return unknown_type
    */
-  function fireEvent( $target, $type )
+  public function fireEvent( $target, $type )
   {
-    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/Event.php";
     $event = new qcl_event_type_Event( $type );
-    $_this->dispatch( $target, $event );
+    $this->dispatch( $target, $event );
   }
 
   /**
@@ -207,12 +203,11 @@ class qcl_event_Dispatcher
    * @param mixed $data
    * @return void
    */
-  function fireDataEvent( $target, $type, $data )
+  public function fireDataEvent( $target, $type, $data )
   {
-    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/DataEvent.php";
     $event = new qcl_event_type_DataEvent( $type, $data );
-    $_this->dispatch( $target, $event );
+    $this->dispatch( $target, $event );
   }
 
   /**
@@ -223,13 +218,12 @@ class qcl_event_Dispatcher
    * @param string $name
    * @return unknown_type
    */
-  function fireServerEvent( $target, $type )
+  public function fireServerEvent( $target, $type )
   {
-    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/ServerEvent.php";
     $event = new qcl_event_type_ServerEvent( $type );
-    $_this->dispatch( $target, $event );
-    $_this->__serverEvents[] = array(
+    $this->dispatch( $target, $event );
+    $this->__serverEvents[] = array(
       'type' => $event->getType()
     );
   }
@@ -237,19 +231,17 @@ class qcl_event_Dispatcher
   /**
    * Fires a server data event which will be forwarded to the client and
    * dispatched o the jsonrpc data store that has initiated the request.
-   * Can be called statically
    * @param qcl_core_Object $target
    * @param string $name
    * @param mixed $data
    * @return void
    */
-  function fireServerDataEvent( $target, $type, $data )
+  public function fireServerDataEvent( $target, $type, $data )
   {
-    $_this = qcl_event_Dispatcher::getInstance();
     require_once "qcl/event/type/ServerDataEvent.php";
     $event = new qcl_event_type_ServerDataEvent( $type, $data );
-    $_this->dispatch( $target, $event );
-    $_this->__serverEvents[] = array(
+    $this->dispatch( $target, $event );
+    $this->__serverEvents[] = array(
       'type'  => $event->getType(),
       'data'  => $event->getData()
     );
@@ -259,10 +251,9 @@ class qcl_event_Dispatcher
    * Returns all server events
    * @return array
    */
-  function getServerEvents()
+  public function getServerEvents()
   {
-    $_this = qcl_event_Dispatcher::getInstance();
-    return $_this->__serverEvents;
+    return $this->__serverEvents;
   }
 }
 ?>

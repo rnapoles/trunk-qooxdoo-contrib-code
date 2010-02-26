@@ -31,7 +31,7 @@ class qcl_access_SessionController
    * The id of the active user, determined from the
    * session id
    */
-  var $_activeUserId;
+  private $_activeUserId;
 
   /**
    * This overrides and extends the parent method by providing a way to determine
@@ -41,7 +41,7 @@ class qcl_access_SessionController
    * @see qcl_access_Controller::isValidUserSession()
    * @override
    */
-  function isValidUserSession( $sessionId=null )
+  public function isValidUserSession( $sessionId=null )
   {
 
     if ( ! $sessionId )
@@ -135,7 +135,7 @@ class qcl_access_SessionController
    * @todo config data should be written to config table and deleted when guest user sessions are deleted.
    * @return void
    */
-  function grantAnonymousAccess()
+  public function grantAnonymousAccess()
   {
     /*
      * parent method does all the work
@@ -156,7 +156,7 @@ class qcl_access_SessionController
    * @param string $param[1] (MD5-encoded) password
    * @return qcl_data_Result
    */
-  function method_authenticate( $params )
+  public function method_authenticate( $params )
   {
     $response = parent::method_authenticate( $params );
     $this->registerSession();
@@ -168,7 +168,7 @@ class qcl_access_SessionController
    * @override
    * @see qcl_access_Controller::logout()
    */
-  function logout()
+  public function logout()
   {
     /*
      * unregister the current session
@@ -197,9 +197,9 @@ class qcl_access_SessionController
    * Returns the session model singleton instance
    * @return qcl_access_model_Session
    */
-  function getSessionModel()
+  public function getSessionModel()
   {
-    return qcl_access_Manager::getSessionModel();
+    return $this->getAccessManager()->getSessionModel();
   }
 
 
@@ -208,7 +208,7 @@ class qcl_access_SessionController
    * @param string $sessionId
    * @return bool
    */
-  function sessionExists( $sessionId )
+  public function sessionExists( $sessionId )
   {
     $sessionModel = $this->getSessionModel();
     return $sessionModel->exists( array(
@@ -221,7 +221,7 @@ class qcl_access_SessionController
    * requires a user and a session model
    * @param int $timeout Timeout in seconds, defaults to 30 Minutes
    */
-  function registerSession($timeout=null)
+  public function registerSession($timeout=null)
   {
     /*
      * models
@@ -250,7 +250,7 @@ class qcl_access_SessionController
   /**
    * Unregisters the current session and deletes all messages
    */
-  function unregisterSession()
+  public function unregisterSession()
   {
     $sessionId = $this->getSessionId();
     $sessionModel = $this->getSessionModel();
@@ -261,7 +261,7 @@ class qcl_access_SessionController
   /**
    * Removes stale and invalid sessions
    */
-  function cleanUp()
+  public function cleanUp()
   {
     $sessionModel = $this->getSessionModel();
     $sessionModel->cleanUp();
@@ -272,7 +272,7 @@ class qcl_access_SessionController
    * @return void
    * @override
    */
-  function terminate()
+  public function terminate()
   {
 
     $sessionModel = $this->getSessionModel();
@@ -290,7 +290,7 @@ class qcl_access_SessionController
    * aborted since the session data refers to a non-existing or expired
    * user.
    */
-  function getUserIdFromSession( $sessionId )
+  public function getUserIdFromSession( $sessionId )
   {
 
     /*
@@ -330,7 +330,7 @@ class qcl_access_SessionController
    * Returns a new session id that depends on a parent session and
    * will be deleted when the parent session is deleted.
    */
-  function createChildSession( $parentSessionId )
+  public function createChildSession( $parentSessionId )
   {
     if ( ! $parentSessionId )
     {
