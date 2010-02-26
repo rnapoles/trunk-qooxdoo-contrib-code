@@ -204,13 +204,13 @@ public class RpcServlet extends HttpServlet {
                                         propertyType));
                         } catch (Exception e) {
                             // try to instatiate a class of the supplied parameter
-                            System.out.println("***** setting '" + propertyName + "' to an instance of '" + initParamValue + "'");
+                            //System.out.println("***** setting '" + propertyName + "' to an instance of '" + initParamValue + "'");
                             PropertyUtils.setSimpleProperty(inst, propertyName,
                                     getServiceInstance(session, initParamValue, null, null));
                         }
                     }
                 } else {
-                    System.out.println("***** property '" + propertyName + "' not matched");
+                    //System.out.println("***** property '" + propertyName + "' not matched");
                 }
             }
 
@@ -461,7 +461,7 @@ public class RpcServlet extends HttpServlet {
                     requestBuffer.append(readBuffer, 0, length);
                 }
                 String requestString = requestBuffer.toString();
-                System.out.println("Request string: " + requestString);
+                //System.out.println("Request string: " + requestString);
                 res = handleRPC(request, requestString);
             }
             
