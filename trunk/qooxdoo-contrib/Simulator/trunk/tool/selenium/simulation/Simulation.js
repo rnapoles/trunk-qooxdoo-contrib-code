@@ -1040,8 +1040,16 @@ simulation.Simulation.prototype.addRingBufferGetter = function()
     var entries = selenium.qxStoredVars["ringBuffer"].getAllLogEvents();
     var entryArray = [];
     for (var i=0,l=entries.length; i<l; i++) {
+      try {
       var entry = selenium.qxStoredVars['autWindow'].qx.log.appender.Util.toText(entries[i]);
       entryArray.push(entry);
+      } catch(ex) {
+        var entry = entries[i].level + ":";
+        for (var j=0,m=entries[i].items.length; j<m; j++) {
+          entry += entries[i].items[j].text + " ";
+        }
+        entryArray.push(entry);
+      }
     }
     return entryArray.join("|");
   };
