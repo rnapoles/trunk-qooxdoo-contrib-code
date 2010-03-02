@@ -48,7 +48,7 @@ class qcl_data_db_Manager extends qcl_core_Object
   }
 
   /**
-   * Returns the type of the database. Can be called statically.
+   * Returns the type of the database.
    * @return string
    */
   public function getDbType()
@@ -133,7 +133,7 @@ class qcl_data_db_Manager extends qcl_core_Object
     $cacheId = is_array($dsn) ? implode(",", array_values($dsn) ) : $dsn;
     //$this->debug("Cache id '$cacheId'");
 
-    if ( $this->cache[$cacheId] )
+    if ( isset( $this->cache[$cacheId] ) )
     {
       //$this->debug("Using cached db object for $cacheId");
       $db = $this->cache[$cacheId];

@@ -45,12 +45,6 @@
           <property name="userId"  />
           <property name="ip"  />
         </index>
-
-        <!-- deprecated -->
-        <index type="unique">
-          <property name="user"  />
-          <property name="sessionId" />
-        </index>
       </indexes>
             
     </definition>

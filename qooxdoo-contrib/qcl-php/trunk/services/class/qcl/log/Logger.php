@@ -15,13 +15,23 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-/*
- * show class name in log message
+
+/**
+ * path to log file
  */
-if ( ! defined("QCL_LOG_SHOW_CLASS_NAME") )
+if ( ! defined( "QCL_LOG_PATH") )
 {
-  define ("QCL_LOG_SHOW_CLASS_NAME",false);
+  define( "QCL_LOG_PATH" ,  sys_get_temp_dir() );
 }
+
+/**
+ * path to log file
+ */
+if ( ! defined( "QCL_LOG_FILE") )
+{
+  define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . "qcl.log" );
+}
+
 
 /*
  * Default logger: logs to filesystem
@@ -70,7 +80,7 @@ class qcl_log_Logger
 
 
   /**
-   * Register a filter. Can be called statically.
+   * Register a filter.
    * @param string $filter Filter name
    * @param string $description Short description of what messages the filter is for.
    * @param bool[optional,default true] $state True if enabled, false if disabled
@@ -90,7 +100,7 @@ class qcl_log_Logger
 
 
   /**
-   * Checks if a filter is registered. Can be called statically.
+   * Checks if a filter is registered.
    * @param $filter
    * @return unknown_type
    */
@@ -100,14 +110,29 @@ class qcl_log_Logger
   }
 
   /**
-   * Enables a registered filter. Can be called statically.
-   * @param $filter
+   * Enables a registered filter.
+   * @param string|array $filter
    * @param $value
-   * @return unknown_type
+   * @return void
    */
   public function setFilterEnabled( $filter, $value )
   {
-    if ( ! $this->filters[$filter] )
+    /*
+     * If array is given, set all the filters
+     */
+    if ( is_array( $filter) )
+    {
+      foreach( $filter as $f )
+      {
+        $this->setFilterEnabled( $f, $value );
+      }
+      return;
+    }
+
+    /*
+     * one filter name, check parameters
+     */
+    if ( ! isset( $this->filters[$filter] ) )
     {
       trigger_error("Filter $filter does not exist.");
     }
@@ -115,12 +140,16 @@ class qcl_log_Logger
     {
       trigger_error("Value parameter must be boolean");
     }
+
+    /*
+     * enable/disable filter
+     */
     $this->filters[$filter]['enabled'] = $value;
   }
 
   /**
    * Log message to file on server, if corresponding
-   * filters are enabled. Can be called statically.
+   * filters are enabled.
    * @param string $message
    * @param string|array $filters
    * @return message written to file
@@ -159,17 +188,17 @@ class qcl_log_Logger
   }
 
   /**
-   * Write to log file. Can be called statically.
+   * Write to log file.
    * @param string $message
    */
   function writeLog( $message )
   {
-
     /*
      * if a valid log file exists or can be created, write message to it
      */
     if( QCL_LOG_FILE and
-      ( is_writable( QCL_LOG_FILE ) or is_writable( dirname( QCL_LOG_FILE ) ) ) )
+      ( is_writable( QCL_LOG_FILE )
+        or is_writable( dirname( QCL_LOG_FILE ) ) ) )
     {
       error_log( $message, 3, QCL_LOG_FILE );
     }
@@ -185,7 +214,7 @@ class qcl_log_Logger
   }
 
   /**
-   * Logs a message with of level "info". Can be called statically.
+   * Logs a message with of level "info".
    * @return void
    * @param mixed $msg
    */
@@ -196,7 +225,7 @@ class qcl_log_Logger
 
 
   /**
-   * Logs a message with of level "warn". Can be called statically.
+   * Logs a message with of level "warn".
    * @return void
    * @param $msg string
    */
@@ -206,7 +235,7 @@ class qcl_log_Logger
   }
 
   /**
-   * Logs a message with of level "error". Can be called statically.
+   * Logs a message with of level "error".
    * @return void
    * @param $msg string
    */

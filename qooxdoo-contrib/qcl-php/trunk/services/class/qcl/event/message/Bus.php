@@ -72,7 +72,7 @@ class qcl_event_message_Bus
    * Adds a message subscriber. This works only for objects which have been
    * initialized during runtime. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * Can be called statically.
+   * 
    *
    * @param string $filter
    * @param qcl_core_Object $subscriber
@@ -119,7 +119,7 @@ class qcl_event_message_Bus
   /**
    * Dispatches a message. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * Can be called statically.
+   * 
    *
    * @param qcl_event_message_Message $message Message
    * @param mixed $data Data dispatched with message
@@ -234,7 +234,7 @@ class qcl_event_message_Bus
 
   /**
    * Returns broadcasted messages for the client with the given session
-   * id. Can be called statically.
+   * id. 
    * @param int $sessionId
    * @return array
    *

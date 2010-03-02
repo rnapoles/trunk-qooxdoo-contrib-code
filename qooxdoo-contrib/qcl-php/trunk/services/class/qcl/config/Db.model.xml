@@ -30,6 +30,11 @@
         
       </properties>
       
+      <!-- indexes -->
+      <indexes>
+        <index type="unique" properties="namedId" />
+      </indexes>
+      
       <!-- metadata -->
       <propertyGroups>
         <propertyGroup name="metaData">

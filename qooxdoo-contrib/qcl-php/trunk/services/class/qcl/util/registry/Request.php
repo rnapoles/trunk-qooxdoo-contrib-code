@@ -22,13 +22,17 @@
 class qcl_util_registry_Request
 {
 
-  var $registry = array();
+  /**
+   * Registry cache
+   * @var array
+   */
+  private $registry = array();
 
   /**
    * Returns a singleton instance of this class
    * @return qcl_util_registry_Request
    */
-  function getInstance( )
+  public static function getInstance( )
   {
     return qcl_getInstance( __CLASS__ );
   }
@@ -38,7 +42,7 @@ class qcl_util_registry_Request
    * called, for example, when a user logs out, Can
    * be called statically
    */
-  function reset()
+  public static function reset()
   {
     $_this = qcl_util_registry_Request::getInstance();
     $_this->registry = array();
@@ -50,7 +54,7 @@ class qcl_util_registry_Request
    * @param string $key
    * @param mixed $value
    */
-  function set( $key, $value )
+  public static function set( $key, $value )
   {
     $_this = qcl_util_registry_Request::getInstance();
     $_this->registry[$key] = $value;
@@ -62,7 +66,7 @@ class qcl_util_registry_Request
    * @param string $key
    * @return mixed
    */
-  function get( $key )
+  public static function get( $key )
   {
     $_this = qcl_util_registry_Request::getInstance();
     return $_this->registry[$key];
@@ -75,7 +79,7 @@ class qcl_util_registry_Request
    * @param string $key
    * @return mixed
    */
-  function has( $key )
+  public static function has( $key )
   {
     $_this = qcl_util_registry_Request::getInstance();
     return isset( $_this->registry[$key] );

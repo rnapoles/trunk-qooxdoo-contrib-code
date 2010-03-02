@@ -31,43 +31,54 @@ class qcl_data_model_xmlSchema_DbModel
 {
 
   /**
-   * The schema as an simpleXml object, containing all
-   * included xml files. Acces with qcl_data_model_xmlSchema_DbModel::getSchemaXml();
-   * @access private
-   * @var qcl_data_xml_SimpleXml
-   */
-  var $schemaXml;
-
-  /**
    * The path to the model schema xml file. ususally automatically resolved.
    * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = null;
+  public $schemaXmlPath = null;
+
+  /**
+   * The path containing data that will imported into the model data
+   * when the model is initialized for the first time.
+   * @var string
+   */
+  public $importDataPath;
+
+  /**
+   * The schema as an simpleXml object, containing all
+   * included xml files. Acces with qcl_data_model_xmlSchema_DbModel::getSchemaXml();
+   * @var qcl_data_xml_SimpleXml
+   */
+  private $schemaXml;
+
+  /**
+   * Flag to prevent caching
+   */
+  public $doNotCache = false;
 
   /**
    * The timestamp of the  model schema xml file.
    * @var string
    */
-  var $schemaTimestamp = null;
+  private $schemaTimestamp = null;
 
   /**
    * The timestamp of an xml data file
    * @var array
    */
-  var $dataTimestamp = array();
+  private $dataTimestamp = array();
 
   /**
    * Shortcuts to property nodes in schema xml. Access with qcl_data_model_xmlSchema_DbModel::getPropertyNode($name)
    * @array array of object references
    */
-  var $propertyNodes =array();
+  private $propertyNodes =array();
 
   /**
    * shortcuts to schema xml nodes with information on table links
    * @var array
    */
-  var $linkNodes = array();
+  private $linkNodes = array();
 
   /**
    * An associated array having the names of all alias as
@@ -75,39 +86,26 @@ class qcl_data_model_xmlSchema_DbModel
    * @access private
    * @var array
    */
-  var $aliases = array();
+  private $aliases = array();
 
   /**
    * An associated array, having the name of the property
    * as keys and their alias as value
    * @var unknown_type
    */
-  var $aliasMap = array();
+  private $aliasMap = array();
 
   /**
    * Shortcuts to property nodes which belong to metadata
    * @array array of object references
    */
-  var $metaDataProperties;
+  private $metaDataProperties;
 
   /**
    * The persistent model table info object
    * @var qcl_data_model_xmlSchema_DbRegistry
    */
-  var $modelTableInfo = null;
-
-  /**
-   * The path containing data that will imported into the model data
-   * when the model is initialized for the first time.
-   * @var string
-   */
-  var $importDataPath;
-
-  /**
-   * Flag to prevent caching
-   */
-  var $doNotCache = false;
-
+  private $modelTableInfo = null;
 
   /**
    * Initializes the model.
@@ -115,7 +113,7 @@ class qcl_data_model_xmlSchema_DbModel
    * the datasource object, or null if model is independent of a datasource
    * @return void
    */
-  function initialize( $datasourceModel=null )
+  public function initialize( $datasourceModel=null )
   {
 
     /*
@@ -640,6 +638,31 @@ class qcl_data_model_xmlSchema_DbModel
   }
 
   /**
+   * Extracts the property names from a parent node. They can either
+   * be in an attribute `properties` or in the attribute `name` of
+   * subnodes.
+   *
+   * @param qcl_data_xml_SimpleXMLElement$node
+   * @return array
+   */
+  private function _extractProperties( SimpleXMLElement $node )
+  {
+    $properties = array();
+    if ( $node['properties'] )
+    {
+      $properties = explode(",", (string) $node['properties'] );
+    }
+    else
+    {
+      foreach ( $node->children() as $child )
+      {
+        $properties[] = (string) $child['name'];
+      }
+    }
+    return $properties;
+  }
+
+  /**
    * Parse xml schema file and, if it has changed, create or update
    * all needed tables and columns. schema document will be available
    * as $this->schemaXml afterwards
@@ -900,20 +923,34 @@ class qcl_data_model_xmlSchema_DbModel
 
       /*
        * Dropping indexes before changing the schema speeds up things immensely.
-       * They will be recreated further dow. This must only be done at
+       * They will be recreated further down. This must only be done at
        * the first change of schema and not at all if nothing changes.
        */
       if ( ! $indexes )
       {
+
         $indexes = $doc->model->definition->indexes;
 
         if ( $indexes )
         {
-          foreach ( $indexes->children() as $index )
+          foreach ( $indexes->children() as $indexNode )
           {
-            $attrs   = $index->attributes();
-            $name    = (string) $attrs['name'];
-            $db->dropIndex($table,$name);
+            if ( ! $indexNode['type'] )
+            {
+              $this->raiseError("Index node doesn't have a type");
+            }
+            $name    = (string) $indexNode['name'];
+            if ( ! $name )
+            {
+              $properties = $this->_extractProperties( $indexNode );
+              $name = $indexNode['type'] . "_" . implode( "_", $properties );
+              $indexNode['name'] = $name;
+            }
+            if ( $db->hasIndex($table, $name ) )
+            {
+              $this->info("Dropping index '$name' in table '$table'");
+              $db->dropIndex( $table, $name );
+            }
           }
         }
       }
@@ -948,7 +985,7 @@ class qcl_data_model_xmlSchema_DbModel
        */
       if ( (string) $attr['unique'] == "yes" )
       {
-        $indexName = $colName . "_unique";
+        $indexName = "unique_" . $colName;
         if ( ! count( $db->getIndexColumns($table,$indexName) ) )
         {
           $db->addIndex("unique", $table, $indexName, $colName );
@@ -956,7 +993,7 @@ class qcl_data_model_xmlSchema_DbModel
       }
 
       /*
-       * index
+       * indexes
        */
       if ( (string) $attr['index'] == "yes" )
       {
@@ -1031,10 +1068,10 @@ class qcl_data_model_xmlSchema_DbModel
     {
       $this->log("Creating indexes ...","propertyModel");
 
-      foreach ( $indexes->children() as $index )
+      foreach ( $indexes->children() as $indexNode )
       {
-        $attrs        = $index->attributes();
-        $indexType    = strtoupper((string)$attrs['type']);
+        $attrs     = $indexNode->attributes();
+        $indexType = strtoupper((string)$attrs['type']);
         switch ($indexType)
         {
           /*
@@ -1044,15 +1081,15 @@ class qcl_data_model_xmlSchema_DbModel
           case "UNIQUE":
 
             $indexProperties = array();
-            foreach($index->children() as $property)
+            $properties = $this->_extractProperties( $indexNode );
+            foreach( $properties as $propName )
             {
-              $a        = $property->attributes();
-              $propName = (string) $a['name'];
               $indexProperties[] = either($aliasMap[$propName],$propName) ;
             }
 
             // analyze existing index
-            $indexName    = either( (string) $attrs['name'],(string) $indexProperties[0]);
+            $indexName = (string) $attrs['name'];
+            $this->log("Adding $indexType index '$indexName' to table '$table' ...","propertyModel");
             $db->addIndex($indexType,$table,$indexName,$indexProperties);
 
             break;
@@ -2607,6 +2644,7 @@ class qcl_data_model_xmlSchema_DbModel
       $metaDataNode = qcl_data_xml_Storage::getChildNodeByAttribute($propGroups,"name","metaData");
       if ( $metaDataNode )
       {
+        // @todo use attribute `properties="a,b,c"` in addition to child nodes
         foreach ( $metaDataNode->children() as $metaDataPropNode )
         {
           $attrs = $metaDataPropNode->attributes();

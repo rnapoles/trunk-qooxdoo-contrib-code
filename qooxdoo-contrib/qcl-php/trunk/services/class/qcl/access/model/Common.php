@@ -20,7 +20,8 @@ require_once "qcl/data/model/xmlSchema/DbModel.php";
 /**
  * Common base class for permission, role and user models
  */
-class qcl_access_model_Common extends qcl_data_model_xmlSchema_DbModel
+class qcl_access_model_Common
+  extends qcl_data_model_xmlSchema_DbModel
 {
 
   /**
@@ -28,7 +29,7 @@ class qcl_access_model_Common extends qcl_data_model_xmlSchema_DbModel
    * roles.
    * @var array
    */
-  var $reservedNames = array();
+  public $reservedNames = array();
 
 	/**
 	 * Creates a new record and optionally links it to a role. Raises an error
@@ -38,8 +39,13 @@ class qcl_access_model_Common extends qcl_data_model_xmlSchema_DbModel
 	 * @param string	$namedId
 	 * @return int the id of the inserted row
 	 */
-	function create( $namedId )
+	public function create( $namedId=null )
   {
+ 		if ( is_null($namedId) )
+ 		{
+ 		  $this->raiseError("You must supply a named id.");
+ 		}
+
  		/*
  		 * check
  		 */
@@ -70,7 +76,7 @@ class qcl_access_model_Common extends qcl_data_model_xmlSchema_DbModel
 	 * @param int		$parentId 	id of role (unused if class is qcl_access_model_Role)
 	 * @return int the id of the inserted row
 	 */
-	function createIfNotExists( $namedId, $parentId=null )
+	public function createIfNotExists( $namedId, $parentId=null )
   {
  		if ( $id = $this->namedIdExists ( $namedId ) )
  		{
@@ -78,8 +84,5 @@ class qcl_access_model_Common extends qcl_data_model_xmlSchema_DbModel
  		}
  		return $this->create( $namedId, $parentId );
   }
-
-
 }
-
 ?>

@@ -53,7 +53,7 @@ class qcl_data_datasource_Manager
   /**
    * Retrieves and initializes the datasource model object for a
    * datasource with the given name. Caches the result during a
-   * request. Can be called statically.
+   * request. 
    *
    * @param string $name
    * @return qcl_data_datasource_type_db_Model
@@ -105,7 +105,7 @@ class qcl_data_datasource_Manager
   }
 
   /**
-   * Register datasource. Can be called statically.
+   * Register datasource. 
    * @param string $name Name of datasource schema
    * @param string $class Name of datasource model class
    * @param string $title Descriptive title of the datasource
@@ -120,7 +120,7 @@ class qcl_data_datasource_Manager
   }
 
   /**
-   * Unregister datasource. Can be called statically.
+   * Unregister datasource. 
    * @param string $name Name of datasource schema
    */
   public function unregisterSchema( $schemaName )
@@ -157,7 +157,7 @@ class qcl_data_datasource_Manager
 
   /**
    * Creates a new datassource entry according to the schema name,
-   * with the given data. Can be called statically.
+   * with the given data. 
    *
    * @param string $datasource Named id of datasource
    * @param string $schemaName Name of schema
@@ -172,7 +172,7 @@ class qcl_data_datasource_Manager
   }
 
   /**
-   * Checks if a datasource of this name exists. Can be called statically.
+   * Checks if a datasource of this name exists. 
    * @param $datasource
    * @return bool
    */
@@ -184,7 +184,7 @@ class qcl_data_datasource_Manager
   }
 
   /**
-   * Deletes a datasource. Can be called statically.
+   * Deletes a datasource. 
    * @param $datasource
    * @return void
    */

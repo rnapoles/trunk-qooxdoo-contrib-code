@@ -31,11 +31,6 @@ class qcl_access_Manager
    */
   private $_activeUser;
 
-  /**
-   * The access controller object
-   * @var qcl_access_Controller
-   */
-  private $_accessController;
 
   /**
    * The current session id
@@ -59,7 +54,7 @@ class qcl_access_Manager
 
   /**
    * Sets the session id. The session id must be set by the access
-   * controller. Can be called statically.
+   * controller.
    * @param $sessionId
    * @return void
    */
@@ -69,7 +64,7 @@ class qcl_access_Manager
   }
 
   /**
-   * Returns the session id. Can be called statically.
+   * Returns the session id.
    * @return string
    */
   public function getSessionId()
@@ -99,7 +94,7 @@ class qcl_access_Manager
   }
 
   /**
-   * Returns active user object. Can be called statically.
+   * Returns active user object.
    * @return qcl_access_model_User
    */
   public function getActiveUser()
@@ -146,13 +141,40 @@ class qcl_access_Manager
    */
   public function getAccessController()
   {
-    if ( ! $this->_accessController )
+    static $accessController = null;
+    if ( is_null( $accessController ) )
     {
       require_once "qcl/access/SessionController.php";
-      require_once "qcl/data/persistence/db/Object.php"; // @todo fix this dependency
-      $this->_accessController = new qcl_access_SessionController( $this );
+      $accessController = new qcl_access_SessionController( $this );
     }
-    return $this->_accessController;
+    return $accessController;
+  }
+
+  /**
+   * Shorthand getter for the permission model of the access controller
+   * @return qcl_access_model_Permission
+   */
+  public function getPermissionModel()
+  {
+    return $this->getAccessController()->getPermissionModel();
+  }
+
+  /**
+   * Shorthand getter for the user model of the access controller
+   * @return qcl_access_model_User
+   */
+  public function getUserModel()
+  {
+    return $this->getAccessController()->getUserModel();
+  }
+
+  /**
+   * Shorthand getter for the role model of the access controller
+   * @return qcl_access_model_Role
+   */
+  public function getRoleModel()
+  {
+    return $this->getAccessController()->getRoleModel();
   }
 
   /**
@@ -184,7 +206,7 @@ class qcl_access_Manager
        * abort request
        */
       $this->warn( $accessController->getError() );
-      $this->getServer()->abort( qcl_application_Application::tr("Access was denied ...") );
+      $this->getServer()->abort( $this->tr("Access was denied ...") );
       exit;
     }
   }

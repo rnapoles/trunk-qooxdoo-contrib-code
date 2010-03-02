@@ -15,33 +15,27 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/persistence/db/Object.php";
 
 /**
  * Class which maintains a registry which is
- * persiste in the database.
+ * persiste in the application database.
  */
 class qcl_util_registry_Persist
-  extends qcl_data_persistence_db_Object
 {
 
-  var $registry = array();
-
   /**
-   * Returns a singleton instance of this class
-   * @return qcl_util_registry_Request
+   * Returns the persistent registry
+   * @return array
    */
-  function getInstance()
+  private static function getRegistryObject()
   {
-    return qcl_getInstance(__CLASS__);
-  }
-
-  /**
-   * Constructor. Creates the persistent object
-   */
-  function __construct()
-  {
-    parent::__construct( __CLASS__ );
+    static $obj = null;
+    if ( is_null($obj) )
+    {
+      require_once "qcl/util/registry/PersistentRegistry.php";
+      $obj = new qcl_data_persistence_PersistentRegistry( __CLASS__ );
+    }
+    return $obj;
   }
 
   /**
@@ -49,11 +43,11 @@ class qcl_util_registry_Persist
    * called, for example, when a user logs out, Can
    * be called statically
    */
-  function reset()
+  public static function reset()
   {
-    $_this = qcl_util_registry_Persist::getInstance();
-    $_this->registry = array();
-    $_this->save();
+    $obj = self::getRegistryObject();
+    $obj->registry = array();
+    $obj->save();
   }
 
   /**
@@ -62,11 +56,11 @@ class qcl_util_registry_Persist
    * @param string $key
    * @param mixed $value
    */
-  function set( $key, $value )
+  public static function set( $key, $value )
   {
-    $_this = qcl_util_registry_Persist::getInstance();
-    $_this->registry[$key] = $value;
-    $_this->save();
+    $obj = self::getRegistryObject();
+    $obj->registry[$key] = $value;
+    $obj->save();
   }
 
   /**
@@ -75,10 +69,10 @@ class qcl_util_registry_Persist
    * @param string $key
    * @return mixed
    */
-  function get( $key )
+  public static function get( $key )
   {
-    $_this = qcl_util_registry_Persist::getInstance();
-    return $_this->registry[$key];
+    $obj = self::getRegistryObject();
+    return $obj->registry[$key];
   }
 
 
@@ -88,10 +82,10 @@ class qcl_util_registry_Persist
    * @param string $key
    * @return mixed
    */
-  function has( $key )
+  public static function has( $key )
   {
-    $_this = qcl_util_registry_Persist::getInstance();
-    return isset( $_this->registry[$key] );
+    $obj = self::getRegistryObject();
+    return isset( $obj->registry[$key] );
   }
 }
 ?>

@@ -50,7 +50,7 @@ class qcl_event_Dispatcher
 
  /**
    * Adds an event listener. Works only during runtime, i.e. event bindings are not
-   * persisted. Can be called statically.
+   * persisted. 
    *
    * @param qcl_core_Object $target The object that the Listener is added to
    * @param string $type The name of the event
@@ -123,7 +123,7 @@ class qcl_event_Dispatcher
   }
 
   /**
-   * Dispatches a server event. Can be called statically.
+   * Dispatches a server event. 
    * @param qcl_core_Object $target
    * @param qcl_event_type_Event $event
    * @return bool Whether the event was dispatched or not.
@@ -213,7 +213,7 @@ class qcl_event_Dispatcher
   /**
    * Fires a server event which will be forwarded to the client and
    * dispatched o the jsonrpc data store that has initiated the request.
-   * Can be called statically.
+   * 
    * @param qcl_core_Object $target
    * @param string $name
    * @return unknown_type

@@ -1218,7 +1218,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array $data Associative array with the property names as keys
    * @return array
    */
-  function unschematize ( $data=null )
+  function unschematize ( $data )
   {
 
     /*

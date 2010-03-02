@@ -59,7 +59,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   function run()
   {
-    $_this = qcl_server_JsonRpc::getInstance();
+    $_this = self::getInstance();
     $_this->start();
   }
 
@@ -100,12 +100,17 @@ class qcl_server_JsonRpc extends JsonRpcServer
   }
 
   /**
-   * Getter for application
+   * Getter for application singleton instance.
+   * Returns null if no application exists.
    * @return qcl_application_Application
    */
-  function getApplication()
+  public function getApplication()
   {
-    return qcl_application_Application::getInstance();
+    if ( class_exists("qcl_application_Application") )
+    {
+      return qcl_application_Application::getInstance();
+    }
+    return null;
   }
 
   /**
@@ -115,6 +120,15 @@ class qcl_server_JsonRpc extends JsonRpcServer
   function getEventDispatcher()
   {
     return qcl_event_Dispatcher::getInstance();
+  }
+
+  /**
+   * Getter for message bus object
+   * @return qcl_event_message_Bus
+   */
+  function getMessageBus()
+  {
+    return qcl_event_message_Bus::getInstance();
   }
 
   /**
@@ -246,12 +260,13 @@ class qcl_server_JsonRpc extends JsonRpcServer
     /*
      * events and messages
      */
-    if ( $this->getApplication()->getIniValue("service.event_transport") == "on" )
+    $app = $this->getApplication();
+    if ( $app and $app->getIniValue("service.event_transport") == "on" )
     {
       $events    = $this->getEventDispatcher()->getServerEvents();
       $response->setEvents( $events );
-      $sessionId = qcl_access_Manager::getSessionId();
-      $messages  = qcl_event_message_Bus::getServerMessages( $sessionId );
+      $sessionId = $this->getAccessManager()->getSessionId();
+      $messages  = $this->getMessageBus()->getServerMessages( $sessionId );
       $response->setMessages( $messages );
     }
 
@@ -286,7 +301,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * authentication
      */
     $sessionId = $_REQUEST['sessionId'];
-    $userController = qcl_access_Manager::getAccessController();
+    $userController = $this->getAccessManager()->getAccessController();
     if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {
@@ -560,12 +575,17 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * Hook for subclasses to locally log the error message
-   * @param $msg
-   * @return unknown_type
+   * @param string $msg Error Message
+   * @param bool $includeBacktrace Whether a backtrace should be printed as well
+   * @return void
    */
-  function logError( $msg )
+  function logError( $msg, $includeBacktrace = false )
   {
-    $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg . "\n" . debug_get_backtrace();
+    $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg;
+    if ( $includeBacktrace )
+    {
+      $msg .= "\n" . debug_get_backtrace();
+    }
     $this->_log( $msg );
   }
 }

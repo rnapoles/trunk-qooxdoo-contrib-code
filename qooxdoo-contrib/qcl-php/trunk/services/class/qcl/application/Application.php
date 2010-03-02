@@ -50,6 +50,12 @@ class qcl_application_Application
   private $_server;
 
   /**
+   * Flag indicating if application has already been started
+   * @var unknown_type
+   */
+  private $_isStarted = false;
+
+  /**
    * The intial configuration values, saved in the config.ini.php file
    * @var array
    */
@@ -82,38 +88,7 @@ class qcl_application_Application
   }
 
   /**
-   * Constructor
-   */
-  function __construct()
-  {
-    $this->setupErrorHandling();
-  }
-
-  /**
-   * Setup error handling to prevent PHP from messing up the json
-   * response.
-   */
-  function setupErrorHandling()
-  {
-    /*
-     * This will not always work, so do some more hacking to
-     * comment out uncaught errors. You'll need to examine the
-     * http response to see the uncaught errors!
-     */
-    ini_set('error_prepend_string', '/*');
-    ini_set('error_append_string', '*/{' .
-        '  error:' .
-        '  {' .
-        '    "origin":' . JsonRpcError_Origin_Server . ',' .
-        '    "code":' .  JsonRpcError_ScriptError . ',' .
-        '    "message":"Fatal PHP Error. See response content for error description ' .
-        ' "}' .
-        '}'
-    );
-  }
-
-  /**
-   * Return the current server instance. Can be called statically.
+   * Return the current server instance.
    * @return AbstractServer
    */
   public function getServer()
@@ -178,16 +153,6 @@ class qcl_application_Application
   //-------------------------------------------------------------
 
   /**
-   * Static method to start the application
-   * @return void
-   */
-  public static function run()
-  {
-    $_this = self::getInstance();
-    $_this->start();
-  }
-
-  /**
    * Start the application. You MUST override this method in your
    * application class. In the overriding class, call getInstance()
    * to instantiate the application object, and then call this
@@ -198,11 +163,19 @@ class qcl_application_Application
   {
 
     /*
+     * set flag
+     */
+    if ( $this->_isStarted )
+    {
+      $this->raiseError("Application has already started.");
+    }
+    $this->_isStarted = true;
+
+    /*
      * Initialize a dummy qcl_data_model_xmlSchema_DbModel object to create tables
      * @todo this can be removed once qcl_data_db_SimpleModel does
      * automatic table creation.
      */
-
      require_once "qcl/data/persistence/db/Setup.php";
      qcl_data_persistence_db_Setup::setup();
 
@@ -231,8 +204,18 @@ class qcl_application_Application
        require_once "qcl/event/message/db/Message.php";
        $this->getMessageBus()->setModel( qcl_event_message_db_Message::getInstance() );
      }
+
+
   }
 
+  /**
+   * Checks if application has started
+   * @return boolean
+   */
+  public function isStarted()
+  {
+    return $this->_isStarted;
+  }
 
 
   //-------------------------------------------------------------
@@ -241,7 +224,7 @@ class qcl_application_Application
 
   /**
    * Reads initial configuration. looks for service.ini.php file in the
-   * directory of the topmost including script. Can be called statically.
+   * directory of the topmost including script.
    * @todo re-implement old behavior that services can ovverride individual
    * settings by service directory
    **/

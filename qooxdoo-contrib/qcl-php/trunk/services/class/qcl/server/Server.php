@@ -17,6 +17,7 @@
  */
 require_once "qcl/core/Object.php";
 
+
 /**
  * Static class for convenient and global access to actual server singleton object
  */

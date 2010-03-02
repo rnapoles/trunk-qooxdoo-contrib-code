@@ -11,22 +11,22 @@ class class_qcl_config_Test extends qcl_access_SessionController
     $configModel = qcl_config_Db::getInstance();
 
     $configModel->createKeyIfNotExists("qcl.test.global","string");
-    $configModel->set("qcl.test.global","Blah!");
+    $configModel->setKey("qcl.test.global","Blah!");
 
-    $this->set("qcl.test.global",$configModel->get("qcl.test.global"));
+    $this->set("qcl.test.global",$configModel->getKey("qcl.test.global"));
 
 
     $configModel->createKeyIfNotExists("qcl.test.foo","string",null,true);
     $configModel->setDefault("qcl.test.foo","bar");
-    $configModel->set("qcl.test.foo","gagaga!");
+    $configModel->setKey("qcl.test.foo","gagaga!");
 
-    $this->set("qcl.test.foo(default)",$configModel->get("qcl.test.foo",0));
+    $this->set("qcl.test.foo(default)",$configModel->getKey("qcl.test.foo",0));
 
-    $this->set("qcl.test.foo(user)",$configModel->get("qcl.test.foo"));
+    $this->set("qcl.test.foo(user)",$configModel->getKey("qcl.test.foo"));
 
     //$configModel->reset("qcl.test.foo");
 
-    //$this->set("qcl.test.foo(reset)",$configModel->get("qcl.test.foo"));
+    //$this->set("qcl.test.foo(reset)",$configModel->getKey("qcl.test.foo"));
 
     return $this->result();
   }

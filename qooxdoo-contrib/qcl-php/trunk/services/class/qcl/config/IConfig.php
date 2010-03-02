@@ -38,8 +38,131 @@
  *   @todo
  */
 
-interface qcl_config_Iconfig
+interface qcl_config_IConfig
 {
+  /**
+   * Returns singleton instance.
+   * @return qcl_config_Db
+   */
+  public static function getInstance();
 
+  /**
+   * Creates a config property, overwriting any previous entry
+   * requires permission "qcl.config.permissions.manage"
+   *
+   * @param string $nameId The name of the property (i.e., myapplication.config.locale)
+   * @param string $type The type of the property (string|number|object|boolean)
+   * @param string $permissionRead The permission name that is needed to access
+   *      and read this property (optional)
+   * @param string $permissionWrite The permission name that is needed to access
+   *      and read this property (optional)
+   * @param boolean $allowUserVariants If true, allow users to create their
+   *      own variant of the configuration setting
+   * @return id of created config entry
+   */
+  public function createKey(
+     $namedId,
+     $type,
+     $permissionWrite=null,
+     $allowUserVariants=false
+  );
+
+  /**
+   * Create a config key if it doesn't exist already
+   * @see qcl_config_Db::create()
+   * @param $namedId
+   * @param $type
+   * @param $permissionWrite
+   * @param $allowUserVariants
+   * @return int|bool  Returns the id of the newly created record, or false if
+   * key was not created.
+   */
+  public function createKeyIfNotExists(
+     $namedId,
+     $type,
+     $permissionWrite=null,
+     $allowUserVariants=false
+  );
+
+  /**
+   * Returns config property value. Raises an error if key does not exist.
+   * @param string $namedId The name of the property (i.e., myapplication.config.locale)
+   * @param int|null[optional] $userId Optional user id. If not given, get the config
+   * key for the current user.
+   * @return value of property.
+   */
+  public function getKey( $namedId, $userId=false );
+
+  /**
+   * Checks if the config entry exists (optional: for a specific user)
+   * @param string $name
+   * @param int $userId
+   */
+  public function hasKey( $nameId, $userId=null );
+
+  /**
+   * Sets config property
+   * @param string $namedId The name of the property (i.e., myapplication.config.locale)
+   * @param string $value The value of the property.
+   * @param int|boolean $userId[optional] If 0, set the default value
+   * @return true if success or false if there was an error
+   */
+  public function setKey( $namedId, $value, $userId=false);
+
+  /**
+   * Deletes a config key dependent on permissions
+   * @todo call statically with id parameters
+   * @return void
+   */
+  public function deleteKey( $ids=null );
+
+  /**
+   * Delete all records that belong to a userId
+   * @param int $userId
+   * @return void
+   */
+  public function deleteByUserId( $userId );
+
+  /**
+   * Returns the type of the current config record
+   * @return string
+   */
+  public function getType();
+
+  /**
+   * Returns the value of the current record in the correct variable type
+   * @return mixed $value
+   */
+  public function getValue();
+
+  /**
+   * Sets a default value for a config key
+   * @param $namedId
+   * @param $value
+   * @return void
+   */
+  public function setDefault( $namedId, $value );
+
+  /**
+   * Gets the default value for a config key
+   * @param $namedId
+   * @return mixed
+   */
+  public function getDefault( $namedId );
+
+  /**
+   * Resets the user variant of a config value to the default value.
+   * @param $namedId
+   * @return void
+   */
+  public function reset( $namedId );
+
+
+  /**
+   * Returns all config property value that are readable by the active user
+   * @param string $mask return only a subset of entries that start with $mask
+   * @return array Array
+   */
+  public function getAccessibleKeys( $mask=null );
 }
 ?>

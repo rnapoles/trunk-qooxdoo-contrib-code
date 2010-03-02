@@ -35,7 +35,7 @@ define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
 
 /**
  * Common base class for controllers. Mainly contains convenience
- * methods that proxy methods originating in other objects.
+ * methods that proxy methods originating in other (manager) objects.
  */
 class qcl_data_controller_Controller
   extends qcl_server_Service
@@ -47,6 +47,17 @@ class qcl_data_controller_Controller
    */
   private $_resultObject;
 
+
+  /**
+   * Constructor. Starts the application if exists and if not started yet.
+   */
+  function __construct()
+  {
+    if ( $this->getApplication() and ! $this->getApplication()->isStarted() )
+    {
+      $this->getApplication()->start();
+    }
+  }
 
   //-------------------------------------------------------------
   // access control
