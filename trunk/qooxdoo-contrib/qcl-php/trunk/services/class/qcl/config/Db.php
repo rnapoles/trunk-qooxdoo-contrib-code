@@ -17,46 +17,64 @@
  */
 require_once "qcl/access/Manager.php";
 require_once "qcl/data/model/xmlSchema/DbModel.php";
+require_once "qcl/config/IConfig.php";
 
 /**
  * Configuration management class, using a database backend
  *
  */
-
 class qcl_config_Db
   extends qcl_data_model_xmlSchema_DbModel
+  implements qcl_config_IConfig
 {
   /**
    * Path to the xml file containing the model schema
    * @var strign
    */
-  var $schemaXmlPath  = "qcl/config/Db.model.xml";
+  public $schemaXmlPath  = "qcl/config/Db.model.xml";
 
   /**
    * types that config values may have
    * @var array
    */
-  var $types = array("string","number","boolean","list");
+  private $types = array("string","number","boolean","list");
 
   /**
    * Results are cached for faster access
    * @var array
    */
-  var $_cache = array();
+  private $_cache = array();
 
   /**
    * Returns singleton instance.
-   * @static
    * @return qcl_config_Db
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance( __CLASS__  );
   }
 
+  /**
+   * Gets the user data model
+   * @param int[optional] $id Load record if given
+   * @return qcl_access_model_User
+   */
+  private function getUserModel( $id=null )
+  {
+    $userModel = $this->getApplication()->getAccessManager()->getUserModel();
+    if ( $id ) $userModel->load( $id );
+    return $userModel;
+  }
+
+  private function getActiveUser()
+  {
+    return $this->getApplication()->getAccessManager()->getActiveUser();
+  }
+
+  ////// API FUNCTIONS
 
 	/**
-	 * creates a config property, overwriting any previous entry
+	 * Creates a config property, overwriting any previous entry
 	 * requires permission "qcl.config.permissions.manage"
 	 *
 	 * @param string $nameId The name of the property (i.e., myapplication.config.locale)
@@ -69,7 +87,7 @@ class qcl_config_Db
 	 * 		  own variant of the configuration setting
 	 * @return id of created config entry
 	 */
-	function createKey(
+	public function createKey(
 	   $namedId,
 	   $type,
 	   $permissionWrite=null,
@@ -79,10 +97,9 @@ class qcl_config_Db
 		/*
 		 * check permission
 		 */
-    $activeUser  = $this->getAccessManager()->getActiveUser();
+    $activeUser  = $this->getApplication()->getAccessManager()->getActiveUser();
 
     //$activeUser->requirePermission("qcl.config.permissions.manage");
-
 
 		/*
 		 * Check type
@@ -95,7 +112,7 @@ class qcl_config_Db
     /*
      * check if key exists
      */
-    if ( $this->has( $namedId ) )
+    if ( $this->hasKey( $namedId ) )
     {
       $this->userNotice("Config key '$namedId' already exists.");
       // never gets here
@@ -126,13 +143,13 @@ class qcl_config_Db
 	 * @return int|bool  Returns the id of the newly created record, or false if
 	 * key was not created.
 	 */
-	function createKeyIfNotExists(
+	public function createKeyIfNotExists(
      $namedId,
      $type,
      $permissionWrite=null,
      $allowUserVariants=false
   ) {
-    if ( ! $this->has( $namedId ) )
+    if ( ! $this->hasKey( $namedId ) )
     {
       return $this->createKey(
        $namedId,
@@ -148,100 +165,42 @@ class qcl_config_Db
   }
 
   /**
-   * Gets the user data model
-   * @param int[optional] $id Load record if given
-   * @return qcl_access_model_User
+   * Returns config property value. Raises an error if key does not exist.
+   * @param string $namedId The name of the property (i.e., myapplication.config.locale)
+   * @param int|null[optional] $userId Optional user id. If not given, get the config
+   * key for the current user.
+   * @return value of property.
    */
-  function getUserModel( $id=null )
+  public function getKey( $namedId, $userId=false )
   {
-    $userModel = qcl_access_model_User::getInstance();
-    if ( $id ) $userModel->load( $id );
-    return $userModel;
-  }
-
-
-	/**
-	 * Deletes a config key dependent on permissions
-	 * @todo call statically with id parameters
-	 * @return void
-	 */
-	function delete( $ids=null )
-	{
-    $activeUser = $this->getActiveUser();
 
     /*
-     * get key name
-     */
-    $namedId = $this->getNamedId();
-
-    /*
-     * delete if permissions allow it
-     */
-    if ( $activeUser->hasPermission("qcl.config.permissions.manage")
-          or $this->getUser() == $activeUser->getNamedId() )
-    {
-      parent::delete();
-      $this->info("Deleted config record '$namedId' (#$id)" );
-    }
-
-    /*
-     * or raise error
-     */
-		else
-		{
-		  $this->userNotice("Current user doesn't have permission to delete '$namedId'");
-		}
-	}
-
-	/**
-	 * Delete all records that belong to a userId
-	 * @param int $userId
-	 * @return void
-	 */
-	function deleteByUserId( $userId )
-	{
-	  $this->deleteWhere(array(
-	   'userId' => $userId
-	  ));
-	}
-
-	/**
-	 * Returns config property value. Raises an error if key does not exist.
-	 * @param string $namedId The name of the property (i.e., myapplication.config.locale)
-	 * @param int|null[optional] $userId Optional user id. If not given, get the config
-	 * key for the current user.
- 	 * @return value of property.
-	 */
-	function get( $namedId, $userId=false )
-	{
-
-	  /*
      * use active user if no user Id
      */
-	  if ( $userId === false )
-	  {
+    if ( $userId === false )
+    {
       $userModel = $this->getApplication()->getAccessManager()->getActiveUser();
       $userId = $userModel? $userModel->getId() : null;
 
-	  }
+    }
 
     /*
      * user id given, this is usually only the
      * case if a manager edits the configuration
      */
-	  else
-	  {
-	    $userModel = $this->getUserModel( $userId );
-	  }
+    else
+    {
+      $userModel = $this->getUserModel( $userId );
+    }
 
-	  /*
-	   * @todo cache results
-	   */
+    /*
+     * @todo cache results
+     */
 
     /*
      * find config key for given user id
      */
-	  $this->findWhere( array(
+    $this->findWhere( array(
       'namedId' => $namedId,
       'userId'  => $userId
     ));
@@ -283,48 +242,14 @@ class qcl_config_Db
      * return value
      */
     return $this->getValue();
-	}
-
-  /**
-   * Returns the type of the current config record
-   * @return string
-   */
-  function getType()
-  {
-    return $this->getProperty("type");
   }
 
   /**
-   * Returns the value of the current record in the correct variable type
-   * @return mixed $value
+   * Checks if the config entry exists (optional: for a specific user)
+   * @param string $name
+   * @param int $userId
    */
-  function getValue()
-  {
-    $value = $this->getProperty("value");
-    $type  = $this->getType();
-
-    /*
-     * return value as correct type
-     */
-    switch ( $type )
-    {
-      case "number"  :
-        return floatval($value);
-      case "boolean" :
-        return (bool) $value;
-      case "list" :
-        return explode(",", $value);
-      default:
-        return strval($value);
-    }
-  }
-
-	/**
-	 * Checks if the config entry exists (optional: for a specific user)
-	 * @param string $name
-	 * @param int $userId
-	 */
-	function has( $nameId, $userId=null )
+  public function hasKey( $nameId, $userId=null )
   {
     if ( $userId )
     {
@@ -348,12 +273,12 @@ class qcl_config_Db
    * @param int|boolean $userId[optional] If 0, set the default value
    * @return true if success or false if there was an error
    */
-  function set( $namedId, $value, $userId=false)
+  public function setKey( $namedId, $value, $userId=false)
   {
     /*
      * check if key exists
      */
-    if ( ! $this->has( $namedId ) )
+    if ( ! $this->hasKey( $namedId ) )
     {
       $this->raiseError("Config key '$namedId' does not exist.");
     }
@@ -363,18 +288,32 @@ class qcl_config_Db
      */
     if ( $userId )
     {
-      $userModel = $this->getUserModel( $id );
+      $userModel = $this->getUserModel( $userId );
     }
     elseif ( $userId === false )
     {
       $userModel = $this->getActiveUser();
-      $userId = $userModel->getId();
+      if ( $userModel )
+      {
+        $userId = $userModel->getId();
+      }
     }
     else
     {
       $userModel = $this->getActiveUser();
     }
-    $username = $userModel->username();
+
+    if ( $userModel )
+    {
+      $username = $userModel->username();
+    }
+    else
+    {
+      /*
+       * without a valid user, only global values can be set
+       */
+      $userId = null;
+    }
 
     /*
      * find config key
@@ -517,15 +456,94 @@ class qcl_config_Db
     return true;
   }
 
+	/**
+	 * Deletes a config key dependent on permissions
+	 * @todo call statically with id parameters
+	 * @return void
+	 */
+	public function deleteKey( $ids=null )
+	{
+    $activeUser = $this->getActiveUser();
+
+    /*
+     * get key name
+     */
+    $namedId = $this->getNamedId();
+
+    /*
+     * delete if permissions allow it
+     */
+    if ( $activeUser->hasPermission("qcl.config.permissions.manage")
+          or $this->getUser() == $activeUser->getNamedId() )
+    {
+      parent::delete();
+      $this->info("Deleted config record '$namedId' (#$id)" );
+    }
+
+    /*
+     * or raise error
+     */
+		else
+		{
+		  $this->userNotice("Current user doesn't have permission to delete '$namedId'");
+		}
+	}
+
+	/**
+	 * Delete all records that belong to a userId
+	 * @param int $userId
+	 * @return void
+	 */
+	public function deleteByUserId( $userId )
+	{
+	  $this->deleteWhere(array(
+	   'userId' => $userId
+	  ));
+	}
+
+  /**
+   * Returns the type of the current config record
+   * @return string
+   */
+  public function getType()
+  {
+    return $this->getProperty("type");
+  }
+
+  /**
+   * Returns the value of the current record in the correct variable type
+   * @return mixed $value
+   */
+  public function getValue()
+  {
+    $value = $this->getProperty("value");
+    $type  = $this->getType();
+
+    /*
+     * return value as correct type
+     */
+    switch ( $type )
+    {
+      case "number"  :
+        return floatval($value);
+      case "boolean" :
+        return (bool) $value;
+      case "list" :
+        return explode(",", $value);
+      default:
+        return strval($value);
+    }
+  }
+
   /**
    * Sets a default value for a config key
    * @param $namedId
    * @param $value
    * @return void
    */
-  function setDefault( $namedId, $value )
+  public function setDefault( $namedId, $value )
   {
-    $this->set( $namedId, $value, 0 );
+    $this->setKey( $namedId, $value, 0 );
   }
 
   /**
@@ -533,9 +551,9 @@ class qcl_config_Db
    * @param $namedId
    * @return mixed
    */
-  function getDefault( $namedId )
+  public function getDefault( $namedId )
   {
-    return $this->get( $namedId, 0 );
+    return $this->getKey( $namedId, 0 );
   }
 
   /**
@@ -543,9 +561,9 @@ class qcl_config_Db
    * @param $namedId
    * @return void
    */
-  function reset( $namedId )
+  public function reset( $namedId )
   {
-    $this->set( $namedId, $this->getDefault( $namedId ) );
+    $this->setKey( $namedId, $this->getDefault( $namedId ) );
   }
 
 	/**
@@ -553,7 +571,7 @@ class qcl_config_Db
 	 * @param string $mask return only a subset of entries that start with $mask
 	 * @return array Array
 	 */
-	function getAccessibleKeys( $mask=null )
+	public function getAccessibleKeys( $mask=null )
 	{
     $activeUser = $this->getActiveUser();
 

@@ -76,7 +76,7 @@ class qcl_data_model_xmlSchema_DbRegistry
   }
 
   /**
-   * Checks if initialization of table and datasource. Can be called statically.
+   * Checks if initialization of table and datasource. 
    *
    * @param qcl_data_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table

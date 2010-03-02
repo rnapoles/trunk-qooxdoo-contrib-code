@@ -1,9 +1,7 @@
 <?php
 
 require_once "qcl/data/persistence/db/Object.php";
-require_once "qcl/util/registry/session.php";
-require_once "qcl/access/Manager.php";
-require_once "qcl/data/controller/Controller.php";
+require_once "qcl/test/AbstractTestController.php";
 
 class TestPersistence extends qcl_data_persistence_db_Object
 {
@@ -12,14 +10,18 @@ class TestPersistence extends qcl_data_persistence_db_Object
   var $counter;
 }
 
+class TestPersistenceBehavior extends qcl_core_Object
+{
+  public $isPersistent = true;
+  public $counter = 0;
+}
+
 /**
  * Service class containing test methods
  */
-class class_qcl_data_persistence_Tests
-  extends qcl_data_controller_Controller
+class class_qcl_test_data_Persistence
+  extends qcl_test_AbstractTestController
 {
-
-  var $skipAuthentication = true;
 
   function method_testPersistence()
   {
@@ -111,6 +113,16 @@ class class_qcl_data_persistence_Tests
      */
     return $this->result();
 
+  }
+
+  function method_testPersistenceBehavior()
+  {
+    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
+    $obj = new TestPersistenceBehavior();
+    $obj->counter++;
+    $this->info("Count:" . $obj->counter );
+    //$obj->save();
+    return $obj->counter;
   }
 }
 

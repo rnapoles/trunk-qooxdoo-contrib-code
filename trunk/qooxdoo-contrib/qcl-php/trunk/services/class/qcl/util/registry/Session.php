@@ -16,8 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-define("QCL_UTIL_REGISTRY_SESSION_KEY","QCL_UTIL_REGISTRY_SESSION_KEY" );
-
 /**
  * Class which maintains a registry which is valid during one
  * PHP session
@@ -25,61 +23,50 @@ define("QCL_UTIL_REGISTRY_SESSION_KEY","QCL_UTIL_REGISTRY_SESSION_KEY" );
 class qcl_util_registry_Session
 {
 
-
-  /**
-   * Returns a singleton instance of this class
-   * @return qcl_util_registry_Session
-   */
-  function getInstance( )
-  {
-    return qcl_getInstance( __CLASS__ );
-  }
+  const KEY = "QCL_UTIL_REGISTRY_SESSION_KEY";
 
   /**
    * resets the page load registry. this needs to be
    * called, for example, when a user logs out. Can
    * be called statically.
    */
-  function reset()
+  public static function reset()
   {
-    $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ] = array();
+    $_SESSION[ self::KEY ] = array();
   }
 
   /**
-   * Sets the registry value. Can be called statically
+   * Sets the registry value.
    *
    * @param string $key
    * @param mixed $value
    */
-  function set( $key, $value )
+  public static function set( $key, $value )
   {
-    $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ][$key] = $value;
+    $_SESSION[ self::KEY ][$key] = $value;
   }
 
   /**
-   * Gets the registry value. Can be called statically
+   * Gets the registry value.
    *
    * @param string $key
    * @return mixed
    */
-  function get( $key )
+  public static function get( $key )
   {
-    return $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ][$key];
+    return $_SESSION[ self::KEY ][$key];
   }
 
 
   /**
-   * Check if registry value is set. Can be called statically
+   * Check if registry value is set.
    *
    * @param string $key
    * @return mixed
    */
-  function has( $key )
+  public static function has( $key )
   {
-    return isset( $_SESSION[ QCL_UTIL_REGISTRY_SESSION_KEY ][$key] );
+    return isset( $_SESSION[ self::KEY ][$key] );
   }
-
-
 }
-
 ?>

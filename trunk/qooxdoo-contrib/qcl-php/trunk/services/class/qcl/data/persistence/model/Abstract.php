@@ -42,11 +42,10 @@ define("qcl_data_persistence_READ_LOCK", 2);
 
 /**
  * Abstract parent class for persistent objects
- * By default, all public properties are saved (PHP4: all
- * properties that do not start with an underscore). You need
+ * By default, all public properties are saved. You need
  * to subclass this class in order to use it
  */
-class qcl_data_persistence_Abstract
+class qcl_data_persistence_model_Abstract
   extends qcl_data_model_Abstract
 {
 
@@ -55,43 +54,43 @@ class qcl_data_persistence_Abstract
    * it has been modified during runtime)
    * @var array
    */
-  var $_original;
+  private $_original;
 
   /**
    * Flag to indicate if object has changed during runtime
    * @var bool
    */
-  var $_hasChanged;
+  private $_hasChanged;
 
   /**
    * Flag to indicate that  object has been deleted
    * @var bool
    */
-  var $_isDeleted;
+  private $_isDeleted;
 
   /**
    * Indicates that this is a persistent object
    * @var bool
    */
-  var $isPersistent = true;
+  public $isPersistent = true;
 
   /**
    * The id of the instance
    * @var string
    */
-  var $instanceId;
+  public $instanceId;
 
   /**
    * The id of the user that this object belongs to.
    * @var int
    */
-  var $_userId = null;
+  private $_userId = null;
 
   /**
    * The id of the session that this object belongs to
    * @var string
    */
-  var $_sessionId = null;
+  private $_sessionId = null;
 
   /**
    * Indicates that this is the first time the object
@@ -99,39 +98,39 @@ class qcl_data_persistence_Abstract
    * from the database
    * @var bool
    */
-  var $isNew = true;
+  public $isNew = true;
 
   /**
    * Whether a process has locked the object for exclusive
    * access.
    * @var bool
    */
-  var $isLocked;
+  public $isLocked;
 
   /**
    * The lock mode
    * @var int
    */
-  var $lockMode = 0;
+  public $lockMode = 0;
 
   /**
    * Timeout in seconds before trying to get the lock is aborted
    * @var int
    */
-  var $_lockTimeout = 3;
+  private $_lockTimeout = 3;
 
   /**
    * Flag indicating that the current lock is owned by the object
    * itself
    * @var bool
    */
-  var $_lockIsMine = false;
+  private $_lockIsMine = false;
 
   /**
    * Timeout in seconds before stale lock is broken
    * @var int
    */
-  var $_staleLockTimeout = 10;
+  private $_staleLockTimeout = 10;
 
   /**
    * Constructor. Reconstructs object properties
@@ -298,7 +297,7 @@ class qcl_data_persistence_Abstract
    * Implementing method to create a new record in the database
    * that will hold the information for this instance
    */
-  function create()
+  function create( $namedId = null )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -434,7 +433,7 @@ class qcl_data_persistence_Abstract
    * Deletes object properties and persistent data
    * @return void
    */
-  function delete()
+  function delete( $ids )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -484,7 +483,7 @@ class qcl_data_persistence_Abstract
   }
 
   /**
-   * Destructor.
+   * Destructor. Saves object to cache
    */
   function __destruct()
   {

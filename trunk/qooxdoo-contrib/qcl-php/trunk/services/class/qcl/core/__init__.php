@@ -22,4 +22,9 @@
 require_once "qcl/log/Logger.php";
 qcl_log_Logger::getInstance()->registerFilter("propertyModel","Log messages concerning the setup and initializing of model properties.",false);
 
+/**
+ * Use as a a default argument to indicate that argument hasn't been supplied
+ */
+define("QCL_ARGUMENT_NOT_SET", "QCL_ARGUMENT_NOT_SET");
+
 ?>

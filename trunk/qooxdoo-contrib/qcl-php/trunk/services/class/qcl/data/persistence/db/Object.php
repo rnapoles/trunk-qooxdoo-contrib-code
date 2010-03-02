@@ -15,17 +15,16 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/persistence/Abstract.php";
+require_once "qcl/data/persistence/model/Abstract.php";
 require_once "qcl/data/persistence/db/Model.php";
 require_once "qcl/data/model/xmlSchema/DbModel.php";
 
 /**
  * Class that is persisted in the database
- * By default, all public properties are saved (PHP4: all
- * properties that do not start with an underscore).
+ * By default, all public properties are saved.
  */
 class qcl_data_persistence_db_Object
-  extends qcl_data_persistence_Abstract
+  extends qcl_data_persistence_model_Abstract
 {
 
   /**
@@ -36,7 +35,7 @@ class qcl_data_persistence_db_Object
   var $_dbModel;
 
   /**
-   * Initializes the object. Can be called statically to
+   * Initializes the object. to
    * initialize the persistence system
    * @override
    */
@@ -47,6 +46,15 @@ class qcl_data_persistence_db_Object
      * the data
      */
     $this->_dbModel = new qcl_data_persistence_db_Model;
+  }
+
+  /**
+   * Needed for the migration to the behavior pattern
+   */
+  function getPersistenceBehavior()
+  {
+    require_once "qcl/data/persistence/behavior/Dummy.php";
+    return qcl_data_persistence_behavior_Dummy::getInstance();
   }
 
   /**

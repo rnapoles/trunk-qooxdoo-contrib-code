@@ -23,16 +23,13 @@ require_once "qcl/access/model/Common.php";
  */
 class qcl_access_model_Permission extends qcl_access_model_Common
 {
-
-   var $schemaXmlPath  = "qcl/access/model/Permission.model.xml";
-
+   public $schemaXmlPath  = "qcl/access/model/Permission.model.xml";
 
   /**
    * Returns singleton instance.
-   * @static
    * @return qcl_access_model_Permission
    */
-  function getInstance()
+  static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }
@@ -43,7 +40,7 @@ class qcl_access_model_Permission extends qcl_access_model_Common
    * @param string $namedId
    * @param int[optional] $roleId
    */
- 	function create( $namedId, $roleId=null )
+ 	public function create( $namedId, $roleId=null )
  	{
  	 	if ( ! $roleId )
  		{

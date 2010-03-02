@@ -270,12 +270,12 @@ class qcl_data_model_db_Abstract
   /**
    * gets all database records optionally sorted by field
    * @param string|null     $orderBy  (optional) order by field
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
-   * @deprecated use new findX.. methods
    */
-  function findAll($orderBy=null)
+  function findAll($orderBy=null, $properties=null )
   {
-    return $this->findWhere(null,$orderBy);
+    return $this->findWhere(null, $orderBy, $properties );
   }
 
   /**
@@ -384,7 +384,7 @@ class qcl_data_model_db_Abstract
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where, $orderBy=null, $properties=null, $link=null, $distinct=false )
+  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $distinct=false )
   {
 
     /*

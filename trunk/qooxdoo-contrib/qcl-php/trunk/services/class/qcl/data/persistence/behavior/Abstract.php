@@ -15,17 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/util/registry/Session.php";
 
 /**
- * Class which maintains a registry which is valid during one page load.
- * For this to work, there must be a service method with is requested only
- * once during the application startup and which calls
- * qcl_util_registry_PageLoad::reset()
+ * Abstract parent class for persistence behaviors
  */
-class qcl_util_registry_PageLoad
-  extends qcl_util_registry_Session
+class qcl_data_persistence_behavior_Abstract
 {
-  const KEY = "QCL_UTIL_REGISTRY_PAGELOAD_KEY";
+
 }
 ?>

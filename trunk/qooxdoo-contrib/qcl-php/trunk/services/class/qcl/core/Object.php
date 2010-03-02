@@ -16,16 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-/*
- * For constant definition for which a simple integer is sufficient,
- * use global variable $constId like so:
- * define("MY_CONSTANT", $constId++);
- */
-$constId = 0;
-
-/*
- * dependencies
- */
 require_once "qcl/core/functions.php";      // global functions
 require_once "qcl/log/Logger.php";
 require_once "qcl/lang/String.php";         // String object similar to java
@@ -34,37 +24,7 @@ require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
 require_once "qcl/core/BaseClass.php";      // Base class containing overloading stuff
 
 /**
- * path to log file
- */
-if ( ! defined( "QCL_LOG_PATH") )
-{
-  define( "QCL_LOG_PATH" ,  sys_get_temp_dir() );
-}
-
-/**
- * path to log file
- */
-if ( ! defined( "QCL_LOG_FILE") )
-{
-  define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . "qcl.log" );
-}
-
-
-/**
- * Use as a a default argument to indicate that argument hasn't been supplied
- */
-define("QCL_ARGUMENT_NOT_SET", "QCL_ARGUMENT_NOT_SET");
-
-/**
- * global reqistry that is maintained during one request
- * @todo deprecated, use qcl_util_registry_Request instead
- * @var array
- */
-$qcl_registry = array();
-
-/**
  * Base class of all qcl classes.
- *
  */
 class qcl_core_Object extends qcl_core_BaseClass
 {
@@ -82,13 +42,14 @@ class qcl_core_Object extends qcl_core_BaseClass
   private $error;
 
   /**
-   * wether this class is persistent. If true, it will be serialized at the
-   * end of the request and can be unserialized with class_name::unserialize()
+   * Wether this class is persistent. If true, it will be serialized at the
+   * end of the request and deserialized at the beginning. By default,
+   * the object is saved into the PHP session.
    */
   public $isPersistent = false;
 
   /**
-   * whether this is a newly instantiated object. Will be turned to false
+   * Whether this is a newly instantiated object. Will be turned to false
    * when retrieved from cache
    */
   public $isNew = true;
@@ -130,6 +91,14 @@ class qcl_core_Object extends qcl_core_BaseClass
      * class name
      */
     $this->_class = get_class($this);
+
+    /*
+     * deserialize if this is a persistent object
+     */
+    if ( $this->isPersistent )
+    {
+      $this->getPersistenceBehavior()->load($this, $this->getPersistenceId() );
+    }
   }
 
   /**
@@ -158,12 +127,27 @@ class qcl_core_Object extends qcl_core_BaseClass
   //-------------------------------------------------------------
 
   /**
-   * Getter for application
+   * Getter for application singleton instance.
+   * Returns null if no application exists.
    * @return qcl_application_Application
    */
   public function getApplication()
   {
-    return qcl_application_Application::getInstance();
+    static $application = null;
+    if ( is_null( $application ) )
+    {
+      if ( defined("APPLICATION_NAME") )
+      {
+        require_once APPLICATION_NAME . "/Application.php";
+        $appClass = APPLICATION_NAME . "_Application";
+        $application = qcl_getInstance( $appClass );
+      }
+      elseif ( class_exists("qcl_application_Application") )
+      {
+        $application = qcl_application_Application::getInstance();
+      }
+    }
+    return $application;
   }
 
   //-------------------------------------------------------------
@@ -635,7 +619,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     {
       $error  = $server->getErrorBehavior();
       $error->setError( $number, htmlentities( stripslashes( $message ) ) );
-      $error->$error->SendAndExit( $this->optionalErrorResponseData() );
+      $error->sendAndExit( $this->optionalErrorResponseData() );
     }
     else
     {
@@ -756,7 +740,7 @@ class qcl_core_Object extends qcl_core_BaseClass
   }
 
   /**
-   * Dispatches a server event. Can be called statically.
+   * Dispatches a server event.
    * @param qcl_core_Object $target
    * @param qcl_event_type_Event $event
    * @return bool Whether the event was dispatched or not.
@@ -793,7 +777,7 @@ class qcl_core_Object extends qcl_core_BaseClass
   //-------------------------------------------------------------
 
   /**
-   * Translates a message. Can be called statically.
+   * Translates a message.
    * @return  String
    * @param   String  $msgId    Message id of the string to be translated
    * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
@@ -812,7 +796,7 @@ class qcl_core_Object extends qcl_core_BaseClass
 
   /**
    * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
-   * Can be called statically.
+   *
    *
    * @param string   $singularMessageId Message id of the singular form (may contain format strings)
    * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
@@ -830,13 +814,12 @@ class qcl_core_Object extends qcl_core_BaseClass
   // Serialization
   //-------------------------------------------------------------
 
-
   /**
    * Returns a string representation of the object that has purely informational
    * value
    * @return string
    */
-  public function toString()
+  public function __toString()
   {
     return "[" . $this->className() . " instance #" . $this->objectId() . "]";
   }
@@ -859,6 +842,83 @@ class qcl_core_Object extends qcl_core_BaseClass
     return var_export( $this, true );
   }
 
+  /**
+   * Serializes an array of public properties of this object
+   * @return string
+   */
+  public function serializeProperties()
+  {
+    $properties = array();
+    foreach ( array_keys( get_class_vars( $this->className() ) ) as $key )
+    {
+      if ( $key{0} != "_" )
+      {
+        $properties[$key] = $this->$key;
+      }
+    }
+    return serialize( $properties );
+  }
+
+  //-------------------------------------------------------------
+  // Persistence
+  //-------------------------------------------------------------
+
+  /**
+   * Getter for persistence behavior. Defaults to persistence in
+   * the session.
+   * @return qcl_persistence_behavior_IBehavior
+   */
+  function getPersistenceBehavior()
+  {
+    if ( ! class_exists("qcl_data_persistence_behavior_Session") )
+    {
+      require_once "qcl/data/persistence/behavior/Session.php";
+    }
+    return qcl_data_persistence_behavior_Session::getInstance();
+  }
+
+  /**
+   * Returns the id that is used to persist the object between
+   * requests. Defaults to the class name, so that each new
+   * object gets the content of the last existing object of the
+   * same class.
+   * @return string
+   */
+  function getPersistenceId()
+  {
+    return $this->className();
+  }
+
+  /**
+   * Save object if persistent
+   * @return void
+   */
+  function save()
+  {
+    if ( $this->isPersistent )
+    {
+      $this->getPersistenceBehavior()->save($this,$this->getPersistenceId());
+    }
+    else
+    {
+      $this->raiseError("Cannot save object - it is not persistent.");
+    }
+  }
+
+  //-------------------------------------------------------------
+  // Destructor
+  //-------------------------------------------------------------
+
+  /**
+   * Destructor. Saves object if persistent.
+   */
+  function __destruct()
+  {
+    if ( $this->isPersistent )
+    {
+      $this->save();
+    }
+  }
 }
 
 /*

@@ -78,7 +78,7 @@ class qcl_config_Controller
      * set key
      */
     $configModel = qcl_config_Db::getInstance();
-    $configModel->set( $key, $value );
+    $configModel->setKey( $key, $value );
 
     /*
      * result

@@ -662,7 +662,7 @@ class qcl_access_Controller
     /*
      * timeout
      */
-    $timeout = (int) either( $configModel->get("qcl.session.timeout"), 30*60 ); // timeout in seconds, defaults to 30 minutes
+    $timeout = (int) either( $configModel->getKey("qcl.session.timeout"), 30*60 ); // timeout in seconds, defaults to 30 minutes
     $seconds = (int) $activeUser->getSecondsSinceLastAction();
 
     //$this->debug("User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
