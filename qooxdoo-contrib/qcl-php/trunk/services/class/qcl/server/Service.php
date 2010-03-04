@@ -98,35 +98,20 @@ class qcl_server_Service
    * @see ServiceIntrospection::method_listServices()
    * @return array
    */
-  function method_listServices()
+  public function method_listServices()
   {
-    if ( phpversion() > 5 )
-    {
-      $serviceIntrospection = new ServiceIntrospection( $this );
-      return $serviceIntrospection->method_listServices();
-    }
-    else
-    {
-      trigger_error( "Introspection requires PHP5");
-    }
+    $serviceIntrospection = new ServiceIntrospection( $this );
+    return $serviceIntrospection->method_listServices();
   }
-
 
   /**
    * @see ServiceIntrospection::method_listMethods()
    * @return array
    */
-  function method_listMethods()
+  public function method_listMethods()
   {
-    if ( phpversion() > 5 )
-    {
-      $serviceIntrospection = new ServiceIntrospection( $this );
-      return $serviceIntrospection->method_listMethods();
-    }
-    else
-    {
-      trigger_error( "Introspection requires PHP5");
-    }
+    $serviceIntrospection = new ServiceIntrospection( $this );
+    return $serviceIntrospection->method_listMethods();
   }
 
   /**
@@ -134,17 +119,10 @@ class qcl_server_Service
    * @param string $method
    * @return array
    */
-  function method_methodSignature( $method )
+  public function method_methodSignature( $method )
   {
-    if ( phpversion() > 5 )
-    {
-      $serviceIntrospection = new ServiceIntrospection( $this );
-      return $serviceIntrospection->method_methodSignature( $method );
-    }
-    else
-    {
-      trigger_error( "Introspection requires PHP5");
-    }
+    $serviceIntrospection = new ServiceIntrospection( $this );
+    return $serviceIntrospection->method_methodSignature( $method );
   }
 
   /**
@@ -152,17 +130,10 @@ class qcl_server_Service
    * @param string $method
    * @return string
    */
-  function method_methodHelp( $method )
+  public function method_methodHelp( $method )
   {
-    if ( phpversion() > 5 )
-    {
-      $serviceIntrospection = new ServiceIntrospection( $this );
-      return $serviceIntrospection->method_methodHelp( $method );
-    }
-    else
-    {
-      trigger_error( "Introspection requires PHP5");
-    }
+    $serviceIntrospection = new ServiceIntrospection( $this );
+    return $serviceIntrospection->method_methodHelp( $method );
   }
 }
 ?>

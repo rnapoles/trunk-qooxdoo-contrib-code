@@ -23,14 +23,36 @@ class class_qcl_test_data_Persistence
   extends qcl_test_AbstractTestController
 {
 
+
+  /**
+   * Tests the persistence of an object.
+   * @return int
+   * @rpctest {
+   *   "label" : "The label in the menu",
+   *   "requestData" : {
+   *     "method" : "testPersistence"
+   *   },
+   *   "checkResult" : function( result )
+   *   {
+   *     var count = result.data;
+   *     if( parseInt(count) !== NaN && count > 0 )
+   *     {
+   *       return true;
+   *     }
+   *     return "Expected: number > 0, got: " + count;
+   *   }
+   * }
+   */
   function method_testPersistence()
   {
     $sessionId = $this->skipAuthentication ? null : qcl_access_Manager::getSessionId();
     $obj = new TestPersistence("TestPersistence", null, $sessionId );
     $this->info('Initialized $obj->foo = ' . $obj->foo);
-    $obj->foo = rand(0,100);
+    $obj->foo = rand(1,100);
     $this->info('Changing $obj->foo = ' . $obj->foo);
-    return $this->result();
+    unset( $obj );
+    $obj = new TestPersistence("TestPersistence", null, $sessionId );
+    return $obj->foo;
   }
 
   function method_testPersistenceLocking()
@@ -42,7 +64,52 @@ class class_qcl_test_data_Persistence
     return $this->result();
   }
 
-  function method_testServerProcessStatus($params)
+
+
+  /**
+   * Tests the persistence behavior mechanism
+   * @return object
+   * @rpctest {
+   *   "label" : "The label in the menu",
+   *   "requestData" : {
+   *     "method" : "testPersistenceBehavior"
+   *   },
+   *   "init" : function()
+   *   {
+   *     this.__persistenceCounter = 0;
+   *     return true;
+   *   },
+   *   "checkResult" : function( result )
+   *   {
+   *     var count = result.data;
+   *     if ( parseInt(count) == NaN )
+   *     {
+   *       return "Result is not a number";
+   *     }
+   *     if ( this.__persistenceCounter == 0 )
+   *     {
+   *       this.__persistenceCounter = count;
+   *       return "You need to run the test again to see if it worked";
+   *     }
+   *     this.__persistenceCounter++;
+   *     if ( count !== this.__persistenceCounter )
+   *     {
+   *       return "Expected: " + this.__persistenceCounter + ", got: " + count;
+   *     }
+   *     return true;
+   *   }
+   * }
+   */
+  function method_testPersistenceBehavior()
+  {
+    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
+    $obj = new TestPersistenceBehavior();
+    $obj->counter++;
+    $this->info("Count:" . $obj->counter );
+    return $obj->counter;
+  }
+
+ function method_testServerProcessStatus($params)
   {
     $id       = $params[0];
     $continue = $params[1];
@@ -115,15 +182,5 @@ class class_qcl_test_data_Persistence
 
   }
 
-  function method_testPersistenceBehavior()
-  {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
-    $obj = new TestPersistenceBehavior();
-    $obj->counter++;
-    $this->info("Count:" . $obj->counter );
-    //$obj->save();
-    return $obj->counter;
-  }
 }
-
 ?>
