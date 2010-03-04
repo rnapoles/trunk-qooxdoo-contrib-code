@@ -357,5 +357,43 @@ qx.core.Init.getApplication().setTestData(
 //      return "Response is not a date!";
       return true;
     }
-  }
+  },
+  "qooxdoo.test.getError":{
+    "visible":false,
+    "requestData":{
+      "method":"getError"
+    },
+    "params":[
+      
+    ]
+  },
+  
+  /**
+   * Load server-generated class tests
+   */
+  loadClassTests : 
+  {
+    label : "Load and execute all class tests (qcl only)",
+    execute : function()
+    {
+      var console = this.getActiveConsole();
+      console.sendRequest({
+        "method" : "rpcConsoleClassTestJson"
+      },
+      function(result)
+      {
+        try
+        {
+          var data = eval( result.result.data );
+          var service = this.getActiveConsole().getRequestModel().getService();
+        } 
+        catch(e){alert(e)}
+        for (var name in data)
+        { 
+          this.getTestData()[name] = data[name];
+        }
+        this.runTests( service + ".test*");
+      },this);
+    }
+  } 
 });
