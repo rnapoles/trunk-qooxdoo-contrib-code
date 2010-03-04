@@ -32,25 +32,64 @@
 class ServiceIntrospection
 {
 
-  public $className;
+
+  /**
+   * The service object to introspect
+   * @var object
+   */
+  private $_serviceObject;
 
   /**
    * Constructor.
-   * @param object|string $class Object or class name introspect
+   * @param object|string|null $value Object or class name introspect. If not given,
+   *   introspect the extending class.
    * @return void
    */
-  function __construct( $class=null )
+  function __construct( $value=null )
   {
-    $this->className = is_object( $class) ? get_class( $class ) : get_class( $this );
+    if ( is_object( $value ) )
+    {
+      $this->_serviceObject = $value;
+    }
+    elseif ( is_string( $value ) )
+    {
+      $this->_serviceObject = new $value;
+    }
+    elseif ( get_class( $this ) != __CLASS__ )
+    {
+      $this->serviceObject = $this;
+    }
+    else
+    {
+      trigger_error("Invalid use of ServiceIntrospection. You must either extend the class or pass a class name or an instance of a service.");
+    }
+  }
+
+  /**
+   * Getter for the class name of the introspected service object
+   * @return string
+   */
+  public function getClassName()
+  {
+    return get_class( $this->getServiceObject() );
+  }
+
+  /**
+   * Getter for the introspected service object
+   * @return string
+   */
+  public function getServiceObject()
+  {
+    return $this->_serviceObject;
   }
 
   /**
    * Returns the name of the current service for use in JsonRpc requests.
    * @return string
    */
-  function getServiceName()
+  public function getServiceName()
   {
-    return str_replace("_",".", substr( $this->className, strlen(JsonRpcClassPrefix) ) );
+    return str_replace("_",".", substr( $this->getClassName(), strlen(JsonRpcClassPrefix) ) );
   }
 
   /**
@@ -58,9 +97,9 @@ class ServiceIntrospection
    * if the class name mirrors the directory structure (foo_bar_baz == foo/bar/baz.php)
    * @return string
    */
-  function getFilePath()
+  public function getFilePath()
   {
-    return str_replace("_","/", substr( $this->className, strlen(JsonRpcClassPrefix) ) ) . ".php";
+    return str_replace("_","/", substr( $this->getClassName(), strlen(JsonRpcClassPrefix) ) ) . ".php";
   }
 
   /**
@@ -70,7 +109,7 @@ class ServiceIntrospection
    * @param string $method
    * @return string
    */
-  function getMethodName ( $method )
+  public function getMethodName ( $method )
   {
     return JsonRpcMethodPrefix . $method;
   }
@@ -81,7 +120,7 @@ class ServiceIntrospection
    * @param string $method_name
    * @return bool
    */
-  function isServiceMethodName ( $method_name )
+  public function isServiceMethodName ( $method_name )
   {
     return (substr( $method_name, 0, strlen(JsonRpcMethodPrefix)) == JsonRpcMethodPrefix);
   }
@@ -92,9 +131,9 @@ class ServiceIntrospection
    * @param string $method
    * @return bool
    */
-  function hasServiceMethod ( $method )
+  public function hasServiceMethod ( $method )
   {
-    return method_exists( $this, $this->getMethodName( $method ) );
+    return method_exists( $this->getServiceObject(), $this->getMethodName( $method ) );
   }
 
   /**
@@ -105,12 +144,24 @@ class ServiceIntrospection
    * @return void
    * @throws JsonRpcError
    */
-  function checkServiceMethod ( $method )
+  public function checkServiceMethod ( $method )
   {
     if ( ! $this->hasServiceMethod( $method ) )
     {
-      throw new JsonRpcError(JsonRpcError_Origin_Server, "Method '$method' is invalid or does not exist.");
+      throw new JsonRpcError("Method '$method' is invalid or does not exist.",JsonRpcError_Origin_Server);
     }
+  }
+
+  /**
+   * Returns the doc comment of the given method
+   * @param strign $method
+   * @return string
+   */
+  public function getDocComment( $method )
+  {
+    $this->checkServiceMethod( $method );
+    $method = new ReflectionMethod( $this->getClassName(), $this->getMethodName( $method ) );
+    return $method->getDocComment();
   }
 
   /**
@@ -119,9 +170,10 @@ class ServiceIntrospection
    * etc.
    *
    * @param $docComment
+   * @todo rewrite more elegantly
    * @return unknown_type
    */
-  function __analyzeDocComment( $docComment )
+  public static function analyzeDocComment( $docComment )
   {
     $params = array();
     $return = "";
@@ -159,16 +211,16 @@ class ServiceIntrospection
       }
     }
     return array(
-      "doc"    => trim($doc),
-      "params" => $params,
-      "return" => trim($return)
+      "doc"     => trim($doc),
+      "params"  => $params,
+      "return"  => trim($return)
     );
   }
 
   /**
    * Extracts the javascript type from a docstring section
    */
-  function __extractJavascriptType( $str )
+  public static function extractJavascriptType( $str )
   {
     $parts = explode(" ", $str);
     switch( $parts[0] )
@@ -191,7 +243,7 @@ class ServiceIntrospection
    * Lists all the services available in a directory.
    * @return array
    */
-  function method_listServices()
+  public function method_listServices()
   {
 
     $services = array();
@@ -221,9 +273,9 @@ class ServiceIntrospection
    * This method returns a list of the methods the server has, by name.
    * @return array Array of method names
    */
-  function method_listMethods()
+  public function method_listMethods()
   {
-    $class = new ReflectionClass( $this->className );
+    $class = new ReflectionClass( $this->getClassName() );
     $methods = array();
     foreach( $class->getMethods() as $method )
     {
@@ -256,17 +308,15 @@ class ServiceIntrospection
    * result, the rest telling the types of the method's parameters and the
    * description of the parameter, separated by space, in order.
    */
-  function method_methodSignature( $method )
+  public function method_methodSignature( $method )
   {
-    $this->checkServiceMethod( $method );
-    $method = new ReflectionMethod( $this->className, $this->getMethodName( $method ) );
-    $docComment = $method->getDocComment();
-    $signature  = $this->__analyzeDocComment( $docComment );
-    $returnType = $this->__extractJavascriptType( $signature['return'] );
+    $docComment = $this->getDocComment( $method );
+    $signature  = self::analyzeDocComment( $docComment );
+    $returnType = self::extractJavascriptType( $signature['return'] );
     $paramTypes = array();
     foreach( $signature['params']  as $param )
     {
-      $paramTypes[] = $this->__extractJavascriptType( $param );
+      $paramTypes[] = self::extractJavascriptType( $param );
     }
     return array(array_merge(array( $returnType ),$paramTypes));
   }
@@ -280,19 +330,19 @@ class ServiceIntrospection
    * @param string $method The name of the method
    * @return string The documentation text of the method.
    */
-  function method_methodHelp( $method )
+  public function method_methodHelp( $method )
   {
     $this->checkServiceMethod( $method );
-    $method = new ReflectionMethod( $this->className, JsonRpcMethodPrefix . $method );
+    $method = new ReflectionMethod( $this->getClassName(), JsonRpcMethodPrefix . $method );
     $docComment = $method->getDocComment();
     $docComment = str_replace(array(" *","/**","*/"),"",$docComment);
     return $docComment;
-//    $signature = $this->_analyzeDocComment( $docComment );
+//    $signature = self::analyzeDocComment( $docComment );
 //    return $signature['doc'];
   }
 }
 
-/*
+/**
  * add capability
  */
 require_once dirname(__FILE__) . "/services/system.php";
