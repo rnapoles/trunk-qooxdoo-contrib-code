@@ -170,6 +170,9 @@ class JsonRpcServer extends AbstractServer
       $jsonRpcError =  $this->getErrorBehavior();
       $jsonRpcError->setError( $e->getCode(), $msg );
       $jsonRpcError->sendAndExit();
+
+      // shouldn't get here
+      exit;
     }
   }
 
@@ -359,8 +362,8 @@ class JsonRpcServer extends AbstractServer
   }
 
   /**
-   * Setup a PHP4-style error handling
-   * see http://forums.knownhost.com/showthread.php?p=5290
+   * Setup error handling to prevent PHP from messing up the json
+   * response.
    */
   function setupErrorHandling()
   {
@@ -397,10 +400,12 @@ class JsonRpcServer extends AbstractServer
      * Determine error type
      * @todo: remove those which are not captured by set_error_handler()
      */
+    $includeBacktrace = false;
     switch($errno)
     {
       case E_ERROR:
         $errtype= "Error";
+        $includeBacktrace = true;
         break;
 
       case E_WARNING:
@@ -413,6 +418,7 @@ class JsonRpcServer extends AbstractServer
 
       case E_USER_ERROR:
         $errtype= "User Error";
+        $includeBacktrace = true;
         break;
 
       case E_USER_WARNING:
@@ -432,13 +438,19 @@ class JsonRpcServer extends AbstractServer
         break;
 
       case E_DEPRECATED:
-        $errtype= "Recoverable Error";
+        $errtype= "Deprecated Error";
         break;
 
       default:
         $errtype= "Unknown error ($errno)";
         break;
     }
+
+    /*
+     * respect error_reporting level
+     */
+    $errno = $errno & error_reporting();
+    if ($errno == 0) return true;
 
     /*
      * Error message
@@ -448,13 +460,7 @@ class JsonRpcServer extends AbstractServer
     /*
      * log error message
      */
-    JsonRpcServer::logError( $errmsg );
-
-    /*
-     * respect error_reporting level
-     */
-    $errno = $errno & error_reporting();
-    if ($errno == 0) return true;
+    $this->logError( $errmsg, $includeBacktrace );
 
     /*
      * return jsonified error message
@@ -463,16 +469,27 @@ class JsonRpcServer extends AbstractServer
     $this->getErrorBehavior()->sendAndExit();
 
     // never gets here
+    exit;
   }
 
   /**
-   * Hook for subclasses to locally log the error message
-   * @param $msg
-   * @return unknown_type
+   * Hook for subclasses to locally log the error message. By default,
+   * log to path in JsonRpcDebugFile constant, if it exists, otherwise
+   * to system log.
+   * @param string $msg Error Message
+   * @param bool $includeBacktrace Not implemented.
+   * @return void
    */
-  function logError( $msg )
+  function logError( $msg, $includeBacktrace = false )
   {
-    @error_log( $msg . "\n", 3, JsonRpcDebugFile );
+    if ( file_exists( JsonRpcDebugFile ) && is_writable( JsonRpcDebugFile ) )
+    {
+      error_log( $msg . "\n", 3, JsonRpcDebugFile );
+    }
+    else
+    {
+      error_log( $msg . "\n" );
+    }
   }
 }
 ?>

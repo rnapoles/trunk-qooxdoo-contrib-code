@@ -439,7 +439,7 @@ class AbstractServer
     {
       trigger_error("Accessibility behavior object must subclass AccessibilityBehavior");
     }
-    $this->accessibilityBehavior =& $object;
+    $this->accessibilityBehavior = $object;
   }
 
   /**
@@ -485,7 +485,7 @@ class AbstractServer
      * error behavior
      * @todo this could be rewritten using interfaces
      */
-    $errorBehavior =& $this->getErrorBehavior();
+    $errorBehavior = $this->getErrorBehavior();
     if ( ! is_a( $errorBehavior, "AbstractError" ) )
     {
       trigger_error("No valid error behavior instance!");
@@ -495,7 +495,7 @@ class AbstractServer
      * accessibility behavior
      * @todo this could be rewritten using interfaces
      */
-    $accessibilityBehavior =& $this->getAccessibilityBehavior();
+    $accessibilityBehavior = $this->getAccessibilityBehavior();
     if ( ! $accessibilityBehavior )
     {
       trigger_error("No accessibility behavior!");
@@ -585,8 +585,8 @@ class AbstractServer
      * instantiate service
      */
     $this->debug("Instantiating service class '{$this->serviceClass}'.");
-    $serviceObject =& $this->getServiceObject( $this->serviceClass );
-    $this->serviceObject =& $serviceObject;
+    $serviceObject = $this->getServiceObject( $this->serviceClass );
+    $this->serviceObject = $serviceObject;
 
     /*
      * check accessibility and abort if access is denied
@@ -694,11 +694,10 @@ class AbstractServer
     {
       if (preg_match("#^[a-zA-Z]#", $serviceComponents[$i]) === false)
       {
-        $error->SetError(
-        JsonRpcError_IllegalService,
-              "A service name component does not begin with a letter"
-              );
-              return false;
+        throw new AbstractError(
+          "A service name component does not begin with a letter",
+          JsonRpcError_IllegalService
+        );
       }
     }
 
@@ -765,11 +764,10 @@ class AbstractServer
      */
 
     $serviceName = implode( ".", $serviceComponents );
-    $this->SetError(
-    JsonRpcError_ServiceNotFound,
-      "Service `$serviceName` not found."
+    throw new AbstractError(
+      "Service `$serviceName` not found.",
+      JsonRpcError_ServiceNotFound
     );
-    return false;
   }
 
   /**
@@ -824,13 +822,10 @@ class AbstractServer
     /*
      * class name was not found
      */
-    $this->SetError(
-    JsonRpcError_ClassNotFound,
-      "Service class `" .
-    $serviceName .
-      "` not found."
-      );
-      return false;
+    throw new AbstractError(
+      "Service class `" . $serviceName . "` not found.",
+      JsonRpcError_ClassNotFound
+    );
   }
 
   /**
@@ -920,7 +915,7 @@ class AbstractServer
    */
   function callServiceMethod( $serviceObject, $method, $params )
   {
-    $errorBehavior =& $this->getErrorBehavior();
+    $errorBehavior = $this->getErrorBehavior();
     try
     {
       /*
