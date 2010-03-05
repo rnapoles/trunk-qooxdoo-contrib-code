@@ -18,7 +18,7 @@ encoding  = utf8
 dsnschema = pear
 
 ;; database.type
-:: the database type. currently, only mysql is supported
+;; the database type. currently, only mysql is supported
 type = mysql
 
 ;; database.host
