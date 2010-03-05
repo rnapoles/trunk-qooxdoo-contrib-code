@@ -19,11 +19,9 @@
 ************************************************************************ */
 
 require_once "qcl/application/Application.php";
-require_once "qcl/util/registry/Persist.php";
 require_once "qcl/access/model/User.php";
 require_once "qcl/access/model/Role.php";
 require_once "qcl/access/model/Permission.php";
-
 
 /**
  * Main application class
@@ -32,69 +30,80 @@ require_once "qcl/access/model/Permission.php";
 class access_Application
   extends qcl_application_Application
 {
+
+
   /**
-   * Return singleton instance of the application
-   * return access_Application
+   * Return the application singleton instance. Actually returns
+   * the parents class's singleton instance (qcl_application_Application),
+   * so that any method can access the current application instance
+   * without knowing its class name by using
+   * qcl_application_Application::getInstance().
+   *
+   * @return access_Application
    */
-  function &getInstance()
+  static function getInstance()
   {
-    return parent::getInstance(__CLASS__);
+    return parent::getInstance();
   }
 
   /**
    * Starts the application and initializes some singleton
    * objects
    */
-  function start()
+  public function start()
   {
-    /*
-     * create the application instance
-     */
-    access_Application::getInstance();
-
     /*
      * call parent method
      */
     parent::start();
 
     /*
+     * logging level
+     */
+    $this->getLogger()->setFilterEnabled(array("propertyModel","xml"),true);
+
+
+    /*
      * Load initial data into models.
      */
-    if ( ! qcl_util_registry_Persist::has("dataImported") )
+    $configModel = $this->getConfigModel();
+    if (  ! $configModel->hasKey("initialized") )
     {
-      qcl_application_Application::info("*** Importing initial data...");
 
       /*
        * load config data, this has to be done first
        */
-      $configModel =& qcl_config_Db::getInstance();
+      $this->info("*** Importing config data...");
       $configModel->import( "access/data/Config.data.xml" );
 
       /*
        * load permission data
        */
-      $permissionModel =& qcl_access_model_Permission::getInstance();
+      $this->info("*** Importing permission data...");
+      $permissionModel = $this->getAccessManager()->getPermissionModel();
       $permissionModel->import( "access/data/Permission.data.xml" );
 
       /*
        * load user data
        */
-      $userModel =& qcl_access_model_User::getInstance();
+      $this->info("*** Importing user data...");
+      $userModel = $this->getAccessManager()->getUserModel();
       $userModel->import( "access/data/User.data.xml");
 
       /*
        * load role data and link it to permissions and users
        */
-      $roleModel =& qcl_access_model_Role::getInstance();
+      $this->info("*** Importing role data...");
+      $roleModel = $this->getAccessManager()->getRoleModel();
       $roleModel->import( "access/data/Role.data.xml");
       $roleModel->importLinkData( "access/data/link_roles_permissions.data.xml" );
       $roleModel->importLinkData( "access/data/link_roles_users.data.xml" );
 
-
       /*
        * set flag that data has been imported
        */
-      qcl_util_registry_Persist::set("dataImported",true);
+       $configModel->createKey("initialized","boolean");
+       $configModel->setKey("initialized",true);
     }
   }
 }

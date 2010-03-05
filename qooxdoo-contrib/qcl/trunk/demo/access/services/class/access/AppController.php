@@ -18,20 +18,34 @@
 
 ************************************************************************ */
 
-require_once "qcl/data/controller/Controller.php";
+require_once "qcl/access/SessionController.php";
 
 /**
  * Application methods
  */
-class class_access_ApplicationController
-  extends qcl_data_controller_Controller
+class class_access_AppController
+  extends qcl_access_SessionController
 {
-  function method_testAccess()
+
+  /**
+   * Returns the current application
+   * @return access_Application
+   */
+  function getApplication()
+  {
+    require_once "access/Application.php";
+    return access_Application::getInstance();
+  }
+
+
+  /**
+   * @return void
+   */
+  public function method_testAccess()
   {
     return array(
       'viewRecord'  => $this->hasPermission("viewRecord"),
       'manageUsers' => $this->hasPermission("manageUsers")
-
     );
   }
 }

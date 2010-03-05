@@ -17,29 +17,26 @@
    *  Christian Boulanger (cboulanger)
 
 ************************************************************************ */
-
 /**
- * Sample application to show qcl access control system, using
- * RpcPhp trunk version and qcl library
+ * Usually, there is no need to change anything in this file
  */
 
 /*
- * configure constants
+ * Configure constants & runtime settings
  */
 require "config.php";
 
 /*
- * start main application
- */
-require_once "access/Application.php";
-access_Application::start();
-
-/*
- * start server with paths to the service classes
+ * Load classes
  */
 require_once "qcl/server/Server.php";
-qcl_server_Server::start(array(
+
+/*
+ * Start server with paths to the service classes, i.e.
+ * qcl and application classes
+ */
+qcl_server_Server::run( array(
   QCL_CLASS_PATH,
-  APPLICATION_CLASS_PATH )
-);
+  APPLICATION_CLASS_PATH
+) );
 ?>
