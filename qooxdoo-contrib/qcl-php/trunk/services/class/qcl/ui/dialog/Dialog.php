@@ -46,7 +46,7 @@ class qcl_ui_dialog_Dialog
     else
     {
       $this->getApplication()->getServer()->forceResponse( array(
-        'id'     => qcl_server_Server::getServerObject()->getId(),
+        'id'     => qcl_server_Server::getInstance()->getServerObject()->getId(),
         'error'  => null,
         'result' => array(
           'messages' => array(

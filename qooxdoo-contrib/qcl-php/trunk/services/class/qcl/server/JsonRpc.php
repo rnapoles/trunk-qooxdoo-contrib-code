@@ -55,9 +55,23 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
 
   /**
+   * Constructor
+   */
+  function __construct()
+  {
+
+    /*
+     * Initialize the server, including error
+     * catching etc.
+     */
+    $this->initializeServer();
+
+  }
+
+  /**
    * Starts a singleton instance of the server. Must be called statically.
    */
-  function run()
+  public static function run()
   {
     $_this = self::getInstance();
     $_this->start();
@@ -67,7 +81,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Return singleton instance of the server
    * return JsonRpcServer
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance( __CLASS__ );
   }
@@ -76,7 +90,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Returns the current controller instance, if any.
    * @return qcl_data_controller_Controller
    */
-  function getController()
+  public function getController()
   {
     return $this->_controller;
   }
@@ -85,7 +99,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Getter for the access manager
    * @return qcl_access_Manager
    */
-  function getAccessManager()
+  public function getAccessManager()
   {
     return qcl_access_Manager::getInstance();
   }
@@ -94,7 +108,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Getter for response object
    * @return qcl_server_Response
    */
-  function getResponseObject()
+  public function getResponseObject()
   {
     return qcl_server_Response::getInstance();
   }
@@ -117,7 +131,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Getter for event dispatcher
    * @return qcl_event_Dispatcher
    */
-  function getEventDispatcher()
+  public function getEventDispatcher()
   {
     return qcl_event_Dispatcher::getInstance();
   }
@@ -126,30 +140,16 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Getter for message bus object
    * @return qcl_event_message_Bus
    */
-  function getMessageBus()
+  public function getMessageBus()
   {
     return qcl_event_message_Bus::getInstance();
-  }
-
-  /**
-   * Constructor
-   */
-  function __construct()
-  {
-
-    /*
-     * Initialize the server, including error
-     * catching etc.
-     */
-    $this->initializeServer();
-
   }
 
   /**
    * Override start method.
    * @see JsonRpcServer::start()
    */
-  function start()
+  public function start()
   {
     /*
      * if this is a file upload, call upload method and exit
@@ -180,7 +180,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @override
    * @see JsonRpcServer::getServiceObject()
    */
-  function getServiceObject( $className )
+  public function getServiceObject( $className )
   {
     /*
      * get service object from parent method
@@ -217,7 +217,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * This will not only check if the method exists, but also
    * check
    */
-  function checkServiceMethod( $serviceObject, $method )
+  public function checkServiceMethod( $serviceObject, $method )
   {
     if ( method_exists( $serviceObject, "hasMixinMethod" )
       and $serviceObject->hasMixinMethod( $method ) )
@@ -233,7 +233,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @see qcl_access_Manager::controlAccess()
    * @return void
    */
-  function checkAccessibility( $serviceObject, $method )
+  public function checkAccessibility( $serviceObject, $method )
   {
     $this->getAccessManager()->controlAccess( $serviceObject, $method );
   }
@@ -244,7 +244,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @param mixded $output
    * @return string
    */
-  function formatOutput( $data )
+  public function formatOutput( $data )
   {
     /*
      * response object
@@ -284,7 +284,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * 1) The calling client provides a valid session id in the URL ("?sessionId=a8dab9das...")
    * 2) If this is not provided, the server responds by presenting a http authentication request
    */
-  function uploadFile()
+  public function uploadFile()
   {
     $this->info("Starting upload ...");
 
@@ -407,7 +407,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * Download a file, given its datasource
    * @return unknown_type
    */
-  function downloadFile()
+  public function downloadFile()
   {
 
     //$this->debug("Starting download ...");
@@ -514,7 +514,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @param $msg
    * @return void
    */
-  function echoReply ( $msg )
+  public function echoReply ( $msg )
   {
     echo "<FONT COLOR=GREEN>$msg</FONT>";
   }
@@ -524,7 +524,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @param $msg
    * @return unknown_type
    */
-  function echoWarning ( $msg )
+  public function echoWarning ( $msg )
   {
    echo "<FONT COLOR=RED>$msg</FONT>";
   }
@@ -534,7 +534,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @param $msg
    * @return unknown_type
    */
-  function abort ( $msg )
+  public function abort ( $msg )
   {
     $this->warn( $msg );
     exit;
@@ -545,7 +545,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @param $str
    * @return void
    */
-  function _log ( $str )
+  private function _log ( $str )
   {
     if ( is_writable( QCL_LOG_FILE) )
     {
@@ -560,7 +560,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
   /**
    * Logs an informational message
    */
-  function info( $str )
+  public function info( $str )
   {
     $this->_log( "\qcl_server_JsonRpc: ".  $str . "\n");
   }
@@ -568,7 +568,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
   /**
    * Logs an informational message
    */
-  function warn( $str )
+  public function warn( $str )
   {
     $this->_log( "\nqcl_server_JsonRpc: *** WARN: ".  $str . "\n" );
   }
@@ -579,7 +579,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    * @param bool $includeBacktrace Whether a backtrace should be printed as well
    * @return void
    */
-  function logError( $msg, $includeBacktrace = false )
+  public function logError( $msg, $includeBacktrace = false )
   {
     $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg;
     if ( $includeBacktrace )

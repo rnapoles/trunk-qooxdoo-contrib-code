@@ -28,6 +28,11 @@ class qcl_core_BaseClass
    */
   private $_mixinlookup = array();
 
+  //-------------------------------------------------------------
+  // Property system
+  // @todo use behavior pattern to make property system pluggable
+  //-------------------------------------------------------------
+
   /**
    * Data on the properties of this object, similar to qooxdoo properties
    * @var array
@@ -53,7 +58,15 @@ class qcl_core_BaseClass
   {
     if ( ! $this->has( $property) )
     {
-      trigger_error("Class " . get_class($this) . " has no property '$property'" );
+      $msg = "Class " . get_class($this) . " has no property '$property'";
+      if ( is_a($this, "qcl_core_Object") )
+      {
+        $this->raiseError($msg);
+      }
+      else
+      {
+        trigger_error( $msg );
+      }
     }
   }
 

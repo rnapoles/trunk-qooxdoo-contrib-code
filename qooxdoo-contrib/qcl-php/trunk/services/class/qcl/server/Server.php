@@ -112,7 +112,7 @@ class qcl_server_Server extends qcl_core_Object
    */
   public function getController()
   {
-    return $this->getController();
+    return $this->getServerObject()->getController();
   }
 
   /**
@@ -122,7 +122,7 @@ class qcl_server_Server extends qcl_core_Object
    */
   public function getServerData( $key=null )
   {
-    return $this->getServerObj()->getServerData( $key );
+    return $this->getServerObject()->getServerData( $key );
   }
 
   /**

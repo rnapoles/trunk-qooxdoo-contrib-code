@@ -57,7 +57,7 @@ class qcl_access_SessionController
      */
     if ( ! $sessionId )
     {
-      $parentSessionId = qcl_server_Server::getServerData("parentSessionId");
+      $parentSessionId = qcl_server_Server::getInstance()->getServerData("parentSessionId");
 
       /*
        * Is this a sub-session of a parent session?
@@ -199,7 +199,7 @@ class qcl_access_SessionController
    */
   public function getSessionModel()
   {
-    return $this->getAccessManager()->getSessionModel();
+    return $this->getApplication()->getAccessManager()->getSessionModel();
   }
 
 
@@ -235,7 +235,7 @@ class qcl_access_SessionController
     $sessionModel->registerSession(
       $this->getSessionId(),
       $activeUser->getId(),
-      qcl_server_Server::getRemoteIp()
+      qcl_server_Server::getInstance()->getRemoteIp()
     );
 
     /*
@@ -362,7 +362,7 @@ class qcl_access_SessionController
     $sessionModel->insert(array(
       'sessionId'       => $sessionId,
       'userId'          => $userId,
-      'ip'              => qcl_server_Server::getRemoteIp(),
+      'ip'              => qcl_server_Server::getInstance()->getRemoteIp(),
       'parentSessionId' => $parentSessionId
     ));
 

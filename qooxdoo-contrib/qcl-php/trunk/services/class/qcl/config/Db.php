@@ -233,7 +233,8 @@ class qcl_config_Db
         if ( $this->foundNothing() )
         {
           $username = $userModel->username();
-          $this->raiseError("'$namedId' does not exist for user '$username' (get)");
+          $this->warn("'$namedId' does not exist for user '$username' (get)");
+          return null;
         }
       }
     }

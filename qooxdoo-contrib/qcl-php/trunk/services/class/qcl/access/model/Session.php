@@ -123,8 +123,7 @@ class qcl_access_model_Session
      * @todo this should all be done automatically through association
      * management
      */
-    require_once "qcl/event/message/Bus.php";
-    $msgModel   = qcl_event_message_Bus::getModel();
+    $msgModel = $this->getMessageBus()->getModel();
     if ( $msgModel )
     {
       $sessTable  = $this->getTableName();
@@ -173,7 +172,7 @@ class qcl_access_model_Session
     /*
      * delete messages belonging to session
      */
-    $msgModel   = qcl_event_message_Bus::getModel();
+    $msgModel = $this->getMessageBus()->getModel();
     $msgModel->updateWhere(
       array('markedDeleted' => 1),
       array('sessionId' => $sessionId)

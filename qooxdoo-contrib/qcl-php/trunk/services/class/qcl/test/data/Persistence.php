@@ -28,7 +28,6 @@ class class_qcl_test_data_Persistence
    * Tests the persistence of an object.
    * @return int
    * @rpctest {
-   *   "label" : "The label in the menu",
    *   "requestData" : {
    *     "method" : "testPersistence"
    *   },

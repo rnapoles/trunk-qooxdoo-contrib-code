@@ -67,7 +67,7 @@ class qcl_data_model_db_Abstract
    * or null if model is independent of a datasource
    * @return bool Success
    */
-  function initialize( $datasourceModel=null )
+  public function initialize( $datasourceModel=null )
   {
     /*
      * datasource model
@@ -89,7 +89,7 @@ class qcl_data_model_db_Abstract
    * Returns the database connection object for this model
    * @return qcl_data_db_type_Abstract
    */
-  function db()
+  public function db()
   {
     return $this->db;
   }
@@ -98,7 +98,7 @@ class qcl_data_model_db_Abstract
    * Returns the name of the table
    * @return string
    */
-  function table()
+  public function table()
   {
     return $this->table;
   }
@@ -118,7 +118,7 @@ class qcl_data_model_db_Abstract
    * handler. Otherwise, get connection data from framework
    * @return bool Success
    */
-  function connect()
+  public function connect()
   {
 
     /*
@@ -160,7 +160,7 @@ class qcl_data_model_db_Abstract
    * Returns the name of the column that holds the unique (numeric) id of this table.
    * @return string
    */
-  function getIdColumn()
+  public function getIdColumn()
   {
     return "id";
   }
@@ -170,7 +170,7 @@ class qcl_data_model_db_Abstract
    * @return string
    * @param string $property Property name
    */
-  function getColumnName ( $name )
+  public function getColumnName ( $name )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -179,7 +179,7 @@ class qcl_data_model_db_Abstract
    * Gets the name of the main data table
    * @return string
    */
-  function getTableName()
+  public function getTableName()
   {
     return $this->table;
   }
@@ -190,7 +190,7 @@ class qcl_data_model_db_Abstract
    * @param $table Table name
    * @return void
    */
-  function setTableName( $table )
+  public function setTableName( $table )
   {
     $this->table = $table;
     $this->initTransactionId();
@@ -201,7 +201,7 @@ class qcl_data_model_db_Abstract
    * initialized yet
    * @return void
    */
-  function initTransactionId()
+  public function initTransactionId()
   {
     $this->notImplemented(__CLASS__);
   }
@@ -210,7 +210,7 @@ class qcl_data_model_db_Abstract
    * Return the transaction id for this modes
    * @return int
    */
-  function getTransactionId()
+  public function getTransactionId()
   {
     $this->notImplemented(__CLASS__);
   }
@@ -219,7 +219,7 @@ class qcl_data_model_db_Abstract
    * Increment the transaction id for this model.
    * @return void
    */
-  function incrementTransactionId()
+  public function incrementTransactionId()
   {
     $this->notImplemented(__CLASS__);
   }
@@ -230,7 +230,7 @@ class qcl_data_model_db_Abstract
    * or an empty string if there is no datasource
    * @return string
    */
-  function getTablePrefix()
+  public function getTablePrefix()
   {
     $prefix = qcl_application_Application::getInstance()->getIniValue("database.tableprefix");
     $dsModel = $this->getDatasourceModel();
@@ -247,7 +247,7 @@ class qcl_data_model_db_Abstract
    * @param $index
    * @return boolean
    */
-  function hasIndex( $index )
+  public function hasIndex( $index )
   {
     return in_array( $index, $this->indexes() );
   }
@@ -257,7 +257,7 @@ class qcl_data_model_db_Abstract
    * which holds the records of this model
    * @return array
    */
-  function indexes()
+  public function indexes()
   {
     $db = $this->db();
     return $db->indexes( $this->table() );
@@ -273,7 +273,7 @@ class qcl_data_model_db_Abstract
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
    */
-  function findAll($orderBy=null, $properties=null )
+  public function findAll($orderBy=null, $properties=null )
   {
     return $this->findWhere(null, $orderBy, $properties );
   }
@@ -286,7 +286,7 @@ class qcl_data_model_db_Abstract
    * @param bool[optional, default false] If true, get only distinct values
    * @return array Array of values
    */
-  function findValues( $property, $where=null, $orderBy=null, $distinct=false )
+  public function findValues( $property, $where=null, $orderBy=null, $distinct=false )
   {
     $column = $this->getColumnName($property);
     $table = $this->table();
@@ -330,7 +330,7 @@ class qcl_data_model_db_Abstract
    * automatically generate the necessary join query.
    * @return array recordset
    */
-  function findBy( $propName, $value, $orderBy=null, $properties=null, $link=null  )
+  public function findBy( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {
     $colName = $this->getColumnName( $propName );
     $values = (array) $value;
@@ -356,7 +356,7 @@ class qcl_data_model_db_Abstract
    * @return array recordset
    * @todo this should be automatic by resolving the type from the schema xml
    */
-  function findLike( $propName, $value, $orderBy=null, $properties=null, $link=null  )
+  public function findLike( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {
     $colName = $this->getColumnName( $propName );
     $value   = $this->db->escape($value);
@@ -384,7 +384,7 @@ class qcl_data_model_db_Abstract
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $distinct=false )
+  public function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $distinct=false )
   {
 
     /*
@@ -631,7 +631,7 @@ class qcl_data_model_db_Abstract
    * @see qcl_data_model_xmlSchema_DbModel::findeWhere() for details
    * @return Array Array of db record sets
    */
-  function findById( $ids, $orderBy=null, $properties=null, $link=null )
+  public function findById( $ids, $orderBy=null, $properties=null, $link=null )
   {
     if ( ! is_numeric($ids) and !is_array($ids) )
     {
@@ -658,13 +658,9 @@ class qcl_data_model_db_Abstract
    * @param int $id
    * @return arrray()
    */
-  function load( $id, $requestId=null )
+  public function load( $id, $requestId=null )
   {
-    if ( ! is_int($id) )
-    {
-      $this->raiseError("Invalid id.");
-    }
-    return $this->findById( $id );
+    return $this->findById( (int) $id );
   }
 
   /**
@@ -676,7 +672,7 @@ class qcl_data_model_db_Abstract
    * @see qcl_data_model_xmlSchema_DbModel::findeWhere() for details
    * @return Array Array of db record sets
    */
-  function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )
+  public function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )
   {
     if ( !  $ids  )
     {
@@ -710,7 +706,7 @@ class qcl_data_model_db_Abstract
    * calling a search...() method.
    * @return array
    */
-  function _nextRecord()
+  public function _nextRecord()
   {
     return $this->db->nextRecord();
   }
@@ -724,7 +720,7 @@ class qcl_data_model_db_Abstract
    * @param string|array $where
    * @todo rename method name and rewrite this
    */
-  function toSql( $where )
+  public function toSql( $where )
   {
     if ( is_array($where) )
     {
@@ -800,7 +796,7 @@ class qcl_data_model_db_Abstract
    * @param int     $foreignId
    * @return int the id of the inserted or existing row
    */
-  function createIfNotExists( $namedId, $foreignId=null )
+  public function createIfNotExists( $namedId, $foreignId=null )
   {
     if ( $this->namedIdExists( $namedId ) )
     {
@@ -814,7 +810,7 @@ class qcl_data_model_db_Abstract
    * @param array|stdClass $data associative array with the column names as keys and the column data as values
    * @return int the id of the inserted row or 0 if the insert was not successful
    */
-  function insert( $data )
+  public function insert( $data )
   {
     /*
      * check arguments
@@ -872,7 +868,7 @@ class qcl_data_model_db_Abstract
    * @param bool        $keepTimestamp If true, do not overwrite the 'modified' timestamp
    * @return boolean success
    */
-  function update ( $data=null, $id=null, $keepTimestamp= false )
+  public function update ( $data=null, $id=null, $keepTimestamp= false )
   {
     /*
      * use cached record data?
@@ -922,7 +918,7 @@ class qcl_data_model_db_Abstract
    * @param string|array $where
    * @return result
    */
-  function updateWhere( $data, $where )
+  public function updateWhere( $data, $where )
   {
     /*
      * increment transaction id for this model
@@ -939,7 +935,7 @@ class qcl_data_model_db_Abstract
    * Checks wheter a record exists that matches a query
    * @param array|string $where Where query
    */
-  function exists( $where )
+  public function exists( $where )
   {
     return $this->db->exists( $this->table(), $this->toSql($where) );
   }
@@ -949,7 +945,7 @@ class qcl_data_model_db_Abstract
    * @param array $data
    * @return int id of record
    */
-  function replace( $data )
+  public function replace( $data )
   {
     /*
      * increment transaction id for this model
@@ -1015,7 +1011,7 @@ class qcl_data_model_db_Abstract
    * @param array $data
    * @return int The id of the existing or newly created record
    */
-  function insertOrUpdate( $data )
+  public function insertOrUpdate( $data )
   {
     /*
      * search for record based on id or row data
@@ -1073,14 +1069,11 @@ class qcl_data_model_db_Abstract
     return $id;
   }
 
-
-
-
   /**
    * Deletes the currently loaded record or one or more records in a table identified by id
    * @param mixed[optional] $ids (array of) record id(s)
    */
-  function delete ( $ids=null )
+  public function delete ( $ids=null )
   {
     if ( is_null ($ids) )
     {
@@ -1103,7 +1096,7 @@ class qcl_data_model_db_Abstract
    * @param string  $where where condition
    * @return void
    */
-  function deleteWhere ( $where )
+  public function deleteWhere ( $where )
   {
     /*
      * increment transaction id for this model
@@ -1122,7 +1115,7 @@ class qcl_data_model_db_Abstract
    * @param mixed $value
    * @return void
    */
-  function deleteBy ( $property, $value )
+  public function deleteBy ( $property, $value )
   {
     /*
      * increment transaction id for this model
@@ -1141,7 +1134,7 @@ class qcl_data_model_db_Abstract
    * Deletes all rows of a table
    * @return void
    */
-  function truncate()
+  public function truncate()
   {
     /*
      * increment transaction id for this model
@@ -1161,7 +1154,7 @@ class qcl_data_model_db_Abstract
    * @param string  $where where condition
    * @return int
    */
-  function countWhere ( $where )
+  public function countWhere ( $where )
   {
     return (int) $this->db->countWhere ( $this->table(), $this->toSql($where) );
   }
@@ -1174,7 +1167,7 @@ class qcl_data_model_db_Abstract
    * Returns number of records in the database
    * @return int
    */
-  function countRecords()
+  public function countRecords()
   {
     $table = $this->table();
     return (int) $this->db->getValue("SELECT COUNT(*) FROM `$table`");
@@ -1184,7 +1177,7 @@ class qcl_data_model_db_Abstract
    * Returns number of records in the last query resultset
    * @return int
    */
-  function countResult()
+  public function countResult()
   {
     return count( $this->getResult() );
   }
@@ -1193,7 +1186,7 @@ class qcl_data_model_db_Abstract
    * Returns the lowest id number
    * @return int
    */
-  function minId()
+  public function minId()
   {
     $idCol = $this->getColumnName('id');
     $table = $this->table();
@@ -1204,7 +1197,7 @@ class qcl_data_model_db_Abstract
    * Returns the highest id number
    * @return int
    */
-  function maxId()
+  public function maxId()
   {
     $idCol = $this->getColumnName('id');
     $table = $this->table();
@@ -1221,7 +1214,7 @@ class qcl_data_model_db_Abstract
    * @return void
    * @todo rewrite without raw sql
    */
-  function updateTimestamp( $ids=null )
+  public function updateTimestamp( $ids=null )
   {
     if ( is_null($ids) )
     {
@@ -1248,7 +1241,7 @@ class qcl_data_model_db_Abstract
    * gets the current timestamp from the database
    * @return string
    */
-  function getTimestamp()
+  public function getTimestamp()
   {
     return $this->db->getValue("SELECT NOW()");
   }
@@ -1262,7 +1255,7 @@ class qcl_data_model_db_Abstract
    * @param string $timestamp Timestamp value
    * @return float
    */
-  function getSecondsSince($timestamp)
+  public function getSecondsSince($timestamp)
   {
     return $this->db->getValue("
       SELECT TIME_TO_SEC(TIMEDIFF(NOW(),'$timestamp'));
@@ -1274,7 +1267,7 @@ class qcl_data_model_db_Abstract
    * @todo rewrite withoug raw sql
    * @return array
    */
-  function getModificationList()
+  public function getModificationList()
   {
     $table = $this->table();
     if ( ! $this->hasProperty("modified") )

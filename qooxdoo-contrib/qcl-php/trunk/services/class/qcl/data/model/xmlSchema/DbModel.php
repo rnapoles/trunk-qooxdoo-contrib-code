@@ -81,14 +81,6 @@ class qcl_data_model_xmlSchema_DbModel
   private $linkNodes = array();
 
   /**
-   * An associated array having the names of all alias as
-   * keys and the property names as value.
-   * @access private
-   * @var array
-   */
-  private $aliases = array();
-
-  /**
    * An associated array, having the name of the property
    * as keys and their alias as value
    * @var unknown_type
@@ -852,7 +844,7 @@ class qcl_data_model_xmlSchema_DbModel
       foreach( $aliases->children() as $alias )
       {
         $a = $alias->attributes();
-        $aliasMap[ (string) $a['for']] = $modelXml->getData($alias);
+        $aliasMap[ (string) $a['for']] = (string) $alias;
       }
     }
 

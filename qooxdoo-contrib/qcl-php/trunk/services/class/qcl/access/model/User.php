@@ -95,7 +95,7 @@ class qcl_access_model_User extends qcl_access_model_Common
 
   /**
    * Creates a new anonymous guest user
-   * @return void
+   * @return int user id of the new user record
    */
   public function createAnonymous()
   {
@@ -107,7 +107,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * role model
      */
-    $roleModel  = qcl_access_model_Role::getInstance();
+    $roleModel = qcl_access_model_Role::getInstance();
     $roleModel->load(1); // the anonymous role is ALWAYS the first role defined
     if ( $roleModel->foundNothing() )
     {
@@ -115,11 +115,19 @@ class qcl_access_model_User extends qcl_access_model_Common
     }
 
     $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
-    $this->create($username);
+    $id = $this->create($username);
+
+    if ( ! $id )
+    {
+      $this->raiseError("Failed to create anonmous user");
+    }
+
     $this->linkWith($roleModel);
     $this->set("anonymous",true);
     $this->set("name",$this->tr("Anonymous User"));
     $this->save();
+
+    return $id;
   }
 
   /**
@@ -132,7 +140,7 @@ class qcl_access_model_User extends qcl_access_model_Common
     $u = QCL_ANONYMOUS_USER_PREFIX;
     $l = strlen($u);
     $this->findWhere("
-      SUBSTR(`username`,1,$l) = '$u' AND
+      SUBSTR(`namedId`,1,$l) = '$u' AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
         OR `lastAction` IS NULL )
     ",null,"id");
@@ -168,6 +176,7 @@ class qcl_access_model_User extends qcl_access_model_Common
 
     /*
      * delete config data
+     * @todo -> this should be automatically linked in the model schema
      */
     $configModel = $this->getApplication()->getConfigModel();
     $configModel->deleteByUserId( $this->getId() );
