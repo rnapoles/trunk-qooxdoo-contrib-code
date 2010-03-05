@@ -48,10 +48,6 @@
         </index>
       </indexes>
       
-      <aliases>
-        <alias for="namedId">username</alias>
-      </aliases>
-      
     </definition>
     
     

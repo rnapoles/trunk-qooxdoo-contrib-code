@@ -40,7 +40,7 @@ class qcl_access_Controller
    * Methods in this controller are not checked for prior
    * authentication
    */
-  var $skipAuthentication = true;
+  public $skipAuthentication = true;
 
   /**
    * The currently active user, determined from request or
@@ -48,20 +48,20 @@ class qcl_access_Controller
    * @access private
    * @var qcl_access_model_User
    */
-  var $_activeUser = null;
+  protected $_activeUser = null;
 
   /**
    * Map pairing permission names with local aliases
    * @var array
    */
-  var $permisssionAliasMap;
+  public $permisssionAliasMap;
 
   /**
    * Gets the user data model
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_User
    */
-  function getUserModel( $id=null )
+  public function getUserModel( $id=null )
   {
     $userModel = qcl_access_model_User::getInstance();
     if ( $id ) $userModel->load( $id );
@@ -73,7 +73,7 @@ class qcl_access_Controller
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_Permission
    */
-  function getPermissionModel( $id = null)
+  public function getPermissionModel( $id = null)
   {
     $permModel = qcl_access_model_Permission::getInstance();
     if ( $id ) $permModel->load( $id );
@@ -85,29 +85,11 @@ class qcl_access_Controller
    * @param int[optional] $id Load record if given
    * @return qcl_access_model_Role
    */
-  function getRoleModel( $id=null )
+  public function getRoleModel( $id=null )
   {
     $roleModel = qcl_access_model_Role::getInstance();
     if ( $id ) $roleModel->load( $id );
     return $roleModel;
-  }
-
-  /**
-   * Gets the role data model
-   * @return qcl_access_model_Role
-   */
-  function getConfigModel()
-  {
-    return qcl_config_Manager::getModel();
-  }
-
-  /**
-   * Getter for access manager
-   * @return qcl_access_Manager
-   */
-  function getAccessManager()
-  {
-    return qcl_access_Manager::getInstance();
   }
 
   /**
@@ -117,7 +99,7 @@ class qcl_access_Controller
    * @param $sessionId[optional] If not given, get from request
    * @return bool success
    */
-  function isValidUserSession( $sessionId = null )
+  public function isValidUserSession( $sessionId = null )
   {
 
     if ( ! $sessionId )
@@ -184,11 +166,11 @@ class qcl_access_Controller
    * @return string New Session Id
    * FIXME This is not functional yet
    */
-  function checkServerDataAuthentication()
+  public function checkServerDataAuthentication()
   {
-    $username  = qcl_server_Server::getServerData("username");
-    $password  = qcl_server_Server::getServerData("password");
-    $sessionId = qcl_server_Server::getServerData("sessionId");
+    $username  = qcl_server_Server::getInstance()->getServerData("username");
+    $password  = qcl_server_Server::getInstance()->getServerData("password");
+    $sessionId = qcl_server_Server::getInstance()->getServerData("sessionId");
 
     if ( $username  )
     {
@@ -241,7 +223,7 @@ class qcl_access_Controller
    * @param string $password (MD5-encoded) password or null
    * @return int|false The id of the user or false if authentication failed
    */
-  function authenticate ( $username=null, $password=null )
+  public function authenticate ( $username=null, $password=null )
   {
     /*
      * user model
@@ -282,7 +264,7 @@ class qcl_access_Controller
    * access. Override this method if this is not what you want.
    * @return qcl_data_Result
    */
-  function method_logout()
+  public function method_logout()
   {
     $this->logout();
     /*
@@ -296,7 +278,7 @@ class qcl_access_Controller
    * Useful for example when browser window is closed.
    * @return qcl_data_Result
    */
-  function method_terminate()
+  public function method_terminate()
   {
     $this->terminate();
 
@@ -311,7 +293,7 @@ class qcl_access_Controller
    * Terminates and destroys the active session
    * @return unknown_type
    */
-  function terminate()
+  public function terminate()
   {
     $this->logout();
     session_destroy();
@@ -321,7 +303,7 @@ class qcl_access_Controller
    * Forces a logout on client and server
    * @return unknown_type
    */
-  function forceLogout()
+  public function forceLogout()
   {
     /*
      * send command to client to force a logout
@@ -335,7 +317,7 @@ class qcl_access_Controller
    * in the user table.
    * @return bool success
    */
-  function logout()
+  public function logout()
   {
 
     /*
@@ -374,7 +356,7 @@ class qcl_access_Controller
    * Whether guest access to the service classes is allowed
    * @return unknown_type
    */
-  function isAnonymousAccessAllowed()
+  public function isAnonymousAccessAllowed()
   {
     return $this->getIniValue("service.allow_anonymous_access");
   }
@@ -385,7 +367,7 @@ class qcl_access_Controller
    * @todo config data should be written to config table and deleted when guest user sessions are deleted.
    * @return void
    */
-  function grantAnonymousAccess()
+  public function grantAnonymousAccess()
   {
     /*
      * create a new session
@@ -396,10 +378,8 @@ class qcl_access_Controller
      * create a new guest user
      */
     $userModel = $this->getUserModel();
-    $userModel->createAnonymous();
+    $userId = $userModel->createAnonymous();
     $this->setActiveUser( $userModel );
-
-    $userId = $userModel->getId();
     $sessionId = $this->getSessionId();
 
     /*
@@ -417,7 +397,7 @@ class qcl_access_Controller
    * @param string $param[1] (MD5-encoded) password
    * @return qcl_access_AuthenticationResult
    */
-  function method_authenticate( $params )
+  public function method_authenticate( $params )
   {
 
     /*
@@ -584,7 +564,7 @@ class qcl_access_Controller
    * @param $userId
    * @return string log message
    */
-  function setActiveUserById( $userId )
+  public function setActiveUserById( $userId )
   {
     /*
      * check if user is already logged in
@@ -651,12 +631,12 @@ class qcl_access_Controller
    * @param string $userName user name
    * @return bool true if user can stay logged in, false if logout should be forced
    */
-  function checkTimeout()
+  public function checkTimeout()
   {
     /*
      * models
      */
-    $configModel = $this->getConfigModel();
+    $configModel = $this->getApplication()->getConfigModel();
     $activeUser  = $this->getActiveUser();
 
     /*
@@ -691,7 +671,7 @@ class qcl_access_Controller
    * Override in parent classes for more sophisticated session handling
    * @return string session id
    */
-  function getSessionId()
+  public function getSessionId()
   {
     return session_id();
   }
@@ -701,7 +681,7 @@ class qcl_access_Controller
    * @param string $sessionId
    * @return void
    */
-  function setSessionId( $sessionId )
+  public function setSessionId( $sessionId )
   {
     if ( $sessionId != $this->getSessionId() )
     {
@@ -709,14 +689,14 @@ class qcl_access_Controller
       session_id( $sessionId );
       session_start();
     }
-    $this->getAccessManager()->setSessionId( $sessionId );
+    $this->getApplication()->getAccessManager()->setSessionId( $sessionId );
   }
 
   /**
    * Creates a new session id.
    * @return string The session id
    */
-  function createSessionId( )
+  public function createSessionId( )
   {
     /*
      * create random session id
@@ -730,9 +710,9 @@ class qcl_access_Controller
    * Returns active user object
    * @return qcl_access_model_User
    */
-  function getActiveUser()
+  public function getActiveUser()
   {
-    return $this->getAccessManager()->getActiveUser();
+    return $this->getApplication()->getAccessManager()->getActiveUser();
   }
 
   /**
@@ -741,9 +721,9 @@ class qcl_access_Controller
    * @param qcl_access_model_User $userObject A user object or null to logout.
    * @return void
    */
-  function setActiveUser( $userObject )
+  public function setActiveUser( $userObject )
   {
-    $this->getAccessManager()->setActiveUser( $userObject );
+    $this->getApplication()->getAccessManager()->setActiveUser( $userObject );
   }
 
   /**
@@ -751,7 +731,7 @@ class qcl_access_Controller
    * and dispatched by the jsonrpc data store.
    * @param string $type Message Event type
    */
-  function fireServerEvent ( $type )
+  public function fireServerEvent ( $type )
   {
     require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->fireServerEvent( $this, $type, $data );
@@ -763,7 +743,7 @@ class qcl_access_Controller
    * @param mixed $event Message Event type
    * @param mixed $data Data dispatched with event
    */
-  function fireServerDataEvent ( $type, $data )
+  public function fireServerDataEvent ( $type, $data )
   {
     require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->fireServerDataEvent( $this, $type, $data );

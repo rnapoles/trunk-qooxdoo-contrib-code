@@ -60,7 +60,7 @@ class qcl_locale_Manager  extends qcl_core_Object
   	 */
   	if ( ! $this->localeModel )
     {
-      $controller = qcl_server_Server::getController();
+      $controller = qcl_server_Server::getInstance()->getController();
       $this->localeModel = new qcl_locale_QooxdooModel( $controller );
     }
 

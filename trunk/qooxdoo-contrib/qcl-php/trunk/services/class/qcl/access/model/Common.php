@@ -61,7 +61,7 @@ class qcl_access_model_Common
    	/*
    	 * insert new empty record
    	 */
-	   $itemId = parent::create($namedId);
+	   $itemId = parent::create( $namedId );
 
     /*
      * return item id

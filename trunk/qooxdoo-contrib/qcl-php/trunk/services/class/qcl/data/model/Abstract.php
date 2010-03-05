@@ -30,47 +30,48 @@ class qcl_data_model_Abstract extends qcl_core_Object
    *
    * @var qcl_data_controller_Controller or subclass
    */
-  var $_controller = null;
+  protected $_controller = null;
 
 
 	/**
 	 * The default record data that will be used when creating a new
 	 * model record. You can preset static data here.
 	 */
-  var $emptyRecord = array();
+  public $emptyRecord = array();
 
  /**
    * The current record cached. Access with ::getRecord()
    * @access private
    * @var array
    */
-  var $currentRecord = null;
-
-  /**
-   * The result of the last query
-   * @access private
-   * @var array
-   */
-  var $_lastResult = null;
+  protected $currentRecord = null;
 
 
   /**
    * The datasource model object, if any
    * @var qcl_data_datasource_model
    */
-  var $datasourceModel = null;
+  protected $datasourceModel = null;
+
+
+  /**
+   * An associated array mapping property names to the "real" name of the
+   * property/column etc. that is used internally.
+   * @var array
+   */
+  protected $aliases = array();
 
   /**
    * The datasource name or other information identifying the datasource
    * @var string
    */
-  var $datasource;
+  public $datasource;
 
   /**
    * The name of the model. Should be a java-like class name such as "namespace.package.ClassName"
    * @var string
    */
-  var $name;
+  public $name;
 
   /**
    * The type of the model, if the model implements a generic
@@ -78,14 +79,14 @@ class qcl_data_model_Abstract extends qcl_core_Object
    *
    * @var string
    */
-  var $type;
+  public $type;
 
   /**
    * The class name of the model.
    *
    * @var string
    */
-  var $class;
+  public $class;
 
 
   /**
@@ -95,7 +96,14 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @access private
    * @var array
    */
-  var $properties = array();
+  protected $properties = array();
+
+  /**
+   * The result of the last query
+   * @access private
+   * @var array
+   */
+  protected $_lastResult = null;
 
 
   /**
@@ -104,7 +112,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * only prepared and then retrieved record by record
    * with the qcl_data_model_db_Abstract::nextRecord() function (true)
    */
-  var $_isSearch = false;
+  protected $_isSearch = false;
 
   /**
    * Constructor
@@ -151,7 +159,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * Returns model name
    */
-  function name()
+  public function name()
   {
     return $this->name;
   }
@@ -160,7 +168,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Initializes the model. Empty stub to be overridden
    * @return unknown_type
    */
-  function initialize(){}
+  public function initialize(){}
 
  	/**
  	 * sets controller of this model to be able to link to other models
@@ -195,7 +203,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
  	 * @return qcl_data_controller_Controller
  	 *
  	 */
-  function getController()
+  public function getController()
   {
     if ( $this->_controller )
     {
@@ -203,12 +211,8 @@ class qcl_data_model_Abstract extends qcl_core_Object
     }
     else
     {
-      $controller = qcl_application_Application::getController();
+      $controller = qcl_application_Application::getInstance()->getController();
     }
-//    if ( ! is_a( $controller,"qcl_data_controller_Controller" ) )
-//    {
-//      $this->raiseError("No controller available." );
-//    }
     return $controller;
   }
 
@@ -216,7 +220,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Returns the controller object
    * @return qcl_data_controller_Controller
    */
-  function controller()
+  public function controller()
   {
     return $this->getController();
   }
@@ -225,9 +229,9 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * Returns the server object
    */
-  function server()
+  public function server()
   {
-    return qcl_server_Server::getServerObject();
+    return qcl_server_Server::getInstance()->getServerObject();
   }
 
 
@@ -240,7 +244,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * object reference to the datasource object
    * return void
    */
-  function setDatasourceModel( $datasource )
+  public function setDatasourceModel( $datasource )
   {
     if ( is_object ( $datasource ) and is_a( $datasource, "qcl_data_datasource_type_db_Model") )
     {
@@ -256,7 +260,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Retrieves the datasource object
    * @return qcl_data_datasource_type_db_Model
    */
-  function getDatasourceModel()
+  public function getDatasourceModel()
   {
     return $this->datasourceModel;
   }
@@ -271,7 +275,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @todo rename
    * @return array
    */
-  function getProperties()
+  public function getProperties()
   {
     return $this->properties();
   }
@@ -280,7 +284,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Return the names of all properties of this model
    * @return array
    */
-  function properties()
+  public function properties()
   {
     $this->notImplemented(__CLASS__);
   }
@@ -291,7 +295,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string $name
    * @return bool
    */
-  function hasProperty( $name )
+  public function hasProperty( $name )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -301,7 +305,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    *
    * @param string $propName property name
    */
-  function hasAlias($propName)
+  public function hasAlias($propName)
   {
     $this->notImplemented(__CLASS__);
   }
@@ -313,7 +317,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string $name
    * @return string
    */
-  function getPropertyType ( $name )
+  public function getPropertyType ( $name )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -327,7 +331,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * is loaded.
    * @return int
    */
-  function getId()
+  public function getId()
   {
     $id = $this->currentRecord['id'];
     if ( ! $id )
@@ -341,7 +345,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Alias of getId()
    * return int
    */
-  function id()
+  public function id()
   {
     return $this->getId();
   }
@@ -350,7 +354,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Returns the named id if it exists as property
    * @return string
    */
-  function getNamedId()
+  public function getNamedId()
   {
     return $this->getProperty("namedId");
   }
@@ -360,7 +364,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Sets the named id if it exists as property
    * @return string
    */
-  function setNamedId( $namedId )
+  public function setNamedId( $namedId )
   {
     return $this->setProperty("namedId",$namedId);
   }
@@ -369,7 +373,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Checks whether model has 'namedId' property
    * @return bool
    */
-  function _checkHasNamedId()
+  public function _checkHasNamedId()
   {
     if ( ! $this->hasProperty("namedId") )
     {
@@ -383,7 +387,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string  $namedId
    * @param int id or null if record does not exist
    */
-  function getIdByNamedId( $namedId )
+  public function getIdByNamedId( $namedId )
   {
     $this->_checkHasNamedId();
     $this->findByNamedId($namedId);
@@ -399,7 +403,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param int $id
    * @param string id or null if record does not exist
    */
-  function getNamedIdById( $id )
+  public function getNamedIdById( $id )
   {
     $this->_checkHasNamedId();
     $this->findById($id);
@@ -415,7 +419,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string  $namedId
    * @param int id of existing record of false
    */
-  function namedIdExists( $namedId )
+  public function namedIdExists( $namedId )
   {
     $this->_checkHasNamedId();
     $this->findByNamedId ( $namedId );
@@ -437,7 +441,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * properties are to be retrieved
    * @return array recordset
    */
-  function findBy( $propName, $value, $orderBy=null, $properties=null )
+  public function findBy( $propName, $value, $orderBy=null, $properties=null )
   {
     $this->raiseError("Not implemented for Model " . $this->className() );
   }
@@ -452,7 +456,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * properties are to be retrieved
    * @return array recordset
    */
-  function searchBy( $propName, $value, $orderBy=null, $properties=null )
+  public function searchBy( $propName, $value, $orderBy=null, $properties=null )
   {
     $this->_isSearch = true;
     return $this->findBy(  $propName, $value, $orderBy, $properties );
@@ -465,7 +469,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return array
    */
-  function findAll( $orderBy=null, $properties=null )
+  public function findAll( $orderBy=null, $properties=null )
   {
     return $this->findWhere( null, $orderBy, $properties );
   }
@@ -477,7 +481,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return array
    */
-  function searchAll( $orderBy=null, $properties=null )
+  public function searchAll( $orderBy=null, $properties=null )
   {
     $this->_isSearch = true;
     return $this->findWhere( null, $orderBy, $properties );
@@ -490,7 +494,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string|null[optional] $orderBy Property to order by
    * @return array Array of values
    */
-  function findDistinctValues( $property, $where=null, $orderBy=null)
+  public function findDistinctValues( $property, $where=null, $orderBy=null)
   {
     return $this->findValues($property,$where,$orderBy,true);
   }
@@ -504,7 +508,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where=null, $orderBy=null, $properties=null )
+  public function findWhere( $where=null, $orderBy=null, $properties=null )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -518,7 +522,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function searchWhere( $where=null, $orderBy=null, $properties=null )
+  public function searchWhere( $where=null, $orderBy=null, $properties=null )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -531,7 +535,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param bool[optional, default false] If true, get only distinct values
    * @return array Array of values
    */
-  function findDistinct( $property, $where=null, $orderBy=null )
+  public function findDistinct( $property, $where=null, $orderBy=null )
   {
     return $this->findBy( $property, $where, $orderBy, true );
   }
@@ -544,7 +548,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param bool[optional, default false] If true, get only distinct values
    * @return array Array of values
    */
-  function findValues( $property, $where=null, $orderBy=null, $distinct=false )
+  public function findValues( $property, $where=null, $orderBy=null, $distinct=false )
   {
     $this->notImplemented( __CLASS__ );
   }
@@ -553,7 +557,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Whether the last query didn't find any records
    * @return boolean
    */
-  function foundNothing()
+  public function foundNothing()
   {
     return is_null( $this->currentRecord );
   }
@@ -562,7 +566,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Whether the last query was successful
    * @return boolean
    */
-  function foundSomething()
+  public function foundSomething()
   {
     return ! is_null( $this->currentRecord );
   }
@@ -574,7 +578,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
    */
-  function findById( $ids, $orderBy=null, $properties=null )
+  public function findById( $ids, $orderBy=null, $properties=null )
   {
     $this->raiseError("Not implemented for Model " . $this->className() );
   }
@@ -587,7 +591,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
    */
-  function searchById( $ids, $orderBy=null, $properties=null )
+  public function searchById( $ids, $orderBy=null, $properties=null )
   {
     $this->_isSearch = true;
     return $this->findById( $ids, $orderBy, $properties);
@@ -600,7 +604,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
    */
-  function findByNamedId( $ids, $orderBy=null, $properties=null )
+  public function findByNamedId( $ids, $orderBy=null, $properties=null )
   {
     $this->raiseError("Not implemented for Model " . $this->className() );
   }
@@ -613,7 +617,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
    */
-  function searchByNamedId( $ids, $orderBy=null, $properties=null )
+  public function searchByNamedId( $ids, $orderBy=null, $properties=null )
   {
     $this->_isSearch = true;
     return $this->findByNamedId( $ids, $orderBy, $properties );
@@ -629,7 +633,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array|stdClass|qcl_data_model_xmlSchema_DbModel $data
    * @return array
    */
-  function _getArrayData( $data )
+  public function _getArrayData( $data )
   {
     if ( is_a( $data, "qcl_data_model_db_Abstract" ) )
     {
@@ -652,7 +656,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    *
    * @return array
    */
-  function getRecord()
+  public function getRecord()
   {
     return $this->currentRecord;
   }
@@ -663,7 +667,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param mixed $record
    * @return void
    */
-  function setRecord($record)
+  public function setRecord($record)
   {
     $this->currentRecord = $record;
   }
@@ -672,7 +676,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * If the last query has found more then one record, get the text one
    * @return array
    */
-  function nextRecord()
+  public function nextRecord()
   {
     if ( $this->_isSearch )
     {
@@ -704,7 +708,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * calling a search...() method.
    * @return array
    */
-  function _nextRecord()
+  public function _nextRecord()
   {
     $this->raiseError("Not implemented for Model " . $this->className() );
   }
@@ -715,7 +719,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * so you can use $record->foo instead of $record['foo']
    * @return stdClass
    */
-  function getRecordObject()
+  public function getRecordObject()
   {
     $obj = (object) $this->currentRecord;
     return $obj;
@@ -726,7 +730,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Gets the data from the last find query
    * @return array
    */
-  function getResult()
+  public function getResult()
   {
     return $this->_lastResult;
   }
@@ -736,7 +740,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array $result
    * @return void
    */
-  function setResult( $result )
+  public function setResult( $result )
   {
     $this->_lastResult = $result;
   }
@@ -744,7 +748,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * return query result as a an
    */
-  function getResultTree( $property )
+  public function getResultTree( $property )
   {
     if ( ! $this->hasProperty($property) )
     {
@@ -768,7 +772,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    *
    * @return array
    */
-  function values()
+  public function values()
   {
     $result = $this->getResult();
     $values = array();
@@ -789,7 +793,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array $fields
    * @return bool whether the values are equal or not
    */
-  function compareWith( $compare, $fields=null )
+  public function compareWith( $compare, $fields=null )
   {
     /*
      * check arguments to get what we should compare with
@@ -845,7 +849,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param int[optional]  $id if given, load record
    * @return mixed value of property
    */
-  function getProperty( $name, $id = null )
+  public function getProperty( $name, $id = null )
   {
 
     if ( ! $this->hasProperty($name) )
@@ -887,7 +891,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
     return $value;
   }
 
-  function getRawProperty( $name )
+  public function getRawProperty( $name )
   {
     if ( ! $this->hasProperty($name) )
     {
@@ -903,7 +907,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param $prop3 ...
    * @return array
    */
-  function listProperties()
+  public function listProperties()
   {
     $result = array();
     foreach ( func_get_args() as $property )
@@ -921,7 +925,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string $value
    * @return unknown
    */
-  function typecast($propertyName, $value)
+  public function typecast($propertyName, $value)
   {
     $type = $this->getPropertyType( $propertyName );
     switch ( $type )
@@ -941,7 +945,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * Shortcut to get a property on the current record
    */
-  function get($property)
+  public function get($property)
   {
     return $this->getProperty($property);
   }
@@ -957,7 +961,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param int $id if given, find and update property recordId
    * @return qcl_data_model_Abstract
    */
-  function set( $first, $value=null, $id=null )
+  public function set( $first, $value=null, $id=null )
   {
     if ( is_array($first) )
     {
@@ -987,7 +991,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param qcl_data_model_xmlSchema_DbModel $model
    * @return array
    */
-  function getSharedPropertyValues ( $model )
+  public function getSharedPropertyValues ( $model )
   {
     $myProperties    = $this->getProperties();
     $data            = $model->getRecord();
@@ -1007,7 +1011,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param qcl_data_model_xmlSchema_DbModel $model
    * @return void
    */
-  function copySharedProperties ( $model, $exclude=array() )
+  public function copySharedProperties ( $model, $exclude=array() )
   {
     $myProperties    = $this->getProperties();
     $data            = $model->getRecord();
@@ -1028,7 +1032,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array[optional] $diff Array that needs to be passed by reference that will contain a list of parameters that differ
    * @return bool True if all property values are identical, false if not
    */
-  function compareSharedProperties ( $that, $diff )
+  public function compareSharedProperties ( $that, $diff )
   {
     $diff = array();
     $properties = array_intersect(
@@ -1060,7 +1064,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param mixed      $value
    * @param int        $id if given, find and update property recordd
    */
-  function setProperty( $name, $value, $id=null )
+  public function setProperty( $name, $value, $id=null )
   {
     if ( ! $this->hasProperty($name) )
     {
@@ -1127,7 +1131,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param array $properties
    * @return void
    */
-  function unsetProperties( $properties=null )
+  public function unsetProperties( $properties=null )
   {
     if ( ! is_array($properties ) )
     {
@@ -1153,7 +1157,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string  $namedId
    * @return int the id of the inserted or existing row
    */
-  function createIfNotExists( $namedId  )
+  public function createIfNotExists( $namedId  )
   {
     if ( $this->namedIdExists( $namedId ) )
     {
@@ -1168,7 +1172,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param string[optional, default] $namedId
    * @return int the id of the inserted row
    */
-  function create( $namedId = null )
+  public function create( $namedId = null )
   {
 
     /*
@@ -1208,17 +1212,18 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @return int the id of the inserted row or 0 if the insert was not successful
    * @abstract
    */
-  function insert( $data )
+  public function insert( $data )
   {
     $this->notImplemented(__CLASS__);
   }
+
 
   /**
    * Converts property names to the local aliases
    * @param array $data Associative array with the property names as keys
    * @return array
    */
-  function unschematize ( $data )
+  public function unschematize ( $data )
   {
 
     /*
@@ -1280,7 +1285,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param bool        $keepTimestamp If true, do not overwrite the 'modified' timestamp
    * @return boolean success
    */
-  function update ( $data=null, $id=null, $keepTimestamp= false )
+  public function update ( $data=null, $id=null, $keepTimestamp= false )
   {
     $this->notImplemented(__CLASS__);
   }
@@ -1289,7 +1294,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
   /**
    * Alias for update() without parameters
    */
-  function save()
+  public function save()
   {
     return $this->update();
   }
@@ -1298,7 +1303,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * deletes one or more records in a table identified by id
    * @param mixed $ids (array of) record id(s)
    */
-  function delete ( $ids )
+  public function delete ( $ids )
   {
     $this->raiseError("Not implemented for class " . $this->className() );
   }
@@ -1309,7 +1314,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * @param  string $namedId
    * @return int Id of found or newly created record
    */
-  function createOrFind( $namedId )
+  public function createOrFind( $namedId )
   {
     $this->findByNamedId( $namedId );
     if ( $this->foundNothing() )
@@ -1327,7 +1332,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Returns number of records in the database
    * @return int
    */
-  function countRecords()
+  public function countRecords()
   {
     $this->raiseError("Not implemented for class " . $this->className() );
   }
@@ -1336,7 +1341,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Returns the ids of all records in the database
    * @return array
    */
-  function ids()
+  public function ids()
   {
     return $this->findValues($this->getColumnName("id"));
   }
@@ -1345,7 +1350,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Gets the timestamp of the last modification
    * @param int[optional] $id Optional id, if omitted, use current record
    */
-  function getModified($id=null)
+  public function getModified($id=null)
   {
     return $this->getProperty("modified",$id);
   }
@@ -1354,11 +1359,9 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * Gets the timestamp of the creation of the record
    * @param int[optional] $id Optional id, if omitted, use current record
    */
-  function getCreated($id=null)
+  public function getCreated($id=null)
   {
     return $this->getProperty("created",$id);
   }
-
-
 }
 ?>
