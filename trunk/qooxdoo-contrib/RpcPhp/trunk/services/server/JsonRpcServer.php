@@ -110,32 +110,26 @@ class JsonRpcServer extends AbstractServer
   /**
    * The id of the request if using script transport
    */
-  var $scriptTransportId;
-
-  /**
-   * The json wrapper object
-   * @var JsonWrapper
-   */
-  var $json;
+  private $scriptTransportId;
 
   /**
    * Return singleton instance of the server
-   * return JsonRpcServer
+   * @return JsonRpcServer
    */
-  function getInstance()
+  public static function getInstance()
   {
-    if ( ! isset( $GLOBALS['JsonRpcServerInstance'] ) )
+    if ( ! isset( $GLOBALS[__CLASS__] ) )
     {
-      $GLOBALS['JsonRpcServerInstance'] = new JsonRpcServer;
+      $GLOBALS[__CLASS__] = new JsonRpcServer;
     }
-    return $GLOBALS['JsonRpcServerInstance'];
+    return $GLOBALS[__CLASS__];
   }
 
 
   /**
    * Starts a singleton instance of the server. Must be called statically.
    */
-  function run()
+  public static function run()
   {
     $_this = JsonRpcServer::getInstance();
     $_this->start();

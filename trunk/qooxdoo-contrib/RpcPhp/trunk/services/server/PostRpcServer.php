@@ -46,7 +46,7 @@ class PostRpcServer extends JsonRpcServer
    * Return singleton instance of the server
    * return PostRpcServer
    */
-  function &getInstance()
+  function getInstance()
   {
     if ( ! is_object( $GLOBALS[__CLASS__] ) )
     {
