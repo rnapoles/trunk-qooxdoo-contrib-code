@@ -152,25 +152,20 @@ class AbstractServer
   /**
    * Whether the server should issue debug messages
    */
-  var $debug = JsonRpcDebug;
+  public $debug = JsonRpcDebug;
 
   /**
    * The file for debug messages
    * @var string
    */
-  var $debugfile = JsonRpcDebugFile;
+  public $debugfile = JsonRpcDebugFile;
 
   /**
-   * PHP4/PHP5-compatible wrapper object
+   * Json wrapper object, allowing to implement custom json renderers
+   * @todo rewrite with behavior design pattern
    * @var JsonWrapper
    */
-  var $json;
-
-  /**
-   * Error behavior object
-   * @var AbstractError
-   */
-  var $errorBehavior;
+  public $json;
 
   /**
    * An array of paths to the services. This will be populated
@@ -178,89 +173,87 @@ class AbstractServer
    * you can also manually populate it.
    * @var array
    */
-  var $servicePaths;
-
-  /**
-   * The accessibility behavior object
-   * @var AccessibilityBehavior
-   */
-  var $accessibilityBehavior;
+  public $servicePaths;
 
   /**
    * The request of the id.
    * @var int
    */
-  var $id;
+  public $id;
 
   /**
    * The input data from the request
    * @var object
    */
-  var $input;
+  public $input;
 
   /**
    * The full service path
    * @var string
    */
-  var $service;
+  public $service;
 
   /**
    * the components of the service
    * @var array
    */
-  var $serviceComponents;
+  public $serviceComponents;
 
   /**
    * The current service name
    * @var string
    */
-  var $serviceName;
+  public $serviceName;
 
   /**
    * The current service class
    * @var string
    */
-  var $serviceClass;
+  public $serviceClass;
 
   /**
    * The current service object
    * @var object
    */
-  var $serviceObject;
+  public $serviceObject;
 
   /**
    * The current service method
    * @var string
    */
-  var $method;
+  public $method;
 
   /**
    * The parameters of the request
    * @var array
    */
-  var $params;
+  public $params;
 
   /**
    * The server data sent with the request
    * @var object
    */
-  var $serverData;
+  public $serverData;
 
   /**
    * The php session id
    */
-  var $sessionId;
+  public $sessionId;
 
   /**
-   * PHP4 constructor
+   * Error behavior object
+   * @var AbstractError
    */
-  function AbstractServer()
-  {
-    $this->__construct();
-  }
+  private $errorBehavior;
 
   /**
-   * PHP5 constructor
+   * The accessibility behavior object
+   * @var AccessibilityBehavior
+   */
+  private $accessibilityBehavior;
+
+  /**
+   * Constructor
    */
   function __construct()
   {
@@ -273,8 +266,8 @@ class AbstractServer
      * Use servicePathPrefix constant for backwards compatibility
      */
     $this->servicePaths = array (
-    dirname(__FILE__) . "/services",
-    servicePathPrefix
+      dirname(__FILE__) . "/services",
+      servicePathPrefix
     );
 
     /**
@@ -288,7 +281,7 @@ class AbstractServer
    * servers.
    * @return void
    */
-  function initializeServer()
+  public function initializeServer()
   {
     trigger_error("Not implemented");
   }
@@ -298,7 +291,7 @@ class AbstractServer
    * @param int $id
    * @return void
    */
-  function setId( $id )
+  public function setId( $id )
   {
     $this->id = $id;
   }
@@ -307,7 +300,7 @@ class AbstractServer
    * Getter for request id
    * @return int
    */
-  function getId()
+  public function getId()
   {
     return $this->id;
   }
@@ -317,7 +310,7 @@ class AbstractServer
    * @param string $service
    * @return void
    */
-  function setService( $service )
+  public function setService( $service )
   {
     $this->service = $service;
   }
@@ -326,7 +319,7 @@ class AbstractServer
    * Getter for service name
    * @return string
    */
-  function getService()
+  public function getService()
   {
     return $this->service;
   }
@@ -336,7 +329,7 @@ class AbstractServer
    * @param string $method
    * @return void
    */
-  function setMethod( $method )
+  public function setMethod( $method )
   {
     $this->method = $method;
   }
@@ -345,7 +338,7 @@ class AbstractServer
    * Getter for method name
    * @return string
    */
-  function getMethod()
+  public function getMethod()
   {
     return $this->method;
   }
@@ -355,7 +348,7 @@ class AbstractServer
    * @param array $params
    * @return void
    */
-  function setParams( $params )
+  public function setParams( $params )
   {
     $this->params = $params;
   }
@@ -364,7 +357,7 @@ class AbstractServer
    * Getter for service parameters
    * @return string
    */
-  function getParams()
+  public function getParams()
   {
     return $this->params;
   }
@@ -375,7 +368,7 @@ class AbstractServer
    * @param stdClass $serverData
    * @return void
    */
-  function setServerData( $serverData )
+  public function setServerData( $serverData )
   {
     $this->serverData = $serverData;
   }
@@ -385,7 +378,7 @@ class AbstractServer
    * @param string[optional] $key If provided, get only a key, otherwise return the map
    * @return mixed Either the value of the given key, or the whole map
    */
-  function getServerData( $key=null )
+  public function getServerData( $key=null )
   {
     if ( is_null($key) )
     {
@@ -397,16 +390,15 @@ class AbstractServer
       {
         return $this->serverData->$key;
       }
-      return null;
     }
-    trigger_error("Invalid parameter.");
+    return null;
   }
 
   /**
    * Setter for service paths
    * @param array|string $servicePaths
    */
-  function setServicePaths( $servicePaths )
+  public function setServicePaths( $servicePaths )
   {
     $sp = array();
     foreach ( (array) $servicePaths as $path )
@@ -423,7 +415,7 @@ class AbstractServer
   /**
    * Getter for service paths
    */
-  function getServicePaths()
+  public function getServicePaths()
   {
     return $this->servicePaths;
   }
@@ -433,7 +425,7 @@ class AbstractServer
    * @param AccessibilityBehavior $object
    * @return void
    */
-  function setAccessibilityBehavior( $object )
+  public function setAccessibilityBehavior( $object )
   {
     if ( ! is_a( $object, "AccessibilityBehavior") )
     {
@@ -446,7 +438,7 @@ class AbstractServer
    * Getter for accessibility behavior object
    * @return AccessibilityBehavior
    */
-  function &getAccessibilityBehavior()
+  public function getAccessibilityBehavior()
   {
     return $this->accessibilityBehavior;
   }
@@ -457,7 +449,7 @@ class AbstractServer
    * @param AbstractErrorBehavior $object
    * @return void
    */
-  function setErrorBehavior( $object )
+  public function setErrorBehavior( $object )
   {
     if ( ! is_a( $object, "AbstractError") )
     {
@@ -470,7 +462,7 @@ class AbstractServer
    * Getter for error behavior object
    * @return AbstractError
    */
-  function &getErrorBehavior()
+  public function getErrorBehavior()
   {
     return $this->errorBehavior;
   }
@@ -478,7 +470,7 @@ class AbstractServer
   /**
    * Start the server.
    */
-  function start()
+  public function start()
   {
 
     /**
@@ -488,7 +480,7 @@ class AbstractServer
     $errorBehavior = $this->getErrorBehavior();
     if ( ! is_a( $errorBehavior, "AbstractError" ) )
     {
-      trigger_error("No valid error behavior instance!");
+      throw new AbstractError("No valid error behavior instance!");
     }
 
     /**
@@ -498,7 +490,7 @@ class AbstractServer
     $accessibilityBehavior = $this->getAccessibilityBehavior();
     if ( ! $accessibilityBehavior )
     {
-      trigger_error("No accessibility behavior!");
+      throw new AbstractError("No accessibility behavior!");
     }
 
     /*
@@ -647,7 +639,7 @@ class AbstractServer
    * Explode the service name into its dot-separated parts
    * @param string $service
    */
-  function getServiceComponents( $service )
+  public function getServiceComponents( $service )
   {
     return explode( ".", $service );
   }
@@ -661,7 +653,7 @@ class AbstractServer
    * @param string $service
    * @return bool True if legal, false if illegal service name
    */
-  function checkService( $service )
+  public function checkService( $service )
   {
     /*
      * First check for legal characters
@@ -712,7 +704,7 @@ class AbstractServer
    * @param string $service
    * @return string|false The name of the file if it was found, false if not.
    */
-  function loadServiceClass( $service )
+  public function loadServiceClass( $service )
   {
     /*
      * check service paths
@@ -775,7 +767,7 @@ class AbstractServer
    * @param string $service
    * @return string
    */
-  function getServiceName( $service )
+  public function getServiceName( $service )
   {
     $serviceComponents = $this->getServiceComponents( $service );
     return $serviceComponents[count($serviceComponents) - 1];
@@ -792,7 +784,7 @@ class AbstractServer
    * @author Derrell Lipman
    * @author Christian Boulanger
    */
-  function getServiceClass( $service, $classes = array() )
+  public function getServiceClass( $service, $classes = array() )
   {
 
     /*
@@ -833,7 +825,7 @@ class AbstractServer
    * the cookie-based PHP session id by providing a 'sessionId'
    * key in the server_data.
    */
-  function startSession()
+  public function startSession()
   {
     $serverData = $this->getServerData();
     if ( isset( $serverData->sessionId ) and $serverData->sessionId )
@@ -857,7 +849,7 @@ class AbstractServer
    * @param string $className
    * @return Object
    */
-  function &getServiceObject( $className )
+  function getServiceObject( $className )
   {
     $serviceObject = new $className();
     return $serviceObject;
@@ -870,7 +862,7 @@ class AbstractServer
    * @param $method
    * @return void
    */
-  function checkAccessibility( $serviceObject, $method )
+  public function checkAccessibility( $serviceObject, $method )
   {
     if ( $this->accessibilityBehavior )
     {
@@ -891,7 +883,7 @@ class AbstractServer
    * @param $method
    * @return unknown_type
    */
-  function checkServiceMethod( $serviceObject, $method )
+  public function checkServiceMethod( $serviceObject, $method )
   {
     if ( ! method_exists( $serviceObject, $method ) )
     {
@@ -913,7 +905,7 @@ class AbstractServer
    * @param array $params
    * @return mixed
    */
-  function callServiceMethod( $serviceObject, $method, $params )
+  public function callServiceMethod( $serviceObject, $method, $params )
   {
     $errorBehavior = $this->getErrorBehavior();
     try
@@ -1002,7 +994,7 @@ class AbstractServer
    * @param mixded $output
    * @return string
    */
-  function formatOutput( $output )
+  public function formatOutput( $output )
   {
     return $output;
   }
@@ -1012,7 +1004,7 @@ class AbstractServer
    * to do something else with the debug output
    * @param string $str
    */
-  function debug($str)
+  public function debug($str)
   {
     if ( $this->debug )
     {
@@ -1025,7 +1017,7 @@ class AbstractServer
    * @param $reply
    * @return unknown_type
    */
-  function sendReply( $reply )
+  public function sendReply( $reply )
   {
     $scriptTransportId = $this->scriptTransportId;
 
@@ -1061,7 +1053,7 @@ class AbstractServer
    * Returns the url of the server
    * @return string
    */
-  function getUrl()
+  public function getUrl()
   {
     return "http://" . getenv ( HTTP_HOST ) . $_SERVER['PHP_SELF'];
   }

@@ -25,7 +25,7 @@ class class_system extends ServiceIntrospection
   /**
    * Returns singleton instance of this class
    */
-  function &getInstance( $class = __CLASS__ )
+  function getInstance( $class = __CLASS__ )
   {
      if ( ! isset( $GLOBALS[$class] ) )
      {
