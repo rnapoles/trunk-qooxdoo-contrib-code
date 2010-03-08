@@ -64,25 +64,33 @@ class qcl_data_controller_Controller
   //-------------------------------------------------------------
 
   /**
-   * Returns the current session id.
-   * Alias of qcl_access_Manager::getSessionId()
+   * Shorthand getter for access behavior
+   * @return qcl_access_Behavior
+   */
+  public function getAccessBehavior()
+  {
+    return $this->getApplication()->getAccessBehavior();
+  }
+
+  /**
+   * Shorthand getter for  the current session id.
    * @return string
    */
   public function getSessionId()
   {
-    return $this->getAccessManager()->getSessionId();
+    return $this->getAccessBehavior()->getSessionId();
   }
 
 
   /**
    * Checks if active user has the given permission.
-   * Alias of $this->getAccessManager()->hasPermission()
+   * Alias of $this->getAccessBehavior()->hasPermission()
    * @param $permission
    * @return bool
    */
   public function hasPermission( $permission )
   {
-    return $this->getAccessManager()->hasPermission( $permission );
+    return $this->getAccessBehavior()->hasPermission( $permission );
   }
 
   /**
@@ -100,29 +108,26 @@ class qcl_data_controller_Controller
     return false;
   }
 
-
   /**
    * Checks if active user has the given permission and aborts if
    * permission is not granted.
-   * Alias of $this->getAccessManager()->requirePermission()
+   * Alias of $this->getAccessBehavior()->requirePermission()
    * @param string $permission
    * @return bool
    */
   public function requirePermission( $permission )
   {
-    return $this->getActiveUser()->requirePermission( $permission );
+    return $this->getAccessBehavior()->requirePermission( $permission );
   }
 
   /**
-   * Checks if active user has the given role.
-   * Alias of $this->getAccessManager()->getActiveUser()->hasRole()
+   * Shorthand method to check if active user has a role
    * @param string $role
    * @return bool
    */
   public function hasRole( $role )
   {
-    $activeUser = $this->getActiveUser();
-    return $activeUser->hasRole( $role );
+    return $this->getAccessBehavior()->hasRole( $role );
   }
 
   //-------------------------------------------------------------

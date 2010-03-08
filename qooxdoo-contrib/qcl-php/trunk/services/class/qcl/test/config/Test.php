@@ -1,34 +1,51 @@
 <?php
 
-require_once "qcl/access/SessionController.php";
-require_once "qcl/config/db.php";
+require_once "qcl/test/AbstractTestController.php";
 
-class class_qcl_config_Test extends qcl_access_SessionController
+class class_qcl_test_config_Test
+  extends qcl_test_AbstractTestController
 {
-
-  function method_test()
+  /**
+   * Tests the a global value
+   * @return string
+   * @rpctest {
+   *   "requestData" : {
+   *     "method" : "testConfigDbGlobal"
+   *   },
+   *   "checkResult" : "test"
+   * }
+   */
+  function method_testConfigDbGlobal()
   {
-    $configModel = qcl_config_Db::getInstance();
-
+    $configModel = $this->getApplication()->getConfigModel();
     $configModel->createKeyIfNotExists("qcl.test.global","string");
-    $configModel->setKey("qcl.test.global","Blah!");
+    $configModel->setKey("qcl.test.global","test");
+    return $configModel->getKey("qcl.test.global");
+  }
 
-    $this->set("qcl.test.global",$configModel->getKey("qcl.test.global"));
+  /**
+   * Tests the a default value
+   * @return string
+   * @rpctest {
+   *   "requestData" : {
+   *     "method" : "testConfigDbDefault"
+   *   },
+   *   "checkResult" : ["default","uservalue"]
+   * }
+   */
+  function method_testConfigDbDefault()
+  {
+    $userId = $this->anonymousAccess();
 
+    $configModel = $this->getApplication()->getConfigModel();
+    $configModel->createKeyIfNotExists("qcl.test.default","string",null,/* allow user variants= */true);
+    $configModel->setDefault("qcl.test.default","default");
+    $configModel->setKey("qcl.test.default","uservalue");
 
-    $configModel->createKeyIfNotExists("qcl.test.foo","string",null,true);
-    $configModel->setDefault("qcl.test.foo","bar");
-    $configModel->setKey("qcl.test.foo","gagaga!");
-
-    $this->set("qcl.test.foo(default)",$configModel->getKey("qcl.test.foo",0));
-
-    $this->set("qcl.test.foo(user)",$configModel->getKey("qcl.test.foo"));
-
-    //$configModel->reset("qcl.test.foo");
-
-    //$this->set("qcl.test.foo(reset)",$configModel->getKey("qcl.test.foo"));
-
-    return $this->result();
+    return array(
+      $configModel->getKey("qcl.test.default",0),
+      $configModel->getKey("qcl.test.default")
+    );
   }
 
   function method_testAccessibleKeys( $params )

@@ -16,13 +16,12 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/access/SessionController.php";
-require_once "qcl/config/Db.php";
 
 /**
  * Service class providing methods to get or set configuration
  * values
  */
-class qcl_config_Controller
+class qcl_config_Service
   extends qcl_data_controller_Controller
 {
 
@@ -47,7 +46,7 @@ class qcl_config_Controller
      */
     $this->setResultClass("qcl_config_LoadResult");
 
-    $configModel = qcl_config_Db::getInstance();
+    $configModel = $this->getApplication()->getConfigModel();
     $configMap   = $configModel->getAccessibleKeys( $filter );
 
     /*
@@ -77,7 +76,7 @@ class qcl_config_Controller
     /*
      * set key
      */
-    $configModel = qcl_config_Db::getInstance();
+    $configModel = $this->getApplication()->getConfigModel();
     $configModel->setKey( $key, $value );
 
     /*
@@ -90,7 +89,7 @@ class qcl_config_Controller
   /**
    * export to xml
    */
-  function method_exportXML()
+  function exportXML()
   {
     /*
      * models
@@ -129,13 +128,13 @@ class qcl_config_Controller
     $this->Info($doc->asXml());
   }
 
-  function method_logFileSize()
+  function logFileSize()
   {
     $this->setResult("text", "Log file size: " . byteConvert( filesize( QCL_LOG_FILE) ) );
     return $this->result();
   }
 
-  function method_deleteLogFile()
+  function deleteLogFile()
   {
     unlink( QCL_LOG_FILE );
     touch ( QCL_LOG_FILE );

@@ -24,11 +24,6 @@ class qcl_event_message_Bus
   extends qcl_core_Object
 {
 
-  /**
-   * The message model
-   * @var qcl_event_message_db_Message
-   */
-  private $_messageModel;
 
   /**
    * The message database
@@ -48,31 +43,22 @@ class qcl_event_message_Bus
     return qcl_getInstance( __CLASS__ );
   }
 
-  /**
-   * Sets the message data model. Can be calles statically.
-   * @param qcl_event_message_db_Message $messageModel
-   * @return unknown_type
-   */
-  public function setModel( $messageModel )
-  {
-    //@todo check model
-    $this->_messageModel = $messageModel;
-  }
 
   /**
-   * Returns the message data model. Can be called statically
+   * Returns the message data model.
    * @return qcl_event_message_db_Message
    */
   public function getModel()
   {
-    return $this->_messageModel;
+    require_once "qcl/event/message/db/Message.php";
+    return qcl_event_message_db_Message::getInstance();
   }
 
   /**
    * Adds a message subscriber. This works only for objects which have been
    * initialized during runtime. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * 
+   *
    *
    * @param string $filter
    * @param qcl_core_Object $subscriber
@@ -119,7 +105,7 @@ class qcl_event_message_Bus
   /**
    * Dispatches a message. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * 
+   *
    *
    * @param qcl_event_message_Message $message Message
    * @param mixed $data Data dispatched with message
@@ -167,7 +153,7 @@ class qcl_event_message_Bus
       /*
        * get ids of sessions
        */
-      $sessionModel = qcl_access_Manager::getSessionModel();
+      $sessionModel = $this->getApplication()->getAccessBehavior()->getAccessController()->getSessionModel();
       $sessionIds = $sessionModel->findValues("sessionId");
       $msgModel = $this->getModel();
 
@@ -234,7 +220,7 @@ class qcl_event_message_Bus
 
   /**
    * Returns broadcasted messages for the client with the given session
-   * id. 
+   * id.
    * @param int $sessionId
    * @return array
    *

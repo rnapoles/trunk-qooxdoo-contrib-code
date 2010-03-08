@@ -33,7 +33,6 @@ class qcl_access_model_Session
    */
   var $schemaXmlPath = "qcl/access/model/Session.model.xml";
 
-
   /**
    * Returns singleton instance.
    * @static
@@ -45,12 +44,12 @@ class qcl_access_model_Session
   }
 
   /**
-   * Getter for access manager
-   * @return unknown_type
+   * Shorthand getter for access behavior
+   * @return qcl_access_Behavior
    */
-  function getAccessManager()
+  function getAccessBehavior()
   {
-    return qcl_access_Manager::getInstance();
+    return $this->getApplication()->getAccessBehavior();
   }
 
 	//-------------------------------------------------------------
@@ -68,7 +67,6 @@ class qcl_access_model_Session
 	 */
   function registerSession( $sessionId, $userId, $ip )
   {
-    $controller = $this->getController();
 
     /*
      * if session id is present but linked to a different IP
@@ -109,7 +107,7 @@ class qcl_access_model_Session
      * @todo unhardcode timeout
      * @todo build this into the model code
      */
-    $activeUser = $this->getAccessManager()->getActiveUser();
+    $activeUser = $this->getAccessBehavior()->getActiveUser();
     if( ! $activeUser ) return;
     $userTable =  $activeUser->getTableName();
     $this->deleteWhere("

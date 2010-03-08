@@ -18,6 +18,8 @@
 require_once "qcl/access/Controller.php";
 require_once "qcl/access/model/Session.php";
 
+
+
 /**
  * Base class that keeps track of connected clients
  * and dispatches or broadcasts messages. A "session" means the
@@ -36,132 +38,158 @@ class qcl_access_SessionController
   /**
    * This overrides and extends the parent method by providing a way to determine
    * the user by a given session id in the request.
-   * @param string[optional] optional session id, if not provided, try to
-   * get it from the server data
-   * @see qcl_access_Controller::isValidUserSession()
+   *
    * @override
+   * @throws qcl_access_InvalidSessionException
+   * @throws qcl_access_TimeoutException
+   * @return int user id
    */
-  public function isValidUserSession( $sessionId=null )
+  public function createUserSession()
   {
 
-    if ( ! $sessionId )
-    {
-      /*
-       * on-the-fly authentication
-       */
-      $sessionId = $this->checkServerDataAuthentication();
-    }
-
     /*
-     * Does the request contain a session id?
+     * on-the-fly authentication
      */
-    if ( ! $sessionId )
-    {
-      $parentSessionId = qcl_server_Server::getInstance()->getServerData("parentSessionId");
-
-      /*
-       * Is this a sub-session of a parent session?
-       */
-      if ( $parentSessionId and ! $this->sessionExists($sessionId) )
-      {
-        $sessionId = $this->createChildSession($parentSessionId);
-        //$this->debug("Created and changed to child session id: $sessionId from parent session: $parentSessionId");
-      }
-    }
-
-    /*
-     * if we have a session id by now, set it and try to
-     * get the user from the session
-     */
-    if ( $sessionId )
-    {
-
-      $this->setSessionId( $sessionId );
-     //$this->debug("Getting session id from request: $sessionId");
-
-      /*
-       * get user from session. if session data is invalid,
-       * do not authenticate
-       */
-      $userId = $this->getUserIdFromSession( $sessionId );
-
-      if ( $userId )
-      {
-        $userModel = $this->getUserModel( $userId );
-        $this->setActiveUser( $userModel );
-
-        /*
-         * If we have an authenticated user, check for timeout etc.
-         */
-        if ( ! $this->checkTimeout() )
-        {
-          /*
-           * force log out because of timeout
-           */
-          $this->forceLogout();
-          $this->setError( "Timeout.");
-          return false;
-        }
-      }
-
-      /*
-       * error
-       */
-      else
-      {
-        $this->forceLogout();
-        $this->setError("No valid user id from session.");
-        return false;
-      }
-    }
+    $sessionId = either(
+      $this->getSessionIdFromServerData(),
+      $this->getSessionIdFromParentSessionId()
+    );
 
     /*
      * we have no valid session
      */
-    else
+    if ( ! $sessionId )
     {
-      $this->setError("No valid session.");
+      throw new qcl_access_InvalidSessionException("No valid session.");
       return false;
+    }
+    $this->log("Got session id from request: $sessionId","access");
+
+    /*
+     * get user id from session. deny access if not valid
+     */
+    $userId = $this->getUserIdFromSession( $sessionId );
+    if ( ! $userId )
+    {
+      $this->warn( $this->getError() );
+      throw new qcl_access_InvalidSessionException("Invalid session id.");
     }
 
     /*
-     * sucess!!
+     * We have a valid user now.
      */
-    return true;
+    $this->log("Got user id from session: $userId","access");
+
+    /*
+     * Check if the user's session has timed out
+     */
+    if ( ! $this->checkTimeout( $userId ) )
+    {
+      $this->forceLogout();
+      throw new qcl_access_TimeoutException("Session timed out.");
+    }
+
+    /*
+     * We have a valid session referring to a valid user.
+     * Set sessioniId and make a copy of the user object as the
+     * active user and return the user id.
+     */
+    $this->setSessionId( $sessionId );
+    $this->createUserSessionByUserId( $userId );
+    return $userId;
   }
 
   /**
-   * Grant guest access
-   * @todo config data should be written to config table and deleted when guest user sessions are deleted.
+   * Creates a valid user session for the given user id, i.e. creates
+   * the user object and the session. Overridden to create session record.
+   * @param $userId
    * @return void
    */
-  public function grantAnonymousAccess()
+  public function createUserSessionByUserId( $userId )
   {
-    /*
-     * parent method does all the work
-     */
-    parent::grantAnonymousAccess();
-
-    /*
-     * now register the new session
-     */
+    parent::createUserSessionByUserId( $userId );
     $this->registerSession();
   }
 
   /**
-   * Actively authenticate the user with username and password.
-   * Returns data for the authentication store.
-   *
-   * @param string $param[0] username
-   * @param string $param[1] (MD5-encoded) password
-   * @return qcl_data_Result
+   * Creates a new session from a parent session, for example, when opening
+   * child windows that share the session.
+   * @return string
    */
-  public function method_authenticate( $params )
+  public function getSessionIdFromParentSessionId()
   {
-    $response = parent::method_authenticate( $params );
+
+    /*
+     * Is this a sub-session of a parent session?
+     */
+    $parentSessionId = $this->getApplication()->getServer()->getServerData("parentSessionId");
+    if ( $parentSessionId )
+    {
+      $sessionId = $this->createChildSession( $parentSessionId );
+      $this->log("Created and changed to child session id: $sessionId from parent session: $parentSessionId","access");
+    }
+    else
+    {
+      throw new qcl_access_AccessDeniedException("Could not create child session");
+    }
+    return $sessionId;
+  }
+
+ /**
+   * Authenticates with data in the server data, either by a given session id or
+   * by a username - password combination.
+   * @return string|null The session id, if it can be retrieved by the server data. Null if
+   * no valid session id can be determined from the server data
+   */
+  public function getSessionIdFromServerData()
+  {
+    $server = $this->getApplication()->getServer();
+
+    /*
+     * if we have a session id in the server data, return it
+     */
+    $sessionId = parent::getSessionIdFromServerData();
+    if ( $sessionId )
+    {
+      return $sessionId;
+    }
+
+    /*
+     * otherwise, try getting a session id from authenticating a
+     * user
+     */
+    $username  = $server->getServerData("username");
+    $password  = $server->getServerData("password");
+
+    if ( $username and $password )
+    {
+      /*
+       * can we authenticate with the server data?
+       */
+      $userId = $this->authenticate( $username, $password );
+      if ( $userId )
+      {
+        $logMsg = $this->createUserSessionByUserId( $userId );
+        $this->info( $logMsg );
+      }
+      else
+      {
+        $this->warn( $this->getError() );
+        throw new qcl_access_AccessDeniedException("Server data authentication failed.");
+      }
+    }
+
+    /*
+     * return the new session id
+     */
+    return $this->getSessionId();
+  }
+
+  public function authenticate( $username, $password )
+  {
+    $userId = parent::authenticate( $username,$password );
     $this->registerSession();
-    $this->cleanUp();
-    return $response;
+    return $userId;
   }
 
   /**
@@ -173,15 +201,7 @@ class qcl_access_SessionController
     /*
      * unregister the current session
      */
-    if ( $this->getSessionId() )
-    {
-      $this->unregisterSession();
-    }
-
-    /*
-     * remove other stale sessions as well
-     */
-    $this->cleanUp();
+    $this->unregisterSession();
 
     /*
      * logout
@@ -199,7 +219,13 @@ class qcl_access_SessionController
    */
   public function getSessionModel()
   {
-    return $this->getApplication()->getAccessManager()->getSessionModel();
+    static $sessionModel = null;
+    if ( $sessionModel === null )
+    {
+       require_once "qcl/access/model/Session.php";
+       $sessionModel = new qcl_access_model_Session();
+    }
+    return $sessionModel;
   }
 
 
@@ -217,34 +243,26 @@ class qcl_access_SessionController
   }
 
   /**
-   * Registers session and user. call from extending controller's constructor
-   * requires a user and a session model
-   * @param int $timeout Timeout in seconds, defaults to 30 Minutes
+   * Registers the current session with the current user. Cleans up stale
+   * sessions
    */
-  public function registerSession($timeout=null)
+  public function registerSession()
   {
+    $sessionId = $this->getSessionId();
+    $userId    = $this->getActiveUser()->getId();
+    $remoteIp  = $this->getApplication()->getServer()->getRemoteIp();
+
+    $this->log("Registering session #$sessionId for user #$userId, IP $remoteIp.","access");
+
     /*
-     * models
+     * clean up stale sessions
      */
-    $activeUser   = $this->getActiveUser();
-    $sessionModel = $this->getSessionModel();
+    $this->getSessionModel()->cleanUp();
 
     /*
      * register current session
      */
-    $sessionModel->registerSession(
-      $this->getSessionId(),
-      $activeUser->getId(),
-      qcl_server_Server::getInstance()->getRemoteIp()
-    );
-
-    /*
-     * Raise error if session model returns false
-     */
-    if ( $sessionModel->getError() )
-    {
-      $this->raiseError( $sessionModel->getError() );
-    }
+    $this->getSessionModel()->registerSession( $sessionId, $userId, $remoteIp );
   }
 
   /**
@@ -253,18 +271,20 @@ class qcl_access_SessionController
   public function unregisterSession()
   {
     $sessionId = $this->getSessionId();
-    $sessionModel = $this->getSessionModel();
-    $sessionModel->unregisterSession( $sessionId );
+    $this->log("Unregistering session #$sessionId.","access");
+    $this->getSessionModel()->unregisterSession( $sessionId );
+    $this->getSessionModel()->cleanUp();
   }
 
-
   /**
-   * Removes stale and invalid sessions
+   * Destroys a session by its id
+   * @param $sessionId
+   * @return void
    */
-  public function cleanUp()
+  public function destroySession( $sessionId )
   {
-    $sessionModel = $this->getSessionModel();
-    $sessionModel->cleanUp();
+    parent::destroySession( $sessionId );
+    $this->getSessionModel()->deleteWhere( array("sessionId" => $sessionId ) );
   }
 
   /**
@@ -274,21 +294,19 @@ class qcl_access_SessionController
    */
   public function terminate()
   {
-
     $sessionModel = $this->getSessionModel();
     $activeUser   = $this->getActiveUser();
     $sessionId = $this->getSessionId();
     $username  = $activeUser->username();
-    $this->info("Session #$sessionId ($username) is terminated.");
+    $this->log("Session #$sessionId ($username) is terminated.","access");
     $this->logout();
   }
 
   /**
-   * Set the active user id from the session id
+   * Get the active user id from the session id.
    * @param int $sessionId
-   * @return int|bool if this method returns false, the request should be
-   * aborted since the session data refers to a non-existing or expired
-   * user.
+   * @return int
+   * @throws qcl_access_InvalidSessionException
    */
   public function getUserIdFromSession( $sessionId )
   {
@@ -307,21 +325,18 @@ class qcl_access_SessionController
       $activeUserId = $sessionModel->get("userId");
       if ( ! $activeUserId )
       {
-        $this->setError("Session $sessionId is not connected with a user id!");
-        return false;
+        throw new qcl_access_InvalidSessionException("Session $sessionId is not connected with a user id!");
       }
       $userModel = $this->getUserModel();
       if ( ! $userModel->exists( array("id" => $activeUserId ) ) )
       {
-        $this->setError("Session $sessionId refers to a non-existing user.");
-        return false;
+        throw new qcl_access_InvalidSessionException("Session $sessionId refers to a non-existing user.");
       }
       return $activeUserId;
     }
     else
     {
-      $this->setError("Session $sessionId does not exist.");
-      return false;
+      throw new qcl_access_InvalidSessionException("Session $sessionId does not exist.");
     }
   }
 

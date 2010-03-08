@@ -28,7 +28,7 @@ class qcl_event_message_db_Message
    * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/event/message/db/Message.model.xml";
+  public $schemaXmlPath = "qcl/event/message/db/Message.model.xml";
 
 
   /**
@@ -36,7 +36,7 @@ class qcl_event_message_db_Message
    * @static
    * @return qcl_event_message_db_Message
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance( __CLASS__ );
   }

@@ -114,7 +114,7 @@ class qcl_access_model_User extends qcl_access_model_Common
       $this->raiseError("You need to have at least one role, the first one being the anonymous role.");
     }
 
-    $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
+    $username = QCL_ACCESS_ANONYMOUS_USER_PREFIX . microtime_float()*100;
     $id = $this->create($username);
 
     if ( ! $id )
@@ -334,7 +334,7 @@ class qcl_access_model_User extends qcl_access_model_Common
         FROM `$table`
        WHERE `id` = $userId;
     ");
-    return $seconds;
+    return (int) $seconds;
   }
 
 }

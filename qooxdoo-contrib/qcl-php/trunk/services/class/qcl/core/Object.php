@@ -200,7 +200,7 @@ class qcl_core_Object extends qcl_core_BaseClass
 
 
   /**
-   * make a copy of this object
+   * Make a copy of this object
    */
   public function cloneObject()
   {

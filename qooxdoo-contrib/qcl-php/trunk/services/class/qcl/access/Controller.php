@@ -16,16 +16,33 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/access/__index__.php";
+require_once "qcl/access/__init__.php";
 require_once "qcl/data/controller/Controller.php";
-require_once "qcl/config/Manager.php";
 require_once "qcl/util/registry/Session.php";
-require_once "qcl/access/IAuthentication.php";
 
 /*
- * constants
+ * the prefix for the anonymous user
  */
-define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
+if ( ! defined('QCL_ACCESS_ANONYMOUS_USER_PREFIX') )
+{
+  define('QCL_ACCESS_ANONYMOUS_USER_PREFIX', "anonymous_");
+}
+
+/*
+ * the default timeout
+ */
+if ( ! defined('QCL_ACCESS_TIMEOUT') )
+{
+  define('QCL_ACCESS_TIMEOUT', 30*60 );
+}
+
+/*
+ * Exceptions thrown in this class and subclasses
+ */
+class qcl_access_AccessDeniedException extends JsonRpcError {}
+class qcl_access_AuthenticationException extends qcl_access_AccessDeniedException {}
+class qcl_access_InvalidSessionException extends qcl_access_AccessDeniedException {}
+class qcl_access_TimeoutException extends qcl_access_InvalidSessionException {}
 
 /**
  * Accessibility behavior class thathandles authentication, access control
@@ -33,14 +50,7 @@ define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
  */
 class qcl_access_Controller
   extends qcl_data_controller_Controller
-  implements qcl_access_IAuthentication
 {
-
-  /**
-   * Methods in this controller are not checked for prior
-   * authentication
-   */
-  public $skipAuthentication = true;
 
   /**
    * The currently active user, determined from request or
@@ -48,13 +58,8 @@ class qcl_access_Controller
    * @access private
    * @var qcl_access_model_User
    */
-  protected $_activeUser = null;
+  private $_activeUser = null;
 
-  /**
-   * Map pairing permission names with local aliases
-   * @var array
-   */
-  public $permisssionAliasMap;
 
   /**
    * Gets the user data model
@@ -96,19 +101,17 @@ class qcl_access_Controller
    * Checks if the requesting client is an authenticated user.
    * @return bool True if request can continue, false if it should be aborted with
    * a "access denied" exception.
-   * @param $sessionId[optional] If not given, get from request
-   * @return bool success
+   * @return int userId
+   * @todo adapt to overriding method, using Exceptions!
+   *
    */
-  public function isValidUserSession( $sessionId = null )
+  public function createUserSession()
   {
 
-    if ( ! $sessionId )
-    {
-      /*
-       * on-the-fly authentication
-       */
-      $sessionId = $this->checkServerDataAuthentication();
-    }
+    /*
+     * on-the-fly authentication
+     */
+    $sessionId = $this->getSessionIdFromServerData();
 
     if ( $sessionId )
     {
@@ -119,8 +122,7 @@ class qcl_access_Controller
       if ( $sessionId != $this->getSessionId() )
       {
         $this->forceLogout();
-        $this->setError("Invalid session id");
-        return false;
+        throw new qcl_access_AccessDeniedException("Invalid session id");
       }
 
       /*
@@ -142,88 +144,54 @@ class qcl_access_Controller
            * force log out because of timeout
            */
           $this->forceLogout();
-          $this->setError( "Timeout.");
+          throw new qcl_access_TimeoutException("Your session has expired.");
           return false;
         }
       }
     }
     else
     {
-      $this->setError("No valid session.");
-      return false;
+      throw new qcl_access_InvalidSessionException("Invalid session.");
     }
-
 
     /*
      * success!!
      */
-    return true;
+    return $userId;
   }
 
+
   /**
-   * Authenticates with data in the server data
-   * @param $sessionId
-   * @return string New Session Id
-   * FIXME This is not functional yet
+   * Gets the session id from the server data.
+   * @return string|null The session id, if it can be retrieved by the server data. Null if
+   * no valid session id can be determined from the server data
    */
-  public function checkServerDataAuthentication()
+  public function getSessionIdFromServerData()
   {
-    $username  = qcl_server_Server::getInstance()->getServerData("username");
-    $password  = qcl_server_Server::getInstance()->getServerData("password");
-    $sessionId = qcl_server_Server::getInstance()->getServerData("sessionId");
-
-    if ( $username  )
-    {
-      $userId = $this->authenticate( $username,$password );
-      if ( $userId )
-      {
-        $logMsg = $this->setActiveUserById( $userId );
-        $this->info( $logMsg );
-      }
-    }
-
-    /**
-     * grant guest access if allowed
-     */
-    elseif ( is_null( $sessionId) and $this->isAnonymousAccessAllowed() )
-    {
-      $this->grantAnonymousAccess();
-    }
+    $server = $this->getApplication()->getServer();
+    $sessionId = $server->getServerData("sessionId");
 
     /*
-     * otherwise, no serverdata authentication
+     * if we have a session id in the server data, return it
      */
-    else
+    if ( $sessionId )
     {
       return $sessionId;
     }
 
-    /*
-     * session id
-     */
-    $sessionId = $this->getSessionId();
-
-    /*
-     * dispatch a message to set the new session id
-     */
-    $this->fireServerDataEvent("changeSessionId", $sessionId);
-
-    /*
-     * return the new session id
-     */
-    return $sessionId;
+    return null;
   }
 
   /**
-   * Authenticate a user with a password.
-   * If no username is given, check if a user has already been logged in,
-   * so you can use this method in your service class without parameters
-   * to make sure a login has taken place.
+   * Authenticate a user with a password. Returns an integer with
+   * the user id if successful and false if unsuccessful. Throws errors
+   *
    * @param string $username or null
-   * @param string $password (MD5-encoded) password or null
+   * @param string $password (MD5-encoded) password
+   * @throws qcl_access_AuthenticationException
    * @return int|false The id of the user or false if authentication failed
    */
-  public function authenticate ( $username=null, $password=null )
+  public function authenticate( $username, $password )
   {
     /*
      * user model
@@ -236,8 +204,7 @@ class qcl_access_Controller
     $userModel->findByNamedId( $username );
     if ( $userModel->foundNothing() )
     {
-      $this->setError( "Unknown user name: $username" );
-      return false;
+      throw new qcl_access_AuthenticationException("Invalid user name.");
     }
 
     /*
@@ -254,40 +221,10 @@ class qcl_access_Controller
     }
     else
     {
-      $this->setError( "Wrong password for: $username" );
-      return false;
+      throw new qcl_access_AuthenticationException("Wrong password.");
     }
   }
 
-  /**
-   * Service method to log out the active user. Automatically creates guest
-   * access. Override this method if this is not what you want.
-   * @return qcl_data_Result
-   */
-  public function method_logout()
-  {
-    $this->logout();
-    /*
-     * create guest access if allowed.
-     */
-    return $this->method_authenticate(array(null));
-  }
-
-  /**
-   * Service method to terminate a session (remove session and user data).
-   * Useful for example when browser window is closed.
-   * @return qcl_data_Result
-   */
-  public function method_terminate()
-  {
-    $this->terminate();
-
-    /*
-     * return an empty instance
-     */
-    $this->setResultClass("qcl_access_AuthenticationResult");
-    return $this->result();
-  }
 
   /**
    * Terminates and destroys the active session
@@ -327,244 +264,64 @@ class qcl_access_Controller
 
     if ( ! $activeUser )
     {
-      //$this->warn("Cannot log out, nobody is logged in");
+      $this->log("No need to log out, nobody is logged in","access");
       return false;
     }
 
     $username  = $activeUser->username();
+    $userId    = $activeUser->getId();
     $sessionId = $this->getSessionId();
 
-    $this->info("Logging out: $username ($sessionId)." );
+    $this->log("Logging out: user '$username' user #$userId, session #$sessionId.","access" );
 
     /*
      * delete user data if anonymous guest
      */
     if ( $activeUser->isAnonymous() )
     {
+      $this->log("Deleting user #$userId ...","access" );
       $activeUser->delete();
     }
 
     /*
      * unset active user
      */
+    $this->log("Deleting active user ...","access" );
     $this->setActiveUser(null);
 
     return true;
   }
 
-  /**
-   * Whether guest access to the service classes is allowed
-   * @return unknown_type
-   */
-  public function isAnonymousAccessAllowed()
-  {
-    return $this->getIniValue("service.allow_anonymous_access");
-  }
-
 
   /**
-   * Grant guest access
-   * @todo config data should be written to config table and deleted when guest user sessions are deleted.
-   * @return void
+   * Grant guest access, using a new session.
+   * @return int user id
    */
   public function grantAnonymousAccess()
   {
-    /*
-     * create a new session
-     */
-    $this->createSessionId();
 
     /*
      * create a new guest user
      */
     $userModel = $this->getUserModel();
     $userId = $userModel->createAnonymous();
-    $this->setActiveUser( $userModel );
-    $sessionId = $this->getSessionId();
 
     /*
-     * log message
+     * create user session for this user
      */
-    $this->info ("Granting anonymous access (user id #$userId, session id #$sessionId ).");
-  }
+    $this->log ("Granting anonymous access user #$userId.","access");
+    $this->createUserSessionByUserId( $userId );
 
-
-  /**
-   * Actively authenticate the user with username and password.
-   * Returns data for the authentication store.
-   *
-   * @param string $param[0] username
-   * @param string $param[1] (MD5-encoded) password
-   * @return qcl_access_AuthenticationResult
-   */
-  public function method_authenticate( $params )
-  {
-
-    /*
-     * set data object
-     */
-    $this->setResultClass("qcl_access_AuthenticationResult");
-
-
-    /*
-     * check for valid user session
-     */
-    $validUserSession = $this->isValidUserSession();
-
-    /*
-     * authentication with
-     */
-    if ( count ( $params ) == 2 )
-    {
-
-      /*
-       * arguments
-       */
-      $username   = utf8_decode($params[0]);
-      $password   = utf8_decode($params[1]);
-
-      /*
-       * username-password-authentication
-       */
-      $userId = $this->authenticate( $username, $password );
-      if ( $userId )
-      {
-        $logMsg = $this->setActiveUserById( $userId );
-
-        /*
-         * reset the timestamp of the user
-         */
-        $activeUser = $this->getActiveUser();
-        $activeUser->resetLastAction();
-      }
-
-      /*
-       * authentication failed, abort request
-       */
-      else
-      {
-        /*
-         * log message
-         */
-        $this->info( $this->getError() );
-
-        return $this->userNotice(
-          $this->tr("Wrong username or password.")
-        );
-      }
-    }
-
-    /*
-     * one parameter, session Id
-     */
-    elseif ( count( $params ) == 1 )
-    {
-
-      $sessionId = $params[0];
-
-      /*
-       * guest acces
-       */
-      if ( is_null( $sessionId ) )
-      {
-        if ( $this->isAnonymousAccessAllowed() )
-        {
-          $this->grantAnonymousAccess();
-        }
-        else
-        {
-          $this->setResult("error","Anonymous access denied.");
-          return $this->result();
-        }
-      }
-
-      /*
-       * requesting guest access
-       */
-      elseif ( is_string( $sessionId ) )
-      {
-
-        if ( $this->isValidUserSession( $sessionId ) )
-        {
-          $activeUser = $this->getActiveUser();
-          $username = $activeUser->username();
-          $logMsg = "Continuing session: $username ($sessionId).";
-        }
-        else
-        {
-          if ( $this->isAnonymousAccessAllowed() )
-          {
-            $this->grantAnonymousAccess();
-          }
-          else
-          {
-            $this->setResult("error","Invalid session id.");
-            return $this->result();
-          }
-        }
-      }
-
-      /*
-       * error
-       */
-      else
-      {
-        $this->raiseError("Invalid parameters");
-      }
-    }
-
-    /*
-     * error
-     */
-    else
-    {
-      $this->raiseError("Wrong parameter count");
-    }
-
-    /*
-     * access data
-     * @todo rename security -> access
-     */
-    $activeUser = $this->getActiveUser();
-    $permissions = $activeUser->getPermissions();
-    $this->setResult( "permissions", $permissions );
-
-    /*
-     * session id
-     */
-    $sessionId  = $this->getSessionId();
-    $this->setResult( "sessionId",$sessionId);
-
-    /*
-     * user data
-     */
-    $this->setResult( "userId", (int) $activeUser->getId() );
-    $this->setResult( "anonymous", $activeUser->isAnonymous() );
-    $this->setResult( "username", $activeUser->username() );
-    $this->setResult( "fullname", $activeUser->get("name") );
-
-    /*
-     * no error
-     */
-    $this->setResult( "error", false );
-
-    /*
-     * log message
-     */
-    $this->info( $logMsg );
-
-    /*
-     * return data to client
-     */
-    return $this->result();
+    return $userId;
   }
 
   /**
-   * Sets the active user by a given user id
+   * Creates a valid user session for the given user id, i.e. creates
+   * the user object and the session.
    * @param $userId
-   * @return string log message
+   * @return void
    */
-  public function setActiveUserById( $userId )
+  public function createUserSessionByUserId( $userId )
   {
     /*
      * check if user is already logged in
@@ -581,9 +338,8 @@ class qcl_access_Controller
        */
       $username  = $activeUser->username();
       $sessionId = $this->getSessionId();
-      $logMsg = "$username already logged in. Continuing session #$sessionId.";
+      $this->log("$username already logged in. Continuing session #$sessionId.","access");
     }
-
 
     /*
      * user is different from user that owns the session
@@ -591,7 +347,7 @@ class qcl_access_Controller
     else
     {
       /*
-       * if an active user exists, log out
+       * if an active user exists, log out this user
        */
       if ( $activeUser )
       {
@@ -601,15 +357,16 @@ class qcl_access_Controller
       /*
        * ... create new session
        */
-      $this->createSessionId();
+      $sessionId = $this->createSessionId();
 
       /*
        * save a copy of the current user model as
-       * the new active user
+       * the new active user and reset its timestamp
        */
-      $userModel = $this->getUserModel( $userId );
-      $this->setActiveUser( $userModel );
-      $activeUser = $this->getActiveUser();
+      $userModel  = $this->getUserModel( $userId );
+      $activeUser = $userModel->cloneObject();
+      $this->setActiveUser( $activeUser );
+      $activeUser->resetLastAction();
 
       /*
        * save the user id in the session
@@ -619,56 +376,41 @@ class qcl_access_Controller
       /*
        * log message
        */
-      $sessionId = $this->getSessionId();
-      $logMsg = "Login successful. New session: $username ($sessionId)";
+      $this->log( "New session: user #$userId, session #$sessionId","access");
     }
-
-    return $logMsg;
   }
 
   /**
    * Checks whether a timeout has occurred for a given user
-   * @param string $userName user name
+   * @param int $userid id of user
    * @return bool true if user can stay logged in, false if logout should be forced
    */
-  public function checkTimeout()
+  public function checkTimeout( $userId )
   {
-    /*
-     * models
-     */
     $configModel = $this->getApplication()->getConfigModel();
-    $activeUser  = $this->getActiveUser();
-
-    /*
-     * timeout
-     */
-    $timeout = (int) either( $configModel->getKey("qcl.session.timeout"), 30*60 ); // timeout in seconds, defaults to 30 minutes
-    $seconds = (int) $activeUser->getSecondsSinceLastAction();
-
-    //$this->debug("User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
-
+    $userModel   = $this->getUserModel( $userId );
+    $userName    = $userModel->username();
+    $timeout     = either( $configModel->getKey("qcl.session.timeout"), QCL_ACCESS_TIMEOUT );
+    $seconds     = $userModel->getSecondsSinceLastAction();
+    $this->log("User $userModel, $seconds seconds since last action, timeout is $timeout seconds.","access");
 
     /*
      * logout if timeout has occurred
      */
     if ( $seconds > $timeout )
     {
-      $userName = $activeUser->username();
-      $this->info( "$userName : $seconds seconds after last activity (Timeout $timeout seconds)." );
       return false;
     }
 
     /*
      * reset the timestamp
      */
-    $activeUser->resetLastAction();
+    $userModel->resetLastAction();
     return true;
   }
 
-
   /**
-   * Returns the current session id. Defaults to PHP session id.
-   * Override in parent classes for more sophisticated session handling
+   * Returns the current PHP session id.
    * @return string session id
    */
   public function getSessionId()
@@ -677,23 +419,35 @@ class qcl_access_Controller
   }
 
   /**
-   * Sets the session id. Breaks the current session!
+   * Sets the PHP session id, which deletes the PHP session data.
    * @param string $sessionId
    * @return void
    */
   public function setSessionId( $sessionId )
   {
-    if ( $sessionId != $this->getSessionId() )
+    $old = $this->getSessionId();
+    if ( $sessionId != $old )
     {
-      session_destroy();
+      $this->destroySession( $old );
+      $this->log("Starting new session id #$sessionId","access");
       session_id( $sessionId );
       session_start();
     }
-    $this->getApplication()->getAccessManager()->setSessionId( $sessionId );
   }
 
   /**
-   * Creates a new session id.
+   * Destroys a session by its id
+   * @param $sessionId
+   * @return void
+   */
+  public function destroySession( $sessionId )
+  {
+    $this->log("Destroying old session #$sessionId","access");
+    session_destroy();
+  }
+
+  /**
+   * Creates a new session id and sets it.
    * @return string The session id
    */
   public function createSessionId( )
@@ -702,8 +456,20 @@ class qcl_access_Controller
      * create random session id
      */
     $sessionId = md5( microtime() );
+    $this->log("Creating new session id ...","access");
     $this->setSessionId( $sessionId );
     return $sessionId;
+  }
+
+  /**
+   * Get the active user id from the session id.
+   * @param int $sessionId
+   * @return int
+   * @throws qcl_access_InvalidSessionException
+   */
+  public function getUserIdFromSession( $sessionId )
+  {
+    throw new qcl_access_InvalidSessionException("Controller does not support sessions");
   }
 
   /**
@@ -712,18 +478,24 @@ class qcl_access_Controller
    */
   public function getActiveUser()
   {
-    return $this->getApplication()->getAccessManager()->getActiveUser();
+    return $this->_activeUser;
   }
 
   /**
-   * Sets the active user. This will copy the user id into the
-   * session variable, in case the client doesn't provide a session id.
+   * Sets the active user.
    * @param qcl_access_model_User $userObject A user object or null to logout.
    * @return void
    */
   public function setActiveUser( $userObject )
   {
-    $this->getApplication()->getAccessManager()->setActiveUser( $userObject );
+    if ( $userObject === null or $userObject instanceof qcl_access_model_User )
+    {
+      $this->_activeUser = $userObject;
+    }
+    else
+    {
+      $this->raiseError("Invalid user object");
+    }
   }
 
   /**
@@ -733,7 +505,6 @@ class qcl_access_Controller
    */
   public function fireServerEvent ( $type )
   {
-    require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->fireServerEvent( $this, $type, $data );
   }
 
@@ -745,7 +516,6 @@ class qcl_access_Controller
    */
   public function fireServerDataEvent ( $type, $data )
   {
-    require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->fireServerDataEvent( $this, $type, $data );
   }
 }
