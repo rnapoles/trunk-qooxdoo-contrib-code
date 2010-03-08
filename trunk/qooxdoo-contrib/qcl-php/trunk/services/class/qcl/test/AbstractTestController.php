@@ -4,11 +4,48 @@ require_once "qcl/data/controller/Controller.php";
 class qcl_test_AbstractTestController
   extends qcl_data_controller_Controller
 {
-   /**
-    * A test controller should not require authentication
-    * @var unknown_type
-    */
-   var $skipAuthentication = true;
+  /**
+   * A test controller should not require authentication
+   * @var unknown_type
+   */
+  public $skipAuthentication = true;
+
+
+  /**
+   *
+   * @return unknown_type
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->getLogger()->setFilterEnabled("xml",false);
+    $this->getLogger()->setFilterEnabled("propertyModel",false);
+  }
+
+  /**
+   * Creates a anonymous user or reuse an existing session. Returns the
+   * user id of the anonymous user.
+   * @return int The user id of the anoymous user
+   */
+  public function anonymousAccess()
+  {
+    if ( ! $this->getApplication() )
+    {
+      $this->raiseError("Cannot create anonymous access without an application instance.");
+    }
+
+    $userController = $this->getApplication()->getAccessBehavior()->getAccessController();
+    if ( ! $_SESSION['sessionId'] )
+    {
+      $userController->grantAnonymousAccess();
+      $_SESSION['sessionId'] = $userController->getSessionId();
+    }
+    else
+    {
+      $userController->setSessionId($_SESSION['sessionId']);
+    }
+    return $userController->createUserSession($_SESSION['sessionId']);
+  }
 
   /**
    * Analyzes a PhpRpc method's doc comment. This allows to provide non-standard

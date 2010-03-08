@@ -17,9 +17,9 @@
  */
 
 /**
- * Interface for classes that provide authentication
+ * Interface for classes that provide access behavior
  */
-interface qcl_access_IAuthentication
+interface qcl_access_IAccessService
 {
 
   /**
@@ -41,10 +41,13 @@ interface qcl_access_IAuthentication
    *    "error"     => "Error message",
    *    "sessionId" => <session id or null if no session>
    * )
-   * @param array $params Array of parameters
-   * @return array
+   * @param string $first If two arguments, this is the username. If no argument,
+   * or null use the session id that has already been established by the access
+   * behavior.
+   * @param string $password (MD5-encoded) password
+   * @return qcl_access_AuthenticationResult
    */
-  function method_authenticate( $params );
+  function method_authenticate( $first=null, $password=null );
 
   /**
    * Service method to log out the active user. Automatically creates guest

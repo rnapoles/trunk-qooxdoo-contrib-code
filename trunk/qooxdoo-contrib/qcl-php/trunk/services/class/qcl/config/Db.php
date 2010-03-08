@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/access/Manager.php";
+require_once "qcl/access/Behavior.php";
 require_once "qcl/data/model/xmlSchema/DbModel.php";
 require_once "qcl/config/IConfig.php";
 
@@ -61,14 +61,18 @@ class qcl_config_Db
    */
   private function getUserModel( $id=null )
   {
-    $userModel = $this->getApplication()->getAccessManager()->getUserModel();
+    $userModel = $this->getApplication()->getAccessBehavior()->getUserModel();
     if ( $id ) $userModel->load( $id );
     return $userModel;
   }
 
+  /**
+   * Returns the active user object
+   * @return qcl_access_model_User
+   */
   private function getActiveUser()
   {
-    return $this->getApplication()->getAccessManager()->getActiveUser();
+    return $this->getApplication()->getAccessBehavior()->getActiveUser();
   }
 
   ////// API FUNCTIONS
@@ -97,7 +101,7 @@ class qcl_config_Db
 		/*
 		 * check permission
 		 */
-    $activeUser  = $this->getApplication()->getAccessManager()->getActiveUser();
+    $activeUser  = $this->getApplication()->getAccessBehavior()->getActiveUser();
 
     //$activeUser->requirePermission("qcl.config.permissions.manage");
 
@@ -179,9 +183,8 @@ class qcl_config_Db
      */
     if ( $userId === false )
     {
-      $userModel = $this->getApplication()->getAccessManager()->getActiveUser();
-      $userId = $userModel? $userModel->getId() : null;
-
+      $userModel = $this->getApplication()->getAccessBehavior()->getActiveUser();
+      $userId    = $userModel? $userModel->getId() : null;
     }
 
     /*
@@ -287,7 +290,7 @@ class qcl_config_Db
     /*
      * user model
      */
-    if ( $userId )
+    if ( (int) $userId > 0 )
     {
       $userModel = $this->getUserModel( $userId );
     }
@@ -298,22 +301,18 @@ class qcl_config_Db
       {
         $userId = $userModel->getId();
       }
+      else
+      {
+        $this->raiseError("No active user!");
+      }
     }
-    else
+    elseif ( $userId === null )
     {
       $userModel = $this->getActiveUser();
     }
-
-    if ( $userModel )
+    elseif ( $userId !== 0)
     {
-      $username = $userModel->username();
-    }
-    else
-    {
-      /*
-       * without a valid user, only global values can be set
-       */
-      $userId = null;
+      $this->raiseError("Invalid userId `$userId`");
     }
 
     /*

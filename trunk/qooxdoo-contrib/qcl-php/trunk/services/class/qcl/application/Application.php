@@ -28,10 +28,6 @@ if ( ! defined("QCL_SERVICE_CONFIG_FILE") )
  * Dependencies
  */
 require_once "qcl/__init__.php";
-require_once "qcl/core/StaticClass.php";
-require_once "qcl/server/Server.php";
-require_once "qcl/config/Manager.php";
-require_once "qcl/event/message/Bus.php";
 
 
 /**
@@ -89,7 +85,7 @@ class qcl_application_Application
 
   /**
    * Return the current server instance.
-   * @return AbstractServer
+   * @return qcl_server_JsonRpc
    */
   public function getServer()
   {
@@ -107,14 +103,6 @@ class qcl_application_Application
     return $this->getServer()->getController();
   }
 
-  /**
-   * Getter for configuration manager instance
-   * @return qcl_config_Manager
-   */
-  public function getConfigManager()
-  {
-    return qcl_config_Manager::getInstance();
-  }
 
   /**
    * Returns the config model singleton instance used by the application
@@ -122,7 +110,8 @@ class qcl_application_Application
    */
   public function getConfigModel()
   {
-    return $this->getConfigManager()->getModel();
+    require_once "qcl/config/Db.php";
+    return qcl_config_Db::getInstance();
   }
 
   /**
@@ -138,13 +127,12 @@ class qcl_application_Application
   }
 
   /**
-   * Getter for access manager
-   * @return qcl_access_Manager
+   * Sborthand getter for access behavior attached
+   * @return qcl_access_Behavior
    */
-  public function getAccessManager()
+  public function getAccessBehavior()
   {
-    require_once "qcl/access/Manager.php";
-    return qcl_access_Manager::getInstance();
+    return $this->getServer()->getAccessBehavior();
   }
 
 
@@ -184,28 +172,6 @@ class qcl_application_Application
       * @todo this is still a hack
       */
      require_once "qcl/data/persistence/db/Object.php";
-
-     /*
-      * set the default models for config, session and messages. If you
-      * want to use different models, set them before calling this method
-      */
-     if ( ! $this->getConfigManager()->getModel() )
-     {
-       require_once "qcl/config/Db.php";
-       $this->getConfigManager()->setModel( qcl_config_Db::getInstance() );
-     }
-     if ( ! $this->getAccessManager()->getSessionModel() )
-     {
-       require_once "qcl/access/model/Session.php";
-       $this->getAccessManager()->setSessionModel( qcl_access_model_Session::getInstance() );
-     }
-     if ( ! $this->getMessageBus()->getModel() )
-     {
-       require_once "qcl/event/message/db/Message.php";
-       $this->getMessageBus()->setModel( qcl_event_message_db_Message::getInstance() );
-     }
-
-
   }
 
   /**

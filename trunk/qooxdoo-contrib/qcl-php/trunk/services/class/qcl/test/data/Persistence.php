@@ -44,7 +44,7 @@ class class_qcl_test_data_Persistence
    */
   function method_testPersistence()
   {
-    $sessionId = $this->skipAuthentication ? null : qcl_access_Manager::getSessionId();
+    $sessionId = $this->getSessionId();
     $obj = new TestPersistence("TestPersistence", null, $sessionId );
     $this->info('Initialized $obj->foo = ' . $obj->foo);
     $obj->foo = rand(1,100);
@@ -63,13 +63,10 @@ class class_qcl_test_data_Persistence
     return $this->result();
   }
 
-
-
   /**
    * Tests the persistence behavior mechanism
    * @return object
    * @rpctest {
-   *   "label" : "The label in the menu",
    *   "requestData" : {
    *     "method" : "testPersistenceBehavior"
    *   },

@@ -211,18 +211,9 @@ class qcl_data_model_Abstract extends qcl_core_Object
     }
     else
     {
-      $controller = qcl_application_Application::getInstance()->getController();
+      $controller = $this->getApplication()->getController();
     }
     return $controller;
-  }
-
-  /**
-   * Returns the controller object
-   * @return qcl_data_controller_Controller
-   */
-  public function controller()
-  {
-    return $this->getController();
   }
 
 
@@ -231,11 +222,8 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function server()
   {
-    return qcl_server_Server::getInstance()->getServerObject();
+    return $this->getApplication()->getServer();
   }
-
-
-
 
   /**
    * Stores the name or object reference of the datasource that
@@ -864,7 +852,8 @@ class qcl_data_model_Abstract extends qcl_core_Object
     {
       if ( ! is_array($this->currentRecord ) or count($this->currentRecord) == 0)
       {
-        $this->raiseError("Cannot get property '$name' from model '{$this->name}: no record loaded.");
+        $this->raiseError("Cannot get property '$name' from model '" .
+          $this->name() . "': no record loaded.");
       }
     }
 
@@ -876,7 +865,8 @@ class qcl_data_model_Abstract extends qcl_core_Object
       $this->findById( $id );
       if ( $this->foundNothing() )
       {
-        $this->raiseError("Cannot get property '$name' from model '{$this->name}: Record #$id does not exist.");
+        $this->raiseError("Cannot get property '$name' from model '" .
+          $this->name() . "': Record #$id does not exist.");
       }
     }
 
@@ -891,6 +881,11 @@ class qcl_data_model_Abstract extends qcl_core_Object
     return $value;
   }
 
+  /**
+   * Get the property without type conversion
+   * @param $name
+   * @return mixed
+   */
   public function getRawProperty( $name )
   {
     if ( ! $this->hasProperty($name) )

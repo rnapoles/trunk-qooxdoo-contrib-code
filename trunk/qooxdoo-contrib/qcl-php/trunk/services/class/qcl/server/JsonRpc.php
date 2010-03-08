@@ -16,7 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "services/server/JsonRpcServer.php";
-require_once "qcl/access/Manager.php";
 require_once "qcl/event/Dispatcher.php";
 require_once "qcl/event/message/Bus.php";
 require_once "qcl/server/Response.php";
@@ -97,11 +96,17 @@ class qcl_server_JsonRpc extends JsonRpcServer
 
   /**
    * Getter for the access manager
-   * @return qcl_access_Manager
+   * @return qcl_access_Behavior
    */
-  public function getAccessManager()
+  public function getAccessBehavior()
   {
-    return qcl_access_Manager::getInstance();
+    static $accessBehavior = null;
+    if ( is_null($accessBehavior) )
+    {
+      require_once "qcl/access/Behavior.php";
+      $accessBehavior = new qcl_access_Behavior();
+    }
+    return $accessBehavior;
   }
 
   /**
@@ -188,24 +193,6 @@ class qcl_server_JsonRpc extends JsonRpcServer
     $serviceObject = parent::getServiceObject( $className );
 
     /*
-     * Check if service has been aborted in the constructor.
-     */
-    if ( method_exists( $serviceObject, "isAborted")
-        && $serviceObject->isAborted() )
-    {
-      /*
-       * do not execute any method but skip to response
-       * immediately
-       */
-      $this->info("Aborted in the constructor...");
-      $this->sendReply(
-        $this->formatOutput( $serviceObject->result() ),
-        $this->scriptTransportId
-      );
-      exit;
-    }
-
-    /*
      * store service object
      */
     $this->_controller = $serviceObject;
@@ -230,12 +217,11 @@ class qcl_server_JsonRpc extends JsonRpcServer
   /**
    * Check the accessibility of service object and service
    * method. Aborts request when access is denied.
-   * @see qcl_access_Manager::controlAccess()
    * @return void
    */
   public function checkAccessibility( $serviceObject, $method )
   {
-    $this->getAccessManager()->controlAccess( $serviceObject, $method );
+    $this->getAccessBehavior()->controlAccess( $serviceObject, $method );
   }
 
   /**
@@ -265,7 +251,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
     {
       $events    = $this->getEventDispatcher()->getServerEvents();
       $response->setEvents( $events );
-      $sessionId = $this->getAccessManager()->getSessionId();
+      $sessionId = $this->getAccessBehavior()->getSessionId();
       $messages  = $this->getMessageBus()->getServerMessages( $sessionId );
       $response->setMessages( $messages );
     }
@@ -301,7 +287,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
      * authentication
      */
     $sessionId = $_REQUEST['sessionId'];
-    $userController = $this->getAccessManager()->getAccessController();
+    $userController = $this->getAccessBehavior()->getAccessController();
     if ( ! $sessionId or
          ! $userController->isValidUserSession( $sessionId ) )
     {

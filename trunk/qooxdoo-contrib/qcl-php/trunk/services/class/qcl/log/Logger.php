@@ -134,7 +134,7 @@ class qcl_log_Logger
      */
     if ( ! isset( $this->filters[$filter] ) )
     {
-      trigger_error("Filter $filter does not exist.");
+      trigger_error("Filter $filter does not exist." );
     }
     if ( ! is_bool($value) )
     {
