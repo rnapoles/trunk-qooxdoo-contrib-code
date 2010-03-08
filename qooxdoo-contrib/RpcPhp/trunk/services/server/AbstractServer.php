@@ -1058,5 +1058,14 @@ class AbstractServer
     return "http://" . getenv ( HTTP_HOST ) . $_SERVER['PHP_SELF'];
   }
 
+  /**
+   * Returns the IP of the remote hosts
+   * @return string
+   */
+  public function getRemoteIp()
+  {
+    return $_SERVER['REMOTE_ADDR'];
+  }
+
 }
 ?>
