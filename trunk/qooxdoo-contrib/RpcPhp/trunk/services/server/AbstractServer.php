@@ -380,7 +380,7 @@ class AbstractServer
    */
   public function getServerData( $key=null )
   {
-    if ( is_null($key) )
+    if ( is_null( $key ) )
     {
       return $this->serverData;
     }
@@ -612,13 +612,16 @@ class AbstractServer
     /*
      * See if the result of the function was actually an error
      */
-    if ( is_a( $result, "AbstractError" ) )
+    if ( $result instanceof AbstractError )
     {
       /*
        * Yup, it was. Set the origin to application and return the error
        */
       $result->setId( $this->getId() );
       $result->setOrigin( JsonRpcError_Origin_Application );
+
+      $this->debug("### Error: " . $result->getMessage() );
+
       $result->sendAndExit();
       /* never gets here */
     }
@@ -974,16 +977,6 @@ class AbstractServer
     {
       $result = $exception;
       $result->setId( $this->getId() );
-    }
-    catch ( Exception $exception )
-    {
-      $result = new AbstractError(
-        "PHP Script Error: "  . $exception->getMessage() . "in " . $exception->getFile() . ", line " . $exception->getLine(),
-        JsonRpcError_ScriptError,
-        null,
-        JsonRpcError_Origin_Application
-      );
-      $this->log( $exception->getTraceAsString() );
     }
     return $result;
   }

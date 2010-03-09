@@ -6,7 +6,7 @@
  * http://qooxdoo.org
  *
  * Copyright:
- *   2006-2009 Derrell Lipman, Christian Boulanger
+ *   2006-2010 Derrell Lipman, Christian Boulanger
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -381,11 +381,47 @@ class JsonRpcServer extends AbstractServer
     /*
      * error handler function for php jsonrpc
      */
-    set_error_handler( array($this,"jsonRpcErrorHandler") );
+    set_exception_handler( array( $this, "jsonRpcExceptionHandler" ) );
+    set_error_handler( array( $this,"jsonRpcErrorHandler" ) );
+
   }
 
   /**
-   * jsonrpc error handler to output json error response messages
+   *
+   * @param Exception $exception
+   * @return void
+   */
+  function jsonRpcExceptionHandler( Exception $e )
+  {
+    $errtype = "Uncaught Exception";
+    $errstr  = $e->getMessage();
+    $errfile = $e->getFile();
+    $errline = $e->getLine();
+
+    /*
+     * Error message
+     */
+    $errmsg = "$errtype: $errstr in $errfile, line $errline ";
+
+    /*
+     * log error message
+     */
+    $this->logError( $errmsg, true );
+
+    /*
+     * return jsonified error message
+     */
+    $this->getErrorBehavior()->setError($errno, $errmsg);
+    $this->getErrorBehavior()->sendAndExit();
+  }
+
+  /**
+   * Jsonrpc error handler to output json error response messages
+   * @param int $errno
+   * @param string $errstr
+   * @param string $errfile
+   * @param string $errline
+   * @return void
    */
   function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
   {
@@ -421,6 +457,7 @@ class JsonRpcServer extends AbstractServer
 
       case E_USER_NOTICE:
         $errtype= "User Notice";
+        $includeBacktrace = true;
         break;
 
       case E_STRICT:
