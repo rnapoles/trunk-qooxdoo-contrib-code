@@ -35,6 +35,13 @@ interface qcl_access_IAccessBehavior
   public function getSessionModel();
 
   /**
+   * Starts a session, i.e. creates a valid session id if one doesn't
+   * exist already
+   * @return void
+   */
+  public function startSession();
+
+  /**
    * Getter for server object
    * @return unknown_type
    */
@@ -140,5 +147,17 @@ interface qcl_access_IAccessBehavior
    * @return int user id
    */
   public function grantAnonymousAccess();
+
+  /**
+   * Logs out the current user
+   * @return void
+   */
+  public function logout();
+
+  /**
+   * Terminates a session
+   * @return void
+   */
+  public function terminate();
 }
 ?>

@@ -215,7 +215,7 @@ class qcl_config_Db
     {
       if ( is_null( $userId ) )
       {
-        $this->raiseError("No global value exists for '$namedId'.");
+        $this->raiseError("Config key '$namedId' does not exist.");
       }
       elseif ( $userId === 0)
       {
@@ -394,12 +394,18 @@ class qcl_config_Db
      */
     elseif ( ! $foundUserVariant and ! $isGlobalKey  )
     {
-      $id = $this->insert(array(
+      $data = array(
         'namedId' => $namedId,
         'type'    => $this->getType(),
         'permissionWrite' => $this->getProperty("permissionWrite"),
         'userId'  => $userId
-      ) );
+      );
+      $id = $this->insert($data);
+      if ( ! $id )
+      {
+        $this->raiseError("Could not create user variant for key '$namedId', user #$userId.");
+      }
+
       $this->load( $id );
     }
 
@@ -412,7 +418,7 @@ class qcl_config_Db
     $permissionWrite = $this->getProperty("permissionWrite");
     if( $permissionWrite )
     {
-      if( ! $userModel->hasPermisson($permissionWrite) )
+      if( ! $userModel->hasPermission( $permissionWrite ) )
       {
         $this->userNotice("User '$username' has no permission to change config key '$namedId'");
       }

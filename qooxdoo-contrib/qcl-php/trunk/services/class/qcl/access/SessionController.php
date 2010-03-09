@@ -50,10 +50,12 @@ class qcl_access_SessionController
     /*
      * on-the-fly authentication
      */
-    $sessionId = either(
-      $this->getSessionIdFromServerData(),
-      $this->getSessionIdFromParentSessionId()
-    );
+    $sessionId = $this->getSessionIdFromServerData();
+
+    if ( ! $sessionId )
+    {
+      $sessionId = $this->getSessionIdFromParentSessionId();
+    }
 
     /*
      * we have no valid session
@@ -63,7 +65,7 @@ class qcl_access_SessionController
       throw new qcl_access_InvalidSessionException("No valid session.");
       return false;
     }
-    $this->log("Got session id from request: $sessionId","access");
+    $this->log("Got session id from request: #$sessionId","access");
 
     /*
      * get user id from session. deny access if not valid
@@ -78,7 +80,7 @@ class qcl_access_SessionController
     /*
      * We have a valid user now.
      */
-    $this->log("Got user id from session: $userId","access");
+    $this->log("Got user id from session: #$userId","access");
 
     /*
      * Check if the user's session has timed out
@@ -143,7 +145,7 @@ class qcl_access_SessionController
    */
   public function getSessionIdFromServerData()
   {
-    $server = $this->getApplication()->getServer();
+
 
     /*
      * if we have a session id in the server data, return it
@@ -158,8 +160,9 @@ class qcl_access_SessionController
      * otherwise, try getting a session id from authenticating a
      * user
      */
-    $username  = $server->getServerData("username");
-    $password  = $server->getServerData("password");
+    $server   = $this->getApplication()->getServer();
+    $username = $server->getServerData("username");
+    $password = $server->getServerData("password");
 
     if ( $username and $password )
     {
@@ -193,8 +196,8 @@ class qcl_access_SessionController
   }
 
   /**
-   * @override
-   * @see qcl_access_Controller::logout()
+   * Logs out a user
+   * @return void
    */
   public function logout()
   {
@@ -206,7 +209,7 @@ class qcl_access_SessionController
     /*
      * logout
      */
-    return parent::logout();
+    parent::logout();
   }
 
   //-------------------------------------------------------------
@@ -325,18 +328,18 @@ class qcl_access_SessionController
       $activeUserId = $sessionModel->get("userId");
       if ( ! $activeUserId )
       {
-        throw new qcl_access_InvalidSessionException("Session $sessionId is not connected with a user id!");
+        throw new qcl_access_InvalidSessionException("Session #$sessionId is not connected with a user id!");
       }
       $userModel = $this->getUserModel();
       if ( ! $userModel->exists( array("id" => $activeUserId ) ) )
       {
-        throw new qcl_access_InvalidSessionException("Session $sessionId refers to a non-existing user.");
+        throw new qcl_access_InvalidSessionException("Session #$sessionId refers to a non-existing user.");
       }
       return $activeUserId;
     }
     else
     {
-      throw new qcl_access_InvalidSessionException("Session $sessionId does not exist.");
+      throw new qcl_access_InvalidSessionException("Session #$sessionId does not exist.");
     }
   }
 

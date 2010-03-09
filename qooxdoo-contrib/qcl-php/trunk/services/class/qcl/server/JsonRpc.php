@@ -568,7 +568,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
   public function logError( $msg, $includeBacktrace = false )
   {
     $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg;
-    if ( $includeBacktrace )
+    if ( true ) //$includeBacktrace )
     {
       $msg .= "\n" . debug_get_backtrace();
     }

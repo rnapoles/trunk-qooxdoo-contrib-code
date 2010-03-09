@@ -170,16 +170,7 @@ class qcl_access_Controller
   {
     $server = $this->getApplication()->getServer();
     $sessionId = $server->getServerData("sessionId");
-
-    /*
-     * if we have a session id in the server data, return it
-     */
-    if ( $sessionId )
-    {
-      return $sessionId;
-    }
-
-    return null;
+    return $sessionId;
   }
 
   /**
@@ -279,7 +270,6 @@ class qcl_access_Controller
      */
     if ( $activeUser->isAnonymous() )
     {
-      $this->log("Deleting user #$userId ...","access" );
       $activeUser->delete();
     }
 
@@ -289,9 +279,14 @@ class qcl_access_Controller
     $this->log("Deleting active user ...","access" );
     $this->setActiveUser(null);
 
+    /*
+     * destroy php session
+     */
+    $this->log("Destroying session ...","access" );
+    $this->destroySession( $sessionId );
+
     return true;
   }
-
 
   /**
    * Grant guest access, using a new session.
@@ -307,9 +302,10 @@ class qcl_access_Controller
     $userId = $userModel->createAnonymous();
 
     /*
-     * create user session for this user
+     * create new session id and user session for this user
      */
     $this->log ("Granting anonymous access user #$userId.","access");
+    $this->createSessionId();
     $this->createUserSessionByUserId( $userId );
 
     return $userId;
@@ -317,67 +313,52 @@ class qcl_access_Controller
 
   /**
    * Creates a valid user session for the given user id, i.e. creates
-   * the user object and the session.
+   * the user object if needed. A valid session must already exist.
    * @param $userId
    * @return void
    */
   public function createUserSessionByUserId( $userId )
   {
+
+    $sessionId = $this->getSessionId();
+
     /*
-     * check if user is already logged in
+     * check if user is already logged in or is not the one
+     * we're supposed to log in
      */
     $activeUser = $this->getActiveUser();
 
-    /*
-     * user is already logged in
-     */
-    if ( $activeUser and $activeUser->getId() == $userId )
+    if ( $activeUser )
     {
-      /*
-       * log message
-       */
-      $username  = $activeUser->username();
-      $sessionId = $this->getSessionId();
-      $this->log("$username already logged in. Continuing session #$sessionId.","access");
-    }
-
-    /*
-     * user is different from user that owns the session
-     */
-    else
-    {
-      /*
-       * if an active user exists, log out this user
-       */
-      if ( $activeUser )
+      if ( $activeUser->getId() != $userId )
       {
-        $this->logout();
+        throw new qcl_access_AuthenticationException("A different user is already logged in.");
       }
-
-      /*
-       * ... create new session
-       */
-      $sessionId = $this->createSessionId();
-
-      /*
-       * save a copy of the current user model as
-       * the new active user and reset its timestamp
-       */
-      $userModel  = $this->getUserModel( $userId );
-      $activeUser = $userModel->cloneObject();
-      $this->setActiveUser( $activeUser );
-      $activeUser->resetLastAction();
-
-      /*
-       * save the user id in the session
-       */
-      qcl_util_registry_Session::set("activeUserId", $userId );
-
-      /*
-       * log message
-       */
-      $this->log( "New session: user #$userId, session #$sessionId","access");
+      else
+      {
+        $this->log("User #$userId already logged in. Continuing session #$sessionId.","access");
+        return;
+      }
     }
+
+    /*
+     * save a copy of the current user model as
+     * the new active user and reset its timestamp
+     */
+    $userModel  = $this->getUserModel( $userId );
+    $activeUser = $userModel->cloneObject();
+    $this->setActiveUser( $activeUser );
+    $activeUser->resetLastAction();
+
+    /*
+     * save the user id in the session
+     */
+    qcl_util_registry_Session::set("activeUserId", $userId );
+
+    /*
+     * log message
+     */
+    $this->log( "New user session: user #$userId, session #$sessionId","access");
   }
 
   /**
@@ -390,9 +371,20 @@ class qcl_access_Controller
     $configModel = $this->getApplication()->getConfigModel();
     $userModel   = $this->getUserModel( $userId );
     $userName    = $userModel->username();
-    $timeout     = either( $configModel->getKey("qcl.session.timeout"), QCL_ACCESS_TIMEOUT );
-    $seconds     = $userModel->getSecondsSinceLastAction();
-    $this->log("User $userModel, $seconds seconds since last action, timeout is $timeout seconds.","access");
+
+    /*
+     * timeout
+     */
+    if ( $configModel->hasKey("qcl.session.timeout") )
+    {
+      $timeout = $configModel->getKey("qcl.session.timeout");
+    }
+    else
+    {
+      $timeout = QCL_ACCESS_TIMEOUT;
+    }
+    $seconds = $userModel->getSecondsSinceLastAction();
+    $this->log("User #$userId, $seconds seconds since last action, timeout is $timeout seconds.","access");
 
     /*
      * logout if timeout has occurred
@@ -425,14 +417,31 @@ class qcl_access_Controller
    */
   public function setSessionId( $sessionId )
   {
+    if ( ! $this->isValidSessionId( $sessionId ) )
+    {
+      throw new qcl_access_InvalidSessionException("Invalid session id #$sessionId.");
+    }
     $old = $this->getSessionId();
     if ( $sessionId != $old )
     {
-      $this->destroySession( $old );
+      if ( $this->isValidSessionId( $old ) )
+      {
+        $this->destroySession( $old );
+      }
       $this->log("Starting new session id #$sessionId","access");
       session_id( $sessionId );
       session_start();
     }
+  }
+
+  /**
+   * Checks if session id is legal
+   * @param $sessionId
+   * @return bool
+   */
+  public function isValidSessionId( $sessionId )
+  {
+    return $sessionId and is_string( $sessionId ) and strlen( $sessionId ) == 32;
   }
 
   /**
