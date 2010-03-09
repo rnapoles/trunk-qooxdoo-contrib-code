@@ -40,7 +40,7 @@ class qcl_access_Service
    */
   public function method_authenticate( $first=null, $password=null )
   {
-    $accessBehavior   = $this->getApplication()->getAccessBehavior();
+    $accessBehavior = $this->getApplication()->getAccessBehavior();
 
     /*
      * authentication with session id
@@ -61,6 +61,13 @@ class qcl_access_Service
       $password   = utf8_decode($password);
       $this->log("Authenticating from username/password ...", "access");
       $userId = $accessBehavior->authenticate( $username, $password );
+
+      /*
+       * authentication successful, logout the accessing user to log in the
+       * new one.
+       */
+      $accessBehavior->logout();
+      $accessBehavior->startSession();
     }
 
     /*
@@ -109,10 +116,23 @@ class qcl_access_Service
    */
   public function method_logout()
   {
-    $accessController = $this->getApplication()->getAccessBehavior()->getAccessController();
-    $accessController->logout();
+    $accessBehavior = $this->getApplication()->getAccessBehavior();
+
+    /**
+     * log out only if the current session id and the requesting session id match
+     */
+    if ( $this->getSessionId() != $this->getServer()->getServerData("sessionId") )
+    {
+      $this->log("Session that requested logout already terminated, no need to log out.","access");
+    }
+    else
+    {
+      $accessBehavior->logout();
+      $accessBehavior->grantAnonymousAccess();
+    }
+
     /*
-     * create guest access if allowed.
+     * return authentication data
      */
     return $this->method_authenticate(null);
   }
@@ -124,14 +144,8 @@ class qcl_access_Service
    */
   public function method_terminate()
   {
-    $accessController = $this->getApplication()->getAccessBehavior()->getAccessController();
-    $accessController->terminate();
-
-    /*
-     * return an empty instance
-     */
-    $response =  new qcl_access_AuthenticationResult();
-    return $response;
+    $this->getApplication()->getAccessBehavior()->terminate();
+    return null;
   }
 }
 ?>

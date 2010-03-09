@@ -48,9 +48,9 @@ function qcl_getInstance( $clazz )
 function either()
 {
   $arg_list = func_get_args();
-  foreach($arg_list as $arg)
+  foreach( $arg_list as $arg)
   {
-    if($arg) return $arg;
+    if ($arg) return $arg;
   }
   return false;
 }

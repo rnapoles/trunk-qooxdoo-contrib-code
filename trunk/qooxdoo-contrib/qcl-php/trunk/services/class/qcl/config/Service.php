@@ -26,20 +26,16 @@ class qcl_config_Service
 {
 
   //-------------------------------------------------------------
-  // public rpc methods
+  // API methods
   //-------------------------------------------------------------
 
  /**
   * Service method to load config data
-  * @param string|null $params[0] Filter
+  * @param string|null $filter Filter
   * @return qcl_config_LoadResult
   */
- function method_load( $params )
+ function method_load( $filter=null )
   {
-    /*
-     * arguments
-     */
-    list( $filter ) = $params;
 
     /*
      * response data class
@@ -60,18 +56,12 @@ class qcl_config_Service
 
   /**
    * Service method to set a config value
-   * @param string $params[0] Key
-   * @param mixed  $params[1] Value
+   * @param string $key Key
+   * @param mixed  $value Value
    * @return bool
    */
-  function method_set( $params )
+  function method_set( $key, $value )
   {
-
-
-    /*
-     * arguments
-     */
-    list( $key, $value ) = $params;
 
     /*
      * set key

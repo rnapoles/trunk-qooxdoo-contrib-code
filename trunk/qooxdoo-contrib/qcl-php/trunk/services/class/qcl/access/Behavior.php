@@ -209,7 +209,6 @@ class qcl_access_Behavior
    */
   public function authenticate( $username, $password )
   {
-    $this->log("Authenticating with username and password...", "access" );
     $accessController = $this->getAccessController();
     $userId = $accessController->authenticate( $username, $password );
     return $userId;
@@ -244,6 +243,38 @@ class qcl_access_Behavior
   public function grantAnonymousAccess()
   {
     return $this->getAccessController()->grantAnonymousAccess();
+  }
+
+  /**
+   * Starts a session, i.e. creates a valid session id if one doesn't
+   * exist already
+   * @return void
+   */
+  public function startSession()
+  {
+    $accessController = $this->getAccessController();
+    if ( ! $accessController->isValidSessionId( $this->getSessionId() ) )
+    {
+      $accessController->createSessionId();
+    }
+  }
+
+  /**
+   * Logs out the current user
+   * @return void
+   */
+  public function logout()
+  {
+     $this->getAccessController()->logout();
+  }
+
+  /**
+   * Terminates a session
+   * @return void
+   */
+  public function terminate()
+  {
+    $this->getAccessController()->terminate();
   }
 }
 ?>
