@@ -51,7 +51,7 @@ class class_qcl_test_config_Test
   function method_testAccessibleKeys( $params )
   {
     $mask = either( $params[0], null );
-    $configModel = qcl_config_Db::getInstance();
+    $configModel = qcl_config_DbModel::getInstance();
     $this->set( array(
       "config" =>  $configModel->getAccessibleKeys( $mask )
     ) );
