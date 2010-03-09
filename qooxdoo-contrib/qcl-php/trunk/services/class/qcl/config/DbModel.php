@@ -23,7 +23,7 @@ require_once "qcl/config/IConfig.php";
  * Configuration management class, using a database backend
  *
  */
-class qcl_config_Db
+class qcl_config_DbModel
   extends qcl_data_model_xmlSchema_DbModel
   implements qcl_config_IConfig
 {
@@ -47,7 +47,7 @@ class qcl_config_Db
 
   /**
    * Returns singleton instance.
-   * @return qcl_config_Db
+   * @return qcl_config_DbModel
    */
   public static function getInstance()
   {
@@ -139,7 +139,7 @@ class qcl_config_Db
 
 	/**
 	 * Create a config key if it doesn't exist already
-	 * @see qcl_config_Db::create()
+	 * @see qcl_config_DbModel::create()
 	 * @param $namedId
 	 * @param $type
 	 * @param $permissionWrite

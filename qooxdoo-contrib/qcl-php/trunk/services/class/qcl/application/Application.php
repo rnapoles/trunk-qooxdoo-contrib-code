@@ -106,12 +106,12 @@ class qcl_application_Application
 
   /**
    * Returns the config model singleton instance used by the application
-   * @return qcl_config_Db
+   * @return qcl_config_DbModel
    */
   public function getConfigModel()
   {
-    require_once "qcl/config/Db.php";
-    return qcl_config_Db::getInstance();
+    require_once "qcl/config/DbModel.php";
+    return qcl_config_DbModel::getInstance();
   }
 
   /**
