@@ -38,7 +38,7 @@
  *   @todo
  */
 
-interface qcl_config_IConfig
+interface qcl_config_IConfigModel
 {
   /**
    * Returns singleton instance.
