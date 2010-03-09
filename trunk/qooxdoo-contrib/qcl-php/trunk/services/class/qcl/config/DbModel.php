@@ -17,7 +17,7 @@
  */
 require_once "qcl/access/Behavior.php";
 require_once "qcl/data/model/xmlSchema/DbModel.php";
-require_once "qcl/config/IConfig.php";
+require_once "qcl/config/IConfigModel.php";
 
 /**
  * Configuration management class, using a database backend
@@ -25,7 +25,7 @@ require_once "qcl/config/IConfig.php";
  */
 class qcl_config_DbModel
   extends qcl_data_model_xmlSchema_DbModel
-  implements qcl_config_IConfig
+  implements qcl_config_IConfigModel
 {
   /**
    * Path to the xml file containing the model schema
