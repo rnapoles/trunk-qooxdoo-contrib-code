@@ -828,7 +828,11 @@ Selenium.prototype.__getParameterMap = function(eventParams)
 
     for (var i = 0; i < paramPairs.length; i++) {
       var onePair = paramPairs[i];
-      var nameAndValue = onePair.split("=");
+      // some parameter values can be key=value pairs, so we can't use split("=")
+      var nameAndValue = [
+        onePair.substr(0, onePair.indexOf("=")),
+        onePair.substr(onePair.indexOf("=") + 1)
+      ];
 
       // rz: using String.trim from htmlutils.js of selenium to get rid of
       // whitespace
@@ -863,10 +867,6 @@ Selenium.prototype.__getColumnIdFromParameters = function(additionalParamsForCli
     return 0;
   }  
 };
-
-/*
-qxTable.getPaneScroller(0).getTablePane().getContentElement().getDomElement().childNodes[0].childNodes[rowIndex].childNodes[colIndex]
- */
 
 /*
  * Returns the DOM element of a qx table's Clipper child widget.
@@ -918,7 +918,32 @@ Selenium.prototype.__getTableHeaderCellElement = function(column, locator, qxTab
     element = qxResultObject.getContentElement().getDomElement();
   }
   return element;
+};
 
+/*
+ * Returns the DOM element of a qx table's FocusIndicator.
+ */
+Selenium.prototype.__getTableFocusIndicatorElement = function(locator, qxTable)
+{
+  // Now add the extra components to the locator to find the clipper itself.
+  // This is the real object that we want to click on.
+  var element = null;
+  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper/qx.ui.table.pane.FocusIndicator";
+  if (locator.indexOf("qxh=") == 0) {
+    var innerLocator = locator + "/" + subLocator;
+    // Now add the extra components to the locator to find the focus indicator.
+    element = this.page().findElement(innerLocator);      
+  }
+  else {
+    var qxhParts = subLocator.split('/');
+    try {
+      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
+    } catch(ex) {
+      throw new SeleniumError("Couldn't find table focus indicator: " + ex);
+    }
+    element = qxResultObject.getContentElement().getDomElement();
+  }
+  return element;
 };
 
 /*
@@ -1134,6 +1159,87 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
   
 };
 
+/**
+ * Simulates user interaction with editable table cells. IMPORTANT: The target 
+ * cell's editing mode must be activated immediately before this function is 
+ * used, e.g. by executing a double click on it using the qxTableClick command 
+ * with the double=true parameter.
+ * 
+ * The following cell editor types are supported:
+
+ * Text fields (qx.ui.table.celleditor.PasswordField, 
+ * qx.ui.table.celleditor.TextField, qx.ui.table.celleditor.ComboBox): Use 
+ * either the "type" or "typeKeys" parameters (typeKeys triggers 
+ * keydown/keyup/keypress events). Examples:
+ * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "type=Some text");
+ * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "typeKeys=Lots of events");
+ * 
+ * Select boxes (qx.ui.table.celleditor.SelectBox, 
+ * qx.ui.table.celleditor.ComboBox): Use the "selectFromBox" parameter. The 
+ * value must be a qxh locator step that identifies the list item to be clicked.
+ * Examples:
+ * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "selectFromBox=[@label=Germany]");
+ * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "selectFromBox=child[2]");
+ * 
+ * Checkboxes (qx.ui.table.celleditor.ComboBox): Use the "toggleCheckBox" 
+ * parameter. Example:
+ * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "toggleCheckBox=foo");
+ * (toggleCheckBox needs a value to be recognized as a valid parameter even 
+ * though it is ignored.)
+ * 
+ * @param locator {String} an element locator that finds a qooxdoo table
+ * @param parameters {String} Comma-separated list of parameters in key=value format
+ */
+Selenium.prototype.doQxEditTableCell = function(locator, parameters)
+{
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
+  if (!qxObject) {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+
+  var parameterMap = this.__getParameterMap(parameters);
+  
+  var focusIndicatorLocator = "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper/qx.ui.table.pane.FocusIndicator";
+  
+  if (parameterMap["type"]) {
+    try {
+      this.doQxType(locator + focusIndicatorLocator, parameterMap["type"]);
+    } catch(ex) {
+      // The textfield of a comboBox is located one level deeper
+      this.doQxType(locator + focusIndicatorLocator + "/child[0]", parameterMap["type"]);
+    }
+  }
+  
+  if (parameterMap["typeKeys"]) {
+    try {
+      this.doQxTypeKeys(locator + focusIndicatorLocator, parameterMap["typeKeys"]);
+    } catch(ex) {
+      // The textfield of a comboBox is located one level deeper
+      this.doQxTypeKeys(locator + focusIndicatorLocator + "/child[0]", parameterMap["typeKeys"]);
+    }
+  }
+  
+  if (parameterMap["toggleCheckBox"]) {
+    // The boolean cell renderer's checkbox is inside a container widget
+    this.doQxClick(locator + focusIndicatorLocator + "/child[0]/child[0]", parameters);
+  }
+  
+  if (parameterMap["selectFromBox"]) {
+    try {
+      // comboBoxes have a button child
+      var buttonLocator = locator + focusIndicatorLocator + "/child[0]/qx.ui.form.Button";
+      this.doQxClick(buttonLocator);
+      var itemLocator = locator + focusIndicatorLocator + "/child[0]/" + parameterMap["selectFromBox"];
+      this.doQxClick(itemLocator, parameters);
+    } catch(ex) {
+      // selectBoxes are themselves clickable
+      this.doQxClick(locator + focusIndicatorLocator + "/child[0]");
+      var itemLocator = locator + focusIndicatorLocator + "/child[0]/" + parameterMap["selectFromBox"]; 
+      this.doQxClick(itemLocator, parameters)
+    }
+  }
+};
 
 /**
  * Get all children of a widget that are instances of the given class(es).
