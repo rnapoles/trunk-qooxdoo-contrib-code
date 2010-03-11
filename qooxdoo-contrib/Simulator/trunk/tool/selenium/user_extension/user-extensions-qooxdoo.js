@@ -864,6 +864,109 @@ Selenium.prototype.__getColumnIdFromParameters = function(additionalParamsForCli
   }  
 };
 
+/*
+qxTable.getPaneScroller(0).getTablePane().getContentElement().getDomElement().childNodes[0].childNodes[rowIndex].childNodes[colIndex]
+ */
+
+/*
+ * Returns the DOM element of a qx table's Clipper child widget.
+ */
+Selenium.prototype.__getTableClipperElement = function(locator, qxTable)
+{
+  // Now add the extra components to the locator to find the clipper itself.
+  // This is the real object that we want to click on.
+  var element = null;
+  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper";
+  if (locator.indexOf("qxh=") == 0) {
+    var innerLocator = locator + "/" + subLocator;
+    // Now add the extra components to the locator to find the clipper itself.
+    // This is the real object that we want to click on.
+    element = this.page().findElement(innerLocator);      
+  }
+  else {
+    var qxhParts = subLocator.split('/');
+    try {
+      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
+    } catch(ex) {
+      throw new SeleniumError("Couldn't find table clipper widget: " + ex);
+    }
+    element = qxResultObject.getContentElement().getDomElement();
+  }
+  return element;
+};
+
+/*
+ * Returns the DOM element of a qx table header cell.
+ */
+Selenium.prototype.__getTableHeaderCellElement = function(column, locator, qxTable) {
+  var element = null;
+  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.container.Composite/qx.ui.table.pane.Clipper/qx.ui.table.pane.Header/child[" + column + "]";
+  if (locator.indexOf("qxh=") == 0) {
+    var headerCellLocator = locator + "/" + subLocator;
+    // Now add the extra components to the locator to find the header cell itself.
+    // This is the real object that we want to click on.
+    element = this.page().findElement(headerCellLocator);      
+  }
+  else {
+    var qxhParts = subLocator.split('/');
+    try {
+      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
+    } catch(ex) {
+      LOG.error("Couldn't find header cell widget: " + ex);
+      return null;
+    }
+    element = qxResultObject.getContentElement().getDomElement();
+  }
+  return element;
+
+};
+
+/*
+ * Scrolls a qx table so that the target row is visible and returns the index
+ * of the new first visible row.
+ */
+Selenium.prototype.__getUpdatedFirstVisibleRow = function(column, row, qxTable)
+{
+  var firstRow = qxTable.getPaneScroller(0).getTablePane().getFirstVisibleRow();
+  var rowCount = qxTable.getPaneScroller(0).getTablePane().getVisibleRowCount();
+  // If our target row is below or beyond the set of rows visible, then scroll
+  // it into view:
+  if( row < firstRow || row >= (firstRow + rowCount)) {
+    qxTable.setFocusedCell(column, row, true); 
+    // now it should be in the viewport
+    firstRow = qxTable.getPaneScroller(0).getTablePane().getFirstVisibleRow();
+    rowCount = qxTable.getPaneScroller(0).getTablePane().getVisibleRowCount();
+    LOG.debug("qxTable firstVisibleRow(" + firstRow + "), visibleRowCount(" 
+      + rowCount + ")");
+  }
+  return firstRow;
+};
+
+Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipperElement) {
+  // Get the coordinates of the table:
+  var coordsXY = getClientXY(clipperElement);
+  LOG.debug("computed coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
+  // Add in table height plus row height to get to the right row:
+  LOG.debug("Table Header Height = " + qxTable.getHeaderCellHeight() );
+  LOG.debug("Table Row Height = " + qxTable.getRowHeight() );
+  coordsXY[1] = coordsXY[1] + ( row * qxTable.getRowHeight() );
+
+  // Add in the column widths for each column:
+  for (var i = 0; i < column; i++) {
+    LOG.debug("Column (" + i + ") Width = (" 
+      + qxTable.getTableColumnModel().getColumnWidth( i ) + ")" );
+    coordsXY[0] = coordsXY[0] + 
+      qxTable.getTableColumnModel().getColumnWidth( i );
+  }
+
+  LOG.debug("updated coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
+  coordsXY[0] = coordsXY[0] + 5;
+  coordsXY[1] = coordsXY[1] + 5;
+  LOG.debug("final coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
+  
+  return coordsXY;
+};
+
 /**
  * Uses the standard qx locators to find a table, and then processes a click on 
  * the table at the given row/column position.  Note, your locator should only 
@@ -901,54 +1004,17 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 {
   var qxObject = this.getQxWidgetByLocator(locator);
   
-  if (qxObject) {
-    /*
-    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
-    }
-    */
-  }
-  else {
+  if (!qxObject) {
     throw new SeleniumError("No qooxdoo object found for locator: " + locator);
   }
-
-  // Now add the extra components to the locator to find the clipper itself.
-  // This is the real object that we want to click on.
   
-  var element = null;
-  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper";
-  if (locator.indexOf("qxh=") == 0) {
-    var innerLocator = locator + "/" + subLocator;
-    // Now add the extra components to the locator to find the header cell itself.
-    // This is the real object that we want to click on.
-    element = this.page().findElement(innerLocator);      
-  }
-  else {
-    var qxhParts = subLocator.split('/');
-    try {
-      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxObject, qxhParts);
-    } catch(ex) {
-      throw new SeleniumError("qxTableHeaderClick couldn't find header cell widget: " + ex);
-    }
-    element = qxResultObject.getContentElement().getDomElement();
-  }
-  
-  /* 
-  element = this.page().findElement(locator + 
-    "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper"
-  );
-  */
+  var element = this.__getTableClipperElement(locator, qxObject);
   
   if (!element) {
     throw new SeleniumError("Could not find clipper child of the table");
   }
 
-  // Get the coordinates of the table:
-  var coordsXY = getClientXY(element);
-  LOG.debug("computed coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
-
   var additionalParamsForClick = this.__getParameterMap(eventParams);
-  
   
   var row = Number(additionalParamsForClick["row"]);
   var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);  
@@ -966,47 +1032,14 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
     doDoubleClick = true;
   }
 
-  // Focus the table row/column so that it can receive the click events
-  //qxObject.setFocusedCell(col, row, true);
-
   // Adjust our row number to match the rows that are currently visible:
-  var first_row = qxObject.getPaneScroller(0).getTablePane().getFirstVisibleRow();
-  var row_count = qxObject.getPaneScroller(0).getTablePane().getVisibleRowCount();
-  LOG.debug("qxTable firstVisibleRow(" + first_row + "), visibleRowCount(" 
-    + row_count + ")");
-
-  // If our target row is below or beyond the set of rows visible, then scroll
-  // it into view:
-  if( row < first_row || row >= (first_row + row_count)) {
-    qxObject.setFocusedCell(col, row, true); 
-    // now it should be in the viewport
-    first_row = qxObject.getPaneScroller(0).getTablePane().getFirstVisibleRow();
-    row_count = qxObject.getPaneScroller(0).getTablePane().getVisibleRowCount();
-    LOG.debug("qxTable firstVisibleRow(" + first_row + "), visibleRowCount(" 
-      + row_count + ")");
-  }
+  var firstRow = this.__getUpdatedFirstVisibleRow(col, row, qxObject);
 
   // Adjust our "row" coordinate to be relative to the viewport:
-  row = row - first_row;
+  row = row - firstRow;
 
-  // Add in table height plus row height to get to the right row:
-  LOG.debug("Table Header Height = " + qxObject.getHeaderCellHeight() );
-  LOG.debug("Table Row Height = " + qxObject.getRowHeight() );
-  coordsXY[1] = coordsXY[1] + ( row * qxObject.getRowHeight() );
-
-  // Add in the column widths for each column:
-  for (var i = 0; i < col; i++) {
-    LOG.debug("Column (" + i + ") Width = (" 
-      + qxObject.getTableColumnModel().getColumnWidth( i ) + ")" );
-    coordsXY[0] = coordsXY[0] + 
-      qxObject.getTableColumnModel().getColumnWidth( i );
-  }
-
-  LOG.debug("updated coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
-  coordsXY[0] = coordsXY[0] + 5;
-  coordsXY[1] = coordsXY[1] + 5;
-  LOG.debug("final coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
-
+  var coordsXY = this.__getCellCoordinates(col, row, qxObject, element);
+  
   // TODO: very dirty no checking, maybe refactoring needed to get doQxClick
   // and doQxClickAt to work smoothly together.
   var newEventParamString = eventParams + ",clientX=" + coordsXY[0]
@@ -1066,14 +1099,7 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
 {
   var qxObject = this.getQxWidgetByLocator(locator);
   
-  if (qxObject) {
-    /*
-    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
-    }
-    */
-  }
-  else {
+  if (!qxObject) {
     throw new SeleniumError("No qooxdoo object found for locator: " + locator);
   }
   
@@ -1082,24 +1108,7 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
   var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);
   LOG.debug("Clicking table header column " + col);
   
-  var element = null;
-  var subLocator = "qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.container.Composite/qx.ui.table.pane.Clipper/qx.ui.table.pane.Header/child[" + col + "]";
-  if (locator.indexOf("qxh=") == 0) {
-    var headerCellLocator = locator + "/" + subLocator;
-    // Now add the extra components to the locator to find the header cell itself.
-    // This is the real object that we want to click on.
-    element = this.page().findElement(headerCellLocator);      
-  }
-  else {
-    var qxhParts = subLocator.split('/');
-    try {
-      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxObject, qxhParts);
-    } catch(ex) {
-      LOG.error("qxTableHeaderClick couldn't find header cell widget: " + ex);
-      return null;
-    }
-    element = qxResultObject.getContentElement().getDomElement();
-  }
+  var element = this.__getTableHeaderCellElement(col, locator, qxObject);
   
   if (!element) {
     throw new SeleniumError("Could not find the header cell with the index " + col);
