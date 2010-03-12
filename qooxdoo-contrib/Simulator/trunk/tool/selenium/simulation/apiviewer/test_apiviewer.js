@@ -96,7 +96,10 @@ simulation.Simulation.prototype.checkSearch = function()
   Packages.java.lang.Thread.sleep(1000);
   
   this.qxTableClick("qxh=app:viewer/[@_searchView]/qx.ui.table.Table","row=0");
-  
+  Packages.java.lang.Thread.sleep(1000);
+  // Temporary workaround: Click the search result again to make sure it's
+  // selected.
+  this.qxTableClick("qxh=app:viewer/[@_searchView]/qx.ui.table.Table","row=0");
   Packages.java.lang.Thread.sleep(4000);
 
   // Check if the HTML embed's content has changed.
