@@ -569,5 +569,13 @@ function ellipsify( $string, $length, $mode="right" )
   return $string;
 }
 
-
+/**
+ * Capitalizes the input string
+ * @param string $string
+ * @return string
+ */
+function capitalize( $string )
+{
+  return strtoupper( $string[0] ) . substr( $string, 1 );
+}
 ?>
