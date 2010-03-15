@@ -26,20 +26,29 @@ require_once "qcl/core/BaseClass.php";      // Base class containing overloading
 /**
  * Base class of all qcl classes.
  */
-class qcl_core_Object extends qcl_core_BaseClass
+class qcl_core_Object
+  extends qcl_core_BaseClass
 {
   /**
    * The class name of this object
    * @var string
    */
-  private $_class;
+  private $_className;
+
+  /**
+   * The globally unique id of this object.
+   * Accessed with ::objectId()
+   * to access it.
+   * @var string
+   */
+  private $_objectId = null;
 
   /**
    * If this object produces a recoverable error, the error message will be stored here
    * for convenience
    * @var string
    */
-  private $error;
+  protected $error;
 
   /**
    * Wether this class is persistent. If true, it will be serialized at the
@@ -53,16 +62,6 @@ class qcl_core_Object extends qcl_core_BaseClass
    * when retrieved from cache
    */
   public $isNew = true;
-
-  /**
-   * The (hopefully) globally unique id of this object.
-   * Do not use this property directly, use ::objectId()
-   * to access it.
-   * @var string
-   * @access private
-   */
-  private $_objectId = null;
-
 
   /**
    * Timestamp for script execution time measurement
@@ -90,7 +89,7 @@ class qcl_core_Object extends qcl_core_BaseClass
     /*
      * class name
      */
-    $this->_class = get_class($this);
+    $this->_className = get_class($this);
 
     /*
      * deserialize if this is a persistent object
@@ -587,7 +586,7 @@ class qcl_core_Object extends qcl_core_BaseClass
    * @param string $file
    * @param int    $line
    * return void
-   * FIXME
+   * FIXME make this consistent with qcl_log_Logger
    */
   public function raiseError( $message, $number=null, $file=null, $line=null )
   {
