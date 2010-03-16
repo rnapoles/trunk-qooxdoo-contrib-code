@@ -62,7 +62,17 @@ simulation.Simulation.prototype.checkWindows = function()
         this.__sel.qxClick(this.locators[locName]);
         this.log("Found window " + locName.substr(6), "info");
       } catch (ex) {
-        this.log("Error while checking window " + locName.substr(6) + ": " + ex, "error");
+        var errMsg = "Error while checking window " + locName.substr(6) + ": ";
+        if (locName == "windowObjects") {
+          try {
+            this.__sel.qxClick("qxh=[@classname=inspector.objects2.Window]");
+            this.log("Found window Objects", "info");
+          } catch(ex) {
+            this.log(errMsg + ex, "error");
+          }
+        } else {
+          this.log(errMsg + ex, "error");
+        }
       }
     }
   }
