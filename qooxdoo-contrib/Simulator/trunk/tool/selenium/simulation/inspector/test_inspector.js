@@ -65,7 +65,7 @@ simulation.Simulation.prototype.checkWindows = function()
         var errMsg = "Error while checking window " + locName.substr(6) + ": ";
         if (locName == "windowObjects") {
           try {
-            this.__sel.qxClick("qxh=[@classname=inspector.objects2.Window]");
+            this.__sel.qxClick("qxh=[@classname=inspector.objects.ObjectsWindow]");
             this.log("Found window Objects", "info");
           } catch(ex) {
             this.log(errMsg + ex, "error");
