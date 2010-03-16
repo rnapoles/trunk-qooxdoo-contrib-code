@@ -287,7 +287,12 @@ simulation.Simulation.prototype.runTest = function()
   
   this.checkSampleLoad(sampleArr);
   
-  this.checkGistFromList();
+  // Selenium Bug: http://jira.openqa.org/browse/SEL-646
+  if (this.getConfigSetting("testBrowser").indexOf("googlechrome") ) {
+    this.log("Skipping Gist test for Chrome since pressing enter doesn't work.", "info");
+  } else {
+    this.checkGistFromList();
+  }
   
   //this.checkGistFromUrl();
   
