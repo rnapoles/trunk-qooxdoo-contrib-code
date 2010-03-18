@@ -18,7 +18,7 @@
 
 /**
  * Base class providing property management and method overloading
- *
+ * @todo merge this with qcl_core_Object
  */
 class qcl_core_BaseClass
 {
@@ -411,18 +411,45 @@ class qcl_core_BaseClass
   }
 
   /**
-   * Serializes the object to an array
+   * Serializes the object to an array. This
    * @return array
-   * @todo deep serialization, i.e. convert objects in member variables
+   * @todo this is the same as data(), consolidate API!
    */
   function toArray()
   {
-    return qcl_getPublicObjectVars( $this );
+    return $this->getPropertyBehavior()->data();
   }
-}
 
-function qcl_getPublicObjectVars($obj) {
-  return get_object_vars($obj);
+  /**
+   * Serializes an array of public properties of this object into a string
+   * that can be used by the unserialize() method to populate the object
+   * properties.
+   * @return string
+   */
+  public function serialize()
+  {
+    return serialize( $this->getPropertyBehavior()->data() );
+  }
+
+  /**
+   * Serializes an array of public properties of this object into a string
+   * that can be used by the unserialize() method to populate the object
+   * properties.
+   * @return string
+   */
+  public function unserialize( $data )
+  {
+    $map = unserialize( $data );
+    if ( ! is_array( $map ) )
+    {
+      $this->warn("Data cannot be unserialized!");
+    }
+    else
+    {
+      $this->set( $map );
+    }
+  }
+
 }
 
 ?>

@@ -45,5 +45,12 @@ interface qcl_data_persistence_behavior_IBehavior
    */
   public function save( $object, $id );
 
+  /**
+   * Deletes the persistence data for the object with the given id.
+   * @param qcl_core_Object $object Persisted object
+   * @param string $id The id of the saved object
+   */
+  public function delete( $object, $id );
+
 }
 ?>

@@ -213,6 +213,7 @@ class qcl_core_Object
    * @return string
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
+   * @deprecated
    * @todo move to function or util class?
    */
   public function getClassPath( $classname = null)
@@ -264,6 +265,7 @@ class qcl_core_Object
    * returns the path to the directory containing the class
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
+   * @deprecated
    * @todo move to function or util class?
    */
   public function getClassDir($classname=null)
@@ -287,6 +289,7 @@ class qcl_core_Object
    * Load file for class. Must be called statically.
    * @return string file path
    * @param $classname Object
+   * @deprecated
    * @todo move to function or util class
    */
   static function includeClassfile ( $classname )
@@ -320,6 +323,7 @@ class qcl_core_Object
 
   /**
    * The currently executed function.
+   * @deprecated, use __METHOD__ instead
    * @return string
    */
   public function functionName()
@@ -359,7 +363,6 @@ class qcl_core_Object
     $class = str_replace(".","_",$class);
     return is_a( $this, $class );
   }
-
 
   /**
    * Returns new instance of classname. If the calling object is a subclass
@@ -407,7 +410,7 @@ class qcl_core_Object
   }
 
   //-------------------------------------------------------------
-  // logging
+  // logging & debugging
   //-------------------------------------------------------------
 
   /**
@@ -469,10 +472,6 @@ class qcl_core_Object
     $this->log ( "*** WARNING *** " . $msg, "warn" );
   }
 
-  //-------------------------------------------------------------
-  // debugging
-  //-------------------------------------------------------------
-
   /**
    * Output the current filename and line number in order to be able to
    * trace program execution
@@ -532,9 +531,9 @@ class qcl_core_Object
   // Error
   //-------------------------------------------------------------
 
-
   /**
-   * getter for error message
+   * Getter for error message
+   * @deprecated
    * @return string
    */
   public function getError()
@@ -543,7 +542,8 @@ class qcl_core_Object
   }
 
   /**
-   * setter for error message
+   * Setter for error message
+   * @deprecated
    * @return string
    */
   public function setError( $error )
@@ -553,6 +553,7 @@ class qcl_core_Object
 
   /**
    * Clears error message
+   * @deprecated
    */
    function clearError()
    {
@@ -563,6 +564,7 @@ class qcl_core_Object
    * Hook to return optional error response data. By default, return an
    * empty array. Override this method if you want to provide
    * addition data to be passed with the error response.
+   * @deprecated
    * @return array
    */
   public function optionalErrorResponseData()
@@ -812,7 +814,7 @@ class qcl_core_Object
   }
 
   //-------------------------------------------------------------
-  // Serialization
+  // Converting object into other formats
   //-------------------------------------------------------------
 
   /**
@@ -826,15 +828,6 @@ class qcl_core_Object
   }
 
   /**
-   * Serializes the object to a string that can be deserialized
-   * @return string
-   */
-  public function serialize()
-  {
-    return serialize( $this );
-  }
-
-  /**
    * Dumps a variable to a string representation
    * @return string
    */
@@ -843,22 +836,6 @@ class qcl_core_Object
     return var_export( $this, true );
   }
 
-  /**
-   * Serializes an array of public properties of this object
-   * @return string
-   */
-  public function serializeProperties()
-  {
-    $properties = array();
-    foreach ( array_keys( get_class_vars( $this->className() ) ) as $key )
-    {
-      if ( $key{0} != "_" )
-      {
-        $properties[$key] = $this->$key;
-      }
-    }
-    return serialize( $properties );
-  }
 
   //-------------------------------------------------------------
   // Persistence
@@ -867,7 +844,7 @@ class qcl_core_Object
   /**
    * Getter for persistence behavior. Defaults to persistence in
    * the session.
-   * @return qcl_persistence_behavior_IBehavior
+   * @return qcl_data_persistence_behavior_Session
    */
   function getPersistenceBehavior()
   {
@@ -882,7 +859,7 @@ class qcl_core_Object
    * Returns the id that is used to persist the object between
    * requests. Defaults to the class name, so that each new
    * object gets the content of the last existing object of the
-   * same class.
+   * same class. Override for different behavior.
    * @return string
    */
   function getPersistenceId()
@@ -898,12 +875,17 @@ class qcl_core_Object
   {
     if ( $this->isPersistent )
     {
-      $this->getPersistenceBehavior()->save($this,$this->getPersistenceId());
+      $this->getPersistenceBehavior()->save( $this, $this->getPersistenceId());
     }
     else
     {
       $this->raiseError("Cannot save object - it is not persistent.");
     }
+  }
+
+  function delete()
+  {
+    $this->getPersistenceBehavior()->delete( $this, $this->getPersistenceId() );
   }
 
   //-------------------------------------------------------------

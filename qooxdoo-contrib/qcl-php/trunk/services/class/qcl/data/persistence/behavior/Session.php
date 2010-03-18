@@ -48,20 +48,8 @@ class qcl_data_persistence_behavior_Session
   {
     if ( isset( $_SESSION[ self::KEY ][ $id ] ) )
     {
-      $serializedProps = $_SESSION[ self::KEY ][ $id ];
-      $props = unserialize( $serializedProps );
       qcl_log_Logger::getInstance()->log( $object->className() . ": loading data with id '$id'","persistence");
-      if ( ! is_array( $props ) )
-      {
-        throw new JsonRpcException("Invalid session data.");
-      }
-      foreach( $props as $key => $value )
-      {
-        if ( $object->has($key) )
-        {
-          $object->set( $key, $value );
-        }
-      }
+      $object->unserialize( $_SESSION[ self::KEY ][ $id ] );
     }
     else
     {
@@ -76,9 +64,19 @@ class qcl_data_persistence_behavior_Session
    */
   public function save( $object, $id )
   {
-    $serializedProperties = $object->serializeProperties();
-    $_SESSION[ self::KEY ][ $id ] = $serializedProperties;
+    $_SESSION[ self::KEY ][ $id ] = $object->serialize();
     qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", "persistence");
+  }
+
+  /**
+   * Deletes the persistence data for the object with the given id.
+   * @param qcl_core_Object $object Persisted object
+   * @param string $id The id of the saved object
+   */
+  public function delete( $object, $id )
+  {
+    qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", "persistence");
+    unset( $_SESSION[ self::KEY ][ $id ] );
   }
 }
 ?>

@@ -236,14 +236,6 @@ class qcl_data_model_PropertyBehavior
     return array_keys( $this->getPropertyDefinition() );
   }
 
-  /**
-   * Returns all the managed properties as a map
-   * @return array Associative array of key-value pairs
-   */
-  public function data()
-  {
-    return $this->data;
-  }
 
   /**
    * Adds a property definition
