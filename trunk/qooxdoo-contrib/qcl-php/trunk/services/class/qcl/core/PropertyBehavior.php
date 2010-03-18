@@ -46,20 +46,25 @@ class qcl_core_PropertyBehavior
   }
 
   /**
-   * Checks if the object has a public property of this type or if the object
+   * Getter for object
+   * @return qcl_core_Object
+   */
+  protected function getObject()
+  {
+    return $this->object;
+  }
+
+  /**
+   * Checks if the object has a public property of this name or if the object
    * has a getter and setter method for this property.
    * @param $property
    * @return bool
    */
   public function has( $property )
   {
-    return in_array(
-      $property,
-      array_keys( get_class_vars( get_class( $this->object ) ) )
-    ) or (
-      $this->hasGetter( $property )
-      and $this->hasSetter( $property )
-    );
+    return
+      in_array( $property, $this->names() )
+      or ( $this->hasGetter( $property ) and $this->hasSetter( $property ) );
   }
 
   /**
@@ -72,7 +77,7 @@ class qcl_core_PropertyBehavior
     if ( ! $this->has( $property) )
     {
       throw new qcl_core_PropertyBehaviorException(
-        "Class " . get_class($this->object) .
+        "Class " . get_class( $this->getObject() ) .
         ": property '$property' does not exist or is not accessible"
       );
     }
@@ -89,9 +94,9 @@ class qcl_core_PropertyBehavior
     if ( $this->hasGetter( $property ) )
     {
       $getterMethod = $this->getterMethod( $property );
-      return $this->object->$getterMethod();
+      return $this->getObject()->$getterMethod();
     }
-    return $this->object->$property;
+    return $this->getObject()->$property;
   }
 
   /**
@@ -108,19 +113,36 @@ class qcl_core_PropertyBehavior
     {
       foreach ( $property as $key => $value )
       {
-        $this->set( $key, $value );
+        $this->_set( $key, $value );
       }
-      return $this->object;
+      return $this->getObject();
     }
+    else
+    {
+      return $this->_set( $property, $value );
+    }
+  }
+
+  /**
+   * Implementation for set()
+   * @param string $property
+   * @param mixed $value
+   * @return qcl_core_Object
+   */
+  protected function _set( $property, $value )
+  {
     $this->check( $property );
 
     if ( $this->hasGetter( $property ) )
     {
       $setterMethod = $this->setterMethod( $property );
-      return $this->object->$setterMethod( $value );
+      return $this->getObject()->$setterMethod( $value );
     }
-    $this->object->$property = $value;
-    return $this->object;
+    else
+    {
+      $this->getObject()->$property = $value;
+      return $this->getObject();
+    }
   }
 
   /**
@@ -130,7 +152,7 @@ class qcl_core_PropertyBehavior
    */
   public function getterMethod( $property )
   {
-    return "get" . capitalize( $property );
+    return "get" . ucfirst( $property );
   }
 
   /**
@@ -140,7 +162,7 @@ class qcl_core_PropertyBehavior
    */
   public function setterMethod( $property )
   {
-    return "set" . capitalize( $property );
+    return "set" . ucfirst( $property );
   }
 
   /**
@@ -150,7 +172,7 @@ class qcl_core_PropertyBehavior
    */
   public function hasGetter( $property )
   {
-    return method_exists( $this->object, $this->getterMethod( $property ) );
+    return method_exists( $this->getObject(), $this->getterMethod( $property ) );
   }
 
   /**
@@ -160,7 +182,54 @@ class qcl_core_PropertyBehavior
    */
   public function hasSetter( $property )
   {
-    return method_exists( $this->object, $this->setterMethod( $property ) );
+    return method_exists( $this->getObject(), $this->setterMethod( $property ) );
+  }
+
+  /**
+   * Checks whether the property has a local or internal name (such as a
+   * column name that is different from the property name).
+   * @param $property
+   * @return bool
+   */
+  public function hasLocalAlias( $property )
+  {
+    return false;
+  }
+
+  /**
+   * Returns the php type of the  property.
+   * @see http://www.php.net/manual/de/function.gettype.php
+   * This only works if the property has been set.
+   * @param $property
+   * @return string
+   */
+  public function type( $property )
+  {
+    $this->check( $property );
+    return gettype( $this->getObject()->$property );
+  }
+
+  /**
+   * The names of all the managed properties
+   * @return array
+   */
+  public function names()
+  {
+    return array_keys( get_class_vars( get_class( $this->getObject() ) ) );
+  }
+
+  /**
+   * Returns all the managed properties as a map
+   * @return array Associative array of key-value pairs
+   */
+  public function data()
+  {
+    $map = array();
+    foreach( $this->names() as $name )
+    {
+      $map[$name] = $this->get( $name );
+    }
+    return $map;
   }
 }
 ?>

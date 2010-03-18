@@ -80,5 +80,33 @@ interface qcl_core_IPropertyBehavior
    * @return bool
    */
   public function hasSetter( $property );
+
+  /**
+   * Checks whether the property has a local or internal name (such as a
+   * column name that is different from the property name).
+   * @param $property
+   * @return bool
+   */
+  public function hasLocalAlias( $property );
+
+  /**
+   * Returns the type of the property depending on the behavior implementation
+   * @param $property
+   * @return string
+   */
+  public function type( $property );
+
+  /**
+   * The names of all the managed properties
+   * @return array
+   */
+  public function names();
+
+  /**
+   * Returns all the managed properties as a map
+   * @return array Associative array of key-value pairs
+   */
+  public function data();
+
 }
 ?>

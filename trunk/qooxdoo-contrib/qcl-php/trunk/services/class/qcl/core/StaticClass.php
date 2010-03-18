@@ -17,6 +17,9 @@
  */
 require_once "qcl/core/Object.php";
 
+/**
+ * @deprecated
+ */
 class qcl_core_StaticClass extends qcl_core_Object
 {
 

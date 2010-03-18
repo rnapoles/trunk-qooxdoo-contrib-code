@@ -149,7 +149,7 @@ class qcl_data_datasource_type_db_Model
    * @todo unhardcode type mysql
    * @return qcl_data_db_type_Mysql
    */
-  function getDatasourceConnection()
+  function getAdapter()
   {
     if ( ! $this->datasourceConnectionObj )
     {

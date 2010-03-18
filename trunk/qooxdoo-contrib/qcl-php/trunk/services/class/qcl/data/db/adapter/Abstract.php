@@ -16,12 +16,23 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/core/Object.php";
+require_once "qcl/data/db/__init__.php";
 
 /*
- * constants
+ * define property type constants. You can override the
+ * values defined here
  */
-define("QCL_LOG_DB","db");
-define("QCL_LOG_TABLE_MAINTENANCE","tableMaintenance");
+if ( ! defined("qcl_data_db_PROPERTY") )
+{
+  define("qcl_data_db_PROPERTY",             "qcl_data_db_property");
+  define("qcl_data_db_PROPERTY_VARCHAR_32",  "qcl_data_db_property_Varchar32");
+  define("qcl_data_db_PROPERTY_VARCHAR_100", "qcl_data_db_property_Varchar100");
+  define("qcl_data_db_PROPERTY_VARCHAR_250", "qcl_data_db_property_Varchar250");
+  define("qcl_data_db_PROPERTY_BOOLEAN",     "qcl_data_db_property_Boolean");
+  define("qcl_data_db_PROPERTY_INT",         "qcl_data_db_property_Int");
+  define("qcl_data_db_PROPERTY_BLOB",        "qcl_data_db_property_Blob");
+  define("qcl_data_db_PROPERTY_TIMESTAMP",   "qcl_data_db_property_Timestamp");
+}
 
 /**
  * abstract class for objects which do database queries
@@ -70,7 +81,7 @@ class qcl_data_db_adapter_Abstract
   /**
    * Contains a reference to a model if called from a model
    * @access private
-   * @var qcl_data_db_IModel
+   * @var qcl_data_model_db_IModel
    */
   var $_model = null;
 
@@ -96,7 +107,7 @@ class qcl_data_db_adapter_Abstract
 	  /*
 	   * store master objects if given
 	   */
-    if ( is_a( $master,"qcl_data_model_Abstract" ) )
+    if ( is_a( $master,"qcl_data_model_ActiveRecord" ) )
     {
       $this->_model  = $master;
       $this->_controller = $master->getController();
@@ -118,7 +129,7 @@ class qcl_data_db_adapter_Abstract
 
   /**
    * Getter for model
-   * @return qcl_data_db_IModel
+   * @return qcl_data_model_db_IModel
    */
   function getModel()
   {
@@ -300,15 +311,6 @@ class qcl_data_db_adapter_Abstract
   function getDatabase()
   {
     return $this->database;
-  }
-
-	/**
-	 * Setup the logger object
-	 */
-  function setupLogger()
-  {
-    $this->getLogger()->registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
-    $this->getLogger()->registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false);
   }
 }
 ?>

@@ -23,6 +23,10 @@
 class qcl_core_BaseClass
 {
 
+  //-------------------------------------------------------------
+  // Main property API
+  //-------------------------------------------------------------
+
   /**
    * Returns the behavior object responsible for maintaining the object
    * properties and providing access to them.
@@ -40,12 +44,33 @@ class qcl_core_BaseClass
   }
 
   /**
+   * Extending classes use this method to add their
+   * property definitions to the basic one in
+   * $this->properties
+   * @param array $properties
+   * @return void
+   */
+  public function addProperties( $properties )
+  {
+    $this->getPropertyBehavior()->add( $properties );
+  }
+
+  /**
+   * Return the names of all properties of this object.
+   * @return array
+   */
+  public function properties()
+  {
+    return $this->getPropertyBehavior()->names();
+  }
+
+  /**
    * Checks if class has this property.
    * Alias for $this->getPropertyBehavior()->has()
    * @param $property
    * @return bool
    */
-  public function has( $property )
+  public function hasProperty( $property )
   {
     return $this->getPropertyBehavior()->has( $property );
   }
@@ -55,7 +80,7 @@ class qcl_core_BaseClass
    * @param $property
    * @return bool
    */
-  public function check( $property )
+  public function checkProperty( $property )
   {
     return $this->getPropertyBehavior()->check( $property );
   }
@@ -81,6 +106,187 @@ class qcl_core_BaseClass
   {
     return $this->getPropertyBehavior()->set( $property, $value );
   }
+
+  /**
+   * Gets the values of all properties as an associative
+   * array, keys being the property names.
+   * @return array
+   */
+  public function data()
+  {
+    return $this->getPropertyBehavior()->data();
+  }
+
+  /**
+   * Returns a array of property values according to the
+   * array of property names that were passes as arguments.
+   * @param $prop1
+   * @param $prop2
+   * @param $prop3 ...
+   * @return array
+   */
+  public function listProperties()
+  {
+    $result = array();
+    foreach ( func_get_args() as $property )
+    {
+      $result[] = $this->get($property);
+    }
+    return $result;
+  }
+
+  //-------------------------------------------------------------
+  // helper methods to compare and copy properties
+  //-------------------------------------------------------------
+
+  /**
+   * Gets the data as an associated array from the data provided
+   * @param array|stdClass|qcl_data_model_xmlSchema_DbModel $data
+   * @return array
+   */
+  protected function getArrayData( $data )
+  {
+    if ( $data instanceof qcl_core_BaseClass )
+    {
+      $array = $data->data();
+    }
+    elseif ( is_object( $data ) )
+    {
+      $array = (array) $data;
+    }
+    elseif ( ! is_array( $data ) )
+    {
+      $this->raiseError("Invalid parameter");
+    }
+    return $array;
+  }
+
+  /**
+   * Compare current record with array. This will only compare
+   * the keys existing in the array or the fields that are
+   * provided as second argument.
+   *
+   * @param object|array $compare Model object or array data
+   * @param array $fields
+   * @return bool whether the values are equal or not
+   */
+  public function compareWith( $compare, $fields=null )
+  {
+    /*
+     * check arguments to get what we should compare with
+     */
+    $array = $this->getArrayData( $compare );
+
+    /*
+     * assume data is equal as default and change this to false
+     * as difference is found
+     */
+    $isEqual = true;
+
+    /*
+     * do the comparison
+     */
+    if ( is_array($fields) )
+    {
+      foreach ( $fields as $key  )
+      {
+        if ( $this->get($key) !== $array[$key] )
+        {
+          $isEqual = false;
+        }
+      }
+    }
+    else
+    {
+      foreach ( $array as $key => $value )
+      {
+        if ( $this->get($key) !== $value )
+        {
+          $isEqual = false;
+        }
+      }
+    }
+
+    /*
+     * return the result
+     */
+    //$this->debug("The data is " . ($isEqual ? "equal" : "not equal") );
+    return $isEqual;
+  }
+
+  /**
+   * Returns all property values that exists in both models.
+   * @param qcl_data_model_xmlSchema_DbModel $model
+   * @return array
+   */
+  public function getSharedPropertyValues ( $model )
+  {
+    $myProperties    = $this->properties();
+    $data            = $model->data();
+
+    foreach( $data as $key => $value )
+    {
+      if ( ! in_array($key, $myProperties) )
+      {
+        unset($data[$value]);
+      }
+    }
+    return $data;
+  }
+
+  /**
+   * Copies all properties that exists in both models except the 'id' property.
+   * @param qcl_data_model_xmlSchema_DbModel $model
+   * @return void
+   */
+  public function copySharedProperties ( $model, $exclude=array() )
+  {
+    $myProperties    = $this->properties();
+    $data            = $model->data();
+
+    foreach( $data as $key => $value )
+    {
+      if ( $key != "id" and in_array( $key, $myProperties ) and ! in_array( $key, $exclude ) )
+      {
+        $this->set($key,$value);
+      }
+    }
+  }
+
+
+  /**
+   * Compares all properties that exists in both models.
+   * @param qcl_data_model_xmlSchema_DbModel $that Other model
+   * @param array[optional] $diff Array that needs to be passed by reference that will contain a list of parameters that differ
+   * @return bool True if all property values are identical, false if not
+   */
+  public function compareSharedProperties ( $that, $diff )
+  {
+    $diff = array();
+    $properties = array_intersect(
+      $this->properties(),
+      $that->properties()
+    );
+
+    $isEqual = true;
+    foreach( $properties as $name )
+    {
+      $prop1 = trim($this->get( $name ));
+      $prop2 = trim($that->get( $name ));
+      //$this->debug("$prop1 => $prop2");
+
+      if ( $prop1 !== $prop2  )
+      {
+        $isEqual = false;
+        $diff[$name] = array($prop1,$prop2);
+      }
+    }
+    return $isEqual;
+  }
+
+  //-------------------------------------------------------------
+  // 'magic' methods providing virtual accessor methods
+  //-------------------------------------------------------------
 
 //  /**
 //   * Property write access. Allows to intercept direct access to the properties.
@@ -181,19 +387,6 @@ class qcl_core_BaseClass
     }
 
     /*
-     * findBy...
-     */
-    $accessor = strtolower( substr( $method, 0, 6 ) );
-    $property = strtolower( substr( $method, 6 ) );
-
-    if ( $accessor == "findby" and method_exists( $this,"findBy" ) )
-    {
-      array_unshift( $arguments, $property);
-      $result = call_user_func_array(array($this, "findBy" ), $arguments);
-      $accessorMethodExists = true;
-    }
-
-    /*
      * raise error if method does not exist
      */
     if ( ! $accessorMethodExists )
@@ -204,7 +397,7 @@ class qcl_core_BaseClass
   }
 
   /**
-   * Raise an error by triggering a user error.
+   * Simple error handling: raise an error by triggering a user error.
    * @param $msg
    * @return void
    */

@@ -18,143 +18,63 @@
 require_once "qcl/core/Object.php";
 
 /**
- * Abstract model class
+ * Abstract class for all classes that implement a data model based on
+ * the "Active Record" pattern. The object holds data for one record at
+ * the time, but provides ways of cycling through a record set if more
+ * than one record is retrieved by a query to the data container.
  */
 
-class qcl_data_model_Abstract extends qcl_core_Object
+class qcl_data_model_ActiveRecord
+  extends qcl_core_Object
 {
-
-  /**
-   * The controller object if a custom controller has been
-   * set. Usually, models use the currently active controller.
-   *
-   * @var qcl_data_controller_Controller or subclass
-   */
-  protected $_controller = null;
-
 
 	/**
 	 * The default record data that will be used when creating a new
 	 * model record. You can preset static data here.
 	 */
-  public $emptyRecord = array();
+  protected $emptyRecord = array();
 
  /**
-   * The current record cached. Access with ::getRecord()
+   * A cached version of the current record. Access with ::getRecord()
    * @access private
    * @var array
    */
   protected $currentRecord = null;
 
-
   /**
-   * The datasource model object, if any
+   * The object instance of the datasource that this model belongs to.
+   * The datasource provides shared resources for models.
    * @var qcl_data_datasource_model
    */
   protected $datasourceModel = null;
 
-
   /**
-   * An associated array mapping property names to the "real" name of the
-   * property/column etc. that is used internally.
-   * @var array
-   */
-  protected $aliases = array();
-
-  /**
-   * The datasource name or other information identifying the datasource
+   * The name of the model. Should be a java-like class name such as
+   * "namespace.package.ClassName"
    * @var string
    */
-  public $datasource;
+  protected $name;
 
   /**
-   * The name of the model. Should be a java-like class name such as "namespace.package.ClassName"
-   * @var string
-   */
-  public $name;
-
-  /**
-   * The type of the model, if the model implements a generic
-   * type in a specific way
+   * The type of the model, if the model implements a generic type in a specific
+   * way.
    *
    * @var string
    */
-  public $type;
+  protected $type;
 
   /**
-   * The class name of the model.
-   *
-   * @var string
+   * Property information for the property behavior
+   * @var mixed
    */
-  public $class;
-
-
-  /**
-   * An associated array having the names of all properties (including linked tables) as
-   * keys and the same names OR a local alias as value. To get a list of properties, use
-   * qcl_data_model_xmlSchema_DbModel::getProperties();
-   * @access private
-   * @var array
-   */
-  protected $properties = array();
+  protected $properties;
 
   /**
    * The result of the last query
    * @access private
    * @var array
    */
-  protected $_lastResult = null;
-
-
-  /**
-   * Flag to indicate whether result of an sql search
-   * is to be retrieved (false) or if the search is
-   * only prepared and then retrieved record by record
-   * with the qcl_data_model_db_Abstract::nextRecord() function (true)
-   */
-  protected $_isSearch = false;
-
-  /**
-   * Constructor
-   * @param qcl_data_controller_Controller|qcl_data_model_Abstract  $controller You can also pass a qcl_data_model_Abstract object here,
-   * since the controller can be retrieved from them model.
-   * @param mixed $datasource Datasource model object or null if no datasource
-   */
-  function __construct( $controller=null, $datasourceModel=null )
-  {
-
-    /*
-     * call parent constructor
-     */
-    parent::__construct( $controller );
-
-    /*
-     * if $controller parameter is a datasource model,
-     * we can use this as datasource and get the
-     * controller from it
-     */
-    if ( is_null( $datasourceModel ) and is_a( $controller, "qcl_data_datasource_type_db_Model" ) )
-    {
-      $datasourceModel = $controller;
-    }
-
-    /*
-     * debug message
-     *
-    $c = $this->getController();
-    $this->debug( "Constructing model '" . $this->className() .
-                "' controlled by '" . $c->className() . "'" .
-                ( is_object( $datasourceModel ) ?
-                  " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
-                "framework");
-    */
-
-    /*
-     *  initialize the model
-     */
-    $this->initialize( $datasourceModel );
-
-  }
+  protected $lastResult = null;
 
   /**
    * Returns model name
@@ -164,61 +84,20 @@ class qcl_data_model_Abstract extends qcl_core_Object
     return $this->name;
   }
 
-  /**
-   * Initializes the model. Empty stub to be overridden
-   * @return unknown_type
-   */
-  public function initialize(){}
-
  	/**
- 	 * sets controller of this model to be able to link to other models
- 	 * connected to the controller
- 	 * @param qcl_data_controller_Controller $controller Controller object. You can
- 	 * also provide a qcl_data_model_Abstract object
- 	 * @todo rewrite this
- 	 */
- 	function setController ( $controller )
- 	{
-		if ( is_a( $controller,"qcl_data_controller_Controller" ) )
-		{
-			$this->_controller = $controller;
-		}
-		elseif ( is_a( $controller,"qcl_data_model_Abstract" ) )
-		{
-		  $this->_controller = $controller->getController();
-		}
-    else
-    {
-			$this->raiseError (
-        "No valid controller object provided for " . $this->className() . ". Received a " .
-          ( is_object($controller) ?
-            ( get_class($controller) . " object." ) :
-            ( gettype( $controller ) . "." ) )
-      );
-    }
- 	}
-
- 	/**
- 	 * Returns the controller object
+ 	 * Shorthand method which returns the current controller object
+ 	 * @todo remove
  	 * @return qcl_data_controller_Controller
- 	 *
  	 */
   public function getController()
   {
-    if ( $this->_controller )
-    {
-      $controller = $this->_controller;
-    }
-    else
-    {
-      $controller = $this->getApplication()->getController();
-    }
+    $controller = $this->getApplication()->getController();
     return $controller;
   }
 
-
   /**
    * Returns the server object
+   * @todo remove
    */
   public function server()
   {
@@ -232,15 +111,16 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * object reference to the datasource object
    * return void
    */
-  public function setDatasourceModel( $datasource )
+  public function setDatasourceModel( $datasourceModel )
   {
-    if ( is_object ( $datasource ) and is_a( $datasource, "qcl_data_datasource_type_db_Model") )
+    // @todo use interface
+    if (  $datasourceModel instanceof qcl_data_datasource_type_db_Model )
     {
-      $this->datasourceModel = $datasource;
+      $this->datasourceModel = $datasourceModel;
     }
     else
     {
-      $this->raiseError("Argument must be a qcl_data_datasource_type_db_Model object");
+      $this->raiseError("Invalid datasource model. Must be instance of qcl_data_datasource_type_db_Model object:" . get_class( $datasourceModel ) );
     }
   }
 
@@ -257,16 +137,6 @@ class qcl_data_model_Abstract extends qcl_core_Object
   // Properties and Columns
   //-------------------------------------------------------------
 
-  /**
-   * Return the names of all properties of this model
-   * @deprecated, use ::properties() instead
-   * @todo rename
-   * @return array
-   */
-  public function getProperties()
-  {
-    return $this->properties();
-  }
 
   /**
    * Return the names of all properties of this model
@@ -446,7 +316,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function searchBy( $propName, $value, $orderBy=null, $properties=null )
   {
-    $this->_isSearch = true;
+    $this->isSearch = true;
     return $this->findBy(  $propName, $value, $orderBy, $properties );
   }
 
@@ -471,7 +341,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function searchAll( $orderBy=null, $properties=null )
   {
-    $this->_isSearch = true;
+    $this->isSearch = true;
     return $this->findWhere( null, $orderBy, $properties );
   }
 
@@ -581,7 +451,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function searchById( $ids, $orderBy=null, $properties=null )
   {
-    $this->_isSearch = true;
+    $this->isSearch = true;
     return $this->findById( $ids, $orderBy, $properties);
   }
 
@@ -607,7 +477,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function searchByNamedId( $ids, $orderBy=null, $properties=null )
   {
-    $this->_isSearch = true;
+    $this->isSearch = true;
     return $this->findByNamedId( $ids, $orderBy, $properties );
   }
 
@@ -666,41 +536,24 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function nextRecord()
   {
-    if ( $this->_isSearch )
-    {
-      return $this->_nextRecord();
-    }
-    else
-    {
-      if ( ! count( $this->_lastResult ) )
-      {
-        return false;
-      }
 
-      /*
-       * throw away the first record
-       */
-      array_shift($this->_lastResult);
-
-      /*
-       * and set the first element as current record
-       */
-      $this->setRecord( $this->_lastResult[0] );
+    if ( ! count( $this->lastResult ) )
+    {
+      return false;
     }
+
+    /*
+     * throw away the first record
+     */
+    array_shift( $this->lastResult );
+
+    /*
+     * and set the first element as current record
+     */
+    $this->setRecord( $this->lastResult[0] );
+
     return $this->getRecord();
   }
-
-  /**
-   * Function that needs to be implemented by model if the
-   * result set is to be retrieved record by record after
-   * calling a search...() method.
-   * @return array
-   */
-  public function _nextRecord()
-  {
-    $this->raiseError("Not implemented for Model " . $this->className() );
-  }
-
 
   /**
    * Gets the data of the currently loaded record as a stdClass object
@@ -720,7 +573,11 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function getResult()
   {
-    return $this->_lastResult;
+    if ( ! is_array( $this->lastResult ) )
+    {
+      $this->raiseError("No data exists - probably missing or failed previous query.");
+    }
+    return $this->lastResult;
   }
 
   /**
@@ -730,7 +587,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function setResult( $result )
   {
-    $this->_lastResult = $result;
+    $this->lastResult = $result;
   }
 
   /**
@@ -954,7 +811,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    * key/value pairs as properties.
    * @param mixed  $value
    * @param int $id if given, find and update property recordId
-   * @return qcl_data_model_Abstract
+   * @return qcl_data_model_ActiveRecord
    */
   public function set( $first, $value=null, $id=null )
   {
@@ -988,7 +845,7 @@ class qcl_data_model_Abstract extends qcl_core_Object
    */
   public function getSharedPropertyValues ( $model )
   {
-    $myProperties    = $this->getProperties();
+    $myProperties    = $this->properties();
     $data            = $model->getRecord();
 
     foreach( $data as $key => $value )
@@ -1031,9 +888,9 @@ class qcl_data_model_Abstract extends qcl_core_Object
   {
     $diff = array();
     $properties = array_intersect(
-                    $this->getProperties(),
-                    $that->getProperties()
-                  );
+                  $this->properties(),
+                  $that->properties()
+                );
 
     $isEqual = true;
     foreach( $properties as $name )

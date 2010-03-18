@@ -53,7 +53,7 @@ class qcl_data_persistence_behavior_Session
       qcl_log_Logger::getInstance()->log( $object->className() . ": loading data with id '$id'","persistence");
       if ( ! is_array( $props ) )
       {
-        throw new JsonRpcError("Invalid session data.");
+        throw new JsonRpcException("Invalid session data.");
       }
       foreach( $props as $key => $value )
       {

@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/model/ActiveRecord.php";
 require_once "qcl/data/persistence/db/Object.php";
 
 /**

@@ -299,5 +299,95 @@ class qcl_data_db_behavior_Tree
       // to do: implement
     }
   }
+
+  /**
+   * Creates functions that help maintain a tree structure in the
+   * database:
+   *
+   * table_getHierarchyPath( int folderId ): returns a slash-separated hierarchy path
+   * table_getHierarchyIds( int folderId ):
+   *
+   * Having these functions will significantly speed up tree
+   * path lookup
+   * @param string $table Table name
+   * @param string $col_id Name of id column
+   * @param string $col_parentId Name of parent id column
+   * @param string $col_label Name of node label/name
+   */
+  public function createHierarchyFunctions($table, $col_id, $col_parentId, $col_label)
+  {
+    /*
+     * @todo check permissions
+     */
+
+    /*
+     * drop functions in case they are already defined
+     */
+    $table = $this->table();
+    $this->execute("
+      DROP FUNCTION IF EXISTS `{$table}_getHierarchyPath`
+    ");
+    $this->execute("
+      DROP FUNCTION IF EXISTS `{$table}_getHierarchyIds`
+    ");
+
+    /*
+     * create functions
+     */
+    $this->execute("
+      CREATE FUNCTION `{$table}_getHierarchyPath`(folderId int)
+      RETURNS varchar(255) READS SQL DATA
+      begin
+       declare path varchar(255);
+       declare part varchar(50);
+       declare parentId int(11);
+       set path = '';
+       while folderId > 0 do
+         select
+           `{$col_label}` into part
+           from `{$table}`
+           where `{$col_id}` = folderId;
+         select
+           `{$col_parentId}` into parentId
+           from `{$table}`
+           where `{$col_id}` = folderId;
+         if path != '' then
+           set path = concat(
+             CAST('/' AS CHAR CHARACTER SET utf8 ),
+             CAST(path AS CHAR CHARACTER SET utf8 )
+           );
+         end if;
+         set path = concat(
+           CAST(part AS CHAR CHARACTER SET utf8 ),
+           CAST(path AS CHAR CHARACTER SET utf8 )
+         );
+         set folderId = parentId;
+       end while;
+       return path;
+      end;
+    ");
+
+    $this->execute("
+      CREATE FUNCTION `{$table}_getHierarchyIds`(folderId int)
+      RETURNS varchar(255) READS SQL DATA
+      begin
+       declare path varchar(255);
+       declare parentId int(11);
+       set path = '';
+       while folderId > 0 do
+         select
+           `{$col_parentId}` into parentId
+         from `{$table}`
+         where `{$col_parentId}` = folderId;
+         if path != '' then
+           set path = concat(path,',');
+         end if;
+         set path = concat(path,folderId);
+         set folderId = parentId;
+       end while;
+       return path;
+      end;
+    ");
+  }
 }
 ?>

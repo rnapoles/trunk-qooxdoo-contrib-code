@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/data/xml/__init__.php";
-require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/model/ActiveRecord.php";
 require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
@@ -59,7 +59,7 @@ class qcl_data_xml_Cache
  * @see qcl_data_xml_Storage::getCacheObject() for details
  *
  **/
-class qcl_data_xml_Storage extends qcl_data_model_Abstract
+class qcl_data_xml_Storage extends qcl_data_model_ActiveRecord
 {
 
   /**

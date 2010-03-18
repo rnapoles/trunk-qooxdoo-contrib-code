@@ -17,30 +17,19 @@
  */
 
 /*
- * dependencies
+ * required classes
  */
 require_once "qcl/data/db/Manager.php";
+require_once "qcl/data/db/Query.php";
+require_once "qcl/data/db/Timestamp.php";
 
 /*
- * constants
+ * register log filters
  */
-define("QCL_LOG_PROPERTY_MODEL","propertyModel");
-
-/*
- * define property type constants. You can override the
- * values defined here
- */
-if ( ! defined("qcl_data_db_PROPERTY") )
-{
-  define("qcl_data_db_PROPERTY",             "qcl_data_db_property");
-  define("qcl_data_db_PROPERTY_VARCHAR_32",  "qcl_data_db_property_Varchar32");
-  define("qcl_data_db_PROPERTY_VARCHAR_100", "qcl_data_db_property_Varchar100");
-  define("qcl_data_db_PROPERTY_VARCHAR_250", "qcl_data_db_property_Varchar250");
-  define("qcl_data_db_PROPERTY_BOOLEAN",     "qcl_data_db_property_Boolean");
-  define("qcl_data_db_PROPERTY_INT",         "qcl_data_db_property_Int");
-  define("qcl_data_db_PROPERTY_BLOB",        "qcl_data_db_property_Blob");
-  define("qcl_data_db_PROPERTY_TIMESTAMP",   "qcl_data_db_property_Timestamp");
-}
+define("QCL_LOG_DB","db");
+define("QCL_LOG_TABLE_MAINTENANCE","tableMaintenance");
+qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
+qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false);
 
 
 ?>

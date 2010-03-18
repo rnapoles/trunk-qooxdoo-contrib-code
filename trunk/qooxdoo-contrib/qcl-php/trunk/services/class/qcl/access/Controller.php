@@ -39,7 +39,7 @@ if ( ! defined('QCL_ACCESS_TIMEOUT') )
 /*
  * Exceptions thrown in this class and subclasses
  */
-class qcl_access_AccessDeniedException extends JsonRpcError {}
+class qcl_access_AccessDeniedException extends JsonRpcException {}
 class qcl_access_AuthenticationException extends qcl_access_AccessDeniedException {}
 class qcl_access_InvalidSessionException extends qcl_access_AccessDeniedException {}
 class qcl_access_TimeoutException extends qcl_access_InvalidSessionException {}

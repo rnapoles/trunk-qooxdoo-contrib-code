@@ -16,11 +16,11 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/data/model/db/Abstract.php";
-require_once "qcl/data/db/IModel.php";
+require_once "qcl/data/model/db/IModel.php";
 
 /**
- * Simpler ORM Mmechanism than the qcl_data_model_xmlSchema_DbModel way that uses xml
- * documents for a schema. In this model type, declare public properties
+ * Simpler ORM Mmechanism than the qcl_data_model_xmlSchema_DbModel way that uses
+ * xml documents to define a schema. In this model type, declare public properties
  * with qcl_data_db_PROPERTY_* constants. However, there is be no automatic
  * setup and maintenance of tables (at least for now). This system is
  * probably a lot faster than the other, and depends on much less stuff.
@@ -39,50 +39,41 @@ require_once "qcl/data/db/IModel.php";
  */
 class qcl_data_model_db_Simple
   extends qcl_data_model_db_Abstract
-  implements qcl_data_db_IModel
 {
   /**
    * This model does not have a schema xml document but
    * manages its properties directly
-   * @todo property definition should be like
-   * $properties = array(
-   *  'foo' => array(
-   *    'type'     => "qcl_data_db_property_varchar32",
-   *    'nullable' => true,
-   *    'init'     => 'foo'
-   *  )
-   * ):
    */
-  var $schemaXmlPath = false;
+  public $schemaXmlPath = false;
 
   /**
    * The id column
    */
-  var $id = qcl_data_db_PROPERTY_INT;
+  public $id = qcl_data_db_PROPERTY_INT;
 
   /**
    * The created column
    */
-  var $created = qcl_data_db_PROPERTY_TIMESTAMP;
+  public $created = qcl_data_db_PROPERTY_TIMESTAMP;
 
   /**
    * The modified column
    */
-  var $modified = qcl_data_db_PROPERTY_TIMESTAMP;
+  public $modified = qcl_data_db_PROPERTY_TIMESTAMP;
 
   /**
    * Constructor. Automatically configures the table name
    * @return void
    */
-  function __construct($controller=null)
+  function __construct()
   {
+    parent::__construct();
+
     if ( ! $this->table() )
     {
       $this->raiseError("No table name!");
     }
     $this->setTableName( $this->getTablePrefix() . $this->table() );
-
-    parent::__construct($controller);
   }
 
   /**
@@ -148,14 +139,13 @@ class qcl_data_model_db_Simple
     /*
      * execute query
      */
-    //$this->debug($sql);
-    $result = $this->db->getAllRecords($sql);
+    $result = $this->db()->getAllRecords($sql);
 
     /*
      * store and return result
      */
     $this->currentRecord = count($result) ? $result[0] : null;
-    $this->_lastResult   = $result;
+    $this->lastResult = $result;
     return $result;
   }
 

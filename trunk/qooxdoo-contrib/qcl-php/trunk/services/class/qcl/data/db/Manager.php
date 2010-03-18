@@ -16,6 +16,8 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+require_once "qcl/data/db/__init__.php";
+
 /*
  * constants for getDefaultDsn method
  */
