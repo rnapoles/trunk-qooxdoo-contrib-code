@@ -3,17 +3,17 @@
 require_once "qcl/data/persistence/db/Object.php";
 require_once "qcl/test/AbstractTestController.php";
 
+class TestPersistenceBehavior extends qcl_core_Object
+{
+  public $isPersistent = true;
+  public $counter = 0;
+}
+
 class TestPersistence extends qcl_data_persistence_db_Object
 {
   var $foo = null;
   var $end;
   var $counter;
-}
-
-class TestPersistenceBehavior extends qcl_core_Object
-{
-  public $isPersistent = true;
-  public $counter = 0;
 }
 
 /**
@@ -22,46 +22,6 @@ class TestPersistenceBehavior extends qcl_core_Object
 class class_qcl_test_data_Persistence
   extends qcl_test_AbstractTestController
 {
-
-
-  /**
-   * Tests the persistence of an object.
-   * @return int
-   * @rpctest {
-   *   "requestData" : {
-   *     "method" : "testPersistence"
-   *   },
-   *   "checkResult" : function( result )
-   *   {
-   *     var count = result.data;
-   *     if( parseInt(count) !== NaN && count > 0 )
-   *     {
-   *       return true;
-   *     }
-   *     return "Expected: number > 0, got: " + count;
-   *   }
-   * }
-   */
-  function method_testPersistence()
-  {
-    $sessionId = $this->getSessionId();
-    $obj = new TestPersistence("TestPersistence", null, $sessionId );
-    $this->info('Initialized $obj->foo = ' . $obj->foo);
-    $obj->foo = rand(1,100);
-    $this->info('Changing $obj->foo = ' . $obj->foo);
-    unset( $obj );
-    $obj = new TestPersistence("TestPersistence", null, $sessionId );
-    return $obj->foo;
-  }
-
-  function method_testPersistenceLocking()
-  {
-    $obj1 = new TestPersistence($this,"TestPersistence");
-    $obj1->getWriteLock();
-    $obj2 = new TestPersistence($this,"TestPersistence");
-    $obj2->getWriteLock();
-    return $this->result();
-  }
 
   /**
    * Tests the persistence behavior mechanism
@@ -98,12 +58,58 @@ class class_qcl_test_data_Persistence
    */
   function method_testPersistenceBehavior()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
+    $this->startLogging();
+
     $obj = new TestPersistenceBehavior();
     $obj->counter++;
     $this->info("Count:" . $obj->counter );
+
+    $this->endLogging();
     return $obj->counter;
   }
+
+
+
+  /**
+   * Tests the persistence of an object.
+   * @return int
+   * @rpctest {
+   *   "requestData" : {
+   *     "method" : "testPersistence"
+   *   },
+   *   "checkResult" : function( result )
+   *   {
+   *     var count = result.data;
+   *     if( parseInt(count) !== NaN && count > 0 )
+   *     {
+   *       return true;
+   *     }
+   *     return "Expected: number > 0, got: " + count;
+   *   }
+   * }
+   */
+  function method_testPersistence()
+  {
+    $sessionId = $this->getSessionId();
+    $obj = new TestPersistence("TestPersistence", null, $sessionId );
+    $this->info('Initialized $obj->foo = ' . $obj->foo);
+    $obj->foo = rand(1,100);
+    $this->info('Changing $obj->foo = ' . $obj->foo);
+    unset( $obj );
+    $obj = new TestPersistence("TestPersistence", null, $sessionId );
+    return $obj->foo;
+  }
+ //////////// not migrated ///////////
+
+  function method_testPersistenceLocking()
+  {
+    $obj1 = new TestPersistence($this,"TestPersistence");
+    $obj1->getWriteLock();
+    $obj2 = new TestPersistence($this,"TestPersistence");
+    $obj2->getWriteLock();
+    return $this->result();
+  }
+
 
  function method_testServerProcessStatus($params)
   {
@@ -178,5 +184,14 @@ class class_qcl_test_data_Persistence
 
   }
 
+  private function startLogging()
+  {
+    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
+  }
+
+  private function endLogging()
+  {
+    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",false);
+  }
 }
 ?>

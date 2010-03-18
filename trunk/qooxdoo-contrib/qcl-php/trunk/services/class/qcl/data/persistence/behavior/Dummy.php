@@ -44,5 +44,10 @@ class qcl_data_persistence_behavior_Dummy
    */
   public function save( $object, $id ){}
 
+  /**
+   * Do nothing
+   */
+  public function delete( $object, $id ){}
+
 }
 ?>
