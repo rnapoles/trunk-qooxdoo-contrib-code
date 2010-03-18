@@ -16,18 +16,16 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/data/model/db/Abstract.php";
-require_once "qcl/data/db/IModel.php";
 
 /**
- * Model base class for models based on a (mysql) database
+ * Model base class for models based on a sql database
  * that are defined by an xml schema definition.
  * @todo rename methods "getX()" into "x()" if they refer to
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
 class qcl_data_model_xmlSchema_DbModel
-  extends qcl_data_model_db_Abstract
-  implements qcl_data_db_IModel
+  extends    qcl_data_model_db_Abstract
 {
 
   /**
@@ -105,7 +103,7 @@ class qcl_data_model_xmlSchema_DbModel
    * the datasource object, or null if model is independent of a datasource
    * @return void
    */
-  public function initialize( $datasourceModel=null )
+  public function init( $datasourceModel=null )
   {
 
     /*
@@ -117,7 +115,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * parent method establishes database connection
      */
-    parent::initialize( $datasourceModel );
+    parent::init( $datasourceModel );
 
 
     /*
@@ -1579,19 +1577,18 @@ class qcl_data_model_xmlSchema_DbModel
     $modelClass =  $this->getLinkedModelClass( $name );
     if ( $modelClass )
     {
-      $controller = $this->getController();
       $dsModel    = $this->getDatasourceModel();
 
       /*
        * load model code
        */
-      $controller->includeClassfile( $modelClass );
+      $this->includeClassfile( $modelClass );
 
       /*
        * create new model instance, passing controller and
        * datasource model to it
        */
-      $modelObj = new $modelClass($controller,$dsModel);
+      $modelObj = new $modelClass( $dsModel );
       return $modelObj;
     }
     return false;

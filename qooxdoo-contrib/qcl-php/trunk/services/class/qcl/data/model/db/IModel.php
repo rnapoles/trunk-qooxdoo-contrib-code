@@ -19,7 +19,7 @@
 /**
  * Interface for a database-based model
  */
-interface qcl_data_db_IModel
+interface qcl_data_model_db_IModel
 {
 
   /**
@@ -28,7 +28,7 @@ interface qcl_data_db_IModel
    * or null if model is independent of a datasource
    * @return bool Success
    */
-  function initialize( $datasourceModel=null );
+  function init( $datasourceModel=null );
 
   /**
    * Returns the database adapter object for this model

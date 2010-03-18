@@ -1,10 +1,25 @@
 <?php
-require_once "qcl/data/controller/Controller.php";
+/*
+ * qooxdoo - the new era of web development
+ *
+ * http://qooxdoo.org
+ *
+ * Copyright:
+ *   2007-2010 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+require_once "qcl/test/AbstractTestController.php";
 
 class class_qcl_test_event_Event
-  extends qcl_data_controller_Controller
+  extends qcl_test_AbstractTestController
 {
-  var $skipAuthentication = true;
 
   function method_testEvents()
   {
@@ -12,17 +27,21 @@ class class_qcl_test_event_Event
     $this->info("My id: #" . $this->objectId() );
 
     $object1 = new qcl_core_Object;
-    $this->info("object1 -> #" . $object1->objectId() );
-    $object1->addListener("fooEvent", $this, "handleFooEvent");
+    $this->info("Adding Listener for 'fooEvent' to object1 -> #" . $object1->objectId() );
+    $object1->addListener( "fooEvent", $this, "handleFooEvent");
 
     $object2 = new qcl_core_Object;
-    $this->info("object2 -> #" . $object2->objectId() );
-    $object2->addListener("barEvent", $this, "handleBarEvent");
+    $this->info("Adding Listener for 'barEvent' to object2 -> #" . $object2->objectId() );
+    $object2->addListener( "barEvent", $this, "handleBarEvent");
 
+    $this->info("Firing 'fooEvent' on object1" );
     $object1->fireDataEvent("fooEvent", "Foo!");
+    $this->info("Firing 'barEvent' on object1" );
     $object1->fireDataEvent("barEvent", "Bar!");
 
+    $this->info("Firing 'fooEvent' on object2" );
     $object2->fireDataEvent("fooEvent", "Foo!");
+    $this->info("Firing 'barEvent' on object2" );
     $object2->fireDataEvent("barEvent", "Bar!");
 
     return true;

@@ -131,7 +131,7 @@ class String
    */
   function contains( $charSequence )
   {
-    return ereg( $charSequence, $this->_value );
+    return strstr( $this->_value, $charSequence );
   }
 
   /**
@@ -304,6 +304,15 @@ class String
    * @return string
    */
   function toString()
+  {
+    return $this->_value;
+  }
+
+  /**
+   * Returns the string value of the object
+   * @return string
+   */
+  function __toString()
   {
     return $this->_value;
   }

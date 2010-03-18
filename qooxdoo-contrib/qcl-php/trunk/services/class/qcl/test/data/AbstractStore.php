@@ -26,7 +26,6 @@
  */
 class AbstractStore
 {
-  var $skipAuthentication = true;
 
   function method_register( $params )
   {

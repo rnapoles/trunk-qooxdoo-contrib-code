@@ -16,7 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/data/db/adapter/Abstract.php";
-require_once "qcl/data/db/IAdapter.php";
 require_once "DB.php"; // PEAR
 
 /**
@@ -26,7 +25,6 @@ require_once "DB.php"; // PEAR
  */
 class qcl_data_db_adapter_Mysql
   extends qcl_data_db_adapter_Abstract
-  implements qcl_data_db_IAdapter
 {
 
 	/**

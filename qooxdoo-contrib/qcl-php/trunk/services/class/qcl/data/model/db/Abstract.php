@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/model/ActiveRecord.php";
 require_once "qcl/data/db/__init__.php";
 require_once "qcl/util/registry/Persist.php";
 
@@ -25,12 +25,12 @@ require_once "qcl/util/registry/Persist.php";
  * @todo define interface
  */
 class qcl_data_model_db_Abstract
-  extends qcl_data_model_Abstract
+  extends qcl_data_model_ActiveRecord
 {
 
   /**
    * The datasource object instance
-   * @var qcl_data_db_type_Mysql
+   * @var qcl_data_db_adapter_Mysql
    * @todo make this a private property
    */
   public $db;
@@ -60,19 +60,35 @@ class qcl_data_model_db_Abstract
    */
   public $foreignKey;
 
+  /**
+   * Constructor
+   * @param qcl_data_datasource_type_db_Model|null Optional $datasource Datasource model
+   */
+  function __construct( $datasourceModel=null )
+  {
+    /*
+     * call parent constructor
+     */
+    parent::__construct();
+
+    /*
+     *  initialize the model
+     */
+    $this->init( $datasourceModel );
+  }
 
   /**
    * Initializes the model. This is called from the constructor.
-   * @param mixed $datasourceModel Object reference to the datasource object,
+   * @param qcl_data_datasource_type_db_Model|null $datasourceModel Object reference to the datasource object,
    * or null if model is independent of a datasource
    * @return bool Success
    */
-  public function initialize( $datasourceModel=null )
+  public function init( $datasourceModel=null )
   {
     /*
      * datasource model
      */
-    if ( is_object( $datasourceModel ) )
+    if ( $datasourceModel ) // todo check
     {
       $this->setDatasourceModel( $datasourceModel );
     }
@@ -87,10 +103,14 @@ class qcl_data_model_db_Abstract
 
   /**
    * Returns the database connection object for this model
-   * @return qcl_data_db_type_Abstract
+   * @return qcl_data_db_adapter_MySql
    */
   public function db()
   {
+    if ( ! $this->db )
+    {
+      $this->raiseError("No database adapter!");
+    }
     return $this->db;
   }
 
@@ -125,11 +145,10 @@ class qcl_data_model_db_Abstract
      * try to get db handler from datasource object
      */
     $dsModel = $this->getDatasourceModel();
-    if ( is_object($dsModel)
-          and $dsModel->isInstanceOf( "qcl_data_datasource_type_db_Model" ) )
+    if ( $dsModel instanceof qcl_data_datasource_type_db_Model )
     {
       //$this->debug( get_class($this) . ": Getting db object from datasource object...");
-      $db = $dsModel->getDatasourceConnection();
+      $db = $dsModel->getAdapter();
     }
 
     /*
@@ -315,7 +334,7 @@ class qcl_data_model_db_Abstract
         $this->raiseError("OrderBy argument must be a string.");
       }
     }
-    return $this->db->values($sql);
+    return $this->db()->values($sql);
   }
 
   /**
@@ -359,7 +378,7 @@ class qcl_data_model_db_Abstract
   public function findLike( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {
     $colName = $this->getColumnName( $propName );
-    $value   = $this->db->escape($value);
+    $value   = $this->db()->escape($value);
     return $this->findWhere("`$colName` LIKE '$value'", $orderBy, $properties, $link );
   }
 
@@ -444,7 +463,7 @@ class qcl_data_model_db_Abstract
          */
         if ( $properties[$i]== "*" )
         {
-          $properties[$i] = $model->getProperties();
+          $properties[$i] = $model->properties();
         }
 
         /*
@@ -493,7 +512,7 @@ class qcl_data_model_db_Abstract
        */
       if ( $properties == "*" )
       {
-        $properties = $this->getProperties();
+        $properties = $this->properties();
       }
 
       foreach ( (array) $properties as $property )
@@ -610,13 +629,13 @@ class qcl_data_model_db_Abstract
      * execute query
      */
     //$this->debug($sql);
-    $result = $this->db->getAllRecords($sql);
+    $result = $this->db()->getAllRecords($sql);
 
     /*
      * store and return result
      */
     $this->currentRecord = count($result) ? $result[0] : null;
-    $this->_lastResult   = $result;
+    $this->lastResult   = $result;
     return $result;
   }
 
@@ -685,7 +704,7 @@ class qcl_data_model_db_Abstract
     $inValues = array();
     foreach ( (array) $ids as $id )
     {
-       $inValues[] = "'" . $this->db->escape($id) . "'";
+       $inValues[] = "'" . $this->db()->escape($id) . "'";
     }
     $inValues = implode(",", $inValues ) ;
 
@@ -700,16 +719,6 @@ class qcl_data_model_db_Abstract
     return $result;
   }
 
-  /**
-   * Function that needs to be implemented by model if the
-   * result set is to be retrieved record by record after
-   * calling a search...() method.
-   * @return array
-   */
-  public function _nextRecord()
-  {
-    return $this->db->nextRecord();
-  }
 
   //-------------------------------------------------------------
   // Data creation and manipulation
@@ -837,7 +846,7 @@ class qcl_data_model_db_Abstract
      */
     //$this->debug($data);
     $table = $this->table();
-    $id = $this->db->insert( $table, $data );
+    $id = $this->db()->insert( $table, $data );
 
     //$this->debug("Created new record #$id in {$table} with data: " . print_r($data,true) );
 
@@ -909,7 +918,7 @@ class qcl_data_model_db_Abstract
 
     //$this->debug($data);
 
-    return $this->db->update( $this->table(), $data, $this->getColumnName("id") );
+    return $this->db()->update( $this->table(), $data, $this->getColumnName("id") );
   }
 
   /**
@@ -928,16 +937,16 @@ class qcl_data_model_db_Abstract
     /*
      * do the update
      */
-    return $this->db->updateWhere( $this->table(), $data, $this->toSql($where) );
+    return $this->db()->updateWhere( $this->table(), $data, $this->toSql($where) );
   }
 
   /**
-   * Checks wheter a record exists that matches a query
+   * Checks whether a record exists that matches a query
    * @param array|string $where Where query
    */
   public function exists( $where )
   {
-    return $this->db->exists( $this->table(), $this->toSql($where) );
+    return $this->db()->exists( $this->table(), $this->toSql( $where ) );
   }
 
   /**
@@ -1087,7 +1096,7 @@ class qcl_data_model_db_Abstract
     /*
      * delete records
      */
-    $this->db->delete ( $this->table(), $ids );
+    $this->db()->delete ( $this->table(), $ids );
   }
 
   /**
@@ -1106,7 +1115,7 @@ class qcl_data_model_db_Abstract
     /*
      * delete
      */
-    $this->db->deleteWhere ( $this->table(), $this->toSql($where) );
+    $this->db()->deleteWhere ( $this->table(), $this->toSql($where) );
   }
 
   /**
@@ -1125,7 +1134,7 @@ class qcl_data_model_db_Abstract
     /*
      * delete
      */
-    $this->db->deleteWhere ( $this->table(), $this->toSql( array(
+    $this->db()->deleteWhere ( $this->table(), $this->toSql( array(
       $property => $value
     ) ) );
   }
@@ -1145,7 +1154,7 @@ class qcl_data_model_db_Abstract
      * truncate
      */
     $table = $this->table();
-    $this->db->execute("TRUNCATE `{$table}`;");
+    $this->db()->execute("TRUNCATE `{$table}`;");
   }
 
 
@@ -1156,7 +1165,7 @@ class qcl_data_model_db_Abstract
    */
   public function countWhere ( $where )
   {
-    return (int) $this->db->countWhere ( $this->table(), $this->toSql($where) );
+    return (int) $this->db()->countWhere ( $this->table(), $this->toSql($where) );
   }
 
   //-----------------------------------------------------------------------
@@ -1170,7 +1179,7 @@ class qcl_data_model_db_Abstract
   public function countRecords()
   {
     $table = $this->table();
-    return (int) $this->db->getValue("SELECT COUNT(*) FROM `$table`");
+    return (int) $this->db()->getValue("SELECT COUNT(*) FROM `$table`");
   }
 
   /**
@@ -1190,7 +1199,7 @@ class qcl_data_model_db_Abstract
   {
     $idCol = $this->getColumnName('id');
     $table = $this->table();
-    return $this->db->getValue("SELECT MIN(`$idCol`) FROM `$this->table`");
+    return $this->db()->getValue("SELECT MIN(`$idCol`) FROM `$this->table`");
   }
 
   /**
@@ -1201,7 +1210,7 @@ class qcl_data_model_db_Abstract
   {
     $idCol = $this->getColumnName('id');
     $table = $this->table();
-    return $this->db->getValue("SELECT MAX(`$idCol`) FROM `$this->table`");
+    return $this->db()->getValue("SELECT MAX(`$idCol`) FROM `$this->table`");
   }
 
   //-------------------------------------------------------------
@@ -1230,7 +1239,7 @@ class qcl_data_model_db_Abstract
     $modifiedCol = $this->getColumnName("modified");
     $idCol = $this->getIdColumn();
     $table = $this->table();
-    $this->db->execute("
+    $this->db()->execute("
       UPDATE `$table`
       SET `$modifiedCol` = NOW()
       WHERE `$idCol` IN ($ids)
@@ -1243,7 +1252,7 @@ class qcl_data_model_db_Abstract
    */
   public function getTimestamp()
   {
-    return $this->db->getValue("SELECT NOW()");
+    return $this->db()->getValue("SELECT NOW()");
   }
 
 
@@ -1257,7 +1266,7 @@ class qcl_data_model_db_Abstract
    */
   public function getSecondsSince($timestamp)
   {
-    return $this->db->getValue("
+    return $this->db()->getValue("
       SELECT TIME_TO_SEC(TIMEDIFF(NOW(),'$timestamp'));
     ");
   }
@@ -1277,7 +1286,7 @@ class qcl_data_model_db_Abstract
     $modifiedCol = $this->getColumnName("modified");
     $idCol = $this->getIdColumn();
 
-    $rows = $this->db->getAllRecords("
+    $rows = $this->db()->getAllRecords("
       SELECT
         `$idCol` AS id,
         `$modifiedCol` AS timestamp

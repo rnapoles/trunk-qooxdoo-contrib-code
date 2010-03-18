@@ -527,20 +527,15 @@ class qcl_server_JsonRpc extends JsonRpcServer
   }
 
   /**
-   * Logs to log file or system log
-   * @param $str
+   * Hook for subclasses to locally save log messages. By default,
+   * log to path in JsonRpcDebugFile constant, if it exists, otherwise
+   * to system log.
+   * @param string $msg Message
    * @return void
    */
-  private function _log ( $str )
+  public function log( $msg )
   {
-    if ( is_writable( QCL_LOG_FILE) )
-    {
-      error_log( $str, 3, QCL_LOG_FILE );
-    }
-    else
-    {
-      error_log( $str );
-    }
+    qcl_log_Logger::getInstance()->log( $msg, "log" );
   }
 
   /**
@@ -548,7 +543,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   public function info( $str )
   {
-    $this->_log( "\qcl_server_JsonRpc: ".  $str . "\n");
+    qcl_log_Logger::getInstance()->info( $msg );
   }
 
   /**
@@ -556,7 +551,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   public function warn( $str )
   {
-    $this->_log( "\nqcl_server_JsonRpc: *** WARN: ".  $str . "\n" );
+    qcl_log_Logger::getInstance()->warn( $msg );
   }
 
   /**
@@ -567,12 +562,7 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   public function logError( $msg, $includeBacktrace = false )
   {
-    $msg = "\nqcl_server_JsonRpc: *** ERROR: ". $msg;
-    if ( $includeBacktrace )
-    {
-      $msg .= "\n" . debug_get_backtrace();
-    }
-    $this->_log( $msg );
+    qcl_log_Logger::getInstance()->error( $msg, $includeBacktrace );
   }
 }
 ?>

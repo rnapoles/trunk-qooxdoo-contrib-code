@@ -1,0 +1,141 @@
+<?php
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+require_once "qcl/data/model/PropertyBehavior.php";
+
+/**
+ * Extending the property behavior of qcl_data_model_PropertyBehavior
+ * with sql database support. This property behavior is to be used
+ * by subclasses of qcl_data_model_AbstractActiveRecord, which already
+ * defines the properties "id", "created", "modified".
+ *
+ * Since the properties will be persisted in the database, non-scalar
+ * value types will be serialized to a string representation. (not
+ * implemented yet).
+ *
+ * This behavior adds the following keys to the property definition:
+ *
+ * 'sqltype' => The full definition of a column in a database table
+ *              as it would be used in a CREATE TABLE statement.
+ *              Support for a more fine-grained type definition will
+ *              be added later, which will make this feature more
+ *              portable across database drivers.
+ *
+ *              If you want to store non-scalar values, make sure to use
+ *              data type (such as LONGTEXT or BLOB) that will be able to
+ *              store adequately long strings or binary data.
+ *              (not implemented yet)
+ *
+ * <pre>
+ * private $properties = array(
+ *   "foo" => array(
+ *     "check"    => "string",
+ *     "init"     => "foo",
+ *     "nullable" => true,
+ *     "sqltype"  => "varchar(50)"
+ *    ),
+ *    "bar"  => array(
+ *      "check"     => "integer",
+ *      "init"      => 1,
+ *      "nullable"  => true,
+ *      "sqltype"   => "int(11)"
+ *    ),
+ *    "baz"  => array(
+ *      "check"     => "boolean",
+ *      "init"      => true,
+ *      "nullable"  => false,
+ *      "sqltype"   => "int(1)"
+ *    ),
+ * );
+ *
+ * function __construct()
+ * {
+ *   $this->addProperties( $this->properties );
+ *   parent::__construct();
+ * }
+ * </pre>
+ *
+ *
+ * @see qcl_data_model_db_PropertyBehavior
+ */
+class qcl_data_model_db_PropertyBehavior
+  extends qcl_data_model_PropertyBehavior
+{
+  /**
+   * A registry to check if a table has already been initialized
+   * @var array
+   */
+  private static $tables_initialized = array();
+
+  /**
+   * Getter for managed model
+   * @return qcl_data_model_db_ActiveRecord
+   */
+  protected function getModel()
+  {
+    return parent::getObject();
+  }
+
+  /**
+   * Constructor. Creates table if it doesn't already exist.
+   * @param qcl_data_model_db_ActiveRecord $model
+   */
+  function __construct( qcl_data_model_db_ActiveRecord $model )
+  {
+    parent::__construct( $model );
+
+    /*
+     * check if table exists, otherwise create
+     */
+    $tableName = $model->tableName();
+    $this->getModel()->debug(self::$tables_initialized[$tableName],__CLASS__,__LINE__);
+    if ( ! self::$tables_initialized[$tableName] )
+    {
+      $table = $model->getQueryBehavior()->getTable();
+      if( ! $table->exists() )
+      {
+        $table->create();
+      }
+      self::$tables_initialized[$tableName] = true;
+    }
+  }
+
+  /**
+   * Adds a property definition. Sets up the corresponding
+   * table column if it doesn't already exist.
+   * @param array $properties
+   * @return void
+   */
+  public function add( $properties )
+  {
+    parent::add( $properties );
+
+    $model = $this->getModel();
+    $qbehv = $model->getQueryBehavior();
+    $table = $qbehv->getTable();
+
+    if( ! $table->exists() )
+    {
+      $table->create();
+    }
+
+
+
+  }
+
+}
+?>

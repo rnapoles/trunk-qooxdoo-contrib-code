@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/model/ActiveRecord.php";
 require_once "qcl/data/persistence/__init__.php";
 require_once "qcl/log/FireCake.php";
 
@@ -46,7 +46,7 @@ define("qcl_data_persistence_READ_LOCK", 2);
  * to subclass this class in order to use it
  */
 class qcl_data_persistence_model_Abstract
-  extends qcl_data_model_Abstract
+  extends qcl_data_model_ActiveRecord
 {
 
   /**
@@ -54,19 +54,19 @@ class qcl_data_persistence_model_Abstract
    * it has been modified during runtime)
    * @var array
    */
-  private $_original;
+  protected $_original;
 
   /**
    * Flag to indicate if object has changed during runtime
    * @var bool
    */
-  private $_hasChanged;
+  protected $_hasChanged;
 
   /**
    * Flag to indicate that  object has been deleted
    * @var bool
    */
-  private $_isDeleted;
+  protected $_isDeleted;
 
   /**
    * Indicates that this is a persistent object
@@ -75,30 +75,18 @@ class qcl_data_persistence_model_Abstract
   public $isPersistent = true;
 
   /**
-   * The id of the instance
-   * @var string
-   */
-  public $instanceId;
-
-  /**
-   * The id of the user that this object belongs to.
-   * @var int
-   */
-  private $_userId = null;
-
-  /**
-   * The id of the session that this object belongs to
-   * @var string
-   */
-  private $_sessionId = null;
-
-  /**
    * Indicates that this is the first time the object
    * has been created, i.e. is has not been reconstructed
    * from the database
    * @var bool
    */
   public $isNew = true;
+
+  /**
+   * The id of the instance
+   * @var string
+   */
+  public $instanceId;
 
   /**
    * Whether a process has locked the object for exclusive
@@ -112,6 +100,18 @@ class qcl_data_persistence_model_Abstract
    * @var int
    */
   public $lockMode = 0;
+
+  /**
+   * The id of the user that this object belongs to.
+   * @var int
+   */
+  protected $_userId = null;
+
+  /**
+   * The id of the session that this object belongs to
+   * @var string
+   */
+  protected $_sessionId = null;
 
   /**
    * Timeout in seconds before trying to get the lock is aborted
@@ -155,6 +155,7 @@ class qcl_data_persistence_model_Abstract
 
     /*
      * check if class is subclassed
+     * @todo
      */
     if ( $this->className() == __CLASS__ )
     {
@@ -193,7 +194,7 @@ class qcl_data_persistence_model_Abstract
    * Empty stub for method that Initializes the object
    * @return void
    */
-  function initialize() {}
+  function init() {}
 
   /**
    * Overrideable method to check if this is the first time the

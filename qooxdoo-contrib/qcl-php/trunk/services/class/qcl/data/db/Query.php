@@ -1,0 +1,139 @@
+<?php
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2010 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+
+/**
+ * An object holding data for use in a SQL query by a QueryBehavior class.
+ * The data should be evaluated by the behavior class as follows:
+ * <ul>
+ * <li>
+ *
+ *
+ *
+ * @param
+ * @param
+ * @param [optional]  $properties
+ * @param string[optional] $link
+ * @param bool $distinct Whether only distinct values should be returned
+
+ */
+
+class qcl_data_db_Query
+  extends qcl_core_Object
+{
+
+  //-------------------------------------------------------------
+  // Properties
+  //-------------------------------------------------------------
+
+  /**
+   * Data for the SELECT statement. If "*" or null (default),
+   * select all columns. if array, select the columns specified in
+   * the array. If the array elements are associative arrays, evaluate
+   * their keys as follows:  'column' => name of the column, 'as' => name
+   * of the key in which the value is returned in the result row, this
+   * allows to use tables that differ from the property schema.
+   * @var string|array|null.
+   */
+  public $select = null;
+
+  /**
+   * Array of properties to retrieve. If "*" or null (default), retrieve all.
+   * When using joined tables, the parameter must be an array containing two
+   * arrays, the first with the properties of the model table, and the second
+   * with the properties of the joined table. Alternatively, you can use the
+   * syntax "prop1,prop2,prop3" for an unlinked, and
+   * "prop1,prop2,prop3|prop1,prop2,prop3" for a linked model. It is also
+   * possible to use "*" or "*|*" to get all properties from unlinked and
+   * linked models, respectively.
+   * @var string|array|null
+   */
+  public $properties = null;
+
+  /**
+   * The name of the affected table. Usually not needed since the
+   * behavior takes care of this.
+   * @var string
+   */
+  public $table = null;
+
+  /**
+   * 'Where' condition to match. If null, get all. if array, match all
+   * key -> value combinations. If string, the table name is available as
+   * the alias "t1", joined tables as "t2".
+   * @var string|array|null
+   */
+  public $where = null;
+
+  /**
+   * Order by property/properties. If an array is given, the last element of
+   * the array will be searched for "ASC" or "DESC" and used as sort direction.
+   * @todo each single property should have a sort direction
+   * @var string|array|null
+   */
+  public $orderBy  =null;
+
+  /**
+   * Data for the sql LIMIT statment
+   * @var string
+   */
+  public $limit;
+
+  /**
+   * Optional flag to select distict rows only
+   * @var boolean
+   */
+  public $distinct = false;
+
+  /**
+   * Optional name of the link in the schema. If provided, this will
+   * cause the query behavior to automatically generate the necessary
+   * join query.
+   * @var string
+   */
+  public $link = null;
+
+  /**
+   * The parameters used to execute dynamic sql statements by controlled
+   * replacement of placeholders
+   * @see PDO::prepare()
+   * @var array
+   */
+  public $parameters = array();
+
+  /**
+   * The types of the parameters used to execute dynamic sql statements
+   * @see PDO::prepare()
+   * @var array
+   */
+  public $parameter_types = array();
+
+
+  //-------------------------------------------------------------
+  // Constructor
+  //-------------------------------------------------------------
+
+  /**
+   * Constructor
+   * @param array $map Map of properties to be set.
+   */
+  function __construct( $map )
+  {
+    $this->set( $map );
+  }
+}
+?>

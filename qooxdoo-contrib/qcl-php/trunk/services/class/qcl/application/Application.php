@@ -57,15 +57,6 @@ class qcl_application_Application
    */
   private $_ini = null;
 
-  /**
-   * Returns the version of the application. Can be called
-   * statically. Must be implemented by the inheriting class
-   * @return string
-   */
-  public function version()
-  {
-    return $this->notImplemented();
-  }
 
   /**
    * Return the application singleton instance. Extending classes
@@ -81,6 +72,16 @@ class qcl_application_Application
   static function getInstance( )
   {
     return qcl_getInstance(__CLASS__);
+  }
+
+  /**
+   * Returns the version of the application. Can be called
+   * statically. Must be implemented by the inheriting class
+   * @return string
+   */
+  public function version()
+  {
+    return $this->notImplemented();
   }
 
   /**
@@ -161,7 +162,7 @@ class qcl_application_Application
 
     /*
      * Initialize a dummy qcl_data_model_xmlSchema_DbModel object to create tables
-     * @todo this can be removed once qcl_data_db_SimpleModel does
+     * FIXME this can be removed once qcl_data_db_SimpleModel does
      * automatic table creation.
      */
      require_once "qcl/data/persistence/db/Setup.php";
@@ -169,7 +170,7 @@ class qcl_application_Application
 
      /*
       * now we can include the real persistent object class
-      * @todo this is still a hack
+      * FIXME this is still a hack
       */
      require_once "qcl/data/persistence/db/Object.php";
   }
@@ -272,6 +273,26 @@ class qcl_application_Application
     //$this->debug("Ini value '$path'= '$value'");
 
     return $value;
+  }
+
+  /**
+   * Returns an array of values corresponding to the given array of keys from the
+   * initialization configuration data.
+   * @param array $arr
+   * @return array
+   */
+  public function getIniValues( $arr )
+  {
+    if ( ! is_array( $arr ) )
+    {
+      $this->raiseError("Invalid parameter - array expected");
+    }
+    $ret = array();
+    foreach( $arr as $key )
+    {
+      $ret[] = $this->getIniValue( $key );
+    }
+    return $ret;
   }
 }
 ?>

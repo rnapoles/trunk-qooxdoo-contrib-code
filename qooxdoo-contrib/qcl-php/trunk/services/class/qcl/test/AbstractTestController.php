@@ -1,51 +1,39 @@
 <?php
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
 require_once "qcl/data/controller/Controller.php";
 
+/**
+ * Exception
+ */
+class qcl_test_AssertionException extends JsonRpcException
+{
+  function __construct( $msg )
+  {
+    parent::__construct( "Assertion failed: " . $msg . " in " . get_class($this) . ":" . $this->getLine());
+  }
+}
+
+/**
+ * Abstract class for test controllers
+ */
 class qcl_test_AbstractTestController
   extends qcl_data_controller_Controller
 {
-  /**
-   * A test controller should not require authentication
-   * @var unknown_type
-   */
-  public $skipAuthentication = true;
-
-
-  /**
-   *
-   * @return unknown_type
-   */
-  function __construct()
-  {
-    parent::__construct();
-    $this->getLogger()->setFilterEnabled("xml",false);
-    $this->getLogger()->setFilterEnabled("propertyModel",false);
-  }
-
-  /**
-   * Creates a anonymous user or reuse an existing session. Returns the
-   * user id of the anonymous user.
-   * @return int The user id of the anoymous user
-   */
-  public function anonymousAccess()
-  {
-    if ( ! $this->getApplication() )
-    {
-      $this->raiseError("Cannot create anonymous access without an application instance.");
-    }
-
-    $userController = $this->getApplication()->getAccessBehavior()->getAccessController();
-    if ( ! $_SESSION['sessionId'] )
-    {
-      $userController->grantAnonymousAccess();
-      $_SESSION['sessionId'] = $userController->getSessionId();
-    }
-    else
-    {
-      $userController->setSessionId($_SESSION['sessionId']);
-    }
-    return $userController->createUserSession($_SESSION['sessionId']);
-  }
 
   /**
    * Analyzes a PhpRpc method's doc comment. This allows to provide non-standard
@@ -148,6 +136,28 @@ class qcl_test_AbstractTestController
     }
     return "({" . implode( ",", $testJsonArr )  . "})";
   }
+
+  /**
+   * Assert that both values are equal. (Uses the equality operator
+   * <code>==</code>.)
+   *
+   * @param mixed $expected Reference value
+   * @param mixed $found found value
+   * @param string $msg|null Message to be shown if the assertion fails.
+   *  Defauts to "Values are not equal."
+   * @param string|null $class name of the class. Pass the __CLASS__ constant here.
+   * @param string|null $line line number. Pass the __LINE__ constant here.
+   * @return boolean true If values are equal
+   */
+  public function assertEquals( $expected, $found, $msg=null, $class=null, $line=null )
+  {
+    if ( $expected == $found ) return true;
+    if ( $msg === null )   $msg   = "Values are not equal.";
+    if ( $class === null ) $class = "Unknown class";
+    if ( $line === null )  $line  = "Unknown line";
+    throw new qcl_test_AssertionException( "$msg ($class:$line)" );
+  }
+
 }
 
 /**

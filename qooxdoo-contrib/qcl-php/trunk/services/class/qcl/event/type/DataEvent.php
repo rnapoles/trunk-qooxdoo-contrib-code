@@ -36,7 +36,23 @@ class qcl_event_type_DataEvent
    * Event Data
    * @var string
    */
-  var $data;
+  protected $data;
 
+  /**
+   * Getter for event data
+   * @return mixed
+   */
+  public function getData()
+  {
+    return $this->data;
+  }
+
+  /**
+   * Setter for event data
+   */
+  public function setData( $data )
+  {
+    $this->data = $data;
+  }
 }
 ?>

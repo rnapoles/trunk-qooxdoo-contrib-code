@@ -28,16 +28,15 @@ class qcl_event_Dispatcher
 
   /**
    * database for event listeners registered on this object
-   * @todo mover everything related to events and messages to event package
    * @var array
    */
-  private $__event_db = array();
+  private $events = array();
 
   /**
    * Events that are forwarded to the client at the end of the request
    * @var array
    */
-  private $__serverEvents = array();
+  private $serverEvents = array();
 
   /**
    * Returns a singleton instance of this class
@@ -48,9 +47,34 @@ class qcl_event_Dispatcher
     return qcl_getInstance( __CLASS__ );
   }
 
+  /**
+   * Getter for events.
+   * @param string|null $objectId if provided, return event data for the
+   *   given object id. Otherwise return all event data.
+   * @return array Returns a reference to the array value so that
+   *  its values can be manipulated directly
+   */
+  protected function &getEvents( $objectId=null )
+  {
+    if ( $objectId === null )
+    {
+      return $this->events;
+    }
+    return $this->events[$objectId];
+  }
+
+  /**
+   * Getter for server events
+   * @return array
+   */
+  public function getServerEvents()
+  {
+    return $this->serverEvents;
+  }
+
  /**
    * Adds an event listener. Works only during runtime, i.e. event bindings are not
-   * persisted. 
+   * persisted.
    *
    * @param qcl_core_Object $target The object that the Listener is added to
    * @param string $type The name of the event
@@ -89,7 +113,7 @@ class qcl_event_Dispatcher
     /*
      * event database
      */
-    $event_db = $this->__event_db[$targetObjectId];
+    $event_db =& $this->getEvents($targetObjectId);
     if ( ! $event_db )
     {
       $event_db = array(
@@ -123,7 +147,7 @@ class qcl_event_Dispatcher
   }
 
   /**
-   * Dispatches a server event. 
+   * Dispatches an event.
    * @param qcl_core_Object $target
    * @param qcl_event_type_Event $event
    * @return bool Whether the event was dispatched or not.
@@ -153,7 +177,7 @@ class qcl_event_Dispatcher
      * search message database
      */
     $type = $event->getType();
-    $event_db = $this->__event_db[$targetObjectId];
+    $event_db =& $this->getEvents($targetObjectId);
 
     if ( ! is_array( $event_db ) )
     {
@@ -184,7 +208,7 @@ class qcl_event_Dispatcher
   }
 
   /**
-   * Fires an event. Can be called statically
+   * Fires an event.
    * @param qcl_core_Object $target
    * @param string $name
    * @return unknown_type
@@ -197,7 +221,7 @@ class qcl_event_Dispatcher
   }
 
   /**
-   * Fires a data event.Can be called statically
+   * Fires a data event.
    * @param qcl_core_Object $target
    * @param string $name
    * @param mixed $data
@@ -213,7 +237,7 @@ class qcl_event_Dispatcher
   /**
    * Fires a server event which will be forwarded to the client and
    * dispatched o the jsonrpc data store that has initiated the request.
-   * 
+   *
    * @param qcl_core_Object $target
    * @param string $name
    * @return unknown_type
@@ -223,7 +247,7 @@ class qcl_event_Dispatcher
     require_once "qcl/event/type/ServerEvent.php";
     $event = new qcl_event_type_ServerEvent( $type );
     $this->dispatch( $target, $event );
-    $this->__serverEvents[] = array(
+    $this->serverEvents[] = array(
       'type' => $event->getType()
     );
   }
@@ -241,19 +265,12 @@ class qcl_event_Dispatcher
     require_once "qcl/event/type/ServerDataEvent.php";
     $event = new qcl_event_type_ServerDataEvent( $type, $data );
     $this->dispatch( $target, $event );
-    $this->__serverEvents[] = array(
+    $this->serverEvents[] = array(
       'type'  => $event->getType(),
       'data'  => $event->getData()
     );
   }
 
-  /**
-   * Returns all server events
-   * @return array
-   */
-  public function getServerEvents()
-  {
-    return $this->__serverEvents;
-  }
+
 }
 ?>

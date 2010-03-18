@@ -5,7 +5,7 @@
  * http://qooxdoo.org/contrib/project/qcl/
  *
  * Copyright:
- *   2007-2009 Christian Boulanger
+ *   2007-2010 Christian Boulanger
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -29,6 +29,28 @@ require_once "qcl/core/BaseClass.php";      // Base class containing overloading
 class qcl_core_Object
   extends qcl_core_BaseClass
 {
+
+  /**
+   * If this object produces a recoverable error, the error message will be stored here
+   * for convenience
+   * @deprecated will be removed and replaced by exceptions
+   * @var string
+   */
+  protected $error;
+
+  /**
+   * Wether this class is persistent. If true, it will be serialized at the
+   * end of the request and deserialized at the beginning. By default,
+   * the object is saved into the PHP session.
+   */
+  protected $isPersistent = false;
+
+  /**
+   * Whether this is a newly instantiated object. Will be turned to false
+   * when retrieved from cache
+   */
+  protected $isNew = true;
+
   /**
    * The class name of this object
    * @var string
@@ -42,26 +64,6 @@ class qcl_core_Object
    * @var string
    */
   private $_objectId = null;
-
-  /**
-   * If this object produces a recoverable error, the error message will be stored here
-   * for convenience
-   * @var string
-   */
-  protected $error;
-
-  /**
-   * Wether this class is persistent. If true, it will be serialized at the
-   * end of the request and deserialized at the beginning. By default,
-   * the object is saved into the PHP session.
-   */
-  public $isPersistent = false;
-
-  /**
-   * Whether this is a newly instantiated object. Will be turned to false
-   * when retrieved from cache
-   */
-  public $isNew = true;
 
   /**
    * Timestamp for script execution time measurement
@@ -573,9 +575,9 @@ class qcl_core_Object
    * @param string class name
    * @todo get class and method name from backtrace.
    */
-  public function notImplemented( $class = __CLASS__ )
+  public function notImplemented( $class="see backtrace", $method="see backtrace" )
   {
-    $this->raiseError( "Method (see backtrace) not implemented for class $class. You may have to subclass this class in order to use it." );
+    $this->raiseError( "Method '$method' not implemented for class '$class'. You may have to subclass this class in order to use it." );
   }
 
 

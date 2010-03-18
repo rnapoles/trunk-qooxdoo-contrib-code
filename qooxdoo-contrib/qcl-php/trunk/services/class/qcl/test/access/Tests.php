@@ -1,12 +1,51 @@
 <?php
-require_once "qcl/access/Controller.php";
-require_once "qcl/data/persistence/db/Object.php";
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2010 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+
+require_once "qcl/test/AbstractTestController.php";
 
 /**
- * Service class containing test methods
+ * Service class containing test methods for access package
  */
-class class_qcl_access_Tests extends qcl_access_Controller
+class class_qcl_test_access_Tests
+  extends qcl_test_AbstractTestController
 {
+
+  /**
+   * Tests the access mechanism
+   * @return int
+   * @rpctest {
+   *   "requestData" : {
+   *     "method" : "authenticate",
+   *     "params" : [null]
+   *   },
+   *   "checkResult" : function( result )
+   *   {
+   *
+   *     return "Expected: number > 0, got: " + count;
+   *   }
+   * }
+   */
+  public function method_testConnect()
+  {
+
+  }
+
+  // rest is not migrated
 
   function method_dummy()
   {

@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/model/ActiveRecord.php";
 
 /**
  * abstract class for classes that implement a plugin
@@ -24,7 +24,7 @@ require_once "qcl/data/model/Abstract.php";
  */
 
 class qcl_application_plugin_Abstract
-  extends qcl_data_model_Abstract
+  extends qcl_data_model_ActiveRecord
 {
 	//-------------------------------------------------------------
   // properties
@@ -57,15 +57,12 @@ class qcl_application_plugin_Abstract
     return $this->author;
   }
 
-
  	/**
 	 * checks whether plugin works (i.e., if dependencies are met)
 	 * if an error occurs, it can be retrieved with the getEror method.
 	 * @return boolean if plugin was initialized without error
 	 */
-	function initialize() {}
-
-
+	function init() {}
 
 }
 

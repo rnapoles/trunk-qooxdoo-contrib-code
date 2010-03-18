@@ -15,12 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/Abstract.php";
+require_once "qcl/data/model/ActiveRecord.php";
 
 /**
  * class to convert from one text encoding to another
  */
-class qcl_util_encoding_Converter extends qcl_data_model_Abstract
+class qcl_util_encoding_Converter extends qcl_data_model_ActiveRecord
 {
   var $converter_cmd = "";
 

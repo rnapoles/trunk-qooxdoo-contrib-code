@@ -35,7 +35,7 @@ if ( ! defined( "QCL_LOG_FILE") )
 
 /*
  * Default logger: logs to filesystem
- * @todo use persistent object instead of session
+ * @todo add other loggers
  */
 class qcl_log_Logger
 {
@@ -210,7 +210,6 @@ class qcl_log_Logger
     {
       error_log( "qcl: " . $message );
     }
-
   }
 
   /**
@@ -218,20 +217,19 @@ class qcl_log_Logger
    * @return void
    * @param mixed $msg
    */
-  function info ( $msg )
+  function info( $msg )
   {
-    $this->log ( $msg, "info" );
+    $this->log( $msg, "info" );
   }
-
 
   /**
    * Logs a message with of level "warn".
    * @return void
    * @param $msg string
    */
-  function warn ( $msg )
+  function warn( $msg )
   {
-    $this->log ( "*** WARNING *** " . $msg, "warn" );
+    $this->log( "*** WARNING *** " . $msg, "warn" );
   }
 
   /**
@@ -239,9 +237,13 @@ class qcl_log_Logger
    * @return void
    * @param $msg string
    */
-  function error ( $msg )
+  function error( $msg, $includeBacktrace=false )
   {
-    $this->log ( "### ERROR ### " . $msg, "error" );
+    if ( $includeBacktrace )
+    {
+      $msg .= "\n" . debug_get_backtrace();
+    }
+    $this->log( "### ERROR ### " . $msg, "error" );
   }
 
 }
