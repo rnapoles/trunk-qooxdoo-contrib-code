@@ -48,7 +48,7 @@ simulation.Simulation.prototype.checkArticle = function()
   var article = this.getEval(articleScript, "Checking for article");
 
   if (String(article).indexOf("feedreader.model.Article") >= 0) {
-    print("Article found.");
+    this.log("Article found.", "info");
   }
   else {
     this.log("ERROR: No Article found.", "error");    
@@ -172,9 +172,12 @@ mySim.runTest = function()
   // Check if the Add Feed window's caption was translated.
   var addFeedWindowLabel = feedWindowScript + ".getCaption().toString()";
   var addLabel = this.getEval(addFeedWindowLabel, "Getting Add Feed window's caption");
-  print("Add Feed window's label: " + addLabel);
+
   if (addLabel.indexOf('Aggiungi') < 0 ) {
     this.log('ERROR: Feed window has unexpected title "' + addLabel + '". Possible translation problem.', "error");
+  }
+  else {
+    this.log("Feed window has translated title", "info");
   }
   
   // Enter new feed details  
@@ -192,7 +195,7 @@ mySim.runTest = function()
   // Check if the Add Feed Window closed.
   var feedWinVis = this.getEval(isFeedWindowVisible, "Waiting for Add Feed window to close.");
   if (String(feedWinVis) == "true") {
-    print("Add Feed Window still visible, clicking again.");
+    this.log("Add Feed Window still visible, clicking again.", "debug");
     this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   }
 
