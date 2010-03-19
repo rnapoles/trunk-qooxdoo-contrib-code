@@ -15,8 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require_once "services/server/JsonRpcServer.php"; // must be included before qcl_core_Object
 require_once "qcl/core/Object.php";
-
 
 /**
  * Static class for convenient and global access to actual server singleton object

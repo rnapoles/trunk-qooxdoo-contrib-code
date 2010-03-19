@@ -167,14 +167,14 @@ class class_qcl_test_data_model_Tests
   {
     $this->startLogging();
     $model = new TestDbActiveRecord();
+    $model2 = new TestDbActiveRecord();
 
-    $this->assertEquals( array (
-      'foo' => 'foo',
-      'bar' => 1,
-      'baz' => true,
-      'created' => NULL,
-      'modified' => NULL,
-    ), $model->data(), null, __CLASS__, __LINE__ );
+    //$this->debug( $model->data(), __CLASS__,__LINE__);
+
+
+
+
+
 
     $this->endLogging();
     return "OK";

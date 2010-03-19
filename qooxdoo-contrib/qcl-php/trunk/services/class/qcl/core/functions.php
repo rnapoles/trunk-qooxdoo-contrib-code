@@ -95,6 +95,16 @@ function object2array( $var )
 }
 
 /**
+ * Converts a boolean value to a string representation
+ * @param bool $value
+ * @return string
+ */
+function boolString($value = false)
+{
+  return ($value ? 'true' : 'false');
+}
+
+/**
  * Returns the absolute path to a file that is anywhere on your
  * include_path or system PATH
  * @param string $file

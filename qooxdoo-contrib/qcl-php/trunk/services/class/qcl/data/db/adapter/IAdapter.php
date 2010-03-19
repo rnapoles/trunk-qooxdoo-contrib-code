@@ -265,8 +265,15 @@ interface qcl_data_db_adapter_IAdapter
   public function countWhere( $table, $where, $parameters=null, $parameter_types=null );
 
   //-------------------------------------------------------------
-  // Fulltext search
+  // special purpose sql statements
   //-------------------------------------------------------------
+
+  /**
+   * Returns the column definition string to create a timestamp column that
+   * automatically updates when the row is changed.
+   * @return string
+   */
+  public function currentTimestampSql();
 
   /**
    * Returns the sql to do a fulltext search. Uses boolean mode.
@@ -280,7 +287,7 @@ interface qcl_data_db_adapter_IAdapter
    * Currently, only "and" is implemented.
    * @return string
    */
-  public function getFullTextSql( $table, $indexName, $expr, $mode="and" );
+  public function fullTextSql( $table, $indexName, $expr, $mode="and" );
 
   //-------------------------------------------------------------
   // Database usage and introspection
@@ -292,20 +299,6 @@ interface qcl_data_db_adapter_IAdapter
    * @return string
    */
   public function sqlDefinition( $table );
-
-  /**
-   * Retrieves information on the columns contained in a given table
-   * in the currently selected database
-   * @param string $table
-   * @return array Associated array with the following keys:
-   *  'name'      => column name (string),
-   *  'default'   => column default value (mixed),
-   *  'nullable'  => if column is nullable ("YES") or not ("NO") (string)
-   *  'type'      => column type as used in the sql table creation sql (string),
-   *  'key'       => if column is the only primary key ("PRI") or part of a multiple primary key ("MUL"),
-   *  'extra'     => additional behavior such as "auto_increment"
-   */
-  public function getColumnMetaData( $table );
 
   /**
    * Checks if table exists

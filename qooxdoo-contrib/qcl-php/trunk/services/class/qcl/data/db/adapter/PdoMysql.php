@@ -705,8 +705,18 @@ class qcl_data_db_adapter_PdoMysql
   }
 
   //-------------------------------------------------------------
-  // Fulltext search
+  // special purpose sql statements
   //-------------------------------------------------------------
+
+  /**
+   * Returns the column definition string to create a timestamp column that
+   * automatically updates when the row is changed.
+   * @return string
+   */
+  public function currentTimestampSql()
+  {
+    return "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP";
+  }
 
   /**
    * Returns the sql to do a fulltext search. Uses boolean mode.
@@ -720,7 +730,7 @@ class qcl_data_db_adapter_PdoMysql
    * Currently, only "and" is implemented.
    * @return string
    */
-  public function getFullTextSql( $table, $indexName, $expr, $mode="and" )
+  public function fullTextSql( $table, $indexName, $expr, $mode="and" )
   {
     /*
      * match mode
@@ -781,34 +791,6 @@ class qcl_data_db_adapter_PdoMysql
     return $this->getResultValue("SHOW CREATE TABLE " . $this->formatTableName( $table ) );
   }
 
-  /**
-   * Retrieves information on the columns contained in a given table
-   * in the currently selected database
-   * @param string $table
-   * @return array Associated array with the following keys:
-   *  'name'      => column name (string),
-   *  'default'   => column default value (mixed),
-   *  'nullable'  => if column is nullable ("YES") or not ("NO") (string)
-   *  'type'      => column type as used in the sql table creation sql (string),
-   *  'key'       => if column is the only primary key ("PRI") or part of a multiple primary key ("MUL"),
-   *  'extra'     => additional behavior such as "auto_increment"
-   */
-  public function getColumnMetaData( $table )
-  {
-    return $this->fetchAll("
-      SELECT
-        COLUMN_NAME    as `name`,
-        COLUMN_DEFAULT as `default`,
-        IS_NULLABLE    as `nullable`,
-        COLUMN_TYPE    as `type`,
-        COLUMN_KEY     as `key`,
-        EXTRA          as `extra`
-      FROM INFORMATION_SCHEMA.COLUMNS
-      WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table
-      ORDER BY ORDINAL_POSITION
-    ", array( ":database" => $this->getDatabase(), ":table" => $table ) );
-  }
-
 
   /**
    * Checks if table exists.
@@ -817,12 +799,10 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function tableExists( $table )
   {
-     // hack: count(*) returns 1 even for tables that have been deleted
-     // on current MySQL server in MacPorts
+    $database = $this->getDatabase();
     $result = $this->getResultValue("
-      SELECT count(CREATE_TIME) FROM INFORMATION_SCHEMA.TABLES
-      WHERE TABLE_NAME = :table AND TABLE_SCHEMA = :database
-    ", array( ":database" => $this->getDatabase(), ":table" => $table ));
+      show tables from $database where tables_in_test like :table
+    ", array( ":table" => $table ));
     return (bool) $result;
   }
 
@@ -837,45 +817,6 @@ class qcl_data_db_adapter_PdoMysql
       SELECT count(*) FROM INFORMATION_SCHEMA.ROUTINES
       WHERE ROUTINE_NAME = :routine
     ", array( ":routine" => $routine ) );
-  }
-
-  /**
-   * Creates a temporary table and fills it with data.
-   * NOT MIGRATED TO PDO YET. UNFUNCTIONAL.
-   * @param string    $name     name of the table
-   * @param array     $columns  map: column name => column definition
-   * @param array     $data     map: column name => column value
-   * @return array
-   */
-  public function createTemporaryTable ( $name, $columnData, $data )
-  {
-    $this->raiseError("Not migrated to PDO");
-    // create table
-    $columnDefinition = array();
-    foreach ( $columnData as $columnName => $columnDef )
-    {
-      $columnDefinition[] = "`$columnName` $columnDef";
-    }
-    $columnDefinition = implode(",",$columnDefinition);
-
-    $this->db->execute("
-      CREATE TEMPORARY TABLE `$name` (
-        $columnDefinition
-      )
-    ");
-
-    // insert values
-    $columns = array_keys($columnData);
-    foreach( $data as $row )
-    {
-      $values = array();
-      foreach( array_values( (array) $row ) as $value )
-      {
-        $values[] = "'" . addslashes($value) . "'";
-      }
-      $values = implode("'",$values);
-      $this->db->execute("INSERT INTO `$name` ($columns) VALUES($values)");
-    }
   }
 
   /**
@@ -950,15 +891,15 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function columnExists( $table, $column )
   {
-    return $this->existsWhere( "INFORMATION_SCHEMA.COLUMNS","
-      TABLE_SCHEMA=:database AND
-      TABLE_NAME=:table AND
-      COLUMN_NAME=:column
+    $database = $this->getDatabase();
+    return (bool) count( $this->fetchAll("
+      SHOW COLUMNS
+      FROM `$table`
+      FROM `$database`
+      LIKE :column
     ", array(
-      ":database" => $this->getDatabase(),
-      ":table"    => $table,
       ":column"   => $column
-    ));
+    ) ) );
   }
 
   /**
@@ -970,23 +911,11 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function getColumnDefinition( $table, $column )
   {
-    $c = $this->fetch("
-      SELECT
-        COLUMN_DEFAULT as `default`,
-        IS_NULLABLE    as `nullable`,
-        COLUMN_TYPE    as `type`,
-        EXTRA          as `extra`
-      FROM
-        INFORMATION_SCHEMA.COLUMNS
-      WHERE
-        TABLE_SCHEMA = :database AND
-        TABLE_NAME   = :table AND
-        COLUMN_NAME  = :column;
-    ", array(
-        ':database' => $this->getDatabase(),
-        ':table'    => $table,
-        ':column'   => $column
-    ));
+    $table = $this->formatTableName( $table );
+    $c = $this->fetch(
+      "SHOW COLUMNS FROM $table WHERE Field like :column",
+      array( ':column' => $column )
+    );
 
     /*
      * @todo Ternary stuff below needs a transparent rework!
@@ -994,14 +923,14 @@ class qcl_data_db_adapter_PdoMysql
     if ( count($c) )
     {
       $definition = trim(str_replace("  "," ",implode(" ", array(
-        $c['type'],
-        ( $c['nullable']=="YES" ? "NULL":"NOT NULL"),
-        ( is_null($c['default']) ? "" :
+        $c['Type'],
+        ( $c['Null']=="YES" ? "NULL":"NOT NULL" ),
+        ( is_null($c['Default']) ? "" :
           "DEFAULT " . (
-            in_array($c['default'], array("CURRENT_TIMESTAMP") ) ?
-              $c['default'] : "'" . addslashes($c['default']) . "'"
+            in_array($c['Default'], array("CURRENT_TIMESTAMP") ) ?
+              $c['Default'] : "'" . addslashes($c['Default']) . "'"
            ) ),
-        $c['extra']
+        $c['Extra']
       ))));
       return trim($definition);
     }

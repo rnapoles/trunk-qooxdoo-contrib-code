@@ -16,10 +16,19 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+/**
+ * This file is called at the beginning of the class loading process.
+ */
+
+require_once "qcl/core/functions.php";      // global functions
+require_once "qcl/log/Logger.php";
+require_once "qcl/lang/String.php";         // String object similar to java
+//require_once "qcl/lang/Utf8String.php";     // Class with methods to deal with Utf8 Strings
+require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
+
 /*
  * create filter
  */
-require_once "qcl/log/Logger.php";
 qcl_log_Logger::getInstance()->registerFilter("propertyModel","Log messages concerning the setup and initializing of model properties.",false);
 
 /**

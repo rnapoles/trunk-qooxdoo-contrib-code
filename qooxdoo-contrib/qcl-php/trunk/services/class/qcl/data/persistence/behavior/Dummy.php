@@ -37,17 +37,17 @@ class qcl_data_persistence_behavior_Dummy
   /**
    * Do nothing
    */
-  public function load( $object, $id ){}
+  public function restore( $object, $id ){}
 
   /**
    * Do nothing
    */
-  public function save( $object, $id ){}
+  public function persist( $object, $id ){}
 
   /**
    * Do nothing
    */
-  public function delete( $object, $id ){}
+  public function clear( $object, $id ){}
 
 }
 ?>

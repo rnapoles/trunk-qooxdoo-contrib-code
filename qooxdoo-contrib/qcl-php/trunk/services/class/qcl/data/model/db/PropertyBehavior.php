@@ -102,7 +102,7 @@ class qcl_data_model_db_PropertyBehavior
      * check if table exists, otherwise create
      */
     $tableName = $model->tableName();
-    $this->getModel()->debug(self::$tables_initialized[$tableName],__CLASS__,__LINE__);
+
     if ( ! self::$tables_initialized[$tableName] )
     {
       $table = $model->getQueryBehavior()->getTable();
@@ -125,15 +125,68 @@ class qcl_data_model_db_PropertyBehavior
     parent::add( $properties );
 
     $model = $this->getModel();
-    $qbehv = $model->getQueryBehavior();
-    $table = $qbehv->getTable();
+    $behav = $model->getQueryBehavior();
+    $table = $behav->getTable();
 
-    if( ! $table->exists() )
+    foreach( $properties as $name => $prop )
     {
-      $table->create();
+      /*
+       * skip "id" column since it is created by default
+       */
+      if ( $name == "id" ) continue;
+
+      $sqltype = $prop['sqltype'];
+
+      /*
+       * 'CURRENT_TIMESTAMP'
+       */
+      if( strtolower($sqltype) == "current_timestamp" )
+      {
+        $sqltype = $behav->getAdapter()->currentTimestampSql();
+      }
+
+      /*
+       * add "NULL" to sql type if not specified (default)
+       */
+      if ( ! strstr( $sqltype, "NULL") and ! strstr( $sqltype, "null") )
+      {
+        $sqltype .= " NULL";
+      }
+
+      /*
+       * check type
+       */
+      if ( ! isset( $prop['sqltype'] ) )
+      {
+        $this->raiseError("Property '$name' does not have a 'sqltype' definition.");
+      }
+
+
+      /*
+       * if column does not exist, create it
+       */
+      if ( ! $table->columnExists( $name ) )
+      {
+        $model->log( "Adding column '$name' with definition '$sqltype'", QCL_LOG_TABLE_MAINTENANCE);
+        $table->addColumn( $name, $sqltype );
+      }
+
+      /*
+       * if not, check if it has changed
+       */
+      else
+      {
+        $curr_sqltype = $table->getColumnDefinition( $name );
+        if (strtolower($curr_sqltype)  != strtolower($sqltype) )
+        {
+          $model->log( "Column '$name' has changed from '$curr_sqltype' to '$sqltype'", QCL_LOG_TABLE_MAINTENANCE);
+        }
+        else
+        {
+          $model->log( "Column '$name' has not changed.", QCL_LOG_TABLE_MAINTENANCE);
+        }
+      }
     }
-
-
 
   }
 
