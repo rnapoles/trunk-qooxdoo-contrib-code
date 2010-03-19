@@ -13,7 +13,6 @@ class qcl_test_data_TestResult
 class class_qcl_test_data_ControllerModel
   extends qcl_data_controller_Controller
 {
-  var $skipAuthentication = true;
 
   function method_testRecord()
   {

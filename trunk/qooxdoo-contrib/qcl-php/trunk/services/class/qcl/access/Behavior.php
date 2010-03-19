@@ -17,6 +17,7 @@
  */
 require_once "qcl/core/Object.php";
 require_once "qcl/access/IAccessBehavior.php";
+require_once "qcl/access/SessionController.php";
 
 /**
  * Whether the application allows anonymous access. Defaults to false
@@ -36,6 +37,11 @@ class qcl_access_Behavior
   extends qcl_core_Object
   implements qcl_access_IAccessBehavior
 {
+
+  /**
+   * @var qcl_access_SessionController
+   */
+  private $accessController;
 
   /**
    * Returns the session id.
@@ -71,13 +77,11 @@ class qcl_access_Behavior
    */
   public function getAccessController()
   {
-    static $accessController = null;
-    if ( is_null( $accessController ) )
+    if ( is_null( $this->accessController ) )
     {
-      require_once "qcl/access/SessionController.php";
-      $accessController = new qcl_access_SessionController( $this );
+      $this->accessController = new qcl_access_SessionController( $this );
     }
-    return $accessController;
+    return $this->accessController;
   }
 
   /**

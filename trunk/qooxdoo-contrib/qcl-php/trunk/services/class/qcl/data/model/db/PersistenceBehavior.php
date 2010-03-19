@@ -18,23 +18,60 @@
 require_once "qcl/data/persistence/behavior/IBehavior.php";
 
 /**
- * Persistence Behavior that saves the object's public properties
- * to the PHP session by an id. If you want to save only one instance
- * of the object, use the class name as id.
+ * Persistence behavior singleton which is bases on a db-based
+ * ActiveRecord object. Saves the serialized object properties
+ * into a blob column.
  */
-class qcl_data_persistence_behavior_Session
+class qcl_data_model_db_PersistenceBehavior
+  extends    qcl_data_model_db_ActiveRecord
   implements qcl_data_persistence_behavior_IBehavior
 {
-  const KEY = QCL_DATA_PERSISTENCE_SESSION;
+
+  //-------------------------------------------------------------
+  // Static members
+  //-------------------------------------------------------------
 
   /**
    * Return singleton instance of this class
-   * @return qcl_data_persistence_behavior_Session
+   * @return qcl_data_model_db_PersistenceBehavior
    */
   public static function getInstance()
   {
     return qcl_getInstance( __CLASS__ );
   }
+
+  //-------------------------------------------------------------
+  // Properties
+  //-------------------------------------------------------------
+
+  private $properties = array(
+    "namedId" => array(
+      "check"   => "string",
+      "sqltype" => "varchar(50)"
+    ),
+    "data" => array(
+      "check"   => "string",
+      "sqltype" => "longblob" //FIXME this is mysql-specific!
+    )
+  );
+
+  //-------------------------------------------------------------
+  // Constructor
+  //-------------------------------------------------------------
+
+  /**
+   * Constructor, adds properties
+   * @return unknown_type
+   */
+  function __construct()
+  {
+    $this->addProperties( $this->properties );
+    parent::__construct();
+  }
+
+  //-------------------------------------------------------------
+  // API methods
+  //-------------------------------------------------------------
 
   /**
    * Loads the object's public properties from the session
@@ -44,10 +81,13 @@ class qcl_data_persistence_behavior_Session
    */
   public function restore( $object, $id )
   {
-    if ( isset( $_SESSION[ self::KEY ][ $id ] ) )
+    $this->loadWhere( array(
+      'namedId' => $id
+    ));
+    if ( $this->foundSomething() )
     {
-      qcl_log_Logger::getInstance()->log( $object->className() . ": loading data with id '$id'","persistence");
-      $object->unserialize( $_SESSION[ self::KEY ][ $id ] );
+      qcl_log_Logger::getInstance()->log( $object->className() . ": restoring properties from id '$id'","persistence");
+      $object->unserialize( $this->get("data") );
     }
     else
     {
@@ -56,14 +96,16 @@ class qcl_data_persistence_behavior_Session
   }
 
   /**
-   * Saves the managed object's public property to the session
+   * Saves the object's public property to the session
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    */
   public function persist( $object, $id )
   {
+    $this->createIfNotExists( $id );
+    $this->set( "data", $object->serialize() );
+    $this->save();
     qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", "persistence");
-    $_SESSION[ self::KEY ][ $id ] = $object->serialize();
   }
 
   /**

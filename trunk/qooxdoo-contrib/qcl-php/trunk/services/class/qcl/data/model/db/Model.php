@@ -16,49 +16,28 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/data/db/__init__.php";
-require_once "qcl/data/model/AbstractActiveRecord.php";
+require_once "qcl/data/model/Model.php";
+require_once "qcl/data/model/db/IModel.php";
 require_once "qcl/data/model/db/PropertyBehavior.php";
 require_once "qcl/data/model/db/QueryBehavior.php";
+require_once "qcl/data/model/db/PersistenceBehavior.php";
 
 
 /**
- * Abstrac class for models that are based on a relational
- * database.
- * @todo define interface
+ * Model that can be persisted in a database.
+ * For property definition, see qcl_data_model_db_PropertyBehavior.
+ * @see qcl_data_model_db_PropertyBehavior
  */
-class qcl_data_model_db_ActiveRecord
-  extends qcl_data_model_AbstractActiveRecord
+class qcl_data_model_db_Model
+  extends     qcl_data_model_Model
+  implements  qcl_data_model_db_IModel
 {
+
+
 
   //-------------------------------------------------------------
   // Model properties
   //-------------------------------------------------------------
-
-  /**
-   * Property information for the property behavior. Similar to the
-   * qooxdoo property definition syntax, with some additional features.
-   * @see qcl_data_model_PropertyBehavior
-   * @var array
-   */
-  private $properties = array(
-    "id" => array(
-      "check"    => "integer",
-      "sqltype"  => "int(11)",
-      "nullable" => false,
-    ),
-    "created" => array(
-      "nullable" => true,
-      "check"    => "DateTime",
-      "sqltype"  => "timestamp",
-      "init"     => null
-    ),
-    "modified" => array(
-      "check"    => "DateTime",
-      "sqltype"  => "current_timestamp",
-      "nullable" => true,
-      "init"     => null
-    )
-  );
 
   /**
    * The name of the table that this model stores its data in.
@@ -69,31 +48,14 @@ class qcl_data_model_db_ActiveRecord
   protected $tableName;
 
   /**
-   * Property behavior object. Access with getPropertyBehavior()
-   * @var qcl_data_model_db_PropertyBehavior
+   * The property behavior object
    */
-  private $propertyBehavior;
+  private $propertyBehavior = null;
 
   /**
-   * The query behavior object. Access with getQueryBehavior()
-   * @var qcl_data_model_db_QueryBehavior
+   * The query behavior object
    */
-  private $queryBehavior;
-
-  //-------------------------------------------------------------
-  // Initialization
-  //-------------------------------------------------------------
-
-  function __construct()
-  {
-    $this->addProperties( $this->properties );
-    parent::__construct();
-  }
-
-  /**
-   * Overrides the init method with an empty stub
-   */
-  protected function init(){}
+  private $queryBehavior = null;
 
   //-------------------------------------------------------------
   // getters and setters
@@ -138,22 +100,22 @@ class qcl_data_model_db_ActiveRecord
    */
   public function getQueryBehavior()
   {
-    if ( $this->queryBehavior === null )
+    static
+    if ( $queryBehavior === null )
     {
-      $this->queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
+      $queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
     }
-    return $this->queryBehavior;
+    return $queryBehavior;
   }
 
   /**
-   * Prevent access to persistence behavior. Active record objects need
-   * not be persisted since they can be saved and restored to the database.
-   * Calling this mehtod raises an error.
-   * @return void
+   * Getter for persistence behavior. Defaults to persistence in
+   * the session.
+   * @return qcl_data_persistence_behavior_Session
    */
-  public function getPersistenceBehavior()
+  function getPersistenceBehavior()
   {
-    $this->raiseError("Active record objects cannot (and need not) be persisted.");
+    return qcl_data_model_db_PersistenceBehavior::getInstance();
   }
 }
 ?>

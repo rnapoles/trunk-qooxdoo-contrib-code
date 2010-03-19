@@ -15,6 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require_once "qcl/core/PropertyBehavior.php";
 
 /**
  * Base class providing property management and method overloading
@@ -22,6 +23,8 @@
  */
 class qcl_core_BaseClass
 {
+
+  private $propertyBehavior;
 
   //-------------------------------------------------------------
   // Main property API
@@ -34,13 +37,11 @@ class qcl_core_BaseClass
    */
   public function getPropertyBehavior()
   {
-    static $propertyBehavior = null;
-    if ( $propertyBehavior === null )
+    if ( $this->propertyBehavior === null )
     {
-      require_once "qcl/core/PropertyBehavior.php";
-      $propertyBehavior = new qcl_core_PropertyBehavior( $this );
+      $this->propertyBehavior = new qcl_core_PropertyBehavior( $this );
     }
-    return $propertyBehavior;
+    return $this->propertyBehavior;
   }
 
   /**

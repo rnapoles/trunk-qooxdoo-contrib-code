@@ -16,7 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/data/model/db/Abstract.php";
-require_once "qcl/data/model/db/IModel.php";
 
 /**
  * Simpler ORM Mmechanism than the qcl_data_model_xmlSchema_DbModel way that uses

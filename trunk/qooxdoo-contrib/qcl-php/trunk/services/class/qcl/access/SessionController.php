@@ -18,8 +18,6 @@
 require_once "qcl/access/Controller.php";
 require_once "qcl/access/model/Session.php";
 
-
-
 /**
  * Base class that keeps track of connected clients
  * and dispatches or broadcasts messages. A "session" means the
@@ -34,6 +32,12 @@ class qcl_access_SessionController
    * session id
    */
   private $_activeUserId;
+
+  /**
+   * The session model object
+   * @var qcl_access_model_Session
+   */
+  private $sessionModel;
 
   /**
    * This overrides and extends the parent method by providing a way to determine
@@ -222,13 +226,11 @@ class qcl_access_SessionController
    */
   public function getSessionModel()
   {
-    static $sessionModel = null;
-    if ( $sessionModel === null )
+    if ( $this->sessionModel === null )
     {
-       require_once "qcl/access/model/Session.php";
-       $sessionModel = new qcl_access_model_Session();
+       $this->sessionModel = new qcl_access_model_Session();
     }
-    return $sessionModel;
+    return $this->sessionModel;
   }
 
 

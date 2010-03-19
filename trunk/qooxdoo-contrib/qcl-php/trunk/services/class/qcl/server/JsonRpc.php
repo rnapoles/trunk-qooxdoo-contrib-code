@@ -19,6 +19,7 @@ require_once "services/server/JsonRpcServer.php";
 require_once "qcl/event/Dispatcher.php";
 require_once "qcl/event/message/Bus.php";
 require_once "qcl/server/Response.php";
+require_once "qcl/access/Behavior.php";
 
 /**
  * Upload path constant
@@ -52,6 +53,10 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   private $_controller;
 
+  /**
+   * The access behavior object
+   */
+  private $accessBehavior = null;
 
   /**
    * Constructor
@@ -100,13 +105,11 @@ class qcl_server_JsonRpc extends JsonRpcServer
    */
   public function getAccessBehavior()
   {
-    static $accessBehavior = null;
-    if ( is_null($accessBehavior) )
+    if ( is_null( $this->accessBehavior ) )
     {
-      require_once "qcl/access/Behavior.php";
-      $accessBehavior = new qcl_access_Behavior();
+      $this->accessBehavior = new qcl_access_Behavior();
     }
-    return $accessBehavior;
+    return $this->accessBehavior;
   }
 
   /**

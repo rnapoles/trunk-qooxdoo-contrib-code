@@ -1,7 +1,8 @@
 <?php
 
-require_once "qcl/data/persistence/db/Object.php";
 require_once "qcl/test/AbstractTestController.php";
+require_once "qcl/data/persistence/db/Object.php";
+require_once "qcl/data/model/db/Model.php";
 
 class TestPersistenceBehavior extends qcl_core_Object
 {
@@ -9,11 +10,12 @@ class TestPersistenceBehavior extends qcl_core_Object
   public $counter = 0;
 }
 
-class TestPersistence extends qcl_data_persistence_db_Object
+class TestPersistence extends qcl_data_model_db_Model
 {
-  var $foo = null;
-  var $end;
-  var $counter;
+  public $isPersistent = true;
+  public $foo = null;
+  public $end;
+  public $counter;
 }
 
 /**
@@ -64,7 +66,7 @@ class class_qcl_test_data_Persistence
     $obj->counter++;
     $this->info("Count:" . $obj->counter );
 
-    $this->endLogging();
+    //$this->endLogging();
     return $obj->counter;
   }
 

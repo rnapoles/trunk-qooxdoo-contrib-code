@@ -17,6 +17,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/core/Object.php";
+require_once "qcl/data/model/PropertyBehavior.php";
 
 /**
  * Abstract class for all classes that implement a data model.
@@ -42,6 +43,11 @@ class qcl_data_model_Model
    * @var string
    */
   protected $type;
+
+  /**
+   * The property behavior object. Access with getPropertyBehavior()
+   */
+  private $propertyBehavior = null;
 
   //-------------------------------------------------------------
   // Constructor & initialization
@@ -96,13 +102,11 @@ class qcl_data_model_Model
    */
   public function getPropertyBehavior()
   {
-    static $propertyBehavior = null;
-    if ( $propertyBehavior === null )
+    if ( $this->propertyBehavior === null )
     {
-      require_once "qcl/data/model/PropertyBehavior.php";
-      $propertyBehavior = new qcl_data_model_PropertyBehavior( $this );
+      $this->propertyBehavior = new qcl_data_model_PropertyBehavior( $this );
     }
-    return $propertyBehavior;
+    return $this->propertyBehavior;
   }
 
 }

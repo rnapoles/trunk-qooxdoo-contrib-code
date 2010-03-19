@@ -26,14 +26,14 @@ interface qcl_data_persistence_behavior_IBehavior
   public static function getInstance();
 
   /**
-   * Loads the persistent object, i.e populate the public
+   * Restores the persistent object from the cache, i.e populate the public
    * properties from the saved data.
    *
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    * @return void
    */
-  public function load( $object, $id );
+  public function restore( $object, $id );
 
   /**
    * Saves the public properties of the object to the
@@ -43,14 +43,14 @@ interface qcl_data_persistence_behavior_IBehavior
    * @param string $id The id of the saved object
    * @return void
    */
-  public function save( $object, $id );
+  public function persist( $object, $id );
 
   /**
    * Deletes the persistence data for the object with the given id.
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    */
-  public function delete( $object, $id );
+  public function clear( $object, $id );
 
 }
 ?>

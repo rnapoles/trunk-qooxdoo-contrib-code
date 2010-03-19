@@ -15,6 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+require_once "qcl/data/db/Table.php";
 
 /**
  * Query behavior for (PDO) database driver
@@ -48,6 +49,18 @@ class qcl_data_model_db_QueryBehavior
    * @var string
    */
   protected $foreignKey;
+
+  /**
+   * The database driver adapter. Acces with getAdapter()
+   */
+  private $adapter;
+
+  /**
+   * The table object used for manipulating the database tables.
+   * Access with getTable()
+   * @var unknown_type
+   */
+  private $table;
 
   //-------------------------------------------------------------
   // Constructor
@@ -148,9 +161,7 @@ class qcl_data_model_db_QueryBehavior
    */
   public function getAdapter()
   {
-
-    static $adapter = null;
-    if ( $adapter === null )
+    if ( $this->adapter === null )
     {
       /*
        * try to get db handler from datasource object
@@ -158,7 +169,7 @@ class qcl_data_model_db_QueryBehavior
       $dsModel = $this->getDatasourceModel();
       if ( $dsModel )
       {
-        $adapter = $dsModel->getAdapter();
+        $this->adapter = $dsModel->getAdapter();
       }
 
       /*
@@ -166,18 +177,18 @@ class qcl_data_model_db_QueryBehavior
        */
       else
       {
-        $adapter = $this->getManager()->createAdapter();
+        $this->adapter = $this->getManager()->createAdapter();
       }
 
       /*
        * if no database object at this point, fatal error.
        */
-      if ( ! $adapter )
+      if ( ! $this->adapter )
       {
         $this->raiseError("No database adapter available.");
       }
     }
-    return  $adapter;
+    return $this->adapter;
   }
 
   //-------------------------------------------------------------
@@ -210,15 +221,13 @@ class qcl_data_model_db_QueryBehavior
    */
   public function getTable()
   {
-    static $table = null;
-    if ( $table === null)
+    if ( $this->table === null)
     {
-      require_once "qcl/data/db/Table.php";
-      $tableName = $this->getTablePrefix() . $this->getTableName();
-      $adapter   = $this->getAdapter();
-      $table = new qcl_data_db_Table( $tableName, $adapter );
+      $tableName   = $this->getTablePrefix() . $this->getTableName();
+      $adapter     = $this->getAdapter();
+      $this->table = new qcl_data_db_Table( $tableName, $adapter );
     }
-    return $table;
+    return $this->table;
   }
 
   /**

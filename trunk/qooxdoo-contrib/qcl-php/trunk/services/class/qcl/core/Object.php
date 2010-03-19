@@ -15,16 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-
-require_once "qcl/core/functions.php";      // global functions
-require_once "qcl/log/Logger.php";
-require_once "qcl/lang/String.php";         // String object similar to java
-require_once "qcl/lang/Utf8String.php";     // Class with methods to deal with Utf8 Strings
-require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
-require_once "qcl/core/BaseClass.php";      // Base class containing overloading stuff
+require_once "qcl/core/__init__.php";
+require_once "qcl/core/BaseClass.php";
 
 /**
  * Base class of all qcl classes.
+ * @todo merge with BaseClass
  */
 class qcl_core_Object
   extends qcl_core_BaseClass
@@ -98,7 +94,7 @@ class qcl_core_Object
      */
     if ( $this->isPersistent )
     {
-      $this->getPersistenceBehavior()->load($this, $this->getPersistenceId() );
+      $this->getPersistenceBehavior()->restore( $this, $this->getPersistenceId() );
     }
   }
 
@@ -135,6 +131,7 @@ class qcl_core_Object
   public function getApplication()
   {
     static $application = null;
+
     if ( is_null( $application ) )
     {
       if ( defined("APPLICATION_NAME") )
@@ -848,6 +845,10 @@ class qcl_core_Object
    */
   function getPersistenceBehavior()
   {
+    /*
+     * includ class file only if class hasn't been loaded yet -
+     * otherwise this will not work when called from the destructor
+     */
     if ( ! class_exists("qcl_data_persistence_behavior_Session") )
     {
       require_once "qcl/data/persistence/behavior/Session.php";
@@ -868,24 +869,20 @@ class qcl_core_Object
   }
 
   /**
-   * Save object if persistent
+   * Persist the properties of the object so that they will be
+   * restored upon next instantiation of the object.
    * @return void
    */
-  function save()
+  public function persistProperties()
   {
     if ( $this->isPersistent )
     {
-      $this->getPersistenceBehavior()->save( $this, $this->getPersistenceId());
+      $this->getPersistenceBehavior()->persist( $this, $this->getPersistenceId() );
     }
     else
     {
       $this->raiseError("Cannot save object - it is not persistent.");
     }
-  }
-
-  function delete()
-  {
-    $this->getPersistenceBehavior()->delete( $this, $this->getPersistenceId() );
   }
 
   //-------------------------------------------------------------
@@ -899,13 +896,8 @@ class qcl_core_Object
   {
     if ( $this->isPersistent )
     {
-      $this->save();
+      $this->persistProperties();
     }
   }
 }
-
-/*
- * init script has to be called *after* this class was defined.
- */
-require_once "qcl/core/__init__.php";
 ?>
