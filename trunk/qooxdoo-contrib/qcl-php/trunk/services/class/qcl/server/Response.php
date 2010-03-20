@@ -48,7 +48,7 @@
  *
  */
 class qcl_server_Response
-  extends qcl_core_BaseClass
+  extends qcl_core_Object
 {
 
   /**
