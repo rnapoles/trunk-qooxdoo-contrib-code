@@ -62,7 +62,7 @@ class qcl_data_xml_Transformer
 	 */
   function _useDomXml($xml,$xsl,$params=null,$debugfile=null)
   {
-		$domXmlObj 	= is_valid_file($xml) ?
+		$domXmlObj 	= qcl_is_file($xml) ?
 			domxml_open_file($xml):
 			domxml_open_mem ($xml);
 		if ( ! is_object($domXmlObj) )
@@ -72,7 +72,7 @@ class qcl_data_xml_Transformer
 			return false;
 		}
 
-		$domXsltObj = is_valid_file($xsl) ?
+		$domXsltObj = qcl_is_file($xsl) ?
 			domxml_xslt_stylesheet_file($xsl) :
 			domxml_xslt_stylesheet_doc(domxml_open_mem ($xsl));
 
@@ -115,7 +115,7 @@ class qcl_data_xml_Transformer
 		/*
 		 * xsl
 		 */
-		if ( is_valid_file($xsl) )
+		if ( qcl_is_file($xsl) )
     {
 		  $doc->load($xsl);
     }
@@ -129,7 +129,7 @@ class qcl_data_xml_Transformer
 		/*
 		 * xml
 		 */
-    if ( is_valid_file($xml) )
+    if ( qcl_is_file($xml) )
     {
       $doc->load($xml);
     }

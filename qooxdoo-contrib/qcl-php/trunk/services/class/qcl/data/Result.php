@@ -22,7 +22,7 @@
  * and provides serialization methods.
  */
 class qcl_data_Result
-  extends qcl_core_BaseClass
+  extends qcl_core_Object
 {
 
   /**

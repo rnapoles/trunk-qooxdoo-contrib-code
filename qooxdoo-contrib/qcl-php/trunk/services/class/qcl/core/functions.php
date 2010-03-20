@@ -17,9 +17,105 @@
  */
 
 /**
- * Collection of functions which provide convenient shorthands or
- * compatibility between php4 and php5
+ * Returns the absolute path to a file that is anywhere on your
+ * include_path or system PATH
+ * @param string $file
  */
+function qcl_realpath( $file )
+{
+  if ( file_exists( $file ) )
+  {
+    return realpath( $file );
+  }
+
+  $paths = array_merge(
+    explode(":", ini_get('include_path') ),
+    explode(":", $_ENV["PATH"] )
+  );
+
+  foreach($paths as $path)
+  {
+    $filepath = "$path/$file";
+    if ( file_exists( $filepath ) )
+    {
+      return realpath($filepath);
+    }
+  }
+  return false;
+}
+
+/**
+ * qcl version of file_exists, checking also files on the include path
+ * @param $path
+ * @return boolean
+ */
+function qcl_file_exists( $path )
+{
+  return file_exists( qcl_realpath( $path) );
+}
+
+
+
+/**
+ * Checks if passed string var is a valid file.
+ * assumes that strings over the length of 512 characters are not a filename
+ * @param string $arg
+ */
+function qcl_is_file( $file )
+{
+  /*
+   * qcl file object?
+   */
+  if ( is_qcl_file($file) )
+  {
+    return $file->exists();
+  }
+
+  /*
+   * get real file path
+   */
+  $file = qcl_realpath($file);
+
+  /*
+   * the following checks work on string arguments
+   */
+  if ( ! is_string($file) ) return false;
+  if ( strlen($file) > 512 ) return false;
+  if ( ! @file_exists( $file ) ) return false;
+  if ( ! is_readable( $file ) ) return false;
+  if ( ! is_file( $file ) ) return false;
+  return true;
+}
+
+/**
+ * Imports a class file, loading __init__.php package initialization files
+ * of the packages that this class is included in.
+ * @param $class
+ * @return void
+ */
+function qcl_import( $class )
+{
+  /*
+   * load __init__ files that belong to a package
+   */
+  $namespace = explode( "_", $class );
+  $path = array();
+  for( $i=0; $i<count($namespace)-1; $i++)
+  {
+    $path[] = $namespace[$i];
+    $init_file = implode("/",$path) . "/__init__.php";
+    if( qcl_file_exists( $init_file ) )
+    {
+      require_once $init_file;
+    }
+  }
+
+  /*
+   * load class file
+   */
+  $class_file = implode( "/", $namespace ) . ".php";
+  require_once $class_file;
+}
 
 /**
  * Returns a reference to the singleton instance of the given class
@@ -105,74 +201,21 @@ function boolString($value = false)
 }
 
 /**
- * Returns the absolute path to a file that is anywhere on your
- * include_path or system PATH
- * @param string $file
- */
-function real_file_path( $file )
-{
-  if ( file_exists( $file ) )
-  {
-    return realpath( $file );
-  }
-
-  $paths = array_merge(
-    explode(":", ini_get('include_path') ),
-    explode(":", $_ENV["PATH"] )
-  );
-
-  foreach($paths as $path)
-  {
-    $filepath = "$path/$file";
-    if ( file_exists( $filepath ) )
-    {
-      return realpath($filepath);
-    }
-  }
-  return false;
-}
-
-/**
- * Checks if passed string var is a valid file.
- * assumes that strings over the length of 512 characters are not a filename
- * @param string $arg
- */
-function is_valid_file( $file )
-{
-  /*
-   * qcl file object?
-   */
-  if ( is_qcl_file($file) )
-  {
-    return $file->exists();
-  }
-
-  /*
-   * get real file path
-   */
-  $file = real_file_path($file);
-
-  /*
-   * the following checks work on string arguments
-   */
-  if ( ! is_string($file) ) return false;
-  if ( strlen($file) > 512 ) return false;
-  if ( ! @file_exists( $file ) ) return false;
-  if ( ! is_readable( $file ) ) return false;
-  if ( ! is_file( $file ) ) return false;
-  return true;
-}
-
-/**
  * checks if argument is a qcl_io_filesystem_IFile object
+ * @todo rename
  * @return bool
- * @todo PHP5
  */
 function is_qcl_file( $arg )
 {
   return is_a( $arg,"qcl_io_filesystem_Resource" );
 }
 
+/**
+ * Returns the type of the variable, or its class name, if
+ * it is an object
+ * @param $var
+ * @return string
+ */
 function get_var_type( $var )
 {
   if ( is_object($var) )
@@ -183,22 +226,6 @@ function get_var_type( $var )
   {
     return gettype($var);
   }
-}
-
-function qcl_get_logger()
-{
-  $obj = new qcl_core_Object();
-  $logger = $obj->getLogger();
-  return $logger;
-}
-
-function boolToStr( $value )
-{
-  if ( ! is_bool($value) )
-  {
-    trigger_error("Value is not boolean");
-  }
-  return $value ? "true" : "false";
 }
 
 /**
@@ -273,7 +300,6 @@ function xml_entity_decode($string, $encoding="utf-8" )
   return strtr($string, $trans_table);
 }
 
-
 /**
  * Converts a string containing html entities to a utf-8 string
  * without touching charactes that are already utf-8.
@@ -338,11 +364,9 @@ function xmlentities($string)
 function html2utf8( $str )
 {
   return strip_tags(
-  html_entity_decode_utf8(
-  str_replace( array("<br/>","<br />","<br>","<p>"), "\n",
-  $str
-  )
-  )
+    html_entity_decode_utf8(
+      str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
+    )
   );
 }
 

@@ -761,7 +761,7 @@ class qcl_data_model_xmlSchema_DbModel
      * You can upgrade its schema only be deleting the table.
      */
     $modelTableInfo = null;
-    if ( $this->isInstanceOf("qcl_data_persistence_db_Model") )
+    if ( $this instanceof qcl_data_persistence_db_Model )
     {
       if ( $tableExists )
       {
@@ -1410,7 +1410,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * Import initial data if necessary
      */
-    $path = real_file_path( $this->getDataPath() );
+    $path = qcl_realpath( $this->getDataPath() );
     //$this->debug("Datapath '$path', table '$table' ".  ( $tableExists ? "exists" : "doesn't exist" ),__CLASS__,__LINE__);
     if ( ! $tableExists and $path )
     {
@@ -1656,7 +1656,7 @@ class qcl_data_model_xmlSchema_DbModel
     {
 
       $a = $linkNode->attributes();
-      if ( $model->isInstanceOf( (string) $a['model'] ) )
+      if ( is_a( $model, (string) $a['model'] ) )
       {
         $links[] =  $linkName;
       }
@@ -1669,7 +1669,7 @@ class qcl_data_model_xmlSchema_DbModel
         foreach ( $linkNode->children() as $linkedModelNode )
         {
           $a = $linkedModelNode->attributes();
-          if ( $model->isInstanceOf( (string) $a['name'] ) )
+          if ( is_a ( $model, (string) $a['name'] ) )
           {
              $links[] = $linkName;
           }
@@ -1728,7 +1728,7 @@ class qcl_data_model_xmlSchema_DbModel
      */
     if ( ! $linkedId )
     {
-      if ( is_object( $first ) and $first->isInstanceOf("qcl_data_model_xmlSchema_DbModel") )
+      if ( is_object( $first ) and $first instanceof qcl_data_model_xmlSchema_DbModel )
       {
         $linkedId = $first->getId();
       }
@@ -2342,7 +2342,7 @@ class qcl_data_model_xmlSchema_DbModel
         $path,
         dirname( $this->getDataPath() ) . "/$joinTable.data.xml"
       );
-      $path = real_file_path ($path);
+      $path = qcl_realpath ($path);
       if ( ! file_exists($path) )
       {
         $this->log("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
@@ -2700,7 +2700,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * check file
      */
-    if ( ! $filepath = real_file_path( $path ) )
+    if ( ! $filepath = qcl_realpath( $path ) )
     {
       $this->raiseError("No valid file path: '$path'");
     }
@@ -2986,7 +2986,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * check file
      */
-    if ( ! is_valid_file( $path ) )
+    if ( ! qcl_is_file( $path ) )
     {
       $this->raiseError("qcl_data_model_xmlSchema_DbModel::import: '$path' is not a valid file.");
     }
