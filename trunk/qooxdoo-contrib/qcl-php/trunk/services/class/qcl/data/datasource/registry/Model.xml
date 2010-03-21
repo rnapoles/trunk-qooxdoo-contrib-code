@@ -7,8 +7,8 @@
    -->
   <model 
     table="schemas"
-    name="qcl.data.datasource.registry.Model"
-    extends="qcl.data.model.xmlSchema.DbModel">
+    name="qcl_data_datasource_registry_Model"
+    extends="qcl_data_model_xmlSchema_DbModel">
     <definition>
       <properties>
          <property name="namedId" type="string" unique="true"> 

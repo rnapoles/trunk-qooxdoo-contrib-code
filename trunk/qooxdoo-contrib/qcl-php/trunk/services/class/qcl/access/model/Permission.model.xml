@@ -3,9 +3,9 @@
   
   <model 
     table="permissions"
-    type="qcl.type.Permission"
-    name="qcl.access.model.Permission"
-    extends="qcl.data.model.xmlSchema.DbModel">
+    type="qcl_type_Permission"
+    name="qcl_access_model_Permission"
+    extends="qcl_data_model_xmlSchema_DbModel">
     
     <definition>
     
@@ -29,7 +29,7 @@
       <link 
         name="role"
         jointable="link_roles_permissions"
-        model="qcl.access.model.Role"/>
+        model="qcl_access_model_Role"/>
     </links>
   </model>
   

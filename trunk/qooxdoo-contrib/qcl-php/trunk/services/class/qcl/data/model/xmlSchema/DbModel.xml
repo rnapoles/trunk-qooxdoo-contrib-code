@@ -5,7 +5,7 @@
     a numeric id, a modified and created column 
   -->
   <model 
-    name="qcl.data.model.xmlSchema.DbModel" >
+    name="qcl_data_model_xmlSchema_DbModel" >
     
     <definition>
 

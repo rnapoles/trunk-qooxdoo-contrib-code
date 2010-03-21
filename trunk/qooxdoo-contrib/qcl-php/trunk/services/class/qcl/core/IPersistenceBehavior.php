@@ -16,7 +16,11 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-interface qcl_data_persistence_behavior_IBehavior
+/**
+ * Interface for persistence behaviors. Always use the singleton
+ * instance.
+ */
+interface qcl_core_IPersistenceBehavior
 {
 
   /**
@@ -31,7 +35,8 @@ interface qcl_data_persistence_behavior_IBehavior
    *
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
-   * @return void
+   * @return boolean Whether object data has been found and restored (true)
+   *  or not (false)
    */
   public function restore( $object, $id );
 
@@ -46,11 +51,11 @@ interface qcl_data_persistence_behavior_IBehavior
   public function persist( $object, $id );
 
   /**
-   * Deletes the persistence data for the object with the given id.
+   * Disposes the persistence data for the object with the given id.
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    */
-  public function clear( $object, $id );
+  public function dispose( $object, $id );
 
 }
 ?>

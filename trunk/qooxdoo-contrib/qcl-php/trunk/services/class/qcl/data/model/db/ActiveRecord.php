@@ -15,11 +15,11 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/db/__init__.php";
-require_once "qcl/data/model/AbstractActiveRecord.php";
-require_once "qcl/data/model/db/PropertyBehavior.php";
-require_once "qcl/data/model/db/QueryBehavior.php";
 
+qcl_import( "qcl_data_model_AbstractActiveRecord" );
+qcl_import( "qcl_data_model_IActiveRecord" );
+qcl_import( "qcl_data_model_db_PropertyBehavior" );
+qcl_import( "qcl_data_model_db_QueryBehavior" );
 
 /**
  * Abstrac class for models that are based on a relational
@@ -27,7 +27,8 @@ require_once "qcl/data/model/db/QueryBehavior.php";
  * @todo define interface
  */
 class qcl_data_model_db_ActiveRecord
-  extends qcl_data_model_AbstractActiveRecord
+  extends    qcl_data_model_AbstractActiveRecord
+  implements qcl_data_model_IActiveRecord
 {
 
   //-------------------------------------------------------------
@@ -48,12 +49,12 @@ class qcl_data_model_db_ActiveRecord
     ),
     "created" => array(
       "nullable" => true,
-      "check"    => "DateTime",
+      "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "timestamp",
       "init"     => null
     ),
     "modified" => array(
-      "check"    => "DateTime",
+      "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "current_timestamp",
       "nullable" => true,
       "init"     => null
@@ -89,11 +90,6 @@ class qcl_data_model_db_ActiveRecord
     $this->addProperties( $this->properties );
     parent::__construct();
   }
-
-  /**
-   * Overrides the init method with an empty stub
-   */
-  protected function init(){}
 
   //-------------------------------------------------------------
   // getters and setters
@@ -143,17 +139,6 @@ class qcl_data_model_db_ActiveRecord
       $this->queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
     }
     return $this->queryBehavior;
-  }
-
-  /**
-   * Prevent access to persistence behavior. Active record objects need
-   * not be persisted since they can be saved and restored to the database.
-   * Calling this mehtod raises an error.
-   * @return void
-   */
-  public function getPersistenceBehavior()
-  {
-    $this->raiseError("Active record objects cannot (and need not) be persisted.");
   }
 }
 ?>

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <links model="qcl.access.model.Role">
-    <link name="permission" model="qcl.access.model.Permission">
+  <links model="qcl_access_model_Role">
+    <link name="permission" 
+      model="qcl_access_model_Permission">
       <origin namedId="administrator">
         <target namedId="manageUsers" />
       </origin>

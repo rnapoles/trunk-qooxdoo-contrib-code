@@ -17,21 +17,30 @@
  */
 qcl_import( "qcl_data_model_Model" );
 qcl_import( "qcl_data_model_db_IModel" );
+qcl_import( "qcl_data_model_PersistentModel" );
 qcl_import( "qcl_data_model_db_PropertyBehavior" );
 qcl_import( "qcl_data_model_db_QueryBehavior" );
 
 /**
- * Model that can be persisted in a database.
- * For property definition, see qcl_data_model_db_PropertyBehavior.
+ * Model that can be persisted in a database. Properties are defined
+ * qooxdoo-style, see qcl_data_model_db_PropertyBehavior.
  * @see qcl_data_model_db_PropertyBehavior
  */
-class qcl_data_model_db_Model
-  extends     qcl_data_model_Model
-  implements  qcl_data_model_db_IModel
+class qcl_data_model_db_PersistentModel
+  extends     qcl_data_model_PersistentModel
+  implements  qcl_data_model_db_IModel,
+              qcl_core_IPersistable
 {
 
   //-------------------------------------------------------------
-  // Model properties
+  // Define the model properties in the subclass as
+  // described in qcl_data_model_db_PropertyBehavior
+  //-------------------------------------------------------------
+
+  private $properties = array();
+
+  //-------------------------------------------------------------
+  // Class properties
   //-------------------------------------------------------------
 
   /**
@@ -102,6 +111,14 @@ class qcl_data_model_db_Model
     return $queryBehavior;
   }
 
-
+  /**
+   * Getter for persistence behavior. Defaults to persistence in
+   * the session.
+   * @return qcl_data_persistence_behavior_Session
+   */
+  function getPersistenceBehavior()
+  {
+    return qcl_data_model_db_PersistenceBehavior::getInstance();
+  }
 }
 ?>

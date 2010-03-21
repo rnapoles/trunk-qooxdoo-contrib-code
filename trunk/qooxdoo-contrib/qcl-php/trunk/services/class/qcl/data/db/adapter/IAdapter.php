@@ -257,6 +257,12 @@ interface qcl_data_db_adapter_IAdapter
   function deleteWhere ( $table, $where, $parameters=null, $parameter_types=null );
 
   /**
+   * Deletes all records from a table and resets the id counter.
+   * @param string $table table name
+   */
+  function truncate( $table );
+
+  /**
    * Counts records in a table matching a where condition
    * @param string  $where where condition
    * @param array|null $parameters Optional parameters to the where condition, @see query()

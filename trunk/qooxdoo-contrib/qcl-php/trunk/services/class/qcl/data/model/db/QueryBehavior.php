@@ -15,12 +15,15 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/db/Table.php";
+
+qcl_import( "qcl_data_model_IQueryBehavior" );
+qcl_import( "qcl_data_db_Table" );
 
 /**
  * Query behavior for (PDO) database driver
  */
 class qcl_data_model_db_QueryBehavior
+  implements qcl_data_model_IQueryBehavior
 {
 
   //-------------------------------------------------------------
@@ -69,8 +72,6 @@ class qcl_data_model_db_QueryBehavior
   /**
    * Constructor
    * @param qcl_data_model_ActiveRecord $model Model affected by this behavior
-   * @param string $tableName The name of the talble that this behavi
-   * @param qcl_data_datasource_type_db_Model|null Optional $datasource Datasource model
    */
   function __construct( $model )
   {
@@ -88,7 +89,7 @@ class qcl_data_model_db_QueryBehavior
    * Getter for model affected by this behavior
    * @return qcl_data_model_db_ActiveRecord
    */
-  protected function getModel()
+  public function getModel()
   {
     return $this->model;
   }
@@ -118,26 +119,18 @@ class qcl_data_model_db_QueryBehavior
    * object reference to the datasource object
    * return void
    */
-  protected function setDatasourceModel( $datasourceModel )
+  protected function setDatasourceModel( qcl_data_datasource_type_db_Model $datasourceModel )
   {
-    // @todo use interface
-    if (  $datasourceModel instanceof qcl_data_datasource_type_db_Model )
-    {
-      $this->datasourceModel = $datasourceModel;
-    }
-    else
-    {
-      $this->raiseError("Invalid datasource model. Must be instance of qcl_data_datasource_type_db_Model object:" . get_class( $datasourceModel ) );
-    }
+    $this->datasourceModel = $datasourceModel;
   }
 
   /**
    * Getter for table name
    * @return string
    */
-  protected function getTableName()
+  public function getTableName()
   {
-    return $this->getModel()->tableName();
+    return $this->getTablePrefix() . $this->getModel()->tableName();
   }
 
   //-------------------------------------------------------------
@@ -223,7 +216,7 @@ class qcl_data_model_db_QueryBehavior
   {
     if ( $this->table === null)
     {
-      $tableName   = $this->getTablePrefix() . $this->getTableName();
+      $tableName   = $this->getTableName();
       $adapter     = $this->getAdapter();
       $this->table = new qcl_data_db_Table( $tableName, $adapter );
     }
@@ -245,7 +238,7 @@ class qcl_data_model_db_QueryBehavior
    * @return string
    * @param string $property Property name
    */
-  public function getColumnName ( $name )
+  public function getColumnName( $name )
   {
     return $name;
   }
@@ -255,13 +248,17 @@ class qcl_data_model_db_QueryBehavior
   //-------------------------------------------------------------
 
   /**
-   * Converts a qcl_data_db_Query object to an sql statement
+   * Converts a qcl_data_db_Query object to an sql statement. If necessary,
+   * the 'parameter' and 'parameter_types' members of the qcl_data_db_Query
+   * object will be modified.
+   *
    * @param qcl_data_db_Query $query
    * @return string sql statement
    */
   public function queryToSql( qcl_data_db_Query $query)
   {
-    $adpt = $this->getAdapter();
+    $adpt    = $this->getAdapter();
+    $propArg = $query->getProperties();
 
     /*
      * determine the column to select and the names under
@@ -273,9 +270,9 @@ class qcl_data_model_db_QueryBehavior
     /*
      * if string, split at the pipe and comma characters
      */
-    if ( is_string( $query->properties ) )
+    if ( is_string( $propArg ) )
     {
-      $properties = explode("|",$query->properties);
+      $properties = explode("|", $propArg );
       if ( count( $properties ) > 1 )
       for ( $i=0; $i<count( $properties ); $i++  )
       {
@@ -286,8 +283,8 @@ class qcl_data_model_db_QueryBehavior
         $properties = explode(",",$properties[0]);
       }
     }
-    elseif ( ! is_array( $query->properties )
-            and ! is_null( $query->properties ) )
+    elseif ( ! is_array( $propArg )
+            and ! is_null( $propArg ) )
     {
       $this->raiseError("Invalid 'properties'.");
     }
@@ -297,7 +294,7 @@ class qcl_data_model_db_QueryBehavior
     /*
      * query involves linked tables
      */
-    if ( $query->link )
+    if ( $query->getLink() )
     {
       for ( $i=0; $i<2; $i++ )
       {
@@ -309,7 +306,7 @@ class qcl_data_model_db_QueryBehavior
             break;
           case 1:
             $alias="t2";
-            $model = $this->getModel()->getLinkedModelInstance( $link );
+            $model = $this->getModel()->getLinkedModelInstance( $query->getLink() );
             break;
         }
 
@@ -334,13 +331,13 @@ class qcl_data_model_db_QueryBehavior
          /*
           * get column name of given property
           */
-         $col = $this->getColumnName( $property );
+         $col = $adpt->formatColumnName( $this->getColumnName( $property ) );
          //$this->info( $model->className() . ": $property -> $col");
 
          /*
           * table and column alias
           */
-         $str = "$alias.`$col`";
+         $str = "$alias.$col";
          if ( $col != $property or $i>0 )
          {
            if ( $i>0 )
@@ -365,26 +362,34 @@ class qcl_data_model_db_QueryBehavior
       /*
        * replace "*" with all properties
        */
-      if ( $properties == "*" or $properties === null)
+      if ( $propArg == "*" or $propArg === null )
       {
-        $properties = $model->properties();
+        $properties = $this->getModel()->properties();
+      }
+      elseif ( ! is_array( $properties ) )
+      {
+        $this->raiseError("Invalid properties");
       }
 
       /*
        * columns, use alias if needed
        */
+      $needAlias = false;
       foreach ( $properties as $property )
       {
         $column = $this->getColumnName( $property );
-        $str .= "\n     " . $adpt->formatColumnName( $col );
+        $columns[] = $column;
+
+        $str = "\n     " . $adpt->formatColumnName( $column );
         if ( $column != $property )
         {
           $str .= " AS '$property'";
+          $needAlias = true;
         }
-        $columns[] = $column;
         $cols[] = $str;
       }
     }
+
 
     /*
      * select
@@ -402,7 +407,15 @@ class qcl_data_model_db_QueryBehavior
     /*
      * columns
      */
-    $sql .= implode(",",  $cols );
+    if ( $needAlias
+         or count( $properties) != count( $this->getModel()->properties() ) )
+    {
+      $sql .= implode(",",  $cols );
+    }
+    else
+    {
+      $sql .= " * ";
+    }
 
     /*
      * from
@@ -446,7 +459,7 @@ class qcl_data_model_db_QueryBehavior
      */
     if ( $query->where )
     {
-      $where = $this->whereDataToSql($query->where);
+      $where = $this->createWhereStatement( $query );
       $sql .= "\n    WHERE $where ";
     }
 
@@ -486,86 +499,80 @@ class qcl_data_model_db_QueryBehavior
       $sql .=   "\n    LIMIT {$query->limit}";
     }
 
-    /*
-     * FIXME start with record ...
-     */
-
     return $sql;
   }
 
   /**
-   * Converts array data to a 'where' compliant sql string
-   * @param string|array $where
-   * @todo rewrite this hacky stuff
+   * Converts data to the 'where' part of a sql statement. If necessary,
+   * this will add to the parameter and parameter_types members of the query
+   * object.
+   *
+   * @param qcl_data_db_Query $query
+   * @return string
    */
-  public function createWhereStatement( $where )
+  public function createWhereStatement( qcl_data_db_Query $query )
   {
-    if ( is_array($where) )
-    {
-      $sql = "";
-      $i=0;
-      foreach ( $where as $property => $expr )
-      {
-        $i++;
+    $adpt   = $this->getAdapter();
+    $where  = $query->getWhere();
 
-        /*
-         * check if expression has an operator. if not,
-         * use "="
-         * FIXME this is a hack. rewrite this!!
-         */
-
-        if ( is_null($expr) or (
-            ! in_array( substr( trim($expr),0,1 ), array( "=","!" ) )
-             AND substr( trim($expr),0, 2 ) != "IN"
-             AND substr( trim($expr),0, 4 ) != "LIKE" )
-        ) {
-          /*
-           * expression is null
-           */
-          if ( is_null($expr) )
-          {
-            $expr = "IS NULL";
-          }
-
-          /*
-           * else, sql depends on property type
-           */
-          else
-          {
-            switch( $this->getPropertyType( $property ) )
-            {
-              case "int":
-                $expr = " = $expr";
-                break;
-
-              case "string":
-              default:
-                $expr = " = '" . addslashes($expr) . "'";
-                break;
-            }
-          }
-
-
-          /*
-           * add boolean operator
-           */
-          if ( $i < count($where) )
-          {
-            $expr .= " AND ";
-          }
-        }
-
-        /*
-         * add to sql
-         */
-        $sql .= "`" . $this->getColumnName($property) . "` " . $expr. " ";
-      }
-      return $sql;
-    }
-    else
+    /*
+     * if we have a string type where statement, return it.
+     */
+    if ( is_string( $where ) )
     {
       return $where;
     }
+    elseif ( ! is_array( $where ) )
+    {
+      $this->raiseError("Invalid 'where' data.");
+    }
+
+    /*
+     * otherwise create sql from it
+     */
+    $sql    = array();
+    foreach( $where as $property => $value )
+    {
+      $type   = $this->getModel()->getPropertyBehavior()->type( $property );
+      $column = $adpt->formatColumnName( $this->getColumnName( $property ) );
+      $param  = ":$property";
+
+      /*
+       * if the value is scalar, use "="
+       */
+      if ( is_scalar($value) )
+      {
+        if ( is_null($value) )
+        {
+          $operator = "IS";
+          $value    = "NULL";
+        }
+        else
+        {
+          $query->parameters[$param] = $value;
+          $operator = "=";
+        }
+      }
+
+      /*
+       * if an array has been passed, the first element is the
+       * operator, the second the value
+       */
+      elseif ( is_array( $value ) )
+      {
+        $operator = $value[0];
+        $value    = $value[1];
+        $query->parameters[$param] = $value;
+      }
+      else
+      {
+        $this->raiseError("Invalid value");
+      }
+
+
+      $sql[]  = "$column $operator $param" ;
+    }
+    return implode(" AND ", $sql );
   }
 
   /**
@@ -618,6 +625,11 @@ class qcl_data_model_db_QueryBehavior
       $this->select( $query );
     }
     $result = $this->getAdapter()->fetch();
+    $propBehavior = $this->getModel()->getPropertyBehavior();
+    foreach( $result as $property => $value )
+    {
+      $result[$property] = $propBehavior->typecast( $property, $value );
+    }
     return $result;
   }
 
@@ -743,9 +755,9 @@ class qcl_data_model_db_QueryBehavior
    */
   public function countWhere( $where )
   {
-    return $this->getTable()->countWhere(
-      $this->createWhereStatement( $where )
-    );
+    $query = new qcl_data_db_Query( array( 'where' => $where) );
+    $sql   = $this->createWhereStatement( $query );
+    return $this->getTable()->countWhere( $sql, $query->parameters, $query->parameter_types );
   }
 
   /**
@@ -798,9 +810,11 @@ class qcl_data_model_db_QueryBehavior
     /*
      * do the update
      */
+    $query = new qcl_data_db_Query( array(
+      'where' => array ( 'id' => $id ) )
+    );
     return $this->getTable()->updateWhere(
-      $data,
-      array ( $this->getIdColumn() => $id )
+      $data, $this->createWhereStatement( $query ), $query->getParameters(), $query->getParameterTypes()
     );
   }
 
@@ -820,9 +834,10 @@ class qcl_data_model_db_QueryBehavior
     /*
      * do the update
      */
+    $query = new qcl_data_db_Query( array( 'where' => $where) );
+    $sql   = $this->createWhereStatement( $query );
     return $this->getTable()->updateWhere(
-      $data,
-      $this->createWhereStatement($where)
+      $data,$sql,$query->getParameters(), $query->getParameterTypes()
     );
   }
 
@@ -843,8 +858,10 @@ class qcl_data_model_db_QueryBehavior
    */
   public function deleteWhere ( $where )
   {
-    return $this->getTable()->deleteWhere (
-      $this->createWhereStatement( $where )
+    $query = new qcl_data_db_Query( array( 'where' => $where) );
+    $sql   = $this->createWhereStatement( $query );
+    return $this->getTable()->deleteWhere(
+      $sql,$query->getParameters(), $query->getParameterTypes()
     );
   }
 

@@ -15,24 +15,54 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-qcl_import( "qcl_data_model_Model" );
-qcl_import( "qcl_data_model_db_IModel" );
+
+qcl_import( "qcl_data_model_AbstractNamedActiveRecord" );
 qcl_import( "qcl_data_model_db_PropertyBehavior" );
 qcl_import( "qcl_data_model_db_QueryBehavior" );
 
 /**
- * Model that can be persisted in a database.
- * For property definition, see qcl_data_model_db_PropertyBehavior.
- * @see qcl_data_model_db_PropertyBehavior
+ * Abstrac class for models that are based on a relational
+ * database.
+ * @todo define interface
  */
-class qcl_data_model_db_Model
-  extends     qcl_data_model_Model
-  implements  qcl_data_model_db_IModel
+class qcl_data_model_db_NamedActiveRecord
+  extends    qcl_data_model_AbstractNamedActiveRecord
+  implements qcl_data_model_INamedActiveRecord
 {
-
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
   // Model properties
   //-------------------------------------------------------------
+
+  /**
+   * Property information for the property behavior. Similar to the
+   * qooxdoo property definition syntax, with some additional features.
+   * @see qcl_data_model_PropertyBehavior
+   * @var array
+   */
+  private $properties = array(
+    "id" => array(
+      "check"    => "integer",
+      "sqltype"  => "int(11)",
+      "nullable" => false,
+    ),
+    "namedId" => array(
+      "check"    => "string",
+      "sqltype"  => "varchar(50)",
+      "nullable" => false,
+    ),
+    "created" => array(
+      "nullable" => true,
+      "check"    => "qcl_data_db_Timestamp",
+      "sqltype"  => "timestamp",
+      "init"     => null
+    ),
+    "modified" => array(
+      "check"    => "qcl_data_db_Timestamp",
+      "sqltype"  => "current_timestamp",
+      "nullable" => true,
+      "init"     => null
+    )
+  );
 
   /**
    * The name of the table that this model stores its data in.
@@ -43,14 +73,26 @@ class qcl_data_model_db_Model
   protected $tableName;
 
   /**
-   * The property behavior object
+   * Property behavior object. Access with getPropertyBehavior()
+   * @var qcl_data_model_db_PropertyBehavior
    */
-  private $propertyBehavior = null;
+  private $propertyBehavior;
 
   /**
-   * The query behavior object
+   * The query behavior object. Access with getQueryBehavior()
+   * @var qcl_data_model_db_QueryBehavior
    */
-  private $queryBehavior = null;
+  private $queryBehavior;
+
+  //-------------------------------------------------------------
+  // Initialization
+  //-------------------------------------------------------------
+
+  function __construct()
+  {
+    $this->addProperties( $this->properties );
+    parent::__construct();
+  }
 
   //-------------------------------------------------------------
   // getters and setters
@@ -95,13 +137,11 @@ class qcl_data_model_db_Model
    */
   public function getQueryBehavior()
   {
-    if ( $queryBehavior === null )
+    if ( $this->queryBehavior === null )
     {
-      $queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
+      $this->queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
     }
-    return $queryBehavior;
+    return $this->queryBehavior;
   }
-
-
 }
 ?>

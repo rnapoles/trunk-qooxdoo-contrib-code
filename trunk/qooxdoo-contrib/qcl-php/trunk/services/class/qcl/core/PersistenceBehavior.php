@@ -15,15 +15,16 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/persistence/behavior/IBehavior.php";
+
+qcl_import("qcl_core_IPersistenceBehavior");
 
 /**
  * Persistence Behavior that saves the object's public properties
  * to the PHP session by an id. If you want to save only one instance
  * of the object, use the class name as id.
  */
-class qcl_data_persistence_behavior_Session
-  implements qcl_data_persistence_behavior_IBehavior
+class qcl_core_PersistenceBehavior
+  implements qcl_core_IPersistenceBehavior
 {
   const KEY = QCL_DATA_PERSISTENCE_SESSION;
 
@@ -40,7 +41,8 @@ class qcl_data_persistence_behavior_Session
    * Loads the object's public properties from the session
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
-   * @return void
+   * @return boolean Whether object data has been found and restored (true)
+   *  or not (false)
    */
   public function restore( $object, $id )
   {
@@ -48,10 +50,12 @@ class qcl_data_persistence_behavior_Session
     {
       qcl_log_Logger::getInstance()->log( $object->className() . ": loading data with id '$id'","persistence");
       $object->unserialize( $_SESSION[ self::KEY ][ $id ] );
+      return true;
     }
     else
     {
       qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'","persistence");
+      return false;
     }
   }
 
@@ -67,11 +71,11 @@ class qcl_data_persistence_behavior_Session
   }
 
   /**
-   * Deletes the persistence data for the object with the given id.
+   * Dispose the persistence data for the object with the given id.
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    */
-  public function clear( $object, $id )
+  public function dispose( $object, $id )
   {
     qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", "persistence");
     unset( $_SESSION[ self::KEY ][ $id ] );

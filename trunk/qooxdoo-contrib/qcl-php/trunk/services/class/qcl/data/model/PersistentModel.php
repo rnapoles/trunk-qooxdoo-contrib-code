@@ -16,35 +16,39 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-qcl_import( "qcl_core_Object" );
-qcl_import( "qcl_data_model_IModel");
-qcl_import( "qcl_data_model_PropertyBehavior");
+qcl_import( "qcl_core_PersistentObject" );
+qcl_import( "qcl_data_model_IModel" );
+qcl_import( "qcl_data_model_PropertyBehavior" );
 
 /**
- * Base class for all classes that implement a data model.
+ * Abstract class for all classes that implement a persistent data model.
  * As opposed to qcl_core_Object, the properties of this object
- * are defined in a qooxdoo-style pattern.
+ * are defined in a qooxdoo-style pattern. This class is persisted in
+ * the session only. For persistence using a database, use
+ * qcl_data_model_db_PersistentModel
+ *
  * @see qcl_data_model_PropertyBehavior
  */
-class qcl_data_model_Model
-  extends    qcl_core_Object
-  implements qcl_data_model_IModel
+class qcl_data_model_PersistentModel
+  extends     qcl_core_PersistentObject
+  implements  qcl_data_model_IModel,
+              qcl_core_IPersistable
 {
 
   /**
-   * The name of the model. Defaults to the class name, but can be an
-   * arbitrary name that is more readable.
+   * The name of the model. Should be a java-like class name such as
+   * "namespace.package.ClassName"
    * @var string
    */
-  protected $name = __CLASS__;
+  protected $name;
 
   /**
    * The type of the model, if the model implements a generic type in a specific
-   * way. Defaults to empty string
+   * way.
    *
    * @var string
    */
-  protected $type ="";
+  protected $type;
 
   /**
    * The property behavior object. Access with getPropertyBehavior()
@@ -56,7 +60,7 @@ class qcl_data_model_Model
   //-------------------------------------------------------------
 
   /**
-   * Constructor, calls the init() method.
+   * Constructor, calls the init() method
    */
   function __construct()
   {
@@ -70,7 +74,10 @@ class qcl_data_model_Model
    */
   protected function init()
   {
-    $this->getPropertyBehavior()->init();
+    if ( $this->isNew() )
+    {
+      $this->getPropertyBehavior()->init();
+    }
   }
 
   //-------------------------------------------------------------
@@ -116,7 +123,7 @@ class qcl_data_model_Model
   }
 
   /**
-   * Add a property definition to the model and initialize the properties
+   * Add a property definition to the model
    * @param array $properties
    * @return void
    */

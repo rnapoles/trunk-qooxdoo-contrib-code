@@ -8,8 +8,8 @@
    -->
   <model 
     table="datasources"
-    name="qcl.data.datasource.type.db.Model"
-    extends="qcl.data.model.xmlSchema.DbModel">
+    name="qcl_data_datasource_type_db_Model"
+    extends="qcl_data_model_xmlSchema_DbModel">
     
     <definition>
       <properties>

@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/PropertyBehavior.php";
+
+qcl_import( "qcl_data_model_PropertyBehavior" );
 
 /**
  * Extending the property behavior of qcl_data_model_PropertyBehavior
@@ -161,7 +162,6 @@ class qcl_data_model_db_PropertyBehavior
         $this->raiseError("Property '$name' does not have a 'sqltype' definition.");
       }
 
-
       /*
        * if column does not exist, create it
        */
@@ -187,8 +187,6 @@ class qcl_data_model_db_PropertyBehavior
         }
       }
     }
-
   }
-
 }
 ?>

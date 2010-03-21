@@ -5,9 +5,9 @@
 
   <model 
     table="users"
-    type="qcl.type.User"
-    name="qcl.access.model.User"
-    extends="qcl.data.model.xmlSchema.DbModel"> 
+    type="user"
+    name="qcl_access.model_User"
+    extends="qcl_data_model_xmlSchema_DbModel"> 
      
     <!-- model definition -->
     <definition>
@@ -59,17 +59,17 @@
         name="role"
         type="n:n"
         jointable="link_roles_users" 
-        model="qcl.access.model.Role" />  
+        model="qcl_access_model_Role" />  
         
       <!-- link 
         name="datasource"
         type="n:n"
         jointable="link_users_datasources">
         <linkedModel 
-          name="qcl.datasource.type.db.Model"
+          name="qcl_datasource_type_db_Model"
           backlink="true" />
         <linkedModel 
-          name="qcl.access.Role" 
+          name="qcl_access_Role" 
           backlink="true" />  
       </link-->
     </links>

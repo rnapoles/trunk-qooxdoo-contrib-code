@@ -16,75 +16,17 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/test/AbstractTestController.php";
-require_once "qcl/data/db/adapter/PdoMysql.php";
-require_once "qcl/data/db/Table.php";
+
+qcl_import( "qcl_test_AbstractTestController" );
+qcl_import( "qcl_data_db_adapter_PdoMysql" );
+qcl_import( "qcl_data_db_Table" );
 
 /**
  * Service class containing test methods
  */
-class class_qcl_test_data_db_Tests
+class class_qcl_test_data_db_Table
   extends qcl_test_AbstractTestController
 {
-  /**
-   * Returns the dsn, user and password of the database used by the application
-   * @return array( dsn, user, password )
-   */
-  protected function getDsnUserPassword()
-  {
-    list( $user,$pass,$dbname, $dbtype, $host, $port )  =
-      $this->getApplication()->getIniValues(array(
-        "database.username","database.userpassw","database.admindb","database.type",
-        "database.host","database.port"
-      ) );
-    return array( "$dbtype:host=$host;port=$port;dbname=$dbname", $user, $pass) ;
-  }
-
-  public function method_testPdoFetch( $table = "access_config" )
-  {
-
-    list($dsn, $user, $pass) = $this->getDsnUserPassword();
-
-    try
-    {
-      $options = array(
-        PDO::ATTR_PERSISTENT         => true,
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
-      );
-
-      $dbh = new PDO( $dsn, $user, $pass, $options );
-
-      //$table = $dbh->quote( $table );
-      $stm = $dbh->prepare( "SELECT * from $table" );
-      $stm->execute();
-
-      $this->info( "Found " . $stm->rowCount() . "rows" );
-
-      $result = array();
-      while ( $row = $stm->fetch( PDO::FETCH_ASSOC ) )
-      {
-        $result[] = $row;
-      }
-
-      $dbh = null;
-    }
-    catch (PDOException $e)
-    {
-      $this->raiseError( $e->getMessage() );
-    }
-    return $result;
-  }
-
-  function startLogging()
-  {
-    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),true);
-  }
-
-  function endLogging()
-  {
-    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),false);
-  }
 
   public function method_testCreateTable()
   {
@@ -134,8 +76,28 @@ class class_qcl_test_data_db_Tests
     return "OK";
   }
 
+  /**
+   * Returns the dsn, user and password of the database used by the application
+   * @return array( dsn, user, password )
+   */
+  protected function getDsnUserPassword()
+  {
+    list( $user,$pass,$dbname, $dbtype, $host, $port )  =
+      $this->getApplication()->getIniValues(array(
+        "database.username","database.userpassw","database.admindb","database.type",
+        "database.host","database.port"
+      ) );
+    return array( "$dbtype:host=$host;port=$port;dbname=$dbname", $user, $pass) ;
+  }
 
+  function startLogging()
+  {
+    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),true);
+  }
 
+  function endLogging()
+  {
+    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),false);
+  }
 }
-
 ?>

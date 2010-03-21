@@ -15,15 +15,22 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/functions.php";
 
-qcl_import( "qcl_core_PropertyBehavior" );
+/*
+ * bootstrapping qcl
+ */
+require_once "qcl/core/__init__.php";
+
+qcl_import( "qcl_core_IPropertyAccessors");
+qcl_import( "qcl_core_PropertyBehavior");
 
 /**
  * Base class of all qcl classes.
- * @todo merge with BaseClass
+ * @todo remove all methods into global functions that have no
+ * direct relationship with the object
  */
 class qcl_core_Object
+//  implements qcl_core_IPropertyAccessors
 {
 
   /**
@@ -33,25 +40,6 @@ class qcl_core_Object
    * @var string
    */
   protected $error;
-
-  /**
-   * Wether this class is persistent. If true, it will be serialized at the
-   * end of the request and deserialized at the beginning. By default,
-   * the object is saved into the PHP session.
-   */
-  protected $isPersistent = false;
-
-  /**
-   * Whether this is a newly instantiated object. Will be turned to false
-   * when retrieved from cache
-   */
-  protected $isNew = true;
-
-  /**
-   * The class name of this object
-   * @var string
-   */
-  private $_className;
 
   /**
    * The globally unique id of this object.
@@ -90,39 +78,6 @@ class qcl_core_Object
      */
     $this->objectId();
 
-    /*
-     * class name
-     */
-    $this->_className = get_class($this);
-
-    /*
-     * deserialize if this is a persistent object
-     */
-    if ( $this->isPersistent )
-    {
-      $this->getPersistenceBehavior()->restore( $this, $this->getPersistenceId() );
-    }
-  }
-
-  /**
-   * Object oriented way of checking whether the class
-   * implements an interface.
-   *
-   * @param string $interface
-   * @param string $className If omitted (default), the given
-   * object's class is checked.
-   * @return unknown_type
-   */
-  function implementsInterface( $interface, $className = null )
-  {
-    if ( $className )
-    {
-      return in_array( $interface, class_implements( $className ) );
-    }
-    else
-    {
-      return in_array( $interface, class_implements( $this ) );
-    }
   }
 
   //-------------------------------------------------------------
@@ -214,18 +169,6 @@ class qcl_core_Object
       $this->propertyBehavior = new qcl_core_PropertyBehavior( $this );
     }
     return $this->propertyBehavior;
-  }
-
-  /**
-   * Extending classes use this method to add their
-   * property definitions to the basic one in
-   * $this->properties
-   * @param array $properties
-   * @return void
-   */
-  public function addProperties( $properties )
-  {
-    $this->getPropertyBehavior()->add( $properties );
   }
 
   /**
@@ -433,9 +376,8 @@ class qcl_core_Object
    * @param array[optional] $diff Array that needs to be passed by reference that will contain a list of parameters that differ
    * @return bool True if all property values are identical, false if not
    */
-  public function compareSharedProperties ( $that, $diff )
+  public function compareSharedProperties ( $that, $diff=array() )
   {
-    $diff = array();
     $properties = array_intersect(
       $this->properties(),
       $that->properties()
@@ -515,12 +457,11 @@ class qcl_core_Object
 //  }
 
   /**
-   * Method called when called method does not exist. (PHP5)
+   * Method called when called method does not exist.
    * This will check whether method name is
    *
    * - getXxx or setXxx and then call get("xxx")
    *    or setProperty("xxx", $arguments[0] ).
-   * - findByXxx to call findBy("xxx",...)
    *
    * Otherwise, raise an error.
    * @param string $method  Method name
@@ -1191,69 +1132,6 @@ class qcl_core_Object
   public function dump()
   {
     return var_export( $this, true );
-  }
-
-
-  //-------------------------------------------------------------
-  // Persistence
-  //-------------------------------------------------------------
-
-  /**
-   * Getter for persistence behavior. Defaults to persistence in
-   * the session.
-   * @return qcl_data_persistence_behavior_Session
-   */
-  function getPersistenceBehavior()
-  {
-    /*
-     * includ class file only if class hasn't been loaded yet -
-     * otherwise this will not work when called from the destructor
-     */
-    if ( ! class_exists("qcl_data_persistence_behavior_Session") )
-    {
-      require_once "qcl/data/persistence/behavior/Session.php";
-    }
-    return qcl_data_persistence_behavior_Session::getInstance();
-  }
-
-  /**
-   * Returns the id that is used to persist the object between
-   * requests. Defaults to the class name, so that each new
-   * object gets the content of the last existing object of the
-   * same class. Override for different behavior.
-   * @return string
-   */
-  function getPersistenceId()
-  {
-    return $this->className();
-  }
-
-  /**
-   * Persist the properties of the object so that they will be
-   * restored upon next instantiation of the object.
-   * @return void
-   */
-  public function persistProperties()
-  {
-    if ( $this->isPersistent )
-    {
-      $this->getPersistenceBehavior()->persist( $this, $this->getPersistenceId() );
-    }
-    else
-    {
-      $this->raiseError("Cannot save object - it is not persistent.");
-    }
-  }
-
-  /**
-   * Destructor. Saves object if persistent.
-   */
-  function __destruct()
-  {
-    if ( $this->isPersistent )
-    {
-      $this->persistProperties();
-    }
   }
 }
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * qooxdoo - the new era of web development
  *
@@ -16,10 +15,9 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/test/AbstractTestController.php";
-require_once "qcl/data/model/Model.php";
-require_once "qcl/data/model/db/ActiveRecord.php";
-require_once "qcl/data/db/Timestamp.php";
+
+qcl_import( "qcl_test_AbstractTestController" );
+qcl_import( "qcl_data_model_Model" );
 
 class TestModel
   extends qcl_data_model_Model
@@ -51,13 +49,18 @@ class TestModel
 
   function __construct()
   {
+    /*
+     * listeners and properties must be declared BEFORE calling the parent constructor
+     */
     $this->addListener( "changeFoo", $this, "_onChangeFoo" );
     $this->addProperties( $this->properties );
+
     parent::__construct();
   }
 
   function init()
   {
+    parent::init();
     $this->set("created", new qcl_data_db_Timestamp("2010-03-17 14:20:53") );
   }
 
@@ -90,49 +93,15 @@ class TestModel
 
 }
 
-class TestDbActiveRecord
-  extends qcl_data_model_db_ActiveRecord
-{
-
-  private $properties = array(
-    "foo" => array(
-      "check"     => "string",
-      "sqltype"   => "varchar(50)",
-      "init"      => "foo",
-      "nullable"  => true,
-    ),
-    "bar"  => array(
-      "check"     => "integer",
-      "sqltype"   => "int(11)",
-      "init"      => 1,
-      "nullable"  => false,
-    ),
-    "baz"  => array(
-      "check"     => "boolean",
-      "sqltype"   => "int(1)",
-      "init"      => true,
-      "nullable"  => false
-    )
-  );
-
-  function __construct()
-  {
-    $this->addProperties( $this->properties );
-    parent::__construct();
-  }
-}
-
 /**
  * Service class containing test methods
  */
-class class_qcl_test_data_model_Tests
+class class_qcl_test_data_model_Model
   extends qcl_test_AbstractTestController
 {
   public function method_testModel()
   {
     $model = new TestModel();
-
-    $this->info( $model->data() );
 
     $this->assertEquals( "2010-03-17 14:20:53", (string) $model->getCreated(), null, __CLASS__, __LINE__ );
     $this->assertEquals("foo", $model->getFoo(), null, __CLASS__, __LINE__ );
@@ -156,38 +125,7 @@ class class_qcl_test_data_model_Tests
     }
     catch( qcl_core_PropertyBehaviorException $e ){}
 
-    // @todo: test event behavior, doesn't work yet
-
-
     return "OK";
-  }
-
-
-  public function method_testDbActiveRecord()
-  {
-    $this->startLogging();
-    $model = new TestDbActiveRecord();
-    $model2 = new TestDbActiveRecord();
-
-    //$this->debug( $model->data(), __CLASS__,__LINE__);
-
-
-
-
-
-
-    $this->endLogging();
-    return "OK";
-  }
-
-  function startLogging()
-  {
-    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),true);
-  }
-
-  function endLogging()
-  {
-    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),false);
   }
 }
 

@@ -400,10 +400,20 @@ class qcl_data_db_Table
    * @param array|null $parameters Optional parameters to the where condition, @see query()
    * @param array|null $parameter_types Optional parameter types, @see query()
    */
-  function deleteWhere ( $where, $parameters=null, $parameter_types=null )
+  public function deleteWhere ( $where, $parameters=null, $parameter_types=null )
   {
     $this->incrementTransactionId();
     return $this->getAdapter()->deleteWhere( $this->getName(), $where, $parameters, $parameter_types );
+  }
+
+  /**
+   * Deletes all records from a table and resets the id count
+   * @return void
+   */
+  public function truncate()
+  {
+    $this->incrementTransactionId();
+    return $this->getAdapter()->truncate( $this->getName() );
   }
 
   //-------------------------------------------------------------

@@ -400,7 +400,7 @@ class qcl_config_DbModel
         'permissionWrite' => $this->getProperty("permissionWrite"),
         'userId'  => $userId
       );
-      $id = $this->insert($data);
+      $id = $this->insert( $data );
       if ( ! $id )
       {
         $this->raiseError("Could not create user variant for key '$namedId', user #$userId.");

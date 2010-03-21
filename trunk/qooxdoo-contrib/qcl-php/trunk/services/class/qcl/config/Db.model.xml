@@ -3,8 +3,8 @@
   include="qcl/data/model/xmlSchema/DbModel.xml">
   
   <model 
-    name="qcl.config.Db"
-    extends="qcl.data.model.xmlSchema.DbModel"
+    name="qcl_config_Db"
+    extends="qcl_data_model_xmlSchema_DbModel"
     table="config">
  
     <!-- model definition -->
@@ -31,9 +31,7 @@
       </properties>
       
       <!-- indexes -->
-      <indexes>
-        <index type="unique" properties="namedId" />
-      </indexes>
+
       
       <!-- metadata -->
       <propertyGroups>

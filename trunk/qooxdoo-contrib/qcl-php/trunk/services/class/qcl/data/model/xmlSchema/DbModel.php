@@ -28,6 +28,7 @@ class qcl_data_model_xmlSchema_DbModel
   extends    qcl_data_model_db_Abstract
 {
 
+
   /**
    * The path to the model schema xml file. ususally automatically resolved.
    * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
@@ -42,12 +43,13 @@ class qcl_data_model_xmlSchema_DbModel
    */
   public $importDataPath;
 
+
   /**
    * The schema as an simpleXml object, containing all
    * included xml files. Acces with qcl_data_model_xmlSchema_DbModel::getSchemaXml();
    * @var qcl_data_xml_SimpleXml
    */
-  private $schemaXml;
+  protected $schemaXml;
 
   /**
    * Flag to prevent caching
@@ -58,44 +60,47 @@ class qcl_data_model_xmlSchema_DbModel
    * The timestamp of the  model schema xml file.
    * @var string
    */
-  private $schemaTimestamp = null;
+  protected $schemaTimestamp = null;
 
   /**
    * The timestamp of an xml data file
    * @var array
    */
-  private $dataTimestamp = array();
+  protected $dataTimestamp = array();
 
   /**
    * Shortcuts to property nodes in schema xml. Access with qcl_data_model_xmlSchema_DbModel::getPropertyNode($name)
    * @array array of object references
    */
-  private $propertyNodes =array();
+  protected $propertyNodes =array();
 
   /**
    * shortcuts to schema xml nodes with information on table links
    * @var array
    */
-  private $linkNodes = array();
+  protected $linkNodes = array();
 
   /**
    * An associated array, having the name of the property
    * as keys and their alias as value
    * @var unknown_type
    */
-  private $aliasMap = array();
+  protected $aliasMap = array();
 
   /**
    * Shortcuts to property nodes which belong to metadata
    * @array array of object references
    */
-  private $metaDataProperties;
+  protected $metaDataProperties;
 
   /**
    * The persistent model table info object
    * @var qcl_data_model_xmlSchema_DbRegistry
    */
-  private $modelTableInfo = null;
+  protected $modelTableInfo = null;
+
+
+
 
   /**
    * Initializes the model.
@@ -231,9 +236,9 @@ class qcl_data_model_xmlSchema_DbModel
   function properties()
   {
     $this->getSchemaXml(); // make sure schema has been initialized
-    return array_keys($this->properties);
+    $properties = array_keys($this->propertyMap);
+    return $properties;
   }
-
 
   /**
    * Checks if property exists
@@ -244,7 +249,7 @@ class qcl_data_model_xmlSchema_DbModel
   function hasProperty( $name )
   {
     $this->getSchemaXml(); // make sure schema has been initialized
-    return isset( $this->properties[$name] );
+    return isset( $this->propertyMap[$name] );
   }
 
   /**
@@ -279,7 +284,7 @@ class qcl_data_model_xmlSchema_DbModel
   function getPropertySchemaName ( $name )
   {
     $this->getSchemaXml(); // make sure schema has been initialized
-    return $this->properties[$name];
+    return $this->propertyMap[$name];
   }
 
   /**
@@ -335,10 +340,19 @@ class qcl_data_model_xmlSchema_DbModel
     static $reverseAliasMap = null;
     if ( !$reverseAliasMap )
     {
-      $reverseAliasMap = array_flip($this->properties);
+      $reverseAliasMap = array_flip($this->propertyMap);
     }
     return $reverseAliasMap[$columnName];
   }
+
+  /**
+   * Getter for name
+   */
+  function name()
+  {
+    return $this->name;
+  }
+
 
   /**
    * Checks whether model has 'namedId' property
@@ -862,7 +876,7 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * save property/alias
        */
-      $this->properties[$propName] = $colName;
+      $this->propertyMap[$propName] = $colName;
 
       /*
        * skip if no column definition available
@@ -1916,10 +1930,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function _modifyLink()
   {
-    /*
-     * admin access
-     * FIXME
-     */
+
 
     /*
      * database connection
@@ -2369,7 +2380,7 @@ class qcl_data_model_xmlSchema_DbModel
        */
       if ( $mdl != $this->name() )
       {
-        $this->warn( "Origin model in xml ('$mdl') does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
+        $this->warn( "Origin model in xml ('$mdl', $path) does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
         return;
       }
 
@@ -2572,7 +2583,7 @@ class qcl_data_model_xmlSchema_DbModel
       /*
        * store property name as key and value
        */
-      $this->properties[$propName] = $propName;
+      $this->propertyMap[$propName] = $propName;
       //$this->debug(gettype($propNode));
     }
 
@@ -2612,7 +2623,7 @@ class qcl_data_model_xmlSchema_DbModel
         /*
          * overwrite property name with alias
          */
-        $this->properties[$propName] = $column;
+        $this->propertyMap[$propName] = $column;
 
         /*
          * store in aliases array
@@ -2884,7 +2895,7 @@ class qcl_data_model_xmlSchema_DbModel
      * list of properties minus those which should be
      * skipped
      */
-    $propList     =  $this->properties();
+    $propList     = $this->properties();
     $skipExpNode  = $schemaXml->getChildNodeByAttribute($propGrpsNode,"name","skipExport");
 
     foreach( $this->propertyNodes as $propNode )
@@ -3056,7 +3067,6 @@ class qcl_data_model_xmlSchema_DbModel
        * this will not overwrite existing entries which are primary keys or are part
        * of a "unique" index.
        */
-       //$this->debug($this->properties);
       $id = $this->insert($data);
       if ($id) $count++;
     }
