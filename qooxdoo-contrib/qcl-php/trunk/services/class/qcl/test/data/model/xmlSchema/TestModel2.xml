@@ -4,7 +4,7 @@
   <model 
     table="model2" 
     name="qcl.db.TestModel2" 
-    extends="qcl.data.model.xmlSchema.DbModel">
+    extends="qcl_data_model_xmlSchema_DbModel">
 
     <!-- model definition -->
     <definition>

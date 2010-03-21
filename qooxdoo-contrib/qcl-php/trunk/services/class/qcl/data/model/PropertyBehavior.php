@@ -45,7 +45,9 @@ require_once "qcl/core/PropertyBehavior.php";
  * <pre>
  * function __construct()
  * {
+ *   // properties must be declared BEFORE calling the parent constructor!
  *   $this->addProperties( $this->properties );
+ *
  *   parent::__construct();
  * }
  * </pre>
@@ -176,7 +178,7 @@ class qcl_data_model_PropertyBehavior
     /*
      * apply method?
      */
-    if ( $apply )
+    if ( $apply and $value !== $old )
     {
       if ( method_exists( $this->getModel(), $apply ) )
       {
@@ -252,20 +254,26 @@ class qcl_data_model_PropertyBehavior
       $this->properties,
       $properties
     );
+  }
 
-    /**
-     * initialize values
-     */
-    $props    = $this->getPropertyDefinition();
-    foreach( array_keys( $properties ) as $property )
+  /**
+   * Set initial values unless the model has been restored from persistent
+   * data.
+   * @param $properties
+   * @return void
+   */
+  public function init()
+  {
+    $properties = $this->getPropertyDefinition();
+    foreach( $properties as $property => $prop )
     {
-      if ( isset( $props[$property]['init'] ) )
+      if ( isset( $prop['init'] )  )
       {
-        $this->set( $property, $props[$property]['init'] );
+        $this->set( $property, $prop['init'] );
       }
-      elseif ( isset( $props[$property]['nullable'] ) )
+      elseif ( isset( $prop['nullable'] ) )
       {
-        if ( $props[$property]['nullable'] )
+        if ( $prop['nullable'] )
         {
           $this->set( $property, null );
         }
@@ -275,28 +283,29 @@ class qcl_data_model_PropertyBehavior
 
   /**
    * Cast the given value to the correct php type according to its
-   * property type
+   * property type. If the type is a class name, instantiate a new
+   * object with the value as the constructor argument.
    *
    * @param string $propertyName
-   * @param string $value
+   * @param mixed $value
    * @return mixed
    */
   public function typecast( $propertyName, $value)
   {
     $type = $this->type( $propertyName );
-    switch ( $type )
+    //$this->getModel()->debug( "$propertyName=$value($type)");
+    if ( in_array( $type, self::$primitives ) )
     {
-      case "integer":
-        return (int) $value;
-      case "boolean":
-        return (bool) $value;
-      case "string":
-        return (string) $value;
-      case "object":
-        return (object) $value;
-      default:
-        return $value;
+      settype( $value, $type );
     }
+    elseif ( class_exists( $type ) )
+    {
+      if ( is_scalar( $value) )
+      {
+        $value =  new $type( $value );
+      }
+    }
+    return $value;
   }
 }
 ?>

@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/persistence/behavior/IBehavior.php";
+qcl_import( "qcl_core_IPersistenceBehavior" );
+qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 
 /**
  * Persistence behavior singleton which is bases on a db-based
@@ -23,8 +24,8 @@ require_once "qcl/data/persistence/behavior/IBehavior.php";
  * into a blob column.
  */
 class qcl_data_model_db_PersistenceBehavior
-  extends    qcl_data_model_db_ActiveRecord
-  implements qcl_data_persistence_behavior_IBehavior
+  extends    qcl_data_model_db_NamedActiveRecord
+  implements qcl_core_IPersistenceBehavior
 {
 
   //-------------------------------------------------------------
@@ -45,10 +46,6 @@ class qcl_data_model_db_PersistenceBehavior
   //-------------------------------------------------------------
 
   private $properties = array(
-    "namedId" => array(
-      "check"   => "string",
-      "sqltype" => "varchar(50)"
-    ),
     "data" => array(
       "check"   => "string",
       "sqltype" => "longblob" //FIXME this is mysql-specific!
@@ -88,10 +85,12 @@ class qcl_data_model_db_PersistenceBehavior
     {
       qcl_log_Logger::getInstance()->log( $object->className() . ": restoring properties from id '$id'","persistence");
       $object->unserialize( $this->get("data") );
+      return true;
     }
     else
     {
       qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'","persistence");
+      return false;
     }
   }
 

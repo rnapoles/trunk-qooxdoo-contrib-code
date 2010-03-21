@@ -1077,6 +1077,7 @@ class qcl_data_model_ActiveRecord
    */
   public function unschematize ( $data )
   {
+    return $data;
 
     /*
      * convert property names to column names if necessary

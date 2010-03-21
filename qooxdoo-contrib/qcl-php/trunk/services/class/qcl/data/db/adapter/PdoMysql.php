@@ -15,9 +15,9 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/db/adapter/Abstract2.php";
-require_once "qcl/data/db/adapter/IAdapter.php";
-require_once "qcl/data/db/adapter/IRemoteHostAdapter.php";
+qcl_import( "qcl_data_db_adapter_Abstract2" );
+qcl_import( "qcl_data_db_adapter_IAdapter" );
+qcl_import( "qcl_data_db_adapter_IRemoteHostAdapter" );
 
 
 /**
@@ -198,8 +198,18 @@ class qcl_data_db_adapter_PdoMysql
         return PDO::PARAM_STR;
       case "NULL":
         return PDO::PARAM_NULL;
+      case "object":
+        if( method_exists( $value, "__toString" ) )
+        {
+          return PDO::PARAM_STR;
+        }
+        else
+        {
+          $this->raiseError("Object of class " . get_class( $value )  .
+            " cannot be converted into a string" );
+        }
       default:
-        $this->raiseError("Unsupported type:" . gettype( $value ) );
+        $this->raiseError("Unsupported type: " . typeof( $value ) );
     }
   }
 
@@ -399,7 +409,14 @@ class qcl_data_db_adapter_PdoMysql
 		{
 		  $this->pdoStatement = $this->db()->query( $sql );
 		}
-    $this->pdoStatement->execute();
+		try
+		{
+      $this->pdoStatement->execute();
+		}
+		catch( Exception $e )
+		{
+		  $this->raiseError( $e->getMessage() );
+		}
 		$this->pdoStatement->setFetchMode( PDO::FETCH_ASSOC );
 
 		return $this->pdoStatement;
@@ -440,7 +457,7 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function rowCount()
   {
-    return $this->db()->rowCount();
+    return $this->pdoStatement->rowCount();
   }
 
 
@@ -585,7 +602,7 @@ class qcl_data_db_adapter_PdoMysql
 	 */
 	public function lastInsertId()
 	{
-	  return $this->db()->lastInsertId();
+	  return (int) $this->db()->lastInsertId();
 	}
 
 	/**
@@ -684,11 +701,21 @@ class qcl_data_db_adapter_PdoMysql
    * @param array|null $parameters Optional parameters to the where condition, @see query()
    * @param array|null $parameter_types Optional parameter types, @see query()
 	 */
-	function deleteWhere ( $table, $where, $parameters=null, $parameter_types=null )
+	function deleteWhere( $table, $where, $parameters=null, $parameter_types=null )
 	{
 		$table = $this->formatTableName( $table );
 	  return $this->execute( "DELETE FROM $table WHERE $where", $parameters, $parameter_types);
 	}
+
+  /**
+   * Deletes all records from a table and resets the id counter.
+   * @param string $table table name
+   */
+  function truncate( $table )
+  {
+    $table = $this->formatTableName( $table );
+    return $this->execute( "TRUNCATE $table");
+  }
 
   /**
    * Counts records in a table matching a where condition.
@@ -892,9 +919,10 @@ class qcl_data_db_adapter_PdoMysql
   public function columnExists( $table, $column )
   {
     $database = $this->getDatabase();
+    $table = $this->formatTableName( $table );
     return (bool) count( $this->fetchAll("
       SHOW COLUMNS
-      FROM `$table`
+      FROM $table
       FROM `$database`
       LIKE :column
     ", array(
@@ -974,12 +1002,12 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function modifyColumn( $table, $column, $definition, $after="" )
   {
+    $oldDef = $this->getColumnDefinition($table,$column);
     $table  = $this->formatTableName( $table );
     $column = $this->formatColumnName( $column );
     $this->exec("
       ALTER TABLE $table MODIFY COLUMN $column $definition $after;
     ");
-    $oldDef = $this->getColumnDefinition($table,$column);
     $this->log("Modified $table.$column from '$oldDef' to '$definition'.","tableMaintenance");
   }
 

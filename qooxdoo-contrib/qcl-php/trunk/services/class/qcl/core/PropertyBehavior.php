@@ -133,7 +133,7 @@ class qcl_core_PropertyBehavior
   {
     $this->check( $property );
 
-    if ( $this->hasGetter( $property ) )
+    if ( $this->hasSetter( $property ) )
     {
       $setterMethod = $this->setterMethod( $property );
       return $this->getObject()->$setterMethod( $value );

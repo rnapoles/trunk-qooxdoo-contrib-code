@@ -3,8 +3,8 @@
 <schema include="qcl/data/model/xmlSchema/DbModel.xml">
   <model 
     table="plugins"
-    name="qcl.application.plugins.db.Model"
-    extends="qcl.data.model.xmlSchema.DbModel">
+    name="qcl_application_plugins_db_Model"
+    extends="qcl_data_model_xmlSchema_DbModel">
 
    <!-- model definition -->
     <definition>

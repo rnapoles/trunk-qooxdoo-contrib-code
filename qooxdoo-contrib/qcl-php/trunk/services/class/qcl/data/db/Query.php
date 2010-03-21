@@ -135,5 +135,36 @@ class qcl_data_db_Query
   {
     $this->set( $map );
   }
+
+  //-------------------------------------------------------------
+  // Getters
+  //-------------------------------------------------------------
+
+  public function getProperties()
+  {
+    return $this->properties;
+  }
+
+  public function getTable()
+  {
+    return $this->table;
+  }
+
+  public function getWhere()
+  {
+    return $this->where;
+  }
+
+  public function getParameters()
+  {
+    return $this->parameters;
+  }
+
+  public function getParameterTypes()
+  {
+    return $this->parameter_types;
+  }
+
+
 }
 ?>

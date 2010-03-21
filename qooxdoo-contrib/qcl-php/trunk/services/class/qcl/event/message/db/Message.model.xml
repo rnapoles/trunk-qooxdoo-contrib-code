@@ -5,9 +5,9 @@
   <!-- model for messages stored in the database -->
   
   <model
-    name="qcl.event.message.db.Message"
+    name="qcl_event_message_db_Message"
     table="messages"
-    extends="qcl.data.model.xmlSchema.DbModel">  
+    extends="qcl_data_model_xmlSchema_DbModel">  
     
     <definition>
       <properties>

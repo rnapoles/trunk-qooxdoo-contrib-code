@@ -22,7 +22,6 @@ require_once "qcl/data/persistence/behavior/IBehavior.php";
  * migration to the "behavior" design pattern.
  */
 class qcl_data_persistence_behavior_Dummy
-  implements qcl_data_persistence_behavior_IBehavior
 {
 
   /**

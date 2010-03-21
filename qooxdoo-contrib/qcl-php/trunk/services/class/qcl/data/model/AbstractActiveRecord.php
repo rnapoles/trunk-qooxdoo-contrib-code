@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/Model.php";
+
+qcl_import( "qcl_data_model_Model" );
 
 /**
  * Abstract class for all classes that implement a data model based on
@@ -29,12 +30,6 @@ require_once "qcl/data/model/Model.php";
 class qcl_data_model_AbstractActiveRecord
   extends qcl_data_model_Model
 {
-
-	/**
-	 * The default record data that will be used when creating a new
-	 * model record. You can preset static data here.
-	 */
-  protected $emptyRecord = array();
 
   /**
    * The object instance of the datasource that this model belongs to.
@@ -58,11 +53,11 @@ class qcl_data_model_AbstractActiveRecord
       "nullable" => false,
     ),
     "created" => array(
-      "check"    => "DateTime",
+      "check"    => "qcl_data_db_Timestamp",
       "nullable" => true
     ),
     "modified" => array(
-      "check"    => "DateTime",
+      "check"    => "qcl_data_db_Timestamp",
       "nullable" => true
     )
   );
@@ -85,40 +80,34 @@ class qcl_data_model_AbstractActiveRecord
     }
 
     /*
-     * call parent constructor, this adds the properties
-     */
-    parent::__construct();
-
-    /*
      * set datasource model
      */
     $this->setDatasourceModel( $datasourceModel );
 
     /*
-     * initialize the model
+     * call parent constructor, this adds the properties
      */
-    $this->init();
+    parent::__construct();
   }
 
-  /**
-   * Model initialization. Sets the creation date to the current time.
-   * Override this method for a different behavior, or call it from the
-   * overriding method to keep it.
-   */
-  protected function init()
-  {
-    $this->set("created", new DateTime("now") );
-  }
 
   //-------------------------------------------------------------
   // Getters & setters
   //-------------------------------------------------------------
 
+  /**
+   * Getter for modification date
+   * @return qcl_data_db_Timestamp
+   */
   public function getModified()
   {
     return $this->get("modified");
   }
 
+  /**
+   * Getter for creation date
+   * @return qcl_data_db_Timestamp
+   */
   public function getCreated()
   {
     return $this->get("created");
@@ -142,28 +131,12 @@ class qcl_data_model_AbstractActiveRecord
     $this->datasourceModel = $datasourceModel;
   }
 
-
-
-  //-------------------------------------------------------------
-  // Record data, Properties and Columns
-  //-------------------------------------------------------------
-
-  /**
-   * Returns the default data for a new empty record. Override
-   * to configure this data
-   * @return unknown_type
-   */
-  public function emptyRecord()
-  {
-    return $this->emptyRecord;
-  }
-
   /**
    * Gets the data of the currently loaded record as a stdClass object
    * so you can use $record->foo instead of $record['foo']
    * @return stdClass
    */
-  public function getRecordObject()
+  public function dataObject()
   {
     return (object) $this->data();
   }
@@ -196,23 +169,7 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getId();
   }
 
-  /**
-   * Returns the named id if it exists as property
-   * @return string
-   */
-  public function getNamedId()
-  {
-    return $this->get("namedId");
-  }
 
-  /**
-   * Sets the named id if it exists as property
-   * @return string
-   */
-  public function setNamedId( $namedId )
-  {
-    return $this->set("namedId",$namedId);
-  }
 
   //-------------------------------------------------------------
   // Record Retrieval (load methods)
@@ -272,64 +229,16 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Creates a new model record.
-   * @param $namedId
    * @return int Id of the record
    */
-  public function create( $namedId = null )
+  public function create()
   {
-    $data = $this->emptyRecord();
-    if ( $namedId and $this->checkProperty( $namedId ) )
-    {
-      $data['namedId'] = $namedId;
-    }
-    $id = $this->getQueryBehavior()->getTable()->insertRow( $data );
+    $this->set("created", new qcl_data_db_Timestamp("now") );
+    $data = $this->data();
+    unset($data['id']);
+    $id   = $this->getQueryBehavior()->getTable()->insertRow( $data );
     $this->load( $id );
     return $id;
-  }
-
-  /**
-   * Creates a new model record if one with the given named id does
-   * not already exist.
-   * @param string  $namedId
-   * @return int the id of the inserted or existing record
-   */
-  public function createIfNotExists( $namedId  )
-  {
-    $id = $this->namedIdExists( $namedId );
-    if ( $id === false )
-    {
-     $id = $this->create( $namedId );
-    }
-    else
-    {
-      $this->load( $id );
-    }
-    return $id;
-  }
-
-  /**
-   * Checks if a model with the given named id exists.
-   * @param $namedId
-   * @return int id of record or false if does not exist
-   */
-  public function namedIdExists( $namedId )
-  {
-    $bhv = $this->getQueryBehavior();
-    $rowCount = $bhv->select( new qcl_data_db_Query( array(
-      'select' => "id",
-      'where'  => array(
-        'namedId' => $namedId
-      )
-    ) ) );
-    if ( $rowCount )
-    {
-      $result = $bhv->fetch();
-      return $result['id'];
-    }
-    else
-    {
-      return false;
-    }
   }
 
   /**
@@ -341,12 +250,22 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * deletes one or more records in a table identified by id
-   * @param mixed $ids (array of) record id(s)
+   * Deletes the record from the database. Does not delete the
+   * active record object.
+   * @return void
    */
   public function delete()
   {
     $this->getQueryBehavior()->deleteRow( $this->getId() );
+  }
+
+  /**
+   * Deletes all records from the database.
+   * @return void
+   */
+  public function deleteAll()
+  {
+    $this->getQueryBehavior()->getTable()->truncate();
   }
 
   //-----------------------------------------------------------------------
@@ -380,7 +299,6 @@ class qcl_data_model_AbstractActiveRecord
     $this->rowCount() > 0;
   }
 
-
   /**
    * Returns number of records in the database
    * @return int
@@ -393,7 +311,7 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Returns the number of records matching the where
    * @param array $where Data for where statement, see qcl_data_model_IQueryBehavior::create
-   * @return unknown_type
+   * @return int
    */
   public function countWhere( $where )
   {

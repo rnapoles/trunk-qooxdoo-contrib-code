@@ -60,6 +60,9 @@ class qcl_data_model_db_Abstract
    */
   public $foreignKey;
 
+
+  protected $propertyMap = array();
+
   /**
    * Constructor
    * @param qcl_data_datasource_type_db_Model|null Optional $datasource Datasource model
@@ -382,6 +385,12 @@ class qcl_data_model_db_Abstract
     return $this->findWhere("`$colName` LIKE '$value'", $orderBy, $properties, $link );
   }
 
+  function properties()
+  {
+
+    return array_keys( $this->propertyMap );
+  }
+
   /**
    * Finds all database records or those that match a where condition.
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
@@ -412,7 +421,7 @@ class qcl_data_model_db_Abstract
     $columns = "";
     if ( is_null( $properties ) )
     {
-      $properties = array_keys($this->properties);
+      $properties = $this->properties();
     }
 
     /*
@@ -829,7 +838,7 @@ class qcl_data_model_db_Abstract
     /*
      * convert property names to local aliases
      */
-    $data = $this->unschematize($data);
+    //$data = $this->unschematize($data);
 
     /*
      * created timestamp by setting it to null
@@ -844,7 +853,7 @@ class qcl_data_model_db_Abstract
     /*
      * insert into database
      */
-    //$this->debug($data);
+    //$this->debug($data,__CLASS__,__LINE__);
     $table = $this->table();
     $id = $this->db()->insert( $table, $data );
 

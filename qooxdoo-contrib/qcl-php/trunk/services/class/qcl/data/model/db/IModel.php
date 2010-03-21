@@ -41,11 +41,5 @@ interface qcl_data_model_db_IModel
    */
   public function getQueryBehavior();
 
-  /**
-   * Getter for persistence behavior. Defaults to persistence in
-   * the session.
-   * @return qcl_data_persistence_db_PersistenceBehavior
-   */
-  function getPersistenceBehavior();
 }
 ?>

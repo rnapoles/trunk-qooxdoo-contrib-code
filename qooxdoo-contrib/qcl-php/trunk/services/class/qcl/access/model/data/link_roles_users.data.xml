@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <links model="qcl.access.model.Role">
-    <link name="user" model="qcl.access.model.User">
+  <links model="qcl_access_model_Role">
+    <link name="user" 
+      model="qcl_access_model_User">
       <origin namedId="user">
         <target namedId="user1" />
         <target namedId="user2" />   
