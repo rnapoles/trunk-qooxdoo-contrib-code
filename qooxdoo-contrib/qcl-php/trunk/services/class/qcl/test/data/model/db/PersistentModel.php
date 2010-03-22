@@ -27,31 +27,25 @@ class PersistentClass
   private $properties = array(
     "name" => array(
       "check"     => "string",
-      "sqltype"   => "varchar(32)",
       "init"      => "foo"
     ),
     "counter"  => array(
       "check"     => "integer",
-      "sqltype"   => "int(11)",
       "init"      => 1,
       "nullable"  => false
     ),
     "flag"  => array(
       "check"     => "boolean",
-      "sqltype"   => "int(1)",
       "init"      => true,
       "nullable"  => false
     ),
     "list"  => array(
       "check"     => "array",
-      "serialize" => true,
-      "sqltype"   => "blob",
       "init"      => array( 1,2,3)
     ),
     "object" => array(
       "check"     => "ArrayList",
-      "sqltype"   => "blob",
-      "serialize" => true
+      "nullable"  => true
     )
   );
 
@@ -76,24 +70,28 @@ class class_qcl_test_data_model_db_PersistentModel
 
     $this->info("*** Initial data ... ");
     $model = new PersistentClass();
-    $this->info( $model->data() );
-
     $this->info("*** Changing and saving data ... ");
     $model->setName("abcdef");
+    $model->setCounter(2);
+    $model->setList(array(3,4,5));
+    $model->setObject( new ArrayList(array(1,2,3) ) );
     $model->savePersistenceData();
 
     $this->info("*** Deleting and recreating model.. ");
     $model = null;
-    $model = new TestModel();
-    $this->info( $model->data() );
-    $this->assertEquals("abcdef",$model->getName() );
+    $model = new PersistentClass();
+    $this->assertEquals("abcdef",$model->getName(), "Failed to restore property", __CLASS__, __LINE__ );
+    $this->assertEquals(2,$model->getCounter(), "Failed to restore property", __CLASS__, __LINE__ );
+    $this->assertEquals(array(3,4,5),$model->getList(), "Failed to restore property", __CLASS__, __LINE__ );
+    $this->assertEquals("ArrayList",get_class($model->getObject()), "Failed to restore property", __CLASS__, __LINE__ );
+    $this->assertEquals(array(1,2,3),$model->getObject()->toArray(), "Failed to restore property", __CLASS__, __LINE__ );
+
 
     $this->info("*** Disposing data and recreating model.. ");
     $model->disposePersistenceData();
     $model = null;
-    $model = new TestModel();
-    $this->info( $model->data() );
-    $this->assertEquals("foo",$model->getFoo() );
+    $model = new PersistentClass();
+    $this->assertEquals("foo",$model->getName() , "Failed to reset property", __CLASS__, __LINE__ );
 
     $this->info("*** Disposing data and deleting model.. ");
     $model->disposePersistenceData();
@@ -105,7 +103,7 @@ class class_qcl_test_data_model_db_PersistentModel
   private function startLogging()
   {
     qcl_log_Logger::getInstance()->setFilterEnabled( "persistence", true );
-    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_DB, true );
+    //qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_DB, true );
     qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
   }
 
