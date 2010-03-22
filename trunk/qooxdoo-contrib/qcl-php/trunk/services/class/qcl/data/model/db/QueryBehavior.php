@@ -97,8 +97,9 @@ class qcl_data_model_db_QueryBehavior
   /**
    * Setter for model
    * @param qcl_data_model_db_ActiveRecord
+   * FIXME parameter type enforcement
    */
-  protected function setModel( qcl_data_model_db_ActiveRecord $model )
+  protected function setModel(  $model )
   {
     $this->model = $model;
   }
@@ -240,6 +241,7 @@ class qcl_data_model_db_QueryBehavior
    */
   public function getColumnName( $name )
   {
+    $this->getModel()->getPropertyBehavior()->check( $name );
     return $name;
   }
 
@@ -829,18 +831,10 @@ class qcl_data_model_db_QueryBehavior
    * Update the records matching the where condition with the key-value pairs
    * @param array $data
    * @param string|array $where
-   * @return result
+   * @return int Number of affected rows
    */
   public function updateWhere( $data, $where )
   {
-    /*
-     * increment transaction id for this model
-     */
-    $this->incrementTransactionId();
-
-    /*
-     * do the update
-     */
     $query = new qcl_data_db_Query( array( 'where' => $where) );
     $sql   = $this->createWhereStatement( $query );
     return $this->getTable()->updateWhere(
@@ -851,6 +845,7 @@ class qcl_data_model_db_QueryBehavior
   /**
    * Deletes one or more records in a table identified by id
    * @param array|int $ids (array of) record id(s)
+   * @return bool Success
    */
   public function deleteRow ( $ids )
   {
@@ -861,7 +856,7 @@ class qcl_data_model_db_QueryBehavior
    * Deletes one or more records in a table matching a where condition.
    * This does not delete dependencies!
    * @param string  $where where condition
-   * @return void
+   * @return int Number of affected rows
    */
   public function deleteWhere ( $where )
   {

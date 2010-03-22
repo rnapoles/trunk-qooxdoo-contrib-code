@@ -28,7 +28,7 @@ qcl_import( "qcl_data_model_INamedActiveRecord" );
 
 class qcl_data_model_AbstractNamedActiveRecord
   extends    qcl_data_model_AbstractActiveRecord
-  implements qcl_data_model_INamedActiveRecord
+//  implements qcl_data_model_INamedActiveRecord
 {
 
   /**
@@ -38,12 +38,29 @@ class qcl_data_model_AbstractNamedActiveRecord
    */
   public function create( $namedId )
   {
-    $data = $this->emptyRecord();
-    if ( $namedId and $this->checkProperty( $namedId ) )
+    /*
+     * check named id
+     */
+    if ( ! is_string($namedId) )
     {
-      $data['namedId'] = $namedId;
+      $this->raiseError("Invalid named id '$namedId'" );
     }
-    $id = $this->getQueryBehavior()->getTable()->insertRow( $data );
+    if ( $this->namedIdExists( $namedId) )
+    {
+      throw new qcl_data_model_RecordExistsException("Named id '$namedId' already exists");
+    }
+
+    /*
+     * reset properties to default values
+     */
+    $this->init();
+    $this->set("namedId", $namedId );
+    $this->set("created", new qcl_data_db_Timestamp("now") );
+
+    /*
+     * insert into database
+     */
+    $id = $this->getQueryBehavior()->getTable()->insertRow( $this->data() );
     $this->load( $id );
     return $id;
   }
@@ -90,6 +107,35 @@ class qcl_data_model_AbstractNamedActiveRecord
     else
     {
       return false;
+    }
+  }
+
+  /**
+   * Loads a model record by numeric id or string-type named id.
+   * @param string|int $id
+   * @return array Record data
+   */
+  public function load( $id )
+  {
+    if ( is_string( $id ) )
+    {
+      $numericId = $this->namedIdExists( $id );
+      if ( $numericId !== false )
+      {
+        return parent::load( $numericId );
+      }
+      else
+      {
+        $this->raiseError("Id '$id' does not exist");
+      }
+    }
+    elseif ( is_numeric( $id ) )
+    {
+      return parent::load( $id );
+    }
+    else
+    {
+      $this->raiseError("Invalid parameter.");
     }
   }
 }

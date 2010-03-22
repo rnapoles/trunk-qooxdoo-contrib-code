@@ -43,14 +43,13 @@ class qcl_data_model_db_ActiveRecord
    */
   private $properties = array(
     "id" => array(
-      "check"    => "integer",
-      "sqltype"  => "int(11)",
-      "nullable" => false,
+      "check"    => "integer"
     ),
     "created" => array(
       "nullable" => true,
       "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "timestamp",
+      "nullable" => true,
       "init"     => null
     ),
     "modified" => array(

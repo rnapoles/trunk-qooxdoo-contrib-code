@@ -27,7 +27,7 @@ qcl_import( "qcl_data_model_db_QueryBehavior" );
  */
 class qcl_data_model_db_NamedActiveRecord
   extends    qcl_data_model_AbstractNamedActiveRecord
-  implements qcl_data_model_INamedActiveRecord
+//  implements qcl_data_model_INamedActiveRecord
 {
 //-------------------------------------------------------------
   // Model properties
@@ -41,19 +41,17 @@ class qcl_data_model_db_NamedActiveRecord
    */
   private $properties = array(
     "id" => array(
-      "check"    => "integer",
-      "sqltype"  => "int(11)",
-      "nullable" => false,
+      "check"    => "integer"
     ),
     "namedId" => array(
       "check"    => "string",
       "sqltype"  => "varchar(50)",
-      "nullable" => false,
+      "unique"   => true
     ),
     "created" => array(
-      "nullable" => true,
       "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "timestamp",
+      "nullable" => true,
       "init"     => null
     ),
     "modified" => array(
