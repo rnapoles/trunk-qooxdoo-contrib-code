@@ -18,6 +18,22 @@
 
 qcl_import( "qcl_data_model_IQueryBehavior" );
 qcl_import( "qcl_data_db_Table" );
+qcl_import( "qcl_core_PersistentObject" );
+
+/**
+ * Cache for property setup
+ */
+class qcl_data_model_db_QueryCache
+  extends qcl_core_PersistentObject
+{
+  public $indexes    = array();
+
+  public function reset()
+  {
+    $this->indexes = array();
+    $this->savePersistenceData();
+  }
+}
 
 /**
  * Query behavior for (PDO) database driver
@@ -65,6 +81,13 @@ class qcl_data_model_db_QueryBehavior
    */
   private $table;
 
+  /**
+   * A static persistent cache object to avoid repetetive introspection
+   * queries
+   * @var qcl_data_model_db_QueryCache
+   */
+  static private $cache;
+
   //-------------------------------------------------------------
   // Constructor
   //-------------------------------------------------------------
@@ -79,6 +102,8 @@ class qcl_data_model_db_QueryBehavior
      * the model affected by this behavior
      */
     $this->setModel( $model );
+
+
   }
 
   //-------------------------------------------------------------
@@ -132,6 +157,28 @@ class qcl_data_model_db_QueryBehavior
   public function getTableName()
   {
     return $this->getTablePrefix() . $this->getModel()->tableName();
+  }
+
+  /**
+   * Getter for persistent cache object
+   * @return qcl_data_model_db_QueryCache
+   */
+  protected function cache()
+  {
+    if ( ! self::$cache )
+    {
+      self::$cache = new qcl_data_model_db_QueryCache();
+    }
+    return self::$cache;
+  }
+
+  /**
+   * Resets  the internal cache
+   * @return void
+   */
+  public function reset()
+  {
+    $this->cache()->reset();
   }
 
   //-------------------------------------------------------------
@@ -243,6 +290,88 @@ class qcl_data_model_db_QueryBehavior
   {
     $this->getModel()->getPropertyBehavior()->check( $name );
     return $name;
+  }
+
+  /**
+   * Add an index to the model table. This will also update
+   * existing indexes.
+   * @param array $indexes Map of index data. The keys are the
+   *  name of the index, the value is an associative array with
+   *  the following keys:
+   *  "type"       => a string value, any of (unique|fulltext),
+   *  "properties" => an array of property names
+   * @return void
+   */
+  public function addIndexes( $indexes )
+  {
+    $model = $this->getModel();
+    $tableName = $this->getTableName();
+    $table = $this->getTable();
+    $cache = $this->cache();
+
+    foreach( $indexes as $name => $index )
+    {
+
+      /*
+       * initialize cache for this table
+       */
+      if ( ! isset( $cache->indexes[$tableName] ) )
+      {
+        $cache->indexes[$tableName] = array();
+      }
+
+      /*
+       * continue if the cache has the same value
+       */
+      if ( isset( $cache->indexes[$tableName][$name] )
+        and $cache->indexes[$tableName][$name] == array(
+          "type"       => $index['type'],
+          "properties" => $index['properties']
+        )  )
+      {
+        $model->log("Index hasn't changed according to cached data.",QCL_LOG_TABLES);
+        $cache->indexes[$tableName][$name] = $index;
+        continue;
+      }
+
+      /*
+       * determine columns
+       */
+      $columns = array();
+      foreach( $index['properties'] as $property )
+      {
+        $columns[] = $this->getColumnName( $property );
+      }
+
+      /*
+       * if index doesn't exist, create it and continue
+       */
+      if ( ! $table->indexExists( $name ) )
+      {
+        $table->addIndex( $index['type'], $name, $columns );
+        $cache->indexes[$tableName][$name] = $index;
+        continue;
+      }
+
+      /*
+       * check if the index has changed in the database
+       */
+      if ( $table->getIndexColumns( $name ) == $columns )
+      {
+        $model->log("Index hasn't changed according to the database.",QCL_LOG_TABLES);
+        $cache->indexes[$tableName][$name] = $index;
+        continue;
+      }
+
+      /*
+       * Yes, it has changed, drop it and recreate it
+       */
+      $model->log("Index has changed, dropping and recreating it.",QCL_LOG_TABLES);
+      $table->dropIndex( $name );
+      $table->addIndex( $index['type'], $name, $columns );
+      $cache->indexes[$tableName][$name] = $index;
+    }
+
   }
 
   //-------------------------------------------------------------
@@ -540,20 +669,19 @@ class qcl_data_model_db_QueryBehavior
       $param  = ":$property";
 
       /*
+       * null value
+       */
+      if ( is_null($value) )
+      {
+        $operator = "IS";
+      }
+
+      /*
        * if the value is scalar, use "="
        */
-      if ( is_scalar($value) )
+      elseif ( is_scalar($value) )
       {
-        if ( is_null($value) )
-        {
-          $operator = "IS";
-          $value    = "NULL";
-        }
-        else
-        {
-          $query->parameters[$param] = $value;
-          $operator = "=";
-        }
+        $operator = "=";
       }
 
       /*
@@ -564,14 +692,13 @@ class qcl_data_model_db_QueryBehavior
       {
         $operator = $value[0];
         $value    = $value[1];
-        $query->parameters[$param] = $value;
       }
       else
       {
-        $this->raiseError("Invalid value");
+        $this->getModel()->raiseError("Property '$property': Invalid value of type " . typeof($value,true) );
       }
 
-
+      $query->parameters[$param] = $value;
       $sql[]  = "$column $operator $param" ;
     }
     return implode(" AND ", $sql );

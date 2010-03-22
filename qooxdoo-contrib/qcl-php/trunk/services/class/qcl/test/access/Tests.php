@@ -59,7 +59,7 @@ class class_qcl_test_access_Tests
 
 
     $logger = $this->getLogger();
-    $logger->setFilterEnabled("propertyModel",true);
+    $logger->setFilterEnabled(QCL_LOG_PROPERTIES,true);
 
     $user = either ($params[0], "admin");
     //$this->debug("Testing user $user");
@@ -76,7 +76,7 @@ class class_qcl_test_access_Tests
       $this->info("User $user not found.");
     }
 
-    $logger->setFilterEnabled("propertyModel",false);
+    $logger->setFilterEnabled(QCL_LOG_PROPERTIES,false);
     $this->info("blabla!");
     return $this->result();
   }

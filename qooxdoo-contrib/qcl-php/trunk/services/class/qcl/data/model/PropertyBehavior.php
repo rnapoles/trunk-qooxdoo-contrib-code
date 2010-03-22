@@ -152,7 +152,7 @@ class qcl_data_model_PropertyBehavior
       if ( $type != gettype( $value ) )
       {
         $fail = true;
-        $msg = ". Expected type '$type', got '" . gettype( $value ) . "'";
+        $msg = ". Expected type '$type', got '$value' (" . gettype( $value ) . ").";
       }
     }
     elseif ( class_exists( $type ) and ! is_a( $value, $type ) )
@@ -352,6 +352,19 @@ class qcl_data_model_PropertyBehavior
       if ( ! is_array( $value ) )
       {
         $this->getModel()->raiseError("Serialized value is not an array!");
+      }
+    }
+    elseif ( is_null( $value ) )
+    {
+      if ( $this->properties[$propertyName]['nullable' ] )
+      {
+        return null;
+      }
+      else
+      {
+        $this->getModel()->raiseError(
+          "Non-nullable property '$propertyName' cannot take a null value"
+        );
       }
     }
     elseif ( in_array( $type, self::$primitives ) )

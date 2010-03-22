@@ -100,7 +100,7 @@ class class_qcl_test_data_model_PersistentModel
   extends qcl_test_AbstractTestController
 {
 
-  public function method_testPersistentModel()
+  public function method_testModel()
   {
     $this->startLogging();
 
@@ -129,12 +129,12 @@ class class_qcl_test_data_model_PersistentModel
 
   private function startLogging()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
+    qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_PERSISTENCE,true);
   }
 
   private function endLogging()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",false);
+    qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_PERSISTENCE,false);
   }
 }
 

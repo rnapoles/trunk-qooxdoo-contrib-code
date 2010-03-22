@@ -196,7 +196,7 @@ class qcl_data_model_ActiveRecord
     {
       $this->raiseError("No record loaded in model " . $this->className() );
     }
-    return $id;
+    return (int) $id;
   }
 
   /**

@@ -226,7 +226,7 @@ class qcl_data_db_Table
    * @param string $index
    * @return array Array of column names that belong to the index
    */
-  public function getIndexColumns( $table, $index )
+  public function getIndexColumns( $index )
   {
     return $this->getAdapter()->getIndexColumns( $this->getName(), $index );
   }
@@ -245,7 +245,7 @@ class qcl_data_db_Table
    * @param $index
    * @return boolean
    */
-  public function indexExists( $table, $index )
+  public function indexExists( $index )
   {
     return $this->getAdapter()->indexExists( $this->getName(), $index );
   }

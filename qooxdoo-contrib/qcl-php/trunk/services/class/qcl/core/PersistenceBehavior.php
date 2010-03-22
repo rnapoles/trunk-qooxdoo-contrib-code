@@ -48,13 +48,13 @@ class qcl_core_PersistenceBehavior
   {
     if ( isset( $_SESSION[ self::KEY ][ $id ] ) )
     {
-      qcl_log_Logger::getInstance()->log( $object->className() . ": loading data with id '$id'","persistence");
+      qcl_log_Logger::getInstance()->log( $object->className() . ": loading data with id '$id'",QCL_LOG_PERSISTENCE);
       $object->unserialize( $_SESSION[ self::KEY ][ $id ] );
       return true;
     }
     else
     {
-      qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'","persistence");
+      qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'",QCL_LOG_PERSISTENCE);
       return false;
     }
   }
@@ -66,7 +66,7 @@ class qcl_core_PersistenceBehavior
    */
   public function persist( $object, $id )
   {
-    qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", "persistence");
+    qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", QCL_LOG_PERSISTENCE);
     $_SESSION[ self::KEY ][ $id ] = $object->serialize();
   }
 
@@ -77,7 +77,7 @@ class qcl_core_PersistenceBehavior
    */
   public function dispose( $object, $id )
   {
-    qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", "persistence");
+    qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", QCL_LOG_PERSISTENCE);
     unset( $_SESSION[ self::KEY ][ $id ] );
   }
 }

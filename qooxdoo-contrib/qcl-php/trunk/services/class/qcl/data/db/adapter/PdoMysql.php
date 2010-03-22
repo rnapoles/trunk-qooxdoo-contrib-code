@@ -404,19 +404,13 @@ class qcl_data_db_adapter_PdoMysql
 		      }
 		    }
 		  }
+      $this->pdoStatement->execute();
 		}
 		else
 		{
-		  $this->pdoStatement = $this->db()->query( $sql );
+	    $this->pdoStatement = $this->db()->query( $sql );
 		}
-		try
-		{
-      $this->pdoStatement->execute();
-		}
-		catch( Exception $e )
-		{
-		  $this->raiseError( $e->getMessage() );
-		}
+
 		$this->pdoStatement->setFetchMode( PDO::FETCH_ASSOC );
 
 		return $this->pdoStatement;

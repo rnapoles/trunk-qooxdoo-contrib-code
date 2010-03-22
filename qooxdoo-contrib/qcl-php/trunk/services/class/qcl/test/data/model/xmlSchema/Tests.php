@@ -33,7 +33,7 @@ class class_qcl_test_data_db_Tests
     require_once "qcl/data/db/test/TestModel2.php";
 
     $logger = $this->getLogger();
-    $logger->setFilterEnabled("propertyModel",true);
+    $logger->setFilterEnabled(QCL_LOG_PROPERTIES,true);
 
     $model1 = new TestModel1($this);
     $model1->create("foo");
@@ -51,7 +51,7 @@ class class_qcl_test_data_db_Tests
     $this->debug("Model2 is linked with Model1: " . boolToStr( $model2->isLinkedWith($model1)) );
 
 
-    $logger->setFilterEnabled("propertyModel",false);
+    $logger->setFilterEnabled(QCL_LOG_PROPERTIES,false);
 
     $this->dispatchMessage("infoMessage","See log file for results.");
     return $this->result();

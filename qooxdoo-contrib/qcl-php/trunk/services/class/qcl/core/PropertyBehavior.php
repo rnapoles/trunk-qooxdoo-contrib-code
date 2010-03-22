@@ -231,5 +231,14 @@ class qcl_core_PropertyBehavior
     }
     return $map;
   }
+
+  /**
+   * Resets any internal data the behavior might keep
+   * @return void
+   */
+  public function reset()
+  {
+    // do nothing
+  }
 }
 ?>

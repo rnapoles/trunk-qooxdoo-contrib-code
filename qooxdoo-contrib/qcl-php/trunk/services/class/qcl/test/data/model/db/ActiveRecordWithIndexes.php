@@ -1,0 +1,117 @@
+<?php
+
+/*
+ * qooxdoo - the new era of web development
+ *
+ * http://qooxdoo.org
+ *
+ * Copyright:
+ *   2007-2010 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+
+qcl_import( "qcl_test_AbstractTestController");
+qcl_import( "qcl_data_model_db_ActiveRecord" );
+qcl_import( "qcl_data_db_Timestamp" );
+
+class Customer
+  extends qcl_data_model_db_ActiveRecord
+{
+
+  protected $tableName = "test_customers";
+
+  private $properties = array(
+    "customerId" => array(
+      "check"     => "integer",
+      "sqltype"   => "int(11)"
+    ),
+    "orderId"  => array(
+      "check"     => "integer",
+      "sqltype"   => "int(11)"
+    ),
+    "productId" => array(
+      "check"     => "integer",
+      "sqltype"   => "int(11)"
+    ),
+  );
+
+  private $indexes = array(
+    "process_index" => array(
+      "type"        => "unique",
+      "properties"  => array("customerId","orderId","productId")
+    )
+  );
+
+  function __construct()
+  {
+    //$this->getPropertyBehavior()->reset();
+    $this->addProperties( $this->properties );
+    $this->addIndexes( $this->indexes );
+    parent::__construct();
+  }
+}
+
+/**
+ * Service class containing test methods
+ */
+class class_qcl_test_data_model_db_ActiveRecordWithIndexes
+  extends qcl_test_AbstractTestController
+{
+
+  public function method_testModel()
+  {
+    $this->startLogging();
+
+    $customer = new Customer();
+    $customer->deleteAll();
+
+    $customer->create( array(
+      'customerId' => 1,
+      'orderId'    => 2,
+      'productId'  => 3
+    ) );
+
+    $customer->create( array(
+      'customerId' => 2,
+      'orderId'    => 2,
+      'productId'  => 3
+    ) );
+
+    try
+    {
+      $customer->create( array(
+        'customerId' => 1,
+        'orderId'    => 2,
+        'productId'  => 3
+      ) );
+    }
+    catch( PDOException $e )
+    {
+      $this->info("Caught PDO Exception");
+    }
+    $this->endLogging();
+    return "OK";
+  }
+
+
+  function startLogging()
+  {
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PERSISTENCE, true );
+  }
+
+  function endLogging()
+  {
+    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLES),false);
+  }
+}
+
+?>

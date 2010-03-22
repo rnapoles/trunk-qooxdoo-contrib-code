@@ -169,10 +169,8 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getId();
   }
 
-
-
   //-------------------------------------------------------------
-  // Record Retrieval (load methods)
+  // Query behavior
   //-------------------------------------------------------------
 
   /**
@@ -183,6 +181,21 @@ class qcl_data_model_AbstractActiveRecord
   {
     $this->notImplemented(__CLASS__,__METHOD__);
   }
+
+  /**
+   * Add indexes to the backend database.
+   * @see qcl_data_model_IQueryBehavior::addIndexes()
+   * @param array $indexes
+   * @return unknown_type
+   */
+  public function addIndexes( $indexes )
+  {
+    return $this->getQueryBehavior()->addIndexes( $indexes );
+  }
+
+  //-------------------------------------------------------------
+  // Record Retrieval (load methods)
+  //-------------------------------------------------------------
 
   /**
    * Loads a model record identified by id. Does not return anything.
@@ -236,16 +249,35 @@ class qcl_data_model_AbstractActiveRecord
   //-------------------------------------------------------------
 
   /**
-   * Creates a new model record.
+   * Creates a new model record, optionally, with preconfigured data.
+   * @param array|null Optional map of properties to set
    * @return int Id of the record
    */
-  public function create()
+  public function create( $data=null )
   {
+    /*
+     * setting initial values
+     */
     $this->init();
     $this->set("created", new qcl_data_db_Timestamp("now") );
-    $data = $this->data();
-    $id   = $this->getQueryBehavior()->insertRow( $data );
+    if( is_array( $data ) )
+    {
+      $this->set( $data );
+    }
+
+    /*
+     * inserting values
+     */
+    $id   = $this->getQueryBehavior()->insertRow( $this->data() );
+
+    /*
+     * reload values, in case the database has changed something
+     */
     $this->load( $id );
+
+    /*
+     * return the id
+     */
     return $id;
   }
 

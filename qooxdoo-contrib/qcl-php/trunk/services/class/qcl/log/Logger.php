@@ -177,7 +177,7 @@ class qcl_log_Logger
          if ( $this->filters[$filter]['enabled'] )
          {
            $message = date( "y-m-j H:i:s" );
-           $message .= ": " . $msg . "\n";
+           $message .= ": [$filter] $msg\n";
            $this->writeLog( $message );
            break;
          }

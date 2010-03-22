@@ -16,6 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/log/Logger.php";
-qcl_log_Logger::getInstance()->registerFilter("persistence","Persistence-related debugging.",false);
+
 
 ?>

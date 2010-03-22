@@ -19,17 +19,19 @@
 /*
  * required classes
  */
-require_once "qcl/data/db/Manager.php";
-require_once "qcl/data/db/Query.php";
-require_once "qcl/data/db/Timestamp.php";
+qcl_import( "qcl_data_db_Manager" );
+qcl_import( "qcl_data_db_Query" );
+qcl_import( "qcl_data_db_Timestamp" );
 
 /*
  * register log filters
  */
+$logger = qcl_log_Logger::getInstance();
 define("QCL_LOG_DB","db");
-define("QCL_LOG_TABLE_MAINTENANCE","tableMaintenance");
-qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
-qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false);
+$logger->registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
+
+define("QCL_LOG_TABLES","tables");
+$logger->registerFilter( QCL_LOG_TABLES, "Modification of table schemas in an sql database",false);
 
 
 ?>

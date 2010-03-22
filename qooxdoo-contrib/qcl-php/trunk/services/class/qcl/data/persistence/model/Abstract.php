@@ -231,7 +231,7 @@ class qcl_data_persistence_model_Abstract
      */
     if ( $data === null )
     {
-      $this->log($this->className() . " [$id] was not found. Creating it...","persistence");
+      $this->log($this->className() . " [$id] was not found. Creating it...",QCL_LOG_PERSISTENCE);
       $this->create();
     }
     elseif ( is_array( $data ) )
@@ -284,7 +284,7 @@ class qcl_data_persistence_model_Abstract
     }
     else
     {
-      $this->log("Persisted object data is invalid.","persistence");
+      $this->log("Persisted object data is invalid.",QCL_LOG_PERSISTENCE);
     }
 
 

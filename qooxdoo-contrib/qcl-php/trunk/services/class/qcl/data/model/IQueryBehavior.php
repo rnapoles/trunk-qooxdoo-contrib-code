@@ -256,5 +256,11 @@ interface qcl_data_model_IQueryBehavior
    */
   public function deleteWhere ( $where );
 
+    /**
+   * Resets any internal data the behavior might keep
+   * @return void
+   */
+  public function reset();
+
 }
 ?>
