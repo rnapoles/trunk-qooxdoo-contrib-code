@@ -79,22 +79,23 @@ class class_qcl_test_core_PersistentObject
     return $obj->counter;
   }
 
-  public function method_testObjectPersistence()
+  public function method_testPersistentObject()
   {
     $this->startLogging();
 
     $obj = new PersistentTestObject();
     $obj->setObject( new DateTime("now") );
-    unset($obj);
+    $obj->savePersistenceData(); // this is necessary because __destruct is not called when unsetting object.
+    $obj = null;
 
     $obj = new PersistentTestObject();
-    $this->assertEquals("DateTime", typeof( $obj->getObject(), true) , "Object member was not persisted.");
+    $this->assertEquals("DateTime", typeof( $obj->getObject(), true) , "Object member was not persisted.", __CLASS__, __LINE__);
 
-    $obj->clearPersistenceData();
-    unset($obj);
+    $obj->disposePersistenceData();
+    $obj = null;
 
     $obj = new PersistentTestObject();
-    $this->assertEquals("NULL", typeof( $obj->getObject() ) , "Persistence data was not cleared.");
+    $this->assertEquals("NULL", typeof( $obj->getObject() ) , "Persistence data was not disposed.", __CLASS__, __LINE__);
 
     return "OK";
   }

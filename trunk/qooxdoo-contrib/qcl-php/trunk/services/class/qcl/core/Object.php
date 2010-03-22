@@ -47,7 +47,7 @@ class qcl_core_Object
    * to access it.
    * @var string
    */
-  private $_objectId = null;
+  private $objectId = null;
 
   /**
    * Timestamp for script execution time measurement
@@ -121,25 +121,26 @@ class qcl_core_Object
    */
   public function objectId()
   {
-    if ( ! $this->_objectId )
+    if ( ! $this->objectId )
     {
       /*
        * generate object id
        */
-      $this->_objectId = uuid();
+      $this->objectId = uuid();
 
       /*
        * register it in global database
+       * @todo move into static member
        */
       global $object_db;
       if ( ! $object_db )
       {
         $object_db = array();
       }
-      $object_db[$this->_objectId] = $this;
+      $object_db[$this->objectId] = $this;
 
     }
-    return $this->_objectId;
+    return $this->objectId;
   }
 
   /**

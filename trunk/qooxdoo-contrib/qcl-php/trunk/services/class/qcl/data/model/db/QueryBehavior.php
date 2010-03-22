@@ -625,12 +625,19 @@ class qcl_data_model_db_QueryBehavior
       $this->select( $query );
     }
     $result = $this->getAdapter()->fetch();
-    $propBehavior = $this->getModel()->getPropertyBehavior();
-    foreach( $result as $property => $value )
+    if ( ! is_array( $result ) )
     {
-      $result[$property] = $propBehavior->typecast( $property, $value );
+      return null;
     }
-    return $result;
+    else
+    {
+      $propBehavior = $this->getModel()->getPropertyBehavior();
+      foreach( $result as $property => $value )
+      {
+        $result[$property] = $propBehavior->typecast( $property, $value );
+      }
+      return $result;
+    }
   }
 
   /**

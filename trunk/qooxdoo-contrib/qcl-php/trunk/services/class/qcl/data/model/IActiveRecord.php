@@ -97,8 +97,9 @@ interface qcl_data_model_IActiveRecord
   public function loadWhere( $query );
 
   /**
-   * If the last query has found more then one record, get the text one
-   * @return array
+   * If the last query has found more then one record, get the text one.
+   * If the end of the records has been reached, return null.
+   * @return array|null
    */
   public function nextRecord();
 
