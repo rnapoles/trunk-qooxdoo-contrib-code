@@ -237,9 +237,9 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function create()
   {
+    $this->init();
     $this->set("created", new qcl_data_db_Timestamp("now") );
     $data = $this->data();
-    unset($data['id']);
     $id   = $this->getQueryBehavior()->getTable()->insertRow( $data );
     $this->load( $id );
     return $id;
@@ -247,6 +247,7 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Save the model properties to the database
+   * @return boolean
    */
   public function save()
   {
@@ -256,20 +257,42 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Deletes the record from the database. Does not delete the
    * active record object.
-   * @return void
+   * @return boolean
    */
   public function delete()
   {
-    $this->getQueryBehavior()->deleteRow( $this->getId() );
+    return $this->getQueryBehavior()->deleteRow( $this->getId() );
+  }
+
+  /**
+   * Deletes the model records that match the 'where' data..
+   * @param array $where
+   * @return int number of affected rows
+   */
+  public function deleteWhere( $where )
+  {
+    return $this->getQueryBehavior()->deleteWhere( $where );
   }
 
   /**
    * Deletes all records from the database.
-   * @return void
+   * @return number of affected rows
    */
   public function deleteAll()
   {
-    $this->getQueryBehavior()->getTable()->truncate();
+    return $this->getQueryBehavior()->getTable()->truncate();
+  }
+
+  /**
+   * Updates the given properties with new values of those model records
+   * that match the 'where' data.
+   * @param array $data Map of key - value pairs of the properties to be updated.
+   * @param array $where
+   * @return int number of affected rows
+   */
+  public function updateWhere( $data, $where )
+  {
+    return $this->getQueryBehavior()->updateWhere( $data, $where );
   }
 
   //-----------------------------------------------------------------------

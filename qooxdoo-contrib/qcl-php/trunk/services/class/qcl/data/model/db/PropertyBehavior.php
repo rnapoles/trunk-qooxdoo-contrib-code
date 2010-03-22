@@ -106,9 +106,15 @@ class qcl_data_model_db_PropertyBehavior
   /**
    * Constructor. Creates table if it doesn't already exist.
    * @param qcl_data_model_db_ActiveRecord $model
+   * FIXME fix dependencies here!
    */
-  function __construct( qcl_data_model_db_ActiveRecord $model )
+  function __construct( $model )
   {
+//    if( ! $model instanceof qcl_data_model_db_IModel )
+//    {
+//      $model->raiseError("Invalid model passed to property behavior.");
+//    }
+
     parent::__construct( $model );
 
     if ( ! self::$cache )
@@ -200,6 +206,15 @@ class qcl_data_model_db_PropertyBehavior
       {
         $model->log( "Adding column '$name' with definition '$sqltype'", QCL_LOG_TABLE_MAINTENANCE);
         $table->addColumn( $name, $sqltype );
+
+        /*
+         * unique index on column?
+         */
+        if ( isset( $prop['unique'] ) and $prop['unique'] === true )
+        {
+          $model->log( "Adding unique index for property '$name'", QCL_LOG_TABLE_MAINTENANCE);
+          $table->addIndex("unique","unique_{$name}",$name);
+        }
       }
 
       /*
@@ -223,6 +238,16 @@ class qcl_data_model_db_PropertyBehavior
        */
       self::$cache->properties[$name] = $serializedProps;
     }
+  }
+
+  /**
+   * Resets the property behavior and the internal cache
+   * @return void
+   */
+  public function reset()
+  {
+    self::$cache->tables = array();
+    self::$cache->properties = array();
   }
 }
 ?>

@@ -611,6 +611,7 @@ class qcl_data_db_adapter_PdoMysql
 	 * @param array $data associative array with the column names as keys and the column data as values
 	 * @param string $idColumn name of column containing the record id, defaults to "id"
 	 * @param int|null $id Optional id value, if id is not part of the data.
+	 * @param bool Success
 	 */
 	public function updateRow( $table, $data, $idColumn="id", $id=null )
 	{
@@ -639,7 +640,7 @@ class qcl_data_db_adapter_PdoMysql
     $where = "UPDATE $table SET $set WHERE $idColumn = :id";
     $result = $this->updateWhere( $table, $data, $where, array( ':id' =>  $id ) );
 
-		return $result;
+		return (bool) $this->rowCount();
 	}
 
   /**
@@ -650,6 +651,7 @@ class qcl_data_db_adapter_PdoMysql
    *   parameters instead.
    * @param array|null $parameters Optional parameters to the where condition, @see query()
    * @param array|null $parameter_types Optional parameter types, @see query()
+   * @return int Number of affected rows
    */
   public function updateWhere ( $table, $data, $where, $parameters=array(), $parameter_types=array() )
   {
@@ -673,9 +675,9 @@ class qcl_data_db_adapter_PdoMysql
      */
     $values = array_merge( $parameters, $param['values'] );
     $types  = array_merge( $parameter_types, $param['types'] );
-    $result = $this->execute( $sql, $values, $types );
+    $this->execute( $sql, $values, $types );
 
-    return $result;
+    return $this->rowCount();
   }
 
 	/**
@@ -690,7 +692,8 @@ class qcl_data_db_adapter_PdoMysql
 		$id_list  = implode(",", (array) $ids );
 		$table    = $this->formatTableName( $table );
 		$idColumn = $this->formatColumnName( $idColumn );
-		return $this->execute("DELETE FROM $table WHERE $idColumn IN ($id_list)");
+		$this->execute("DELETE FROM $table WHERE $idColumn IN ($id_list)");
+		return (bool) $this->rowCount();
 	}
 
 	/**
@@ -700,21 +703,25 @@ class qcl_data_db_adapter_PdoMysql
    *   parameters instead.
    * @param array|null $parameters Optional parameters to the where condition, @see query()
    * @param array|null $parameter_types Optional parameter types, @see query()
+   * @return int Number of affected rows
 	 */
 	function deleteWhere( $table, $where, $parameters=null, $parameter_types=null )
 	{
 		$table = $this->formatTableName( $table );
-	  return $this->execute( "DELETE FROM $table WHERE $where", $parameters, $parameter_types);
+	  $this->execute( "DELETE FROM $table WHERE $where", $parameters, $parameter_types);
+	  return $this->rowCount();
 	}
 
   /**
    * Deletes all records from a table and resets the id counter.
    * @param string $table table name
+   * @return bool Success
    */
   function truncate( $table )
   {
     $table = $this->formatTableName( $table );
-    return $this->execute( "TRUNCATE $table");
+    $this->execute( "TRUNCATE $table");
+    return true;
   }
 
   /**

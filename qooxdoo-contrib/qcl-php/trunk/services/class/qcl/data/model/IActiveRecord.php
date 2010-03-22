@@ -115,22 +115,40 @@ interface qcl_data_model_IActiveRecord
 
   /**
    * Save the model properties to the database
-   * @return void
+   * @return boolean
    */
   public function save();
 
   /**
    * Deletes the record from the database. Does not delete the
    * active record object.
-   * @return void
+   * @return boolean
    */
   public function delete();
 
   /**
+   * Deletes the model records that match the 'where' data..
+   * @param array $where
+   * @return int number of affected rows
+   */
+  public function deleteWhere( $where );
+
+  /**
    * Deletes all records from the database.
-   * @return void
+   *  @return number of affected rows
    */
   public function deleteAll();
+
+  /**
+   * Updates the given properties with new values of those model records
+   * that match the 'where' data.
+   * @param array $data
+   * @param array $where
+   * @return int number of affected rows
+   */
+  public function updateWhere( $data, $where );
+
+
 
   //-----------------------------------------------------------------------
   // Information on records/queries

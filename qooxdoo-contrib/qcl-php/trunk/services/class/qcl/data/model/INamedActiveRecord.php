@@ -16,6 +16,8 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+qcl_import("qcl_data_model_IActiveRecord");
+
 /**
  * Like qcl_data_model_IActiveRecord, but provides
  * methods that add a "named id" to the model, i.e. a unique
@@ -23,7 +25,7 @@
  * as opposed to the numeric id which is specific to the table.
  */
 interface qcl_data_model_INamedActiveRecord
-  extends qcl_data_model_IActiveRecord
+//  extends qcl_data_model_IActiveRecord
 {
   /**
    * Returns the named id if it exists as property
@@ -58,5 +60,12 @@ interface qcl_data_model_INamedActiveRecord
    * @return int id of record or false if does not exist
    */
   public function namedIdExists( $namedId );
+
+  /**
+   * Loads a model record by numeric id or string-type named id.
+   * @param string|int $id
+   * @return array Record data
+   */
+  public function load( $id );
 }
 ?>

@@ -242,7 +242,7 @@ class qcl_data_model_PropertyBehavior
   /**
    * Adds a property definition. You can refine values in parent classes.
    * @param array $properties
-   * @return void
+   * @return array The new property definition
    */
   public function add( $properties )
   {
@@ -264,6 +264,8 @@ class qcl_data_model_PropertyBehavior
         }
       }
     }
+
+    return $this->properties;
   }
 
   /**
@@ -275,18 +277,47 @@ class qcl_data_model_PropertyBehavior
   public function init()
   {
     $properties = $this->getPropertyDefinition();
+
     foreach( $properties as $property => $prop )
     {
+      /*
+       * skip id column
+       */
+      if ( $property == "id" ) continue;
+
+      /*
+       * initial value is set
+       */
       if ( isset( $prop['init'] )  )
       {
         $this->set( $property, $prop['init'] );
       }
+
+      /*
+       * no initial value, but nullability is set
+       */
       elseif ( isset( $prop['nullable'] ) )
       {
-        if ( $prop['nullable'] )
+        if ( $prop['nullable'] == true )
         {
           $this->set( $property, null );
         }
+        else
+        {
+          throw new qcl_core_PropertyBehaviorException(
+            "Property " . get_class( $this->getModel() ) . "::\${$property} must be nullable or have an init value:"
+          );
+        }
+      }
+      /*
+       * if no initial value, make property implicitly nullable
+       * and defaulting to null
+       */
+      else
+      {
+        $this->properties[ $property ][ 'nullable' ] = true;
+        $this->properties[ $property ][ 'init' ] = null;
+        $this->set( $property, null );
       }
     }
   }

@@ -72,47 +72,82 @@ class class_qcl_test_data_model_db_ActiveRecord
 
   public function method_testCreateRecords()
   {
-    $this->startLogging();
+    //$this->startLogging();
 
-    $model = new Member();
-    $model->deleteAll();
+    $member = new Member();
+    $member->deleteAll();
 
     $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );
+    $subscriber = false;
     foreach( $randomdata as $line )
     {
       if ( ! trim( $line ) ) continue;
       $columns = explode( ";", $line );
-      $model->create();
-      $model->set( array(
+      $member->create();
+      $member->set( array(
         "name"        => trim($columns[0]),
         "email"       => trim($columns[1]),
         "address"     => trim($columns[2]),
         "city"        => trim($columns[3]),
         "country"     => trim($columns[4]),
-        "newsletter"  => (bool) rand(0,1)
+        "newsletter"  => $subscriber = ! $subscriber
       ));
-      $model->save();
+      $member->save();
     }
-    $this->endLogging();
+    //$this->endLogging();
     return "OK";
   }
 
   public function method_testQueries()
   {
+
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
+    $this->method_testCreateRecords();
+
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
-    $model = new Member();
-    $count = $model->loadWhere( array(
+
+    $member = new Member();
+    $count = $member->loadWhere( array(
       "name"        => array( "LIKE" , "B%"),
       "newsletter"  => true
     ) );
+
+    $this->assertEquals(7,$count,null,__CLASS__,__METHOD__);
+
+    /*
+     * querying records
+     */
     $this->info( "We have $count newsletter subscribers that start with 'B':");
     $subscribers = array();
-    while( $model->nextRecord() )
+    while( $member->nextRecord() )
     {
-      $subscribers[] = $model->getName() . " <" . $model->getEmail() . ">";
+      $subscribers[] = $member->getName() . " <" . $member->getEmail() . ">";
     }
-    $this->info( implode(", ", $subscribers ) );
+    $subscribers = implode(", ", $subscribers );
+    $this->info($subscribers);
+
+    $this->assertEquals("Buck, Gabriel R. <molestie.in@eu.com>, Bolton, Graham D. <Proin@cursus.org>, Baxter, Samson V. <lobortis.mauris@odioNaminterdum.edu>, Bender, Lisandra C. <Suspendisse@Donec.edu>, Bullock, Thaddeus I. <augue.ut.lacus@eget.com>, Benson, Erin M. <at.pede.Cras@acipsum.edu>",$subscribers,null,__CLASS__,__METHOD__);
+
+    /*
+     * updating across records without changing the active record
+     */
+    $this->info("Making all members from China subscriber");
+    $newSubscribers = $member->updateWhere(
+      array( "newsletter" => true ),
+      array( "country"    => "China" )
+    );
+    $this->info("We have $newSubscribers new subscribers from China now.");
+
+    /*
+     * deleting records: we don't like ".com" addresses from germany
+     */
+    $count = $member->deleteWhere(array(
+      "email" => array( "LIKE", "%.com" ),
+      "country" => "Germany"
+    ));
+    $this->info("Deleted $count .com - address from Germany.");
+
+    return "OK";
   }
 
 

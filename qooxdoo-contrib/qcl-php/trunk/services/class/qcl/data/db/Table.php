@@ -336,7 +336,19 @@ class qcl_data_db_Table
    */
   public function insertRow( $data )
   {
+    /*
+     * remove id column
+     */
+    unset( $data['id'] );
+
+    /*
+     * mark change
+     */
     $this->incrementTransactionId();
+
+    /*
+     * insert data
+     */
     return $this->getAdapter()->insertRow( $this->getName(), $data );
   }
 
@@ -359,6 +371,7 @@ class qcl_data_db_Table
    * Updates a record in the table identified by id.
    * @param string $idColumn name of column containing the record id, defaults to "id"
    * @param int|null $id Optional id value, if id is not part of the data.
+   * @return bool Success
    */
   public function updateRow( $data, $id=null )
   {
@@ -374,6 +387,7 @@ class qcl_data_db_Table
    *   parameters instead.
    * @param array|null $parameters Optional parameters to the where condition, @see query()
    * @param array|null $parameter_types Optional parameter types, @see query()
+   * @return int Number of affected rows
    */
   public function updateWhere ( $data, $where, $parameters=array(), $parameter_types=array() )
   {
@@ -385,7 +399,7 @@ class qcl_data_db_Table
    * Deletes one or several records in the table identified by id(s)
    * @param int|array $ids (array of) record id(s)
    * @param string $idColumn name of column containing the record id
-   * @return bool success
+   * @return bool Success
    */
   public function deleteRow( $ids )
   {
@@ -399,6 +413,7 @@ class qcl_data_db_Table
    *   parameters instead.
    * @param array|null $parameters Optional parameters to the where condition, @see query()
    * @param array|null $parameter_types Optional parameter types, @see query()
+   * @return int Number of affected rows
    */
   public function deleteWhere ( $where, $parameters=null, $parameter_types=null )
   {
@@ -408,7 +423,7 @@ class qcl_data_db_Table
 
   /**
    * Deletes all records from a table and resets the id count
-   * @return void
+   * @return bool Success
    */
   public function truncate()
   {
