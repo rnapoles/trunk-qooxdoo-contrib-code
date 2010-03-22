@@ -188,12 +188,16 @@ class qcl_data_model_AbstractActiveRecord
    * Loads a model record identified by id. Does not return anything.
    * Throws an exception if no model data could be found.
    * @param int $id
-   * @return void
+   * @return array|false Record or false if nothing was found.
    */
   public function load( $id )
   {
     $result = $this->getQueryBehavior()->fetchWhere( array( "id" => $id ) );
-    $this->set( $result );
+    if ( $result )
+    {
+      $this->set( $result );
+    }
+    return $result;
   }
 
   /**
@@ -318,7 +322,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function foundNothing()
   {
-    $this->rowCount() == 0;
+    return $this->rowCount() == 0;
   }
 
   /**
@@ -327,7 +331,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function foundSomething()
   {
-    $this->rowCount() > 0;
+    return $this->rowCount() > 0;
   }
 
   /**

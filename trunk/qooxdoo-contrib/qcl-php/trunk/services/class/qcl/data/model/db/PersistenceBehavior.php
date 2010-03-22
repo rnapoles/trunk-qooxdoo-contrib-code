@@ -45,7 +45,20 @@ class qcl_data_model_db_PersistenceBehavior
   // Properties
   //-------------------------------------------------------------
 
-
+  private $properties = array(
+    "data" => array(
+      "check"     => "string",
+      "sqltype"   => "longblob"
+    ),
+    "userId" => array(
+      "check"     => "integer",
+      "sqltype"   => "int(11)"
+    ),
+    "sessionId" => array(
+      "check"     => "string",
+      "sqltype"   => "varchar(40)"
+    )
+  );
 
   //-------------------------------------------------------------
   // Constructor
@@ -53,10 +66,10 @@ class qcl_data_model_db_PersistenceBehavior
 
   /**
    * Constructor, adds properties
-   * @return unknown_type
    */
   function __construct()
   {
+    $this->addProperties( $this->properties );
     parent::__construct();
   }
 
@@ -78,9 +91,7 @@ class qcl_data_model_db_PersistenceBehavior
    */
   public function restore( $object, $id )
   {
-    $this->loadWhere( array(
-      'namedId' => $id
-    ));
+    $this->load( (string) $id );
     if ( $this->foundSomething() )
     {
       qcl_log_Logger::getInstance()->log( $object->className() . ": restoring properties from id '$id'","persistence");
@@ -115,7 +126,9 @@ class qcl_data_model_db_PersistenceBehavior
   public function dispose( $object, $id )
   {
     qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", "persistence");
-    unset( $_SESSION[ self::KEY ][ $id ] );
+    $this->deleteWhere( array(
+      "namedId" => $id
+    ) );
   }
 }
 ?>

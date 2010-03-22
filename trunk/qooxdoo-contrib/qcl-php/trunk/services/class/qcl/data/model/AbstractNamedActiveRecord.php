@@ -113,21 +113,18 @@ class qcl_data_model_AbstractNamedActiveRecord
   /**
    * Loads a model record by numeric id or string-type named id.
    * @param string|int $id
-   * @return array Record data
+   * @return array|false Record data or false if no record was found.
    */
   public function load( $id )
   {
     if ( is_string( $id ) )
     {
-      $numericId = $this->namedIdExists( $id );
-      if ( $numericId !== false )
+      $result = $this->getQueryBehavior()->fetchWhere( array( "namedId" => $id ) );
+      if ( $result )
       {
-        return parent::load( $numericId );
+        $this->set( $result );
       }
-      else
-      {
-        $this->raiseError("Id '$id' does not exist");
-      }
+      return $result;
     }
     elseif ( is_numeric( $id ) )
     {
