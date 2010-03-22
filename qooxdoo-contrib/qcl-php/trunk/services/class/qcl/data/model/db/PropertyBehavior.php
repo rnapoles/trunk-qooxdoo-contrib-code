@@ -17,6 +17,17 @@
  */
 
 qcl_import( "qcl_data_model_PropertyBehavior" );
+qcl_import( "qcl_core_PersistentObject" );
+
+/**
+ * Cache for property setup
+ */
+class qcl_data_model_db_PropertyCache
+  extends qcl_core_PersistentObject
+{
+  public $tables     = array();
+  public $properties = array();
+}
 
 /**
  * Extending the property behavior of qcl_data_model_PropertyBehavior
@@ -77,10 +88,11 @@ class qcl_data_model_db_PropertyBehavior
   extends qcl_data_model_PropertyBehavior
 {
   /**
-   * A registry to check if a table has already been initialized
-   * @var array
+   * A persistent object which holds cached data on
+   * table, property and column initialization
+   * @var qcl_data_model_db_PropertyCache
    */
-  private static $tables_initialized = array();
+  private static $cache = null;
 
   /**
    * Getter for managed model
@@ -99,19 +111,25 @@ class qcl_data_model_db_PropertyBehavior
   {
     parent::__construct( $model );
 
+    if ( ! self::$cache )
+    {
+      self::$cache = new qcl_data_model_db_PropertyCache();
+    }
+
     /*
      * check if table exists, otherwise create
      */
     $tableName = $model->tableName();
+    $cache     = self::$cache;
 
-    if ( ! self::$tables_initialized[$tableName] )
+    if ( ! self::$cache->tables[$tableName] )
     {
       $table = $model->getQueryBehavior()->getTable();
       if( ! $table->exists() )
       {
         $table->create();
       }
-      self::$tables_initialized[$tableName] = true;
+      self::$cache->tables[$tableName] = true;
     }
   }
 
@@ -129,8 +147,21 @@ class qcl_data_model_db_PropertyBehavior
     $behav = $model->getQueryBehavior();
     $table = $behav->getTable();
 
+    $cachedProps = self::$cache->properties;
+
+    /*
+     * setup table columns
+     * @todo rework caching
+     */
     foreach( $properties as $name => $prop )
     {
+      $serializedProps = serialize( $prop );
+      if ( isset( $cachedProps[$name] ) and $cachedProps[$name] == $serializedProps )
+      {
+        //$model->log( "Property '$name' has not changed.", QCL_LOG_TABLE_MAINTENANCE);
+        continue;
+      }
+
       /*
        * skip "id" column since it is created by default
        */
@@ -183,9 +214,14 @@ class qcl_data_model_db_PropertyBehavior
         }
         else
         {
-          $model->log( "Column '$name' has not changed.", QCL_LOG_TABLE_MAINTENANCE);
+          //$model->log( "Column '$name' has not changed.", QCL_LOG_TABLE_MAINTENANCE);
         }
       }
+
+      /*
+       * save in cache
+       */
+      self::$cache->properties[$name] = $serializedProps;
     }
   }
 }

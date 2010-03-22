@@ -22,12 +22,23 @@ qcl_import( "qcl_core_IPersistable" );
 
 /**
  * Class that will be persisted between requests. The particular implementation
- * of the persistence is done by the persistence behavior object.
+ * of the persistence is done by the persistence behavior object. Avoid instantiating
+ * more than one instance of this object during run-time, since this will create
+ * problems at destruct time - it is hard to foresee which object saves its data
+ * last. Use a singleton or global variable, or store a reference to the object
+ * in a static member of the class you need it.
  */
 class qcl_core_PersistentObject
   extends    qcl_core_Object
   implements qcl_core_IPersistable
 {
+  /**
+   * A referece to the last instance instantiated, to avoid that
+   * many instances linger in memory to be saved at destruct time.
+   * @var qcl_core_PersistentObject
+   */
+  private static $instance;
+
   /**
    * Whether this is a newly instantiated object. Will be turned to false
    * when retrieved from cache.
@@ -57,6 +68,13 @@ class qcl_core_PersistentObject
      * which means the object is no longer "new".
      */
     $this->isNew =  ! $this->getPersistenceBehavior()->restore( $this, $this->getPersistenceId() );
+
+    /*
+     * save a reference to the last created instance of this class,
+     * only this instance will be saved in the end.
+     */
+    //echo "/* instantiating " . $this->objectId() . "*/";
+    self::$instance = $this;
   }
 
   /**
@@ -126,9 +144,9 @@ class qcl_core_PersistentObject
    */
   function __destruct()
   {
-
-    if ( ! $this->isDisposed() )
+    if ( ! $this->isDisposed() and self::$instance === $this )
     {
+      //echo "/* saving " . print_r( $this, true ) . " */";
       $this->savePersistenceData();
     }
   }

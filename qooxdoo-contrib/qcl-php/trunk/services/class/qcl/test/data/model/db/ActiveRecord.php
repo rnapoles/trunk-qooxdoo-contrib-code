@@ -21,27 +21,37 @@ qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_data_model_db_ActiveRecord" );
 qcl_import( "qcl_data_db_Timestamp" );
 
-class TestDbActiveRecord
+class Member
   extends qcl_data_model_db_ActiveRecord
 {
 
+  protected $tableName = "test_members";
+
   private $properties = array(
-    "foo" => array(
+    "name" => array(
       "check"     => "string",
-      "sqltype"   => "varchar(50)",
-      "init"      => "foo",
-      "nullable"  => true,
-    ),
-    "bar"  => array(
-      "check"     => "integer",
-      "sqltype"   => "int(11)",
-      "init"      => 1,
+      "sqltype"   => "varchar(52)",
       "nullable"  => false,
     ),
-    "baz"  => array(
+    "email"  => array(
+      "check"     => "string",
+      "sqltype"   => "varchar(100)",
+      "nullable"  => true,
+    ),
+    "city"  => array(
+      "check"     => "string",
+      "sqltype"   => "varchar(50)",
+      "nullable"  => true,
+    ),
+    "country"  => array(
+      "check"     => "string",
+      "sqltype"   => "varchar(50)",
+      "nullable"  => true,
+    ),
+    "newsletter"  => array(
       "check"     => "boolean",
       "sqltype"   => "int(1)",
-      "init"      => true,
+      "init"      => false,
       "nullable"  => false
     )
   );
@@ -60,27 +70,55 @@ class class_qcl_test_data_model_db_ActiveRecord
   extends qcl_test_AbstractTestController
 {
 
-  public function method_testActiveRecord()
+  public function method_testCreateRecords()
   {
     $this->startLogging();
-    $model = new TestDbActiveRecord();
+
+    $model = new Member();
     $model->deleteAll();
-    $bool = false;
-    for( $i=0; $i<100; $i++ )
+
+    $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );
+    foreach( $randomdata as $line )
     {
+      if ( ! trim( $line ) ) continue;
+      $columns = explode( ";", $line );
       $model->create();
-      $model->setFoo( "Record $i" );
-      $model->setBar( $i );
-      $model->setBaz( $bool = ! $bool );
+      $model->set( array(
+        "name"        => trim($columns[0]),
+        "email"       => trim($columns[1]),
+        "address"     => trim($columns[2]),
+        "city"        => trim($columns[3]),
+        "country"     => trim($columns[4]),
+        "newsletter"  => (bool) rand(0,1)
+      ));
       $model->save();
     }
     $this->endLogging();
     return "OK";
   }
 
-  function startLogging()
+  public function method_testQueries()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
+    $model = new Member();
+    $count = $model->loadWhere( array(
+      "name"        => array( "LIKE" , "B%"),
+      "newsletter"  => true
+    ) );
+    $this->info( "We have $count newsletter subscribers that start with 'B':");
+    $subscribers = array();
+    while( $model->nextRecord() )
+    {
+      $subscribers[] = $model->getName() . " <" . $model->getEmail() . ">";
+    }
+    $this->info( implode(", ", $subscribers ) );
+  }
+
+
+  function startLogging()
+  {
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
   }
 

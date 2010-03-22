@@ -240,7 +240,7 @@ class qcl_data_model_PropertyBehavior
 
 
   /**
-   * Adds a property definition
+   * Adds a property definition. You can refine values in parent classes.
    * @param array $properties
    * @return void
    */
@@ -250,10 +250,20 @@ class qcl_data_model_PropertyBehavior
     /**
      * add to property definition array
      */
-    $this->properties = array_merge(
-      $this->properties,
-      $properties
-    );
+    foreach ( $properties as $name => $map )
+    {
+      if ( ! is_array( $this->properties[ $name ] ) )
+      {
+        $this->properties[ $name ] = $map;
+      }
+      else
+      {
+        foreach( $map as $key => $value )
+        {
+           $this->properties[ $name ][ $key ] = $value;
+        }
+      }
+    }
   }
 
   /**

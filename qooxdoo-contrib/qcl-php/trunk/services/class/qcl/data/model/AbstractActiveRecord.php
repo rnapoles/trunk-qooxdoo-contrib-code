@@ -213,13 +213,17 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * If the last query has found more then one record, get the text one
-   * @return array
+   * If the last query has found more then one record, get the text one.
+   * If the end of the records has been reached, return null.
+   * @return array|null
    */
   public function nextRecord()
   {
     $record = $this->getQueryBehavior()->fetch();
-    $this->set( $record );
+    if( $record )
+    {
+      $this->set( $record );
+    }
     return $record;
   }
 
