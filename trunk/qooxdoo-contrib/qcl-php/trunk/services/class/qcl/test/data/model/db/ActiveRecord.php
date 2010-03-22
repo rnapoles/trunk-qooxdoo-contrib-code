@@ -30,8 +30,7 @@ class Member
   private $properties = array(
     "name" => array(
       "check"     => "string",
-      "sqltype"   => "varchar(52)",
-      "nullable"  => false,
+      "sqltype"   => "varchar(52)"
     ),
     "email"  => array(
       "check"     => "string",

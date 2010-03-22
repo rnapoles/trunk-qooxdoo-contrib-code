@@ -36,7 +36,7 @@ class qcl_data_model_AbstractActiveRecord
    * The datasource provides shared resources for models.
    * @var qcl_data_datasource_type_db_Model
    */
-  protected $datasourceModel = null;
+  private $datasourceModel = null;
 
 
   //-------------------------------------------------------------
@@ -240,17 +240,21 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
     $this->set("created", new qcl_data_db_Timestamp("now") );
     $data = $this->data();
-    $id   = $this->getQueryBehavior()->getTable()->insertRow( $data );
+    $id   = $this->getQueryBehavior()->insertRow( $data );
     $this->load( $id );
     return $id;
   }
 
   /**
-   * Save the model properties to the database
+   * Save the model properties to the database.
    * @return boolean
    */
   public function save()
   {
+    if ( ! $this->id() )
+    {
+      $this->raiseError("Model does not have an id yet. Did you 'create()' it?");
+    }
     return $this->getQueryBehavior()->update( $this->data() );
   }
 

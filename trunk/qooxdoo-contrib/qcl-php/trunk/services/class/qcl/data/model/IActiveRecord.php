@@ -39,11 +39,6 @@ interface qcl_data_model_IActiveRecord
    */
   public function getCreated();
 
-  /**
-   * Getter for datasource model
-   * @return qcl_data_datasource_type_db_Model
-   */
-  public function datasourceModel();
 
   /**
    * Gets the data of the currently loaded record as a stdClass object

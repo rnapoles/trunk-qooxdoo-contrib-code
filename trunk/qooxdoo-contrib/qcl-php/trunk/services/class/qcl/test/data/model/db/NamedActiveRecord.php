@@ -80,7 +80,7 @@ class class_qcl_test_data_model_db_NamedActiveRecord
   {
 
     //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
-    //$this->method_testCreateRecords();
+    $this->method_testCreateRecords();
 
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
 

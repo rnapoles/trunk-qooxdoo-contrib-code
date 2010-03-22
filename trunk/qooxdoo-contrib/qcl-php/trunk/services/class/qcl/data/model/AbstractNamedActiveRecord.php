@@ -60,7 +60,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * insert into database
      */
-    $id = $this->getQueryBehavior()->getTable()->insertRow( $this->data() );
+    $id = $this->getQueryBehavior()->insertRow( $this->data() );
     $this->load( $id );
     return $id;
   }

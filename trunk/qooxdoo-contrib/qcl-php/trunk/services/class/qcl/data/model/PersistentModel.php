@@ -36,8 +36,9 @@ class qcl_data_model_PersistentModel
 {
 
   /**
-   * The name of the model. Should be a java-like class name such as
-   * "namespace.package.ClassName"
+   * The name of the model. Defaults to the name of the class
+   * but can be anything.
+   *
    * @var string
    */
   protected $name;

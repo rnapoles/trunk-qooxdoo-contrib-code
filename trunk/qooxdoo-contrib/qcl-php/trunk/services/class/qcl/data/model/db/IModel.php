@@ -29,6 +29,12 @@ interface qcl_data_model_db_IModel
   public function tableName();
 
   /**
+   * Getter for datasource model
+   * @return qcl_data_datasource_type_db_Model
+   */
+  public function datasourceModel();
+
+  /**
    * Returns the behavior object responsible for maintaining the object
    * properties and providing access to them.
    * @return qcl_data_model_db_PropertyBehavior
