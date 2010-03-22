@@ -151,9 +151,16 @@ class qcl_data_model_db_PropertyBehavior
 
     $model = $this->getModel();
     $behav = $model->getQueryBehavior();
+    $adpt  = $behav->getAdapter();
     $table = $behav->getTable();
+    $tableName = $model->tableName();
 
-    $cachedProps = self::$cache->properties;
+    if ( ! isset( self::$cache->properties[$tableName] ) )
+    {
+      self::$cache->properties[$tableName] = array();
+    }
+    $cachedProps = self::$cache->properties[$tableName];
+
 
     /*
      * setup table columns
@@ -173,7 +180,25 @@ class qcl_data_model_db_PropertyBehavior
        */
       if ( $name == "id" ) continue;
 
-      $sqltype = $prop['sqltype'];
+      /*
+       * determine sql type
+       */
+      if ( isset( $prop['sqltype'] ) )
+      {
+        $sqltype = $prop['sqltype'];
+      }
+      else
+      {
+        if ( isset( $prop['serialize'] ) and $prop['serialize'] == true )
+        {
+          // FIXME: this is MySQL-specific -> delegate to adapter!
+          $sqltype = "blob";
+        }
+        elseif ( $this->isPrimitive( $prop['check'] ) )
+        {
+          //$sqltype = $adpt->getSqlDataType( $prop['check'] );
+        }
+      }
 
       /*
        * 'CURRENT_TIMESTAMP'
@@ -196,7 +221,9 @@ class qcl_data_model_db_PropertyBehavior
        */
       if ( ! isset( $prop['sqltype'] ) )
       {
-        $this->raiseError("Property '$name' does not have a 'sqltype' definition.");
+        throw new qcl_data_model_Exception(
+          sprintf( "Property '%s.%s' does not have a 'sqltype' definition.", get_class( $this->model), $name )
+        );
       }
 
       /*
@@ -236,7 +263,7 @@ class qcl_data_model_db_PropertyBehavior
       /*
        * save in cache
        */
-      self::$cache->properties[$name] = $serializedProps;
+      self::$cache->properties[$tableName][$name] = $serializedProps;
     }
   }
 

@@ -616,7 +616,9 @@ class qcl_data_model_db_QueryBehavior
   /**
    * If no argument, return the first or next row of the result of the previous
    * query. If a query object is used as argument, run this query beforehand and
-   * return the first row.
+   * return the first row. The returned value is converted into the correct type
+   * according to the property definition and the property behavior.
+   * @see qcl_data_model_db_PropertyBehavior::typecast()
    * @param qcl_data_db_Query $query
    * @return array
    */
@@ -666,7 +668,12 @@ class qcl_data_model_db_QueryBehavior
     {
       $this->select( $query );
     }
-    return $this->getAdapter()->fetchAll();
+    $result = array();
+    while ( $row = $this->fetch() )
+    {
+      $result[] = $row;
+    }
+    return $result;
   }
 
   /**
@@ -783,6 +790,31 @@ class qcl_data_model_db_QueryBehavior
   //-------------------------------------------------------------
 
   /**
+   * Stringifies data using the property behavior
+   * @param array $data
+   * @return array
+   */
+  protected function scalarizeData( $data )
+  {
+    $propBeh = $this->getModel()->getPropertyBehavior();
+    foreach( $data as $key => $value )
+    {
+      $data[$key] = $propBeh->scalarize( $key, $value );
+    }
+    return $data;
+  }
+
+  /**
+   * Inserts a data record.
+   * @param array $data
+   * @return int The id of the created row.
+   */
+  public function insertRow( $data )
+  {
+    return $this->getTable()->insertRow( $this->scalarizeData( $data) );
+  }
+
+  /**
    * Updates a record in a table identified by id
    * @param array $data associative array with the column names as keys and
    *  the column data as values.
@@ -792,8 +824,9 @@ class qcl_data_model_db_QueryBehavior
    *  timestamp
    * @return boolean success
    */
-  public function update ( $data, $id=null, $keepTimestamp= false )
+  public function update( $data, $id=null, $keepTimestamp= false )
   {
+
     /*
      * determine id
      */
@@ -802,9 +835,10 @@ class qcl_data_model_db_QueryBehavior
       $id = $data['id'];
       unset( $data['id'] );
     }
-    elseif ( ! $id  )
+
+    if ( ! $id  )
     {
-      $this->raiseError("No id given.");
+      $this->getModel()->raiseError("Missing id.");
     }
 
     /*
@@ -823,7 +857,10 @@ class qcl_data_model_db_QueryBehavior
       'where' => array ( 'id' => $id ) )
     );
     return $this->getTable()->updateWhere(
-      $data, $this->createWhereStatement( $query ), $query->getParameters(), $query->getParameterTypes()
+      $this->scalarizeData( $data ),
+      $this->createWhereStatement( $query ),
+      $query->getParameters(),
+      $query->getParameterTypes()
     );
   }
 
@@ -836,9 +873,11 @@ class qcl_data_model_db_QueryBehavior
   public function updateWhere( $data, $where )
   {
     $query = new qcl_data_db_Query( array( 'where' => $where) );
-    $sql   = $this->createWhereStatement( $query );
     return $this->getTable()->updateWhere(
-      $data,$sql,$query->getParameters(), $query->getParameterTypes()
+      $this->scalarizeData( $data ),
+      $this->createWhereStatement( $query ),
+      $query->getParameters(),
+      $query->getParameterTypes()
     );
   }
 
@@ -866,6 +905,5 @@ class qcl_data_model_db_QueryBehavior
       $sql,$query->getParameters(), $query->getParameterTypes()
     );
   }
-
 }
 ?>

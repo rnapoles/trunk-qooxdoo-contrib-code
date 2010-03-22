@@ -15,21 +15,21 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-qcl_import( "qcl_data_model_Model" );
-qcl_import( "qcl_data_model_db_IModel" );
 qcl_import( "qcl_data_model_PersistentModel" );
-qcl_import( "qcl_data_model_db_PropertyBehavior" );
-qcl_import( "qcl_data_model_db_QueryBehavior" );
+qcl_import( "qcl_data_model_db_PersistenceBehavior" );
 
 /**
  * Model that can be persisted in a database. Properties are defined
- * qooxdoo-style, see qcl_data_model_db_PropertyBehavior.
+ * qooxdoo-style, see qcl_data_model_db_PropertyBehavior. The model
+ * automatically retrieves the property state it had when it was
+ * last saved. Do not instantiate more than one instance of this model,
+ * see qcl_core_PersistentObject.
+ *
  * @see qcl_data_model_db_PropertyBehavior
  */
 class qcl_data_model_db_PersistentModel
   extends     qcl_data_model_PersistentModel
-  implements  qcl_data_model_db_IModel,
-              qcl_core_IPersistable
+  implements  qcl_core_IPersistable
 {
 
   //-------------------------------------------------------------
@@ -51,16 +51,6 @@ class qcl_data_model_db_PersistentModel
    */
   protected $tableName;
 
-  /**
-   * The property behavior object
-   */
-  private $propertyBehavior = null;
-
-  /**
-   * The query behavior object
-   */
-  private $queryBehavior = null;
-
   //-------------------------------------------------------------
   // getters and setters
   //-------------------------------------------------------------
@@ -80,36 +70,8 @@ class qcl_data_model_db_PersistentModel
   }
 
   //-------------------------------------------------------------
-  // Behaviours
+  // Persistence
   //-------------------------------------------------------------
-
-  /**
-   * Returns the behavior object responsible for maintaining the object
-   * properties and providing access to them.
-   * @override
-   * @return qcl_data_model_db_PropertyBehavior
-   */
-  public function getPropertyBehavior()
-  {
-    if ( $this->propertyBehavior === null )
-    {
-      $this->propertyBehavior = new qcl_data_model_db_PropertyBehavior( $this );
-    }
-    return $this->propertyBehavior;
-  }
-
-  /**
-   * Returns the query behavior.
-   * @return qcl_data_model_db_QueryBehavior
-   */
-  public function getQueryBehavior()
-  {
-    if ( $queryBehavior === null )
-    {
-      $queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
-    }
-    return $queryBehavior;
-  }
 
   /**
    * Getter for persistence behavior. Defaults to persistence in
@@ -120,5 +82,6 @@ class qcl_data_model_db_PersistentModel
   {
     return qcl_data_model_db_PersistenceBehavior::getInstance();
   }
+
 }
 ?>

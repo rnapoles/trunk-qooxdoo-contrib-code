@@ -45,12 +45,7 @@ class qcl_data_model_db_PersistenceBehavior
   // Properties
   //-------------------------------------------------------------
 
-  private $properties = array(
-    "data" => array(
-      "check"   => "string",
-      "sqltype" => "longblob" //FIXME this is mysql-specific!
-    )
-  );
+
 
   //-------------------------------------------------------------
   // Constructor
@@ -62,12 +57,17 @@ class qcl_data_model_db_PersistenceBehavior
    */
   function __construct()
   {
-    $this->addProperties( $this->properties );
     parent::__construct();
   }
 
   //-------------------------------------------------------------
-  // API methods
+  // qcl_data_model_INamedActiveRecord interface methods
+  //-------------------------------------------------------------
+
+
+
+  //-------------------------------------------------------------
+  // qcl_core_IPersistable interface methods
   //-------------------------------------------------------------
 
   /**
@@ -112,7 +112,7 @@ class qcl_data_model_db_PersistenceBehavior
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    */
-  public function clear( $object, $id )
+  public function dispose( $object, $id )
   {
     qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", "persistence");
     unset( $_SESSION[ self::KEY ][ $id ] );

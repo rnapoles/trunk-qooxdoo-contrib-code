@@ -64,7 +64,7 @@ class qcl_data_model_PropertyBehavior
   extends qcl_core_PropertyBehavior
 {
 
-  static $primitives = array("boolean", "integer", "double", "string", "array", "object","resource","NULL");
+  protected static $primitives = array("boolean", "integer", "double", "string", "array", "object","resource","NULL");
 
   /**
    * Cache of property definitions
@@ -283,7 +283,12 @@ class qcl_data_model_PropertyBehavior
       /*
        * skip id column
        */
-      if ( $property == "id" ) continue;
+      if ( $property == "id" )
+      {
+        $this->properties[ "id" ][ 'nullable' ] = true; // FIXME Hack!
+        $this->set( "id", null );
+        continue;
+      }
 
       /*
        * initial value is set
@@ -325,8 +330,11 @@ class qcl_data_model_PropertyBehavior
   /**
    * Cast the given value to the correct php type according to its
    * property type. If the type is a class name, instantiate a new
-   * object with the value as the constructor argument.
-   *
+   * object with the value as the constructor argument. If the
+   * 'serialize' flag has been set, unserialize the value into
+   * a string before saving it.
+   * FIXME this is a mess. Typecasting and unserializing should be
+   * dealt with separately.
    * @param string $propertyName
    * @param mixed $value
    * @return mixed
@@ -335,18 +343,106 @@ class qcl_data_model_PropertyBehavior
   {
     $type = $this->type( $propertyName );
     //$this->getModel()->debug( "$propertyName=$value($type)");
-    if ( in_array( $type, self::$primitives ) )
+
+    if ( $type == "array"
+          and isset( $this->properties[$propertyName]['serialize'] )
+            and  $this->properties[$propertyName]['serialize'] === true)
+    {
+      $value = unserialize( $value );
+      if ( ! is_array( $value ) )
+      {
+        $this->getModel()->raiseError("Serialized value is not an array!");
+      }
+    }
+    elseif ( in_array( $type, self::$primitives ) )
     {
       settype( $value, $type );
     }
     elseif ( class_exists( $type ) )
     {
-      if ( is_scalar( $value) )
+      if ( is_string( $value) )
       {
-        $value =  new $type( $value );
+        if ( isset( $this->properties[$propertyName]['serialize'] )
+            and  $this->properties[$propertyName]['serialize'] === true )
+        {
+          $value = unserialize( $value );
+          if ( ! $value instanceof $type )
+          {
+            $this->getModel()->raiseError(
+              "Invalid value class. Expected '$type', got '" .
+              typeof( $value, true ) . "'."
+            );
+          }
+        }
+        else
+        {
+          $value =  new $type( $value );
+        }
       }
     }
     return $value;
+  }
+
+  /**
+   * Converts into a scalar value (a string, integer, boolean)
+   * that can be saved into the database. NULL values are treated
+   * as scalars for the purpose of this method.
+   *
+   * Objects and arrays are cast to a string value, depending on the
+   * property definition. If the 'serialize' flag is set to true,
+   * serialize the value. Otherwise, cast it to a string. This will
+   * work only with objects that have a __toString() method.
+   *
+   *
+   * @param string $propertyName Name of the property to scalarize
+   * @param mixed $value Value to scalarize
+   * @return string
+   */
+  public function scalarize( $propertyName, $value )
+  {
+    /*
+     * scalar values and null need no conversion
+     */
+    if ( is_scalar( $value ) or is_null( $value ) )
+    {
+      return $value;
+    }
+    /*
+     * serialize the property if so defined
+     */
+    if ( isset( $this->properties[$propertyName]['serialize'] )
+            and  $this->properties[$propertyName]['serialize'] === true )
+    {
+      return serialize( $value );
+    }
+    elseif( ! is_object( $value) )
+    {
+      $this->getModel()->raiseError(
+        "Unable to stringify '" . typeof( $value, true ) . "' type value. " .
+        "Use the 'serialize' flag in the definition of property '$propertyName'."
+      );
+    }
+    elseif ( method_exists( $value, "__toString" ) )
+    {
+      return (string) $value;
+    }
+    else
+    {
+      $this->getModel()->raiseError(
+        "Unable to stringify a " . get_class( $value ) . " class object. " .
+        "Use the 'serialize' flag in the definition of property '$propertyName'."
+      );
+    }
+  }
+
+  /**
+   * Returns true if the php type passed as argument is a primitive type
+   * @param string $type
+   * @return bool
+   */
+  protected function isPrimitive( $type )
+  {
+    return in_array( $type, self::$primitives );
   }
 }
 ?>

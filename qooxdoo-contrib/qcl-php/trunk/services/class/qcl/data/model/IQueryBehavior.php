@@ -216,6 +216,13 @@ interface qcl_data_model_IQueryBehavior
   //-------------------------------------------------------------
 
   /**
+   * Inserts a data record.
+   * @param array $data
+   * @return int The id of the created row.
+   */
+  public function insertRow( $data );
+
+  /**
    * Updates a record in a table identified by id
    * @param array $data associative array with the column names as keys and
    *  the column data as values.
