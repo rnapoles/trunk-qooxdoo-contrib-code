@@ -24,6 +24,8 @@ class PersistentClass
 {
   protected $tableName = "test_persistent_db_class";
 
+  protected $isBoundToSession = true;
+
   private $properties = array(
     "name" => array(
       "check"     => "string",
@@ -51,11 +53,11 @@ class PersistentClass
 
   function __construct()
   {
+    $this->getPropertyBehavior()->reset();
     $this->addProperties( $this->properties );
     parent::__construct();
   }
 }
-
 
 /**
  * Service class containing test methods
@@ -68,50 +70,63 @@ class class_qcl_test_data_model_db_PersistentModel
   {
     $this->startLogging();
 
-    $this->info("*** Initial data ... ");
-    $model = new PersistentClass();
-    $this->info("*** Changing and saving data ... ");
-    $model->setName("abcdef");
-    $model->setCounter(2);
-    $model->setList(array(3,4,5));
-    $model->setObject( new ArrayList(array(1,2,3) ) );
-    $model->savePersistenceData();
+    try{
 
-    $this->info("*** Deleting and recreating model.. ");
-    $model = null;
-    $model = new PersistentClass();
-    $this->assertEquals("abcdef",$model->getName(), "Failed to restore property", __CLASS__, __LINE__ );
-    $this->assertEquals(2,$model->getCounter(), "Failed to restore property", __CLASS__, __LINE__ );
-    $this->assertEquals(array(3,4,5),$model->getList(), "Failed to restore property", __CLASS__, __LINE__ );
-    $this->assertEquals("ArrayList",get_class($model->getObject()), "Failed to restore property", __CLASS__, __LINE__ );
-    $this->assertEquals(array(1,2,3),$model->getObject()->toArray(), "Failed to restore property", __CLASS__, __LINE__ );
+      $this->info("*** Initial data ... ");
+      $model = new PersistentClass();
+      $this->info("*** Changing and saving data ... ");
+      $model->setName("abcdef");
+      $model->setCounter(2);
+      $model->setList(array(3,4,5));
+      $model->setObject( new ArrayList(array(1,2,3) ) );
+      $model->savePersistenceData();
+
+      $this->info("*** Deleting and recreating model.. ");
+      $model = null;
+      $model = new PersistentClass();
+      $this->assertEquals("abcdef",$model->getName(), "Failed to restore property", __CLASS__, __LINE__ );
+      $this->assertEquals(2,$model->getCounter(), "Failed to restore property", __CLASS__, __LINE__ );
+      $this->assertEquals(array(3,4,5),$model->getList(), "Failed to restore property", __CLASS__, __LINE__ );
+      $this->assertEquals("ArrayList",get_class($model->getObject()), "Failed to restore property", __CLASS__, __LINE__ );
+      $this->assertEquals(array(1,2,3),$model->getObject()->toArray(), "Failed to restore property", __CLASS__, __LINE__ );
 
 
-    $this->info("*** Disposing data and recreating model.. ");
-    $model->disposePersistenceData();
-    $model = null;
-    $model = new PersistentClass();
-    $this->assertEquals("foo",$model->getName() , "Failed to reset property", __CLASS__, __LINE__ );
+      $this->info("*** Disposing data and recreating model.. ");
+      $model->disposePersistenceData();
+      $model = null;
+      $model = new PersistentClass();
+      $this->assertEquals("foo",$model->getName() , "Failed to reset property", __CLASS__, __LINE__ );
 
-    $this->info("*** Disposing data and deleting model.. ");
-    $model->disposePersistenceData();
-    unset($model);
+      $this->info("*** Disposing data and deleting model.. ");
+      $model->disposePersistenceData();
+      unset($model);
+
+    } catch( Exception $e ) {
+      $this->raiseError($e->getMessage());
+    }
 
     return "OK";
   }
 
+  public function method_testCounter()
+  {
+    $model = new PersistentClass();
+    $model->setCounter( $model->getCounter() +1 );
+    return $model->getCounter();
+  }
+
   private function startLogging()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled( "persistence", true );
+    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_PERSISTENCE, true );
     //qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_DB, true );
-    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
+    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLES, true );
   }
 
   private function endLogging()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",false);
-    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_DB, false );
-    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, false );
+    qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_PERSISTENCE,false);
+    //qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_DB, false );
+    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLES, false );
   }
 }
 

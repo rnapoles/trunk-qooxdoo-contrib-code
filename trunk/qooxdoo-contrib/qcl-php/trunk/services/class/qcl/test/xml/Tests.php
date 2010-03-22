@@ -22,7 +22,7 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
     $logger = $this->getLogger();
 
     $logger->setFilterEnabled("xml",true);
-    $logger->setFilterEnabled("persistence",true);
+    $logger->setFilterEnabled(QCL_LOG_PERSISTENCE,true);
 
     $testfile = realpath("../var/tmp/test.xml");
 
@@ -74,7 +74,7 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
     $this->info($parser2->asXML());
 
     $logger->setFilterEnabled("xml",false);
-    $logger->setFilterEnabled("persistence",false);
+    $logger->setFilterEnabled(QCL_LOG_PERSISTENCE,false);
 
     return $this->result();
   }

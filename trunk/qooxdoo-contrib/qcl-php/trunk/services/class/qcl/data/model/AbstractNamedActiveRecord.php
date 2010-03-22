@@ -32,11 +32,13 @@ class qcl_data_model_AbstractNamedActiveRecord
 {
 
   /**
-   * Creates a new model record.
+   * Creates a new model record, optionally setting initial
+   * property values.
    * @param $namedId
+   * @param array|null Optional map of properties to set
    * @return int Id of the record
    */
-  public function create( $namedId )
+  public function create( $namedId, $data )
   {
     /*
      * check named id
@@ -56,12 +58,24 @@ class qcl_data_model_AbstractNamedActiveRecord
     $this->init();
     $this->set("namedId", $namedId );
     $this->set("created", new qcl_data_db_Timestamp("now") );
+    if( is_array( $data ) )
+    {
+      $this->set( $data );
+    }
 
     /*
      * insert into database
      */
     $id = $this->getQueryBehavior()->insertRow( $this->data() );
+
+    /*
+     * reload the data, in case the database has changed/added something
+     */
     $this->load( $id );
+
+    /*
+     * return the id
+     */
     return $id;
   }
 

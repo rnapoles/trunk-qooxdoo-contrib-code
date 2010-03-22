@@ -142,7 +142,7 @@ class qcl_data_persistence_db_Object
    */
   function save()
   {
-    $this->log("Saving object data for '" . $this->className() . "' [$this->instanceId].","persistence");
+    $this->log("Saving object data for '" . $this->className() . "' [$this->instanceId].",QCL_LOG_PERSISTENCE);
 
     if ( $this->_isDeleted )
     {

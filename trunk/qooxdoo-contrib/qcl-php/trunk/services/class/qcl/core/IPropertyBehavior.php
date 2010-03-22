@@ -108,5 +108,12 @@ interface qcl_core_IPropertyBehavior
    */
   public function data();
 
+  /**
+   * Resets any internal data the behavior might keep
+   * @return void
+   */
+  public function reset();
+
+
 }
 ?>

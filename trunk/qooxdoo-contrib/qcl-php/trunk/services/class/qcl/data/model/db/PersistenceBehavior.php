@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 qcl_import( "qcl_core_IPersistenceBehavior" );
-qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+qcl_import( "qcl_data_model_db_ActiveRecord" );
 
 /**
  * Persistence behavior singleton which is bases on a db-based
@@ -24,7 +24,7 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
  * into a blob column.
  */
 class qcl_data_model_db_PersistenceBehavior
-  extends    qcl_data_model_db_NamedActiveRecord
+  extends    qcl_data_model_db_ActiveRecord
   implements qcl_core_IPersistenceBehavior
 {
 
@@ -42,21 +42,47 @@ class qcl_data_model_db_PersistenceBehavior
   }
 
   //-------------------------------------------------------------
-  // Properties
+  // Object Properties
+  //-------------------------------------------------------------
+
+
+  //-------------------------------------------------------------
+  // Model Properties
   //-------------------------------------------------------------
 
   private $properties = array(
+    "class" => array(
+      "check"   => "string",
+      "sqltype" => "varchar(50)"
+    ),
+    "objectId"  => array(
+      "check"   => "string",
+      "sqltype" => "varchar(50)"
+    ),
     "data" => array(
       "check"     => "string",
       "sqltype"   => "longblob"
     ),
     "userId" => array(
       "check"     => "integer",
-      "sqltype"   => "int(11)"
+      "sqltype"   => "int(11)",
+      "nullable"  => true
     ),
     "sessionId" => array(
       "check"     => "string",
-      "sqltype"   => "varchar(40)"
+      "sqltype"   => "varchar(40)",
+      "nullable"  => true
+    )
+  );
+
+  /**
+   * The indexes
+   * @var array
+   */
+  private $indexes = array(
+    "class_objectId_userId_sessionId" => array(
+      "type"        => "unique",
+      "properties"  => array( "class","objectId","userId","sessionId" )
     )
   );
 
@@ -67,16 +93,17 @@ class qcl_data_model_db_PersistenceBehavior
   /**
    * Constructor, adds properties
    */
-  function __construct()
+  function __construct( )
   {
+    $this->getPropertyBehavior()->reset();
     $this->addProperties( $this->properties );
+    $this->addIndexes( $this->indexes );
     parent::__construct();
   }
 
   //-------------------------------------------------------------
-  // qcl_data_model_INamedActiveRecord interface methods
+  // getters & setters
   //-------------------------------------------------------------
-
 
 
   //-------------------------------------------------------------
@@ -91,16 +118,24 @@ class qcl_data_model_db_PersistenceBehavior
    */
   public function restore( $object, $id )
   {
-    $this->load( (string) $id );
+    $sessionId = $this->getSessionIdValue( $object );
+    $userId    = $this->getUserIdValue( $object );
+
+    $this->loadWhere( array(
+      "class"     => get_class($object),
+      "objectId"  => $id,
+      "sessionId" => $sessionId,
+      "userId"    => $userId
+    ) );
     if ( $this->foundSomething() )
     {
-      qcl_log_Logger::getInstance()->log( $object->className() . ": restoring properties from id '$id'","persistence");
+      qcl_log_Logger::getInstance()->log( $object->className() . ": restoring properties from id '$id'",QCL_LOG_PERSISTENCE);
       $object->unserialize( $this->get("data") );
       return true;
     }
     else
     {
-      qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'","persistence");
+      qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'",QCL_LOG_PERSISTENCE);
       return false;
     }
   }
@@ -112,10 +147,44 @@ class qcl_data_model_db_PersistenceBehavior
    */
   public function persist( $object, $id )
   {
-    $this->createIfNotExists( $id );
-    $this->set( "data", $object->serialize() );
-    $this->save();
-    qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", "persistence");
+    $sessionId = $this->getSessionIdValue( $object );
+    $userId    = $this->getUserIdValue( $object );
+
+    /*
+     * see if record exists
+     */
+    $this->loadWhere( array(
+      "class"     => get_class($object),
+      "objectId"  => $id,
+      "sessionId" => $sessionId,
+      "userId"    => $userId
+    ) );
+
+    /*
+     * if yes, update data
+     */
+    if ( $this->foundSomething() )
+    {
+      $this->setData( $object->serialize() );
+      $this->save();
+      $object->log( $object->className() . ": updated in cache with id '$id'", QCL_LOG_PERSISTENCE);
+    }
+
+    /*
+     * otherwise, create it
+     */
+    else
+    {
+      $this->create(array(
+        "class"     => get_class( $object ),
+        "objectId"  => $id,
+        "sessionId" => $sessionId,
+        "userId"    => $userId,
+        "data"      => $object->serialize()
+      ));
+      $object->log( $object->className() . ": saved to cache with id '$id'", QCL_LOG_PERSISTENCE);
+    }
+
   }
 
   /**
@@ -125,10 +194,35 @@ class qcl_data_model_db_PersistenceBehavior
    */
   public function dispose( $object, $id )
   {
-    qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", "persistence");
+    qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", QCL_LOG_PERSISTENCE);
     $this->deleteWhere( array(
-      "namedId" => $id
+      "objectId" => $id
     ) );
   }
+
+  /**
+   * Returns true if persistent object is bound to the current user
+   * @param $object
+   * @return boolean
+   */
+  protected function getUserIdValue( $object )
+  {
+    $user = $this->getApplication()->getAccessBehavior()->getActiveUser();
+    $userId = $user->id();
+    return $object->isBoundToUser() ? $userId : null;
+  }
+
+  /**
+   * Returns true if persistent object is bound to the current session
+   * @param $object
+   * @return boolean
+   */
+  protected function getSessionIdValue( $object )
+  {
+    $sessionId = $this->getApplication()->getController()->getSessionId();
+    return $object->isBoundToSession() ? $sessionId : null;
+  }
+
+
 }
 ?>

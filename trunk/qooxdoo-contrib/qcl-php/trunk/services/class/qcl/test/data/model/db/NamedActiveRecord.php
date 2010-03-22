@@ -55,7 +55,7 @@ class class_qcl_test_data_model_db_NamedActiveRecord
 
   public function method_testCreateRecords()
   {
-    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
     $user = new User();
     $user->deleteAll();
     $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );
@@ -79,7 +79,7 @@ class class_qcl_test_data_model_db_NamedActiveRecord
   public function method_testQueries()
   {
 
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
     $this->method_testCreateRecords();
 
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
@@ -117,12 +117,12 @@ class class_qcl_test_data_model_db_NamedActiveRecord
   function startLogging()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLE_MAINTENANCE, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
   }
 
   function endLogging()
   {
-    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLE_MAINTENANCE),false);
+    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLES),false);
   }
 }
 

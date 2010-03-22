@@ -103,10 +103,11 @@ interface qcl_data_model_IActiveRecord
   //-------------------------------------------------------------
 
   /**
-   * Creates a new model record.
+   * Creates a new model record, optionally, with preconfigured data.
+   * @param array|null Optional map of properties to set
    * @return int Id of the record
    */
-  public function create();
+  public function create( $data= null );
 
   /**
    * Save the model properties to the database

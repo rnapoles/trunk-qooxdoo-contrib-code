@@ -51,6 +51,18 @@ class qcl_data_model_db_PersistentModel
    */
   protected $tableName;
 
+  /**
+   * Whether this model is tied to a user, i.e., if it is
+   * to be deleted when the user no longer exists
+   */
+  protected $isBoundToUser = false;
+
+  /**
+   * Whether this model is tied to a session, i.e., if it is
+   * to be deleted when the session expires
+   */
+  protected $isBoundToSession = false;
+
   //-------------------------------------------------------------
   // getters and setters
   //-------------------------------------------------------------
@@ -69,6 +81,15 @@ class qcl_data_model_db_PersistentModel
     return $this->tableName;
   }
 
+  public function isBoundToUser()
+  {
+    return $this->isBoundToUser;
+  }
+
+  public function isBoundToSession()
+  {
+    return $this->isBoundToSession;
+  }
   //-------------------------------------------------------------
   // Persistence
   //-------------------------------------------------------------

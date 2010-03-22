@@ -676,7 +676,7 @@ class qcl_data_model_xmlSchema_DbModel
   function setupSchema( $forceUpgrade=false )
   {
 
-    //$this->debug("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
+    //$this->debug("Setting up model schema for '" .$this->className() . "' ...", QCL_LOG_PROPERTIES );
 
     /*
      * the schema xml object and document
@@ -721,7 +721,7 @@ class qcl_data_model_xmlSchema_DbModel
     if ( (string) $modelAttrs['upgradeSchema'] == "no"
        and ! $forceUpgrade )
     {
-      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.","propertyModel");
+      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.",QCL_LOG_PROPERTIES);
       return null;
     }
 
@@ -730,7 +730,7 @@ class qcl_data_model_xmlSchema_DbModel
      */
     if ( (string) $modelAttrs['table']  == "no" or (string) $modelAttrs['table']  == "false" )
     {
-      $this->log("Model name '{$this->name}' has no table backend.","propertyModel");
+      $this->log("Model name '{$this->name}' has no table backend.",QCL_LOG_PROPERTIES);
       return null;
     }
 
@@ -818,7 +818,7 @@ class qcl_data_model_xmlSchema_DbModel
       $this->log(
         "Schema document for model name '{$this->name}', ".
         "type '{$this->type}', class '{$this->class}' hasn't changed.",
-        "propertyModel"
+        QCL_LOG_PROPERTIES
       );
       return null;
     }
@@ -844,7 +844,7 @@ class qcl_data_model_xmlSchema_DbModel
       $modelXml->hasChanged = true;
     }
 
-    $this->log("Creating aliases...","propertyModel");
+    $this->log("Creating aliases...",QCL_LOG_PROPERTIES);
 
     /*
      * create alias table
@@ -861,7 +861,7 @@ class qcl_data_model_xmlSchema_DbModel
     }
 
 
-    $this->log("Setting up table columns...","propertyModel");
+    $this->log("Setting up table columns...",QCL_LOG_PROPERTIES);
 
     /*
      * properties as columns
@@ -1018,7 +1018,7 @@ class qcl_data_model_xmlSchema_DbModel
     if ( $constraints )
     {
 
-      $this->log("Checking constraints...","propertyModel");
+      $this->log("Checking constraints...",QCL_LOG_PROPERTIES);
 
       foreach ( $constraints->children() as $constraint )
       {
@@ -1070,7 +1070,7 @@ class qcl_data_model_xmlSchema_DbModel
     $indexes = $doc->model->definition->indexes;
     if ( $indexes )
     {
-      $this->log("Creating indexes ...","propertyModel");
+      $this->log("Creating indexes ...",QCL_LOG_PROPERTIES);
 
       foreach ( $indexes->children() as $indexNode )
       {
@@ -1093,7 +1093,7 @@ class qcl_data_model_xmlSchema_DbModel
 
             // analyze existing index
             $indexName = (string) $attrs['name'];
-            $this->log("Adding $indexType index '$indexName' to table '$table' ...","propertyModel");
+            $this->log("Adding $indexType index '$indexName' to table '$table' ...",QCL_LOG_PROPERTIES);
             $db->addIndex($indexType,$table,$indexName,$indexProperties);
 
             break;
@@ -1109,12 +1109,12 @@ class qcl_data_model_xmlSchema_DbModel
     $this->log( "Model has " .
       ( is_object( $links ) ?
         qcl_data_xml_Storage::nodeGetChildCount( $links ) : "no" ) .
-      " links.", "propertyModel" );
+      " links.", QCL_LOG_PROPERTIES );
 
     if ( is_object( $links ) and qcl_data_xml_Storage::nodeGetChildCount( $links ) )
     {
       $linksChildren = $links->children();
-      $this->log("Creating or updating linked tables...","propertyModel");
+      $this->log("Creating or updating linked tables...",QCL_LOG_PROPERTIES);
 
       $a = $links->attributes();
 
@@ -1157,7 +1157,7 @@ class qcl_data_model_xmlSchema_DbModel
          * or the name of the table that is linked
          */
         $name = (string) either( $a['name'], $a['table']);
-        $this->log("Setting up link '$name' ...","propertyModel");
+        $this->log("Setting up link '$name' ...",QCL_LOG_PROPERTIES);
 
         /*
          * Check if we have a N:N relationship
@@ -1172,17 +1172,17 @@ class qcl_data_model_xmlSchema_DbModel
           if ( $tbl )
           {
             $link_table = $this->getTablePrefix() . $tbl;
-            $this->log("Getting join table name '$link_table' from schema ....","propertyModel");
+            $this->log("Getting join table name '$link_table' from schema ....",QCL_LOG_PROPERTIES);
           }
           else
           {
             $link_table = $this->getTablePrefix() . "link_{$table}_{$name}";
-            $this->log("Generating join table name '$link_table' ...","propertyModel");
+            $this->log("Generating join table name '$link_table' ...",QCL_LOG_PROPERTIES);
           }
 
           if ( ! $db->tableExists($link_table) )
           {
-            $this->log("Creating table '$link_table'...","propertyModel");
+            $this->log("Creating table '$link_table'...",QCL_LOG_PROPERTIES);
             $db->createTable($link_table);
           }
 
@@ -1250,7 +1250,7 @@ class qcl_data_model_xmlSchema_DbModel
                 $this->raiseError("linked model node has no 'name','class' or 'model' attribute.");
               }
 
-              $this->log("Linking $modelName ...","propertyModel");
+              $this->log("Linking $modelName ...",QCL_LOG_PROPERTIES);
 
               /*
                * if you provide a "path" attribute, it will load this file,
@@ -1433,7 +1433,7 @@ class qcl_data_model_xmlSchema_DbModel
     }
     else
     {
-      $this->info("No data to import.","propertyModel");
+      $this->info("No data to import.",QCL_LOG_PROPERTIES);
     }
 
     /*
@@ -1474,7 +1474,7 @@ class qcl_data_model_xmlSchema_DbModel
    */
   function setupTableLinks()
   {
-    $this->log("Setting up table associations ... ","propertyModel");
+    $this->log("Setting up table associations ... ",QCL_LOG_PROPERTIES);
 
     $schemaXml = $this->getSchemaXml();
     $links     = $schemaXml->getNode("/model/links");
@@ -2330,7 +2330,7 @@ class qcl_data_model_xmlSchema_DbModel
 
     if ( ! count( $linkNodes ) )
     {
-      $this->log("Model does not have links. Cannot import link data.","propertyModel");
+      $this->log("Model does not have links. Cannot import link data.",QCL_LOG_PROPERTIES);
       return;
     }
 
@@ -2356,11 +2356,11 @@ class qcl_data_model_xmlSchema_DbModel
       $path = qcl_realpath ($path);
       if ( ! file_exists($path) )
       {
-        $this->log("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
+        $this->log("No link data available for link '$linkName' of model '{$this->name}' ",QCL_LOG_PROPERTIES);
         continue;
       }
 
-      $this->log("Importing link data for link '$linkName' of model '{$this->name}' from '$path'...","propertyModel");
+      $this->log("Importing link data for link '$linkName' of model '{$this->name}' from '$path'...",QCL_LOG_PROPERTIES);
 
       /*
        * parse xml file
@@ -2380,7 +2380,7 @@ class qcl_data_model_xmlSchema_DbModel
        */
       if ( $mdl != $this->name() )
       {
-        $this->warn( "Origin model in xml ('$mdl', $path) does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
+        $this->warn( "Origin model in xml ('$mdl', $path) does not fit this model ('" . $this->name() . "'). Skipping...", QCL_LOG_PROPERTIES);
         return;
       }
 
@@ -2530,7 +2530,7 @@ class qcl_data_model_xmlSchema_DbModel
   function setupProperties()
   {
 
-    $this->log("Setting up properties...", "propertyModel" );
+    $this->log("Setting up properties...", QCL_LOG_PROPERTIES );
 
     /*
      * defintion node
@@ -2740,7 +2740,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * load model schema xml file
      */
-    $this->log("Parsing model schema file '$file'...","propertyModel");
+    $this->log("Parsing model schema file '$file'...",QCL_LOG_PROPERTIES);
     $modelXml = new qcl_data_xml_Storage( $file );
     $modelXml->doNotCache = $this->doNotCache;
     $modelXml->load();
@@ -2769,7 +2769,7 @@ class qcl_data_model_xmlSchema_DbModel
     {
       foreach( explode(",",$includeFiles) as $includeFile )
       {
-        $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
+        $this->log("Including '$includeFile' into '$file'...", QCL_LOG_PROPERTIES );
         $parentXml   = $this->parseXmlSchemaFile( $includeFile );
         $modelXml->extend($parentXml);
         //$this->debug($modelXml->asXml());
@@ -2799,7 +2799,7 @@ class qcl_data_model_xmlSchema_DbModel
     /*
      * load model schema xml file
      */
-    $this->log("Parsing model data file '$file'...","propertyModel");
+    $this->log("Parsing model data file '$file'...",QCL_LOG_PROPERTIES);
     $dataXml = new qcl_data_xml_Storage( $file );
     $dataXml->load();
 
@@ -2819,7 +2819,7 @@ class qcl_data_model_xmlSchema_DbModel
     {
       foreach( explode(",",$includeFiles) as $includeFile )
       {
-        $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
+        $this->log("Including '$includeFile' into '$file'...", QCL_LOG_PROPERTIES );
         $parentXml   = $this->parseXmlSchemaFile( $includeFile );
         $dataXml->extend($parentXml);
         //$this->debug($dataXml->asXml());
@@ -2855,7 +2855,7 @@ class qcl_data_model_xmlSchema_DbModel
      * path of exported file
      */
     $path = either($path,$this->getDataPath());
-    $this->log("Exporting {$this->name} data to $path","propertyModel");
+    $this->log("Exporting {$this->name} data to $path",QCL_LOG_PROPERTIES);
 
     /*
      * remove old file if it exists
@@ -2911,7 +2911,7 @@ class qcl_data_model_xmlSchema_DbModel
     $skipPropList = array_unique($skipPropList);
     $propList = array_diff($propList,$skipPropList);
 
-    $this->log("Exporting properties " . implode(",",$propList) . ", skipping properties " . implode(",",$skipPropList) . ".","propertyModel");
+    $this->log("Exporting properties " . implode(",",$propList) . ", skipping properties " . implode(",",$skipPropList) . ".",QCL_LOG_PROPERTIES);
 
     /*
      * export all records
@@ -3008,7 +3008,7 @@ class qcl_data_model_xmlSchema_DbModel
     $schemaXml    = $this->getSchemaXml();
     $schemaXmlDoc = $this->schemaXml->getDocument();
 
-    $this->info("Importing data from '$path' into {$this->name}...", "propertyModel" );
+    $this->info("Importing data from '$path' into {$this->name}...", QCL_LOG_PROPERTIES );
 
     /*
      * open xml data file and get record node
@@ -3070,7 +3070,7 @@ class qcl_data_model_xmlSchema_DbModel
       $id = $this->insert($data);
       if ($id) $count++;
     }
-    $this->log("$count records imported.","propertyModel");
+    $this->log("$count records imported.",QCL_LOG_PROPERTIES);
   }
 
    //-------------------------------------------------------------

@@ -103,12 +103,12 @@ class class_qcl_test_core_PersistentObject
 
   private function startLogging()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",true);
+    qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_PERSISTENCE,true);
   }
 
   private function endLogging()
   {
-    qcl_log_Logger::getInstance()->setFilterEnabled("persistence",false);
+    qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_PERSISTENCE,false);
   }
 }
 ?>

@@ -27,7 +27,14 @@ class qcl_data_model_db_PropertyCache
 {
   public $tables     = array();
   public $properties = array();
+  public function reset()
+  {
+    $this->tables = array();
+    $this->properties = array();
+    $this->savePersistenceData();
+  }
 }
+
 
 /**
  * Extending the property behavior of qcl_data_model_PropertyBehavior
@@ -41,16 +48,21 @@ class qcl_data_model_db_PropertyCache
  *
  * This behavior adds the following keys to the property definition:
  *
- * 'sqltype' => The full definition of a column in a database table
+ * 'sqltype'    The full definition of a column in a database table
  *              as it would be used in a CREATE TABLE statement.
  *              Support for a more fine-grained type definition will
  *              be added later, which will make this feature more
  *              portable across database drivers.
  *
- *              If you want to store non-scalar values, make sure to use
- *              data type (such as LONGTEXT or BLOB) that will be able to
- *              store adequately long strings or binary data.
- *              (not implemented yet)
+ * 'unique'     Easy way to add a unique index on the column
+ *
+ * 'serialize'  If <true>, non-scalar values will be serialized before
+ *              stored in the database, and unserialized before when the
+ *              record is loaded. Since serialized objects have a variable
+ *              and potentially very large size, make sure to use
+ *              data type (such as LONGTEXT or LONGBLOB) that will be able to
+ *              store adequately long strings.
+ *
  *
  * <pre>
  * private $properties = array(
@@ -117,26 +129,34 @@ class qcl_data_model_db_PropertyBehavior
 
     parent::__construct( $model );
 
-    if ( ! self::$cache )
-    {
-      self::$cache = new qcl_data_model_db_PropertyCache();
-    }
-
     /*
      * check if table exists, otherwise create
      */
     $tableName = $model->tableName();
-    $cache     = self::$cache;
+    $cache     = $this->cache();
 
-    if ( ! self::$cache->tables[$tableName] )
+    if ( ! $cache->tables[$tableName] )
     {
       $table = $model->getQueryBehavior()->getTable();
       if( ! $table->exists() )
       {
         $table->create();
       }
-      self::$cache->tables[$tableName] = true;
+      $cache->tables[$tableName] = true;
     }
+  }
+
+  /**
+   * Returns the static cache object
+   * @return qcl_data_model_db_PropertyCache
+   */
+  protected function cache()
+  {
+    if ( ! self::$cache )
+    {
+      self::$cache = new qcl_data_model_db_PropertyCache();
+    }
+    return self::$cache;
   }
 
   /**
@@ -154,12 +174,13 @@ class qcl_data_model_db_PropertyBehavior
     $adpt  = $behav->getAdapter();
     $table = $behav->getTable();
     $tableName = $model->tableName();
+    $cache = $this->cache();
 
-    if ( ! isset( self::$cache->properties[$tableName] ) )
+    if ( ! isset( $cache->properties[$tableName] ) )
     {
-      self::$cache->properties[$tableName] = array();
+      $cache->properties[$tableName] = array();
     }
-    $cachedProps = self::$cache->properties[$tableName];
+    $cachedProps = $cache->properties[$tableName];
 
 
     /*
@@ -171,7 +192,7 @@ class qcl_data_model_db_PropertyBehavior
       $serializedProps = serialize( $prop );
       if ( isset( $cachedProps[$name] ) and $cachedProps[$name] == $serializedProps )
       {
-        //$model->log( "Property '$name' has not changed.", QCL_LOG_TABLE_MAINTENANCE);
+        $model->log( "Property '$name' has not changed.", QCL_LOG_PROPERTIES );
         continue;
       }
 
@@ -231,7 +252,7 @@ class qcl_data_model_db_PropertyBehavior
        */
       if ( ! $table->columnExists( $name ) )
       {
-        $model->log( "Adding column '$name' with definition '$sqltype'", QCL_LOG_TABLE_MAINTENANCE);
+        $model->log( "Adding column '$name' with definition '$sqltype'", QCL_LOG_TABLES);
         $table->addColumn( $name, $sqltype );
 
         /*
@@ -239,7 +260,7 @@ class qcl_data_model_db_PropertyBehavior
          */
         if ( isset( $prop['unique'] ) and $prop['unique'] === true )
         {
-          $model->log( "Adding unique index for property '$name'", QCL_LOG_TABLE_MAINTENANCE);
+          $model->log( "Adding unique index for property '$name'", QCL_LOG_TABLES);
           $table->addIndex("unique","unique_{$name}",$name);
         }
       }
@@ -252,18 +273,18 @@ class qcl_data_model_db_PropertyBehavior
         $curr_sqltype = $table->getColumnDefinition( $name );
         if (strtolower($curr_sqltype)  != strtolower($sqltype) )
         {
-          $model->log( "Column '$name' has changed from '$curr_sqltype' to '$sqltype'", QCL_LOG_TABLE_MAINTENANCE);
+          $model->log( "Column '$name' has changed from '$curr_sqltype' to '$sqltype'", QCL_LOG_TABLES);
         }
         else
         {
-          //$model->log( "Column '$name' has not changed.", QCL_LOG_TABLE_MAINTENANCE);
+          $model->log( "Column '$name' has not changed.", QCL_LOG_TABLES);
         }
       }
 
       /*
        * save in cache
        */
-      self::$cache->properties[$tableName][$name] = $serializedProps;
+      $cache->properties[$tableName][$name] = $serializedProps;
     }
   }
 
@@ -273,8 +294,7 @@ class qcl_data_model_db_PropertyBehavior
    */
   public function reset()
   {
-    self::$cache->tables = array();
-    self::$cache->properties = array();
+    $this->cache()->reset();
   }
 }
 ?>
