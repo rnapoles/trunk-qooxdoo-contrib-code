@@ -174,7 +174,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * form
        */
-      this.__form = new qx.ui.form.Form()
+      this.__form = new qx.ui.form.Form();
       this.__formController = new qx.data.controller.Form( null, this.__form );
       
       /*
@@ -218,14 +218,14 @@ qx.Class.define("rpcconsole.RpcConsole",
       // list controller to manage the combobox list
       this.__serviceListController = new qx.data.controller.List(new qx.data.Array(),serviceComboBox);
        // function to add the last used service name to the combobox list      
-      var converterFunc = qx.lang.Function.bind( function( service ) 
+      converterFunc = qx.lang.Function.bind( function( service ) 
       {
         if ( service )
         {
           var list = this.getServiceListController().getModel();
           if ( list.contains( service ) )
           {
-            list.removeAt( list.indexOf( service ) )
+            list.removeAt( list.indexOf( service ) );
           }
           list.unshift( service );
           if ( list.length > 10 )
@@ -255,7 +255,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       // list controller to manage the combo box list
       this.__methodListController = new qx.data.controller.List(new qx.data.Array(),methodComboBox);
        // function to add the last used service name to the combobox list      
-      var converterFunc = qx.lang.Function.bind( function( method ) 
+      converterFunc = qx.lang.Function.bind( function( method ) 
       {
         if ( method )
         {
@@ -379,7 +379,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       serverDataPage.setLayout( new qx.ui.layout.Grow() );
       tabview.add( serverDataPage );
       var serverDataTextArea = new qx.ui.form.TextArea();
-      serverDataTextArea.setPlaceholder("You can send arbitrary json data with your request here.")
+      serverDataTextArea.setPlaceholder("You can send arbitrary json data with your request here.");
       serverDataPage.add( serverDataTextArea );
       this.__form.add( serverDataTextArea , null, null, "serverData" );
       this.__formController.addBindingOptions("serverData", {
@@ -706,7 +706,7 @@ qx.Class.define("rpcconsole.RpcConsole",
                 "message" : error.message,
                 "code" : error.code
               }
-            }
+            };
             this.getResponseTextArea().setValue( qx.util.Json.stringify(response) );
             this.handleError( error.toString() );  
           }
@@ -723,7 +723,7 @@ qx.Class.define("rpcconsole.RpcConsole",
             "id" : id,
             "result" : result,
             "error" : null
-          }
+          };
           this.setResponseModel( qx.data.marshal.Json.createModel(response,true) );
         
           // callback
@@ -745,7 +745,7 @@ qx.Class.define("rpcconsole.RpcConsole",
        * send rpc request
        */
       var args = [ handler, requestModel.getMethod() ].concat( requestModel.getParams() );
-      this.__opaqueCallReference = rpc.callAsync.apply(rpc, args )
+      this.__opaqueCallReference = rpc.callAsync.apply(rpc, args );
       
     },
     
