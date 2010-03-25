@@ -200,8 +200,10 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Loads a model record identified by id. Does not return anything.
    * Throws an exception if no model data could be found.
+   *
    * @param int $id
    * @return array|false Record or false if nothing was found.
+   * @throws qcl_data_model_RecordNotFoundException
    */
   public function load( $id )
   {
@@ -209,13 +211,22 @@ class qcl_data_model_AbstractActiveRecord
     if ( $result )
     {
       $this->set( $result );
+      return $result;
     }
-    return $result;
+    else
+    {
+      throw new qcl_data_model_RecordNotFoundException( sprintf(
+        "Model instance [%s#%s] does not exist",
+        $this->className(), $id
+      ) );
+    }
   }
 
   /**
    * If query is successful, load the first row of the result set into the
-   * model.
+   * model. If not, throw an exception.
+   *
+   * @throws qcl_data_model_RecordNotFoundException
    * @param qcl_data_db_Query|array $query
    * @return int Number of rows retrieved
    */
@@ -225,8 +236,25 @@ class qcl_data_model_AbstractActiveRecord
     if ( $rowCount )
     {
       $this->set( $this->getQueryBehavior()->fetch() );
+      return $rowCount;
     }
-    return $rowCount;
+    else
+    {
+      throw new qcl_data_model_RecordNotFoundException( sprintf(
+        "No model instance [%s] could be found for the given query",
+        $this->className()
+      ) );
+    }
+  }
+
+  /**
+   * Select records for iteration with nextRecord()
+   * @param qcl_data_db_Query|array $query
+   * @return int Number of rows retrieved
+   */
+  public function selectWhere( $query )
+  {
+    return $this->getQueryBehavior()->selectWhere( $query );
   }
 
   /**
@@ -295,17 +323,35 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * Deletes the record from the database. Does not delete the
-   * active record object.
+   * Deletes the model instance data from the database. Does not delete the
+   * active record object. Also deletes references to this model that exist
+   * through the previous linking of models.
+   *
    * @return boolean
    */
   public function delete()
   {
+    /*
+     * delete references to this model instance
+     */
+    $relBeh = $this->getRelationBehavior();
+    foreach( $relBeh->relations() as $relation )
+    {
+      $targetModel = $relBeh->getTargetModel( $relation );
+      $this->getRelationBehavior()->unlinkAll( $targetModel );
+    }
+
+    /*
+     * delete the model data
+     */
     return $this->getQueryBehavior()->deleteRow( $this->getId() );
   }
 
   /**
-   * Deletes the model records that match the 'where' data..
+   * Deletes the model records that match the 'where' data. This does not
+   * delete linked model data. Load() each record to be deleted and then
+   * execute delete() in order to delete relational dat.
+   *
    * @param array $where
    * @return int number of affected rows
    */
@@ -315,12 +361,28 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * Deletes all records from the database.
+   * Deletes all records from the database. Also deletes references
+   * to other model instances.
+   *
    * @return number of affected rows
    */
   public function deleteAll()
   {
-    return $this->getQueryBehavior()->getTable()->truncate();
+    /*
+     * delete linked data
+     */
+    $relationBehavior = $this->getRelationBehavior();
+    foreach ( $relationBehavior->relations() as $relation )
+    {
+      $relationBehavior->setupRelation( $relation );
+      $targetModel = $relationBehavior->getTargetModel( $relation );
+      $relationBehavior->unlinkAll( $targetModel, true );
+    }
+
+    /*
+     * delete model data
+     */
+    return $this->getQueryBehavior()->deleteAll();
   }
 
   /**
@@ -384,5 +446,90 @@ class qcl_data_model_AbstractActiveRecord
   {
     return $this->getQueryBehavior()->countWhere( $where );
   }
+
+  //-----------------------------------------------------------------------
+  // Model relations (associations )
+  //-----------------------------------------------------------------------
+
+  /**
+   * Returns the relation behavior
+   * @return qcl_data_model_db_RelationBehavior
+   */
+  function getRelationBehavior()
+  {
+    $this->notImplemented(__CLASS__,__METHOD__);
+  }
+
+  /**
+   * Add the definition of relations of this model for use in
+   * queries.
+   *
+   * @param array $relations
+   * @return void
+   */
+  public function addRelations( $relations )
+  {
+    return $this->getRelationBehavior()->addRelations( $relations );
+  }
+
+  /**
+   * Returns true if the managed model has a relation with the given
+   * model.
+   *
+   * @param qcl_data_model_db_ActiveRecord $model
+   * @return bool
+   */
+  public function hasRelationWithModel( $model )
+  {
+    return $this->getRelationBehavior()->hasRelationWithModel( $model );
+  }
+
+  /**
+   * Creates a link between two associated models.
+   * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @return bool True if new link was created, false if link
+   *   already existed.
+   */
+  public function linkModel( $targetModel )
+  {
+    return $this->getRelationBehavior()->linkModel( $targetModel );
+  }
+
+  /**
+   * Checks if this model and the given target model are linked.
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return bool
+   */
+  public function islinkedModel( $targetModel )
+  {
+    return $this->getRelationBehavior()->isLinkedModel( $targetModel );
+  }
+
+  /**
+   * Unlinks the given target model from this model.
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return bool
+   */
+  public function unlinkModel( $targetModel )
+  {
+    return $this->getRelationBehavior()->unlinkModel( $targetModel );
+  }
+
+  /**
+   * Select the models instances that are linked with the target model
+   * for iteration with nextRecord()
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return int Number of instances
+   */
+  public function selectLinkedModels( $targetModel )
+  {
+    $ids = $this->getRelationBehavior()->getLinkedModelIds( $targetModel );
+    $this->getQueryBehavior()->selectIds( $ids );
+    return count( $ids );
+  }
+
 }
 ?>

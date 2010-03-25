@@ -86,6 +86,21 @@ class qcl_data_model_db_PersistenceBehavior
     )
   );
 
+  /**
+   * Relations
+   * @var array
+   */
+  private $relations = array(
+    'session' => array(
+      'type'    => "n:1",
+      'target'  => array( 'model' => "qcl_access_model_Session" )
+    ),
+    'user'   => array(
+      'type'    => "n:1",
+      'target'  => array( 'model' => "qcl_access_model_User" )
+    )
+  );
+
   //-------------------------------------------------------------
   // Constructor
   //-------------------------------------------------------------
@@ -98,6 +113,7 @@ class qcl_data_model_db_PersistenceBehavior
     $this->getPropertyBehavior()->reset();
     $this->addProperties( $this->properties );
     $this->addIndexes( $this->indexes );
+    //$this->addRelations( $this->relations );
     parent::__construct();
   }
 

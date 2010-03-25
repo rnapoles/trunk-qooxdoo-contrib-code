@@ -63,8 +63,11 @@ interface qcl_data_model_INamedActiveRecord
 
   /**
    * Loads a model record by numeric id or string-type named id.
+   * Throws an error if record does not exist.
+   *
    * @param string|int $id
    * @return array Record data
+   * @throws qcl_data_model_RecordNotFoundException
    */
   public function load( $id );
 }

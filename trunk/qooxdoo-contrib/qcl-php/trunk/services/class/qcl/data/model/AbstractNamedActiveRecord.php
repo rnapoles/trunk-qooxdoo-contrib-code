@@ -137,8 +137,15 @@ class qcl_data_model_AbstractNamedActiveRecord
       if ( $result )
       {
         $this->set( $result );
+        return $result;
       }
-      return $result;
+      else
+      {
+        throw new qcl_data_model_RecordNotFoundException( sprintf(
+          "Named model instance [%s#%s] does not exist",
+          $this->className(), $id
+        ) );
+      }
     }
     elseif ( is_numeric( $id ) )
     {

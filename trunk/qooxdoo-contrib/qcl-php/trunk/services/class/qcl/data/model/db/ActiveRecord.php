@@ -20,6 +20,8 @@ qcl_import( "qcl_data_model_AbstractActiveRecord" );
 qcl_import( "qcl_data_model_IActiveRecord" );
 qcl_import( "qcl_data_model_db_PropertyBehavior" );
 qcl_import( "qcl_data_model_db_QueryBehavior" );
+qcl_import( "qcl_data_model_IRelationalModel" );
+qcl_import( "qcl_data_model_db_RelationBehavior" );
 
 /**
  * Abstrac class for models that are based on a relational
@@ -28,8 +30,15 @@ qcl_import( "qcl_data_model_db_QueryBehavior" );
  */
 class qcl_data_model_db_ActiveRecord
   extends    qcl_data_model_AbstractActiveRecord
-  implements qcl_data_model_IActiveRecord
+//  implements qcl_data_model_IActiveRecord,
+//             qcl_data_model_IRelationalModel
 {
+
+  //-------------------------------------------------------------
+  // Clas properties
+  //-------------------------------------------------------------
+
+  protected $foreignKey = null;
 
   //-------------------------------------------------------------
   // Model properties
@@ -80,6 +89,12 @@ class qcl_data_model_db_ActiveRecord
    */
   private $queryBehavior;
 
+  /**
+   * The relation behavior object. Access with getRelationBehavior()
+   * @var qcl_data_model_db_RelationBehavior
+   */
+  private $relationBehavior;
+
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
@@ -106,6 +121,17 @@ class qcl_data_model_db_ActiveRecord
       $this->tableName = get_class( $this );
     }
     return $this->tableName;
+  }
+
+  /**
+   * Returns the key with which the ids of the model data is
+   * referenced in other (foreign) relational tables
+   *
+   * @return string
+   */
+  public function foreignKey()
+  {
+    return $this->foreignKey;
   }
 
   //-------------------------------------------------------------
@@ -138,6 +164,19 @@ class qcl_data_model_db_ActiveRecord
       $this->queryBehavior = new qcl_data_model_db_QueryBehavior( $this );
     }
     return $this->queryBehavior;
+  }
+
+  /**
+   * Returns the relation behavior.
+   * @return qcl_data_model_db_RelationBehavior
+   */
+  public function getRelationBehavior()
+  {
+    if ( $this->relationBehavior === null )
+    {
+      $this->relationBehavior = new qcl_data_model_db_RelationBehavior( $this );
+    }
+    return $this->relationBehavior;
   }
 }
 ?>

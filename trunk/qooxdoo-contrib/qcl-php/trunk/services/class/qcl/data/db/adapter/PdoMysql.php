@@ -327,6 +327,22 @@ class qcl_data_db_adapter_PdoMysql
     $this->execute("USE `$database`");
   }
 
+  /**
+   * Checks an sql WHERE statement. Raises an error if problems
+   * are found.
+   *
+   * @todo sanity checks.
+   * @param string $where
+   * @return void
+   */
+  protected function checkWhereStatement( $where )
+  {
+    if ( ! is_string( $where ) or ! trim( $where ) )
+    {
+      $this->raiseError("Invalid 'where' statement '$where'");
+    }
+  }
+
   //-------------------------------------------------------------
   // IAdapter Interface
   //-------------------------------------------------------------
@@ -557,6 +573,7 @@ class qcl_data_db_adapter_PdoMysql
 	 */
 	function existsWhere( $table, $where, $parameters=null, $parameter_types=null )
 	{
+	   $this->checkWhereStatement($where);
 	   $table = $this->formatTableName($table);
 	   $this->query("SELECT 1 FROM $table WHERE $where LIMIT 1", $parameters, $parameter_types);
 	   return $count > 0;
@@ -652,6 +669,8 @@ class qcl_data_db_adapter_PdoMysql
     /*
      * prepare sql statement
      */
+    $this->checkWhereStatement($where);
+
     $param    = $this->prepareParameters( $data );
     $columns  = $param['columns'];
     $names    = $param['names'];
@@ -701,7 +720,8 @@ class qcl_data_db_adapter_PdoMysql
 	 */
 	function deleteWhere( $table, $where, $parameters=null, $parameter_types=null )
 	{
-		$table = $this->formatTableName( $table );
+		$this->checkWhereStatement($where);
+	  $table = $this->formatTableName( $table );
 	  $this->execute( "DELETE FROM $table WHERE $where", $parameters, $parameter_types);
 	  return $this->rowCount();
 	}
@@ -727,6 +747,7 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function countWhere( $table, $where, $parameters=null, $parameter_types=null )
   {
+    $this->checkWhereStatement($where);
     $table = $this->formatTableName( $table );
     $sql   = "SELECT COUNT(*) FROM $table WHERE $where";
     return $this->getResultValue($sql, $parameters, $parameter_types);
