@@ -31,12 +31,12 @@ var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE + '.viewer';
 
 var logPause = 5000; // millisecs to wait after loading sample
-var selectNextSample = qxAppInst + '.tree.addToSelection(' + qxAppInst + '.tree.getNextSiblingOf(' + qxAppInst + '.tree.getSelection()[0]))';
+var selectNextSample = qxAppInst + '.tree.addToSelection(' + qxAppInst + '.tree.getNextNodeOf(' + qxAppInst + '.tree.getSelection()[0]))';
 var runSample = qxAppInst + '.runSample()'; // play currently selected sample
 var getSampleCategory = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getParent().getLabel()'; // get category name
 var getSampleLabel = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getLabel()'; // get sample name
-var getNextSampleCategory = selWin + '.' + qxAppInst + '.tree.getNextSiblingOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getParent().getLabel()';
-var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextSiblingOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getLabel()';
+var getNextSampleCategory = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getParent().getLabel()';
+var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getLabel()';
 var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
 var shutdownSample = selWin + '.' + qxAppInst + '.infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
