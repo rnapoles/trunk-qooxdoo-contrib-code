@@ -49,6 +49,19 @@ interface qcl_data_model_IActiveRecord
   public function dataObject();
 
   //-------------------------------------------------------------
+  // Definition of data schema
+  //-------------------------------------------------------------
+
+  /**
+   * Add the definition of relations of this model for use in
+   * queries.
+   * @see qcl_data_model_IQueryBehavior::addRelations()
+   * @param array $relations
+   * @return unknown_type
+   */
+  public function addRelations( $relations );
+
+  //-------------------------------------------------------------
   // Numeric and Named Id
   //-------------------------------------------------------------
 
@@ -85,11 +98,20 @@ interface qcl_data_model_IActiveRecord
 
   /**
    * If query is successful, load the first row of the result set into the
-   * model.
+   * model. If not, throw an exception.
+   *
+   * @throws qcl_data_model_RecordNotFoundException
    * @param qcl_data_db_Query|array $query
    * @return int Number of rows retrieved
    */
   public function loadWhere( $query );
+
+  /**
+   * Select records for iteration with nextRecord()
+   * @param qcl_data_db_Query|array $query
+   * @return int Number of rows retrieved
+   */
+  public function selectWhere( $query );
 
   /**
    * If the last query has found more then one record, get the text one.

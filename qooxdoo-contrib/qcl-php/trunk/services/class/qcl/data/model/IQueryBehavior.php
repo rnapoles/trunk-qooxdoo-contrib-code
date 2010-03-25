@@ -193,6 +193,13 @@ interface qcl_data_model_IQueryBehavior
   public function selectBy( $propName, $values, $query=null );
 
   /**
+   * Select an array of ids for fetching
+   * @param array $ids
+   * @return void
+   */
+  public function selectIds( $ids );
+
+  /**
    * Returns the number of records found in the last query.
    * @return int
    */

@@ -95,6 +95,8 @@ class qcl_data_db_Table
    */
   function create()
   {
+    qcl_log_Logger::getInstance()->log( sprintf(
+     "Creating table `%s`",  $this->getName() ), QCL_LOG_TABLES );
     $this->getAdapter()->createTable( $this->getName() );
   }
 
@@ -119,6 +121,11 @@ class qcl_data_db_Table
    */
   public function addColumn( $column, $definition, $after="")
   {
+    qcl_log_Logger::getInstance()->log( sprintf(
+     "Adding column `%s` to table `%s` with definition '%s' %s",
+      $column, $this->getName(), $definition, $after ? "AFTER $after":""
+    ), QCL_LOG_TABLES );
+
     return $this->getAdapter()->addColumn( $this->getName(), $column, $definition, $after );
   }
 
@@ -153,6 +160,10 @@ class qcl_data_db_Table
    */
   public function modifyColumn( $column, $definition, $after="" )
   {
+    qcl_log_Logger::getInstance()->log( sprintf(
+     "Modifying column `%s` in table `%s` with definition '%s' %s",
+      $column, $this->getName(), $definition, $after ? "AFTER $after":""
+    ), QCL_LOG_TABLES );
     $this->getAdapter()->modifyColumn( $this->getName(), $column, $definition, $after );
   }
 
@@ -168,6 +179,11 @@ class qcl_data_db_Table
    */
   public function renameColumn( $oldColumn, $newColumn, $definition, $after="" )
   {
+    qcl_log_Logger::getInstance()->log( sprintf(
+     "Renaming column `%s` to `%s` in table `%s` with definition '%s' %s",
+      $oldColumn, $newColumn, $this->getName(), $definition, $after ? "AFTER $after":""
+    ), QCL_LOG_TABLES );
+
     return $this->getAdapter()->renameColumn( $this->getName(), $oldColumn, $newColumn, $definition, $after );
   }
 
@@ -181,6 +197,10 @@ class qcl_data_db_Table
    */
   public function dropColumn( $column )
   {
+    qcl_log_Logger::getInstance()->log( sprintf(
+     "Dropping column `%s` from table `%s`.",
+      $column, $this->getName()
+    ), QCL_LOG_TABLES );
     return $this->getAdapter()->dropColumn( $this->getName(), $column );
   }
 
@@ -260,6 +280,10 @@ class qcl_data_db_Table
    */
   public function addIndex( $type, $index, $columns )
   {
+    qcl_log_Logger::getInstance()->log( sprintf(
+     "Adding '%s' index `%s` to table `%s` using columns %.",
+      $type, $index, $this->getName(), implode(",",$columns)
+    ), QCL_LOG_TABLES );
     return $this->getAdapter()->addIndex( $this->getName(), $type, $index, $columns );
   }
 

@@ -26,7 +26,7 @@ qcl_import( "qcl_core_PersistentObject" );
 class qcl_data_model_db_QueryCache
   extends qcl_core_PersistentObject
 {
-  public $indexes    = array();
+  public $indexes = array();
 
   public function reset()
   {
@@ -36,7 +36,8 @@ class qcl_data_model_db_QueryCache
 }
 
 /**
- * Query behavior for (PDO) database driver
+ * Query behavior for (PDO) database driver.
+ * @todo Outsource relations management into a separate RelationsBehavior
  */
 class qcl_data_model_db_QueryBehavior
   implements qcl_data_model_IQueryBehavior
@@ -51,23 +52,6 @@ class qcl_data_model_db_QueryBehavior
    * @var qcl_data_model_db_ActiveRecord
    */
   protected $model;
-
-  /**
-   * the local key of the table, usually the id property. acces with ::getLocalKey()
-   * @var string
-   * @todo make this private
-   */
-  protected $localKey;
-
-  /**
-   * The foreign key of the table in other tables that link to this model.
-   * This MUST always be the same key, one model cannot have different foreign key names.
-   * Access with ::getForeignKey()
-   *
-   * @todo make this private
-   * @var string
-   */
-  protected $foreignKey;
 
   /**
    * The database driver adapter. Acces with getAdapter()
@@ -101,13 +85,11 @@ class qcl_data_model_db_QueryBehavior
     /*
      * the model affected by this behavior
      */
-    $this->setModel( $model );
-
-
+    $this->model = $model;
   }
 
   //-------------------------------------------------------------
-  // Getters and setters for properties
+  // Getters and setters
   //-------------------------------------------------------------
 
   /**
@@ -117,16 +99,6 @@ class qcl_data_model_db_QueryBehavior
   public function getModel()
   {
     return $this->model;
-  }
-
-  /**
-   * Setter for model
-   * @param qcl_data_model_db_ActiveRecord
-   * FIXME parameter type enforcement
-   */
-  protected function setModel(  $model )
-  {
-    $this->model = $model;
   }
 
   /**
@@ -163,7 +135,7 @@ class qcl_data_model_db_QueryBehavior
    * Getter for persistent cache object
    * @return qcl_data_model_db_QueryCache
    */
-  protected function cache()
+  public function cache()
   {
     if ( ! self::$cache )
     {
@@ -172,14 +144,6 @@ class qcl_data_model_db_QueryBehavior
     return self::$cache;
   }
 
-  /**
-   * Resets  the internal cache
-   * @return void
-   */
-  public function reset()
-  {
-    $this->cache()->reset();
-  }
 
   //-------------------------------------------------------------
   // Database management
@@ -372,6 +336,16 @@ class qcl_data_model_db_QueryBehavior
       $cache->indexes[$tableName][$name] = $index;
     }
 
+  }
+
+
+  /**
+   * Resets  the internal cache
+   * @return void
+   */
+  public function reset()
+  {
+    $this->cache()->reset();
   }
 
   //-------------------------------------------------------------
@@ -846,6 +820,29 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
+   * Select an array of ids for fetching
+   * @param array $ids
+   * @return void
+   */
+  public function selectIds( $ids )
+  {
+    if ( ! is_array( $ids) )
+    {
+      $this->getModel()->raiseError("Invalid argument");
+    }
+    foreach( $ids as $id )
+    {
+      if( ! is_numeric($id) )
+      {
+        $this->getModel()->raiseError("Invalid id '$id'");
+      }
+    }
+    $this->selectWhere( array(
+      "id" => array( "IN", "(" . implode(",", $ids ) .")" )
+    ) );
+  }
+
+  /**
    * Returns a records by property value
    * @param string $propName Name of property
    * @param string|array $values Value or array of values to find. If an array, retrieve all records
@@ -1009,7 +1006,9 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Deletes one or more records in a table identified by id
+   * Deletes one or more records in a table identified by id. This
+   * does not delete dependencies!
+   *
    * @param array|int $ids (array of) record id(s)
    * @return bool Success
    */
@@ -1019,8 +1018,9 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Deletes one or more records in a table matching a where condition.
+   * Deletes one or more records in the data table matching a where condition.
    * This does not delete dependencies!
+   *
    * @param string  $where where condition
    * @return int Number of affected rows
    */
@@ -1031,6 +1031,18 @@ class qcl_data_model_db_QueryBehavior
     return $this->getTable()->deleteWhere(
       $sql,$query->getParameters(), $query->getParameterTypes()
     );
+  }
+
+  /**
+   * Deletes all records from the database.
+   * @return number of affected rows
+   */
+  public function deleteAll()
+  {
+    /*
+     * delete model data
+     */
+    return $this->getTable()->truncate();
   }
 }
 ?>
