@@ -208,8 +208,6 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   // wait for the sample to finish loading, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
   
-  //this.runDemoTest(category, currentSample);
-  
   // Shut down the sample application
   if (this.getConfigSetting("shutdownSample")) {
     this.getEval(shutdownSample, "Shutting down sample application");
@@ -459,36 +457,6 @@ simulation.Simulation.prototype.runTest = function()
 
 };
 
-simulation.Simulation.prototype.runDemoTest = function(category, sample)
-{
-  var demoTestSource = simSvn + "/trunk/tool/selenium/simulation/demobrowser/";
-  demoTestSource += category + "/" + sample + ".js";
-  
-  // Apparently load won't throw an exception if the file doesn't exist :(
-  try {
-    load([demoTestSource]);
-  }
-  catch(ex) {
-    print ("Unable to load test code for demo " + category + ":" + sample + ": " + ex);
-  }
-  
-  if (demoTestCode["category"] == category && demoTestCode["demo"] == sample) {
-    for (method in demoTestCode["testMethods"]) {
-      simulation.Simulation.prototype[method] = demoTestCode["testMethods"][method];
-      var testFullName = category + "." + sample + "." + method;
-      try {
-        this[method]();
-        this.log(testFullName + " successful", "info");
-      } catch(ex) {
-        this.log(testFullName + " failed: " + ex, "error");
-      }
-      
-      simulation.Simulation.prototype[method] = null;
-       
-    }
-  }
-  
-};
 
 // - Main --------------------------------------------------------------------
 
