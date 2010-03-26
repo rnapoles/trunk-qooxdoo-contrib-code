@@ -26,6 +26,18 @@ qcl_import( "qcl_data_model_db_RelationBehavior" );
 /**
  * Abstrac class for models that are based on a relational
  * database.
+ *
+ * <b>Concepts:</b>
+ * <ul>
+ *  <li><b>model instance:</b> The instance of the active record class that can
+ *      load model data for a given (named) id.</i>
+ *  <li><b>record:</b> The data corresponding to a (namded) id</li>
+ *  <li><b>id:</b> The number (integer) that identifies a model record in the model
+ *      database</li>
+ *  <li><b>named id:</b> The alphanumeric (string) identifier which can additionally
+ *      be used as id in a NamedActiveRecord instance.</li>
+ * </ul>
+ * @todo use consistent vocabulary
  * @todo define interface
  */
 class qcl_data_model_db_ActiveRecord
@@ -110,16 +122,11 @@ class qcl_data_model_db_ActiveRecord
   //-------------------------------------------------------------
 
   /**
-   * Getter for table name. If no name is set, use class name
-   * as table name
+   * Getter for table name.
    * @return string
    */
   public function tableName()
   {
-    if ( ! isset( $this->tableName ) )
-    {
-      $this->tableName = get_class( $this );
-    }
     return $this->tableName;
   }
 
@@ -177,6 +184,23 @@ class qcl_data_model_db_ActiveRecord
       $this->relationBehavior = new qcl_data_model_db_RelationBehavior( $this );
     }
     return $this->relationBehavior;
+  }
+
+  /**
+   * Resets the internal cache used by the behaviors to avoid unneccessary
+   * database lookups. Call this method from the constructor of your models
+   * before adding properties and relations during your development but remove
+   * the call when your properties and relations have stabilized, this will
+   * speed up things considerably.
+   *
+   * @return void
+   * @todo create a constant in config.php to control this
+   */
+  public function resetBehaviors()
+  {
+    $this->getPropertyBehavior()->reset();
+    $this->getQueryBehavior()->reset();
+    $this->getRelationBehavior()->reset();
   }
 }
 ?>

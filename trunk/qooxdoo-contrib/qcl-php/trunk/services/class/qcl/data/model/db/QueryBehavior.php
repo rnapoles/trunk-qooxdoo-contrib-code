@@ -66,6 +66,13 @@ class qcl_data_model_db_QueryBehavior
   private $table;
 
   /**
+   * The name of the table used for storing the data of the managed
+   * object.
+   * @var string
+   */
+  private $tableName;
+
+  /**
    * A static persistent cache object to avoid repetetive introspection
    * queries
    * @var qcl_data_model_db_QueryCache
@@ -123,12 +130,21 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Getter for table name
+   * Getter for table name. If the table name has not been set
+   * by the model, use "data_" plus class name of the model
    * @return string
    */
   public function getTableName()
   {
-    return $this->getTablePrefix() . $this->getModel()->tableName();
+    if ( ! $this->tableName )
+    {
+      $this->tableName = $this->getModel()->tableName();
+      if ( ! $this->tableName )
+      {
+        $this->tableName = "data_" . $this->getModel()->className();
+      }
+    }
+    return $this->getTablePrefix() . $this->tableName;
   }
 
   /**
@@ -635,7 +651,7 @@ class qcl_data_model_db_QueryBehavior
     /*
      * otherwise create sql from it
      */
-    $sql    = array();
+    $sql = array();
     foreach( $where as $property => $value )
     {
       $type   = $this->getModel()->getPropertyBehavior()->type( $property );
@@ -679,57 +695,155 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Runs a query on the table managed by this behavior.
+   * Runs a query on the table managed by this behavior. Stores a
+   * reference to the result PDO statement in the query, so that
+   * it can be used by the fetch() command.
+   *
    * @param qcl_data_db_Query $query
    * @return int number of rows selected
    */
   public function select( qcl_data_db_Query $query)
   {
     $sql = $this->queryToSql( $query );
-    $this->getAdapter()->query( $sql, $query->parameters, $query->parameter_types );
+    $query->pdoStatement = $this->getAdapter()->query(
+      $sql, $query->getParameters(), $query->getParameterTypes()
+    );
+    $query->rowCount = $this->getAdapter()->rowCount();
     return $this->rowCount();
   }
 
   /**
    * Selects all database records or those that match a where condition.
-   * Takes a qcl_data_db_Query object or an array as argument. If an array
-   * is passed, a new qcl_data_db_Query object is created and its 'where'
-   * property populated with the array.
-   * @param qcl_data_db_Query|array $query
-   * @see qcl_data_db_Query
-   * @return int number of rows selected
+   * Takes an array as argument, from which new qcl_data_db_Query object
+   * is created and returned.
+   *
+   * @param array $where
+   * @return qcl_data_db_Query
    */
-  public function selectWhere( $query )
+  public function selectWhere( $where )
   {
-    if( is_array( $query ) )
+    if( ! is_array( $where ) )
     {
-      $query = new qcl_data_db_Query( array(
-        'where' => $query
-      ) );
+      $this->getModel()->raiseError("Invalid query data. Must be array.");
+    }
+
+    /*
+     * Create query object
+     */
+    $query = new qcl_data_db_Query( array(
+      'where' => $where
+    ) );
+
+    /*
+     * Do query and return object
+     */
+    $this->select( $query );
+    return $query;
+  }
+
+  /**
+   * Select an array of ids for fetching
+   * @param array $ids
+   * @return qcl_data_db_Query
+   */
+  public function selectIds( $ids )
+  {
+    if ( ! is_array( $ids) )
+    {
+      $this->getModel()->raiseError("Invalid argument");
+    }
+
+    /*
+     * sanity-check the ids
+     */
+    foreach( $ids as $id )
+    {
+      if( ! is_numeric($id) )
+      {
+        $this->getModel()->raiseError("Invalid id '$id'");
+      }
+    }
+    /*
+     * select
+     */
+    $query = new qcl_data_db_Query( array(
+      "select" => "*",
+      "where" => "id IN (" . implode(",", $ids ) .")"
+    ) );
+    $this->select( $query );
+    return $query;
+  }
+
+  /**
+   * Returns a records by property value
+   * @param string $propName Name of property
+   * @param string|array $values Value or array of values to find. If an array, retrieve all records
+   * that match any of the values.
+   * @param qcl_data_db_Query|null $query
+   * @return qcl_data_db_Query
+   */
+  public function selectBy( $propName, $values, $query=null )
+  {
+    if( $query === null )
+    {
+      $query = new qcl_data_db_Query();
     }
     elseif ( ! $query instanceof qcl_data_db_Query )
     {
       $this->raiseError("Invalid query data.");
     }
-    return $this->select( $query );
+
+    $column     = $this->getColumnName( $propName );
+    $colStr     = $this->getAdapter()->formatColumnName( $column );
+    $names      = array();
+    $parameters = array();
+
+    foreach ( (array) $values as $i => $value )
+    {
+      $name    = ":value{$i}";
+      $names[] = $name;
+      $parameters[$name] = $value;
+    }
+
+    $query->where      = "$col IN (" . implode(",", $names ) . ")";
+    $query->parameters = $parameters;
+
+    $this->select( $query );
+    return $query;
   }
 
   /**
    * If no argument, return the first or next row of the result of the previous
-   * query. If a query object is used as argument, run this query beforehand and
-   * return the first row. The returned value is converted into the correct type
+   * query. If a query object is passed, return the first or next row of the
+   * result of this query.
+   * The returned value is converted into the correct type
    * according to the property definition and the property behavior.
    * @see qcl_data_model_db_PropertyBehavior::typecast()
-   * @param qcl_data_db_Query $query
+   * @param qcl_data_db_Query|null $query
    * @return array
    */
   public function fetch( $query = null )
   {
-    if ( $query )
+    /*
+     * use passed PDOStatement or simply the last one created
+     */
+    if ( $query instanceof qcl_data_db_Query
+         and $query->getPdoStatement() instanceof PDOStatement )
     {
-      $this->select( $query );
+      $result = $query->getPdoStatement()->fetch();
     }
-    $result = $this->getAdapter()->fetch();
+    elseif( $query === null )
+    {
+      $result = $this->getAdapter()->fetch( $query );
+    }
+    else
+    {
+      $this->getModel()->raiseError("Invalid argument");
+    }
+
+    /*
+     * set the result
+     */
     if ( ! is_array( $result ) )
     {
       return null;
@@ -745,16 +859,6 @@ class qcl_data_model_db_QueryBehavior
     }
   }
 
-  /**
-   * Like fetch(), but allow to pass 'where' data by array.
-   * @param qcl_data_db_Query|array $query
-   * @return array
-   */
-  public function fetchWhere( $query )
-  {
-    $this->selectWhere( $query );
-    return $this->fetch();
-  }
 
   /**
    * If no argument, return all rows of the result of the previous
@@ -777,16 +881,6 @@ class qcl_data_model_db_QueryBehavior
     return $result;
   }
 
-  /**
-   * Like fetchAll(), but allow to pass 'where' data by array.
-   * @param qcl_data_db_Query|array $query
-   * @return array
-   */
-  public function fetchAllWhere( $query )
-  {
-    $this->selectWhere( $query );
-    return $this->getAdapter()->fetchAll();
-  }
 
   /**
    * Returns all values of a model property that match a query
@@ -819,65 +913,7 @@ class qcl_data_model_db_QueryBehavior
     return $result;
   }
 
-  /**
-   * Select an array of ids for fetching
-   * @param array $ids
-   * @return void
-   */
-  public function selectIds( $ids )
-  {
-    if ( ! is_array( $ids) )
-    {
-      $this->getModel()->raiseError("Invalid argument");
-    }
-    foreach( $ids as $id )
-    {
-      if( ! is_numeric($id) )
-      {
-        $this->getModel()->raiseError("Invalid id '$id'");
-      }
-    }
-    $this->selectWhere( array(
-      "id" => array( "IN", "(" . implode(",", $ids ) .")" )
-    ) );
-  }
 
-  /**
-   * Returns a records by property value
-   * @param string $propName Name of property
-   * @param string|array $values Value or array of values to find. If an array, retrieve all records
-   * that match any of the values.
-   * @param qcl_data_db_Query|null $query
-   * @return array recordset
-   */
-  public function selectBy( $propName, $values, $query=null )
-  {
-    if( $query === null )
-    {
-      $query = new qcl_data_db_Query();
-    }
-    elseif ( ! $query instanceof qcl_data_db_Query )
-    {
-      $this->raiseError("Invalid query data.");
-    }
-
-    $column     = $this->getColumnName( $propName );
-    $colStr     = $this->getAdapter()->formatColumnName( $column );
-    $names      = array();
-    $parameters = array();
-
-    foreach ( (array) $values as $i => $value )
-    {
-      $name    = ":value{$i}";
-      $names[] = $name;
-      $parameters[$name] = $value;
-    }
-
-    $query->where      = "$col IN (" . implode(",", $names ) . ")";
-    $query->parameters = $parameters;
-
-    return $this->selectWhere( $query );
-  }
 
   /**
    * Returns the number of records found in the last query.

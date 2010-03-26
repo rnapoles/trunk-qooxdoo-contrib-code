@@ -74,6 +74,10 @@ class qcl_core_PropertyBehavior
    */
   public function check( $property )
   {
+    if ( ! $property or ! is_string( $property ) )
+    {
+      $this->getObject()->raiseError("Invalid property '$property'");
+    }
     if ( ! $this->has( $property) )
     {
       throw new qcl_core_PropertyBehaviorException(

@@ -27,6 +27,7 @@ class qcl_data_model_db_PropertyCache
 {
   public $tables     = array();
   public $properties = array();
+
   public function reset()
   {
     $this->tables = array();
@@ -132,17 +133,40 @@ class qcl_data_model_db_PropertyBehavior
     /*
      * check if table exists, otherwise create
      */
-    $tableName = $model->tableName();
     $cache     = $this->cache();
+    $tableName = $model->getQueryBehavior()->getTableName();
+    if ( ! $tableName )
+    {
+      $model->raiseError("Invalid table name '$tableName'.");
+    }
 
-    if ( ! $cache->tables[$tableName] )
+    if ( ! isset( $cache->tables[$tableName] ) or ! $cache->tables[$tableName] )
     {
       $table = $model->getQueryBehavior()->getTable();
       if( ! $table->exists() )
       {
+        $model->log( sprintf(
+          "Creating table '%s' for model '%s'.",
+          $tableName, $model->className()
+        ), QCL_LOG_PROPERTIES );
+
         $table->create();
+        $cache->tables[$tableName] = true;
       }
-      $cache->tables[$tableName] = true;
+      else
+      {
+        $model->log( sprintf(
+          "Table '%s' for model '%s' already exists.",
+          $tableName, $model->className()
+        ), QCL_LOG_PROPERTIES );
+      }
+    }
+    else
+    {
+      $model->log( sprintf(
+        "Cache: Table '%s' for model '%s' already exists.",
+        $tableName, $model->className()
+      ), QCL_LOG_PROPERTIES );
     }
   }
 
@@ -169,12 +193,17 @@ class qcl_data_model_db_PropertyBehavior
   {
     parent::add( $properties );
 
-    $model = $this->getModel();
-    $behav = $model->getQueryBehavior();
-    $adpt  = $behav->getAdapter();
-    $table = $behav->getTable();
-    $tableName = $model->tableName();
-    $cache = $this->cache();
+    $model     = $this->getModel();
+    $qBehavior = $model->getQueryBehavior();
+    $adpt      = $qBehavior->getAdapter();
+    $table     = $qBehavior->getTable();
+    $tableName = $qBehavior->getTableName();
+    $cache     = $this->cache();
+
+    if ( ! $tableName )
+    {
+      $model->raiseError("No table name!");
+    }
 
     if ( ! isset( $cache->properties[$tableName] ) )
     {
@@ -185,14 +214,19 @@ class qcl_data_model_db_PropertyBehavior
 
     /*
      * setup table columns
-     * @todo rework caching
      */
     foreach( $properties as $name => $prop )
     {
+      /*
+       * savve the property definition in serialized form
+       */
       $serializedProps = serialize( $prop );
       if ( isset( $cachedProps[$name] ) and $cachedProps[$name] == $serializedProps )
       {
-        $model->log( "Property '$name' has not changed.", QCL_LOG_PROPERTIES );
+        $model->log( sprintf(
+          "Property '%s' of class '%s', table '%s' has not changed.",
+          $name, $model->className(), $tableName
+        ), QCL_LOG_PROPERTIES );
         continue;
       }
 
@@ -226,7 +260,7 @@ class qcl_data_model_db_PropertyBehavior
        */
       if( strtolower($sqltype) == "current_timestamp" )
       {
-        $sqltype = $behav->getAdapter()->currentTimestampSql();
+        $sqltype = $qBehavior->getAdapter()->currentTimestampSql();
       }
 
       /*
@@ -252,7 +286,6 @@ class qcl_data_model_db_PropertyBehavior
        */
       if ( ! $table->columnExists( $name ) )
       {
-        $model->log( "Adding column '$name' with definition '$sqltype'", QCL_LOG_TABLES);
         $table->addColumn( $name, $sqltype );
 
         /*
@@ -260,7 +293,6 @@ class qcl_data_model_db_PropertyBehavior
          */
         if ( isset( $prop['unique'] ) and $prop['unique'] === true )
         {
-          $model->log( "Adding unique index for property '$name'", QCL_LOG_TABLES);
           $table->addIndex("unique","unique_{$name}",$name);
         }
       }
@@ -273,11 +305,11 @@ class qcl_data_model_db_PropertyBehavior
         $curr_sqltype = $table->getColumnDefinition( $name );
         if (strtolower($curr_sqltype)  != strtolower($sqltype) )
         {
-          $model->log( "Column '$name' has changed from '$curr_sqltype' to '$sqltype'", QCL_LOG_TABLES);
+          $model->log( "Column '$name' has changed from '$curr_sqltype' to '$sqltype'", QCL_LOG_PROPERTIES);
         }
         else
         {
-          $model->log( "Column '$name' has not changed.", QCL_LOG_TABLES);
+          $model->log( "Column '$name' has not changed.", QCL_LOG_PROPERTIES);
         }
       }
 
