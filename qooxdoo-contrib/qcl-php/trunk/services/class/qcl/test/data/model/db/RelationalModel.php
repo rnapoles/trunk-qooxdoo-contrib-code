@@ -23,45 +23,63 @@ qcl_import( "qcl_data_model_db_ActiveRecord" );
 class User extends qcl_data_model_db_ActiveRecord
 {
   /*
-   * table in which to store the model data
-   */
-  protected $tableName = "test_relational_users";
-
-  /*
-   * model properties
+   * Model properties. Foreign key properties will be
+   * automatically created
    */
   private $properties = array(
     "name" => array(
       "check"     => "string",
       "sqltype"   => "varchar(32)"
-    ),
-    "groupId" => array(
-      "check"     => "integer",
-      "sqltype"   => "int(11)"
     )
   );
 
   /*
-   * model relationships
+   * table in which to store the model data.
+   * Can be omitted,  Default to "data_" plus class name
+   * (here: "data_User")
    */
-  protected $foreignKey = "userId";
+  protected $tableName = "data_User";
 
+  /*
+   * the key with which the model id is identified in
+   * "foreign" tables. Can be omitted, defaults to
+   * class name plus "Id" (here, "UserId")
+   */
+  protected $foreignKey = "UserId";
+
+  /*
+   * relations (associations) of the model
+   */
   private $relations = array(
     /*
      * user belongs to exactly one group
      */
-    "user_group" => array(
-      "type"      => "n:1", // same as QCL_RELATIONS_HAS_ONE
+    "User_Group" => array(
+      "type"      => QCL_RELATIONS_HAS_ONE, //"n:1"
       "target"    => array( "class" => "Group")
     ),
 
     /*
      * user belongs to several categories
+     * the "jointable" key can can be omitted, defaults to "join_" plus
+     * relation name (here, "join_user_category")
      */
-    "user_category" => array(
-      "type"      => "n:n", // same as QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY
-      "jointable" => "test_relational_join_user_category",
+    "User_Category" => array(
+      "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,  // "n:n"
+      "jointable" => "join_user_category", // can be omitted, see above
       "target"    => array( "class" => "Category" )
+    ),
+
+    /*
+     * users have a history of actions which needs to be
+     * deleted when the user is deleted
+     */
+    "User_History" => array(
+      "type"    => QCL_RELATIONS_HAS_MANY, // "1:n"
+      "target"  => array(
+        "class"     => "History",
+        "dependent" => true // dependent targets are removed upon deletion of the "parent" model record
+      )
     )
   );
 
@@ -70,6 +88,8 @@ class User extends qcl_data_model_db_ActiveRecord
    */
   function __construct()
   {
+    $this->resetBehaviors(); // comment this out when in production
+
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations );
     parent::__construct();
@@ -78,11 +98,6 @@ class User extends qcl_data_model_db_ActiveRecord
 
 class Group extends qcl_data_model_db_ActiveRecord
 {
-
-  protected $tableName = "test_relational_groups";
-
-  protected $foreignKey = "groupId";
-
   private $properties = array(
     "name" => array(
       "check"     => "string",
@@ -94,8 +109,8 @@ class Group extends qcl_data_model_db_ActiveRecord
     /*
      * group has many users
      */
-    "user_group" => array(
-      "type"      => QCL_RELATIONS_HAS_MANY, // same as "1:n"
+    "User_Group" => array(
+      "type"      => QCL_RELATIONS_HAS_MANY, // "1:n"
       "target"    => array( "class" => "User" )
     )
   );
@@ -108,12 +123,11 @@ class Group extends qcl_data_model_db_ActiveRecord
   }
 }
 
+/**
+ * Categories
+ */
 class Category extends qcl_data_model_db_ActiveRecord
 {
-
-  protected $tableName = "test_relational_categories";
-
-  protected $foreignKey = "categoryId";
 
   private $properties = array(
     "name" => array(
@@ -126,10 +140,73 @@ class Category extends qcl_data_model_db_ActiveRecord
     /*
      * A category has many users and the other way round
      */
-    "user_category" => array(
-      "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY, // == "n:n"
-      "jointable" => "test_relational_join_user_category",
+    "User_Category" => array(
+      "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY, //  "n:n"
       "target"    => array( "class" => "User" )
+    )
+  );
+
+  function __construct()
+  {
+    $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations );
+    parent::__construct();
+  }
+}
+
+
+
+class History extends qcl_data_model_db_ActiveRecord
+{
+
+  private $relations = array(
+    /*
+     * A history record belongs to exactly one user and
+     * will be deleted with that user (this is set up in
+     * the "relations/user_history/target/dependent" entry
+     * in the User model class).
+     */
+    "User_History" => array(
+      "type"      => QCL_RELATIONS_HAS_ONE, // "n:1"
+      "target"    => array(
+        "class" => "User"
+      )
+    ),
+    /*
+     * A history record is also linked to an Action
+     * model
+     */
+    "Action_History" => array(
+      "type"      => QCL_RELATIONS_HAS_ONE, //  "n:1"
+      "target"    => array(
+        "class" => "Action"
+      )
+    )
+  );
+
+  function __construct()
+  {
+    $this->addRelations( $this->relations );
+    parent::__construct();
+  }
+}
+
+class Action extends qcl_data_model_db_ActiveRecord
+{
+
+  private $properties = array(
+    "description" => array(
+      "check"     => "string",
+      "sqltype"   => "varchar(32)"
+    )
+  );
+
+  private $relations = array(
+    "Action_History" => array(
+      "type"      => QCL_RELATIONS_HAS_MANY, // same as "1:n"
+      "target"    => array(
+        "class" => "History"
+      )
     )
   );
 
@@ -150,12 +227,16 @@ class class_qcl_test_data_model_db_RelationalModel
 
   public function method_testModel()
   {
-
+//$this->startLogging();
+    $user     = new User();
+    $history  = new History();
+    $action   = new Action();
+    $group    = new Group();
+    $category = new Category();
 
     /*
      * create users
      */
-    $user = new User();
     $user->deleteAll();
     $users = array(
       "mehmet", "ling", "john",
@@ -167,10 +248,13 @@ class class_qcl_test_data_model_db_RelationalModel
       $user->create( array( "name" => $name ) );
     }
 
+
+
+
     /*
      * create groups
      */
-    $group = new Group();
+
     $group->deleteAll();
     $groups = array( "customer", "employee", "manager" );
     foreach( $groups as $name )
@@ -181,7 +265,7 @@ class class_qcl_test_data_model_db_RelationalModel
     /*
      * create category
      */
-    $category = new Category();
+
     $category->deleteAll();
     $categories = array( "music", "sports", "health", "computer" );
     foreach( $categories as $name )
@@ -248,6 +332,80 @@ class class_qcl_test_data_model_db_RelationalModel
       }
     }
 
+   $this->info("Creating random user history...");
+    $history->deleteAll();
+    $action->deleteAll();
+
+    /*
+     * create actions
+     */
+    $actions = array(
+      "logged on", "logged off", "bought stuff",
+      "wrote review","asked question","answered question"
+    );
+    foreach ( $actions as $description )
+    {
+      $action->create( array(
+        'description' => $description
+      ) );
+    }
+
+    /*
+     * create a user history
+     */
+    foreach( $users as $name )
+    {
+      /*
+       * load the user record
+       */
+      $user->loadWhere( array( 'name' => $name ) );
+
+      for( $i=0; $i < rand( 5,10 ); $i++)
+      {
+        /*
+         * load a random action record
+         */
+        $action->load( rand(1,6) );
+
+        /*
+         * create a history record and link it to the action
+         */
+        $history->create();
+        $history->linkModel( $action );
+
+        /*
+         * link the user and the history record
+         */
+        $user->linkModel( $history );
+
+        $this->info( sprintf(
+          "  %s: %s %s",
+          $history->getCreated(), $user->getName(), $action->getDescription()
+        ) );
+      }
+    }
+
+    //$this->startLogging();
+
+    /*
+     * iterate through the groups.
+     */
+    $q1 = $group->selectAll();
+    $this->info( sprintf( "We have %s groups", $q1->getRowCount() ) );
+    while( $group->nextRecord() )
+    {
+      $q2 = $user->selectLinkedModels( $group );
+      $members = array();
+      while( $user->nextRecord() )
+      {
+        $members[] = $user->getName();
+      }
+      $this->info( sprintf(
+        "Group '%s' has %s members: %s",
+        $group->getName(), $q2->getRowCount(), implode( ",", $members )
+      ) );
+    }
+
     $this->endLogging();
     return "OK";
   }
@@ -257,6 +415,7 @@ class class_qcl_test_data_model_db_RelationalModel
   {
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
   }
 
@@ -265,6 +424,7 @@ class class_qcl_test_data_model_db_RelationalModel
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, false );
   }
 }
 

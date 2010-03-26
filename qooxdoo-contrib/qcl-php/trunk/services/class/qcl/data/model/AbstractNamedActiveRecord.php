@@ -133,7 +133,8 @@ class qcl_data_model_AbstractNamedActiveRecord
   {
     if ( is_string( $id ) )
     {
-      $result = $this->getQueryBehavior()->fetchWhere( array( "namedId" => $id ) );
+      $this->getQueryBehavior()->selectWhere( array( "namedId" => $id ) );
+      $result = $this->getQueryBehavior()->fetch();
       if ( $result )
       {
         $this->set( $result );

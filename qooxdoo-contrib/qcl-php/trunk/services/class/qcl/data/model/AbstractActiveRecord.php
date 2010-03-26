@@ -39,6 +39,13 @@ class qcl_data_model_AbstractActiveRecord
   private $datasourceModel = null;
 
 
+  /**
+   * The last query executed
+   * @var qcl_data_db_Query
+   */
+  private $lastQuery;
+
+
   //-------------------------------------------------------------
   // Model properties
   //-------------------------------------------------------------
@@ -207,7 +214,8 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function load( $id )
   {
-    $result = $this->getQueryBehavior()->fetchWhere( array( "id" => $id ) );
+    $this->getQueryBehavior()->selectWhere( array( "id" => $id ) );
+    $result = $this->getQueryBehavior()->fetch();
     if ( $result )
     {
       $this->set( $result );
@@ -247,24 +255,63 @@ class qcl_data_model_AbstractActiveRecord
     }
   }
 
+  //-----------------------------------------------------------------------
+  // Select model records for iteration
+  //-----------------------------------------------------------------------
+
   /**
-   * Select records for iteration with nextRecord()
-   * @param qcl_data_db_Query|array $query
-   * @return int Number of rows retrieved
+   * Select model records that match the given where query data
+   * for iteration
+   * @param qcl_data_db_Query $query
+   * @return int Number of instances
    */
-  public function selectWhere( $query )
+  public function select( qcl_data_db_Query $query )
   {
-    return $this->getQueryBehavior()->selectWhere( $query );
+    return $this->getQueryBehavior()->select( $query );
+  }
+
+  /**
+   * Select all model records for iteration
+   * @return qcl_data_db_Query The query object to use for iteration
+   */
+  public function selectAll()
+  {
+    $this->lastQuery = new qcl_data_db_Query( array(
+      "select" => "*"
+    ) );
+    $this->getQueryBehavior()->select( $this->lastQuery );
+    return $this->lastQuery;
+  }
+
+  /**
+   * Select the models instances that are linked with the target model
+   * for iteration
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return qcl_data_db_Query
+   */
+  public function selectLinkedModels( $targetModel )
+  {
+    $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel );
+    $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
+    return $this->lastQuery;
   }
 
   /**
    * If the last query has found more then one record, get the text one.
    * If the end of the records has been reached, return null.
+   * @param qcl_data_db_Query|null $query If given, fetch the records
+   *   that have been selected using the given query. Otherwise retrieve
+   *   the result of the last query.
    * @return array|null
    */
-  public function nextRecord()
+  public function nextRecord( $query= null )
   {
-    $record = $this->getQueryBehavior()->fetch();
+    if ( $query === null )
+    {
+      $query = $this->lastQuery;
+    }
+    $record = $this->getQueryBehavior()->fetch( $query );
     if( $record )
     {
       $this->set( $record );
@@ -517,19 +564,7 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getRelationBehavior()->unlinkModel( $targetModel );
   }
 
-  /**
-   * Select the models instances that are linked with the target model
-   * for iteration with nextRecord()
-   *
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
-   * @return int Number of instances
-   */
-  public function selectLinkedModels( $targetModel )
-  {
-    $ids = $this->getRelationBehavior()->getLinkedModelIds( $targetModel );
-    $this->getQueryBehavior()->selectIds( $ids );
-    return count( $ids );
-  }
+
 
 }
 ?>

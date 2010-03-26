@@ -144,19 +144,15 @@ interface qcl_data_model_IQueryBehavior
 
   /**
    * If no argument, return the first or next row of the result of the previous
-   * query. If a query object is used as argument, run this query beforehand and
-   * return the first row.
-   * @param qcl_data_db_Query $query
+   * query. If a query object is passed, return the first or next row of the
+   * result of this query.
+   * The returned value is converted into the correct type
+   * according to the property definition and the property behavior.
+   * @see qcl_data_model_db_PropertyBehavior::typecast()
+   * @param qcl_data_db_Query|null $query
    * @return array
    */
   public function fetch( $query = null );
-
-  /**
-   * Like fetch(), but allow to pass 'where' data by array.
-   * @param qcl_data_db_Query|array $query
-   * @return array
-   */
-  public function fetchWhere( $query );
 
   /**
    * If no argument, return all rows of the result of the previous
@@ -167,12 +163,6 @@ interface qcl_data_model_IQueryBehavior
    */
   public function fetchAll( $query = null );
 
-  /**
-   * Like fetchAll(), but allow to pass 'where' data by array.
-   * @param qcl_data_db_Query|array $query
-   * @return array
-   */
-  public function fetchAllWhere( $query );
 
   /**
    * Returns all values of a model property that match a query

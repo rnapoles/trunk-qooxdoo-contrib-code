@@ -122,6 +122,19 @@ class qcl_data_db_Query
    */
   public $parameter_types = array();
 
+  /**
+   * The reference to the PDOStatement object that is returned
+   * by a PDO::prepare() call.
+   * @var PDOStatement
+   */
+  public $pdoStatement;
+
+
+  /**
+   * The number of rows affected or retrieved by the last
+   * query
+   */
+  public $rowCount;
 
   //-------------------------------------------------------------
   // Constructor
@@ -165,6 +178,14 @@ class qcl_data_db_Query
     return $this->parameter_types;
   }
 
+  public function getPdoStatement()
+  {
+    return $this->pdoStatement;
+  }
 
+  public function getRowCount()
+  {
+    return $this->rowCount;
+  }
 }
 ?>

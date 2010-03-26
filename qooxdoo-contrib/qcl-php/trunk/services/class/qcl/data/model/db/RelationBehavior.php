@@ -23,12 +23,11 @@
 class qcl_data_model_db_RelationsCache
   extends qcl_core_PersistentObject
 {
-  public $relations = array();
 
+  public $relations = array();
   public function reset()
   {
     $this->relations = array();
-    $this->savePersistenceData();
   }
 }
 
@@ -198,17 +197,42 @@ class qcl_data_model_db_RelationBehavior
   public function setupRelation( $relation )
   {
     $this->checkRelation( $relation );
+
+    /*
+     * setup if that hasn't happened yet
+     */
+    $model = $this->getModel();
+    $class = $model->className();
     $cache = $this->cache();
-    if( ! isset( $cache->relations[ $relation ] ) )
+    if ( ! isset( $cache->relations[ $relation ] ) )
     {
+      $cache->relations[ $relation ] = array();
+    }
+
+    if( ! isset( $cache->relations[ $relation ][ $class ] ) )
+    {
+      /*
+       * call setup method
+       */
       $method = "setupRelation" . $this->convertLinkType( $this->getRelationType( $relation ) );
-      $this->getModel()->log( sprintf( "Setting up relation '%s' using '%s'...",
-        $relation, $method ), QCL_LOG_MODEL_RELATIONS );
+
+      $model->log( sprintf(
+        "Setting up relation '%s' for class '%s' using '%s'...",
+        $relation, $class, $method
+      ), QCL_LOG_MODEL_RELATIONS );
+
       $this->$method( $relation );
-      $cache->relations[ $relation ] = true;
+
+      /*
+       * set flag
+       */
+      $cache->relations[ $relation ][ $class ] = true;
       return true;
     }
-    //$this->getModel()->log( sprintf( "Relation '%s' is already set up.", $relation ), QCL_LOG_MODEL_RELATIONS );
+    $this->getModel()->log( sprintf(
+      "Relation '%s' is already set up for class '%s'.",
+      $relation, $class
+    ), QCL_LOG_MODEL_RELATIONS );
     return false;
   }
 
@@ -242,7 +266,7 @@ class qcl_data_model_db_RelationBehavior
 
     $target = array(
       'class'       => $this->checkRelationTargetModelClass( $target['class'], $name ),
-      'foreignKey'  => $this->checkRelationForeignKey( $target, $name )
+      'foreignKey'  => $target['foreignKey']
     );
 
     return $target;
@@ -267,56 +291,56 @@ class qcl_data_model_db_RelationBehavior
   }
 
   /**
-   * Checks the foreign key information in the target definition data
-   * @param array $target Target definition data
-   * @param string $name Name of the relation for error message
-   * @return string The name of the foreign key
-   */
-  protected function checkRelationForeignKey( $target, $name )
-  {
-    /*
-     * if we don't have a 'foreignKey' property ...
-     */
-    if ( ! isset( $target['foreignKey' ] ) )
-    {
-      $model = $this->getModel();
-      /*
-       * ... try to get the foreign key from the model's foreignKey
-       * class property
-       */
-      $foreignKey = $model->foreignKey();
-      if ( ! $foreignKey )
-      {
-        throw new qcl_data_model_Exception(
-          sprintf("No 'foreignKey' class property in model '%s' or in relation '%s'.",
-            get_class($model), $name
-          )
-        );
-      }
-      $target[ 'foreignKey' ] = $foreignKey;
-    }
-    return $target['foreignKey'];
-  }
-
-  /**
-   * Checks if the key needed by the relation exists as a property
-   * in the local model.
+   * Adds the foreign key as a property of this model
    *
    * @param string $key
    * @return string key
    */
-  public function checkProperty( $key, $relation )
+  public function setupForeignKey( $key, $relation )
   {
     $model   = $this->getModel();
     $propBeh = $model->getPropertyBehavior();
-    if ( ! $propBeh->has( $key ) or $propBeh->type( $key ) != "integer" )
+    if ( $propBeh->has( $key ) )
     {
-      throw new qcl_data_model_Exception(sprintf(
-        "Model '%s' has no valid integer property '%s' needed as key for relation '%s'.",
-        get_class($model), $key, $relation
+      if (  $propBeh->type( $key ) != "integer" )
+      {
+        throw new qcl_data_model_Exception(sprintf(
+          "Model '%s' has no valid integer property '%s' needed as key for relation '%s'.",
+          get_class($model), $key, $relation
+        ) );
+      }
+    }
+    else
+    {
+      qcl_log_Logger::getInstance()->log( sprintf(
+        "Adding foreign key property '%s' to model '%s' for relation '%s",
+        $key, $this->getModel()->className(), $relation
+      ), QCL_LOG_MODEL_RELATIONS );
+
+      $propBeh->add( array(
+        $key => array(
+          "check"   => "integer",
+          "sqltype" => "int(11)" // FIXME
+        )
       ) );
     }
     return $key;
+  }
+
+  /**
+   * Retrieves the foreign key name from the model. If the model
+   * does not specify the foreign id, create it from the class
+   * name plus "Id".
+   * @return string
+   */
+  public function getForeignKeyFromModel()
+  {
+    $foreignKey = $this->getModel()->foreignKey();
+    if ( ! $foreignKey )
+    {
+      $foreignKey = $this->getModel()->className() . "Id";
+    }
+    return $foreignKey;
   }
 
   /**
@@ -327,13 +351,24 @@ class qcl_data_model_db_RelationBehavior
   public function getForeignKey( $relation )
   {
     $this->checkRelation( $relation );
-    $foreignKey =  $this->relations[$relation]['target']['foreignKey'];
-    if ( ! $foreignKey )
+
+    $foreignKey = null;
+
+    /*
+     * first, check relation data
+     */
+    if ( isset( $this->relations[$relation]['target']['foreignKey'] ) )
     {
-      throw new qcl_data_model_Exception( sprintf(
-        "Cannot determine foreign key in relation '%s'.",
-        $relation
-      ) );
+      $foreignKey = $this->relations[$relation]['target']['foreignKey'];
+    }
+
+    /*
+     * otherwise, get it from model
+     */
+    if( ! $foreignKey )
+    {
+      $foreignKey = $this->getForeignKeyFromModel();
+      $this->relations[$relation]['target']['foreignKey'] = $foreignKey;
     }
     return $foreignKey;
   }
@@ -365,6 +400,7 @@ class qcl_data_model_db_RelationBehavior
   public function getTargetModel( $relation )
   {
     $this->checkRelation( $relation );
+
     /*
      * keep static cache of class instances, otherwise this
      * will cause an inifinite recursion, since associated
@@ -374,7 +410,8 @@ class qcl_data_model_db_RelationBehavior
     $class = $this->getTargetModelClass( $relation );
     if ( ! $instances[$class] )
     {
-      $instances[$class] = new $class();
+      $model = new $class();
+      $instances[$class] = $model;
     }
     return $instances[$class];
   }
@@ -415,7 +452,7 @@ class qcl_data_model_db_RelationBehavior
   {
     $foreignKey  = $this->getForeignKey( $relation );
     $targetModel = $this->getTargetModel( $relation );
-    $targetModel->getQueryBehavior()->checkProperty( $foreignKey, $relation );
+    $targetModel->getRelationBehavior()->setupForeignKey( $foreignKey, $relation );
   }
 
   /**
@@ -432,7 +469,7 @@ class qcl_data_model_db_RelationBehavior
   protected function setupRelationManyToOne( $relation )
   {
     $targetForeignKey = $this->getTargetForeignKey( $relation );
-    $this->checkProperty( $targetForeignKey, $relation );
+    $this->setupForeignKey( $targetForeignKey, $relation );
   }
 
   /**
@@ -700,6 +737,7 @@ class qcl_data_model_db_RelationBehavior
     if ( $this->getModel()->get( $targetForeignKey ) != $id )
     {
       $this->getModel()->set( $targetForeignKey, $id );
+      $this->getModel()->save();
       return true;
     }
   }
@@ -926,9 +964,9 @@ class qcl_data_model_db_RelationBehavior
     $method = "unlinkAll" . $this->convertLinkType( $this->getRelationType( $relation ) );
 
     qcl_log_Logger::getInstance()->log( sprintf(
-      "Unlinking %s model instances [%s] and [%s].",
+      "Unlinking %s model instances [%s] and [%s] using '%s'.",
        $allLinks ? "all" : "selected",
-       $this->getModel()->className(), $targetModel->className()
+       $this->getModel()->className(), $targetModel->className(), $method
     ), QCL_LOG_MODEL_RELATIONS );
 
     return $this->$method( $relation, $targetModel, $allLinks );
@@ -1033,13 +1071,77 @@ class qcl_data_model_db_RelationBehavior
   }
 
   /**
-   * Return the ids of the model instances that are linked to the target record
+   * Return the ids of the model that are linked to the target model,
+   * depending on the relation type many-to-one and many-to-many relations
+   * return the ids that are linked to the target model record.
+   * one-to-many relations make no sense in this context.
+   *
    * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return array
    */
-  public function getLinkedModelIds( $targetModel )
+  public function linkedModelIds( $targetModel )
   {
+    $relation = $this->checkModelRelation( $targetModel );
+    $this->setupRelation( $relation );
+    $method = "linkedModelIds" . $this->convertLinkType( $this->getRelationType( $relation ) );
+    return $this->$method( $relation, $targetModel );
+  }
 
+  /**
+   * No implementation for linkedModelIds() for 1:n relations, simply
+   * raises an error
+   * @return void
+   */
+  protected function linkedModelIdsOneToMany()
+  {
+    $this->getModel()->raiseError("No linked ids can be meaningfully determined in a one-to-many relationship.");
+  }
+
+  /**
+   * Implementation for linkedModelIds() for n:1 relations
+   * @param string $relation
+   * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @return array
+   */
+  protected function linkedModelIdsManyToOne( $relation, $targetModel )
+  {
+    $targetForeignKey = $targetModel
+      ->getRelationBehavior()
+      ->getForeignKey( $relation );
+    $targetId = $targetModel->id();
+    $ids = $this->getModel()->getQueryBehavior()->fetchValues( "id", array(
+      $targetForeignKey => $targetId
+    ));
+    return $ids;
+  }
+
+  /**
+   * Implementation for linkedModelIds() for n:n relations
+   * @param string $relation
+   * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @return array
+   */
+  protected function linkedModelIdsManyToMany( $relation, $targetModel )
+  {
+    $jointable  = $this->getJointable( $relation );
+    $adapter    = $jointable->getAdapter();
+    $foreignKey = $adapter->formatColumnName( $this->getForeignKey( $relation ) );
+
+    return $adapter->getReturnValues(
+      "SELECT id WHERE $foreignKey = :id ",
+      array(
+        ":id" => $this->getModel()->id()
+      )
+    );
+  }
+
+  /**
+   * Resets  the internal cache
+   * @return void
+   */
+  public function reset()
+  {
+    $this->cache()->reset();
   }
 }
 ?>
