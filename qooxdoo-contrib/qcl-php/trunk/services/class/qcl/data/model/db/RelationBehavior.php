@@ -235,7 +235,7 @@ class qcl_data_model_db_RelationBehavior
 
     $target = array(
       'class'       => $this->checkRelationTargetClass( $relData, $relation ),
-      'dependent'   => $this->checkRelationTargetDependency( $relData, $relation)
+      'dependent'   => $this->checkRelationTargetDependency( $relData, $relation )
     );
 
     return $target;
@@ -283,6 +283,7 @@ class qcl_data_model_db_RelationBehavior
           $relData['type'], $relation
         ) );
       }
+      return true;
     }
     else
     {
@@ -422,14 +423,16 @@ class qcl_data_model_db_RelationBehavior
 
   /**
    * Returns true if given model depends on the the managed model.
-   * @param $targetModel
+   * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return bool
    */
   public function isDependentModel( $targetModel )
   {
-    $relation = $this->getRelationNameForModel( $targetModel );
-    return isset( $this->relations[$relation]['target']['dependent'] )
-      and $this->relations[$relation]['target']['dependent'] == true;
+    $relation    = $this->getRelationNameForModel( $targetModel );
+    $isDependent =
+      ( isset( $this->relations[$relation]['target']['dependent'] )
+      and ( $this->relations[$relation]['target']['dependent'] == true ) );
+    return $isDependent;
   }
 
   //-------------------------------------------------------------
@@ -673,18 +676,23 @@ class qcl_data_model_db_RelationBehavior
 
   /**
    * Returns the name of the relation with which the given model is
-   * linked or null if no such link exists.
+   * linked or null if no such link exists. Throws an exception
+   * if there is no such link.
    *
    * @param qcl_data_model_db_ActiveRecord $model
-   * @return string|null
+   * @return string
    */
   public function getRelationNameForModel( $model )
   {
-    if ( isset( $this->relationModels[ $model->className() ] ) )
+    $class = $model->className();
+    if ( isset( $this->relationModels[ $class ] ) )
     {
-      return $this->relationModels[ $model->className() ];
+      return $this->relationModels[ $class ];
     }
-    return null;
+    throw new qcl_data_model_Exception( sprintf(
+      "Model '%s' os not associated to model '%s'.",
+      $this->getModel()->className(), $class
+    ) );
   }
 
   /**
@@ -989,12 +997,15 @@ class qcl_data_model_db_RelationBehavior
     $relation = $this->checkModelRelation( $targetModel );
     $this->setupRelation( $relation );
 
-    $method = "unlinkAll" . $this->convertLinkType( $this->getRelationType( $relation ) );
+    $relationType = $this->getRelationType( $relation );
+    $method = "unlinkAll" . $this->convertLinkType( $relationType );
 
     qcl_log_Logger::getInstance()->log( sprintf(
       "Unlinking %s model instances [%s] and [%s] using '%s'%s.",
        $allLinks ? "all" : "selected",
-       $this->getModel()->className(), $targetModel->className(), $method,
+       $this->getModel()->className(),
+       $targetModel->className(),
+       $method,
        $delete ? " and deleting the linked records" : ""
     ), QCL_LOG_MODEL_RELATIONS );
 

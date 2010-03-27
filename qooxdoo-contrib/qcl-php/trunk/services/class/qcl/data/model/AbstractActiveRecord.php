@@ -401,7 +401,11 @@ class qcl_data_model_AbstractActiveRecord
     {
       $this->raiseError("Cannot delete: no model record loaded.");
     }
-    $this->log( "Deleting model record #$id", QCL_LOG_MODEL );
+
+    $this->log( sprintf(
+      "Unlinking all linked records for [%s #%s] ...",
+      $this->className(), $id
+    ), QCL_LOG_MODEL );
 
     /*
      * unlink all model records and delete dependend ones
@@ -410,14 +414,25 @@ class qcl_data_model_AbstractActiveRecord
     foreach( $relationBehavior->relations() as $relation )
     {
       $targetModel = $relationBehavior->getTargetModel( $relation );
-      $relationBehavior->unlinkAll(
-        $targetModel, false, $relationBehavior->isDependentModel( $targetModel )
-      );
+      $isDependent = $relationBehavior->isDependentModel( $targetModel );
+
+      $this->log( sprintf(
+        "    ... for relation '%s':%s target model '%s'",
+        $relation,
+        $isDependent ? " dependent":"",
+        $targetModel->className()
+      ), QCL_LOG_MODEL );
+
+      $relationBehavior->unlinkAll( $targetModel, false, $isDependent );
     }
 
     /*
      * delete the model data
      */
+    $this->log( sprintf(
+      "Deleting record data for [%s #%s] ...",
+      $this->className(), $id
+    ), QCL_LOG_MODEL );
     return $this->getQueryBehavior()->deleteRow( $id );
   }
 
@@ -446,7 +461,7 @@ class qcl_data_model_AbstractActiveRecord
      * delete linked data
      */
     $this->log( sprintf(
-      "Unlinking all records for class '%s'", $this->className()
+      "Unlinking all linked records for model '%s' ...", $this->className()
     ), QCL_LOG_MODEL );
 
     $relationBehavior = $this->getRelationBehavior();
@@ -454,13 +469,18 @@ class qcl_data_model_AbstractActiveRecord
     {
       $relationBehavior->setupRelation( $relation );
       $targetModel = $relationBehavior->getTargetModel( $relation );
+      $isDependent = $relationBehavior->isDependentModel( $targetModel );
 
       /*
        * unlink all model records and delete dependend ones
        */
-      $relationBehavior->unlinkAll(
-        $targetModel, true,  $relationBehavior->isDependentModel( $targetModel )
-      );
+      $this->log( sprintf(
+        "    ... for relation '%s':%s target model '%s'",
+        $relation,
+        $isDependent ? " dependent":"",
+        $targetModel->className()
+      ), QCL_LOG_MODEL );
+      $relationBehavior->unlinkAll( $targetModel, true,  $isDependent );
     }
 
     /*
