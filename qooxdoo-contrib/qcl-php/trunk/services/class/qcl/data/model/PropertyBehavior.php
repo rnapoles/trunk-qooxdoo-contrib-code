@@ -127,7 +127,10 @@ class qcl_data_model_PropertyBehavior
 
 
   /**
-   * @see class/qcl/core/qcl_core_PropertyBehavior#_set()
+   * Implementation for model property setter
+   * @param string $property Property name
+   * @param mixed $value Propery value
+   * @return qcl_data_model_db_Model
    */
   public function _set( $property, $value )
   {

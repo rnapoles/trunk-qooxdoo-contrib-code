@@ -28,6 +28,13 @@ interface qcl_data_model_IActiveRecord
   //-------------------------------------------------------------
 
   /**
+   * Generic setter for model properties.
+   * @see qcl_core_Object#set()
+   * @return qcl_data_model_db_ActiveRecord
+   */
+  public function set( $first, $second= null );
+
+  /**
    * Getter for modification date
    * @return qcl_data_db_Timestamp
    */
@@ -90,28 +97,43 @@ interface qcl_data_model_IActiveRecord
 
   /**
    * Loads a model record identified by id. Does not return anything.
-   * Throws an exception if no model data could be found.
+   * Throws an exception if no model data could be found. Returns
+   * itself in order to allow changed method calling ($model->load(1)->delete();
+   *
    * @param int $id
-   * @return void
+   * @return qcl_data_model_db_ActiveRecord
+   * @throws qcl_data_model_RecordNotFoundException
    */
   public function load( $id );
 
   /**
    * If query is successful, load the first row of the result set into the
-   * model. If not, throw an exception.
+   * model. If not, throw an exception. Returns
+   * itself in order to allow changed method calling, such as:
+   * $model->loadWhere( array( 'foo' => "bar" )
+   *  ->set( array( 'foo' => "baz" )
+   *  ->save();
    *
    * @throws qcl_data_model_RecordNotFoundException
    * @param qcl_data_db_Query|array $query
-   * @return int Number of rows retrieved
+   * @return qcl_data_model_db_ActiveRecord
    */
   public function loadWhere( $query );
+
+  /**
+   * find model records that match the given where query data
+   * for iteration
+   * @param qcl_data_db_Query $query
+   * @return int Number of instances
+   */
+  public function find( qcl_data_db_Query $query );
 
   /**
    * Select records for iteration with nextRecord()
    * @param qcl_data_db_Query|array $query
    * @return int Number of rows retrieved
    */
-  public function selectWhere( $query );
+  public function findWhere( $query );
 
   /**
    * If the last query has found more then one record, get the text one.

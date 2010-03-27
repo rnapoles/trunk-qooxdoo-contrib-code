@@ -103,6 +103,17 @@ class qcl_data_model_AbstractActiveRecord
   //-------------------------------------------------------------
 
   /**
+   * Generic setter for model properties.
+   * @see qcl_core_Object#set()
+   * @return qcl_data_model_db_ActiveRecord
+   */
+  public function set( $first, $second= null )
+  {
+    parent::set( $first, $second );
+    return $this;
+  }
+
+  /**
    * Getter for modification date
    * @return qcl_data_db_Timestamp
    */
@@ -206,10 +217,11 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Loads a model record identified by id. Does not return anything.
-   * Throws an exception if no model data could be found.
+   * Throws an exception if no model data could be found. Returns
+   * itself in order to allow changed method calling ($model->load(1)->delete();
    *
    * @param int $id
-   * @return array|false Record or false if nothing was found.
+   * @return qcl_data_model_db_ActiveRecord
    * @throws qcl_data_model_RecordNotFoundException
    */
   public function load( $id )
@@ -228,15 +240,20 @@ class qcl_data_model_AbstractActiveRecord
         $this->className(), $id
       ) );
     }
+    return $this;
   }
 
   /**
    * If query is successful, load the first row of the result set into the
-   * model. If not, throw an exception.
+   * model. If not, throw an exception. Returns
+   * itself in order to allow changed method calling, such as:
+   * $model->loadWhere( array( 'foo' => "bar" )
+   *  ->set( array( 'foo' => "baz" )
+   *  ->save();
    *
    * @throws qcl_data_model_RecordNotFoundException
    * @param qcl_data_db_Query|array $query
-   * @return int Number of rows retrieved
+   * @return qcl_data_model_db_ActiveRecord
    */
   public function loadWhere( $query )
   {
@@ -253,6 +270,7 @@ class qcl_data_model_AbstractActiveRecord
         $this->className()
       ) );
     }
+    return $this;
   }
 
   //-----------------------------------------------------------------------
@@ -260,21 +278,21 @@ class qcl_data_model_AbstractActiveRecord
   //-----------------------------------------------------------------------
 
   /**
-   * Select model records that match the given where query data
+   * find model records that match the given where query data
    * for iteration
    * @param qcl_data_db_Query $query
    * @return int Number of instances
    */
-  public function select( qcl_data_db_Query $query )
+  public function find( qcl_data_db_Query $query )
   {
     return $this->getQueryBehavior()->select( $query );
   }
 
   /**
-   * Select all model records for iteration
+   * Find all model records for iteration
    * @return qcl_data_db_Query The query object to use for iteration
    */
-  public function selectAll()
+  public function findAll()
   {
     $this->lastQuery = new qcl_data_db_Query( array(
       "select" => "*"
@@ -284,13 +302,13 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * Select the models instances that are linked with the target model
-   * for iteration
+   * Find the models instances that are linked with the target model
+   * for iteration.
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
    * @return qcl_data_db_Query
    */
-  public function selectLinkedModels( $targetModel )
+  public function findLinkedModels( $targetModel )
   {
     $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel );
     $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
@@ -378,20 +396,29 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function delete()
   {
-    /*
-     * delete references to this model instance
-     */
-    $relBeh = $this->getRelationBehavior();
-    foreach( $relBeh->relations() as $relation )
+    $id = $this->getId();
+    if ( ! $id )
     {
-      $targetModel = $relBeh->getTargetModel( $relation );
-      $this->getRelationBehavior()->unlinkAll( $targetModel );
+      $this->raiseError("Cannot delete: no model record loaded.");
+    }
+    $this->log( "Deleting model record #$id", QCL_LOG_MODEL );
+
+    /*
+     * unlink all model records and delete dependend ones
+     */
+    $relationBehavior = $this->getRelationBehavior();
+    foreach( $relationBehavior->relations() as $relation )
+    {
+      $targetModel = $relationBehavior->getTargetModel( $relation );
+      $relationBehavior->unlinkAll(
+        $targetModel, false, $relationBehavior->isDependentModel( $targetModel )
+      );
     }
 
     /*
      * delete the model data
      */
-    return $this->getQueryBehavior()->deleteRow( $this->getId() );
+    return $this->getQueryBehavior()->deleteRow( $id );
   }
 
   /**
@@ -418,17 +445,31 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * delete linked data
      */
+    $this->log( sprintf(
+      "Unlinking all records for class '%s'", $this->className()
+    ), QCL_LOG_MODEL );
+
     $relationBehavior = $this->getRelationBehavior();
     foreach ( $relationBehavior->relations() as $relation )
     {
       $relationBehavior->setupRelation( $relation );
       $targetModel = $relationBehavior->getTargetModel( $relation );
-      $relationBehavior->unlinkAll( $targetModel, true );
+
+      /*
+       * unlink all model records and delete dependend ones
+       */
+      $relationBehavior->unlinkAll(
+        $targetModel, true,  $relationBehavior->isDependentModel( $targetModel )
+      );
     }
 
     /*
      * delete model data
      */
+    $this->log( sprintf(
+      "Deleting all records for class '%s'", $this->className()
+    ), QCL_LOG_MODEL );
+
     return $this->getQueryBehavior()->deleteAll();
   }
 
@@ -564,7 +605,33 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getRelationBehavior()->unlinkModel( $targetModel );
   }
 
+  //-----------------------------------------------------------------------
+  // Import / export
+  //-----------------------------------------------------------------------
 
+  /**
+   * Imports data, using an importer class that needs to subclass
+   * qcl_data_model_AbstractImporter
+   *
+   * @param qcl_data_model_AbstractImporter $importer
+   * @return void
+   */
+  public function import( qcl_data_model_AbstractImporter $importer )
+  {
+    $importer->importInto( $this );
+  }
 
+  /**
+   * Exports data, using an exporter class that needs to subclass
+   * qcl_data_model_AbstractExporter. Returns data in the format
+   * that the exporter provides
+   *
+   * @param qcl_data_model_AbstractExporter $exporter
+   * @return mixed The exported data
+   */
+  public function export( qcl_data_model_AbstractExporter $exporter )
+  {
+    $exporter->exportFrom( $this );
+  }
 }
 ?>

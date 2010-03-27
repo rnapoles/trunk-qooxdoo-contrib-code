@@ -205,7 +205,7 @@ class Action extends qcl_data_model_db_ActiveRecord
     "Action_History" => array(
       "type"      => QCL_RELATIONS_HAS_MANY, // same as "1:n"
       "target"    => array(
-        "class" => "History"
+        "class"   => "History"
       )
     )
   );
@@ -227,7 +227,7 @@ class class_qcl_test_data_model_db_RelationalModel
 
   public function method_testModel()
   {
-//$this->startLogging();
+
     $user     = new User();
     $history  = new History();
     $action   = new Action();
@@ -390,11 +390,13 @@ class class_qcl_test_data_model_db_RelationalModel
     /*
      * iterate through the groups.
      */
-    $q1 = $group->selectAll();
-    $this->info( sprintf( "We have %s groups", $q1->getRowCount() ) );
+    $q1 = $group->findAll();
+    $this->assertEquals(3, $q1->getRowCount() );
+    $this->info( sprintf( "We have %s groups", $q1->getRowCount() ), null, __CLASS__,__METHOD__ );
+
     while( $group->nextRecord() )
     {
-      $q2 = $user->selectLinkedModels( $group );
+      $q2 = $user->findLinkedModels( $group );
       $members = array();
       while( $user->nextRecord() )
       {
@@ -406,6 +408,31 @@ class class_qcl_test_data_model_db_RelationalModel
       ) );
     }
 
+
+$this->startLogging();
+
+
+    /*
+     * delete a user, this should delete his/her history
+     */
+    $user->loadWhere( array( 'name' => "peer" ) );
+    $id = $user->id();
+    $count = $history->find( new qcl_data_db_Query( array(
+      'where' => array( 'UserId' => $id )
+    ) ) );
+    $this->info("'peer' has $count history records.");
+
+    $this->info("Deleting user 'peer' with id#$id");
+    $user->delete();
+
+    $this->assertEquals( 0, $user->countWhere( array( 'name' => "peer" ) ) , null, __CLASS__,__METHOD__);
+
+    $count = $history->find( new qcl_data_db_Query( array(
+      'where' => array( 'UserId' => $id )
+    ) ) );
+    $this->info("'peer' has $count history records.");
+    $this->assertEquals( 0, $count , null, __CLASS__,__METHOD__);
+
     $this->endLogging();
     return "OK";
   }
@@ -415,6 +442,7 @@ class class_qcl_test_data_model_db_RelationalModel
   {
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
   }
@@ -423,8 +451,10 @@ class class_qcl_test_data_model_db_RelationalModel
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, false );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
+
   }
 }
 
