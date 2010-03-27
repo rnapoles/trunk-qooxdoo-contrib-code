@@ -111,7 +111,7 @@ class qcl_data_model_db_RelationBehavior
 
 
   //-------------------------------------------------------------
-  // API
+  // Add relation data
   //-------------------------------------------------------------
 
   /**
@@ -123,24 +123,176 @@ class qcl_data_model_db_RelationBehavior
    */
   public function addRelations( $relations )
   {
-    foreach( $relations as $name => $rel )
+    foreach( $relations as $relation => $relData )
     {
       /*
        * add to relations map
        */
-      $this->relations[$name] = array(
-        'type'    => $this->checkRelationType( $rel['type'], $name ),
-        'target'  => $this->checkRelationTarget( $rel['target'], $name )
+      $this->relations[ $relation ] = array(
+        'type'        => $this->checkRelationType(   $relData, $relation ),
+        'target'      => $this->checkRelationTarget( $relData, $relation ),
+        'foreignKey'  => $this->checkRelationForeignKey( $relData, $relation )
       );
 
       /*
        * add a lookup index for class names
        */
-      $class = $this->getTargetModelClass( $name );
-      $this->relationModels[ $class ] = $name;
+      $class = $this->getTargetModelClass( $relation );
+      $this->relationModels[ $class ] = $relation;
 
     }
   }
+
+  /**
+   * Check the relation type. Throws an error if incorrect type is detected.
+   *
+   * @param array $relData The relation data
+   * @param string $relation The name of the relation (needed for error message)
+   * @return string The type
+   */
+  protected function checkRelationType( $relData, $relation )
+  {
+    if ( ! in_array( $relData['type'], self::$relation_types ) )
+    {
+      throw new qcl_data_model_Exception( sprintf(
+        "Unknown type '%s' in relation '%s'.",
+        $relData['type'], $relation
+      ) );
+    }
+    return $relData['type'];
+  }
+
+  /**
+   * Checks and returns the foreign key as used in the relation
+   * data-
+   *
+   * @param array $relData The relation data
+   * @param string $relation
+   * @return string
+   * @throws qcl_data_model_Exception
+   */
+  protected function checkRelationForeignKey( $relData, $relation )
+  {
+    $foreignKey = null;
+
+    /*
+     * first, check relation data
+     */
+    if ( isset( $relData['foreignKey'] ) )
+    {
+      $foreignKey = $relData['foreignKey'];
+    }
+
+    /*
+     * otherwise, get it from model
+     */
+    if( ! $foreignKey )
+    {
+      $foreignKey = $this->getForeignKeyFromModel();
+    }
+
+    /*
+     * if still no foreign key, throw exception
+     */
+    if ( ! $foreignKey  )
+    {
+      throw new qcl_data_model_Exception( sprintf(
+        "Missing foreign key in in relation '%s'",$relation
+      ) );
+    }
+
+    return $foreignKey;
+  }
+
+  /**
+   * Retrieves the foreign key name from the model. If the model
+   * does not specify the foreign id, create it from the class
+   * name plus "Id".
+   * @return string
+   */
+  public function getForeignKeyFromModel()
+  {
+    $foreignKey = $this->getModel()->foreignKey();
+    if ( ! $foreignKey )
+    {
+      $foreignKey = $this->getModel()->className() . "Id";
+    }
+    return $foreignKey;
+  }
+
+  /**
+   * Check the relation target. Throws an error if incorrect target is passed.
+   * @param array $relData The relation data
+   * @param string $relation The name of the relation (needed for error message)
+   * @return array The target definition
+   */
+  protected function checkRelationTarget( $relData, $relation )
+  {
+    if ( ! isset( $relData['target'] ) or ! is_array( $relData['target'] ) )
+    {
+      throw new qcl_data_model_Exception("Missing or invalid target definition in relation '$relation'.");
+    }
+
+    $target = array(
+      'class'       => $this->checkRelationTargetClass( $relData, $relation ),
+      'dependent'   => $this->checkRelationTargetDependency( $relData, $relation)
+    );
+
+    return $target;
+  }
+
+  /**
+   * Checks that the class of the target model exists and throws an
+   * exception if not.
+   *
+   * @param array $relData The relation data
+   * @param string $relation
+   * @return string
+   * @throws qcl_data_model_Exception
+   */
+  protected function checkRelationTargetClass( $relData, $relation )
+  {
+    if ( ! isset( $relData['target']['class'] )
+          or ! class_exists( $relData['target']['class'] ) )
+    {
+      throw new qcl_data_model_Exception( sprintf(
+        "Missing or invalid target model class relation '%s'.", $relation
+      ) );
+    }
+    return $relData['target']['class'];
+  }
+
+  /**
+   * Checks that the dependency of the target model is valid and throws
+   * an exception if not.
+   *
+   * @param array $relData The relation data
+   * @param string $relation
+   * @return bool True
+   * @throws qcl_data_model_Exception
+   */
+  protected function checkRelationTargetDependency( $relData, $relation )
+  {
+    if ( isset( $relData['target']['dependent'] )
+          and $relData['target']['dependent'] === true )
+    {
+      if ( $relData['type'] !== QCL_RELATIONS_HAS_MANY )
+      {
+        throw new qcl_data_model_Exception( sprintf(
+          "Target model can only be dependent for 1:n relationships. Invalid relation type '%' or dependency in relation '%s'",
+          $relData['type'], $relation
+        ) );
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  //-------------------------------------------------------------
+  // Information on relation data
+  //-------------------------------------------------------------
 
   /**
    * Returns the names of all registered relations
@@ -172,7 +324,7 @@ class qcl_data_model_db_RelationBehavior
    */
   public function checkRelation( $relation )
   {
-    if ( ! $this->relationExists(  $relation ) )
+    if ( ! $this->relationExists( $relation ) )
     {
       $this->getModel()->raiseError( "Relation '$relation' does not exist." );
     }
@@ -186,191 +338,23 @@ class qcl_data_model_db_RelationBehavior
   public function getRelationType( $relation )
   {
     $this->checkRelation( $relation );
+    if ( ! isset(  $this->relations[$relation]['type'] )
+          or  ! $this->relations[$relation]['type'] )
+    {
+      $this->getModel()->raiseError("Cannot determine relation type for relation '$relation'.");
+    }
     return $this->relations[$relation]['type'];
-  }
-
-  /**
-   * Setup the relation, creating relational join tables if needed.
-   * @return bool True if relations had to be set up, false if they
-   * were already set up.
-   */
-  public function setupRelation( $relation )
-  {
-    $this->checkRelation( $relation );
-
-    /*
-     * setup if that hasn't happened yet
-     */
-    $model = $this->getModel();
-    $class = $model->className();
-    $cache = $this->cache();
-    if ( ! isset( $cache->relations[ $relation ] ) )
-    {
-      $cache->relations[ $relation ] = array();
-    }
-
-    if( ! isset( $cache->relations[ $relation ][ $class ] ) )
-    {
-      /*
-       * call setup method
-       */
-      $method = "setupRelation" . $this->convertLinkType( $this->getRelationType( $relation ) );
-
-      $model->log( sprintf(
-        "Setting up relation '%s' for class '%s' using '%s'...",
-        $relation, $class, $method
-      ), QCL_LOG_MODEL_RELATIONS );
-
-      $this->$method( $relation );
-
-      /*
-       * set flag
-       */
-      $cache->relations[ $relation ][ $class ] = true;
-      return true;
-    }
-    $this->getModel()->log( sprintf(
-      "Relation '%s' is already set up for class '%s'.",
-      $relation, $class
-    ), QCL_LOG_MODEL_RELATIONS );
-    return false;
-  }
-
-  /**
-   * Check the relation type. Throws an error if incorrect type is passed.
-   * @param string $type The relation type
-   * @param string $name The name of the relation (needed for error message)
-   * @return string The type
-   */
-  protected function checkRelationType( $type, $name )
-  {
-    if ( ! in_array( $type, self::$relation_types ) )
-    {
-      throw new qcl_data_model_Exception("Unknown type '$type' in relation '$name'.");
-    }
-    return $type;
-  }
-
-  /**
-   * Check the relation target. Throws an error if incorrect target is passed.
-   * @param array $target The relation target definition
-   * @param string $name The name of the relation (needed for error message)
-   * @return array The target definition
-   */
-  protected function checkRelationTarget( $target, $name )
-  {
-    if ( ! isset( $target['class'] ) or ! $target['class'] )
-    {
-      throw new qcl_data_model_Exception("Invalid target definition in relation '$name'.");
-    }
-
-    $target = array(
-      'class'       => $this->checkRelationTargetModelClass( $target['class'], $name ),
-      'foreignKey'  => $target['foreignKey']
-    );
-
-    return $target;
-  }
-
-  /**
-   * Checks that the class of the target model exists.
-   * @param $model
-   * @param $name
-   * @return unknown_type
-   */
-  protected function checkRelationTargetModelClass( $class, $name )
-  {
-    if ( ! class_exists( $class ) )
-    {
-      throw new qcl_data_model_Exception( sprintf(
-        "Invalid target model class '%s' in relation '%s'.",
-        $class, $name
-      ) );
-    }
-    return $class;
-  }
-
-  /**
-   * Adds the foreign key as a property of this model
-   *
-   * @param string $key
-   * @return string key
-   */
-  public function setupForeignKey( $key, $relation )
-  {
-    $model   = $this->getModel();
-    $propBeh = $model->getPropertyBehavior();
-    if ( $propBeh->has( $key ) )
-    {
-      if (  $propBeh->type( $key ) != "integer" )
-      {
-        throw new qcl_data_model_Exception(sprintf(
-          "Model '%s' has no valid integer property '%s' needed as key for relation '%s'.",
-          get_class($model), $key, $relation
-        ) );
-      }
-    }
-    else
-    {
-      qcl_log_Logger::getInstance()->log( sprintf(
-        "Adding foreign key property '%s' to model '%s' for relation '%s",
-        $key, $this->getModel()->className(), $relation
-      ), QCL_LOG_MODEL_RELATIONS );
-
-      $propBeh->add( array(
-        $key => array(
-          "check"   => "integer",
-          "sqltype" => "int(11)" // FIXME
-        )
-      ) );
-    }
-    return $key;
-  }
-
-  /**
-   * Retrieves the foreign key name from the model. If the model
-   * does not specify the foreign id, create it from the class
-   * name plus "Id".
-   * @return string
-   */
-  public function getForeignKeyFromModel()
-  {
-    $foreignKey = $this->getModel()->foreignKey();
-    if ( ! $foreignKey )
-    {
-      $foreignKey = $this->getModel()->className() . "Id";
-    }
-    return $foreignKey;
   }
 
   /**
    * Returns the model's foreign key as used in a relationship
    * @param $relation
-   * @return unknown_type
+   * @return string
    */
   public function getForeignKey( $relation )
   {
     $this->checkRelation( $relation );
-
-    $foreignKey = null;
-
-    /*
-     * first, check relation data
-     */
-    if ( isset( $this->relations[$relation]['target']['foreignKey'] ) )
-    {
-      $foreignKey = $this->relations[$relation]['target']['foreignKey'];
-    }
-
-    /*
-     * otherwise, get it from model
-     */
-    if( ! $foreignKey )
-    {
-      $foreignKey = $this->getForeignKeyFromModel();
-      $this->relations[$relation]['target']['foreignKey'] = $foreignKey;
-    }
-    return $foreignKey;
+    return $this->relations[$relation]['foreignKey'];
   }
 
   /**
@@ -435,6 +419,109 @@ class qcl_data_model_db_RelationBehavior
     }
     return $foreignKey;
   }
+
+  /**
+   * Returns true if given model depends on the the managed model.
+   * @param $targetModel
+   * @return bool
+   */
+  public function isDependentModel( $targetModel )
+  {
+    $relation = $this->getRelationNameForModel( $targetModel );
+    return isset( $this->relations[$relation]['target']['dependent'] )
+      and $this->relations[$relation]['target']['dependent'] == true;
+  }
+
+  //-------------------------------------------------------------
+  // Setup the realtions from the data
+  //-------------------------------------------------------------
+
+  /**
+   * Adds the foreign key as a property of this model
+   *
+   * @param string $key
+   * @return string key
+   */
+  public function setupForeignKey( $key, $relation )
+  {
+    $model   = $this->getModel();
+    $propBeh = $model->getPropertyBehavior();
+    if ( $propBeh->has( $key ) )
+    {
+      if (  $propBeh->type( $key ) != "integer" )
+      {
+        throw new qcl_data_model_Exception(sprintf(
+          "Model '%s' has no valid integer property '%s' needed as key for relation '%s'.",
+          get_class($model), $key, $relation
+        ) );
+      }
+    }
+    else
+    {
+      qcl_log_Logger::getInstance()->log( sprintf(
+        "Adding foreign key property '%s' to model '%s' for relation '%s",
+        $key, $this->getModel()->className(), $relation
+      ), QCL_LOG_MODEL_RELATIONS );
+
+      $propBeh->add( array(
+        $key => array(
+          "check"   => "integer",
+          "sqltype" => "int(11)" // FIXME
+        )
+      ) );
+    }
+    return $key;
+  }
+
+  /**
+   * Setup the relation, creating relational join tables if needed.
+   * @return bool True if relations had to be set up, false if they
+   * were already set up.
+   */
+  public function setupRelation( $relation )
+  {
+    $this->checkRelation( $relation );
+
+    /*
+     * setup if that hasn't happened yet
+     */
+    $model = $this->getModel();
+    $class = $model->className();
+    $cache = $this->cache();
+    if ( ! isset( $cache->relations[ $relation ] ) )
+    {
+      $cache->relations[ $relation ] = array();
+    }
+
+    if( ! isset( $cache->relations[ $relation ][ $class ] ) )
+    {
+      /*
+       * call setup method
+       */
+      $relationType =  $this->getRelationType( $relation );
+      $method = "setupRelation" . $this->convertLinkType( $relationType );
+
+      $model->log( sprintf(
+        "Setting up relation '%s' for class '%s' using '%s'...",
+        $relation, $class, $method
+      ), QCL_LOG_MODEL_RELATIONS );
+
+      $this->$method( $relation );
+
+      /*
+       * set flag
+       */
+      $cache->relations[ $relation ][ $class ] = true;
+      return true;
+    }
+    $this->getModel()->log( sprintf(
+      "Relation '%s' is already set up for class '%s'.",
+      $relation, $class
+    ), QCL_LOG_MODEL_RELATIONS );
+    return false;
+  }
+
+
 
 
   /**
@@ -661,6 +748,10 @@ class qcl_data_model_db_RelationBehavior
       );
   }
 
+  //-------------------------------------------------------------
+  // Link two model records
+  //-------------------------------------------------------------
+
   /**
    * Creates a link between two associated model instances. Throws an exception
    * if models are already linked.
@@ -769,80 +860,10 @@ class qcl_data_model_db_RelationBehavior
     return false;
   }
 
-  /**
-   * Checks if the managed modeland the given target model are linked.
-   *
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
-   * @return bool
-   */
-  public function islinkedModel( $targetModel )
-  {
-    $relation = $this->checkModelRelation( $targetModel );
-    $this->setupRelation( $relation );
-    $method = "isLinkedModel" .
-      $this->convertLinkType( $this->getRelationType( $relation ) );
-    return $this->$method( $relation, $targetModel );
 
-  }
-
-  /**
-   * Checks if a one-to-many relation between the managed model
-   * and the given target model exists.
-   *
-   * @param string $relation Name of the relation
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
-   * @return bool
-   */
-  protected function islinkedModelOneToMany( $relation, $targetModel )
-  {
-    $foreignKey = $this->getForeignKey( $relation );
-    $id = $this->getModel()->id();
-    return $targetModel->get( $foreignKey ) == $id;
-  }
-
-  /**
-   * Checks if a many-to-one relation between the managed model
-   * and the given target model exists.
-   *
-   * @param string $relation Name of the relation
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
-   * @return bool
-   */
-  protected function islinkedModelManyToOne( $relation, $targetModel )
-  {
-    $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    $id = $targetModel->id();
-    return $this->getModel()->get( $targetForeignKey ) == $id;
-  }
-
-  /**
-   * Checks if a many-to-many relation between the managed model
-   * and the given target model exists.
-   *
-   * @param string $relation Name of the relation
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
-   * @return bool
-   */
-  protected function islinkedModelManyToMany( $relation, $targetModel )
-  {
-    $foreignKey       = $this->getForeignKey( $relation );
-    $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    $jointable        = $this->getJointable( $relation );
-    $queryBehavior    = $this->getModel()->getQueryBehavior();
-
-    return (bool) $jointable->countWhere(
-      sprintf(
-        "%s = :sourceId AND %s = :targetId",
-        $queryBehavior->getAdapter()->formatColumnName( $foreignKey ),
-        $queryBehavior->getAdapter()->formatColumnName( $targetForeignKey )
-      ),
-      array(
-        ":sourceId" => $this->getModel()->id(),
-        ":targetId" => $targetModel->id()
-      )
-    );
-  }
-
+  //-------------------------------------------------------------
+  // Unlink two model records
+  //-------------------------------------------------------------
 
   /**
    * Unlinks the given target model from the managed model. Throws an error
@@ -945,18 +966,25 @@ class qcl_data_model_db_RelationBehavior
     );
   }
 
+  //-------------------------------------------------------------
+  // Remove all links between two models
+  //-------------------------------------------------------------
 
   /**
-   * Unlinks all instances of the target model from the managed model.
-   * If
+   * Unlinks all instances of the target model from the managed model,
+   * optionally deleting the linked records ($delete = true). You can
+   * either unlink only the links between the currently loaded record
+   * ($allLinks = false) or remove all links ($allLinks= true).
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
    * @param bool $allLinks If true, remove all links, i.e. not only
    *   of the model instance (with the present id), but all other
    *   instances as well.
+   * @param bool $delete If true, delete all linked records in addition
+   *   to unlinking them. This is needed for dependend models.
    * @return int number of links removed
    */
-  public function unlinkAll( $targetModel, $allLinks = false )
+  public function unlinkAll( $targetModel, $allLinks = false, $delete = false )
   {
     $relation = $this->checkModelRelation( $targetModel );
     $this->setupRelation( $relation );
@@ -964,12 +992,13 @@ class qcl_data_model_db_RelationBehavior
     $method = "unlinkAll" . $this->convertLinkType( $this->getRelationType( $relation ) );
 
     qcl_log_Logger::getInstance()->log( sprintf(
-      "Unlinking %s model instances [%s] and [%s] using '%s'.",
+      "Unlinking %s model instances [%s] and [%s] using '%s'%s.",
        $allLinks ? "all" : "selected",
-       $this->getModel()->className(), $targetModel->className(), $method
+       $this->getModel()->className(), $targetModel->className(), $method,
+       $delete ? " and deleting the linked records" : ""
     ), QCL_LOG_MODEL_RELATIONS );
 
-    return $this->$method( $relation, $targetModel, $allLinks );
+    return $this->$method( $relation, $targetModel, $allLinks, $delete );
   }
 
   /**
@@ -981,24 +1010,57 @@ class qcl_data_model_db_RelationBehavior
    * @param bool $allLinks If true, remove all links, i.e. not only
    *   of the model instance (with the present id), but all other
    *   instances as well.
+   * @param bool $delete If true, delete all linked records in addition
+   *   to unlinking them. This is needed for dependend models.
    * @return int number of links removed
    */
-  protected function unlinkAllOneToMany( $relation, $targetModel, $allLinks  )
+  protected function unlinkAllOneToMany( $relation, $targetModel, $allLinks, $delete  )
   {
-    $foreignKey = $this->getForeignKey( $relation );
+    $foreignKey  = $this->getForeignKey( $relation );
+    $tgtQueryBeh = $targetModel->getQueryBehavior();
+
+    /*
+     * if all ties are to be broken, set all values in the
+     * foreign key column in the target model to null or
+     * delete them if requested
+     */
     if ( $allLinks )
     {
-      return $targetModel->getQueryBehavior()->updateWhere(
-        array( $foreignKey => null ),
-        array( $foreignKey => array( "IS NOT" , null ) )
-      );
+      if ( $delete )
+      {
+        return $tgtQueryBeh->deleteWhere(
+          array( $foreignKey => array( "IS NOT" , null ) )
+        );
+      }
+      else
+      {
+        return $tgtQueryBeh->updateWhere(
+          array( $foreignKey => null ),
+          array( $foreignKey => array( "IS NOT" , null ) )
+        );
+      }
     }
+
+    /*
+     * otherwise, set the foreign key columns in the target
+     * model that contain the id of the current model to null
+     * record or delete those rows if requested
+     */
     else
     {
-      return $targetModel->getQueryBehavior()->updateWhere(
-        array( $foreignKey => null ),
-        array( $foreignKey => $this->getModel()->getId() )
-      );
+      if ( $delete )
+      {
+        return $tgtQueryBeh->deleteWhere(
+          array( $foreignKey => $this->getModel()->getId() )
+        );
+      }
+      else
+      {
+        return $tgtQueryBeh->updateWhere(
+          array( $foreignKey => null ),
+          array( $foreignKey => $this->getModel()->getId() )
+        );
+      }
     }
   }
 
@@ -1011,13 +1073,28 @@ class qcl_data_model_db_RelationBehavior
    * @param bool $allLinks If true, remove all links, i.e. not only
    *   of the model instance (with the present id), but all other
    *   instances as well.
+   * @param bool $delete Must be false in a many-to-one relationship,
+   *   raises an error if true.
    * @return int number of links removed
    */
-  protected function unlinkAllManyToOne( $relation, $targetModel, $allLinks )
+  protected function unlinkAllManyToOne( $relation, $targetModel, $allLinks, $delete )
   {
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $queryBehavior    = $this->getModel()->getQueryBehavior();
 
+    /*
+     * we cannot delete target model records in a many-to-one relationship,
+     * this would break data integrity
+     */
+    if ( $delete )
+    {
+      $this->getModel()->raiseError("Cannot delete target model in a many-to-one relationship!");
+    }
+
+    /**
+     * if all links between the models are to be severed,
+     * set all foreign key columns in the model data to null
+     */
     if ( $allLinks )
     {
       return $queryBehavior->updateWhere(
@@ -1025,12 +1102,15 @@ class qcl_data_model_db_RelationBehavior
         array( $targetForeignKey => array( "IS NOT", null ) )
       );
     }
+
+    /*
+     * otherwise, do this only for the present record
+     */
     else
     {
-      return $queryBehavior->updateWhere(
-        array( $targetForeignKey => null ),
-        array( $targetForeignKey => $targetModel->getId() )
-      );
+      $targetId = $this->getModel()->get( $targetForeignKey );
+      $this->getModel()->set( $targetForeignKey, null );
+      $this->getModel()->save();
     }
   }
 
@@ -1043,19 +1123,38 @@ class qcl_data_model_db_RelationBehavior
    * @param bool $allLinks If true, remove all links, i.e. not only
    *   of the model instance (with the present id), but all other
    *   instances as well.
+   * @param bool $delete Must be false in a many-to-many relationship,
+   *   raises an error if true.
    * @return int number of links removed
    */
-  protected function unlinkAllManyToMany( $relation, $targetModel, $allLinks )
+  protected function unlinkAllManyToMany( $relation, $targetModel, $allLinks, $delete )
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $jointable        = $this->getJointable( $relation );
     $queryBehavior    = $this->getModel()->getQueryBehavior();
 
+    /*
+     * we cannot delete target model records in a many-to-one relationship,
+     * this would break data integrity
+     */
+    if ( $delete )
+    {
+      $this->getModel()->raiseError("Cannot delete target model in a many-to-one relationship!");
+    }
+
+    /*
+     * if all links are to be deleted, truncate the join table
+     */
     if ( $allLinks )
     {
       return $jointable->truncate();
     }
+
+    /*
+     * otherwise, remove those records that contain this model's
+     * id in the foreign key column
+     */
     else
     {
       return $jointable->deleteWhere(
@@ -1068,6 +1167,83 @@ class qcl_data_model_db_RelationBehavior
         )
       );
     }
+  }
+
+  //-------------------------------------------------------------
+  // Information on links between model records
+  //-------------------------------------------------------------
+
+  /**
+   * Checks if the managed modeland the given target model are linked.
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return bool
+   */
+  public function islinkedModel( $targetModel )
+  {
+    $relation = $this->checkModelRelation( $targetModel );
+    $this->setupRelation( $relation );
+    $method = "isLinkedModel" .
+      $this->convertLinkType( $this->getRelationType( $relation ) );
+    return $this->$method( $relation, $targetModel );
+  }
+
+  /**
+   * Checks if a one-to-many relation between the managed model
+   * and the given target model exists.
+   *
+   * @param string $relation Name of the relation
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return bool
+   */
+  protected function islinkedModelOneToMany( $relation, $targetModel )
+  {
+    $foreignKey = $this->getForeignKey( $relation );
+    $id = $this->getModel()->id();
+    return $targetModel->get( $foreignKey ) == $id;
+  }
+
+  /**
+   * Checks if a many-to-one relation between the managed model
+   * and the given target model exists.
+   *
+   * @param string $relation Name of the relation
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return bool
+   */
+  protected function islinkedModelManyToOne( $relation, $targetModel )
+  {
+    $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
+    $id = $targetModel->id();
+    return $this->getModel()->get( $targetForeignKey ) == $id;
+  }
+
+  /**
+   * Checks if a many-to-many relation between the managed model
+   * and the given target model exists.
+   *
+   * @param string $relation Name of the relation
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return bool
+   */
+  protected function islinkedModelManyToMany( $relation, $targetModel )
+  {
+    $foreignKey       = $this->getForeignKey( $relation );
+    $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
+    $jointable        = $this->getJointable( $relation );
+    $queryBehavior    = $this->getModel()->getQueryBehavior();
+
+    return (bool) $jointable->countWhere(
+      sprintf(
+        "%s = :sourceId AND %s = :targetId",
+        $queryBehavior->getAdapter()->formatColumnName( $foreignKey ),
+        $queryBehavior->getAdapter()->formatColumnName( $targetForeignKey )
+      ),
+      array(
+        ":sourceId" => $this->getModel()->id(),
+        ":targetId" => $targetModel->id()
+      )
+    );
   }
 
   /**
@@ -1134,6 +1310,11 @@ class qcl_data_model_db_RelationBehavior
       )
     );
   }
+
+  //-------------------------------------------------------------
+  // Reset the internal cache
+  //-------------------------------------------------------------
+
 
   /**
    * Resets  the internal cache

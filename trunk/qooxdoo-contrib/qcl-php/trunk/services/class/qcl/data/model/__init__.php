@@ -33,6 +33,9 @@ class qcl_data_model_RecordNotFoundException extends qcl_data_model_Exception{}
 /*
  * log filters
  */
+define("QCL_LOG_MODEL","model");
+qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_MODEL, "Messages concerning models", false);
+
 define("QCL_LOG_MODEL_RELATIONS","relations");
 qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_MODEL_RELATIONS, "Model relations", false);
 

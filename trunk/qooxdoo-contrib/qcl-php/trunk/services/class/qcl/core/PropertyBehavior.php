@@ -109,7 +109,7 @@ class qcl_core_PropertyBehavior
    *  to $value. If array, assume it is a map and set each key-value pair.
    *  Returns the object to allow chained setting.
    * @param mixed $value
-   * @return qcl_core_BaseClass
+   * @return qcl_core_Object
    */
   public function set( $property, $value=null )
   {
