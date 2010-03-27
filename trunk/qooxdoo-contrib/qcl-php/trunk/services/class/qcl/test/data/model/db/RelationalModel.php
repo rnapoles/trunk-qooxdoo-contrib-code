@@ -292,11 +292,11 @@ class class_qcl_test_data_model_db_RelationalModel
         $group->linkModel( $user );
         $this->assertEquals(true, $group->islinkedModel( $user ) );
 
-        $this->info("   Removing user '$userName'...");
+//        $this->info("   Removing user '$userName'...");
         $group->unlinkModel( $user );
         $this->assertEquals(false, $group->islinkedModel( $user ) );
 
-        $this->info("   Re-adding user '$userName'...");
+//        $this->info("   Re-adding user '$userName'...");
         $group->linkModel( $user );
         $this->assertEquals(true, $group->islinkedModel( $user ) );
       }
@@ -322,11 +322,11 @@ class class_qcl_test_data_model_db_RelationalModel
         $category->linkModel( $user );
         $this->assertEquals(true, $category->islinkedModel( $user ) );
 
-        $this->info("   Removing user '$userName'...");
+//        $this->info("   Removing user '$userName'...");
         $category->unlinkModel( $user );
         $this->assertEquals(false, $category->islinkedModel( $user ) );
 
-        $this->info("   Re-adding user '$userName'...");
+//        $this->info("   Re-adding user '$userName'...");
         $category->linkModel( $user );
         $this->assertEquals(true, $category->islinkedModel( $user ) );
       }
@@ -378,10 +378,10 @@ class class_qcl_test_data_model_db_RelationalModel
          */
         $user->linkModel( $history );
 
-        $this->info( sprintf(
-          "  %s: %s %s",
-          $history->getCreated(), $user->getName(), $action->getDescription()
-        ) );
+//        $this->info( sprintf(
+//          "  %s: %s %s",
+//          $history->getCreated(), $user->getName(), $action->getDescription()
+//        ) );
       }
     }
 
@@ -408,10 +408,6 @@ class class_qcl_test_data_model_db_RelationalModel
       ) );
     }
 
-
-$this->startLogging();
-
-
     /*
      * delete a user, this should delete his/her history
      */
@@ -432,6 +428,9 @@ $this->startLogging();
     ) ) );
     $this->info("'peer' has $count history records.");
     $this->assertEquals( 0, $count , null, __CLASS__,__METHOD__);
+
+    $this->startLogging();
+
 
     $this->endLogging();
     return "OK";

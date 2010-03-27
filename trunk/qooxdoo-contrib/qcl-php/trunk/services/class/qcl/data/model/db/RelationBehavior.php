@@ -17,6 +17,7 @@
  *
  */
 
+
 /**
  * Persistent cache object
  */
@@ -574,58 +575,33 @@ class qcl_data_model_db_RelationBehavior
     $model            = $this->getModel();
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $this->getTargetForeignKey( $relation );
-    $jointable        = $this->getJointable( $relation );
 
-    if ( ! $jointable->exists() )
-    {
-      $model->log( sprintf(
-        "Creating jointable '%s' ...", $jointable->getName()
-      ), QCL_LOG_MODEL_RELATIONS );
+    $joinModel = $this->getJoinModel( $relation );
 
-      $jointable->create();
-    }
+    $model->log( sprintf(
+      "Creating join model with properties '%s' and '%s' ...",
+      $foreignKey, $targetForeignKey
+    ), QCL_LOG_MODEL_RELATIONS );
 
-    /*
-     * drop the index if it exists
-     */
+    $joinModel->addProperties( array(
+      $foreignKey => array(
+        'check'     => "integer",
+        'sqltype'   => "INT(11)"
+      ),
+      $targetForeignKey => array(
+        'check'     => "integer",
+        'sqltype'   => "INT(11)"
+      )
+    ));
+
+    $jointable =  $joinModel->getQueryBehavior() ->getTable();
     $indexName = "unique_" . $foreignKey . "_" . $targetForeignKey;
-    if ( $jointable->indexExists( $indexName ) )
+    if ( ! $jointable->indexExists( $indexName ) )
     {
-      $jointable->dropIndex( $indexName );
+      $jointable->addIndex(
+        "unique", $indexName, array( $foreignKey, $targetForeignKey )
+      );
     }
-
-    /*
-     * create a column with the foreign id of this model
-     */
-    if ( ! $jointable->columnExists( $foreignKey ) )
-    {
-      $definition = "INT(11) NOT NULL"; //FIXME
-      $model->log( sprintf(
-        "Creating local foreign key column '%s' ...", $foreignKey
-      ), QCL_LOG_MODEL_RELATIONS );
-
-      $jointable->addColumn( $foreignKey, $definition );
-    }
-
-    /*
-     * create a column with the foreign id of the target model
-     */
-    if ( ! $jointable->columnExists( $targetForeignKey ) )
-    {
-      $definition = "INT(11) NOT NULL"; //FIXME
-
-      $model->log( sprintf(
-        "Creating target foreign key column '%s' ...", $targetForeignKey
-      ), QCL_LOG_MODEL_RELATIONS );
-
-     $jointable->addColumn( $targetForeignKey, $definition );
-    }
-
-    /*
-     * recreate index
-     */
-    $jointable->addIndex( "unique", $indexName, array( $foreignKey, $targetForeignKey ) );
-
   }
 
   /**
@@ -647,31 +623,30 @@ class qcl_data_model_db_RelationBehavior
     {
       $this->relations[$relation]['jointable'] = "join_" .$relation;
     }
-    $tablePrefix = $this->getModel()->getQueryBehavior()->getTablePrefix();
-    return $tablePrefix . $this->relations[$relation]['jointable'];
+    return $this->relations[$relation]['jointable'];
   }
 
   /**
-   * Returns the table object that is used to join two other
+   * Returns the active record model that is used to join two other
    * tables in a many-to-many relationship.
    * @param string $relation Relation name
-   * @return qcl_data_db_Table
+   * @return qcl_data_model_db_ActiveRecord
    */
-  protected function getJointable( $relation )
+  protected function getJoinModel( $relation )
   {
     $joinTableName = $this->getJoinTableName( $relation );
-    $adapter       = $this->getModel()->getQueryBehavior()->getAdapter();
 
     /*
-     * use cached table object or create new one
+     * use cached  object or create new one
      */
-    static $tables = array();
-
-    if ( ! isset( $tables[$joinTableName] ) )
+    static $joinModels = array();
+    if ( ! isset( $joinModels[$joinTableName] ) )
     {
-      $tables[$joinTableName] = new qcl_data_db_Table( $joinTableName, $adapter );
+      qcl_import( "qcl_data_model_db_JoinModel" );
+      $joinModel = new qcl_data_model_db_JoinModel( $joinTableName );
+      $joinModels[$joinTableName] = $joinModel;
     }
-    return $tables[$joinTableName];
+    return $joinModels[$joinTableName];
   }
 
   /**
@@ -855,11 +830,11 @@ class qcl_data_model_db_RelationBehavior
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    $jointable        = $this->getJointable( $relation );
+    $joinModel = $this->getJoinModel( $relation );
 
     if ( ! $this->isLinkedModelManyToMany( $relation, $targetModel ) )
     {
-      $jointable->insertRow( array(
+      $joinModel->create( array(
         $foreignKey        => $this->getModel()->id(),
         $targetForeignKey  => $targetModel->id()
       ) );
@@ -958,20 +933,14 @@ class qcl_data_model_db_RelationBehavior
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    $jointable        = $this->getJointable( $relation );
-    $queryBehavior    = $this->getModel()->getQueryBehavior();
 
-    return (bool) $jointable->deleteWhere(
-      sprintf(
-        "%s = :sourceId AND %s = :targetId",
-        $queryBehavior->getAdapter()->formatColumnName( $foreignKey ),
-        $queryBehavior->getAdapter()->formatColumnName( $targetForeignKey )
-      ),
-      array(
-        ":sourceId" => $this->getModel()->id(),
-        ":targetId" => $targetModel->id()
-      )
-    );
+    $joinModel     = $this->getJoinModel( $relation );
+    $queryBehavior = $joinModel->getQueryBehavior();
+
+    return $queryBehavior->deleteWhere( array(
+        $foreignKey       => $this->getModel()->id(),
+        $targetForeignKey => $targetModel->id()
+    ) );
   }
 
   //-------------------------------------------------------------
@@ -1140,10 +1109,8 @@ class qcl_data_model_db_RelationBehavior
    */
   protected function unlinkAllManyToMany( $relation, $targetModel, $allLinks, $delete )
   {
-    $foreignKey       = $this->getForeignKey( $relation );
-    $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    $jointable        = $this->getJointable( $relation );
-    $queryBehavior    = $this->getModel()->getQueryBehavior();
+    $foreignKey = $this->getForeignKey( $relation );
+    $joinModel  = $this->getJoinModel( $relation );
 
     /*
      * we cannot delete target model records in a many-to-one relationship,
@@ -1159,7 +1126,7 @@ class qcl_data_model_db_RelationBehavior
      */
     if ( $allLinks )
     {
-      return $jointable->truncate();
+      return $joinModel->getQueryBehavior()->getTable()->truncate();
     }
 
     /*
@@ -1168,15 +1135,9 @@ class qcl_data_model_db_RelationBehavior
      */
     else
     {
-      return $jointable->deleteWhere(
-        sprintf(
-          "%s = :sourceId",
-          $queryBehavior->getAdapter()->formatColumnName( $foreignKey )
-        ),
-        array(
-          ":sourceId" => $this->getModel()->id()
-        )
-      );
+      return $joinModel->getQueryBehavior()->deleteWhere( array(
+        $foreignKey => $this->getModel()->id()
+      ) );
     }
   }
 
@@ -1241,20 +1202,12 @@ class qcl_data_model_db_RelationBehavior
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    $jointable        = $this->getJointable( $relation );
-    $queryBehavior    = $this->getModel()->getQueryBehavior();
+    $joinModel        = $this->getJoinModel( $relation );
 
-    return (bool) $jointable->countWhere(
-      sprintf(
-        "%s = :sourceId AND %s = :targetId",
-        $queryBehavior->getAdapter()->formatColumnName( $foreignKey ),
-        $queryBehavior->getAdapter()->formatColumnName( $targetForeignKey )
-      ),
-      array(
-        ":sourceId" => $this->getModel()->id(),
-        ":targetId" => $targetModel->id()
-      )
-    );
+    return (bool) $joinModel->getQueryBehavior()->countWhere(  array(
+      $foreignKey       => $this->getModel()->id(),
+      $targetForeignKey => $targetModel->id()
+    ) );
   }
 
   /**
@@ -1310,14 +1263,13 @@ class qcl_data_model_db_RelationBehavior
    */
   protected function linkedModelIdsManyToMany( $relation, $targetModel )
   {
-    $jointable  = $this->getJointable( $relation );
-    $adapter    = $jointable->getAdapter();
-    $foreignKey = $adapter->formatColumnName( $this->getForeignKey( $relation ) );
+    $foreignKey        = $this->getForeignKey( $relation );
+    $targetForeignKey  = $targetModel->getRelationBehavior()->getForeignKey( $relation );
+    $joinQueryBehavior = $this->getJoinModel( $relation )->getQueryBehavior();
 
-    return $adapter->getReturnValues(
-      "SELECT id WHERE $foreignKey = :id ",
+    return  $joinQueryBehavior->fetchValues( $targetForeignKey,
       array(
-        ":id" => $this->getModel()->id()
+        $foreignKey => $this->getModel()->id()
       )
     );
   }
