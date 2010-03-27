@@ -433,6 +433,7 @@ class qcl_data_model_AbstractActiveRecord
       "Deleting record data for [%s #%s] ...",
       $this->className(), $id
     ), QCL_LOG_MODEL );
+
     return $this->getQueryBehavior()->deleteRow( $id );
   }
 
