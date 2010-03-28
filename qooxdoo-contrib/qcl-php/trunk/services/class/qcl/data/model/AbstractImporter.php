@@ -15,27 +15,22 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
+qcl_import( "qcl_core_Object" );
 
 /**
  * Abstract class serving as marker interface for classes
  * that import data into active record models
  */
 abstract class qcl_data_model_AbstractImporter
+  extends qcl_core_Object
 {
-
-  /**
-   * Constructor. Takes the data to be imported as argument.
-   * @param mixed $data. The data to import. Type depends on the
-   *  importer.
-   */
-  abstract public function __construct( $data );
 
   /**
    * Imports the data into the model. Takes the model as argument.
    * @param qcl_data_model_AbstractActiveRecord $model
    * @return void
    */
-  abstract public function importInto( qcl_data_model_AbstractActiveRecord $model );
+  abstract public function import( qcl_data_model_AbstractActiveRecord $model );
 
 }
 ?>

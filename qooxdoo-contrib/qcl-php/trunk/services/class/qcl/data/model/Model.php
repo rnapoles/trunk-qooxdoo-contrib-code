@@ -61,15 +61,6 @@ class qcl_data_model_Model
   function __construct()
   {
     parent::__construct();
-    $this->init();
-  }
-
-  /**
-   * Model initialization. If you define an overriding method, make sure
-   * to call the parent method, otherwise the properties will not be initialized.
-   */
-  protected function init()
-  {
     $this->getPropertyBehavior()->init();
   }
 

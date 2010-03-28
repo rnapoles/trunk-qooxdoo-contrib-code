@@ -41,7 +41,8 @@ class qcl_data_model_db_NamedActiveRecord
    */
   private $properties = array(
     "id" => array(
-      "check"    => "integer"
+      "check"    => "integer",
+      "export"   => false
     ),
     "namedId" => array(
       "check"    => "string",
@@ -52,13 +53,15 @@ class qcl_data_model_db_NamedActiveRecord
       "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "timestamp",
       "nullable" => true,
-      "init"     => null
+      "init"     => null,
+      "export"   => false
     ),
     "modified" => array(
       "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "current_timestamp",
       "nullable" => true,
-      "init"     => null
+      "init"     => null,
+      "export"   => false
     )
   );
 
@@ -82,6 +85,12 @@ class qcl_data_model_db_NamedActiveRecord
    */
   private $queryBehavior;
 
+  /**
+   * The relation behavior object. Access with getRelationBehavior()
+   * @var qcl_data_model_db_RelationBehavior
+   */
+  private $relationBehavior;
+
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
@@ -103,10 +112,6 @@ class qcl_data_model_db_NamedActiveRecord
    */
   public function tableName()
   {
-    if ( ! isset( $this->tableName ) )
-    {
-      $this->tableName = get_class( $this );
-    }
     return $this->tableName;
   }
 
@@ -141,5 +146,20 @@ class qcl_data_model_db_NamedActiveRecord
     }
     return $this->queryBehavior;
   }
+
+  /**
+   * Returns the relation behavior.
+   * @return qcl_data_model_db_RelationBehavior
+   */
+  public function getRelationBehavior()
+  {
+    if ( $this->relationBehavior === null )
+    {
+      $this->relationBehavior = new qcl_data_model_db_RelationBehavior( $this );
+      $this->relationBehavior->init();
+    }
+    return $this->relationBehavior;
+  }
+
 }
 ?>

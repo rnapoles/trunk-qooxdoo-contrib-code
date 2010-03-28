@@ -18,7 +18,7 @@
 require_once "qcl/io/filesystem/IResource.php";
 
 /**
- * PHP4/PHP5 Interface for file-like resources. Creating an object
+ * Interface for file-like resources. Creating an object
  * will create a file if it doesn't exist already.
  */
 class qcl_io_filesystem_IFile extends qcl_io_filesystem_IResource

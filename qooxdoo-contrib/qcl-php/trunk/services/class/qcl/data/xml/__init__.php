@@ -15,6 +15,15 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/log/Logger.php";
+
+/*
+ * Exception
+ */
+class qcl_data_xml_Exception extends JsonRpcException {}
+
+/*
+ * log filter
+ */
 qcl_log_Logger::getInstance()->registerFilter("xml","XML-related debugging.",false);
+
 ?>

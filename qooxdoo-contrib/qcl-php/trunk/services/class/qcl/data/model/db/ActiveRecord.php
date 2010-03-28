@@ -50,7 +50,7 @@ class qcl_data_model_db_ActiveRecord
   // Clas properties
   //-------------------------------------------------------------
 
-  protected $foreignKey = null;
+
 
   //-------------------------------------------------------------
   // Model properties
@@ -71,13 +71,15 @@ class qcl_data_model_db_ActiveRecord
       "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "timestamp",
       "nullable" => true,
-      "init"     => null
+      "init"     => null,
+      "export"   => false
     ),
     "modified" => array(
       "check"    => "qcl_data_db_Timestamp",
       "sqltype"  => "current_timestamp",
       "nullable" => true,
-      "init"     => null
+      "init"     => null,
+      "export"   => false
     )
   );
 
@@ -130,16 +132,7 @@ class qcl_data_model_db_ActiveRecord
     return $this->tableName;
   }
 
-  /**
-   * Returns the key with which the ids of the model data is
-   * referenced in other (foreign) relational tables
-   *
-   * @return string
-   */
-  public function foreignKey()
-  {
-    return $this->foreignKey;
-  }
+
 
   //-------------------------------------------------------------
   // Behaviours
@@ -182,25 +175,10 @@ class qcl_data_model_db_ActiveRecord
     if ( $this->relationBehavior === null )
     {
       $this->relationBehavior = new qcl_data_model_db_RelationBehavior( $this );
+      $this->relationBehavior->init();
     }
     return $this->relationBehavior;
   }
 
-  /**
-   * Resets the internal cache used by the behaviors to avoid unneccessary
-   * database lookups. Call this method from the constructor of your models
-   * before adding properties and relations during your development but remove
-   * the call when your properties and relations have stabilized, this will
-   * speed up things considerably.
-   *
-   * @return void
-   * @todo create a constant in config.php to control this
-   */
-  public function resetBehaviors()
-  {
-    $this->getPropertyBehavior()->reset();
-    $this->getQueryBehavior()->reset();
-    $this->getRelationBehavior()->reset();
-  }
 }
 ?>

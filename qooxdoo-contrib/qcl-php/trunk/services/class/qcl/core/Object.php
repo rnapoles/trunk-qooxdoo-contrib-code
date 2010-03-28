@@ -1123,7 +1123,7 @@ class qcl_core_Object
    */
   public function __toString()
   {
-    return "[" . $this->className() . " instance #" . $this->objectId() . "]";
+    return "[" . $this->className() . " #" . $this->objectId() . "]";
   }
 
   /**
