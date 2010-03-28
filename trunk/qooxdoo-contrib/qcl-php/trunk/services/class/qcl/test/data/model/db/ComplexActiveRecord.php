@@ -60,6 +60,7 @@ class ComplexModel
 
   function __construct()
   {
+    $this->resetBehaviors();
     $this->addProperties( $this->properties );
     parent::__construct();
   }
@@ -80,6 +81,8 @@ class class_qcl_test_data_model_db_ComplexActiveRecord
      * creating complex object
      */
     $model = new ComplexModel();
+    $model->deleteAll();
+
     $id = $model->create();
     $model->setList( array(4,5,6) );
     $model->setObject( new ArrayList( array( 7,8,9 ) ) );
@@ -88,12 +91,16 @@ class class_qcl_test_data_model_db_ComplexActiveRecord
     /*
      * retrieving complex object
      */
-    $model->init();
     $model->load($id);
     $this->assertEquals(array(4,5,6), $model->getList(), "Array serialization failed.");
     $object = $model->getObject();
     $this->assertEquals("ArrayList", get_class($object), "Object serialization failed.");
     $this->assertEquals(array( 7,8,9 ) , $object->toArray(), "Object serialization failed.");
+
+    /*
+     * delete the table
+     */
+    $model->destroy();
 
     return "OK";
   }

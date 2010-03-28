@@ -55,6 +55,9 @@ class qcl_data_model_db_PropertyCache
  *              be added later, which will make this feature more
  *              portable across database drivers.
  *
+ * 'column'     The name of the column that the property is stored in.
+ *              Defaults to the property name.
+ *
  * 'unique'     Easy way to add a unique index on the column
  *
  * 'serialize'  If <true>, non-scalar values will be serialized before
@@ -81,7 +84,8 @@ class qcl_data_model_db_PropertyCache
  *      "check"     => "integer",
  *      "init"      => 1,
  *      "nullable"  => true,
- *      "sqltype"   => "int(11)"
+ *      "sqltype"   => "int(11)",
+ *      "column"    => "real_bar_column"
  *    ),
  *    "baz"  => array(
  *      "check"     => "boolean",
@@ -196,6 +200,9 @@ class qcl_data_model_db_PropertyBehavior
    */
   public function add( $properties )
   {
+    /*
+     * add property map to local map
+     */
     parent::add( $properties );
 
     $model     = $this->getModel();
@@ -221,25 +228,39 @@ class qcl_data_model_db_PropertyBehavior
      * setup table columns
      * @todo separate by task into individual methods
      */
-    foreach( $properties as $name => $prop )
+    foreach( $properties as $property => $prop )
     {
       /*
-       * savve the property definition in serialized form
+       * save the property definition in serialized form
        */
       $serializedProps = serialize( $prop );
-      if ( isset( $cachedProps[$name] ) and $cachedProps[$name] == $serializedProps )
+      if ( isset( $cachedProps[$property] ) and $cachedProps[$property] == $serializedProps )
       {
         $model->log( sprintf(
           "Property '%s' of class '%s', table '%s' has not changed.",
-          $name, $model->className(), $tableName
+          $property, $model->className(), $tableName
         ), QCL_LOG_PROPERTIES );
         continue;
       }
 
       /*
+       * real column name of the property, defaults
+       * to the property name
+       */
+      if ( ! isset( $prop['column'] ) or ! $prop['column'] )
+      {
+        $this->properties[$property]['column']  = $property;
+      }
+      else
+      {
+        $this->properties[$property]['column'] = $prop['column'];
+      }
+      $column = $this->properties[$property]['column'];
+
+      /*
        * skip "id" column since it is created by default
        */
-      if ( $name == "id" ) continue;
+      if ( $property == "id" ) continue;
 
       /*
        * determine sql type
@@ -283,25 +304,24 @@ class qcl_data_model_db_PropertyBehavior
       if ( ! isset( $prop['sqltype'] ) )
       {
         throw new qcl_data_model_Exception(
-          sprintf( "Property '%s.%s' does not have a 'sqltype' definition.", get_class( $this->model), $name )
+          sprintf( "Property '%s.%s' does not have a 'sqltype' definition.", get_class( $this->model), $property )
         );
       }
 
       /*
        * if column does not exist, create it
        */
-      if ( ! $table->columnExists( $name ) )
+      if ( ! $table->columnExists( $column ) )
       {
-        $table->addColumn( $name, $sqltype );
+        $table->addColumn( $column, $sqltype );
 
         /*
          * unique index on column?
          */
         if ( isset( $prop['unique'] ) and $prop['unique'] === true )
         {
-          $table->addIndex("unique","unique_{$name}",array($name) );
+          $table->addIndex( "unique", "unique_{$column}", array( $column ) );
         }
-
       }
 
       /*
@@ -309,23 +329,49 @@ class qcl_data_model_db_PropertyBehavior
        */
       else
       {
-        $curr_sqltype = $table->getColumnDefinition( $name );
-        if (strtolower($curr_sqltype)  != strtolower($sqltype) )
+        $curr_sqltype = $table->getColumnDefinition( $column );
+        if (strtolower( $curr_sqltype )  != strtolower( $sqltype ) )
         {
-          $model->log( "Column '$name' has changed from '$curr_sqltype' to '$sqltype'", QCL_LOG_PROPERTIES);
+          $model->log( sprintf(
+            "Column '%s' has changed from '%s' to '%s'",
+            $column, $curr_sqltype, $sqltype
+          ), QCL_LOG_PROPERTIES);
         }
         else
         {
-          $model->log( "Column '$name' has not changed.", QCL_LOG_PROPERTIES);
+          $model->log(
+            "Column '$column' has not changed.", QCL_LOG_PROPERTIES
+          );
         }
       }
 
       /*
        * save in cache
        */
-      $cache->properties[$tableName][$name] = $serializedProps;
+      $cache->properties[$tableName][$property] = $serializedProps;
 
     } // end foreach
+  }
+
+  /**
+   * Given the name of the property, return the name of the column
+   * that the property data is stored in.
+   * @param $property
+   * @return string
+   */
+  public function getColumnName( $property )
+  {
+    $this->check( $property );
+    $column = $this->properties[$property]['column'];
+    if ( ! $column )
+    {
+      // FIXME - Bad hack, doesn't work if foreign keys are manually set!
+      return $property;
+      $this->getModel()->raiseError( sprintf(
+        "Cannot convert property '%s' into column name", $property
+      ) );
+    }
+    return $column;
   }
 
   /**

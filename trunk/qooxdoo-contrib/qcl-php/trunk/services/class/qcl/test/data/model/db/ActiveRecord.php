@@ -41,6 +41,7 @@ class Member
       "check"     => "string",
       "sqltype"   => "varchar(50)",
       "nullable"  => true,
+      "column"    => "town"
     ),
     "country"  => array(
       "check"     => "string",
@@ -51,12 +52,14 @@ class Member
       "check"     => "boolean",
       "sqltype"   => "int(1)",
       "init"      => false,
-      "nullable"  => false
+      "nullable"  => false,
+      "column"    => "isSubscriber"
     )
   );
 
   function __construct()
   {
+    $this->resetBehaviors(); // Development
     $this->addProperties( $this->properties );
     parent::__construct();
   }
@@ -69,7 +72,7 @@ class class_qcl_test_data_model_db_ActiveRecord
   extends qcl_test_AbstractTestController
 {
 
-  public function method_testCreateRecords()
+  public function method_testModel()
   {
     //$this->startLogging();
 
@@ -93,30 +96,20 @@ class class_qcl_test_data_model_db_ActiveRecord
       ));
       $member->save();
     }
-    //$this->endLogging();
-    return "OK";
-  }
-
-  public function method_testQueries()
-  {
-
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
-    $this->method_testCreateRecords();
-
-    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
 
     $member = new Member();
-    $count = $member->loadWhere( array(
+    $query = $member->loadWhere( array(
       "name"        => array( "LIKE" , "B%"),
       "newsletter"  => true
     ) );
+    $count = $query->getRowCount();
 
+    $this->info( "We have $count newsletter subscribers that start with 'B':");
     $this->assertEquals(7,$count,null,__CLASS__,__METHOD__);
 
     /*
      * querying records
      */
-    $this->info( "We have $count newsletter subscribers that start with 'B':");
     $subscribers = array();
     while( $member->nextRecord() )
     {
@@ -146,19 +139,31 @@ class class_qcl_test_data_model_db_ActiveRecord
     ));
     $this->info("Deleted $count .com - address from Germany.");
 
+    /*
+     * cleanup
+     */
+    $member->destroy();
+
     return "OK";
   }
 
 
   function startLogging()
   {
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
   }
 
   function endLogging()
   {
-    $this->getLogger()->setFilterEnabled(array(QCL_LOG_DB,QCL_LOG_TABLES),false);
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
   }
 }
 

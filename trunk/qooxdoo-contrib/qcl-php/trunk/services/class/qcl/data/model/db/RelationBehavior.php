@@ -488,7 +488,8 @@ class qcl_data_model_db_RelationBehavior
           "check"    => "integer",
           "sqltype"  => "int(11)", // FIXME Is this portable?
           "export"   => false,
-          "nullable" => true
+          "nullable" => true,
+          "column"   => $key // FIXME make this configurable
         )
       ) );
     }
@@ -604,11 +605,15 @@ class qcl_data_model_db_RelationBehavior
     $joinModel->addProperties( array(
       $foreignKey => array(
         'check'     => "integer",
-        'sqltype'   => "INT(11)"
+        'sqltype'   => "INT(11)",
+        'export'    => true,
+        'column'    => $foreignKey //FIXME
       ),
       $targetForeignKey => array(
         'check'     => "integer",
-        'sqltype'   => "INT(11)"
+        'sqltype'   => "INT(11)",
+        'export'    => true,
+        'column'    => $targetForeignKey //FIXME
       )
     ));
 
