@@ -64,6 +64,10 @@ class qcl_data_model_db_PropertyCache
  *              data type (such as LONGTEXT or LONGBLOB) that will be able to
  *              store adequately long strings.
  *
+ * 'export'     When the model data is exported, whether to include
+ *              this property in the export data. Defaults to <true> if
+ *              not defined.
+ *
  *
  * <pre>
  * private $properties = array(
@@ -83,7 +87,8 @@ class qcl_data_model_db_PropertyCache
  *      "check"     => "boolean",
  *      "init"      => true,
  *      "nullable"  => false,
- *      "sqltype"   => "int(1)"
+ *      "sqltype"   => "int(1)",
+ *      "export"    => false
  *    ),
  * );
  *
@@ -214,6 +219,7 @@ class qcl_data_model_db_PropertyBehavior
 
     /*
      * setup table columns
+     * @todo separate by task into individual methods
      */
     foreach( $properties as $name => $prop )
     {
@@ -293,8 +299,9 @@ class qcl_data_model_db_PropertyBehavior
          */
         if ( isset( $prop['unique'] ) and $prop['unique'] === true )
         {
-          $table->addIndex("unique","unique_{$name}",$name);
+          $table->addIndex("unique","unique_{$name}",array($name) );
         }
+
       }
 
       /*
@@ -317,7 +324,8 @@ class qcl_data_model_db_PropertyBehavior
        * save in cache
        */
       $cache->properties[$tableName][$name] = $serializedProps;
-    }
+
+    } // end foreach
   }
 
   /**

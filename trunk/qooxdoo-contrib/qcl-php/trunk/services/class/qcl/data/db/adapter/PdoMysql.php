@@ -907,6 +907,7 @@ class qcl_data_db_adapter_PdoMysql
     }
     $table = $this->formatTableName( $table );
     $this->exec("DROP TABLE $table" );
+    $this->flush();
   }
 
   /**
@@ -1300,6 +1301,23 @@ class qcl_data_db_adapter_PdoMysql
     return $this->getResultValue("
       SELECT TIME_TO_SEC(TIMEDIFF(NOW(),:timestamp));
     ", array( ":timestamp" => $timestamp ) );
+  }
+
+  /**
+   * Updates table information schema of the backend. This is necessary
+   * for MySql after deleting tables. Requires administrative privileges.
+   * @return void.
+   */
+  public function flush()
+  {
+    try
+    {
+      $this->exec("FLUSH TABLES");
+    }
+    catch( PDOException $e)
+    {
+      $this->warn("Cannot flush tables:" . $e->getMessage() );
+    }
   }
 
 }

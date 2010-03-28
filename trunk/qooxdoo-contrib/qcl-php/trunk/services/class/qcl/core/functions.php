@@ -400,6 +400,17 @@ function is_list( $var )
 }
 
 /**
+ * Checks whether the input an associative array
+ * @param array $var
+ * @return bool
+ */
+function is_map( $var )
+{
+  if ( ! is_array( $var ) ) return false;
+  return ! is_list( $var );
+}
+
+/**
  * Modification of debug_print_backtrace() - modified not to
  * echo but instead to return the backtrace and to
  * skip a variable number of entries

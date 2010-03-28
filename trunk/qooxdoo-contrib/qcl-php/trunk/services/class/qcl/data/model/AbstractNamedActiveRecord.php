@@ -32,13 +32,22 @@ class qcl_data_model_AbstractNamedActiveRecord
 {
 
   /**
+   * Getter for named id
+   * @return string
+   */
+  public function namedId()
+  {
+    return $this->get("namedId");
+  }
+
+  /**
    * Creates a new model record, optionally setting initial
    * property values.
    * @param $namedId
    * @param array|null Optional map of properties to set
    * @return int Id of the record
    */
-  public function create( $namedId, $data )
+  public function create( $namedId, $data=null )
   {
     /*
      * check named id
@@ -55,7 +64,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * reset properties to default values
      */
-    $this->init();
+    $this->getPropertyBehavior()->init();
     $this->set("namedId", $namedId );
     $this->set("created", new qcl_data_db_Timestamp("now") );
     if( is_array( $data ) )
@@ -143,7 +152,7 @@ class qcl_data_model_AbstractNamedActiveRecord
       else
       {
         throw new qcl_data_model_RecordNotFoundException( sprintf(
-          "Named model instance [%s#%s] does not exist",
+          "Named model record [%s #%s] does not exist",
           $this->className(), $id
         ) );
       }

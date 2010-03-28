@@ -276,10 +276,14 @@ class qcl_data_db_Table
    * not sanitized. Make sure not to pass user-generated data to this method!
    * @param string $type Any of (FULLTEXT|UNIQUE)
    * @param string $index Index name
-   * @param string|array $columns name(s) of column(s) in the index
+   * @param array $columns Names of columns in the index
    */
   public function addIndex( $type, $index, $columns )
   {
+    if ( ! $type or !$index or ! is_array( $columns ) or ! count( $columns ) )
+    {
+      $this->raiseError("Invalid arguments");
+    }
     qcl_log_Logger::getInstance()->log( sprintf(
      "Adding '%s' index `%s` to table `%s` using columns %s.",
       $type, $index, $this->getName(), implode(",",$columns)

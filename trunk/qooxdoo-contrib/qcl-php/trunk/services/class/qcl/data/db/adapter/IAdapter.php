@@ -484,5 +484,12 @@ interface qcl_data_db_adapter_IAdapter
    * @return string
    */
   public function getSecondsSince( $timestamp );
+
+  /**
+   * Updates table information schema of the backend. This is necessary
+   * for MySql after deleting tables. Requires administrative privileges.
+   * @return void
+   */
+  public function flush();
 }
 ?>

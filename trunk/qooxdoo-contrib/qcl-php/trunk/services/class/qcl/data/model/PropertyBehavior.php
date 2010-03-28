@@ -250,7 +250,18 @@ class qcl_data_model_PropertyBehavior
   public function add( $properties )
   {
     //$this->getModel()->debug("Adding " .print_r( $properties,true),__CLASS__,__LINE__);
-    /**
+
+    /*
+     * check validity
+     */
+    if( ! is_array( $properties ) or ! is_map( $properties ) )
+    {
+      $this->getModel()->raiseError( sprintf(
+        "Invalid property data in model class '%s'.", $this->getModel()->className()
+      ) );
+    }
+
+    /*
      * add to property definition array
      */
     foreach ( $properties as $name => $map )
@@ -266,6 +277,15 @@ class qcl_data_model_PropertyBehavior
            $this->properties[ $name ][ $key ] = $value;
         }
       }
+
+      /*
+       * optional export property is true by default
+       */
+      if ( ! isset( $this->properties[ $name ]['export'] ) )
+      {
+        $this->properties[ $name ]['export'] = true;
+      }
+
     }
 
     return $this->properties;
@@ -459,6 +479,34 @@ class qcl_data_model_PropertyBehavior
   protected function isPrimitive( $type )
   {
     return in_array( $type, self::$primitives );
+  }
+
+  /**
+   * Returns true if the property is to be included in an export.
+   * @param $property
+   * @return bool
+   */
+  public function isExportableProperty( $property )
+  {
+    return $this->properties[$property]['export'];
+  }
+
+  /**
+   * Returns an array of properties that have been defined as
+   * exportable.
+   * @return array
+   */
+  public function exportableProperties()
+  {
+    $propList = array();
+    foreach( $this->names() as $property )
+    {
+      if ( $this->isExportableProperty( $property ) )
+      {
+        $propList[] = $property;
+      }
+    }
+    return $propList;
   }
 }
 ?>

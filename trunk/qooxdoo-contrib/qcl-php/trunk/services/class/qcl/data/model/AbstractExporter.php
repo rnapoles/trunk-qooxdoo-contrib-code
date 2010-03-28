@@ -16,11 +16,15 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+qcl_import( "qcl_core_Object" );
+
+
 /**
  * Abstract class serving as marker interface for classes
  * that export data from active record models
  */
 abstract class qcl_data_model_AbstractExporter
+  extends qcl_core_Object
 {
 
   /**
@@ -29,7 +33,7 @@ abstract class qcl_data_model_AbstractExporter
    * @param qcl_data_model_AbstractActiveRecord $model
    * @return mixed
    */
-  abstract public function exportFrom( qcl_data_model_AbstractActiveRecord $model );
+  abstract public function export( qcl_data_model_AbstractActiveRecord $model );
 
 }
 ?>

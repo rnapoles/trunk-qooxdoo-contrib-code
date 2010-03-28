@@ -1071,14 +1071,23 @@ class qcl_data_model_db_QueryBehavior
 
   /**
    * Deletes all records from the database.
-   * @return number of affected rows
+   * @return int number of affected rows
    */
   public function deleteAll()
   {
-    /*
-     * delete model data
-     */
     return $this->getTable()->truncate();
+  }
+
+  /**
+   * Destroys all data connected to the behavior: Deletes the table
+   * that holds the model records.
+   */
+  public function destroy()
+  {
+    if( $this->getTable()->exists() )
+    {
+      $this->getTable()->delete();
+    }
   }
 }
 ?>

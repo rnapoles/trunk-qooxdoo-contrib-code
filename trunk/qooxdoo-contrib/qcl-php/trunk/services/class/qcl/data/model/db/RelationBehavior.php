@@ -72,7 +72,7 @@ class qcl_data_model_db_RelationBehavior
   static private $cache;
 
   //-------------------------------------------------------------
-  // Constructors
+  // Initialization
   //-------------------------------------------------------------
 
   /**
@@ -82,6 +82,19 @@ class qcl_data_model_db_RelationBehavior
   function __construct( $model )
   {
     $this->model = $model;
+  }
+
+
+  /**
+   * Initialization. Sets up relations.
+   * @return void
+   */
+  public function init()
+  {
+    foreach( $this->relations() as $relation )
+    {
+      $this->setupRelation( $relation );
+    }
   }
 
   //-------------------------------------------------------------
@@ -312,9 +325,12 @@ class qcl_data_model_db_RelationBehavior
    */
   public function relationExists( $relation )
   {
-    if ( ! is_string( $relation ) or ! trim( $relation ) )
+    if ( ! is_string( $relation ) or ! $relation )
     {
-      $this->getModel()->raiseError("Invalid relation name");
+      $this->getModel()->raiseError( sprintf(
+        "Invalid relation type %s for model class '%s'",
+        gettype($relation), $this->getModel()->className()
+      ) );
     }
     return isset( $this->relations[ $relation ] );
   }
@@ -469,8 +485,10 @@ class qcl_data_model_db_RelationBehavior
 
       $propBeh->add( array(
         $key => array(
-          "check"   => "integer",
-          "sqltype" => "int(11)" // FIXME
+          "check"    => "integer",
+          "sqltype"  => "int(11)", // FIXME Is this portable?
+          "export"   => false,
+          "nullable" => true
         )
       ) );
     }
@@ -632,7 +650,7 @@ class qcl_data_model_db_RelationBehavior
    * @param string $relation Relation name
    * @return qcl_data_model_db_ActiveRecord
    */
-  protected function getJoinModel( $relation )
+  public function getJoinModel( $relation )
   {
     $joinTableName = $this->getJoinTableName( $relation );
 
@@ -1228,31 +1246,33 @@ class qcl_data_model_db_RelationBehavior
   }
 
   /**
-   * No implementation for linkedModelIds() for 1:n relations, simply
-   * raises an error
-   * @return void
-   */
-  protected function linkedModelIdsOneToMany()
-  {
-    $this->getModel()->raiseError("No linked ids can be meaningfully determined in a one-to-many relationship.");
-  }
-
-  /**
-   * Implementation for linkedModelIds() for n:1 relations
+   * Implementation for linkedModelIds() for 1:n relations
    * @param string $relation
    * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return array
    */
-  protected function linkedModelIdsManyToOne( $relation, $targetModel )
+  protected function linkedModelIdsOneToMany ( $relation, $targetModel )
   {
-    $targetForeignKey = $targetModel
-      ->getRelationBehavior()
-      ->getForeignKey( $relation );
-    $targetId = $targetModel->id();
-    $ids = $this->getModel()->getQueryBehavior()->fetchValues( "id", array(
-      $targetForeignKey => $targetId
+    $foreignKey = $this->getForeignKey( $relation );
+    $ids = $targetModel->getQueryBehavior()->fetchValues( "id", array(
+      $foreignKey => $this->getModel()->id()
     ));
     return $ids;
+  }
+
+  /**
+   * Implementation for linkedModelIds() for n:1 relations. Returns an
+   * array with one element, the id of the target model record that is
+   * linked with the loaded record.
+   *
+   * @param string $relation
+   * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @return array Returns an empty array
+   */
+  protected function linkedModelIdsManyToOne( $relation, $targetModel )
+  {
+    $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
+    return array( $this->getModel()->get( $targetForeignKey ) );
   }
 
   /**

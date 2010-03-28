@@ -7,13 +7,6 @@ require_once "qcl/data/xml/Storage.php";
  */
 class class_qcl_data_xml_Tests extends qcl_data_db_controller
 {
-  /*
-  function __construct()
-  {
-    parent::__construct();
-    //$this->debug("Constructor ...");
-    //$this->controlAccess();
-  }*/
 
  function method_testSimpleXml()
  {
@@ -47,13 +40,7 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
     $record2->addAttribute("id","second record");
     $child2  = $record2->addChild("child");
     $child2->addAttribute("id","child of second record");
-
-
-    if ( phpversion() >5 )
-      $doc->record[0] = "CDATA of first record (PHP5)";
-    else
-      $doc->record[0]->setCDATA("CDATA of first record (PHP4)");
-
+    $doc->record[0] = "CDATA of first record (PHP5)";
     $doc->record[1]->child->addAttribute("foo","yeah!");
 
     //$parser->setData("/record[2]","Oder nicht?");
@@ -78,13 +65,6 @@ class class_qcl_data_xml_Tests extends qcl_data_db_controller
 
     return $this->result();
   }
-
-  function method_testCache()
-  {
-    //$this->debug("Not implemented");
-    return $this->result();
-  }
-
 }
 
 ?>

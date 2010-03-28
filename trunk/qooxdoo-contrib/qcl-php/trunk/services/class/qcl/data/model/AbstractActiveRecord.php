@@ -32,11 +32,18 @@ class qcl_data_model_AbstractActiveRecord
 {
 
   /**
+   * The name of the property that is used to reference the
+   * model record in a different model
+   * @var string
+   */
+  protected $foreignKey;
+
+  /**
    * The object instance of the datasource that this model belongs to.
    * The datasource provides shared resources for models.
    * @var qcl_data_datasource_type_db_Model
    */
-  private $datasourceModel = null;
+  private $datasourceModel;
 
 
   /**
@@ -44,7 +51,6 @@ class qcl_data_model_AbstractActiveRecord
    * @var qcl_data_db_Query
    */
   private $lastQuery;
-
 
   //-------------------------------------------------------------
   // Model properties
@@ -187,6 +193,8 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getId();
   }
 
+
+
   //-------------------------------------------------------------
   // Query behavior
   //-------------------------------------------------------------
@@ -236,7 +244,7 @@ class qcl_data_model_AbstractActiveRecord
     else
     {
       throw new qcl_data_model_RecordNotFoundException( sprintf(
-        "Model instance [%s#%s] does not exist",
+        "Model record [%s #%s] does not exist",
         $this->className(), $id
       ) );
     }
@@ -349,9 +357,14 @@ class qcl_data_model_AbstractActiveRecord
   public function create( $data=null )
   {
     /*
+     * setup relations if not already set up
+     */
+    $this->getRelationBehavior()->init();
+
+    /*
      * setting initial values
      */
-    $this->init();
+    $this->getPropertyBehavior()->init();
     $this->set("created", new qcl_data_db_Timestamp("now") );
     if( is_array( $data ) )
     {
@@ -466,9 +479,9 @@ class qcl_data_model_AbstractActiveRecord
     ), QCL_LOG_MODEL );
 
     $relationBehavior = $this->getRelationBehavior();
+
     foreach ( $relationBehavior->relations() as $relation )
     {
-      $relationBehavior->setupRelation( $relation );
       $targetModel = $relationBehavior->getTargetModel( $relation );
       $isDependent = $relationBehavior->isDependentModel( $targetModel );
 
@@ -561,6 +574,17 @@ class qcl_data_model_AbstractActiveRecord
   //-----------------------------------------------------------------------
 
   /**
+   * Returns the key with which the ids of the model data is
+   * referenced in other (foreign) relational tables
+   *
+   * @return string
+   */
+  public function foreignKey()
+  {
+    return $this->foreignKey;
+  }
+
+  /**
    * Returns the relation behavior
    * @return qcl_data_model_db_RelationBehavior
    */
@@ -639,7 +663,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function import( qcl_data_model_AbstractImporter $importer )
   {
-    $importer->importInto( $this );
+    $importer->import( $this );
   }
 
   /**
@@ -652,7 +676,44 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function export( qcl_data_model_AbstractExporter $exporter )
   {
-    $exporter->exportFrom( $this );
+    return $exporter->export( $this );
+  }
+
+  //-------------------------------------------------------------
+  // Cleanup
+  //-------------------------------------------------------------
+
+  /**
+   * Resets the internal cache used by the behaviors to avoid unneccessary
+   * database lookups. Call this method from the constructor of your models
+   * before adding properties and relations during your development but remove
+   * the call when your properties and relations have stabilized, this will
+   * speed up things considerably.
+   *
+   * @return void
+   */
+  public function resetBehaviors()
+  {
+    $this->getPropertyBehavior()->reset();
+    $this->getQueryBehavior()->reset();
+    $this->getRelationBehavior()->reset();
+  }
+
+  /**
+   * Destroys all data connected to the model, such as tables etc.
+   */
+  public function destroy()
+  {
+    $relationBehavior = $this->getRelationBehavior();
+    foreach( $relationBehavior->relations() as $relation )
+    {
+      if ( $relationBehavior->getRelationType( $relation ) == QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY )
+      {
+        $joinModel = $relationBehavior->getJoinModel( $relation );
+        $joinModel->destroy();
+      }
+    }
+    $this->getQueryBehavior()->destroy();
   }
 }
 ?>
