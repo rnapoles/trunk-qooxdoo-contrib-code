@@ -261,15 +261,15 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Returns the column name from a property name. By default, return the
-   * property name. Override for different behavior.
-   * @return string
+   * Returns the column name from a property name set by the property
+   * behavior.
+   *
    * @param string $property Property name
+   * @return string
    */
-  public function getColumnName( $name )
+  public function getColumnName( $property )
   {
-    $this->getModel()->getPropertyBehavior()->check( $name );
-    return $name;
+    return $this->getModel()->getPropertyBehavior()->getColumnName( $property );
   }
 
   /**
@@ -655,7 +655,9 @@ class qcl_data_model_db_QueryBehavior
     foreach( $where as $property => $value )
     {
       $type   = $this->getModel()->getPropertyBehavior()->type( $property );
+
       $column = $adpt->formatColumnName( $this->getColumnName( $property ) );
+
       $param  = ":$property";
 
       /*
@@ -950,18 +952,21 @@ class qcl_data_model_db_QueryBehavior
   //-------------------------------------------------------------
 
   /**
-   * Stringifies data using the property behavior
+   * Prepares the data for insertion and update
    * @param array $data
    * @return array
    */
-  protected function scalarizeData( $data )
+  protected function prepareData( $data )
   {
+    $preparedData = array();
     $propBeh = $this->getModel()->getPropertyBehavior();
-    foreach( $data as $key => $value )
+    foreach( $data as $property => $value )
     {
-      $data[$key] = $propBeh->scalarize( $key, $value );
+      $column = $this->getColumnName( $property );
+      $preparedData[ $column ] = $propBeh->scalarize( $property, $value );
     }
-    return $data;
+
+    return $preparedData;
   }
 
   /**
@@ -971,7 +976,7 @@ class qcl_data_model_db_QueryBehavior
    */
   public function insertRow( $data )
   {
-    return $this->getTable()->insertRow( $this->scalarizeData( $data) );
+    return $this->getTable()->insertRow( $this->prepareData( $data) );
   }
 
   /**
@@ -1017,7 +1022,7 @@ class qcl_data_model_db_QueryBehavior
       'where' => array ( 'id' => $id ) )
     );
     return $this->getTable()->updateWhere(
-      $this->scalarizeData( $data ),
+      $this->prepareData( $data ),
       $this->createWhereStatement( $query ),
       $query->getParameters(),
       $query->getParameterTypes()
@@ -1034,7 +1039,7 @@ class qcl_data_model_db_QueryBehavior
   {
     $query = new qcl_data_db_Query( array( 'where' => $where) );
     return $this->getTable()->updateWhere(
-      $this->scalarizeData( $data ),
+      $this->prepareData( $data ),
       $this->createWhereStatement( $query ),
       $query->getParameters(),
       $query->getParameterTypes()

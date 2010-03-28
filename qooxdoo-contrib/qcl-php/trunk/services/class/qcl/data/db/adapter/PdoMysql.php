@@ -944,10 +944,7 @@ class qcl_data_db_adapter_PdoMysql
     $database = $this->getDatabase();
     $table = $this->formatTableName( $table );
     return (bool) count( $this->fetchAll("
-      SHOW COLUMNS
-      FROM $table
-      FROM `$database`
-      LIKE :column
+      SHOW COLUMNS FROM $table FROM `$database` LIKE :column
     ", array(
       ":column"   => $column
     ) ) );
@@ -1310,13 +1307,18 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function flush()
   {
+    static $warning = true;
     try
     {
       $this->exec("FLUSH TABLES");
     }
     catch( PDOException $e)
     {
-      $this->warn("Cannot flush tables:" . $e->getMessage() );
+      if( $warning )
+      {
+        $this->warn("Cannot flush tables:" . $e->getMessage() );
+        $warning = false; // warn only once
+      }
     }
   }
 

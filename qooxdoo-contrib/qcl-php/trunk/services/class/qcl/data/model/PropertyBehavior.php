@@ -209,17 +209,6 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * Checks whether the property has a local or internal name (such as a
-   * column name that is different from the property name).
-   * @param $property
-   * @return bool
-   */
-  public function hasLocalAlias( $property )
-  {
-    return false;
-  }
-
-  /**
    * Returns the type of the property as provided in the property
    * definition
    * @param $property

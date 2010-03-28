@@ -237,6 +237,7 @@ class class_qcl_test_data_model_db_RelationalModel
     /*
      * create users
      */
+    $user->deleteAll();
     $users = array(
       "mehmet", "ling", "john",
       "fritz", "cathrine", "peer",
@@ -253,6 +254,7 @@ class class_qcl_test_data_model_db_RelationalModel
     /*
      * create groups
      */
+    $group->deleteAll();
     $groups = array( "customer", "employee", "manager" );
     foreach( $groups as $name )
     {
@@ -262,6 +264,7 @@ class class_qcl_test_data_model_db_RelationalModel
     /*
      * create category
      */
+    $category->deleteAll();
     $categories = array( "music", "sports", "health", "computer" );
     foreach( $categories as $name )
     {
@@ -327,7 +330,7 @@ class class_qcl_test_data_model_db_RelationalModel
       }
     }
 
-   $this->info("Creating random user history...");
+    $this->info("Creating random user history...");
     $history->deleteAll();
     $action->deleteAll();
 
@@ -453,7 +456,6 @@ class class_qcl_test_data_model_db_RelationalModel
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
-
   }
 }
 
