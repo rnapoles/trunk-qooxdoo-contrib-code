@@ -71,6 +71,17 @@ class qcl_data_model_db_RelationBehavior
    */
   static private $cache;
 
+
+  /**
+   * A map of key value pairs that is looked up each time a class name
+   * is used during the setup of the model. This allows child classes to
+   * use the relations defined in parent classes without having to redefine
+   * the relations.
+   *
+   * @var array
+   */
+  static private $replace_class = array();
+
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
@@ -131,12 +142,23 @@ class qcl_data_model_db_RelationBehavior
   /**
    * Add the definition of relations of this model for use in
    * queries.
+   *
    * @see qcl_data_model_IQueryBehavior::addRelations()
    * @param array $relations
-   * @return unknown_type
+   * @param string $parentClass The class that defines the relations.
+   * @param string $childClass The implementing child class
+   * @return void
    */
-  public function addRelations( $relations )
+  public function addRelations( $relations, $parentClass, $childClass )
   {
+    /*
+     * replace parent class name with child class
+     */
+    if ( $parentClass != $childClass )
+    {
+      self::$replace_class[$parentClass] = $childClass;
+    }
+
     foreach( $relations as $relation => $relData )
     {
       /*
@@ -281,10 +303,9 @@ class qcl_data_model_db_RelationBehavior
     /*
      * replace the class name by a name provided by subclasses?
      */
-    $replaceClassMap = $this->getModel()->replaceClassMap();
-    if ( isset( $replaceClassMap[$class] ) )
+    if ( isset( self::$replace_class[$class] ) )
     {
-      $class2 = $replaceClassMap[$class];
+      $class2 = self::$replace_class[$class];
       if ( ! class_exists( $class2 ) )
       {
         throw new qcl_data_model_Exception( sprintf(
@@ -440,6 +461,15 @@ class qcl_data_model_db_RelationBehavior
         "Cannot determine class name for target model in relation '%s'.",
         $relation
       ) );
+    }
+
+    /*
+     * return the name of the child class instead of the
+     * defining class
+     */
+    if ( isset( self::$replace_class[$class] ) )
+    {
+      return self::$replace_class[$class];
     }
     return $class;
   }
@@ -1379,24 +1409,21 @@ class qcl_data_model_db_RelationBehavior
   }
 
   /**
-   * Implementation for linkedModelIds() for 1:n relations
+   * Implementation for linkedModelIds() for 1:n relations.
+   * Returns an empty.
    * @param string $relation
    * @param qcl_data_model_db_ActiveRecord $targetModel
-   * @return array
+   * @return array An empty array
    */
   protected function linkedModelIdsOneToMany ( $relation, $targetModel )
   {
-    $foreignKey = $this->getForeignKey( $relation );
-    $ids = $targetModel->getQueryBehavior()->fetchValues( "id", array(
-      $foreignKey => $this->getModel()->id()
-    ));
-    return $ids;
+    return array();
+    //$targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
+    //return array( $this->getModel()->get( $targetForeignKey ) );
   }
 
   /**
-   * Implementation for linkedModelIds() for n:1 relations. Returns an
-   * array with one element, the id of the target model record that is
-   * linked with the loaded record.
+   * Implementation for linkedModelIds() for n:1 relations.
    *
    * @param string $relation
    * @param qcl_data_model_db_ActiveRecord $targetModel
@@ -1405,7 +1432,10 @@ class qcl_data_model_db_RelationBehavior
   protected function linkedModelIdsManyToOne( $relation, $targetModel )
   {
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    return array( $this->getModel()->get( $targetForeignKey ) );
+    $ids = $this->getModel()->getQueryBehavior()->fetchValues( "id", array(
+      $targetForeignKey => $targetModel->id()
+    ));
+    return $ids;
   }
 
   /**

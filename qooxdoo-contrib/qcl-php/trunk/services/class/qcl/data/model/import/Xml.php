@@ -65,6 +65,7 @@ class qcl_data_model_import_Xml
   {
     $xmlDoc           = $this->xmlDoc;
     $relationBehavior = $model->getRelationBehavior();
+    $propertyBehavior = $model->getPropertyBehavior();
     $className        = $model->className();
 
     /*
@@ -115,7 +116,9 @@ class qcl_data_model_import_Xml
        */
       foreach ( $recordNode->children() as $propertyNode )
       {
-        $model->set( $propertyNode->getName(), (string) $propertyNode );
+        $property = $propertyNode->getName();
+        $value    = (string) $propertyNode;
+        $model->set( $property, $propertyBehavior->typecast( $property, $value ) );
       }
       $model->save();
     }

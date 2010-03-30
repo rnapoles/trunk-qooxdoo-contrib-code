@@ -106,7 +106,6 @@ class qcl_data_model_export_Xml
     /*
      * model associations/links
      */
-
     foreach( $relationBehavior->relations() as $relation )
     {
       $relNode = $linksNode->addChild("relation");
@@ -115,7 +114,7 @@ class qcl_data_model_export_Xml
       while( $model->nextRecord() )
       {
         $targetModel = $relationBehavior->getTargetModel( $relation );
-        $ids = $relationBehavior->linkedModelIds( $targetModel );
+        $ids = $targetModel->getRelationBehavior()->linkedModelIds( $model );
 
         if ( count($ids) )
         {

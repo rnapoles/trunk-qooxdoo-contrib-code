@@ -113,7 +113,7 @@ class qcl_data_model_db_PersistenceBehavior
     $this->getPropertyBehavior()->reset();
     $this->addProperties( $this->properties );
     $this->addIndexes( $this->indexes );
-    //$this->addRelations( $this->relations );
+    //$this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 

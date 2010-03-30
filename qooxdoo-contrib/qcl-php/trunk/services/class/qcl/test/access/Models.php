@@ -19,16 +19,6 @@
 qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_access_model_User2" );
 
-class Replace
-{
-    static public $map = array(
-    'qcl_access_model_User2'       => "User",
-    'qcl_access_model_Role2'       => "Role",
-    'qcl_access_model_Permission2' => "Permission",
-    'qcl_config_ConfigModel'       => "Config",
-    'qcl_config_UserConfigModel'   => "UserConfig"
-  );
-}
 
 /**
  * Class to model the user data. As the other model classes defined
@@ -83,14 +73,6 @@ class User extends qcl_access_model_User2
   {
     return qcl_getInstance( __CLASS__ );
   }
-
-  /**
-   * Returns the replacement map for class names
-   */
-  public function replaceClassMap()
-  {
-    return Replace::$map;
-  }
 }
 
 /**
@@ -101,9 +83,7 @@ class Role extends qcl_access_model_Role2
 {
   protected $tableName = "test_data_Role";
   protected $foreignKey = "test_RoleId";
-  public function replaceClassMap() {
-    return Replace::$map;
-  }
+
   function __construct() {
     parent::__construct();
     $this->getRelationBehavior()->setJoinTableName( "User_Role", "test_join_User_Role" );
@@ -125,9 +105,6 @@ class Permission extends qcl_access_model_Permission2
 {
   protected $tableName = "test_data_Permission";
   protected $foreignKey = "test_PermissionId";
-  public function replaceClassMap() {
-    return Replace::$map;
-  }
   function __construct() {
     parent::__construct();
     $this->getRelationBehavior()->setJoinTableName( "Permission_Role", "test_join_Permission_Role" );
@@ -148,9 +125,6 @@ class Config extends qcl_config_ConfigModel
 {
   protected $tableName = "test_data_Config";
   protected $foreignKey = "test_ConfigId";
-  public function replaceClassMap() {
-    return Replace::$map;
-  }
   /**
    * @return Config
    */
@@ -166,9 +140,6 @@ class Config extends qcl_config_ConfigModel
 class UserConfig extends qcl_config_UserConfigModel
 {
   protected $tableName = "test_data_UserConfig";
-  public function replaceClassMap() {
-    return Replace::$map;
-  }
   /**
    * @return UserConfig
    */
@@ -225,8 +196,8 @@ class class_qcl_test_access_Models
      * link records
      */
     $Role_User = array(
-      'user'      => array( "user1", "user2", "user3" ),
-      'manager'   => array( "user3" ),
+      'user'      => array( "user1", "user2", "user3", "admin" ),
+      'manager'   => array( "user3", "admin" ),
       'admin'     => array( "admin" )
     );
     foreach( $Role_User as $roleName => $users )
@@ -258,7 +229,8 @@ class class_qcl_test_access_Models
      */
     $this->testAnonymous();
     $this->testUser();
-
+    $this->testImportExport();
+    $this->testUser();
 
     return "OK";
   }
@@ -291,9 +263,44 @@ class class_qcl_test_access_Models
     $this->assertEquals( true, $user->hasPermission("createRecord" ), null, __CLASS__, __LINE__ );
     $this->assertEquals( false, $user->hasPermission("manageUsers" ), null, __CLASS__, __LINE__ );
 
+    $user->load("admin");
+    $this->assertEquals( "user,manager,admin", implode( ",", $user->roles() ), null, __CLASS__, __LINE__ );
+    $this->assertEquals( "viewRecord,createRecord,deleteRecord,manageUsers", implode( ",", $user->permissions() ), null, __CLASS__, __LINE__ );
+
     $user->resetLastAction();
     sleep(1);
     $this->assertEquals( 1, $user->getSecondsSinceLastAction(), null, __CLASS__, __LINE__ );
+  }
+
+  protected function testImportExport()
+  {
+    /*
+     * export to xml
+     */
+    qcl_import( "qcl_data_model_export_Xml" );
+    $exporter =  new qcl_data_model_export_Xml();
+    $userXml = User::getInstance()->export( $exporter );
+    $roleXml = Role::getInstance()->export( $exporter );
+    $permissionXml = Permission::getInstance()->export( $exporter );
+
+//    $this->info( $userXml );
+//    $this->info( $roleXml );
+//    $this->info( $permissionXml );
+
+    /*
+     * delete all records
+     */
+    User::getInstance()->deleteAll();
+    Role::getInstance()->deleteAll();
+    Permission::getInstance()->deleteAll();
+
+    /*
+     * re-import
+     */
+    qcl_import( "qcl_data_model_import_Xml" );
+    User::getInstance()->import( new qcl_data_model_import_Xml( $userXml ) );
+    Role::getInstance()->import( new qcl_data_model_import_Xml( $roleXml ) );
+    Permission::getInstance()->import( new qcl_data_model_import_Xml( $permissionXml ) );
   }
 
   protected function startLogging()
