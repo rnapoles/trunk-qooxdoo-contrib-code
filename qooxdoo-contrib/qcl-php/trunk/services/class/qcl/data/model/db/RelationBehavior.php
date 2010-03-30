@@ -462,7 +462,29 @@ class qcl_data_model_db_RelationBehavior
     $class = $this->getTargetModelClass( $relation );
     if ( ! $instances[$class] )
     {
-      $model = new $class();
+      /*
+       * try to get the object singleton
+       */
+      if ( version_compare ( PHP_VERSION, '5.3', '<') )
+      {
+        //$model = call_user_func_array( array( $class, "getInstance" ), array() );
+      }
+      else
+      {
+        //$model = call_user_func_array( "$class::getInstance", array() );
+      }
+
+      /*
+       * if no getInstance() method exists, create a new object
+       */
+      if ( ! is_object( $model ) )
+      {
+        $model = new $class();
+      }
+
+      /*
+       * store the object
+       */
       $instances[$class] = $model;
     }
     return $instances[$class];
@@ -686,7 +708,7 @@ class qcl_data_model_db_RelationBehavior
    * @param string $relation Relation name
    * @return string
    */
-  protected function getJoinTableName( $relation )
+  public function getJoinTableName( $relation )
   {
     /*
      * get name of join table
@@ -696,7 +718,38 @@ class qcl_data_model_db_RelationBehavior
     {
       $this->relations[$relation]['jointable'] = "join_" .$relation;
     }
-    return $this->relations[$relation]['jointable'];
+    $joinTableName = $this->relations[$relation]['jointable'];
+    $this->checkJoinTableName( $joinTableName, $relation );
+    return $joinTableName;
+  }
+
+  /**
+   * Checks the name of the join table for the current relation
+   * @param string $tableName
+   * @param string $relation Relation name
+   * @return void
+   */
+  protected function checkJoinTableName( $joinTableName, $relation )
+  {
+    if ( ! is_string( $joinTableName ) or empty( $joinTableName ) )
+    {
+      throw new qcl_data_model_Exception( sprintf(
+        "Invalid join table name '%s' in class '%s', relation '%s'",
+        $joinTableName, $this->getModel()->className(), $relation
+      ) );
+    }
+  }
+
+  /**
+   * Sets the name of the table that joins two models
+   * @param $relation
+   * @param $tableName
+   * @return unknown_type
+   */
+  public function setJoinTableName( $relation, $joinTableName )
+  {
+    $this->checkJoinTableName( $relation, $joinTableName );
+    $this->relations[$relation]['jointable'] = $joinTableName;
   }
 
   /**
@@ -1367,9 +1420,9 @@ class qcl_data_model_db_RelationBehavior
     $targetForeignKey  = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $joinQueryBehavior = $this->getJoinModel( $relation )->getQueryBehavior();
 
-    return  $joinQueryBehavior->fetchValues( $targetForeignKey,
+    return  $joinQueryBehavior->fetchValues($foreignKey,
       array(
-        $foreignKey => $this->getModel()->id()
+        $targetForeignKey => $targetModel->id()
       )
     );
   }

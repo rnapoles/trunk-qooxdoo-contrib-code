@@ -394,11 +394,14 @@ class qcl_data_db_adapter_PdoMysql
 		/*
 		 * log
 		 */
-	  $this->log("query: $sql", QCL_LOG_DB );
-		if ( $parameters )
-		{
-		  $this->log("Using parameters:" . print_r($parameters,true) . print_r($parameter_types,true) , QCL_LOG_DB );
-		}
+	  if ( $this->getLogger()->isFilterEnabled( QCL_LOG_DB ) )
+	  {
+  	  $this->log("query: $sql", QCL_LOG_DB );
+      if ( $parameters )
+      {
+        $this->log("Using parameters:" . print_r($parameters,true) . print_r($parameter_types,true) , QCL_LOG_DB );
+      }
+	  }
 
 		/*
 		 * bind values
@@ -442,7 +445,10 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function exec( $sql )
   {
-    $this->log("exec: $sql", QCL_LOG_DB );
+    if ( $this->getLogger()->isFilterEnabled( QCL_LOG_DB ) )
+    {
+      $this->log("exec: $sql", QCL_LOG_DB );
+    }
     return $this->db()->exec( $sql );
   }
 
