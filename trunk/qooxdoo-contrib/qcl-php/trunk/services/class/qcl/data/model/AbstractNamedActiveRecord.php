@@ -166,5 +166,14 @@ class qcl_data_model_AbstractNamedActiveRecord
     }
     $this->raiseError("Invalid parameter.");
   }
+
+  /**
+   * Return a string representation of the model
+   */
+  public function __toString()
+  {
+    $namedId = $this->getPropertyBehavior()->get("namedId");
+    return sprintf( "[%s #%s]", $this->className(), $namedId ? $namedId : "--" );
+  }
 }
 ?>

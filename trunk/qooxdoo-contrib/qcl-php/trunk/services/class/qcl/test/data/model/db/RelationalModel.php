@@ -91,7 +91,7 @@ class User extends qcl_data_model_db_ActiveRecord
     $this->resetBehaviors(); // comment this out when in production
 
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }
@@ -118,7 +118,7 @@ class Group extends qcl_data_model_db_ActiveRecord
   function __construct()
   {
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }
@@ -148,9 +148,10 @@ class Category extends qcl_data_model_db_ActiveRecord
 
   function __construct()
   {
-    $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
     parent::__construct();
+    $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
+
   }
 }
 
@@ -186,7 +187,7 @@ class History extends qcl_data_model_db_ActiveRecord
 
   function __construct()
   {
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }
@@ -213,7 +214,7 @@ class Action extends qcl_data_model_db_ActiveRecord
   function __construct()
   {
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }

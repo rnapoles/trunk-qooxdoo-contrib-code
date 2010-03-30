@@ -94,8 +94,9 @@ class qcl_config_ConfigModel
    */
   function __construct()
   {
+    parent::__construct();
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
   }
 
   /**

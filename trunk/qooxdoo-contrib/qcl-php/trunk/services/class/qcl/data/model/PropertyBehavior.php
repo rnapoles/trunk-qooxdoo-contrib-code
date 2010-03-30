@@ -138,7 +138,7 @@ class qcl_data_model_PropertyBehavior
          throw new qcl_core_PropertyBehaviorException( sprintf(
           "Class '%s': core model property '%s' does not exist. ".
           "Did you call the parent constructor in the constructor of class '%s'?",
-          get_class( $this->getModel() ), $property
+          $this->getModel()->className(), $property, $this->getModel()->className()
         ) );
       }
       throw new qcl_core_PropertyBehaviorException( sprintf(
@@ -394,7 +394,7 @@ class qcl_data_model_PropertyBehavior
    * @param mixed $value
    * @return mixed
    */
-  public function typecast( $propertyName, $value)
+  public function typecast( $propertyName, $value )
   {
     $type = $this->type( $propertyName );
     //$this->getModel()->debug( "$propertyName=$value($type)");

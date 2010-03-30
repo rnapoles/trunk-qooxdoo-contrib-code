@@ -39,16 +39,6 @@ class qcl_data_model_AbstractActiveRecord
   protected $foreignKey;
 
   /**
-   * A map of key value pairs that is looked up each time a class name
-   * is used during the setup of the model. This allows child classes to
-   * use the relations defined in parent classes without having to redefine
-   * the relations.
-   *
-   * @var array
-   */
-  protected $replace_class = array();
-
-  /**
    * The object instance of the datasource that this model belongs to.
    * The datasource provides shared resources for models.
    * @var qcl_data_datasource_type_db_Model
@@ -619,12 +609,16 @@ class qcl_data_model_AbstractActiveRecord
    * Add the definition of relations of this model for use in
    * queries.
    *
-   * @param array $relations
+   * @param array  $relations
+   * @param string $parentClass The class that defines the
+   *   relations. Usually, the caller passes the __CLASS__ constant.
+   *   This is needed to correctly determine the model class names when
+   *   child classes are involved.
    * @return void
    */
-  public function addRelations( $relations )
+  public function addRelations( $relations, $parentClass )
   {
-    return $this->getRelationBehavior()->addRelations( $relations );
+    return $this->getRelationBehavior()->addRelations( $relations, $parentClass, $this->className() );
   }
 
   /**
@@ -670,18 +664,6 @@ class qcl_data_model_AbstractActiveRecord
   public function unlinkModel( $targetModel )
   {
     return $this->getRelationBehavior()->unlinkModel( $targetModel );
-  }
-
-  /**
-   * Returns map of key value pairs that is looked up each time a class name
-   * is used during the setup of the model. This allows child classes to
-   * use the relations defined in parent classes without having to redefine
-   * the relations.
-   * @return array
-   */
-  public function replaceClassMap()
-  {
-    return $this->replace_class;
   }
 
   //-----------------------------------------------------------------------
@@ -748,6 +730,15 @@ class qcl_data_model_AbstractActiveRecord
       }
     }
     $this->getQueryBehavior()->destroy();
+  }
+
+  /**
+   * Return a string representation of the model
+   */
+  public function __toString()
+  {
+    $id = $this->getPropertyBehavior()->get("id");
+    return sprintf( "[%s #%s]", $this->className(), $id ? $id : "--" );
   }
 }
 ?>

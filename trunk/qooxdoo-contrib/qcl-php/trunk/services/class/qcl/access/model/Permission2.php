@@ -76,7 +76,7 @@ class qcl_access_model_Permission2
   function __construct()
   {
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 

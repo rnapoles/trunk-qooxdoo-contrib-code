@@ -82,7 +82,7 @@ class User extends qcl_data_model_db_ActiveRecord
     $this->resetBehaviors(); // comment this out when in production
 
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }
@@ -109,7 +109,7 @@ class Group extends qcl_data_model_db_ActiveRecord
   function __construct()
   {
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }
@@ -132,7 +132,7 @@ class Category extends qcl_data_model_db_NamedActiveRecord
 
   function __construct()
   {
-    $this->addRelations( $this->relations );
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
   }
 }
@@ -236,11 +236,14 @@ class class_qcl_test_data_model_db_ImportExport
     /*
      * create md5 hashes to validate the result
      */
-    $this->info( "Hash for user xml: " . md5( $userXml ) );
-    $this->info( "Hash for group xml: " . md5( $groupXml) );
-    $this->info( "Hash for category xml: " . md5( $categoryXml ) );
+//    $this->info( $userXml );
+//    $this->info( $groupXml );
+//    $this->info( $categoryXml );
+//    $this->info( "Hash for user xml: " . md5( $userXml ) );
+//    $this->info( "Hash for group xml: " . md5( $groupXml) );
+//    $this->info( "Hash for category xml: " . md5( $categoryXml ) );
 
-    $userXmlHash     = "9b01d2ba503a7a77edf4bf199b6b287f";
+    $userXmlHash     = "ac8ffe8d82f91035bfc4cdb1876025d9";
     $groupXmlHash    = "746c8738b301beefa297913a069fd4b7";
     $categoryXmlHash = "e999dc0a988f5bbfd4b348b3695338d5";
 

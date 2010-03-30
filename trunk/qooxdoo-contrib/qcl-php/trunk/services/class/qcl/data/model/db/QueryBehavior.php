@@ -836,7 +836,7 @@ class qcl_data_model_db_QueryBehavior
     }
     elseif( $query === null )
     {
-      $result = $this->getAdapter()->fetch( $query );
+      $result = $this->getAdapter()->fetch();
     }
     else
     {
