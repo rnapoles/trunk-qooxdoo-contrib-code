@@ -81,7 +81,7 @@ class qcl_config_ConfigModel
    * types that config values may have
    * @var array
    */
-  private $types = array("string","number","boolean","list");
+  protected $types = array("string","number","boolean","list");
 
   /**
    * Results are cached for faster access
@@ -94,9 +94,9 @@ class qcl_config_ConfigModel
    */
   function __construct()
   {
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations, __CLASS__ );
   }
 
   /**
@@ -242,6 +242,21 @@ class qcl_config_ConfigModel
   }
 
   /**
+   * Returns the index code of the config key type
+   * @param $type
+   * @return unknown_type
+   */
+  protected function getTypeIndex( $type )
+  {
+    return array_search( $type, $this->types );
+  }
+
+  protected function getTypeString( $index )
+  {
+    return $this->types[$index];
+  }
+
+  /**
    * Checks if a configuration key exists and throws an exception if not.
    * @param $key
    * @return void
@@ -264,6 +279,48 @@ class qcl_config_ConfigModel
   public function keyExists( $key, $userId=null )
   {
     return ($this->namedIdExists( $key ) > 0);
+  }
+
+  /**
+   * Returns a valid qcl_access_model_User object.
+   * @param qcl_access_model_User|int|false $user User id or user object or false.
+   *   If false, return active user object
+   * @return qcl_access_model_User
+   */
+  protected function checkUserModel( $user )
+  {
+    /*
+     * use active user if no user Id
+     */
+    if ( $userId === false )
+    {
+      $userModel = $this->getActiveUser();
+    }
+
+    /*
+     * user model
+     */
+    elseif ( $user instanceof qcl_access_model_User2 )
+    {
+      $userModel = $user;
+    }
+
+    /*
+     * user id
+     */
+    elseif ( is_int( $user ) and $user > 0 )
+    {
+      $userModel = $this->getUserModel( $user );
+    }
+
+    /*
+     * invalid
+     */
+    else
+    {
+      $this->raiseError("Invalid argument");
+    }
+    return $userModel;
   }
 
 
@@ -305,7 +362,7 @@ class qcl_config_ConfigModel
      * create new entry
      */
 		return $this->create( $key, array(
-		  'type'      => $type,
+		  'type'      => $this->getTypeIndex( $type ),
 		  'default'   => $this->castType( $default, $type, false ),
 		  'customize' => $customize
 		));
@@ -370,33 +427,18 @@ class qcl_config_ConfigModel
   /**
    * Returns config property value. Raises an error if key does not exist.
    * @param string $key The name of the property (i.e., myapplication.config.locale)
-   * @param int|false $userId Optional user id. If not given, get the config
-   *   key for the current user, falling back to the default value if no user variant
-   *   exists
+   * @param qcl_access_model_User|int|false $user Optional user (id). If not given,
+   *   get the config key for the current user. If no custom value exists for the given
+   *   user, return the default value.
    * @return value of property.
    */
-  public function getKey( $key, $userId=false )
+  public function getKey( $key, $user=false )
   {
 
     $this->checkKey( $key );
+    $userModel = $this->checkUserModel( $user );
+    $userId    = $userModel? $userModel->getId() : null;
 
-    /*
-     * use active user if no user Id
-     */
-    if ( $userId === false )
-    {
-      $userModel = $this->getActiveUser();
-      $userId    = $userModel? $userModel->getId() : null;
-    }
-
-    /*
-     * user id given, this is usually only the
-     * case if a manager edits the configuration
-     */
-    else
-    {
-      $userModel = $this->getUserModel( $userId );
-    }
 
     /*
      * are the results cached?
@@ -443,33 +485,17 @@ class qcl_config_ConfigModel
    * Sets config property
    * @param string $key The name of the config key  (i.e., myapplication.config.locale)
    * @param string $value The value of the property.
-   * @param int|false $userId Optional user id. If given, create or set a custom
-   *   user value for that key.
+   * @param qcl_access_model_User|int|false $user Optional user (id). If given, create
+   *   or set a custom user value for that key.
    * @return qcl_config_ConfigModel
    * @todo permissions
    */
-  public function setKey( $key, $value, $userId=false)
+  public function setKey( $key, $value, $user=false)
   {
 
     $this->checkKey( $key );
-
-    /*
-     * use active user if no user Id
-     */
-    if ( $userId === false )
-    {
-      $userModel = $this->getActiveUser();
-      $userId    = $userModel? $userModel->getId() : null;
-    }
-
-    /*
-     * user id given, this is usually only the
-     * case if a manager edits the configuration
-     */
-    else
-    {
-      $userModel = $this->getUserModel( $userId );
-    }
+    $userModel = $this->checkUserModel( $user );
+    $userId = $userModel? $userModel->id() : null;
 
     /*
      * load record and look for custom user value and check
@@ -559,6 +585,15 @@ class qcl_config_ConfigModel
   {
     $this->checkKey( $key );
     $this->setKey( $key, $this->getDefault( $key ), $userId );
+  }
+
+  /**
+   * Returns the type of the currently loaded config key
+   * @return string
+   */
+  public function getType()
+  {
+    return $this->getTypeString( $this->getType() );
   }
 
 	/**

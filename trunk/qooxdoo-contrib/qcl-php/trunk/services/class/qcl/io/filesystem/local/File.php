@@ -15,19 +15,17 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/io/filesystem/local/Resource.php";
-require_once "qcl/io/filesystem/IFile.php";
+qcl_import( "qcl_io_filesystem_local_Resource" );
+qcl_import( "qcl_io_filesystem_IFile" );
 
 /**
- * PHP4/PHP5 Interface for file-like resources
+ * Interface for file-like resources
  */
-class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
+class qcl_io_filesystem_local_File
+  extends qcl_io_filesystem_local_Resource
+  implements qcl_io_filesystem_IFile
 {
 
-  /**
-   * php 4 interface implementaion
-   */
-  var $implements = array("qcl_io_filesystem_IFile");
 
   /**
    * A php file pointer

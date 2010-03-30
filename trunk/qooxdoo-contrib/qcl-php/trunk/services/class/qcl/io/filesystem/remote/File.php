@@ -15,20 +15,19 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/io/filesystem/remote/Resource.php";
-require_once "qcl/io/filesystem/IFile.php";
+
+qcl_import( "qcl_io_filesystem_remote_Resource" );
+qcl_import( "qcl_io_filesystem_IFile" );
 
 /**
- * PHP4/PHP5 Interface for file-like resources stored on a remote computer
+ * Interface for file-like resources stored on a remote computer
  * Supports all protocols/wrappers supported by PHP
  */
-class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
+class qcl_io_filesystem_remote_File
+  extends qcl_io_filesystem_remote_Resource
+  implements qcl_io_filesystem_IFile
 {
 
-  /**
-   * php 4 interface implementaion
-   */
-  var $implements = array("qcl_io_filesystem_IFile");
 
   /**
    * A php file pointer

@@ -155,6 +155,18 @@ class class_qcl_test_access_Models
   extends qcl_test_AbstractTestController
 {
 
+
+  /**
+   * Tests the a global value
+   * @return string
+   * @rpctest {
+   *   "requestData" : {
+   *     "method" : "testModel",
+   *     "timeout" : 30
+   *   },
+   *   "checkResult" : "OK"
+   * }
+   */
   public function method_testModel()
   {
     /*
@@ -231,6 +243,15 @@ class class_qcl_test_access_Models
     $this->testUser();
     $this->testImportExport();
     $this->testUser();
+
+    /*
+     * cleanup
+     */
+    User::getInstance()->destroy();
+    Role::getInstance()->destroy();
+    Permission::getInstance()->destroy();
+    Config::getInstance()->destroy();
+    UserConfig::getInstance()->destroy();
 
     return "OK";
   }

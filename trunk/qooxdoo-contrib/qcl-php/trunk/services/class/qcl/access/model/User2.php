@@ -62,7 +62,8 @@ class qcl_access_model_User2
     ),
     'lastAction'  => array(
       'check'     => "qcl_data_db_Timestamp",
-      'sqltype'   => "timestamp"
+      'sqltype'   => "timestamp",
+      'export'    => false
     )
   );
 

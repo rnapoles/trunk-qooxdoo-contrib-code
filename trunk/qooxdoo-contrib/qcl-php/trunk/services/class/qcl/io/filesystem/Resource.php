@@ -15,12 +15,13 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/ActiveRecord.php";
+
 
 /**
  * Methods common to all filesystem resources
  */
-class qcl_io_filesystem_Resource extends qcl_data_model_ActiveRecord
+class qcl_io_filesystem_Resource
+  extends qcl_core_Object
 {
   /**
    * The file resource path
@@ -128,7 +129,7 @@ class qcl_io_filesystem_Resource extends qcl_data_model_ActiveRecord
    * Returns the prefix of the resource path as the protocol/ resource
    * type
    */
-  function getResourceType( $resourcePath )
+  static function getResourceType( $resourcePath )
   {
     return substr( $resourcePath, 0, strpos($resourcePath,":") );
   }
@@ -203,7 +204,7 @@ class qcl_io_filesystem_Resource extends qcl_data_model_ActiveRecord
    * @param string[optional] $resourcePath
    * @return string
    */
-  function extension()
+  function extension( $resourcePath=null )
   {
     $rp  = either ( $resourcePath, $this->resourcePath() );
     $bn  = $this->basename( $rp );
@@ -223,8 +224,6 @@ class qcl_io_filesystem_Resource extends qcl_data_model_ActiveRecord
   {
     return $this->resourcePath();
   }
-
-
 }
 
 ?>
