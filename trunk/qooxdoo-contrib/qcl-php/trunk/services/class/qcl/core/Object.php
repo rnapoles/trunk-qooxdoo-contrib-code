@@ -507,14 +507,16 @@ class qcl_core_Object
 
     if ( $accessor == "set" )
     {
+      $this->checkProperty( $property );
       array_unshift( $arguments, $property);
-      $result = call_user_func_array( array($this, "set" ), $arguments);
+      $result = call_user_func_array( array( $this, "set" ), $arguments);
       $accessorMethodExists = true;
     }
     elseif ( $accessor == "get" )
     {
+      $this->checkProperty( $property );
       array_unshift( $arguments, $property);
-      $result = call_user_func_array( array($this, "get" ), $arguments);
+      $result = call_user_func_array( array( $this, "get" ), $arguments);
       $accessorMethodExists = true;
     }
 

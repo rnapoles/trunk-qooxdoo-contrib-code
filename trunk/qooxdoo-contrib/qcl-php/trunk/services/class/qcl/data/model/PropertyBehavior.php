@@ -132,6 +132,7 @@ class qcl_data_model_PropertyBehavior
     }
     if ( ! $this->has( $property) )
     {
+      $this->getModel()->warn( $this->getModel()->backtrace() );
       if ( in_array( $property, self::$core_properties ) )
       {
          throw new qcl_core_PropertyBehaviorException( sprintf(

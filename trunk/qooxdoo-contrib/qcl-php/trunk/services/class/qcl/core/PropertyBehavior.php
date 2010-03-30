@@ -80,6 +80,7 @@ class qcl_core_PropertyBehavior
     }
     if ( ! $this->has( $property) )
     {
+      $this->getObject()->warn( $this->getObject()->backtrace() );
       throw new qcl_core_PropertyBehaviorException( sprintf(
         "Class '%s': object property '%s' does not exist or is not accessible",#
         get_class( $this->getObject() ), $property

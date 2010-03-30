@@ -106,7 +106,7 @@ class qcl_log_Logger
    */
   public function isRegistered($filter)
   {
-    return isset( $this->filters[$filter]);
+    return isset( $this->filters[$filter] );
   }
 
   /**
@@ -129,13 +129,8 @@ class qcl_log_Logger
       return;
     }
 
-    /*
-     * one filter name, check parameters
-     */
-    if ( ! isset( $this->filters[$filter] ) )
-    {
-      trigger_error("Filter $filter does not exist." );
-    }
+    $this->checkFilter( $filter );
+
     if ( ! is_bool($value) )
     {
       trigger_error("Value parameter must be boolean");
@@ -145,6 +140,30 @@ class qcl_log_Logger
      * enable/disable filter
      */
     $this->filters[$filter]['enabled'] = $value;
+  }
+
+  /**
+   * Check if filter exists
+   * @param string $filter
+   * @return void
+   */
+  public function checkFilter( $filter )
+  {
+    if ( ! $this->isRegistered( $filter ) )
+    {
+      trigger_error("Filter $filter does not exist." );
+    }
+  }
+
+  /**
+   * Returns the state of the filter.
+   * @param string $filter
+   * @return boolean
+   */
+  public function isFilterEnabled( $filter )
+  {
+    $this->checkFilter( $filter );
+    return $this->filters[$filter]['enabled'];
   }
 
   /**

@@ -52,7 +52,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * check named id
      */
-    if ( ! is_string($namedId) )
+    if ( ! is_string( $namedId ) )
     {
       $this->raiseError("Invalid named id '$namedId'" );
     }
@@ -67,6 +67,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     $this->getPropertyBehavior()->init();
     $this->set("namedId", $namedId );
     $this->set("created", new qcl_data_db_Timestamp("now") );
+
     if( is_array( $data ) )
     {
       $this->set( $data );
