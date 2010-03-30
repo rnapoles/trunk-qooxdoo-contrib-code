@@ -52,37 +52,22 @@ interface qcl_config_IConfigModel
    *
    * @param string $nameId The name of the property (i.e., myapplication.config.locale)
    * @param string $type The type of the property (string|number|object|boolean)
-   * @param string $permissionRead The permission name that is needed to access
-   *      and read this property (optional)
-   * @param string $permissionWrite The permission name that is needed to access
-   *      and read this property (optional)
    * @param boolean $allowUserVariants If true, allow users to create their
    *      own variant of the configuration setting
    * @return id of created config entry
    */
-  public function createKey(
-     $namedId,
-     $type,
-     $permissionWrite=null,
-     $allowUserVariants=false
-  );
+  public function createKey( $namedId, $type, $allowUserVariants=false );
 
   /**
    * Create a config key if it doesn't exist already
    * @see qcl_config_DbModel::create()
    * @param $namedId
    * @param $type
-   * @param $permissionWrite
    * @param $allowUserVariants
    * @return int|bool  Returns the id of the newly created record, or false if
    * key was not created.
    */
-  public function createKeyIfNotExists(
-     $namedId,
-     $type,
-     $permissionWrite=null,
-     $allowUserVariants=false
-  );
+  public function createKeyIfNotExists( $namedId, $type, $allowUserVariants=false );
 
   /**
    * Returns config property value. Raises an error if key does not exist.

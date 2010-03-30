@@ -887,12 +887,14 @@ class qcl_data_model_db_QueryBehavior
   /**
    * Returns all values of a model property that match a query
    * @param string $property Name of property
-   * @param qcl_data_db_Query|array $query
+   * @param qcl_data_db_Query|array|null $query "Where" query information
+   * as string or qcl_data_db_Query object. If null, select all property values
+   * in the model data
    * @return array Array of values
    */
-  public function fetchValues( $property, $query )
+  public function fetchValues( $property, $query=null )
   {
-    if( is_array( $query ) )
+    if ( is_array ( $query ) or is_null ( $query ) )
     {
       $query = new qcl_data_db_Query( array(
         'properties' => $property,
@@ -914,8 +916,6 @@ class qcl_data_model_db_QueryBehavior
     }
     return $result;
   }
-
-
 
   /**
    * Returns the number of records found in the last query.
@@ -1062,7 +1062,7 @@ class qcl_data_model_db_QueryBehavior
    * Deletes one or more records in the data table matching a where condition.
    * This does not delete dependencies!
    *
-   * @param string  $where where condition
+   * @param array|string $where where condition
    * @return int Number of affected rows
    */
   public function deleteWhere ( $where )

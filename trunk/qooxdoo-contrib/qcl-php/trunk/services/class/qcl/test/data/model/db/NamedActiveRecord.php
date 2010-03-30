@@ -39,7 +39,7 @@ class User
 
   function __construct()
   {
-    //$this->getPropertyBehavior()->reset(); // if you change the property definition
+    $this->resetBehaviors();
     $this->addProperties( $this->properties );
     parent::__construct();
   }
@@ -53,11 +53,12 @@ class class_qcl_test_data_model_db_NamedActiveRecord
   extends qcl_test_AbstractTestController
 {
 
-  public function method_testCreateRecords()
+  public function method_testModel()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
     $user = new User();
     $user->deleteAll();
+
     $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );
     $subscriber = false;
     $counter = 0;
@@ -72,15 +73,6 @@ class class_qcl_test_data_model_db_NamedActiveRecord
       ));
       $user->save();
     }
-    //$this->endLogging();
-    return "OK";
-  }
-
-  public function method_testQueries()
-  {
-
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
-    $this->method_testCreateRecords();
 
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
 
@@ -109,6 +101,9 @@ class class_qcl_test_data_model_db_NamedActiveRecord
 
     $user->load("foo");
     $this->assertEquals("foo@bar.org",$user->getEmail(),null,__CLASS__,__METHOD__);
+
+
+    $user->destroy();
 
     return "OK";
   }

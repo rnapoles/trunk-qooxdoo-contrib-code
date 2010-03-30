@@ -30,15 +30,18 @@ class Customer
   private $properties = array(
     "customerId" => array(
       "check"     => "integer",
-      "sqltype"   => "int(11)"
+      "sqltype"   => "int(11)",
+      "column"   => "customer_id"
     ),
     "orderId"  => array(
       "check"     => "integer",
-      "sqltype"   => "int(11)"
+      "sqltype"   => "int(11)",
+      "column"    => "order_id"
     ),
     "productId" => array(
       "check"     => "integer",
-      "sqltype"   => "int(11)"
+      "sqltype"   => "int(11)",
+      "column"    => "product_id"
     ),
   );
 
@@ -51,7 +54,7 @@ class Customer
 
   function __construct()
   {
-    //$this->getPropertyBehavior()->reset();
+    $this->resetBehaviors();
     $this->addProperties( $this->properties );
     $this->addIndexes( $this->indexes );
     parent::__construct();
@@ -97,6 +100,9 @@ class class_qcl_test_data_model_db_ActiveRecordWithIndexes
       $this->info("Caught PDO Exception");
     }
     $this->endLogging();
+
+    $customer->destroy();
+
     return "OK";
   }
 

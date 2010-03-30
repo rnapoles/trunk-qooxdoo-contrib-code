@@ -90,11 +90,19 @@ function qcl_is_file( $file )
 /**
  * Imports a class file, loading __init__.php package initialization files
  * of the packages that this class is included in.
- * @param $class
+ * @param string $class Name of the class
+ * @param bool $checkDefined If true, check if the class is defined in the
+ *   included file. Defaults to false.
  * @return void
  */
-function qcl_import( $class )
+function qcl_import( $class, $checkDefined = false )
 {
+  /*
+   * no need to load anything if class is already
+   * defined
+   */
+  if ( class_exists( $class ) ) return;
+
   /*
    * load __init__ files that belong to a package
    */
@@ -114,7 +122,45 @@ function qcl_import( $class )
    * load class file
    */
   $class_file = implode( "/", $namespace ) . ".php";
-  require_once $class_file;
+  if( qcl_file_exists( $class_file ) )
+  {
+    require_once $class_file;
+    if ( $checkDefined and ! class_exists( $class ) )
+    {
+      trigger_error("Class '$class' is not defined in file '$class_file'.");
+    }
+  }
+  else
+  {
+    trigger_error("Class file '$class_file' does not exist.");
+  }
+}
+
+/**
+ * Imports a package, which means that it loads the  __init__.php package
+ * initialization file of each namespace part in the package name . If you
+ * want to import classes automatically that belong to the packages, load
+ * them with qcl_import() in the __init__.php file.
+ *
+ * @param $package
+ * @return void
+ */
+function qcl_import_package ( $package )
+{
+  /*
+   * load __init__ files that belong to a package
+   */
+  $namespace = explode( "_", $package );
+  $path = array();
+  for( $i=0; $i<count($namespace)-1; $i++)
+  {
+    $path[] = $namespace[$i];
+    qcl_log_Logger::getInstance()->info( $init_file );
+    if( qcl_file_exists( $init_file ) )
+    {
+      require_once $init_file;
+    }
+  }
 }
 
 /**

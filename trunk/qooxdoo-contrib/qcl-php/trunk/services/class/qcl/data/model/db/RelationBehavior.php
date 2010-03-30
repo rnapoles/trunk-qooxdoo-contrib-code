@@ -244,7 +244,10 @@ class qcl_data_model_db_RelationBehavior
   {
     if ( ! isset( $relData['target'] ) or ! is_array( $relData['target'] ) )
     {
-      throw new qcl_data_model_Exception("Missing or invalid target definition in relation '$relation'.");
+      throw new qcl_data_model_Exception( sprintf(
+        "Missing or invalid target definition in class '%s', relation '%s'.",
+        $this->getModel()->className(), $relation
+      ) );
     }
 
     $target = array(
@@ -266,14 +269,61 @@ class qcl_data_model_db_RelationBehavior
    */
   protected function checkRelationTargetClass( $relData, $relation )
   {
-    if ( ! isset( $relData['target']['class'] )
-          or ! class_exists( $relData['target']['class'] ) )
+    if ( ! isset( $relData['target']['class'] ) )
     {
       throw new qcl_data_model_Exception( sprintf(
-        "Missing or invalid target model class relation '%s'.", $relation
+        "Missing target model class in class '%s', relation '%s'.",
+         $this->getModel()->className(), $relation
       ) );
     }
-    return $relData['target']['class'];
+    $class = $relData['target']['class'];
+
+    /*
+     * replace the class name by a name provided by subclasses?
+     */
+    $replaceClassMap = $this->getModel()->replaceClassMap();
+    if ( isset( $replaceClassMap[$class] ) )
+    {
+      $class2 = $replaceClassMap[$class];
+      if ( ! class_exists( $class2 ) )
+      {
+        throw new qcl_data_model_Exception( sprintf(
+          "Invalid target model class in class '%s', relation '%s': class '%s' (replacing '%s') does not exist.",
+           $this->getModel()->className(), $relation, $class2, $class
+        ) );
+      }
+      else
+      {
+        $class = $class2;
+      }
+    }
+    else
+    {
+      if ( ! class_exists( $class ) )
+      {
+        throw new qcl_data_model_Exception( sprintf(
+          "Invalid target model class in class '%s', relation '%s': class '%s' does not exist.",
+           $this->getModel()->className(), $relation, $class
+        ) );
+      }
+    }
+    return $class;
+  }
+
+  /**
+   * Checks that the target model object is valid
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   * @return void
+   */
+  protected function checkTargetModel( $targetModel )
+  {
+    if ( ! $targetModel instanceof qcl_data_model_AbstractActiveRecord )
+    {
+      $this->getModel()->raiseError( sprintf(
+        "Invalid target model: Expected instance of '%s', got '%s'.",
+        "qcl_data_model_AbstractActiveRecord", typeof( $targetModel, true)
+      ) );
+    }
   }
 
   /**
@@ -675,20 +725,45 @@ class qcl_data_model_db_RelationBehavior
   /**
    * Returns the name of the relation with which the given model is
    * linked or null if no such link exists. Throws an exception
-   * if there is no such link.
+   * if there is no such link. Since relation definitions can be
+   * inherited by subclasses, the method checks relations to parent
+   * classes if no direct relation to the given class can be
+   * established.
    *
-   * @param qcl_data_model_db_ActiveRecord $model
+   * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return string
    */
-  public function getRelationNameForModel( $model )
+  public function getRelationNameForModel( $targetModel )
   {
-    $class = $model->className();
+    $this->checkTargetModel( $targetModel );
+    $class = $targetModel->className();
+
+    /*
+     * try class name
+     */
     if ( isset( $this->relationModels[ $class ] ) )
     {
       return $this->relationModels[ $class ];
     }
+
+    /*
+     * try class parents
+     */
+    $parent_class = get_parent_class( $targetModel );
+    do
+    {
+      if ( isset( $this->relationModels[ $parent_class ] ) )
+      {
+        return $this->relationModels[ $parent_class ];
+      }
+    }
+    while ( $parent_class = get_parent_class( $targetModel ) );
+
+    /*
+     * throw exception
+     */
     throw new qcl_data_model_Exception( sprintf(
-      "Model '%s' os not associated to model '%s'.",
+      "Model '%s' is not associated to model '%s'.",
       $this->getModel()->className(), $class
     ) );
   }
@@ -697,12 +772,12 @@ class qcl_data_model_db_RelationBehavior
    * Returns true if the managed model has a relation with the given
    * model.
    *
-   * @param qcl_data_model_db_ActiveRecord $model
+   * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return bool
    */
-  public function hasRelationWithModel( $model )
+  public function hasRelationWithModel( $targetModel )
   {
-    return ! is_null( $this->getRelationNameForModel( $model ) );
+    return ! is_null( $this->getRelationNameForModel( $targetModel ) );
   }
 
   /**

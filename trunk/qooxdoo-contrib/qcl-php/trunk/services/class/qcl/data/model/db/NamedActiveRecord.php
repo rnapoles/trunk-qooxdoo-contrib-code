@@ -19,6 +19,7 @@
 qcl_import( "qcl_data_model_AbstractNamedActiveRecord" );
 qcl_import( "qcl_data_model_db_PropertyBehavior" );
 qcl_import( "qcl_data_model_db_QueryBehavior" );
+qcl_import( "qcl_data_model_db_RelationBehavior" );
 
 /**
  * Abstrac class for models that are based on a relational
@@ -26,7 +27,7 @@ qcl_import( "qcl_data_model_db_QueryBehavior" );
  * @todo define interface
  */
 class qcl_data_model_db_NamedActiveRecord
-  extends    qcl_data_model_AbstractNamedActiveRecord
+  extends qcl_data_model_AbstractNamedActiveRecord
 //  implements qcl_data_model_INamedActiveRecord
 {
 //-------------------------------------------------------------
