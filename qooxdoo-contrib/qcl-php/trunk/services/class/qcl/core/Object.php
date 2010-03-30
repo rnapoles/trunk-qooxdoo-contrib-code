@@ -34,6 +34,12 @@ class qcl_core_Object
 {
 
   /**
+   * Whether the model properties can be modified
+   * @var unknown_type
+   */
+  protected $readonly = false;
+
+  /**
    * If this object produces a recoverable error, the error message will be stored here
    * for convenience
    * @deprecated will be removed and replaced by exceptions
@@ -60,6 +66,8 @@ class qcl_core_Object
    * @var qcl_core_PropertyBehavior
    */
   private $propertyBehavior;
+
+
 
   /**
    * Class constructor. If the mixin class property contains
@@ -250,6 +258,15 @@ class qcl_core_Object
       $result[] = $this->get($property);
     }
     return $result;
+  }
+
+  /**
+   * Whether the model is readonly
+   * @return bool
+   */
+  public function isReadonly()
+  {
+    return $this->readonly;
   }
 
   //-------------------------------------------------------------

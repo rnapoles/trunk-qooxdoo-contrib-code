@@ -80,10 +80,10 @@ class qcl_core_PropertyBehavior
     }
     if ( ! $this->has( $property) )
     {
-      throw new qcl_core_PropertyBehaviorException(
-        "Class " . get_class( $this->getObject() ) .
-        ": property '$property' does not exist or is not accessible"
-      );
+      throw new qcl_core_PropertyBehaviorException( sprintf(
+        "Class '%s': object property '%s' does not exist or is not accessible",#
+        get_class( $this->getObject() ), $property
+      ) );
     }
   }
 
@@ -113,6 +113,14 @@ class qcl_core_PropertyBehavior
    */
   public function set( $property, $value=null )
   {
+    /*
+     * readonly?
+     */
+    if ( $this->getObject()->isReadonly() )
+    {
+      $this->getObject()->raiseError("Object is readonly.");
+    }
+
     if ( is_array( $property ) )
     {
       foreach ( $property as $key => $value )

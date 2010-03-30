@@ -39,6 +39,16 @@ class qcl_data_model_AbstractActiveRecord
   protected $foreignKey;
 
   /**
+   * A map of key value pairs that is looked up each time a class name
+   * is used during the setup of the model. This allows child classes to
+   * use the relations defined in parent classes without having to redefine
+   * the relations.
+   *
+   * @var array
+   */
+  protected $replace_class = array();
+
+  /**
    * The object instance of the datasource that this model belongs to.
    * The datasource provides shared resources for models.
    * @var qcl_data_datasource_type_db_Model
@@ -239,16 +249,12 @@ class qcl_data_model_AbstractActiveRecord
     if ( $result )
     {
       $this->set( $result );
-      return $result;
+      return $this;
     }
-    else
-    {
-      throw new qcl_data_model_RecordNotFoundException( sprintf(
-        "Model record [%s #%s] does not exist",
-        $this->className(), $id
-      ) );
-    }
-    return $this;
+    throw new qcl_data_model_RecordNotFoundException( sprintf(
+      "Model record [%s #%s] does not exist",
+      $this->className(), $id
+    ) );
   }
 
   /**
@@ -286,14 +292,26 @@ class qcl_data_model_AbstractActiveRecord
   //-----------------------------------------------------------------------
 
   /**
-   * find model records that match the given where query data
+   * find model records that match the given query object
    * for iteration
    * @param qcl_data_db_Query $query
-   * @return int Number of instances
+   * @return int Number of found records
    */
   public function find( qcl_data_db_Query $query )
   {
     return $this->getQueryBehavior()->select( $query );
+  }
+
+  /**
+   * find model records that match the given where array data
+   * for iteration
+   * @param array $where
+   * @return qcl_data_db_Query Result query object
+   */
+  public function findWhere( $query )
+  {
+    $this->lastQuery =  $this->getQueryBehavior()->selectWhere( $query );
+    return $this->lastQuery;
   }
 
   /**
@@ -529,6 +547,10 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function rowCount()
   {
+    if ( $this->lastQuery )
+    {
+      return $this->lastQuery->getRowCount();
+    }
     return $this->getQueryBehavior()->rowCount();
   }
 
@@ -561,7 +583,7 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Returns the number of records matching the where
-   * @param array $where Data for where statement, see qcl_data_model_IQueryBehavior::create
+   * @param array $where Data for where statement,
    * @return int
    */
   public function countWhere( $where )
@@ -648,6 +670,18 @@ class qcl_data_model_AbstractActiveRecord
   public function unlinkModel( $targetModel )
   {
     return $this->getRelationBehavior()->unlinkModel( $targetModel );
+  }
+
+  /**
+   * Returns map of key value pairs that is looked up each time a class name
+   * is used during the setup of the model. This allows child classes to
+   * use the relations defined in parent classes without having to redefine
+   * the relations.
+   * @return array
+   */
+  public function replaceClassMap()
+  {
+    return $this->replace_class;
   }
 
   //-----------------------------------------------------------------------

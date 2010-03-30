@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/PropertyBehavior.php";
+
+qcl_import( "qcl_core_PropertyBehavior" );
 
 /**
  * Property behavior modelled on the qooxdoo property definition syntax.
@@ -64,7 +65,18 @@ class qcl_data_model_PropertyBehavior
   extends qcl_core_PropertyBehavior
 {
 
-  protected static $primitives = array("boolean", "integer", "double", "string", "array", "object","resource","NULL");
+  /**
+   * The native variable types
+   * @var array
+   */
+  protected static $native_types = array("boolean", "integer", "double", "string", "array", "object","resource","NULL");
+
+  /**
+   * The names of the core properties that ActiveRecord and NamedActiveRecord models
+   * define
+   * @var array
+   */
+  protected static $core_properties = array( "id", "namedId", "created", "modified" );
 
   /**
    * Cache of property definitions
@@ -76,6 +88,8 @@ class qcl_data_model_PropertyBehavior
    * @var array
    */
   private $data = array();
+
+
 
   /**
    * Constructor
@@ -103,6 +117,34 @@ class qcl_data_model_PropertyBehavior
   protected function getPropertyDefinition()
   {
     return $this->properties;
+  }
+
+  /**
+   * Checks if property exists and throws an error if not.
+   * @param $property
+   * @return bool
+   */
+  public function check( $property )
+  {
+    if ( ! $property or ! is_string( $property ) )
+    {
+      $this->getModel()->raiseError("Invalid property '$property'");
+    }
+    if ( ! $this->has( $property) )
+    {
+      if ( in_array( $property, self::$core_properties ) )
+      {
+         throw new qcl_core_PropertyBehaviorException( sprintf(
+          "Class '%s': core model property '%s' does not exist. ".
+          "Did you call the parent constructor in the constructor of class '%s'?",
+          get_class( $this->getModel() ), $property
+        ) );
+      }
+      throw new qcl_core_PropertyBehaviorException( sprintf(
+        "Class '%s': model property '%s' does not exist or is not accessible",#
+        get_class( $this->getModel() ), $property
+      ) );
+    }
   }
 
   /**
@@ -150,7 +192,7 @@ class qcl_data_model_PropertyBehavior
     {
       $fail = false;
     }
-    elseif ( in_array( $type, self::$primitives ) )
+    elseif ( in_array( $type, self::$native_types ) )
     {
       if ( $type != gettype( $value ) )
       {
@@ -379,7 +421,7 @@ class qcl_data_model_PropertyBehavior
         );
       }
     }
-    elseif ( in_array( $type, self::$primitives ) )
+    elseif ( in_array( $type, self::$native_types ) )
     {
       settype( $value, $type );
     }
@@ -461,13 +503,13 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * Returns true if the php type passed as argument is a primitive type
+   * Returns true if the php type passed as argument is a native type
    * @param string $type
    * @return bool
    */
-  protected function isPrimitive( $type )
+  protected function isNativeType( $type )
   {
-    return in_array( $type, self::$primitives );
+    return in_array( $type, self::$native_types );
   }
 
   /**

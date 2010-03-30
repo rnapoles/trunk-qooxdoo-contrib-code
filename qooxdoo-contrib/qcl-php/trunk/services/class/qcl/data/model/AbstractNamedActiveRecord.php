@@ -135,8 +135,10 @@ class qcl_data_model_AbstractNamedActiveRecord
 
   /**
    * Loads a model record by numeric id or string-type named id.
+   * Returns itself to allow chained method calling.
    * @param string|int $id
-   * @return array|false Record data or false if no record was found.
+   * @return qcl_data_model_db_ActiveRecord
+   * @throws qcl_data_model_RecordNotFoundException
    */
   public function load( $id )
   {
@@ -147,7 +149,7 @@ class qcl_data_model_AbstractNamedActiveRecord
       if ( $result )
       {
         $this->set( $result );
-        return $result;
+        return $this;
       }
       else
       {
@@ -161,10 +163,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     {
       return parent::load( $id );
     }
-    else
-    {
-      $this->raiseError("Invalid parameter.");
-    }
+    $this->raiseError("Invalid parameter.");
   }
 }
 ?>
