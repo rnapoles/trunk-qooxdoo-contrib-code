@@ -21,7 +21,8 @@ require_once "qcl/io/filesystem/Resource.php";
 /**
  * Base class for local filesystem resource classes
  */
-class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
+class qcl_io_filesystem_local_Resource
+  extends qcl_io_filesystem_Resource
 {
 
   /**
@@ -32,7 +33,8 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
    */
   function setResourcePath( $resourcePath )
   {
-    $this->_resourcePath = "file://" . qcl_realpath( $this->filePath( $resourcePath ) );
+    $path = qcl_realpath( $this->filePath( $resourcePath ) );
+    $this->_resourcePath = "file://" . $path; // FIXME ? $path : $resourcePath;
   }
 
   /**
@@ -112,7 +114,7 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
    */
   function lastModified()
   {
-    return filectime($this->filePath());
+    return filectime( $this->filePath() );
   }
 
 }

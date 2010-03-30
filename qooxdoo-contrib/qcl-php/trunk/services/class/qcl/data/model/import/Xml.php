@@ -17,6 +17,7 @@
  */
 
 qcl_import( "qcl_data_model_AbstractImporter" );
+qcl_import( "qcl_io_filesystem_IFile" );
 
 /**
  * Importer implementation for xml files. Importing linked data works only
@@ -51,6 +52,10 @@ class qcl_data_model_import_Xml
     }
     elseif ( $xml instanceof qcl_io_filesystem_IFile )
     {
+      if ( ! $xml->exists() )
+      {
+        $this->raiseError( sprintf( "File '%s' does not exist: ", $xml->filePath() ) );
+      }
       $this->xmlDoc = qcl_data_xml_SimpleXMLElement::createFromFile(
         $xml->resourcePath()
       );

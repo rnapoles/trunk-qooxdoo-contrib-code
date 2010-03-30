@@ -73,6 +73,15 @@ class qcl_data_controller_Controller
   }
 
   /**
+   * Shorthand getter for active user object
+   * @return qcl_access_model_User
+   */
+  public function getActiveUser()
+  {
+    return $this->getAccessBehavior()->getActiveUser();
+  }
+
+  /**
    * Shorthand getter for  the current session id.
    * @return string
    */

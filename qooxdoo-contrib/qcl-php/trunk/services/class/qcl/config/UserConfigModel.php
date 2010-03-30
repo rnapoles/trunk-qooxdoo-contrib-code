@@ -71,9 +71,9 @@ class qcl_config_UserConfigModel
    */
   function __construct()
   {
+    $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();
     $this->addProperties( $this->properties );
-    $this->addRelations( $this->relations, __CLASS__ );
   }
 
   /**
