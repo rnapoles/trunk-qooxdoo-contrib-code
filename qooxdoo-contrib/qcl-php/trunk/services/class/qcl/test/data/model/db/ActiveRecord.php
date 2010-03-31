@@ -59,7 +59,6 @@ class Member
 
   function __construct()
   {
-    $this->resetBehaviors(); // Development
     $this->addProperties( $this->properties );
     parent::__construct();
   }

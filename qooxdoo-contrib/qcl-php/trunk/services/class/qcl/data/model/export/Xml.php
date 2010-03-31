@@ -73,9 +73,13 @@ class qcl_data_model_export_Xml
          */
         $columnData = $model->get( $propName );
 
-        if ( empty( $columnData ) )
+        if ( $columnData === null )
         {
           continue;
+        }
+        elseif ( $columnData === false )
+        {
+          $columnData = 0;
         }
 
         /*

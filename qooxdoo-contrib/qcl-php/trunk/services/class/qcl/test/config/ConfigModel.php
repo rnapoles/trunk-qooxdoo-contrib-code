@@ -51,6 +51,7 @@ class UserConfig extends qcl_config_UserConfigModel
   }
 }
 
+
 /**
  * Class to model the user data
  * @see qcl_test_access_Models
@@ -60,7 +61,6 @@ class User extends qcl_access_model_User2
   protected $tableName = "test_data_User2";
   function __construct()
   {
-    $this->resetBehaviors();
     parent::__construct();
     $this->getRelationBehavior()->setJoinTableName( "User_Role", "test_join_User_Role2" );
   }
@@ -135,12 +135,21 @@ class class_qcl_test_config_ConfigModel
   public function method_testModel()
   {
     /*
-     * create model instances
+     * reset internal caches
      */
-    $user = User::getInstance();
-    $role = Role::getInstance();
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
+
+    /*
+     * create model instances. We need to instantiate even
+     * the ones we don't need (i.e Permission) or which are only implicitly
+     * used (such as UserConfig), otherwise the relations are not
+     * correctly initialized.
+     */
+    $user       = User::getInstance();
+    $role       = Role::getInstance();
     $permission = Permission::getInstance();
-    $config = Config::getInstance();
+    $config     = Config::getInstance();
+    $userConfig = UserConfig::getInstance();
 
     /*
      * import data
@@ -163,115 +172,68 @@ class class_qcl_test_config_ConfigModel
     /*
      * tests
      */
+    $config->deleteAll();
+    $userConfig->deleteAll();
+
     $config->createKey( "global", "string", false, "global" );
     $config->createKey( "custom", "string", true, "custom" );
-    $config->createKey( "number", "integer", true, 1 );
-    $config->createKey( "list", "list", true, array() );
+    $config->createKey( "number", "number", true, 1 );
+    $config->createKey( "list", "list", true, array("foo","bar","baz") );
 
     $user->createAnonymous();
-    $anonymous = $user->cloneObject();
+
+    $this->assertEquals( 1, $config->getKey( "number", $user ), null, __CLASS__, __LINE__ );
+
+    $this->assertEquals( array("foo","bar","baz"), $config->getKey( "list", $user ), null, __CLASS__, __LINE__ );
+
+    $this->assertEquals("custom", $config->getKeyDefault( "custom" ), null, __CLASS__, __LINE__ );
+
+    $config->setKey( "custom", "anonymous!", $user );
+    $this->assertEquals("anonymous!", $config->getKey( "custom", $user ), null, __CLASS__, __LINE__ );
+
     $user->load("user1");
-
-    $config->setKey( "custom", "anonymous!", $anonymous );
     $config->setKey( "custom", "user1", $user );
+    $this->assertEquals("user1", $config->getKey( "custom", $user ), null, __CLASS__, __LINE__ );
 
-    /*
-     * cleanup
-     */
-//    User::getInstance()->destroy();
-//    Role::getInstance()->destroy();
-//    Permission::getInstance()->destroy();
-//    Config::getInstance()->destroy();
-//    UserConfig::getInstance()->destroy();
+    $user->load("user2");
+    $config->setKey( "custom", "user2", $user );
+    $this->assertEquals("user2", $config->getKey( "custom", $user ), null, __CLASS__, __LINE__ );
 
-    return "OK";
-  }
+    $user->load("user3");
+    $config->setKey( "custom", "user3", $user );
+    $this->assertEquals("user3", $config->getKey( "custom", $user ), null, __CLASS__, __LINE__ );
 
+    $user->load("user1");
+    $this->assertEquals("user1", $config->getKey( "custom", $user ), null, __CLASS__, __LINE__ );
 
-
- /**
-   * Tests the a global value
-   * @return string
-   * @rpctest {
-   *   "requestData" : {
-   *     "method" : "testConfigDbGlobal"
-   *   },
-   *   "checkResult" : "test"
-   * }
-   */
-  function method_testConfigDbGlobal()
-  {
-    $configModel = $this->getApplication()->getConfigModel();
-    $configModel->createKeyIfNotExists("qcl.test.global","string");
-    $configModel->setKey("qcl.test.global","test");
-    return $configModel->getKey("qcl.test.global");
-  }
-
-  /**
-   * Tests the a default value
-   * @return string
-   * @rpctest {
-   *   "requestData" : {
-   *     "method" : "testConfigDbDefault"
-   *   },
-   *   "checkResult" : ["default","uservalue"]
-   * }
-   */
-  function method_testConfigDbDefault()
-  {
-    $userId = $this->anonymousAccess();
-
-    $configModel = $this->getApplication()->getConfigModel();
-    $configModel->createKeyIfNotExists("qcl.test.default","string",null,/* allow user variants= */true);
-    $configModel->setDefault("qcl.test.default","default");
-    $configModel->setKey("qcl.test.default","uservalue");
-
-    return array(
-      $configModel->getKey("qcl.test.default",0),
-      $configModel->getKey("qcl.test.default")
-    );
-  }
-
-  function method_testAccessibleKeys( $params )
-  {
-    $mask = either( $params[0], null );
-    $configModel = qcl_config_DbModel::getInstance();
-    $this->set( array(
-      "config" =>  $configModel->getAccessibleKeys( $mask )
-    ) );
-    return $this->result();
-  }
-
-  protected function testImportExport()
-  {
     /*
      * export to xml
      */
     qcl_import( "qcl_data_model_export_Xml" );
     $exporter =  new qcl_data_model_export_Xml();
-    $userXml = User::getInstance()->export( $exporter );
-    $roleXml = Role::getInstance()->export( $exporter );
-    $permissionXml = Permission::getInstance()->export( $exporter );
 
-//    $this->info( $userXml );
-//    $this->info( $roleXml );
-//    $this->info( $permissionXml );
+    $configXml = trim( $config->export( $exporter ) );
+    // $this->info( $configXml );
+    $configXmlFile = new qcl_io_filesystem_local_File( "file://qcl/test/config/Config.xml");
+    $this->assertEquals( $configXml, trim($configXmlFile->load()), null, __CLASS__, __LINE__ );
 
-    /*
-     * delete all records
-     */
-    User::getInstance()->deleteAll();
-    Role::getInstance()->deleteAll();
-    Permission::getInstance()->deleteAll();
+    $userConfigXmlFile = new qcl_io_filesystem_local_File( "file://qcl/test/config/UserConfig.xml");
+    $userConfigXml = trim( $userConfig->export( $exporter ) );
+    //$this->info( $userConfigXml );
+    $this->assertEquals( $userConfigXml, trim( $userConfigXmlFile->load() ), null, __CLASS__, __LINE__ );
 
     /*
-     * re-import
+     * cleanup
      */
-    qcl_import( "qcl_data_model_import_Xml" );
-    User::getInstance()->import( new qcl_data_model_import_Xml( $userXml ) );
-    Role::getInstance()->import( new qcl_data_model_import_Xml( $roleXml ) );
-    Permission::getInstance()->import( new qcl_data_model_import_Xml( $permissionXml ) );
+    User::getInstance()->destroy();
+    Role::getInstance()->destroy();
+    Permission::getInstance()->destroy();
+    Config::getInstance()->destroy();
+    UserConfig::getInstance()->destroy();
+
+    return "OK";
   }
+
 
   protected function startLogging()
   {

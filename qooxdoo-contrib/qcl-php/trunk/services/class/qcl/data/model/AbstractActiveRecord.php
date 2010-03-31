@@ -701,18 +701,18 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Resets the internal cache used by the behaviors to avoid unneccessary
-   * database lookups. Call this method from the constructor of your models
-   * before adding properties and relations during your development but remove
-   * the call when your properties and relations have stabilized, this will
-   * speed up things considerably.
+   * database lookups. Call this method statically at the beginning of your
+   * code as long as your model delfinitions change.
    *
    * @return void
    */
-  public function resetBehaviors()
+  public static function resetBehaviors()
   {
-    $this->getPropertyBehavior()->reset();
-    $this->getQueryBehavior()->reset();
-    $this->getRelationBehavior()->reset();
+    $class = get_called_class();
+    $_this = new $class;
+    $_this->getPropertyBehavior()->reset();
+    $_this->getQueryBehavior()->reset();
+    $_this->getRelationBehavior()->reset();
   }
 
   /**

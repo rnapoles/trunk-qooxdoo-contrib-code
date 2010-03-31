@@ -46,12 +46,6 @@ class User extends qcl_access_model_User2
   function __construct()
   {
     /*
-     * reset behavior caches. This is only needed during development,
-     * when model property definitions are being changed.
-     */
-    $this->resetBehaviors();
-
-    /*
      * define properties / relations in the parent class
      */
     parent::__construct();

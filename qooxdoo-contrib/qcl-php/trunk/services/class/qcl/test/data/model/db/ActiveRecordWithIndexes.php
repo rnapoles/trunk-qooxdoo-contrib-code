@@ -54,7 +54,6 @@ class Customer
 
   function __construct()
   {
-    $this->resetBehaviors();
     $this->addProperties( $this->properties );
     $this->addIndexes( $this->indexes );
     parent::__construct();

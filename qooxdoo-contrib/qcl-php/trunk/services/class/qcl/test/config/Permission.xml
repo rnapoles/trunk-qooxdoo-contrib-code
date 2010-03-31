@@ -15,7 +15,6 @@
         <link namedId="deleteRecord">manager</link>
         <link namedId="manageUsers">admin</link>
       </relation>
-      <relation name="Permission_Config"/>
     </links>
   </model>
 </root>

@@ -64,10 +64,10 @@ class qcl_config_ConfigModel
    * Relations
    */
   private $relations = array(
-    'Permission_Config' => array(
-      'type'        => QCL_RELATIONS_HAS_ONE,
-      'target'      => array( 'class' => "qcl_access_model_Permission2" )
-    ),
+//    'Permission_Config' => array(
+//      'type'        => QCL_RELATIONS_HAS_ONE,
+//      'target'      => array( 'class' => "qcl_access_model_Permission2" )
+//    ),
     'Config_UserConfig' => array(
       'type'        => QCL_RELATIONS_HAS_MANY,
       'target'      => array(
@@ -95,8 +95,8 @@ class qcl_config_ConfigModel
   function __construct()
   {
     $this->addRelations( $this->relations, __CLASS__ );
-    parent::__construct();
     $this->addProperties( $this->properties );
+    parent::__construct();
   }
 
   /**
@@ -143,7 +143,7 @@ class qcl_config_ConfigModel
    */
   protected function getUserConfigModel()
   {
-    return qcl_config_UserConfigModel::getInstance();
+    return $this->getRelationBehavior()->getTargetModel("Config_UserConfig");
   }
 
   /**
@@ -258,6 +258,8 @@ class qcl_config_ConfigModel
 
   /**
    * Checks if a configuration key exists and throws an exception if not.
+   * FIXME This is inefficient. Methods should try to load the record and
+   * abort if not found.
    * @param $key
    * @return void
    */
@@ -292,7 +294,7 @@ class qcl_config_ConfigModel
     /*
      * use active user if no user Id
      */
-    if ( $userId === false )
+    if ( $user === false )
     {
       $userModel = $this->getActiveUser();
     }
@@ -419,7 +421,7 @@ class qcl_config_ConfigModel
    */
   public function getKeyDefault( $key )
   {
-    $this->check( $key );
+    $this->checkKey( $key );
     $this->load( $key );
     return $this->castType( $this->getDefault(), $this->getType(), true );
   }
@@ -434,18 +436,16 @@ class qcl_config_ConfigModel
    */
   public function getKey( $key, $user=false )
   {
-
     $this->checkKey( $key );
     $userModel = $this->checkUserModel( $user );
     $userId    = $userModel? $userModel->getId() : null;
-
 
     /*
      * are the results cached?
      */
     if ( isset( $this->cache[$key][$userId] ) )
     {
-      $this->cache[$key][$userId];
+      return $this->cache[$key][$userId];
     }
 
     /*
@@ -463,12 +463,14 @@ class qcl_config_ConfigModel
     ) );
     if ( $userConfigModel->foundSomething() )
     {
-      $value = $this->castType( $userConfigModel->getValue(), $this->getType(), true );
+      $userConfigModel->nextRecord();
+      $value = $userConfigModel->getValue();
     }
     else
     {
       $value = $this->getDefault();
     }
+    $value = $this->castType( $value, $this->getType(), true );
 
     /*
      * retrieve, cache and return value
@@ -588,12 +590,25 @@ class qcl_config_ConfigModel
   }
 
   /**
+   * Returns the type of a key
+   * @param string $key
+   * @return string
+   */
+  public function keyType( $key )
+  {
+    $this->checkKey( $key );
+    $this->load( $key );
+    return $this->getType();
+  }
+
+
+  /**
    * Returns the type of the currently loaded config key
    * @return string
    */
   public function getType()
   {
-    return $this->getTypeString( $this->getType() );
+    return $this->getTypeString( $this->get("type") );
   }
 
 	/**

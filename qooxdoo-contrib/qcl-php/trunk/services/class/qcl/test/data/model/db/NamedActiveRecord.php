@@ -39,7 +39,6 @@ class User
 
   function __construct()
   {
-    $this->resetBehaviors();
     $this->addProperties( $this->properties );
     parent::__construct();
   }

@@ -34,10 +34,6 @@ class qcl_config_UserConfigModel
    * Properties
    */
   private $properties = array(
-    'type'  => array(
-      'check'     => "integer",
-      'sqltype'   => "smallint"
-    ),
     'value'  => array(
       'check'     => "string",
       'sqltype'   => "varchar(255)",
@@ -72,8 +68,8 @@ class qcl_config_UserConfigModel
   function __construct()
   {
     $this->addRelations( $this->relations, __CLASS__ );
-    parent::__construct();
     $this->addProperties( $this->properties );
+    parent::__construct();
   }
 
   /**
