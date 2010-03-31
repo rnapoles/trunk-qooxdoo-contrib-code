@@ -81,8 +81,6 @@ class User extends qcl_data_model_db_ActiveRecord
    */
   function __construct()
   {
-    $this->resetBehaviors(); // comment this out when in production
-
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();

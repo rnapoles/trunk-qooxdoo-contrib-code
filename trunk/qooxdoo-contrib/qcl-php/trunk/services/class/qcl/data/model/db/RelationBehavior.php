@@ -134,6 +134,28 @@ class qcl_data_model_db_RelationBehavior
     return self::$cache;
   }
 
+  /**
+   * Return the raw relations definition array. Using this map is unsupported, since
+   * its structure might change any time. Use it only for debugging and otherwise use
+   * the API methods to manipulate relations.
+   * @return array
+   */
+  public function _relationsMap()
+  {
+    $this->getModel()->warn(sprintf("Use %s() only for debugging", __METHOD__ ) );
+    return $this->relations;
+  }
+
+  /**
+   * Return the map that determines class name substitution.
+   * Use it only for debugging.
+   * @return array
+   */
+  public function _replaceMap()
+  {
+    $this->getModel()->warn(sprintf("Use %s() only for debugging", __METHOD__ ) );
+    return self::$replace_class;
+  }
 
   //-------------------------------------------------------------
   // Add relation data
@@ -455,6 +477,7 @@ class qcl_data_model_db_RelationBehavior
   {
     $this->checkRelation( $relation );
     $class = $this->relations[$relation]['target']['class'];
+
     if ( ! $class )
     {
       throw new qcl_data_model_Exception( sprintf(

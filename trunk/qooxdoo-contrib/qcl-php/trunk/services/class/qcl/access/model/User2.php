@@ -100,7 +100,6 @@ class qcl_access_model_User2
    */
   function __construct()
   {
-    $this->resetBehaviors(); //FIXME
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
     parent::__construct();

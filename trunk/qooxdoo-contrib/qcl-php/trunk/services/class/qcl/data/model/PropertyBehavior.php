@@ -102,8 +102,8 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * Getter for managed model
-   * @return qcl_data_model_Model
+   * Getter for managed model FIXME
+   * @return qcl_data_model_AbstractActiveRecord
    */
   protected function getModel()
   {
@@ -133,16 +133,18 @@ class qcl_data_model_PropertyBehavior
     if ( ! $this->has( $property) )
     {
       $this->getModel()->warn( $this->getModel()->backtrace() );
+      $this->getModel()->debug( $this->getModel()->getRelationBehavior()->_relationsMap(),__CLASS__,__LINE__);
+      $this->getModel()->debug( $this->getModel()->getRelationBehavior()->_replaceMap(),__CLASS__,__LINE__);
       if ( in_array( $property, self::$core_properties ) )
       {
          throw new qcl_core_PropertyBehaviorException( sprintf(
-          "Class '%s': core model property '%s' does not exist. ".
+          "Class '%s': core model property '%s' is not defined. ".
           "Did you call the parent constructor in the constructor of class '%s'?",
           $this->getModel()->className(), $property, $this->getModel()->className()
         ) );
       }
       throw new qcl_core_PropertyBehaviorException( sprintf(
-        "Class '%s': model property '%s' does not exist or is not accessible",#
+        "Class '%s': model property '%s' is not defined.",#
         get_class( $this->getModel() ), $property
       ) );
     }
