@@ -617,7 +617,7 @@ class qcl_config_DbModel
     {
       $result[$this->getNamedId()] = $this->getValue();
     }
-		while( $this->nextRecord() );
+		while( $this->loadNext() );
 		return $result;
 	}
 }

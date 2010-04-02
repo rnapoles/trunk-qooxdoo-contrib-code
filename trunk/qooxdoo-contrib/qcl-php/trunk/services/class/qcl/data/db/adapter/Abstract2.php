@@ -15,8 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/Object.php";
-require_once "qcl/data/db/__init__.php";
+qcl_import( "qcl_core_Object" );
 
 /**
  * abstract class for objects which do database queries
@@ -89,19 +88,9 @@ abstract class qcl_data_db_adapter_Abstract2
     $this->set( $this->extractDsnProperties( $dsn ) );
 
 		/*
-		 * initialize the connection with the dsn provided
+		 * connect to the database
 		 */
-		$this->init();
-	}
-
-
-	/**
-	 * Hook for initialization stuff called from the constructor.
-	 * Calls connect()
-	 */
-	public function init()
-	{
-    $this->connect();
+		$this->connect();
 	}
 
 	//-------------------------------------------------------------

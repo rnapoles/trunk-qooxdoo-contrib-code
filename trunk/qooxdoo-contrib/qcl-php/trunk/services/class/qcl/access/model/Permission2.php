@@ -63,11 +63,11 @@ class qcl_access_model_Permission2
     'Permission_Role' => array(
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
       'target'      => array( 'class' => "qcl_access_model_Role2" )
-    ),
+//    ),
 //    'Permission_Config' => array(
 //      'type'        => QCL_RELATIONS_HAS_MANY,
 //      'target'      => array( 'class' => "qcl_config_ConfigModel" )
-//    )
+    )
   );
 
   /**
@@ -75,9 +75,9 @@ class qcl_access_model_Permission2
    */
   function __construct()
   {
+    parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
-    parent::__construct();
   }
 
   /**

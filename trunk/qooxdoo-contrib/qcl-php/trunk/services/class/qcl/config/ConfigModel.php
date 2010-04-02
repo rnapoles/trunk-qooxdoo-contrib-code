@@ -463,7 +463,7 @@ class qcl_config_ConfigModel
     ) );
     if ( $userConfigModel->foundSomething() )
     {
-      $userConfigModel->nextRecord();
+      $userConfigModel->loadNext();
       $value = $userConfigModel->getValue();
     }
     else

@@ -52,6 +52,12 @@ class qcl_data_model_AbstractActiveRecord
    */
   private $lastQuery;
 
+  /**
+   * If the model has been initialized
+   * @var bool
+   */
+  private $isInitialized = false;
+
   //-------------------------------------------------------------
   // Model properties
   //-------------------------------------------------------------
@@ -87,22 +93,37 @@ class qcl_data_model_AbstractActiveRecord
    */
   function __construct( $datasourceModel=null )
   {
+
     if ( get_class( $this ) == __CLASS__ )
     {
       $this->raiseError("Class is abstract and must be extended.");
     }
 
+    parent::__construct();
+
     /*
      * set datasource model
      */
     $this->setDatasourceModel( $datasourceModel );
-
-    /*
-     * call parent constructor, this adds the properties
-     */
-    parent::__construct();
   }
 
+  /**
+   * Initialzies the model and the behaviors.
+   */
+  public function init()
+  {
+    if ( ! $this->isInitialized )
+    {
+      $this->getPropertyBehavior()->init();
+      $this->getRelationBehavior()->init();
+    }
+    else
+    {
+      $this->log( sprintf(
+        "Model '%s' is already initialized.", $this->className()
+      ), QCL_LOG_MODEL );
+    }
+  }
 
   //-------------------------------------------------------------
   // Getters & setters
@@ -115,6 +136,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function set( $first, $second= null )
   {
+    $this->init();
     parent::set( $first, $second );
     return $this;
   }
@@ -234,7 +256,18 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function load( $id )
   {
-    $this->getQueryBehavior()->selectWhere( array( "id" => $id ) );
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * select and fetch row with corresponding id
+     */
+    $this->getQueryBehavior()->select( new qcl_data_db_Query( array(
+      'select' => $this->properties(),
+      'where'  => array( "id" => $id )
+    ) ) );
     $result = $this->getQueryBehavior()->fetch();
     if ( $result )
     {
@@ -261,6 +294,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function loadWhere( $query )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * select and fetch first row that matches the query
+     */
     $rowCount = $this->getQueryBehavior()->selectWhere( $query );
     if ( $rowCount )
     {
@@ -289,6 +330,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function find( qcl_data_db_Query $query )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * execute query
+     */
     return $this->getQueryBehavior()->select( $query );
   }
 
@@ -300,6 +349,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function findWhere( $query )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * execute query
+     */
     $this->lastQuery =  $this->getQueryBehavior()->selectWhere( $query );
     return $this->lastQuery;
   }
@@ -310,6 +367,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function findAll()
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * run query
+     */
     $this->lastQuery = new qcl_data_db_Query( array(
       "select" => "*"
     ) );
@@ -326,25 +391,50 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function findLinkedModels( $targetModel )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * find linked ids
+     */
     $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel );
     $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
     return $this->lastQuery;
   }
 
   /**
-   * If the last query has found more then one record, get the text one.
-   * If the end of the records has been reached, return null.
+   * If the last query has found more then one record, get the first or next one.
+   * If not, or the end of the found records has been reached, return null.
    * @param qcl_data_db_Query|null $query If given, fetch the records
    *   that have been selected using the given query. Otherwise retrieve
    *   the result of the last query.
    * @return array|null
    */
-  public function nextRecord( $query= null )
+  public function loadNext( $query= null )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * check argument
+     */
     if ( $query === null )
     {
       $query = $this->lastQuery;
     }
+    else if ( ! $query instanceof qcl_data_db_Query )
+    {
+      $this->raiseError("Argument must be an instance of qcl_data_db_Query");
+    }
+
+    /*
+     * fetch the next record, set the corrensponding properties if successful
+     * and return the result
+     */
     $record = $this->getQueryBehavior()->fetch( $query );
     if( $record )
     {
@@ -365,14 +455,14 @@ class qcl_data_model_AbstractActiveRecord
   public function create( $data=null )
   {
     /*
-     * setup relations if not already set up
+     * initialize model and behaviors
      */
-    $this->getRelationBehavior()->init();
+    $this->init();
 
     /*
      * setting initial values
      */
-    $this->getPropertyBehavior()->init();
+    $this->getPropertyBehavior()->initPropertyValues();
     $this->set("created", new qcl_data_db_Timestamp("now") );
     if( is_array( $data ) )
     {
@@ -382,12 +472,17 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * inserting values
      */
-    $id   = $this->getQueryBehavior()->insertRow( $this->data() );
+    $id = $this->getQueryBehavior()->insertRow( $this->data() );
 
     /*
      * reload values, in case the database has changed something
      */
     $this->load( $id );
+
+    /*
+     * log message
+     */
+    $this->log( sprintf( "Created new model record '%s'.", $this ), QCL_LOG_MODEL );
 
     /*
      * return the id
@@ -417,6 +512,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function delete()
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * check if we have a loaded record
+     */
     $id = $this->getId();
     if ( ! $id )
     {
@@ -450,11 +553,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * delete the model data
      */
-    $this->log( sprintf(
-      "Deleting record data for [%s #%s] ...",
-      $this->className(), $id
-    ), QCL_LOG_MODEL );
-
+    $this->log( sprintf( "Deleting record data for %s ...", $this ), QCL_LOG_MODEL );
     return $this->getQueryBehavior()->deleteRow( $id );
   }
 
@@ -468,6 +567,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function deleteWhere( $where )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * execute query
+     */
     return $this->getQueryBehavior()->deleteWhere( $where );
   }
 
@@ -480,14 +587,25 @@ class qcl_data_model_AbstractActiveRecord
   public function deleteAll()
   {
     /*
-     * delete linked data
+     * initialize model and behaviors
      */
-    $this->log( sprintf(
-      "Unlinking all linked records for model '%s' ...", $this->className()
-    ), QCL_LOG_MODEL );
+    $this->init();
 
+    $this->log( sprintf( "Unlinking all linked records for model '%s' ...", $this->className() ), QCL_LOG_MODEL );
+
+    /*
+     * initialize all dependent models so that he dependencies are set up
+     * before deleting them
+     */
     $relationBehavior = $this->getRelationBehavior();
+    foreach ( $relationBehavior->relations() as $relation )
+    {
+      $relationBehavior->getTargetModel( $relation )->init();
+    }
 
+    /*
+     * now unlink them
+     */
     foreach ( $relationBehavior->relations() as $relation )
     {
       $targetModel = $relationBehavior->getTargetModel( $relation );
@@ -509,7 +627,7 @@ class qcl_data_model_AbstractActiveRecord
      * delete model data
      */
     $this->log( sprintf(
-      "Deleting all records for class '%s'", $this->className()
+      "Deleting all records for model '%s'", $this->className()
     ), QCL_LOG_MODEL );
 
     return $this->getQueryBehavior()->deleteAll();
@@ -524,6 +642,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function updateWhere( $data, $where )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * execute query
+     */
     return $this->getQueryBehavior()->updateWhere( $data, $where );
   }
 
@@ -578,6 +704,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function countWhere( $where )
   {
+    $this->init();
     return $this->getQueryBehavior()->countWhere( $where );
   }
 
@@ -610,15 +737,15 @@ class qcl_data_model_AbstractActiveRecord
    * queries.
    *
    * @param array  $relations
-   * @param string $parentClass The class that defines the
+   * @param string $definingClass The class that defines the
    *   relations. Usually, the caller passes the __CLASS__ constant.
    *   This is needed to correctly determine the model class names when
    *   child classes are involved.
    * @return void
    */
-  public function addRelations( $relations, $parentClass )
+  public function addRelations( $relations, $definingClass )
   {
-    return $this->getRelationBehavior()->addRelations( $relations, $parentClass, $this->className() );
+    return $this->getRelationBehavior()->addRelations( $relations, $definingClass );
   }
 
   /**
@@ -630,6 +757,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function hasRelationWithModel( $model )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call behavior method do do the actual work
+     */
     return $this->getRelationBehavior()->hasRelationWithModel( $model );
   }
 
@@ -641,6 +776,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function linkModel( $targetModel )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call behavior method do do the actual work
+     */
     return $this->getRelationBehavior()->linkModel( $targetModel );
   }
 
@@ -652,6 +795,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function islinkedModel( $targetModel )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call behavior method do do the actual work
+     */
     return $this->getRelationBehavior()->isLinkedModel( $targetModel );
   }
 
@@ -663,6 +814,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function unlinkModel( $targetModel )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call behavior method do do the actual work
+     */
     return $this->getRelationBehavior()->unlinkModel( $targetModel );
   }
 
@@ -679,6 +838,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function import( qcl_data_model_AbstractImporter $importer )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call importer method do do the actual work
+     */
     $importer->import( $this );
   }
 
@@ -692,6 +859,14 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function export( qcl_data_model_AbstractExporter $exporter )
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call importer method do do the actual work
+     */
     return $exporter->export( $this );
   }
 
@@ -720,13 +895,28 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function destroy()
   {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * destroy all jointables models, too. This can leave the database in a
+     * broken state, make sure to destroy the model joined by the join table,
+     * too.
+     */
     $relationBehavior = $this->getRelationBehavior();
     foreach( $relationBehavior->relations() as $relation )
     {
       if ( $relationBehavior->getRelationType( $relation ) == QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY )
       {
-        $joinModel = $relationBehavior->getJoinModel( $relation );
-        $joinModel->destroy();
+        $joinTableName = $relationBehavior->getJoinTableName( $relation );
+        $joinTable = new qcl_data_db_Table( $joinTableName, $this->getQueryBehavior()->getAdapter() );
+        if ( $joinTable->exists() )
+        {
+          $joinModel = $relationBehavior->getJoinModel( $relation );
+          $joinModel->destroy();
+        }
       }
     }
     $this->getQueryBehavior()->destroy();

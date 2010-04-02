@@ -70,9 +70,9 @@ class qcl_access_model_Role2
    */
   function __construct()
   {
+    parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
-    parent::__construct();
   }
 
   /**
@@ -112,7 +112,7 @@ class qcl_access_model_Role2
     $permModel = $this->getPermissionModel();
     $permModel->findLinkedModels( $this );
     $permissions =  array();
-    while ( $permModel->nextRecord() )
+    while ( $permModel->loadNext() )
     {
       $permissions[] = $permModel->namedId();
     }
@@ -128,7 +128,7 @@ class qcl_access_model_Role2
     $userModel = $this->getUserModel();
     $userModel->findLinkedModels( $this );
     $users =  array();
-    while ( $userModel->nextRecord() )
+    while ( $userModel->loadNext() )
     {
       $users[] = $userModel->namedId();
     }

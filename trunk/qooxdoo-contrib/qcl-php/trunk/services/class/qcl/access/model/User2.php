@@ -86,6 +86,13 @@ class qcl_access_model_User2
         'class'       => "qcl_config_UserConfigModel",
         'dependent'   => true
       )
+    ),
+    'User_Session'  => array(
+      'type'    => QCL_RELATIONS_HAS_MANY,
+      'target'  => array(
+        'class'     => "qcl_access_model_Session2",
+        'dependent' => "true"
+      )
     )
   );
 
@@ -100,9 +107,9 @@ class qcl_access_model_User2
    */
   function __construct()
   {
+    parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
-    parent::__construct();
   }
 
   /**
@@ -266,7 +273,7 @@ class qcl_access_model_User2
     $roleModel = $this->getRoleModel();
     $roleModel->findLinkedModels( $this );
     $roles = array();
-    while( $roleModel->nextRecord() )
+    while( $roleModel->loadNext() )
     {
       $roles[] = $roleModel->namedId();
     }

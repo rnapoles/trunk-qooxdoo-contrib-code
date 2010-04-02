@@ -88,9 +88,9 @@ class User extends qcl_data_model_db_ActiveRecord
    */
   function __construct()
   {
+    parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
-    parent::__construct();
   }
 }
 
@@ -149,12 +149,14 @@ class Category extends qcl_data_model_db_ActiveRecord
     parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
-
   }
 }
 
 
-
+/**
+ * History model, has a reference to a user and one to an
+ * action
+ */
 class History extends qcl_data_model_db_ActiveRecord
 {
 
@@ -227,16 +229,28 @@ class class_qcl_test_data_model_db_RelationalModel
   public function method_testModel()
   {
 
-    $user     = new User();
-    $history  = new History();
-    $action   = new Action();
-    $group    = new Group();
-    $category = new Category();
+    $this->startTimer();
+
+    /**
+     * Reset model caches
+     */
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
+
+    /*
+     * instantiate all needed models
+     */
+    $singletons = true;
+    $user     = $singletons ? User::getInstance() : new User();
+    $action   = $singletons ? Action::getInstance() : new Action();
+    $history  = $singletons ? History::getInstance() :new History();
+    $group    = $singletons ? Group::getInstance() : new Group();
+    $category = $singletons ? Category::getInstance() : new Category();
 
     /*
      * create users
      */
     $user->deleteAll();
+
     $users = array(
       "mehmet", "ling", "john",
       "fritz", "cathrine", "peer",
@@ -246,9 +260,6 @@ class class_qcl_test_data_model_db_RelationalModel
     {
       $user->create( array( "name" => $name ) );
     }
-
-
-
 
     /*
      * create groups
@@ -287,15 +298,15 @@ class class_qcl_test_data_model_db_RelationalModel
         $this->info("   Adding user '$userName'...");
         $user->loadWhere( array( "name" => $userName ) );
         $group->linkModel( $user );
-        $this->assertEquals(true, $group->islinkedModel( $user ) );
+        $this->assertEquals(true, $group->islinkedModel( $user ), null, __CLASS__, __LINE__ );
 
 //        $this->info("   Removing user '$userName'...");
         $group->unlinkModel( $user );
-        $this->assertEquals(false, $group->islinkedModel( $user ) );
+        $this->assertEquals(false, $group->islinkedModel( $user ), null, __CLASS__, __LINE__ );
 
 //        $this->info("   Re-adding user '$userName'...");
         $group->linkModel( $user );
-        $this->assertEquals(true, $group->islinkedModel( $user ) );
+        $this->assertEquals(true, $group->islinkedModel( $user ), null, __CLASS__, __LINE__ );
       }
     }
 
@@ -317,19 +328,23 @@ class class_qcl_test_data_model_db_RelationalModel
         $this->info("   Adding user '$userName'...");
         $user->loadWhere( array( "name" => $userName ) );
         $category->linkModel( $user );
-        $this->assertEquals(true, $category->islinkedModel( $user ) );
+        $this->assertEquals(true, $category->islinkedModel( $user ), null, __CLASS__, __LINE__ );
 
 //        $this->info("   Removing user '$userName'...");
         $category->unlinkModel( $user );
-        $this->assertEquals(false, $category->islinkedModel( $user ) );
+        $this->assertEquals(false, $category->islinkedModel( $user ), null, __CLASS__, __LINE__ );
 
 //        $this->info("   Re-adding user '$userName'...");
         $category->linkModel( $user );
-        $this->assertEquals(true, $category->islinkedModel( $user ) );
+        $this->assertEquals(true, $category->islinkedModel( $user ), null, __CLASS__, __LINE__ );
       }
     }
 
+    /*
+     * pseudo user "history"
+     */
     $this->info("Creating random user history...");
+
     $history->deleteAll();
     $action->deleteAll();
 
@@ -364,6 +379,11 @@ class class_qcl_test_data_model_db_RelationalModel
          */
         $action->load( rand(1,6) );
 
+//        $this->info( sprintf(
+//          "  %s: %s %s",
+//          $history->getCreated(), $user->getName(), $action->getDescription()
+//        ) );
+
         /*
          * create a history record and link it to the action
          */
@@ -373,12 +393,9 @@ class class_qcl_test_data_model_db_RelationalModel
         /*
          * link the user and the history record
          */
-        $user->linkModel( $history );
+        $history->linkModel( $user );
 
-//        $this->info( sprintf(
-//          "  %s: %s %s",
-//          $history->getCreated(), $user->getName(), $action->getDescription()
-//        ) );
+
       }
     }
 
@@ -389,13 +406,13 @@ class class_qcl_test_data_model_db_RelationalModel
      */
     $q1 = $group->findAll();
     $this->assertEquals(3, $q1->getRowCount() );
-    $this->info( sprintf( "We have %s groups", $q1->getRowCount() ), null, __CLASS__,__METHOD__ );
+    $this->info( sprintf( "We have %s groups", $q1->getRowCount() ), null, __CLASS__,__LINE__ );
 
-    while( $group->nextRecord() )
+    while( $group->loadNext() )
     {
       $q2 = $user->findLinkedModels( $group );
       $members = array();
-      while( $user->nextRecord() )
+      while( $user->loadNext() )
       {
         $members[] = $user->getName();
       }
@@ -418,13 +435,13 @@ class class_qcl_test_data_model_db_RelationalModel
     $this->info("Deleting user 'peer' with id#$id");
     $user->delete();
 
-    $this->assertEquals( 0, $user->countWhere( array( 'name' => "peer" ) ) , null, __CLASS__,__METHOD__);
+    $this->assertEquals( 0, $user->countWhere( array( 'name' => "peer" ) ) , null, __CLASS__,__LINE__);
 
     $count = $history->find( new qcl_data_db_Query( array(
       'where' => array( 'UserId' => $id )
     ) ) );
     $this->info("'peer' has $count history records.");
-    $this->assertEquals( 0, $count , null, __CLASS__,__METHOD__);
+    $this->assertEquals( 0, $count , null, __CLASS__,__LINE__);
 
     /*
      * Cleanup
@@ -434,6 +451,8 @@ class class_qcl_test_data_model_db_RelationalModel
     $category->destroy();
     $action->destroy();
     $history->destroy();
+
+    $this->info("Execution took " .$this->timerAsSeconds() . " seconds.");
 
     return "OK";
   }
@@ -452,7 +471,7 @@ class class_qcl_test_data_model_db_RelationalModel
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, false );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
   }

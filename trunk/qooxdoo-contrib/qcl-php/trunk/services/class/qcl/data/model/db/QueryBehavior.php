@@ -910,6 +910,7 @@ class qcl_data_model_db_QueryBehavior
       $this->raiseError("Invalid query data.");
     }
     $this->select( $query );
+    $result = array();
     while( $row = $this->fetch() )
     {
       $result[] = $row[$property];
@@ -1093,6 +1094,21 @@ class qcl_data_model_db_QueryBehavior
     {
       $this->getTable()->delete();
     }
+  }
+
+  //-------------------------------------------------------------
+  // convenience methods
+  //-------------------------------------------------------------
+
+  /**
+   * Forwards log method request to model
+   * @param $msg
+   * @param $filters
+   * @return void
+   */
+  protected function log( $msg, $filters )
+  {
+    $this->getModel()->log( $msg, $filters );
   }
 }
 ?>

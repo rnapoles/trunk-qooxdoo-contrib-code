@@ -98,8 +98,8 @@ class qcl_data_model_db_NamedActiveRecord
 
   function __construct()
   {
-    $this->addProperties( $this->properties );
     parent::__construct();
+    $this->addProperties( $this->properties );
   }
 
   //-------------------------------------------------------------
@@ -157,7 +157,6 @@ class qcl_data_model_db_NamedActiveRecord
     if ( $this->relationBehavior === null )
     {
       $this->relationBehavior = new qcl_data_model_db_RelationBehavior( $this );
-      $this->relationBehavior->init();
     }
     return $this->relationBehavior;
   }

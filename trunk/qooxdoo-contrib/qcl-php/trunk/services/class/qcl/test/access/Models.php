@@ -143,6 +143,22 @@ class UserConfig extends qcl_config_UserConfigModel
 }
 
 /**
+ * Class to model the custom user configuration data.
+ * @see User
+ */
+class Session extends qcl_access_model_Session2
+{
+  protected $tableName = "test_data_Session";
+  /**
+   * @return Session
+   */
+  public static function getInstance() {
+    return qcl_getInstance( __CLASS__ );
+  }
+}
+
+
+/**
  * Service class containing test methods for access package
  */
 class class_qcl_test_access_Models
@@ -169,6 +185,14 @@ class class_qcl_test_access_Models
     $user = User::getInstance();
     $role = Role::getInstance();
     $permission = Permission::getInstance();
+    $session = Session::getInstance();
+
+    /*
+     * Even though the models are not needed, we need to instantiate them, otherwise
+     * the relations are not correctly set up-
+     */
+    Config::getInstance();
+    UserConfig::getInstance();
 
     /*
      * users
@@ -233,19 +257,21 @@ class class_qcl_test_access_Models
     /*
      * tests
      */
-    $this->testAnonymous();
-    $this->testUser();
-    $this->testImportExport();
-    $this->testUser();
+//    $this->testAnonymous();
+//    $this->testUser();
+//    $this->testImportExport();
+//    $this->testUser();
+    $this->testSession();
 
     /*
      * cleanup
      */
-    User::getInstance()->destroy();
-    Role::getInstance()->destroy();
-    Permission::getInstance()->destroy();
-    Config::getInstance()->destroy();
-    UserConfig::getInstance()->destroy();
+//    $user->destroy();
+//    $role->destroy();
+//    $permission->destroy();
+//    $session->destroy();
+//    Config::getInstance()->destroy();
+//    UserConfig::getInstance()->destroy();
 
     return "OK";
   }
@@ -318,13 +344,25 @@ class class_qcl_test_access_Models
     Permission::getInstance()->import( new qcl_data_model_import_Xml( $permissionXml ) );
   }
 
+  protected function testSession()
+  {
+    $user = User::getInstance();
+    $session = Session::getInstance();
+    $session->deleteAll();
+    $user->load("user1");
+    $this->startLogging();
+    $session->registerSession( $this->getSessionId() , $user, $this->getServer()->getRemoteIp() );
+  }
+
   protected function startLogging()
   {
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_ACCESS, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+
   }
 
   protected function endLogging()

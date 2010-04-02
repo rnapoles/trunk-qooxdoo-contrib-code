@@ -36,6 +36,12 @@ class qcl_test_AbstractTestController
 {
 
   /**
+   * Timestamp for script execution time measurement
+   * @var float
+   */
+  private $timestamp;
+
+  /**
    * Analyzes a PhpRpc method's doc comment. This allows to provide non-standard
    * documentation in the sense that you can use @param $params[0], @param $params[1],
    * etc.
@@ -156,6 +162,26 @@ class qcl_test_AbstractTestController
     if ( $class === null ) $class = "Unknown class";
     if ( $line === null )  $line  = "Unknown line";
     throw new qcl_test_AssertionException( "$msg ($class:$line)" );
+  }
+
+  /**
+   * Records a timestamp for this object
+   * @return unknown_type
+   */
+  public function startTimer()
+  {
+    $this->timestamp = microtime_float();
+  }
+
+  /**
+   * Returns the time since startTimer() was called in seconds
+   * @return float
+   */
+  public function timerAsSeconds()
+  {
+    $time_end = microtime_float();
+    $seconds = round($time_end - $this->timestamp,5);
+    return $seconds;
   }
 
 }

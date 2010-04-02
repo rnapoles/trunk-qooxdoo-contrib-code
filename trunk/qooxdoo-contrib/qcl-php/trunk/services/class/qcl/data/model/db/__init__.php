@@ -16,5 +16,8 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+define( "QCL_PROPERTY_CHECK_STRING",  "string" );
+define( "QCL_PROPERTY_CHECK_INTEGER", "integer" );
+define( "QCL_PROPERTY_CHECK_BOOLEAN", "boolean" );
 
 ?>

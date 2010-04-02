@@ -59,6 +59,12 @@ class qcl_data_model_db_RelationBehavior
   private $relationModels = array();
 
   /**
+   * Whether the relations have been initialized
+   * @var bool
+   */
+  private $isInitialized = false;
+
+  /**
    * The types of relationships that are supported between models/tables
    * @var array
    */
@@ -102,10 +108,23 @@ class qcl_data_model_db_RelationBehavior
    */
   public function init()
   {
-    foreach( $this->relations() as $relation )
+    if ( ! $this->isInitialized )
     {
-      $this->setupRelation( $relation );
+      $this->getModel()->log( sprintf(
+        "* Initialzing relations for '%s'", $this->getModel()->className()
+      ), QCL_LOG_MODEL_RELATIONS );
+      foreach( $this->relations() as $relation )
+      {
+        $this->setupRelation( $relation );
+      }
+      $this->isInitialized = true;
     }
+//    else
+//    {
+//      $this->getModel()->log( sprintf(
+//        "- Relations for '%s' are already initialized", $this->getModel()->className()
+//      ), QCL_LOG_MODEL_RELATIONS );
+//    }
   }
 
   //-------------------------------------------------------------
@@ -167,22 +186,29 @@ class qcl_data_model_db_RelationBehavior
    *
    * @see qcl_data_model_IQueryBehavior::addRelations()
    * @param array $relations
-   * @param string $parentClass The class that defines the relations.
-   * @param string $childClass The implementing child class
+   * @param string $definingClass The class that defines the relations.
    * @return void
    */
-  public function addRelations( $relations, $parentClass, $childClass )
+  public function addRelations( $relations, $definingClass )
   {
     /*
      * replace parent class name with child class
      */
-    if ( $parentClass != $childClass )
+    $modelClass = $this->getModel()->className();
+    if ( $definingClass != $modelClass )
     {
-      self::$replace_class[$parentClass] = $childClass;
+      self::$replace_class[$definingClass] = $modelClass;
     }
 
     foreach( $relations as $relation => $relData )
     {
+
+      $this->getModel()->log( sprintf(
+        "Adding relation '%s' for model %s.", $relation,
+        $definingClass == $modelClass ?
+          "'$modelClass'" :  "'$modelClass' (defined in '$definingClass')"
+      ), QCL_LOG_MODEL_RELATIONS );
+
       /*
        * add to relations map
        */
@@ -197,7 +223,6 @@ class qcl_data_model_db_RelationBehavior
        */
       $class = $this->getTargetModelClass( $relation );
       $this->relationModels[ $class ] = $relation;
-
     }
   }
 
@@ -517,21 +542,27 @@ class qcl_data_model_db_RelationBehavior
     {
       /*
        * try to get the object singleton
+       * FIXME qcl_core_Object::getInstance() exists, so this will always be true
        */
-      if ( version_compare ( PHP_VERSION, '5.3', '<') )
+      if( method_exists( $class, "getInstance" ) )
       {
-        //$model = call_user_func_array( array( $class, "getInstance" ), array() );
+        $this->getModel()->log( "Using singleton instance '$class'.", QCL_LOG_MODEL_RELATIONS );
+
+        if ( version_compare ( PHP_VERSION, '5.3', '<') )
+        {
+          $model = call_user_func_array( array( $class, "getInstance" ), array() );
+        }
+        else
+        {
+          $model = call_user_func_array( "$class::getInstance", array() );
+        }
       }
       else
       {
-        //$model = call_user_func_array( "$class::getInstance", array() );
-      }
-
-      /*
-       * if no getInstance() method exists, create a new object
-       */
-      if ( ! is_object( $model ) )
-      {
+        /*
+         * if no getInstance() method exists, create a new object
+         */
+        $this->getModel()->log( "Creating new reference instance '$class'.", QCL_LOG_MODEL_RELATIONS );
         $model = new $class();
       }
 
@@ -600,13 +631,17 @@ class qcl_data_model_db_RelationBehavior
           get_class($model), $key, $relation
         ) );
       }
+      else
+      {
+        // do nothing, key is already set up
+      }
     }
     else
     {
-      qcl_log_Logger::getInstance()->log( sprintf(
-        "Adding foreign key property '%s' to model '%s' for relation '%s",
-        $key, $this->getModel()->className(), $relation
-      ), QCL_LOG_MODEL_RELATIONS );
+      $this->getModel()->log( sprintf(
+        "Relation '%s': Adding foreign key property '%s' to model '%s'.",
+        $relation, $key, $model->className()
+      ), QCL_LOG_MODEL_RELATIONS  );
 
       $propBeh->add( array(
         $key => array(
@@ -634,6 +669,7 @@ class qcl_data_model_db_RelationBehavior
      * setup if that hasn't happened yet
      */
     $model = $this->getModel();
+    $objectId = $model->objectId();
     $class = $model->className();
     $cache = $this->cache();
     if ( ! isset( $cache->relations[ $relation ] ) )
@@ -641,7 +677,10 @@ class qcl_data_model_db_RelationBehavior
       $cache->relations[ $relation ] = array();
     }
 
-    if( ! isset( $cache->relations[ $relation ][ $class ] ) )
+    /*
+     * check if that particular object has already been setup
+     */
+    if( ! isset( $cache->relations[ $relation ][ $objectId ] ) )
     {
       /*
        * call setup method
@@ -650,8 +689,8 @@ class qcl_data_model_db_RelationBehavior
       $method = "setupRelation" . $this->convertLinkType( $relationType );
 
       $model->log( sprintf(
-        "Setting up relation '%s' for class '%s' using '%s'...",
-        $relation, $class, $method
+        "Setting up relation '%s' for [%s #%s] using '%s'...",
+        $relation, $class, $objectId, $method
       ), QCL_LOG_MODEL_RELATIONS );
 
       $this->$method( $relation );
@@ -659,12 +698,12 @@ class qcl_data_model_db_RelationBehavior
       /*
        * set flag
        */
-      $cache->relations[ $relation ][ $class ] = true;
+      $cache->relations[ $relation ][ $objectId ] = true;
       return true;
     }
     $this->getModel()->log( sprintf(
-      "Relation '%s' is already set up for class '%s'.",
-      $relation, $class
+      "Relation '%s' is already set up for [%s #%s].",
+      $relation, $class, $objectId
     ), QCL_LOG_MODEL_RELATIONS );
     return false;
   }
@@ -714,8 +753,6 @@ class qcl_data_model_db_RelationBehavior
    */
   protected function setupRelationManyToMany( $relation )
   {
-    //$cache = $this->cache();
-
     $model            = $this->getModel();
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $this->getTargetForeignKey( $relation );
@@ -723,8 +760,8 @@ class qcl_data_model_db_RelationBehavior
     $joinModel = $this->getJoinModel( $relation );
 
     $model->log( sprintf(
-      "Creating join model with properties '%s' and '%s' ...",
-      $foreignKey, $targetForeignKey
+      "Creating join model, using table '%s' with properties '%s' and '%s' ...",
+      $joinModel->tableName(), $foreignKey, $targetForeignKey
     ), QCL_LOG_MODEL_RELATIONS );
 
     $joinModel->addProperties( array(
@@ -948,8 +985,10 @@ class qcl_data_model_db_RelationBehavior
    */
   public function linkModel( $targetModel )
   {
+    /*
+     * call  method depending on relation type
+     */
     $relation = $this->checkModelRelation( $targetModel );
-    $this->setupRelation( $relation );
     $method = "linkModel" . $this->convertLinkType( $this->getRelationType( $relation ) );
 
     $this->getModel()->log( sprintf(
@@ -1061,8 +1100,10 @@ class qcl_data_model_db_RelationBehavior
    */
   public function unlinkModel( $targetModel )
   {
+    /*
+     * call method depending on relation type
+     */
     $relation = $this->checkModelRelation( $targetModel );
-    $this->setupRelation( $relation );
     $method = "unlinkModel" .
       $this->convertLinkType( $this->getRelationType( $relation ) );
     if ( $this->$method( $relation, $targetModel ) )
@@ -1167,9 +1208,10 @@ class qcl_data_model_db_RelationBehavior
    */
   public function unlinkAll( $targetModel, $allLinks = false, $delete = false )
   {
+    /*
+     * call method depending on relation type
+     */
     $relation = $this->checkModelRelation( $targetModel );
-    $this->setupRelation( $relation );
-
     $relationType = $this->getRelationType( $relation );
     $method = "unlinkAll" . $this->convertLinkType( $relationType );
 
@@ -1212,9 +1254,7 @@ class qcl_data_model_db_RelationBehavior
     {
       if ( $delete )
       {
-        return $tgtQueryBeh->deleteWhere(
-          array( $foreignKey => array( "IS NOT" , null ) )
-        );
+        return $targetModel->deleteAll();
       }
       else
       {
@@ -1234,9 +1274,13 @@ class qcl_data_model_db_RelationBehavior
     {
       if ( $delete )
       {
-        return $tgtQueryBeh->deleteWhere(
+        $targetModel->findWhere(
           array( $foreignKey => $this->getModel()->getId() )
         );
+        while ( $targetModel->loadNext() )
+        {
+          $targetModel->delete();
+        }
       }
       else
       {
@@ -1272,7 +1316,9 @@ class qcl_data_model_db_RelationBehavior
      */
     if ( $delete )
     {
-      $this->getModel()->raiseError("Cannot delete target model in a many-to-one relationship!");
+      $this->getModel()->raiseError(
+        "Cannot delete target model in a many-to-one relationship!"
+      );
     }
 
     /**
@@ -1281,6 +1327,11 @@ class qcl_data_model_db_RelationBehavior
      */
     if ( $allLinks )
     {
+      $this->getModel()->log( sprintf(
+        "Relation '%s', source '%s', target '%s': Setting property '%s' to null in '%s'",
+        $relation, $this->getModel()->className(), $targetModel->className(),
+        $targetForeignKey, $this->getModel()->className()
+      ), QCL_LOG_MODEL_RELATIONS );
       return $queryBehavior->updateWhere(
         array( $targetForeignKey => null ),
         array( $targetForeignKey => array( "IS NOT", null ) )
@@ -1288,13 +1339,14 @@ class qcl_data_model_db_RelationBehavior
     }
 
     /*
-     * otherwise, do this only for the present record
+     * otherwise, no action
      */
     else
     {
-      $targetId = $this->getModel()->get( $targetForeignKey );
-      $this->getModel()->set( $targetForeignKey, null );
-      $this->getModel()->save();
+      $this->getModel()->log( sprintf(
+        "Relation '%s', source '%s', target '%s': Ignoring unlinkAllManyToOne method request.",
+        $relation, $this->getModel()->className(), $targetModel->className()
+      ),QCL_LOG_MODEL_RELATIONS  );
     }
   }
 
@@ -1330,6 +1382,11 @@ class qcl_data_model_db_RelationBehavior
      */
     if ( $allLinks )
     {
+      $this->getModel()->log( sprintf(
+        "Relation '%s', source '%s', target '%s': Truncating join table '%s'",
+        $relation, $this->getModel()->className(), $targetModel->className(),
+        $joinModel->tableName()
+      ),QCL_LOG_MODEL_RELATIONS  );
       return $joinModel->getQueryBehavior()->getTable()->truncate();
     }
 
@@ -1339,6 +1396,11 @@ class qcl_data_model_db_RelationBehavior
      */
     else
     {
+      $this->getModel()->log( sprintf(
+        "Relation '%s', source '%s', target '%s': Removing joined records in table '%s'",
+        $relation, $this->getModel()->className(), $targetModel->className(),
+        $joinModel->tableName()
+      ),QCL_LOG_MODEL_RELATIONS  );
       return $joinModel->getQueryBehavior()->deleteWhere( array(
         $foreignKey => $this->getModel()->id()
       ) );
@@ -1357,8 +1419,10 @@ class qcl_data_model_db_RelationBehavior
    */
   public function islinkedModel( $targetModel )
   {
+    /*
+     * call method depending on relation type
+     */
     $relation = $this->checkModelRelation( $targetModel );
-    $this->setupRelation( $relation );
     $method = "isLinkedModel" .
       $this->convertLinkType( $this->getRelationType( $relation ) );
     return $this->$method( $relation, $targetModel );
@@ -1425,8 +1489,10 @@ class qcl_data_model_db_RelationBehavior
    */
   public function linkedModelIds( $targetModel )
   {
+    /*
+     * call method depending on relation type
+     */
     $relation = $this->checkModelRelation( $targetModel );
-    $this->setupRelation( $relation );
     $method = "linkedModelIds" . $this->convertLinkType( $this->getRelationType( $relation ) );
     return $this->$method( $relation, $targetModel );
   }
@@ -1486,12 +1552,28 @@ class qcl_data_model_db_RelationBehavior
 
 
   /**
-   * Resets  the internal cache
+   * Resets  the internal caches
    * @return void
    */
   public function reset()
   {
     $this->cache()->reset();
+    $this->isInitialized = false;
+  }
+
+  //-------------------------------------------------------------
+  // convenience methods
+  //-------------------------------------------------------------
+
+  /**
+   * Forwards log method request to model
+   * @param $msg
+   * @param $filters
+   * @return void
+   */
+  protected function log( $msg, $filters )
+  {
+    $this->getModel()->log( $msg, $filters );
   }
 }
 ?>

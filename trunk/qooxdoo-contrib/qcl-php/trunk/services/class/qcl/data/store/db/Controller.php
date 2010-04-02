@@ -218,7 +218,7 @@ class qcl_data_store_db_Controller
     {
       $events[] = unserialize( $eventStore->get("eventData" ) );
     }
-    while ( $eventStore->nextRecord() );
+    while ( $eventStore->loadNext() );
 
     /*
      * delete retrieved events

@@ -240,7 +240,7 @@ class qcl_data_db_adapter_Mysql
    * Returns the next record from the database
    * @param boolean $withColumnNames  if true (default), map values to column names
    */
-  function nextRecord( $withColumnNames=true )
+  function loadNext( $withColumnNames=true )
   {
     $this->raiseError("Not implemented");
     $this->log ( $sql,"db");

@@ -534,7 +534,7 @@ class qcl_data_model_ActiveRecord
    * If the last query has found more then one record, get the text one
    * @return array
    */
-  public function nextRecord()
+  public function loadNext()
   {
 
     if ( ! count( $this->lastResult ) )

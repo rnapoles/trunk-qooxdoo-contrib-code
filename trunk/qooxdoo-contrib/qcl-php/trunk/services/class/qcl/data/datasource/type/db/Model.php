@@ -78,7 +78,7 @@ class qcl_data_datasource_type_db_Model
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_type_db_Model
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }

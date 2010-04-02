@@ -55,14 +55,6 @@ class qcl_data_model_Model
   // Constructor & initialization
   //-------------------------------------------------------------
 
-  /**
-   * Constructor, calls the init() method.
-   */
-  function __construct()
-  {
-    parent::__construct();
-    $this->getPropertyBehavior()->init();
-  }
 
   //-------------------------------------------------------------
   // Getters & setters
