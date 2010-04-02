@@ -29,7 +29,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
    * @static
    * @return qcl_access_model_Role
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }
@@ -61,7 +61,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
       {
         $permissions[] = $permModel->getProperty( $prop );
       }
-      while( $permModel->nextRecord() );
+      while( $permModel->loadNext() );
     }
     return $permissions;
   }
@@ -99,7 +99,7 @@ class qcl_access_model_Role extends qcl_access_model_Common
       {
         $users[] = $userModel->getProperty($prop);
       }
-      while( $userModel->nextRecord() );
+      while( $userModel->loadNext() );
     }
     return $users;
   }

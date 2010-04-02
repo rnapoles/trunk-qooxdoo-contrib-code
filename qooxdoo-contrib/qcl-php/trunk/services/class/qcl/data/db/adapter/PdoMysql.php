@@ -360,7 +360,15 @@ class qcl_data_db_adapter_PdoMysql
     $pass    = $this->getPassword();
     $options = $this->getOptions();
 
-    $this->log("Connecting to '$dsn' with user '$user', options: " . json_encode( $options ), QCL_LOG_DB );
+    if ( $this->getLogger()->isFilterEnabled( QCL_LOG_DB ) )
+    {
+      $this->log("query: $sql", QCL_LOG_DB );
+      if ( $parameters )
+      {
+        $this->log("Connecting to '$dsn' with user '$user', options: " . json_encode( $options ), QCL_LOG_DB );
+      }
+    }
+
 
     /*
      * connect. this will throw a PDOException if unsuccesful
@@ -370,7 +378,7 @@ class qcl_data_db_adapter_PdoMysql
     /*
      * tell driver to use the current database
      */
-    $this->useDatabase ( $this->getDatabase() );
+    $this->useDatabase( $this->getDatabase() );
 
   }
 

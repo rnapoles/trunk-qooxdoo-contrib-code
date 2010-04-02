@@ -33,7 +33,7 @@ class qcl_data_datasource_registry_Model
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_registry_Model
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }

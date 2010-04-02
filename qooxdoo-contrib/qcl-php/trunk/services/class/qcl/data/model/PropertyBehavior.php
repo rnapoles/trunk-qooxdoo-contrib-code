@@ -81,15 +81,23 @@ class qcl_data_model_PropertyBehavior
   /**
    * Cache of property definitions
    */
-  private $properties = array();
+  protected $properties = array();
 
   /**
    * The stored values for the managed properties
    * @var array
    */
-  private $data = array();
+  protected $data = array();
 
+  /**
+   * If the behavior has been initialized
+   * @var bool
+   */
+  private $isInitialized = false;
 
+  //-------------------------------------------------------------
+  // Initialization
+  //-------------------------------------------------------------
 
   /**
    * Constructor
@@ -100,6 +108,94 @@ class qcl_data_model_PropertyBehavior
   {
     parent::__construct( $model );
   }
+
+  /**
+   * Set initial values unless the model has been restored from persistent
+   * data.
+   * @param boolean $force If true, re-initialize the properties regardless of
+   * whether the behavior has been initialized before
+   * @return void
+   */
+  public function init( $force = false )
+  {
+    if ( ! $this->isInitialized or $force )
+    {
+      $this->initPropertyValues();
+      $this->isInitialized = true;
+    }
+//    else
+//    {
+//      $this->log( sprintf(
+//        "Property behavior for model '%s' is already initialized.", $this->getModel()->className()
+//      ), QCL_LOG_PROPERTIES );
+//    }
+  }
+
+  /**
+   * Set initial values unless the model has been restored from persistent
+   * data.
+   * @return void
+   */
+  public function initPropertyValues()
+  {
+
+    $this->log( sprintf(
+      "Initializing properties for model '%s'.", $this->getModel()->className()
+    ), QCL_LOG_PROPERTIES );
+    foreach( $this->properties as $property => $prop )
+
+    {
+      /*
+       * skip id column
+       */
+      if ( $property == "id" )
+      {
+        $this->properties[ "id" ][ 'nullable' ] = true; // FIXME Hack!
+        $this->set( "id", null );
+        continue;
+      }
+
+      /*
+       * initial value is set
+       */
+      if ( isset( $prop['init'] )  )
+      {
+        $this->set( $property, $prop['init'] );
+      }
+
+      /*
+       * no initial value, but nullability is set
+       */
+      elseif ( isset( $prop['nullable'] ) )
+      {
+        if ( $prop['nullable'] == true )
+        {
+          $this->set( $property, null );
+        }
+        else
+        {
+          throw new qcl_core_PropertyBehaviorException(
+            "Property " . get_class( $this->getModel() ) . "::\${$property} must be nullable or have an init value:"
+          );
+        }
+      }
+      /*
+       * if no initial value, make property implicitly nullable
+       * and defaulting to null
+       */
+      else
+      {
+        $this->properties[ $property ][ 'nullable' ] = true;
+        $this->properties[ $property ][ 'init' ] = null;
+        $this->set( $property, null );
+      }
+    }
+  }
+
+
+  //-------------------------------------------------------------
+  // Getters
+  //-------------------------------------------------------------
 
   /**
    * Getter for managed model FIXME
@@ -114,10 +210,15 @@ class qcl_data_model_PropertyBehavior
    * Getter for definition of properties in the managed model
    * @return array
    */
-  protected function getPropertyDefinition()
+  protected function _propertyMap()
   {
+    $this->getModel()->warn(sprintf("Use %s() only for debugging", __METHOD__ ) );
     return $this->properties;
   }
+
+  //-------------------------------------------------------------
+  // API
+  //-------------------------------------------------------------
 
   /**
    * Checks if property exists and throws an error if not.
@@ -132,7 +233,9 @@ class qcl_data_model_PropertyBehavior
     }
     if ( ! $this->has( $property) )
     {
-      $this->getModel()->warn( $this->getModel()->backtrace() );
+      //FIXME
+      $this->getModel()->debug( $this->_propertyMap() );
+      $this->getModel()->debug( $this->getModel()->backtrace() );
       $this->getModel()->debug( $this->getModel()->getRelationBehavior()->_relationsMap(),__CLASS__,__LINE__);
       $this->getModel()->debug( $this->getModel()->getRelationBehavior()->_replaceMap(),__CLASS__,__LINE__);
       if ( in_array( $property, self::$core_properties ) )
@@ -180,7 +283,7 @@ class qcl_data_model_PropertyBehavior
   public function _set( $property, $value )
   {
 
-    $props    = $this->getPropertyDefinition();
+    $props    = $this->properties;
     $def      = $props[$property];
     $type     = isset( $def['check'] )    ? $def['check']    : null;
     $nullable = isset( $def['nullable'] ) ? $def['nullable'] : null;
@@ -262,8 +365,7 @@ class qcl_data_model_PropertyBehavior
   public function type( $property )
   {
     $this->check( $property );
-    $properties = $this->getPropertyDefinition();
-    return $properties[$property]['check'];
+    return $this->properties[$property]['check'];
   }
 
   /**
@@ -272,7 +374,7 @@ class qcl_data_model_PropertyBehavior
    */
   public function names()
   {
-    return array_keys( $this->getPropertyDefinition() );
+    return array_keys( $this->properties );
   }
 
 
@@ -300,6 +402,10 @@ class qcl_data_model_PropertyBehavior
      */
     foreach ( $properties as $name => $map )
     {
+      $this->getModel()->log( sprintf(
+        "Adding property '%s' for model '%s'.", $name, $this->getModel()->className()
+      ), QCL_LOG_PROPERTIES );
+
       if ( ! is_array( $this->properties[ $name ] ) )
       {
         $this->properties[ $name ] = $map;
@@ -319,69 +425,9 @@ class qcl_data_model_PropertyBehavior
       {
         $this->properties[ $name ]['export'] = true;
       }
-
     }
 
     return $this->properties;
-  }
-
-  /**
-   * Set initial values unless the model has been restored from persistent
-   * data.
-   * @param $properties
-   * @return void
-   */
-  public function init()
-  {
-    $properties = $this->getPropertyDefinition();
-
-    foreach( $properties as $property => $prop )
-    {
-      /*
-       * skip id column
-       */
-      if ( $property == "id" )
-      {
-        $this->properties[ "id" ][ 'nullable' ] = true; // FIXME Hack!
-        $this->set( "id", null );
-        continue;
-      }
-
-      /*
-       * initial value is set
-       */
-      if ( isset( $prop['init'] )  )
-      {
-        $this->set( $property, $prop['init'] );
-      }
-
-      /*
-       * no initial value, but nullability is set
-       */
-      elseif ( isset( $prop['nullable'] ) )
-      {
-        if ( $prop['nullable'] == true )
-        {
-          $this->set( $property, null );
-        }
-        else
-        {
-          throw new qcl_core_PropertyBehaviorException(
-            "Property " . get_class( $this->getModel() ) . "::\${$property} must be nullable or have an init value:"
-          );
-        }
-      }
-      /*
-       * if no initial value, make property implicitly nullable
-       * and defaulting to null
-       */
-      else
-      {
-        $this->properties[ $property ][ 'nullable' ] = true;
-        $this->properties[ $property ][ 'init' ] = null;
-        $this->set( $property, null );
-      }
-    }
   }
 
   /**
@@ -541,6 +587,21 @@ class qcl_data_model_PropertyBehavior
       }
     }
     return $propList;
+  }
+
+  //-------------------------------------------------------------
+  // convenience methods
+  //-------------------------------------------------------------
+
+  /**
+   * Forwards log method request to model
+   * @param $msg
+   * @param $filters
+   * @return void
+   */
+  protected function log( $msg, $filters )
+  {
+    $this->getModel()->log( $msg, $filters );
   }
 }
 ?>

@@ -129,7 +129,7 @@ interface qcl_data_model_IActiveRecord
   public function find( qcl_data_db_Query $query );
 
   /**
-   * Select records for iteration with nextRecord()
+   * Select records for iteration with loadNext()
    * @param qcl_data_db_Query|array $query
    * @return int Number of rows retrieved
    */
@@ -140,7 +140,7 @@ interface qcl_data_model_IActiveRecord
    * If the end of the records has been reached, return null.
    * @return array|null
    */
-  public function nextRecord();
+  public function loadNext();
 
   //-------------------------------------------------------------
   // Data creation and manipulation

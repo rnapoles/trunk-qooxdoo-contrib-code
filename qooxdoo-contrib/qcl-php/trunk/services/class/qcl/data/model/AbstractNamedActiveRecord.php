@@ -50,6 +50,11 @@ class qcl_data_model_AbstractNamedActiveRecord
   public function create( $namedId, $data=null )
   {
     /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
      * check named id
      */
     if ( ! is_string( $namedId ) )
@@ -64,7 +69,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * reset properties to default values
      */
-    $this->getPropertyBehavior()->init();
+    $this->getPropertyBehavior()->initPropertyValues();
     $this->set("namedId", $namedId );
     $this->set("created", new qcl_data_db_Timestamp("now") );
 
@@ -84,6 +89,11 @@ class qcl_data_model_AbstractNamedActiveRecord
     $this->load( $id );
 
     /*
+     * log message
+     */
+    $this->log( sprintf( "Created new model record '%s'.", $this ), QCL_LOG_MODEL );
+
+    /*
      * return the id
      */
     return $id;
@@ -92,15 +102,18 @@ class qcl_data_model_AbstractNamedActiveRecord
   /**
    * Creates a new model record if one with the given named id does
    * not already exist.
+   *
    * @param string  $namedId
+   * @param array $data The data of the properties that should be set in the model
    * @return int the id of the inserted or existing record
+   * @todo this could be optimized to avoid queries
    */
-  public function createIfNotExists( $namedId  )
+  public function createIfNotExists( $namedId, $data  )
   {
     $id = $this->namedIdExists( $namedId );
     if ( $id === false )
     {
-     $id = $this->create( $namedId );
+      $id = $this->create( $namedId, $data );
     }
     else
     {

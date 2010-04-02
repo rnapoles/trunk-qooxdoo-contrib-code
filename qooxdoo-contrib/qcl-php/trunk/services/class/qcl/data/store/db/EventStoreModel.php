@@ -36,7 +36,7 @@ class qcl_data_store_db_EventStoreModel
    * @static
    * @return qcl_data_store_db_StoreModel
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }

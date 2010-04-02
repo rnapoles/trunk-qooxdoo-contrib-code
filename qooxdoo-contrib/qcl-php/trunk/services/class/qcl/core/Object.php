@@ -55,11 +55,6 @@ class qcl_core_Object
    */
   private $objectId = null;
 
-  /**
-   * Timestamp for script execution time measurement
-   * @var float
-   */
-  private $_timestamp;
 
   /**
    * The property behavior object
@@ -67,7 +62,15 @@ class qcl_core_Object
    */
   private $propertyBehavior;
 
+  /**
+   * If the object has been initialized
+   * @var bool
+   */
+  private $isInitialized = false;
 
+  //-------------------------------------------------------------
+  // Initialization & singleton
+  //-------------------------------------------------------------
 
   /**
    * Class constructor. If the mixin class property contains
@@ -75,17 +78,32 @@ class qcl_core_Object
    */
   function __construct()
   {
-
-    /*
-     * start internal timer
-     */
-    $this->startTimer();
-
     /*
      * initialize object id
      */
     $this->objectId();
+  }
 
+  /**
+   * Initialize object
+   * @return unknown_type
+   */
+  public function init()
+  {
+    if ( ! $this->isInitialized )
+    {
+      $this->getPropertyBehavior()->init();
+      $this->isInitialized = true;
+    }
+  }
+
+  /**
+   * Returns a singleton instance of this class
+   * @return qcl_core_Object
+   */
+  public static function getInstance()
+  {
+    return qcl_getInstance( get_called_class() );
   }
 
   //-------------------------------------------------------------
@@ -217,6 +235,14 @@ class qcl_core_Object
    */
   public function get( $property )
   {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
+    /*
+     * call the behvior method to do the work
+     */
     return $this->getPropertyBehavior()->get( $property );
   }
 
@@ -229,6 +255,14 @@ class qcl_core_Object
    */
   public function set( $property, $value=null )
   {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
+    /*
+     * call the behvior method to do the work
+     */
     return $this->getPropertyBehavior()->set( $property, $value );
   }
 
@@ -239,6 +273,14 @@ class qcl_core_Object
    */
   public function data()
   {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
+    /*
+     * call the behvior method to do the work
+     */
     return $this->getPropertyBehavior()->data();
   }
 
@@ -252,6 +294,14 @@ class qcl_core_Object
    */
   public function listProperties()
   {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
+    /*
+     * return properties as passed to the method
+     */
     $result = array();
     foreach ( func_get_args() as $property )
     {
@@ -307,6 +357,11 @@ class qcl_core_Object
   public function compareWith( $compare, $fields=null )
   {
     /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
+    /*
      * check arguments to get what we should compare with
      */
     $array = $this->getArrayData( $compare );
@@ -355,6 +410,11 @@ class qcl_core_Object
    */
   public function getSharedPropertyValues ( $model )
   {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
     $myProperties    = $this->properties();
     $data            = $model->data();
 
@@ -396,6 +456,11 @@ class qcl_core_Object
    */
   public function compareSharedProperties ( $that, $diff=array() )
   {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
     $properties = array_intersect(
       $this->properties(),
       $that->properties()
@@ -948,34 +1013,6 @@ class qcl_core_Object
     }
   }
 
-  //-------------------------------------------------------------
-  // Timeer
-  //-------------------------------------------------------------
-
-  /**
-   * Records a timestamp for this object
-   * @return unknown_type
-   */
-  public function startTimer()
-  {
-    $this->_timestamp = microtime_float();
-  }
-
-  /**
-   * Returns the time since startTimer() was called in seconds
-   * @param $debugmsg
-   * @return unknown_type
-   */
-  public function timerAsSeconds($debugmsg=null)
-  {
-    $time_end = microtime_float();
-    $seconds = round($time_end - $this->_timestamp,5);
-    if ( $debugmsg )
-    {
-      //$this->debug( $debugmsg . ": $seconds seconds since timer started." );
-    }
-    return $seconds;
-  }
 
   //-------------------------------------------------------------
   // Messages and events

@@ -45,6 +45,20 @@ class qcl_core_PropertyBehavior
     $this->object = $object;
   }
 
+
+  /**
+   * Initializes behavior. Does nothing currently.
+   * @return unknown_type
+   */
+  public function init()
+  {
+    if ( ! $this->isInitialized )
+    {
+      //
+      $this->isInitialized = true;
+    }
+  }
+
   /**
    * Getter for object
    * @return qcl_core_Object
@@ -252,6 +266,17 @@ class qcl_core_PropertyBehavior
   public function reset()
   {
     // do nothing
+  }
+
+  /**
+   * Forwards log method request to object
+   * @param $msg
+   * @param $filters
+   * @return void
+   */
+  protected function log( $msg, $filters )
+  {
+    $this->getObject()->log( $msg, $filters );
   }
 }
 ?>

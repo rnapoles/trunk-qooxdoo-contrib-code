@@ -74,7 +74,7 @@ class qcl_locale_Manager  extends qcl_core_Object
 	/**
 	 * function to return singleton instance
 	 */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance( __CLASS__ );
   }

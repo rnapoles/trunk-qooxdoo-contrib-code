@@ -245,7 +245,7 @@ class qcl_access_model_User extends qcl_access_model_Common
      {
        if ( $roleModel->getNamedId() == $role ) return true;
      }
-     while( $roleModel->nextRecord() );
+     while( $roleModel->loadNext() );
      return false;
    }
 
@@ -296,7 +296,7 @@ class qcl_access_model_User extends qcl_access_model_Common
           $permissions, $roleModel->getPermissions( $prop )
         ) );
       }
-      while( $roleModel->nextRecord() );
+      while( $roleModel->loadNext() );
     }
     return $permissions;
   }

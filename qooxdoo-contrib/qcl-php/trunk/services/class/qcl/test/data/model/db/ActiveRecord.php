@@ -110,7 +110,7 @@ class class_qcl_test_data_model_db_ActiveRecord
      * querying records
      */
     $subscribers = array();
-    while( $member->nextRecord() )
+    while( $member->loadNext() )
     {
       $subscribers[] = $member->getName() . " <" . $member->getEmail() . ">";
     }

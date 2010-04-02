@@ -245,7 +245,7 @@ class qcl_event_message_Bus
         'name'  => $msgModel->get( "name" ),
         'data'  => unserialize( stripslashes( $msgModel->get("data") ) )
       );
-    } while ( $msgModel->nextRecord() );
+    } while ( $msgModel->loadNext() );
 
     /*
      * delete messages

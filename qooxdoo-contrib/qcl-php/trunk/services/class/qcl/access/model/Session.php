@@ -38,7 +38,7 @@ class qcl_access_model_Session
    * @static
    * @return qcl_access_model_Session
    */
-  function getInstance()
+  public static function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }

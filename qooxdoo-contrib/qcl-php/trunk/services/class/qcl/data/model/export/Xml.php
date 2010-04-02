@@ -57,7 +57,7 @@ class qcl_data_model_export_Xml
      * record data
      */
     $model->findAll();
-    while( $model->nextRecord() )
+    while( $model->loadNext() )
     {
 
 
@@ -115,7 +115,7 @@ class qcl_data_model_export_Xml
       $relNode = $linksNode->addChild("relation");
       $relNode->addAttribute( "name", $relation );
       $model->findAll();
-      while( $model->nextRecord() )
+      while( $model->loadNext() )
       {
         $targetModel = $relationBehavior->getTargetModel( $relation );
         $ids = $targetModel->getRelationBehavior()->linkedModelIds( $model );

@@ -66,7 +66,6 @@ class qcl_data_model_PersistentModel
   function __construct()
   {
     parent::__construct();
-    $this->init();
   }
 
   /**

@@ -204,7 +204,6 @@ class qcl_data_model_db_PropertyBehavior
      * add property map to local map
      */
     parent::add( $properties );
-
     $model     = $this->getModel();
     $qBehavior = $model->getQueryBehavior();
     $adpt      = $qBehavior->getAdapter();
@@ -222,7 +221,6 @@ class qcl_data_model_db_PropertyBehavior
       $cache->properties[$tableName] = array();
     }
     $cachedProps = $cache->properties[$tableName];
-
 
     /*
      * setup table columns
