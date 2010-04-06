@@ -2,6 +2,7 @@
   "libraries" :
   {
     "*" : {
+      "types" : ["contribution"],
       "versions" : ["*"],
       "qooxdoo-versions" : ["*"]
     }
