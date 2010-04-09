@@ -1,15 +1,12 @@
-;;<?php exit; ?>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; leave the above line to make sure nobody can view this file ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;<?php exit; ?>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Leave the above line to make sure nobody can access this file ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-[service]
-event_transport = yes
+;; ================================================================
+;; Configure the values below to your needs
+;; ================================================================
 
 [database]
-
-;; database.encoding
-;; The default encoding scheme of the database
-encoding  = utf8
 
 ;; database.type
 ;; the database type. currently, only mysql is supported and tested. Since
@@ -40,23 +37,45 @@ adminname  = test
 adminpassw = test
 
 ;; database.userdb
-;; The name of the databases that will have the data of the users
+;; The name of the databases that contains the user data
 userdb = qcl_test
 
 ;; database.admindb
 ;; The name of the database holding all the tables with global and
 ;; administrative information. Can be the same as database.userdb,
-;; but it is recommended to keep a separate database for this.
+;; but if you can access or create more than one database,
+;; is recommended to keep a separate database for this.
 admindb = qcl_test
 
 ;; database.tableprefix
 ;; A global prefix for all tables that are created, which makes
 ;; it possible to keep the data of several applications in one
 ;; database. you can omit this if no prefix is needed.
-tableprefix = qcl_test_
+tableprefix =
 
-;; =============================================================
+;; database.encoding
+;; The default encoding scheme of the database. It is recommended
+;; to use the default utf8.
+encoding  = utf8
+
+[service]
+
+;; service.event_transport
+;; Whether the server response should contain messages and events
+;; for the qooxdoo application
+event_transport = yes
+
+;; ================================================================
 ;; Don't touch anything beyond this point
-;; =============================================================
-dsn_admin="${database.type}:host=${database.host}&port=${database.port}&dbname=${database.admindb}"
-;;
+;; ================================================================
+
+[macros]
+
+;; DSN information. Since the ";" character cannot be used in value
+;; definitions, it is replaced by "&" in the the dsn string.
+dsn_user = "${database.type}:host=${database.host}&port=${database.port}&dbname=${database.admindb}"
+dsn_admin ="${database.type}:host=${database.host}&port=${database.port}&dbname=${database.admindb}"
+
+;; ================================================================
+;; End
+;; ================================================================

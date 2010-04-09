@@ -196,9 +196,10 @@ class qcl_data_model_db_PersistenceBehavior
       $this->loadNext();
       $this->setData( $object->serialize() );
       $this->save();
-      $this->log( sprintf(
-        "%s: updated in cache with id '%s'", $object->className(), $id
-      ), QCL_LOG_APPLICATION );
+// @todo cannot use logging during shutdown, when called from destructor
+//      $this->log( sprintf(
+//        "%s: updated in cache with id '%s'", $object->className(), $id
+//      ), QCL_LOG_APPLICATION );
     }
 
     /*
@@ -213,11 +214,11 @@ class qcl_data_model_db_PersistenceBehavior
         "userId"    => $userId,
         "data"      => $object->serialize()
       ));
-     $this->log( sprintf(
-        "%s: saved to cache with id '%s'", $object->className(), $id
-      ), QCL_LOG_APPLICATION );
+// @todo cannot use logging during shutdown, when called from destructor
+//     $this->log( sprintf(
+//        "%s: saved to cache with id '%s'", $object->className(), $id
+//      ), QCL_LOG_APPLICATION );
     }
-
   }
 
   /**

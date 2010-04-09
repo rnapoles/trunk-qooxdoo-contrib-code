@@ -62,7 +62,7 @@ class qcl_data_db_Manager
   {
     if ( $dsn === null )
     {
-      $dsn = $this->getApplication()->getIniValue("database.dsn_admin");
+      $dsn = $this->getApplication()->getIniValue("macros.dsn_admin");
       $dsn = str_replace("&",";", $dsn );
     }
     elseif ( ! is_string( $dsn ) ) // @todo use regexp
