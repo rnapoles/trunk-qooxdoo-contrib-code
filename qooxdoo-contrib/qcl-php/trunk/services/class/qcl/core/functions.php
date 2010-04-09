@@ -58,7 +58,9 @@ function qcl_import( $class, $checkDefined = false )
   if( qcl_file_exists( $class_file ) )
   {
     require_once $class_file;
-    if ( $checkDefined and ! class_exists( $class ) )
+    if ( $checkDefined
+          and ! class_exists( $class )
+            and ! class_exists( JsonRpcClassPrefix . $class ) )
     {
       throw new qcl_ClassNotDefinedException("Class '$class' is not defined in file '$class_file'.");
     }

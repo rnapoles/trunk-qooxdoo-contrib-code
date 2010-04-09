@@ -72,6 +72,9 @@ class class_qcl_test_data_model_db_ComplexActiveRecord
   extends qcl_test_AbstractTestController
 {
 
+  /**
+   * @rpctest OK
+   */
   public function method_testModel()
   {
     //$this->startLogging();

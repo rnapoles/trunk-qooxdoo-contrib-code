@@ -17,7 +17,16 @@
  */
 
 /**
- * Cache for property setup
+ * Cache for property setup.
+ *
+ * @todo Currently, this cannot be converted into a
+ * qcl_data_model_db_PersistentObject because this creates an infinite
+ * recursion ( qcl_data_model_db_PersistentObject depends on
+ * qcl_data_model_db_ActiveRecord which depends on
+ * qcl_data_model_db_PropertyCache which depends on qcl_core_PersistentObject
+ * which depends on ... ). Need to find a way to break this circular dependency,
+ * because the caches should not be tied to the session but instead persisted
+ * in the database.
  */
 class qcl_data_model_db_PropertyCache
   extends qcl_core_PersistentObject
@@ -32,6 +41,4 @@ class qcl_data_model_db_PropertyCache
     $this->savePersistenceData();
   }
 }
-
-
 ?>

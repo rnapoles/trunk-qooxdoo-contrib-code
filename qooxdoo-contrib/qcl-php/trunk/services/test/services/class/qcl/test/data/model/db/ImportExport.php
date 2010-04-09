@@ -23,7 +23,7 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 qcl_import( "qcl_data_model_import_Xml" );
 qcl_import( "qcl_data_model_export_Xml" );
 
-class User extends qcl_data_model_db_ActiveRecord
+class imex_User extends qcl_data_model_db_ActiveRecord
 {
   /*
    * Model properties. Foreign key properties will be
@@ -85,7 +85,7 @@ class User extends qcl_data_model_db_ActiveRecord
   }
 }
 
-class Group extends qcl_data_model_db_ActiveRecord
+class imex_Group extends qcl_data_model_db_ActiveRecord
 {
   private $properties = array(
     "name" => array(
@@ -100,7 +100,7 @@ class Group extends qcl_data_model_db_ActiveRecord
      */
     "User_Group" => array(
       "type"      => QCL_RELATIONS_HAS_MANY, // "1:n"
-      "target"    => array( "class" => "User" )
+      "target"    => array( "class" => "imex_User" )
     )
   );
 
@@ -115,7 +115,7 @@ class Group extends qcl_data_model_db_ActiveRecord
 /**
  * Categories
  */
-class Category extends qcl_data_model_db_NamedActiveRecord
+class imex_Category extends qcl_data_model_db_NamedActiveRecord
 {
 
   private $relations = array(
@@ -124,7 +124,7 @@ class Category extends qcl_data_model_db_NamedActiveRecord
      */
     "User_Category" => array(
       "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY, //  "n:n"
-      "target"    => array( "class" => "User" )
+      "target"    => array( "class" => "imex_User" )
     )
   );
 
@@ -147,9 +147,9 @@ class class_qcl_test_data_model_db_ImportExport
 
     $time = microtime(true);
 
-    $user     = new User();
-    $group    = new Group();
-    $category = new Category();
+    $user     = new imex_User();
+    $group    = new imex_Group();
+    $category = new imex_Category();
 
     $this->info( sprintf(
       "Creating classes took %s seconds.",

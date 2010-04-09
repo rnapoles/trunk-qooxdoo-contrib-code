@@ -20,7 +20,7 @@
 qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 
-class User
+class named_User
   extends qcl_data_model_db_NamedActiveRecord
 {
 
@@ -55,7 +55,7 @@ class class_qcl_test_data_model_db_NamedActiveRecord
   public function method_testModel()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
-    $user = new User();
+    $user = new named_User();
     $user->deleteAll();
 
     $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );
@@ -75,7 +75,7 @@ class class_qcl_test_data_model_db_NamedActiveRecord
 
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
 
-    $user = new User();
+    $user = new named_User();
     $user->load( "user50" );
     $email = $user->getEmail();
     $this->info( "user50 has email <$email>" );

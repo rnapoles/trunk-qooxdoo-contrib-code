@@ -39,7 +39,8 @@ class class_qcl_test_core_PersistentObject
    * @return object
    * @rpctest {
    *   "requestData" : {
-   *     "method" : "PersistentTestObject"
+   *     "service" : "qcl.test.core.PersistentObject",
+   *     "method" : "testCounter"
    *   },
    *   "init" : function()
    *   {
@@ -48,7 +49,7 @@ class class_qcl_test_core_PersistentObject
    *   },
    *   "checkResult" : function( result )
    *   {
-   *     var count = result.data;
+   *     var count = result;
    *     if ( parseInt(count) == NaN )
    *     {
    *       return "Result is not a number";
@@ -77,6 +78,18 @@ class class_qcl_test_core_PersistentObject
 
     //$this->endLogging();
     return $obj->counter;
+  }
+
+  /**
+   * @rpctest {
+   *   "init":function (){
+   *      this.runTest("qcl.test.core.PersistentObject.testCounter");
+   *      this.runTest("qcl.test.core.PersistentObject.testCounter");
+   *      this.runTest("qcl.test.core.PersistentObject.testCounter");
+   *    }
+   *  }
+   */
+  public function method_testCounter2(){
   }
 
   public function method_testPersistentObject()

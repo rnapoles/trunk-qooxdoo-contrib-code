@@ -16,14 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-/*
- * core packages
- */
-qcl_import("qcl_log_Logger");
-qcl_import("qcl_lang_String");
-qcl_import("qcl_lang_ArrayList");
-
-
 /**
  * Use as a a default argument to indicate that argument hasn't been supplied
  */

@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/controller/Controller.php";
+
+qcl_import( "qcl_data_controller_Controller" );
 
 /**
  * Exception
@@ -121,10 +122,22 @@ class qcl_test_AbstractTestController
 
   /**
    * Returns the json data to create a complete test case for all the methods
-   * of a class as a string.
-   * @return unknown_type
+   * of a class as an string that evaluates to an object.
+   * @return string
    */
   public function method_rpcConsoleClassTestJson()
+  {
+    return "({" . $this->rpcConsoleClassTestJson() . "})";
+  }
+
+  /**
+   * Returns the json data to create a complete test case for all the methods
+   * of a class as a string without the surrounding curly brackets, so it
+   * can be concatenated with other json fragments.
+   *
+   * @return string
+   */
+  public function rpcConsoleClassTestJson()
   {
     $serviceIntrospection = new ServiceIntrospection( $this );
     $methods = $serviceIntrospection->method_listMethods();
@@ -133,14 +146,46 @@ class qcl_test_AbstractTestController
     {
       $docComment = $serviceIntrospection->getDocComment( $method );
       $signature  = self::analyzeDocComment( $docComment );
-      $testJson = $signature['rpctest'];
+      $testJson = trim( $signature['rpctest'] );
       $service = $serviceIntrospection->getServiceName();
-      if ( $testJson )
+      $json = null;
+
+      if ( $testJson == "OK" )
       {
-        $testJsonArr[] = '"' . $service . "." . $method . '": ' . $testJson;
+        $json =  sprintf(
+          '"%s.%s" : { "requestData":{"service":"%s","method":"%s"},"checkResult":"OK"}',
+          $service,$method,$service,$method
+        );
+      }
+      elseif( $testJson )
+      {
+        $json = '"' . $service . "." . $method . '": ' . $testJson;
+      }
+
+      if ( $json )
+      {
+        /*
+         * do a basic syntax check on the javascript
+         * @todo find a PHP script that does lint and pretty print
+         * on javascript
+         */
+        $problem =
+          substr_count( $json, "{" ) != substr_count( $json, "}" )
+          || substr_count( $json, "[" ) != substr_count( $json, "]" );
+        if( $problem )
+        {
+          $this->warn( sprint(
+            "There is a problem with the rpc test data in class '%s', method '%s'",
+            $this->className(), $method
+          ));
+        }
+        else
+        {
+          $testJsonArr[] = $json;
+        }
       }
     }
-    return "({" . implode( ",", $testJsonArr )  . "})";
+    return implode( ",\n", $testJsonArr );
   }
 
   /**
@@ -189,7 +234,8 @@ class qcl_test_AbstractTestController
 /**
  * add capability
  */
-class_system::addCapability(
+require_once "services/server/services/System.php";
+class_System::getInstance()->addCapability(
   "rpctest",
   "http://qooxdoo.org/documentation/json_rpc_introspection",
   "0.1",

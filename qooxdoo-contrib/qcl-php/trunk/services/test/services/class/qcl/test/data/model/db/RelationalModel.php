@@ -20,7 +20,7 @@
 qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_data_model_db_ActiveRecord" );
 
-class User extends qcl_data_model_db_ActiveRecord
+class relational_User extends qcl_data_model_db_ActiveRecord
 {
   /*
    * Model properties. Foreign key properties will be
@@ -94,7 +94,7 @@ class User extends qcl_data_model_db_ActiveRecord
   }
 }
 
-class Group extends qcl_data_model_db_ActiveRecord
+class relational_Group extends qcl_data_model_db_ActiveRecord
 {
   private $properties = array(
     "name" => array(
@@ -109,7 +109,7 @@ class Group extends qcl_data_model_db_ActiveRecord
      */
     "User_Group" => array(
       "type"      => QCL_RELATIONS_HAS_MANY, // "1:n"
-      "target"    => array( "class" => "User" )
+      "target"    => array( "class" => "relational_User" )
     )
   );
 
@@ -124,7 +124,7 @@ class Group extends qcl_data_model_db_ActiveRecord
 /**
  * Categories
  */
-class Category extends qcl_data_model_db_ActiveRecord
+class relational_Category extends qcl_data_model_db_ActiveRecord
 {
 
   private $properties = array(
@@ -140,7 +140,7 @@ class Category extends qcl_data_model_db_ActiveRecord
      */
     "User_Category" => array(
       "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY, //  "n:n"
-      "target"    => array( "class" => "User" )
+      "target"    => array( "class" => "relational_User" )
     )
   );
 
@@ -157,7 +157,7 @@ class Category extends qcl_data_model_db_ActiveRecord
  * History model, has a reference to a user and one to an
  * action
  */
-class History extends qcl_data_model_db_ActiveRecord
+class relational_History extends qcl_data_model_db_ActiveRecord
 {
 
   private $relations = array(
@@ -165,12 +165,12 @@ class History extends qcl_data_model_db_ActiveRecord
      * A history record belongs to exactly one user and
      * will be deleted with that user (this is set up in
      * the "relations/user_history/target/dependent" entry
-     * in the User model class).
+     * in the relational_User model class).
      */
     "User_History" => array(
       "type"      => QCL_RELATIONS_HAS_ONE, // "n:1"
       "target"    => array(
-        "class" => "User"
+        "class" => "relational_User"
       )
     ),
     /*
@@ -192,7 +192,7 @@ class History extends qcl_data_model_db_ActiveRecord
   }
 }
 
-class Action extends qcl_data_model_db_ActiveRecord
+class relational_Action extends qcl_data_model_db_ActiveRecord
 {
 
   private $properties = array(
@@ -206,7 +206,7 @@ class Action extends qcl_data_model_db_ActiveRecord
     "Action_History" => array(
       "type"      => QCL_RELATIONS_HAS_MANY, // same as "1:n"
       "target"    => array(
-        "class"   => "History"
+        "class"   => "relational_History"
       )
     )
   );
@@ -240,11 +240,11 @@ class class_qcl_test_data_model_db_RelationalModel
      * instantiate all needed models
      */
     $singletons = true;
-    $user     = $singletons ? User::getInstance() : new User();
-    $action   = $singletons ? Action::getInstance() : new Action();
-    $history  = $singletons ? History::getInstance() :new History();
-    $group    = $singletons ? Group::getInstance() : new Group();
-    $category = $singletons ? Category::getInstance() : new Category();
+    $user     = $singletons ? relational_User::getInstance() : new relational_User();
+    $action   = $singletons ? relational_Action::getInstance() : new relational_Action();
+    $history  = $singletons ? relational_History::getInstance() :new relational_History();
+    $group    = $singletons ? relational_Group::getInstance() : new relational_Group();
+    $category = $singletons ? relational_Category::getInstance() : new relational_Category();
 
     /*
      * create users

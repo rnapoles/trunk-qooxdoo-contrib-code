@@ -19,7 +19,7 @@
 qcl_import( "qcl_test_AbstractTestController" );
 qcl_import( "qcl_data_model_PersistentModel" );
 
-class TestModel
+class persist_TestModel
   extends qcl_data_model_PersistentModel
 {
   private $properties = array(
@@ -105,19 +105,19 @@ class class_qcl_test_data_model_PersistentModel
     $this->startLogging();
 
     $this->info("*** Creating and saving data ... ");
-    $model = new TestModel();
+    $model = new persist_TestModel();
     $model->setFoo("abcdef");
     $model->savePersistenceData();
 
     $this->info("*** Deleting and recreating model.. ");
     $model = null;
-    $model = new TestModel();
+    $model = new persist_TestModel();
     $this->assertEquals("abcdef",$model->getFoo() );
 
     $this->info("*** Disposing data and recreating model.. ");
     $model->disposePersistenceData();
     $model = null;
-    $model = new TestModel();
+    $model = new persist_TestModel();
     $this->assertEquals("foo",$model->getFoo() );
 
     $this->info("*** Disposing data and deleting model.. ");

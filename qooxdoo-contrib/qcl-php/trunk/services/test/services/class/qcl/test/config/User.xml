@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <root>
-  <model name="User">
+  <model name="config_User">
     <data>
       <record namedId="user1">
         <name>User 1</name>

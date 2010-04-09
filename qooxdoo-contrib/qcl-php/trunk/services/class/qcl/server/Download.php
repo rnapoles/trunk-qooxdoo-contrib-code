@@ -21,7 +21,8 @@
  * -- not yet functional --
  *
  */
-class qcl_server_Download extends qcl_core_Object
+class qcl_server_Download
+  extends qcl_core_Object
 {
   /**
    * Not used, only here for compatibility
@@ -137,6 +138,4 @@ class qcl_server_Download extends qcl_core_Object
 
 
 }
-
-
- ?>
+?>

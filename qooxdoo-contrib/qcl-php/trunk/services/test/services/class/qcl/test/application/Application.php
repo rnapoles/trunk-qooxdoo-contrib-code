@@ -43,6 +43,13 @@ class qcl_test_application_Application
   extends qcl_application_Application
 {
 
+  /**
+   * Hardcoding the path to the application file so that other
+   * test applications can subclass this class and use the ini
+   * file.
+   * @var string
+   */
+  protected $iniPath = "qcl/test/application/application.ini.php";
 
   /**
    * Starts the application, does on-the-fly database setup
@@ -50,7 +57,7 @@ class qcl_test_application_Application
    */
   public function main()
   {
-    $this->startLogging();
+    //$this->startLogging();
     qcl_data_model_db_ActiveRecord::resetBehaviors();
 
     /*
@@ -73,12 +80,13 @@ class qcl_test_application_Application
     {
       $this->log("Data has already been imported.", QCL_LOG_APPLICATION );
     }
-    $this->endLogging();
+    //$this->endLogging();
   }
 
   protected function startLogging()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_APPLICATION, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_CONFIG, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_ACCESS, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
     //$this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );

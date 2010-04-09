@@ -19,7 +19,7 @@
 qcl_import( "qcl_test_AbstractTestController" );
 qcl_import( "qcl_data_model_Model" );
 
-class TestModel
+class model_TestModel
   extends qcl_data_model_Model
 {
   private $properties = array(
@@ -101,7 +101,7 @@ class class_qcl_test_data_model_Model
 {
   public function method_testModel()
   {
-    $model = new TestModel();
+    $model = new model_TestModel();
 
     $this->assertEquals( "2010-03-17 14:20:53", (string) $model->getCreated(), null, __CLASS__, __LINE__ );
     $this->assertEquals("foo", $model->getFoo(), null, __CLASS__, __LINE__ );

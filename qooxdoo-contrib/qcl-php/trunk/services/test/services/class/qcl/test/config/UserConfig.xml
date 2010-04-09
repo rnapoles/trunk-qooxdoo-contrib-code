@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <root>
-  <model name="UserConfig">
+  <model name="config_UserConfig">
     <data>
       <record id="1">
         <value>anonymous!</value>

@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/test/AbstractTestController.php";
+qcl_import( "qcl_test_AbstractTestController" );
 
 class class_qcl_test_event_Event
   extends qcl_test_AbstractTestController

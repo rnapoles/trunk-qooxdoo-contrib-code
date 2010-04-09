@@ -15,9 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-
 require_once "qcl/bootstrap.php";
-require_once "services/server/JsonRpcServer.php";
 
 qcl_import("qcl_core_Object");
 
@@ -96,7 +94,7 @@ class qcl_server_Server
     /*
      * if test data is provided, use the test server
      */
-    elseif ( is_string( $testData ) )
+    elseif ( $testData !== null )
     {
       qcl_import( "qcl_server_JsonRpcTestServer" );
       $serverObj = new qcl_server_JsonRpcTestServer( $testData );
@@ -138,7 +136,7 @@ class qcl_server_Server
    * top including script.
    * @return string
    */
-  public function getUrl()
+  static public function getUrl()
   {
     return "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
   }

@@ -25,11 +25,11 @@ qcl_import( "qcl_io_filesystem_local_File" );
  * Class to model the configuration data.
  * @see User
  */
-class Config extends qcl_config_ConfigModel
+class config_Config extends qcl_config_ConfigModel
 {
   protected $tableName = "test_data_Config2";
   /**
-   * @return Config
+   * @return config_Config
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -40,11 +40,11 @@ class Config extends qcl_config_ConfigModel
  * Class to model the custom user configuration data.
  * @see User
  */
-class UserConfig extends qcl_config_UserConfigModel
+class config_UserConfig extends qcl_config_UserConfigModel
 {
   protected $tableName = "test_data_UserConfig2";
   /**
-   * @return UserConfig
+   * @return config_UserConfig
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -56,7 +56,7 @@ class UserConfig extends qcl_config_UserConfigModel
  * Class to model the user data
  * @see qcl_test_access_Models
  */
-class User extends qcl_access_model_User
+class config_User extends qcl_access_model_User
 {
   protected $tableName = "test_data_User2";
   function __construct()
@@ -65,7 +65,7 @@ class User extends qcl_access_model_User
     $this->getRelationBehavior()->setJoinTableName( "User_Role", "test_join_User_Role2" );
   }
   /**
-   * @return User
+   * @return config_User
    */
   public static function getInstance()
   {
@@ -75,9 +75,9 @@ class User extends qcl_access_model_User
 
 /**
  * Class to model the role data
- * @see User
+ * @see config_User
  */
-class Role extends qcl_access_model_Role
+class config_Role extends qcl_access_model_Role
 {
   protected $tableName = "test_data_Role2";
   function __construct() {
@@ -86,7 +86,7 @@ class Role extends qcl_access_model_Role
     $this->getRelationBehavior()->setJoinTableName( "Permission_Role", "test_join_Permission_Role2" );
   }
   /**
-   * @return Role
+   * @return config_Role
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -95,9 +95,9 @@ class Role extends qcl_access_model_Role
 
 /**
  * Class to model the permission data.
- * @see User
+ * @see config_User
  */
-class Permission extends qcl_access_model_Permission
+class config_Permission extends qcl_access_model_Permission
 {
   protected $tableName = "test_data_Permission2";
   function __construct() {
@@ -105,7 +105,7 @@ class Permission extends qcl_access_model_Permission
     $this->getRelationBehavior()->setJoinTableName( "Permission_Role", "test_join_Permission_Role2" );
   }
   /**
-   * @return Permission
+   * @return config_Permission
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -126,6 +126,7 @@ class class_qcl_test_config_ConfigModel
    * @return string
    * @rpctest {
    *   "requestData" : {
+   *     "service" : "qcl.test.config.ConfigModel",
    *     "method" : "testModel",
    *     "timeout" : 30
    *   },
@@ -141,15 +142,15 @@ class class_qcl_test_config_ConfigModel
 
     /*
      * create model instances. We need to instantiate even
-     * the ones we don't need (i.e Permission) or which are only implicitly
-     * used (such as UserConfig), otherwise the relations are not
+     * the ones we don't need (i.e config_Permission) or which are only implicitly
+     * used (such as config_UserConfig), otherwise the relations are not
      * correctly initialized.
      */
-    $user       = User::getInstance();
-    $role       = Role::getInstance();
-    $permission = Permission::getInstance();
-    $config     = Config::getInstance();
-    $userConfig = UserConfig::getInstance();
+    $user       = config_User::getInstance();
+    $role       = config_Role::getInstance();
+    $permission = config_Permission::getInstance();
+    $config     = config_Config::getInstance();
+    $userConfig = config_UserConfig::getInstance();
 
     /*
      * import data
@@ -225,11 +226,11 @@ class class_qcl_test_config_ConfigModel
     /*
      * cleanup
      */
-    User::getInstance()->destroy();
-    Role::getInstance()->destroy();
-    Permission::getInstance()->destroy();
-    Config::getInstance()->destroy();
-    UserConfig::getInstance()->destroy();
+    config_User::getInstance()->destroy();
+    config_Role::getInstance()->destroy();
+    config_Permission::getInstance()->destroy();
+    config_Config::getInstance()->destroy();
+    config_UserConfig::getInstance()->destroy();
 
     return "OK";
   }

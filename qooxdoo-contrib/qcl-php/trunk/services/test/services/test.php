@@ -38,8 +38,8 @@ require_once "qcl/server/Server.php";
  */
 $testData = <<<END
   {
-    "service":"qcl.test.application.ApplicationTests",
-    "method":"echo",
+    "service":"qcl.test.access.Models",
+    "method":"testModels",
     "id":1,
     "params":["hello world!"]
   }

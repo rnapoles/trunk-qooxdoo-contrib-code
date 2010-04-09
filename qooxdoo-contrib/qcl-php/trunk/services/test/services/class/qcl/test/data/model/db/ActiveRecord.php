@@ -21,7 +21,7 @@ qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_data_model_db_ActiveRecord" );
 qcl_import( "qcl_data_db_Timestamp" );
 
-class Member
+class active_Member
   extends qcl_data_model_db_ActiveRecord
 {
 
@@ -75,7 +75,7 @@ class class_qcl_test_data_model_db_ActiveRecord
   {
     //$this->startLogging();
 
-    $member = new Member();
+    $member = new active_Member();
     $member->deleteAll();
 
     $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );
@@ -96,7 +96,7 @@ class class_qcl_test_data_model_db_ActiveRecord
       $member->save();
     }
 
-    $member = new Member();
+    $member = new active_Member();
     $query = $member->loadWhere( array(
       "name"        => array( "LIKE" , "B%"),
       "newsletter"  => true

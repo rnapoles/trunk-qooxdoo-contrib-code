@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <root>
-  <model name="Config">
+  <model name="config_Config">
     <data>
       <record namedId="global">
         <type>0</type>

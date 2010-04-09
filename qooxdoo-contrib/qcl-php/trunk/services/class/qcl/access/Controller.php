@@ -86,7 +86,7 @@ class qcl_access_Controller
    */
   public function isAnonymousAccessAllowed()
   {
-    return $this->getApplication()->getAllowAnonymousAccess();
+    return $this->getApplication()->allowAnonymousAccess();
   }
 
   /**
