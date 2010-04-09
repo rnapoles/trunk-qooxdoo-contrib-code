@@ -18,6 +18,10 @@
 #asset(rpcconsole/*)
 #require(qx.ui.form.ListItem)
 #require(rpcconsole.MRpcMockup)
+#asset(qx/icon/${qx.icontheme}/16/actions/dialog-apply.png)
+#asset(qx/icon/${qx.icontheme}/16/status/dialog-warning.png)
+#asset(qx/icon/${qx.icontheme}/16/status/dialog-error.png)
+#asset(qx/icon/${qx.icontheme}/16/status/dialog-information.png)
 
 ************************************************************************ */
 
@@ -107,7 +111,13 @@ qx.Class.define("rpcconsole.RpcConsole",
      * use patched rpc object
      */
     qx.Class.patch( qx.io.remote.Rpc, rpcconsole.MRpcMockup );
-    this.__rpc = new qx.io.remote.Rpc();    
+    this.__rpc = new qx.io.remote.Rpc();  
+    
+    /*
+     * cache for request and response data
+     */
+    this.__responseCache = {};
+    this.__requestCache  = {};
   },
   
   
@@ -141,7 +151,96 @@ qx.Class.define("rpcconsole.RpcConsole",
     __logPage               : null,
     __paramsCache           : null,
     __listenersAdded        : null,
+    __reportPage            : null,
+    __reportTable           : null,
+    __responseCache         : null,
+    __requestCache          : null,
     
+    /*
+    -------------------------------------------------------------------------
+      WIDGET GETTERS
+    -------------------------------------------------------------------------
+    */    
+    
+    /**
+     * Returns the tabview widget (useful to add own tab pages)
+     * @return {qx.ui.tabview.TabView}
+     */
+    getTabView : function()
+    {
+      return this.__tabview;
+    },
+    
+    /**
+     * Returns the table widget which can be used to report on the 
+     * success of requests
+     * @return {qx.ui.table.Table}
+     */
+    getReportTable : function()
+    {
+      return this.__reportTable;
+    },
+    
+    /**
+     * Returns the controller that manages the list of entries
+     * for the service name
+     * @return {qx.data.controller.List}
+     */
+    getServiceListController : function()
+    {
+      return this.__serviceListController;
+    },
+
+    /**
+     * Returns the controller that manages the list of entries
+     * for the method name
+     * @return {qx.data.controller.List}
+     */
+    getMethodListController : function()
+    {
+      return this.__methodListController;
+    },
+    
+    /**
+     * Returns text area containing the response data
+     * @return {qx.ui.form.TextArea}
+     */
+    getResponseTextArea : function()
+    {
+      return this.__responseTextArea;
+    }, 
+    
+    /**
+     * Returns text area containing the response data
+     * @return {qx.ui.form.TextArea}
+     */
+    getLogTextArea : function()
+    {
+      return this.__logTextArea;
+    },     
+    
+    /**
+     * Returns form widget
+     * @return {qx.ui.form.Form}
+     */
+    getForm : function()
+    {
+      return this.__form;
+    },
+
+    /**
+     * Returns form widget
+     * @return {qx.data.controller.Form}
+     */
+    getFormController : function()
+    {
+      return this.__formController;
+    },    
+    /*
+    -------------------------------------------------------------------------
+      GUI
+    -------------------------------------------------------------------------
+    */    
     /**
      * Creates the UI
      */
@@ -292,31 +391,14 @@ qx.Class.define("rpcconsole.RpcConsole",
        * Timeout
        */
       hbox.add( new qx.ui.basic.Label("Timeout:") );
-      var timeoutSpinner = new qx.ui.form.Spinner(10,10,60);
+      var timeoutSpinner = new qx.ui.form.Spinner(3,10,60);
       timeoutSpinner.set({
         editable : true
       });
       hbox.add( timeoutSpinner );
       hbox.add( new qx.ui.basic.Label("sec.") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );
-      
-      /*
-       * Mockup generation
-       */
-      var mockupControl = new qx.ui.form.SelectBox();
-      mockupControl.add( new qx.ui.form.ListItem("Off") );
-      mockupControl.add( new qx.ui.form.ListItem("Monitor") );
-      mockupControl.add( new qx.ui.form.ListItem("On") );
-      mockupControl.addListener("changeSelection",function(e){
-        var sel = e.getData();
-        var label = sel[0].getLabel();
-        this.__rpc.setMockupMode(label.toLowerCase() );
-      },this);
-      hbox.add( new qx.ui.basic.Label("Mockup:") );
-      hbox.add(mockupControl);
-      
-      servicePage.add( new qx.ui.basic.Label("Options:"), {row: 3, column: 0 });
-      servicePage.add(hbox, {row: 3, column: 1 });
+     
       
       /*
        * service parameters
@@ -454,9 +536,9 @@ qx.Class.define("rpcconsole.RpcConsole",
         this.cancelRequest();
       }, this);
       hbox.add( this.__cancelButton );
-      var clearLogButton = new qx.ui.form.Button("Clear log");
+      var clearLogButton = new qx.ui.form.Button("Reset");
       clearLogButton.addListener("execute",function(){
-        this.__logTextArea.setValue("");
+        this.clear();
       },this);
       hbox.add( clearLogButton );
       this.add(hbox);
@@ -474,20 +556,30 @@ qx.Class.define("rpcconsole.RpcConsole",
       });
       
       /*
+       * configure form controller and create model
+       */      
+      this.setRequestModel( this.__formController.createModel(true) );
+      this.__formController.getModel().setUrl(serverUrl);
+      
+      
+      /*
+       * report table page
+       */
+      this.__reportTable = this._createReportTable();
+      this.__reportPage  = new qx.ui.tabview.Page("Tests");
+      var layout = new qx.ui.layout.VBox();
+      this.__reportPage.setLayout( layout );
+      this.__reportPage.add( this.__reportTable, { flex : 1 });
+      tabview.add( this.__reportPage );
+      
+      /*
        * log
        */
       var logPage = this.__logPage = new qx.ui.tabview.Page( "Log" );
       logPage.setLayout( new qx.ui.layout.Grow() );
       tabview.add( logPage );
       var logTextArea = this.__logTextArea = new qx.ui.form.TextArea();
-      logPage.add( logTextArea );
-      
-      
-      /*
-       * configure form controller and create model
-       */      
-      this.setRequestModel( this.__formController.createModel(true) );
-      this.__formController.getModel().setUrl(serverUrl);
+      logPage.add( logTextArea );      
       
       /*
        * select first page
@@ -495,7 +587,36 @@ qx.Class.define("rpcconsole.RpcConsole",
       tabview.setSelection([servicePage]);
     },
    
+    /*
+     * creates the report table
+     */
+    _createReportTable : function()
+    {
+      var tableModel = new qx.ui.table.model.Simple();
+      tableModel.setColumns([ "id", "Class", "Method", " ", "Status" ]);
 
+      var table = new qx.ui.table.Table(tableModel, {
+        tableColumnModel : function(obj) {
+          return new qx.ui.table.columnmodel.Resize(obj);
+        }
+      } );
+      
+      var columnModel = table.getTableColumnModel();
+      var resizeBehavior = columnModel.getBehavior();
+      resizeBehavior.set(0, { width:40, minWidth:40 });
+      resizeBehavior.set(1, { width:"1*" });
+      resizeBehavior.set(2, { width:"1*" });
+      resizeBehavior.set(3, { width:40, minWidth:40 });
+      resizeBehavior.set(4, { width:"1*" });
+
+      var imageRenderer = new qx.ui.table.cellrenderer.Image(19, 16);
+      columnModel.setDataCellRenderer(3, imageRenderer);
+      
+      table.setMaxHeight( 200 ); // FIXME
+      return table;
+    },    
+    
+    
     /*
     -------------------------------------------------------------------------
       EVENT HANDLERS
@@ -564,62 +685,6 @@ qx.Class.define("rpcconsole.RpcConsole",
       return this.__rpc;
     },
     
-    /**
-     * Returns the controller that manages the list of entries
-     * for the service name
-     * @return {qx.data.controller.List}
-     */
-    getServiceListController : function()
-    {
-      return this.__serviceListController;
-    },
-
-    /**
-     * Returns the controller that manages the list of entries
-     * for the method name
-     * @return {qx.data.controller.List}
-     */
-    getMethodListController : function()
-    {
-      return this.__methodListController;
-    },
-    
-    
-    /**
-     * Returns text area containing the response data
-     * @return {qx.ui.form.TextArea}
-     */
-    getResponseTextArea : function()
-    {
-      return this.__responseTextArea;
-    }, 
-    
-    /**
-     * Returns text area containing the response data
-     * @return {qx.ui.form.TextArea}
-     */
-    getLogTextArea : function()
-    {
-      return this.__logTextArea;
-    },     
-    
-    /**
-     * Returns form widget
-     * @return {qx.ui.form.Form}
-     */
-    getForm : function()
-    {
-      return this.__form;
-    },
-
-    /**
-     * Returns form widget
-     * @return {qx.ui.form.Form}
-     */
-    getFormController : function()
-    {
-      return this.__formController;
-    },
     
     /**
      * Sends a request, either based on data supplied by the arguments or 
@@ -651,6 +716,12 @@ qx.Class.define("rpcconsole.RpcConsole",
         alert("Insufficient request data.");
         return; 
       }
+      
+      /*
+       * cache request data with timestamp
+       */
+      var timestamp = (new Date).getTime();
+      this.__requestCache[timestamp] = qx.util.Serializer.toNativeObject(requestModel);
       
       /*
        * rpc object
@@ -687,10 +758,12 @@ qx.Class.define("rpcconsole.RpcConsole",
        */
       var handler = qx.lang.Function.bind( function( result, error, id )
       {
+        
         if ( error )
         {
           this.__sendButton.setEnabled(true);
           this.__cancelButton.setEnabled(false);
+          this.cancelRequest();
           if ( typeof error == "xml" )
           {
             this.handleError( "Unparseable XML response." ); 
@@ -710,7 +783,6 @@ qx.Class.define("rpcconsole.RpcConsole",
             this.getResponseTextArea().setValue( qx.util.Json.stringify(response) );
             this.handleError( error.toString() );  
           }
-          this.cancelRequest();
         }
         else
         {
@@ -725,20 +797,30 @@ qx.Class.define("rpcconsole.RpcConsole",
             "error" : null
           };
           this.setResponseModel( qx.data.marshal.Json.createModel(response,true) );
+        }
         
-          // callback
-          if ( qx.lang.Type.isFunction( callback ) )
+        /*
+         * save in cache
+         */
+        this.__responseCache[id] = response;
+        this.__requestCache[id] = this.__requestCache[timestamp];
+        delete this.__requestCache[timestamp];
+        
+        /*
+         * execute callback
+         */
+        if ( qx.lang.Type.isFunction( callback ) )
+        {
+          try
           {
-            try
-            {
-              callback.call( context, response );  
-            }
-            catch(e)
-            {
-              this.warn(e);
-            }
+            callback.call( context, response );  
+          }
+          catch(e)
+          {
+            this.warn(e);
           }
         }
+
       },this);
 
       /*
@@ -757,7 +839,7 @@ qx.Class.define("rpcconsole.RpcConsole",
      */
     handleError : function( error )
     {
-      this.log( "!!! " + error);  
+      this.log( "!!! " + error);      
     },
     
     /**
@@ -784,9 +866,79 @@ qx.Class.define("rpcconsole.RpcConsole",
      */
     log : function( text )
     {
-      this.__tabview.setSelection( [this.__logPage] );
+      //this.__tabview.setSelection( [this.__logPage] );
       this.getLogTextArea().setValue( (this.getLogTextArea().getValue() || "") + text + "\n" );
       this.getLogTextArea().getContentElement().scrollToY(10000); 
+    },
+    
+    __imageMap : {
+      "wait"  : "rpcconsole/ajax-loader.gif",
+      "ok"    : "icon/16/actions/dialog-apply.png",
+      "info"  : "icon/16/status/dialog-information.png",
+      "warn"  : "icon/16/status/dialog-warning.png",
+      "error" : "icon/16/status/dialog-error.png"
+    },
+    
+    /**
+     * Reports the result of a request in the report table
+     * @param id {Integer} Id of request
+     * @param service {String} Service name
+     * @param method {String} Method name
+     * @param status {String} Any of (wait|ok|info|warn|error)
+     * @param message {String} Any status message
+     * @param index {Integer|undefined} If given, alter the report
+     *   row with the given index instead of appending a new row
+     * @return {Integer} The index of the new row or the given 
+     *   index. 
+     */
+    report : function( id, service, method, status, message, index )
+    {
+      this.__tabview.setSelection( [this.__reportPage] );
+      var table = this.getReportTable();
+      var image = status && this.__imageMap[status] ? 
+        this.__imageMap[status] : this.__imageMap["info"];
+        
+      if ( index !== undefined )
+      {
+        table.getTableModel().setRows([
+          [ id, service, method, image, message ]
+        ], index );        
+        return index;
+      }
+      else
+      {
+        table.getTableModel().addRows([
+          [ id, service, method, image, message ]
+        ]);
+        index = table.getTableModel().getRowCount()-1;
+        table.scrollCellVisible(0,index);
+        return index;
+      }
+    },
+    
+    /**
+     * Clears everything except the server url
+     */
+    clear : function()
+    {
+      var serverUrl = this.getRequestModel().getUrl();
+      this.getResponseTextArea().setValue("");
+      this.getLogTextArea().setValue("");
+      this.getReportTable().getTableModel().setData([]);
+      this.getForm().reset();
+      this.getRequestModel().setUrl( serverUrl );
+      this.__requestCache = {};
+      this.__responseCache = {};
+    },
+    
+    getCachedRequest : function( id )
+    {
+      return this.__requestCache[id];
+    },
+    
+    getCachedResponse : function( id )
+    {
+      return this.__responseCache[id];
     }
   }  
 });

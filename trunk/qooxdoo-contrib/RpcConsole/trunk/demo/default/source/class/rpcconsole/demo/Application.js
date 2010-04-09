@@ -331,9 +331,9 @@ qx.Class.define("rpcconsole.demo.Application",
       }
       
       /*
-       * console
+       * create console and add test table
        */
-      var console = new rpcconsole.RpcConsole( serverUrl );      
+      var console = new rpcconsole.RpcConsole( serverUrl );
       win.add(console);
       win.addListener("changeActive",function(e){
         if (e.getData())
@@ -346,7 +346,23 @@ qx.Class.define("rpcconsole.demo.Application",
        * finish
        */
       win.open();
-
+      
+      /*
+       * attach a event
+       */
+      console.getReportTable().addListener("cellClick", function(e){
+         var tableModel = console.getReportTable().getTableModel();
+         var id = tableModel.getValue(0,e.getRow());
+         var message = tableModel.getValue(4,e.getRow());
+         
+         console.getResponseTextArea().setValue(
+          "Request Data:\n" + qx.util.Serializer.toJson( console.getCachedRequest( id ) ) +
+          "\n\nResponse:\n" + qx.util.Serializer.toJson( console.getCachedResponse( id ) ) +
+          "\n\nStatus Message:\n" + message
+         );
+         
+      },this );
+      
     },
     
     /**
@@ -378,6 +394,16 @@ qx.Class.define("rpcconsole.demo.Application",
     getTestDataUrl : function()
     {
       return this.__testDataUrl;
+    },
+    
+    /**
+     * Reports the result of a test in the rep
+     * @param {} success
+     * @param {} status
+     */
+    displayTestResult : function( success, status )
+    {
+      
     },
 
     /**
@@ -479,10 +505,10 @@ qx.Class.define("rpcconsole.demo.Application",
         var data = testData[testName];
         
         /*
-         * if the 'visible' property is set to false,
-         * don't show a button 
+         * if the 'visible' property is set to false, or if we have
+         * no label, don't show a button 
          */
-        if ( data.visible === false )
+        if ( data.visible === false ||  ! data.label )
         {
           continue;
         }
@@ -560,14 +586,31 @@ qx.Class.define("rpcconsole.demo.Application",
      * @param callback {Function|undefined} If given, execute this callback
      *   after executing the callback in the test data.
      * @return {void}
+     * @todo fix the response vs. response.data mess
      */
     runTest : function( testName, callback )
     {
-      var doSendRequest, data = this.getTestData(testName);
+      var doSendRequest, 
+          data = this.getTestData(testName);
+      
       if ( ! data )
       {
-        this.error("A test with name '"+testName+"' does not exist.");
+        this.logTestFailed( testName, "Test does not exist.");
+        return;
       }
+      
+      /*
+       * show in report table
+       */
+      var reportRow = data.__reportRow;
+      try
+      {
+        var service = data.requestData.service;
+        var method  = data.requestData.method;
+        data.__reportRow = this.getActiveConsole().report( 
+          null, service, method, "wait","Request is pending..."
+        );
+      }catch(e){}
       
       /*
        * function to exectue before the request
@@ -583,75 +626,166 @@ qx.Class.define("rpcconsole.demo.Application",
       if ( doSendRequest !== false && this.getActiveConsole() && data.requestData )
       {
         this.getActiveConsole().sendRequest( data.requestData, function(response){
-          
-          /*
-           * check response
-           */
-          if ( ! qx.lang.Type.isObject(response) || response.result === undefined )
+          try 
           {
-            this.logTestFailed( testName, "Invalid response: " + qx.util.Json.stringify(response) );
-            return;
-          }
-          
-          /*
-           * Optional data to compare the result with an expected.
-           * If the value is a function, this function must return
-           * true if the result is correct, false, if the result is 
-           * wrong. You can also return a string which is taken as
-           * an error message.
-           */
-          if ( qx.lang.Type.isFunction( data.checkResult ) )
-          {
-            var check = data.checkResult.call( this, response.result );
-            if ( check === true )
+            /*
+             * check response
+             */
+            if ( ! qx.lang.Type.isObject( response ) || response.result === undefined )
             {
-              this.logTestPassed( testName );
+              this._handleTestFailed( testName, "Invalid response: " + qx.util.Json.stringify(response) );
+              return;
             }
+            
+            /*
+             * save id of request with request data
+             */
+            data.__id = response.id; 
+            
+            /*
+             * response is error
+             */
+            if ( response.error )
+            {
+              this._handleTestFailed( testName, response.error.message );
+            }
+            
+            /*
+             * Optional data to compare the result with an expected.
+             * If the value is a function, this function must return
+             * true if the result is correct, false, if the result is 
+             * wrong. You can also return a string which is taken as
+             * an error message.
+             */
+            else if ( qx.lang.Type.isFunction( data.checkResult ) )
+            {
+              var check = data.checkResult.call( 
+                this, 
+                qx.lang.Type.isObject( response.result ) && response.result.data !== undefined ?
+                  response.result.data : response.result
+              );
+              if ( check === true )
+              {
+                this._handleTestPassed( testName );
+              }
+              else
+              {
+                this._handleTestFailed( testName, check===false ? "Wrong result." : check );
+              }
+            }
+            
+            /* Alternatively, the data can be of any native data type
+             * (boolean, null, string, array, object) and will be
+             * compared verbatim to the result by jsonifying both 
+             * values.
+             */ 
+            else if ( data.checkResult !== undefined )
+            {
+              var expected = qx.util.Json.stringify( data.checkResult );
+              if ( qx.lang.Type.isObject( response.result ) && response.result.data !== undefined )
+              {
+                var received = qx.util.Json.stringify( response.result.data );  
+              }
+              else
+              {
+                var received = qx.util.Json.stringify( response.result );  
+              }
+              if ( received == expected )
+              {
+                this._handleTestPassed( testName );
+              }
+              else
+              {
+                this._handleTestFailed( testName, "Expected:" + expected + ", received:" + received );
+              }
+            }
+            
+            /*
+             * otherwise, we declare this test as successful
+             */
             else
             {
-              this.logTestFailed( testName, check===false ? "Wrong result." : check );
+              this._handleTestPassed( testName );
             }
-          }
-         
-          
-          /* Alternatively, the data can be of any native data type
-           * (boolean, null, string, array, object) and will be
-           * compared verbatim to the result by jsonifying both 
-           * values.
-           */ 
-          else if (data.checkResult != undefined )
-          {
-            var expected = qx.util.Json.stringify( data.checkResult );
-            var received = qx.util.Json.stringify( response.result ); 
-            if ( received == expected )
+            
+            /*
+             * if no check has been specified, execute the test data callback
+             * if one exists. 
+             */
+            if ( qx.lang.Type.isFunction( data.callback ) )
             {
-              this.logTestPassed( testName );
+              data.callback.call( 
+                this, 
+                qx.lang.Type.isObject( response.result ) && response.result.data !== undefined ?
+                  response.result.data : response.result
+              );
             }
-            else
+            
+            /*
+             * execute the method callback
+             */
+            if ( qx.lang.Type.isFunction( callback ) )
             {
-              this.logTestFailed( testName, "Expected:" + expected + ", received:" + received );
+              callback.call(
+               this, 
+                qx.lang.Type.isObject( response.result ) && response.result.data !== undefined ?
+                  response.result.data : response.result            
+              );
+              return;
             }
+            
           }
-          
-          /*
-           * if no check has been specified, execute the test data callback
-           * if one exists. 
-           */
-          else if ( qx.lang.Type.isFunction( data.callback ) )
+          catch( e )
           {
-            data.callback.call( this, response.result);
+            console.warn(e);  
           }
-          
-          /*
-           * execute the method callback
-           */
-          if ( qx.lang.Type.isFunction( callback ) )
-          {
-            callback.call( this, response.result);
-          }        
         }, this );
       }
     },
+    
+    /**
+     * Handles a successful test. Override for different behavior
+     * @param  testName {String}
+     */
+    _handleTestPassed : function( testName )
+    {
+      var data = this.getTestData( testName );
+      var id = data.__id;
+      var reportRow = data.__reportRow;
+      var service = data.requestData.service;
+      var method  =  data.requestData.method;
+      
+      this.getActiveConsole().report(
+        id, service, method, "ok", "", reportRow
+      );
+      
+      delete data.__reportRow;
+      delete data.__id;
+    },
+    
+    /**
+     * Handles a failed test. Override for different behavior
+     * @param testName {String}
+     * @param error {String}
+     */
+    _handleTestFailed : function( testName, error )
+    {
+      var data = this.getTestData( testName );
+      var reportRow = data.__reportRow;
+      var id = data.__id;
+      var service = data.requestData.service;
+      var method  =  data.requestData.method;
+      
+      this.getActiveConsole().report(
+        id, service, method, "error", error, reportRow
+      );      
+      
+      this.getActiveConsole().log( "Test '" + testName + "' failed: " + error );
+      
+      delete data.__reportRow;
+      delete data.__id;
+    },    
+    
     
     /**
      * Convenience method that passes its arguments to the sendRequest method
@@ -679,6 +813,9 @@ qx.Class.define("rpcconsole.demo.Application",
      */
     runTests : function( includeArg, excludeArg )
     {
+      var activeConsole =  this.getActiveConsole();
+      activeConsole.clear();
+      
       var testData = this.getTestData();
       var testNameArr = [];
       for( testName in testData )
@@ -759,30 +896,9 @@ qx.Class.define("rpcconsole.demo.Application",
         } 
         else
         {
-          this.getActiveConsole().log("Tests finished.");
+          //this.getActiveConsole().log("Tests finished.");
         }
       });
-    },
-    
-    /**
-     * Logs a successful test to the active console. Override this method
-     * for other behavior
-     * @param testName {String}
-     */
-    logTestPassed : function ( testName )
-    {
-      this.getActiveConsole().log("Test '" + testName + "': passed.");
-    },
-    
-    /**
-     * Logs a failed test to the active console. Override this method
-     * for other behavior
-     * @param testName {String}
-     * @param error {String}
-     */
-    logTestFailed : function ( testName, error )
-    {
-      this.getActiveConsole().log("!!! Test '" + testName + "' failed: " + error);
     }
   }
 });
