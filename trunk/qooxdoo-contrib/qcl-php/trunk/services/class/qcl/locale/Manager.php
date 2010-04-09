@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/locale/QooxdooModel.php";
+
 
 /**
  * Manages locales and translations. uses a gettext model by default
@@ -55,15 +55,6 @@ class qcl_locale_Manager  extends qcl_core_Object
   	 */
 	  parent::__construct();
 
-  	/*
-  	 * You can set a different locale model in an extending class
-  	 */
-  	if ( ! $this->localeModel )
-    {
-      $controller = qcl_server_Server::getInstance()->getController();
-      $this->localeModel = new qcl_locale_QooxdooModel( $controller );
-    }
-
     /*
      *  automatically determine locale
      */
@@ -85,6 +76,11 @@ class qcl_locale_Manager  extends qcl_core_Object
    */
   function getLocaleModel()
   {
+    if ( ! $this->localeModel )
+    {
+      qcl_import( "qcl_locale_QooxdooModel" );
+      $this->localeModel = new qcl_locale_QooxdooModel();
+    }
     return $this->localeModel;
   }
 

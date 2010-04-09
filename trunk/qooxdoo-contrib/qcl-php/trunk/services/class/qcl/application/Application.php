@@ -16,103 +16,91 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-/**
- * The name of the file containing the initial configuration
- */
-if ( ! defined("QCL_SERVICE_CONFIG_FILE") )
-{
-  define("QCL_SERVICE_CONFIG_FILE","service.ini.php");
-}
-
-/*
- * Dependencies
- */
-require_once "qcl/__init__.php";
-
+qcl_import( "qcl_access_model_User" ); // this imports all the other required models
 
 /**
- * Application class. All public methods of this class and of its subclasses
- * should be statically callable and work with an sigleton instance of this
- * class internally.
+ * Base class for applications. This class mainly provides access to the
+ * different application models and to the access controller
  *
  */
 class qcl_application_Application
   extends qcl_core_Object
 {
-  /**
-   * The server instance
-   * @var AbstractServer
-   */
-  private $_server;
+  //-------------------------------------------------------------
+  // class properties
+  //-------------------------------------------------------------
 
   /**
-   * Flag indicating if application has already been started
-   * @var unknown_type
+   * Whether anoynmous access is allowed
+   * @var boolean
    */
-  private $_isStarted = false;
+  protected $allowAnonymousAccess = true;
 
   /**
-   * The intial configuration values, saved in the config.ini.php file
-   * @var array
+   * The manager for the initial application configuration
+   * @var qcl_config_IniConfigManager
    */
-  private $_ini = null;
-
+  private $iniManager;
 
   /**
-   * Return the application singleton instance. Extending classes
-   * must define this method and call parent::getInstance();
-   *
-   * A subclass will share the singleton with this class, so that qcl
-   * classes calling methods of this class will work with the subclasses
-   * instance.
-   *
-   * @param string class name
-   * @return qcl_application_Application
+   * The current application instance
+   * @var qcl_application_Application
    */
-  static function getInstance( )
+  static private $application;
+
+  //-------------------------------------------------------------
+  // property getters
+  //-------------------------------------------------------------
+
+  /**
+   * Whether anonymous access is allowed or not
+   * @return bool
+   */
+  public function getAllowAnonymousAccess()
   {
-    return qcl_getInstance(__CLASS__);
+    return $this->allowAnonymousAccess;
+  }
+
+  //-------------------------------------------------------------
+  // object getters
+  //-------------------------------------------------------------
+
+  /**
+   * Static getter for current application instance.
+   * @return qcl_application_Application|false
+   */
+  static public function getInstance()
+  {
+    return self::$application;
   }
 
   /**
-   * Returns the version of the application. Can be called
-   * statically. Must be implemented by the inheriting class
-   * @return string
+   * Static setter for current application instance. Returns false
+   * if no application exists
+   * @param qcl_application_Application|false
    */
-  public function version()
+  static public function setInstance( $application )
   {
-    return $this->notImplemented();
+    self::$application = $application;
   }
 
   /**
    * Return the current server instance.
    * @return qcl_server_JsonRpc
    */
-  public function getServer()
+  public function getServerInstance()
   {
-    $server = qcl_server_Server::getInstance();
-    return $server->getServerObject();
+    return qcl_server_Server::getInstance()->getServerInstance();
   }
-
-  /**
-   * Returns the current controller instance, if any. Can be called statically
-   * @return qcl_data_controller_Controller
-   * @deprecated Get directly from server
-   */
-  public function getController()
-  {
-    return $this->getServer()->getController();
-  }
-
 
   /**
    * Returns the config model singleton instance used by the application
-   * @return qcl_config_DbModel
+   * @return qcl_config_ConfigModel
    */
   public function getConfigModel()
   {
-    require_once "qcl/config/DbModel.php";
-    return qcl_config_DbModel::getInstance();
+    qcl_import( "qcl_config_ConfigModel" );
+    return qcl_config_ConfigModel::getInstance();
   }
 
   /**
@@ -123,115 +111,60 @@ class qcl_application_Application
    */
   public function getLocaleManager()
   {
-    require_once "qcl/locale/Manager.php";
+    qcl_import( "qcl_locale_Manager" );
     return qcl_locale_Manager::getInstance();
   }
 
   /**
    * Sborthand getter for access behavior attached
-   * @return qcl_access_Behavior
+   * @return qcl_access_Controller
    */
-  public function getAccessBehavior()
+  public function getAccessController()
   {
-    return $this->getServer()->getAccessBehavior();
+    qcl_import( "qcl_access_SessionController" );
+    return qcl_access_SessionController::getInstance();
   }
 
-
   //-------------------------------------------------------------
-  // startup methods
+  // event dispatcher and message bus
   //-------------------------------------------------------------
 
   /**
-   * Start the application. You MUST override this method in your
-   * application class. In the overriding class, call getInstance()
-   * to instantiate the application object, and then call this
-   * method with 'parent::start()'.
-   * @return unknown_type
+   * Getter for event dispatcher
+   * @return qcl_event_Dispatcher
    */
-  public function start()
+  public function getEventDispatcher()
   {
-
-    /*
-     * set flag
-     */
-    if ( $this->_isStarted )
-    {
-      $this->raiseError("Application has already started.");
-    }
-    $this->_isStarted = true;
-
-    /*
-     * Initialize a dummy qcl_data_model_xmlSchema_DbModel object to create tables
-     * FIXME this can be removed once qcl_data_db_SimpleModel does
-     * automatic table creation.
-     */
-     require_once "qcl/data/persistence/db/Setup.php";
-     qcl_data_persistence_db_Setup::setup();
-
-     /*
-      * now we can include the real persistent object class
-      * FIXME this is still a hack
-      */
-     require_once "qcl/data/persistence/db/Object.php";
+    qcl_import( "qcl_event_Dispatcher" );
+    return qcl_event_Dispatcher::getInstance();
   }
 
   /**
-   * Checks if application has started
-   * @return boolean
+   * Getter for message bus object
+   * @return qcl_event_message_Bus
    */
-  public function isStarted()
+  public function getMessageBus()
   {
-    return $this->_isStarted;
+    qcl_import( "qcl_event_message_Bus" );
+    return qcl_event_message_Bus::getInstance();
   }
-
 
   //-------------------------------------------------------------
   // ini values
   //-------------------------------------------------------------
 
   /**
-   * Reads initial configuration. looks for service.ini.php file in the
-   * directory of the topmost including script.
-   * @todo re-implement old behavior that services can ovverride individual
-   * settings by service directory
-   **/
-  public function getIniConfig()
+   * Returns initial configuration data manager
+   * @return qcl_config_IniConfigManager
+   */
+  public function getIniManager()
   {
-    /*
-     * return config array if already parsed
-     */
-    if ( is_array( $this->_ini ) )
+    if ( ! $this->iniManager )
     {
-      return $this->_ini;
+      qcl_import( "qcl_config_IniConfigManager" );
+      $this->iniManager = new  qcl_config_IniConfigManager( $this );
     }
-
-    /*
-     * file containing intial configuration
-     */
-    $ini_path = dirname( $_SERVER["SCRIPT_FILENAME"] ). "/" . QCL_SERVICE_CONFIG_FILE;
-    if ( ! file_exists( $ini_path) )
-    {
-      $this->warn("Configuration file '$ini_path' not found for " . get_class($this) . " ." );
-      return array();
-    }
-
-    /*
-     * PHP 5.3
-     */
-    if ( defined("INI_SCANNER_RAW") )
-    {
-      $this->_ini = parse_ini_file ( $ini_path, true, INI_SCANNER_RAW );
-    }
-
-    /*
-     * PHP < 5.3
-     */
-    else
-    {
-      $this->_ini = parse_ini_file ( $ini_path, true );
-    }
-
-    return $this->_ini;
+    return $this->iniManager;
   }
 
   /**
@@ -240,39 +173,7 @@ class qcl_application_Application
    */
   public function getIniValue( $path )
   {
-    /*
-     * if called recursively
-     */
-    if ( is_array($path) )
-    {
-      $path= $path[1];
-    }
-
-    $parts   = explode(".",$path);
-    $value   = $this->getIniConfig();
-
-    /*
-     * traverse array
-     */
-    while( is_array($value) and $part = array_shift($parts) )
-    {
-      $value = $value[$part];
-    }
-
-    /*
-     * expand strings
-     */
-    if ( is_string( $value ) )
-    {
-      $value = trim( preg_replace_callback(
-        '/\$\{([^}]+)\}/',
-        array($this,"getIniValue"), $value
-      ) );
-    }
-
-    //$this->debug("Ini value '$path'= '$value'");
-
-    return $value;
+    return $this->getIniManager()->getIniValue( $path );
   }
 
   /**
@@ -283,16 +184,35 @@ class qcl_application_Application
    */
   public function getIniValues( $arr )
   {
-    if ( ! is_array( $arr ) )
+    return $this->getIniManager()->getIniValues( $arr );
+  }
+
+  //-------------------------------------------------------------
+  // ini values
+  //-------------------------------------------------------------
+
+  /**
+   * Imports initial data
+   * @param array $datat - map of model types and paths to the
+   * xml data files
+   */
+  protected function importInitialData( $data )
+  {
+    qcl_import( "qcl_data_model_import_Xml" );
+    qcl_import( "qcl_io_filesystem_local_File" );
+
+    foreach( $data as $type => $path )
     {
-      $this->raiseError("Invalid parameter - array expected");
+      $this->info("*** Importing '$type' data...");
+      $modelGetter = "get" . ucfirst( $type ) . "Model";
+      $model = $type == "config" ?
+        $this->$modelGetter() :
+        $this->getAccessController()->$modelGetter();
+      $model->deleteAll();
+      $xmlFile = new qcl_io_filesystem_local_File( "file://" . $path );
+      $this->log( "     ... from $path" , QCL_LOG_APPLICATION );
+      $model->import( new qcl_data_model_import_Xml( $xmlFile ) );
     }
-    $ret = array();
-    foreach( $arr as $key )
-    {
-      $ret[] = $this->getIniValue( $key );
-    }
-    return $ret;
   }
 }
 ?>

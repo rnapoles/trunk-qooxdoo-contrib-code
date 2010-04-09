@@ -16,14 +16,69 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/access/model/Common.php";
+
+qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+
 
 /**
  * Permission class
  */
-class qcl_access_model_Permission extends qcl_access_model_Common
+class qcl_access_model_Permission
+  extends qcl_data_model_db_NamedActiveRecord
 {
-   public $schemaXmlPath  = "qcl/access/model/Permission.model.xml";
+  /**
+   * The table storing model data
+   */
+  protected $tableName = "data_Permission";
+
+  /**
+   * Properties
+   */
+  private $properties = array(
+    'name'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(100)"
+    ),
+    'description'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(255)"
+    ),
+    'active'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1)",
+      'nullable'  => false,
+      'init'      => false
+    )
+  );
+
+  /**
+   * The foreign key of this model
+   */
+  protected $foreignKey = "PermissionId";
+
+  /**
+   * Relations
+   */
+  private $relations = array(
+    'Permission_Role' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_Role" )
+//    ),
+//    'Permission_Config' => array(
+//      'type'        => QCL_RELATIONS_HAS_MANY,
+//      'target'      => array( 'class' => "qcl_config_ConfigModel" )
+    )
+  );
+
+  /**
+   * Constructor
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
+  }
 
   /**
    * Returns singleton instance.
@@ -33,21 +88,5 @@ class qcl_access_model_Permission extends qcl_access_model_Common
   {
     return qcl_getInstance(__CLASS__);
   }
-
-  /**
-   * Creates a new permission. throws an error if permission already exists
-   * @overridden
-   * @param string $namedId
-   * @param int[optional] $roleId
-   */
- 	public function create( $namedId, $roleId=null )
- 	{
- 	 	if ( ! $roleId )
- 		{
-      $roleModel  = qcl_access_model_Role::getInstance();
-   	  $roleId	    =  $roleModel->createIfNotExists("qcl.roles.Unassigned");
- 		}
- 		return parent::create( $namedId, $roleId );
- 	}
 }
 ?>

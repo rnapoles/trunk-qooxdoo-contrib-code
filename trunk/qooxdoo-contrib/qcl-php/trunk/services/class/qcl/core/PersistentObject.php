@@ -35,9 +35,9 @@ class qcl_core_PersistentObject
   /**
    * A referece to the last instance instantiated, to avoid that
    * many instances linger in memory to be saved at destruct time.
-   * @var qcl_core_PersistentObject
+   * @var array
    */
-  private static $instance;
+  private static $instance = array();
 
   /**
    * Whether this is a newly instantiated object. Will be turned to false
@@ -74,7 +74,7 @@ class qcl_core_PersistentObject
      * only this instance will be saved in the end.
      */
     //echo "/* instantiating " . $this->objectId() . "*/";
-    self::$instance = $this;
+    self::$instance[get_class($this)] = $this;
   }
 
   /**
@@ -144,9 +144,11 @@ class qcl_core_PersistentObject
    */
   function __destruct()
   {
-    if ( ! $this->isDisposed() and self::$instance === $this )
+    //echo "\n\n/* destroying " .  $this . ", last instance " . self::$instance[get_class($this)] . " */";
+    if ( ! $this->isDisposed() and self::$instance[get_class($this)] === $this )
     {
-      //echo "/* saving " . print_r( $this, true ) . " */";
+      //echo "\n/* saving " .  $this  . " */";
+      //echo "\n/* saving " .  print_r( $this->data(), true)  . " */";
       $this->savePersistenceData();
     }
   }

@@ -16,7 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 qcl_import( "qcl_data_model_db_NamedActiveRecord" );
-qcl_import( "qcl_access_Behavior" );
 //qcl_import( "qcl_config_IConfigModel" );
 
 /**
@@ -66,7 +65,7 @@ class qcl_config_ConfigModel
   private $relations = array(
 //    'Permission_Config' => array(
 //      'type'        => QCL_RELATIONS_HAS_ONE,
-//      'target'      => array( 'class' => "qcl_access_model_Permission2" )
+//      'target'      => array( 'class' => "qcl_access_model_Permission" )
 //    ),
     'Config_UserConfig' => array(
       'type'        => QCL_RELATIONS_HAS_MANY,
@@ -115,14 +114,14 @@ class qcl_config_ConfigModel
   /**
    * Gets the user data model
    * @param int[optional] $id Load record if given
-   * @return qcl_access_model_User2
+   * @return qcl_access_model_User
    */
   protected function getUserModel( $id=null )
   {
     static $userModel = null;
     if ( $userModel === null )
     {
-      $userModel = qcl_access_model_User2::getInstance();
+      $userModel = qcl_access_model_User::getInstance();
     }
     if ( $id ) $userModel->load( $id );
     return $userModel;
@@ -134,7 +133,7 @@ class qcl_config_ConfigModel
    */
   protected function getActiveUser()
   {
-    return $this->getApplication()->getAccessBehavior()->getActiveUser();
+    return $this->getApplication()->getAccessController()->getActiveUser();
   }
 
   /**
@@ -150,7 +149,7 @@ class qcl_config_ConfigModel
    * Given a user id, return the user model. If the id is boolean
    * false, return the active user model object
    * @param $userId
-   * @return qcl_access_model_User2
+   * @return qcl_access_model_User
    */
   protected function getUserFromId( $userId )
   {
@@ -302,7 +301,7 @@ class qcl_config_ConfigModel
     /*
      * user model
      */
-    elseif ( $user instanceof qcl_access_model_User2 )
+    elseif ( $user instanceof qcl_access_model_User )
     {
       $userModel = $user;
     }
@@ -506,7 +505,9 @@ class qcl_config_ConfigModel
     $this->load( $key );
     if( ! $this->getCustomize() )
     {
-      throw new qcl_config_Exception("Config key '%s' does not allow user values.");
+      throw new qcl_config_Exception( sprintf(
+        "Config key '%s' does not allow user values.", $key
+      ) );
     }
 
     /*

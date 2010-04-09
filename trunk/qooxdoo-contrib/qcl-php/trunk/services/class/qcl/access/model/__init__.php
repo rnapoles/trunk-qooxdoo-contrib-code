@@ -17,18 +17,11 @@
    *  Christian Boulanger (cboulanger)
 
 ************************************************************************ */
-
-qcl_import( "qcl_access_model_User2" );
-qcl_import( "qcl_access_model_Role2" );
-qcl_import( "qcl_access_model_Permission2" );
-qcl_import( "qcl_access_model_Session2" );
+qcl_import( "qcl_access_model_User" );
+qcl_import( "qcl_access_model_Role" );
+qcl_import( "qcl_access_model_Permission" );
+qcl_import( "qcl_access_model_Session" );
 qcl_import( "qcl_config_ConfigModel" );
 qcl_import( "qcl_config_UserConfigModel" );
-
-/*
- * log filter
- */
-define("QCL_LOG_ACCESS", "access");
-qcl_log_Logger::getInstance()->registerFilter(QCL_LOG_ACCESS,"Access-related log messages",false);
 
 ?>

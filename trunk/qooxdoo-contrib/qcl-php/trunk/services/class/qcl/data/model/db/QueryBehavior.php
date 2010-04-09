@@ -18,22 +18,7 @@
 
 qcl_import( "qcl_data_model_IQueryBehavior" );
 qcl_import( "qcl_data_db_Table" );
-qcl_import( "qcl_core_PersistentObject" );
 
-/**
- * Cache for property setup
- */
-class qcl_data_model_db_QueryCache
-  extends qcl_core_PersistentObject
-{
-  public $indexes = array();
-
-  public function reset()
-  {
-    $this->indexes = array();
-    $this->savePersistenceData();
-  }
-}
 
 /**
  * Query behavior for (PDO) database driver.
@@ -155,6 +140,7 @@ class qcl_data_model_db_QueryBehavior
   {
     if ( ! self::$cache )
     {
+      qcl_import( "qcl_data_model_db_QueryCache" );
       self::$cache = new qcl_data_model_db_QueryCache();
     }
     return self::$cache;
@@ -171,8 +157,8 @@ class qcl_data_model_db_QueryBehavior
    */
   public function getManager()
   {
-    require_once "qcl/data/db/Manager2.php";
-    return qcl_data_db_Manager2::getInstance();
+    qcl_import( "qcl_data_db_Manager" );
+    return qcl_data_db_Manager::getInstance();
   }
 
   /**
@@ -212,6 +198,15 @@ class qcl_data_model_db_QueryBehavior
     return $this->adapter;
   }
 
+  /**
+   * Returns application instance
+   * @return qcl_application_Application
+   */
+  protected function getApplication()
+  {
+    return qcl_server_Server::getInstance()->getServerInstance()->getApplication();
+  }
+
   //-------------------------------------------------------------
   // Table management
   //-------------------------------------------------------------
@@ -231,7 +226,7 @@ class qcl_data_model_db_QueryBehavior
     }
     else
     {
-      $prefix = qcl_application_Application::getInstance()->getIniValue("database.tableprefix");
+      $prefix = $this->getApplication()->getIniValue("database.tableprefix");
     }
     return $prefix;
   }

@@ -15,48 +15,43 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/ActiveRecord.php";
-require_once "qcl/data/persistence/db/Object.php";
+
+qcl_import( "qcl_data_model_db_PersistentObject" );
 
 /**
  * locale model using the  the qooxdoo translation system.
  * @todo externally set paths
  */
-class qcl_locale_QooxdooModel extends qcl_data_persistence_db_Object
+class qcl_locale_QooxdooModel
+  extends qcl_data_model_db_PersistentObject
 {
 
   /**
    * The current message catalogue
    * @var array
    */
-  var $catalogue = array();
+  public  $catalogue = array();
 
   /**
    * The default locale
    */
-  var $default_locale = "en";
+  public  $default_locale = "en";
 
   /**
    * The current locale
-   * @var string
+   * @public  string
    */
-  var $locale = null;
+  public  $locale = null;
 
   /*
    * paths to files
    */
-  var $locale_dir;
-  var $locale_js_dir;
-  var $translation_js;
+  public  $locale_dir;
 
-  /**
-   * Constuctor
-   */
-  function __construct( )
-  {
-    parent::__construct( __CLASS__ );
-    $this->locale_dir = "../source/translation";
-  }
+  public  $locale_js_dir;
+
+  public  $translation_js;
+
 
   /**
    * does the actual lookup
@@ -99,7 +94,7 @@ class qcl_locale_QooxdooModel extends qcl_data_persistence_db_Object
 	{
     $this->locale = $locale;
     $this->loadTranslations();
-    $this->save();
+    //$this->savePersistenceData();
 	}
 
   /**
@@ -146,10 +141,13 @@ class qcl_locale_QooxdooModel extends qcl_data_persistence_db_Object
 
   /**
    * gets a list of available locales
+   * FIXME unfunctional
    * @return array
    */
   function getAvailableLocales()
   {
+    return array();
+
     static $availableLocales = array();
     if ( ! count( $availableLocales ) )
     {

@@ -15,14 +15,65 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/access/model/Common.php";
+
+qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 
 /**
  * Role class
  */
-class qcl_access_model_Role extends qcl_access_model_Common
+class qcl_access_model_Role
+  extends qcl_data_model_db_NamedActiveRecord
 {
-   var $schemaXmlPath  = "qcl/access/model/Role.model.xml";
+
+  /**
+   * The table storing model data
+   */
+  protected $tableName = "data_Role";
+
+  /**
+   * Properties
+   */
+  private $properties = array(
+    'name'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(100)"
+    ),
+    'active'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1)",
+      'nullable'  => false,
+      'init'      => false
+    )
+  );
+
+  /**
+   * The foreign key of this model
+   */
+  protected $foreignKey = "RoleId";
+
+  /**
+   * Relations
+   */
+  private $relations = array(
+    'Permission_Role' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_Permission" )
+    ),
+    'User_Role' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_User" )
+    ),
+  );
+
+  /**
+   * Constructor
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
+  }
 
   /**
    * Returns singleton instance.
@@ -35,79 +86,53 @@ class qcl_access_model_Role extends qcl_access_model_Common
   }
 
   /**
-   * Return the permission model containing only those
-   * permissions that are connected to the current role
+   * Getter for permission model instance
    * @return qcl_access_model_Permission
    */
-  function linkedPermissionModel( $properties="*")
+  protected function getPermissionModel()
   {
-    $permModel = qcl_access_model_Permission::getInstance();
-    $permModel->findByLinkedModel( $this,null,$properties);
-    return $permModel;
+    return $this->getRelationBehavior()->getTargetModel("Permission_Role");
   }
 
   /**
-   * Returns a list of permissions connected to the current model.
-   * @param string property name, defaults to "namedId"
+   * Getter for user model instance
+   * @return qcl_access_model_User
+   */
+  protected function getUserModel()
+  {
+    return $this->getRelationBehavior()->getTargetModel("User_Role");
+  }
+
+  /**
+   * Returns a list of permissions connected to the current model record.
    * @return array
    */
-  function getPermissions( $prop="namedId" )
+  public function permissions()
   {
-    $permissions = array();
-    $permModel = $this->linkedPermissionModel();
-    if ( $permModel->foundSomething() )
+    $permModel = $this->getPermissionModel();
+    $permModel->findLinkedModels( $this );
+    $permissions =  array();
+    while ( $permModel->loadNext() )
     {
-      do
-      {
-        $permissions[] = $permModel->getProperty( $prop );
-      }
-      while( $permModel->loadNext() );
+      $permissions[] = $permModel->namedId();
     }
     return $permissions;
   }
 
-  function getPermissionIds()
-  {
-    return $this->getPermissions("id");
-  }
-
-
   /**
-   * Return the user model containing only those
-   * users that are connected to the current role
-   * @return qcl_access_model_User
+   * Returns a list of users connected to the current model record.
+   * @return array
    */
-  function linkedUserModel( $properties="*")
+  public function users()
   {
-    $controller = $this->getController();
-    $userModel  = $controller->getUserModel();
-    $userModel->findByLinkedModel($this,null,$properties);
-    return $userModel;
-  }
-
-   /**
-   * Returns a list of users connected to the current model.
-   * @param string property name, defaults to "namedId"
-   */
-  function getUsers($prop="namedId")
-  {
-    $users = array();
-    $userModel = $this->linkedUserModel($prop);
-    if ( $userModel->foundSomething() )
+    $userModel = $this->getUserModel();
+    $userModel->findLinkedModels( $this );
+    $users =  array();
+    while ( $userModel->loadNext() )
     {
-      do
-      {
-        $users[] = $userModel->getProperty($prop);
-      }
-      while( $userModel->loadNext() );
+      $users[] = $userModel->namedId();
     }
     return $users;
   }
-
-  function getUserIds()
-  {
-    return $this->getUses("id");
-  }
-
 }
 ?>

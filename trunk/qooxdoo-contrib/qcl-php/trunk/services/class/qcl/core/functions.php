@@ -16,6 +16,59 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+class qcl_FileNotFoundException extends Exception {}
+class qcl_ClassNotDefinedException extends Exception {}
+class qcl_InvalidClassException extends Exception {}
+
+/**
+ * Imports a class file, loading __init__.php package initialization files
+ * of the packages that this class is included in.
+ * @param string $class Name of the class
+ * @param bool $checkDefined If true, check if the class is defined in the
+ *   included file. Defaults to false.
+ * @return void
+ */
+function qcl_import( $class, $checkDefined = false )
+{
+  /*
+   * no need to load anything if class is already
+   * defined
+   */
+  if ( class_exists( $class ) ) return;
+
+  /*
+   * load __init__ files that belong to a package
+   */
+  $namespace = explode( "_", $class );
+  $path = array();
+  for( $i=0; $i<count($namespace)-1; $i++)
+  {
+    $path[] = $namespace[$i];
+    $init_file = implode("/",$path) . "/__init__.php";
+    if( qcl_file_exists( $init_file ) )
+    {
+      require_once $init_file;
+    }
+  }
+
+  /*
+   * load class file
+   */
+  $class_file = implode( "/", $namespace ) . ".php";
+  if( qcl_file_exists( $class_file ) )
+  {
+    require_once $class_file;
+    if ( $checkDefined and ! class_exists( $class ) )
+    {
+      throw new qcl_ClassNotDefinedException("Class '$class' is not defined in file '$class_file'.");
+    }
+  }
+  else
+  {
+    throw new qcl_FileNotFoundException("Class file '$class_file' does not exist.");
+  }
+}
+
 /**
  * Returns the absolute path to a file that is anywhere on your
  * include_path or system PATH
@@ -28,14 +81,13 @@ function qcl_realpath( $file )
     return realpath( $file );
   }
 
-  $paths = array_merge(
-  explode(":", ini_get('include_path') ),
-  explode(":", $_ENV["PATH"] )
-  );
+  // FIXME Windows!
+  $paths = explode(":", ini_get('include_path') );
 
   foreach($paths as $path)
   {
     $filepath = "$path/$file";
+
     if ( file_exists( $filepath ) )
     {
       return realpath($filepath);
@@ -87,81 +139,9 @@ function qcl_is_file( $file )
   return true;
 }
 
-/**
- * Imports a class file, loading __init__.php package initialization files
- * of the packages that this class is included in.
- * @param string $class Name of the class
- * @param bool $checkDefined If true, check if the class is defined in the
- *   included file. Defaults to false.
- * @return void
- */
-function qcl_import( $class, $checkDefined = false )
-{
-  /*
-   * no need to load anything if class is already
-   * defined
-   */
-  if ( class_exists( $class ) ) return;
 
-  /*
-   * load __init__ files that belong to a package
-   */
-  $namespace = explode( "_", $class );
-  $path = array();
-  for( $i=0; $i<count($namespace)-1; $i++)
-  {
-    $path[] = $namespace[$i];
-    $init_file = implode("/",$path) . "/__init__.php";
-    if( qcl_file_exists( $init_file ) )
-    {
-      require_once $init_file;
-    }
-  }
 
-  /*
-   * load class file
-   */
-  $class_file = implode( "/", $namespace ) . ".php";
-  if( qcl_file_exists( $class_file ) )
-  {
-    require_once $class_file;
-    if ( $checkDefined and ! class_exists( $class ) )
-    {
-      trigger_error("Class '$class' is not defined in file '$class_file'.");
-    }
-  }
-  else
-  {
-    trigger_error("Class file '$class_file' does not exist.");
-  }
-}
 
-/**
- * Imports a package, which means that it loads the  __init__.php package
- * initialization file of each namespace part in the package name . If you
- * want to import classes automatically that belong to the packages, load
- * them with qcl_import() in the __init__.php file.
- *
- * @param $package
- * @return void
- */
-function qcl_import_package ( $package )
-{
-  /*
-   * load __init__ files that belong to a package
-   */
-  $namespace = explode( "_", $package );
-  $path = array();
-  for( $i=0; $i<count($namespace)-1; $i++)
-  {
-    $path[] = $namespace[$i];
-    qcl_log_Logger::getInstance()->info( $init_file );
-    if( qcl_file_exists( $init_file ) )
-    {
-      require_once $init_file;
-    }
-  }
-}
 
 /**
  * Returns a reference to the singleton instance of the given class
@@ -347,38 +327,6 @@ function xml_entity_decode($string, $encoding="utf-8" )
 }
 
 /**
- * Converts a string containing html entities to a utf-8 string
- * without touching charactes that are already utf-8.
- * Needed for PHP4
- * @param string $string
- * @param string $quote_stye
- * @return string Utf8-encoded string
- */
-function html_entity_decode_utf8( $string, $quote_style = ENT_COMPAT )
-{
-  if ( phpversion() < 5 )
-  {
-    static $trans_table = null;
-
-    if( is_null( $trans_table ) )
-    {
-      $translation_table = get_html_translation_table( HTML_ENTITIES );
-      foreach ($translation_table as $key => $value)
-      {
-        $trans_table[$value] = utf8_encode($key);
-      }
-
-      /*
-       * html entities that are not converted
-       */
-      $trans_table["&dash;"] = "-";
-    }
-    return strtr($string, $trans_table);
-  }
-  return html_entity_decode( $string, $quote_style, "utf-8");
-}
-
-/**
  * Converts a utf-8 encoded string into a string.
  * Taken from http://webworkpro.de/webwork/sonderzeichen-in-unicode/
  * that can be used in xml
@@ -410,12 +358,17 @@ function xmlentities($string)
 function html2utf8( $str )
 {
   return strip_tags(
-  html_entity_decode_utf8(
-  str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
-  )
+    html_entity_decode_utf8(
+      str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
+    )
   );
 }
 
+/**
+ * Strips a string of all quote characters
+ * @param $string
+ * @return unknown_type
+ */
 function stripquotes( $string )
 {
   return str_replace("'","",str_replace('"',"",$string));
@@ -665,8 +618,11 @@ function ellipsify( $string, $length, $mode="right" )
  * Tested and works in PHP 5.2.4
  * http://www.sol1.com.au/
  ********************************/
-if(!function_exists('get_called_class')) {
-  function get_called_class($bt = false,$l = 1) {
+if(!function_exists('get_called_class'))
+{
+  ini_set("auto_detect_line_endings", 1);
+  function get_called_class($bt = false,$l = 1)
+  {
     if (!$bt) $bt = debug_backtrace();
     if (!isset($bt[$l])) throw new Exception("Cannot find called class -> stack level too deep.");
     if (!isset($bt[$l]['type'])) {
@@ -696,15 +652,16 @@ if(!function_exists('get_called_class')) {
             return $matches[1];
         }
         // won't get here.
-          case '->': switch ($bt[$l]['function']) {
+       case '->':
+         switch ($bt[$l]['function'])
+         {
             case '__get':
               // edge case -> get class of calling object
               if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
               return get_class($bt[$l]['object']);
             default: return $bt[$l]['class'];
           }
-
-            default: throw new Exception ("Unknown backtrace method type");
+      default: throw new Exception ("Unknown backtrace method type");
     }
   }
 }

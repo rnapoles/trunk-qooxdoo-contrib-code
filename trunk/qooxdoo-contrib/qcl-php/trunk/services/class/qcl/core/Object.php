@@ -112,27 +112,12 @@ class qcl_core_Object
 
   /**
    * Getter for application singleton instance.
-   * Returns null if no application exists.
+   * Returns false if no application exists.
    * @return qcl_application_Application
    */
   public function getApplication()
   {
-    static $application = null;
-
-    if ( is_null( $application ) )
-    {
-      if ( defined("APPLICATION_NAME") )
-      {
-        require_once APPLICATION_NAME . "/Application.php";
-        $appClass = APPLICATION_NAME . "_Application";
-        $application = qcl_getInstance( $appClass );
-      }
-      elseif ( class_exists("qcl_application_Application") )
-      {
-        $application = qcl_application_Application::getInstance();
-      }
-    }
-    return $application;
+    return qcl_application_Application::getInstance();
   }
 
   //-------------------------------------------------------------
@@ -855,7 +840,7 @@ class qcl_core_Object
    * @param mixed $msg
    * @param string|array $filters
    */
-  public function log ( $msg, $filters="debug" )
+  public function log( $msg, $filters="debug" )
   {
     $this->getLogger()->log( $msg, $filters );
   }
@@ -1000,7 +985,7 @@ class qcl_core_Object
    */
   public function userNotice ( $message, $number=null )
   {
-    $server = $this->getApplication()->getServer();
+    $server = $this->getApplication()->getServerInstance();
     if ( $server )
     {
       $error  = $server->getErrorBehavior();
@@ -1080,6 +1065,7 @@ class qcl_core_Object
    */
   public function getEventDispatcher()
   {
+    qcl_import( "qcl_event_Dispatcher" );
     return qcl_event_Dispatcher::getInstance();
   }
 
@@ -1093,7 +1079,6 @@ class qcl_core_Object
    */
   public function addListener( $type, $object, $method )
   {
-    require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->addListener( $this, $type, $object, $method );
   }
 
@@ -1105,7 +1090,6 @@ class qcl_core_Object
    */
   public function dispatchEvent ( $event )
   {
-    require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->dispatchEvent( $this, $event );
   }
 
@@ -1115,7 +1099,6 @@ class qcl_core_Object
    */
   public function fireEvent ( $type )
   {
-    require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->fireDataEvent( $this, $type, $data );
   }
 
@@ -1126,7 +1109,6 @@ class qcl_core_Object
    */
   public function fireDataEvent ( $type, $data )
   {
-    require_once "qcl/event/Dispatcher.php";
     $this->getEventDispatcher()->fireDataEvent( $this, $type, $data );
   }
 

@@ -21,7 +21,7 @@
  */
 if ( ! defined( "QCL_LOG_PATH") )
 {
-  define( "QCL_LOG_PATH" ,  sys_get_temp_dir() );
+  throw new JsonRpcException("You must define the QCL_LOG_PATH constant.");
 }
 
 /**
@@ -133,7 +133,7 @@ class qcl_log_Logger
 
     if ( ! is_bool($value) )
     {
-      trigger_error("Value parameter must be boolean");
+      throw new Exception("Value parameter must be boolean");
     }
 
     /*
@@ -151,7 +151,7 @@ class qcl_log_Logger
   {
     if ( ! $this->isRegistered( $filter ) )
     {
-      trigger_error("Filter $filter does not exist." );
+      trigger_error("Filter '$filter' does not exist." );
     }
   }
 
@@ -223,11 +223,11 @@ class qcl_log_Logger
     }
 
     /*
-     * else, write to system log
+     * else, throw an exception
      */
     else
     {
-      error_log( "qcl: " . $message );
+      throw new Exception( sprintf( "Log file '%s' is not writable.", QCL_LOG_FILE ) );
     }
   }
 

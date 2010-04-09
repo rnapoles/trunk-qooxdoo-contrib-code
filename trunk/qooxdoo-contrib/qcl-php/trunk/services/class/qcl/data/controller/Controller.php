@@ -15,23 +15,9 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/server/Service.php";
-require_once "qcl/server/Response.php";
-require_once "qcl/data/Result.php";
-
-/*
- * constants
- */
-
-/*
- * log filter name for request-related messages
- */
-define("QCL_LOG_REQUEST", "request");
-
-/**
- * global var for session ids independent of the PHP session
- */
-define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
+qcl_import("qcl_server_Service");
+qcl_import("qcl_server_Response");
+qcl_import("qcl_data_Result");
 
 /**
  * Common base class for controllers. Mainly contains convenience
@@ -47,29 +33,17 @@ class qcl_data_controller_Controller
    */
   private $_resultObject;
 
-
-  /**
-   * Constructor. Starts the application if exists and if not started yet.
-   */
-  function __construct()
-  {
-    if ( $this->getApplication() and ! $this->getApplication()->isStarted() )
-    {
-      $this->getApplication()->start();
-    }
-  }
-
   //-------------------------------------------------------------
   // access control
   //-------------------------------------------------------------
 
   /**
    * Shorthand getter for access behavior
-   * @return qcl_access_Behavior
+   * @return qcl_access_Controller
    */
-  public function getAccessBehavior()
+  public function getAccessController()
   {
-    return $this->getApplication()->getAccessBehavior();
+    return $this->getApplication()->getAccessController();
   }
 
   /**
@@ -78,7 +52,7 @@ class qcl_data_controller_Controller
    */
   public function getActiveUser()
   {
-    return $this->getAccessBehavior()->getActiveUser();
+    return $this->getAccessController()->getActiveUser();
   }
 
   /**
@@ -87,19 +61,19 @@ class qcl_data_controller_Controller
    */
   public function getSessionId()
   {
-    return $this->getAccessBehavior()->getSessionId();
+    return $this->getAccessController()->getSessionId();
   }
 
 
   /**
    * Checks if active user has the given permission.
-   * Alias of $this->getAccessBehavior()->hasPermission()
+   * Alias of $this->getAccessController()->hasPermission()
    * @param $permission
    * @return bool
    */
   public function hasPermission( $permission )
   {
-    return $this->getAccessBehavior()->hasPermission( $permission );
+    return $this->getAccessController()->hasPermission( $permission );
   }
 
   /**
@@ -120,13 +94,13 @@ class qcl_data_controller_Controller
   /**
    * Checks if active user has the given permission and aborts if
    * permission is not granted.
-   * Alias of $this->getAccessBehavior()->requirePermission()
+   * Alias of $this->getAccessController()->requirePermission()
    * @param string $permission
    * @return bool
    */
   public function requirePermission( $permission )
   {
-    return $this->getAccessBehavior()->requirePermission( $permission );
+    return $this->getAccessController()->requirePermission( $permission );
   }
 
   /**
@@ -136,7 +110,7 @@ class qcl_data_controller_Controller
    */
   public function hasRole( $role )
   {
-    return $this->getAccessBehavior()->hasRole( $role );
+    return $this->getAccessController()->hasRole( $role );
   }
 
   //-------------------------------------------------------------

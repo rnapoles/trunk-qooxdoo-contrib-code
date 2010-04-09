@@ -17,7 +17,7 @@
  */
 
 qcl_import( "qcl_test_AbstractTestController");
-qcl_import( "qcl_access_model_User2" );
+qcl_import( "qcl_access_model_User" );
 qcl_import( "qcl_data_model_import_Xml" );
 qcl_import( "qcl_io_filesystem_local_File" );
 
@@ -56,7 +56,7 @@ class UserConfig extends qcl_config_UserConfigModel
  * Class to model the user data
  * @see qcl_test_access_Models
  */
-class User extends qcl_access_model_User2
+class User extends qcl_access_model_User
 {
   protected $tableName = "test_data_User2";
   function __construct()
@@ -77,7 +77,7 @@ class User extends qcl_access_model_User2
  * Class to model the role data
  * @see User
  */
-class Role extends qcl_access_model_Role2
+class Role extends qcl_access_model_Role
 {
   protected $tableName = "test_data_Role2";
   function __construct() {
@@ -97,7 +97,7 @@ class Role extends qcl_access_model_Role2
  * Class to model the permission data.
  * @see User
  */
-class Permission extends qcl_access_model_Permission2
+class Permission extends qcl_access_model_Permission
 {
   protected $tableName = "test_data_Permission2";
   function __construct() {

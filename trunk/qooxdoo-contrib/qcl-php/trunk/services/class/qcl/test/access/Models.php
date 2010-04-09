@@ -17,7 +17,7 @@
  */
 
 qcl_import( "qcl_test_AbstractTestController");
-qcl_import( "qcl_access_model_User2" );
+qcl_import( "qcl_access_model_User" );
 
 
 /**
@@ -27,7 +27,7 @@ qcl_import( "qcl_access_model_User2" );
  * columns. This is done to demonstrate these features but also in order
  * not to interfere with the real access model data.
  */
-class User extends qcl_access_model_User2
+class User extends qcl_access_model_User
 {
   /*
    * set a custom table name for this derived model
@@ -73,7 +73,7 @@ class User extends qcl_access_model_User2
  * Class to model the role data
  * @see User
  */
-class Role extends qcl_access_model_Role2
+class Role extends qcl_access_model_Role
 {
   protected $tableName = "test_data_Role";
   protected $foreignKey = "test_RoleId";
@@ -95,7 +95,7 @@ class Role extends qcl_access_model_Role2
  * Class to model the permission data.
  * @see User
  */
-class Permission extends qcl_access_model_Permission2
+class Permission extends qcl_access_model_Permission
 {
   protected $tableName = "test_data_Permission";
   protected $foreignKey = "test_PermissionId";
@@ -146,7 +146,7 @@ class UserConfig extends qcl_config_UserConfigModel
  * Class to model the custom user configuration data.
  * @see User
  */
-class Session extends qcl_access_model_Session2
+class Session extends qcl_access_model_Session
 {
   protected $tableName = "test_data_Session";
   /**
@@ -351,7 +351,7 @@ class class_qcl_test_access_Models
     $session->deleteAll();
     $user->load("user1");
     $this->startLogging();
-    $session->registerSession( $this->getSessionId() , $user, $this->getServer()->getRemoteIp() );
+    $session->registerSession( $this->getSessionId() , $user, $this->getServerInstance()->getRemoteIp() );
   }
 
   protected function startLogging()

@@ -18,9 +18,34 @@
 
 ************************************************************************ */
 
-require_once "qcl/access/model/User.php";
-require_once "qcl/access/model/Role.php";
-require_once "qcl/access/model/Permission.php";
+/*
+ * Exceptions thrown in this class and subclasses
+ */
+class qcl_access_AccessDeniedException extends JsonRpcException {}
+class qcl_access_AuthenticationException extends qcl_access_AccessDeniedException {}
+class qcl_access_InvalidSessionException extends qcl_access_AccessDeniedException {}
+class qcl_access_TimeoutException extends qcl_access_InvalidSessionException {}
 
-qcl_log_Logger::getInstance()->registerFilter("access","Authentication and Authorization-related messages",false);
+/*
+ * the prefix for the anonymous user
+ */
+if ( ! defined('QCL_ACCESS_ANONYMOUS_USER_PREFIX') )
+{
+  define('QCL_ACCESS_ANONYMOUS_USER_PREFIX', "anonymous_");
+}
+
+/*
+ * the default timeout
+ */
+if ( ! defined('QCL_ACCESS_TIMEOUT') )
+{
+  define('QCL_ACCESS_TIMEOUT', 30*60 );
+}
+
+/*
+ * log filter
+ */
+define("QCL_LOG_ACCESS", "access");
+qcl_log_Logger::getInstance()->registerFilter(QCL_LOG_ACCESS,"Access-related log messages",false);
+
 ?>
