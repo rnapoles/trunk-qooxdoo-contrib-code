@@ -190,7 +190,4 @@ class qcl_server_Upload extends qcl_core_Object
   }
 
 }
-
-
-
- ?>
+?>

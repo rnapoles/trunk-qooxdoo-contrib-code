@@ -87,7 +87,6 @@ class qcl_config_IniConfigManager
     {
       $this->iniConfig = parse_ini_file ( $ini_path, true );
     }
-
     return $this->iniConfig;
   }
 

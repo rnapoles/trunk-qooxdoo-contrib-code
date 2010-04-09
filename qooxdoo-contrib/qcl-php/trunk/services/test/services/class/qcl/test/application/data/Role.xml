@@ -23,8 +23,8 @@
         <link namedId="admin">manageUsers</link>
       </relation>
       <relation name="User_Role">
-        <link namedId="user">user1,user2,user3</link>
-        <link namedId="manager">user3</link>
+        <link namedId="user">user1,user2,user3,admin</link>
+        <link namedId="manager">user3,admin</link>
         <link namedId="admin">admin</link>
       </relation>
     </links>

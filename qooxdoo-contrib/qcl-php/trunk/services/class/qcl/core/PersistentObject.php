@@ -144,12 +144,19 @@ class qcl_core_PersistentObject
    */
   function __destruct()
   {
-    //echo "\n\n/* destroying " .  $this . ", last instance " . self::$instance[get_class($this)] . " */";
-    if ( ! $this->isDisposed() and self::$instance[get_class($this)] === $this )
+    try
     {
-      //echo "\n/* saving " .  $this  . " */";
-      //echo "\n/* saving " .  print_r( $this->data(), true)  . " */";
-      $this->savePersistenceData();
+      //echo "\n\n/* destroying " .  $this . ", last instance " . self::$instance[get_class($this)] . " */";
+      if ( ! $this->isDisposed() and self::$instance[get_class($this)] === $this )
+      {
+        //echo "\n/* saving " .  $this  . " */";
+        //echo "\n/* saving " .  print_r( $this->data(), true)  . " */";
+        $this->savePersistenceData();
+      }
+    }
+    catch( Exception $e )
+    {
+      echo "/* Exception caught in destructor: $e */";
     }
   }
 }
