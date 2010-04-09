@@ -28,6 +28,7 @@
  *    $serviceIntrospection = new ServiceIntrospection( $this );
  *    return $serviceIntrospection->method_methodSignature( $method );
  * }
+ * </pre>
  */
 class ServiceIntrospection
 {
@@ -37,7 +38,7 @@ class ServiceIntrospection
    * The service object to introspect
    * @var object
    */
-  private $_serviceObject;
+  private $serviceObject;
 
   /**
    * Constructor.
@@ -49,11 +50,11 @@ class ServiceIntrospection
   {
     if ( is_object( $value ) )
     {
-      $this->_serviceObject = $value;
+      $this->serviceObject = $value;
     }
     elseif ( is_string( $value ) )
     {
-      $this->_serviceObject = new $value;
+      $this->serviceObject = new $value;
     }
     elseif ( get_class( $this ) != __CLASS__ )
     {
@@ -76,11 +77,11 @@ class ServiceIntrospection
 
   /**
    * Getter for the introspected service object
-   * @return string
+   * @return qcl_core_Object
    */
   public function getServiceObject()
   {
-    return $this->_serviceObject;
+    return $this->serviceObject;
   }
 
   /**
@@ -160,7 +161,7 @@ class ServiceIntrospection
   public function getDocComment( $method )
   {
     $this->checkServiceMethod( $method );
-    $method = new ReflectionMethod( $this->getClassName(), $this->getMethodName( $method ) );
+    $method = new ReflectionMethod( $this->getServiceObject()->className(), $this->getMethodName( $method ) );
     return $method->getDocComment();
   }
 
@@ -238,32 +239,6 @@ class ServiceIntrospection
         return null;
     }
   }
-
-  /**
-   * Lists all the services available in a directory.
-   * @return array
-   */
-  public function method_listServices()
-  {
-
-    $services = array();
-    $path = realpath( dirname( servicePathPrefix . $this->getFilePath() ) );
-    $dir = dir( $path );
-    while ( false !== ( $file = $dir->read() ) )
-    {
-      $file = "$path/$file";
-      if ( is_file( $file ) and substr( $file, -4, 4 ) == ".php" )
-      {
-        $content = file_get_contents( $file );
-        if ( preg_match("/class class_([a-zA-Z0-9_]+)/",$content,$matches) )
-        {
-          $services[] = str_replace("_",".",$matches[1]);
-        }
-      }
-    }
-    return $services;
-  }
-
 
   //-------------------------------------------------------------
   // Service class introspection API
@@ -345,8 +320,8 @@ class ServiceIntrospection
 /**
  * add capability
  */
-require_once dirname(__FILE__) . "/services/system.php";
-class_system::addCapability(
+require_once dirname(__FILE__) . "/services/System.php";
+class_System::getInstance()->addCapability(
   "introspection",
   "http://qooxdoo.org/documentation/json_rpc_introspection",
   "0.1",

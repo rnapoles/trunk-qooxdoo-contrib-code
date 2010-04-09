@@ -112,4 +112,9 @@ class JsonRpcError extends AbstractError
     }
   }
 }
+
+/**
+ * JsonRpcError will be renamed into JsonRpcException in the next major release
+ */
+class JsonRpcException extends JsonRpcError {}
 ?>

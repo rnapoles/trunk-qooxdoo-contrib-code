@@ -21,6 +21,9 @@
  *   "fail" -
  *     Access is denied
  */
+
+require_once dirname( __FILE__ ) . "/IAccessibilityBehavior.php";
+
 define("Accessibility_Public",             "public");
 define("Accessibility_Domain",             "domain");
 define("Accessibility_Session",            "session");
@@ -31,7 +34,7 @@ define("Accessibility_Fail",               "fail");
  */
 if ( ! defined("defaultAccessibility") )
 {
-  define("defaultAccessibility",           Accessibility_Domain);
+  define("defaultAccessibility",  Accessibility_Domain);
 }
 
 /**
@@ -42,8 +45,10 @@ if ( ! defined("defaultAccessibility") )
  *
  * @author Derrell Lipman
  * @author Christian Boulanger
+ *
+ * @todo AccessibilityBehaviors should throw exceptions instead of returning false
  */
-class AccessibilityBehavior
+class AccessibilityBehavior implements IAccessibilityBehavior
 {
 
   /**
@@ -64,7 +69,7 @@ class AccessibilityBehavior
   var $server;
 
   /**
-   * PHP 5 Constructor
+   * Constructor
    * @param AbstractServer $server
    */
   function __construct( $server )

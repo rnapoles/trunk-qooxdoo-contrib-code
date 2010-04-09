@@ -113,16 +113,22 @@ class JsonRpcServer extends AbstractServer
   private $scriptTransportId;
 
   /**
+   * Singleton instance
+   * @var JsonRpcServer
+   */
+  static private $instance;
+
+  /**
    * Return singleton instance of the server
    * @return JsonRpcServer
    */
   public static function getInstance()
   {
-    if ( ! isset( $GLOBALS[__CLASS__] ) )
+    if ( ! self::$instance )
     {
-      $GLOBALS[__CLASS__] = new JsonRpcServer;
+      self::$instance = new self;
     }
-    return $GLOBALS[__CLASS__];
+    return self::$instance;
   }
 
 
@@ -160,7 +166,18 @@ class JsonRpcServer extends AbstractServer
     }
     catch( Exception $e )
     {
-      $msg = $e->getMessage() . "in " . $e->getFile() . ", line " . $e->getLine();
+      $msg = $e->getMessage();
+      /*
+       * logging the error might produce other exceptions
+       */
+      try
+      {
+        $this->logError( $msg );
+      }
+      catch( Exception $e )
+      {
+        $msg = $e->getMessage();
+      }
       $jsonRpcError =  $this->getErrorBehavior();
       $jsonRpcError->setError( $e->getCode(), $msg );
       $jsonRpcError->sendAndExit();
@@ -230,8 +247,9 @@ class JsonRpcServer extends AbstractServer
 
   /**
    * Return the input as a php object if a valid
-   * request is found, otherwise return false
-   * @return StdClass|false
+   * request is found, otherwise throw a JsonRpcException
+   * @return StdClass
+   * @throws JsonRpcException
    */
   function getInput()
   {
@@ -257,7 +275,7 @@ class JsonRpcServer extends AbstractServer
            * occurrence of the string "new Date(" in arbitrary string
            * data.
            */
-          if ( strstr($input, "new Date(") )
+          if ( handleQooxdooDates and  strstr($input, "new Date(") )
           {
             $this->json->useJsonClass();
           }
@@ -287,9 +305,9 @@ class JsonRpcServer extends AbstractServer
        */
       $this->setScriptTransportId($_GET["_ScriptTransport_id"]);
       $input = $_GET["_ScriptTransport_data"];
-      $input = $this->json->decode(get_magic_quotes_gpc()
-      ? stripslashes($input)
-      : $input);
+      $input = $this->json->decode(
+        get_magic_quotes_gpc() ? stripslashes($input) : $input
+      );
     }
     else
     {
@@ -297,7 +315,7 @@ class JsonRpcServer extends AbstractServer
        * This request was not issued with JSON-RPC so echo the error rather than
        * issuing a JsonRpcError response.
        */
-      throw new JsonRpcError( "Services require JSON-RPC" );
+      throw new JsonRpcException( "Services require JSON-RPC" );
     }
 
     /*
@@ -501,26 +519,6 @@ class JsonRpcServer extends AbstractServer
 
     // never gets here
     exit;
-  }
-
-  /**
-   * Hook for subclasses to locally log the error message. By default,
-   * log to path in JsonRpcDebugFile constant, if it exists, otherwise
-   * to system log.
-   * @param string $msg Error Message
-   * @param bool $includeBacktrace Not implemented.
-   * @return void
-   */
-  function logError( $msg, $includeBacktrace = false )
-  {
-    if ( file_exists( JsonRpcDebugFile ) && is_writable( JsonRpcDebugFile ) )
-    {
-      error_log( $msg . "\n", 3, JsonRpcDebugFile );
-    }
-    else
-    {
-      error_log( $msg . "\n" );
-    }
   }
 }
 ?>
