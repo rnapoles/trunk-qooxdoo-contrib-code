@@ -7,7 +7,7 @@ qx.core.Init.getApplication().setTestData(
    * Service introspection 
    */
   listMethods : {
-    label : "Service introspection (trunk only): listMethods",
+    label : "Service introspection: listMethods",
     requestData : {
       service : "qooxdoo.test",
       method : "listMethods"
@@ -22,7 +22,7 @@ qx.core.Init.getApplication().setTestData(
     }
   },
   methodSignature : {
-    label : "Service introspection (trunk only): methodSignature",
+    label : "Service introspection: methodSignature",
     requestData : {
       service : "qooxdoo.test",
       method : "methodSignature",
@@ -43,7 +43,7 @@ qx.core.Init.getApplication().setTestData(
     }
   },
   methodHelp : {
-    label : "Service introspection (trunk only): methodHelp",
+    label : "Service introspection: methodHelp",
     requestData : {
       service : "qooxdoo.test",
       method : "methodHelp",
@@ -55,5 +55,14 @@ qx.core.Init.getApplication().setTestData(
       var alertStr = "Service '" + rqm.getService() + "', method '" + rqm.getMethod() + "':\n" + result;
       alert( alertStr );      
     }
-  }
+  },
+  /**
+   * Load introspection tests
+   */
+  loadIntrospectionTests : {
+    label : "Back to qooxdoo tests",
+    execute : function(){
+      this.loadTestData("resource/rpcconsole/demo/testData.js");
+    }
+  }   
 });

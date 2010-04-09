@@ -174,6 +174,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,   
     requestData : {
+      service : "qooxdoo.test",
       method  : "getFloat"
     },     
     checkResult : 1/3
@@ -183,6 +184,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,    
     requestData : {
+      service : "qooxdoo.test",
       method  : "getString"
     },      
     checkResult : "Hello world"
@@ -192,6 +194,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,   
     requestData : {
+      service : "qooxdoo.test",
       method  : "getBadString"
     },               
     checkResult : "<!DOCTYPE HTML \"-//IETF//DTD HTML 2.0//EN\">"
@@ -201,6 +204,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,   
     requestData : {
+      service : "qooxdoo.test",
       method  : "getArrayInteger"
     },  
     checkResult : [ 1, 2, 3, 4 ]
@@ -210,6 +214,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,    
     requestData : {
+      service : "qooxdoo.test",
       method  : "getArrayString"
     },  
     checkResult : [ "one", "two", "three", "four" ]
@@ -219,6 +224,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,   
     requestData : {
+      service : "qooxdoo.test",
       method  : "getObject"
     },               
     checkResult : {"use":0}
@@ -228,6 +234,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,    
     requestData : {
+      service : "qooxdoo.test",
       method  : "getTrue"
     },              
     checkResult : true
@@ -237,6 +244,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,  
     requestData : {
+      service : "qooxdoo.test",
       method  : "getFalse"
     },                
     checkResult : false
@@ -246,6 +254,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,         
     requestData : {
+      service : "qooxdoo.test",
       method  : "getNull"
     },
     checkResult : null
@@ -255,6 +264,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,  
     requestData : {
+      service : "qooxdoo.test",
       method  : "isInteger",
       params : [ 1 ]
     },
@@ -265,6 +275,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "isFloat",
       params : [ 1/3 ]
     },
@@ -275,6 +286,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "isString",
       params : [ "Hello World!" ]
     },
@@ -285,6 +297,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "isBoolean",
       params : [ true ]
     },
@@ -295,6 +308,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "isArray",
       params : [ [1,2,3] ]
     },
@@ -305,6 +319,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "isObject",
       params : [ { "foo" : "bar" } ]
     },
@@ -315,6 +330,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "isNull",
       params : [ null ]
     },
@@ -325,6 +341,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,
     requestData : {
+      service : "qooxdoo.test",
       method  : "getParams",
       params : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]
     },
@@ -335,6 +352,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "getParam",
       params : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]
     },
@@ -345,6 +363,7 @@ qx.core.Init.getApplication().setTestData(
   {
     visible : false,        
     requestData : {
+      service : "qooxdoo.test",
       method  : "getCurrentTimestamp"
     },
     params : [],
@@ -361,39 +380,8 @@ qx.core.Init.getApplication().setTestData(
   "qooxdoo.test.getError":{
     "visible":false,
     "requestData":{
+      service : "qooxdoo.test",
       "method":"getError"
-    },
-    "params":[
-      
-    ]
-  },
-  
-  /**
-   * Load server-generated class tests
-   */
-  loadClassTests : 
-  {
-    label : "Load and execute all class tests (qcl only)",
-    execute : function()
-    {
-      var console = this.getActiveConsole();
-      console.sendRequest({
-        "method" : "rpcConsoleClassTestJson"
-      },
-      function(result)
-      {
-        try
-        {
-          var data = eval( result.result.data );
-          var service = this.getActiveConsole().getRequestModel().getService();
-        } 
-        catch(e){alert(e)}
-        for (var name in data)
-        { 
-          this.getTestData()[name] = data[name];
-        }
-        this.runTests( service + ".test*");
-      },this);
     }
   } 
 });
