@@ -973,10 +973,11 @@ class AbstractServer
       }
 
     }
-    catch ( AbstractError $exception)
+    catch ( AbstractError $exception )
     {
       $result = $exception;
       $result->setId( $this->getId() );
+      $this->logError( $exception->getMessage() );
     }
     return $result;
   }
@@ -992,7 +993,39 @@ class AbstractServer
     return $output;
   }
 
-  /*
+  /**
+   * Hook for subclasses to locally save log messages. By default,
+   * log to path in JsonRpcDebugFile constant, if it exists, otherwise
+   * to system log.
+   * @param string $msg Message
+   * @return void
+   */
+  public function log( $msg )
+  {
+    if ( ( file_exists( JsonRpcDebugFile )
+         && is_writable( JsonRpcDebugFile ) )
+         || is_writable( dirname( JsonRpcDebugFile ) ) )
+    {
+      error_log( $msg . "\n", 3, JsonRpcDebugFile );
+    }
+    else
+    {
+      error_log( $msg . "\n" );
+    }
+  }
+
+  /**
+   * Logs an error message.
+   * @param string $msg Error Message
+   * @param bool $includeBacktrace Not implemented.
+   * @return void
+   */
+  public function logError( $msg, $includeBacktrace = false )
+  {
+    $this->log("### Error ### $msg");
+  }
+
+  /**
    * Debug function. Define your own function if you want
    * to do something else with the debug output
    * @param string $str
@@ -1001,7 +1034,7 @@ class AbstractServer
   {
     if ( $this->debug )
     {
-      error_log(  $str . "\n",3, JsonRpcDebugFile );
+      $this->log( $msg );
     }
   }
 
