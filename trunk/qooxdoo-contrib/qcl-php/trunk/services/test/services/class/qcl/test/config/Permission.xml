@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <root>
-  <model name="Permission">
+  <model name="config_Permission">
     <data>
       <record namedId="viewRecord"/>
       <record namedId="createRecord"/>

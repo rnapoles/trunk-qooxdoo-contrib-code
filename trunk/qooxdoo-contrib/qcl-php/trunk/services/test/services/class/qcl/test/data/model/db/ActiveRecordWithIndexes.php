@@ -21,7 +21,7 @@ qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_data_model_db_ActiveRecord" );
 qcl_import( "qcl_data_db_Timestamp" );
 
-class Customer
+class indexed_Customer
   extends qcl_data_model_db_ActiveRecord
 {
 
@@ -71,7 +71,7 @@ class class_qcl_test_data_model_db_ActiveRecordWithIndexes
   {
     $this->startLogging();
 
-    $customer = new Customer();
+    $customer = new indexed_Customer();
     $customer->deleteAll();
 
     $customer->create( array(

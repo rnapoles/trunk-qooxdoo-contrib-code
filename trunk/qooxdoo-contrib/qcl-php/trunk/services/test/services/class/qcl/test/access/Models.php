@@ -27,7 +27,7 @@ qcl_import( "qcl_access_model_User" );
  * columns. This is done to demonstrate these features but also in order
  * not to interfere with the real access model data.
  */
-class User extends qcl_access_model_User
+class access_User extends qcl_access_model_User
 {
   /*
    * set a custom table name for this derived model
@@ -61,7 +61,7 @@ class User extends qcl_access_model_User
   /**
    * Returns singleton instance of this class. Needed in each derived class that
    * has singleton behavior.
-   * @return User
+   * @return access_User
    */
   public static function getInstance()
   {
@@ -71,9 +71,9 @@ class User extends qcl_access_model_User
 
 /**
  * Class to model the role data
- * @see User
+ * @see access_User
  */
-class Role extends qcl_access_model_Role
+class access_Role extends qcl_access_model_Role
 {
   protected $tableName = "test_data_Role";
   protected $foreignKey = "test_RoleId";
@@ -84,7 +84,7 @@ class Role extends qcl_access_model_Role
     $this->getRelationBehavior()->setJoinTableName( "Permission_Role", "test_join_Permission_Role" );
   }
   /**
-   * @return Role
+   * @return access_Role
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -93,9 +93,9 @@ class Role extends qcl_access_model_Role
 
 /**
  * Class to model the permission data.
- * @see User
+ * @see access_User
  */
-class Permission extends qcl_access_model_Permission
+class access_Permission extends qcl_access_model_Permission
 {
   protected $tableName = "test_data_Permission";
   protected $foreignKey = "test_PermissionId";
@@ -104,7 +104,7 @@ class Permission extends qcl_access_model_Permission
     $this->getRelationBehavior()->setJoinTableName( "Permission_Role", "test_join_Permission_Role" );
   }
   /**
-   * @return Permission
+   * @return access_Permission
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -113,14 +113,14 @@ class Permission extends qcl_access_model_Permission
 
 /**
  * Class to model the configuration data.
- * @see User
+ * @see access_User
  */
-class Config extends qcl_config_ConfigModel
+class access_Config extends qcl_config_ConfigModel
 {
   protected $tableName = "test_data_Config";
   protected $foreignKey = "test_ConfigId";
   /**
-   * @return Config
+   * @return access_Config
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -129,13 +129,13 @@ class Config extends qcl_config_ConfigModel
 
 /**
  * Class to model the custom user configuration data.
- * @see User
+ * @see access_User
  */
-class UserConfig extends qcl_config_UserConfigModel
+class access_UserConfig extends qcl_config_UserConfigModel
 {
   protected $tableName = "test_data_UserConfig";
   /**
-   * @return UserConfig
+   * @return access_UserConfig
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -144,13 +144,13 @@ class UserConfig extends qcl_config_UserConfigModel
 
 /**
  * Class to model the custom user configuration data.
- * @see User
+ * @see access_User
  */
-class Session extends qcl_access_model_Session
+class access_Session extends qcl_access_model_Session
 {
   protected $tableName = "test_data_Session";
   /**
-   * @return Session
+   * @return access_Session
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
@@ -171,7 +171,8 @@ class class_qcl_test_access_Models
    * @return string
    * @rpctest {
    *   "requestData" : {
-   *     "method" : "testModel",
+   *     "service" : "qcl.test.access.Models",
+   *     "method"  : "testModel",
    *     "timeout" : 30
    *   },
    *   "checkResult" : "OK"
@@ -182,25 +183,25 @@ class class_qcl_test_access_Models
     /*
      * create model instances
      */
-    $user = User::getInstance();
-    $role = Role::getInstance();
-    $permission = Permission::getInstance();
-    $session = Session::getInstance();
+    $user = access_User::getInstance();
+    $role = access_Role::getInstance();
+    $permission = access_Permission::getInstance();
+    $session = access_Session::getInstance();
 
     /*
      * Even though the models are not needed, we need to instantiate them, otherwise
      * the relations are not correctly set up-
      */
-    Config::getInstance();
-    UserConfig::getInstance();
+    access_Config::getInstance();
+    access_UserConfig::getInstance();
 
     /*
      * users
      */
     $user->deleteAll();
-    $user->create("user1",array( 'name' => "User 1", 'password' => "user1" ) );
-    $user->create("user2",array( 'name' => "User 2", 'password' => "user2" ) );
-    $user->create("user3",array( 'name' => "User 3", 'password' => "user3" ) );
+    $user->create("user1",array( 'name' => "access_User 1", 'password' => "user1" ) );
+    $user->create("user2",array( 'name' => "access_User 2", 'password' => "user2" ) );
+    $user->create("user3",array( 'name' => "access_User 3", 'password' => "user3" ) );
     $user->create("admin",array( 'name' => "Administrator", 'password' => "admin" ) );
 
     /*
@@ -257,28 +258,28 @@ class class_qcl_test_access_Models
     /*
      * tests
      */
-//    $this->testAnonymous();
-//    $this->testUser();
-//    $this->testImportExport();
-//    $this->testUser();
+    $this->testAnonymous();
+    $this->testUser();
+    $this->testImportExport();
+    $this->testUser();
     $this->testSession();
 
     /*
      * cleanup
      */
-//    $user->destroy();
-//    $role->destroy();
-//    $permission->destroy();
-//    $session->destroy();
-//    Config::getInstance()->destroy();
-//    UserConfig::getInstance()->destroy();
+    $user->destroy();
+    $role->destroy();
+    $permission->destroy();
+    $session->destroy();
+    access_Config::getInstance()->destroy();
+    access_UserConfig::getInstance()->destroy();
 
     return "OK";
   }
 
   protected function testAnonymous()
   {
-    $user = User::getInstance();
+    $user = access_User::getInstance();
     $user->createAnonymous();
 //    $this->info( sprintf(
 //      "Created anonmyous user '%s', id #%s, with roles '%s' and permissions '%s'.",
@@ -296,7 +297,7 @@ class class_qcl_test_access_Models
 
   protected function testUser()
   {
-    $user = User::getInstance();
+    $user = access_User::getInstance();
     $user->load("user1");
     $this->assertEquals( false, $user->isAnonymous() );
     $this->assertEquals( "user", implode( ",", $user->roles() ), null, __CLASS__, __LINE__ );
@@ -320,9 +321,9 @@ class class_qcl_test_access_Models
      */
     qcl_import( "qcl_data_model_export_Xml" );
     $exporter =  new qcl_data_model_export_Xml();
-    $userXml = User::getInstance()->export( $exporter );
-    $roleXml = Role::getInstance()->export( $exporter );
-    $permissionXml = Permission::getInstance()->export( $exporter );
+    $userXml = access_User::getInstance()->export( $exporter );
+    $roleXml = access_Role::getInstance()->export( $exporter );
+    $permissionXml = access_Permission::getInstance()->export( $exporter );
 
 //    $this->info( $userXml );
 //    $this->info( $roleXml );
@@ -331,27 +332,27 @@ class class_qcl_test_access_Models
     /*
      * delete all records
      */
-    User::getInstance()->deleteAll();
-    Role::getInstance()->deleteAll();
-    Permission::getInstance()->deleteAll();
+    access_User::getInstance()->deleteAll();
+    access_Role::getInstance()->deleteAll();
+    access_Permission::getInstance()->deleteAll();
 
     /*
      * re-import
      */
     qcl_import( "qcl_data_model_import_Xml" );
-    User::getInstance()->import( new qcl_data_model_import_Xml( $userXml ) );
-    Role::getInstance()->import( new qcl_data_model_import_Xml( $roleXml ) );
-    Permission::getInstance()->import( new qcl_data_model_import_Xml( $permissionXml ) );
+    access_User::getInstance()->import( new qcl_data_model_import_Xml( $userXml ) );
+    access_Role::getInstance()->import( new qcl_data_model_import_Xml( $roleXml ) );
+    access_Permission::getInstance()->import( new qcl_data_model_import_Xml( $permissionXml ) );
   }
 
   protected function testSession()
   {
-    $user = User::getInstance();
-    $session = Session::getInstance();
+    $user = access_User::getInstance();
+    $session = access_Session::getInstance();
     $session->deleteAll();
     $user->load("user1");
     $this->startLogging();
-    $session->registerSession( $this->getSessionId() , $user, $this->getServerInstance()->getRemoteIp() );
+    $session->registerSession( $this->getSessionId() , $user, qcl_server_Request::getInstance()->getIp() );
   }
 
   protected function startLogging()
@@ -361,7 +362,7 @@ class class_qcl_test_access_Models
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
     //$this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
     //$this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
 
   }
 

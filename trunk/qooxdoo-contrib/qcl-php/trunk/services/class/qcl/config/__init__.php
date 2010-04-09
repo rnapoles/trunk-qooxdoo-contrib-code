@@ -29,5 +29,6 @@ class qcl_config_Exception extends JsonRpcException {}
 /*
  * log filters
  */
-qcl_log_Logger::getInstance()->registerFilter("config","Configuration-related log messages",false);
+define( "QCL_LOG_CONFIG", "config" );
+qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_CONFIG, "Configuration-related log messages", false );
 ?>

@@ -23,7 +23,7 @@ qcl_import( "qcl_access_model_User" ); // this imports all the other required mo
  * different application models and to the access controller
  *
  */
-class qcl_application_Application
+abstract class qcl_application_Application
   extends qcl_core_Object
 {
   //-------------------------------------------------------------
@@ -35,6 +35,13 @@ class qcl_application_Application
    * @var boolean
    */
   protected $allowAnonymousAccess = true;
+
+  /**
+   * The path to the ini file containing initial configuration
+   * such as database connectivity etc.
+   * @var string
+   */
+  protected $iniPath = null;
 
   /**
    * The manager for the initial application configuration
@@ -56,9 +63,19 @@ class qcl_application_Application
    * Whether anonymous access is allowed or not
    * @return bool
    */
-  public function getAllowAnonymousAccess()
+  public function allowAnonymousAccess()
   {
     return $this->allowAnonymousAccess;
+  }
+
+  /**
+   * Returns the path to the ini file containing initial configuration
+   * such as database connectivity etc. if set by as a class property
+   * @return string
+   */
+  public function iniPath()
+  {
+    return $this->iniPath;
   }
 
   //-------------------------------------------------------------
@@ -213,6 +230,17 @@ class qcl_application_Application
       $this->log( "     ... from $path" , QCL_LOG_APPLICATION );
       $model->import( new qcl_data_model_import_Xml( $xmlFile ) );
     }
+  }
+
+  //-------------------------------------------------------------
+  // required main() method
+  //-------------------------------------------------------------
+
+  public function main()
+  {
+    throw new JsonRpcException(sprintf(
+      "Application class '%s' must implement main() method.", $this->className()
+    ) );
   }
 }
 ?>

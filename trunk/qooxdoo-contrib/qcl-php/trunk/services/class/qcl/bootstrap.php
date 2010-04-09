@@ -86,5 +86,13 @@ if ( ! defined("QCL_UPLOAD_PATH") )
  * load core functions
  */
 require_once "qcl/core/functions.php";
+require_once "services/server/error/JsonRpcError.php";
+
+/*
+ * core packages
+ */
+qcl_import("qcl_log_Logger");
+qcl_import("qcl_lang_String");
+qcl_import("qcl_lang_ArrayList");
 
 ?>

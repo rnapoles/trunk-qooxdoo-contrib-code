@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="yes"?>
 <root>
-  <model name="Role">
+  <model name="config_Role">
     <data>
       <record namedId="anonymous">
         <name>Anonymous user</name>

@@ -1,6 +1,25 @@
 <?php
-require_once "qcl/data/Result.php";
-require_once "qcl/data/controller/Controller.php";
+/* ************************************************************************
+
+   qcl - the qooxdoo component library
+
+   http://qooxdoo.org/contrib/project/qcl/
+
+   Copyright:
+     2007-2009 Christian Boulanger
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Chritian Boulanger (cboulanger)
+
+************************************************************************ */
+
+qcl_import( "qcl_data_Result");
+qcl_import( "qcl_test_AbstractTestController");
 
 class qcl_test_data_TestResult
   extends qcl_data_Result
@@ -11,7 +30,7 @@ class qcl_test_data_TestResult
 }
 
 class class_qcl_test_data_ControllerModel
-  extends qcl_data_controller_Controller
+  extends qcl_test_AbstractTestController
 {
 
   function method_testRecord()
@@ -58,6 +77,5 @@ class class_qcl_test_data_ControllerModel
     $result = new qcl_test_data_TestResult;
     return $result->queryResultToModel($testMap);
   }
-
 }
 ?>

@@ -18,6 +18,7 @@
  */
 
 qcl_import( "qcl_server_JsonRpcServer" );
+qcl_import( "qcl_server_Request" );
 
 /**
  * This is a server that can be used to test the service classes by using
@@ -29,7 +30,7 @@ class qcl_server_JsonRpcTestServer
 {
   /**
    * The test data
-   * @var string
+   * @var string|array
    */
   private $jsonrpcRequest;
 
@@ -49,18 +50,29 @@ class qcl_server_JsonRpcTestServer
    */
   function getInput()
   {
-    /*
-     * decode json data
-     */
-    $input = $this->json->decode( $this->jsonrpcRequest );
+    if ( is_array( $this->jsonrpcRequest ) )
+    {
+      /*
+       * convert array into object
+       */
+      $input = (object) $input;
+    }
+    elseif ( is_string( $this->jsonrpcRequest ) )
+    {
+      /*
+       * decode json data
+       */
+      $input = $this->json->decode( $this->jsonrpcRequest );
+    }
+    else
+    {
+      throw new JsonRpcException("Invalid request data");
+    }
 
     /*
      * Ensure that this was a valid JSON-RPC service request
      */
-    if (! isset($input) ||
-    ! isset($input->service) ||
-    ! isset($input->method) ||
-    ! isset($input->params))
+    if ( isset($input->service) || ! isset($input->method) || ! isset($input->params))
     {
       /*
        * This request was not issued with JSON-RPC so echo the error rather than

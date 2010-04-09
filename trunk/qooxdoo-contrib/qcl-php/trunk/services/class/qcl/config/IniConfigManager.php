@@ -49,19 +49,45 @@ class qcl_config_IniConfigManager
      * file containing intial configuration
      */
     $app = $this->getApplication();
-    $appClass = new String( $app->className() );
-    $ini_path = dirname( $appClass->replace("/_/","/") );
-    do
+    $found = false;
+
+    /*
+     * application can provide path
+     */
+    if( $app->iniPath() )
     {
-      $ini_path = $ini_path.  "/" . QCL_SERVICE_CONFIG_FILE;
-      if ( qcl_file_exists( $ini_path) )
-      {
-        break;
-      }
-      $ini_path = dirname( dirname( $ini_path ) );
+      $this->log( "Getting ini file from application...", QCL_LOG_CONFIG );
+      $found = true;
+      $ini_path = $app->iniPath();
     }
-    while( $ini_path );
-    if ( ! $ini_path )
+
+    /*
+     * or we are looking inside the folder hierarchy for the
+     * file
+     */
+    else
+    {
+      $this->log( "Looking for ini file in the file system...", QCL_LOG_CONFIG );
+      $appClass = new String( $app->className() );
+      $ini_path = dirname( $appClass->replace("/_/","/") );
+
+      do
+      {
+        $ini_path = $ini_path.  "/" . QCL_SERVICE_CONFIG_FILE;
+        if ( qcl_file_exists( $ini_path) )
+        {
+          $found = true;
+          break;
+        }
+        $ini_path = dirname( dirname( $ini_path ) );
+      }
+      while( $ini_path and strlen( $ini_path ) > 2 );
+    }
+
+    /*
+     * warn if no ini file was found
+     */
+    if ( ! $found )
     {
       $this->warn( sprintf(
         "No '%s' file found for '%s'",
@@ -71,6 +97,7 @@ class qcl_config_IniConfigManager
     }
 
     $ini_path = qcl_realpath( $ini_path );
+    $this->log( sprintf( "Parsing ini-file '%s'...", $ini_path), QCL_LOG_CONFIG );
 
     /*
      * PHP 5.3
@@ -87,6 +114,7 @@ class qcl_config_IniConfigManager
     {
       $this->iniConfig = parse_ini_file ( $ini_path, true );
     }
+    $this->log( sprintf( "Ini-file contains %s sections.", count($this->iniConfig) ), QCL_LOG_CONFIG );
     return $this->iniConfig;
   }
 
