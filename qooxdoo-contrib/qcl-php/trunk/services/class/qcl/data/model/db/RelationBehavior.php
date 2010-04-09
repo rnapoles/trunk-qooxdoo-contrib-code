@@ -18,19 +18,6 @@
  */
 
 
-/**
- * Persistent cache object
- */
-class qcl_data_model_db_RelationsCache
-  extends qcl_core_PersistentObject
-{
-
-  public $relations = array();
-  public function reset()
-  {
-    $this->relations = array();
-  }
-}
 
 /**
  * Class responsible for managing relationships between models
@@ -73,7 +60,7 @@ class qcl_data_model_db_RelationBehavior
   /**
    * A static persistent cache object to avoid repetitive introspection
    * queries
-   * @var qcl_data_model_db_RelationsCache
+   * @var qcl_data_model_db_RelationCache
    */
   static private $cache;
 
@@ -142,13 +129,14 @@ class qcl_data_model_db_RelationBehavior
 
   /**
    * Getter for persistent cache object
-   * @return qcl_data_model_db_RelationsCache
+   * @return qcl_data_model_db_RelationCache
    */
   public function cache()
   {
     if ( ! self::$cache )
     {
-      self::$cache = new qcl_data_model_db_RelationsCache();
+      qcl_import( "qcl_data_model_db_RelationCache" );
+      self::$cache = new qcl_data_model_db_RelationCache();
     }
     return self::$cache;
   }

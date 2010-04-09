@@ -16,15 +16,6 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-//
-// This file must called at the beginning of the class loading process.
-//
-
-/*
- * global functions
- */
-require_once "qcl/core/functions.php";
-
 /*
  * core packages
  */
@@ -46,6 +37,6 @@ define("QCL_LOG_PERSISTENCE","persistence");
 $logger->registerFilter( QCL_LOG_PERSISTENCE, "Persistence-related debugging.",false);
 
 define("QCL_LOG_PROPERTIES","properties");
-$logger->registerFilter(QCL_LOG_PROPERTIES, "Messages concerning the setup and initializing of model properties.",false);
+$logger->registerFilter( QCL_LOG_PROPERTIES, "Messages concerning the setup and initializing of model properties.",false);
 
 ?>

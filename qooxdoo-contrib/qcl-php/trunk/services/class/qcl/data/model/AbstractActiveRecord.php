@@ -108,7 +108,7 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * Initialzies the model and the behaviors.
+   * Initializes the model and the behaviors.
    */
   public function init()
   {
@@ -302,11 +302,12 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * select and fetch first row that matches the query
      */
-    $rowCount = $this->getQueryBehavior()->selectWhere( $query );
-    if ( $rowCount )
+    $query = $this->getQueryBehavior()->selectWhere( $query );
+
+    if ( $query->getRowCount() > 0 )
     {
       $this->set( $this->getQueryBehavior()->fetch() );
-      return $rowCount;
+      return $query->getRowCount();
     }
     else
     {

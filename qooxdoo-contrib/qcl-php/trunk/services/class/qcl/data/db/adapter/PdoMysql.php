@@ -863,9 +863,11 @@ class qcl_data_db_adapter_PdoMysql
   public function tableExists( $table )
   {
     $database = $this->getDatabase();
-    $result = $this->getResultValue("
-      show tables from $database where tables_in_test like :table
-    ", array( ":table" => $table ));
+    $column   = $this->formatColumnName("tables_in_" . $database );
+    $result = $this->getResultValue(
+      "show tables from $database where $column like :table",
+      array( ":table" => $table )
+    );
     return (bool) $result;
   }
 

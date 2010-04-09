@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/xmlSchema/DbModel.php";
+
+qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 
 /**
  * Model for session data bases on a mysql database model.
@@ -23,15 +24,60 @@ require_once "qcl/data/model/xmlSchema/DbModel.php";
  * browser instance.
  */
 class qcl_access_model_Session
-  extends qcl_data_model_xmlSchema_DbModel
+  extends qcl_data_model_db_NamedActiveRecord
 {
 
   /**
-   * the path to the model schema xml file
-   * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
-   * @var string
+   * Table name
    */
-  var $schemaXmlPath = "qcl/access/model/Session.model.xml";
+  protected $tableName = "data_Session";
+
+  /**
+   * Properties of the model
+   * @var unknown_type
+   */
+  private $properties = array(
+    'parentSessionId' => array(
+      'check'     => QCL_PROPERTY_CHECK_STRING,
+      'sqltype'   => "varchar(50)",
+      'nullable'  => true
+    ),
+    'ip' => array(
+      'check'     => QCL_PROPERTY_CHECK_STRING,
+      'sqltype'   => "varchar(32)"
+    )
+  );
+
+  /**
+   * Indexes
+   */
+  private $indexes = array(
+    "session_index" => array(
+      "type"        => "unique",
+      "properties"  => array("namedId","ip")
+    )
+  );
+
+  /**
+   * Relations of the model
+   */
+  private $relations = array(
+    'User_Session'  => array(
+      'type'    => QCL_RELATIONS_HAS_ONE,
+      'target'  => array( 'class'  => "qcl_access_model_User" )
+    )
+  );
+
+  /**
+   * Constructor
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
+    $this->addIndexes( $this->indexes );
+  }
 
   /**
    * Returns singleton instance.
@@ -45,27 +91,28 @@ class qcl_access_model_Session
 
   /**
    * Shorthand getter for access behavior
-   * @return qcl_access_Behavior
+   * @return qcl_access_Controller
    */
-  function getAccessBehavior()
+  function getAccessController()
   {
-    return $this->getApplication()->getAccessBehavior();
+    return $this->getApplication()->getAccessController();
   }
 
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // API methods
   //-------------------------------------------------------------
 
-	/**
-	 * Registers a session. adds an entry with the current timestamp if the session
-	 * doesn't exist, otherwise leaves the last action column alone.
-	 * @return void
-	 * @param string $sessionId The id of the current session
-	 * @param int $userId The id of the current user
-	 * @param string $ip The IP address of the requesting client. This makes sure
-	 * session ids cannot be "stolen" by an intercepting party
-	 */
-  function registerSession( $sessionId, $userId, $ip )
+  /**
+   * Registers a session. adds an entry with the current timestamp if the session
+   * doesn't exist, otherwise leaves the last action column alone.
+   *
+   * @return void
+   * @param string $sessionId The id of the current session
+   * @param qcl_access_model_User $user
+   * @param string $ip The IP address of the requesting client. This makes sure
+   * session ids cannot be "stolen" by an intercepting party
+   */
+  function registerSession( $sessionId, qcl_access_model_User $user, $ip )
   {
 
     /*
@@ -73,22 +120,22 @@ class qcl_access_model_Session
      * there is a security breach, unless the request was originated
      * on the local host
      */
-    $localhost = ( $ip=="::1" or $ip=="127.0.0.1" );
-    if ( ! $localhost and $this->exists("`sessionId` = '$sessionId' AND `ip` != '$ip'") )
+    $localhost    = ( $ip=="::1" or $ip=="127.0.0.1" );
+    $sessionMismatch = $this->countWhere( array(
+      'namedId' => $sessionId,
+      'ip'      => array( "!=", $ip )
+    ) );
+    if ( ! $localhost and $sessionMismatch )
     {
-      $this->setError("Access denied.");
-      return false;
+      throw new qcl_access_AccessDeniedException("Access denied");
     }
 
-    $this->cleanUp();
-
     /*
-     * insert new session data
+     * create new session data if it doesn't already exist
      */
-    $this->insertOrUpdate( array (
-      'sessionId'        => $sessionId,
-      'userId'           => $userId,
-      'ip'               => $ip
+    $this->createIfNotExists( $sessionId, array(
+      $user->foreignKey()  => $user->id(),
+      'ip'                 => $ip
     ) );
 
     return true;
@@ -96,100 +143,56 @@ class qcl_access_model_Session
   }
 
   /**
-   * Cleanup sessions and messages,
-   * @todo rewrite without raw sql
+   * Check if user is registered
+   * @param $sessionId
+   * @param qcl_access_model_User $user
+   * @param $ip
+   * @return unknown_type
    */
-  function cleanUp()
+  function isRegistered( $sessionId, qcl_access_model_User $user, $ip )
   {
-    /*
-     * Delete sessions that have been deleted, refer to non-existing users, or
-     * to the same user with a different session id.
-     * @todo unhardcode timeout
-     * @todo build this into the model code
-     */
-    $activeUser = $this->getAccessBehavior()->getActiveUser();
-    if( ! $activeUser ) return;
-    $userTable =  $activeUser->getTableName();
-    $this->deleteWhere("
-      markedDeleted = 1
-      OR userId NOT IN ( SELECT id FROM `$userTable` )
-      OR TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600
-    ");
-
-    /*
-     * Delete messages that have been deleted, or refer to non-existing sessions
-     * @todo this should all be done automatically through association
-     * management
-     */
-    $msgModel = $this->getMessageBus()->getModel();
-    if ( $msgModel )
-    {
-      $sessTable  = $this->getTableName();
-      $msgModel->deleteWhere("
-        markedDeleted = 1 OR
-        sessionId NOT IN ( SELECT sessionId FROM `$sessTable` )
-      ");
-    }
+    return $this->countWhere( array(
+      'namedId'              => $sessionId,
+       $user->foreignKey()   => $user->id(),
+      'ip'                   => $ip
+    ) );
   }
 
   /**
-   * Checks whether a user is registered with a session
+   * Unregisters a session. We cannot delete them right away since
+   * the request has not completed yet, so we mark them to be deleted
+   * when the next session is registered.
+   * @return void
+   * @param string $sessionId
    */
-  function isRegistered( $sessionId, $userId, $ip )
-  {
-    return $this->exists("
-      `sessionId` = '$sessionId' AND
-      `userId`    = $userId AND
-      `ip`        = '$ip'
-    ");
-  }
-
-	/**
-	 * Unregisters a session. We cannot delete them right away since
-	 * the request has not completed yet, so we mark them to be deleted
-	 * when the next session is registered.
-	 * @return void
-	 * @param string $sessionId
-	 */
   function unregisterSession( $sessionId )
   {
     if ( ! $sessionId )
     {
       $this->raiseError("Invalid session id");
     }
-
-    //$this->debug($sessionId);
-    /*
-     * delete session
-     */
-    $this->updateWhere(
-      array('markedDeleted' => 1),
-      "`sessionId`='$sessionId' OR `parentSessionId`='$sessionId'"
-    );
-
-    /*
-     * delete messages belonging to session
-     */
-    $msgModel = $this->getMessageBus()->getModel();
-    $msgModel->updateWhere(
-      array('markedDeleted' => 1),
-      array('sessionId' => $sessionId)
-    );
+    try
+    {
+      $this->load( $sessionId );
+      $this->delete();
+    }
+    catch( qcl_data_model_RecordNotFoundException $e)
+    {
+      $this->log( "Session #$sessionId does not exist.", QCL_LOG_ACCESS );
+    }
   }
 
- /**
-   * Unregisters all sessions for a user
+  /**
+   * Purges timed out sessions
    * @return void
-   * @param int $userId
    */
-  function unregisterAllSessions( $userId )
+  public function cleanUp()
   {
-    $table = $this->table();
-    $this->db->execute("
-      UPDATE `$table`
-      SET `markedDeleted` = 1
-      WHERE `userId`  = $userId
-    ");
+    $this->findWhere("TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600");
+    while( $this->loadNext() )
+    {
+      $this->delete();
+    }
   }
 }
 ?>

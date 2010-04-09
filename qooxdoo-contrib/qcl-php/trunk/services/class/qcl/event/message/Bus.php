@@ -153,7 +153,7 @@ class qcl_event_message_Bus
       /*
        * get ids of sessions
        */
-      $sessionModel = $this->getApplication()->getAccessBehavior()->getAccessController()->getSessionModel();
+      $sessionModel = $this->getApplication()->getAccessController()->getAccessController()->getSessionModel();
       $sessionIds = $sessionModel->findValues("sessionId");
       $msgModel = $this->getModel();
 

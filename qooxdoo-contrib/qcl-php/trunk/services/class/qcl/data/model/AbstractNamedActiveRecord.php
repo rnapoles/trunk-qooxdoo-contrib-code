@@ -158,6 +158,14 @@ class qcl_data_model_AbstractNamedActiveRecord
   {
     if ( is_string( $id ) )
     {
+      /*
+       * initialize, if necessary
+       */
+      $this->init();
+
+      /*
+       * load record
+       */
       $this->getQueryBehavior()->selectWhere( array( "namedId" => $id ) );
       $result = $this->getQueryBehavior()->fetch();
       if ( $result )
@@ -165,6 +173,10 @@ class qcl_data_model_AbstractNamedActiveRecord
         $this->set( $result );
         return $this;
       }
+
+      /*
+       * throw exception if record doesn't exist
+       */
       else
       {
         throw new qcl_data_model_RecordNotFoundException( sprintf(

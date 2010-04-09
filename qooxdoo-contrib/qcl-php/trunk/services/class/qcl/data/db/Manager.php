@@ -16,21 +16,12 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/data/db/__init__.php";
-
-/*
- * constants for getDefaultDsn method
- */
-define ("qcl_data_db_USER_TABLE", true);
-define ("qcl_data_db_ADMIN_TABLE", false);
-define ("qcl_data_db_USER_ACCESS", false);
-define ("qcl_data_db_ADMIN_ACCESS", true);
-
 /**
  * Database manager singleton, providing global access to a database object
  * with a unified API
  */
-class qcl_data_db_Manager extends qcl_core_Object
+class qcl_data_db_Manager
+  extends qcl_core_Object
 {
 
   /**
@@ -50,95 +41,43 @@ class qcl_data_db_Manager extends qcl_core_Object
   }
 
   /**
-   * Returns the type of the database.
+   * Returns the type of the database, based on the dsn string
    * @return string
    */
-  public function getDbType()
+  public function getDbType( $dsn )
   {
-    return $this->getApplication()->getIniValue("database.type");
+    return substr( $dsn, 0, strpos( $dsn, ":" ) );
   }
-
-  /**
-   * Returns the dsn information from the service.ini data.
-   * By default, return user-level access to the admin database. Can be called
-   * statically.
-   * @see qcl_data_db_Manager::connect()
-   * @return string
-   */
-  public function getDefaultDsn( $userdata=false, $adminaccess=false )
-  {
-    if ( $userdata )
-    {
-      if ( $adminaccess )
-      {
-        return $this->getApplication()->getIniValue("database.admin_userdb");
-      }
-      else
-      {
-        return $this->getApplication()->getIniValue("database.user_userdb");
-      }
-    }
-    else
-    {
-      if ( $adminaccess )
-      {
-        return $this->getApplication()->getIniValue("database.admin_admindb");
-      }
-      else
-      {
-        return $this->getApplication()->getIniValue("database.user_admindb");
-      }
-    }
-  }
-
 
   /**
    * Creates and caches a database connection object (adapter).
-   *
-   * @param mixed $first [optional] If string, treat as dsn. If boolean, whether
-   * to use the userdata database (true) or the database containing
-   * the application data tables (false, default)
-   *
-   * @param boolean $adminaccess [optional] whether
-   * to use a dsn with admin-level access to create tables etc. (true) or
-   * just user privileges (false, default). Is ignored if first argument is a string
-   *
+   * @param string|null $dsn Use dsn if given, otherwise use dsn
+   *  of admin database as specified in the service.ini.php of the
+   *  application.
+   * @param string $user user name used for accesing the database
+   * @param string $pass password
    * @return qcl_data_db_type_Abstract
    */
-  public function createAdapter( $first=false, $adminaccess=false )
+  public function createAdapter( $dsn=null, $user=null, $pass=null )
   {
-    /*
-     * if first argument is boolean, get dsn from ini values,
-     * otherwise treat as string
-     */
-    if ( ! $first or is_bool( $first ) )
+    if ( $dsn === null )
     {
-      $dsn = $this->getDefaultDsn( $first, $adminaccess );
+      $dsn = $this->getApplication()->getIniValue("database.dsn_admin");
+      $dsn = str_replace("&",";", $dsn );
     }
-    elseif ( is_string( $first ) or is_array( $first ) )
+    elseif ( ! is_string( $dsn ) ) // @todo use regexp
     {
-      $dsn = $first;
+      $this->raiseError("Invalid dsn '$dsn'.");
     }
-    else
-    {
-      $this->raiseError("Invalid parameters.");
-    }
-
-    if ( ! $dsn )
-    {
-      $this->raiseError("No dsn information available.");
-    }
+    //$this->debug("Using dsn '$dsn' ",__CLASS__,__LINE__);
 
     /*
      * pool connection objects
      */
-    $cacheId = is_array($dsn) ? implode(",", array_values($dsn) ) : $dsn;
-    //$this->debug("Cache id '$cacheId'");
-
-    if ( isset( $this->cache[$cacheId] ) )
+    if ( isset( $this->cache[$dsn] ) )
     {
-      //$this->debug("Using cached db object for $cacheId");
-      $db = $this->cache[$cacheId];
+      //$this->debug("Getting adapter from cache ",__CLASS__,__LINE__);
+      $adapter = $this->cache[$dsn];
     }
 
     /*
@@ -149,8 +88,8 @@ class qcl_data_db_Manager extends qcl_core_Object
       /*
        * type and class of database adapter
        */
-      $type = $this->getDbType();
-      $class = "qcl_data_db_adapter_" . strtoupper($type[0]) . substr( $type, 1 );
+      $type  = $this->getDbType( $dsn );
+      $class = "qcl_data_db_adapter_PDO" . ucfirst( $type ); // FIXME
 
       /*
        * include class file
@@ -158,26 +97,27 @@ class qcl_data_db_Manager extends qcl_core_Object
       require_once ( str_replace("_","/",$class) . ".php" );
 
       /*
-       * adapter
+       * user/password
        */
-      $db = new $class( $dsn );
-      //$this->debug("Created new $class adapter... for '$dsn'.");
+      if ( $user === null )
+      {
+        $user = $this->getApplication()->getIniValue("database.adminname");
+        $pass = $this->getApplication()->getIniValue("database.adminpassw");
+      }
 
       /*
-       * check for errors
+       * create adapter
        */
-      if ( $db->error )
-      {
-        $this->raiseError( $db->error );
-      }
+      //$this->debug("New Connection with '$user', '$pass ",__CLASS__,__LINE__);
+      $adapter = new $class( $dsn, $user, $pass );
 
       /*
        * save adapter
        */
-      $this->cache[$cacheId] = $db;
+      $this->cache[$dsn] = $adapter;
     }
 
-    return $db;
+    return $adapter;
   }
 }
 ?>

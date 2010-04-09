@@ -18,6 +18,7 @@
 
 qcl_import( "qcl_data_model_AbstractImporter" );
 qcl_import( "qcl_io_filesystem_IFile" );
+qcl_import( "qcl_data_xml_SimpleXMLElement" );
 
 /**
  * Importer implementation for xml files. Importing linked data works only

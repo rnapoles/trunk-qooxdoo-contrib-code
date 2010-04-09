@@ -66,7 +66,7 @@ class qcl_core_PersistenceBehavior
    */
   public function persist( $object, $id )
   {
-    qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", QCL_LOG_PERSISTENCE);
+    //qcl_log_Logger::getInstance()->log( $object->className() . " saved to cache with id '$id'", QCL_LOG_PERSISTENCE);
     $_SESSION[ self::KEY ][ $id ] = $object->serialize();
   }
 

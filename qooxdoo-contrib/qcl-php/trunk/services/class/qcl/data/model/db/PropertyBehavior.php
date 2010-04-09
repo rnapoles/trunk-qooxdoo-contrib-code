@@ -17,25 +17,6 @@
  */
 
 qcl_import( "qcl_data_model_PropertyBehavior" );
-qcl_import( "qcl_core_PersistentObject" );
-
-/**
- * Cache for property setup
- */
-class qcl_data_model_db_PropertyCache
-  extends qcl_core_PersistentObject
-{
-  public $tables     = array();
-  public $properties = array();
-
-  public function reset()
-  {
-    $this->tables = array();
-    $this->properties = array();
-    $this->savePersistenceData();
-  }
-}
-
 
 /**
  * Extending the property behavior of qcl_data_model_PropertyBehavior
@@ -187,6 +168,7 @@ class qcl_data_model_db_PropertyBehavior
   {
     if ( ! self::$cache )
     {
+      qcl_import( "qcl_data_model_db_PropertyCache" );
       self::$cache = new qcl_data_model_db_PropertyCache();
     }
     return self::$cache;

@@ -53,7 +53,7 @@ class qcl_config_UserConfigModel
   private $relations = array(
     'User_UserConfig' => array(
       'type'        => QCL_RELATIONS_HAS_ONE,
-      'target'      => array( 'class' => "qcl_access_model_User2" )
+      'target'      => array( 'class' => "qcl_access_model_User" )
     ),
     'Config_UserConfig' => array(
       'type'        => QCL_RELATIONS_HAS_ONE,

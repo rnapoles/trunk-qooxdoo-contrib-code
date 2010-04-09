@@ -40,7 +40,8 @@ class qcl_access_Service
    */
   public function method_authenticate( $first=null, $password=null )
   {
-    $accessBehavior = $this->getApplication()->getAccessBehavior();
+    $accessController = $this->getApplication()->getAccessController();
+    $activeUserId = $this->getActiveUser()->id();
 
     /*
      * authentication with session id
@@ -48,8 +49,8 @@ class qcl_access_Service
     if ( is_null( $first )  or is_null( $password ) )
     {
       $sessionId = either( $first, $this->getSessionId() );
-      $this->log("Authenticating from existing session '$sessionId'...", "access");
-      $userId = $accessBehavior->getUserIdFromSession($sessionId);
+      $this->log("Authenticating from existing session '$sessionId'...", QCL_LOG_ACCESS);
+      $userId = $accessController->getUserIdFromSession( $sessionId );
     }
 
     /*
@@ -59,28 +60,31 @@ class qcl_access_Service
     {
       $username   = utf8_decode($first);
       $password   = utf8_decode($password);
-      $this->log("Authenticating from username/password ...", "access");
-      $userId = $accessBehavior->authenticate( $username, $password );
+      $this->log("Authenticating from username/password ...", QCL_LOG_ACCESS);
+      $userId = $accessController->authenticate( $username, $password );
 
       /*
        * authentication successful, logout the accessing user to log in the
        * new one.
        */
-      $accessBehavior->logout();
-      $accessBehavior->startSession();
+      if ( $activeUserId and $userId != $activeUserId )
+      {
+        $accessController->logout();
+        $accessController->createSessionId();
+      }
     }
 
     /*
      * create (new) valid user session
      */
-    $accessBehavior->createUserSessionByUserId( $userId );
+    $accessController->createUserSessionByUserId( $userId );
 
     /*
      * response data
      */
     $response = new qcl_access_AuthenticationResult();
-    $activeUser = $accessBehavior->getActiveUser();
-    $permissions = $activeUser->getPermissions();
+    $activeUser = $accessController->getActiveUser();
+    $permissions = $activeUser->permissions();
     $response->set( "permissions", $permissions );
 
     /*
@@ -116,19 +120,19 @@ class qcl_access_Service
    */
   public function method_logout()
   {
-    $accessBehavior = $this->getApplication()->getAccessBehavior();
+    $accessController = $this->getApplication()->getAccessController();
 
     /**
      * log out only if the current session id and the requesting session id match
      */
-    if ( $this->getSessionId() != $this->getServer()->getServerData("sessionId") )
+    if ( $this->getSessionId() != qcl_server_Request::getInstance()->getServerData("sessionId") )
     {
-      $this->log("Session that requested logout already terminated, no need to log out.","access");
+      $this->log("Session that requested logout already terminated, no need to log out.",QCL_LOG_ACCESS);
     }
     else
     {
-      $accessBehavior->logout();
-      $accessBehavior->grantAnonymousAccess();
+      $accessController->logout();
+      $accessController->grantAnonymousAccess();
     }
 
     /*
@@ -144,7 +148,7 @@ class qcl_access_Service
    */
   public function method_terminate()
   {
-    $this->getApplication()->getAccessBehavior()->terminate();
+    $this->getApplication()->getAccessController()->terminate();
     return null;
   }
 }

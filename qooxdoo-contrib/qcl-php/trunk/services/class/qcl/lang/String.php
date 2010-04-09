@@ -49,10 +49,10 @@ class String
   /**
    * Constructor
    */
-  function String( $str = null, $size = null )
+  function __construct( $str = null, $size = null )
   {
     $this->_size = $size;
-    $this->set( (string)$str );
+    $this->set( (string) $str );
   }
 
 
@@ -94,11 +94,12 @@ class String
    * Concatenates the specified string to the end of this string.
    *
    * @param string String that will be concatenated.
-   * @return void
+   * @return the modified String object
    */
   function concat( $str )
   {
     $this->_value .= $str;
+    return $this;
   }
 
 
@@ -131,7 +132,7 @@ class String
    */
   function contains( $charSequence )
   {
-    return strstr( $this->_value, $charSequence );
+    return strstr( $this->_value, $charSequence ) ? true : false;
   }
 
   /**
@@ -140,10 +141,11 @@ class String
    */
   function copyValueOf( $data )
   {
-    if ( is_a($data, 'String') )
+    if ( is_a( $data, 'String' ) )
     {
       $this->_copyValueOfString( $data );
     }
+    return $this;
   }
 
   /**
@@ -183,6 +185,10 @@ class String
     return $this->lenght();
   }
 
+  /**
+   * Returns the string value of the Object
+   * @return string
+   */
   function get()
   {
     return $this->_value;
@@ -232,71 +238,68 @@ class String
    * string value to the substring made by the beginning to size position
    *
    * @param string Value that will be passed to the string.
+   * @return String
    */
   function set( $value )
   {
     $this->_value = ( (int)$this->_size > 0 )
     ? substr( $value, 0, $this->_size )
     : $value;
+    return $this;
   }
 
   /**
-   * Removes white spaces form beginnig and end of string.
+   * Returns a new string object with white spaces form beginnig and end of string
+   * removed
+   * @return String
    */
   function trim()
   {
-    $this->_value = trim( $this->_value );
-  }
-  /**
-   * Changes the string case to uppercase if no position is specified.
-   * If a position was specified, changes that position case to upper.
-   */
-  function toUppercase( $charpos = null )
-  {
-    if ( $charpos === null || !is_int($charpos) ) {
-      $this->_value = strtoupper( $this->_value );
-    } else {
-      $this->putCharAt( strtoupper($this->getCharAt( $charpos )),
-      $charpos );
-    }
+    return new String( trim( $this->_value ) );
   }
 
   /**
-   * Changes the string case to lowercase if no position is specified.
-   * If a position was specified, changes that position case to lower.
+   * Changes the string case to uppercase
+   * @return String A new String object with the modified content
+   */
+  function toUppercase()
+  {
+    return new String( strtoupper( $this->_value ) );
+  }
+
+  /**
+   * Changes the string case to lowercase.
+   * @return String A new String object with the modified content
    */
   function toLowercase( $charpos = null )
   {
-    if ( $charpos === null || !is_int($charpos) ) {
-      $this->_value = strtolower( $this->_value );
-    } else {
-      $this->putCharAt( strtolower($this->getCharAt( $charpos )),
-      $charpos );
-    }
+    return new String( strtoupper( $this->_value ) );
   }
 
   /**
    * Returns a part of the string
    * @param int $first Index of first character
    * @param int[optional, default null] $count Number of characters to fetch, all if null
+   * @return String A new String object with the modified content
    */
   function substr ($first,$count=null)
   {
-    if ( ! is_null($count) )
+    if ( ! is_null( $count ) )
     {
-      return substr($this->_value,$first,$count);
+      return new String( substr($this->_value,$first,$count) );
     }
-    return substr($this->_value,$first);
+    return new String( substr($this->_value,$first) );
   }
 
   /**
    * Returns a part of the string
    * @param int $first Index of first character to fetch
    * @param int $last Index of last character to fetch
+   * @return String A new String object with the modified content
    */
   function substring($first,$last)
   {
-    return $this->substr($first,$last-$first);
+    return new String( $this->substr($first,$last-$first) );
   }
 
   /**
@@ -320,7 +323,7 @@ class String
   /**
    * Returns an array of parts of the string split at the given seperator instances
    * @param string $separator A regular expression
-   * @return array
+   * @return array Array of strings
    */
    function split($separator)
    {
@@ -331,10 +334,11 @@ class String
    /**
     * Returns a string that is the result of a regular
     * expression replace operation
+    * @return String A new String object with the modified content
     */
     function replace($search,$replace)
     {
-      return preg_replace($search,$replace,$this->_value);
+      return new String( preg_replace($search,$replace,$this->_value) );
     }
 
     /**

@@ -61,18 +61,10 @@ class qcl_data_model_PersistentModel
   //-------------------------------------------------------------
 
   /**
-   * Constructor, calls the init() method
-   */
-  function __construct()
-  {
-    parent::__construct();
-  }
-
-  /**
    * Model initialization. If you define an overriding method, make sure
    * to call the parent method, otherwise the properties will not be initialized.
    */
-  protected function init()
+  public function init()
   {
     if ( $this->isNew() )
     {

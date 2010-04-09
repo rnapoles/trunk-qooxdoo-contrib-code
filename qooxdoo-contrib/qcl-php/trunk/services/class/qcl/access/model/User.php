@@ -15,7 +15,9 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/access/model/Common.php";
+
+qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+
 
 /**
  * class providing data on users
@@ -23,16 +25,76 @@ require_once "qcl/access/model/Common.php";
  *
  * Class cannot be used directly, you need to subclass it
  * in your application service class folder
- * @todo separate user model class and active user class
  */
-class qcl_access_model_User extends qcl_access_model_Common
+class qcl_access_model_User
+  extends qcl_data_model_db_NamedActiveRecord
 {
+  /**
+   * The table storing model data
+   */
+  protected $tableName = "data_User";
 
   /**
-   * The path to the schema file
-   * @var string
+   * Properties
    */
-   public $schemaXmlPath  = "qcl/access/model/User.model.xml";
+  private $properties = array(
+    'name'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(100)"
+    ),
+    'password'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(32)"
+    ),
+    'email'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(255)"
+    ),
+    'anonymous'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1)"
+    ),
+    'active'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1)",
+      'nullable'  => false,
+      'init'      => true
+    ),
+    'lastAction'  => array(
+      'check'     => "qcl_data_db_Timestamp",
+      'sqltype'   => "timestamp",
+      'export'    => false
+    )
+  );
+
+  /**
+   * The foreign key of this model
+   */
+  protected $foreignKey = "UserId";
+
+  /**
+   * Relations
+   */
+  private $relations = array(
+    'User_Role' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_Role" )
+    ),
+    'User_UserConfig' => array(
+      'type'        => QCL_RELATIONS_HAS_MANY,
+      'target'      => array(
+        'class'       => "qcl_config_UserConfigModel",
+        'dependent'   => true
+      )
+    ),
+    'User_Session'  => array(
+      'type'    => QCL_RELATIONS_HAS_MANY,
+      'target'  => array(
+        'class'     => "qcl_access_model_Session",
+        'dependent' => "true"
+      )
+    )
+  );
 
   /**
    * names that cannot be used as namedId
@@ -40,11 +102,21 @@ class qcl_access_model_User extends qcl_access_model_Common
   public $reservedNames = array("default","admin","global");
 
   /**
+   * Constructor
+   * @return unknown_type
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
+  }
+
+  /**
    * Returns singleton instance.
-   * @static
    * @return qcl_access_model_User
    */
-  static function getInstance()
+  static public function getInstance()
   {
     return qcl_getInstance(__CLASS__);
   }
@@ -53,18 +125,18 @@ class qcl_access_model_User extends qcl_access_model_Common
    * Getter for permission model instance
    * @return qcl_access_model_Permission
    */
-  public function getPermissionModel()
+  protected function getPermissionModel()
   {
-    return qcl_access_model_Permission::getInstance();
+    return $this->getRoleModel()->getRelationBehavior()->getTargetModel("Permission_Role");
   }
 
   /**
    * Getter for role model instance
    * @return qcl_access_model_Role
    */
-  public function getRoleModel()
+  protected function getRoleModel()
   {
-    return qcl_access_model_Role::getInstance();
+    return $this->getRelationBehavior()->getTargetModel("User_Role");
   }
 
   /**
@@ -75,7 +147,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   public function username()
   {
-    return $this->getNamedId();
+    return $this->namedId();
   }
 
   /**
@@ -85,12 +157,7 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   public function isAnonymous()
   {
-    return $this->get("anonymous")==true;
-  }
-
-  public function isAdmin()
-  {
-    return ( $this->hasRole("qcl.roles.Administrator") );
+    return $this->getAnonymous();
   }
 
   /**
@@ -107,26 +174,29 @@ class qcl_access_model_User extends qcl_access_model_Common
     /*
      * role model
      */
-    $roleModel = qcl_access_model_Role::getInstance();
-    $roleModel->load(1); // the anonymous role is ALWAYS the first role defined
-    if ( $roleModel->foundNothing() )
+    $roleModel =$this->getRoleModel();
+    try
     {
-      $this->raiseError("You need to have at least one role, the first one being the anonymous role.");
+       $roleModel->load("anonymous");
+    }
+    catch( qcl_data_model_Exception $e)
+    {
+      $this->raiseError("No 'anonymous' role defined.");
     }
 
     $username = QCL_ACCESS_ANONYMOUS_USER_PREFIX . microtime_float()*100;
-    $id = $this->create($username);
-
+    $id = $this->create( $username, array(
+      'anonymous' => true,
+      'name'      => $this->tr("Anonymous User")
+    ) );
     if ( ! $id )
     {
-      $this->raiseError("Failed to create anonmous user");
+      $this->raiseError("Failed to create anonymous user");
     }
-
-    $this->linkWith($roleModel);
-    $this->set("anonymous",true);
-    $this->set("name",$this->tr("Anonymous User"));
-    $this->save();
-
+    /*
+     * link to anonymous role
+     */
+    $this->linkModel( $roleModel );
     return $id;
   }
 
@@ -137,54 +207,14 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   public function purgeInactiveGuestUsers()
   {
-    $u = QCL_ANONYMOUS_USER_PREFIX;
-    $l = strlen($u);
-    $this->findWhere("
-      SUBSTR(`namedId`,1,$l) = '$u' AND
-      ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
-        OR `lastAction` IS NULL )
-    ",null,"id");
-    $ids = $this->values();
-
-    if ( count( $ids ) )
-    {
-      $this->delete( $ids );
-    }
-  }
-
-  /**
-   * Deletes the active user, also purging linked data. Can be called statically
-   * if an argument is provided
-   * @param array[optional] $ids If not given, delete active record, otherwise delete given ids.
-   *
-   * @return void
-   */
-  function delete( $ids=null )
-  {
-    /*
-     * if argument is array, delete list of ids
-     */
-    if ( is_array( $ids ) )
-    {
-      foreach($ids as $id )
-      {
-        $this->load($id);
-        $this->delete();
-      }
-      return;
-    }
-
-    /*
-     * delete config data
-     * @todo -> this should be automatically linked in the model schema
-     */
-    $configModel = $this->getApplication()->getConfigModel();
-    $configModel->deleteByUserId( $this->getId() );
-
-    /*
-     * call parent method to delete data
-     */
-    parent::delete();
+    $queryBehavior = $this->getQueryBehavior();
+    $lastActionCol = $queryBehavior->getAdapter()->formatColumnName( "lastAction");
+    $modifiedCol   = $queryBehavior->getAdapter()->formatColumnName( "modified");
+    $this->getQueryBehavior()->deleteWhere("
+      `anonymous` = 1 AND
+      ( TIME_TO_SEC( TIMEDIFF( NOW(), $lastActionCol ) ) > 3600
+        OR TIME_TO_SEC( TIMEDIFF( NOW(), $modifiedCol ) ) > 3600 )
+    ");
   }
 
   /**
@@ -195,41 +225,32 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   public function hasPermission( $requestedPermission )
   {
-    if ( ! $this->foundSomething() )
-    {
-      $this->raiseError("You can check permissions only on a initialized user. In most cases, this is the active user.");
-    }
-
-    /*
-     * models
-     */
-    $permModel = $this->getPermissionModel();
 
     /*
      * get all permissions of the user
      */
-    $permissions = $this->getPermissions();
+    $permissions = $this->permissions();
 
     /*
      * check if permission is granted
      */
     foreach( $permissions as $permission )
-		{
-		  if ( $permission == $requestedPermission )
-		  {
-		    return true;
-		  }
-		  elseif ( strstr($permission,"*") )
-		  {
-		    $pos = strpos($permission,"*");
-		    if ( substr($permission,0,$pos) == substr($requestedPermission,0,$pos) )
-		    {
-		      return true;
-		    }
-		  }
-		}
+    {
+      if ( $permission == $requestedPermission )
+      {
+        return true;
+      }
+      elseif ( strstr($permission,"*") )
+      {
+        $pos = strpos($permission,"*");
+        if ( substr($permission,0,$pos) == substr($requestedPermission,0,$pos) )
+        {
+          return true;
+        }
+      }
+    }
 
-		return false;
+    return false;
   }
 
   /**
@@ -238,45 +259,25 @@ class qcl_access_model_User extends qcl_access_model_Common
    * @return bool
    * @todo this can be optimized
    */
-   function hasRole($role)
-   {
-     $roleModel = $this->linkedRoleModel();
-     do
-     {
-       if ( $roleModel->getNamedId() == $role ) return true;
-     }
-     while( $roleModel->loadNext() );
-     return false;
-   }
-
-
-  /**
-   * Returns a preconfigured role model, holding only the records
-   * that are linked to the current user
-   * @param string|array $properties
-   * @return qcl_access_model_Role
-   */
-  function linkedRoleModel($properties="*")
+  function hasRole( $role )
   {
-    $roleModel  = $this->getRoleModel();
-    $roleModel->findByLinkedModel( $this, null, $properties );
-    return $roleModel;
+    return in_array( $role, $this->roles() );
   }
 
   /**
    * Returns list of role that belong to a user
-   * @param string $prop Property to retrieve, defaults to "namedId"
    * @return array Array of values
    */
-  function getRoles( $prop="namedId" )
+  function roles()
   {
-    $roleModel  = $this->linkedRoleModel($prop);
-    return $roleModel->values();
-  }
-
-  function getRoleIds()
-  {
-    return $this->getRoles("id");
+    $roleModel = $this->getRoleModel();
+    $roleModel->findLinkedModels( $this );
+    $roles = array();
+    while( $roleModel->loadNext() )
+    {
+      $roles[] = $roleModel->namedId();
+    }
+    return $roles;
   }
 
   /**
@@ -284,28 +285,21 @@ class qcl_access_model_User extends qcl_access_model_Common
    * @param string $prop Property to retrieve, defaults to "id"
    * @return array Array of values
    */
-  function getPermissions( $prop="namedId" )
+  function permissions()
   {
+    $roleModel = $this->getRoleModel();
+    $roles = $this->roles();
     $permissions =  array();
-    $roleModel = $this->linkedRoleModel();
-    if ( $roleModel->foundSomething() )
+    foreach( $roles as $roleName )
     {
-      do
-      {
-        $permissions = array_unique( array_merge(
-          $permissions, $roleModel->getPermissions( $prop )
-        ) );
-      }
-      while( $roleModel->loadNext() );
+      $roleModel->load( $roleName );
+      $permissions = array_merge(
+        $permissions,
+        $roleModel->permissions()
+      );
     }
     return $permissions;
   }
-
-  function getPermissionIds()
-  {
-    return $this->getPermissions("id");
-  }
-
 
   /**
    * Resets the timestamp of the last action  for the current user
@@ -313,28 +307,20 @@ class qcl_access_model_User extends qcl_access_model_Common
    */
   function resetLastAction()
   {
-    $this->setProperty( "lastAction", $this->getTimestamp() );
+    $this->set( "lastAction", new qcl_data_db_Timestamp("now") );
     $this->save();
   }
 
   /**
    * Returns number of seconds since resetLastAction() has been called
    * for the current user
-   * for the current user or the specified user
    * @return int seconds
-   * @todo unhardcode sql
    */
   function getSecondsSinceLastAction()
   {
-    $userId = $this->getId();
-    $table = $this->table();
-    $lastActionCol = $this->getColumnName("lastAction");
-    $seconds = $this->db->getValue("
-      SELECT TIME_TO_SEC( TIMEDIFF( NOW(), `$lastActionCol` ) )
-        FROM `$table`
-       WHERE `id` = $userId;
-    ");
-    return (int) $seconds;
+    $now  = new qcl_data_db_Timestamp();
+    $d = $now->diff( $this->get( "lastAction") );
+    return (int) ( $d->s + 60 * $d->i + 3600 * $d->h + 3600*12 * $d->d );
   }
 
 }

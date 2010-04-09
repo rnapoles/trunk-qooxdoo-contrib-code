@@ -233,11 +233,6 @@ class qcl_data_model_PropertyBehavior
     }
     if ( ! $this->has( $property) )
     {
-      //FIXME
-      $this->getModel()->debug( $this->_propertyMap() );
-      $this->getModel()->debug( $this->getModel()->backtrace() );
-      $this->getModel()->debug( $this->getModel()->getRelationBehavior()->_relationsMap(),__CLASS__,__LINE__);
-      $this->getModel()->debug( $this->getModel()->getRelationBehavior()->_replaceMap(),__CLASS__,__LINE__);
       if ( in_array( $property, self::$core_properties ) )
       {
          throw new qcl_core_PropertyBehaviorException( sprintf(
@@ -246,6 +241,8 @@ class qcl_data_model_PropertyBehavior
           $this->getModel()->className(), $property, $this->getModel()->className()
         ) );
       }
+      //$this->getModel()->debug( $this->_propertyMap() );
+      $this->getObject()->warn( $this->getObject()->backtrace() );
       throw new qcl_core_PropertyBehaviorException( sprintf(
         "Class '%s': model property '%s' is not defined.",#
         get_class( $this->getModel() ), $property
@@ -314,10 +311,11 @@ class qcl_data_model_PropertyBehavior
 
     if ( $fail )
     {
-      throw new qcl_core_PropertyBehaviorException(
-        "Invalid value type for property '$property' of class " .
-        get_class( $this->getModel() ) . ": $msg"
-       );
+      //$this->getModel()->raiseError(
+      throw new qcl_core_PropertyBehaviorException( sprintf(
+        "Invalid value type for property '%s' of class '%s': %s" .
+        $property, $this->getModel()->className(), $msg
+       ) );
     }
 
     /*

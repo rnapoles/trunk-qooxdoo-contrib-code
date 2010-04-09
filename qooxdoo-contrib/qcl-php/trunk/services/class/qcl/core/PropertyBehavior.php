@@ -136,7 +136,10 @@ class qcl_core_PropertyBehavior
       $this->getObject()->raiseError("Object is readonly.");
     }
 
-    if ( is_array( $property ) )
+    /*
+     * if first argument is array, iterate through array
+     */
+    if ( is_array( $property ) and $value === null )
     {
       foreach ( $property as $key => $value )
       {
@@ -144,9 +147,33 @@ class qcl_core_PropertyBehavior
       }
       return $this->getObject();
     }
-    else
+
+    /*
+     * if first argument is object, iterate through object properties
+     */
+    elseif ( is_object( $property ) and $value === null )
+    {
+      foreach( get_object_vars( $property )  as $key => $value )
+      {
+        $this->_set( $key, $value );
+      }
+      return $this->getObject();
+    }
+
+    /*
+     * normal case, arguments are property and value
+     */
+    elseif ( is_string( $property ) )
     {
       return $this->_set( $property, $value );
+    }
+
+    /*
+     * else, error
+     */
+    else
+    {
+      $this->getObject()->raiseError("Invalid arguments");
     }
   }
 

@@ -44,14 +44,6 @@ class qcl_data_model_db_PersistentModel
   //-------------------------------------------------------------
 
   /**
-   * The name of the table that this model stores its data in.
-   * If you don't provide a name here, the name of the class is
-   * used.
-   * @var string
-   */
-  protected $tableName;
-
-  /**
    * Whether this model is tied to a user, i.e., if it is
    * to be deleted when the user no longer exists
    */
@@ -67,19 +59,6 @@ class qcl_data_model_db_PersistentModel
   // getters and setters
   //-------------------------------------------------------------
 
-  /**
-   * Getter for table name. If no name is set, use class name
-   * as table name
-   * @return string
-   */
-  public function tableName()
-  {
-    if ( ! isset( $this->tableName ) )
-    {
-      $this->tableName = get_class( $this );
-    }
-    return $this->tableName;
-  }
 
   public function isBoundToUser()
   {
@@ -103,6 +82,5 @@ class qcl_data_model_db_PersistentModel
   {
     return qcl_data_model_db_PersistenceBehavior::getInstance();
   }
-
 }
 ?>

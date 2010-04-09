@@ -15,20 +15,24 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "services/server/JsonRpcServer.php"; // must be included before qcl_core_Object
-require_once "qcl/core/Object.php";
+
+require_once "qcl/bootstrap.php";
+require_once "services/server/JsonRpcServer.php";
+
+qcl_import("qcl_core_Object");
 
 /**
- * Static class for convenient and global access to actual server singleton object
+ * Static class for global access to actual server singleton object
  */
-class qcl_server_Server extends qcl_core_Object
+class qcl_server_Server
+  extends qcl_core_Object
 {
 
   /**
    * The actual server object
    * @var AbstractServer
    */
-  private $serverObject;
+  private $serverInstance;
 
   /**
    * Returns the singleton instance of this class
@@ -41,47 +45,70 @@ class qcl_server_Server extends qcl_core_Object
 
   /**
    * Static method to start the application
+   * @param array $servicePaths
+   * @param string|null $testData If provided, use the string data as the input
+   *  request for test purposes
    * @return void
    */
-  public static function run( $servicePaths )
+  public static function run( $servicePaths, $testData=null )
   {
     $_this = self::getInstance();
-    $_this->start( $servicePaths );
+    $_this->start( $servicePaths, $testData );
   }
 
   /**
    * Start a server that handles the request type (JSONRPC, POST, ...).
    * @param array $servicePaths An array of paths to the services used
    * by the server
+   * @param string|null $testData If provided, use the string data as the input
+   *  request for test purposes
    * @return void
    */
-  public function start( $servicePaths )
+  public function start( $servicePaths=array(), $testData = null )
   {
-
-    /**
-     * Check service classes
+    /*
+     * if this is a file upload, call upload method and exit
      */
-    if ( ! is_array( $servicePaths) )
+    if ( count( $_FILES ) )
     {
-      $this->raiseError("You must supply an array of paths to the service classes.");
+      qcl_import( "qcl_server_Upload" );
+      $serverObj = new qcl_server_Upload();
+    }
+
+    /*
+     * if it is a download request, call download method and exit
+     */
+    elseif ( $_REQUEST['download'] )
+    {
+      qcl_import( "qcl_server_Download" );
+      $serverObj = new qcl_server_Download();
     }
 
     /*
      * if POST request, use post request server extension
      */
-    if ( isset( $_REQUEST['service'] )  )
+    elseif ( isset( $_REQUEST['service'] )  )
     {
       require_once "services/server/PostRpcServer.php";
-      $serverObj = PostRpcServer::getInstance();
+      $serverObj = new PostRpcServer();
     }
 
     /*
-     * use qcl jsonrpc server extension
+     * if test data is provided, use the test server
+     */
+    elseif ( is_string( $testData ) )
+    {
+      qcl_import( "qcl_server_JsonRpcTestServer" );
+      $serverObj = new qcl_server_JsonRpcTestServer( $testData );
+    }
+
+    /*
+     * in all cases, use qcl jsonrpc server extension
      */
     else
     {
-      require "qcl/server/JsonRpc.php";
-      $serverObj = qcl_server_JsonRpc::getInstance();
+      qcl_import( "qcl_server_JsonRpcServer" );
+      $serverObj = new qcl_server_JsonRpcServer();
     }
 
     /*
@@ -92,37 +119,18 @@ class qcl_server_Server extends qcl_core_Object
     /*
      * save and start server
      */
-    $this->serverObject = $serverObj;
+    $this->serverInstance = $serverObj;
     $serverObj->start();
   }
 
 
   /**
    * Returns the current server object
-   * @return qcl_server_JsonRpc
+   * @return qcl_server_JsonRpcServer
    */
-  public function getServerObject()
+  public function getServerInstance()
   {
-    return $this->serverObject;
-  }
-
-  /**
-   * Returns the current controller object
-   * @return qcl_data_controller_Controller
-   */
-  public function getController()
-  {
-    return $this->getServerObject()->getController();
-  }
-
-  /**
-   * Returns the current server data sent by the client
-   * @param string $key If given, return only the value of the given key
-   * @return string|array
-   */
-  public function getServerData( $key=null )
-  {
-    return $this->getServerObject()->getServerData( $key );
+    return $this->serverInstance;
   }
 
   /**
@@ -133,41 +141,6 @@ class qcl_server_Server extends qcl_core_Object
   public function getUrl()
   {
     return "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
-  }
-
-  /**
-   * Aborts the request with an error message
-   * @param $message
-   * @return void
-   */
-  public function abort( $message )
-  {
-    $serverObj = $this->getServerObject();
-    $serverObj->getErrorBehavior()->setError( null, $message );
-    $serverObj->getErrorBehavior()->sendAndExit();
-    exit;
-  }
-
-  /**
-   * Aborts the request and forces a data response
-   * @param $data
-   * @return void
-   */
-  public function forceResponse( $data )
-  {
-    $json = new JsonWrapper();
-    echo $json->encode( $data );
-    exit;
-  }
-
-  /**
-   * Returns the ip of the requesting client. Can be called
-   * statically.
-   * @return string
-   */
-  public function getRemoteIp()
-  {
-    return $_SERVER['REMOTE_ADDR'];
   }
 
 }

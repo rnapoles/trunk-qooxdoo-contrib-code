@@ -89,17 +89,18 @@ class qcl_data_model_db_PersistenceBehavior
   /**
    * Relations
    * @var array
+   * @todo implement plug-in relations
    */
-  private $relations = array(
-    'session' => array(
-      'type'    => "n:1",
-      'target'  => array( 'model' => "qcl_access_model_Session" )
-    ),
-    'user'   => array(
-      'type'    => "n:1",
-      'target'  => array( 'model' => "qcl_access_model_User" )
-    )
-  );
+//  private $relations = array(
+//    'session' => array(
+//      'type'    => "n:1",
+//      'target'  => array( 'model' => "qcl_access_model_Session" )
+//    ),
+//    'user'   => array(
+//      'type'    => "n:1",
+//      'target'  => array( 'model' => "qcl_access_model_User" )
+//    )
+//  );
 
   //-------------------------------------------------------------
   // Constructor
@@ -137,19 +138,31 @@ class qcl_data_model_db_PersistenceBehavior
     $sessionId = $this->getSessionIdValue( $object );
     $userId    = $this->getUserIdValue( $object );
 
-    $this->loadWhere( array(
-      "class"     => get_class($object),
-      "objectId"  => $id,
-      "sessionId" => $sessionId,
-      "userId"    => $userId
-    ) );
-    if ( $this->foundSomething() )
+    try
     {
-      qcl_log_Logger::getInstance()->log( $object->className() . ": restoring properties from id '$id'",QCL_LOG_PERSISTENCE);
+      /*
+       * load model record
+       */
+      $this->loadWhere( array(
+        "class"     => get_class($object),
+        "objectId"  => $id,
+        "sessionId" => $sessionId,
+        "userId"    => $userId
+      ) );
+
+      qcl_log_Logger::getInstance()->log( sprintf(
+        "%s: restoring properties from id #%s",
+        $object->className(), $id
+      ), QCL_LOG_PERSISTENCE );
+
+      /*
+       * restore properties
+       */
       $object->unserialize( $this->get("data") );
+
       return true;
     }
-    else
+    catch( qcl_data_model_RecordNotFoundException $e)
     {
       qcl_log_Logger::getInstance()->log( $object->className() . ": no cached data with id '$id'",QCL_LOG_PERSISTENCE);
       return false;
@@ -157,33 +170,35 @@ class qcl_data_model_db_PersistenceBehavior
   }
 
   /**
-   * Saves the object's public property to the session
+   * Saves the object's public property to the session.
    * @param qcl_core_Object $object Persisted object
    * @param string $id The id of the saved object
    */
   public function persist( $object, $id )
   {
+
     $sessionId = $this->getSessionIdValue( $object );
     $userId    = $this->getUserIdValue( $object );
 
     /*
      * see if record exists
      */
-    $this->loadWhere( array(
+    $this->findWhere( array(
       "class"     => get_class($object),
       "objectId"  => $id,
       "sessionId" => $sessionId,
       "userId"    => $userId
     ) );
 
-    /*
-     * if yes, update data
-     */
-    if ( $this->foundSomething() )
+    if( $this->foundSomething() )
     {
+
+      $this->loadNext();
       $this->setData( $object->serialize() );
       $this->save();
-      $object->log( $object->className() . ": updated in cache with id '$id'", QCL_LOG_PERSISTENCE);
+      $this->log( sprintf(
+        "%s: updated in cache with id '%s'", $object->className(), $id
+      ), QCL_LOG_APPLICATION );
     }
 
     /*
@@ -191,14 +206,16 @@ class qcl_data_model_db_PersistenceBehavior
      */
     else
     {
-      $this->create(array(
+      $this->create( array(
         "class"     => get_class( $object ),
         "objectId"  => $id,
         "sessionId" => $sessionId,
         "userId"    => $userId,
         "data"      => $object->serialize()
       ));
-      $object->log( $object->className() . ": saved to cache with id '$id'", QCL_LOG_PERSISTENCE);
+     $this->log( sprintf(
+        "%s: saved to cache with id '%s'", $object->className(), $id
+      ), QCL_LOG_APPLICATION );
     }
 
   }
@@ -223,7 +240,8 @@ class qcl_data_model_db_PersistenceBehavior
    */
   protected function getUserIdValue( $object )
   {
-    $user = $this->getApplication()->getAccessBehavior()->getActiveUser();
+    $user = $this->getApplication()->getAccessController()->getActiveUser();
+    if ( ! $user ) return null;
     $userId = $user->id();
     return $object->isBoundToUser() ? $userId : null;
   }
@@ -235,7 +253,7 @@ class qcl_data_model_db_PersistenceBehavior
    */
   protected function getSessionIdValue( $object )
   {
-    $sessionId = $this->getApplication()->getController()->getSessionId();
+    $sessionId = $this->getApplication()->getAccessController()->getSessionId();
     return $object->isBoundToSession() ? $sessionId : null;
   }
 

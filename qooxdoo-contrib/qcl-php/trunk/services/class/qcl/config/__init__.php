@@ -18,7 +18,8 @@
 
 ************************************************************************ */
 
-qcl_import( "qcl_access_model_User2" );
+qcl_import( "qcl_access_model_User" );
+qcl_import( "qcl_config_UserConfigModel" );
 
 /*
  * exceptions

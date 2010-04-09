@@ -16,33 +16,8 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/access/__init__.php";
-require_once "qcl/data/controller/Controller.php";
-require_once "qcl/util/registry/Session.php";
-
-/*
- * the prefix for the anonymous user
- */
-if ( ! defined('QCL_ACCESS_ANONYMOUS_USER_PREFIX') )
-{
-  define('QCL_ACCESS_ANONYMOUS_USER_PREFIX', "anonymous_");
-}
-
-/*
- * the default timeout
- */
-if ( ! defined('QCL_ACCESS_TIMEOUT') )
-{
-  define('QCL_ACCESS_TIMEOUT', 30*60 );
-}
-
-/*
- * Exceptions thrown in this class and subclasses
- */
-class qcl_access_AccessDeniedException extends JsonRpcException {}
-class qcl_access_AuthenticationException extends qcl_access_AccessDeniedException {}
-class qcl_access_InvalidSessionException extends qcl_access_AccessDeniedException {}
-class qcl_access_TimeoutException extends qcl_access_InvalidSessionException {}
+qcl_import( "qcl_data_controller_Controller" );
+qcl_import( "qcl_util_registry_Session" );
 
 /**
  * Accessibility behavior class thathandles authentication, access control
@@ -50,20 +25,23 @@ class qcl_access_TimeoutException extends qcl_access_InvalidSessionException {}
  */
 class qcl_access_Controller
   extends qcl_data_controller_Controller
+  implements IAccessibilityBehavior
 {
 
   /**
    * The currently active user, determined from request or
    * from session variable. Is a user model instance
-   * @access private
    * @var qcl_access_model_User
    */
-  private $_activeUser = null;
+  private $activeUser = null;
 
+  //-------------------------------------------------------------
+  // models
+  //-------------------------------------------------------------
 
   /**
    * Gets the user data model
-   * @param int[optional] $id Load record if given
+   * @param string|int $id Load record if given
    * @return qcl_access_model_User
    */
   public function getUserModel( $id=null )
@@ -75,7 +53,7 @@ class qcl_access_Controller
 
   /**
    * Gets the permission data model
-   * @param int[optional] $id Load record if given
+   * @param string|int $id Load record if given
    * @return qcl_access_model_Permission
    */
   public function getPermissionModel( $id = null)
@@ -87,7 +65,7 @@ class qcl_access_Controller
 
   /**
    * Gets the role data model
-   * @param int[optional] $id Load record if given
+   * @param string|int $id Load record if given
    * @return qcl_access_model_Role
    */
   public function getRoleModel( $id=null )
@@ -95,6 +73,57 @@ class qcl_access_Controller
     $roleModel = qcl_access_model_Role::getInstance();
     if ( $id ) $roleModel->load( $id );
     return $roleModel;
+  }
+
+  //-------------------------------------------------------------
+  // main API
+  //-------------------------------------------------------------
+
+  /**
+   * Whether guest access to the service classes is allowed
+   * @return boolean
+   * FIXME
+   */
+  public function isAnonymousAccessAllowed()
+  {
+    return $this->getApplication()->getAllowAnonymousAccess();
+  }
+
+  /**
+   * Check the accessibility of service object and service
+   * method. Aborts request when access is denied, unless when the method name is
+   * "authenticate"
+   * @param qcl_core_Object $serviceObject
+   * @param string $method
+   * @return void
+   */
+  public function checkAccessibility( $serviceObject, $method )
+  {
+    if ( ! $serviceObject instanceof qcl_server_Service )
+    {
+      $this->raiseError("Service object must be subclass of qcl_server_Service");
+    }
+
+    $this->log( sprintf(
+      "Checking access to service object '%s'", $serviceObject->className()
+    ), QCL_LOG_ACCESS );
+
+    try
+    {
+      $this->createUserSession();
+    }
+    catch( qcl_access_AccessDeniedException $e)
+    {
+      if ( $this->isAnonymousAccessAllowed() or $method=="authenticate" )
+      {
+        $this->log("No valid session, granting anonymous access", QCL_LOG_ACCESS );
+        $this->grantAnonymousAccess();
+      }
+      else
+      {
+        throw new $e;
+      }
+    }
   }
 
   /**
@@ -168,14 +197,13 @@ class qcl_access_Controller
    */
   public function getSessionIdFromServerData()
   {
-    $server = $this->getApplication()->getServer();
-    $sessionId = $server->getServerData("sessionId");
-    return $sessionId;
+    return qcl_server_Request::getInstance()->getServerData("sessionId");
   }
 
   /**
    * Authenticate a user with a password. Returns an integer with
-   * the user id if successful and false if unsuccessful. Throws errors
+   * the user id if successful. Throws qcl_access_AuthenticationException
+   * if unsuccessful
    *
    * @param string $username or null
    * @param string $password (MD5-encoded) password
@@ -192,8 +220,11 @@ class qcl_access_Controller
     /*
      * try to authenticate
      */
-    $userModel->findByNamedId( $username );
-    if ( $userModel->foundNothing() )
+    try
+    {
+      $userModel->load( $username );
+    }
+    catch( qcl_data_model_RecordNotFoundException $e)
     {
       throw new qcl_access_AuthenticationException("Invalid user name.");
     }
@@ -233,9 +264,6 @@ class qcl_access_Controller
    */
   public function forceLogout()
   {
-    /*
-     * send command to client to force a logout
-     */
     $this->fireServerEvent("logout");
     $this->logout();
   }
@@ -255,7 +283,7 @@ class qcl_access_Controller
 
     if ( ! $activeUser )
     {
-      $this->log("No need to log out, nobody is logged in","access");
+      $this->log("No need to log out, nobody is logged in.", QCL_LOG_ACCESS);
       return false;
     }
 
@@ -263,7 +291,7 @@ class qcl_access_Controller
     $userId    = $activeUser->getId();
     $sessionId = $this->getSessionId();
 
-    $this->log("Logging out: user '$username' user #$userId, session #$sessionId.","access" );
+    $this->log("Logging out: user '$username' user #$userId, session #$sessionId.",QCL_LOG_ACCESS );
 
     /*
      * delete user data if anonymous guest
@@ -276,13 +304,13 @@ class qcl_access_Controller
     /*
      * unset active user
      */
-    $this->log("Deleting active user ...","access" );
+    $this->log("Deleting active user ...",QCL_LOG_ACCESS );
     $this->setActiveUser(null);
 
     /*
      * destroy php session
      */
-    $this->log("Destroying session ...","access" );
+    $this->log("Destroying session ...",QCL_LOG_ACCESS );
     $this->destroySession( $sessionId );
 
     return true;
@@ -304,7 +332,7 @@ class qcl_access_Controller
     /*
      * create new session id and user session for this user
      */
-    $this->log ("Granting anonymous access user #$userId.","access");
+    $this->log ("Granting anonymous access user #$userId.",QCL_LOG_ACCESS);
     $this->createSessionId();
     $this->createUserSessionByUserId( $userId );
 
@@ -336,7 +364,7 @@ class qcl_access_Controller
       }
       else
       {
-        $this->log("User #$userId already logged in. Continuing session #$sessionId.","access");
+        $this->log("User #$userId already logged in. Continuing session #$sessionId.",QCL_LOG_ACCESS);
         return;
       }
     }
@@ -358,7 +386,7 @@ class qcl_access_Controller
     /*
      * log message
      */
-    $this->log( "New user session: user #$userId, session #$sessionId","access");
+    $this->log( "New user session: user #$userId, session #$sessionId",QCL_LOG_ACCESS);
   }
 
   /**
@@ -375,7 +403,7 @@ class qcl_access_Controller
     /*
      * timeout
      */
-    if ( $configModel->hasKey("qcl.session.timeout") )
+    if ( $configModel->keyExists("qcl.session.timeout") )
     {
       $timeout = $configModel->getKey("qcl.session.timeout");
     }
@@ -384,7 +412,7 @@ class qcl_access_Controller
       $timeout = QCL_ACCESS_TIMEOUT;
     }
     $seconds = $userModel->getSecondsSinceLastAction();
-    $this->log("User #$userId, $seconds seconds since last action, timeout is $timeout seconds.","access");
+    $this->log("User #$userId, $seconds seconds since last action, timeout is $timeout seconds.",QCL_LOG_ACCESS);
 
     /*
      * logout if timeout has occurred
@@ -428,7 +456,7 @@ class qcl_access_Controller
       {
         $this->destroySession( $old );
       }
-      $this->log("Starting new session id #$sessionId","access");
+      $this->log("Starting new session id #$sessionId",QCL_LOG_ACCESS);
       session_id( $sessionId );
       session_start();
     }
@@ -451,7 +479,7 @@ class qcl_access_Controller
    */
   public function destroySession( $sessionId )
   {
-    $this->log("Destroying old session #$sessionId","access");
+    $this->log("Destroying old session #$sessionId",QCL_LOG_ACCESS);
     session_destroy();
   }
 
@@ -459,13 +487,13 @@ class qcl_access_Controller
    * Creates a new session id and sets it.
    * @return string The session id
    */
-  public function createSessionId( )
+  public function createSessionId()
   {
     /*
      * create random session id
      */
     $sessionId = md5( microtime() );
-    $this->log("Creating new session id ...","access");
+    $this->log("Creating new session id ...",QCL_LOG_ACCESS);
     $this->setSessionId( $sessionId );
     return $sessionId;
   }
@@ -487,7 +515,7 @@ class qcl_access_Controller
    */
   public function getActiveUser()
   {
-    return $this->_activeUser;
+    return $this->activeUser;
   }
 
   /**
@@ -499,7 +527,7 @@ class qcl_access_Controller
   {
     if ( $userObject === null or $userObject instanceof qcl_access_model_User )
     {
-      $this->_activeUser = $userObject;
+      $this->activeUser = $userObject;
     }
     else
     {
@@ -526,6 +554,22 @@ class qcl_access_Controller
   public function fireServerDataEvent ( $type, $data )
   {
     $this->getEventDispatcher()->fireServerDataEvent( $this, $type, $data );
+  }
+
+  /**
+   * Unused, simply here for implementing IAccessibilityBehavior.
+   */
+  function getErrorMessage()
+  {
+    throw new Exception( __METHOD__ . " is not implemented");
+  }
+
+  /**
+   * Unused, simply here for implementing IAccessibilityBehavior.
+   */
+  function getErrorNumber()
+  {
+    throw new Exception( __METHOD__ . " is not implemented");
   }
 }
 ?>
