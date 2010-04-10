@@ -531,6 +531,7 @@ class qcl_config_ConfigModel
      */
     if ( $userConfigModel->foundSomething() )
     {
+      $userConfigModel->loadNext();
       $userConfigModel->setValue( $storeValue );
       $userConfigModel->save();
     }
@@ -618,7 +619,8 @@ class qcl_config_ConfigModel
 	 * @param string $mask return only a subset of entries that start with $mask
    * @param int $userId Optional id of the user to whom the custom value
    *   belongs or false if current user
-	 * @return array Array of maps with the keys 'key', 'type' and 'value'
+	 * @return array Map with the keys 'keys', 'types' and 'values', each
+	 * having an index array with all the values.
 	 */
 	public function getAccessibleKeys( $mask=null, $userId = false  )
 	{
@@ -632,18 +634,22 @@ class qcl_config_ConfigModel
      * iterate through all keys and return either the
      * user custom value or the default value
      */
-    $keys = $this->keys();
-    $result = array();
-    foreach ( $keys as $key )
+    $keys   = array();
+    $typs   = array();
+    $values = array();
+
+    foreach ( $this->keys() as $key )
     {
-      $value = $this->getKey( $key, $userId );
-      $result[] = array(
-        'key'   => $key,
-        'type'  => $this->getType(),
-        'value' => $value
-      );
+      $keys[]   = $key;
+      $values[] = $this->getKey( $key, $userId );
+      $types[]  = $this->getType();
     }
-		return $result;
+
+		return array(
+		  'keys'    => $keys,
+		  'values'  => $values,
+		  'types'   => $types
+		);
 	}
 }
 ?>

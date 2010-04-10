@@ -28,13 +28,19 @@ class qcl_config_LoadResult
     * The config keys
     * @var array
     */
-   var $keys;
+   public $keys;
 
    /**
     * The config values
     * @var array
     */
-   var $values;
+   public $values;
+
+   /**
+    * The config types
+    * @var array
+    */
+   public $types;
 
 }
 ?>
