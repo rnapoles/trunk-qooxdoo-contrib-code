@@ -153,7 +153,14 @@ class AbstractError extends Exception
     /*
      * call parent constructor
      */
-    parent::__construct( $message, $code, $previous );
+    if (version_compare(PHP_VERSION, '5.3.0', '<'))
+    {
+      parent::__construct( $message, $code );
+    }
+    else
+    {
+      parent::__construct( $message, $code, $previous );
+    }
   }
 
   /**
