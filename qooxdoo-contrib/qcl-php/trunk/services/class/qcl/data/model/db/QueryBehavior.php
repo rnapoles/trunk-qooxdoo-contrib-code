@@ -25,7 +25,7 @@ qcl_import( "qcl_data_db_Table" );
  * @todo Outsource relations management into a separate RelationsBehavior
  */
 class qcl_data_model_db_QueryBehavior
-  implements qcl_data_model_IQueryBehavior
+  //implements qcl_data_model_IQueryBehavior
 {
 
   //-------------------------------------------------------------

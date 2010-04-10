@@ -21,7 +21,7 @@
  * @author bibliograph
  *
  */
-class class_SimpleAuthController
+class class_simple_AuthController
 {
 
   /**

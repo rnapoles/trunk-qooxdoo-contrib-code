@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-class class_SimpleConfigController
+class class_simple_ConfigController
 {
 
   var $config = array(
@@ -60,7 +60,5 @@ class class_SimpleConfigController
       'result'  => true
     );
   }
-
-
 }
 ?>

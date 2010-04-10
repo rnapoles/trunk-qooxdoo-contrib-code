@@ -193,8 +193,8 @@ qx.Class.define("access.Main",
       {
         case "rpcphp":
           this.getRpcManager().setServerUrl("../services/server_rpcphp.php");
-          this.getAccessManager().setService("access.SimpleAuthController");
-          this.getConfigManager().setService("access.SimpleConfigController");
+          this.getAccessManager().setService("simple.AuthController");
+          this.getConfigManager().setService("simple.ConfigController");
           if ( old )
           {
             dialog.alert("Using RpcPhp server without database backend. Data is saved in PHP session.");  
