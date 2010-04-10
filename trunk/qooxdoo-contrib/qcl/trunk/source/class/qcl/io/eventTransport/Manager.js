@@ -34,7 +34,7 @@ qx.Class.define("qcl.io.eventTransport.Manager",
   {
     eventTransportImpl :
     {
-      check : "qx.core.Object" // @todo Create interface
+      check : "qx.core.Object", // @todo Create interface
       nullable : false
     }
   },
