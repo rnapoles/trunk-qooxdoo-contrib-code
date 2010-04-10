@@ -29,7 +29,7 @@
 qx.Class.define("access.Main",
 {
   extend : qx.application.Standalone,
-  include : [ qcl.application.MApplication ],
+  include : [ qcl.application.MAppManagerProvider ],
 
   properties :
   {
@@ -56,6 +56,11 @@ qx.Class.define("access.Main",
     main : function()
     {
       this.base(arguments);
+      
+      /**
+       * initialize the managers
+       */
+      this.initializeManagers();
 
       /*
        * logging
@@ -69,15 +74,15 @@ qx.Class.define("access.Main",
       this.info("Starting Application...");
       
       /*
-       * Setup authentication and config without
+       * Setup authentication and configKey without
        * setting the service methods
        */
       this.getAccessManager().init();
       this.getConfigManager().init();
 
       /*
-       * setup server state, this will configure
-       * the service methods and start auth/config
+       * setup server state, this will configKeyure
+       * the service methods and start auth/configKey
        */
       if ( ! this.getStateManager().getState("server") ) {
         this.setServer("rpcphp"); // this updates the state,too
@@ -124,7 +129,7 @@ qx.Class.define("access.Main",
           callback.call(context, true);
 
           /*
-           * load configuration data for this user
+           * load configKeyuration data for this user
            */
           app.getConfigManager().load();
         }
@@ -146,7 +151,7 @@ qx.Class.define("access.Main",
       this.getAccessManager().logout(function()
       {
         /*
-         * reload configuration data for anonymous
+         * reload configKeyuration data for anonymous
          */
         this.getConfigManager().load();
       },
@@ -207,7 +212,7 @@ qx.Class.define("access.Main",
       }
 
       /*
-       * (re-)authenticate and when done, load new config values
+       * (re-)authenticate and when done, load new configKey values
        */
       this.getAccessManager().connect( function() {
         this.getConfigManager().load();

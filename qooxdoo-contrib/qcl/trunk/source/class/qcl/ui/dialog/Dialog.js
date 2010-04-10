@@ -55,16 +55,16 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      * display of dialogs using messages which can come from the server.
      * @see #_onMessage
      */
-    allowServerControl : function( value )
+    allowServerMessages : function( value )
     {
       var messageName = "qcl.ui.dialog.Dialog.createDialog";
       if ( value )
       {
-        qx.event.message.Bus.getInstance().subscribe( messageName, this._onMessage,this);
+        qx.event.message.Bus.getInstance().subscribe( messageName, this._onServerDialog,this);
       }
       else
       {
-        qx.event.message.Bus.getInstance().unsubscribe( messageName, this._onMessage,this);
+        qx.event.message.Bus.getInstance().unsubscribe( messageName, this._onServerDialog,this);
       }
     },
     
@@ -80,7 +80,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      * }
      * </pre>
      */
-    _onMessage : function( message )
+    _onServerDialog : function( message )
     {
       var data = message.getData();
       if ( data.service )
@@ -99,14 +99,15 @@ qx.Class.define("qcl.ui.dialog.Dialog",
           /*
            * send request back to server
            */
-          qx.core.Init.getApplication().executeService( 
+          this.execute( 
               data.service, data.method, data.params 
           );
         }
       }
-      var widget = qcl.ui.dialog.Dialog.getInstanceByType(data.type);
+      var widget = dialog.Dialog.getInstanceByType(data.type);
       widget.set( data.properties );
       widget.show();
+    
     }
   }
 });

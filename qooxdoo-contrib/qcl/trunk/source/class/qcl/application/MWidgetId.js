@@ -21,7 +21,7 @@
 /**
  * A mixin for to qx.core.Object that provides central access to widgets by
  * a global id stored at the application instance. Interacts with 
- * qcl.application.MGetApplication and qcl.application.MApplication
+ * qcl.application.MGetApplication and qcl.application.MAppManagerProvider
  */
 qx.Mixin.define("qcl.application.MWidgetId",
 {

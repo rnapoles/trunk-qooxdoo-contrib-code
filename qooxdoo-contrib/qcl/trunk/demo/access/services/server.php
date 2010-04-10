@@ -17,9 +17,6 @@
    *  Christian Boulanger (cboulanger)
 
 ************************************************************************ */
-/**
- * Usually, there is no need to change anything in this file
- */
 
 /*
  * Configure constants & runtime settings

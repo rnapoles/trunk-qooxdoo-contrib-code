@@ -20,7 +20,7 @@
 qx.Class.define("databinding.Application",
 {
   extend : qx.application.Standalone,
-  include : [ qcl.application.MApplication ],
+  include : [ qcl.application.MAppManagerProvider ],
 
   /*
     *****************************************************************************

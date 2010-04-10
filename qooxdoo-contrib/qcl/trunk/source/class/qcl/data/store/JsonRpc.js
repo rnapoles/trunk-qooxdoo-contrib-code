@@ -117,7 +117,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
     {
       this.__rpc = rpc;
     }
-    else if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) )
+    else if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MAppManagerProvider ) )
     {
       this.__rpc = this.getApplication().getRpcManager().getRpcObject();
     }
@@ -131,10 +131,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
      */ 
      this.setStoreId( this.uuid() );
      
-    /*
-     * store a reference to itself for polling
-     */
-     this.setProxiedStores([this]);
   },
 
   /*
@@ -253,54 +249,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
     {
       check : "Boolean",
       init : false
-    },
-    
-    useEventTransport :
-    {
-      check : "Boolean",
-      init : false,
-      event : "changeUseEventTransport",
-      apply : "_applyUseEventTransport"
-    },
-    
-    /** 
-     * The polling frequency in seconds
-     */
-    interval :
-    {
-      check : "Integer",
-      init : 3
-    },
-    
-    /**
-     * The name of the service method that is used to exchange
-     * events with the server
-     */
-    serviceMethodExchangeEvents :
-    {
-      check : "String",
-      init : "exchangeEvents"
-    },
-    
-    /**
-     * If a central jsonrpc store takes care of event transport, 
-     * store a reference here. 
-     */
-    eventStore :
-    {
-      check : "qcl.data.store.JsonRpc",
-      nullable : true
-    },
-    
-    /**
-     * An array of qcl.data.store.JsonRpc object that this
-     * object serves as an event proxy for. Contains at least a reference
-     * to itself.
-     */
-    proxiedStores : 
-    {
-      check : "Array",
-      nullable : false
     }
   },
 
@@ -317,14 +265,12 @@ qx.Class.define("qcl.data.store.JsonRpc",
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */  
+    _responseData : null,
     __request : null,
     __pool : null,
     __opaqueCallRef : null,
-    _responseData : null,
     __rpc : null,
     __requestId : 0,
-    __timerId : null,
-    __dataEvents : [],
     __requestCounter : 0,
     
     /*
@@ -332,180 +278,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
        APPLY METHODS
     ---------------------------------------------------------------------------
     */ 
-    
-    /**
-    * Turn event transport on or off
-    * @param value
-    * @param old
-    * @return
-    */
-   _applyUseEventTransport : function ( value, old )
-   {
-     /*
-      * remove the old timer, if exists
-      */
-     if ( this.__timerId  )      
-     {
-       qx.util.TimerManager.getInstance().stop( this.__timerId );
-       this.unregisterStore();
-     }
-     
-      if ( value )
-      {
-       /*
-        * start the timer
-        */    
-       this.__timerId = qx.util.TimerManager.getInstance().start(
-         this._poll,
-         this.getInterval() * 1000,
-         this
-       );
-       this.registerStore();
-      }
-   },
-    
-   /*
-   ---------------------------------------------------------------------------
-      API METHODS
-   ---------------------------------------------------------------------------
-   */     
-    /**
-     * Returns a incrementing number to distinguish requests
-     * dispatched by this store
-     */
-    getNextRequestId : function()
-    {
-      return this.__requestId++;
-    },
-
-    /** 
-     * Loads the data from a service method asynchroneously. 
-     * @param serviceMethod {String} Method to call
-     * @param params {Array} Array of arguments passed to the service method
-     * @param finalCallback {function} The callback function that is called with
-     *   the result of the request
-     * @param context {Object} The context of the callback function     
-     */
-    load : function( serviceMethod, params, finalCallback, context  )
-    {
-      this._sendJsonRpcRequest( 
-          serviceMethod||this.getDefaultLoadMethodName(), 
-          params,
-          finalCallback, 
-          context,
-          true
-      );
-    },
-    
-   /** 
-    * Executes a service method without loading model data in response. 
-    * @param serviceMethod {String} Method to call
-    * @param params {Array} Array of arguments passed to the service method
-    * @param finalCallback {function} The callback function that is called with
-    *   the result of the request
-    * @param context {Object} The context of the callback function     
-    */
-   execute : function( serviceMethod, params, finalCallback, context )
-   {
-     this._sendJsonRpcRequest( 
-         serviceMethod||this.getServiceMethod(), 
-         params,
-         finalCallback, 
-         context,
-         false
-     );
-   },    
-   
-   /**
-    * Aborts the current request
-    */
-   abort : function()
-   {
-     if ( this.__opaqueCallRef )
-     {
-       this.getCurrentRequest().abort( this.__opaqueCallRef );
-     }
-   },
-    
-   /**  
-    * Register store with with with RpcManager
-    */    
-   register : function()
-   {
-     if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
-     ){
-        this.getApplication().getRpcManager().registerStore(this);
-     }
-   },
-
-   /**  
-    * Unegister store from server and from event store, if exists 
-    */    
-   unregister : function()
-   {
-     if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MApplication ) 
-     ){
-        this.getApplication().getRpcManager().unregisterStore(this);
-     }
-   },
-   
-    
-    /**
-     * Returns the current event queue and empties it.
-     * @return {Array}
-     */
-    getDataEvents : function()
-    {
-      var events = this.__dataEvents;
-      this.__dataEvents = [];
-      return events;
-    },
-    
-    /**
-     * Adds an event to the event queue that is transported to
-     * the server upon the next connection
-     * @param event {qx.event.type.Data}
-     * @return {Void}
-     */
-    addToEventQueue : function( event )
-    {
-       if ( ! event  ) return;
-            
-       /*
-        * dispatch a copy for listening controllers
-        */
-       this.dispatchEvent( event.clone() );
-       
-       /*
-        * abort if no event transport
-        */
-       if ( ! this.getUseEventTransport() && ! this.getEventStore() ) return;
-      
-       /*
-        * convert the event for propagation to the server
-        */
-      var data = event.getData();
-      var type = event.getType();
-      
-      if ( ! data || ! type )
-      {
-        this.warn("Invalid event!");
-        return;
-      }
-      
-      /*
-       * delete event target hash code in event data since we should not get
-       * our own events back anyways
-       */
-      delete data.hashCode;
-     
-      data.eventType = type;
-
-      /*
-       * save the event
-       */
-      this.__dataEvents.push( data );
-    },    
     
     /*
     ---------------------------------------------------------------------------
@@ -534,7 +306,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
       }
       else if( qx.Class.hasMixin( 
             qx.Class.getByName( app.classname ), 
-            qcl.application.MApplication ) )
+            qcl.application.MAppManagerProvider ) )
       {
         rpc.setUrl( this.getApplication().getRpcManager().getServerUrl() );
       }
@@ -554,7 +326,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
        */
       if( qx.Class.hasMixin( 
             qx.Class.getByName( app.classname ), 
-            qcl.application.MApplication ) )
+            qcl.application.MAppManagerProvider ) )
       {
         rpc.setServerData( app.getStateManager().getStates() );  
       }
@@ -665,8 +437,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
           if ( typeof finalCallback == "function" )
           {
             try{
-            finalCallback.call( context, data );
-            }catch(e){console.warn(e)}
+              finalCallback.call( context, data );
+            }catch(e){this.error(e)}
           }            
         } 
         else 
@@ -687,7 +459,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
           this.fireDataEvent("loaded",null);
         }
         
-        }catch(e){console.warn(e)}
+        }catch(e){this.error(e)}
       }, this );    
 
       /*
@@ -757,39 +529,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
       
     },
     
-    /**
-     * Polls the server, passing the events in the queue
-     * and retrieving the events on the server to all stores
-     * that this object serves as proxy for, including itself.
-     * @return {Void}
-     */
-    _poll : function()
-    {
-      try{
-      var events = {};
-      this.getProxiedStores().forEach(function(store){
-        var storeId = store.getStoreId();
-        events[storeId] = store.getDataEvents();
-      });
-      this.execute( 
-        this.getServiceMethodExchangeEvents(),
-        [ events ],
-        function(data)
-        {
-          try{
-            this.getProxiedStores().forEach(function(store){
-              var events = data.events[store.getStoreId()];
-              if ( qx.lang.Type.isArray(events) )
-              {
-                store._handleServerEvents(events);
-              }
-            });
-          }catch(e){console.warn(e)}
-        }, 
-        this 
-      ); 
-      }catch(e){console.warn(e)}
-    },
     
     /**
      * Handles the events sent by the server
@@ -810,8 +549,93 @@ qx.Class.define("qcl.data.store.JsonRpc",
         
         this.dispatchEvent( event );
       }
+    },    
+    
+   /*
+   ---------------------------------------------------------------------------
+      API METHODS
+   ---------------------------------------------------------------------------
+   */     
+    /**
+     * Returns a incrementing number to distinguish requests
+     * dispatched by this store
+     */
+    getNextRequestId : function()
+    {
+      return this.__requestId++;
+    },
+
+    /** 
+     * Loads the data from a service method asynchroneously. 
+     * @param serviceMethod {String} Method to call
+     * @param params {Array} Array of arguments passed to the service method
+     * @param finalCallback {function} The callback function that is called with
+     *   the result of the request
+     * @param context {Object} The context of the callback function     
+     */
+    load : function( serviceMethod, params, finalCallback, context  )
+    {
+      this._sendJsonRpcRequest( 
+          serviceMethod||this.getDefaultLoadMethodName(), 
+          params,
+          finalCallback, 
+          context,
+          true
+      );
     },
     
+   /** 
+    * Executes a service method without loading model data in response. 
+    * @param serviceMethod {String} Method to call
+    * @param params {Array} Array of arguments passed to the service method
+    * @param finalCallback {function} The callback function that is called with
+    *   the result of the request
+    * @param context {Object} The context of the callback function     
+    */
+   execute : function( serviceMethod, params, finalCallback, context )
+   {
+     this._sendJsonRpcRequest( 
+         serviceMethod||this.getServiceMethod(), 
+         params,
+         finalCallback, 
+         context,
+         false
+     );
+   },    
+   
+   /**
+    * Aborts the current request
+    */
+   abort : function()
+   {
+     if ( this.__opaqueCallRef )
+     {
+       this.getCurrentRequest().abort( this.__opaqueCallRef );
+     }
+   },
+    
+   /**  
+    * Register store with with with RpcManager
+    */    
+   register : function()
+   {
+     if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MAppManagerProvider ) 
+     ){
+        this.getApplication().getRpcManager().registerStore(this);
+     }
+   },
+
+   /**  
+    * Unegister store from server and from event store, if exists 
+    */    
+   unregister : function()
+   {
+     if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MAppManagerProvider ) 
+     ){
+        this.getApplication().getRpcManager().unregisterStore(this);
+     }
+   },
+       
     
    /*
      
@@ -897,5 +721,3 @@ qx.Class.define("qcl.data.store.JsonRpc",
     }
   }
 });
-
-

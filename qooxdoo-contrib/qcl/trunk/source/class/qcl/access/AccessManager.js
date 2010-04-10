@@ -123,7 +123,7 @@ qx.Class.define("qcl.access.AccessManager",
      */
     getSessionId : function()
     {
-      qx.core.Init.getApplication().getSessionId();
+      qx.core.Init.getApplication().getSessionManager().getSessionId();
     },
     
     /**
@@ -171,7 +171,7 @@ qx.Class.define("qcl.access.AccessManager",
        * bind the session id propery of the auth store to the session
        * id of the application
        */
-      this.getStore().bind("model.sessionId", this.getApplication(), "sessionId" );
+      this.getStore().bind("model.sessionId", qx.core.Init.getApplication().getSessionManager(), "sessionId" );
       
       /*
        * bind the authentication state to a local boolean

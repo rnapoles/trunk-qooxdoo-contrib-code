@@ -18,10 +18,14 @@
 
 ************************************************************************ */
 
-require_once "qcl/application/Application.php";
-require_once "qcl/access/model/User.php";
-require_once "qcl/access/model/Role.php";
-require_once "qcl/access/model/Permission.php";
+qcl_import( "qcl_application_Application" );
+qcl_import( "qcl_data_model_db_PersistentObject" );
+
+class access_ApplicationCache
+  extends qcl_data_model_db_PersistentObject
+{
+  public $dataImported = false;
+}
 
 /**
  * Main application class
@@ -31,79 +35,40 @@ class access_Application
   extends qcl_application_Application
 {
 
-
-  /**
-   * Return the application singleton instance. Actually returns
-   * the parents class's singleton instance (qcl_application_Application),
-   * so that any method can access the current application instance
-   * without knowing its class name by using
-   * qcl_application_Application::getInstance().
-   *
-   * @return access_Application
+ /**
+   * The path to the application ini-file
+   * Can be omitted, the framework will automatically find it.
+   * @var string
    */
-  static function getInstance()
-  {
-    return parent::getInstance();
-  }
+  protected $iniPath = "access/application.ini.php";
 
   /**
-   * Starts the application and initializes some singleton
+   * Starts the application, does on-the-fly database setup
    * objects
    */
-  public function start()
+  public function main()
   {
-    /*
-     * call parent method
+    /**
+     * Clear internal caches. This is only necessary during development
+     * As long as you modify the properties of models.
      */
-    parent::start();
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
 
     /*
-     * logging level
+     * Load initial data into models if that hasn't happened yet
      */
-    $this->getLogger()->setFilterEnabled(array("propertyModel","xml"),true);
-
-
-    /*
-     * Load initial data into models.
-     */
-    $configModel = $this->getConfigModel();
-    if (  ! $configModel->hasKey("initialized") )
+    $cache = access_ApplicationCache::getInstance();
+    if (  ! $cache->get("dataImported") )
     {
-
-      /*
-       * load config data, this has to be done first
-       */
-      $this->info("*** Importing config data...");
-      $configModel->import( "access/data/Config.data.xml" );
-
-      /*
-       * load permission data
-       */
-      $this->info("*** Importing permission data...");
-      $permissionModel = $this->getAccessManager()->getPermissionModel();
-      $permissionModel->import( "access/data/Permission.data.xml" );
-
-      /*
-       * load user data
-       */
-      $this->info("*** Importing user data...");
-      $userModel = $this->getAccessManager()->getUserModel();
-      $userModel->import( "access/data/User.data.xml");
-
-      /*
-       * load role data and link it to permissions and users
-       */
-      $this->info("*** Importing role data...");
-      $roleModel = $this->getAccessManager()->getRoleModel();
-      $roleModel->import( "access/data/Role.data.xml");
-      $roleModel->importLinkData( "access/data/link_roles_permissions.data.xml" );
-      $roleModel->importLinkData( "access/data/link_roles_users.data.xml" );
-
-      /*
-       * set flag that data has been imported
-       */
-       $configModel->createKey("initialized","boolean");
-       $configModel->setKey("initialized",true);
+       $this->log("Importing data ....", QCL_LOG_APPLICATION );
+       $this->importInitialData( array(
+        'config'      => "access/data/Config.xml",
+        'user'        => "access/data/User.xml",
+        'permission'  => "access/data/Permission.xml",
+        'role'        => "access/data/Role.xml",
+       ) );
+       $cache->set( "dataImported", true );
+       $cache->savePersistenceData(); // usually not needed, automatically saved at shutdown
     }
   }
 }

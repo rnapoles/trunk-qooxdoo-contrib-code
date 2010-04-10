@@ -57,7 +57,7 @@
  * key, value that saves the config value back into the database.
  * 
  * You can bind any property of an object to a config value by using
- * the {@link #bindValue} method.
+ * the {@link #bindKey} method.
  * 
  */
 qx.Class.define("qcl.application.ConfigManager",
@@ -295,7 +295,7 @@ qx.Class.define("qcl.application.ConfigManager",
      * @param key {String}
      * @return {var}
      */
-    getValue : function ( key )
+    getKey : function ( key )
     {
       var index = this._getIndex(key);
       return this.getModel().getValues().getItem( index );
@@ -306,7 +306,7 @@ qx.Class.define("qcl.application.ConfigManager",
      * @param key {String}
      * @param value {Mixed} 
      */
-    setValue : function (key, value)
+    setKey : function (key, value)
     {
        var index = this._getIndex(key);
        var old = this.getModel().getValues().getItem( index );
@@ -331,7 +331,7 @@ qx.Class.define("qcl.application.ConfigManager",
      *  change the config value if the target property changes
      * @return
      */
-    bindValue : function( key, targetObject, targetPath, updateSelfAlso )
+    bindKey : function( key, targetObject, targetPath, updateSelfAlso )
     {
       if ( ! this.getModel() )
       {
@@ -350,7 +350,7 @@ qx.Class.define("qcl.application.ConfigManager",
          * set the initial value
          */
         //try{
-        targetObject.set( targetPath, this.getValue(key) );
+        targetObject.set( targetPath, this.getKey(key) );
         //}catch(e){alert(e);}
         
         /*
@@ -363,7 +363,7 @@ qx.Class.define("qcl.application.ConfigManager",
           if( changeKey == key )
           {
             //console.warn("Updating property "+targetPath+" from config key "+key+":"+this.getValue(key));
-            targetObject.set(targetPath,this.getValue(key));
+            targetObject.set(targetPath,this.getKey(key));
           }
         },this);
 
@@ -378,7 +378,7 @@ qx.Class.define("qcl.application.ConfigManager",
             {
               var value= e.getData();
               //console.warn("Updating config key "+key+" with "+value);
-              this.setValue(key,value);
+              this.setKey(key,value);
             },
             this
           );

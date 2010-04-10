@@ -35,7 +35,8 @@ qx.Class.define("qcl.io.RpcManager",
   *****************************************************************************
   */
 
-  properties : {
+  properties : 
+  {
       
      /**
       * The RPC object that is shared by all methods that require access
@@ -66,17 +67,7 @@ qx.Class.define("qcl.io.RpcManager",
      {
        check : "String",
        nullable : true
-     },
-     
-    /**
-     * Allow dialogs initiated by the server
-     */
-    allowServerDialogs :
-    {
-      check : "Boolean",
-      init : false,
-      apply : "_applyAllowServerDialogs"
-    }
+     }
   },
 
   /*
@@ -120,8 +111,7 @@ qx.Class.define("qcl.io.RpcManager",
     ---------------------------------------------------------------------------
        APPLY METHODS
     ---------------------------------------------------------------------------
-    */          
-    
+    */ 
     
     /**
      * Applying the server url will automatically create a rpc object if it 
@@ -136,27 +126,9 @@ qx.Class.define("qcl.io.RpcManager",
       this.getRpcObject().setUrl(url);
     },
     
-    /**
-     * Turns remote server control on or off. If turned on, you can trigger the
-     * display of dialogs using messages which can come from the server.
-     * @see #_onServerDialog
-     */
-    _applyAllowServerDialogs : function( value, old )
-    {
-      var messageName = "qcl.ui.dialog.Dialog.createDialog";
-      if ( value )
-      {
-        qx.event.message.Bus.getInstance().subscribe( messageName, this._onServerDialog,this);
-      }
-      else
-      {
-        qx.event.message.Bus.getInstance().unsubscribe( messageName, this._onServerDialog,this);
-      }
-    },        
-    
     /*
     ---------------------------------------------------------------------------
-       STARTUP AND TERMINATION
+       API METHODS
     ---------------------------------------------------------------------------
     */     
         
@@ -192,13 +164,7 @@ qx.Class.define("qcl.io.RpcManager",
          this._terminate();
        }
     },
-
-    /*
-    ---------------------------------------------------------------------------
-       SERVER COMMUNICATION
-    ---------------------------------------------------------------------------
-    */
-     
+   
     /** 
      * Executes a jsonrpc service method with the rpc object configured in the 
      * main application's constructor
@@ -226,120 +192,6 @@ qx.Class.define("qcl.io.RpcManager",
       this._appStore.execute( serviceMethod, params, callback, context);
     },
     
-
-    
-    /**
-     * Handles the message. The message data has to be a map with of the following
-     * structure: <pre>
-     * {
-     *   type : "(alert|confirm|form|login|select|wizard)",
-     *   properties : { the dialog properties WITHOUT a callback },
-     *   service : "the.name.of.the.rpc.service",
-     *   method : "serviceMethod",
-     *   params : [ the, parameters, passed, to, the, service, method ]
-     * }
-     * </pre>
-     */
-    _onServerDialog : function( message )
-    {
-      var data = message.getData();
-      if ( data.service )
-      {
-        data.properties.callback = function( result )
-        {
-          /*
-           * push the result to the beginning of the parameter array
-           */
-          if ( ! data.params || ! data.params instanceof Array )
-          {
-            data.params = [];
-          }
-          data.params.unshift(result);
-          
-          /*
-           * send request back to server
-           */
-          this.execute( 
-              data.service, data.method, data.params 
-          );
-        }
-      }
-      var widget = dialog.Dialog.getInstanceByType(data.type);
-      widget.set( data.properties );
-      widget.show();
-    
-    },
-   
-    /*
-    ---------------------------------------------------------------------------
-       EVENT TRANSPORT 
-    ---------------------------------------------------------------------------
-    */               
-   
-    /**
-     * Start a central mechanism for registered databinding controllers
-     * to transport their events to the server through period polling
-     * @param interval {Integer|false} If an positive integer, the interval
-     * for the polling 
-     */
-    startEventTransport : function( serviceName, serviceMethod, interval )
-    {
-
-      if ( this._eventStore )
-      {
-        this.warn("Event transport is already running.");
-        return;
-      }
-      if ( ! this.getRpcObject() )
-      {
-        this.error("No rpc object defined");
-      }
-
-      var store = this._eventStore;
-      
-      if( ! store )
-      {
-        store = this._eventStore = new qcl.data.store.JsonRpc( null, serviceName);
-        store.registerStore();        
-      }
-      if ( interval )
-      {
-        if ( isNaN( parseInt( interval ) ) )
-        {
-          this.error("Invalid interval value");
-        }        
-        store.setInterval( interval );  
-      }
-      if ( serviceMethod )
-      {
-        store.setServiceMethodExchangeEvents( serviceMethod ); 
-      }
-      store.setUseEventTransport( true );
-    },
-    
-    /**
-     * Stop the event transport
-     * @return {Void}
-     */
-    stopEventTransport : function()
-    {
-      if ( ! this._eventStore )
-      {
-        this.warn("Event transport is not running.");
-        return;
-      }
-      this.getEventStore().setUseEventTransport(false);
-    },
-
-    /** 
-     * Returns the event store object
-     * @return qcl.data.store.JsonRpc
-     */
-    getEventStore : function()
-    {
-      return this._eventStore;
-    },
-    
     /**
      * Registers a store with the server
      * @param {} store
@@ -360,6 +212,6 @@ qx.Class.define("qcl.io.RpcManager",
       this.load("unregister",[ store.getStoreId() ],function(data){
         //this.info(data);
       }, this );  
-    }
+    }    
   }
 });
