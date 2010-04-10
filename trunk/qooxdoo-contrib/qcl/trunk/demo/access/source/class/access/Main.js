@@ -45,6 +45,11 @@ qx.Class.define("access.Main",
       event    : "changeServer"
     }
   },
+  
+  events:
+  {
+    "changeServer" : "qx.event.type.Data"
+  },
 
   members :
   {
@@ -69,7 +74,7 @@ qx.Class.define("access.Main",
         qx.log.appender.Native;
       }
 
-      dialog.Dialog.init(); // creates the shorthand methods like dialog.alert()
+      dialog.Dialog.init(); // FIXME
       
       this.info("Starting Application...");
       
@@ -129,7 +134,7 @@ qx.Class.define("access.Main",
           callback.call(context, true);
 
           /*
-           * load configKeyuration data for this user
+           * load configuration data for this user
            */
           app.getConfigManager().load();
         }
@@ -151,7 +156,7 @@ qx.Class.define("access.Main",
       this.getAccessManager().logout(function()
       {
         /*
-         * reload configKeyuration data for anonymous
+         * reload configuration data for anonymous
          */
         this.getConfigManager().load();
       },
@@ -197,7 +202,7 @@ qx.Class.define("access.Main",
           break;
 
         case "qcl":
-          this.getRpcManager().setServerUrl("../services/server_qcl.php");
+          this.getRpcManager().setServerUrl("../services/server.php");
           this.getAccessManager().setService("access.AuthController");
           this.getConfigManager().setService("access.ConfigController");
           if ( old )

@@ -18,7 +18,7 @@
     <links>
       <relation name="Permission_Role">
         <link namedId="anonymous">viewRecord</link>
-        <link namedId="user">viewRecord,createRecord</link>
+        <link namedId="user">viewRecord,createRecord,manageConfig</link>
         <link namedId="manager">deleteRecord</link>
         <link namedId="admin">manageUsers</link>
       </relation>

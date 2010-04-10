@@ -7,7 +7,7 @@
       "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
     },
     {
-     "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
+      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
     }
   ],
 
@@ -47,7 +47,8 @@
     // QxTransformer
     "PYTHON"       : "/opt/local/bin/python2.5",
     "CONTRIB_PATH" : "contrib",    
-    "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
+    //"QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
+    "QXTRANSFORMER_PATH": "../../../../QxTransformer/trunk/tool"
   },
   
   "jobs" :
@@ -58,11 +59,13 @@
       [
        // QxTransformer
        {
-         "manifest" : "contrib://QxTransformer/trunk/Manifest.json" 
+         //"manifest" : "contrib://QxTransformer/trunk/Manifest.json"
+         "manifest" : "../../../../QxTransformer/trunk/Manifest.json" 
        },  
        // qcl-js
        {
-         "manifest" : "contrib://qcl/trunk/Manifest.json"
+         //"manifest" : "contrib://qcl/trunk/Manifest.json"
+         "manifest" : "../../Manifest.json"
        },
        // qcl-php
        {

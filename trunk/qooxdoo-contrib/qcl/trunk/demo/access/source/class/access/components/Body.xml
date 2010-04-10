@@ -188,16 +188,16 @@
           
           </qx:groupBox>
 
-          <qx:groupBox qxt:flex="1" legend="configKeyuration">
+          <qx:groupBox qxt:flex="1" legend="configuration">
           
             <qx:vbox spacing="5">
             
               <qx:label rich="true" qxt:flex="1" width="200" allowStretchX="true">
                 <qxt:property name="value">
                   <![CDATA[
-                   <p>Users can change configKeyuration values according to their permissions.
+                   <p>Users can change configuration values according to their permissions.
                    Changes are sent to the server and persist through page reloads.</p>
-                   <p>If you use the qcl backend, configKeyuration values can be configKeyured to
+                   <p>If you use the qcl backend, configuration values can be configKeyured to
                    have user variants, i.e. all non-global values will be specifig to the 
                    current user.</p>
                    <p>Only the 'intValue' key can be changed by the anonymous
@@ -217,11 +217,11 @@
                   administrator only.
                  -->
                 <qx:label value="adminValue" qxt:row="0" qxt:column="0">
-                  <qcl:observe propertyChain="enabled" permission="changeAdminValue" />
+                  <qcl:observe propertyChain="enabled" permission="manageUsers" />
                 </qx:label>
                 <qx:textField qxt:row="0" qxt:column="1">
-                  <qcl:observe propertyChain="enabled" permission="changeAdminValue" />
-                  <qcl:sync propertyChain="value" configKey="adminValue"  />
+                  <qcl:observe propertyChain="enabled" permission="manageUsers" />
+                  <qcl:sync    propertyChain="value" configKey="adminValue"  />
                 </qx:textField>
                 
                 <!-- 
@@ -231,26 +231,26 @@
                 
                 <!-- text value -->
                 <qx:label value="userValue" qxt:row="1" qxt:column="0">
-                  <qcl:observe propertyChain="enabled" permission="changeConfig" />
+                  <qcl:observe propertyChain="enabled" permission="manageConfig" />
                 </qx:label>
                 <qx:textField qxt:row="1" qxt:column="1">
-                  <qcl:observe propertyChain="enabled" permission="changeConfig" />
+                  <qcl:observe propertyChain="enabled" permission="manageConfig" />
                   <qcl:sync    propertyChain="value" configKey="userValue"  />              
                 </qx:textField>
                 
                 <!-- boolean value -->
                 <qx:label value="boolValue" qxt:row="2" qxt:column="0">
-                  <qcl:observe propertyChain="enabled" permission="changeConfig"/>
+                  <qcl:observe propertyChain="enabled" permission="manageConfig"/>
                 </qx:label>
                 
                 <qx:checkBox qxt:row="2" qxt:column="1">
-                  <qcl:observe propertyChain="enabled" permission="changeConfig"/>
+                  <qcl:observe propertyChain="enabled" permission="manageConfig"/>
                   <qcl:sync propertyChain="value" configKey="boolValue"  />
                 </qx:checkBox>
                 
                 <!-- integer value  -->
                 <qx:label value="intValue" qxt:row="3" qxt:column="0">
-                  <qcl:observe propertyChain="enabled" permission="changeConfig"/>
+                  <qcl:observe propertyChain="enabled" permission="viewRecord"/>
                 </qx:label>
                 <qx:slider orientation="horizontal" minimum="0" maximum="10" value="0"
                    qxt:row="3" qxt:column="1"> 

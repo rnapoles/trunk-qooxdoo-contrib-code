@@ -39,7 +39,8 @@
  * <pre> 
  * {
  *   keys : [ ... array of the names of the configuration keys ],
- *   values : [ ... array of the configuration values ... ]
+ *   values : [ ... array of the configuration values ... ],
+ *   types : [ ... array of the configuration value types ... ]
  * }
  * </pre>
  * 
