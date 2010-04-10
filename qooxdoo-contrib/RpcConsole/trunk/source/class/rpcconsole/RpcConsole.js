@@ -398,8 +398,10 @@ qx.Class.define("rpcconsole.RpcConsole",
       hbox.add( timeoutSpinner );
       hbox.add( new qx.ui.basic.Label("sec.") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );
-     
       
+      servicePage.add( new qx.ui.basic.Label("Options:"), {row: 3, column: 0 });
+      servicePage.add(hbox, {row: 3, column: 1 });
+     
       /*
        * service parameters
        */
@@ -604,10 +606,10 @@ qx.Class.define("rpcconsole.RpcConsole",
       var columnModel = table.getTableColumnModel();
       var resizeBehavior = columnModel.getBehavior();
       resizeBehavior.set(0, { width:40, minWidth:40 });
-      resizeBehavior.set(1, { width:"1*" });
+      resizeBehavior.set(1, { width:"2*" });
       resizeBehavior.set(2, { width:"1*" });
       resizeBehavior.set(3, { width:40, minWidth:40 });
-      resizeBehavior.set(4, { width:"1*" });
+      resizeBehavior.set(4, { width:"2*" });
 
       var imageRenderer = new qx.ui.table.cellrenderer.Image(19, 16);
       columnModel.setDataCellRenderer(3, imageRenderer);
