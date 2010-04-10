@@ -2,42 +2,43 @@
 <%namespace name="attr" file="../../utils/attribute.mako"/>\
 <%doc>
   === doc ===
-  qcl:bind works like qx:bind, but you can also bind a property to a 
-  config value.The binding is bi-directional by default, i.e. the config
-  value is updated if the property changes, and vice versa. 
-  See also qcl:observe for unidirectional binding. 
-  @see qx:bind
-  @see qcl:observe  
-  @attr path {String}
+  qcl:bind extends qxt:bind by adding the possibility to bind a configKeyuration 
+  value to the source property chain. Use qcl:sync for bidirectional binding.
+   
+  @see qxt:bind
+  @see qcl:observe
+  @see qcl:sync  
+  @attr propertyChain {String}
   @attr target {Object} 
-  @attr targetPath {String}
-  @attr config {String}
+  @attr targetPropertyChain {String}
+  @attr configKey {String}
   @attr converter {Function|null}
   @attr onSetOk {Function|null} 
   @attr onSetFail {Function|null}
   === example ===
   <qcl:bind 
-    path="foo" target="widget" targetPath="bar" 
+    propertyChain="foo" 
+    target="widget" targetPropertyChain="bar" 
     converter="function(data,model){return data;}"
     onSetOk="function(source,targe,data){}"
     onSetFail="function(source,targe,data){}" />
-  <qcl:bind path="foo" config="config.foo.bar" />
+  <qcl:bind propertyChain="foo" configKey="configKey.foo.bar" />
   === result ===
   parent.bind("foo",widget,"bar",{
     converter:function(data,model){return data;},
     onSetOk:function(source,targe,data){},
     onSetFail:function(source,targe,data){}}
   );
-  qcl.config.Manager.getInstance().addListener("ready",function(){ 
-    qcl.config.Manager.getInstance().bindValue("config.foo.bar",widget,"foo",true);
+  qx.core.Init.getApplication().getConfigManager().addListener("ready",function(){ 
+    qx.core.Init.getApplication().getConfigManager().bindKey("configKey.foo.bar",widget,"foo");
   });
 </%doc>
-% if utils.rawAttrib("config") is not None:
-qcl.config.Manager.getInstance().addListener("ready",function(){       
-  qcl.config.Manager.getInstance().bindValue(${utils.attrib("config")},${utils.parentRawAttrib("id")}, ${utils.attrib("path")},true );      
+% if utils.rawAttrib("configKey") is not None:
+qx.core.Init.getApplication().getConfigManager().addListener("ready",function(){       
+  qx.core.Init.getApplication().getConfigManager().bindKey(${utils.attrib("configKey")},${utils.parentRawAttrib("id")}, ${utils.attrib("propertyChain")});      
 });
 % else:
-${utils.parentRawAttrib("id")}.bind(${utils.attrib("path")},${utils.rawAttrib("target")},${utils.attrib("targetPath")},{\
+${utils.parentRawAttrib("id")}.bind(${utils.attrib("propertyChain")},${utils.rawAttrib("target")},${utils.attrib("targetPropertyChain")},{\
 ${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
 % endif
    

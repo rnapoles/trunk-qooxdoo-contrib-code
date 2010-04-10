@@ -100,6 +100,25 @@
        "*":""
    }
  },    
+
+ "qcl:sync": {
+   "body": {
+       "*":"body/qcl/sync.mako"
+   },
+   "add": {
+       "*":""
+   }
+ },    
+  
+   "qcl:loginDialog": {
+    "extends" : "qx:widget",
+    "add" : { "*":"" }, 
+      "data": {
+        "props": {
+            "class": "qcl.ui.dialog.Login"
+        }
+    }
+  },
  
  /**
   * A widget controller (currently only list-type widgets)

@@ -1185,5 +1185,14 @@
       }
     }
     
+ "qxt:sync": {
+   "body": {
+       "*":"body/qxt/sync.mako"
+   },
+   "add": {
+       "*":""
+   }
+ },        
+    
     
 }
