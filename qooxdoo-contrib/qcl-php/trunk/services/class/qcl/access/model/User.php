@@ -157,7 +157,7 @@ class qcl_access_model_User
    */
   public function isAnonymous()
   {
-    return $this->getAnonymous();
+    return (bool) $this->getAnonymous();
   }
 
   /**

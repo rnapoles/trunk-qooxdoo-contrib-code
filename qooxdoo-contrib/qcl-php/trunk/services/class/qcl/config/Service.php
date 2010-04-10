@@ -15,7 +15,9 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/access/SessionController.php";
+
+qcl_import( "qcl_data_controller_Controller" );
+qcl_import( "qcl_config_LoadResult" );
 
 /**
  * Service class providing methods to get or set configuration
@@ -36,22 +38,11 @@ class qcl_config_Service
   */
  function method_load( $filter=null )
   {
-
-    /*
-     * response data class
-     */
-    $this->setResultClass("qcl_config_LoadResult");
-
     $configModel = $this->getApplication()->getConfigModel();
     $configMap   = $configModel->getAccessibleKeys( $filter );
-
-    /*
-     * response data
-     */
-    $this->setResult( 'keys',   array_keys( $configMap ) );
-    $this->setResult( 'values', array_values( $configMap ) );
-
-    return $this->result();
+    $result = new qcl_config_LoadResult;
+    $result->set( $configMap );
+    return $result;
   }
 
   /**

@@ -8,8 +8,8 @@
   === example ===
   <qcl:access/>
   === result ===
-  var qxaccess1 = qcl.access.permission.Manager.getInstance();
+  var qxaccess1 = qcl.access.PermissionManager.getInstance();
 </%doc>
-var ${utils.rawAttrib("id")} = qcl.access.permission.Manager.getInstance();
+var ${utils.rawAttrib("id")} = qcl.access.PermissionManager.getInstance();
 ${tag.children("*")}
    

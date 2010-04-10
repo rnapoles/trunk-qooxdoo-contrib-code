@@ -497,9 +497,9 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function save()
   {
-    if ( ! $this->id() )
+    if ( ! $this->get("id") )
     {
-      $this->raiseError("Model does not have an id yet. Did you 'create()' it?");
+      $this->raiseError("Model does not have an id yet. Did you create or load the record already?");
     }
     return $this->getQueryBehavior()->update( $this->data() );
   }
