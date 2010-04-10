@@ -34,13 +34,6 @@ class relational_User extends qcl_data_model_db_ActiveRecord
   );
 
   /*
-   * table in which to store the model data.
-   * Can be omitted,  Default to "data_" plus class name
-   * (here: "data_User")
-   */
-  protected $tableName = "data_User";
-
-  /*
    * the key with which the model id is identified in
    * "foreign" tables. Can be omitted, defaults to
    * class name plus "Id" (here, "UserId")
@@ -54,9 +47,9 @@ class relational_User extends qcl_data_model_db_ActiveRecord
     /*
      * user belongs to exactly one group
      */
-    "User_Group" => array(
+    "relational_User_Group" => array(
       "type"      => QCL_RELATIONS_HAS_ONE, //"n:1"
-      "target"    => array( "class" => "Group")
+      "target"    => array( "class" => "relational_Group")
     ),
 
     /*
@@ -64,20 +57,20 @@ class relational_User extends qcl_data_model_db_ActiveRecord
      * the "jointable" key can can be omitted, defaults to "join_" plus
      * relation name (here, "join_user_category")
      */
-    "User_Category" => array(
+    "relational_User_Category" => array(
       "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,  // "n:n"
       "jointable" => "join_user_category", // can be omitted, see above
-      "target"    => array( "class" => "Category" )
+      "target"    => array( "class" => "relational_Category" )
     ),
 
     /*
      * users have a history of actions which needs to be
      * deleted when the user is deleted
      */
-    "User_History" => array(
+    "relational_User_History" => array(
       "type"    => QCL_RELATIONS_HAS_MANY, // "1:n"
       "target"  => array(
-        "class"     => "History",
+        "class"     => "relational_History",
         "dependent" => true // dependent targets are removed upon deletion of the "parent" model record
       )
     )
@@ -107,7 +100,7 @@ class relational_Group extends qcl_data_model_db_ActiveRecord
     /*
      * group has many users
      */
-    "User_Group" => array(
+    "relational_User_Group" => array(
       "type"      => QCL_RELATIONS_HAS_MANY, // "1:n"
       "target"    => array( "class" => "relational_User" )
     )
@@ -138,7 +131,7 @@ class relational_Category extends qcl_data_model_db_ActiveRecord
     /*
      * A category has many users and the other way round
      */
-    "User_Category" => array(
+    "relational_User_Category" => array(
       "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY, //  "n:n"
       "target"    => array( "class" => "relational_User" )
     )
@@ -167,7 +160,7 @@ class relational_History extends qcl_data_model_db_ActiveRecord
      * the "relations/user_history/target/dependent" entry
      * in the relational_User model class).
      */
-    "User_History" => array(
+    "relational_User_History" => array(
       "type"      => QCL_RELATIONS_HAS_ONE, // "n:1"
       "target"    => array(
         "class" => "relational_User"
@@ -177,10 +170,10 @@ class relational_History extends qcl_data_model_db_ActiveRecord
      * A history record is also linked to an Action
      * model
      */
-    "Action_History" => array(
+    "relational_Action_History" => array(
       "type"      => QCL_RELATIONS_HAS_ONE, //  "n:1"
       "target"    => array(
-        "class" => "Action"
+        "class" => "relational_Action"
       )
     )
   );
@@ -203,7 +196,7 @@ class relational_Action extends qcl_data_model_db_ActiveRecord
   );
 
   private $relations = array(
-    "Action_History" => array(
+    "relational_Action_History" => array(
       "type"      => QCL_RELATIONS_HAS_MANY, // same as "1:n"
       "target"    => array(
         "class"   => "relational_History"
@@ -226,6 +219,9 @@ class class_qcl_test_data_model_db_RelationalModel
   extends qcl_test_AbstractTestController
 {
 
+  /**
+   * @rpctest OK
+   */
   public function method_testModel()
   {
 

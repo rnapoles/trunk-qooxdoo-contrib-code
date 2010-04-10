@@ -70,7 +70,9 @@ class active_Member
 class class_qcl_test_data_model_db_ActiveRecord
   extends qcl_test_AbstractTestController
 {
-
+  /**
+   * @rpctest OK
+   */
   public function method_testModel()
   {
     //$this->startLogging();
@@ -97,14 +99,14 @@ class class_qcl_test_data_model_db_ActiveRecord
     }
 
     $member = new active_Member();
-    $query = $member->loadWhere( array(
+    $query = $member->findWhere( array(
       "name"        => array( "LIKE" , "B%"),
       "newsletter"  => true
     ) );
     $count = $query->getRowCount();
 
     $this->info( "We have $count newsletter subscribers that start with 'B':");
-    $this->assertEquals(7,$count,null,__CLASS__,__METHOD__);
+    $this->assertEquals(7,$count,"Expected :7, got: $count",__CLASS__,__LINE__);
 
     /*
      * querying records
@@ -117,8 +119,12 @@ class class_qcl_test_data_model_db_ActiveRecord
     $subscribers = implode(", ", $subscribers );
     $this->info($subscribers);
 
-    $this->assertEquals("Buck, Gabriel R. <molestie.in@eu.com>, Bolton, Graham D. <Proin@cursus.org>, Baxter, Samson V. <lobortis.mauris@odioNaminterdum.edu>, Bender, Lisandra C. <Suspendisse@Donec.edu>, Bullock, Thaddeus I. <augue.ut.lacus@eget.com>, Benson, Erin M. <at.pede.Cras@acipsum.edu>",$subscribers,null,__CLASS__,__METHOD__);
-
+    $expected = "Bailey, Madaline O. <amet.consectetuer@nullaante.ca>, Buck, Gabriel R. <molestie.in@eu.com>, Bolton, Graham D. <Proin@cursus.org>, Baxter, Samson V. <lobortis.mauris@odioNaminterdum.edu>, Bender, Lisandra C. <Suspendisse@Donec.edu>, Bullock, Thaddeus I. <augue.ut.lacus@eget.com>, Benson, Erin M. <at.pede.Cras@acipsum.edu>";
+    $this->assertEquals(
+      $expected,$subscribers,
+      "Expected: '$expected'\nGot:      '$subscribers'",
+      __CLASS__,__LINE__
+    );
     /*
      * updating across records without changing the active record
      */

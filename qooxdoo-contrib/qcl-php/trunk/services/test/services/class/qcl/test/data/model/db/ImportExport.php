@@ -36,12 +36,6 @@ class imex_User extends qcl_data_model_db_ActiveRecord
     )
   );
 
-  /*
-   * table in which to store the model data.
-   * Can be omitted,  Default to "data_" plus class name
-   * (here: "data_User")
-   */
-  protected $tableName = "data_User";
 
   /*
    * the key with which the model id is identified in
@@ -59,7 +53,7 @@ class imex_User extends qcl_data_model_db_ActiveRecord
      */
     "User_Group" => array(
       "type"      => QCL_RELATIONS_HAS_ONE, //"n:1"
-      "target"    => array( "class" => "Group")
+      "target"    => array( "class" => "imex_Group")
     ),
 
     /*
@@ -70,7 +64,7 @@ class imex_User extends qcl_data_model_db_ActiveRecord
     "User_Category" => array(
       "type"      => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,  // "n:n"
       "jointable" => "join_user_category", // can be omitted, see above
-      "target"    => array( "class" => "Category" )
+      "target"    => array( "class" => "imex_Category" )
     )
   );
 
@@ -117,7 +111,6 @@ class imex_Group extends qcl_data_model_db_ActiveRecord
  */
 class imex_Category extends qcl_data_model_db_NamedActiveRecord
 {
-
   private $relations = array(
     /*
      * A category has many users and the other way round
@@ -142,8 +135,13 @@ class class_qcl_test_data_model_db_ImportExport
   extends qcl_test_AbstractTestController
 {
 
+  /**
+   * @rpctest OK
+   */
   public function method_testModel()
   {
+
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
 
     $time = microtime(true);
 
@@ -237,13 +235,13 @@ class class_qcl_test_data_model_db_ImportExport
 //    $this->info( $userXml );
 //    $this->info( $groupXml );
 //    $this->info( $categoryXml );
-//    $this->info( "Hash for user xml: " . md5( $userXml ) );
-//    $this->info( "Hash for group xml: " . md5( $groupXml) );
-//    $this->info( "Hash for category xml: " . md5( $categoryXml ) );
+    $this->info( "Hash for user xml: " . md5( $userXml ) );
+    $this->info( "Hash for group xml: " . md5( $groupXml) );
+    $this->info( "Hash for category xml: " . md5( $categoryXml ) );
 
-    $userXmlHash     = "ac8ffe8d82f91035bfc4cdb1876025d9";
-    $groupXmlHash    = "746c8738b301beefa297913a069fd4b7";
-    $categoryXmlHash = "e999dc0a988f5bbfd4b348b3695338d5";
+    $userXmlHash     = "0ffa1efdb2e0c562741eaddc50bd704c";
+    $groupXmlHash    = "f338fc49f036c179b32daf25e27e8500";
+    $categoryXmlHash = "a4f67a444b39ee50810e355e385707a7";
 
     $message = "XML was not correctly exported: ";
     $this->assertEquals( $userXmlHash, md5( $userXml ), $message . "user", __CLASS__, __LINE__ );

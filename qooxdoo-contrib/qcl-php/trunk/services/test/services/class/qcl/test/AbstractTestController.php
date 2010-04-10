@@ -153,7 +153,7 @@ class qcl_test_AbstractTestController
       if ( $testJson == "OK" )
       {
         $json =  sprintf(
-          '"%s.%s" : { "requestData":{"service":"%s","method":"%s"},"checkResult":"OK"}',
+          '"%s.%s" : { "requestData":{"service":"%s","method":"%s","timeout":30},"checkResult":"OK"}',
           $service,$method,$service,$method
         );
       }

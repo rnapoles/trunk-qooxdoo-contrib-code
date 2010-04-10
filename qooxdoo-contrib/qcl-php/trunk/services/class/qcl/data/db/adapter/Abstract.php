@@ -5,7 +5,7 @@
  * http://qooxdoo.org/contrib/project/qcl/
  *
  * Copyright:
- *   2007-2009 Christian Boulanger
+ *   2007-2010 Christian Boulanger
  *
  * License:
  *   LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -15,302 +15,218 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/Object.php";
-require_once "qcl/data/db/__init__.php";
-
-/*
- * define property type constants. You can override the
- * values defined here
- */
-if ( ! defined("qcl_data_db_PROPERTY") )
-{
-  define("qcl_data_db_PROPERTY",             "qcl_data_db_property");
-  define("qcl_data_db_PROPERTY_VARCHAR_32",  "qcl_data_db_property_Varchar32");
-  define("qcl_data_db_PROPERTY_VARCHAR_100", "qcl_data_db_property_Varchar100");
-  define("qcl_data_db_PROPERTY_VARCHAR_250", "qcl_data_db_property_Varchar250");
-  define("qcl_data_db_PROPERTY_BOOLEAN",     "qcl_data_db_property_Boolean");
-  define("qcl_data_db_PROPERTY_INT",         "qcl_data_db_property_Int");
-  define("qcl_data_db_PROPERTY_BLOB",        "qcl_data_db_property_Blob");
-  define("qcl_data_db_PROPERTY_TIMESTAMP",   "qcl_data_db_property_Timestamp");
-}
+qcl_import( "qcl_core_Object" );
 
 /**
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_data_db_adapter_Abstract
+abstract class qcl_data_db_adapter_Abstract
   extends qcl_core_Object
 {
-
-	/**
-	 * @var object database handler
-	 */
-	var $db;
-
-	/**
-	 * @var string $dsn database dsn, gets read from configuration file
-	 */
-	var $dsn;
-
-	/**
-	 * @var string $type type of database system (mysql, postgres, ...) read from dsn
-	 */
-	var $type;
-
-	/**
-	 * @var string $database name of database, read from dsn
-	 */
-	var $database;
-
-	/**
-	 * The database host
-	 * @var string
-	 */
-  var $host;
+  /**
+   * @var object database handler
+   */
+  protected $db;
 
   /**
-   * The port on which the database daemon listens
+   * @var string $dsn database dsn, gets read from configuration file
    */
-  var $port;
+  protected $dsn;
+
+  /**
+   * @var string $type type of database system (mysql, postgres, ...) read from dsn
+   */
+  protected $type;
+
+  /**
+   * The user accessing the database
+   * @var string
+   */
+  protected $user;
 
   /**
    * The password needed to access the server
    */
-  var $password;
+  protected $password;
 
   /**
-   * Contains a reference to a model if called from a model
-   * @access private
-   * @var qcl_data_model_db_IModel
+   * An array of optional data for the connection
    */
-  var $_model = null;
+  protected $options = array();
 
   /**
-   * contains a reference to the controller if called from a model
-   * or controller
-   * @access private
-   * @var qcl_data_controller_Controller
+   * Constructor. Initializes adapter.
+   * @param string $dsn
+   * @param string $user
+   * @param string $pass
+   * @param string|null $options Optional options to pass to the driver
+   * @return void
    */
-  var $_controller = null;
-
-	/**
-	 * Constructor
-	 * @todo remove dependency on master
-	 */
-	function __construct( $dsn=null, $master=null )
-	{
-		/*
-		 * initialize parent class
-		 */
-	  parent::__construct();
-
-	  /*
-	   * store master objects if given
-	   */
-    if ( is_a( $master,"qcl_data_model_ActiveRecord" ) )
-    {
-      $this->_model  = $master;
-      $this->_controller = $master->getController();
-    }
-	  elseif ( is_a( $master,"qcl_data_controller_Controller" ) )
-    {
-      $this->_controller = $master;
-    }
-	  elseif ( ! is_null( $master ) )
-	  {
-	    $this->raiseError("Invalid master object: " .  get_class($master) );
-	  }
-
-		/*
-		 * initialize the connection with the dsn provided
-		 */
-		$this->init( $dsn );
-	}
-
-  /**
-   * Getter for model
-   * @return qcl_data_model_db_IModel
-   */
-  function getModel()
+  function __construct( $dsn, $user, $pass, $options=null )
   {
-    return $this->_model;
+
+    /*
+     * initialize parent class
+     */
+    parent::__construct();
+
+    /*
+     * set properties
+     */
+    $this->setDsn( $dsn );
+    $this->setUser( $user );
+    $this->setPassword( $pass );
+
+    $defaultOptions = $this->getDefaultOptions();
+    $options = $options ? array_merge( $defaultOptions, $options ) : $defaultOptions;
+    $this->setOptions( $options );
+
+    /*
+     * set properties from dsn
+     */
+    $this->set( $this->extractDsnProperties( $dsn ) );
+
+    /*
+     * connect to the database
+     */
+    $this->connect();
+  }
+
+  //-------------------------------------------------------------
+  // accessors
+  //-------------------------------------------------------------
+
+  /**
+   * Getter for database handler object
+   * @return PDO
+   */
+  public function db()
+  {
+    return $this->db;
   }
 
   /**
-   * Getter for controller
-   * @return qcl_data_controller_Controller
+   * Getter for DSN
+   * @return string
    */
-  function getController()
+  public function getDsn()
   {
-    return $this->_controller;
+    return $this->dsn;
   }
-
-
-	/**
-	 * Initializes and connects the adapter object. Will raise an error if
-	 * connection fails.
-	 *
-	 * @param string $dsn optional dsn string overriding the dsn provided by the controller
-	 */
-	function init( $dsn = null )
-	{
-	  /*
-	   * we have a valid dsn
-	   */
-	  if ( is_string($dsn) or is_array($dsn) )
-		{
-			$this->setDsn($dsn);
- 			$this->db = $this->connect();
- 			if ( ! $this->db )
- 			{
- 			  $this->raiseError($this->getError());
- 			}
-		}
-
-		/*
-		 * if not, throw error
-		 */
-    else
-    {
-      $this->raiseError ("Cannot initialize database object " .
-        get_class($this) . ". No DSN available.");
-    }
-	}
-
-	//-------------------------------------------------------------
-	// accessors
-	//-------------------------------------------------------------
-
-	/**
-	 * getter for DSN
-	 * return mixed array or string, according to how it was initialized
-	 */
-	function getDsn()
-	{
-		return $this->dsn;
-	}
-
-  /**
-   * Return dsn information as an array of connectin info.
-   * @return array
-   */
-  function getDsnAsArray()
-  {
-    trigger_error("Not implemented");
-  }
-
-	/**
-	 * return dsn information as a PEAR::DB compatible dsn string
-	 * @return string
-	 */
-	function getDsnAsString()
-	{
-	  if ( is_array($this->dsn) )
-	  {
-  	  return (
-  	   $this->type . "://" .
-  	   ( $this->userModel ?       $this->userModel : "" ) .
-  	   ( $this->password  ? ":" . $this->password  : "" ) .
-  	   ( $this->userModel ? "@"                    : "" ) .
-  	   $this->host . "/" .
-  	   ( $this->port      ? ":" . $this->port      : "" ) .
-  	   "/" . $this->database
-  	  );
-	  }
-	  else
-	  {
-	    return $this->getDsn();
-	  }
-	}
 
   /**
    * sets and analyzes the dsn for this database
    * @param  string dsn
    * @return
    */
-  function setDsn($dsn)
+  protected function setDsn($dsn)
   {
+    $this->extractDsnProperties( $dsn );
     $this->dsn = $dsn;
-    if ( is_string ($dsn ) )
-    {
-      $matches = array();
-      preg_match(
-        "/([^:]+):\/\/([^:]*):?([^@]+)@([^\/:]+):?([^\/]*)\/(.+)/",
-        $dsn, $matches
-      );
-      $this->type     = $matches[1];
-      $this->user     = $matches[2];
-      $this->password = $matches[3];
-      $this->host     = $matches[4];
-      $this->port     = $matches[5];
-      $this->database = $matches[6];
-    }
-    elseif ( is_array( $dsn ) )
-    {
-      foreach ( $dsn as $key => $value )
-      {
-        $this->$key = $value;
-      }
-    }
-    else
-    {
-      $this->raiseError("qcl_db::setDsn : Invalid DSN '$dsn'" );
-    }
   }
-
-
-	/**
-	 * Returns database type, such as "mysql"
-	 * return string
-	 */
-	function getType()
-	{
-		return $this->type;
-	}
-
-	/**
-	 * getter for database user
-	 * return string
-	 */
-	function getUser()
-	{
-		return $this->user;
-	}
-
-	/**
-	 * getter for database user
-	 * return string
-	 */
-	function getPassword()
-	{
-		return $this->password;
-	}
-
-	/**
-	 * getter for database host
-	 * return string
-	 */
-	function getHost()
-	{
-		return $this->host;
-	}
-
-	/**
-	 * getter for database port
-	 * return string
-	 */
-	function getPort()
-	{
-		return $this->port;
-	}
 
   /**
-   * getter for database name
-   * @return string
+   * Returns database type, such as "mysql"
+   * return string
    */
-  function getDatabase()
+  public function getType()
   {
-    return $this->database;
+    return $this->type;
+  }
+
+  /**
+   * Setter for type
+   * return void
+   */
+  protected function setType( $type )
+  {
+    $this->type = $type;
+  }
+
+  /**
+   * Getter for database user
+   * return string
+   */
+  public function getUser()
+  {
+    return $this->user;
+  }
+
+  /**
+   * Setter for database user
+   * return void
+   */
+  protected function setUser( $user )
+  {
+    $this->user = $user;
+  }
+
+  /**
+   * Getter for database user
+   * return string
+   */
+  protected function getPassword()
+  {
+    return $this->password;
+  }
+
+  /**
+   * Setter for database user
+   * @param string $password
+   * return void
+   */
+  protected function setPassword( $password )
+  {
+    $this->password = $password;
+  }
+
+  /**
+   * Setter for options
+   * return void
+   */
+  public function getOptions()
+  {
+    return $this->options;
+  }
+
+  /**
+   * Setter for options
+   * return void
+   */
+  protected function setOptions( $options )
+  {
+    $this->options = $options;
+  }
+
+
+  /**
+   * Disconnects from database
+   * @return void
+   */
+  public function disconnect()
+  {
+    $this->db = null;
+  }
+
+  /**
+   * Returns the default options for initiating a PDO connection
+   * @return array
+   */
+  public function getDefaultOptions()
+  {
+    $this->notImplemented(__CLASS__);
+  }
+
+  /**
+   * Extracts the values contained in the dsn into an associated array of
+   * key-value pairs that can be set as  properties of this object.
+   * @return array
+   */
+  public function extractDsnProperties( $dsn )
+  {
+    $this->notImplemented(__CLASS__);
   }
 }
+
 ?>

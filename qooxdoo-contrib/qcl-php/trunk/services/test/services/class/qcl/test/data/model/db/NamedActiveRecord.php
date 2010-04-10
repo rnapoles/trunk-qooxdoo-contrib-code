@@ -51,7 +51,9 @@ class named_User
 class class_qcl_test_data_model_db_NamedActiveRecord
   extends qcl_test_AbstractTestController
 {
-
+  /**
+   * @rpctest OK
+   */
   public function method_testModel()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );

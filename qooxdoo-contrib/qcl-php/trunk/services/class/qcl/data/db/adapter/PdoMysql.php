@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-qcl_import( "qcl_data_db_adapter_Abstract2" );
+qcl_import( "qcl_data_db_adapter_Abstract" );
 qcl_import( "qcl_data_db_adapter_IAdapter" );
 qcl_import( "qcl_data_db_adapter_IRemoteHostAdapter" );
 
@@ -28,7 +28,7 @@ qcl_import( "qcl_data_db_adapter_IRemoteHostAdapter" );
  * See http://www.php.net/manual/de/book.pdo.php
  */
 class qcl_data_db_adapter_PdoMysql
-  extends    qcl_data_db_adapter_Abstract2
+  extends    qcl_data_db_adapter_Abstract
   implements qcl_data_db_adapter_IAdapter,
              qcl_data_db_adapter_IRemoteHostAdapter
 {
