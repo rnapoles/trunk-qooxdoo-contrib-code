@@ -608,8 +608,8 @@ qx.Class.define("rpcconsole.demo.Application",
      */
     runTest : function( testName, callback )
     {
-      var doSendRequest, 
-          data = this.getTestData(testName);
+      var doSendRequest = true; 
+      var data = this.getTestData(testName);
       
       if ( ! data )
       {
@@ -631,7 +631,7 @@ qx.Class.define("rpcconsole.demo.Application",
       }catch(e){}
       
       /*
-       * function to exectue before the request
+       * function to execute before the request
        */
       if ( qx.lang.Type.isFunction( data.execute ) )
       {
