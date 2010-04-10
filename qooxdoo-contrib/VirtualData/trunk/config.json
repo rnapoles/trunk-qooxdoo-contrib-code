@@ -35,5 +35,21 @@
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
+  },
+  
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [
+        {
+          "manifest" : "contrib://cometd/trunk/Manifest.json"
+        },
+        {
+          "manifest" : "contrib://Persist/trunk/Manifest.json"
+        }        
+      ]
+    }
   }
 }

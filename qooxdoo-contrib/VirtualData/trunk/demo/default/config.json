@@ -32,10 +32,11 @@
   {
     "APPLICATION"  : "virtualdata.demo",
     "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
+    //"CONTRIB_PATH" : "contrib://",
+    "CONTRIB_PATH" : "../../../../",
     "QXTHEME"      : "virtualdata.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   },
 
@@ -47,8 +48,23 @@
       [
         {
           "manifest" : "../../Manifest.json"
-        }
+        },
+        {
+          "manifest" : "${CONTRIB_PATH}cometd/trunk/Manifest.json"
+        },
+        {
+          "manifest" : "${CONTRIB_PATH}Persist/trunk/Manifest.json"
+        }        
       ]
-    }
+    },
+    
+    "source-script":
+    {
+      // download contrib code to location that is accessible to web server in source version
+      "cache" :
+      {
+        "downloads" : "cache-downloads"
+      }    
+    }     
   }
 }
