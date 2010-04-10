@@ -176,30 +176,12 @@ qx.Class.define("qcl.access.AbstractManager",
 		
 		/**
 		 * Creates a managed object or retrieves it if an object with the same name already
-		 * exists. Can take multiple arguments or an array argument
-		 * @param name {String|Array} (array of) element name(s)
-		 * @return {Object|Array} (array of) reference(s) to created or existing object(s)
+		 * exists. 
+		 * @param name {String} Element name
+		 * @return {Object} Reference to created or existing object
 		 */
 		create : function ( name )
 		{
-			if ( name instanceof Array )
-			{
-				var list=[];
-				name.forEach(function( n ){
-					list.push( this.create( n ) );
-				},this);
-				return list;
-			}
-			
-			if ( arguments.length > 1 )
-			{
-				var list=[];
-				for (var i=0; i<arguments.length; i++)
-				{
-				  list.push( this.create( arguments[i] ) );		
-				}
-				return list;
-			}
       
 			if ( typeof name != "string" )
 			{
@@ -208,13 +190,12 @@ qx.Class.define("qcl.access.AbstractManager",
 			}
 			
 			var obj = this.getObject(name); 
-			if ( ! obj )
+			if ( ! qx.lang.Type.isObject( obj )  )
 			{ 
-        // FIXME FIXME FIXME
-        eval("obj = new " + this._managedObjectClassName + "(name);" );
-        if ( ! obj )
+        obj = new qcl.access[ this._type ](name);
+        if ( ! qx.lang.Type.isObject( obj ) )
         {
-          this.error("The _managedObjectClassName property is not set!");
+          this.error("Could not create object");
         }
 			}
 			return obj;

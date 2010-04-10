@@ -104,7 +104,6 @@ qx.Class.define("qcl.io.RpcManager",
     ---------------------------------------------------------------------------
     */             
     _rpc : null,
-    _eventStore: null,
     _appStore : null,
     
     /*
@@ -140,13 +139,6 @@ qx.Class.define("qcl.io.RpcManager",
      */
     terminate : function()
     {
-      /*
-       * unregister stores
-       */
-      if( this.getEventStore() )
-      {
-        this.getEventStore().unregisterStore();
-      }
       
       /*
        * execute terminate function on server
