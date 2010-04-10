@@ -224,11 +224,10 @@ qx.Class.define("qcl.application.ConfigManager",
        API METHODS
     ---------------------------------------------------------------------------
     */     
-    
 
     /**
      * Initializes the manager
-     * @param {} service
+     * @param service {String}
      */
     init : function( service )
     {

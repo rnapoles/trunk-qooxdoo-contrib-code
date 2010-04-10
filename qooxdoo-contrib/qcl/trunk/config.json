@@ -5,9 +5,6 @@
   [
     {
       "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
-    },
-    {
-      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
     }
   ],
 
@@ -27,20 +24,15 @@
     "source-all",
     "test",
     "test-source",
-    "translation",
-    "transform"
+    "translation"
   ],
 
   "let" :
   {
     "APPLICATION"  : "qcl",
-    "QOOXDOO_PATH" : "../../../qooxdoo/qooxdoo-0.8.3-sdk",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${QOOXDOO_PATH}/cache",
-    "ROOT"         : ".",
-    "PYTHON"       : "/opt/local/bin/python2.5",
-    "QXTRANSFORMER_PATH": "../../../qooxdoo/qxtransformer/toolkit",
-    "QXT_VERBOSE"  : "main:INFO;dev:INFO;"
+    "ROOT"         : "."
   }
 }

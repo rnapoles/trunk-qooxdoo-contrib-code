@@ -194,7 +194,7 @@ qx.Class.define("qcl.io.RpcManager",
     
     /**
      * Registers a store with the server
-     * @param {} store
+     * @param store {qcl.data.store.JsonRpc}
      */
     registerStore : function( store )
     {
@@ -205,7 +205,7 @@ qx.Class.define("qcl.io.RpcManager",
     
     /**
      * Unregisters a store from the server
-     * @param {} store
+     * @param store {qcl.data.store.JsonRpc}
      */
     unregisterStore : function( store )
     {
