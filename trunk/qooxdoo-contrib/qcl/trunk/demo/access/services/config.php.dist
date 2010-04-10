@@ -22,6 +22,7 @@
  * set error level.
  */
 error_reporting( E_ALL ^ E_NOTICE  );
+ini_set("display_errors",1);
 
 /**
  * Configure paths to the various libraries used by the backend
