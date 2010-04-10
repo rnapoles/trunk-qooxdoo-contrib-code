@@ -163,8 +163,11 @@ qx.Class.define("rpcconsole.demo.Application",
       /*
        * "About" menu
        */
-      var button = new qx.ui.toolbar.Button("About RpcConsole");
-      button.addListener("execute", this._onAboutButtonExecute, this);
+      var button = new qx.ui.toolbar.Button("Help");
+//      button.addListener("execute", this._onAboutButtonExecute, this);
+      button.addListener("execute", function(){
+        window.open("http://qooxdoo.org/contrib/project/rpcconsole")
+      }, this);      
       toolbar.add(button);      
                
       /*
