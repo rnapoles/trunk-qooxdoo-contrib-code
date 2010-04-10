@@ -46,14 +46,6 @@ if( ! defined( "QCL_TEST_SERVICE_PARENT_CLASS" ) )
 }
 
 /*
- * The filter used to run tests
- */
-if( ! defined( "QCL_TEST_RUN_FILTER" ) )
-{
-  define( "QCL_TEST_RUN_FILTER" , "qcl.test.*" );
-}
-
-/*
  * we're delivering a javascript file
  */
 header("Content-Type: text/javascript");
@@ -124,6 +116,7 @@ function getServiceClassFiles( $dir = QCL_TEST_CLASS_DIR )
     if ( is_dir( $path) )
     {
       $serviceClasses->addAll( getServiceClassFiles( $path ) );
+
     }
     elseif ( get_file_extension( $file ) == "php" )
     {
@@ -135,25 +128,42 @@ function getServiceClassFiles( $dir = QCL_TEST_CLASS_DIR )
 
 require_once "services/server/JsonRpcServer.php";
 
-$filter = QCL_TEST_RUN_FILTER;
+$tests = array();
+$files = getServiceClassFiles();
+$packages = array();
+$packageCount = 0;
+
 echo <<<EOF
 qx.core.Init.getApplication().setTestData(
 {
-  "runAutomatedTests":{
-    "label":"Execute $filter test suite",
-    "execute":function (){
-      this.info( "Starting test suite ");
-      this.runTests("$filter");
-    }
-  },
-
 EOF;
-
-$tests = array();
-$files = getServiceClassFiles();
 
 foreach( $files as $path )
 {
+  /*
+   * package
+   */
+  $packageDir = dirname( $path );
+  $package = str_replace( "/",".", substr( $packageDir, strlen(QCL_TEST_CLASS_DIR) +1 ) ) . ".*";
+  if ( ! isset( $packages[$package] ) )
+  {
+    $packageCount++;
+    echo <<<EOF
+
+      "runPackage{$packageCount}":{
+        "label":"Execute $package test suite",
+        "execute":function (){
+          this.info( "Starting test suite $package ");
+          this.runTests("$package");
+        }
+      },
+
+EOF;
+    $packages[$package] = true;
+  }
+
+
+
   $file_content = file_get_contents( $path );
   if ( strstr( $file_content, "extends ". QCL_TEST_SERVICE_PARENT_CLASS) )
   {
@@ -164,6 +174,7 @@ foreach( $files as $path )
        str_replace("/","_", substr( $path, strlen(QCL_TEST_CLASS_DIR) +1 ) ), 0, -4
     );
     qcl_import( $import_class );
+
     $className = JsonRpcClassPrefix . $import_class;
     $class = new $className;
 
