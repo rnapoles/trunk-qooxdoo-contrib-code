@@ -220,7 +220,7 @@ class class_SimpleAuthController
       1 => 'createRecord',
       2 => 'deleteRecord',
       3 => 'manageUsers',
-      4 => 'changeConfig',
+      4 => 'manageConfig',
       5 => 'changeAdminValue'
     ),
 
