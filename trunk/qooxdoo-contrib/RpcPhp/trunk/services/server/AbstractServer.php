@@ -591,7 +591,7 @@ class AbstractServer
      */
     $method = JsonRpcMethodPrefix . $method;
     $this->debug("Checking service method '$method'.");
-    $validMethod = $this->checkServiceMethod( &$serviceObject, $method );
+    $validMethod = $this->checkServiceMethod( $serviceObject, $method );
     if ( ! $validMethod )
     {
       $this->sendErrorAndExit();
@@ -870,7 +870,7 @@ class AbstractServer
     if ( $this->accessibilityBehavior )
     {
       $this->debug("Checking accessibility...");
-      if ( ! $this->accessibilityBehavior->checkAccessibility( &$serviceObject, $method ) )
+      if ( ! $this->accessibilityBehavior->checkAccessibility( $serviceObject, $method ) )
       {
         throw new AbstractError(
           $this->accessibilityBehavior->getErrorMessage(),
