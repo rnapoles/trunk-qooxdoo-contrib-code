@@ -2,24 +2,24 @@
 <root>
   <model name="qcl_config_ConfigModel">
     <data>
-      <record namedId="global">
+      <record namedId="adminValue">
         <type>0</type>
-        <default>global</default>
-        <customize>0</customize>
-      </record>
-      <record namedId="custom">
-        <type>0</type>
-        <default>custom</default>
+        <default>Admin Value</default>
         <customize>1</customize>
       </record>
-      <record namedId="number">
+      <record namedId="userValue">
+        <type>0</type>
+        <default>User Value</default>
+        <customize>1</customize>
+      </record>
+      <record namedId="intValue">
         <type>1</type>
-        <default>1</default>
+        <default>0</default>
         <customize>1</customize>
       </record>
-      <record namedId="list">
-        <type>3</type>
-        <default>foo,bar,baz</default>
+      <record namedId="boolValue">
+        <type>2</type>
+        <default>0</default>
         <customize>1</customize>
       </record>
     </data>

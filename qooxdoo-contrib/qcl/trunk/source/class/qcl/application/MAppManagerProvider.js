@@ -19,6 +19,7 @@
 
 /* ************************************************************************
 #require(qcl.application.*)
+#require(qcl.access.*)
 ************************************************************************ */
 
 /**
@@ -236,23 +237,23 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
       }      
     },
     
-    /**
-     * Returns a reference to the main application
-     *
-     * @return {qx.application.Standalone}
-     */
-    getMainApplication : function()
-    {
-       if ( window.opener ) 
-       {
-         var app = opener.qx.core.Init.getApplication();
-       } 
-       else 
-       {
-         var app = this;
-       }
-       return app;
-    },    
+//    /**
+//     * Returns a reference to the main application
+//     *
+//     * @return {qx.application.Standalone}
+//     */
+//    getMainApplication : function()
+//    {
+//       if ( window.opener ) 
+//       {
+//         var app = opener.qx.core.Init.getApplication();
+//       } 
+//       else 
+//       {
+//         var app = this;
+//       }
+//       return app;
+//    },    
 
     /*
     ---------------------------------------------------------------------------

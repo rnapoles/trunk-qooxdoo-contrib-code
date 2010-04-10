@@ -26,8 +26,9 @@
  */
 qx.Class.define("qcl.access.PermissionManager",
 {
-	extend : qcl.access.AbstractManager,
   
+  extend : qcl.access.AbstractManager,
+  type : "singleton",
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -39,6 +40,7 @@ qx.Class.define("qcl.access.PermissionManager",
     this.base(arguments);
     this._managedObjectClassName = "qcl.access.Permission";
   },  
+
   
   /*
   *****************************************************************************

@@ -14,6 +14,7 @@
         <link namedId="createRecord">user</link>
         <link namedId="deleteRecord">manager</link>
         <link namedId="manageUsers">admin</link>
+        <link namedId="manageConfig">user</link>
       </relation>
     </links>
   </model>

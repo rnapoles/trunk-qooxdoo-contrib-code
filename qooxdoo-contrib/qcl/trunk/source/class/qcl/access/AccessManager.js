@@ -147,12 +147,12 @@ qx.Class.define("qcl.access.AccessManager",
        */
       if ( ! this.getUserManager() )
       {
-        this.setUserManager( new qcl.access.UserManager() );
+        this.setUserManager( qcl.access.UserManager.getInstance() );
       }
       
       if ( ! this.getPermissionManager() )
       {
-        this.setPermissionManager( new qcl.access.PermissionManager() );
+        this.setPermissionManager( qcl.access.PermissionManager.getInstance() );
       }
       
       if ( ! this.getStore() )

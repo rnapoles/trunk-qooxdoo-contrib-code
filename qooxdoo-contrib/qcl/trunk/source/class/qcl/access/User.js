@@ -176,13 +176,9 @@ qx.Class.define("qcl.access.User",
      */
     grantPermissions : function()
     {
-      this.getPermissions().forEach( function( name )
+      this.getPermissions().forEach( function( permission )
       {
-        try{
-          perms[name].setGranted(true);
-        }catch(e){
-          this.warn("Invalid permission:" + name );
-        }
+        permission.setGranted(true);
       },this);
     },
 
@@ -191,17 +187,12 @@ qx.Class.define("qcl.access.User",
      */
     revokePermissions : function()
     {
-      this.getPermissions().forEach( function( name )
+      this.getPermissions().forEach( function( permission )
       {
-        try{
-          perms[name].setGranted(false);
-        }catch(e){
-          this.warn("Invalid permission:" + name );
-        }
+        permission.setGranted(false);
       },this);
       this.setPermissions([]);
     }
-
   },
 
   /*

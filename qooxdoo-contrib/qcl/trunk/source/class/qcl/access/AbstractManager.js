@@ -27,6 +27,7 @@
  */
 qx.Class.define("qcl.access.AbstractManager",
 {
+ 
 	extend : qx.core.Object,
 
   /*
@@ -58,12 +59,14 @@ qx.Class.define("qcl.access.AbstractManager",
     _index : null,
     _objects : null,
     _managedObjectClassName : null,
+    _instance : null,
     
     /*
     ---------------------------------------------------------------------------
       USER API
     ---------------------------------------------------------------------------
     */    
+    
     /**
      * Adds managed object
      *
