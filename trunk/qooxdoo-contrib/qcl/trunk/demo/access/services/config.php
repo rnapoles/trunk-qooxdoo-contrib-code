@@ -32,37 +32,27 @@ error_reporting( E_ALL ^ E_NOTICE  );
  * downloaded.
  * @var string
  */
-//define("CONTRIB_PATH", "../contrib/" ); // standard path
-define("CONTRIB_PATH", "../../../../../" ); // CB development path
+//define("CONTRIB_PATH", "../contrib/" );
+define("CONTRIB_PATH", realpath( "../../../../../" ) . "/" );
 
 /**
  * Path to the RpcPhp package in qooxdoo-contrib
  * @var string
  */
-//define("RPCPHP_SERVER_PATH", CONTRIB_PATH . "RpcPhp/trunk/"); // standard path
-define("RPCPHP_SERVER_PATH", CONTRIB_PATH . "../RpcPhp/trunk/"); // CB development path
+define("RPCPHP_SERVER_PATH", CONTRIB_PATH . "RpcPhp/trunk/");
 
 /**
  * Path to the qcl php library
  * @var string
  */
-//define("QCL_CLASS_PATH", CONTRIB_PATH . "qcl-php/trunk/class/"); // standard path
-define("QCL_CLASS_PATH", CONTRIB_PATH . "../qcl-php/class/"); // CB development path
+define("QCL_CLASS_PATH", CONTRIB_PATH . "qcl-php/trunk/services/class/");
 
 /**
- * The name of the application
+ * Path to the application backend classes. Defaults to "./class". You
+ * shouldn't change this
  * @var string
  */
-define("APPLICATION_NAME", "access");
-
-/**
- * Path to the application backend classes. Defaults to "./class"
- * @var string
- */
-if ( ! defined("APPLICATION_CLASS_PATH" ) )
-{
-  define("APPLICATION_CLASS_PATH", "./class");
-}
+define("APPLICATION_CLASS_PATH", "./class");
 
 /*
  * where should the application log to. If not defined,

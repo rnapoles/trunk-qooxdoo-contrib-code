@@ -46,8 +46,7 @@
     
     // QxTransformer
     "PYTHON"       : "/opt/local/bin/python2.5",
-    //"CONTRIB_PATH" : "contrib",
-    "CONTRIB_PATH" : "../../../..",
+    "CONTRIB_PATH" : "contrib",    
     "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
   },
   
@@ -71,11 +70,11 @@
        },
        // PHP JSON-RPC server
        {
-         "manifest" : "contrib://RpcPhp/1.1.0/Manifest.json"
+         "manifest" : "contrib://RpcPhp/trunk/Manifest.json"
        },     
        // Dialogs 
        {
-         "manifest" : "contrib://Dialog/0.1/Manifest.json"
+         "manifest" : "contrib://Dialog/trunk/Manifest.json"
        }      
       ]
     },

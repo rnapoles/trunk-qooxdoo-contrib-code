@@ -81,7 +81,7 @@ qx.Class.define("qcl.application.StateManager",
      * percent-encoded, such as the tilde ~. You can also use a 
      * combination of characters, such as '~~~'. The URI hash 
      * string is first split on this character(s), then on the
-     * {@link qcl.application.MApplicationState#stateDefineChar}
+     * {@link qcl.application.MAppManagerProviderState#stateDefineChar}
      * character(s).
      */
     stateSeparatorChar :
@@ -93,7 +93,7 @@ qx.Class.define("qcl.application.StateManager",
     
     /** 
      * The character which separates state variable name and state value.
-     * See {@link qcl.application.MApplicationState#stateSeparatorChar} for
+     * See {@link qcl.application.MAppManagerProviderState#stateSeparatorChar} for
      * the choice of the character.
      */
     stateDefineChar :

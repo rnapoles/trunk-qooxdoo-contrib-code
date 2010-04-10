@@ -259,9 +259,13 @@ qx.Class.define("qcl.access.Permission",
         {
           if (pos == 0 || myName.substr(0, pos) == name.substr(0, pos))
           {
-            if (name.indexOf("*") < 0) // other wildcard permissions do not need to be updated
+            if ( name.indexOf("*") < 0) // other wildcard permissions do not need to be updated
             {
-              this._manager.getByName(name).setGranted(granted);
+              try{
+                this._manager.getByName(name).setGranted(granted);
+              }catch(e){
+               this.warn("Invalid manager:"+this._manager); 
+              }
             }
           } 
         },this);

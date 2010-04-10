@@ -24,7 +24,7 @@
 qx.Class.define("dialog.Application",
 {
   extend : qx.application.Standalone,
-  include : [ qcl.application.MApplication ],
+  include : [ qcl.application.MAppManagerProvider ],
 
 
   /*
