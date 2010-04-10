@@ -33,8 +33,7 @@ ini_set("display_errors",1);
  * downloaded.
  * @var string
  */
-//define("CONTRIB_PATH", "../contrib/" );
-define("CONTRIB_PATH", realpath( "../../../../../" ) . "/" );
+define("CONTRIB_PATH", "../contrib/" );
 
 /**
  * Path to the RpcPhp package in qooxdoo-contrib
