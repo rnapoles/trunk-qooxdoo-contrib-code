@@ -210,24 +210,27 @@ class qcl_log_Logger
    * Write to log file.
    * @param string $message
    */
-  function writeLog( $message )
+  protected function writeLog( $message )
   {
     /*
      * if a valid log file exists or can be created, write message to it
      */
-    if( QCL_LOG_FILE and
-      ( is_writable( QCL_LOG_FILE )
-        or is_writable( dirname( QCL_LOG_FILE ) ) ) )
+    if( QCL_LOG_FILE )
     {
-      error_log( $message, 3, QCL_LOG_FILE );
-    }
 
-    /*
-     * else, throw an exception
-     */
-    else
-    {
-      throw new Exception( sprintf( "Log file '%s' is not writable.", QCL_LOG_FILE ) );
+      if ( is_writable( QCL_LOG_FILE )
+        or is_writable( dirname( QCL_LOG_FILE ) ) )
+      {
+        error_log( $message, 3, QCL_LOG_FILE );
+      }
+
+      /*
+       * else, throw an exception
+       */
+      else
+      {
+        throw new Exception( sprintf( "Log file '%s' is not writable.", QCL_LOG_FILE ) );
+      }
     }
   }
 

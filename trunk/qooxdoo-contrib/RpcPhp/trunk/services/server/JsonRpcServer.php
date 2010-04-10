@@ -110,7 +110,7 @@ class JsonRpcServer extends AbstractServer
   /**
    * The id of the request if using script transport
    */
-  private $scriptTransportId;
+  protected $scriptTransportId;
 
   /**
    * Singleton instance

@@ -22,7 +22,7 @@
  * Use the plain RpcPhp server to server mockup data. This does not
  * require a database
  */
-define("RPCPHP_PATH", "../../../../../RpcPhp/1.1.0");
+define("RPCPHP_PATH", "../contrib/RpcPhp/trunk");
 require_once RPCPHP_PATH . "/services/index.php";
 
 ?>
