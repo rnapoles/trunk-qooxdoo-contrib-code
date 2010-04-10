@@ -50,7 +50,7 @@ class qcl_server_Request
    * JSON-RPC specification
    * @var mixed
    */
-  public $serverData = null;
+  public $server_data = null;
 
   /**
    * Returns the singleton instance of this class
@@ -68,13 +68,13 @@ class qcl_server_Request
    */
   public function getServerData( $key = null )
   {
-    if ( $key !== null and is_object( $this->serverData ) )
+    if ( $key !== null and is_object( $this->server_data ) )
     {
-      return $this->serverData->$key;
+      return $this->server_data->$key;
     }
-    elseif ( $key !== null and is_array( $this->serverData ) )
+    elseif ( $key !== null and is_array( $this->server_data ) )
     {
-      return $this->serverData[$key];
+      return $this->server_data[$key];
     }
   }
 
