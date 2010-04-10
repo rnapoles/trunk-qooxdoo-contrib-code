@@ -160,11 +160,23 @@ qx.Class.define("rpcconsole.demo.Application",
       button.setMenu( menu );
       toolbar.add(button);
       
+      toolbar.add( new qx.ui.core.Spacer() );
+      
       /*
-       * "About" menu
+       * "Help" menu
        */
-      var button = new qx.ui.toolbar.Button("About RpcConsole");
-      button.addListener("execute", this._onAboutButtonExecute, this);
+      var button = new qx.ui.toolbar.MenuButton("Help");
+      button.setShowArrow(true);
+      var menu = new qx.ui.menu.Menu();
+      button.setMenu(menu);
+      var mbutton = new qx.ui.menu.Button("About RpcConsole");
+      mbutton.addListener("execute", this._onAboutButtonExecute, this);
+      menu.add(mbutton);
+      mbutton = new qx.ui.menu.Button("RpcConsole Website");
+      mbutton.addListener("execute", function(){
+        window.open("http://qooxdoo.org/contrib/project/rpcconsole")
+      }, this);
+      menu.add(mbutton);
       toolbar.add(button);      
                
       /*
@@ -246,7 +258,7 @@ qx.Class.define("rpcconsole.demo.Application",
         });
         win.addListener("appear", win.center, win );
         win.setLayout( new qx.ui.layout.Grow() );
-        var iframe = new qx.ui.embed.Iframe("../../../readme.txt");
+        var iframe = new qx.ui.embed.Iframe("../../../readme.txt?"+(new Date).getTime());
         win.add( iframe );
       }
       this.__helpWindow.open();
@@ -353,13 +365,19 @@ qx.Class.define("rpcconsole.demo.Application",
       console.getReportTable().addListener("cellClick", function(e){
          var tableModel = console.getReportTable().getTableModel();
          var id = tableModel.getValue(0,e.getRow());
+         var requestData = console.getCachedRequest(id);
          var message = tableModel.getValue(4,e.getRow());
          
          console.getResponseTextArea().setValue(
-          "Request Data:\n" + qx.util.Serializer.toJson( console.getCachedRequest( id ) ) +
-          "\n\nResponse:\n" + qx.util.Serializer.toJson( console.getCachedResponse( id ) ) +
-          "\n\nStatus Message:\n" + message
+          "[Request Data]\n" + qx.util.Serializer.toJson( requestData ) +
+          "\n\n[Response Data]\n" + qx.util.Serializer.toJson( console.getCachedResponse( id ) ) +
+          "\n\n[Status Message]\n" + message
          );
+         
+         if ( qx.lang.Type.isObject( requestData ) )
+         {
+           console.getRequestModel().set( requestData );
+         }
          
       },this );
       

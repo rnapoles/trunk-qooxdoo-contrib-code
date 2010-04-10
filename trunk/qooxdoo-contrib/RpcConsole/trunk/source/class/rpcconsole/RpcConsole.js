@@ -403,7 +403,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       /*
        * service parameters
        */
-      servicePage.add( new qx.ui.basic.Label("Params:" ), {row: 4, column: 0} );
+      servicePage.add( new qx.ui.basic.Label("Parameters:" ), {row: 4, column: 0} );
       var paramsTextField = new qx.ui.form.TextArea().set({
         placeholder : "Please enter the method parameters, separated by comma and properly quoted, for example: \"Hello World!\"."
       });
@@ -613,6 +613,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       columnModel.setDataCellRenderer(3, imageRenderer);
       
       table.setMaxHeight( 200 ); // FIXME
+      table.setShowCellFocusIndicator( false );
       return table;
     },    
     
