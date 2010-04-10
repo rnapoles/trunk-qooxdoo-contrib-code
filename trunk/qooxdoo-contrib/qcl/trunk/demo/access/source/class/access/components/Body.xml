@@ -197,7 +197,7 @@
                   <![CDATA[
                    <p>Users can change configuration values according to their permissions.
                    Changes are sent to the server and persist through page reloads.</p>
-                   <p>If you use the qcl backend, configuration values can be configKeyured to
+                   <p>If you use the qcl backend, configuration values can be configured to
                    have user variants, i.e. all non-global values will be specifig to the 
                    current user.</p>
                    <p>Only the 'intValue' key can be changed by the anonymous
