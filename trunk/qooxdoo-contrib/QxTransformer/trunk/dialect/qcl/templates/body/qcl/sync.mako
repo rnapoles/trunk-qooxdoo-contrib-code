@@ -15,7 +15,8 @@
   @attr onSetFail {Function|null}
   === example ===
   <qcl:sync 
-    propertyChain="foo" target="widget" targetPropertyChain="bar" 
+    propertyChain="foo" 
+    target="widget" targetPropertyChain="bar" 
     converter="function(data,model){return data;}"
     onSetOk="function(source,targe,data){}"
     onSetFail="function(source,targe,data){}" />
@@ -42,6 +43,6 @@ qx.core.Init.getApplication().getConfigManager().addListener("ready",function(){
 % else:
 ${utils.parentRawAttrib("id")}.bind(${utils.attrib("propertyChain")},${utils.rawAttrib("target")},${utils.attrib("targetPropertyChain")},{\
 ${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
-${utils.rawAttrib("source")}.bind(${utils.attrib("sourcePropertyChain")},${utils.parentRawAttrib("id")},${utils.attrib("propertyChain")},{\
+${utils.rawAttrib("target")}.bind(${utils.attrib("targetPropertyChain")},${utils.parentRawAttrib("id")},${utils.attrib("propertyChain")},{\
 ${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
 % endif

@@ -2,49 +2,50 @@
 <%namespace name="attr" file="../../utils/attribute.mako"/>\
 <%doc>
   === doc ===
-  The qcl:observe extends qx:observe by the possibility of binding
+  The qcl:observe extends qxt:observe by the possibility of binding
   a property of the object represented by the parent node to 
-  a config value, or a permission state. The latter only works with boolean 
-  properties. A observed config value is not updated when the property
-  changes (use qcl:bind for this).
-  @see qx:observe
+  a configKey value, or a permission state. The latter only works with boolean 
+  properties. Use qcl:sync for bidirectional binding.
+  
+  @see qxt:observe
   @see qcl:bind
-  @attr path {String}
+  @see qcl:sync
+  @attr propertyChain {String}
   @attr permission {String} 
   @attr source {Object} The source object to observe 
-  @attr sourcePath {String} The source path path to follow
-  @attr config {String}
+  @attr sourcePropertyChain {String} The source propertyChain propertyChain to follow
+  @attr configKey {String}
   @attr converter {Function|null}
   @attr onSetOk {Function|null} 
   @attr onSetFail {Function|null}
   === example ===
   <qcl:observe 
-    path="foo" 
-    source="widget" sourcePath="bar"
+    propertyChain="foo" 
+    source="widget" sourcePropertyChain="bar"
     converter="function(data,model){return data;}"
     onSetOk="function(source,targe,data){}"
     onSetFail="function(source,targe,data){}" />  
-  <qcl:observe path="foo" permission="permissions.bar.baz" />
-  <qcl:observe path="foo" config="config.foo.bar" />
+  <qcl:observe propertyChain="foo" permission="permissions.bar.baz" />
+  <qcl:observe propertyChain="foo" configKey="configKey.foo.bar" />
   === result ===
   widget.bind("bar",parentNodeWidget,"foo",{
     converter:function(data,model){return data;},
     onSetOk:function(source,targe,data){},
     onSetFail:function(source,targe,data){}}
   );
-  qcl.access.permission.Manager.getInstance().create("foo.bar.baz").bind("state",parent,"foo");  
-  qcl.config.Manager.getInstance().addListener("ready",function(){ 
-    qcl.config.Manager.getInstance().bindValue("config.foo.bar",widget,"foo",false);
+  qx.core.Init.getApplication().getAccessManager().getPermissionManager().create("foo.bar.baz").bind("state",parent,"foo");  
+  qcl.application.configKeyManager.getInstance().addListener("ready",function(){ 
+    qcl.application.configKeyManager.getInstance().bindKey("configKey.foo.bar",widget,"foo",false);
   }); 
 </%doc>
 % if utils.rawAttrib("permission") is not None:
-qcl.access.permission.Manager.getInstance().create(${utils.attrib("permission")}).bind("state",${utils.parentRawAttrib("id")},${utils.attrib("path")},\
+qx.core.Init.getApplication().getAccessManager().getPermissionManager().create(${utils.attrib("permission")}).bind("state",${utils.parentRawAttrib("id")},${utils.attrib("propertyChain")},\
 {${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
-% elif utils.rawAttrib("config") is not None:
-qcl.config.Manager.getInstance().addListener("ready",function(){       
-  qcl.config.Manager.getInstance().bindValue(${utils.attrib("config")},${utils.parentRawAttrib("id")}, ${utils.attrib("path")},false );      
+% elif utils.rawAttrib("configKey") is not None:
+qx.core.Init.getApplication().getConfigManager().addListener("ready",function(){       
+  qx.core.Init.getApplication().getConfigManager().bindKey(${utils.attrib("configKey")},${utils.parentRawAttrib("id")}, ${utils.attrib("propertyChain")},false );      
 });
 % else:
-${utils.rawAttrib("source")}.bind(${utils.attrib("sourcePath")},${utils.parentRawAttrib("id")},${utils.attrib("path")},\
+${utils.rawAttrib("source")}.bind(${utils.attrib("sourcePropertyChain")},${utils.parentRawAttrib("id")},${utils.attrib("propertyChain")},\
 {${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
 % endif
