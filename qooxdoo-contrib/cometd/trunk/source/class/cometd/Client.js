@@ -16,15 +16,19 @@
 /* ************************************************************************
 
 #asset(cometd/*)
+#ignore(dojo)
+#ignore(dojo.*)
+#ignore(org.cometd)
 #ignore(org.cometd.*)
 
 ************************************************************************ */
 
 /**
- * This is is a thin wrapper to the cometd client from the dojo toolkit 
+ * This is is a wrapper for the cometd client from the dojo toolkit 
  * (see http://cometdproject.dojotoolkit.org).
  * Note that the method signatures of some of the functions differ to make 
- * the API closer to qooxdoo conventions.
+ * the API closer to qooxdoo method signature conventions.
+ * @todo Remove dependency on dojo.js
  * 
  */
 qx.Class.define("cometd.Client",
