@@ -40,7 +40,7 @@ qx.Class.define("qcl.access.UserManager",
   construct : function()
   {
 		this.base(arguments);
-    this._managedObjectClassName = "qcl.access.User";
+    this._type = "User";
   },
   
  
@@ -139,15 +139,15 @@ qx.Class.define("qcl.access.UserManager",
 			}
 		},
     
-    /**
-     * Creates or returns already created user with the given named id
-     * @param namedId {String}
-     * @return {qcl.access.User}
-     */
-    create : function( namedId )
-    {
-      return this.base(arguments, namedId );
-    },
+//    /**
+//     * Creates or returns already created user with the given named id
+//     * @param namedId {String}
+//     * @return {qcl.access.User}
+//     */
+//    create : function( namedId )
+//    {
+//      return this.base(arguments, namedId );
+//    },
 		
 		/**
 		 * removes all permission, role and user information

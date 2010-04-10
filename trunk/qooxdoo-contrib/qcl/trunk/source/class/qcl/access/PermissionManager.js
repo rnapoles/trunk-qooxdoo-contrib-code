@@ -38,7 +38,7 @@ qx.Class.define("qcl.access.PermissionManager",
   construct : function()
   {
     this.base(arguments);
-    this._managedObjectClassName = "qcl.access.Permission";
+    this._type = "Permission";
   },  
 
   
@@ -51,14 +51,14 @@ qx.Class.define("qcl.access.PermissionManager",
   
   members :
   {
-    /**
-     * Creates or returns already created permission with the given named id
-     * @param namedId {String}
-     * @return {qcl.access.Permission}
-     */
-    create : function( namedId )
-    {
-      return this.base(arguments, namedId );
-    }
+//    /**
+//     * Creates or returns already created permission with the given named id
+//     * @param namedId {String}
+//     * @return {qcl.access.Permission}
+//     */
+//    create : function( namedId )
+//    {
+//      return this.base(arguments, namedId );
+//    }
   }
 });

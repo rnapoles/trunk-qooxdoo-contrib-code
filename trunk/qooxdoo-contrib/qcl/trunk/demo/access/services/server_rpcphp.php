@@ -18,8 +18,11 @@
 
 ************************************************************************ */
 
+error_reporting( E_ALL ^ E_NOTICE  );
+ini_set("display_errors",1);
+
 /**
- * Use the plain RpcPhp server to server mockup data. This does not
+ * Use the plain RpcPhp server to serve mockup data. This does not
  * require a database
  */
 define("RPCPHP_PATH", "../contrib/RpcPhp/trunk");
