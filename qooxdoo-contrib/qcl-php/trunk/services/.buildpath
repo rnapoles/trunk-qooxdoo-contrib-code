@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="src" path=""/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+	<buildpathentry external="true" kind="lib" path="/opt/local/lib/php"/>
+	<buildpathentry combineaccessrules="false" kind="prj" path="/RpcPhp">
+		<accessrules>
+			<accessrule kind="accessible" pattern="trunk/**"/>
+			<accessrule kind="nonaccessible" pattern="**"/>
+		</accessrules>
+	</buildpathentry>
+</buildpath>

@@ -131,7 +131,7 @@ class qcl_data_controller_Controller
    * Returns the  datasource model with the datasource connection
    * data preloaded.
    * @param string $datasource
-   * @return qcl_data_datasource_type_db_Model
+   * @return qcl_data_datasource_DbModel
    */
   public function getDatasourceModel( $datasource )
   {

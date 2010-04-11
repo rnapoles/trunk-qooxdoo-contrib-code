@@ -1,0 +1,210 @@
+<?php
+
+/*
+ * qooxdoo - the new era of web development
+ *
+ * http://qooxdoo.org
+ *
+ * Copyright:
+ *   2007-2010 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+
+qcl_import( "qcl_test_AbstractTestController");
+qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+qcl_import( "qcl_data_db_Timestamp" );
+qcl_import( "qcl_data_datasource_DbModel" );
+qcl_import( "qcl_data_datasource_Manager" );
+
+/**
+ * This is the datasource that holds the information
+ * for the model classes.
+ */
+class ds_Addressbook
+  extends qcl_data_datasource_DbModel
+{
+  function __construct()
+  {
+    parent::__construct();
+
+    /*
+     * register the models
+     */
+    $this->registerModels( array(
+      'person' => new ds_Person($this),
+      'group'  => new ds_Group($this),
+      'tag'    => new ds_Tag($this)
+    ) );
+  }
+
+  /**
+   * @return ds_Addressbook
+   */
+  public static function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }
+
+  /**
+   * Returns the "person" model
+   * @return ds_Person
+   */
+  public function getPersonModel()
+  {
+    return $this->getModelOfType("person");
+  }
+
+  /**
+   * Returns the "group" model
+   * @return ds_Group
+   */
+  public function getGroupModel()
+  {
+    return $this->getModelOfType("group");
+  }
+
+ /**
+   * Returns the "tag" model
+   * @return ds_Tag
+   */
+  public function getTagModel()
+  {
+    return $this->getModelOfType("tag");
+  }
+
+}
+
+class ds_Person
+  extends qcl_data_model_db_NamedActiveRecord
+{
+
+  // ... would have properties, and relations to the other models ...
+}
+
+class ds_Group
+  extends qcl_data_model_db_NamedActiveRecord
+{
+  // ... would have properties, and relations to the other models ...
+}
+
+class ds_Tag
+  extends qcl_data_model_db_NamedActiveRecord
+{
+  // ... would have properties, and relations to the other models ...
+}
+
+/**
+ * Service class containing test methods
+ */
+class class_qcl_test_data_datasource_DatasourceTest
+  extends qcl_test_AbstractTestController
+{
+  /**
+   * @rpctest OK
+   */
+  public function method_testModel()
+  {
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
+
+    $this->startLogging();
+
+    $dsManager = qcl_data_datasource_Manager::getInstance();
+    $dsManager->registerSchema( "addressbook", array(
+      "class"       => "ds_Addressbook",
+      "description" => "A schema for addressbooks that have a person, group and tag model"
+    ) );
+
+
+    /*
+     * create a new addressbook datasource that is stored in the
+     * user database and initialize it and its models
+     */
+    $addressbook = ds_Addressbook::getInstance();
+    $addressbook->deleteAll();
+    $addressbook->create("my_addressbook");
+    $addressbook->setDsn( $this->getApplication()->getUserDsn() );
+    $addressbook->init();
+
+    $person1 = $addressbook->getPersonModel();
+    $group1  = $addressbook->getGroupModel();
+    $tag1    = $addressbook->getTagModel();
+
+    $person1->deleteAll();
+    $person1->create("Peter");
+    $person1->create("Paul");
+    $person1->create("Mary");
+    $group1->deleteAll();
+    $group1->create("Work");
+    $group1->create("Personal");
+    $group1->create("Leisure");
+    $tag1->deleteAll();
+    $tag1->create("foo");
+    $tag1->create("bar");
+
+    /*
+     * create a second addressbook datasource that is stored in the
+     * same database
+     */
+    $addressbook->create("meine_adressen");
+    $addressbook->setDsn( $this->getApplication()->getUserDsn() );
+    $addressbook->init();
+
+    $person2 = $addressbook->getPersonModel();
+    $group2  = $addressbook->getGroupModel();
+    $tag2    = $addressbook->getTagModel();
+
+    $person2->deleteAll();
+    $person2->create("Monika");
+    $person2->create("Fritz");
+    $person2->create("Ingrid");
+    $group2->deleteAll();
+    $group2->create("Arbeit");
+    $group2->create("Freizeit");
+    $group2->create("Familie");
+    $tag2->deleteAll();
+    $tag2->create("dies");
+    $tag2->create("das");
+
+    $this->info( sprintf(
+      "'%s' is in addressbook '%s'",
+      $person1->namedId(), $person1->datasourceModel()->namedId()
+    ) );
+
+    $this->info( sprintf(
+      "'%s' is in addressbook '%s'",
+      $person2->namedId(), $person2->datasourceModel()->namedId()
+    ) );
+
+    return "OK";
+  }
+
+
+  function startLogging()
+  {
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DATASOURCE, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
+  }
+
+  function endLogging()
+  {
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DATASOURCE, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, false );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, false );
+  }
+}
+
+?>

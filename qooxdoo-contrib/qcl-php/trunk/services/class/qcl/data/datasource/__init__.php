@@ -16,6 +16,14 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-trigger_error( "Package qcl_data_datasource is currently unfunctional." );
+/*
+ * Log filter
+ */
+if ( defined("QCL_LOG_DATASOURCE") )
+{
+  define("QCL_LOG_DATASOURCE","datasource");
+}
+qcl_log_Logger::getInstance()->registerFilter(QCL_LOG_DATASOURCE,"Datasource-related log messages",false);
+
 
 ?>

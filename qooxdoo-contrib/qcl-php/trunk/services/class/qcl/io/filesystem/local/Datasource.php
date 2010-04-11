@@ -23,7 +23,7 @@ require_once "qcl/io/filesystem/local/Folder.php";
  * Class modeling a datasource containing files stored on the local computer.
  * Currently does not support subfolders
  */
-class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_type_db_Model
+class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_DbModel
 {
 
   /**

@@ -255,6 +255,30 @@ abstract class qcl_application_Application
   }
 
   //-------------------------------------------------------------
+  // database connectivity
+  //-------------------------------------------------------------
+
+  /**
+   * Returns the DSN for the user database
+   * @return string
+   */
+  public function getUserDsn()
+  {
+    $dsn = $this->getIniValue("macros.dsn_user");
+    return str_replace("&",";", $dsn );
+  }
+
+  /**
+   * Returns the DSN for the admin database
+   * @return string
+   */
+  public function getAdminDsn()
+  {
+    $dsn = $this->getIniValue("macros.dsn_admin");
+    return str_replace("&",";", $dsn );
+  }
+
+  //-------------------------------------------------------------
   // required main() method
   //-------------------------------------------------------------
 

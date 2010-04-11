@@ -41,7 +41,7 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * The object instance of the datasource that this model belongs to.
    * The datasource provides shared resources for models.
-   * @var qcl_data_datasource_type_db_Model
+   * @var qcl_data_datasource_DbModel
    */
   private $datasourceModel;
 
@@ -87,7 +87,7 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Constructor
-   * @param qcl_data_model_Model|null $datasourceModel Optional datasource
+   * @param qcl_data_datasource_DbModel|null $datasourceModel Optional datasource
    *  model which provides shared resources for several models that belong
    *  to it.
    */
@@ -161,7 +161,7 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Getter for datasource model
-   * @return qcl_data_datasource_type_db_Model
+   * @return qcl_data_datasource_DbModel
    */
   public function datasourceModel()
   {
@@ -170,7 +170,7 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Setter for datasource model
-   * @param qcl_data_datasource_type_db_Model $datasourceModel
+   * @param qcl_data_datasource_DbModel $datasourceModel
    */
   protected function setDatasourceModel( $datasourceModel )
   {
