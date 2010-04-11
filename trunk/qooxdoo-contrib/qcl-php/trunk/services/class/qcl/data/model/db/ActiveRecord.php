@@ -113,9 +113,15 @@ class qcl_data_model_db_ActiveRecord
   // Initialization
   //-------------------------------------------------------------
 
-  function __construct()
+  /**
+   * Constructor
+   * @param qcl_data_datasource_DbModel|null $datasourceModel Optional datasource
+   *  model which provides shared resources for several models that belong
+   *  to it.
+   */
+  function __construct( $datasourceModel = null )
   {
-    parent::__construct();
+    parent::__construct( $datasourceModel );
     $this->addProperties( $this->properties );
   }
 

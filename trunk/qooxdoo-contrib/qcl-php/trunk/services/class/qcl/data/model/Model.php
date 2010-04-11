@@ -31,55 +31,18 @@ class qcl_data_model_Model
   implements qcl_data_model_IModel
 {
 
-  /**
-   * The name of the model. Defaults to the class name, but can be an
-   * arbitrary name that is more readable.
-   * @var string
-   */
-  protected $name = __CLASS__;
-
-  /**
-   * The type of the model, if the model implements a generic type in a specific
-   * way. Defaults to empty string
-   *
-   * @var string
-   */
-  protected $type ="";
+  //-------------------------------------------------------------
+  // Class properties
+  //-------------------------------------------------------------
 
   /**
    * The property behavior object. Access with getPropertyBehavior()
    */
   private $propertyBehavior = null;
 
-  //-------------------------------------------------------------
-  // Constructor & initialization
-  //-------------------------------------------------------------
-
 
   //-------------------------------------------------------------
-  // Getters & setters
-  //-------------------------------------------------------------
-
-  /**
-   * Returns model name
-   * @return string
-   */
-  public function name()
-  {
-    return $this->name;
-  }
-
-  /**
-   * Returns model type
-   * @return string
-   */
-  public function type()
-  {
-    return $this->type;
-  }
-
-  //-------------------------------------------------------------
-  // Properties
+  // Property system
   //-------------------------------------------------------------
 
   /**

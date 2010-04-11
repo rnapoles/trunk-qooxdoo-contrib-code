@@ -973,7 +973,7 @@ class qcl_core_Object
       $this->backtrace() .
       "\n";
 
-    $logger->writeLog( $msg );
+    $logger->error( $msg );
     $this->userNotice( $message, $number );
   }
 

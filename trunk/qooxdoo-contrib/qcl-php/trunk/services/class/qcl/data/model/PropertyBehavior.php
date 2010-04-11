@@ -283,7 +283,7 @@ class qcl_data_model_PropertyBehavior
     $props    = $this->properties;
     $def      = $props[$property];
     $type     = isset( $def['check'] )    ? $def['check']    : null;
-    $nullable = isset( $def['nullable'] ) ? $def['nullable'] : null;
+    $nullable = isset( $def['nullable'] ) ? $def['nullable'] : true; // nullable by default
     $apply    = isset( $def['apply'] )    ? $def['apply']    : null;
     $event    = isset( $def['event'] )    ? $def['event']    : null;
 
@@ -300,20 +300,20 @@ class qcl_data_model_PropertyBehavior
       if ( $type != gettype( $value ) )
       {
         $fail = true;
-        $msg = ". Expected type '$type', got '$value' (" . gettype( $value ) . ").";
+        $msg = "Expected type '$type', got '$value' (" . gettype( $value ) . ").";
       }
     }
     elseif ( class_exists( $type ) and ! is_a( $value, $type ) )
     {
       $fail = true;
-      $msg = ". Expected class '$type', got '" . typeof( $value, true ) . "'";
+      $msg = "Expected class '$type', got '" . typeof( $value, true ) . "'";
     }
 
     if ( $fail )
     {
       //$this->getModel()->raiseError(
       throw new qcl_core_PropertyBehaviorException( sprintf(
-        "Invalid value type for property '%s' of class '%s': %s" .
+        "Invalid value type for property '%s' of class '%s': %s",
         $property, $this->getModel()->className(), $msg
        ) );
     }
@@ -457,7 +457,8 @@ class qcl_data_model_PropertyBehavior
     }
     elseif ( is_null( $value ) )
     {
-      if ( $this->properties[$propertyName]['nullable' ] )
+      if ( ! isset( $this->properties[$propertyName]['nullable' ] )
+          or $this->properties[$propertyName]['nullable' ] === true )
       {
         return null;
       }

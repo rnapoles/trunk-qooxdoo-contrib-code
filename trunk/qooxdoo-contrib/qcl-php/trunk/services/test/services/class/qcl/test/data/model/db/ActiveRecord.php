@@ -75,6 +75,8 @@ class class_qcl_test_data_model_db_ActiveRecord
    */
   public function method_testModel()
   {
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
+
     //$this->startLogging();
 
     $member = new active_Member();

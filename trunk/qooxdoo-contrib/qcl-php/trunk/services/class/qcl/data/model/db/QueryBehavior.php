@@ -95,7 +95,7 @@ class qcl_data_model_db_QueryBehavior
 
   /**
    * Retrieves the datasource object
-   * @return qcl_data_datasource_type_db_Model
+   * @return qcl_data_datasource_DbModel
    */
   public function getDatasourceModel()
   {
@@ -109,7 +109,7 @@ class qcl_data_model_db_QueryBehavior
    * object reference to the datasource object
    * return void
    */
-  protected function setDatasourceModel( qcl_data_datasource_type_db_Model $datasourceModel )
+  protected function setDatasourceModel( qcl_data_datasource_DbModel $datasourceModel )
   {
     $this->datasourceModel = $datasourceModel;
   }

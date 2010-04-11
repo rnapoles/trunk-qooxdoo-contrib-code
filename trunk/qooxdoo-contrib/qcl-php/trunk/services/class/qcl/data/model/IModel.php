@@ -26,27 +26,6 @@ interface qcl_data_model_IModel
   extends qcl_core_IPropertyAccessors
 {
 
-  //-------------------------------------------------------------
-  // Getters & setters
-  //-------------------------------------------------------------
-
-  /**
-   * Returns model name. Defaults to the class name.
-   * @return string
-   */
-  public function name();
-
-  /**
-   * Returns model type. Defaults to empty string.
-   * @return string
-   */
-  public function type();
-
-
-  //-------------------------------------------------------------
-  // Properties
-  //-------------------------------------------------------------
-
   /**
    * Add a property definition to the model
    * @param array $properties
