@@ -7,7 +7,7 @@
       "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
     },
     {
-      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
+      "path" : "${QXTRANSFORMER_PATH}/tool/bin/qxtransformer.json"
     }
   ],
 
@@ -29,9 +29,7 @@
     "test-source",
     "translation",
     
-    /*
-     * QxTransformer
-     */
+    // QxTransformer
     "transform"
   ],
 
@@ -43,12 +41,19 @@
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
     "ROOT"         : ".",
+
+    // Contributions: download them from the repository (a)
+    // or use absolute path to an existing checkout (b)
+    // a)
+    //"CONTRIB_PATH" : "contrib",  
+    //"CONTRIB_LIB"  : "contrib:/",
+    // b)
+    "CONTRIB_PATH" : "../../../..", 
+    "CONTRIB_LIB" : "${CONTRIB_PATH}",    
     
     // QxTransformer
-    "PYTHON"       : "/opt/local/bin/python2.5",
-    "CONTRIB_PATH" : "contrib",    
-    //"QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
-    "QXTRANSFORMER_PATH": "../../../../QxTransformer/trunk/tool"
+    "PYTHON" : "/opt/local/bin/python2.5",
+    "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/"
   },
   
   "jobs" :
@@ -59,25 +64,23 @@
       [
        // QxTransformer
        {
-         //"manifest" : "contrib://QxTransformer/trunk/Manifest.json"
-         "manifest" : "../../../../QxTransformer/trunk/Manifest.json" 
+         "manifest" : "${CONTRIB_LIB}/QxTransformer/trunk/Manifest.json"
        },  
        // qcl-js
        {
-         //"manifest" : "contrib://qcl/trunk/Manifest.json"
-         "manifest" : "../../Manifest.json"
+         "manifest" : "${CONTRIB_LIB}/qcl/trunk/Manifest.json"
        },
        // qcl-php
        {
-         "manifest" : "contrib://qcl-php/trunk/Manifest.json"
+         "manifest" : "${CONTRIB_LIB}/qcl-php/trunk/Manifest.json"
        },
        // PHP JSON-RPC server
        {
-         "manifest" : "contrib://RpcPhp/trunk/Manifest.json"
+         "manifest" : "${CONTRIB_LIB}/RpcPhp/trunk/Manifest.json"
        },     
        // Dialogs 
        {
-         "manifest" : "contrib://Dialog/trunk/Manifest.json"
+         "manifest" : "${CONTRIB_LIB}/Dialog/trunk/Manifest.json"
        }      
       ]
     },
@@ -88,7 +91,7 @@
     {
       "cache" :
       {
-        "downloads" : "${CONTRIB_PATH}"
+        "downloads" : "contrib"
       } 
     },
         
