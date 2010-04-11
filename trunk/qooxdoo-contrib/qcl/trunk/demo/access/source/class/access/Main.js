@@ -79,15 +79,15 @@ qx.Class.define("access.Main",
       this.info("Starting Application...");
       
       /*
-       * Setup authentication and configKey without
+       * Setup authentication and configuration without
        * setting the service methods
        */
       this.getAccessManager().init();
       this.getConfigManager().init();
 
       /*
-       * setup server state, this will configKeyure
-       * the service methods and start auth/configKey
+       * setup server state, this will configure
+       * the service methods and start auth/config
        */
       if ( ! this.getStateManager().getState("server") ) {
         this.setServer("rpcphp"); // this updates the state,too
