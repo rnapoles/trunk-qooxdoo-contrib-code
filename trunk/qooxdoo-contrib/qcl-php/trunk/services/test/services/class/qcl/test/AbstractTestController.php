@@ -174,7 +174,7 @@ class qcl_test_AbstractTestController
           || substr_count( $json, "[" ) != substr_count( $json, "]" );
         if( $problem )
         {
-          $this->warn( sprint(
+          $this->warn( sprintf(
             "There is a problem with the rpc test data in class '%s', method '%s'",
             $this->className(), $method
           ));

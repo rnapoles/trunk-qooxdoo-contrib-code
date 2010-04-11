@@ -35,6 +35,12 @@ class qcl_server_JsonRpcServer
    */
   private $controller = null;
 
+
+  /**
+   * An array mapping services to service classes
+   */
+  private $serviceClassMap = array();
+
   //-------------------------------------------------------------
   // initialization & startup
   //-------------------------------------------------------------
@@ -184,6 +190,23 @@ class qcl_server_JsonRpcServer
     }
   }
 
+  /**
+   * Maps a service to a class
+   * @param $service
+   * @param $class
+   * @return void
+   */
+  public function mapServiceToClass( $service, $class )
+  {
+    if ( ! is_string( $service ) or ! is_string( $class ) )
+    {
+      trigger_error("Involid arguments");
+    }
+    $this->debug("Mapping service 'service' to class '$class'");
+    $this->serviceClassMap[$service] = $class;
+  }
+
+
   //-------------------------------------------------------------
   //  overridden methods
   //-------------------------------------------------------------
@@ -191,16 +214,95 @@ class qcl_server_JsonRpcServer
   /**
    * Return the input as a php object if a valid
    * request is found, otherwise throw a JsonRpcException. Overridden
-   * to populate qcl_server_Request singleton from input
+   * to populate qcl_server_Request singleton from input and to start
+   * the application before the service is called.
    * @return StdClass
    * @throws JsonRpcException
    */
   public function getInput()
   {
+    /*
+     * parent function does all the work
+     */
     $input = parent::getInput();
+
+    /*
+     * populate the request
+     */
     $request = qcl_server_Request::getInstance();
     $request->set( $input );
+
+    /*
+     * call the application so that the service->class mapping
+     * is setup before the services are called.
+     */
+    $this->getApplication();
+
+    /*
+     * return the input
+     */
     return $input;
+  }
+
+  /**
+   * Overridden to allow underscores instead of dots.
+   * This a bit of a hack to allow mapping of service
+   * names to classes.
+   * @param string $service
+   */
+  public function getServiceComponents( $service )
+  {
+    if ( strstr( $service,"." ) )
+    {
+      return explode( ".", $service );
+    }
+    elseif ( strstr( $service,"_" ) )
+    {
+      return explode( "_", $service );
+    }
+    else
+    {
+      return $service;
+    }
+  }
+
+  /**
+   * Overridden to allow mapping of services to classes
+   * @param string $service
+   * @return string|false The name of the class it exists, otherwise false
+   *
+   */
+  function getServiceClass( $service, $classes = array() )
+  {
+    if ( isset( $this->serviceClassMap[$service] ) )
+    {
+      $class = $this->serviceClassMap[$service];
+      $this->debug( "Service '$service' is implemented by class/service '$class'");
+      return parent::getServiceClass( $class, array( $class ) );
+    }
+    else
+    {
+      return parent::getServiceClass( $service, array() );
+    }
+  }
+
+  /**
+   * Overridden to allow mapping of services to classes
+   * @param string $service
+   * @return string|false The name of the file if it was found, false if not.
+   */
+  public function loadServiceClass( $service )
+  {
+    if ( isset( $this->serviceClassMap[$service] ) )
+    {
+      $class = $this->serviceClassMap[$service];
+      $this->debug( "Loading class/service '$class' for requested service '$service'");
+      return parent::loadServiceClass( $class );
+    }
+    else
+    {
+      return parent::loadServiceClass( $service );
+    }
   }
 
   /**

@@ -27,9 +27,49 @@ class class_qcl_test_application_ApplicationTests
   extends qcl_test_AbstractTestController
 {
 
+  /**
+   * @rpctest {
+   *   requestData : {
+   *     service : "qcl.test.application.test1",
+   *     method  : "echo",
+   *     params  : ["hello"]
+   *   },
+   *   checkResult : "hello"
+   * }
+   */
+  public function method_checkServiceMapping1(){}
+
+  /**
+   * @rpctest {
+   *   requestData : {
+   *     service : "qcl.test.application.test2",
+   *     method  : "echo",
+   *     params  : ["hello"]
+   *   },
+   *   checkResult : "hello"
+   * }
+   */
+  public function method_checkServiceMapping2(){}
+
+  /**
+   * @rpctest {
+   *   requestData : {
+   *     service : "qcl.test.application.test3",
+   *     method  : "authenticate",
+   *     params  : [null]
+   *   },
+   *   checkResult : function( result )
+   *   {
+   *     return qx.lang.Type.isObject(result);
+   *   }
+   * }
+   */
+  public function method_checkServiceMapping3(){}
+
+
   function method_echo( $message )
   {
-    return "Client said: '$message'";
+    return $message;
   }
 
   function method_getIniValue($key)
