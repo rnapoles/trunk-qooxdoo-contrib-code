@@ -7,7 +7,7 @@
       "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
     },
     {
-      "path" : "${QXTRANSFORMER_PATH}/tool/bin/qxtransformer.json"
+      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
     }
   ],
 
@@ -53,7 +53,7 @@
     
     // QxTransformer
     "PYTHON" : "/opt/local/bin/python2.5",
-    "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/"
+    "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
   },
   
   "jobs" :
