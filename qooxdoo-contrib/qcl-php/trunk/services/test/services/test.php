@@ -27,6 +27,10 @@
 require "config.php";
 
 /*
+ * @todo check paths and other prerequisites here.
+ */
+
+/*
  * Load classes
  */
 require_once "qcl/server/Server.php";

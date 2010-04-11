@@ -60,6 +60,15 @@ class qcl_test_application_Application
     //$this->startLogging();
     qcl_data_model_db_ActiveRecord::resetBehaviors();
 
+    /**
+     * Register the services provided by this application
+     */
+    $this->registerServices( array(
+      "qcl.test.application.test1" => "qcl.test.application.ApplicationTests",
+      "qcl.test.application.test2" => "qcl_test_application_ApplicationTests",
+      "qcl.test.application.test3" => "qcl_access_Service"
+    ) );
+
     /*
      * Load initial data into models if that hasn't happened yet
      */

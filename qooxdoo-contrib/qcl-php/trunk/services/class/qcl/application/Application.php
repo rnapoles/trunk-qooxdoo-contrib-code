@@ -205,7 +205,7 @@ abstract class qcl_application_Application
   }
 
   //-------------------------------------------------------------
-  // ini values
+  // initial data
   //-------------------------------------------------------------
 
   /**
@@ -229,6 +229,28 @@ abstract class qcl_application_Application
       $xmlFile = new qcl_io_filesystem_local_File( "file://" . $path );
       $this->log( "     ... from $path" , QCL_LOG_APPLICATION );
       $model->import( new qcl_data_model_import_Xml( $xmlFile ) );
+    }
+  }
+
+  //-------------------------------------------------------------
+  // services that belong to this application
+  //-------------------------------------------------------------
+
+  /**
+   * Registers service names that will be used by this application and
+   * maps them to the classes that implement them. Takes an asoociative
+   * array. The keys are the service names, the values the implementing
+   * classes.
+   *
+   * @param array $serviceClassMap
+   * @return unknown_type
+   */
+  public function registerServices( $serviceClassMap )
+  {
+    $server = qcl_server_Server::getInstance()->getServerInstance();
+    foreach( $serviceClassMap as $service => $class )
+    {
+      $server->mapServiceToClass( $service, $class );
     }
   }
 

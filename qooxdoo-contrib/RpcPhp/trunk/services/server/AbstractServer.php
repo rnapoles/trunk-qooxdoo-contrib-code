@@ -137,7 +137,7 @@ if (! defined("JsonRpcDebugFile"))
  */
 if (! defined("JsonRpcPackageIndexFile") )
 {
-  define("JsonRpcPackageIndexFile", null );
+  define("JsonRpcPackageIndexFile", "__init__.php" );
 }
 
 /**
@@ -702,7 +702,7 @@ class AbstractServer
     return true;
   }
 
-  /*
+  /**
    * Loads the file containing the service class definition
    * @param string $service
    * @return string|false The name of the file if it was found, false if not.
@@ -733,10 +733,9 @@ class AbstractServer
       $classFile = "$prefix/$path.php";
       if ( file_exists( $classFile ) )
       {
-
         /*
          * if package index file exists, which loads package
-         * dependencies (usually '__index__.php'), load this first
+         * dependencies (usually '__init__.php'), load this first
          */
         if ( JsonRpcPackageIndexFile )
         {
@@ -747,7 +746,6 @@ class AbstractServer
             require_once $packageIndexFile;
           }
         }
-
         $this->debug("Loading class file '$classFile'...");
         require_once $classFile;
         return $classFile;
@@ -817,6 +815,7 @@ class AbstractServer
     /*
      * class name was not found
      */
+    $this->debug("Service class '$serviceName' does not exist.");
     throw new AbstractError(
       "Service class `" . $serviceName . "` not found.",
       JsonRpcError_ClassNotFound
@@ -1030,7 +1029,7 @@ class AbstractServer
    * to do something else with the debug output
    * @param string $str
    */
-  public function debug($str)
+  public function debug( $msg )
   {
     if ( $this->debug )
     {
