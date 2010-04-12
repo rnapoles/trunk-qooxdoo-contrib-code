@@ -98,7 +98,8 @@ class qcl_data_model_db_RelationBehavior
     if ( ! $this->isInitialized )
     {
       $this->getModel()->log( sprintf(
-        "* Initialzing relations for '%s'", $this->getModel()->className()
+        "* Initializing relations for '%s' using '%s'",
+        $this->getModel()->className(), get_class( $this )
       ), QCL_LOG_MODEL_RELATIONS );
       foreach( $this->relations() as $relation )
       {
@@ -609,6 +610,8 @@ class qcl_data_model_db_RelationBehavior
   public function setupForeignKey( $key, $relation )
   {
     $model   = $this->getModel();
+    $model->init();
+
     $propBeh = $model->getPropertyBehavior();
     if ( $propBeh->has( $key ) )
     {
@@ -631,6 +634,9 @@ class qcl_data_model_db_RelationBehavior
         $relation, $key, $model->className()
       ), QCL_LOG_MODEL_RELATIONS  );
 
+      /*
+       * add the property definition
+       */
       $propBeh->add( array(
         $key => array(
           "check"    => "integer",
@@ -640,6 +646,11 @@ class qcl_data_model_db_RelationBehavior
           "column"   => $key // FIXME make this configurable
         )
       ) );
+
+      /*
+       * setup the property
+       */
+      $propBeh->setupProperties( array( $key ) );
     }
     return $key;
   }
@@ -767,6 +778,14 @@ class qcl_data_model_db_RelationBehavior
       )
     ));
 
+    /*
+     * initialize join model
+     */
+    $joinModel->init();
+
+    /*
+     * add additional indexes
+     */
     $jointable =  $joinModel->getQueryBehavior() ->getTable();
     $indexName = "unique_" . $foreignKey . "_" . $targetForeignKey;
     if ( ! $jointable->indexExists( $indexName ) )
@@ -775,6 +794,8 @@ class qcl_data_model_db_RelationBehavior
         "unique", $indexName, array( $foreignKey, $targetForeignKey )
       );
     }
+
+
   }
 
   /**
@@ -846,9 +867,19 @@ class qcl_data_model_db_RelationBehavior
     static $joinModels = array();
     if ( ! isset( $joinModels[$joinTableName] ) )
     {
+      $this->getModel()->log( sprintf(
+        "Creating new join model with table name '%s' ...", $joinTableName
+      ), QCL_LOG_MODEL_RELATIONS );
+
       qcl_import( "qcl_data_model_db_JoinModel" );
       $joinModel = new qcl_data_model_db_JoinModel( $joinTableName );
       $joinModels[$joinTableName] = $joinModel;
+    }
+    else
+    {
+      $this->getModel()->log( sprintf(
+        "Using cached join model with table name '%s' ...", $joinTableName
+      ), QCL_LOG_MODEL_RELATIONS );
     }
     return $joinModels[$joinTableName];
   }

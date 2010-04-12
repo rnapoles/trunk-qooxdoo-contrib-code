@@ -110,25 +110,33 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * Set initial values unless the model has been restored from persistent
-   * data.
-   * @param boolean $force If true, re-initialize the properties regardless of
-   * whether the behavior has been initialized before
+   * Initializes the property behavior. Overrides parent class method.
    * @return void
    */
-  public function init( $force = false )
+  public function init()
   {
-    if ( ! $this->isInitialized or $force )
+    if ( ! $this->isInitialized )
     {
+      $this->getModel()->log( sprintf(
+        "* Initializing model properties for '%s' using '%s'",
+        $this->getModel()->className(), get_class( $this )
+      ), QCL_LOG_PROPERTIES );
+
+      /*
+       * set up the properties
+       */
+      $this->setupProperties();
+
+      /*
+       * initialize the property values
+       */
       $this->initPropertyValues();
+
+      /*
+       * remember we're intialized
+       */
       $this->isInitialized = true;
     }
-//    else
-//    {
-//      $this->log( sprintf(
-//        "Property behavior for model '%s' is already initialized.", $this->getModel()->className()
-//      ), QCL_LOG_PROPERTIES );
-//    }
   }
 
   /**
@@ -139,11 +147,7 @@ class qcl_data_model_PropertyBehavior
   public function initPropertyValues()
   {
 
-    $this->log( sprintf(
-      "Initializing properties for model '%s'.", $this->getModel()->className()
-    ), QCL_LOG_PROPERTIES );
     foreach( $this->properties as $property => $prop )
-
     {
       /*
        * skip id column
@@ -160,6 +164,10 @@ class qcl_data_model_PropertyBehavior
        */
       if ( isset( $prop['init'] )  )
       {
+        $this->getModel()->log( sprintf(
+          "Initializing property '%s' with '%s'",
+          $property, $prop['init']
+        ), QCL_LOG_PROPERTIES );
         $this->set( $property, $prop['init'] );
       }
 
@@ -170,6 +178,7 @@ class qcl_data_model_PropertyBehavior
       {
         if ( $prop['nullable'] == true )
         {
+        $this->getModel()->log(  "Initializing property '$property' with NULL", QCL_LOG_PROPERTIES );
           $this->set( $property, null );
         }
         else
@@ -210,7 +219,7 @@ class qcl_data_model_PropertyBehavior
    * Getter for definition of properties in the managed model
    * @return array
    */
-  protected function _propertyMap()
+  public function _propertyMap()
   {
     $this->getModel()->warn(sprintf("Use %s() only for debugging", __METHOD__ ) );
     return $this->properties;
@@ -426,6 +435,15 @@ class qcl_data_model_PropertyBehavior
     }
 
     return $this->properties;
+  }
+
+  /**
+   * Empty placeholder to be overridden
+   * @return void
+   */
+  public function setupProperties()
+  {
+    // does nothing currently
   }
 
   /**

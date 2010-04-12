@@ -48,15 +48,24 @@ class qcl_core_PropertyBehavior
 
   /**
    * Initializes behavior. Does nothing currently.
-   * @return unknown_type
+   * @return bool True if calling subclass should also do initialization
+   * stuff, false if already initialized
    */
   public function init()
   {
     if ( ! $this->isInitialized )
     {
-      //
+//      $this->getObject()->log( sprintf(
+//        "* Initializing object properties for '%s' using '%s'",
+//        $this->getObject()->className(), get_class( $this )
+//      ), QCL_LOG_PROPERTIES );
+
+      // do nothing at this point
+
       $this->isInitialized = true;
+      return true;
     }
+    return false;
   }
 
   /**

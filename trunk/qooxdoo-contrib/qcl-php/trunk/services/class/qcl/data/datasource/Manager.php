@@ -122,7 +122,7 @@ class qcl_data_datasource_Manager
 
     try
     {
-      $registry->load( $namedId );
+      $registry->load( $schemaName );
       return $registry->getClass();
     }
     catch ( qcl_data_model_RecordNotFoundException $e )
@@ -163,6 +163,28 @@ class qcl_data_datasource_Manager
   {
     return $this->getDatasourceModel()->getQueryBehavior()->fetchValues( "namedId" );
   }
+
+  /**
+   * Creates a datasource with the given name, of the given schema.
+   * @param $name
+   * @param $schema
+   * @return qcl_data_datasource_DbModel
+   */
+  public function createDatasource( $name, $schema )
+  {
+    if ( ! is_string( $name ) or ! is_string( $schema ) )
+    {
+      throw new InvalidArgumentException(" Invalid arguments ");
+    }
+    $dsModel = $this->getDatasourceModel();
+    $dsModel->create( $name, array( "schema" => $schema ) );
+    $dsModel->setDsn( $this->getApplication()->getUserDsn() ); //FIXME generalize this
+    $dsModel->save();
+
+    return $this->getDatasourceModelByName( $name );
+  }
+
+
 
   /**
    * Retrieves and initializes the datasource model object for a
@@ -213,7 +235,6 @@ class qcl_data_datasource_Manager
        */
       $dsModel = new $schemaClass;
       $dsModel->load( $name );
-      $dsModel->init();
 
       /*
        * save reference to the object
@@ -226,5 +247,47 @@ class qcl_data_datasource_Manager
      */
     return $this->datasourceModels[$name];
   }
+
+  /**
+   * Destroys all data connected to the model, such as tables etc.
+   * Use with caution, as this may have desastrous effects.
+   */
+  public function destroyAll()
+  {
+    /*
+     * destroy each datasource in the table
+     */
+    foreach( $this->datasources() as $name )
+    {
+      $this->getDatasourceModelByName( $name )->destroy();
+    }
+
+    /*
+     * destroy the table itself
+     */
+    $dsModel= $this->getDatasourceModel();
+    $this->log( "Destroying the datasource table for " . get_class( $dsModel ), QCL_LOG_DATASOURCE);
+    $dsModel->getQueryBehavior()->getTable()->delete();
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
+  }
+
+
+  /**
+   * Deletes all datasources with their model data.
+   * Use with caution, as this may have desastrous effects.
+   * @return boolean
+   */
+  public function emptyAll()
+  {
+    /*
+     * delete each datasource in the table
+     */
+    foreach( $this->datasources() as $name )
+    {
+      $this->getDatasourceModelByName( $name )->delete();
+    }
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
+  }
+
 }
 ?>

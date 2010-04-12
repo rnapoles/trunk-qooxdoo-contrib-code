@@ -30,18 +30,29 @@ qcl_import( "qcl_data_datasource_Manager" );
 class ds_Addressbook
   extends qcl_data_datasource_DbModel
 {
-  function __construct()
+  /**
+   * When called for the first time, register the connected models.
+   * This cannot be done in the constructor, because the datasource
+   * model must exists before the models are registered.
+   *
+   * @return boolean True if initialization has to be done in the subclass,
+   *   false if object was already initialized earlier.
+   */
+  public function init()
   {
-    parent::__construct();
-
     /*
-     * register the models
+     * register the model classes when called the first timethe following pattern to register the models.
      */
-    $this->registerModels( array(
-      'person' => new ds_Person($this),
-      'group'  => new ds_Group($this),
-      'tag'    => new ds_Tag($this)
-    ) );
+    if ( parent::init() )
+    {
+      $this->registerModels( array(
+        'person' => array( 'class' => "ds_Person" ),
+        'group'  => array( 'class' => "ds_Group" ),
+        'tag'    => array( 'class' => "ds_Tag" )
+      ) );
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -51,6 +62,7 @@ class ds_Addressbook
   {
     return qcl_getInstance( __CLASS__ );
   }
+
 
   /**
    * Returns the "person" model
@@ -79,6 +91,26 @@ class ds_Addressbook
     return $this->getModelOfType("tag");
   }
 
+}
+
+class ds_AddressbookManager
+  extends qcl_data_datasource_Manager
+{
+  /**
+   * @return ds_AddressbookManager
+   */
+  static public function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }
+
+  /**
+   * @return ds_Addressbook
+   */
+  protected function getDatasourceModel()
+  {
+    return ds_Addressbook::getInstance();
+  }
 }
 
 class ds_Person
@@ -115,36 +147,36 @@ class class_qcl_test_data_datasource_DatasourceTest
 
     $this->startLogging();
 
-    $dsManager = qcl_data_datasource_Manager::getInstance();
+    /*
+     * empty all the tables if they still exist
+     */
+    ds_AddressbookManager::getInstance()->emptyAll();
+
+
+    $dsManager = ds_AddressbookManager::getInstance();
     $dsManager->registerSchema( "addressbook", array(
       "class"       => "ds_Addressbook",
       "description" => "A schema for addressbooks that have a person, group and tag model"
     ) );
 
-
     /*
      * create a new addressbook datasource that is stored in the
      * user database and initialize it and its models
      */
-    $addressbook = ds_Addressbook::getInstance();
-    $addressbook->deleteAll();
-    $addressbook->create("my_addressbook");
-    $addressbook->setDsn( $this->getApplication()->getUserDsn() );
-    $addressbook->init();
+    $addressbook1 = $dsManager->createDatasource( "my_addressbook", "addressbook");
 
-    $person1 = $addressbook->getPersonModel();
-    $group1  = $addressbook->getGroupModel();
-    $tag1    = $addressbook->getTagModel();
+    $person1 = $addressbook1->getPersonModel();
+    $group1  = $addressbook1->getGroupModel();
+    $tag1    = $addressbook1->getTagModel();
 
-    $person1->deleteAll();
     $person1->create("Peter");
     $person1->create("Paul");
     $person1->create("Mary");
-    $group1->deleteAll();
+
     $group1->create("Work");
     $group1->create("Personal");
     $group1->create("Leisure");
-    $tag1->deleteAll();
+
     $tag1->create("foo");
     $tag1->create("bar");
 
@@ -152,23 +184,20 @@ class class_qcl_test_data_datasource_DatasourceTest
      * create a second addressbook datasource that is stored in the
      * same database
      */
-    $addressbook->create("meine_adressen");
-    $addressbook->setDsn( $this->getApplication()->getUserDsn() );
-    $addressbook->init();
+    $addressbook2 = $dsManager->createDatasource( "meine_adressen", "addressbook");
 
-    $person2 = $addressbook->getPersonModel();
-    $group2  = $addressbook->getGroupModel();
-    $tag2    = $addressbook->getTagModel();
+    $person2 = $addressbook2->getPersonModel();
+    $group2  = $addressbook2->getGroupModel();
+    $tag2    = $addressbook2->getTagModel();
 
-    $person2->deleteAll();
     $person2->create("Monika");
     $person2->create("Fritz");
     $person2->create("Ingrid");
-    $group2->deleteAll();
+
     $group2->create("Arbeit");
     $group2->create("Freizeit");
     $group2->create("Familie");
-    $tag2->deleteAll();
+
     $tag2->create("dies");
     $tag2->create("das");
 
@@ -182,6 +211,12 @@ class class_qcl_test_data_datasource_DatasourceTest
       $person2->namedId(), $person2->datasourceModel()->namedId()
     ) );
 
+    /*
+     * destroy all the tables if they still exist
+     */
+    ds_AddressbookManager::getInstance()->destroyAll();
+    //ds_AddressbookManager::getInstance()->emptyAll();
+
     return "OK";
   }
 
@@ -189,15 +224,18 @@ class class_qcl_test_data_datasource_DatasourceTest
   function startLogging()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_DATASOURCE, true );
-//    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
-//    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_OBJECT, true );
 //    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
 //    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
+
   }
 
   function endLogging()
   {
+    $this->getLogger()->setFilterEnabled( QCL_LOG_OBJECT, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_DATASOURCE, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_DB, false );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, false );

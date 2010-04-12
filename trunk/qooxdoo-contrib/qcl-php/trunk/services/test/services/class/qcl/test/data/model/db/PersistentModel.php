@@ -76,6 +76,7 @@ class class_qcl_test_data_model_db_PersistentModel
 
       $this->info("*** Initial data ... ");
       $model = new PersistentClass();
+
       $this->info("*** Changing and saving data ... ");
       $model->setName("abcdef");
       $model->setCounter(2);
@@ -104,7 +105,8 @@ class class_qcl_test_data_model_db_PersistentModel
       unset($model);
 
     } catch( Exception $e ) {
-      $this->raiseError($e->getMessage());
+      $this->warn($e);
+      throw $e;
     }
 
     return "OK";
@@ -120,8 +122,10 @@ class class_qcl_test_data_model_db_PersistentModel
   private function startLogging()
   {
     qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_PERSISTENCE, true );
+    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
+    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_MODEL, true );
     //qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_DB, true );
-    qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLES, true );
+    //qcl_log_Logger::getInstance()->setFilterEnabled( QCL_LOG_TABLES, true );
   }
 
   private function endLogging()

@@ -98,6 +98,12 @@ class qcl_data_model_db_PropertyBehavior
   private static $cache = null;
 
   /**
+   * Whether the behavior has been initialized
+   * @var bool
+   */
+  private $isInitialized = false;
+
+  /**
    * Getter for managed model
    * @return qcl_data_model_db_ActiveRecord
    */
@@ -107,18 +113,62 @@ class qcl_data_model_db_PropertyBehavior
   }
 
   /**
-   * Constructor. Creates table if it doesn't already exist.
-   * @param qcl_data_model_db_ActiveRecord $model
-   * FIXME fix dependencies here!
+   * Returns the static cache object
+   * @return qcl_data_model_db_PropertyCache
    */
-  function __construct( $model )
+  protected function cache()
   {
-//    if( ! $model instanceof qcl_data_model_db_IModel )
-//    {
-//      $model->raiseError("Invalid model passed to property behavior.");
-//    }
+    if ( ! self::$cache )
+    {
+      qcl_import( "qcl_data_model_db_PropertyCache" );
+      self::$cache = new qcl_data_model_db_PropertyCache();
+    }
+    return self::$cache;
+  }
 
-    parent::__construct( $model );
+  /**
+   * Initializes the property behavior. Overrides parent class method.
+   * @return void
+   */
+  public function init()
+  {
+    if ( ! $this->isInitialized )
+    {
+      $this->getModel()->log( sprintf(
+        "* Initializing model properties for '%s' using '%s'",
+        $this->getModel()->className(), get_class( $this )
+      ), QCL_LOG_PROPERTIES );
+
+      /*
+       * setup the table holding the data
+       */
+      $this->setupTable();
+
+      /*
+       * set up the properties
+       */
+      $this->setupProperties();
+
+      /*
+       * initialize the property values
+       */
+      $this->initPropertyValues();
+
+      /*
+       * remember we're intialized
+       */
+      $this->isInitialized = true;
+    }
+  }
+
+  /**
+   * Creates model table if it doesn't already exist.
+   * @return void
+   */
+  function setupTable()
+  {
+
+    $model = $this->getModel();
 
     /*
      * check if table exists, otherwise create
@@ -160,44 +210,34 @@ class qcl_data_model_db_PropertyBehavior
     }
   }
 
-  /**
-   * Returns the static cache object
-   * @return qcl_data_model_db_PropertyCache
-   */
-  protected function cache()
-  {
-    if ( ! self::$cache )
-    {
-      qcl_import( "qcl_data_model_db_PropertyCache" );
-      self::$cache = new qcl_data_model_db_PropertyCache();
-    }
-    return self::$cache;
-  }
 
   /**
-   * Adds a property definition. Sets up the corresponding
-   * table column if it doesn't already exist.
-   * @param array $properties
+   * Sets up the model properties, creating corresponding
+   * tables and columns if they doesn't already exist.
+   *
    * @return void
    */
-  public function add( $properties )
+  public function setupProperties( $filter=null )
   {
-    /*
-     * add property map to local map
-     */
-    parent::add( $properties );
-    $model     = $this->getModel();
-    $qBehavior = $model->getQueryBehavior();
-    $adpt      = $qBehavior->getAdapter();
-    $table     = $qBehavior->getTable();
-    $tableName = $qBehavior->getTableName();
-    $cache     = $this->cache();
+    $properties = $this->properties;
+    $model      = $this->getModel();
+    $qBehavior  = $model->getQueryBehavior();
+    $adpt       = $qBehavior->getAdapter();
+    $table      = $qBehavior->getTable();
+    $tableName  = $qBehavior->getTableName();
+    $cache      = $this->cache();
 
+    /*
+     * check table name
+     */
     if ( ! $tableName )
     {
-      $model->raiseError("No table name!");
+      $model->raiseError("Cannot setup properties. No table name!");
     }
 
+    /*
+     * setup cache
+     */
     if ( ! isset( $cache->properties[$tableName] ) )
     {
       $cache->properties[$tableName] = array();
@@ -210,11 +250,14 @@ class qcl_data_model_db_PropertyBehavior
      */
     foreach( $properties as $property => $prop )
     {
+      if ( is_array( $filter ) and ! in_array( $property, $filter ) ) continue;
+
       /*
        * save the property definition in serialized form
        */
       $serializedProps = serialize( $prop );
-      if ( isset( $cachedProps[$property] ) and $cachedProps[$property] == $serializedProps )
+      if ( isset( $cachedProps[$property] )
+        and $cachedProps[$property] == $serializedProps )
       {
         $model->log( sprintf(
           "Property '%s' of class '%s', table '%s' has not changed.",
@@ -272,6 +315,7 @@ class qcl_data_model_db_PropertyBehavior
 
       /*
        * add "NULL" to sql type if not specified (default)
+       * @todo this should be tied to the "nullable" property
        */
       if ( ! strstr( $sqltype, "NULL") and ! strstr( $sqltype, "null") )
       {
@@ -281,11 +325,12 @@ class qcl_data_model_db_PropertyBehavior
       /*
        * check type
        */
-      if ( ! isset( $prop['sqltype'] ) )
+      if ( ! $sqltype )
       {
-        throw new qcl_data_model_Exception(
-          sprintf( "Property '%s.%s' does not have a 'sqltype' definition.", get_class( $this->model), $property )
-        );
+        throw new qcl_data_model_Exception( sprintf(
+          "Property '%s.%s' does not have a valid 'sqltype' definition.",
+          get_class( $this->model), $property
+        ) );
       }
 
       /*
@@ -360,6 +405,7 @@ class qcl_data_model_db_PropertyBehavior
    */
   public function reset()
   {
+    $this->isInitialized = false;
     $this->cache()->reset();
   }
 }

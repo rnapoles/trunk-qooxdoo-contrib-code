@@ -135,6 +135,7 @@ class qcl_data_model_db_PersistenceBehavior
    */
   public function restore( $object, $id )
   {
+
     $sessionId = $this->getSessionIdValue( $object );
     $userId    = $this->getUserIdValue( $object );
 

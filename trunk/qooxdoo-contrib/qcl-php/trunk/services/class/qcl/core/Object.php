@@ -82,19 +82,25 @@ class qcl_core_Object
      * initialize object id
      */
     $this->objectId();
+
+    $this->log( "* Constructing $this", QCL_LOG_OBJECT );
   }
 
   /**
    * Initialize object
-   * @return unknown_type
+   * @return boolean True if initialization has to be done in the subclass,
+   * false if object was already initialized earlier.
    */
   public function init()
   {
     if ( ! $this->isInitialized )
     {
+      $this->log( "* Initializing $this", QCL_LOG_OBJECT );
       $this->getPropertyBehavior()->init();
       $this->isInitialized = true;
+      return true;
     }
+    return false;
   }
 
   /**
@@ -104,6 +110,23 @@ class qcl_core_Object
   public static function getInstance()
   {
     return qcl_getInstance( get_called_class() );
+  }
+
+  /**
+   * Returns true if object has been initialized
+   * @return bool
+   */
+  public function isInitialized()
+  {
+    return $this->isInitialized;
+  }
+
+  /**
+   * Resets the initialization state
+   */
+  public function resetInitialized()
+  {
+    $this->isInitialized = false;
   }
 
   //-------------------------------------------------------------
