@@ -203,7 +203,30 @@ class qcl_test_AbstractTestController
   public function assertEquals( $expected, $found, $msg=null, $class=null, $line=null )
   {
     if ( $expected == $found ) return true;
-    if ( $msg === null )   $msg   = "Values are not equal.";
+    if ( $msg === null ) {
+      $msg = sprintf(
+        "Values are not equal: Expected '%s', found '%s'",
+        $expected, $found
+      );
+    }
+    if ( $class === null ) $class = "Unknown class"; //FIXME
+    if ( $line === null )  $line  = "Unknown line"; // FIXME
+    throw new qcl_test_AssertionException( "$msg ($class:$line)" );
+  }
+
+  /**
+   * Assert that value is boolean true.
+   *
+   * @param mixed $value
+   * @param string $msg|null Message to be shown if the assertion fails.
+   *  Defaults to "Failed."
+   * @param string|null $class name of the class. Pass the __CLASS__ constant here.
+   * @param string|null $line line number. Pass the __LINE__ constant here.
+   * @return boolean true If values are equal
+   */
+  public function assertTrue( $value, $msg="Failed.", $class=null, $line=null )
+  {
+    if ( $value === true ) return true;
     if ( $class === null ) $class = "Unknown class";
     if ( $line === null )  $line  = "Unknown line";
     throw new qcl_test_AssertionException( "$msg ($class:$line)" );
