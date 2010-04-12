@@ -108,6 +108,12 @@ class qcl_data_datasource_DbModel
   //-------------------------------------------------------------
 
   /**
+   * The datasource manager object
+   * @var qcl_data_datasource_Manager
+   */
+  public $manager;
+
+  /**
    * Models that are attached to this datasource
    * @var array
    */
@@ -146,6 +152,14 @@ class qcl_data_datasource_DbModel
   // API methods
   //-------------------------------------------------------------
 
+  /**
+   * Getter for manager
+   * @return qcl_data_datasource_Manager
+   */
+  public function getManager()
+  {
+    return $this->manager;
+  }
 
   /**
    * Registers the models that are part of the datasource
@@ -360,13 +374,12 @@ class qcl_data_datasource_DbModel
   public function delete()
   {
     $this->init();
-    $this->log( "Emptying all models of datasource $this", QCL_LOG_DATASOURCE);
+    $this->log( "Destroying all models of datasource $this", QCL_LOG_DATASOURCE);
     foreach( $this->modelTypes() as $type )
     {
-      $this->getModelOfType( $type )->deleteAll();
+      $this->getModelOfType( $type )->destroy();
     }
-    $this->log( "Deleting datasource $this", QCL_LOG_DATASOURCE);
-    $this->getQueryBehavior()->deleteWhere( array( "id" => $this->id() ) );
+    $this->getManager()->deleteDatasource( $this->namedId(), false );
   }
 }
 

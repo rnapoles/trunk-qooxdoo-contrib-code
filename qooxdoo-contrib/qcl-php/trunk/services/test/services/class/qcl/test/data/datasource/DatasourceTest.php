@@ -150,9 +150,11 @@ class class_qcl_test_data_datasource_DatasourceTest
     /*
      * empty all the tables if they still exist
      */
-    ds_AddressbookManager::getInstance()->emptyAll();
+    //ds_AddressbookManager::getInstance()->emptyAll();
 
-
+    /*
+     * register the "addressbook" schema
+     */
     $dsManager = ds_AddressbookManager::getInstance();
     $dsManager->registerSchema( "addressbook", array(
       "class"       => "ds_Addressbook",
@@ -160,8 +162,7 @@ class class_qcl_test_data_datasource_DatasourceTest
     ) );
 
     /*
-     * create a new addressbook datasource that is stored in the
-     * user database and initialize it and its models
+     * create a new addressbook datasource
      */
     $addressbook1 = $dsManager->createDatasource( "my_addressbook", "addressbook");
 
@@ -182,7 +183,7 @@ class class_qcl_test_data_datasource_DatasourceTest
 
     /*
      * create a second addressbook datasource that is stored in the
-     * same database
+     * same database and create some models that depend on it
      */
     $addressbook2 = $dsManager->createDatasource( "meine_adressen", "addressbook");
 
@@ -210,6 +211,17 @@ class class_qcl_test_data_datasource_DatasourceTest
       "'%s' is in addressbook '%s'",
       $person2->namedId(), $person2->datasourceModel()->namedId()
     ) );
+
+    $this->assertTrue( $addressbook1 === $dsManager->getDatasourceModelByName( "my_addressbook") );
+    $this->assertTrue( $addressbook2 === $dsManager->getDatasourceModelByName( "meine_adressen") );
+
+    $this->assertEquals( 2, count( $dsManager->datasources() ) );
+
+    $addressbook1->delete();
+    $this->assertEquals( 1, count( $dsManager->datasources() ) );
+
+    $dsManager->deleteDatasource( "meine_adressen" );
+    $this->assertEquals( 0, count( $dsManager->datasources() ) );
 
     /*
      * destroy all the tables if they still exist

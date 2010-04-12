@@ -186,6 +186,7 @@ class qcl_data_datasource_Manager
 
 
 
+
   /**
    * Retrieves and initializes the datasource model object for a
    * datasource with the given name. Caches the result during a
@@ -239,6 +240,7 @@ class qcl_data_datasource_Manager
       /*
        * save reference to the object
        */
+      $dsModel->manager = $this;
       $this->datasourceModels[$name] = $dsModel;
     }
 
@@ -247,6 +249,28 @@ class qcl_data_datasource_Manager
      */
     return $this->datasourceModels[$name];
   }
+
+  /**
+   * Deletes a datasource from the database and from the manager cache.
+   * @param $name
+   * @param $deleteModels Whether to delete the datasource's models, too
+   *   Defaults to true
+   * @return unknown_type
+   */
+  public function deleteDatasource( $name, $deleteModels=true )
+  {
+    $dsModel = $this->getDatasourceModelByName( $name );
+    if ( $deleteModels )
+    {
+      foreach( $dsModel->modelTypes() as $type )
+      {
+        $dsModel->getModelOfType( $type )->destroy();
+      }
+    }
+    $dsModel->getQueryBehavior()->deleteWhere( array( NAMED_ID => $name ) );
+    unset( $this->datasourceModels[$name] );
+  }
+
 
   /**
    * Destroys all data connected to the model, such as tables etc.

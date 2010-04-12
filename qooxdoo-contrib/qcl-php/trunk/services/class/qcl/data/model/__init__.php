@@ -19,6 +19,8 @@
 /*
  * constants
  */
+define("ID", "id");
+define("NAMED_ID", "namedId");
 define("QCL_RELATIONS_HAS_ONE", "n:1");
 define("QCL_RELATIONS_HAS_MANY", "1:n");
 define("QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY", "n:n");
