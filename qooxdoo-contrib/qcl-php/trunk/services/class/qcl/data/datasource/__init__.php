@@ -19,7 +19,7 @@
 /*
  * Log filter
  */
-if ( defined("QCL_LOG_DATASOURCE") )
+if ( ! defined("QCL_LOG_DATASOURCE") )
 {
   define("QCL_LOG_DATASOURCE","datasource");
 }

@@ -26,9 +26,10 @@ define("QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY", "n:n");
 /*
  * exceptions
  */
-class qcl_data_model_Exception extends JsonRpcException{}
+class qcl_data_model_Exception extends LogicException{}
 class qcl_data_model_RecordExistsException extends qcl_data_model_Exception{}
 class qcl_data_model_RecordNotFoundException extends qcl_data_model_Exception{}
+class qcl_data_model_NoRecordLoadedException extends qcl_data_model_Exception{}
 
 /*
  * log filters

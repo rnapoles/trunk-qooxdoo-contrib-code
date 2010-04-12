@@ -180,6 +180,9 @@ class class_qcl_test_access_Models
    */
   public function method_testModel()
   {
+    try
+    {
+  //$this->startLogging();
     /*
      * create model instances
      */
@@ -275,6 +278,13 @@ class class_qcl_test_access_Models
     access_UserConfig::getInstance()->destroy();
 
     return "OK";
+
+    }
+    catch ( Exception $e )
+    {
+      $this->warn( $e );
+      throw $e;
+    }
   }
 
   protected function testAnonymous()
@@ -357,11 +367,11 @@ class class_qcl_test_access_Models
 
   protected function startLogging()
   {
-    $this->getLogger()->setFilterEnabled( QCL_LOG_ACCESS, true );
+    //$this->getLogger()->setFilterEnabled( QCL_LOG_ACCESS, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );
     //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
 
   }

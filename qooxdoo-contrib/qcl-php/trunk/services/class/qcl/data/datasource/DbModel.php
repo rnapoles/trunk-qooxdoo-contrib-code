@@ -111,12 +111,26 @@ class qcl_data_datasource_DbModel
    * Models that are attached to this datasource
    * @var array
    */
-  var $modelMap = array();
+  private $modelMap = array();
 
+  /**
+   * Cache for model instances
+   * @var array
+   */
+  private $modelCache = array();
 
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
+
+  /**
+   * Constructor, adds properties
+   */
+  public function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+  }
 
   /**
    * Returns singleton instance of this class.
@@ -127,27 +141,16 @@ class qcl_data_datasource_DbModel
     return qcl_getInstance(__CLASS__);
   }
 
-  /**
-   * Initializes all models that belong to this datasource.
-   *
-   */
-  public function init()
-  {
-    parent::init();
-    foreach( $this->modelTypes() as $type )
-    {
-      $this->getModelOfType($type)->init();
-    }
-  }
 
   //-------------------------------------------------------------
   // API methods
   //-------------------------------------------------------------
 
+
   /**
    * Registers the models that are part of the datasource
    * @param array $modelMap Associative array that maps the
-   * type of model to the model instance
+   * type of model to the model classes
    * @return void
    */
   public function registerModels( $modelMap )
@@ -156,18 +159,27 @@ class qcl_data_datasource_DbModel
     {
       $this->raiseError( "Invalid argument" );
     }
-    foreach( $modelMap as $type => $model )
+
+    /*
+     * iterate through the map an register each model
+     */
+    foreach( $modelMap as $type => $data )
     {
-      if ( ! $model instanceof qcl_data_model_AbstractActiveRecord
-        and ! $model instanceof qcl_data_model_IActiveRecord )
+      $class = $data['class'];
+      if ( ! class_exists( $class )  ) // FIXME check interface
       {
-        throw new InvalidArgumentException("Invalid model class");
+        throw new InvalidArgumentException("Invalid model class '$class'");
       }
 
       /*
        * store reference
        */
-      $this->modelMap[$type] = $model;
+      $this->modelMap[$type] = $data;
+
+      $this->log( sprintf(
+        "Datasource '%s': registered model of type '%s' with class '%s'",
+        $this, $type, $class
+      ), QCL_LOG_DATASOURCE );
     }
   }
 
@@ -187,11 +199,27 @@ class qcl_data_datasource_DbModel
    */
   public function getModelOfType( $type )
   {
+    $this->checkLoaded();
+
     if ( ! isset( $this->modelMap[$type] ) )
     {
-      throw new InvalidArgumentException("Model of type '$type' does not exist");
+      throw new InvalidArgumentException("Model of type '$type' is not registered");
     }
-    return $this->modelMap[$type];
+
+    /*
+     * get, initialize and return the model
+     */
+    $class = $this->modelMap[$type]['class'];
+    $namedId = $this->namedId();
+
+    if ( ! isset( $this->modelCache[$class] ) )
+    {
+      $model = new $class( $this );
+      $model->init();
+      $this->modelCache[$class] = $model;
+    }
+
+    return $this->modelCache[$class];
   }
 
   /**
@@ -234,7 +262,7 @@ class qcl_data_datasource_DbModel
     $this->set( array(
       'type'     => $matches[1],
       'host'     => $matches[2],
-      'port'     => $matches[3],
+      'port'     => (int) $matches[3],
       'database' => $matches[4],
     ) );
     return $this;
@@ -247,7 +275,7 @@ class qcl_data_datasource_DbModel
    */
   public function createAdapter()
   {
-    return qcl_data_db_Manager::getInstance()->createAdapter( $this->dsn() );
+    return qcl_data_db_Manager::getInstance()->createAdapter( $this->getDsn() );
   }
 
   /**
@@ -292,6 +320,53 @@ class qcl_data_datasource_DbModel
   public function providesModelTypes()
   {
     return array();
+  }
+
+
+  //-------------------------------------------------------------
+  // Overwritten methods
+  //-------------------------------------------------------------
+
+  /**
+   * Disabled
+   */
+  public function destroy()
+  {
+    $this->init();
+    $this->log( "Destroying all models of datasource $this", QCL_LOG_DATASOURCE);
+    foreach( $this->modelTypes() as $type )
+    {
+      $this->getModelOfType( $type )->destroy();
+    }
+    $this->log( "Deleting datasource $this", QCL_LOG_DATASOURCE);
+    $this->getQueryBehavior()->deleteWhere( array( "id" => $this->id() ) );
+  }
+
+
+  /**
+   * Disabled
+   */
+  public function deleteAll()
+  {
+    throw new LogicException( "Not allowed.");
+  }
+
+  /**
+   * Deletes the datasource model instance data and the data of all
+   * the connected models from the database.
+   *
+   * @return boolean
+   */
+  public function delete()
+  {
+    $this->init();
+    $this->log( "Emptying all models of datasource $this", QCL_LOG_DATASOURCE);
+    foreach( $this->modelTypes() as $type )
+    {
+      $this->getModelOfType( $type )->deleteAll();
+    }
+    $this->log( "Deleting datasource $this", QCL_LOG_DATASOURCE);
+    $this->getQueryBehavior()->deleteWhere( array( "id" => $this->id() ) );
   }
 }
 

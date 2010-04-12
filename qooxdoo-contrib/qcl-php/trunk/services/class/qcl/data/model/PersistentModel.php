@@ -56,6 +56,12 @@ class qcl_data_model_PersistentModel
    */
   private $propertyBehavior = null;
 
+  /**
+   * Whether the model has been initialized
+   * @var bool
+   */
+  private $isInitialized = false;
+
   //-------------------------------------------------------------
   // Constructor & initialization
   //-------------------------------------------------------------
@@ -63,36 +69,36 @@ class qcl_data_model_PersistentModel
   /**
    * Model initialization. If you define an overriding method, make sure
    * to call the parent method, otherwise the properties will not be initialized.
+   * Replaces parent methods, does not call them by design.
    */
   public function init()
   {
-    if ( $this->isNew() )
+    if ( ! $this->isInitialized )
     {
-      $this->getPropertyBehavior()->init();
+      /*
+       * if this is a new object, i.e. not restored from cache,
+       * do the full initialization of the property behavior.
+       */
+      if ( $this->isNew() )
+      {
+        $this->getPropertyBehavior()->init();
+      }
+      else
+      {
+        $this->log( sprintf(
+          "* Setting up properties for persisten model '%s' without resetting them...", $this->className()
+        ), QCL_LOG_PERSISTENCE );
+        $this->getPropertyBehavior()->setupProperties();
+      }
+      $this->isInitialized = true;
+      return true;
     }
+    return false;
   }
 
   //-------------------------------------------------------------
   // Getters & setters
   //-------------------------------------------------------------
-
-  /**
-   * Returns model name
-   * @return string
-   */
-  public function name()
-  {
-    return $this->name;
-  }
-
-  /**
-   * Returns model type
-   * @return string
-   */
-  public function type()
-  {
-    return $this->type;
-  }
 
   //-------------------------------------------------------------
   // Properties

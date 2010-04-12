@@ -52,11 +52,6 @@ class qcl_data_model_AbstractActiveRecord
    */
   private $lastQuery;
 
-  /**
-   * If the model has been initialized
-   * @var bool
-   */
-  private $isInitialized = false;
 
   //-------------------------------------------------------------
   // Model properties
@@ -109,20 +104,18 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Initializes the model and the behaviors.
+   * @return boolean True if initialization has to be done in the subclass,
+   * false if object was already initialized earlier.
    */
   public function init()
   {
-    if ( ! $this->isInitialized )
+    if ( parent::init() )
     {
-      $this->getPropertyBehavior()->init();
+      $this->getQueryBehavior()->init();
       $this->getRelationBehavior()->init();
+      return true;
     }
-    else
-    {
-      $this->log( sprintf(
-        "Model '%s' is already initialized.", $this->className()
-      ), QCL_LOG_MODEL );
-    }
+    return false;
   }
 
   //-------------------------------------------------------------
@@ -171,10 +164,23 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Setter for datasource model
    * @param qcl_data_datasource_DbModel $datasourceModel
+   * FIXME use interface!
    */
   protected function setDatasourceModel( $datasourceModel )
   {
-    $this->datasourceModel = $datasourceModel;
+    if ( is_null( $datasourceModel ) )
+    {
+      $this->datasourceModel = $datasourceModel;
+    }
+    elseif ( $datasourceModel instanceof qcl_data_datasource_DbModel )
+    {
+      $datasourceModel->id(); // makes sure active record is loaded
+      $this->datasourceModel = $datasourceModel;
+    }
+    else
+    {
+      throw new InvalidArgumentException("Datasource model must be null or instance of qcl_data_datasource_DbModel");
+    }
   }
 
   /**
@@ -202,6 +208,7 @@ class qcl_data_model_AbstractActiveRecord
     if ( ! $id )
     {
       $this->raiseError("No record loaded in model " . $this->className() );
+      throw new qcl_data_model_NoRecordLoadedException("No record loaded in model " . $this->className() );
     }
     return $id;
   }
@@ -215,6 +222,14 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getId();
   }
 
+  /**
+   * Checks whether a record is loaded and throws an exception if not
+   * @return void
+   */
+  public function checkLoaded()
+  {
+    $this->id();
+  }
 
 
   //-------------------------------------------------------------
@@ -592,7 +607,7 @@ class qcl_data_model_AbstractActiveRecord
      */
     $this->init();
 
-    $this->log( sprintf( "Unlinking all linked records for model '%s' ...", $this->className() ), QCL_LOG_MODEL );
+    $this->log( "Unlinking all records for model $this", QCL_LOG_MODEL );
 
     /*
      * initialize all dependent models so that he dependencies are set up
@@ -616,10 +631,10 @@ class qcl_data_model_AbstractActiveRecord
        * unlink all model records and delete dependend ones
        */
       $this->log( sprintf(
-        "    ... for relation '%s':%s target model '%s'",
+        "    ... for relation '%s':%s target model %s",
         $relation,
         $isDependent ? " dependent":"",
-        $targetModel->className()
+        $targetModel
       ), QCL_LOG_MODEL );
       $relationBehavior->unlinkAll( $targetModel, true,  $isDependent );
     }
@@ -628,10 +643,11 @@ class qcl_data_model_AbstractActiveRecord
      * delete model data
      */
     $this->log( sprintf(
-      "Deleting all records for model '%s'", $this->className()
+      "Deleting all records for model %s", $this
     ), QCL_LOG_MODEL );
 
-    return $this->getQueryBehavior()->deleteAll();
+    $this->getQueryBehavior()->deleteAll();
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
   }
 
   /**
@@ -921,6 +937,7 @@ class qcl_data_model_AbstractActiveRecord
       }
     }
     $this->getQueryBehavior()->destroy();
+    qcl_data_model_db_ActiveRecord::resetBehaviors();
   }
 
   /**
@@ -929,7 +946,8 @@ class qcl_data_model_AbstractActiveRecord
   public function __toString()
   {
     $id = $this->getPropertyBehavior()->get("id");
-    return sprintf( "[%s #%s]", $this->className(), $id ? $id : "--" );
+    $ds = $this->datasourceModel();
+    return sprintf( "[%s%s/%s]", ( $ds ? $ds->namedId() . "/" : "" ) , $this->className(),  ( $id ? $id : "--" ) );
   }
 }
 ?>

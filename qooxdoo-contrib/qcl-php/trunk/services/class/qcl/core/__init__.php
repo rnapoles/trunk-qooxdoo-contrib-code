@@ -25,6 +25,11 @@ define("QCL_ARGUMENT_NOT_SET", "QCL_ARGUMENT_NOT_SET");
  * create filters
  */
 $logger = qcl_log_Logger::getInstance();
+
+define("QCL_LOG_OBJECT","object");
+$logger->registerFilter( QCL_LOG_OBJECT, "Object-related debugging.",false);
+
+
 define("QCL_LOG_PERSISTENCE","persistence");
 $logger->registerFilter( QCL_LOG_PERSISTENCE, "Persistence-related debugging.",false);
 

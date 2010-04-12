@@ -64,6 +64,20 @@ class qcl_data_model_db_QueryBehavior
    */
   static private $cache;
 
+
+  /**
+   * The indexes of the model table
+   * @var array
+   */
+  private $indexes = array();
+
+
+  /**
+   * Whether the object is initialized
+   * @var unknown_type
+   */
+  private $isInitialized = false;
+
   //-------------------------------------------------------------
   // Constructor
   //-------------------------------------------------------------
@@ -78,6 +92,21 @@ class qcl_data_model_db_QueryBehavior
      * the model affected by this behavior
      */
     $this->model = $model;
+  }
+
+  /**
+   * Initialization
+   * @return bool true if initialization is necessary, false if already initialized
+   */
+  function init()
+  {
+    if ( ! $this->isInitialized )
+    {
+      $this->setupIndexes();
+      $this->isInitialized  = true;
+      return true;
+    }
+    return false;
   }
 
   //-------------------------------------------------------------
@@ -176,7 +205,7 @@ class qcl_data_model_db_QueryBehavior
       $dsModel = $this->getDatasourceModel();
       if ( $dsModel )
       {
-        $this->adapter = $dsModel->getAdapter();
+        $this->adapter = $dsModel->createAdapter();
       }
 
       /*
@@ -279,10 +308,25 @@ class qcl_data_model_db_QueryBehavior
    */
   public function addIndexes( $indexes )
   {
-    $model = $this->getModel();
+    foreach( $indexes as $name => $index)
+    {
+      $this->indexes['name'] = $index;
+    }
+  }
+
+  /**
+   * Sets up the indexes. This must be called from the init()
+   * method, after the properties have been set up
+   *
+   * @return void.
+   */
+  public function setupIndexes()
+  {
+    $indexes   = $this->indexes;
+    $model     = $this->getModel();
     $tableName = $this->getTableName();
-    $table = $this->getTable();
-    $cache = $this->cache();
+    $table     = $this->getTable();
+    $cache     = $this->cache();
 
     foreach( $indexes as $name => $index )
     {
@@ -346,7 +390,6 @@ class qcl_data_model_db_QueryBehavior
       $table->addIndex( $index['type'], $name, $columns );
       $cache->indexes[$tableName][$name] = $index;
     }
-
   }
 
 
