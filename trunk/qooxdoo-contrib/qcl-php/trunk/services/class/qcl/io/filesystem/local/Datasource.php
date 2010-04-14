@@ -23,7 +23,8 @@ require_once "qcl/io/filesystem/local/Folder.php";
  * Class modeling a datasource containing files stored on the local computer.
  * Currently does not support subfolders
  */
-class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_DbModel
+class qcl_io_filesystem_local_Datasource
+  extends qcl_data_datasource_DbModel
 {
 
   /**
@@ -42,7 +43,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_DbModel
    * @abstract
    * @param string $datasource Name of the datasource
    */
-  function initializeModels( $datasource )
+  function init()
   {
     $resourcePath = $this->getType() . "://" . $this->getResourcePath();
     $this->folderObj = new qcl_io_filesystem_local_Folder( $resourcePath );
@@ -77,44 +78,9 @@ class qcl_io_filesystem_local_Datasource extends qcl_data_datasource_DbModel
     return array( "host", "port", "username", "password", "database", "prefix");
   }
 
-  /**
-   * Creates a local filesystem datasource
-   * @return void
-   * @param string $datasource datasource name
-   * @param array  $options    connection data etc.
-   */
-  function create ( $datasource, $options = array()  )
-  {
-    /*
-     * check datasource name
-     */
-    if ( ! $this->_checkCreate($datasource) ) return false;
-
-    /*
-     * create entry
-     */
-    $this->insert(array(
-      "namedId"      => $datasource,
-      "active"       => isset($options['active']) ? $options['active'] : 1,
-      "readonly"     => isset($options['readonly']) ? $options['readonly'] : 0,
-      "native"       => 0,
-      "name"         => either($options['name'],$datasource),
-      "schema"       => $this->schemaName(),
-      "type"         => "file",
-      "resourcepath" => either($options['resourcepath'],QCL_UPLOAD_PATH),
-      "description"  => either($options['description'],""),
-      "owner"        => either($options['owner'],""),
-      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,
-    ));
-
-    return true;
-  }
-
   function isFileStorage()
   {
     return true;
   }
-
 }
-
 ?>

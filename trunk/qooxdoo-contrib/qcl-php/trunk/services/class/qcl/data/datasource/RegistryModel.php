@@ -35,16 +35,18 @@ class qcl_data_datasource_RegistryModel
    */
   private $properties = array(
     'class' => array(
-      'check'   => "string",
-      'sqltype' => "varchar(100)"
+      'check'     => "string",
+      'sqltype'   => "varchar(100) NOT NULL"
     ),
     'description' => array(
-      'check'   => "string",
-      'sqltype' => "varchar(255)"
+      'check'     => "string",
+      'sqltype'   => "varchar(255)"
     ),
     'active' => array(
       'check'   => "boolean",
-      'sqltype' => "tinyint(1)"
+      'sqltype' => "tinyint(1)",
+      'nullable'  => false,
+      'init'      => true
     )
   );
 
@@ -61,7 +63,6 @@ class qcl_data_datasource_RegistryModel
     $this->addProperties( $this->properties );
   }
 
-
   /**
    * Returns singleton instance of this class.
    * @return qcl_data_datasource_RegistryModel
@@ -70,6 +71,5 @@ class qcl_data_datasource_RegistryModel
   {
     return qcl_getInstance(__CLASS__);
   }
-
 }
 ?>
