@@ -145,12 +145,7 @@ class class_qcl_test_data_datasource_DatasourceTest
   {
     qcl_data_model_db_ActiveRecord::resetBehaviors();
 
-    $this->startLogging();
-
-    /*
-     * empty all the tables if they still exist
-     */
-    //ds_AddressbookManager::getInstance()->emptyAll();
+    //$this->startLogging();
 
     /*
      * register the "addressbook" schema
@@ -166,6 +161,9 @@ class class_qcl_test_data_datasource_DatasourceTest
      */
     $addressbook1 = $dsManager->createDatasource( "my_addressbook", "addressbook");
 
+    /*
+     * create model data
+     */
     $person1 = $addressbook1->getPersonModel();
     $group1  = $addressbook1->getGroupModel();
     $tag1    = $addressbook1->getTagModel();
@@ -202,6 +200,9 @@ class class_qcl_test_data_datasource_DatasourceTest
     $tag2->create("dies");
     $tag2->create("das");
 
+    /*
+     * some logging
+     */
     $this->info( sprintf(
       "'%s' is in addressbook '%s'",
       $person1->namedId(), $person1->datasourceModel()->namedId()
@@ -212,6 +213,9 @@ class class_qcl_test_data_datasource_DatasourceTest
       $person2->namedId(), $person2->datasourceModel()->namedId()
     ) );
 
+    /*
+     * testing
+     */
     $this->assertTrue( $addressbook1 === $dsManager->getDatasourceModelByName( "my_addressbook") );
     $this->assertTrue( $addressbook2 === $dsManager->getDatasourceModelByName( "meine_adressen") );
 
@@ -224,10 +228,13 @@ class class_qcl_test_data_datasource_DatasourceTest
     $this->assertEquals( 0, count( $dsManager->datasources() ) );
 
     /*
-     * destroy all the tables if they still exist
+     * unregister schema and destruction of data
      */
-    ds_AddressbookManager::getInstance()->destroyAll();
+    $dsManager->unregisterSchema("addressbook");
+    $dsManager->destroyAll();
     //ds_AddressbookManager::getInstance()->emptyAll();
+
+
 
     return "OK";
   }

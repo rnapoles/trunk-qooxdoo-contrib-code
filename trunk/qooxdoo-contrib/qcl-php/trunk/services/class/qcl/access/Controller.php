@@ -22,6 +22,8 @@ qcl_import( "qcl_util_registry_Session" );
 /**
  * Accessibility behavior class thathandles authentication, access control
  * and configuration
+ *
+ * FIXME access models need to be made part of the access datasource
  */
 class qcl_access_Controller
   extends qcl_data_controller_Controller
@@ -37,12 +39,14 @@ class qcl_access_Controller
 
   //-------------------------------------------------------------
   // models
-  //-------------------------------------------------------------
+  //-------------------------------------------------------------}
+
 
   /**
    * Gets the user data model
    * @param string|int $id Load record if given
    * @return qcl_access_model_User
+   * FIXME Get from access datasource
    */
   public function getUserModel( $id=null )
   {
@@ -55,6 +59,7 @@ class qcl_access_Controller
    * Gets the permission data model
    * @param string|int $id Load record if given
    * @return qcl_access_model_Permission
+   * FIXME Get from access datasource
    */
   public function getPermissionModel( $id = null)
   {
@@ -67,6 +72,7 @@ class qcl_access_Controller
    * Gets the role data model
    * @param string|int $id Load record if given
    * @return qcl_access_model_Role
+   * FIXME Get from access datasource
    */
   public function getRoleModel( $id=null )
   {

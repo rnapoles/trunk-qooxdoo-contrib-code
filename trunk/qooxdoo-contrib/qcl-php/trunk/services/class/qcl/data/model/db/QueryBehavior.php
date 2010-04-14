@@ -442,8 +442,11 @@ class qcl_data_model_db_QueryBehavior
         $properties = explode(",",$properties[0]);
       }
     }
-    elseif ( ! is_array( $propArg )
-            and ! is_null( $propArg ) )
+    elseif ( is_array( $propArg ) )
+    {
+      $properties = $propArg;
+    }
+    elseif ( ! is_null( $propArg ) )
     {
       $this->raiseError("Invalid 'properties'.");
     }
@@ -932,6 +935,10 @@ class qcl_data_model_db_QueryBehavior
    */
   public function fetchValues( $property, $query=null )
   {
+
+    /*
+     * create query object from arguments
+     */
     if ( is_array ( $query ) or is_null ( $query ) )
     {
       $query = new qcl_data_db_Query( array(
@@ -939,14 +946,38 @@ class qcl_data_model_db_QueryBehavior
         'where'      => $query
       ) );
     }
-    elseif ( $query instanceof qcl_data_db_Query )
+
+    /*
+     * if query argument is a query object, set its 'properties'
+     * value unless it is already set
+     */
+    elseif ( $query instanceof qcl_data_db_Query  )
     {
-      $query->properties = $property;
+      if ( ! $query->getProperties() )
+      {
+        $query->setProperties( (array) $property );
+      }
+      elseif ( $property === null )
+      {
+        $property = $query->properties[0];
+      }
+      else
+      {
+        throw new InvalidArgumentException("Invalid query data.");
+      }
     }
+
+    /*
+     * invalid argument
+     */
     else
     {
-      $this->raiseError("Invalid query data.");
+      throw new InvalidArgumentException("Invalid query data.");
     }
+
+    /*
+     * select and fetch data
+     */
     $this->select( $query );
     $result = array();
     while( $row = $this->fetch() )

@@ -44,11 +44,13 @@ class qcl_data_model_AbstractNamedActiveRecord
   /**
    * Creates a new model record, optionally setting initial
    * property values.
-   * @param $namedId
+   *
+   * @param string|array|object $first If string, use as named id. If array,
+   * or object, use as record data to extract the named id from.
    * @param array|null Optional map of properties to set
    * @return int Id of the record
    */
-  public function create( $namedId, $data=null )
+  public function create( $first, $data=null )
   {
     /*
      * initialize model and behaviors
@@ -58,10 +60,24 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * check named id
      */
-    if ( ! is_string( $namedId ) )
+    if ( is_array( $first ) or is_object( $first ) )
     {
-      $this->raiseError("Invalid named id '$namedId'" );
+      $data = (array) $first;
+      $namedId = $data['namedId'];
+      unset( $data['namedId'] );
     }
+    elseif ( is_string( $first ) )
+    {
+      $namedId = $first;
+    }
+    else
+    {
+      throw new InvalidArgumentException("Invalid named id '$first'" );
+    }
+
+    /*
+     * check for duplicate
+     */
     if ( $this->namedIdExists( $namedId) )
     {
       throw new qcl_data_model_RecordExistsException("Named id '$namedId' already exists");

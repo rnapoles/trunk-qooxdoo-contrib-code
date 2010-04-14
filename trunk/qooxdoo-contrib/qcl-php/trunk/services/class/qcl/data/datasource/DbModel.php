@@ -38,6 +38,12 @@ class qcl_data_datasource_DbModel
   //-------------------------------------------------------------
 
   /**
+   * Table name
+   * @var string
+   */
+  protected $tableName = "data_Datasource";
+
+  /**
    * The model properties
    */
   private $properties = array(
@@ -45,9 +51,9 @@ class qcl_data_datasource_DbModel
       'check'   => "string",
       'sqltype' => "varchar(255)"
     ),
-    'prefix' => array(
+    'schema' => array(
       'check'   => "string",
-      'sqltype' => "varchar(20)"
+      'sqltype' => "varchar(20) NOT NULL"
     ),
     'type' => array(
       'check'   => "string",
@@ -78,6 +84,10 @@ class qcl_data_datasource_DbModel
       'sqltype' => "varchar(20)",
       'nullable'  => false,
       'init'      => "utf-8"
+    ),
+    'prefix' => array(
+      'check'   => "string",
+      'sqltype' => "varchar(20)"
     ),
     'resourcepath' => array(
       'check'   => "string",
