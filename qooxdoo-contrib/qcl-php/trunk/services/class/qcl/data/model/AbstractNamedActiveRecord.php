@@ -111,14 +111,22 @@ class qcl_data_model_AbstractNamedActiveRecord
    */
   public function createIfNotExists( $namedId, $data  )
   {
+    /*
+     * initialize if not already initialized
+     */
+    $this->init();
+
+    /*
+     * get numeric id and load record, if not exists, create it
+     */
     $id = $this->namedIdExists( $namedId );
-    if ( $id === false )
+    if ( $id !== false )
     {
-      $id = $this->create( $namedId, $data );
+      $this->load( $id );
     }
     else
     {
-      $this->load( $id );
+      $id = $this->create( $namedId, $data );
     }
     return $id;
   }

@@ -76,7 +76,7 @@ class qcl_data_datasource_Manager
     }
     $class = $options['class'];
 
-    // FIXME FIXME
+    // FIXME FIXME : decide if class must exists at time of registering so that we can do dependency checks or not
     if ( ! is_string( $class) ) //or ! $class instanceof qcl_data_datasource_DbModel )
     {
       throw new InvalidArgumentException("Invalid class '$class'. Must implement qcl_data_datasource_IModel ");

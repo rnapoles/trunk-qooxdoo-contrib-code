@@ -22,6 +22,9 @@ qcl_import("qcl_core_IPersistenceBehavior");
  * Persistence Behavior that saves the object's public properties
  * to the PHP session by an id. If you want to save only one instance
  * of the object, use the class name as id.
+ *
+ * FIXME Do we need $object AND $id? $object should have its persistence
+ * id built in -> change interface and implementations!
  */
 class qcl_core_PersistenceBehavior
   implements qcl_core_IPersistenceBehavior
@@ -79,6 +82,15 @@ class qcl_core_PersistenceBehavior
   public function dispose( $object, $id )
   {
     qcl_log_Logger::getInstance()->log( "Deleting persistence data for " . $object->className() . " (id '$id')", QCL_LOG_PERSISTENCE);
+    unset( $_SESSION[ self::KEY ][ $id ] );
+  }
+
+  /**
+   * Resets all persistence data
+   * @return void
+   */
+  public function reset()
+  {
     unset( $_SESSION[ self::KEY ][ $id ] );
   }
 }

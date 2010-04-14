@@ -41,14 +41,6 @@ class qcl_data_datasource_DbModel
    * The model properties
    */
   private $properties = array(
-    'schema' => array(
-      'check'   => "string",
-      'sqltype' => "varchar(50)"
-    ),
-    'name' => array(
-      'check'   => "string",
-      'sqltype' => "varchar(50)"
-    ),
     'description' => array(
       'check'   => "string",
       'sqltype' => "varchar(255)"
@@ -59,7 +51,7 @@ class qcl_data_datasource_DbModel
     ),
     'type' => array(
       'check'   => "string",
-      'sqltype' => "varchar(20)"
+      'sqltype' => "varchar(20) NOT NULL"
     ),
     'host' => array(
       'check'   => "string",
@@ -83,23 +75,31 @@ class qcl_data_datasource_DbModel
     ),
     'encoding' => array(
       'check'   => "string",
-      'sqltype' => "varchar(20)"
+      'sqltype' => "varchar(20)",
+      'nullable'  => false,
+      'init'      => "utf-8"
     ),
     'resourcepath' => array(
       'check'   => "string",
       'sqltype' => "varchar(255)"
     ),
     'active' => array(
-      'check'   => "boolean",
-      'sqltype' => "tinyint(1)"
+      'check'     => "boolean",
+      'sqltype'   => "tinyint(1)",
+      'nullable'  => false,
+      'init'      => true
     ),
     'readonly' => array(
-      'check'   => "boolean",
-      'sqltype' => "tinyint(1)"
+      'check'     => "boolean",
+      'sqltype'   => "tinyint(1)",
+      'nullable'  => false,
+      'init'      => false
     ),
     'hidden' => array(
       'check'   => "boolean",
-      'sqltype' => "tinyint(1)"
+      'sqltype' => "tinyint(1)",
+      'nullable'  => false,
+      'init'      => false
     )
   );
 
@@ -326,16 +326,6 @@ class qcl_data_datasource_DbModel
     return false;
   }
 
-  /**
-   * Returns an array of the type of models that this datasource provides.
-   * Defaults to an empty array.
-   * @return array
-   */
-  public function providesModelTypes()
-  {
-    return array();
-  }
-
 
   //-------------------------------------------------------------
   // Overwritten methods
@@ -382,5 +372,4 @@ class qcl_data_datasource_DbModel
     $this->getManager()->deleteDatasource( $this->namedId(), false );
   }
 }
-
 ?>
