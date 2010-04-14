@@ -167,8 +167,6 @@ class class_qcl_test_access_Models
 
 
   /**
-   * Tests the a global value
-   * @return string
    * @rpctest {
    *   "requestData" : {
    *     "service" : "qcl.test.access.Models",

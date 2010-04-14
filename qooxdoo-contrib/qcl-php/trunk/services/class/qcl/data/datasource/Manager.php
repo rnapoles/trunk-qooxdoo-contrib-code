@@ -152,7 +152,14 @@ class qcl_data_datasource_Manager
    */
   protected function getDatasourceModel()
   {
-    return qcl_data_datasource_DbModel::getInstance();
+    static $dsModel = null;
+    if ( $dsModel === null )
+    {
+      qcl_import( "qcl_data_datasource_DbModel" );
+      $dsModel =  qcl_data_datasource_DbModel::getInstance();
+      $dsModel->init();
+    }
+    return $dsModel;
   }
 
   /**
@@ -177,7 +184,7 @@ class qcl_data_datasource_Manager
       throw new InvalidArgumentException(" Invalid arguments ");
     }
     $dsModel = $this->getDatasourceModel();
-    $dsModel->create( $name, array( "schema" => $schema ) );
+    $dsModel->create( $name, array( "schema" => $schema, "type" => "placeholder" ) );
     $dsModel->setDsn( $this->getApplication()->getUserDsn() ); //FIXME generalize this
     $dsModel->save();
 
@@ -234,6 +241,7 @@ class qcl_data_datasource_Manager
       /*
        * instantiate, load data and initialize the datasource and the attached models
        */
+      qcl_import( $schemaClass );
       $dsModel = new $schemaClass;
       $dsModel->load( $name );
 

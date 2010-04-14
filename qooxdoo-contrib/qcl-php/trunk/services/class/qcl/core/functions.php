@@ -183,7 +183,8 @@ function either()
  * Transform an object structure into an associative array.
  * In contrast to array casting with "(array)", this function
  * transverses nested object structures, including nested arrays within
- * this structure
+ * this structure.
+ *
  * @param object $var
  * return array
  */

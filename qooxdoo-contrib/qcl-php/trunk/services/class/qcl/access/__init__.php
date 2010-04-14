@@ -19,6 +19,16 @@
 ************************************************************************ */
 
 /*
+ * constants
+ */
+define( "QCL_ACCESS_READ",    "read"  );
+define( "QCL_ACCESS_WRITE",   "write" );
+define( "QCL_ACCESS_CREATE",  "create" );
+define( "QCL_ACCESS_DELETE",  "delete" );
+define( "QCL_ACCESS_ALL",     "*" );
+define( "QCL_ROLE_ANONYMOUS", "anonymous" );
+
+/*
  * Exceptions thrown in this class and subclasses
  */
 class qcl_access_AccessDeniedException extends JsonRpcException {}

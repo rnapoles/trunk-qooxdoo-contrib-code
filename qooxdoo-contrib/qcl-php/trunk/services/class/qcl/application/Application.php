@@ -17,6 +17,21 @@
  */
 
 qcl_import( "qcl_access_model_User" ); // this imports all the other required models
+qcl_import( "qcl_data_model_db_PersistentObject" );
+
+class qcl_application_ApplicationCache
+  extends qcl_data_model_db_PersistentObject
+{
+  public $datasourceRegistered = false;
+
+  /**
+   * @return qcl_application_ApplicationCache
+   */
+  static public function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }
+}
 
 /**
  * Base class for applications. This class mainly provides access to the
@@ -54,6 +69,10 @@ abstract class qcl_application_Application
    * @var qcl_application_Application
    */
   static private $application;
+
+  //-------------------------------------------------------------
+  // initialization
+  //-------------------------------------------------------------
 
   //-------------------------------------------------------------
   // property getters
@@ -141,6 +160,7 @@ abstract class qcl_application_Application
     qcl_import( "qcl_access_SessionController" );
     return qcl_access_SessionController::getInstance();
   }
+
 
   //-------------------------------------------------------------
   // event dispatcher and message bus

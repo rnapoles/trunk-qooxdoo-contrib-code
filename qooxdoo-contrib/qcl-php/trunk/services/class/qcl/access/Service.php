@@ -16,9 +16,9 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/data/controller/Controller.php";
-require_once "qcl/access/IAccessService.php";
-require_once "qcl/access/AuthenticationResult.php";
+qcl_import( "qcl_data_controller_Controller" );
+qcl_import( "qcl_access_IAccessService" );
+qcl_import( "qcl_access_AuthenticationResult" );
 
 /**
  * Service providing methods for authentication and authorization
@@ -26,7 +26,7 @@ require_once "qcl/access/AuthenticationResult.php";
  */
 class qcl_access_Service
   extends qcl_data_controller_Controller
-  implements qcl_access_IAccessService
+//  implements qcl_access_IAccessService
 {
   /**
    * Actively authenticate the user with session id or with username and password.
@@ -125,7 +125,8 @@ class qcl_access_Service
     /**
      * log out only if the current session id and the requesting session id match
      */
-    if ( $this->getSessionId() != qcl_server_Request::getInstance()->getServerData("sessionId") )
+    $requestingSessionId = qcl_server_Request::getInstance()->getServerData("sessionId") ;
+    if ( $requestingSessionId and $this->getSessionId() != $requestingSessionId )
     {
       $this->log("Session that requested logout already terminated, no need to log out.",QCL_LOG_ACCESS);
     }

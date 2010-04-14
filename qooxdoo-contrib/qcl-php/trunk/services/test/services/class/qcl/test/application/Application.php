@@ -25,6 +25,8 @@ class qcl_test_application_ApplicationCache
   extends qcl_data_model_db_PersistentObject
 {
   public $dataImported = false;
+  public $datasourceRegistered = false;
+  public $datasourcesCreated = false;
 
   /**
    * @return qcl_test_application_ApplicationCache
@@ -57,8 +59,18 @@ class qcl_test_application_Application
    */
   public function main()
   {
+    $this->log( "Starting test application", QCL_LOG_APPLICATION );
     //$this->startLogging();
+
+    /*
+     * reset internal caches - only for debugging
+     */
     qcl_data_model_db_ActiveRecord::resetBehaviors();
+
+    /*
+     * application cache
+     */
+    $cache = qcl_test_application_ApplicationCache::getInstance();
 
     /**
      * Register the services provided by this application
@@ -72,8 +84,7 @@ class qcl_test_application_Application
     /*
      * Load initial data into models if that hasn't happened yet
      */
-    $cache = qcl_test_application_ApplicationCache::getInstance();
-    if (  ! $cache->get("dataImported") )
+    if ( ! $cache->get("dataImported") )
     {
        $this->log("Importing data ....", QCL_LOG_APPLICATION );
        $this->importInitialData( array(
@@ -83,12 +94,39 @@ class qcl_test_application_Application
         'role'        => "qcl/test/application/data/Role.xml",
        ) );
        $cache->set( "dataImported", true );
-       $cache->savePersistenceData();
     }
-    else
+
+    /*
+     * Register the access models as a datasource to make
+     * them accessible to client queries
+     * FIXME this needs to go into the framework
+     */
+    if ( ! $cache->get("datasourceRegistered") )
     {
-      $this->log("Data has already been imported.", QCL_LOG_APPLICATION );
+      qcl_import( "qcl_data_datasource_Manager" );
+      qcl_import( "qcl_access_DatasourceModel" );
+      $dsManager = qcl_data_datasource_Manager::getInstance();
+      $dsManager->registerSchema("access",array(
+        'class'       => "qcl_access_DatasourceModel",
+        'description' => "Datasource for the user, permission, role, config and userconfig models"
+      ) );
+      $cache->set( "datasourceRegistered", true );
     }
+
+    /*
+     * create datasources
+     * FIXME should go into the framework
+     */
+    //$cache->set( "datasourcesCreated", false );
+    if ( ! $cache->get("datasourcesCreated") )
+    {
+      qcl_import( "qcl_data_datasource_Manager" );
+      qcl_import( "qcl_access_DatasourceModel" );
+      $dsManager = qcl_data_datasource_Manager::getInstance();
+      $dsManager->createDatasource("access","access");
+      $cache->set( "datasourcesCreated", true );
+    }
+
     //$this->endLogging();
   }
 
