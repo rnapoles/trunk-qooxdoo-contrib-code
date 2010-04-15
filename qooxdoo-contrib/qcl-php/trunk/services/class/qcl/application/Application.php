@@ -17,21 +17,7 @@
  */
 
 qcl_import( "qcl_access_model_User" ); // this imports all the other required models
-qcl_import( "qcl_data_model_db_PersistentObject" );
-
-class qcl_application_ApplicationCache
-  extends qcl_data_model_db_PersistentObject
-{
-  public $datasourceRegistered = false;
-
-  /**
-   * @return qcl_application_ApplicationCache
-   */
-  static public function getInstance()
-  {
-    return qcl_getInstance( __CLASS__ );
-  }
-}
+qcl_import( "qcl_application_ApplicationCache" );
 
 /**
  * Base class for applications. This class mainly provides access to the
@@ -237,15 +223,63 @@ abstract class qcl_application_Application
   {
     qcl_import( "qcl_data_model_import_Xml" );
     qcl_import( "qcl_io_filesystem_local_File" );
+    qcl_import( "qcl_data_datasource_Manager" );
+    qcl_import( "qcl_access_DatasourceModel" );
 
+    /*
+     * Register the access models as a datasource to make
+     * them accessible to client queries
+     */
+    try
+    {
+      $this->log( "Registering 'access' datasource schema" , QCL_LOG_APPLICATION );
+      $dsManager = qcl_data_datasource_Manager::getInstance();
+      $dsManager->registerSchema("access",array(
+        'class'       => "qcl_access_DatasourceModel",
+        'description' => "Datasource for the user, permission, role, config and userconfig models"
+      ) );
+    }
+    catch( qcl_data_model_RecordExistsException $e )
+    {
+      $this->warn("'Access' datasource schema already exists.");
+    }
+
+    /*
+     * create datasources
+     */
+    $dsManager = qcl_data_datasource_Manager::getInstance();
+    try
+    {
+      $this->log( "Creating 'access' datasource" , QCL_LOG_APPLICATION );
+      $dsManager->createDatasource("access","access");
+    }
+    catch( qcl_data_model_RecordExistsException $e )
+    {
+      $this->warn("'Access' datasource already exists.");
+    }
+
+    /*
+     * Import data
+     */
     foreach( $data as $type => $path )
     {
       $this->info("*** Importing '$type' data...");
-      $modelGetter = "get" . ucfirst( $type ) . "Model";
-      $model = $type == "config" ?
-        $this->$modelGetter() :
-        $this->getAccessController()->$modelGetter();
+
+      /*
+       * get model from datasource
+       */
+      $dsModel = $dsManager->getDatasourceModelByName( "access" );
+      $model   = $dsModel->getModelOfType( $type );
+
+      /*
+       * delete all data
+       * @todo check overwrite
+       */
       $model->deleteAll();
+
+      /*
+       * import new data
+       */
       $xmlFile = new qcl_io_filesystem_local_File( "file://" . $path );
       $this->log( "     ... from $path" , QCL_LOG_APPLICATION );
       $model->import( new qcl_data_model_import_Xml( $xmlFile ) );
