@@ -98,7 +98,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * insert into database
      */
-    $id = $this->getQueryBehavior()->insertRow( $this->data() );
+    $id = (int) $this->getQueryBehavior()->insertRow( $this->data() );
 
     /*
      * reload the data, in case the database has changed/added something
@@ -164,7 +164,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     if ( $rowCount )
     {
       $result = $bhv->fetch();
-      return $result['id'];
+      return (int) $result['id'];
     }
     else
     {
@@ -195,7 +195,11 @@ class qcl_data_model_AbstractNamedActiveRecord
       $result = $this->getQueryBehavior()->fetch();
       if ( $result )
       {
-        $this->set( $result );
+        $propBehavior = $this->getPropertyBehavior();
+        foreach( $result as $property => $value )
+        {
+          $this->set( $property, $propBehavior->typecast( $property, $value ) );
+        }
         return $this;
       }
 

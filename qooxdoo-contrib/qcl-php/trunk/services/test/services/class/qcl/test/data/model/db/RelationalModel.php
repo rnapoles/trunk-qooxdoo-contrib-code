@@ -395,7 +395,7 @@ class class_qcl_test_data_model_db_RelationalModel
       }
     }
 
-    //$this->startLogging();
+
 
     /*
      * iterate through the groups.
@@ -417,7 +417,7 @@ class class_qcl_test_data_model_db_RelationalModel
         $group->getName(), $q2->getRowCount(), implode( ",", $members )
       ) );
     }
-
+//$this->startLogging();
     /*
      * delete a user, this should delete his/her history
      */
@@ -456,7 +456,7 @@ class class_qcl_test_data_model_db_RelationalModel
 
   function startLogging()
   {
-    //$this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
+    $this->getLogger()->setFilterEnabled( QCL_LOG_DB, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_TABLES, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
     $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );

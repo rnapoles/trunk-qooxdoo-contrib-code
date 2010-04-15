@@ -38,6 +38,20 @@ class qcl_data_datasource_DbModel
   //-------------------------------------------------------------
 
   /**
+   * The name of the schema, needed for self-
+   * registering
+   * @var string
+   */
+  protected $schemaName = null;
+
+  /**
+   * The description of the schema, needed for self-
+   * registering
+   * @var unknown_type
+   */
+  protected $description = null;
+
+  /**
    * Table name
    * @var string
    */
@@ -47,6 +61,10 @@ class qcl_data_datasource_DbModel
    * The model properties
    */
   private $properties = array(
+    'title' => array(
+      'check'   => "string",
+      'sqltype' => "varchar(100)"
+    ),
     'description' => array(
       'check'   => "string",
       'sqltype' => "varchar(255)"
@@ -157,6 +175,22 @@ class qcl_data_datasource_DbModel
     return qcl_getInstance(__CLASS__);
   }
 
+  /**
+   * Self-registers the datasource model with the manager
+   * @return void
+   */
+  public function registerSchema()
+  {
+    if ( ! $this->schemaName  )
+    {
+      throw new LogicException("You must define the 'schemaName' property to be able to self-register the datasource.");
+    }
+    $dsManager = qcl_data_datasource_Manager::getInstance();
+    $dsManager->registerSchema( $this->schemaName, array(
+      'class'       => $this->className(),
+      'description' => $this->description
+    ) );
+  }
 
   //-------------------------------------------------------------
   // API methods
@@ -190,6 +224,7 @@ class qcl_data_datasource_DbModel
     foreach( $modelMap as $type => $data )
     {
       $class = $data['class'];
+      qcl_import( $class );
       if ( ! class_exists( $class )  ) // FIXME check interface
       {
         throw new InvalidArgumentException("Invalid model class '$class'");

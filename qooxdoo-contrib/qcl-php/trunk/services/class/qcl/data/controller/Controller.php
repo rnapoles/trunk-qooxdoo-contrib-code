@@ -160,7 +160,12 @@ class qcl_data_controller_Controller
    */
   protected function getModelAcl()
   {
-    return $this->acl['model'];
+    $modelAcl = $this->acl['model'];
+    if ( ! is_array( $modelAcl ) or ! count( $modelAcl ) )
+    {
+      throw new JsonRpcException("No model ACL defined for " . $this->className() );
+    }
+    return $modelAcl;
   }
 
   /**
@@ -433,8 +438,23 @@ class qcl_data_controller_Controller
     $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, $properties );
 
     /*
+     * check read access to properties in "where" clause
+     */
+    $where = $query->getWhere();
+    if ( $where )
+    {
+      if ( ! is_array(  $where ) or ! count( $where )  )
+      {
+        throw new InvalidArgumentException( "Invalid 'where' data.");
+      }
+      $whereProps = array_keys( $where );
+      $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, $whereProps );
+    }
+
+    /*
      * do the query
      */
+    $this->getLogger()->setFilterEnabled(QCL_LOG_DB,true);
     return $model->getQueryBehavior()->fetchAll( $query );
   }
 

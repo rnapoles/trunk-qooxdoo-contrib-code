@@ -204,7 +204,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function getId()
   {
-    $id = $this->get("id");
+    $id = (int) $this->get("id");
     if ( ! $id )
     {
       $this->raiseError("No record loaded in model " . $this->className() );
@@ -284,9 +284,18 @@ class qcl_data_model_AbstractActiveRecord
       'where'  => array( "id" => $id )
     ) ) );
     $result = $this->getQueryBehavior()->fetch();
+
+    /*
+     * typecast and set result
+     */
     if ( $result )
     {
-      $this->set( $result );
+
+      $propBehavior = $this->getPropertyBehavior();
+      foreach( $result as $property => $value )
+      {
+        $this->set( $property, $propBehavior->typecast( $property, $value ) );
+      }
       return $this;
     }
     throw new qcl_data_model_RecordNotFoundException( sprintf(
@@ -321,7 +330,12 @@ class qcl_data_model_AbstractActiveRecord
 
     if ( $query->getRowCount() > 0 )
     {
-      $this->set( $this->getQueryBehavior()->fetch() );
+      $result = $this->getQueryBehavior()->fetch();
+      $propBehavior = $this->getPropertyBehavior();
+      foreach( $result as $property => $value )
+      {
+        $this->set( $property, $propBehavior->typecast( $property, $value ) );
+      }
       return $query->getRowCount();
     }
     else
@@ -451,12 +465,16 @@ class qcl_data_model_AbstractActiveRecord
      * fetch the next record, set the corrensponding properties if successful
      * and return the result
      */
-    $record = $this->getQueryBehavior()->fetch( $query );
-    if( $record )
+    $result = $this->getQueryBehavior()->fetch( $query );
+    if( $result )
     {
-      $this->set( $record );
+      $propBehavior = $this->getPropertyBehavior();
+      foreach( $result as $property => $value )
+      {
+        $this->set( $property, $propBehavior->typecast( $property, $value ) );
+      }
     }
-    return $record;
+    return $result;
   }
 
   //-------------------------------------------------------------

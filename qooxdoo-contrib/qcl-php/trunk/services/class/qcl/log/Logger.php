@@ -177,14 +177,6 @@ class qcl_log_Logger
   {
 
     /*
-     * convert non-scalar data to string
-     */
-    if ( is_array($msg) or is_object($msg) )
-    {
-      $msg = var_export ( $msg, true );
-    }
-
-    /*
      * check if a matching filter has been enabled
      */
     $found = false;
