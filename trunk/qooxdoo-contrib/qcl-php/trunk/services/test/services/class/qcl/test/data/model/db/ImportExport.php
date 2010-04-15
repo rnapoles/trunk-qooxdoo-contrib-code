@@ -232,9 +232,9 @@ class class_qcl_test_data_model_db_ImportExport
     /*
      * create md5 hashes to validate the result
      */
-//    $this->info( $userXml );
-//    $this->info( $groupXml );
-//    $this->info( $categoryXml );
+    $this->info( $userXml );
+    $this->info( $groupXml );
+    $this->info( $categoryXml );
     $this->info( "Hash for user xml: " . md5( $userXml ) );
     $this->info( "Hash for group xml: " . md5( $groupXml) );
     $this->info( "Hash for category xml: " . md5( $categoryXml ) );

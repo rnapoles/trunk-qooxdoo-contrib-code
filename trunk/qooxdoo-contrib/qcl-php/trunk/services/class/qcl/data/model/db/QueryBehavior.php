@@ -490,6 +490,7 @@ class qcl_data_model_db_QueryBehavior
           */
          if ( ! $property ) continue;
 
+
          /*
           * get column name of given property
           */
@@ -547,6 +548,10 @@ class qcl_data_model_db_QueryBehavior
         {
           $str .= " AS '$property'";
           $needAlias = true;
+        }
+        elseif ( isset( $query->as[$property] ) )
+        {
+          $str .= " AS '" . $query->as[$property] . "'";
         }
         $cols[] = $str;
       }
@@ -695,7 +700,7 @@ class qcl_data_model_db_QueryBehavior
     $sql = array();
     foreach( $where as $property => $value )
     {
-      $type   = $this->getModel()->getPropertyBehavior()->type( $property );
+      $type = $this->getModel()->getPropertyBehavior()->type( $property );
 
       $column = $adpt->formatColumnName( $this->getColumnName( $property ) );
 
@@ -893,11 +898,7 @@ class qcl_data_model_db_QueryBehavior
     }
     else
     {
-      $propBehavior = $this->getModel()->getPropertyBehavior();
-      foreach( $result as $property => $value )
-      {
-        $result[$property] = $propBehavior->typecast( $property, $value );
-      }
+      if ( isset( $result["id"]) ) settype( $result["id"] , "integer" ); //FIXME
       return $result;
     }
   }
@@ -1137,7 +1138,7 @@ class qcl_data_model_db_QueryBehavior
    */
   public function deleteWhere ( $where )
   {
-    $query = new qcl_data_db_Query( array( 'where' => $where) );
+    $query = new qcl_data_db_Query( array( 'where' => $where ) );
     $sql   = $this->createWhereStatement( $query );
     return $this->getTable()->deleteWhere(
       $sql,$query->getParameters(), $query->getParameterTypes()

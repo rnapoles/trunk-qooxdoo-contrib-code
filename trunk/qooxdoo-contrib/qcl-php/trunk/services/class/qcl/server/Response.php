@@ -54,18 +54,18 @@ class qcl_server_Response
   /**
    * The id of the request
    */
-  var $id = null;
+  public $id = null;
 
   /**
    * The result of the service call
    * @var unknown_type
    */
-  var $result = null;
+  public $result = array( "__qcl" => true );
 
   /**
    * Error data. of amy
    */
-  var $error = null;
+  public $error = null;
 
   /**
    * Returns a singleton instance of this class
@@ -81,12 +81,17 @@ class qcl_server_Response
    * @param $data
    * @return void
    */
-  function setData( $data )
+  public function setData( $data )
   {
     $this->result['data'] = $data;
   }
 
-  function setEvents( $events )
+  /**
+   * Sets the events
+   * @param $events
+   * @return unknown_type
+   */
+  public function setEvents( $events )
   {
     if ( $events and count($events) )
     {
@@ -94,7 +99,12 @@ class qcl_server_Response
     }
   }
 
-  function setMessages( $messages )
+  /**
+   * Sets the messages
+   * @param $messages
+   * @return unknown_type
+   */
+  public function setMessages( $messages )
   {
     if ( $messages and count($messages) )
     {

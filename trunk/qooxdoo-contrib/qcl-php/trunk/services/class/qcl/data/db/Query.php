@@ -136,6 +136,15 @@ class qcl_data_db_Query
    */
   public $rowCount;
 
+
+  /**
+   * Maps property names to keys that should replace the
+   * property names in the result data
+   * @var array
+   */
+  public $as = array();
+
+
   //-------------------------------------------------------------
   // Constructor
   //-------------------------------------------------------------

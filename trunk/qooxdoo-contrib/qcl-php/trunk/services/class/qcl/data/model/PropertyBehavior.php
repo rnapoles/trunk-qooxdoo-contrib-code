@@ -460,6 +460,8 @@ class qcl_data_model_PropertyBehavior
    */
   public function typecast( $propertyName, $value )
   {
+    if( $property == "id" ) return (int) $value;
+
     $type = $this->type( $propertyName );
     //$this->getModel()->debug( "$propertyName=$value($type)");
 
@@ -501,7 +503,7 @@ class qcl_data_model_PropertyBehavior
           $value = unserialize( $value );
           if ( ! $value instanceof $type )
           {
-            $this->getModel()->raiseError(
+            throw new LogicException(
               "Invalid value class. Expected '$type', got '" .
               typeof( $value, true ) . "'."
             );
