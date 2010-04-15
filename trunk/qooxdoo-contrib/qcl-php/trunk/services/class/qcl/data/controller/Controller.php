@@ -36,7 +36,14 @@ class qcl_data_controller_Controller
    * of information.
    * @var array
    */
-  protected $acl = array();
+  private $acl = array();
+
+  /**
+   * The types of access control lists this controller maintains
+   * Defaults to "model"
+   * @var array
+   */
+  protected $aclTypes = array( "model" );
 
 
   //-------------------------------------------------------------
@@ -128,10 +135,48 @@ class qcl_data_controller_Controller
   // access control on the model-level
   //-------------------------------------------------------------
 
- /**
+
+  /**
+   * Adds an acl ruleset to the controller
+   * @param string $type
+   * @param array $ruleset Array of Maps
+   * @return void
+   */
+  protected function addAclRuleset( $type, $ruleset )
+  {
+    if ( !in_array( $type, $this->aclTypes ) or !is_array( $ruleset ) )
+    {
+      throw new InvalidArgumentException("Invalid arguments");
+    }
+    foreach( $ruleset as $acl )
+    {
+      $this->acl[$type][] = $acl;
+    }
+  }
+
+  /**
+   * Returns the acl rulesets for models
+   * @return array Array of maps
+   */
+  protected function getModelAcl()
+  {
+    return $this->acl['model'];
+  }
+
+  /**
+   * Adds a model acl ruleset to the controller
+   * @param $ruleset
+   * @return void
+   */
+  protected function addModelAcl( $ruleset )
+  {
+    $this->addAclRuleset("model", $ruleset );
+  }
+
+  /**
    * Returns the model object, given datasource and model type. If both
    * arguments are NULL, return the datasource model object itself.
-   * This method also checks whether the role of the current user is allowed
+   * This method checks whether the role of the current user is allowed
    * to access the model as set up in the "acl" property of the class.
    *
    * @param string $datasource
@@ -144,16 +189,17 @@ class qcl_data_controller_Controller
     /*
      * check access to model
      */
-    $activeUser = $this->getActiveUser();
-    $roles = $activeUser->roles();
+    $activeUser  = $this->getActiveUser();
+    $roles       = $activeUser->roles();
+    $modelAclArr = $this->getModelAcl();
     $access = false;
-    foreach( $this->acl as $modelAcl )
+    foreach( $modelAclArr as $modelAcl )
     {
       /*
-       * find matching model
+       * check if datasource and model type matches
        */
-      if ( $modelAcl['datasource'] == $datasource
-           and $modelAcl['modelType'] == $modelType )
+      if ( ( $modelAcl['datasource'] == $datasource or $modelAcl['datasource'] == "*" )
+       and ( $modelAcl['modelType']  == $modelType  or $modelAcl['modelType']  == "*" ) )
       {
         /*
          * check if 'roles' property matches
@@ -201,16 +247,17 @@ class qcl_data_controller_Controller
       throw new InvalidArgumentException("Invalid 'properties' argument. Must be array or '*'." );
     }
 
-    $activeUser = $this->getActiveUser();
-    $roles = $activeUser->roles();
-    $access = false;
-    foreach( $this->acl as $modelAcl )
+    $activeUser  = $this->getActiveUser();
+    $roles       = $activeUser->roles();
+    $modelAclArr = $this->getModelAcl();
+    $access  = false;
+    foreach( $modelAclArr as $modelAcl )
     {
       /*
-       * find matching model
+       * check if datasource and model type matches
        */
-      if ( $modelAcl['datasource'] == $datasource
-           and $modelAcl['modelType'] == $modelType )
+      if ( ( $modelAcl['datasource'] == $datasource or $modelAcl['datasource'] == "*" )
+       and ( $modelAcl['modelType']  == $modelType  or $modelAcl['modelType']  == "*" ) )
       {
 
         /*
@@ -257,8 +304,8 @@ class qcl_data_controller_Controller
     if ( ! $access )
     {
       $this->warn( sprintf(
-        "User '%s' has no access to one or more of the properties [%s] in datatsource '%s'/ model type '%s'.",
-        $activeUser->username(), implode(",", (array) $properties ), $datasource, $modelType
+        "User '%s' has no '%s' access to the record or to one or more of the properties [%s] in datatsource '%s'/ model type '%s'.",
+        $activeUser->username(), $accessType, implode(",", (array) $properties ), $datasource, $modelType
       ) );
       throw new qcl_access_AccessDeniedException("Access denied.");
     }

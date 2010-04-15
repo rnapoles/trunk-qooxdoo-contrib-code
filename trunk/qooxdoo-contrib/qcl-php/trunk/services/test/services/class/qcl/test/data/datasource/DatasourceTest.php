@@ -147,95 +147,103 @@ class class_qcl_test_data_datasource_DatasourceTest
 
     //$this->startLogging();
 
-    /*
-     * register the "addressbook" schema
-     */
     $dsManager = ds_AddressbookManager::getInstance();
-    $dsManager->registerSchema( "addressbook", array(
-      "class"       => "ds_Addressbook",
-      "description" => "A schema for addressbooks that have a person, group and tag model"
-    ) );
+    $dsCount = count( $dsManager->datasources() );
 
-    /*
-     * create a new addressbook datasource
-     */
-    $addressbook1 = $dsManager->createDatasource( "my_addressbook", "addressbook");
+    try
+    {
 
-    /*
-     * create model data
-     */
-    $person1 = $addressbook1->getPersonModel();
-    $group1  = $addressbook1->getGroupModel();
-    $tag1    = $addressbook1->getTagModel();
+      /*
+       * register the "addressbook" schema
+       */
+      $dsManager->registerSchema( "addressbook", array(
+        "class"       => "ds_Addressbook",
+        "description" => "A schema for addressbooks that have a person, group and tag model"
+      ) );
 
-    $person1->create("Peter");
-    $person1->create("Paul");
-    $person1->create("Mary");
+      /*
+       * create a new addressbook datasource
+       */
+      $addressbook1 = $dsManager->createDatasource( "my_addressbook", "addressbook");
 
-    $group1->create("Work");
-    $group1->create("Personal");
-    $group1->create("Leisure");
+      /*
+       * create model data
+       */
+      $person1 = $addressbook1->getPersonModel();
+      $group1  = $addressbook1->getGroupModel();
+      $tag1    = $addressbook1->getTagModel();
 
-    $tag1->create("foo");
-    $tag1->create("bar");
+      $person1->create("Peter");
+      $person1->create("Paul");
+      $person1->create("Mary");
 
-    /*
-     * create a second addressbook datasource that is stored in the
-     * same database and create some models that depend on it
-     */
-    $addressbook2 = $dsManager->createDatasource( "meine_adressen", "addressbook");
+      $group1->create("Work");
+      $group1->create("Personal");
+      $group1->create("Leisure");
 
-    $person2 = $addressbook2->getPersonModel();
-    $group2  = $addressbook2->getGroupModel();
-    $tag2    = $addressbook2->getTagModel();
+      $tag1->create("foo");
+      $tag1->create("bar");
 
-    $person2->create("Monika");
-    $person2->create("Fritz");
-    $person2->create("Ingrid");
+      /*
+       * create a second addressbook datasource that is stored in the
+       * same database and create some models that depend on it
+       */
+      $addressbook2 = $dsManager->createDatasource( "meine_adressen", "addressbook");
 
-    $group2->create("Arbeit");
-    $group2->create("Freizeit");
-    $group2->create("Familie");
+      $person2 = $addressbook2->getPersonModel();
+      $group2  = $addressbook2->getGroupModel();
+      $tag2    = $addressbook2->getTagModel();
 
-    $tag2->create("dies");
-    $tag2->create("das");
+      $person2->create("Monika");
+      $person2->create("Fritz");
+      $person2->create("Ingrid");
 
-    /*
-     * some logging
-     */
-    $this->info( sprintf(
-      "'%s' is in addressbook '%s'",
-      $person1->namedId(), $person1->datasourceModel()->namedId()
-    ) );
+      $group2->create("Arbeit");
+      $group2->create("Freizeit");
+      $group2->create("Familie");
 
-    $this->info( sprintf(
-      "'%s' is in addressbook '%s'",
-      $person2->namedId(), $person2->datasourceModel()->namedId()
-    ) );
+      $tag2->create("dies");
+      $tag2->create("das");
 
-    /*
-     * testing
-     */
-    $this->assertTrue( $addressbook1 === $dsManager->getDatasourceModelByName( "my_addressbook") );
-    $this->assertTrue( $addressbook2 === $dsManager->getDatasourceModelByName( "meine_adressen") );
+      /*
+       * some logging
+       */
+      $this->info( sprintf(
+        "'%s' is in addressbook '%s'",
+        $person1->namedId(), $person1->datasourceModel()->namedId()
+      ) );
 
-    $this->assertEquals( 2, count( $dsManager->datasources() ) );
+      $this->info( sprintf(
+        "'%s' is in addressbook '%s'",
+        $person2->namedId(), $person2->datasourceModel()->namedId()
+      ) );
 
-    $addressbook1->delete();
-    $this->assertEquals( 1, count( $dsManager->datasources() ) );
+      /*
+       * testing
+       */
+      $this->assertTrue( $addressbook1 === $dsManager->getDatasourceModelByName( "my_addressbook") );
+      $this->assertTrue( $addressbook2 === $dsManager->getDatasourceModelByName( "meine_adressen") );
 
-    $dsManager->deleteDatasource( "meine_adressen" );
-    $this->assertEquals( 0, count( $dsManager->datasources() ) );
+      $this->assertEquals( $dsCount + 2, count( $dsManager->datasources() ) );
 
-    /*
-     * unregister schema and destruction of data
-     */
-    $dsManager->unregisterSchema("addressbook");
-    $dsManager->destroyAll();
-    //ds_AddressbookManager::getInstance()->emptyAll();
+      $addressbook1->delete();
+      $this->assertEquals( $dsCount + 1, count( $dsManager->datasources() ) );
 
+      $dsManager->deleteDatasource( "meine_adressen" );
+      $this->assertEquals( $dsCount, count( $dsManager->datasources() ) );
 
+      /*
+       * unregister schema and destruction of data
+       */
+      $dsManager->unregisterSchema( "addressbook", true );
 
+    }
+    catch( qcl_data_model_RecordExistsException $e )
+    {
+      $this->warn( $e );
+      $dsManager->unregisterSchema( "addressbook", true );
+      throw new JsonRpcException("Test failed ... cleaning up");
+    }
     return "OK";
   }
 
@@ -243,7 +251,7 @@ class class_qcl_test_data_datasource_DatasourceTest
   function startLogging()
   {
     $this->getLogger()->setFilterEnabled( QCL_LOG_DATASOURCE, true );
-    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
+//    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL, true );
 //    $this->getLogger()->setFilterEnabled( QCL_LOG_OBJECT, true );
 //    $this->getLogger()->setFilterEnabled( QCL_LOG_PROPERTIES, true );
 //    $this->getLogger()->setFilterEnabled( QCL_LOG_MODEL_RELATIONS, true );

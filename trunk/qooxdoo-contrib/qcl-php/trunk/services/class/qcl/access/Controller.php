@@ -23,12 +23,52 @@ qcl_import( "qcl_util_registry_Session" );
  * Accessibility behavior class thathandles authentication, access control
  * and configuration
  *
- * FIXME access models need to be made part of the access datasource
  */
 class qcl_access_Controller
   extends qcl_data_controller_Controller
   implements IAccessibilityBehavior
 {
+
+  /**
+   * Access control list. Determines what role has access to what kind
+   * of information.
+   * @var array
+   */
+  private $modelAcl = array(
+
+    /*
+     * ruleset for all models in the "access" datasource
+     */
+    array(
+      /*
+       * this ruleset
+       */
+      'datasource'  => "access",
+      'modelType'   => "*",
+
+      /*
+       * which roles have generally access to this model?
+       * Here: all.
+       */
+      'roles'       => "*",
+
+      /*
+       * now we set up some rules
+       */
+      'rules'         => array(
+
+        /*
+         * only admin can read or change through the generic
+         * functions
+         */
+        array(
+          'roles'       => array( QCL_ROLE_ADMIN ),
+          'access'      => "*",
+          'properties'  => "*"
+        )
+      )
+    )
+  );
 
   /**
    * The currently active user, determined from request or
@@ -38,8 +78,20 @@ class qcl_access_Controller
   private $activeUser = null;
 
   //-------------------------------------------------------------
+  // initialization
+  //-------------------------------------------------------------
+
+  /**
+   * Constructor
+   */
+  function __construct()
+  {
+    $this->addModelAcl( $this->modelAcl );
+  }
+
+  //-------------------------------------------------------------
   // models
-  //-------------------------------------------------------------}
+  //-------------------------------------------------------------
 
 
   /**
@@ -47,6 +99,7 @@ class qcl_access_Controller
    * @param string|int $id Load record if given
    * @return qcl_access_model_User
    * FIXME Get from access datasource
+   * FIXME Remove argument
    */
   public function getUserModel( $id=null )
   {
@@ -60,6 +113,7 @@ class qcl_access_Controller
    * @param string|int $id Load record if given
    * @return qcl_access_model_Permission
    * FIXME Get from access datasource
+   * FIXME Remove argument
    */
   public function getPermissionModel( $id = null)
   {
@@ -73,6 +127,7 @@ class qcl_access_Controller
    * @param string|int $id Load record if given
    * @return qcl_access_model_Role
    * FIXME Get from access datasource
+   * FIXME Remove argument
    */
   public function getRoleModel( $id=null )
   {

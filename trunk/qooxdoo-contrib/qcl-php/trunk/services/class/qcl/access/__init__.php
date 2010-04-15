@@ -19,14 +19,20 @@
 ************************************************************************ */
 
 /*
- * constants
+ * access constants
  */
 define( "QCL_ACCESS_READ",    "read"  );
 define( "QCL_ACCESS_WRITE",   "write" );
 define( "QCL_ACCESS_CREATE",  "create" );
 define( "QCL_ACCESS_DELETE",  "delete" );
 define( "QCL_ACCESS_ALL",     "*" );
+
+/*
+ * three default roles.
+ */
 define( "QCL_ROLE_ANONYMOUS", "anonymous" );
+define( "QCL_ROLE_USER", "user" );
+define( "QCL_ROLE_ADMIN", "admin" );
 
 /*
  * Exceptions thrown in this class and subclasses

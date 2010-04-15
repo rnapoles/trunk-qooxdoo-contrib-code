@@ -28,7 +28,7 @@ class class_qcl_test_access_ModelAccessControl
    * of information.
    * @var array
    */
-  protected $acl = array(
+  private $modelAcl = array(
 
     /*
      * access to user data
@@ -80,6 +80,15 @@ class class_qcl_test_access_ModelAccessControl
       )
     )
   );
+
+  /**
+   * Constructor. Adds model acl
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->addModelAcl( $this->modelAcl );
+  }
 
   /**
    * @rpctest {
@@ -180,7 +189,6 @@ class class_qcl_test_access_ModelAccessControl
     /*
      * the following test must all fail, otherwise there is a failure
      */
-    $failed = false;
     try
     {
       $query = new stdClass();

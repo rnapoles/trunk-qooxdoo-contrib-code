@@ -67,6 +67,7 @@ class qcl_data_datasource_Manager
    * @param array $options Map of additional information. At least the
    * key 'class' must be provided
    * @param string $description Long description
+   * @throws qcl_data_model_RecordExistsException
    */
   public function registerSchema( $schemaName, $options )
   {
@@ -84,15 +85,26 @@ class qcl_data_datasource_Manager
 
     $this->log("Registering class '$class' for schema '$schemaName'", QCL_LOG_DATASOURCE);
 
-    return $this->getRegistryModel()->createIfNotExists( $schemaName, $options );
+    return $this->getRegistryModel()->create( $schemaName, $options );
   }
 
   /**
    * Unregister datasource.
    * @param string $name Name of datasource schema
+   * @param bool $deleteAll If true, also delete all datasources
+   *   and their models
+   * @throws InvalidArgumentException
    */
-  public function unregisterSchema( $schemaName )
+  public function unregisterSchema( $schemaName, $deleteAll=false )
   {
+    if ( $deleteAll )
+    {
+      $schemaDatasources = $this->getDatasourceNamesBySchema( $schemaName );
+      foreach( $schemaDatasources as $dsName )
+      {
+        $this->deleteDatasource( $dsName, true );
+      }
+    }
     $this->log("Unregistering schema '$schemaName'", QCL_LOG_DATASOURCE);
     $registry = $this->getRegistryModel();
     try
@@ -104,7 +116,22 @@ class qcl_data_datasource_Manager
     {
       throw new InvalidArgumentException("Schema '$schemaName' does not exist.");
     }
+
   }
+
+  /**
+   * Returns an array of datasource names that are registered for the model
+   * @param string $schemaName
+   * @return array
+   */
+  public function getDatasourceNamesBySchema( $schemaName )
+  {
+    $dsModel = $this->getDatasourceModel();
+    return $dsModel->getQueryBehavior()->fetchValues(NAMED_ID,array(
+      'schema'  => $schemaName
+    ) );
+  }
+
 
   /**
    * Return the class name for a datasource schema name
@@ -176,6 +203,7 @@ class qcl_data_datasource_Manager
    * @param $name
    * @param $schema
    * @return qcl_data_datasource_DbModel
+   * @throws qcl_data_model_RecordExistsException
    */
   public function createDatasource( $name, $schema )
   {
@@ -272,9 +300,11 @@ class qcl_data_datasource_Manager
     {
       foreach( $dsModel->modelTypes() as $type )
       {
+        $this->log( "Destroying model type '$type' of datasource '$name' ", QCL_LOG_DATASOURCE );
         $dsModel->getModelOfType( $type )->destroy();
       }
     }
+    $this->log( "Deleting datasource '$name' ", QCL_LOG_DATASOURCE );
     $dsModel->getQueryBehavior()->deleteWhere( array( NAMED_ID => $name ) );
     unset( $this->datasourceModels[$name] );
   }
