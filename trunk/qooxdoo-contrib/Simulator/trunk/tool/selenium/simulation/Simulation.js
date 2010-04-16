@@ -1107,11 +1107,11 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
     var targetWin = autWin || selenium.qxStoredVars['autWindow']; 
     targetWin.qx.event.GlobalError.setErrorHandler(function(ex) {
       var exString = "";
+      if (ex instanceof targetWin.qx.core.GlobalError) {
+        ex = ex.getSourceException();
+      }
       if (ex instanceof targetWin.qx.core.WindowError) {
         exString = ex.toString() + " in " + ex.getUri() + " line " + ex.getLineNumber();
-      }
-      else if (ex instanceof targetWin.qx.core.GlobalError) {
-        exString = ex.toString();
       }
       else {
         exString = ex.name + ": " + ex.message;
@@ -1124,10 +1124,11 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
         if (ex.description) {
           exString += " Description: " + ex.description;
         }
+        if (ex.stack) {
+          exString += " Stack: " + ex.stack;
+        }
       }
       var sanitizedEx = selenium.qxStoredVars['autWindow'].qx.Simulation.sanitize(exString);
-      //sanitizedEx = sanitizedEx.replace(/\n/g,"<br/>");
-      //sanitizedEx = sanitizedEx.replace(/\r/g,"<br/>");      
       targetWin.qx.Simulation.errorStore.push(sanitizedEx);
     });
   };
