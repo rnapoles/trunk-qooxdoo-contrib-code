@@ -37,7 +37,7 @@ var locators = {
   gistMenu : 'qxh=[@classname="playground.view.gist.GistMenu"]',
   gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
   gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]',
-  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="Shorten"]'
+  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="URL"]'
 };
 
 var getLogHtml = function()
@@ -286,9 +286,13 @@ simulation.Simulation.prototype.runTest = function()
   
   var editOk = this.checkEdit(sampleArr[0]);
   
+  /*
+   * This opens a TinyURL window which sends a request to PayPal that causes a
+   * certificate warning to pop up, breaking the test.
   if (editOk) {
     this.checkUrlShortening();
   }
+  */
   
   this.checkSampleLoad(sampleArr);
   
