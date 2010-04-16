@@ -36,7 +36,8 @@ var locators = {
   gitHubButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[3]',
   gistMenu : 'qxh=[@classname="playground.view.gist.GistMenu"]',
   gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
-  gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]'
+  gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]',
+  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="Shorten"]'
 };
 
 var getLogHtml = function()
@@ -141,7 +142,7 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
     this.qxClick(locators.runButton, '', 'Pressing Run button');
   } catch(ex) {
     this.log("Could not edit sample " + sampleName + ": " + ex, "error");
-    return;
+    return false;
   }
   
   var modifiedSampleName = sampleName + " (modified)";
@@ -154,7 +155,7 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
 
   if (!sampleLoaded || !sampleStarted) {
     this.log("Modified sample " + sampleName + " did not start correctly!", "error");
-    return;
+    return false;
   }
   
   try {
@@ -167,10 +168,10 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
     }
   } catch(ex) {
     this.log("Error checking modified sample " + sampleName + ": " + ex, "error");
-    return;
+    return false;
   }
   
-  //this.checkCodeFromUrl("Simulator");
+  return true;
   
 };
 
@@ -283,12 +284,16 @@ simulation.Simulation.prototype.runTest = function()
   
   this.checkSyntaxHighlighting();
   
-  this.checkEdit(sampleArr[0]);
+  var editOk = this.checkEdit(sampleArr[0]);
+  
+  if (editOk) {
+    this.checkUrlShortening();
+  }
   
   this.checkSampleLoad(sampleArr);
   
   // Selenium Bug: http://jira.openqa.org/browse/SEL-646
-  if (this.getConfigSetting("testBrowser").indexOf("googlechrome") ) {
+  if (this.getConfigSetting("testBrowser").indexOf("googlechrome") >= 0 ) {
     this.log("Skipping Gist test for Chrome since pressing enter doesn't work.", "info");
   } else {
     this.checkGistFromList();
@@ -348,7 +353,7 @@ simulation.Simulation.prototype.checkGistFromList = function()
   // Loading the gist list won't work unless the text field's list item is 
   // focused (qx bug #3456), so we click it first.
   this.qxClick(locators.gistUserNameField, "");
-  this.qxType(locators.gistUserNameField, "wittemann");
+  this.qxType(locators.gistUserNameField, "danielwagner");
   this.__sel.keyPress(locators.gistUserNameField, "13");
   
   var checkGistReady = function()
@@ -397,6 +402,27 @@ simulation.Simulation.prototype.checkGistFromUrl = function()
 {
   var url = this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "#gist=279900";
   this.__sel.open(url);
+};
+
+simulation.Simulation.prototype.checkUrlShortening = function()
+{
+  this.qxClick(locators.shortenUrlButton, "", "Clicking Shorten URL");
+  Packages.java.lang.Thread.sleep(2000);
+  var winTitles = this.__sel.getAllWindowTitles();
+  var found = false;
+  for (prop in winTitles) {
+    if (winTitles[prop].match(/tinyurl/i)) {
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    this.log("TinyURL.com window opened", "info");
+  }
+  else {
+    this.log("TinyURL.com window not opened!", "error");
+  }
+  
 };
 
 
