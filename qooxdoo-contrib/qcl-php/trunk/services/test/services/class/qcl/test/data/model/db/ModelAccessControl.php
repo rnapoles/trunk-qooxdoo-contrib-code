@@ -126,6 +126,16 @@ class class_qcl_test_data_model_db_ModelAccessControl
         ),
 
         /*
+         * anonymous and other roles can write the "data" property
+         * since it is also protected on the record-level
+         */
+        array(
+          'roles'       => "*",
+          'access'      => array( QCL_ACCESS_WRITE ),
+          'properties'  => array( "data" )
+        ),
+
+        /*
          * admin can read and write the properties "id", "owner", "type", "data",
          * "admindata" and create and delete records
          */
@@ -329,6 +339,30 @@ class class_qcl_test_data_model_db_ModelAccessControl
          */
         $this->info("Take that, Olaf! - Punch - ");
       }
+
+      /*
+       * now check that anonymous, whatever the record-level acl,
+       * cannot read a property, but admin can
+       */
+      $this->setPerson( "Akiko" );
+      try
+      {
+        $data = $this->method_getValue( "acl_test", "personaldata", $id, "admindata" );
+        throw new qcl_test_AssertionException( "Access violation on line " . __LINE__ );
+      }
+      catch( qcl_access_AccessDeniedException $e)
+      {
+        $this->info("No, Akiko, you cannot read secret stuff the admin wrote about you...");
+      }
+
+      /*
+       * now the admin logs in and accessed the same data successfully
+       */
+      qcl_import( "qcl_access_Service" );
+      $service = new qcl_access_Service();
+      $service->method_authenticate("admin","admin");
+      $data = $this->method_getValue( "acl_test", "personaldata", $id, "admindata" );
+      $this->info( $data );
     }
     catch( Exception $e )
     {
