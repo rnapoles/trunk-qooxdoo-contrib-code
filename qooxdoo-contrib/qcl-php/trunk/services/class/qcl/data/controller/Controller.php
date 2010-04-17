@@ -705,6 +705,11 @@ class qcl_data_controller_Controller
     }
 
     /*
+     * Check property-level access
+     */
+    $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, array( $property ) );
+
+    /*
      * Run query
      */
     $model->load( $id );
@@ -734,6 +739,11 @@ class qcl_data_controller_Controller
     {
       throw new InvalidArgumentException("Model '$model' has no property '$property' !");
     }
+
+    /*
+     * check property-level access
+     */
+    $this->checkAccess( QCL_ACCESS_WRITE, $datasource, $modelType, array( $property ) );
 
     /*
      * Run query

@@ -240,7 +240,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
             "owner"     => $person,
             "type"      => $type,
             "data"      => "$person's $type. Only to be viewed by $person!",
-            "passowrd"  => "Super secret password. This should NEVER be visible!",
+            "password"  => "Super secret password. This should NEVER be visible!",
             "admindata" => "This is data that only the admin is allowed to see."
           ) );
         }

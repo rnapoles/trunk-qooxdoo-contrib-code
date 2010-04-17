@@ -59,7 +59,11 @@ class qcl_test_application_Application
   {
     $this->getLogger()->setFilterEnabled(QCL_LOG_APPLICATION, true );
 
-    $this->log( "Starting test application", QCL_LOG_APPLICATION );
+    $request = qcl_server_Request::getInstance();
+    $this->log( sprintf(
+      "Starting test application, service '%s', method '%s'",
+      $request->getService(), $request->getMethod()
+    ), QCL_LOG_APPLICATION );
 
     //$this->startLogging();
 

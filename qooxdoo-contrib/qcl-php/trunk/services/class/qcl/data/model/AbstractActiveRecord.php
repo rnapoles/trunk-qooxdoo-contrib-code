@@ -559,6 +559,11 @@ class qcl_data_model_AbstractActiveRecord
     $this->log( sprintf( "Created new model record '%s'.", $this ), QCL_LOG_MODEL );
 
     /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
+
+    /*
      * return the id
      */
     return $id;
@@ -574,7 +579,14 @@ class qcl_data_model_AbstractActiveRecord
     {
       $this->raiseError("Model does not have an id yet. Did you create or load the record already?");
     }
-    return $this->getQueryBehavior()->update( $this->data() );
+    $success = $this->getQueryBehavior()->update( $this->data() );
+
+    /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
+
+    return $success;
   }
 
   /**
@@ -628,7 +640,14 @@ class qcl_data_model_AbstractActiveRecord
      * delete the model data
      */
     $this->log( sprintf( "Deleting record data for %s ...", $this ), QCL_LOG_MODEL );
-    return $this->getQueryBehavior()->deleteRow( $id );
+    $succes = $this->getQueryBehavior()->deleteRow( $id );
+
+    /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
+
+    return $succes;
   }
 
   /**
@@ -649,7 +668,14 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * execute query
      */
-    return $this->getQueryBehavior()->deleteWhere( $where );
+    $rowCount =  $this->getQueryBehavior()->deleteWhere( $where );
+
+    /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
+
+    return $rowCount;
   }
 
   /**
@@ -706,6 +732,11 @@ class qcl_data_model_AbstractActiveRecord
 
     $this->getQueryBehavior()->deleteAll();
     qcl_data_model_db_ActiveRecord::resetBehaviors();
+
+    /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
   }
 
   /**
@@ -725,7 +756,47 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * execute query
      */
-    return $this->getQueryBehavior()->updateWhere( $data, $where );
+    $rowCount =  $this->getQueryBehavior()->updateWhere( $data, $where );
+
+    /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
+
+    return $rowCount;
+  }
+
+  //-----------------------------------------------------------------------
+  // Transaction id
+  //-----------------------------------------------------------------------
+
+  /**
+   * Returns the model that keeps transactions ids for other models
+   * @return qcl_data_model_db_TransactionModel
+   * FIXME: Create interface, move into db_models, don't implement here
+   */
+  protected function getTransactionModel()
+  {
+    qcl_import("qcl_data_model_db_TransactionModel");
+    return qcl_data_model_db_TransactionModel::getInstance();
+  }
+
+  /**
+   * Use transaction model to get transaction id of this model
+   * @return int The current transaction id
+   */
+  protected function getTransactionId()
+  {
+    return $this->getTransactionModel()->getTransactionIdFor( $this );
+  }
+
+  /**
+   * Use transaction model to increment transaction id of this model
+   * @return int The current transaction id
+   */
+  protected function incrementTransactionId()
+  {
+    return $this->getTransactionModel()->incrementTransactionIdFor( $this );
   }
 
   //-----------------------------------------------------------------------
@@ -997,6 +1068,10 @@ class qcl_data_model_AbstractActiveRecord
     $this->getQueryBehavior()->destroy();
     qcl_data_model_db_ActiveRecord::resetBehaviors();
   }
+
+  //-------------------------------------------------------------
+  // Conversions
+  //-------------------------------------------------------------
 
   /**
    * Return a string representation of the model

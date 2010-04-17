@@ -109,6 +109,10 @@ class qcl_data_model_AbstractNamedActiveRecord
      * log message
      */
     $this->log( sprintf( "Created new model record '%s'.", $this ), QCL_LOG_MODEL );
+    /*
+     * increment transaciton id since data has changed
+     */
+    $this->incrementTransactionId();
 
     /*
      * return the id
