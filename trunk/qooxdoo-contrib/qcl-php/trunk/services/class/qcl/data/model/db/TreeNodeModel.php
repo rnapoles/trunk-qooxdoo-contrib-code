@@ -53,9 +53,14 @@ class qcl_data_model_db_TreeNodeModel
   // init
   //-------------------------------------------------------------
 
-  function __construct()
+  /**
+   * Constructor.
+   * @param $datasourceModel
+   * @return unknown_type
+   */
+  function __construct( $datasourceModel )
   {
-    parent::__construct();
+    parent::__construct( $datasourceModel );
     $this->addProperties( $this->properties );
   }
 
@@ -128,36 +133,6 @@ class qcl_data_model_db_TreeNodeModel
 		return $this->countWhere( array( "parentId" => $this->id() ) );
 	}
 
-  /**
-   * Reorders the position of the child node. If the tree data in the
-   * model does not support reordering, implement as empty stub.
-   * @param string|null $orderBy defaults to position column
-   * @return void
-   */
-	function reorder ( $orderBy=null )
-	{
-		$orderBy  = either ( $orderBy, "position" );
-		$childIds = $this->getChildIds ( $orderBy );
-		$index = 1;
-		foreach ( $childIds as $id )
-		{
-			$data=array();
-			$data["id"] 		= $id;
-			$data["position"] 	= $index++;
-			$this->set($data);
-			$this->save();
-		}
-		return true;
-	}
-
-	/**
-	 * Whether tree model supports positioning.
-	 * @return bool
-	 */
-	function supportsPositioning()
-	{
-		return $this->has("position") ;
-	}
 
 	/**
 	 * Returns the current position among the node's siblings

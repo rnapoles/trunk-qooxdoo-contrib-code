@@ -28,6 +28,41 @@ class qcl_data_controller_TreeController
 //  implements qcl_data_controller_ITreeController
 {
 
+  /**
+   * The type of the model for the datasource
+   */
+  protected $modelType;
+
+
+  /**
+   * Returns the type of model managed by this controller
+   * @return string
+   */
+  protected function getModelType()
+  {
+    if ( ! $this->modelType )
+    {
+      throw new LogicException("No model type set in " . $this->className() );
+    }
+    return $this->modelType;
+  }
+
+  /**
+   * Returns the tree node model, optionally with a record loaded.
+   * @param string $datasource
+   * @param int $id
+   * @return qcl_data_model_db_TreeNodeModel
+   */
+  protected function getTreeNodeModel( $datasource, $id=null )
+  {
+    $model = $this->getModel( $datasource, $this->getModelType() );
+    if ( $id )
+    {
+      $model->load( $id );
+    }
+    return $model;
+  }
+
   /*
   ---------------------------------------------------------------------------
      INTERFACE ITREECONTROLLER
@@ -38,26 +73,21 @@ class qcl_data_controller_TreeController
    * Creates a node.
    * @param string $datasource Name of the datasource which will contain
    *   the new record.
-   * @param string $modelType The type of the model
    * @param mixed|null $options Optional data that might be
    *   necessary to create the new record
    * @return mixed Id of the newly created record.
    * @override
    */
-  function createNode( $datasource, $modelType, $options=null )
+  function createNode( $datasource, $options=null )
   {
     $label            = $options->label;
     $position         = $options->position;
     $parentNodeId     = $options->parentId;
 
     /*
-     * model
-     */
-    $model = $this->getModel($datasource, $modelType );
-
-    /*
      * create new folder
      */
+    $model = $this->getTreeNodeModel( $datasource );
     $nodeId = $model->create();
     $model->setParentId( $parentNodeId );
     $model->setLabel( $label );
@@ -86,8 +116,12 @@ class qcl_data_controller_TreeController
    */
   function getChildren ( $datasource, $parentId, $orderBy=null )
   {
-    $model = $this->getModel( $datasource, $parentId );
-    return $model->getChildIds( $orderBy );
+    $model = $this->getTreeNodeModel( $datasource );
+    $query = new qcl_data_db_Query( array(
+      'where'   => array( 'parentId' => $parentId ),
+      'orderBy' => $orderBy
+    ) );
+    return $model->getQueryBehavior()->fetch( $query );
   }
 
   /**
@@ -100,20 +134,26 @@ class qcl_data_controller_TreeController
    */
   function getChildIds ( $datasource, $parentId, $orderBy=null )
   {
-    $model = $this->getModel( $datasource, $parentId );
-    return $model->getChildIds( $orderBy );
+    $model = $this->getTreeNodeModel( $datasource );
+    $query = new qcl_data_db_Query( array(
+      'where'   => array( 'parentId' => $parentId ),
+      'orderBy' => $orderBy
+    ) );
+    return $model->getQueryBehavior()->fetchValues( "id", $query );
   }
 
   /**
    * Returns the number of children of the given node
    * @param string $datasource Name of the datasource
-   * @param int $parentId
+   * @param int $parentId If 0, get the top-level noded
    * @return int
    */
   function getChildCount ( $datasource, $parentId )
   {
-    $model = $this->getModel( $datasource, $parentId );
-    return $model->getChildCount();
+    $model = $this->getTreeNodeModel( $datasource, $parentId );
+    return $model->getQueryBehavior()->countWhere(array(
+      'parentId' => $parentId
+    ) );
   }
 
   /**
@@ -126,12 +166,22 @@ class qcl_data_controller_TreeController
    */
   function reorder ( $datasource, $parentId, $orderBy="position" )
   {
-    $model = $this->getModel($datasource, $parentId);
+    $this->notImplemented(__METHOD__);
+    $model = $this->getTreeNodeModel( $datasource );
     if (! $model->hasProperty( $orderBy ) )
     {
       $this->raiseError("Invalid order field '$orderBy'");
     }
-    $model->reorder( $orderBy );
+    $childIds = $this->getChildIds ( $orderBy );
+    $index = 1;
+    foreach ( $childIds as $id )
+    {
+      $data=array();
+      $data["id"]     = $id;
+      $data["position"]   = $index++;
+      $this->set($data);
+      $this->save();
+    }
     return true;
   }
 
@@ -148,11 +198,8 @@ class qcl_data_controller_TreeController
     /*
      * change folder position in database
      */
-    $model = $this->getModel($datasource, $nodeId );
+    $model = $this->getTreeNodeModel( $datasource, $parentId );
     $model->changePosition( $position );
-
-    // todo: message to clients
-
     return true;
   }
 
@@ -172,18 +219,14 @@ class qcl_data_controller_TreeController
       $this->raiseError("Node cannot be its own child!");
     }
 
-    $model = $this->getModel( $datasource, $nodeId );
+    $model = $this->getTreeNodeModel( $datasource, $nodeId );
     $oldParentId =  $model->getParentId();
     $model->changeParent($parentId );
 
-    if ( ! is_null( $position ) and $model->supportsPositioning() )
+    if ( ! is_null( $position )  )
     {
       $model->changePosition( $position );
     }
-
-    /*
-     * @todo send message to clients
-     */
 
     /*
      * return response
@@ -201,7 +244,7 @@ class qcl_data_controller_TreeController
    */
   function getLabelPath( $datasource, $nodeId, $separator="/" )
   {
-    $model = $this->getModel( $datasource, $nodeId );
+    $model = $this->getTreeNodeModel( $datasource, $nodeId );
     return  $model->getLabelPath( $separator );
   }
 
@@ -215,7 +258,7 @@ class qcl_data_controller_TreeController
    */
   function getIdPath( $datasource, $nodeId )
   {
-    $model = $this->getModel( $datasource, $nodeId );
+    $model = $this->getTreeNodeModel( $datasource, $nodeId );
     return $model->getIdPath();
   }
 
@@ -228,7 +271,7 @@ class qcl_data_controller_TreeController
    */
   function getIdByPath( $datasource, $path, $separator="/" )
   {
-    $model = $this->getModel( $datasource );
+    $model = $this->getTreeNodeModel( $datasource );
     return $model->getIdByPath( $path, $separator );
   }
 
@@ -241,7 +284,7 @@ class qcl_data_controller_TreeController
    */
   function createPath( $datasource, $path, $separator="/" )
   {
-    $model = $this->getModel( $datasource );
+    $model = $this->getTreeNodeModel( $datasource );
     return $model->getIdByPath( $path, $separator );
   }
 
@@ -264,13 +307,13 @@ class qcl_data_controller_TreeController
   function delete( $datasource, $nodeId, $options=null )
   {
 
-    $folderModel = $this->getFolderModel($datasource, $nodeId);
-    $childIds = $folderModel->getChildIds();
+    $model = $this->getTreeNodeModel( $datasource, $nodeId );
+    $childIds = $model->getChildIds();
 
     /*
      *  delete folder and unlink all records
      */
-    $folderModel->delete();
+    $model->delete();
     $this->info("Deleted node #$nodeId");
 
     /*
@@ -280,11 +323,165 @@ class qcl_data_controller_TreeController
     {
       foreach( $childIds as $index => $childId )
       {
-        $this->delete($datasource, $childId, $options );
+        $this->delete( $datasource, $childId, $options );
       }
     }
     return true;
   }
 
+   /*
+    ---------------------------------------------------------------------------
+       INTERFACE ITREEVIRTUALCONTROLLER
+    ---------------------------------------------------------------------------
+    */
+
+  /**
+   * Return the data of a node of the tree.
+   * @param string $datasource Datasource name
+   * @param int $nodeId
+   * @param int $parentId Optional id of parent folder
+   * @param mixed|null $options Optional data
+   * @return array
+   */
+  function getNodeData( $datasource, $nodeId, $parentId=null, $options=null )
+  {
+    $this->notImplemented(__METHOD__);
+  }
+
+  /**
+   * Returns the number of nodes in a given datasource
+   * @param string $datasource
+   * @param mixed|null $options Optional data, for example, when nodes
+   *   should be filtered by a certain criteria
+   * @return array containing the keys 'nodeCount', 'transactionId'
+   *   and (optionally) 'statusText'.
+   */
+  function method_getNodeCount( $datasource, $options=null )
+  {
+    $model = $this->getTreeNodeModel( $datasource );
+    $nodeCount = $model->countRecords();
+    return array(
+      'nodeCount'     => $nodeCount,
+      'transactionId' => $model->getTransactionId(),
+      'statusText'    => $this->tr("%s Nodes.", $nodeCount)
+    );
+  }
+
+  /**
+   * Returns the number of children of a node with the given id
+   * in the given datasource.
+   *
+   * @param $datasource
+   * @param $nodeId
+   * @param mixed|null $options Optional data, for example, when nodes
+   *   should be filtered by a certain criteria
+   * @return array
+   */
+  function method_getChildCount( $datasource, $nodeId, $options=null )
+  {
+    $childCount = $this->getChildCount( $datasource, $nodeId );
+    return array(
+      'childCount'   => $childCount
+    );
+  }
+
+  /**
+   * Returns the node data of the children of a given array of
+   * parent node ids. If the "recurse" parameter is true,
+   * also return the data of the whole branch. The number of
+   * nodes returned can be limited by the "max" argument.
+   *
+   * Returns an associative array with at least the keys "nodeData" and
+   * "queue". The "nodeData" value is an array of node data, each of which
+   * contains information on the parent id in the data.parentId property.
+   * The "queue" value is an array of ids that could not be retrieved
+   * because of the "max" limitation.
+   *
+   * If you supply a 'storeId' parameter, the requesting tree will be
+   * synchronized with all other trees that are connected to this store.
+   *
+   * @param string $datasource The name of the datasource
+   * @param int|array $ids A node id or array of node ids
+   * @param int $max The maximum number of queues to retrieve
+   * @param bool $recurse Whether recurse into the tree branch
+   * @param string $storeId The id of the connected datastore
+   * @param string|null $options Optional data, for example, when nodes
+   *   should be filtered by a certain criteria
+   * @return array
+   */
+  function method_getChildNodeData(
+    $datasource, $ids, $max=null, $recurse=false, $storeId=null, $options=null )
+  {
+
+    $counter = 0;
+
+    /*
+     * create node array with root node
+     */
+    $nodeArr = array();
+
+    /*
+     * check array of nodes of which the children should be retrieved
+     */
+    if ( ! is_array( $ids ) )
+    {
+      if ( ! is_numeric( $ids ) )
+      {
+        $this->raiseError("Invalid argument.");
+      }
+    }
+    $queue = (array) $ids;
+
+    /*
+     * retrieve the whole tree
+     */
+    while( count($queue) )
+    {
+
+      /*
+       * get child nodes
+       */
+      $parentId = (int) array_shift( $queue );
+      $childIds = (array) $this->getChildIds( $datasource, $parentId, "position" );
+
+      /*
+       * break if maximum number of nodes has been reached
+       */
+      $counter++;
+      if ( $max and $counter > $max ) break;
+
+      //$this->debug($childIds);
+
+      foreach ( $childIds as $childId )
+      {
+        /*
+         * get child data
+         */
+        $childData = $this->getNodeData( $datasource, $childId, $parentId );
+
+        /*
+         * if the child has children itself, load those
+         */
+        if ( $recurse and $childData['data']['childCount'] )
+        {
+          array_push( $queue, (int) $childId );
+        }
+
+        /*
+         * add child data to result
+         */
+        $nodeArr[] = $childData;
+      }
+    }
+
+   /*
+    * return the node data
+    */
+    $queueCount = count($queue);
+    return array(
+      'nodeData'  => $nodeArr,
+      'queue'     => $queue
+    );
+  }
 }
 ?>
