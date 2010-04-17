@@ -19,6 +19,7 @@
 qcl_import( "qcl_test_AbstractTestController");
 qcl_import( "qcl_access_model_User" );
 
+
 class class_qcl_test_access_ModelAccessControl
   extends qcl_test_AbstractTestController
 {

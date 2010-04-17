@@ -15,25 +15,76 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/ITreeNodeModel.php";
 
+qcl_import( "qcl_data_model_db_ActiveRecord" );
 
 /**
  * Behavior class providing methods to model a basic tree structure based on an
  * sql database table.
  */
-class qcl_data_db_behavior_Tree
-  implements qcl_data_model_ITreeNodeModel
+class qcl_data_model_db_TreeNodeModel
+  extends qcl_data_model_db_ActiveRecord
+//  implements qcl_data_model_ITreeNodeModel
 {
 
+  //-------------------------------------------------------------
+  // Model properties
+  //-------------------------------------------------------------
+
+  private $properties = array(
+
+    'parentId'  => array(
+      'check'     => "integer",
+      'sqltype'   => "int(11)"
+    ),
+    'position'  => array(
+      'check'     => "integer",
+      'sqltype'   => "int(11) NOT NULL",
+      'nullable'  => false,
+      'init'      => 0
+    ),
+    'label'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(100)"
+    )
+  );
+
+  //-------------------------------------------------------------
+  // init
+  //-------------------------------------------------------------
+
+  function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+  }
+
+
+  //-------------------------------------------------------------
+  // Getters
+  //-------------------------------------------------------------
+
   /**
-   * Returns the id of the parent node.
+   * Getter for the id of the parent node.
    * @return int
    */
   function getParentId()
   {
-    return $this->getProperty("parentId");
+    return $this->get("parentId");
   }
+
+  /**
+   * Setter for the id of the parent node.
+   * @return int
+   */
+  function setParentId( $id )
+  {
+    return $this->set("parentId", $id);
+  }
+
+  //-------------------------------------------------------------
+  // API
+  //-------------------------------------------------------------
 
   /**
    * Returns the data of child nodes of a branch ordered by the order field
@@ -41,12 +92,15 @@ class qcl_data_db_behavior_Tree
    *   data should be ordered
    * @return array
    */
-	function getChildren ( $orderBy=null )
+	function getChildrenData( $orderBy=null )
 	{
-	  return $this->findWhere(
-		  array( "parentId" => $this->getId() ),
-		  either( $orderBy, "position")
-		);
+	  $query = new qcl_data_db_Query( array(
+	   'properties'  => "*", // FIXME
+	   'where'       => array( 'parentId' => $id ),
+	   'orderBy'     => $orderBy
+	  ) );
+	  $this->find( $query );
+	  return $this->fetchAll();
 	}
 
   /**
@@ -57,18 +111,21 @@ class qcl_data_db_behavior_Tree
    */
 	function getChildIds ( $orderBy=null )
 	{
-	  $id = ( $this->foundSomething() ) ? $this->getId() : 0;
-	  return $this->findValues("id", array( "parentId" => $id ), $orderBy );
+    $query = new qcl_data_db_Query( array(
+     'properties'  => "*", // FIXME
+     'where'       => array( 'parentId' => $id ),
+     'orderBy'     => $orderBy
+    ) );
+    return $this->getQueryBehavior()->fetchValues("id", $query );
 	}
 
   /**
    * Returns the number of children of the given node
-   *
    * @return int
    */
 	function getChildCount()
 	{
-		return $this->countWhere( array( "parentId" => $this->getId() ) );
+		return $this->countWhere( array( "parentId" => $this->id() ) );
 	}
 
   /**
@@ -87,7 +144,8 @@ class qcl_data_db_behavior_Tree
 			$data=array();
 			$data["id"] 		= $id;
 			$data["position"] 	= $index++;
-			$this->update($data);
+			$this->set($data);
+			$this->save();
 		}
 		return true;
 	}
@@ -98,7 +156,7 @@ class qcl_data_db_behavior_Tree
 	 */
 	function supportsPositioning()
 	{
-		return $this->hasProperty("position") ;
+		return $this->has("position") ;
 	}
 
 	/**
@@ -107,7 +165,7 @@ class qcl_data_db_behavior_Tree
 	 */
 	function getPosition()
 	{
-	  return $this->getProperty("position");
+	  return $this->get("position");
 	}
 
    /**
@@ -120,7 +178,7 @@ class qcl_data_db_behavior_Tree
 	{
 		if ( ! $this->supportsPositioning() )
 		{
-			$this->raiseError ("Setting a position is not supported");
+			throw new JsonRpcException("Setting a position is not supported");
 		}
 
 		if ( is_string($position) )
@@ -131,12 +189,12 @@ class qcl_data_db_behavior_Tree
 		  }
 		  else
 		  {
-		    $this->raiseError("Invalid parameter");
+		    throw new InvalidArgumentException("Invalid position");
 		  }
 		}
 		elseif ( ! is_int( $position ) )
 		{
-		  $this->raiseError("Invalid parameter");
+		  throw new InvalidArgumentException("Invalid position");
 		}
 
 		$id = $this->getId();
@@ -160,7 +218,8 @@ class qcl_data_db_behavior_Tree
 				$data['position'] = $index++;
 			}
 
-			$this->update($data);
+			$this->set($data);
+			$this->save();
 		}
 		return true;
 	}
@@ -172,8 +231,9 @@ class qcl_data_db_behavior_Tree
     */
 	function changeParent( $parentId )
 	{
-		$oldParentId = $this->getProperty("parentId");
-    $this->setProperty("parentId", $parentId );
+		$oldParentId = $this->getParentId();
+    $this->setParentId( $parentId );
+    $this->save();
     return $oldParentId;
 	}
 
@@ -214,9 +274,9 @@ class qcl_data_db_behavior_Tree
     /*
      * if the tree path is cached, return it
      */
-    if ( ! $this->__cachePath and $this->hasProperty("path") )
+    if ( ! $this->__cachePath and $this->has("path") )
     {
-      if ( $path = $this->getProperty("path") )
+      if ( $path = $this->getPath() )
       {
         return $path;
       }
@@ -230,7 +290,7 @@ class qcl_data_db_behavior_Tree
      * get path of parent if any
      */
     $label    =  trim( str_replace( "/", "\\/", $this->getLabel() ) );
-    $parentId = $this->get("parentId");
+    $parentId = $this->getParentId();
 
     if ( $parentId )
     {
@@ -267,7 +327,7 @@ class qcl_data_db_behavior_Tree
    */
   function getIdPath()
   {
-    $this->raiseError("Not implemented");
+    $this->notImplemented(__METHOD__);
   }
 
   /**
@@ -278,9 +338,7 @@ class qcl_data_db_behavior_Tree
    */
   function getIdByPath ( $path, $separator="/" )
   {
-    $this->raiseError("Not implemented.");
-    $path = str_replace("\\/","&backslash;",$path);
-    $parts = explode("/",$path);
+    $this->notImplemented(__METHOD__);
   }
 
   /**
@@ -291,103 +349,7 @@ class qcl_data_db_behavior_Tree
    */
   function createPath( $path, $separator="/" )
   {
-    $this->raiseError("Not implemented.");
-    $path = str_replace("\\/","&backslash;",$path);
-    $parts = explode("/",$path);
-    foreach ( $parts as $part )
-    {
-      // to do: implement
-    }
-  }
-
-  /**
-   * Creates functions that help maintain a tree structure in the
-   * database:
-   *
-   * table_getHierarchyPath( int folderId ): returns a slash-separated hierarchy path
-   * table_getHierarchyIds( int folderId ):
-   *
-   * Having these functions will significantly speed up tree
-   * path lookup
-   * @param string $table Table name
-   * @param string $col_id Name of id column
-   * @param string $col_parentId Name of parent id column
-   * @param string $col_label Name of node label/name
-   */
-  public function createHierarchyFunctions($table, $col_id, $col_parentId, $col_label)
-  {
-    /*
-     * @todo check permissions
-     */
-
-    /*
-     * drop functions in case they are already defined
-     */
-    $table = $this->table();
-    $this->execute("
-      DROP FUNCTION IF EXISTS `{$table}_getHierarchyPath`
-    ");
-    $this->execute("
-      DROP FUNCTION IF EXISTS `{$table}_getHierarchyIds`
-    ");
-
-    /*
-     * create functions
-     */
-    $this->execute("
-      CREATE FUNCTION `{$table}_getHierarchyPath`(folderId int)
-      RETURNS varchar(255) READS SQL DATA
-      begin
-       declare path varchar(255);
-       declare part varchar(50);
-       declare parentId int(11);
-       set path = '';
-       while folderId > 0 do
-         select
-           `{$col_label}` into part
-           from `{$table}`
-           where `{$col_id}` = folderId;
-         select
-           `{$col_parentId}` into parentId
-           from `{$table}`
-           where `{$col_id}` = folderId;
-         if path != '' then
-           set path = concat(
-             CAST('/' AS CHAR CHARACTER SET utf8 ),
-             CAST(path AS CHAR CHARACTER SET utf8 )
-           );
-         end if;
-         set path = concat(
-           CAST(part AS CHAR CHARACTER SET utf8 ),
-           CAST(path AS CHAR CHARACTER SET utf8 )
-         );
-         set folderId = parentId;
-       end while;
-       return path;
-      end;
-    ");
-
-    $this->execute("
-      CREATE FUNCTION `{$table}_getHierarchyIds`(folderId int)
-      RETURNS varchar(255) READS SQL DATA
-      begin
-       declare path varchar(255);
-       declare parentId int(11);
-       set path = '';
-       while folderId > 0 do
-         select
-           `{$col_parentId}` into parentId
-         from `{$table}`
-         where `{$col_parentId}` = folderId;
-         if path != '' then
-           set path = concat(path,',');
-         end if;
-         set path = concat(path,folderId);
-         set folderId = parentId;
-       end while;
-       return path;
-      end;
-    ");
+    $this->notImplemented(__METHOD__);
   }
 }
 ?>

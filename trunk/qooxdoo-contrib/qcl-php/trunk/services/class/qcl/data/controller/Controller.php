@@ -43,7 +43,7 @@ class qcl_data_controller_Controller
    * Defaults to "model"
    * @var array
    */
-  protected $aclTypes = array( "model" );
+  protected $aclTypes = array( "model", "record" );
 
 
   //-------------------------------------------------------------
@@ -144,14 +144,24 @@ class qcl_data_controller_Controller
    */
   protected function addAclRuleset( $type, $ruleset )
   {
-    if ( !in_array( $type, $this->aclTypes ) or !is_array( $ruleset ) )
+    if ( ! in_array( $type, $this->aclTypes ) or !is_array( $ruleset ) )
     {
-      throw new InvalidArgumentException("Invalid arguments");
+      throw new InvalidArgumentException("Invalid acl type '$type'");
     }
     foreach( $ruleset as $acl )
     {
       $this->acl[$type][] = $acl;
     }
+  }
+
+  /**
+   * Adds a model acl ruleset to the controller
+   * @param $ruleset
+   * @return void
+   */
+  protected function addModelAcl( $ruleset )
+  {
+    $this->addAclRuleset("model", $ruleset );
   }
 
   /**
@@ -169,13 +179,27 @@ class qcl_data_controller_Controller
   }
 
   /**
-   * Adds a model acl ruleset to the controller
+   * Adds a record acl ruleset to the controller
    * @param $ruleset
    * @return void
    */
-  protected function addModelAcl( $ruleset )
+  protected function addRecordAcl( $ruleset )
   {
-    $this->addAclRuleset("model", $ruleset );
+    $this->addAclRuleset("record", $ruleset );
+  }
+
+  /**
+   * Returns the acl rulesets for models
+   * @return array Array of maps
+   */
+  protected function getRecordAcl()
+  {
+    $recordAcl = $this->acl['record'];
+    if ( ! is_array( $recordAcl ) or ! count( $recordAcl ) )
+    {
+      throw new JsonRpcException("No record ACL defined for " . $this->className() );
+    }
+    return $recordAcl;
   }
 
   /**
@@ -196,21 +220,26 @@ class qcl_data_controller_Controller
      */
     $activeUser  = $this->getActiveUser();
     $roles       = $activeUser->roles();
-    $modelAclArr = $this->getModelAcl();
+    $modelAcl    = $this->getModelAcl();
     $access = false;
-    foreach( $modelAclArr as $modelAcl )
+
+    foreach( $modelAcl as $ruleset )
     {
       /*
        * check if datasource and model type matches
        */
-      if ( ( $modelAcl['datasource'] == $datasource or $modelAcl['datasource'] == "*" )
-       and ( $modelAcl['modelType']  == $modelType  or $modelAcl['modelType']  == "*" ) )
+      if ( ( ! isset( $ruleset['datasource'] )
+               or in_array( $datasource, (array) $ruleset['datasource'] )
+                  or $ruleset['datasource'] == "*" )
+            and ( in_array( $modelType, (array) $ruleset['modelType'] )
+              or $ruleset['modelType']  == "*" ) )
       {
+
         /*
-         * check if 'roles' property matches
+         * check if 'roles' property exists and if yes, if it matches
          */
-        if ( $modelAcl['roles'] == "*"
-              or count( array_intersect( $roles, (array) $modelAcl['roles'] ) ) )
+        if ( ! isset( $ruleset['roles'] ) or $ruleset['roles'] == "*"
+              or count( array_intersect( $roles, (array) $ruleset['roles'] ) ) )
         {
           $access = true;
           break;
@@ -221,13 +250,32 @@ class qcl_data_controller_Controller
     if ( ! $access )
     {
       $this->warn( sprintf(
-        "User '%s' has no access to datatsource '%s'/ model type '%s'.",
-        $activeUser->username(), $datasource, $modelType
+        "User '%s' (role %s) has no access to datasource '%s'/ model type '%s'.",
+        $activeUser->username(), implode(",", $roles), $datasource, $modelType
       ) );
       throw new qcl_access_AccessDeniedException("Access denied");
     }
 
+    /*
+     * get datasource model by name
+     */
     $model = $this->getDatasourceModel( $datasource );
+
+    /*
+     * check schema if given
+     * FIXME: does this make sense here or must be a selection criteria?
+     */
+    if ( isset( $ruleset['schema'] ) )
+    {
+      if ( ! in_array( $model->getSchema(), (array) $ruleset['schema']) )
+      {
+        throw new qcl_access_AccessDeniedException("Wrong schema!");
+      }
+    }
+
+    /*
+     * get model type
+     */
     if( $modelType )
     {
       $model = $model->getModelOfType( $modelType );
@@ -254,21 +302,25 @@ class qcl_data_controller_Controller
 
     $activeUser  = $this->getActiveUser();
     $roles       = $activeUser->roles();
-    $modelAclArr = $this->getModelAcl();
+    $modelAcl    = $this->getModelAcl();
     $access  = false;
-    foreach( $modelAclArr as $modelAcl )
+    foreach( $modelAcl as $ruleset )
     {
       /*
        * check if datasource and model type matches
        */
-      if ( ( $modelAcl['datasource'] == $datasource or $modelAcl['datasource'] == "*" )
-       and ( $modelAcl['modelType']  == $modelType  or $modelAcl['modelType']  == "*" ) )
+      if ( ( ! isset( $ruleset['datasource'] )
+              or in_array( $datasource, (array) $ruleset['datasource'] )
+                or $ruleset['datasource'] == "*" )
+            and ( in_array( $modelType, (array) $ruleset['modelType'] )
+              or $ruleset['modelType']  == "*" ) )
       {
 
         /*
          * examine the rules
+         * @todo check if rules OR roles are defined
          */
-        $rules =  $modelAcl['rules'];
+        $rules =  $ruleset['rules'];
         foreach ( $rules as $rule )
         {
 
@@ -283,19 +335,19 @@ class qcl_data_controller_Controller
           /*
            * does rule match the the access type ?
            */
-          if ( $accessTypes == "*" or in_array( $accessType, $accessTypes ) )
+          if ( $accessTypes == "*" or in_array( $accessType, (array) $accessTypes ) )
           {
 
             /*
              * does rule also match the given roles?
              */
-            if ( $accessRoles == "*" or count( array_intersect( $accessRoles, $roles  ) ) )
+            if ( $accessRoles == "*" or count( array_intersect( $accessRoles, (array) $roles  ) ) )
             {
 
               /*
                * finally, does rule match given properties?
                */
-              if ( $accesProps == "*" or count( array_intersect( $accesProps, $properties ) ) )
+              if ( $accesProps == "*" or count( array_intersect( $accesProps, (array) $properties ) ) )
               {
                 $access = true;
                 break;
@@ -309,13 +361,120 @@ class qcl_data_controller_Controller
     if ( ! $access )
     {
       $this->warn( sprintf(
-        "User '%s' has no '%s' access to the record or to one or more of the properties [%s] in datatsource '%s'/ model type '%s'.",
-        $activeUser->username(), $accessType, implode(",", (array) $properties ), $datasource, $modelType
+        "User '%s' (role %s) has no '%s' access to the records or to one or more of the properties [%s] in datatsource '%s'/ model type '%s'.",
+        $activeUser->username(), implode(",", $roles ),
+        $accessType, implode(",", (array) $properties ),
+        $datasource, $modelType
       ) );
       throw new qcl_access_AccessDeniedException("Access denied.");
     }
   }
 
+  /**
+   * Checks if there is a rule affecting access to the given record
+   * @param string $datasource
+   * @param string $modelType
+   * @param array $record
+   * @return bool
+   */
+  protected function hasRecordAccess( $datasource, $modelType, $record )
+  {
+    /*
+     * static variable to cache access rules
+     */
+    static $cache = array();
+    $rule = null;
+
+    /*
+     * did we cache the rule already?
+     */
+    if ( isset( $cache[$datasource]  ) )
+    {
+      if ( isset( $cache[$datasource][$modelType] ) )
+      {
+        $rule = $cache[$datasource][$modelType];
+      }
+    }
+    else
+    {
+      $recordAcl = $this->getRecordAcl();
+      foreach( $recordAcl as $ruleset )
+      {
+        /*
+         * look for the first ruleset where datasource and model type
+         * matches and save rules in the cache to speed up rule lookups
+         */
+        if ( ( ! isset( $ruleset['datasource'] )
+                or in_array( $datasource, (array) $ruleset['datasource'] )
+                  or $ruleset['datasource'] == "*" )
+              and ( in_array( $modelType, (array) $ruleset['modelType'] )
+                or $ruleset['modelType']  == "*" ) )
+        {
+          if ( isset( $ruleset['rules'] ) and is_array( $ruleset['rules'] ) )
+          {
+            $cache[$datasource][$modelType] = $ruleset['rules'];
+            break;
+          }
+          else
+          {
+            throw new JsonRpcException("No rules defined in record acl for $datasource/$modelType.");
+          }
+        }
+      }
+    }
+
+    /*
+     * test all the rules against the record. return false when the
+     * first test fails.
+     */
+    $access = true;
+    $rules = $cache[$datasource][$modelType];
+    foreach( $rules as $rule )
+    {
+      /*
+       * look for callback
+       * @todo implement other types of rules
+       */
+      if( isset( $rule['callback' ] ) )
+      {
+        $callback = $rule['callback' ];
+        if ( ! method_exists( $this, $callback ) )
+        {
+          throw new JsonRpcException("Invalid callback '$callback' defined in record acl for $datasource/$modelType.");
+        }
+
+        if ( ! $this->$callback($record) )
+        {
+          return false;
+        }
+      }
+      else
+      {
+        throw new JsonRpcException("No callback defined in record acl for $datasource/$modelType.");
+      }
+    }
+    /*
+     * passed all tests
+     */
+    return true;
+  }
+
+
+  /**
+   * Checks if there is a rule affecting access to the given record and
+   * throws an exception if access to this record is denied
+   * @param string $datasource
+   * @param string $modelType
+   * @param array $record
+   * @return void
+   */
+  protected function checkRecordAccess( $datasource, $modelType, $record )
+  {
+    if ( ! $this->hasRecordAccess( $datasource, $modelType, $record ) )
+    {
+      throw new qcl_access_AccessDeniedException("Access to model record denied.");
+    }
+  }
 
   /**
    * Creates a record in the given model.
@@ -368,8 +527,10 @@ class qcl_data_controller_Controller
 
     /*
      * load and update it. this will throw an error if it doesn't exist
+     * or if access to this model is not allowed
      */
     $model->load( $id );
+    $this->checkRecordAccess( $datasource, $modelType, $model->data() );
     $model->set( $data );
     $model->save();
     return "OK";
@@ -397,8 +558,10 @@ class qcl_data_controller_Controller
 
     /*
      * load and update it. this will throw an error if it doesn't exist
+     * or if access is not allowed
      */
     $model->load( $id );
+    $this->checkRecordAccess( $datasource, $modelType, $model->data() );
     $model->delete();
     return "OK";
   }
@@ -454,63 +617,87 @@ class qcl_data_controller_Controller
     /*
      * do the query
      */
-    $this->getLogger()->setFilterEnabled(QCL_LOG_DB,true);
-    return $model->getQueryBehavior()->fetchAll( $query );
+    $data = $model->getQueryBehavior()->fetchAll( $query );
+
+    /*
+     * check the result rows and delete them if access is not allowed
+     */
+    $result = array();
+    for ( $i=0; $i<count($data); $i++)
+    {
+      if ( $this->hasRecordAccess( $datasource, $modelType, $data[$i] ) )
+      {
+        $result[] = $data[$i];
+      }
+      else
+      {
+        //$this->debug( "Ignoring " . $data[$i]['data']);
+      }
+    }
+    return $result;
   }
 
-
   /**
-   * Returns the result of a "fetchValues" operation on the given model of the
-   * given datasource.
-   *
+   * Returns the value of a property of a record identified by the id.
+   * Throws an error if no access to the property.
    * @param string $datasource
    * @param string $modelType
-   * @param object|string $queryData If string, use as property name to
-   * retrieve. If object, use the data to create query object
-   * @param array|null $where Only accepted if $queryData is string and
-   * used as "where" data
-   * @return array
+   * @param string $id
+   * @return mixed
    */
-  public function method_fetchValues( $datasource, $modelType, $queryData, $where = null )
+  public function method_getValue( $datasource, $modelType, $id, $property )
   {
     /*
-     * check arguments
-     */
-    if ( is_string( $queryData ) )
-    {
-      if ( ! is_object( $where ) and ! is_null( $where ) )
-      {
-        throw new InvalidArgumentException("Invalid query data.");
-      }
-      $query = new qcl_data_db_Query( array(
-        'properties'  => array( $queryData ),
-        'where'       => object2array( $where )
-      ) );
-    }
-    elseif ( is_object( $queryData ) )
-    {
-      $query = new qcl_data_db_Query( object2array( $queryData )  );
-    }
-    else
-    {
-      throw new InvalidArgumentException("Invalid query data.");
-    }
-
-    /*
-     * check access to model and get it
+     * get model and check whether the id is numeric or a string
      */
     $model = $this->getModel( $datasource, $modelType );
 
     /*
-     * check read access to properties
+     * Check property
      */
-    $properties = $query->getProperties();
-    $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, $properties );
+    if ( ! $model->hasProperty( $property ) )
+    {
+      throw new InvalidArgumentException("Model '$model' has no property '$property' !");
+    }
 
     /*
-     * do the query
+     * Run query
      */
-    return $model->getQueryBehavior()->fetchValues( null, $query );
+    $model->load( $id );
+    $this->checkRecordAccess( $datasource, $modelType, $model->data() );
+    return $model->get($property);
+  }
+
+  /**
+   * Sets the value of a property of a record identified by the id. Throws
+   * an error if no access to that property.
+   * @param string $datasource
+   * @param string $modelType
+   * @param string $id
+   * @return mixed
+   */
+  public function method_setValue( $datasource, $modelType, $id, $property, $value )
+  {
+    /*
+     * get model and check whether the id is numeric or a string
+     */
+    $model = $this->getModel( $datasource, $modelType );
+
+    /*
+     * Check property
+     */
+    if ( ! $model->hasProperty( $property ) )
+    {
+      throw new InvalidArgumentException("Model '$model' has no property '$property' !");
+    }
+
+    /*
+     * Run query
+     */
+    $model->load( $id );
+    $this->checkRecordAccess( $datasource, $modelType, $model->data() );
+    $model->set($property, $value);
+    $model->save();
   }
 
 
