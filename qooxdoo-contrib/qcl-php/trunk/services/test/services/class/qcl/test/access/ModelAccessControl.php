@@ -41,7 +41,7 @@ class class_qcl_test_access_ModelAccessControl
 
       /*
        * which roles have generally access to this model?
-       * Here: all
+       * Here: all roles
        */
       'roles'       => "*",
 
@@ -196,12 +196,11 @@ class class_qcl_test_access_ModelAccessControl
       $query->properties = array( NAMED_ID, "name", "password" );
       $query->where = array( "anonymous" => false );
       $data = $this->method_fetchRecords( "access","user", $query );
-      $failed = false;
+      throw new qcl_test_AssertionException( "Access violation in line" . __LINE__ );
     }
     catch( qcl_access_AccessDeniedException $e)
     {
-      $this->warn( $e );
-      $failed = true;
+      $this->info( $e->getMessage() );
     }
 
     try
@@ -212,12 +211,11 @@ class class_qcl_test_access_ModelAccessControl
       $newUser->password = "user4";
       $this->method_createRecord("access","user", $newUser );
       $userModel = $this->getModel( "access", "user" );
-      $failed = false;
+      throw new qcl_test_AssertionException( "Access violation in line" . __LINE__ );
     }
     catch( qcl_access_AccessDeniedException $e)
     {
       $this->info( $e->getMessage() );
-      $failed = true;
     }
 
     try
@@ -225,25 +223,22 @@ class class_qcl_test_access_ModelAccessControl
       $data = new stdClass();
       $data->email = "foo@bar.com";
       $this->method_updateRecord( "access", "user", "user4", $data );
-      $failed = false;
+      throw new qcl_test_AssertionException( "Access violation in line" . __LINE__ );
     }
     catch( qcl_access_AccessDeniedException $e)
     {
-      $this->info( $e->getMessage() );
-      $failed = true;
+     $this->info( $e->getMessage() );
     }
 
     try
     {
       $this->method_deleteRecord( "access", "user", "user4" );
-      $failed = false;
+      throw new qcl_test_AssertionException( "Access violation in line" . __LINE__ );
     }
     catch( qcl_access_AccessDeniedException $e)
     {
       $this->info( $e->getMessage() );
-      $failed = true;
     }
-    $this->assertEquals( true, $failed, null, __CLASS__, __LINE__ );
 
     return "OK";
   }
