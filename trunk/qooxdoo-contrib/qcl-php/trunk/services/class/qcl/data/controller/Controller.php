@@ -195,11 +195,16 @@ class qcl_data_controller_Controller
   protected function getRecordAcl()
   {
     $recordAcl = $this->acl['record'];
-    if ( ! is_array( $recordAcl ) or ! count( $recordAcl ) )
-    {
-      throw new JsonRpcException("No record ACL defined for " . $this->className() );
-    }
     return $recordAcl;
+  }
+
+  /**
+   * Checks if any record acl rules have been set up.
+   * @return bool
+   */
+  protected function hasRecordAcl()
+  {
+    return count( $this->getRecordAcl() ) > 0;
   }
 
   /**
@@ -470,6 +475,7 @@ class qcl_data_controller_Controller
    */
   protected function checkRecordAccess( $datasource, $modelType, $record )
   {
+    if ( ! $this->hasRecordAcl() ) return;
     if ( ! $this->hasRecordAccess( $datasource, $modelType, $record ) )
     {
       throw new qcl_access_AccessDeniedException("Access to model record denied.");
@@ -620,21 +626,59 @@ class qcl_data_controller_Controller
     $data = $model->getQueryBehavior()->fetchAll( $query );
 
     /*
-     * check the result rows and delete them if access is not allowed
+     * if no record acl rules have been set up, return unfiltered data
      */
-    $result = array();
+    if ( ! $this->hasRecordAcl() )
+    {
+      return $data;
+    }
+
+    /*
+     * otherwise filter rows to which the access in not allowed
+     */
+    $filteredData = array();
     for ( $i=0; $i<count($data); $i++)
     {
       if ( $this->hasRecordAccess( $datasource, $modelType, $data[$i] ) )
       {
-        $result[] = $data[$i];
+        $filteredData[] = $data[$i];
       }
       else
       {
         //$this->debug( "Ignoring " . $data[$i]['data']);
       }
     }
-    return $result;
+    return $filteredData;
+  }
+
+  /**
+   * Returns the values of a property that matches a where condition
+   * @param string $datasource
+   * @param string $modelType
+   * @param string $property
+   * @param object $where
+   * @return array
+   */
+  public function method_fetchValues( $datasource, $modelType, $property, $where )
+  {
+    $model = $this->getModel( $datasource, $modelType );
+    $model->findWhere( object2array( $where ) );
+    $result = array();
+    if ( $this->hasRecordAcl() )
+    {
+      while( $model->loadNext() )
+      {
+        if ( $this->hasRecordAccess( $datasource, $modelType, $model->data() ) )
+        {
+          $result[] = $model->get( $property );
+        }
+      }
+      return $result;
+    }
+    else
+    {
+      return $model->getQueryBehavior()->fetchValues( $property, object2array( $where ) );
+    }
   }
 
   /**
