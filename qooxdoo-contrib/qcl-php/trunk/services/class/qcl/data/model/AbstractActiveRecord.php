@@ -440,7 +440,8 @@ class qcl_data_model_AbstractActiveRecord
    * @param qcl_data_db_Query|null $query If given, fetch the records
    *   that have been selected using the given query. Otherwise retrieve
    *   the result of the last query.
-   * @return array|null
+   * @return array|null The raw data from the record model. To get typecasted
+   *  data with translated key names, use ::data()
    */
   public function loadNext( $query= null )
   {
@@ -476,6 +477,45 @@ class qcl_data_model_AbstractActiveRecord
     }
     return $result;
   }
+
+  /**
+   * Returns the result of the last query without modifying the
+   * active record.
+   * @return array Array of arrays
+   */
+  public function fetchAll()
+  {
+    try
+    {
+      $id = $this->id();
+    }
+    catch ( qcl_data_model_NoRecordLoadedException $e )
+    {
+      // ignore error, this should also work without a loaded record
+      $id = null;
+    }
+
+    $result = array();
+
+    /*
+     * fetch the complete data
+     */
+    while( $this->loadNext() )
+    {
+      $result[] = $this->data();
+    }
+
+    /*
+     * reload model
+     */
+    if ( $id )
+    {
+      $this->load( $id );
+    }
+
+    return $result;
+  }
+
 
   //-------------------------------------------------------------
   // Data creation and manipulation
