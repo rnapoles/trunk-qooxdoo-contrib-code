@@ -49,6 +49,13 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
      {
        this.setStore( store );
      } 
+     
+     /*
+      * node id map
+      */
+     this.__nodeIdMap={
+       0 : 0
+     };
    },
 
    /*
@@ -96,6 +103,17 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
        apply: "_applyDelegate",
        init: null,
        nullable: true
+     },
+     
+     /**
+      * A number indicating the state of the tree data. This way, client and
+      * server state can be compared. If one transaction id is higher than the other,
+      * the other is out of date. 
+      */
+     transactionId :
+     {
+       check : "Integer",
+       event : "changeTransactionId"
      }
    },
 
@@ -107,7 +125,19 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
   
   members :
   {
-
+    
+     /*
+     ---------------------------------------------------------------------------
+        PRIVATE MEMBERS
+     ---------------------------------------------------------------------------
+     */     
+    
+    /**
+     * A map connecting client-side node ids (key) with the server-side
+     * node id (value) 
+     */
+    __nodeIdMap : null,
+    
      /*
      ---------------------------------------------------------------------------
         APPLY METHODS
@@ -142,11 +172,11 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
          /*
           * catch events like add, remove, etc. 
           */         
-         targetModel.addListener("change", this._targetOnChange, this);
+         targetModel.getModel().addListener("change", this._targetOnChange, this);
          /*
           * catch property changes in the nodes
           */         
-         targetModel.addListener("changeBubble", this._targetOnChangeBubble, this);         
+         targetModel.getModel().addListener("changeBubble", this._targetOnChangeBubble, this);         
        }
 
      },
@@ -195,16 +225,83 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
         * check if there are any nodes to add
         */
        var nodeData = model.getNodeData();   
+       if ( ! qx.lang.Type.isArray( nodeData ) )
+       {
+          throw new Error("Invalid node data!"); // FIXME Proper error handling
+       }
        if ( ! nodeData.length ) return;
        
        /*
         * add tree data to the model
         */
-       targetModel.addData( null, nodeData );   
+       nodeData.forEach( function(node){
+          
+          var serverNodeId = node.data.id;
+          if ( ! qx.lang.Type.isNumber( serverNodeId ) )
+          {
+            throw new Error("Missing  or invalid server node id in node data.")
+          }
+          var serverParentId = node.data.parentId;
+          if ( ! qx.lang.Type.isNumber( serverParentId ) )
+          {
+            throw new Error("Missing or invalid server parent node id in node data.")
+          }
+          
+          var parentNodeId = this.__nodeIdMap[serverParentId];
+          if ( parentNodeId === undefined )
+          {
+            throw new Error( "Cannot add node #" + serverNodeId + ": parent node #" + serverParentId + " has not been loaded yet." )
+          }
+          
+          if ( node.isBranch )
+          {
+            var clientNodeId = targetModel.addBranch(
+              parentNodeId,
+              node.label,
+              node.bOpened,
+              node.bHideOpenCloseButton,
+              node.icon,
+              node.iconSelected
+            );
+          }
+          else
+          {
+            var clientNodeId = targetModel.addLeaf(
+              parentNodeId,
+              node.label,
+              node.icon,
+              node.iconSelected
+            );
+          }
+          
+          /*
+           * set column und node data
+           */
+          targetModel.setState(clientNodeId, {
+            columnData : node.columnData,
+            data       : node.data
+          });
+          
+          /*
+           * save node in map
+           */
+          this.__nodeIdMap[serverNodeId] = clientNodeId;
+          
+       }, this);
+          
        targetModel.setData();         
 
      },
-
+    
+     /**
+      * Given the server-side node id, return the client-side one
+      * @param serverNodeId {Integer}
+      * @return {Integer}
+      */
+     getClientNodeId : function( serverNodeId )
+     {
+        return this.__nodeIdMap[serverNodeId];
+     },
      
      /*
      ---------------------------------------------------------------------------
@@ -222,54 +319,8 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
      _targetOnChange : function( event )
      {
        //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
-      
-       /*
-        * if no store, no propagation
-        */ 
-       if ( ! this.getStore() ) return;
-        
-       var target = this.getTarget();
-       var targetModel = target.getDataModel();
        
-       /*
-        * event data
-        */
-       var data = event.getData();
-       data.eventType = event.getType();
-       data.items = [];
-       
-       /*
-        * iterate through all elements that
-        * are concerned
-        */
-        for ( var i=data.start; i<= data.end; i++)
-        {
-          switch ( data.type )
-          {
-            /* 
-             * add a node
-             */
-            case "add":
-              data.items.push( targetModel.getData()[i] );
-              break;
-              
-           /*
-            * move a node
-            */
-            case "move":
-              this.error("Not implmemented");
-          }
-        }
-
-        /*
-         * store hash code of event target
-         */
-        event.getData().hashCode = this.getTarget().toHashCode(); 
-        
-        /*
-         * put event in store queue
-         */
-        this.getStore().addToEventQueue( event );
+        // FIXME: not implemented
      },
 
      /**
@@ -282,25 +333,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
      {
         //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
         
-        var targetModel = this.getTarget().getDataModel();
-       
-       /*
-        * exchange client id with server id
-        */
-       event.getData().name   = event.getData().name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId){
-         var serverNodeId = targetModel.getServerNodeId( parseInt(sourceNodeId) ) ;
-         return "getData()[" + serverNodeId + "]";
-       });
-       
-       /*
-        * store hash code of event target
-        */
-       event.getData().hashCode = this.getTarget().toHashCode();    
-       
-       /*
-        * put event in store queue
-        */
-       this.getStore().addToEventQueue( event );
+        //FIXME: not implemented
      },
 
      /**
@@ -313,53 +346,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
         
          //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
 
-         /*
-          * no action if no target or the event source is the the target tree
-          */
-         if ( ! this.getTarget()  
-             || event.getData().hashCode == this.getTarget().toHashCode() ) return;
-                  
-         var data = event.getData();
-         var target = this.getTarget();
-         var targetModel = target.getDataModel();
          
-         /*
-          * handle range of items 
-          */
-         for ( var i=data.start; i<= data.end; i++)
-         {
-           switch ( data.type )
-           {
-             /* 
-              * Add a node. If the event comes from the server,
-              * use the data from the items property. Otherwise,
-              * use data from the event target.
-              */
-             case "add":
-               var node = data.isServerEvent ? 
-                   data.items[i-data.start] : event.getTarget().getData()[i];
-               targetModel.addData( null, [node] );
-               break;
-             
-             /*
-              * Remove a node: if the event is not from the server,
-              * get the server node id from the event target.
-              */
-             case "remove":
-               var serverNodeId = data.isServerEvent ? 
-                   i : event.getTarget().getServerNodeId(i);
-               var nodeId = targetModel.getClientNodeId( serverNodeId );
-               targetModel._removeNodeData( nodeId );
-               break;
-               
-            /*
-             * move a node
-             */
-             case "move":
-               this.error("Not implmemented");
-           }
-         }  
-         targetModel.setData();
       },
       
       /**
@@ -372,31 +359,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
         
          //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
          
-         /*
-          * no action if no target or the event source is the the target tree
-          */
-         if ( ! this.getTarget()  
-             || event.getData().hashCode == this.getTarget().toHashCode() ) return;
-         
-        /*
-         * change data
-         */
-        var data = event.getData();
-        var target = this.getTarget();
-        var targetModel = target.getDataModel();
- 
-        var path   = data.name.replace(/^data\[([0-9]+)\]/,function(m,sourceNodeId)
-        {
-          var serverNodeId = data.isServerEvent ? 
-              sourceNodeId : targetModel.getServerNodeId( parseInt(sourceNodeId) ) ;
-          var targetNodeId = targetModel.getClientNodeId( serverNodeId ); 
-          return "getData()[" + targetNodeId + "]";
-        });
-        
-        // eval creates problem for build variable optimization
-        eval( "this.getTarget().getDataModel()." + path + "= arguments[0].getData().value;" );
-        
-        targetModel.setData();
+          // FIXME : not implemented
       }     
      
   }

@@ -1022,7 +1022,7 @@ qx.Class.define("virtualdata.model.SimpleTreeDataModel",
      */
     clearData : function ()
     {
-      this._resetSelections();
+      this._clearSelections();
       this.setData([ this.self(arguments).__getEmptyTree() ]);
     },
 
