@@ -274,11 +274,28 @@ class qcl_data_datasource_DbModel
     if ( ! isset( $this->modelCache[$class] ) )
     {
       $model = new $class( $this );
-      $model->init();
+      //$model->init();
       $this->modelCache[$class] = $model;
     }
 
     return $this->modelCache[$class];
+  }
+
+  /**
+   * Return the model that corresponds to the given class
+   * @param string $class
+   * @return qcl_data_model_db_AbstractActiveRecord
+   */
+  public function getModelByClass( $class )
+  {
+    foreach( $this->modelMap as $type => $data )
+    {
+      if ( $data['class'] == $class )
+      {
+        return $this->getModelOfType( $type );
+      }
+    }
+    throw new InvalidArgumentException("Datasource $this does not have a model of class '$class'.");
   }
 
   /**

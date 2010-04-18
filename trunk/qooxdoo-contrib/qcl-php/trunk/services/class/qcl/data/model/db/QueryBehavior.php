@@ -25,7 +25,7 @@ qcl_import( "qcl_data_db_Table" );
  * @todo Outsource relations management into a separate RelationsBehavior
  */
 class qcl_data_model_db_QueryBehavior
-  //implements qcl_data_model_IQueryBehavior
+//implements qcl_data_model_IQueryBehavior
 {
 
   //-------------------------------------------------------------
@@ -343,10 +343,10 @@ class qcl_data_model_db_QueryBehavior
        * continue if the cache has the same value
        */
       if ( isset( $cache->indexes[$tableName][$name] )
-        and $cache->indexes[$tableName][$name] == array(
+      and $cache->indexes[$tableName][$name] == array(
           "type"       => $index['type'],
           "properties" => $index['properties']
-        )  )
+      )  )
       {
         $model->log("Index hasn't changed according to cached data.",QCL_LOG_TABLES);
         $cache->indexes[$tableName][$name] = $index;
@@ -420,46 +420,112 @@ class qcl_data_model_db_QueryBehavior
     $propArg = $query->getProperties();
 
     /*
+     * check for relations
+     */
+    $link    = $query->getLink();
+    if ( $link and isset( $link['relation'] ) )
+    {
+      $relBeh = $this->getModel()->getRelationBehavior();
+      $relation = $link['relation'];
+      $relBeh->checkRelation( $relation );
+      $targetModel = $relBeh->getTargetModel( $relation );
+    }
+    else
+    {
+      $targetModel = null;
+    }
+
+    /*
      * determine the column to select and the names under
      * which the columns should be returned ('properties')
+     * properties is an array, one element for each model
+     * involved, of arrays of property names.
      */
     $columns    = array();
     $properties = array();
+
 
     /*
      * if string, split at the pipe and comma characters
      */
     if ( is_string( $propArg ) )
     {
-      $properties = explode("|", $propArg );
-      if ( count( $properties ) > 1 )
-      for ( $i=0; $i<count( $properties ); $i++  )
+      $parts = explode("|", $propArg );
+
+      /*
+       * if we have "p1,p2,p3|p4,p5,p6"
+       */
+      if ( count( $parts ) > 1 )
       {
-        $properties[$i] = explode(",",$properties[$i] );
+        for ( $i=0; $i<count( $parts ); $i++  )
+        {
+          $properties[$i] = explode(",",$parts[$i] );
+        }
+      }
+
+      /*
+       * no only "p1,p2,p3"
+       */
+      else
+      {
+        $properties[0] = explode(",",$parts[0]);
+      }
+    }
+
+    /*
+     * We have an array.
+     * If first element is a string, only the properties
+     * of the current model are requested. Convert
+     * the properties array accordingly
+     */
+    elseif ( is_array( $propArg ) )
+    {
+      if ( is_array( $propArg[0] ) )
+      {
+        $properties = $propArg;
+      }
+      elseif ( is_string( $propArg[0] ) )
+      {
+        $properties = array( $propArg );
       }
       else
       {
-        $properties = explode(",",$properties[0]);
+        throw new InvalidArgumentException("Invalid property argument");
       }
     }
-    elseif ( is_array( $propArg ) )
+
+    /*
+     * if null, all the properties of the current model
+     */
+    elseif ( is_null( $propArg ) )
     {
-      $properties = $propArg;
-    }
-    elseif ( ! is_null( $propArg ) )
-    {
-      $this->raiseError("Invalid 'properties'.");
+      $properties = array( "*" );
     }
 
-    $cols = array();
+    /*
+     * invalid property arguments
+     */
+    else
+    {
+      throw new InvalidArgumentException("Invalid 'properties'.");
+    }
 
     /*
      * query involves linked tables
      */
-    if ( $query->getLink() )
+    if ( $targetModel )
     {
       for ( $i=0; $i<2; $i++ )
       {
+
+        /*
+         * break if no more properties
+         */
+        if ( ! isset( $properties[$i] ) ) break;
+
+        /*
+         * get model
+         */
         switch( $i )
         {
           case 0:
@@ -468,7 +534,7 @@ class qcl_data_model_db_QueryBehavior
             break;
           case 1:
             $alias="t2";
-            $model = $this->getModel()->getLinkedModelInstance( $query->getLink() );
+            $model = $targetModel;
             break;
         }
 
@@ -481,38 +547,74 @@ class qcl_data_model_db_QueryBehavior
         }
 
         /*
+         * convert single properties to array
+         */
+        if ( is_string( $properties[$i] ) )
+        {
+           $properties[$i] = array( $properties[$i] );
+        }
+
+        /*
+         * otherwise abort
+         */
+        elseif ( ! is_array( $properties[$i] ) )
+        {
+          throw new InvalidArgumentException("Invalid property argument" );
+        }
+
+        /*
          * construct column query
          */
-        foreach ( (array) $properties[$i] as $property )
+        foreach ( $properties[$i] as $property )
         {
-         /*
-          * skip empty parameters
-          */
-         if ( ! $property ) continue;
+          /*
+           * skip empty parameters
+           */
+          if ( ! $property ) continue;
 
+          /*
+           * get column name of given property
+           */
+          $column = $this->getColumnName( $property );
+          $col = $adpt->formatColumnName( $column );
+          //$this->info( $model->className() . ": $property -> $col");
 
-         /*
-          * get column name of given property
-          */
-         $col = $adpt->formatColumnName( $this->getColumnName( $property ) );
-         //$this->info( $model->className() . ": $property -> $col");
+          /*
+           * alias
+           */
+          if( isset( $query->as[$property] ) )
+          {
+            $as = $query->as[$property];
+            if ( preg_match('/[^0-9A-Za-z_]/',$as) )
+            {
+              throw new InvalidArgumentException("Invalid alias '$as'");
+            }
+          }
+          else
+          {
+            $as = null;
+          }
 
-         /*
-          * table and column alias
-          */
-         $str = "$alias.$col";
-         if ( $col != $property or $i>0 )
-         {
-           if ( $i>0 )
-           {
-             $str .= " AS '$link.$property'";
-           }
-           else
-           {
-            $str .= " AS '$property'";
-           }
-         }
-         $cols[] = $str;
+          /*
+           * table and column alias
+           */
+          $str = "$alias.$col";
+          if ( $col != $property or $i > 0 )
+          {
+            if ( $i > 0 )
+            {
+              $str .= " AS '$relation.$property'";
+            }
+            elseif ( $as )
+            {
+              $str .= " AS '$as'";
+            }
+            elseif( $property != $column )
+            {
+              $str .= " AS '$property'";
+            }
+          }
+          $columns[] = $str;
         }
       }
     }
@@ -522,17 +624,19 @@ class qcl_data_model_db_QueryBehavior
      */
     else
     {
+
       /*
        * replace "*" with all properties
        */
-      if ( $propArg == "*" or $propArg === null )
+      if ( $properties[0] == "*" )
       {
         $properties = $this->getModel()->properties();
       }
-      elseif ( ! is_array( $properties ) )
+      else
       {
-        $this->raiseError("Invalid properties");
+        $properties = $properties[0];
       }
+
 
       /*
        * columns, use alias if needed
@@ -540,8 +644,28 @@ class qcl_data_model_db_QueryBehavior
       $needAlias = false;
       foreach ( $properties as $property )
       {
+        if ( ! $property or ! is_string( $property ) )
+        {
+          throw new InvalidArgumentException("Invalid property argument!");
+        }
+
         $column = $this->getColumnName( $property );
-        $columns[] = $column;
+
+        /*
+         * alias
+         */
+        if( isset( $query->as[$property] ) )
+        {
+          $as = $query->as[$property];
+          if ( preg_match('/[^0-9A-Za-z_]/',$as) )
+          {
+            throw new InvalidArgumentException("Invalid alias '$as'");
+          }
+        }
+        else
+        {
+          $as = null;
+        }
 
         $str = "\n     " . $adpt->formatColumnName( $column );
         if ( $column != $property )
@@ -549,11 +673,11 @@ class qcl_data_model_db_QueryBehavior
           $str .= " AS '$property'";
           $needAlias = true;
         }
-        elseif ( isset( $query->as[$property] ) )
+        elseif ( $as )
         {
-          $str .= " AS '" . $query->as[$property] . "'";
+          $str .= " AS '$as'";
         }
-        $cols[] = $str;
+        $columns[] = $str;
       }
     }
 
@@ -575,9 +699,9 @@ class qcl_data_model_db_QueryBehavior
      * columns
      */
     if ( $needAlias
-         or count( $properties) != count( $this->getModel()->properties() ) )
+    or count( $properties) != count( $this->getModel()->properties() ) )
     {
-      $sql .= implode(",",  $cols );
+      $sql .= implode(",",  $columns );
     }
     else
     {
@@ -591,33 +715,55 @@ class qcl_data_model_db_QueryBehavior
     $sql .= "\n     FROM $thisTable AS t1 ";
 
     /*
-     * join
+     * join linked records. The "link" property mus be an array
+     * of the following structure:
+     *
+     * array(
+     *  'relation' => "name-of-relation"
+     * )
+     *
      */
-    if ( $query->link )
+    if ( $targetModel )
     {
-      /*
-       * link table
-       */
-      $linkTable   = $adpt->formatColumnName( $this->getLinkTable( $query->link ));
-      $localKey    = $adpt->formatColumnName( $this->getLocalKey() );
-      $foreignKey  = $adpt->formatColumnName( $this->getForeignKey() );
+      $foreignKey   = $adpt->formatColumnName( $this->getModel()->foreignKey() );
+      $targetTable  = $adpt->formatTableName( $targetModel->getQueryBehavior()->getTableName() );
+      $targetFKey   = $adpt->formatColumnName( $targetModel->foreignKey() );
 
-      /*
-       * joined model
-       */
-      $joinedTable = $adpt->formatTableName( $this->getJoinedTable( $query->link ) );
-      $joinedModel = $this->getLinkedModelInstance( $query->link );
-      $joinedLKey  = $adpt->formatColumnName( $joinedModel->getLocalKey() );
-      $joinedFKey  = $adpt->formatColumnName( $joinedModel->getForeignKey() );
-
-      if ( $linkTable != $joinedTable )
+      // for now, we do only foreign id
+      $foreignId = $link['foreignId'];
+      if( ! $foreignId )
       {
-        $sql .= "\n     JOIN ($linkTable AS l,$joinedTable AS t2) ";
-        $sql .= "\n       ON ( t1.$localKey = l.$foreignKey AND l.$joinedFKey = t2.$joinedLKey ) ";
+        throw new InvalidArgumentException("For now, only foreign id links are allowed.");
       }
-      else
+      // check foreign id!
+      if( ! is_numeric( $foreignId )  )
       {
-        $sql .= "\n     JOIN $joinedTable AS t2 ON ( t1.$localKey = t2.$foreignKey ) ";
+        throw new InvalidArgumentException("Invalid foreign id '$foreignId'");
+      }
+
+      $relType = $relBeh->getRelationType( $relation );
+
+      switch( $relType )
+      {
+        case QCL_RELATIONS_HAS_ONE:
+          $sql .= "\n     JOIN $targetTable AS t2 ON ( t1.id = t2.$foreignKey AND t2.id = $foreignId ) ";
+          break;
+
+        case QCL_RELATIONS_HAS_MANY:
+          //$sql .= "\n     JOIN $targetTable AS t2 ON ( t1.$targetFKey = t2.id ) ";
+          throw new InvalidArgumentException("1:n relations make no sense with foreign id.'");
+          break;
+
+        case QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY:
+
+          $joinTable = $adpt->formatColumnName( $relBeh->getJoinTableName( $relation ) );
+          $sql .= "\n     JOIN ( $joinTable AS l,$targetTable AS t2) ";
+          $sql .= "\n       ON ( t1.id = l.$foreignKey AND l.$targetFKey = t2.id AND t2.id = $foreignId ) ";
+          break;
+
+        default:
+          // should never get here
+          throw new LogicException("Invalid relation type");
       }
     }
 
@@ -643,7 +789,7 @@ class qcl_data_model_db_QueryBehavior
        */
       $lastElem = $orderBy[count($orderBy)-1];
       $direction = in_array( strtolower($lastElem), array("asc","desc") ) ?
-          array_pop($orderBy) : "";
+      array_pop($orderBy) : "";
 
       /*
        * order columns
@@ -659,11 +805,12 @@ class qcl_data_model_db_QueryBehavior
     }
 
     /*
-     * LIMIT
+     * Retrieve only subset of all rows
      */
-    if ( $query->limit )
+    if ( ! is_null( $query->firstRow ) or ! is_null( $query->lastRow ) )
     {
-      $sql .=   "\n    LIMIT {$query->limit}";
+      $sql .=   "\n    " .
+      $this->getAdapter()->createLimitStatement(  $query->firstRow,  $query->lastRow );
     }
 
     return $sql;
@@ -729,6 +876,7 @@ class qcl_data_model_db_QueryBehavior
       elseif ( is_array( $value ) )
       {
         $operator = $value[0];
+        $this->checkOperator( $operator );
         $value    = $value[1];
       }
       else
@@ -743,6 +891,22 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
+   * Checks if the operator used in the where query is valid and throws
+   * an InvalidArgumentException if not.
+   * @param string $operator
+   * @return void
+   * @throws InvalidArgumentException
+   */
+  protected function checkOperator( $operator )
+  {
+    if ( in_array( strtolower( $operator ), $this->getModel()->operators() ) )
+    {
+      return true;
+    }
+    throw new InvalidArgumentException("Operator '$operator' is invalid.");
+  }
+
+  /**
    * Runs a query on the table managed by this behavior. Stores a
    * reference to the result PDO statement in the query, so that
    * it can be used by the fetch() command.
@@ -754,7 +918,7 @@ class qcl_data_model_db_QueryBehavior
   {
     $sql = $this->queryToSql( $query );
     $query->pdoStatement = $this->getAdapter()->query(
-      $sql, $query->getParameters(), $query->getParameterTypes()
+    $sql, $query->getParameters(), $query->getParameterTypes()
     );
     $query->rowCount = $this->getAdapter()->rowCount();
     return $this->rowCount();
@@ -817,9 +981,9 @@ class qcl_data_model_db_QueryBehavior
     $query = new qcl_data_db_Query( array(
       "select" => "*",
       "where" => "id IN (" . implode(",", $ids ) .")"
-    ) );
-    $this->select( $query );
-    return $query;
+      ) );
+      $this->select( $query );
+      return $query;
   }
 
   /**
@@ -876,7 +1040,7 @@ class qcl_data_model_db_QueryBehavior
      * use passed PDOStatement or simply the last one created
      */
     if ( $query instanceof qcl_data_db_Query
-         and $query->getPdoStatement() instanceof PDOStatement )
+    and $query->getPdoStatement() instanceof PDOStatement )
     {
       $result = $query->getPdoStatement()->fetch();
     }
@@ -1093,10 +1257,10 @@ class qcl_data_model_db_QueryBehavior
       'where' => array ( 'id' => $id ) )
     );
     return $this->getTable()->updateWhere(
-      $this->prepareData( $data ),
-      $this->createWhereStatement( $query ),
-      $query->getParameters(),
-      $query->getParameterTypes()
+    $this->prepareData( $data ),
+    $this->createWhereStatement( $query ),
+    $query->getParameters(),
+    $query->getParameterTypes()
     );
   }
 
@@ -1110,10 +1274,10 @@ class qcl_data_model_db_QueryBehavior
   {
     $query = new qcl_data_db_Query( array( 'where' => $where) );
     return $this->getTable()->updateWhere(
-      $this->prepareData( $data ),
-      $this->createWhereStatement( $query ),
-      $query->getParameters(),
-      $query->getParameterTypes()
+    $this->prepareData( $data ),
+    $this->createWhereStatement( $query ),
+    $query->getParameters(),
+    $query->getParameterTypes()
     );
   }
 
@@ -1141,7 +1305,7 @@ class qcl_data_model_db_QueryBehavior
     $query = new qcl_data_db_Query( array( 'where' => $where ) );
     $sql   = $this->createWhereStatement( $query );
     return $this->getTable()->deleteWhere(
-      $sql,$query->getParameters(), $query->getParameterTypes()
+    $sql,$query->getParameters(), $query->getParameterTypes()
     );
   }
 

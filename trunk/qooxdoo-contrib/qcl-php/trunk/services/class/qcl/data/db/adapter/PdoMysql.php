@@ -1231,6 +1231,28 @@ class qcl_data_db_adapter_PdoMysql
   }
 
   /**
+   * Creates a "LIMIT" statement from a first-row, last-row information
+   * @param $firstRow
+   * @param $lastRow
+   * @return string
+   */
+  public function createLimitStatement( $firstRow, $lastRow )
+  {
+    if ( ! $firstRow and $lastRow )
+    {
+      return "LIMIT $lastRow";
+    }
+    elseif ( $firstRow and $lastRow )
+    {
+      return "LIMIT $firstRow, $lastRow";
+    }
+    else
+    {
+      throw new InvalidArgumentException("Invalid LIMIT arguments");
+    }
+  }
+
+  /**
    * Creates a trigger that inserts a timestamp on
    * each newly created record.
    * WARNING: Input values are assumed to come from internal processing only and are therefore

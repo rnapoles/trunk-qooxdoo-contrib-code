@@ -457,6 +457,14 @@ interface qcl_data_db_adapter_IAdapter
   public function addIndex( $table, $type, $index, $columns );
 
   /**
+   * Creates a "LIMIT" statement from a first-row, last-row information
+   * @param $firstRow
+   * @param $lastRow
+   * @return string
+   */
+  public function createLimitStatement( $firstRow, $lastRow );
+
+  /**
    * Creates a trigger that inserts a timestamp on
    * each newly created record.
    * @param string $table Name of table

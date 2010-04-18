@@ -799,51 +799,6 @@ class qcl_core_Object
     return get_class_methods( $this->className() );
   }
 
-  /**
-   * Returns new instance of classname. If the calling object is a subclass
-   * of qx_jsonrpc_controller, pass the object as constructor to the model class,
-   * otherwise pass optional parameter. Must be called statically.
-   *
-   * @param string $classname PHP class name or dot-separated class name
-   * @param qcl_data_controller_Controller[optional] $controller (optional) controller object
-   * to be passed to the singleton constructor
-   * @return qcl_core_Object
-   * @deprecated Use native php code to instantiate classes, this will
-   * be removed.
-   */
-  static function getNew( $classname )
-  {
-    /*
-     * convert dot-separated class names into php-style
-     */
-    if ( strstr( $classname, "." ) )
-    {
-      $classname = str_replace( ".", "_", $classname );
-    }
-
-    /*
-     * check for class existence
-     */
-    if ( ! class_exists ( $classname ) )
-    {
-      $path = qcl_core_Object::includeClassFile( $classname );
-
-      /*
-       * Check class
-       */
-      if ( ! class_exists ( $classname ) )
-      {
-        qcl_core_Object::raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );
-      }
-    }
-
-    /*
-     * create new instance and return it
-     */
-    $instance = new $classname;
-    return $instance;
-  }
-
   //-------------------------------------------------------------
   // logging & debugging
   //-------------------------------------------------------------
