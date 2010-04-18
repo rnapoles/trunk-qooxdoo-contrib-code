@@ -64,7 +64,7 @@ class qcl_access_Controller
         array(
           'roles'       => array( QCL_ROLE_ADMIN ),
           'access'      => "*",
-          'properties'  => "*"
+          'properties'  => array( "allow" => "*" )
         )
       )
     )
