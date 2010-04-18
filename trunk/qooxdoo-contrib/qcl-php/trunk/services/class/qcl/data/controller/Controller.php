@@ -337,6 +337,7 @@ class qcl_data_controller_Controller
           $accessTypes = $rule['access'];
           $accesProps  = $rule['properties'];
 
+
           /*
            * does rule match the the access type ?
            */
@@ -348,14 +349,29 @@ class qcl_data_controller_Controller
              */
             if ( $accessRoles == "*" or count( array_intersect( $accessRoles, (array) $roles  ) ) )
             {
-
               /*
                * finally, does rule match given properties?
                */
-              if ( $accesProps == "*" or count( array_intersect( $accesProps, (array) $properties ) ) )
+              if ( isset( $accesProps['allow'] ) )
               {
-                $access = true;
-                break;
+                if ( $accesProps['allow'] == "*" or
+                    count( (array) $properties ) == count( array_intersect( $accesProps['allow'], (array) $properties ) ) )
+                {
+                  $access = true;
+                  break;
+                }
+              }
+              elseif ( isset( $accesProps['deny'] ) )
+              {
+                if ( ! count( array_intersect( $accesProps['deny'], (array) $properties ) ) )
+                {
+                  $access = true;
+                  break;
+                }
+              }
+              else
+              {
+                throw new JsonRpcException( "Acl rule must have a properties/allow or properties/deny element");
               }
             }
           }

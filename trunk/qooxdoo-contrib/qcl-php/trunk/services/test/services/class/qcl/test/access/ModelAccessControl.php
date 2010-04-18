@@ -59,7 +59,7 @@ class class_qcl_test_access_ModelAccessControl
             "user"
           ),
           'access'      => array( QCL_ACCESS_READ ),
-          'properties'  => array( NAMED_ID )
+          'properties'  => array( "allow" => array( NAMED_ID ) )
         ),
 
         /*
@@ -76,7 +76,7 @@ class class_qcl_test_access_ModelAccessControl
             QCL_ACCESS_CREATE,
             QCL_ACCESS_DELETE
           ), // equvivalent to QCL_ACCESS_ALL or "*"
-          'properties'  => "*"
+          'properties'  => array( "allow" => "*" )
         )
       )
     )

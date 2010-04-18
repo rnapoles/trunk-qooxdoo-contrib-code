@@ -122,7 +122,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
         array(
           'roles'       => "*",
           'access'      => array( QCL_ACCESS_READ ),
-          'properties'  => array( "id", "owner", "type", "data" )
+          'properties'  => array( "allow" => array( "id", "owner", "type", "data" ) )
         ),
 
         /*
@@ -132,7 +132,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
         array(
           'roles'       => "*",
           'access'      => array( QCL_ACCESS_WRITE ),
-          'properties'  => array( "data" )
+          'properties'  => array( "allow" => array( "data" ) )
         ),
 
         /*
@@ -142,7 +142,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
         array(
           'roles'       => array( QCL_ROLE_ADMIN ),
           'access'      => "*",
-          'properties'  => array( "id", "owner", "type", "data", "admindata" )
+          'properties'  => array( "allow" => array( "id", "owner", "type", "data", "admindata" ) )
         ),
 
         /*
@@ -151,7 +151,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
         array(
           'roles'       => array( QCL_ROLE_ADMIN ),
           'access'      => array( QCL_ACCESS_WRITE ),
-          'properties'  => array( "password" )
+          'properties'  => array( "allow" => array( "password" ) )
         )
       )
     )
