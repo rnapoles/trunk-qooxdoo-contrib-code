@@ -71,8 +71,7 @@ class qcl_data_controller_TableController
      */
     $query = $queryData->query;
     if ( ! is_object( $query ) or
-         ! is_array(  $query->properties ) or
-         ! is_object( $query->where ) )
+         ! is_array(  $query->properties ) )
     {
       throw new InvalidArgumentException("Invalid query data");
     }

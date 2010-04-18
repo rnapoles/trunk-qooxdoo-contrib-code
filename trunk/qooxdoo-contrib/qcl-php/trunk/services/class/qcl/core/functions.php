@@ -30,6 +30,7 @@ class qcl_InvalidClassException extends Exception {}
  */
 function qcl_import( $class, $checkDefined = false )
 {
+
   /*
    * no need to load anything if class is already
    * defined

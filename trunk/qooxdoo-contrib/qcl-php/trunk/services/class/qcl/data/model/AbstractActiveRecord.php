@@ -862,13 +862,13 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * Returns the number of records matching the where
-   * @param array $where Data for where statement,
+   * @param array|qcl_data_db_Query $query Query or where condition
    * @return int
    */
-  public function countWhere( $where )
+  public function countWhere( $query )
   {
     $this->init();
-    return $this->getQueryBehavior()->countWhere( $where );
+    return $this->getQueryBehavior()->countWhere( $query );
   }
 
   //-----------------------------------------------------------------------
