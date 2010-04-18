@@ -838,7 +838,7 @@ class qcl_data_model_db_QueryBehavior
     }
     elseif ( ! is_array( $where ) )
     {
-      $this->raiseError("Invalid 'where' data.");
+      throw new InvalidArgumentException("Invalid 'where' data: '$where' (" . typeof( $where ) .")");
     }
 
     /*
@@ -1162,15 +1162,21 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Counts records in a table matching a where condition.
-   * @param string|array  $where where condition
+   * Counts records in a table matching a query
+   * @param qcl_data_db_Query|array  $query Query or where condition
    * @return int
    */
-  public function countWhere( $where )
+  public function countWhere( $query )
   {
-    $query = new qcl_data_db_Query( array( 'where' => $where) );
-    $sql   = $this->createWhereStatement( $query );
-    return $this->getTable()->countWhere( $sql, $query->parameters, $query->parameter_types );
+    if ( is_array( $query ) )
+    {
+      $query = new qcl_data_db_Query( array( 'where' => $where) );
+    }
+    elseif ( ! $query instanceof qcl_data_db_Query )
+    {
+      throw new InvalidArgumentException("Argument must be an array or a qcl_data_db_Query object");
+    }
+    return $this->select( $query );
   }
 
   /**

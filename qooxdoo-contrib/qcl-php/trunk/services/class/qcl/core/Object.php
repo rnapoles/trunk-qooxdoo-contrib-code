@@ -327,6 +327,39 @@ class qcl_core_Object
     return $this->readonly;
   }
 
+  /**
+   * Allows easy traversal through the properties
+   * of this object: $this->query("foo/bar/baz");
+   *
+   * @param string $path
+   * @param mixed|null $node Optional property node to query
+   * @return mixed value
+   */
+  public function query( $path, $node=null )
+  {
+    if ( $node === null )
+    {
+      $node = $this;
+    }
+    $parts = explode( "/", $path );
+    foreach( $parts as $part )
+    {
+      if ( is_object( $node ) and isset( $node->$part ) )
+      {
+        $node = $node->$part;
+      }
+      elseif ( is_array( $node ) and isset( $node[$part] ) )
+      {
+        $node = $node[$part];
+      }
+      else
+      {
+        throw new InvalidArgumentException("Cannot complete traversal of '$path', no match at '$part'");
+      }
+    }
+    return $node;
+  }
+
   //-------------------------------------------------------------
   // helper methods to compare and copy properties
   //-------------------------------------------------------------
@@ -923,9 +956,9 @@ class qcl_core_Object
    * @param string class name
    * @todo get class and method name from backtrace.
    */
-  public function notImplemented( $class="see backtrace", $method="see backtrace" )
+  public function notImplemented( $class="see backtrace", $method=null )
   {
-    $this->raiseError( "Method '$method' not implemented for class '$class'. You may have to subclass this class in order to use it." );
+    $this->raiseError( "Method $class::$method' not implemented." );
   }
 
 
