@@ -17,6 +17,7 @@
  */
 
 /**
+ * The request object, which is populated from the json-rpc request data
  */
 class qcl_server_Request
   extends qcl_core_Object
@@ -59,6 +60,42 @@ class qcl_server_Request
   static public function getInstance()
   {
     return qcl_getInstance( __CLASS__ );
+  }
+
+  /**
+   * Returns the service request id
+   * @return int
+   */
+  public function getId()
+  {
+    return $this->id;
+  }
+
+  /**
+   * Returns the service name
+   * @return string
+   */
+  public function getService()
+  {
+    return $this->service;
+  }
+
+  /**
+   * Returns the service method name
+   * @return string
+   */
+  public function getMethod()
+  {
+    return $this->method;
+  }
+
+  /**
+   * Returns the service method parameters
+   * @return array
+   */
+  public function getParams()
+  {
+    return $this->params;
   }
 
   /**

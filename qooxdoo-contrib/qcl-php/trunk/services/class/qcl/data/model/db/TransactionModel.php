@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+qcl_import( "qcl_data_model_db_ActiveRecord" );
 
 /**
  * Singleton active record that holds a transaction id for each model that
@@ -25,7 +25,7 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
  * their model data. Records are identified by the class name of the model.
  */
 class qcl_data_model_db_TransactionModel
-  extends qcl_data_model_db_NamedActiveRecord
+  extends qcl_data_model_db_ActiveRecord
 {
   //-------------------------------------------------------------
   // Model properties
@@ -34,12 +34,26 @@ class qcl_data_model_db_TransactionModel
   protected $tableName = "data_Transaction";
 
   private $properties = array(
-
+    'datasource'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(50)"
+    ),
+    'class'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(50)"
+    ),
     'transactionId'  => array(
       'check'     => "integer",
       'sqltype'   => "int(11) NOT NULL",
       'nullable'  => false,
       'init'      => 0
+    )
+  );
+
+  private $indexes = array(
+    "datasource_class_index" => array(
+      "type"        => "unique",
+      "properties"  => array("datasource","class")
     )
   );
 
@@ -51,6 +65,7 @@ class qcl_data_model_db_TransactionModel
   {
     parent::__construct();
     $this->addProperties( $this->properties );
+    $this->addIndexes( $this->indexes );
   }
 
   /**
@@ -83,14 +98,21 @@ class qcl_data_model_db_TransactionModel
    */
   function getTransactionIdFor( qcl_data_model_AbstractActiveRecord $model )
   {
-    $className = $model->className();
+    $class      = $model->className();
+    $datasource = $model->datasourceModel() ? $model->datasourceModel()->namedId() : null;
     try
     {
-      $this->load( $className );
+      $this->loadWhere( array(
+        'class'       => $class,
+        'datasource'  => $datasource
+      ) );
     }
     catch ( qcl_data_model_RecordNotFoundException $e)
     {
-      $this->create( $className );
+      $this->create( array(
+        'class'       => $class,
+        'datasource'  => $datasource
+      ) );
     }
     return $this->get("transactionId");
   }
