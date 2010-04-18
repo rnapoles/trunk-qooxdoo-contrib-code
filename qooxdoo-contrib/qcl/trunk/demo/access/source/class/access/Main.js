@@ -18,19 +18,26 @@
 ************************************************************************ */
 
 /* ************************************************************************
+
 #asset(access/*)
-#asset(qx/*)
 #require(qcl.application.*)
+
 ************************************************************************ */
 
 /**
- * Class definition
+ * The main application class
  */
 qx.Class.define("access.Main",
 {
   extend : qx.application.Standalone,
   include : [ qcl.application.MAppManagerProvider ],
 
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */  
+  
   properties :
   {
     /**
@@ -46,11 +53,11 @@ qx.Class.define("access.Main",
     }
   },
   
-  events:
-  {
-    "changeServer" : "qx.event.type.Data"
-  },
-
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */    
   members :
   {
     /**
@@ -144,7 +151,7 @@ qx.Class.define("access.Main",
 
 
     /**
-     * TODOC
+     * Log out the current user
      *
      * @return {void} 
      */

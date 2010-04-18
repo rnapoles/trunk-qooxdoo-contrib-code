@@ -41,12 +41,15 @@
  *   // messages to be transported
  *   result : 
  *   {
+ *     __qcl : true, // this marks the result as coming from the qcl server
+ *     
  *     data   : { (... result data ...) },
  *     events : [ { type : "fooDataEvent", class: "qx.event.type.Data", data : "foo" }, 
  *                { type : "barEvent", class: "qx.event.type.Event" }, ... ],
- *     messages : [ { name : "appname.messages.foo", data : "foo" }, 
- *                  { name : "appname.messages.bar", data: "bar" }, ... ]
+ *     messages : [ { name : "fooMessage", data : "foo" }, 
+ *                  { name : "barMessage", data: "bar" }, ... ]
  *   }
+ *   
  *   // error property only exists if an error occurred 
  *   error : 
  *   {
@@ -394,7 +397,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
            * property.
            */
           var data;
-          if ( result && ( result.data !== undefined || result.messages || result.events ) )
+          if ( this._is_qcl_result( result ) )
           {
             /*
              * handle messages and events
@@ -469,6 +472,16 @@ qx.Class.define("qcl.data.store.JsonRpc",
       this.__opaqueCallRef = rpc.callAsync.apply( rpc, params2 );
 
     },
+    
+    /**
+     * Checks if result object is a qcl result (containing events and messages)
+     * @param result {Object}
+     * @return {Boolean}
+     */
+    _is_qcl_result : function ( result )
+    {
+      return ( qx.lang.Type.isObject( result )  && result.__qcl === true );  
+    },
 
     /** 
      * Handles events and messages received with server response 
@@ -523,10 +536,12 @@ qx.Class.define("qcl.data.store.JsonRpc",
       this.warn ( "Async exception (#" + id + "): " + ex.message );
       
       /*
-       * simply alert error
+       * alert error if the dialog package is loaded
        */
-      //this.warn(ex.message); 
-      
+      if ( qx.lang.Type.isObject( window.dialog ) && qx.lang.Type.isFunction( dialog.alert ) )
+      {
+        dialog.alert(ex.message);  
+      }
     },
     
     
