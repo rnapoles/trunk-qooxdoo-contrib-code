@@ -480,8 +480,9 @@ class qcl_data_controller_TreeController
     */
     $queueCount = count($queue);
     return array(
-      'nodeData'  => $nodeArr,
-      'queue'     => $queue
+      'nodeData'    => $nodeArr,
+      'queue'       => $queue,
+      'statusText'  => $queueCount ? "Loading..." : ""
     );
   }
 

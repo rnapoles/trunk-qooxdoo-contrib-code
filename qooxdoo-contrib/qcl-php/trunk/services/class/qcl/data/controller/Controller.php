@@ -578,7 +578,7 @@ class qcl_data_controller_Controller
    *
    * @param string $datasource
    * @param string $modelType
-   * @param object $queryData See qcl_data_db_Query
+   * @param object $queryData Must be an qcl_data_db_Query - like object
    * @return array
    */
   public function method_fetchRecords( $datasource, $modelType, $queryData )
@@ -586,13 +586,16 @@ class qcl_data_controller_Controller
     /*
      * check arguments
      */
-    if ( is_object( $queryData ) )
+    if ( ! $queryData instanceof qcl_data_db_Query )
     {
-      $query = new qcl_data_db_Query( object2array( $queryData )  );
-    }
-    else
-    {
-      throw new InvalidArgumentException("Invalid query data.");
+      if ( is_object( $queryData ) )
+      {
+        $query = new qcl_data_db_Query( object2array( $queryData )  );
+      }
+      else
+      {
+        throw new InvalidArgumentException("Invalid query data.");
+      }
     }
 
     /*

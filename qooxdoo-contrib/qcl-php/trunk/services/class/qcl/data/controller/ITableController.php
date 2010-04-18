@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/controller/IItemController.php";
+
 
 /**
  * Interface for a controller that supplies data for a
@@ -23,7 +23,6 @@ require_once "qcl/data/controller/IItemController.php";
  *
  */
 interface qcl_data_controller_ITableController
-//  extends qcl_data_controller_IItemController
 {
 
   /**
@@ -46,17 +45,20 @@ interface qcl_data_controller_ITableController
   function method_getRowCount( $queryData );
 
   /**
-   * Returns row data according to the query data
+   * Returns row data executing a constructed query
    *
-   * @param int $firstRow
-   * @param int $lastRow
-   * @param string|null $requestId Request id used to identify a series of requests
-   * (for example, for caching).
-   * @param object|null $queryData Arbitrary object containing information
-   * for the query
-   *
-   * @return array
+   * @param integer $firstRow  first row of queried data
+   * @param integer $lastRow   last row of queried data
+   * @param string  $requestId Request id
+   * @param object  $queryData  data to construct the query. Needs at least the following properties:
+   *                (string) datasource name of datasource
+   *                (string) modelType type of the model
+   *                (object) query A qcl_data_db_Query- compatible object
+   * @return array Array containing the keys
+   *                (int) requestId The request id identifying the request (mandatory)
+   *                (array) rowData The actual row data (mandatory)
+   *                (string) statusText Optional text to display in a status bar
    */
-  function method_getRowData( $firstRow, $lastRow, $requestId=null, $queryData=null );
+  function method_getRowData( $firstRow, $lastRow, $queryData=null );
 }
 ?>

@@ -451,7 +451,7 @@ class qcl_data_model_db_RelationBehavior
   {
     if ( ! $this->relationExists( $relation ) )
     {
-      $this->getModel()->raiseError( "Relation '$relation' does not exist." );
+      throw new LogicException( "Relation '$relation' does not exist in Model " . $this->getModel() );
     }
   }
 
@@ -527,13 +527,30 @@ class qcl_data_model_db_RelationBehavior
      */
     static $instances = array();
     $class = $this->getTargetModelClass( $relation );
+
+    /*
+     * get the object singleton
+     */
     if ( ! $instances[$class] )
     {
+      $datasourceModel = $this->getModel()->datasourceModel();
+
       /*
-       * try to get the object singleton
-       * FIXME qcl_core_Object::getInstance() exists, so this will always be true
+       * use getInstance() method if no datasource
        */
-      if( method_exists( $class, "getInstance" ) )
+      if( is_object( $datasourceModel )  )
+      {
+        /*
+         * if no getInstance() method exists, create a new object
+         */
+        $this->getModel()->log( "Creating new instance with  datasource '$datasourceModel'.", QCL_LOG_MODEL_RELATIONS );
+        $model = $datasourceModel->getModelByClass( $class );
+      }
+
+      /*
+       * else use the static getInstance() method
+       */
+      else
       {
         $this->getModel()->log( "Using singleton instance '$class'.", QCL_LOG_MODEL_RELATIONS );
 
@@ -545,14 +562,6 @@ class qcl_data_model_db_RelationBehavior
         {
           $model = call_user_func_array( "$class::getInstance", array() );
         }
-      }
-      else
-      {
-        /*
-         * if no getInstance() method exists, create a new object
-         */
-        $this->getModel()->log( "Creating new reference instance '$class'.", QCL_LOG_MODEL_RELATIONS );
-        $model = new $class();
       }
 
       /*
@@ -819,7 +828,8 @@ class qcl_data_model_db_RelationBehavior
     }
     $joinTableName = $this->relations[$relation]['jointable'];
     $this->checkJoinTableName( $joinTableName, $relation );
-    return $joinTableName;
+    $prefix = $this->getModel()->getQueryBehavior()->getTablePrefix();
+    return $prefix . $joinTableName;
   }
 
   /**

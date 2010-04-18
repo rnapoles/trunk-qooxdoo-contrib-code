@@ -88,10 +88,17 @@ class qcl_data_db_Query
   public $orderBy  =null;
 
   /**
-   * Data for the sql LIMIT statment
-   * @var string
+   * The first row to retrieve
+   * @var int|null
    */
-  public $limit;
+  public $firstRow = null;
+
+  /**
+   * The last row to retrieve
+   * @var int|null
+   */
+  public $lastRow = null;
+
 
   /**
    * Optional flag to select distict rows only
@@ -100,10 +107,10 @@ class qcl_data_db_Query
   public $distinct = false;
 
   /**
-   * Optional name of the link in the schema. If provided, this will
+   * Optional link condition. If provided, this will
    * cause the query behavior to automatically generate the necessary
    * join query.
-   * @var string
+   * @var array|null
    */
   public $link = null;
 
@@ -195,6 +202,14 @@ class qcl_data_db_Query
   public function getRowCount()
   {
     return $this->rowCount;
+  }
+
+  /**
+   * @return array
+   */
+  public function getLink()
+  {
+    return $this->link;
   }
 }
 ?>
