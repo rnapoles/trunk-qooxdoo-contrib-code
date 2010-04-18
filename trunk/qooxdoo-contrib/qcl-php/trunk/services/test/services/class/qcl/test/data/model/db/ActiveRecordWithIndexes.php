@@ -54,9 +54,9 @@ class indexed_Customer
 
   function __construct()
   {
+    parent::__construct();
     $this->addProperties( $this->properties );
     $this->addIndexes( $this->indexes );
-    parent::__construct();
   }
 }
 

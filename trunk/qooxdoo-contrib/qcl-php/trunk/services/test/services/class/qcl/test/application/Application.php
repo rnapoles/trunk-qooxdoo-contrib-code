@@ -61,8 +61,8 @@ class qcl_test_application_Application
 
     $request = qcl_server_Request::getInstance();
     $this->log( sprintf(
-      "Starting test application, service '%s', method '%s'",
-      $request->getService(), $request->getMethod()
+      "Starting qcl test service: %s.%s( %s ) ...",
+      $request->getService(), $request->getMethod(), implode(", ", $request->getParams() )
     ), QCL_LOG_APPLICATION );
 
     //$this->startLogging();

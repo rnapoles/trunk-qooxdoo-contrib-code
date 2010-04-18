@@ -162,7 +162,9 @@ class qcl_data_model_db_PropertyBehavior
   }
 
   /**
-   * Creates model table if it doesn't already exist.
+   * Creates model table if it doesn't already exist. Fires the
+   * "tableCreated" event in case a table gets newly created.
+   *
    * @return void
    */
   function setupTable()
@@ -192,6 +194,11 @@ class qcl_data_model_db_PropertyBehavior
 
         $table->create();
         $cache->tables[$tableName] = true;
+
+        /*
+         * fire event to notify listeners
+         */
+        $this->getModel()->fireEvent("tableCreated");
       }
       else
       {

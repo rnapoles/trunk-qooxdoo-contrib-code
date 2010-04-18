@@ -432,10 +432,11 @@ class qcl_data_controller_TreeController
     }
     $queue = (array) $ids;
 
+
     /*
      * retrieve the whole tree
      */
-    while( count($queue) )
+    while( count( $queue ) )
     {
 
       /*
@@ -482,6 +483,19 @@ class qcl_data_controller_TreeController
       'nodeData'  => $nodeArr,
       'queue'     => $queue
     );
+  }
+
+   /**
+   * Return the data of a node of the tree.
+   * @param string $datasource Datasource name
+   * @param int $nodeId
+   * @param int $parentId Optional id of parent folder
+   * @param mixed|null $options Optional data
+   * @return array
+   */
+  function method_getNodeData( $datasource, $nodeId, $parentId=null, $options=null )
+  {
+    return $this->getNodeData( $datasource, $nodeId, $parentId, $options );
   }
 }
 ?>
