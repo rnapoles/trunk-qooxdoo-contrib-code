@@ -198,7 +198,14 @@ class qcl_access_model_User
     /*
      * link to anonymous role
      */
-    $this->linkModel( $roleModel );
+    try
+    {
+      $this->linkModel( $roleModel );
+    }
+    catch( qcl_data_model_RecordExistsException $e)
+    {
+      $this->warn( $e->getMessage() );
+    }
     return $id;
   }
 

@@ -1170,7 +1170,7 @@ class qcl_data_model_db_QueryBehavior
   {
     if ( is_array( $query ) )
     {
-      $query = new qcl_data_db_Query( array( 'where' => $where) );
+      $query = new qcl_data_db_Query( array( 'where' => $query ) );
     }
     elseif ( ! $query instanceof qcl_data_db_Query )
     {

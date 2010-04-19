@@ -594,19 +594,19 @@ class qcl_data_controller_Controller
    *
    * @param string $datasource
    * @param string $modelType
-   * @param object $queryData Must be an qcl_data_db_Query - like object
+   * @param object $query Must be an qcl_data_db_Query - like object
    * @return array
    */
-  public function method_fetchRecords( $datasource, $modelType, $queryData )
+  public function method_fetchRecords( $datasource, $modelType, $query )
   {
     /*
      * check arguments
      */
-    if ( ! $queryData instanceof qcl_data_db_Query )
+    if ( ! $query instanceof qcl_data_db_Query )
     {
-      if ( is_object( $queryData ) )
+      if ( is_object( $query ) )
       {
-        $query = new qcl_data_db_Query( object2array( $queryData )  );
+        $query = new qcl_data_db_Query( object2array( $query )  );
       }
       else
       {

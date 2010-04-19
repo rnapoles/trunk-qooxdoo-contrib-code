@@ -1011,6 +1011,7 @@ class qcl_data_model_db_RelationBehavior
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return void
+   * @throws qcl_data_model_RecordExistsException If link already exists
    */
   public function linkModel( $targetModel )
   {
@@ -1033,10 +1034,9 @@ class qcl_data_model_db_RelationBehavior
     }
     else
     {
-      throw new qcl_data_model_Exception( sprintf(
-        "The model instances [%s#%s] and [%s#%s]  are already linked.",
-         $this->getModel()->className(), (string) $this->getModel()->id(),
-         $targetModel->className(), (string) $targetModel->id()
+      throw new qcl_data_model_RecordExistsException( sprintf(
+        "The model instances %s and %s are already linked.",
+         $this->getModel(), $targetModel
       ) );
     }
   }
@@ -1501,7 +1501,7 @@ class qcl_data_model_db_RelationBehavior
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $joinModel        = $this->getJoinModel( $relation );
 
-    return (bool) $joinModel->getQueryBehavior()->countWhere(  array(
+    return (bool) $joinModel->getQueryBehavior()->countWhere( array(
       $foreignKey       => $this->getModel()->id(),
       $targetForeignKey => $targetModel->id()
     ) );
