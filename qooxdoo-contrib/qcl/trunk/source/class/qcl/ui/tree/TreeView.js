@@ -114,7 +114,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */
     marshaler :
     {
-      check : "qcl.data.marshal.TreeVirtual",
+      check : "qx.core.Object",
       nullable : true
     },
     
@@ -206,7 +206,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
     /*
      * Marshaler
      */
-    this.setMarshaler( new qcl.data.marshal.TreeVirtual() );    
+    this.setMarshaler( new virtualdata.marshal.TreeVirtual() );    
     
     this.__datasources = {}; 
     
@@ -505,6 +505,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
            {
              var counter = 0;
              
+             this.getTreeView().setEnabled(false);
+             
              /*
               * Create a function that can recursively call itself
               * in order to load folder children, as long as there
@@ -553,6 +555,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                 /*
                  * @todo: fire event
                  */
+                this.getTreeView().setEnabled(true);
                }
 
                /*
@@ -563,6 +566,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                 /*
                  * @todo: fire data event
                  */
+                 this.getTreeView().setEnabled(true);
                  
                  /*
                   * save new cache
