@@ -26,7 +26,7 @@ qcl_import( "qcl_data_controller_ITableController" );
  */
 class qcl_data_controller_TableController
   extends qcl_data_controller_Controller
-  implements qcl_data_controller_ITableController
+//implements qcl_data_controller_ITableController
 {
 
   /*
@@ -58,6 +58,7 @@ class qcl_data_controller_TableController
    */
   function method_getRowCount( $queryData )
   {
+
     $datasource = $queryData->datasource;
     $modelType  = $queryData->modelType;
 
@@ -102,19 +103,19 @@ class qcl_data_controller_TableController
   /**
    * Returns row data executing a constructed query
    *
-   * @param integer $firstRow  first row of queried data
-   * @param integer $lastRow   last row of queried data
-   * @param string  $requestId Request id
-   * @param object  $queryData  data to construct the query. Needs at least the following properties:
-   *                (string) datasource name of datasource
-   *                (string) modelType type of the model
-   *                (object) query A qcl_data_db_Query- compatible object
+   * @param int     $firstRow   First row of queried data
+   * @param int     $lastRow    Last row of queried data
+   * @param int     $requestId  Request id
+   * @param object  $queryData  Data to construct the query. Needs at least the following properties:
+   *                string  datasource  Name of datasource
+   *                string  modelType   Type of the model
+   *                object  query       A qcl_data_db_Query- compatible object
    * @return array Array containing the keys
-   *                (int) requestId The request id identifying the request (mandatory)
-   *                (array) rowData The actual row data (mandatory)
-   *                (string) statusText Optional text to display in a status bar
+   *                int     requestId   The request id identifying the request (mandatory)
+   *                array   rowData     The actual row data (mandatory)
+   *                string  statusText  Optional text to display in a status bar
    */
-  function method_getRowData( $firstRow, $lastRow, $queryData=null )
+  function method_getRowData( $firstRow, $lastRow, $requestId, $queryData )
   {
     $datasource = $queryData->datasource;
     $modelType  = $queryData->modelType;
@@ -123,13 +124,12 @@ class qcl_data_controller_TableController
          ! is_numeric( $firstRow ) or
          ! is_numeric( $lastRow ) )
     {
-      throw new JsonRpcException("Invalid arguments.");
+      throw new InvalidArgumentException("Invalid arguments.");
     }
 
     $query = $queryData->query;
     if ( ! is_object( $query ) or
-         ! is_array(  $query->properties ) or
-         ! is_object( $query->where ) )
+         ! is_array(  $query->properties ) )
     {
       throw new InvalidArgumentException("Invalid query data");
     }
