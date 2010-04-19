@@ -26,6 +26,7 @@ import logging
 from logging import config
 import re
 import time
+import traceback
 
 reload(sys)
 sys.setdefaultencoding( "utf-8" )
@@ -185,21 +186,25 @@ def main():
     
     startTime = time.time();
     
-    #processing only one file, option -f
-    if options.file:
-        #getting real path by relative
-        filePath = getProjectPath(options.file)
-        __processFile__(filePath, options)
-    #processing whole directory
-    elif options.dir:
-        #getting real path by relative
-        dirPath = getProjectPath(options.dir)
-        __processDir__(dirPath,options)
     
-    
-    endTime = time.time();
-    
-    log.info("Processing is done in %.2f seconds." %(endTime-startTime))
+    try:
+        #processing only one file, option -f
+        if options.file:
+            #getting real path by relative
+            filePath = getProjectPath(options.file)
+            __processFile__(filePath, options)
+        #processing whole directory
+        elif options.dir:
+            #getting real path by relative
+            dirPath = getProjectPath(options.dir)
+            __processDir__(dirPath,options)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        log.error(exc_value)
+        log.debug('Error details: %s' %(''.join(traceback.format_exception(exc_type, exc_value,exc_traceback))) )
+    else:
+        endTime = time.time();
+        log.info("Transformation process was successfully completed in %.2f seconds." %(endTime-startTime))
 
 def getProjectPath(path):
     """docstring for getProjectPath"""
