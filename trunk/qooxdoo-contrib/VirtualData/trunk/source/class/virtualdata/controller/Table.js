@@ -18,13 +18,17 @@
 
 ************************************************************************ */
 
+/* *****
+#asset(virtualdata/ajax-loader.gif)
+*** */
+
 /**
  * Controller for Table widget
  */
 qx.Class.define("virtualdata.controller.Table", 
 {
   extend : qx.core.Object,
-  include: qx.data.controller.MSelection,
+  include: [ qx.data.controller.MSelection, qcl.ui.MLoadingPopup ],
 
   /*
    *****************************************************************************
@@ -36,22 +40,24 @@ qx.Class.define("virtualdata.controller.Table",
     * @param target { qx.ui.table.Table } The target table.
     * @param store { Object?null } The store that retrieves the data
     */
-   construct : function( target, store )  
-   {
-     this.base(arguments);
-     
-     if( target != undefined ) 
-     {
+  construct : function( target, store )  
+  {
+    this.base(arguments);
+    
+    if( target != undefined ) 
+    {
        this.setTarget( target );
-     }
+    }
      
-     if( store != undefined ) 
-     {
+    if( store != undefined ) 
+    {
        this.setStore( store );
-     }     
+    }     
      
-     this.__currentRequestIds = [];
-   },
+    this.__currentRequestIds = [];
+     
+    this.createPopup( "Loading...","virtualdata/ajax-loader.gif"); 
+  },
 
    /*
    *****************************************************************************
@@ -112,8 +118,8 @@ qx.Class.define("virtualdata.controller.Table",
         PRIVATE MEMBERS
      ---------------------------------------------------------------------------
      */          
-     __rowCountRequest : false,
      __currentRequestIds : null,
+     __rowCount : null,
 
      /*
      ---------------------------------------------------------------------------
@@ -148,12 +154,12 @@ qx.Class.define("virtualdata.controller.Table",
           * catch the dataEdited event which is fired when the
           * user has made a manual change to the data
           */
-         target.addListener("dataEdited", this._targetOnDataEdited, this );
+         //target.addListener("dataEdited", this._targetOnDataEdited, this );
          
          /*
           * catch events like add, remove, etc. 
           */
-         target.getTableModel().addListener("change", this._targetOnChange, this );
+         //target.getTableModel().addListener("change", this._targetOnChange, this );
          
          /*
           * store a reference to controller in the model. This can be
@@ -170,17 +176,8 @@ qx.Class.define("virtualdata.controller.Table",
       */
      _applyStore : function ( store, old )
      {
-       if ( old )
-       {
-         // @todo remove event listeners and bindings
-       }       
+
        
-       if ( store )
-       {
-         store.bind( "model", this, "model" );
-         store.addListener( "change", this._storeOnChange, this );
-         store.addListener( "changeBubble", this._storeOnChangeBubble, this );
-       }
      },
      
      /**  
@@ -242,15 +239,21 @@ qx.Class.define("virtualdata.controller.Table",
      {
        if( this.getTarget() && this.getStore() )
        {
+         /*
+          * visually reset the table
+          */
          var table = this.getTarget();
+         var model = table.getTableModel();
          table.resetSelection();
+         
+         //model.clearCache();
+         
+         model.reloadData();
          table.scrollCellVisible(0,0);
-         var model = this.getTarget().getTableModel();
-         model.clearCache();
-         model.reloadRows(0,100);
+         
+         
        }
      },
-     
      
      /*
      ---------------------------------------------------------------------------
@@ -266,12 +269,26 @@ qx.Class.define("virtualdata.controller.Table",
       */
      _loadRowCount : function()
      {
-       if ( this.__rowCountRequest ) return;
-       var store = this.getStore();
-       var marshaler = store.getMarshaler();
-       var params = marshaler.getQueryParams();
-       this.__rowCountRequest = true;
-       store.load( marshaler.getMethodGetRowCount(), params );
+       if ( ! this.getTarget() ) return;
+       
+       var store      = this.getStore();
+       var tableModel = this.getTarget().getTableModel();
+       var marshaler  = store.getMarshaler();
+       var params     = marshaler.getQueryParams();
+       
+       /*
+        * show popup centered to table
+        */
+       this.showPopup( this.getTarget(), "Getting number of rows..." );
+
+       /*
+        * load the row count and pass it to th model
+        */
+       store.load( marshaler.getMethodGetRowCount(), params, function(){
+         this.hidePopup();
+         this.__rowCount = store.getModel().getRowCount();
+         tableModel._onRowCountLoaded( this.__rowCount );
+       },this );
      },
      
      
@@ -285,11 +302,12 @@ qx.Class.define("virtualdata.controller.Table",
      {
        //if ( this.__rowDataRequest ) return;
        //this.info( "Requesting " + firstRow + " - " + lastRow );
+      
        
        var store = this.getStore();
        var marshaler = store.getMarshaler();
+       var tableModel = this.getTarget().getTableModel();
 
-       
        /*
         * store request id so that we can differentiate different
         * tables connected to the same store
@@ -300,13 +318,31 @@ qx.Class.define("virtualdata.controller.Table",
        /*
         * add firstRow, lastRow, requestId at the beginning of the 
         * parameters
+        * FIXME do we really need the request id?
         */
        var params = [firstRow, lastRow, requestId].concat( marshaler.getQueryParams() );
          
        /*
+        * show popup
+        */
+       this.showPopup( 
+        this.getTarget(), 
+        "Loading rows " + firstRow + " - " + Math.min( lastRow, this.__rowCount ) + " of " + this.__rowCount 
+       );
+       
+       /*
         * load data
         */
-       store.load( marshaler.getMethodGetRowData(), params );
+       store.load( marshaler.getMethodGetRowData(), params, function(){
+        this.hidePopup();
+        var rowData = store.getModel().getRowData();
+        if ( ! qx.lang.Type.isArray( rowData ) || ! rowData.length )
+        {
+          this.warn("Invalid server response"); // FIXME
+          rowData = null;
+        }
+        tableModel._onRowDataLoaded( rowData );
+       }, this );
      },
      
      /*
@@ -314,126 +350,6 @@ qx.Class.define("virtualdata.controller.Table",
         EVENT LISTENERS
      ---------------------------------------------------------------------------
      */
-    
-    /**
-     * Called when the editor in the table flushes. Creates a 
-     * "changeBubble" event and propagates it to the connected
-     * datastore 
-     */
-    _targetOnDataEdited : function( event )
-    {
-      if ( ! this.getStore() ) return;
-      var data = event.getData();
-      var event = new qx.event.type.Data;
-      event.init({
-        value : data.value,
-        old : data.oldValue,
-        row : data.row,
-        col : data.col
-      });
-      event.setType("changeBubble");
-      
-      /*
-       * store hash code of event target
-       */
-      event.getData().hashCode = this.getTarget().toHashCode();       
-      
-      this.getStore().addToEventQueue( event );
-    },
-    
-    /**
-     * Called when the target has dispatched a "change" event.
-     * Propagates it to the store.
-     * @param event {qx.event.type.Data}
-     * @return
-     */
-    _targetOnChange : function( event )
-    {
-       if ( ! this.getStore() ) return;
-       
-       /*
-        * store hash code of event target
-        */
-       event.getData().hashCode = this.getTarget().toHashCode(); 
-       
-       this.getStore().addToEventQueue( event );
-    },
-    
-    /**
-     * Called when the store dispatches a 'change' event
-     * @param event {qx.event.type.Data?null}
-     * @return {void}
-     */
-    _storeOnChange : function( event )
-    {
-       /*
-        * no action if no target or the event source is the the target tree
-        */
-       if ( ! this.getTarget()  
-           || event.getData().hashCode == this.getTarget().toHashCode() ) return;
-   
-       var data = event.getData();
-       var target = this.getTarget();
-       var targetModel = target.getTableModel();
-       
-       switch ( data.type )
-       {
-         /*
-          * remove row 
-          */
-         case "remove":
-           targetModel.removeRow( data.start, true );
-           break;
-           
-         /*
-          * reload some rows 
-          */  
-         case "relaod":
-           targetModel.reloadRows( data.start, data.end, true );
-            
-       }
-    },
-    
-    /**
-     * Called when the store dispatches a 'changeBubble' event
-     * @param event {qx.event.type.Data?null}
-     * @return {void}
-     */
-    _storeOnChangeBubble : function( event )
-    {
-       try{
-       /*
-        * no action if no target or the event source is the the target tree
-        */
-       if ( ! this.getTarget()  
-           || event.getData().hashCode == this.getTarget().toHashCode() ) 
-       {
-         return;
-       }
-      var data = event.getData();
-      var tableModel = this.getTarget().getTableModel();
-      
-      /*
-       * if there is a record id 
-       */
-      if ( data.id )     
-      {
-        var rowIndex = tableModel.getRowById(data.id);
-        var colIndex = tableModel.getColumnIndexById(data.name);
-        if ( rowIndex != undefined && colIndex != undefined )
-        {
-          tableModel.setValue( colIndex, rowIndex,  data.value);
-        }
-      }
-   
-      /*
-       * set the value in the target data model by column and value
-       */
-      else if ( data.col && data.row )
-      {
-        tableModel.setValue( data.col, data.row, data.value ); 
-      }
-       }catch(e){console.warn(e)}
-    }    
+    endOfFile : true
   }
 });
