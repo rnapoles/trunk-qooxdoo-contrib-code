@@ -30,7 +30,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 simulation.Simulation.prototype.bomTest = function()
 {
   this.__sel.focus('//html/body/div[@id="logger"]');
-  this.qxTypeKeys('//html/body/div[@id="logger"]', 'A');
+  this.__sel.typeKeys('//html/body/div[@id="logger"]', 'A');
   var divContent = this.getEval(selWin + '.document.getElementById("logger").innerHTML', "Getting logger div content.");
   if (divContent.indexOf("A") === 0) {
     this.log("qooxdoo event system seems to work.", "info");
@@ -49,7 +49,8 @@ simulation.Simulation.prototype.inlineTest = function()
 
 simulation.Simulation.prototype.runTest = function()
 { 
-  if (this.getConfigSetting("autPath").indexOf("/bomapplication") >= 0) {
+  if (this.getConfigSetting("autPath").indexOf("/bomapplication") >= 0
+      || this.getConfigSetting("autPath").indexOf("/nativeapplication") >= 0) {
     this.bomTest();
   }
   else if (this.getConfigSetting("autPath").indexOf("/inlineapplication") >= 0) {
@@ -71,7 +72,8 @@ simulation.Simulation.prototype.runTest = function()
     return;
   }
 
-  if (mySim.getConfigSetting("autPath").indexOf("/bomapplication") < 0) {
+  if (mySim.getConfigSetting("autPath").indexOf("/bomapplication") < 0
+      && mySim.getConfigSetting("autPath").indexOf("/nativeapplication") < 0) {
     var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, "Waiting for qooxdoo application");
     
     if (!isAppReady) {
