@@ -57,20 +57,28 @@ qx.Class.define("bug3504.Application",
       -------------------------------------------------------------------------
       */
 
+
+/*
       if (qx.bom.client.Platform.MAC) {
         this.__selectAllShortcut = new qx.ui.core.Command("Meta+A"); 
       } else {
         this.__selectAllShortcut = new qx.ui.core.Command("Control+A"); 
       }
-      
+
+
       
       this.__selectAllShortcut.addListener("execute", function(e){
         console.info(e);
       }, this); 
+*/
 
 
+      var shortcut = new qx.bom.Shortcut("Control+A");
+      shortcut.setAutoRepeat(true);
 
-
+      shortcut.addListener("execute", function(e){
+        console.info(e);
+      }, this); 
 
 
 
