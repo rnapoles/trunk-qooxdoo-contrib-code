@@ -80,6 +80,17 @@ class class_qcl_test_data_model_db_ActiveRecord
     //$this->startLogging();
 
     $member = new active_Member();
+
+//    try
+//    {
+//      $member->set("name","Foo");
+//      throw new qcl_test_AssertionException( "Unloaded Record must throw exception" );
+//    }
+//    catch( qcl_data_model_NoRecordLoadedException $e )
+//    {
+//      //
+//    }
+
     $member->deleteAll();
 
     $randomdata = file( qcl_realpath("qcl/test/data/model/data/randomdata.csv") );

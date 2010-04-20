@@ -238,7 +238,7 @@ class qcl_data_model_PropertyBehavior
   {
     if ( ! $property or ! is_string( $property ) )
     {
-      $this->getModel()->raiseError("Invalid property '$property'");
+      throw new InvalidArgumentException("Invalid property '$property'");
     }
     if ( ! $this->has( $property) )
     {
@@ -276,6 +276,7 @@ class qcl_data_model_PropertyBehavior
    */
   public function get( $property )
   {
+    //$this->check( $property ); // FIXME This must be uncommented, but something in Persistence behavior borks then.
     return $this->data[$property];
   }
 

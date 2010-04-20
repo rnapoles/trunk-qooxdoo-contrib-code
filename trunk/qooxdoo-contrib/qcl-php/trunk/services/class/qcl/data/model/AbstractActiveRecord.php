@@ -61,6 +61,8 @@ class qcl_data_model_AbstractActiveRecord
     "like","is","is not","=",">","<","!="
   );
 
+  protected $_loaded = false;
+
   //-------------------------------------------------------------
   // Model properties
   //-------------------------------------------------------------
@@ -135,9 +137,9 @@ class qcl_data_model_AbstractActiveRecord
    * @see qcl_core_Object#set()
    * @return qcl_data_model_db_ActiveRecord
    */
-  public function set( $first, $second= null )
+  public function set( $first, $second= null, $checkLoaded=true )
   {
-    $this->init();
+    if( $checkLoaded) $this->checkLoaded();
     parent::set( $first, $second );
     return $this;
   }
@@ -148,6 +150,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function getModified()
   {
+    $this->checkLoaded();
     return $this->get("modified");
   }
 
@@ -157,6 +160,7 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function getCreated()
   {
+    $this->checkLoaded();
     return $this->get("created");
   }
 
@@ -192,12 +196,23 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
+   * Overridden to check if record has been loaded
+   * @return array
+   */
+  public function data()
+  {
+    $this->checkLoaded();
+    return parent::data();
+  }
+
+  /**
    * Gets the data of the currently loaded record as a stdClass object
    * so you can use $record->foo instead of $record['foo']
    * @return stdClass
    */
   public function dataObject()
   {
+    $this->checkLoaded();
     return (object) $this->data();
   }
 
@@ -221,12 +236,8 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function getId()
   {
+    $this->checkLoaded();
     $id = (int) $this->get("id");
-    if ( ! $id )
-    {
-      $this->raiseError("No record loaded in model " . $this->className() );
-      throw new qcl_data_model_NoRecordLoadedException("No record loaded in model " . $this->className() );
-    }
     return $id;
   }
 
@@ -237,15 +248,6 @@ class qcl_data_model_AbstractActiveRecord
   public function id()
   {
     return $this->getId();
-  }
-
-  /**
-   * Checks whether a record is loaded and throws an exception if not
-   * @return void
-   */
-  public function checkLoaded()
-  {
-    $this->id();
   }
 
 
@@ -311,14 +313,47 @@ class qcl_data_model_AbstractActiveRecord
       $propBehavior = $this->getPropertyBehavior();
       foreach( $result as $property => $value )
       {
-        $this->set( $property, $propBehavior->typecast( $property, $value ) );
+        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
       }
+
+      /*
+       * Mark that we're loaded
+       */
+      $this->_loaded = true;
+
+      /*
+       * return myself
+       */
       return $this;
     }
     throw new qcl_data_model_RecordNotFoundException( sprintf(
       "Model record [%s #%s] does not exist",
       $this->className(), $id
     ) );
+  }
+
+  /**
+   * Return true if record has been loaded, false if not.
+   * @return bool
+   */
+  public function isLoaded()
+  {
+    return $this->_loaded;
+  }
+
+
+  /**
+   * Checks if active record is loaded and throws a qcl_data_model_NoRecordLoadedException if not.
+   * @return void
+   * @throws qcl_data_model_NoRecordLoadedException
+   */
+  protected function checkLoaded()
+  {
+    if ( ! $this->_loaded )
+    {
+      //throw new qcl_data_model_NoRecordLoadedException("Model is not loaded yet.");
+      $this->raiseError("Model is not loaded yet.");
+    }
   }
 
   /**
@@ -349,10 +384,23 @@ class qcl_data_model_AbstractActiveRecord
     {
       $result = $this->getQueryBehavior()->fetch();
       $propBehavior = $this->getPropertyBehavior();
+
+      /*
+       * Set all the properties
+       */
       foreach( $result as $property => $value )
       {
-        $this->set( $property, $propBehavior->typecast( $property, $value ) );
+        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
       }
+
+      /*
+       * mark that a record is loaded
+       */
+      $this->_loaded = true;
+
+      /*
+       * return the number of rows found
+       */
       return $query->getRowCount();
     }
     else
@@ -362,7 +410,6 @@ class qcl_data_model_AbstractActiveRecord
         $this->className()
       ) );
     }
-    return $this;
   }
 
   //-----------------------------------------------------------------------
@@ -489,9 +536,18 @@ class qcl_data_model_AbstractActiveRecord
       $propBehavior = $this->getPropertyBehavior();
       foreach( $result as $property => $value )
       {
-        $this->set( $property, $propBehavior->typecast( $property, $value ) );
+        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
       }
     }
+
+    /*
+     * mark that a record is loaded
+     */
+    $this->_loaded = true;
+
+    /*
+     * return the record
+     */
     return $result;
   }
 
@@ -551,6 +607,11 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     /*
+     * mark that record is loaded
+     */
+    $this->_loaded = true;
+
+    /*
      * setting initial values
      */
     $this->getPropertyBehavior()->initPropertyValues();
@@ -592,10 +653,8 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function save()
   {
-    if ( ! $this->get("id") )
-    {
-      $this->raiseError("Model does not have an id yet. Did you create or load the record already?");
-    }
+    $this->checkLoaded();
+
     $success = $this->getQueryBehavior()->update( $this->data() );
 
     /*
