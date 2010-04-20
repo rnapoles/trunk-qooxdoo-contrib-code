@@ -58,6 +58,11 @@ class qcl_data_model_AbstractNamedActiveRecord
     $this->init();
 
     /*
+     * mark that record is loaded
+     */
+    $this->_loaded = true;
+
+    /*
      * check named id
      */
     if ( is_array( $first ) or is_object( $first ) )
@@ -78,7 +83,11 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * check for duplicate
      */
-    if ( $this->namedIdExists( $namedId) )
+    if ( isset( $this->__namedIdExistChecked ) )
+    {
+      unset( $this->__namedIdExistChecked );
+    }
+    elseif ( $this->namedIdExists( $namedId) )
     {
       throw new qcl_data_model_RecordExistsException("Named id '$namedId' already exists");
     }
@@ -146,6 +155,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     }
     else
     {
+      $this->__namedIdExistChecked = true;
       $id = $this->create( $namedId, $data );
     }
     return $id;
@@ -202,8 +212,17 @@ class qcl_data_model_AbstractNamedActiveRecord
         $propBehavior = $this->getPropertyBehavior();
         foreach( $result as $property => $value )
         {
-          $this->set( $property, $propBehavior->typecast( $property, $value ) );
+          $this->set( $property, $propBehavior->typecast( $property, $value ), false );
         }
+
+        /*
+         * Mark that we're loaded
+         */
+        $this->_loaded = true;
+
+        /*
+         * return myself
+         */
         return $this;
       }
 
