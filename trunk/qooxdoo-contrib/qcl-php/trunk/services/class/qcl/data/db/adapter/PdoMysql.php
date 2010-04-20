@@ -783,6 +783,7 @@ class qcl_data_db_adapter_PdoMysql
 
   /**
    * Returns the sql to do a fulltext search. Uses boolean mode.
+   *
    * @param string $table
    * @param string $indexName
    * @param string $expr
@@ -792,6 +793,10 @@ class qcl_data_db_adapter_PdoMysql
    * not be part of the record.
    * Currently, only "and" is implemented.
    * @return string
+   *
+   * @todo this needs to be reworked in connection with
+   * qcl_data_model_db_QueryBehavior::createWhereStatement and
+   * qcl_data_db_Query
    */
   public function fullTextSql( $table, $indexName, $expr, $mode="and" )
   {
@@ -818,11 +823,12 @@ class qcl_data_db_adapter_PdoMysql
         $expr = str_replace("++","+", implode(" ",$searchWords ) );
         break;
       default:
-        $this->raiseError("Match mode '$mode' is invalid");
+        throw new InvalidArgumentException("Match mode '$mode' is invalid");
     }
 
     /*
      * get index columns
+     * @todo: use cache for this!
      */
     $fullTextCols = $this->getIndexColumns( $table, $indexName );
     if( ! count( $fullTextCols ) )
@@ -1019,7 +1025,7 @@ class qcl_data_db_adapter_PdoMysql
       $this->exec("
         ALTER TABLE $table ADD COLUMN $column $definition $after;
       ");
-      $this->log("Added $table.$column with definition '$definition'.","tableMaintenance");
+      $this->log("Added $table.$column with definition '$definition'.",QCL_LOG_TABLES);
     }
     else
     {
@@ -1044,7 +1050,7 @@ class qcl_data_db_adapter_PdoMysql
     $this->exec("
       ALTER TABLE $table MODIFY COLUMN $column $definition $after;
     ");
-    $this->log("Modified $table.$column from '$oldDef' to '$definition'.","tableMaintenance");
+    $this->log("Modified $table.$column from '$oldDef' to '$definition'.",QCL_LOG_TABLES);
   }
 
   /**
@@ -1066,7 +1072,7 @@ class qcl_data_db_adapter_PdoMysql
     $this->exec("
       ALTER TABLE $table CHANGE COLUMN $oldColumn $newColumn $definition $after
     ");
-    $this->log("Renamed $table.$oldColumn to $table.$newColumn.","tableMaintenance");
+    $this->log("Renamed $table.$oldColumn to $table.$newColumn.",QCL_LOG_TABLES);
   }
 
   /**
@@ -1117,7 +1123,7 @@ class qcl_data_db_adapter_PdoMysql
       ALTER TABLE $table
       ADD PRIMARY KEY  (`" . implode("`,`", $columns) . "`);
     ");
-    $this->log("Added primary key to table $table.","tableMaintenance" );
+    $this->log("Added primary key to table $table.",QCL_LOG_TABLES );
   }
 
   /**
@@ -1130,7 +1136,7 @@ class qcl_data_db_adapter_PdoMysql
     $this->execute("
       ALTER TABLE $table DROP PRIMARY KEY;
     ");
-    $this->log("Removed primary key from table $table.","tableMaintenance" );
+    $this->log("Removed primary key from table $table.",QCL_LOG_TABLES );
   }
 
   /**
@@ -1147,7 +1153,7 @@ class qcl_data_db_adapter_PdoMysql
       $this->execute("
         ALTER TABLE $table DROP INDEX `$index`
       ");
-       $this->log("Removed index '$index' from table $table.","tableMaintenance" );
+       $this->log("Removed index '$index' from table $table.",QCL_LOG_TABLES );
     }
   }
 
@@ -1222,7 +1228,7 @@ class qcl_data_db_adapter_PdoMysql
       $this->execute ("
         ALTER TABLE $table ADD $type `$index` (`" . implode("`,`", $columns) . "`);
       ");
-      $this->log("Added $type index '$index' to table $table indexing columns " . implode(",",$columns) . ".","tableMaintenance");
+      $this->log("Added $type index '$index' to table $table indexing columns " . implode(",",$columns) . ".", QCL_LOG_TABLES);
     }
     else
     {
@@ -1311,7 +1317,7 @@ class qcl_data_db_adapter_PdoMysql
       FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
     ",false);
 
-    $this->log("Created trigger to update hash over " . implode(",",$columns) . ".","tableMaintenance");
+    $this->log("Created trigger to update hash over " . implode(",",$columns) . ".",QCL_LOG_TABLES);
   }
 
   /**

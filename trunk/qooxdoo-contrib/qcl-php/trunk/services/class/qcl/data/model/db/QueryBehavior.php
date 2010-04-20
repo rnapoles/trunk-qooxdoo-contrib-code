@@ -310,7 +310,7 @@ class qcl_data_model_db_QueryBehavior
   {
     foreach( $indexes as $name => $index)
     {
-      $this->indexes['name'] = $index;
+      $this->indexes[$name] = $index;
     }
   }
 
@@ -332,6 +332,18 @@ class qcl_data_model_db_QueryBehavior
     {
 
       /*
+       * check structure
+       */
+      try
+      {
+         qcl_array_assert_keys( $index, array( "type", "properties" ) );
+      }
+      catch ( InvalidArgumentException $e )
+      {
+        throw new InvalidJsonRpcArgumentException("Invalid index '$name': " . $e->getMessage() );
+      }
+
+      /*
        * initialize cache for this table
        */
       if ( ! isset( $cache->indexes[$tableName] ) )
@@ -342,21 +354,28 @@ class qcl_data_model_db_QueryBehavior
       /*
        * continue if the cache has the same value
        */
-      if ( isset( $cache->indexes[$tableName][$name] )
-      and $cache->indexes[$tableName][$name] == array(
-          "type"       => $index['type'],
-          "properties" => $index['properties']
-      )  )
+      if ( isset( $cache->indexes[$tableName][$name] ) )
       {
-        $model->log("Index hasn't changed according to cached data.",QCL_LOG_TABLES);
-        $cache->indexes[$tableName][$name] = $index;
-        continue;
+        if ( $cache->indexes[$tableName][$name] == array(
+            "type"       => $index['type'],
+            "properties" => $index['properties']
+        )  )
+        {
+          $model->log("Index hasn't changed according to cached data.",QCL_LOG_TABLES);
+          $cache->indexes[$tableName][$name] = $index;
+          continue;
+        }
       }
 
       /*
        * determine columns
        */
       $columns = array();
+      if( ! is_array( $index['properties'] ) )
+      {
+        throw new InvalidJsonRpcArgumentException("Invalid index '$name': properties must be an array." );
+      }
+
       foreach( $index['properties'] as $property )
       {
         $columns[] = $this->getColumnName( $property );
@@ -413,6 +432,7 @@ class qcl_data_model_db_QueryBehavior
    *
    * @param qcl_data_db_Query $query
    * @return string sql statement
+   * @todo rewrite
    */
   public function queryToSql( qcl_data_db_Query $query)
   {
@@ -768,9 +788,10 @@ class qcl_data_model_db_QueryBehavior
     }
 
     /*
-     * where
+     * construct 'where' statement from the 'where' and
+     * 'match' properties of the query object
      */
-    if ( $query->where )
+    if ( $query->where or  $query->match )
     {
       $where = $this->createWhereStatement( $query );
       $sql .= "\n    WHERE $where ";
@@ -822,72 +843,115 @@ class qcl_data_model_db_QueryBehavior
    * object.
    *
    * @param qcl_data_db_Query $query
-   * @return string
+   * @return string|null Returns a string if there are conditions that can
+   * be expressed in the 'where' query and NULL if not.
+   *
+   * @todo rewrite using classes similar to cql!
+   * @todo make protected
    */
   public function createWhereStatement( qcl_data_db_Query $query )
   {
     $adpt   = $this->getAdapter();
-    $where  = $query->getWhere();
+    $where  = object2array( $query->getWhere() );
+    $match  = object2array( $query->getMatch() );
 
     /*
-     * if we have a string type where statement, return it.
+     * if we have a string type where statement, return it. Use this with
+     * caution, since the string is not sanitized
+     * FIXME: Remove this?
      */
     if ( is_string( $where ) )
     {
       return $where;
     }
-    elseif ( ! is_array( $where ) )
+    elseif ( ! is_array( $where ) and ! is_array( $match ) )
     {
-      throw new InvalidArgumentException("Invalid 'where' data: '$where' (" . typeof( $where ) .")");
+      throw new InvalidArgumentException("Cannot create where query. Invalid query data.");
     }
 
     /*
      * otherwise create sql from it
      */
     $sql = array();
-    foreach( $where as $property => $value )
+
+    /*
+     * first use 'where' info
+     */
+    if( $where)
     {
-      $type = $this->getModel()->getPropertyBehavior()->type( $property );
-
-      $column = $adpt->formatColumnName( $this->getColumnName( $property ) );
-
-      $param  = ":$property";
-
-      /*
-       * null value
-       */
-      if ( is_null($value) )
+      foreach( $where as $property => $value )
       {
-        $operator = "IS";
-      }
+        /*
+         * this is useful but against the design: the query behavior
+         * should work independently of the property behavior!
+         */
+        $type = $this->getModel()->getPropertyBehavior()->type( $property );
 
-      /*
-       * if the value is scalar, use "="
-       */
-      elseif ( is_scalar($value) )
-      {
-        $operator = "=";
-      }
+        $column = $adpt->formatColumnName( $this->getColumnName( $property ) );
 
-      /*
-       * if an array has been passed, the first element is the
-       * operator, the second the value
-       */
-      elseif ( is_array( $value ) )
-      {
-        $operator = $value[0];
-        $this->checkOperator( $operator );
-        $value    = $value[1];
-      }
-      else
-      {
-        $this->getModel()->raiseError("Property '$property': Invalid value of type " . typeof($value,true) );
-      }
+        $param  = ":$property";
 
-      $query->parameters[$param] = $value;
-      $sql[]  = "$column $operator $param" ;
+        /*
+         * null value
+         */
+        if ( is_null($value) )
+        {
+          $operator = "IS";
+        }
+
+        /*
+         * if the value is scalar, use "="
+         */
+        elseif ( is_scalar($value) )
+        {
+          $operator = "=";
+        }
+
+        /*
+         * if an array has been passed, the first element is the
+         * operator, the second the value
+         */
+        elseif ( is_array( $value ) )
+        {
+          $operator = $value[0];
+          $this->checkOperator( $operator );
+          $value    = $value[1];
+        }
+        else
+        {
+          $this->getModel()->raiseError("Property '$property': Invalid value of type " . typeof($value,true) );
+        }
+
+        $query->parameters[$param] = $value;
+        $sql[]  = "$column $operator $param" ;
+      }
     }
-    return implode(" AND ", $sql );
+
+    /*
+     * now analyse "match" data
+     */
+    if( $match )
+    {
+      foreach( $match as $index => $expr )
+      {
+        // @todo check if index exists, but only from cached data
+        //$sql[]  = "MATCH($index) AGAINST '$expr' IN BOOLEAN MODE";
+        $sql[]  = $adpt->fullTextSql( $this->getTableName(), $index, $expr );
+      }
+    }
+
+    /*
+     * return the result
+     */
+    if ( count ( $sql ) )
+    {
+      return implode("\n           AND ", $sql );
+    }
+    else
+    {
+      return null;
+    }
+
   }
 
   /**
