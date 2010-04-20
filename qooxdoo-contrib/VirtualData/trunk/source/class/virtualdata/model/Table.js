@@ -23,9 +23,8 @@
 ************************************************************************ */
 
 /**
- * An implementation of the abstract class qx.ui.table.model.Remote that uses
- * qcl.data package. Requests to load data are delegated to
- * the data store through the controller.
+ * An implementation of the abstract class qx.ui.table.model.Remote requests 
+ * to load data are delegated to the data store through the controller.
  */
 qx.Class.define("virtualdata.model.Table",
 {
@@ -57,7 +56,7 @@ qx.Class.define("virtualdata.model.Table",
      */
     controller :
     {
-      check : "qcl.data.controller.Table",
+      check : "qx.core.Object",
       nullable : true
     },
     
@@ -67,30 +66,6 @@ qx.Class.define("virtualdata.model.Table",
       init : "id"
     }
   },
-  
-  /*
-  *****************************************************************************
-     EVENTS
-  *****************************************************************************
-  */  
-  events :
-  {
-    /**
-     * The change event which will be fired if there is a change in the array.
-     * The data contains a map with three key value pairs:
-     * <li>start: The start index of the change.</li>
-     * <li>end: The end index of the change.</li>
-     * <li>type: The type of the change as a String. This can be 'add',  
-     * 'remove' or 'order'</li>
-     * <li>items: The items which has been changed (as a JavaScript array).</li>
-     */
-    "change" : "qx.event.type.Data",
-    
-    /**
-     * Event signaling that the model data has changed
-     */
-    "changeBubble" : "qx.event.type.Data"
-  },  
   
   /*
   *****************************************************************************
@@ -130,14 +105,15 @@ qx.Class.define("virtualdata.model.Table",
      * Reloads a section of the data only
      * @author Most of the code by Til Schneider 
      * @param firstRowIndex
-     * @param lastRowIndex
-     * @param dontFireEvent {Boolean|undefined} If true, do not fire a 'change' event     
+     * @param lastRowIndex     
      */
-    reloadRows : function(firstRowIndex, lastRowIndex, dontFireEvent )
+    reloadRows : function(firstRowIndex, lastRowIndex )
     {
-      // this.debug("Reloading wanted: " + firstRowIndex + ".." + lastRowIndex);
+//      this.debug("Reloading wanted: " + firstRowIndex + ".." + lastRowIndex);
+            
       if (this.__firstLoadingBlock == -1)
       {
+        
         var blockSize = this.getBlockSize();
         var totalBlockCount = Math.ceil(this.__rowCount / blockSize);
 
@@ -155,6 +131,14 @@ qx.Class.define("virtualdata.model.Table",
         if (lastBlock >= totalBlockCount) {
           lastBlock = totalBlockCount - 1;
         }
+        
+//        this.debug(
+//          "blockSize: " + blockSize + ", " +
+//          "totalBlockCount: " + totalBlockCount + ", " +
+//          "firstBlock: " + firstBlock + ", " +
+//          "lastBlock: " + lastBlock + ", " +
+//          "totalBlockCount: " + blockSize + ", "
+//        );
 
         // Check which blocks we have to load
         var firstBlockToLoad = -1;
@@ -162,74 +146,39 @@ qx.Class.define("virtualdata.model.Table",
 
         for (var block=firstBlock; block<=lastBlock; block++)
         {
-          // We don't have this block
-          if (firstBlockToLoad == -1) {
-            firstBlockToLoad = block;
-          }
+          if (this.__rowBlockCache[block] == null || this.__rowBlockCache[block].isDirty)
+          {
+            // We don't have this block
+            if (firstBlockToLoad == -1) {
+              firstBlockToLoad = block;
+            }
 
-          lastBlockToLoad = block;
+            lastBlockToLoad = block;
+          }
         }
 
         // Load the blocks
-        if (firstBlockToLoad != -1)
+        if ( firstBlockToLoad != -1 )
         {
           this.__firstRowToLoad = -1;
           this.__lastRowToLoad = -1;
 
           this.__firstLoadingBlock = firstBlockToLoad;
 
-          // this.debug("Starting server request. rows: " + firstRowIndex + ".." + lastRowIndex + ", blocks: " + firstBlockToLoad + ".." + lastBlockToLoad);
+//           this.debug("Starting server request. rows: " + firstRowIndex + ".." + lastRowIndex + ", blocks: " + firstBlockToLoad + ".." + lastBlockToLoad);
           this._loadRowData(firstBlockToLoad * blockSize, (lastBlockToLoad + 1) * blockSize - 1);
         }
       }
       else
       {
+//        this.debug("Request already running ... ");
+        
         // There is already a request running -> Remember this request
         // so it can be executed after the current one is finished.
         this.__firstRowToLoad = firstRowIndex;
         this.__lastRowToLoad = lastRowIndex;
       }
       
-      /*
-       * this will force a redraw
-       */
-      this._loadRowCount();
-      
-      /*
-       * fire events if this hasn't been caused by an event
-       */
-      if ( ! dontFireEvent )
-      {
-        this.fireDataEvent("change",{
-          start : firstRowIndex,
-          end : lastRowIndex,
-          type : "relaod"
-        });
-      }
-    },
-    
-    /*
-    ---------------------------------------------------------------------------
-       OVERRIDDEN METHODS
-    ---------------------------------------------------------------------------
-    */      
-   
-    /**
-     * Removes a row.
-     * @param rowIndex {Integer} The index of the row to remove
-     * @param dontFireEvent {Boolean|undefined} If true, do not fire a 'change' event
-     */
-    removeRow : function( rowIndex, dontFireEvent )
-    {
-      if ( ! dontFireEvent )
-      {
-        this.fireDataEvent("change",{
-          start : rowIndex,
-          end : rowIndex,
-          type : "remove"
-        });
-      }
-      this.base(arguments, rowIndex);
     },
     
     /**
@@ -240,6 +189,25 @@ qx.Class.define("virtualdata.model.Table",
     getRowById : function( id )
     {
       return this.__idIndex[id];
+    },    
+    
+    /*
+    ---------------------------------------------------------------------------
+       OVERRIDDEN METHODS
+    ---------------------------------------------------------------------------
+    */      
+  
+    /**
+     * Reloads the model and clears the local cache.
+     *
+     * @return {void}
+     */
+    reloadData : function()
+    {
+      // FIXME This a hack and will cause problems when the data is reloaded whe
+      // there is still a request underway
+      this.__loadRowCountRequestRunning = false;
+      this.base(arguments);
     },
     
     /*
@@ -278,19 +246,18 @@ qx.Class.define("virtualdata.model.Table",
      */
     _loadRowData : function( firstRow, lastRow ) 
     {
-      //console.log("Requesting rows " + firstRow + " - " + lastRow );
-      if ( this.getController() )
-      {
-        this.__firstRow = firstRow;
-        this.__lastRow = lastRow;
-        
-        /*
-         * call the controller's method which will then 
-         * trigger a request by the store
-         */
-        this.getController()._loadRowData( firstRow, lastRow );
-      } 
+      //this.debug("Requesting rows " + firstRow + " - " + lastRow );
+      
+      this.__firstRow = firstRow;
+      this.__lastRow = lastRow;
+      
+      /*
+       * call the controller's method which will then 
+       * trigger a request by the store
+       */
+      this.getController()._loadRowData( firstRow, lastRow );
     },
+    
     
     /**
      * Sets row data.
@@ -302,6 +269,9 @@ qx.Class.define("virtualdata.model.Table",
      */
     _onRowDataLoaded : function(rowDataArr)
     {
+      
+      //this.debug("Row data returned from server...");
+      
       /*
        * call parent method
        */
@@ -310,11 +280,14 @@ qx.Class.define("virtualdata.model.Table",
       /*
        * create index
        */
-      var index= this.__firstRow;
-      var idCol = this.getIdColumn();
-      rowDataArr.forEach(function(row){
-        this.__idIndex[row[idCol]]=index++;
-      },this);
+      if( qx.lang.Type.isArray( rowDataArr ) )
+      {
+        var index= this.__firstRow;
+        var idCol = this.getIdColumn();
+        rowDataArr.forEach(function(row){
+          this.__idIndex[row[idCol]]=index++;
+        },this);
+      }
       
       this.__firstRow = null;
       this.__lastRow = null;      
