@@ -159,8 +159,6 @@ class qcl_data_controller_TableController
     /*
      * run query
      */
-qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_TABLES,true);
-
     $rowData = $this->method_fetchRecords( $datasource, $modelType, $qclQuery );
     return array(
       'requestId'  => $requestId,
