@@ -74,7 +74,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
     {
       check    : "Object",
       nullable : true,
-      event    : "changeSelectedNode"
+      event    : "changeSelectedNode",
+      apply    : "_applySelectedNode"
     },
 
     /** 
@@ -99,6 +100,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
 
     /**
      * The widget displaying the tree
+     * FIXME: rename?
      */
     treeView :
     {
@@ -293,9 +295,13 @@ qx.Class.define("qcl.ui.tree.TreeView",
     */
    _applyNodeId : function ( value, old )
    {
-      this.selectByServerNodeId( value );
+      //this.selectByServerNodeId( value ); // FIXME
    },   
    
+   _applySelectedNode : function ( value, old )
+   {
+      // empty stub
+   },   
 
 
    
@@ -757,8 +763,11 @@ qx.Class.define("qcl.ui.tree.TreeView",
       /* 
        * update properties
        */
-      this.setNodeId( nodeId );
       this.setSelectedNode( node );
+      this.setNodeId( nodeId );
+      
+      
+      
 //      this.setSelectedNodeType( nodeType );
       
       return;      
