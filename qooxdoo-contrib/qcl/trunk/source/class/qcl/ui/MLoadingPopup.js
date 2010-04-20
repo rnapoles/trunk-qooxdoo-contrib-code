@@ -17,6 +17,9 @@
   
 ************************************************************************ */
 
+/* ************************************************************************
+#asset(qcl/ajax-loader.gif)
+************************************************************************ */
 
 /**
  * A mixin that provides a "Loading..." popup over a widget that is 
@@ -37,6 +40,14 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
       */
      createPopup : function( label, iconpath )
      {
+        if ( label === undefined )
+        {
+          label = this.tr("Loading ...");
+        }
+        if ( iconpath === undefined )
+        {
+          iconpath = "qcl/ajax-loader.gif";
+        }
         this.__loadingPopup = new qx.ui.popup.Popup(new qx.ui.layout.Canvas()).set({
           decorator: "group",
           minWidth  : 100,
