@@ -57,52 +57,17 @@ qx.Class.define("bug3504.Application",
       -------------------------------------------------------------------------
       */
 
+      if (qx.bom.client.Platform.MAC) {
+        this.__selectAllShortcut = new qx.ui.core.Command("Meta+A"); 
+      } else {
+        this.__selectAllShortcut = new qx.ui.core.Command("Control+A"); 
+      }
+      
+      
+      this.__selectAllShortcut.addListener("execute", function(e){
+        console.info(e);
+      }, this); 
 
-
-
-var tableModel = new qx.ui.table.model.Simple();
-tableModel.setColumns([ "ID", "Number 1", "Number 2", "Image" ]);
-
-var image = [
- "icon/16/actions/dialog-ok.png",
- "icon/16/actions/dialog-cancel.png"
-];
-
-// table
-var table = new qx.ui.table.Table(tableModel);
-table.set(
- {
- width : 400,
- height : 200
- });
-
-table.setMetaColumnCounts([1, -1]);
-var selectionMode =
- qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION;
-table.getSelectionModel().setSelectionMode(selectionMode);
-
-var rowData = [];
-for (var row = 0; row < 100; row++)
-{
- var x = Math.random() * 1000;
- rowData.push([ row, x, x, image[Math.floor(x) % 2] ]);
-}
-tableModel.setData(rowData);
-tableModel.setColumnEditable(1, true);
-tableModel.setColumnEditable(2, true);
-var renderer = new qx.ui.table.cellrenderer.Image(19, 16);
-table.getTableColumnModel().setDataCellRenderer(3, renderer);
-
-
-var container = new qx.ui.container.Composite(new qx.ui.layout.Grow);
-
-this.getRoot().add(container, {left : 10, top : 10});
-
-container.addListener("keypress", function(e){
-console.info("key: ", e.getKeyIdentifier());  
-  }, this);
-
-container.add(table);
 
 
 
