@@ -143,6 +143,7 @@ class qcl_data_controller_TableController
      */
     $qclQuery = new qcl_data_db_Query( array(
       'properties' => $query->properties,
+      'orderBy'    => $query->orderBy,
       'firstRow'   => ":firstRow",
       'lastRow'    => ":lastRow",
       'parameters' => array(

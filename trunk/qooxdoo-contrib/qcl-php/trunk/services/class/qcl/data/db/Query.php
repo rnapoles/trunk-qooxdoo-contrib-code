@@ -86,9 +86,7 @@ class qcl_data_db_Query
   public $match = null;
 
   /**
-   * Order by property/properties. If an array is given, the last element of
-   * the array will be searched for "ASC" or "DESC" and used as sort direction.
-   * @todo each single property should have a sort direction
+   * Order by property/properties.
    * @var string|array|null
    */
   public $orderBy  =null;

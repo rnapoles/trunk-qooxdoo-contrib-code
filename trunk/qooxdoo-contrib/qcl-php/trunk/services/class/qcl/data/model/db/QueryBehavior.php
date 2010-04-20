@@ -798,19 +798,18 @@ class qcl_data_model_db_QueryBehavior
     }
 
     /*
-     * order by
-     * FIXME direction handling might be wrong
+     * ORDER BY
      */
     if ( $query->orderBy )
     {
-      $orderBy  = (array) $query->orderBy;
-
-      /*
-       * order direction
-       */
-      $lastElem = $orderBy[count($orderBy)-1];
-      $direction = in_array( strtolower($lastElem), array("asc","desc") ) ?
-      array_pop($orderBy) : "";
+      if ( is_string( $query->orderBy ) )
+      {
+        $orderBy = explode(",", $query->orderBy );
+      }
+      else if ( ! is_array( $orderBy ) )
+      {
+        throw new InvalidArgumentException("Invalid 'orderBy' data.");
+      }
 
       /*
        * order columns
@@ -818,7 +817,16 @@ class qcl_data_model_db_QueryBehavior
       $column = array();
       foreach ( $orderBy as $property )
       {
-        $column[] = $adpt->formatColumnName( $this->getColumnName( $property ) );
+        if ( substr( $property, -4 ) == "DESC" )
+        {
+          $column[] =
+            $adpt->formatColumnName(
+              $this->getColumnName( substr( $property, 0 -5 ) ) ) . " DESC";
+        }
+        else
+        {
+          $column[] = $adpt->formatColumnName( $this->getColumnName( $property ) );
+        }
       }
       $orderBy = implode(",", (array) $column );
       $sql .= "\n    ORDER BY $orderBy $direction";
