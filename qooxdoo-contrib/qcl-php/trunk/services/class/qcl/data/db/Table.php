@@ -282,12 +282,14 @@ class qcl_data_db_Table
   {
     if ( ! $type or !$index or ! is_array( $columns ) or ! count( $columns ) )
     {
-      $this->raiseError("Invalid arguments");
+      throw new InvalidArgumentException("Invalid arguments");
     }
+
     qcl_log_Logger::getInstance()->log( sprintf(
      "Adding '%s' index `%s` to table `%s` using columns %s.",
       $type, $index, $this->getName(), implode(",",$columns)
     ), QCL_LOG_TABLES );
+
     return $this->getAdapter()->addIndex( $this->getName(), $type, $index, $columns );
   }
 

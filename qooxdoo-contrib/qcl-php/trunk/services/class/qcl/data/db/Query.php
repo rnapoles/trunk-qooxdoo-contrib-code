@@ -80,6 +80,12 @@ class qcl_data_db_Query
   public $where = null;
 
   /**
+   * A condition for index matches
+   * @var array
+   */
+  public $match = null;
+
+  /**
    * Order by property/properties. If an array is given, the last element of
    * the array will be searched for "ASC" or "DESC" and used as sort direction.
    * @todo each single property should have a sort direction
@@ -182,6 +188,11 @@ class qcl_data_db_Query
   public function getWhere()
   {
     return $this->where;
+  }
+
+  public function getMatch()
+  {
+    return $this->match;
   }
 
   public function getParameters()

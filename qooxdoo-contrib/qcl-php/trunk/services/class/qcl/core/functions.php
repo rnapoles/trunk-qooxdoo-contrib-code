@@ -60,8 +60,8 @@ function qcl_import( $class, $checkDefined = false )
   {
     require_once $class_file;
     if ( $checkDefined
-          and ! class_exists( $class )
-            and ! class_exists( JsonRpcClassPrefix . $class ) )
+    and ! class_exists( $class )
+    and ! class_exists( JsonRpcClassPrefix . $class ) )
     {
       throw new qcl_ClassNotDefinedException("Class '$class' is not defined in file '$class_file'.");
     }
@@ -220,6 +220,30 @@ function object2array( $var )
   return $arr;
 }
 
+
+/**
+ * Asserts that all keys in the second argument exist in the first argument.
+ * @param array $array
+ * @param array $keys
+ * @return void.
+ * @throws InvalidArgumentException
+ */
+function qcl_array_assert_keys( $array, $keys )
+{
+  if ( ! is_array( $array ) or ! is_array( $keys ) )
+  {
+    throw new InvalidArgumentException( "Invalid arguments." );
+  }
+  if ( count( array_intersect( array_keys( $array ), $keys) ) < count( $keys ) )
+  {
+    throw new InvalidArgumentException( sprintf(
+      "Assertion failed: keys ['%s'] are missing from given array,",
+      implode("', '",array_diff( $keys, array_keys( $array ) ) )
+    ) );
+  }
+}
+
+
 /**
  * Converts a boolean value to a string representation
  * @param bool $value
@@ -362,9 +386,9 @@ function xmlentities($string)
 function html2utf8( $str )
 {
   return strip_tags(
-    html_entity_decode_utf8(
-      str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
-    )
+  html_entity_decode_utf8(
+  str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
+  )
   );
 }
 
@@ -656,18 +680,19 @@ if(!function_exists('get_called_class'))
             return $matches[1];
         }
         // won't get here.
-       case '->':
-         switch ($bt[$l]['function'])
-         {
-            case '__get':
-              // edge case -> get class of calling object
-              if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
-              return get_class($bt[$l]['object']);
-            default: return $bt[$l]['class'];
-          }
-      default: throw new Exception ("Unknown backtrace method type");
+          case '->':
+            switch ($bt[$l]['function'])
+            {
+              case '__get':
+                // edge case -> get class of calling object
+                if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
+                return get_class($bt[$l]['object']);
+              default: return $bt[$l]['class'];
+            }
+              default: throw new Exception ("Unknown backtrace method type");
     }
   }
 }
+
 
 ?>

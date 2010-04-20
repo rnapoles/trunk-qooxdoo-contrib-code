@@ -285,6 +285,12 @@ class qcl_data_controller_Controller
     {
       $model = $model->getModelOfType( $modelType );
     }
+
+    /*
+     * initialize model
+     */
+    $model->init();
+
     return $model;
   }
 

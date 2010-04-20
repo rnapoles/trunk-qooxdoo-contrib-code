@@ -80,11 +80,14 @@ class qcl_data_controller_TableController
     /*
      * sanitize query data
      */
-    $query = new qcl_data_db_Query( array(
-      'properties' => $query->properties,
-      'where'      => object2array($query->where),
-      'link'       => object2array($query->link)
+    $qclQuery = new qcl_data_db_Query( array(
+      'properties' => $query->properties
     ) );
+
+    /*
+     * now add the query conditions
+     */
+    $qclQuery = $this->addQueryConditions( $query, $qclQuery );
 
     /*
      * check access
@@ -96,7 +99,7 @@ class qcl_data_controller_TableController
      * return data
      */
     return array(
-      "rowCount" => $model->countWhere( $query )
+      "rowCount" => $model->countWhere( $qclQuery )
     );
   }
 
@@ -117,6 +120,7 @@ class qcl_data_controller_TableController
    */
   function method_getRowData( $firstRow, $lastRow, $requestId, $queryData )
   {
+
     $datasource = $queryData->datasource;
     $modelType  = $queryData->modelType;
 
@@ -137,10 +141,8 @@ class qcl_data_controller_TableController
     /*
      * sanitize query data
      */
-    $query = new qcl_data_db_Query( array(
+    $qclQuery = new qcl_data_db_Query( array(
       'properties' => $query->properties,
-      'where'      => object2array($query->where),
-      'link'       => object2array($query->link),
       'firstRow'   => ":firstRow",
       'lastRow'    => ":lastRow",
       'parameters' => array(
@@ -149,12 +151,40 @@ class qcl_data_controller_TableController
       )
     ) );
 
-    $rowData = $this->method_fetchRecords( $datasource, $modelType, $query );
+    /*
+     * now add the query conditions
+     */
+    $qclQuery = $this->addQueryConditions( $query, $qclQuery );
+
+    /*
+     * run query
+     */
+qcl_log_Logger::getInstance()->setFilterEnabled(QCL_LOG_TABLES,true);
+
+    $rowData = $this->method_fetchRecords( $datasource, $modelType, $qclQuery );
     return array(
       'requestId'  => $requestId,
       'rowData'    =>  $rowData,
       'statusText' => "$firstRow - $lastRow"
     );
+  }
+
+
+  /**
+   * Hook for child classes to add the 'where' statement data
+   * to the query object, depending on the request. The standard behavior
+   * simply converts the 'link' and 'where' properties of the request object
+   * into arrays if set and copies them into the database query object.
+   *
+   * @param stdClass $query The query data object from the json-rpc request
+   * @param qcl_data_db_Query $qclQuery The query object used by the query behavior
+   * @return qcl_data_db_Query
+   */
+  protected function addQueryConditions( stdClass $query, qcl_data_db_Query $qclQuery )
+  {
+    $qclQuery->link  = isset( $query->link ) ? object2array( $query->link ): null ;
+    $qclQuery->where = isset( $query->where ) ? object2array( $query->where ): null ;
+    return $qclQuery;
   }
 }
 ?>
