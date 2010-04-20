@@ -816,7 +816,7 @@ class qcl_data_model_db_RelationBehavior
    * @param string $relation Relation name
    * @return string
    */
-  public function getJoinTableName( $relation )
+  public function getJoinTableName( $relation, $withPrefix=true  )
   {
     /*
      * get name of join table
@@ -828,8 +828,16 @@ class qcl_data_model_db_RelationBehavior
     }
     $joinTableName = $this->relations[$relation]['jointable'];
     $this->checkJoinTableName( $joinTableName, $relation );
-    $prefix = $this->getModel()->getQueryBehavior()->getTablePrefix();
-    return $prefix . $joinTableName;
+
+    if( $withPrefix )
+    {
+      $prefix = $this->getModel()->getQueryBehavior()->getTablePrefix();
+      return $prefix . $joinTableName;
+    }
+    else
+    {
+      return $joinTableName;
+    }
   }
 
   /**
@@ -869,7 +877,7 @@ class qcl_data_model_db_RelationBehavior
    */
   public function getJoinModel( $relation )
   {
-    $joinTableName = $this->getJoinTableName( $relation );
+    $joinTableName = $this->getJoinTableName( $relation, false );
 
     /*
      * use cached  object or create new one
@@ -882,7 +890,8 @@ class qcl_data_model_db_RelationBehavior
       ), QCL_LOG_MODEL_RELATIONS );
 
       qcl_import( "qcl_data_model_db_JoinModel" );
-      $joinModel = new qcl_data_model_db_JoinModel( $joinTableName );
+      $datasourceModel = $this->getModel()->datasourceModel();
+      $joinModel = new qcl_data_model_db_JoinModel( $datasourceModel, $joinTableName );
       $joinModels[$joinTableName] = $joinModel;
     }
     else

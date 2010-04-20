@@ -26,13 +26,14 @@ class qcl_data_model_db_JoinModel
 {
   /**
    * Constructor, allows to set the table name externally
+   * @param qcl_data_datasource_DbModel $datasourceModel
    * @param string $tableName
    * @return void
    */
-  public function __construct( $tableName )
+  public function __construct( $datasourceModel, $tableName )
   {
     $this->tableName = $tableName;
-    parent::__construct();
+    parent::__construct( $datasourceModel );
   }
 }
 ?>
