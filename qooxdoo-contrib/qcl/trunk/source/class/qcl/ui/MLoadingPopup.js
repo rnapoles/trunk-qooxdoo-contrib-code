@@ -61,10 +61,9 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
      
      /**
       * Shows the popup centered over the widget
-      * @param widget {qx.ui.core.Widget}
       * @param label {String}
       */
-     showPopup : function( widget, label )
+     showPopup : function( label )
      {
        if ( label )
        {
@@ -73,22 +72,16 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
        
        var p = this.__loadingPopup;
        var c,l,t,w,h;
-       if ( widget  ) 
+       try
        {
-          c = widget.getContentLocation();
-          if ( c )
-          {
-            var w = c.right - c.left;
-            var h = c.bottom - c.top;
-            l = Math.floor( c.left + ( w / 2) - ( p.getWidth() / 2 ) ); 
-            t = Math.floor( c.top + ( h / 2) - ( p.getHeight() / 2) );
-          }
+         c = this.getContentLocation();
+         var w = c.right - c.left;
+         var h = c.bottom - c.top;
+         l = Math.floor( c.left + ( w / 2) - ( p.getWidth() / 2 ) ); 
+         t = Math.floor( c.top + ( h / 2) - ( p.getHeight() / 2) ); 
+         p.placeToPoint({left: l, top: t}); 
        }
-       if ( widget && l && t)
-       {
-         p.placeToPoint({left: l, top: t}); // we have valid paramters 
-       }
-       else
+       catch(e)
        {
          l =  Math.floor( ( qx.bom.Document.getWidth() / 2 ) - ( p.getWidth() / 2 ) );
          t =  Math.floor( ( qx.bom.Document.getHeight() / 2 ) - ( p.getHeight() / 2 ) );

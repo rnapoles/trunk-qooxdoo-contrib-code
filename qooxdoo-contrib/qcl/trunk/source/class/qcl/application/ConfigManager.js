@@ -285,9 +285,9 @@ qx.Class.define("qcl.application.ConfigManager",
      * }
      * </pre>
      */
-    load : function()
+    load : function( callback, context )
     {
-      this.getStore().load();
+      this.getStore().load( null, null, callback, context );
     },
    
     /**

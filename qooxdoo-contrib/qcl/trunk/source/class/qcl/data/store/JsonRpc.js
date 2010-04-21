@@ -252,6 +252,20 @@ qx.Class.define("qcl.data.store.JsonRpc",
     {
       check : "Boolean",
       init : false
+    },
+    
+    
+    autoLoadMethod:
+    {
+      check : "String",
+      apply : "_applyAutoLoadMethod",
+      nullable : true
+    },
+    
+    autoLoadParams:
+    {
+      apply : "_applyAutoLoadParams",
+      nullable : true
     }
   },
 
@@ -275,12 +289,38 @@ qx.Class.define("qcl.data.store.JsonRpc",
     __rpc : null,
     __requestId : 0,
     __requestCounter : 0,
+    __lastMethod : null,
+    __lastParams : null,
     
     /*
     ---------------------------------------------------------------------------
        APPLY METHODS
     ---------------------------------------------------------------------------
     */ 
+    
+    _applyAutoLoadMethod : function( value, old)
+    {
+      if ( this.getAutoLoadParams() )
+      {
+        this.load( value, this.getAutoLoadParams() );
+      }
+    },
+
+    _applyAutoLoadParams : function( value, old)
+    {
+      if ( qx.lang.Type.isString( value ) )
+      {
+        var value = value.split(",");
+      }
+      else if( value !== null && ! qx.lang.Type.isArray( value ) )
+      {
+        this.error("Value for autoLoadParams must be string, null or array.");
+      }      
+      if ( this.getAutoLoadMethod() )
+      {
+        this.load( this.getAutoLoadMethod(), value );
+      }
+    },    
     
     /*
     ---------------------------------------------------------------------------
@@ -590,6 +630,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
      */
     load : function( serviceMethod, params, finalCallback, context  )
     {
+      this.__lastMethod = serviceMethod;
+      this.__lastParams = params;
       this._sendJsonRpcRequest( 
           serviceMethod||this.getDefaultLoadMethodName(), 
           params,
@@ -597,6 +639,19 @@ qx.Class.define("qcl.data.store.JsonRpc",
           context,
           true
       );
+    },
+    
+    /** 
+     * Reloads the data from a service method asynchroneously. Uses the last
+     * method and parameters used.
+     * 
+     * @param callback {function} The callback function that is called with
+     *   the result of the request
+     * @param context {Object} The context of the callback function     
+     */    
+    reload : function( callback, context )
+    {
+      this.load( this.__lastMethod, this.__lastParams, callback, context );
     },
     
    /** 
