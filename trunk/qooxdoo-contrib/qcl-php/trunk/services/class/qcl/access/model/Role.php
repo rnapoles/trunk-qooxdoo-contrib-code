@@ -17,6 +17,7 @@
  */
 
 qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+qcl_import( "qcl_data_datasource_DbModel" );
 
 /**
  * Role class
@@ -63,6 +64,10 @@ class qcl_access_model_Role
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
       'target'      => array( 'class' => "qcl_access_model_User" )
     ),
+    'Datasource_Role' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_data_datasource_DbModel" )
+    )
   );
 
   /**

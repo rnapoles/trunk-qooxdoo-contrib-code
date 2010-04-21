@@ -1517,7 +1517,7 @@ class qcl_data_model_db_RelationBehavior
   }
 
   /**
-   * Return the ids of the model that are linked to the target model,
+   * Return the ids of the model records that are linked to the target model,
    * depending on the relation type many-to-one and many-to-many relations
    * return the ids that are linked to the target model record.
    * one-to-many relations make no sense in this context.
