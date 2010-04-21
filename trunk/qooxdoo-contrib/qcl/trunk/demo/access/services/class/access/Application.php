@@ -54,6 +54,15 @@ class access_Application
      */
     qcl_data_model_db_ActiveRecord::resetBehaviors();
 
+
+    /**
+     * Register the services provided by this application
+     */
+    $this->registerServices( array(
+      "access.auth"       => "qcl_access_Service",
+      "access.config"     => "qcl_config_Service",
+    ) );
+
     /*
      * Load initial data into models if that hasn't happened yet
      */
@@ -68,7 +77,6 @@ class access_Application
         'role'        => "access/data/Role.xml",
        ) );
        $cache->set( "dataImported", true );
-       $cache->savePersistenceData(); // usually not needed, automatically saved at shutdown
     }
   }
 }
