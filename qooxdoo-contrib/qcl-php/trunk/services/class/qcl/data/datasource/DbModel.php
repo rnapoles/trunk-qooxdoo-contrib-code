@@ -58,6 +58,11 @@ class qcl_data_datasource_DbModel
   protected $tableName = "data_Datasource";
 
   /**
+   * The foreign key of this model
+   */
+  protected $foreignKey = "DatasourceId";
+
+  /**
    * The model properties
    */
   private $properties = array(
@@ -131,6 +136,20 @@ class qcl_data_datasource_DbModel
     )
   );
 
+  /**
+   * Model relations
+   */
+  private $relations = array(
+    'Datasource_User' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_User" )
+    ),
+    'Datasource_Role' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_Role" )
+    )
+  );
+
   //-------------------------------------------------------------
   // Class properties
   //-------------------------------------------------------------
@@ -164,6 +183,7 @@ class qcl_data_datasource_DbModel
   {
     parent::__construct();
     $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
   }
 
   /**

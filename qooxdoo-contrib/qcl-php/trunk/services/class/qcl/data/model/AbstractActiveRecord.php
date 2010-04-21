@@ -1029,6 +1029,25 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
+   * Returns the ids of all model records linked to the target model.
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @return array
+   */
+  public function linkedModelIds( $targetModel )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call behavior method do do the actual work
+     */
+    return $this->getRelationBehavior()->linkedModelIds( $targetModel );
+  }
+
+  /**
    * Unlinks the given target model from this model.
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model

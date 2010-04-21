@@ -470,7 +470,7 @@ class qcl_data_controller_Controller
           throw new JsonRpcException("Invalid callback '$callback' defined in record acl for $datasource/$modelType.");
         }
 
-        if ( ! $this->$callback($record) )
+        if ( ! $this->$callback( $datasource, $modelType, $record ) )
         {
           return false;
         }
@@ -632,6 +632,15 @@ class qcl_data_controller_Controller
     $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, $properties );
 
     /*
+     * add 'id' property if not already there
+     */
+    if ( ! in_array( "id", $properties ) )
+    {
+      array_unshift( $properties, "id" );
+      $query->setProperties( $properties );
+    }
+
+    /*
      * check read access to properties in "where" clause
      */
     $where = $query->getWhere();
@@ -644,6 +653,11 @@ class qcl_data_controller_Controller
       $whereProps = array_keys( $where );
       $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, $whereProps );
     }
+
+    /*
+     * allow subclasses to manipulate the query object
+     */
+    $query = $this->fetchRecordsQueryCallback( $datasource, $modelType, $query );
 
     /*
      * do the query
@@ -674,6 +688,21 @@ class qcl_data_controller_Controller
       }
     }
     return $filteredData;
+  }
+
+  /**
+   * Hook for subclasses to do something with the query passed
+   * to the fetchRecords service method before the query is
+   * executed.
+   *
+   * @param string $datasource
+   * @param string $modelType
+   * @param qcl_data_db_Query $query
+   * @return qcl_data_db_Query By default, simply pass back the object
+   */
+  protected function fetchRecordsQueryCallback( $datasource, $modelType,  qcl_data_db_Query $query )
+  {
+    return $query;
   }
 
   /**

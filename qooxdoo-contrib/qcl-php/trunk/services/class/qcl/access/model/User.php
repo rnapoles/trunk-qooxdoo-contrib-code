@@ -17,7 +17,7 @@
  */
 
 qcl_import( "qcl_data_model_db_NamedActiveRecord" );
-
+qcl_import( "qcl_data_datasource_DbModel" );
 
 /**
  * class providing data on users
@@ -95,6 +95,10 @@ class qcl_access_model_User
         'class'     => "qcl_access_model_Session",
         'dependent' => "true"
       )
+    ),
+    'Datasource_User' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_data_datasource_DbModel" )
     )
   );
 
@@ -287,6 +291,16 @@ class qcl_access_model_User
       $roles[] = $roleModel->namedId();
     }
     return $roles;
+  }
+
+  /**
+   * Returns list of the ids of the role that belong to a user
+   * @return array Array of values
+   */
+  function roleIds()
+  {
+    $roleModel = $this->getRoleModel();
+    return $roleModel->linkedModelIds( $this );
   }
 
   /**

@@ -256,7 +256,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
       $result =  $this->method_fetchRecords( "acl_test", "personaldata", $queryData );
       $hash = md5( print_r( $result, true) );
       //$this->info(  $hash ) );
-      $this->assertEquals("fb0fe6ffda61a57af92efb89732898fd",$hash,null,__CLASS__,__LINE__);
+      $this->assertEquals("fee6e7991d41e3fba67d54e8422104da",$hash,null,__CLASS__,__LINE__);
 
       $this->setPerson( "Helmut" );
       $result =  $this->method_fetchRecords( "acl_test", "personaldata", $queryData );
@@ -392,12 +392,14 @@ class class_qcl_test_data_model_db_ModelAccessControl
 
   /**
    * Callback method to check record-level access
-   * @param $record
-   * @return unknown_type
+   *
+   * @param string $datasource
+   * @param string $modelType
+   * @param string $record
+   * @return boolean
    */
-  protected function checkOwner( $record )
+  protected function checkOwner( $datasource, $modelType, $record )
   {
-    //$this->debug( $this->person ." == ". $record['owner']. "?" );
     return $this->person == $record['owner'];
   }
 }
