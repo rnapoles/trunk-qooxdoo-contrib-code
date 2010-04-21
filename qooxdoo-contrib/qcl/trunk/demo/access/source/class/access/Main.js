@@ -210,8 +210,8 @@ qx.Class.define("access.Main",
 
         case "qcl":
           this.getRpcManager().setServerUrl("../services/server.php");
-          this.getAccessManager().setService("access.AuthController");
-          this.getConfigManager().setService("access.ConfigController");
+          this.getAccessManager().setService("access.auth");
+          this.getConfigManager().setService("access.config");
           if ( old )
           {
             dialog.alert("Using qcl server now with real database backend.");  
