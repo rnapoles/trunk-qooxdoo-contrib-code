@@ -406,7 +406,7 @@ class class_qcl_test_data_model_db_RelationalModel
 
     while( $group->loadNext() )
     {
-      $q2 = $user->findLinkedModels( $group );
+      $q2 = $user->findLinked( $group );
       $members = array();
       while( $user->loadNext() )
       {

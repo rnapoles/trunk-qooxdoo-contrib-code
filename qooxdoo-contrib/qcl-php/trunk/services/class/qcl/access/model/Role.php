@@ -115,7 +115,7 @@ class qcl_access_model_Role
   public function permissions()
   {
     $permModel = $this->getPermissionModel();
-    $permModel->findLinkedModels( $this );
+    $permModel->findLinked( $this );
     $permissions =  array();
     while ( $permModel->loadNext() )
     {
@@ -131,7 +131,7 @@ class qcl_access_model_Role
   public function users()
   {
     $userModel = $this->getUserModel();
-    $userModel->findLinkedModels( $this );
+    $userModel->findLinked( $this );
     $users =  array();
     while ( $userModel->loadNext() )
     {

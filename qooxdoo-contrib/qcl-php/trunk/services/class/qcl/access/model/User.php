@@ -284,7 +284,7 @@ class qcl_access_model_User
   function roles()
   {
     $roleModel = $this->getRoleModel();
-    $roleModel->findLinkedModels( $this );
+    $roleModel->findLinked( $this );
     $roles = array();
     while( $roleModel->loadNext() )
     {
