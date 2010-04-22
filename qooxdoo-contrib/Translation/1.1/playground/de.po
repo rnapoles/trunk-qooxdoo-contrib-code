@@ -1,4 +1,4 @@
-# translation of de.po to German
+# German
 # 
 msgid ""
 msgstr ""
@@ -34,11 +34,11 @@ msgstr "Eigener Code"
 msgid ""
 "// Could not handle URL parameter! \n"
 "// %1"
-msgstr ""
+msgstr "// Konnte den URL Parameter nicht verarbeiten! \n// %1"
 
 #: playground/Application.js:403
 msgid "// Your browser has a length restriction of the URL parameter which could have caused the problem."
-msgstr ""
+msgstr "// Ihr Browser hat eine Längenbeschränkung des URL Parameters, was das Problem verursacht haben könnte."
 
 #: playground/Application.js:420
 msgid "Cannot append sample code to URL, as it is too long. Disable this warning in the future?"
