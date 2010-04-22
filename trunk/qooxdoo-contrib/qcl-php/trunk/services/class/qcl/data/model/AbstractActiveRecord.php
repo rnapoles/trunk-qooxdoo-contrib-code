@@ -483,7 +483,7 @@ class qcl_data_model_AbstractActiveRecord
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
    * @return qcl_data_db_Query
    */
-  public function findLinkedModels( $targetModel )
+  public function findLinked( $targetModel )
   {
     /*
      * initialize model and behaviors
@@ -494,8 +494,18 @@ class qcl_data_model_AbstractActiveRecord
      * find linked ids
      */
     $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel );
-    $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
-    return $this->lastQuery;
+    if ( count( $ids ) )
+    {
+      $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
+      return $this->lastQuery;
+    }
+    else
+    {
+      throw new qcl_data_model_RecordNotFoundException( sprintf(
+        "No record of [%s] is linked to %s",
+        $this->className(), $targetModel
+      ) );
+    }
   }
 
   /**
