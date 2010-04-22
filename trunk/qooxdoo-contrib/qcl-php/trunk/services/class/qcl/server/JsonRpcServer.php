@@ -161,7 +161,7 @@ class qcl_server_JsonRpcServer
       }
       catch( qcl_FileNotFoundException $e )
       {
-        qcl_log_Logger::getInstance()->log( "No or unfunctional application: " . $e->getMessage(), QCL_LOG_APPLICATION );
+        qcl_log_Logger::getInstance()->warn( "No or unfunctional application: " . $e->getMessage() );
         qcl_application_Application::setInstance( false );
       }
     }
