@@ -937,8 +937,9 @@ class qcl_data_model_db_RelationBehavior
       {
         return $this->relationModels[ $parent_class ];
       }
+      $parent_class = get_parent_class( $parent_class );
     }
-    while ( $parent_class = get_parent_class( $targetModel ) );
+    while ( $parent_class );
 
     /*
      * throw exception
