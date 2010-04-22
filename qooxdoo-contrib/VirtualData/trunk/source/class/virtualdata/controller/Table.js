@@ -279,7 +279,7 @@ qx.Class.define("virtualdata.controller.Table",
        /*
         * show popup centered to table
         */
-       this.showPopup( this.getTarget(), "Getting number of rows..." );
+       this.showPopup( "Getting number of rows...", this.getTarget() );
 
        /*
         * load the row count and pass it to th model
@@ -325,9 +325,9 @@ qx.Class.define("virtualdata.controller.Table",
        /*
         * show popup
         */
-       this.showPopup( 
-        this.getTarget(), 
-        "Loading rows " + firstRow + " - " + Math.min( lastRow, this.__rowCount ) + " of " + this.__rowCount 
+       this.showPopup(
+        "Loading rows " + firstRow + " - " + Math.min( lastRow, this.__rowCount ) + " of " + this.__rowCount,
+        this.getTarget()
        );
        
        /*
