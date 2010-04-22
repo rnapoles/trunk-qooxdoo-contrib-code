@@ -29,7 +29,11 @@
  * @param [optional]  $properties
  * @param string[optional] $link
  * @param bool $distinct Whether only distinct values should be returned
-
+ *
+ *
+ * @todo Remove dependency on qcl_core_Object by providing manual getter and
+ * setter methods for all properties
+ * @todo Rewrite using the planned qcl_data_query_* architecture
  */
 
 class qcl_data_db_Query
