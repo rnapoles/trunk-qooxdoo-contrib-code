@@ -89,12 +89,12 @@ class qcl_data_db_Manager
        * type and class of database adapter
        */
       $type  = $this->getDbType( $dsn );
-      $class = "qcl_data_db_adapter_PDO" . ucfirst( $type ); // FIXME
+      $class = "qcl_data_db_adapter_Pdo" . ucfirst( $type ); // FIXME
 
       /*
        * include class file
        */
-      require_once ( str_replace("_","/",$class) . ".php" );
+      qcl_import( $class );
 
       /*
        * user/password
