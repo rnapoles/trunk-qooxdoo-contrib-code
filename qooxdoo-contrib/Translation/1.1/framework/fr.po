@@ -6,7 +6,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-05-19 10:11+0200\n"
 "PO-Revision-Date: 2008-08-26 15:58-0500\n"
-"Last-Translator: Daniel Gagnon <redalastor@gmail.com>\n"
+"Last-Translator: Daniel Gagnon <redalastor AT gmail DOT com>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -368,24 +368,3 @@ msgstr ""
 #: qx/util/Validate.js:287
 msgid "%1 does not fit %2."
 msgstr ""
-
-#~ msgid "Case sensitive"
-#~ msgstr "Sensible à la casse"
-
-#~ msgid "Choose a date"
-#~ msgstr "Choisissez une date"
-
-#~ msgid "Description"
-#~ msgstr "Description"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgid "Search"
-#~ msgstr "Recherche"
-
-#~ msgid "Search items in list"
-#~ msgstr "Recherchez les éléments dans une liste"
-
-#~ msgid "Search next occurrence"
-#~ msgstr "Rechercher le prochaine résultat"
