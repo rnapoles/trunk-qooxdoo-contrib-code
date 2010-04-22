@@ -2406,8 +2406,12 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     // check external widget children (built with w.add())
     if (node.getChildren) {
       LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants of " + node);
-      // +" (got: "+ (c.length? c.length: 0)+")");
-      c = node.getChildren();
+      // Workaround for qx bug #3161
+      try {
+        c = node.getChildren();
+      } catch(ex) {
+        c = [];      
+      }
       descArr = descArr.concat(c);
       if (node.getMenu) {
         LOG.debug("Getting child menu");
