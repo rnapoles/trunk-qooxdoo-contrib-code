@@ -72,13 +72,12 @@
   databinding
  -------------------------------------------------------------------------*/
 
- 
  /**
-  * binds a property of a target object to a property of the 
-  * object represented by the node parent, or to a config value
-  * (bi-directional) binding 
+  * The qcl:bind extends qxt:bind by the possibility of binding 
+  * a property of the object represented by the parent node to 
+  * a config value, or a permission state.
   */    
-"qcl:bind": {
+ "qcl:bind": {
      "body": {
          "*":"body/qcl/bind.mako"
      },
@@ -88,8 +87,8 @@
  },
 
  /**
-  * The qcl:observe extends qx:observe by the possibility of binding
-  * a property of the object represented by the parent node to 
+  * The qcl:observe extends qxt:observe by the possibility of having 
+  * a property of the object represented by the parent node observe 
   * a config value, or a permission state.
   */    
  "qcl:observe": {
@@ -101,6 +100,12 @@
    }
  },    
 
+ /**
+  * The qcl:observe extends qxt:sync by the possibility of binding
+  * a property of the object represented by the parent node to 
+  * a config value, or a permission state and the other way round
+  * (bi-directional binding)
+  */   
  "qcl:sync": {
    "body": {
        "*":"body/qcl/sync.mako"
@@ -110,7 +115,10 @@
    }
  },    
   
-   "qcl:loginDialog": {
+  /**
+   * a login dialog widget
+   */
+  "qcl:loginDialog": {
     "extends" : "qx:widget",
     "add" : { "*":"" }, 
       "data": {
@@ -132,30 +140,10 @@
    },
    "add" : { "*":"" }
  },
- 
- /**
-  * A marshaller for the TreeVirtual widget
-  */
- "qcl:treeVirtualMarshaler": {
-      "extends" : "qx:widget",
-      "add" : { "*":"" }, 
-      "data": {
-        "props": {
-            "class": "qcl.data.marshal.TreeVirtual"
-        }
-    }
-  },
 
-  "qcl:tableMarshaler": {
-    "extends" : "qx:widget",
-    "add" : { "*":"" }, 
-    "data": {
-      "props": {
-          "class": "qcl.data.marshal.Table"
-      }
-  }
-},    
-  
+  /**
+   * A data store that retrieves its content with a jsonrpc request
+   */  
   "qcl:jsonRpcStore": {
     "extends" : "qx:widget",
     "add" : { "*":"" }, 
@@ -164,28 +152,6 @@
             "class": "qcl.data.store.JsonRpc",
             "constructor-args":"url,serviceName,marshaler"
         }
-    }
-  },
-  
-  "qcl:treeVirtualController": {
-    "extends" : "qx:widget",
-    "add" : { "*":"" }, 
-    "data": {
-      "props": {
-          "class": "qcl.data.controller.TreeVirtual",
-          "constructor-args":"target,store"
-      }
-    }
-  },
-  
-  "qcl:tableController": {
-    "extends" : "qx:widget",
-    "add" : { "*":"" }, 
-    "data": {
-      "props": {
-          "class": "qcl.data.controller.Table",
-          "constructor-args":"target,store"
-      }
     }
   }
 }
