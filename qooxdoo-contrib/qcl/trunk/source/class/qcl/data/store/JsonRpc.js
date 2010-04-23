@@ -222,10 +222,11 @@ qx.Class.define("qcl.data.store.JsonRpc",
      * The name of the service method that is called on the server when the load()
      * method is called without arguments. Defaults to "load"
      */
-    defaultLoadMethodName :
+    loadMethod :
     {
       check : "String",
-      init : "load"
+      init : "load",
+      event : "changeLoadMethod"
     },
   
     /**
@@ -257,15 +258,17 @@ qx.Class.define("qcl.data.store.JsonRpc",
     
     autoLoadMethod:
     {
-      check : "String",
-      apply : "_applyAutoLoadMethod",
-      nullable : true
+      check     : "String",
+      nullable  : true,
+      apply     : "_applyAutoLoadMethod",
+      event     : "changeAutoLoadMethod"
     },
     
     autoLoadParams:
     {
-      apply : "_applyAutoLoadParams",
-      nullable : true
+      nullable  : true,
+      apply     : "_applyAutoLoadParams",
+      event     : "changeAutoLoadParams"
     }
   },
 
@@ -311,11 +314,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
       if ( qx.lang.Type.isString( value ) )
       {
         var value = value.split(",");
-      }
-      else if( value !== null && ! qx.lang.Type.isArray( value ) )
-      {
-        this.error("Value for autoLoadParams must be string, null or array.");
-      }      
+      } 
       if ( this.getAutoLoadMethod() )
       {
         this.load( this.getAutoLoadMethod(), value );
@@ -633,7 +632,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
       this.__lastMethod = serviceMethod;
       this.__lastParams = params;
       this._sendJsonRpcRequest( 
-          serviceMethod||this.getDefaultLoadMethodName(), 
+          serviceMethod||this.getLoadMethod(), 
           params,
           finalCallback, 
           context,
