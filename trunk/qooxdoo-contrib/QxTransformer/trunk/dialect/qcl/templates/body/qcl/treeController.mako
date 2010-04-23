@@ -32,6 +32,6 @@ var ${utils.rawAttrib("id")} = new qx.data.controller.Tree(null,${utils.parentRa
     ${utils.rawAttrib("store")}.bind( "model", ${utils.rawAttrib("id")}, "model", {} );
 % endif
 % if utils.rawAttrib("delegate") is not None:
-  ${utils.rawAttrib("id")}.setDelegate("${utils.rawAttrib("delegate")}");
+  ${utils.rawAttrib("id")}.setDelegate(${utils.rawAttrib("delegate")});
 % endif
 ${tag.children("*")}
