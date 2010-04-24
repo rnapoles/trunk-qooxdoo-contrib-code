@@ -15,21 +15,50 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/xmlSchema/DbModel.php";
+
+qcl_import( "qcl_data_model_db_ActiveRecord" );
 
 /**
  * model for messages stored in a database
  */
 class qcl_event_message_db_Message
-  extends qcl_data_model_xmlSchema_DbModel
+  extends qcl_data_model_db_ActiveRecord
 {
+
   /**
-   * the path to the model schema xml file
-   * @see qcl_data_model_xmlSchema_DbModel::getSchmemaXmlPath()
+   * Name of the table storing the data
+   * for this model
    * @var string
    */
-  public $schemaXmlPath = "qcl/event/message/db/Message.model.xml";
+  protected $tableName = "data_Messages";
 
+  /**
+   * The properties of this model
+   * @var array
+   */
+  private $properties = array(
+    'sessionId' => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(50)"
+    ),
+    'name' => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(100)"
+    ),
+    'data' => array(
+      'check'     => "string",
+      'sqltype'   => "blob"
+    )
+  );
+
+  /**
+   * Constructor. Adds properties
+   */
+  function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+  }
 
   /**
    * Returns singleton instance.

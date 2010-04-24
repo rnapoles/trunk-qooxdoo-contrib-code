@@ -1053,10 +1053,10 @@ class qcl_core_Object
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  public function dispatchServerMessage ( $name, $data )
+  public function dispatchClientMessage ( $name, $data )
   {
     require_once "qcl/event/message/Bus.php";
-    $this->getMessageBus()->dispatchServerMessage( $this, $name, $data );
+    $this->getMessageBus()->dispatchClientMessage( $this, $name, $data );
   }
 
   /**
@@ -1064,10 +1064,10 @@ class qcl_core_Object
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  public function broadcastServerMessage ( $name, $data  )
+  public function broadcastClientMessage ( $name, $data  )
   {
     require_once "qcl/event/message/Bus.php";
-    $this->getMessageBus()->broadcastServerMessage( $this, $name, $data );
+    $this->getMessageBus()->broadcastClientMessage( $this, $name, $data );
   }
 
   /**

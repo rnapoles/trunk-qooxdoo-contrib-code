@@ -15,10 +15,29 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/event/message/Message.php";
+qcl_import( "qcl_event_message_Message" );
 /**
  * A server message that is forwarded to the client
  */
-class qcl_event_message_ServerMessage
-  extends qcl_event_message_Message {}
+class qcl_event_message_ClientMessage
+  extends qcl_event_message_Message
+{
+  /**
+   * Whether the message should be broadcasted to all connected clients
+   * @var bool
+   */
+  protected $broadcast = false;
+
+  public function setBroadcast( $value )
+  {
+    qcl_assert_type( $value, "boolean" );
+    $this->broadcast = $value;
+  }
+
+  public function isBroadcast()
+  {
+    return $this->broadcast;
+  }
+
+}
 ?>

@@ -161,6 +161,54 @@ function qcl_getInstance( $clazz )
   return $singletons[ $clazz ];
 }
 
+/**
+ * Asserts that argument is of the given type
+ * @param mixed $value
+ * @param string $type
+ */
+function qcl_assert_type( $value, $type )
+{
+  if ( gettype( $value ) != $type )
+  {
+    throw new InvalidArgumentException( sprintf(
+      "Invalid argument type. Expected '%s', got '%s'",
+      $type, gettype( $value )
+    ) );
+  }
+}
+
+/**
+ * Asserts that argument is boolean
+ * @param $value
+ */
+function qcl_assert_boolean( $value )
+{
+  qcl_assert_type( $value, "boolean" );
+}
+
+/**
+ * Asserts that argument is a string
+ * @param mixed $value
+ */
+function qcl_assert_string( $value )
+{
+  qcl_assert_type( $value, "string" );
+}
+
+/**
+ * Asserts that argument is a non-empty string
+ * @param mixed $value
+ */
+function qcl_assert_valid_string( $value )
+{
+  if ( $value === "" )
+  {
+    throw new InvalidArgumentException(
+      "Invalid argument type. Expected valid string, got empty string"
+    );
+  }
+  qcl_assert_string( $value );
+}
 
 /**
  * Returns the first non-null argument.

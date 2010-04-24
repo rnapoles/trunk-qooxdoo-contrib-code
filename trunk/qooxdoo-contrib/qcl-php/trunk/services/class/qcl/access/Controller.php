@@ -325,7 +325,7 @@ class qcl_access_Controller
    */
   public function forceLogout()
   {
-    $this->fireServerEvent("logout");
+    $this->fireClientEvent("logout");
     $this->logout();
   }
 
@@ -601,9 +601,9 @@ class qcl_access_Controller
    * and dispatched by the jsonrpc data store.
    * @param string $type Message Event type
    */
-  public function fireServerEvent ( $type )
+  public function fireClientEvent ( $type )
   {
-    $this->getEventDispatcher()->fireServerEvent( $this, $type, $data );
+    $this->getEventDispatcher()->fireClientEvent( $this, $type, $data );
   }
 
   /**
@@ -612,9 +612,9 @@ class qcl_access_Controller
    * @param mixed $event Message Event type
    * @param mixed $data Data dispatched with event
    */
-  public function fireServerDataEvent ( $type, $data )
+  public function fireClientDataEvent ( $type, $data )
   {
-    $this->getEventDispatcher()->fireServerDataEvent( $this, $type, $data );
+    $this->getEventDispatcher()->fireClientDataEvent( $this, $type, $data );
   }
 
   /**
