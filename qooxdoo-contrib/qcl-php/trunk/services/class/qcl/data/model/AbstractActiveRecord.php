@@ -997,7 +997,14 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * call behavior method do do the actual work
      */
-    return $this->getRelationBehavior()->hasRelationWithModel( $model );
+    try
+    {
+      return $this->getRelationBehavior()->hasRelationWithModel( $model );
+    }
+    catch( qcl_data_model_Exception $e )
+    {
+      return false;
+    }
   }
 
   /**

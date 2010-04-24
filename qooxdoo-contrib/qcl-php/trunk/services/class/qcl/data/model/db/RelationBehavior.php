@@ -913,6 +913,7 @@ class qcl_data_model_db_RelationBehavior
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return string
+   * @throws qcl_data_model_Exception
    */
   public function getRelationNameForModel( $targetModel )
   {
