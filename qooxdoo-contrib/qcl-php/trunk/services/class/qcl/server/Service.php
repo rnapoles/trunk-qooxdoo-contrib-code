@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/core/Object.php";
+qcl_import("qcl_core_Object");
 
 /**
  * The base class for all service classes. Contains introspection methods
@@ -88,6 +88,37 @@ class qcl_server_Service
   function isAborted()
   {
     return $this->_isAborted;
+  }
+
+  //-------------------------------------------------------------
+  // shorthand methods to get rpc request parameters
+  //-------------------------------------------------------------
+
+  /**
+   * Returns the service name as stated in the json-rpc request
+   * @return string
+   */
+  public function serviceName()
+  {
+    return qcl_server_Request::getInstance()->getService();
+  }
+
+  /**
+   * Returns the service method as stated in the json-rpc request
+   * @return string
+   */
+  public function serviceMethod()
+  {
+    return qcl_server_Request::getInstance()->getMethod();
+  }
+
+  /**
+   * Returns the service parameters as stated in the json-rpc request
+   * @return string
+   */
+  public function serviceParams()
+  {
+    return qcl_server_Request::getInstance()->getParams();
   }
 
   //-------------------------------------------------------------

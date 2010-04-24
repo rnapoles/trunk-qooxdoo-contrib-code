@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/Object.php";
+
+qcl_import("qcl_core_Object");
 
 /**
  * Message Bus
@@ -24,12 +25,11 @@ class qcl_event_message_Bus
   extends qcl_core_Object
 {
 
-
   /**
    * The message database
    * @var array
    */
-  private $__message_db = array(
+  private $messages = array(
     'filters'  => array(),
     'data'     => array()
   );
@@ -50,7 +50,7 @@ class qcl_event_message_Bus
    */
   public function getModel()
   {
-    require_once "qcl/event/message/db/Message.php";
+    qcl_import("qcl_event_message_db_Message");
     return qcl_event_message_db_Message::getInstance();
   }
 
@@ -64,14 +64,14 @@ class qcl_event_message_Bus
    * @param qcl_core_Object $subscriber
    * @param string $method Callback method of the subscriber
    */
-  function addSubscriber( $filter, $subscriber, $method )
+  public function addSubscriber( $filter, $subscriber, $method )
   {
     if ( ! $filter or ! $method or ! is_a( $subscriber, "qcl_core_Object" ) )
     {
       $this->raiseError("Invalid parameter.");
     }
 
-    $message_db = $this->__message_db;
+    $message_db = $this->messages;
 
     /*
      * object id
@@ -106,17 +106,12 @@ class qcl_event_message_Bus
    * Dispatches a message. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
    *
-   *
    * @param qcl_event_message_Message $message Message
    * @param mixed $data Data dispatched with message
-   * @return bool Whether message was dispatched
+   * @return void
    */
-  function dispatch ( $message )
+  public function dispatch ( qcl_event_message_Message $message )
   {
-    if ( ! is_a( $message, "qcl_event_message_Message" ) )
-    {
-      $this->raiseError("Invalid parameter.");
-    }
 
     /*
      * message data
@@ -127,7 +122,7 @@ class qcl_event_message_Bus
     /*
      * search message database
      */
-    $message_db = $this->__message_db;
+    $message_db = $this->messages;
     $index = array_search ( $name, $message_db['filters'] );
 
     /*
@@ -147,74 +142,97 @@ class qcl_event_message_Bus
     /**
      * Broadcast message to connected clients
      */
-    if ( is_a( $message, "qcl_event_message_ServerMessage" ) )
+    if ( $message instanceof qcl_event_message_ClientMessage )
     {
-
-      /*
-       * get ids of sessions
-       */
-      $sessionModel = $this->getApplication()->getAccessController()->getAccessController()->getSessionModel();
-      $sessionIds = $sessionModel->findValues("sessionId");
       $msgModel = $this->getModel();
 
-      foreach( $sessionIds as $sessionId )
+      /*
+       * if message is a broadcast, get the ids of all sessions and store
+       * a message for each session
+       */
+      if ( $message->isBroadcast() )
       {
-        $msgModel->create();
-        $msgModel->set("sessionId", $sessionId );
-        $msgModel->setName( $name );
-        $msgModel->setData( addSlashes( serialize( $data ) ) );
-        $msgModel->update();
+        $sessionModel = $this->getApplication()->getAccessController()->getSessionModel();
+        $sessionIds = $sessionModel->getQueryBehavior()->fetchValues("sessionId");
+
+        foreach( $sessionIds as $sessionId )
+        {
+          $msgModel->create( array(
+            'sessionId' => $sessionId,
+            'name'      => $name,
+            'data'      => addSlashes( serialize( $data ) )
+          ) );
+        }
       }
-      return true;
+
+      /*
+       * else, store a message for only the connected session
+       */
+      else
+      {
+        $sessionId = $this->getApplication()->getAccessController()->getSessionId();
+        $msgModel->create( array(
+          'sessionId' => $sessionId,
+          'name'      => $name,
+          'data'      => addSlashes( serialize( $data ) )
+        ) );
+      }
     }
-    return false;
   }
 
-
   /**
-   * Shorthand method for dispatching a server-only message. Can
-   * be called statically
+   * Shorthand method for dispatching a server-only message.
    * @param qcl_core_Object $sender
    * @param string $name
    * @param mixed $data
    * @return bool Whether message was dispatched
    */
-  function dispatchMessage( $sender, $name, $data )
+  public function dispatchMessage( $sender, $name, $data )
   {
-    require_once "qcl/event/message/Message.php";
+    qcl_import( "qcl_event_message_Message" );
     $message = new qcl_event_message_Message( $name, $data );
-    if ( $sender) $message->setSender( $sender );
+    if ( $sender)
+    {
+      $message->setSender( $sender );
+    }
     return $this->dispatch( $message );
   }
 
   /**
    * Shorthand method for dispatching a message that will be forwarded
-   * to the client. Can be called statically
+   * to the client.
    * @param qcl_core_Object $sender
    * @param string $name
    * @param mixed $data
    * @return bool Whether message was dispatched
    */
-  function dispatchServerMessage( $sender, $name, $data )
+  public function dispatchClientMessage( $sender, $name, $data )
   {
-    require_once "qcl/event/message/ServerMessage.php";
-    $message = new qcl_event_message_ServerMessage( $name, $data );
-    if ( $sender) $message->setSender( $sender );
+    qcl_import( "qcl_event_message_ClientMessage" );
+    $message = new qcl_event_message_ClientMessage( $name, $data );
+    if ( $sender)
+    {
+      $message->setSender( $sender );
+    }
     return $this->dispatch( $message );
   }
 
   /**
-   * Broadcasts a message to all connected clients. C
+   * Broadcasts a message to all connected clients.
    * @param qcl_core_Object $sender
    * @param mixed $message Message name or hash map of messages
    * @param mixed $data Data dispatched with message
    * @todo use into qcl_server_Response object
    */
-  function broadcastServerMessage ( $sender, $name, $data )
+  public function broadcastClientMessage ( $sender, $name, $data )
   {
-    require_once "qcl/event/message/ServerMessage.php";
-    $message = new qcl_event_message_ServerMessage( $name, $data );
-    if ( $sender) $message->setSender( $sender );
+    qcl_import( "qcl_event_message_ClientMessage" );
+    $message = new qcl_event_message_ClientMessage( $name, $data );
+    $message->setBroadcast( true );
+    if ( $sender)
+    {
+      $message->setSender( $sender );
+    }
     return $this->dispatch( $message );
   }
 
@@ -225,32 +243,32 @@ class qcl_event_message_Bus
    * @return array
    *
    */
-  function getServerMessages( $sessionId )
+  public function getClientMessages( $sessionId )
   {
     $msgModel = $this->getModel();
 
     /*
      * get messages that have been stored for session id
      */
-    $msgModel->findWhere(
-      "`sessionId`='$sessionId'",
-      null,
-      array('name','data')
-    );
+    $msgModel->findWhere( array(
+      'sessionId' => $sessionId
+    ) );
 
     $messages = array();
-    if ( $msgModel->foundSomething() ) do
+    while ( $msgModel->loadNext() )
     {
       $messages[] = array(
         'name'  => $msgModel->get( "name" ),
         'data'  => unserialize( stripslashes( $msgModel->get("data") ) )
       );
-    } while ( $msgModel->loadNext() );
+    };
 
     /*
      * delete messages
      */
-    $msgModel->deleteWhere("`sessionId`='$sessionId'");
+    $msgModel->deleteWhere( array(
+      'sessionId' => $sessionId
+    ) );
 
     /*
      * return message array

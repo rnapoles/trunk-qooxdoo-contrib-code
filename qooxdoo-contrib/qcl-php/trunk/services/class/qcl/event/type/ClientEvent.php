@@ -15,11 +15,11 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/event/type/Event.php";
+
+qcl_import("qcl_event_type_Event");
 
 /**
  * A server event which will be forwarded to the client
  */
-class qcl_event_type_ServerEvent
-  extends qcl_event_type_Event {}
+class qcl_event_type_ClientEvent extends qcl_event_type_Event {}
 ?>

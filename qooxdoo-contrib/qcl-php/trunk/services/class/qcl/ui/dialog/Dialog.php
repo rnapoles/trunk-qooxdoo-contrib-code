@@ -31,32 +31,17 @@ class qcl_ui_dialog_Dialog
   function dispatchDialogMessage( $data )
   {
     /*
-     * if we have a database-based message transport, use this
+     * only dispatch the message if event transport is on
      */
     if ( $this->getApplication()->getIniValue("service.event_transport") == "on" )
     {
-      $this->getMessageBus()->dispatchServerMessage(
+      $this->getMessageBus()->dispatchClientMessage(
         null, "qcl.ui.dialog.Dialog.createDialog", $data
       );
     }
-
-    /*
-     * otherwise, force a response that contains only this message
-     */
     else
     {
-      $this->getApplication()->getServerInstance()->forceResponse( array(
-        'id'     => qcl_server_Server::getInstance()->getServerInstance()->getId(),
-        'error'  => null,
-        'result' => array(
-          'messages' => array(
-            array (
-              'name' => "qcl.ui.dialog.Dialog.createDialog",
-              'data' => $data
-            )
-          )
-        )
-      ));
+      $this->warn( "Cannot dispatch message - event transport is off!");
     }
   }
 }

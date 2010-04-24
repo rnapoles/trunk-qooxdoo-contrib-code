@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/Object.php";
+
+qcl_import("qcl_core_Object");
 
 class qcl_event_message_Message
   extends qcl_core_Object
@@ -25,18 +26,18 @@ class qcl_event_message_Message
    * Message name
    * @var string
    */
-  var $name;
+  protected $name;
 
   /**
    * Message data
    */
-  var $data;
+  protected $data;
 
   /**
    * The id of the sender. Only set when the message is dispatched
    * @var string
    */
-  var $senderId;
+  protected $senderId;
 
   /**
    * Constructor
@@ -44,18 +45,63 @@ class qcl_event_message_Message
    * @param mixed $data
    * @return void
    */
-  function __construct( $name, $data )
+  public function __construct( $name, $data )
   {
     $this->name = $name;
     $this->data = $data;
   }
 
-  function setSenderId( $senderId )
+  /**
+   * Setter for name. Forbidden.
+   */
+  public function setName()
+  {
+    throw new LogicException("Name cannot be changed.");
+  }
+
+  /**
+   * Getter for name
+   * @return string
+   */
+  public function getName()
+  {
+    return $this->name;
+  }
+
+  /**
+   * Setter for data
+   * @param mixed $data
+   * @return void
+   */
+  public function setData( $data )
+  {
+    $this->data = $data;
+  }
+
+  /**
+   * Getter for data
+   * @return mixed
+   */
+  public function getData()
+  {
+    return $this->data;
+  }
+
+  /**
+   * Setter for sender id
+   * @param $senderId
+   * @return unknown_type
+   */
+  public function setSenderId( $senderId )
   {
     $this->senderId = $senderId;
   }
 
-  function getSenderId()
+  /**
+   * Getter for sender id
+   * @return string
+   */
+  public function getSenderId()
   {
     return $this->senderId;
   }
@@ -65,7 +111,7 @@ class qcl_event_message_Message
    * @param qcl_core_Object $sender
    * @return void
    */
-  function setSender( $sender )
+  public function setSender( $sender )
   {
     $this->setSenderId( $sender->objectId() );
   }
@@ -74,7 +120,7 @@ class qcl_event_message_Message
    * Returns the sender object
    * @return qcl_core_Object
    */
-  function getSender()
+  public function getSender()
   {
     return $this->getObjectById( $this->getSenderId() );
   }

@@ -359,10 +359,10 @@ class qcl_server_JsonRpcServer
     $app = $this->getApplication();
     if ( $app and $app->getIniValue("service.event_transport") == "on" )
     {
-      $events    = $app->getEventDispatcher()->getServerEvents();
+      $events    = $app->getEventDispatcher()->getClientEvents();
       $response->setEvents( $events );
       $sessionId = $app->getAccessController()->getSessionId();
-      $messages  = $app->getMessageBus()->getServerMessages( $sessionId );
+      $messages  = $app->getMessageBus()->getClientMessages( $sessionId );
       $response->setMessages( $messages );
     }
 

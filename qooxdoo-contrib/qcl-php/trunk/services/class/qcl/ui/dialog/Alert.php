@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/ui/dialog/Dialog.php";
+qcl_import( "qcl_ui_dialog_Dialog" );
 
 class qcl_ui_dialog_Alert
   extends qcl_ui_dialog_Dialog

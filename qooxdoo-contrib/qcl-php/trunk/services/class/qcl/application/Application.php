@@ -139,7 +139,7 @@ abstract class qcl_application_Application
 
   /**
    * Sborthand getter for access behavior attached
-   * @return qcl_access_Controller
+   * @return qcl_access_SessionController
    */
   public function getAccessController()
   {

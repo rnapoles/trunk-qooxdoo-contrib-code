@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/Object.php";
+
+qcl_import("qcl_core_Object");
 
 define("QCL_LOG_TYPE_EVENT", "QCL_LOG_TYPE_EVENT" );
 
@@ -67,7 +68,7 @@ class qcl_event_Dispatcher
    * Getter for server events
    * @return array
    */
-  public function getServerEvents()
+  public function getClientEvents()
   {
     return $this->serverEvents;
   }
@@ -152,25 +153,9 @@ class qcl_event_Dispatcher
    * @param qcl_event_type_Event $event
    * @return bool Whether the event was dispatched or not.
    */
-  public function dispatch ( $target, $event )
+  public function dispatch ( qcl_core_Object $target, qcl_event_type_Event $event )
   {
-
-    /*
-     * event
-     */
-    if ( ! is_a( $event,"qcl_event_type_Event" ) )
-    {
-      $this->raiseError("Invalid argument, must be a qcl_event_type_Event or subclass.");
-    }
     $event->setTarget($target);
-
-    /*
-     * target object id
-     */
-    if ( ! is_a( $target, "qcl_core_Object" ) )
-    {
-      $this->raiseError("Invalid target object");
-    }
     $targetObjectId = $target->objectId();
 
     /*
@@ -215,7 +200,7 @@ class qcl_event_Dispatcher
    */
   public function fireEvent( $target, $type )
   {
-    require_once "qcl/event/type/Event.php";
+    qcl_import("qcl_event_type_Event");
     $event = new qcl_event_type_Event( $type );
     $this->dispatch( $target, $event );
   }
@@ -229,7 +214,7 @@ class qcl_event_Dispatcher
    */
   public function fireDataEvent( $target, $type, $data )
   {
-    require_once "qcl/event/type/DataEvent.php";
+    qcl_import("qcl_event_type_DataEvent");
     $event = new qcl_event_type_DataEvent( $type, $data );
     $this->dispatch( $target, $event );
   }
@@ -242,10 +227,10 @@ class qcl_event_Dispatcher
    * @param string $name
    * @return unknown_type
    */
-  public function fireServerEvent( $target, $type )
+  public function fireClientEvent( $target, $type )
   {
-    require_once "qcl/event/type/ServerEvent.php";
-    $event = new qcl_event_type_ServerEvent( $type );
+    qcl_import("qcl_event_type_ClientEvent");
+    $event = new qcl_event_type_ClientEvent( $type );
     $this->dispatch( $target, $event );
     $this->serverEvents[] = array(
       'type' => $event->getType()
@@ -260,17 +245,15 @@ class qcl_event_Dispatcher
    * @param mixed $data
    * @return void
    */
-  public function fireServerDataEvent( $target, $type, $data )
+  public function fireClientDataEvent( $target, $type, $data )
   {
-    require_once "qcl/event/type/ServerDataEvent.php";
-    $event = new qcl_event_type_ServerDataEvent( $type, $data );
+    qcl_import("qcl_event_type_ClientDataEvent");
+    $event = new qcl_event_type_ClientDataEvent( $type, $data );
     $this->dispatch( $target, $event );
     $this->serverEvents[] = array(
       'type'  => $event->getType(),
       'data'  => $event->getData()
     );
   }
-
-
 }
 ?>
