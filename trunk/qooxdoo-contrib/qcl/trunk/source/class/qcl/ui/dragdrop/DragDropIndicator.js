@@ -24,7 +24,7 @@
 /**
  * An indicator for drag & drop operations
  */
-qx.Class.define("qcl.ui.DragDropIndicator",
+qx.Class.define("qcl.ui.dragdrop.DragDropIndicator",
 {
   extend : qx.ui.core.Widget,
   
