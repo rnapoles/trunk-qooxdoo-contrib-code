@@ -315,7 +315,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
       {
         var value = value.split(",");
       } 
-      if ( this.getAutoLoadMethod() )
+      if (value && this.getAutoLoadMethod() )
       {
         this.load( this.getAutoLoadMethod(), value );
       }
