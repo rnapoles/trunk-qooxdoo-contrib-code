@@ -63,7 +63,8 @@ encoding  = utf8
 ;; service.event_transport
 ;; Whether the server response should contain messages and events
 ;; for the qooxdoo application
-event_transport = yes
+;; Values are on/off
+event_transport = on
 
 ;; ================================================================
 ;; Don't touch anything beyond this point
