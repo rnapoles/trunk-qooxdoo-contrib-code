@@ -206,6 +206,8 @@ qx.Class.define("virtualdata.model.Table",
     {
       // FIXME This a hack and will cause problems when the data is reloaded whe
       // there is still a request underway
+      // it also cannot work with private optimization - must be turned off 
+      // for this to work. 
       this.__loadRowCountRequestRunning = false;
       this.base(arguments);
     },
