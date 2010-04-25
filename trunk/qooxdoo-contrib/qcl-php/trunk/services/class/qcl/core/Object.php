@@ -1020,6 +1020,7 @@ class qcl_core_Object
    */
   public function getMessageBus()
   {
+    qcl_import("qcl_event_message_Bus");
     return qcl_event_message_Bus::getInstance();
   }
 
@@ -1033,7 +1034,6 @@ class qcl_core_Object
    */
   public function addSubscriber( $filter, $method )
   {
-    require_once "qcl/event/message/Bus.php";
     $this->getMessageBus()->addSubscriber( $filter, $this, $method );
   }
 
@@ -1042,9 +1042,8 @@ class qcl_core_Object
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  public function dispatchMessage ( $name, $data )
+  public function dispatchMessage ( $name, $data=true )
   {
-    require_once "qcl/event/message/Bus.php";
     $this->getMessageBus()->dispatchMessage( $this, $name, $data );
   }
 
@@ -1053,9 +1052,8 @@ class qcl_core_Object
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  public function dispatchClientMessage ( $name, $data )
+  public function dispatchClientMessage ( $name, $data=true )
   {
-    require_once "qcl/event/message/Bus.php";
     $this->getMessageBus()->dispatchClientMessage( $this, $name, $data );
   }
 
@@ -1064,9 +1062,8 @@ class qcl_core_Object
    * @param string $name Message name
    * @param mixed $data Data dispatched with message
    */
-  public function broadcastClientMessage ( $name, $data  )
+  public function broadcastClientMessage ( $name, $data=true  )
   {
-    require_once "qcl/event/message/Bus.php";
     $this->getMessageBus()->broadcastClientMessage( $this, $name, $data );
   }
 

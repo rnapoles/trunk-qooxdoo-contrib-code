@@ -25,7 +25,11 @@ class qcl_ui_dialog_Confirm
   /**
    * Returns a message to the client which prompts the user to confirm something
    * @param string $message The message text
-   * @param array $choices Array containing the "Yes" and the "No" message
+   * @param array|null|true $choices
+   *  Array containing the "Yes" and the "No" message. A third optional
+   *  parameter is a boolean which determines whether a cancel button is
+   *  shown or not (default to false). If null, show a standard yes/no.
+   *  If true, show yes/no/cancel.
    * @param string $callbackService Service that will be called when the user clicks on the OK button
    * @param string $callbackMethod Service method
    * @param array $callbackParams Optional service params
@@ -38,12 +42,21 @@ class qcl_ui_dialog_Confirm
     $callbackMethod,
     $callbackParams=null )
   {
+    if ( $choices === null )
+    {
+      $choices = array( $this->tr("Yes"), $this->tr("No"), false );
+    }
+    elseif ( $choices === true )
+    {
+      $choices = array( $this->tr("Yes"), $this->tr("No"), true );
+    }
     $this->dispatchDialogMessage( array(
      'type' => "confirm",
      'properties'  => array(
-        'message'  => $message,
+        'message'        => $message,
         'yesButtonLabel' => $choices[0],
-        'noButtonLabel'  => $choices[1]
+        'noButtonLabel'  => $choices[1],
+        'allowCancel'    => isset( $choices[2] ) ? $choices[2] : false
       ),
      'service' => $callbackService,
      'method'  => $callbackMethod,

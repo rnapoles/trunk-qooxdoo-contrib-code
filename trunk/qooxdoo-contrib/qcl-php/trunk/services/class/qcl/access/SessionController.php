@@ -214,8 +214,10 @@ class qcl_access_SessionController
 
     /*
      * unregister the current session
+     * and cleanup session data
      */
     $this->unregisterSession();
+    $this->cleanup();
 
     /*
      * logout
@@ -259,7 +261,6 @@ class qcl_access_SessionController
    */
   public function registerSession()
   {
-    $this->cleanup(); // FIXME move somewhere else
     $sessionId = $this->getSessionId();
     $user      = $this->getActiveUser();
     $remoteIp  = qcl_server_Request::getInstance()->getIp();
@@ -299,6 +300,7 @@ class qcl_access_SessionController
    */
   public function terminate()
   {
+    $this->cleanup(); // FIXME move somewhere else
     $sessionModel = $this->getSessionModel();
     $activeUser   = $this->getActiveUser();
     $sessionId    = $this->getSessionId();
