@@ -183,8 +183,7 @@ qx.Class.define("qcl.access.AccessManager",
         converter : function(activeUser){ 
           return ( ! activeUser || activeUser.isAnonymous() ? false : true ) 
         }
-      });      
-      
+      });
     }, 
 
     /**
