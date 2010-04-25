@@ -90,9 +90,17 @@ class qcl_access_Controller
   }
 
   //-------------------------------------------------------------
-  // models
+  // Object getters
   //-------------------------------------------------------------
 
+  /**
+   * Shorthand getter for access controller. Overridden to return itself
+   * @return qcl_access_Controller
+   */
+  public function getAccessController()
+  {
+    return $this;
+  }
 
   /**
    * Gets the user data model
@@ -136,9 +144,36 @@ class qcl_access_Controller
     return $roleModel;
   }
 
+  /**
+   * Returns active user object
+   * @return qcl_access_model_User
+   */
+  public function getActiveUser()
+  {
+    return $this->activeUser;
+  }
+
+  /**
+   * Sets the active user.
+   * @param qcl_access_model_User $userObject A user object or null to logout.
+   * @return void
+   */
+  public function setActiveUser( $userObject )
+  {
+    if ( $userObject === null or $userObject instanceof qcl_access_model_User )
+    {
+      $this->activeUser = $userObject;
+    }
+    else
+    {
+      $this->raiseError("Invalid user object");
+    }
+  }
+
   //-------------------------------------------------------------
-  // main API
+  // access control on the session level
   //-------------------------------------------------------------
+
 
   /**
    * Whether guest access to the service classes is allowed
@@ -186,6 +221,105 @@ class qcl_access_Controller
       }
     }
   }
+
+  //-------------------------------------------------------------
+  // session id
+  //-------------------------------------------------------------
+
+  /**
+   * Returns the current PHP session id.
+   * @return string session id
+   */
+  public function getSessionId()
+  {
+    return session_id();
+  }
+
+  /**
+   * Sets the PHP session id, which deletes the PHP session data.
+   * @param string $sessionId
+   * @return void
+   */
+  public function setSessionId( $sessionId )
+  {
+    if ( ! $this->isValidSessionId( $sessionId ) )
+    {
+      throw new qcl_access_InvalidSessionException("Invalid session id #$sessionId.");
+    }
+    $old = $this->getSessionId();
+    if ( $sessionId != $old )
+    {
+      if ( $this->isValidSessionId( $old ) )
+      {
+        $this->destroySession( $old );
+      }
+      $this->log("Starting new session id #$sessionId",QCL_LOG_ACCESS);
+      session_id( $sessionId );
+      session_start();
+    }
+  }
+
+  /**
+   * Checks if session id is legal
+   * @param $sessionId
+   * @return bool
+   */
+  public function isValidSessionId( $sessionId )
+  {
+    return $sessionId and is_string( $sessionId ) and strlen( $sessionId ) == 32;
+  }
+
+  /**
+   * Destroys a session by its id
+   * @param $sessionId
+   * @return void
+   */
+  public function destroySession( $sessionId )
+  {
+    $this->log("Destroying old session #$sessionId",QCL_LOG_ACCESS);
+    session_destroy();
+  }
+
+  /**
+   * Creates a new session id and sets it.
+   * @return string The session id
+   */
+  public function createSessionId()
+  {
+    /*
+     * create random session id
+     */
+    $sessionId = md5( microtime() );
+    $this->log("Creating new session id ...",QCL_LOG_ACCESS);
+    $this->setSessionId( $sessionId );
+    return $sessionId;
+  }
+
+  /**
+   * Get the active user id from the session id.
+   * @param int $sessionId
+   * @return int
+   * @throws qcl_access_InvalidSessionException
+   */
+  public function getUserIdFromSession( $sessionId )
+  {
+    throw new qcl_access_InvalidSessionException("Controller does not support sessions");
+  }
+
+  /**
+   * Gets the session id from the server data.
+   * @return string|null The session id, if it can be retrieved by the server data. Null if
+   * no valid session id can be determined from the server data
+   */
+  public function getSessionIdFromServerData()
+  {
+    return qcl_server_Request::getInstance()->getServerData("sessionId");
+  }
+
+  //-------------------------------------------------------------
+  // authentication
+  //-------------------------------------------------------------
+
 
   /**
    * Checks if the requesting client is an authenticated user.
@@ -250,17 +384,6 @@ class qcl_access_Controller
     return $userId;
   }
 
-
-  /**
-   * Gets the session id from the server data.
-   * @return string|null The session id, if it can be retrieved by the server data. Null if
-   * no valid session id can be determined from the server data
-   */
-  public function getSessionIdFromServerData()
-  {
-    return qcl_server_Request::getInstance()->getServerData("sessionId");
-  }
-
   /**
    * Authenticate a user with a password. Returns an integer with
    * the user id if successful. Throws qcl_access_AuthenticationException
@@ -307,7 +430,6 @@ class qcl_access_Controller
       throw new qcl_access_AuthenticationException("Wrong password.");
     }
   }
-
 
   /**
    * Terminates and destroys the active session
@@ -396,7 +518,7 @@ class qcl_access_Controller
     $this->log ("Granting anonymous access user #$userId.",QCL_LOG_ACCESS);
     $this->createSessionId();
     $this->createUserSessionByUserId( $userId );
-
+    $this->dispatchClientMessage("setSessionId", $this->getSessionId() );
     return $userId;
   }
 
@@ -490,111 +612,11 @@ class qcl_access_Controller
     return true;
   }
 
-  /**
-   * Returns the current PHP session id.
-   * @return string session id
-   */
-  public function getSessionId()
-  {
-    return session_id();
-  }
 
-  /**
-   * Sets the PHP session id, which deletes the PHP session data.
-   * @param string $sessionId
-   * @return void
-   */
-  public function setSessionId( $sessionId )
-  {
-    if ( ! $this->isValidSessionId( $sessionId ) )
-    {
-      throw new qcl_access_InvalidSessionException("Invalid session id #$sessionId.");
-    }
-    $old = $this->getSessionId();
-    if ( $sessionId != $old )
-    {
-      if ( $this->isValidSessionId( $old ) )
-      {
-        $this->destroySession( $old );
-      }
-      $this->log("Starting new session id #$sessionId",QCL_LOG_ACCESS);
-      session_id( $sessionId );
-      session_start();
-    }
-  }
 
-  /**
-   * Checks if session id is legal
-   * @param $sessionId
-   * @return bool
-   */
-  public function isValidSessionId( $sessionId )
-  {
-    return $sessionId and is_string( $sessionId ) and strlen( $sessionId ) == 32;
-  }
-
-  /**
-   * Destroys a session by its id
-   * @param $sessionId
-   * @return void
-   */
-  public function destroySession( $sessionId )
-  {
-    $this->log("Destroying old session #$sessionId",QCL_LOG_ACCESS);
-    session_destroy();
-  }
-
-  /**
-   * Creates a new session id and sets it.
-   * @return string The session id
-   */
-  public function createSessionId()
-  {
-    /*
-     * create random session id
-     */
-    $sessionId = md5( microtime() );
-    $this->log("Creating new session id ...",QCL_LOG_ACCESS);
-    $this->setSessionId( $sessionId );
-    return $sessionId;
-  }
-
-  /**
-   * Get the active user id from the session id.
-   * @param int $sessionId
-   * @return int
-   * @throws qcl_access_InvalidSessionException
-   */
-  public function getUserIdFromSession( $sessionId )
-  {
-    throw new qcl_access_InvalidSessionException("Controller does not support sessions");
-  }
-
-  /**
-   * Returns active user object
-   * @return qcl_access_model_User
-   */
-  public function getActiveUser()
-  {
-    return $this->activeUser;
-  }
-
-  /**
-   * Sets the active user.
-   * @param qcl_access_model_User $userObject A user object or null to logout.
-   * @return void
-   */
-  public function setActiveUser( $userObject )
-  {
-    if ( $userObject === null or $userObject instanceof qcl_access_model_User )
-    {
-      $this->activeUser = $userObject;
-    }
-    else
-    {
-      $this->raiseError("Invalid user object");
-    }
-  }
+  //-------------------------------------------------------------
+  // events and messages
+  //-------------------------------------------------------------
 
   /**
    * Fires a server event which will be transported to the client
@@ -616,6 +638,10 @@ class qcl_access_Controller
   {
     $this->getEventDispatcher()->fireClientDataEvent( $this, $type, $data );
   }
+
+  //-------------------------------------------------------------
+  // IAccessibilityBehavior
+  //-------------------------------------------------------------
 
   /**
    * Unused, simply here for implementing IAccessibilityBehavior.

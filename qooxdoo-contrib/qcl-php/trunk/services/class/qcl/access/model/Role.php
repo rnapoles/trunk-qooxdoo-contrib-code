@@ -39,6 +39,10 @@ class qcl_access_model_Role
       'check'     => "string",
       'sqltype'   => "varchar(100)"
     ),
+    'description'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(100)"
+    ),
     'active'  => array(
       'check'     => "boolean",
       'sqltype'   => "int(1)",
@@ -67,6 +71,22 @@ class qcl_access_model_Role
     'Datasource_Role' => array(
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
       'target'      => array( 'class' => "qcl_data_datasource_DbModel" )
+    )
+  );
+
+
+  /**
+   * dialog.Form - compatible form data for the editable properties
+   * of this model.
+   *
+   * @var array
+   */
+  protected $formData = array(
+    'name'        => array(
+      'label'       => "Role name"
+    ),
+    'description' => array(
+      'label'       => "Description"
     )
   );
 
@@ -115,7 +135,14 @@ class qcl_access_model_Role
   public function permissions()
   {
     $permModel = $this->getPermissionModel();
-    $permModel->findLinked( $this );
+    try
+    {
+      $permModel->findLinked( $this );
+    }
+    catch( qcl_data_model_RecordNotFoundException $e )
+    {
+      return array();
+    }
     $permissions =  array();
     while ( $permModel->loadNext() )
     {

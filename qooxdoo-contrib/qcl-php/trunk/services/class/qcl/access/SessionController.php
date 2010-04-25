@@ -259,6 +259,7 @@ class qcl_access_SessionController
    */
   public function registerSession()
   {
+    $this->cleanup(); // FIXME move somewhere else
     $sessionId = $this->getSessionId();
     $user      = $this->getActiveUser();
     $remoteIp  = qcl_server_Request::getInstance()->getIp();
@@ -278,7 +279,6 @@ class qcl_access_SessionController
     $sessionId = $this->getSessionId();
     $this->log("Unregistering session #$sessionId.", QCL_LOG_ACCESS );
     $this->getSessionModel()->unregisterSession( $sessionId );
-    //$this->getSessionModel()->cleanUp();
   }
 
   /**
@@ -393,6 +393,43 @@ class qcl_access_SessionController
     ));
 
     return $sessionId;
+  }
+
+  /**
+   * Clean up the access data:
+   * - Purge all anonymous guests that are inactive for more than
+   *   one hour
+   * - delete all state sessions.
+   * FIXME rewrite as portable query!
+   */
+  public function cleanup()
+  {
+
+    /*
+     * clean up stale users
+     */
+    $userModel = $this->getUserModel();
+    $ids = $userModel->getQueryBehavior()->fetchValues("id",
+      new qcl_data_db_Query( array( 'where' =>
+        "anonymous = 1 AND
+        ( TIME_TO_SEC( TIMEDIFF( NOW(), lastAction ) ) > 3600
+          OR TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 3600 )"
+    ) ) );
+    foreach( $ids as $id )
+    {
+      $userModel->load( $id );
+      $userModel->delete();
+    }
+
+    /*
+     * clean up stale sessions
+     */
+    $sessionModel = $this->getSessionModel();
+    $ids = $sessionModel->getQueryBehavior()->deleteWhere("id",
+      new qcl_data_db_Query( array( 'where' =>
+      "anonymous = 1 AND
+      TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 3600"
+    ) ) );
   }
 }
 ?>

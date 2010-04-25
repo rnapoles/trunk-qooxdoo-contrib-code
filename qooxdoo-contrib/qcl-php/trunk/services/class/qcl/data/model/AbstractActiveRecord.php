@@ -86,6 +86,14 @@ class qcl_data_model_AbstractActiveRecord
     )
   );
 
+  /**
+   * dialog.Form - compatible form data for the editable properties
+   * of this model.
+   * @todo add documentation
+   * @var array
+   */
+  protected $formData = array();
+
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
@@ -223,6 +231,17 @@ class qcl_data_model_AbstractActiveRecord
   public function operators()
   {
     return $this->operators;
+  }
+
+  /**
+   * Return dialog.Form - compatible  form data for editable properties of
+   * this model.
+   * @todo add documentation
+   * @return array
+   */
+  public function formData()
+  {
+    return $this->formData;
   }
 
   //-------------------------------------------------------------
@@ -482,6 +501,7 @@ class qcl_data_model_AbstractActiveRecord
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
    * @return qcl_data_db_Query
+   * @throws qcl_data_model_RecordNotFoundException
    */
   public function findLinked( $targetModel )
   {

@@ -29,6 +29,11 @@ qcl_import( "qcl_data_datasource_DbModel" );
 class qcl_access_model_User
   extends qcl_data_model_db_NamedActiveRecord
 {
+
+  //-------------------------------------------------------------
+  // Model properties
+  //-------------------------------------------------------------
+
   /**
    * The table storing model data
    */
@@ -103,9 +108,66 @@ class qcl_access_model_User
   );
 
   /**
+   * dialog.Form - compatible form data for the editable properties
+   * of this model.
+   *
+   * @var array
+   */
+  protected $formData = array(
+    'name'        => array(
+      'name'        => "name",
+      'label'       => "Full name"
+    ),
+    'email'       => array(
+      'label'       => "E-Mail address",
+      'placeholder' => "Enter a valid E-mail address",
+      'validation'  => array(
+        'validator'   => "email"
+      )
+    ),
+    'password'    => array(
+      'label'       => "Password",
+      'type'        => "PasswordField",
+      'value'       => "",
+      'placeholder' => "Leave blank if you don't want to change the password",
+      'marshaler'   => array(
+        'unmarshal'  => array( 'callback' => array( "this", "checkFormPassword" ) )
+      )
+    ),
+    'password2' => array(
+      'label'       => "Repeat Password",
+      'type'        => "PasswordField",
+      'value'       => "",
+      'ignore'      => true,
+      'placeholder' => "Repeat password",
+      'marshaler'   => array(
+        'unmarshal'  => array( 'callback' => array( "this", "checkFormPassword" ) )
+      )
+    )
+  );
+
+  //-------------------------------------------------------------
+  // Class properties
+  //-------------------------------------------------------------
+
+  /**
    * names that cannot be used as namedId
    */
-  public $reservedNames = array("default","admin","global");
+  protected $reservedNames = array("default","admin","global");
+
+  /**
+   * Cache for user permissions
+   */
+  private $permissions;
+
+  /**
+   * Cache for user roles
+   */
+  private $roles;
+
+  //-------------------------------------------------------------
+  // Initialization
+  //-------------------------------------------------------------
 
   /**
    * Constructor
@@ -172,10 +234,6 @@ class qcl_access_model_User
    */
   public function createAnonymous()
   {
-    /*
-     * purge inactive guests
-     */
-    $this->purgeInactiveGuestUsers();
 
     /*
      * role model
@@ -211,23 +269,6 @@ class qcl_access_model_User
       $this->warn( $e->getMessage() );
     }
     return $id;
-  }
-
-  /**
-   * Purge all anonymous guests that are inactive for more than
-   * one hour.
-   * @todo unhardcode timeout
-   */
-  public function purgeInactiveGuestUsers()
-  {
-    $queryBehavior = $this->getQueryBehavior();
-    $lastActionCol = $queryBehavior->getAdapter()->formatColumnName( "lastAction");
-    $modifiedCol   = $queryBehavior->getAdapter()->formatColumnName( "modified");
-    $this->getQueryBehavior()->deleteWhere("
-      `anonymous` = 1 AND
-      ( TIME_TO_SEC( TIMEDIFF( NOW(), $lastActionCol ) ) > 3600
-        OR TIME_TO_SEC( TIMEDIFF( NOW(), $modifiedCol ) ) > 3600 )
-    ");
   }
 
   /**
@@ -281,23 +322,27 @@ class qcl_access_model_User
    * Returns list of role that belong to a user
    * @return array Array of values
    */
-  function roles()
+  public function roles()
   {
-    $roleModel = $this->getRoleModel();
-    $roleModel->findLinked( $this );
-    $roles = array();
-    while( $roleModel->loadNext() )
+    if ( ! $this->roles )
     {
-      $roles[] = $roleModel->namedId();
+      $roleModel = $this->getRoleModel();
+      $roleModel->findLinked( $this );
+      $roles = array();
+      while( $roleModel->loadNext() )
+      {
+        $roles[] = $roleModel->namedId();
+      }
+      $this->roles = $roles;
     }
-    return $roles;
+    return $this->roles;
   }
 
   /**
    * Returns list of the ids of the role that belong to a user
    * @return array Array of values
    */
-  function roleIds()
+  public function roleIds()
   {
     $roleModel = $this->getRoleModel();
     return $roleModel->linkedModelIds( $this );
@@ -308,27 +353,42 @@ class qcl_access_model_User
    * @param string $prop Property to retrieve, defaults to "id"
    * @return array Array of values
    */
-  function permissions()
+  public function permissions()
   {
-    $roleModel = $this->getRoleModel();
-    $roles = $this->roles();
-    $permissions =  array();
-    foreach( $roles as $roleName )
+    if ( ! $this->permissions )
     {
-      $roleModel->load( $roleName );
-      $permissions = array_merge(
-        $permissions,
-        $roleModel->permissions()
-      );
+      $roleModel = $this->getRoleModel();
+      $roles = $this->roles();
+      $permissions =  array();
+      foreach( $roles as $roleName )
+      {
+        $roleModel->load( $roleName );
+        $permissions = array_merge(
+          $permissions,
+          $roleModel->permissions()
+        );
+      }
+      $this->permissions = $permissions;
     }
-    return $permissions;
+    return $this->permissions;
+  }
+
+  /**
+   * Overridden to clear cached roles and permissions
+   * @see class/qcl/data/model/qcl_data_model_AbstractNamedActiveRecord#load()
+   */
+  public function load( $id )
+  {
+    $this->roles = null;
+    $this->permissions = null;
+    return parent::load( $id );
   }
 
   /**
    * Resets the timestamp of the last action  for the current user
    * @return void
    */
-  function resetLastAction()
+  public function resetLastAction()
   {
     $this->set( "lastAction", new qcl_data_db_Timestamp("now") );
     $this->save();
@@ -339,12 +399,29 @@ class qcl_access_model_User
    * for the current user
    * @return int seconds
    */
-  function getSecondsSinceLastAction()
+  public function getSecondsSinceLastAction()
   {
     $now  = new qcl_data_db_Timestamp();
     $d = $now->diff( $this->get( "lastAction") );
     return (int) ( $d->s + 60 * $d->i + 3600 * $d->h + 3600*12 * $d->d );
   }
 
+  /**
+   * Internato function to check the password
+   * @param $value
+   * @return unknown_type
+   */
+  protected function checkFormPassword ( $value )
+  {
+    if ( ! isset( $this->__password ) )
+    {
+      $this->__password = $value;
+    }
+    elseif ( $this->__password != $value )
+    {
+      throw new InvalidJsonRpcArgumentException( "Passwords do not match..." );
+    }
+    return $value;
+  }
 }
 ?>
