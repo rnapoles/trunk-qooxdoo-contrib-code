@@ -709,14 +709,12 @@ class qcl_data_model_AbstractActiveRecord
      */
     $this->init();
 
+    $this->checkLoaded();
+
     /*
      * check if we have a loaded record
      */
     $id = $this->getId();
-    if ( ! $id )
-    {
-      $this->raiseError("Cannot delete: no model record loaded.");
-    }
 
     $this->log( sprintf(
       "Unlinking all linked records for [%s #%s] ...",

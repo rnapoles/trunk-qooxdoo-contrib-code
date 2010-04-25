@@ -226,11 +226,6 @@ class qcl_data_datasource_DbModel
   // Class properties
   //-------------------------------------------------------------
 
-  /**
-   * The datasource manager object
-   * @var qcl_data_datasource_Manager
-   */
-  public $manager;
 
   /**
    * Models that are attached to this datasource
@@ -294,7 +289,8 @@ class qcl_data_datasource_DbModel
    */
   public function getManager()
   {
-    return $this->manager;
+    qcl_import( "qcl_data_datasource_Manager" );
+    return qcl_data_datasource_Manager::getInstance();
   }
 
   /**
@@ -518,9 +514,9 @@ class qcl_data_datasource_DbModel
   public function delete()
   {
     $this->init();
-    $this->log( "Destroying all models of datasource $this", QCL_LOG_DATASOURCE);
     foreach( $this->modelTypes() as $type )
     {
+      $this->log( "Destroying model '$type' of datasource $this", QCL_LOG_DATASOURCE);
       $this->getModelOfType( $type )->destroy();
     }
     $this->getManager()->deleteDatasource( $this->namedId(), false );

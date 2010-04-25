@@ -579,6 +579,7 @@ class qcl_access_Controller
    */
   public function checkTimeout( $userId )
   {
+    return true; // FIXME!!
     $configModel = $this->getApplication()->getConfigModel();
     $userModel   = $this->getUserModel( $userId );
     $userName    = $userModel->username();

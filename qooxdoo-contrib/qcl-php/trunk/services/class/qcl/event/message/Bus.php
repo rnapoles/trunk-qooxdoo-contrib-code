@@ -153,7 +153,7 @@ class qcl_event_message_Bus
       if ( $message->isBroadcast() )
       {
         $sessionModel = $this->getApplication()->getAccessController()->getSessionModel();
-        $sessionIds = $sessionModel->getQueryBehavior()->fetchValues("sessionId");
+        $sessionIds = $sessionModel->getQueryBehavior()->fetchValues("namedId");
 
         foreach( $sessionIds as $sessionId )
         {
