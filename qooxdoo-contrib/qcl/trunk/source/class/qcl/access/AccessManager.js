@@ -267,6 +267,7 @@ qx.Class.define("qcl.access.AccessManager",
      */
     logout : function( callback, context )
     {
+      qx.event.message.Bus.dispatch( new qx.event.message.Message("logout", true ) );
       this.getStore().load("logout", null, callback, context );
     }
    
