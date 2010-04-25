@@ -54,6 +54,14 @@ qx.Class.define("qcl.application.SessionManager",
   construct : function()
   {  
     this.base(arguments);
+    
+    /*
+     * subscribe to a message that usually comes from the server to set
+     * a new session id
+     */
+    qx.event.message.Bus.subscribe( "setSessionId", function( e ){
+      this.setSessionId( e.getData() );
+    }, this);    
 
   },
   
