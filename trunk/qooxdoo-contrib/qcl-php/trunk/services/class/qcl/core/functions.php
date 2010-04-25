@@ -16,6 +16,11 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+/*
+ * @todo rename functions to have a qcl_ prefix
+ */
+
+
 class qcl_FileNotFoundException extends Exception {}
 class qcl_ClassNotDefinedException extends Exception {}
 class qcl_InvalidClassException extends Exception {}
@@ -208,6 +213,45 @@ function qcl_assert_valid_string( $value )
     );
   }
   qcl_assert_string( $value );
+}
+
+/**
+ * Asserts that argument is an array
+ * @param mixed $value
+ */
+function qcl_assert_array( $value )
+{
+  qcl_assert_type( $value, "array" );
+}
+
+/**
+ * Asserts that argument is an object
+ * @param mixed $value
+ */
+function qcl_assert_object( $value )
+{
+  qcl_assert_type( $value, "object" );
+}
+
+
+/**
+ * Asserts that the given object has the given method.
+ *
+ * @param object $object
+ * @param string $method
+ * @return void
+ */
+function qcl_assert_method_exists( $object, $method )
+{
+  qcl_assert_object( $object );
+  qcl_assert_string( $method );
+  if ( ! method_exists( $object, $method ) )
+  {
+    throw new InvalidArgumentException( sprintf(
+      "Object of class %s does not have a method %s",
+      get_class( $object ), $method
+    ));
+  }
 }
 
 /**
@@ -483,6 +527,26 @@ function is_map( $var )
 {
   if ( ! is_array( $var ) ) return false;
   return ! is_list( $var );
+}
+
+/**
+ * Converts to string value
+ * @param mixed $value
+ * @return string
+ */
+function qcl_toString( $value )
+{
+  return (string) $value;
+}
+
+/**
+ * Converts to integer value
+ * @param mixed $value
+ * @return integer
+ */
+function qcl_toInteger( $value )
+{
+  return (integer) $value;
 }
 
 /**

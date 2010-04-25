@@ -52,11 +52,11 @@ class qcl_data_controller_Controller
 
 
   //-------------------------------------------------------------
-  // access control
+  // access control on the session level
   //-------------------------------------------------------------
 
   /**
-   * Shorthand getter for access behavior
+   * Shorthand getter for access controller
    * @return qcl_access_Controller
    */
   public function getAccessController()
@@ -82,43 +82,34 @@ class qcl_data_controller_Controller
     return $this->getAccessController()->getSessionId();
   }
 
-
   /**
    * Checks if active user has the given permission.
-   * Alias of $this->getAccessController()->hasPermission()
    * @param $permission
    * @return bool
    */
   public function hasPermission( $permission )
   {
-    return $this->getAccessController()->hasPermission( $permission );
-  }
-
-  /**
-   * Checks if permission has an controller-specific
-   * name. This allows to reuse a global permission for a
-   * specific service class without giving the user the same
-   * right in a different service class. This is a stub to be overridden
-   * if this feature is to be used.
-   *
-   * @param string $permission
-   * @return string|false Name of permission if alias exists, otherwise false
-   */
-  public function hasPermissionAlias( $permission )
-  {
-    return false;
+    return $this->getActiveUser()->hasPermission( $permission );
   }
 
   /**
    * Checks if active user has the given permission and aborts if
    * permission is not granted.
-   * Alias of $this->getAccessController()->requirePermission()
+   *
    * @param string $permission
    * @return bool
+   * @throws qcl_access_AccessDeniedException
    */
   public function requirePermission( $permission )
   {
-    return $this->getAccessController()->requirePermission( $permission );
+    if ( !  $this->hasPermission( $permission ) )
+    {
+      $this->warn( sprintf(
+        "Active user %s does hat required permission %s",
+        $this->getActiveUser(), $permission
+      ) );
+      throw new qcl_access_AccessDeniedException("Access denied.");
+    }
   }
 
   /**
@@ -128,7 +119,24 @@ class qcl_data_controller_Controller
    */
   public function hasRole( $role )
   {
-    return $this->getAccessController()->hasRole( $role );
+    return $this->getActiveUser()->hasRole( $role );
+  }
+
+  /**
+   * Shorthand method to enforce if active user has a role
+   * @param string $role
+   * @return bool
+   */
+  public function requireRole( $role )
+  {
+    if ( !  $this->hasRole( $role ) )
+    {
+      $this->warn( sprintf(
+        "Active user %s does hat required role %s",
+        $this->getActiveUser(), $role
+      ) );
+      throw new qcl_access_AccessDeniedException("Access denied.");
+    }
   }
 
   //-------------------------------------------------------------

@@ -145,7 +145,7 @@ class class_qcl_test_access_ModelAccessControl
         'password' => 'admin'
       )
     );
-    $this->assertEquals( $expected, $data, null, __CLASS__, __LINE__ );
+    $this->assertEquals( print_r( $expected, true), print_r( $data, true), null, __CLASS__, __LINE__ );
 
     /*
      * create new user
