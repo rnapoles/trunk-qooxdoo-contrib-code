@@ -1,4 +1,4 @@
-# 
+﻿# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
@@ -33,7 +33,7 @@ msgstr "Plakken"
 
 #: showcase/page/i18n/Content.js:162 showcase/page/i18n/Content.js:196
 msgid "Copy"
-msgstr "Kopi�ren"
+msgstr "Kopiëren"
 
 #: showcase/page/i18n/Content.js:169
 msgid "A date:"
