@@ -464,7 +464,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */
      _loadTreeData : function( datasource, nodeId )
      {
-       //try{
+       if ( ! datasource )
+       {
+         this.error("Invalid arguments: no datasource given");
+       }
        var store = this.getStore();
        var tree  = this.getTreeView();
        var nodeId = nodeId || 0;
@@ -825,7 +828,14 @@ qx.Class.define("qcl.ui.tree.TreeView",
       /*
        * clear tree and load new tree data
        */
-      this._loadTreeData( datasource, nodeId );
+      if ( datasource)
+      {
+        this._loadTreeData( datasource, nodeId );  
+      }
+      else
+      {
+        this.warn( "Cannot load: no datasource!");
+      }
     },
     
     /**
