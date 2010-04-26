@@ -35,27 +35,32 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
     
      /**
       * Creates the popup
-      * @param label {String}
-      * @param iconpath {String}
+      * @param options {Map}
       */
-     createPopup : function( label, iconpath )
+     createPopup : function( options )
      {
-        if ( label === undefined )
+        if ( options === undefined )
         {
-          label = this.tr("Loading ...");
+          options = {};
         }
-        if ( iconpath === undefined )
+        else if( ! qx.lang.Type.isObject( options ) )
         {
-          iconpath = "qcl/ajax-loader.gif";
+          this.error("Invalid argument.");
         }
+        
         this.__loadingPopup = new qx.ui.popup.Popup(new qx.ui.layout.Canvas()).set({
           decorator: "group",
           minWidth  : 100,
           minHeight : 30,
           padding   : 10
         });
-        this.__popupAtom = new qx.ui.basic.Atom( label, iconpath ) ;
-        this.__popupAtom.setRich(true);
+        this.__popupAtom = new qx.ui.basic.Atom().set({
+          label         : options.label || "Loading ...",
+          icon          : options.icon || "qcl/ajax-loader.gif",
+          rich          : options.rich || true,
+          iconPosition  : options.iconPosition || "left",
+          show          : options.show || "both"
+        });
         this.__loadingPopup.add( this.__popupAtom );
      },
      
