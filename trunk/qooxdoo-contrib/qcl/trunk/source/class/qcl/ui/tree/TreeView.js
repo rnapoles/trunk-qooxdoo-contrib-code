@@ -26,6 +26,7 @@
 qx.Class.define("qcl.ui.tree.TreeView",
 {
   extend : qx.ui.container.Composite,
+  include : [qcl.ui.MLoadingPopup],
 
   /*
   *****************************************************************************
@@ -213,6 +214,11 @@ qx.Class.define("qcl.ui.tree.TreeView",
     this.__datasources = {}; 
     
     this.__prompt = new dialog.Prompt();
+    
+    /*
+     * pupup
+     */
+    this.createPopup();
   },
   
   /*
@@ -349,6 +355,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
         }       
      } );
      tree.set({
+       allowStretchY : true,
        alwaysShowOpenCloseSymbol : false,
        statusBarVisible : false,
        backgroundColor : "white",
@@ -382,7 +389,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      {
        this.error( "Container for tree widget (member name " + memberName + ") must exist and must be an instance of qx.ui.container.Composite! ")
      }
-     this[memberName].add( tree, { flex : 1 } );
+     this[memberName].add( tree, { flex : 10, height: null } );
      
      /*
       * Store
@@ -421,6 +428,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      * Creates the tree and optionally loads the data
      * @param datasource {String}
      * @param doLoad {Boolean|undefined}
+     * @todo rewrite
      */
     _setupTree : function( datasource, doLoad )
     {
@@ -469,6 +477,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
        var datasource = this.getDatasource();
        var storeId = store.getStoreId();
        this.clearSelection();
+       
+       this.showPopup("Loading tree data...");
 
        /*
         * get node count and transaction id from server
@@ -483,6 +493,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
           */
          if ( ! nodeCount )
          {
+            this.hidePopup();
             return;
          }
          
@@ -502,6 +513,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
               * set the tree data
               */
              tree.getDataModel().setData( cache.treeData );
+             this.hidePopup();
            }
            
            /*
@@ -544,7 +556,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                         && data.queue.length )
                {
                  counter += data.queue.length;
-                 //this._statusLabel.setValue( counter + "/" + nodeCount + " (" + Math.floor( 100*counter/nodeCount ) + "%)" );
+                 this.showPopup("Loading tree data... " +  Math.floor( 100* (counter/nodeCount) ) + "%" );
                  store.load(
                    this.getChildNodeDataMethod(), 
                    [ datasource, data.queue, this.getChildrenPerRequest(), 
@@ -561,6 +573,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                 /*
                  * @todo: fire event
                  */
+                this.hidePopup();
                 this.getTreeView().setEnabled(true);
                }
 
@@ -581,6 +594,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
                    treeData : this.getTreeView().getDataModel().getData(),
                    transactionId : transactionId
                  } );
+                 
+                 this.hidePopup();
                  
                } // end if
              }, this) )( true );  // end function loadTree
@@ -807,12 +822,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */ 
     load : function( datasource, nodeId )
     {
-      //try{
       /*
        * clear tree and load new tree data
        */
       this._loadTreeData( datasource, nodeId );
-      //}catch(e){console.warn(e);}
     },
     
     /**
@@ -821,7 +834,6 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */
     reload : function()
     {
-      //try{
       /*
        * clear the tree and reload
        */
@@ -829,7 +841,6 @@ qx.Class.define("qcl.ui.tree.TreeView",
       this.clearTree();
       this.clearTreeCache( datasource )
       this.load( datasource );
-      //}catch(e){console.warn(e)}
     },    
     
     /**
