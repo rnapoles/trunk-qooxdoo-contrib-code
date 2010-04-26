@@ -101,7 +101,7 @@ class qcl_data_model_db_TreeNodeModel
 	{
 	  $query = new qcl_data_db_Query( array(
 	   'properties'  => "*", // FIXME
-	   'where'       => array( 'parentId' => $id ),
+	   'where'       => array( 'parentId' => $this->id() ),
 	   'orderBy'     => $orderBy
 	  ) );
 	  $this->find( $query );
@@ -117,8 +117,8 @@ class qcl_data_model_db_TreeNodeModel
 	function getChildIds ( $orderBy=null )
 	{
     $query = new qcl_data_db_Query( array(
-     'properties'  => "*", // FIXME
-     'where'       => array( 'parentId' => $id ),
+     'properties'  => null, // FIXME
+     'where'       => array( 'parentId' => $this->id() ),
      'orderBy'     => $orderBy
     ) );
     return $this->getQueryBehavior()->fetchValues("id", $query );

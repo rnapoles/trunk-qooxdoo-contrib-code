@@ -867,7 +867,14 @@ class qcl_core_Object
    */
   public function debug($msg,$class=null,$line=null)
   {
-    if ( ! is_scalar($msg) ) $msg = print_r($msg,true);
+    if ( is_bool( $msg ) )
+    {
+      $msg = boolString( $msg );
+    }
+    elseif ( ! is_scalar($msg) )
+    {
+      $msg = print_r($msg,true);
+    }
     $m = ">>> DEBUG <<< ";
     if ($class and $line) $m .= "$class:$line: ";
     $m .= $msg;

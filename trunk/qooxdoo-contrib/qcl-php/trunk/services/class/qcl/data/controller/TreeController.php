@@ -341,7 +341,8 @@ class qcl_data_controller_TreeController
    * @param int $nodeId
    * @param int $parentId Optional id of parent folder
    * @param mixed|null $options Optional data
-   * @return array
+   * @return array|null Returns null if node is not accessible, otherwise
+   * returns a map of node properties.
    */
   function getNodeData( $datasource, $nodeId, $parentId=null, $options=null )
   {
@@ -358,12 +359,16 @@ class qcl_data_controller_TreeController
    */
   function method_getNodeCount( $datasource, $options=null )
   {
+    if ( ! $datasource )
+    {
+      throw new InvalidJsonRpcArgumentException("Invalid datasource argument");
+    }
     $model = $this->getTreeNodeModel( $datasource );
     $nodeCount = $model->countRecords();
     return array(
       'nodeCount'     => $nodeCount,
       'transactionId' => $model->getTransactionId(),
-      'statusText'    => $this->tr("%s Nodes.", $nodeCount)
+      'statusText'    => ""
     );
   }
 
@@ -445,20 +450,19 @@ class qcl_data_controller_TreeController
       $parentId = (int) array_shift( $queue );
       $childIds = (array) $this->getChildIds( $datasource, $parentId, "position" );
 
-      /*
-       * break if maximum number of nodes has been reached
-       */
-      $counter++;
-      if ( $max and $counter > $max ) break;
-
-      //$this->debug($childIds);
-
       foreach ( $childIds as $childId )
       {
         /*
          * get child data
          */
         $childData = $this->getNodeData( $datasource, $childId, $parentId );
+
+        /*
+         * ingnore inaccessible nodes
+         */
+        if ( $childData === null ) continue;
+
+        qcl_assert_array( $childData ); // FIXME assert kes
 
         /*
          * if the child has children itself, load those
@@ -472,7 +476,14 @@ class qcl_data_controller_TreeController
          * add child data to result
          */
         $nodeArr[] = $childData;
+
+        /*
+         * break if maximum number of nodes has been reached
+         */
+        $counter++;
+        if ( $max and $counter > $max ) break;
       }
+      if ( $max and $counter > $max ) break;
     }
 
    /*
