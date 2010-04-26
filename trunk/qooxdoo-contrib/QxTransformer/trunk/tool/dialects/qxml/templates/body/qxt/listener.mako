@@ -62,7 +62,7 @@ ${self.addTo()}.addListener(${utils.attrib("event")}, ${self.funcBody()}, ${self
 %endif
 
 <%def name="addTo()"><%
-    addRef = utils.rawAttrib("addTo")
+    addRef = utils.rawAttrib("target")
     if addRef is not None:
         return addRef
     else:
