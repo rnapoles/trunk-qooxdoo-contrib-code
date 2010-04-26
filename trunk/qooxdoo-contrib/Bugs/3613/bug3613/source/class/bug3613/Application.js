@@ -65,7 +65,7 @@ qx.Class.define("bug3613.Application",
 
 
 
-      var tree = new qx.ui.tree.Tree().set({
+      tree = new qx.ui.tree.Tree().set({
         width : 200,
         height : 400
       });
@@ -116,6 +116,32 @@ qx.Class.define("bug3613.Application",
       this.getRoot().add(container, {left: 20, top: 10});
 
       qx.log.appender.Console.show(); 
+      
+      var btn1 = new qx.ui.form.Button("Scroll #18 into view");
+      var btn2 = new qx.ui.form.Button("Toggle tree visibility");
+      var btn3 = new qx.ui.form.Button("Show tree and scroll");
+
+      btn1.addListener("execute", function() {
+        x.getTree().scrollChildIntoView(x);
+      }, this);
+
+      btn2.addListener("execute", function() {
+        var vis = tree.getVisibility();
+        (vis == "visible") ? tree.hide() : tree.show();
+      }, this);
+
+
+      btn3.addListener("execute", function() {
+        tree.show();
+        x.getTree().scrollChildIntoView(x);
+      }, this);
+
+
+      var root = this.getRoot();
+
+      root.add(btn1, {left : 300, top : 330});
+      root.add(btn2, {left : 300, top : 355});
+      root.add(btn3, {left : 300, top : 380});
 
     }
   }
