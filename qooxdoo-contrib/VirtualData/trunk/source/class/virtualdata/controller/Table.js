@@ -56,7 +56,7 @@ qx.Class.define("virtualdata.controller.Table",
      
     this.__currentRequestIds = [];
      
-    this.createPopup( "Loading...","virtualdata/ajax-loader.gif"); 
+    this.createPopup(); 
   },
 
    /*
