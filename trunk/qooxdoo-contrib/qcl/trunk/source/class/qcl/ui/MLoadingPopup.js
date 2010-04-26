@@ -55,11 +55,11 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
           padding   : 10
         });
         this.__popupAtom = new qx.ui.basic.Atom().set({
-          label         : options.label || "Loading ...",
-          icon          : options.icon || "qcl/ajax-loader.gif",
-          rich          : options.rich || true,
-          iconPosition  : options.iconPosition || "left",
-          show          : options.show || "both"
+          label : options.label !== undefined ? options.label : "Loading ...",
+          icon  : options.icon  !== undefined ? options.icon : "qcl/ajax-loader.gif",
+          rich  : options.rich !== undefined ? options.rich :true,
+          iconPosition  : options.iconPosition !== undefined ? options.iconPosition : "left",
+          show  : options.show !== undefined ? options.show :  "both"
         });
         this.__loadingPopup.add( this.__popupAtom );
      },

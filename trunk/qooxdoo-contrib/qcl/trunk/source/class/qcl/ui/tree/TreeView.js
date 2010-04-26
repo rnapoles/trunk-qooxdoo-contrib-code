@@ -555,7 +555,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                         && qx.lang.Type.isArray( data.queue ) 
                         && data.queue.length )
                {
-                 counter += data.queue.length;
+                 counter += data.nodeData.length;
                  this.showPopup("Loading tree data... " +  Math.floor( 100* (counter/nodeCount) ) + "%" );
                  store.load(
                    this.getChildNodeDataMethod(), 
