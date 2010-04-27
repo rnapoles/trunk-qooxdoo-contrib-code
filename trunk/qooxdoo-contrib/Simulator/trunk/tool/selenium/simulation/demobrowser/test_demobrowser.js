@@ -157,6 +157,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     return [nextSampleCategory,nextSampleLabel];
   }
   else {
+    this.log('Loading demo ' + nextSampleCategory + ' - ' + nextSampleLabel, "debug");
     // run the sample
     this.runScript(scriptCode, "Running sample");
     
