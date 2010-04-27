@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: qooxdoo framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-05-19 10:11+0200\n"
-"PO-Revision-Date: 2007-01-23 17:53+0100\n"
+"PO-Revision-Date: 2010-04-22 17:53+0100\n"
 "Last-Translator: Thomas Herchenroeder <thron7 AT users DOT sourceforge DOT net>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -234,26 +234,26 @@ msgstr "Kontextmenü"
 #: qx/test/locale/Locale.js:78
 msgid "test One car"
 msgid_plural "test %1 cars"
-msgstr[0] "teste Ein Auto"
-msgstr[1] "teste %1 Autos"
+msgstr[0] ""
+msgstr[1] ""
 
 #: qx/test/ui/LocaleSwitch.js:85 qx/test/ui/LocaleSwitch.js:115
 #: qx/test/locale/Locale.js:60
 msgid "test one"
-msgstr "teste ein"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:64
 #: qx/test/locale/Locale.js:68
 msgid "test Hello %1!"
-msgstr "test Hallo %1!"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:68
 msgid "test Jonny"
-msgstr "teste Jonny"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:99
 msgid "test two"
-msgstr "teste zwei"
+msgstr ""
 
 #: qx/ui/control/ColorPopup.js:147
 msgid "Automatic"
@@ -339,34 +339,34 @@ msgstr[1] "%1 von %2 Zeilen"
 msgid "Reset column widths"
 msgstr "Spaltenbreite zurücksetzen"
 
-#: qx/util/Validate.js:90
+#: qx/util/Validate.js:87
 msgid "%1 is not a number."
 msgstr "%1 ist keine Nummer."
 
-#: qx/util/Validate.js:123
+#: qx/util/Validate.js:120
 msgid "'%1' is not an email address."
-msgstr "'%1' is keine Email Adresse."
+msgstr "'%1' ist keine Emailadresse."
 
-#: qx/util/Validate.js:153
+#: qx/util/Validate.js:150
 msgid "%1 is not a string."
 msgstr "%1 ist keine Zeichenkette."
 
-#: qx/util/Validate.js:184
+#: qx/util/Validate.js:181
 msgid "%1 is not an url."
 msgstr "%1 ist keine URL."
 
-#: qx/util/Validate.js:216
+#: qx/util/Validate.js:213
 msgid "%1 is not a color! %2"
 msgstr "%1 ist keine Farbe! %2"
 
-#: qx/util/Validate.js:242
+#: qx/util/Validate.js:239
 msgid "%1 is not in the range from [%2, %3]."
 msgstr "%1 liegt nicht im Intervall [%2, %3]."
 
-#: qx/util/Validate.js:264
+#: qx/util/Validate.js:261
 msgid "%1 is not in %2"
 msgstr "%1 ist nicht in %2"
 
-#: qx/util/Validate.js:287
+#: qx/util/Validate.js:284
 msgid "%1 does not fit %2."
 msgstr "%1 passt nicht zu %2."

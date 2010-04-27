@@ -53,15 +53,15 @@ msgstr ""
 msgid "Can't load the gist."
 msgstr ""
 
-#: playground/Application.js:603
+#: playground/Application.js:605
 msgid "Starting application"
 msgstr ""
 
-#: playground/Application.js:606
+#: playground/Application.js:608
 msgid "Successfully started"
 msgstr ""
 
-#: playground/Application.js:663
+#: playground/Application.js:665
 msgid "%1 (modified)"
 msgstr ""
 

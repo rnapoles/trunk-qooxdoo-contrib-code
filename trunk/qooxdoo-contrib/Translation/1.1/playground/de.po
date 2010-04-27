@@ -1,11 +1,11 @@
-# German
+# translation of de.po to German
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: you@qooxdoo.org\n"
 "POT-Creation-Date: 2007-10-18 14:00+0100\n"
-"PO-Revision-Date: 2009-12-10 18:58+0100\n"
+"PO-Revision-Date: 2010-04-22 18:58+0100\n"
 "Last-Translator: Thomas Herchenroeder <thron7 AT users DOT sourceforge DOT net>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +34,9 @@ msgstr "Eigener Code"
 msgid ""
 "// Could not handle URL parameter! \n"
 "// %1"
-msgstr "// Konnte den URL Parameter nicht verarbeiten! \n// %1"
+msgstr ""
+"// Konnte den URL Parameter nicht verarbeiten! \n"
+"// %1"
 
 #: playground/Application.js:403
 msgid "// Your browser has a length restriction of the URL parameter which could have caused the problem."
@@ -56,15 +58,15 @@ msgstr "Gist enthält keinen Inhalt."
 msgid "Can't load the gist."
 msgstr "gist kann nicht geladen werden."
 
-#: playground/Application.js:603
+#: playground/Application.js:605
 msgid "Starting application"
 msgstr "Starte Anwendung"
 
-#: playground/Application.js:606
+#: playground/Application.js:608
 msgid "Successfully started"
 msgstr "Anwendung gestartet"
 
-#: playground/Application.js:663
+#: playground/Application.js:665
 msgid "%1 (modified)"
 msgstr "%1 (geändert)"
 
