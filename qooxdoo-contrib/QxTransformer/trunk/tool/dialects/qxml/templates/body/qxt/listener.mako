@@ -4,7 +4,7 @@
   === doc ===
   qxt:listener adds an event listener to the object represented
   by the parent node, or to a custom object specified in the 
-  'addTo' attribute. There are shorthand templates to transform
+  'target' attribute. There are shorthand templates to transform
   the event into a message or redispatch it. If an inline code
   event handler or a delegate function will be used, the context
   is the including widget, unless you specify a context by specifying
@@ -62,7 +62,7 @@ ${self.addTo()}.addListener(${utils.attrib("event")}, ${self.funcBody()}, ${self
 %endif
 
 <%def name="addTo()"><%
-    addRef = utils.rawAttrib("target")
+    addRef = utils.rawAttrib("addTo")
     if addRef is not None:
         return addRef
     else:
