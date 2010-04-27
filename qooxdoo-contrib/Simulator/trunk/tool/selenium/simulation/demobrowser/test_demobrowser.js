@@ -219,7 +219,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);  
 
-  this.log('<h3>Last loaded demo: ' + category + ' - ' + currentSample + '</h3>', "info");
+  this.log('Last loaded demo: ' + category + ' - ' + currentSample, "debug");
   
   var expectedLogEntries = [
     "Load runtime",
