@@ -234,26 +234,26 @@ msgstr "Kontextmenü"
 #: qx/test/locale/Locale.js:78
 msgid "test One car"
 msgid_plural "test %1 cars"
-msgstr[0] "teste Ein Auto"
-msgstr[1] "teste %1 Autos"
+msgstr[0] ""
+msgstr[1] ""
 
 #: qx/test/ui/LocaleSwitch.js:85 qx/test/ui/LocaleSwitch.js:115
 #: qx/test/locale/Locale.js:60
 msgid "test one"
-msgstr "teste ein"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:64
 #: qx/test/locale/Locale.js:68
 msgid "test Hello %1!"
-msgstr "test Hallo %1!"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:93 qx/test/locale/Locale.js:68
 msgid "test Jonny"
-msgstr "teste Jonny"
+msgstr ""
 
 #: qx/test/ui/LocaleSwitch.js:99
 msgid "test two"
-msgstr "teste zwei"
+msgstr ""
 
 #: qx/ui/control/ColorPopup.js:138
 msgid "Automatic"
@@ -345,7 +345,7 @@ msgstr "%1 ist keine Nummer."
 
 #: qx/util/Validate.js:123
 msgid "'%1' is not an email address."
-msgstr "'%1' is keine Email Adresse."
+msgstr "'%1' ist keine Emailadresse."
 
 #: qx/util/Validate.js:153
 msgid "%1 is not a string."
