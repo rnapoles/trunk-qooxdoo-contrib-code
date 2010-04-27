@@ -35,6 +35,11 @@ var isStatusReady = selWin + '.' + qxAppInst + qxStatusText + ' == "Ready" || ' 
 var testResultHTML = selWin + '.' + qxAppInst + '.f1.getContentElement().getDomElement().innerHTML';
 var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
 
+var locators = {
+  buttonRun : 'qxh=[@classname=testrunner.runner.TestRunner]/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]',
+  treeFirstItem : 'qxh=child[1]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tree.Tree/qx.ui.tree.TreeFolder/qx.ui.tree.TreeFolder',
+  logEmbed : 'qxh=[@classname="testrunner.runner.TestRunner"]/qx.ui.splitpane.Pane/child[1]/qx.ui.splitpane.Pane/child[1]/child[1]/qx.ui.embed.Html',
+};
 
 simulation.Simulation.prototype.runTest = function()
 {
@@ -163,6 +168,7 @@ simulation.Simulation.prototype.runTestsSteps = function()
   }
   else {
     packages = this.getPackageArray();
+    packages.sort();
   }
 
   if (!packages) {
@@ -232,10 +238,10 @@ simulation.Simulation.prototype.runPackage = function(packageName)
   
   var packageStartDate = new Date();
 
-  var topTreeNodeLoc = 'qxh=child[1]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tree.Tree/qx.ui.tree.TreeFolder/qx.ui.tree.TreeFolder';
-  this.qxClick(topTreeNodeLoc, "", "Selecting top node in tree");
+  this.qxClick(locators.treeFirstItem, "", "Selecting top node in tree");
   
-  this.runScript(qxAppInst + '.runTest();', "Calling runTest");
+  //this.runScript(qxAppInst + '.runTest();', "Calling runTest");
+  this.qxClick(locators.buttonRun, "", "Clicking Run button");
 
   var isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
                     "Waiting for test package " + packageName + " to finish", "info");
@@ -315,9 +321,6 @@ simulation.Simulation.prototype.logErrors = function()
     print("Split result into " + logArray.length + " array entries.");
   }
 
-  // we can speed this up since we don't have to wait for the browser
-  this.__sel.setSpeed("500");
-
   for (var i=0, l=logArray.length; i<l; i++) {
     var line = logArray[i];
 
@@ -381,8 +384,7 @@ simulation.Simulation.prototype.logErrors = function()
  */
 simulation.Simulation.prototype.logAutLog = function()
 {
-  var logLocator = 'qxh=[@classname="testrunner.runner.TestRunner"]/qx.ui.splitpane.Pane/child[1]/qx.ui.splitpane.Pane/child[1]/child[1]/qx.ui.embed.Html';
-  var findElem = 'selenium.page().findElement(\'' + logLocator + '\')';
+  var findElem = 'selenium.page().findElement(\'' + locators.logEmbed + '\')';
   var logContent = this.getEval(findElem + '.innerHTML');
   this.log("AUT Log contents:", "info");
   this.log(logContent);
