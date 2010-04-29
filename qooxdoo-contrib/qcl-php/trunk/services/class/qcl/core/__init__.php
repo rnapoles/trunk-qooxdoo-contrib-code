@@ -36,4 +36,14 @@ $logger->registerFilter( QCL_LOG_PERSISTENCE, "Persistence-related debugging.",f
 define("QCL_LOG_PROPERTIES","properties");
 $logger->registerFilter( QCL_LOG_PROPERTIES, "Messages concerning the setup and initializing of model properties.",false);
 
+/*
+ * Exceptions
+ */
+class qcl_core_NotImplementedException extends JsonRpcException
+{
+  function __construct( $method )
+  {
+    parent::__construct("Method $method not implemented");
+  }
+}
 ?>

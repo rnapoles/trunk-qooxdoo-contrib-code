@@ -16,6 +16,14 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-trigger_error( "Package is currently unfunctional." );
+/*
+ * log filter
+ */
+define("QCL_LOG_PLUGIN","plugin");
+qcl_log_Logger::getInstance()->registerFilter(QCL_LOG_PLUGIN,"Plugin-related log messages",true);
 
+/*
+ * Exception
+ */
+class qcl_application_plugin_Exception extends JsonRpcException {}
 ?>

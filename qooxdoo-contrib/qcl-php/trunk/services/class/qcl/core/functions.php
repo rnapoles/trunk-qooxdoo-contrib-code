@@ -225,6 +225,15 @@ function qcl_assert_array( $value )
 }
 
 /**
+ * Asserts that argument is an integer value
+ * @param mixed $value
+ */
+function qcl_assert_integer( $value )
+{
+  qcl_assert_type( $value, "integer" );
+}
+
+/**
  * Asserts that argument is an object
  * @param mixed $value
  */
