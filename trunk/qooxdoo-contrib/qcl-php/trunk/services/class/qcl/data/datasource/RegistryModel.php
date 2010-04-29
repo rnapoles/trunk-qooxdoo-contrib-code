@@ -30,6 +30,8 @@ class qcl_data_datasource_RegistryModel
   // Model properties
   //-------------------------------------------------------------
 
+  protected $tableName = "data_DatasourceSchema";
+
   /**
    * The model properties
    */
