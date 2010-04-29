@@ -50,6 +50,8 @@ class qcl_data_model_db_PersistenceBehavior
   // Model Properties
   //-------------------------------------------------------------
 
+  protected $tableName = "data_Persistence";
+
   private $properties = array(
     "class" => array(
       "check"   => "string",
