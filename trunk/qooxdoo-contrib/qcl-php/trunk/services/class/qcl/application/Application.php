@@ -51,6 +51,12 @@ abstract class qcl_application_Application
   private $iniManager;
 
   /**
+   * The path to the plugin directory. Must be explicitly set
+   * @var string
+   */
+  protected $pluginPath;
+
+  /**
    * The current application instance
    * @var qcl_application_Application
    */
@@ -81,6 +87,19 @@ abstract class qcl_application_Application
   public function iniPath()
   {
     return $this->iniPath;
+  }
+
+  /**
+   * Returns the path to the folder containing the plugins
+   * @return string
+   */
+  public function pluginPath()
+  {
+    if ( ! $this->pluginPath )
+    {
+      throw new qcl_application_plugin_Exception("No plugin path defined");
+    }
+    return $this->pluginPath;
   }
 
   //-------------------------------------------------------------
