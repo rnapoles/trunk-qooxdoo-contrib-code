@@ -21,12 +21,14 @@ qcl_import("qcl_data_model_db_ActiveRecord");
 class qcl_application_plugin_RegistryModel
   extends qcl_data_model_db_NamedActiveRecord
 {
+  protected $tableName = "data_Plugin";
+
   private $properties = array(
     'name'  => array(
       'check'   => "string",
       'sqltype' => "varchar(255)"
     ),
-    'decription'  => array(
+    'description'  => array(
       'check'   => "string",
       'sqltype' => "varchar(50)"
     )

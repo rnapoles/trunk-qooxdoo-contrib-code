@@ -168,6 +168,8 @@ class qcl_data_model_AbstractNamedActiveRecord
    */
   public function namedIdExists( $namedId )
   {
+    $this->init();
+
     $bhv = $this->getQueryBehavior();
     $rowCount = $bhv->select( new qcl_data_db_Query( array(
       'select' => "id",
