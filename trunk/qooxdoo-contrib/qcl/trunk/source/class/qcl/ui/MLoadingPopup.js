@@ -30,8 +30,9 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
   
   members:
   {
-    __loadingPopup : null,
+    __popup : null,
     __popupAtom : null,
+    __target : null,
     
      /**
       * Creates the popup
@@ -48,7 +49,7 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
           this.error("Invalid argument.");
         }
         
-        this.__loadingPopup = new qx.ui.popup.Popup(new qx.ui.layout.Canvas()).set({
+        this.__popup = new qx.ui.popup.Popup(new qx.ui.layout.Canvas()).set({
           decorator: "group",
           minWidth  : 100,
           minHeight : 30,
@@ -59,9 +60,35 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
           icon  : options.icon  !== undefined ? options.icon : "qcl/ajax-loader.gif",
           rich  : options.rich !== undefined ? options.rich :true,
           iconPosition  : options.iconPosition !== undefined ? options.iconPosition : "left",
-          show  : options.show !== undefined ? options.show :  "both"
+          show  : options.show !== undefined ? options.show :  "both",
+          height : options.height || null,
+          width : options.width || null
         });
-        this.__loadingPopup.add( this.__popupAtom );
+        this.__popup.add( this.__popupAtom );
+        this.__popup.addListener("appear", this._centerPopup, this);           
+     },
+     
+     /**
+      * Centers the popup
+      */
+     _centerPopup :function()
+     {
+        var bounds = this.__popup.getBounds();
+        if ( this.__target && "left" in this.__target.getLayoutProperties() )
+        {
+          var l = this.__target.getLayoutProperties();
+          this.__popup.placeToPoint({
+            left: Math.round( l.left + ( l.width / 2) - ( bounds.width / 2) ),
+            top : Math.round( l.top + ( l.height / 2 ) - ( bounds.height / 2) )
+          });          
+        }
+        else
+        {
+          this.__popup.set({
+            marginTop: Math.round( ( qx.bom.Document.getHeight() -bounds.height ) / 2),
+            marginLeft : Math.round( ( qx.bom.Document.getWidth() -bounds.width) / 2)
+          });          
+        }
      },
      
      /**
@@ -76,29 +103,8 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
        {
           this.__popupAtom.setLabel( label );
        }
-       
-       var p = this.__loadingPopup;
-       var c,l,t,w,h;
-       if ( target === undefined )
-       {
-         target = this;
-       }
-       try
-       {
-         c = target.getContentLocation();
-         var w = c.right - c.left;
-         var h = c.bottom - c.top;
-         l = Math.floor( c.left + ( w / 2) - ( p.getWidth() / 2 ) ); 
-         t = Math.floor( c.top + ( h / 2) - ( p.getHeight() / 2) ); 
-         p.placeToPoint({left: l, top: t}); 
-       }
-       catch(e)
-       {
-         l =  Math.floor( ( qx.bom.Document.getWidth() / 2 ) - ( p.getWidth() / 2 ) );
-         t =  Math.floor( ( qx.bom.Document.getHeight() / 2 ) - ( p.getHeight() / 2 ) );
-         p.placeToPoint({left: l, top: t}); // place it in the middle of the screen 
-       }
-       p.show();      
+       this.__target = target;
+       this.__popup.show();       
      },
      
      /**
@@ -106,7 +112,7 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
       */
      hidePopup : function()
      {
-       this.__loadingPopup.hide();
+       this.__popup.hide();
      }
    },
 
@@ -114,6 +120,6 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
     * Destructor
     */
   destruct : function() {
-    this._disposeObjects("__loadingPopup","this.__popupAtom");
+    this._disposeObjects("__popup","this.__popupAtom");
   }   
 });
