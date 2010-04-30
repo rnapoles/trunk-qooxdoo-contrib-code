@@ -387,7 +387,7 @@
         "data": {
             "props": {
                 "class":"qx.ui.basic.Label",
-                "constructor-args": "content"
+                "constructor-args": "value"
             }
         }
     },
@@ -558,7 +558,7 @@
                 "constructor-args": "model,custom",
                 // put listed attributes to custom map and pass to constructor
                 "customAttrs":["treeDataCellRenderer", "defaultDataCellRenderer", "dataRowRenderer", "selectionManager", "tableColumnModel"],
-                "selectionModelAttributes" : ["SelectionMode"]
+                "selectionModelAttributes" : ["selectionMode"]
             }
         },
         "attributes": {
@@ -573,6 +573,26 @@
       }        
     },
     
+    "qx:tableModel": {
+        "extends" : "qx:widget",
+        "body" : {
+            "qx:table":"body/qx/table/tableModel.mako",
+            "*": ""
+        },
+        "add": {
+            "qx:table" : "add/qx/tableModel.mako",
+            "*": ""
+        },
+        "data" : {
+            "attr": {
+                "class": "qx.ui.table.model.Simple"
+            }
+        },
+        "attributes": {
+            "class":""
+        }
+    },
+    
     "qx:tableColumn": {
       "body" : {
           "qx:table":"body/qx/table/tableColumn.mako"
@@ -580,9 +600,9 @@
       "data" : {
           "props" : {
               // table column attributes
-              "attributesTable" : ["Editable"],
-              "attributes" : [ "Width" ],
-              "attributesRenderersEditors" : [ "DataCellRenderer", "CellEditorFactory" ]
+              "attributesTable" : ["editable"],
+              "attributes" : [ "width" ],
+              "attributesRenderersEditors" : [ "dataCellRenderer", "cellEditorFactory" ]
           }
       },
       "attributes": {
