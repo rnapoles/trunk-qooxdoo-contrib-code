@@ -62,7 +62,7 @@ simulation.Simulation.prototype.runTest = function()
   }
   
   var clickedLink = false;
-  if (constructorDetail) {
+  if (constructorDetail && this.getConfigSetting("browserId").indexOf("Safari 3") < 0 ) {
     try {
       this.__sel.click("link=qx.ui.core.Widget#construct");
       clickedLink = true;
@@ -91,8 +91,9 @@ simulation.Simulation.prototype.checkSearch = function()
   
   this.qxType("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
   // execute typeKeys once so all needed events are fired.
+  Packages.java.lang.Thread.sleep(5000);
   this.qxTypeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "w");
-  
+
   Packages.java.lang.Thread.sleep(1000);
   
   this.qxTableClick("qxh=app:viewer/[@_searchView]/qx.ui.table.Table","row=0");
