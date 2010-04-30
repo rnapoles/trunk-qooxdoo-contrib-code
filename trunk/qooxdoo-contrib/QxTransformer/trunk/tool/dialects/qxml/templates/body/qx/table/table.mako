@@ -39,22 +39,14 @@
 </%doc>\
 
 <%def name="new()">\
-
-    var ${utils.rawAttrib("id")}_tableModel = new ${utils.rawAttrib("tableModel")};
-    ${utils.rawAttrib("id")}_tableModel.setColumns([<%
-        headings = utils.xpathAllAttribs("./qx:tableColumn", "label")
-        context.write(",".join(headings))
-    %>],[<%
-        ids = utils.xpathAllAttribs("./qx:tableColumn", "id")
-        context.write(",".join(ids))
-    %>]);
-
-    var ${utils.rawAttrib("id")} = new ${utils.prop("class")}( ${utils.rawAttrib("id")}_tableModel, {
+    
+    var ${utils.rawAttrib("id")} = new ${utils.prop("class")}( null , {
         <%
             customAttrs = utils.prop("customAttrs")
-            valueProcessor = lambda name: "new %s" % name
+            valueProcessor = lambda name: "function(obj) { return new %s(obj);}" % name
             attr.rattrsByComma(customAttrs, True, valueProcessor)
-        %>});
+        %>
+    });
     ${utils.varScope()}
 </%def>
 

@@ -47,6 +47,11 @@
     return name[:1].capitalize()+name[1:]
 %></%def>
 
+<%def name="attrRawName()"><%
+    return econtext.getAttrName()
+%></%def>
+
+
 
 <%def name="attrValue()"><%
     return data.get('attrData')
