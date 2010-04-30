@@ -1168,9 +1168,10 @@ class qcl_data_model_db_QueryBehavior
    * @param qcl_data_db_Query|array|null $query "Where" query information
    * as string or qcl_data_db_Query object. If null, select all property values
    * in the model data
+   * @param bool $distinct If true, return only distinct values. Defaults to false
    * @return array Array of values
    */
-  public function fetchValues( $property, $query=null )
+  public function fetchValues( $property, $query=null, $distinct=false )
   {
 
     /*
@@ -1180,7 +1181,9 @@ class qcl_data_model_db_QueryBehavior
     {
       $query = new qcl_data_db_Query( array(
         'properties' => $property,
-        'where'      => $query
+        'where'      => $query,
+        'distinct'   => $distinct,
+        'orderBy'    => $property
       ) );
     }
 
@@ -1201,6 +1204,14 @@ class qcl_data_model_db_QueryBehavior
       else
       {
         throw new InvalidArgumentException("Invalid query data.");
+      }
+      if ( ! isset( $query->distinct ) )
+      {
+        $query->distinct = $distinct;
+      }
+      if ( ! isset( $query->orderBy ) )
+      {
+        $query->orderBy = $property;
       }
     }
 
