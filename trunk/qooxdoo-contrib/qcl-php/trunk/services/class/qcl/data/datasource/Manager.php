@@ -94,6 +94,7 @@ class qcl_data_datasource_Manager
    * @param bool $deleteAll If true, also delete all datasources
    *   and their models
    * @throws InvalidArgumentException
+   * @todo de-activate all datasources
    */
   public function unregisterSchema( $schemaName, $deleteAll=false )
   {
