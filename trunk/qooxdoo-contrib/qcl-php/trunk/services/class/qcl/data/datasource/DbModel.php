@@ -16,7 +16,8 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+qcl_import("qcl_data_model_db_NamedActiveRecord");
+qcl_import("qcl_data_datasource_Manager");
 
 /**
  * Class modeling datasource information that is stored in a
@@ -162,16 +163,15 @@ class qcl_data_datasource_DbModel
       'label'       => "Datasource name"
     ),
     'description' => array(
-      'name'        => "description",
       'type'        => "TextArea",
       'lines'       => 3,
       'label'       => "Description"
     ),
     'schema'      => array(
-      'name'        => "schema",
+      'type'        => "selectbox",
       'label'       => "Datasource schema",
-      'validation'  => array(
-        'required'    => true
+      'delegate'    => array(
+        'options'     => "getSchemaOptions"
       )
     ),
     'type'        => array(
@@ -262,21 +262,49 @@ class qcl_data_datasource_DbModel
     return qcl_getInstance(__CLASS__);
   }
 
+  //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
+
   /**
-   * Self-registers the datasource model with the manager
-   * @return void
+   * Checks whether the model has a valid schema name
    */
-  public function registerSchema()
+  protected function checkSchemaName()
   {
     if ( ! $this->schemaName  )
     {
       throw new LogicException("You must define the 'schemaName' property to be able to self-register the datasource.");
     }
-    $dsManager = qcl_data_datasource_Manager::getInstance();
-    $dsManager->registerSchema( $this->schemaName, array(
-      'class'       => $this->className(),
-      'description' => $this->description
-    ) );
+  }
+
+  /**
+   * Getter for manager
+   * @return qcl_data_datasource_Manager
+   */
+  protected function getManager()
+  {
+    qcl_import( "qcl_data_datasource_Manager" );
+    return qcl_data_datasource_Manager::getInstance();
+  }
+
+  /**
+   * Returns an 'options' array for a select box with the
+   * schema names
+   *
+   * @return array
+   */
+  public function getSchemaOptions()
+  {
+    $schemata = qcl_data_datasource_Manager::getInstance()->schemas();
+    $options = array();
+    foreach( $schemata as $schema )
+    {
+      $options[] = array(
+        'label' => $schema,
+        'value' => $schema
+      );
+    }
+    return $options;
   }
 
   //-------------------------------------------------------------
@@ -284,14 +312,30 @@ class qcl_data_datasource_DbModel
   //-------------------------------------------------------------
 
   /**
-   * Getter for manager
-   * @return qcl_data_datasource_Manager
+   * Self-registers the datasource model with the manager
+   * @return void
    */
-  public function getManager()
+  public function registerSchema()
   {
-    qcl_import( "qcl_data_datasource_Manager" );
-    return qcl_data_datasource_Manager::getInstance();
+    $this->checkSchemaName();
+    $dsManager = qcl_data_datasource_Manager::getInstance();
+    $dsManager->registerSchema( $this->schemaName, array(
+      'class'       => $this->className(),
+      'description' => $this->description
+    ) );
   }
+
+  /**
+   * Self-unregisters schema
+   * @return void
+   */
+  public function unregisterSchema()
+  {
+    $this->checkSchemaName();
+    $dsManager = qcl_data_datasource_Manager::getInstance();
+    $dsManager->unregisterSchema( $this->schemaName );
+  }
+
 
   /**
    * Registers the models that are part of the datasource
@@ -378,7 +422,7 @@ class qcl_data_datasource_DbModel
   {
     foreach( $this->modelMap as $type => $data )
     {
-      if ( $data['class'] == $class )
+      if ( $data['class'] == $class or ( isset( $data['replace'] ) and $data['replace']== $class  ) )
       {
         return $this->getModelOfType( $type );
       }
@@ -458,15 +502,6 @@ class qcl_data_datasource_DbModel
   }
 
   /**
-   * Returns a list of fields that should be disabled in a form
-   * @return array
-   */
-  public function unusedFields()
-  {
-    return array("resourcepath");
-  }
-
-  /**
    * If the datasource is a file storage. Defaults to false in normal
    * datasources
    * @return bool
@@ -514,11 +549,27 @@ class qcl_data_datasource_DbModel
   public function delete()
   {
     $this->init();
+
+    /*
+     * delete all model data
+     */
     foreach( $this->modelTypes() as $type )
     {
       $this->log( "Destroying model '$type' of datasource $this", QCL_LOG_DATASOURCE);
       $this->getModelOfType( $type )->destroy();
     }
+
+    /*
+     * delete transaction entries
+     */
+    qcl_import("qcl_data_model_db_TransactionModel");
+    qcl_data_model_db_TransactionModel::getInstance()->deleteWhere(array(
+      'datasource'  => $this->namedId()
+    ));
+
+    /*
+     * delete datasource
+     */
     $this->getManager()->deleteDatasource( $this->namedId(), false );
   }
 }

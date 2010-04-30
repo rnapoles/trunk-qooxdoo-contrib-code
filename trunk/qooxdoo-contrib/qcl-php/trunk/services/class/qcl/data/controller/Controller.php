@@ -873,6 +873,19 @@ class qcl_data_controller_Controller
 
     foreach( $modelFormData as $name => $elementData )
     {
+      /*
+       * dynamically get element data from the object
+       */
+      if ( isset( $elementData['delegate'] ) )
+      {
+        qcl_assert_array( $elementData['delegate'] );
+        foreach( $elementData['delegate'] as $key => $delegateMethod )
+        {
+          qcl_assert_method_exists( $model, $delegateMethod );
+          $elementData[$key] = $model->$delegateMethod( $name, $key, $elementData );
+        }
+        unset( $elementData['delegate'] );
+      }
 
       /*
        * check property data
@@ -921,7 +934,6 @@ class qcl_data_controller_Controller
           $marshaler = $elementData['marshaler']['marshal'];
           if( isset( $marshaler['function'] ) )
           {
-            $this->debug(" ",__CLASS__,__LINE__);
             $elementData['value'] = $marshaler['function']( $elementData['value'] );
           }
           elseif( isset( $marshaler['callback'] ) )
