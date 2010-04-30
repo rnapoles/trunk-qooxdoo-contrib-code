@@ -9,12 +9,11 @@
 */
 {
     //show priority of dialects. Next dialect overrides previous one.
-    "dialects": ["qxml"],
+    "dialects": ["qxml", "qcl"],
     "qxml": {
         "path": "../dialects/qxml"
-    }
-    /*,
+    },
     "qcl" : {
         "path" : "../../dialect/qcl"
-    }*/
+    }
 }
