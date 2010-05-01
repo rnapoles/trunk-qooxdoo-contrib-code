@@ -1,11 +1,11 @@
 /* ************************************************************************
 
-   qooxdoo - the new era of web development
-
-   http://qooxdoo.org
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
 
    Copyright:
-     2008 Christian Boulanger
+     2010 Christian Boulanger
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -13,14 +13,10 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Christian Boulanger (cboulanger)
+   * Christian Boulanger (cboulanger)
 
-************************************************************************ */
+ ************************************************************************ */
 
-/* ************************************************************************
-
-
-************************************************************************ */
 
 /**
  * Adds autocompletion to a widget that allows entering values.
