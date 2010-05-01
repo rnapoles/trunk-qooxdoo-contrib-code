@@ -26,26 +26,73 @@
  * Adds autocompletion to a widget that allows entering values.
  * Currently, qx.ui.form.(TextField|TextArea|ComboBox) are supported.
  * 
- * If you want to use this mixin stand-alone you need to uncomment
- * some code in the "properties" section. 
- * 
- * Use the following way:
- * 
- * var widget = new qx.ui.form.(TextField|TextArea|ComboBox);
- * new qcl.data.controller.AutoComplete( model, widget);
- * 
- * The model can be populated by hand or retrieved from a server with
- * a store
- * 
- * The model structure looks like this:
+ * The model is a qx.core.object marshalled from json data (using, for example
+ * qx.data.marshal.Json.create() ), with the following structure:
  * 
  * { "input" : "fragment",
  *   "suggestions" : ["fragment","fragmentation","fragmentabolous","fragmentive",...]
  * }
+ * 
+ * The "input" property contains the input fragment to match, the suggestions are an 
+ * array of values that match the input fragment. Usually, the model would be 
+ * marshalled from data received by the server. Most conveniently, you can connect
+ * the controller qith a qc.data.store.Json (see below).
+ * 
+ * Autocompletion is not limited to single-value fields, i.e. fields that contain
+ * only one value. You can also use separators such as semicolon, comma or newline
+ * to use autocomplete for the individual values. For example, in the "TO" field
+ * of an email client, you can use autocomplete for each email address, without having
+ * to use several separate text fields. 
+ * 
+ * Code examples:
+ * 
+ * Autocomplete with a single-value ComboBox
+ * 
+ * <pre>
+ * var store = new qcl.data.store.JsonRpc(null, "my.service");
+ * store.setAutoLoadMethod("myAutoCompleteValuesMethod");
+ * var combobox = new qx.ui.form.ComboBox();
+ * var controller = new qcl.data.controller.AutoComplete(null,combobox);
+ * controller.bind("input", store, "autoLoadParams",{
+ *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input] : null } 
+ * });
+ * store.bind("model", controller,"model");
+ * </pre>
+ * 
+ * Autocomplete with a multi-valued TextField which contains values separated
+ * by a semicolon (";"). In the database backend, values are also separated by 
+ * ";" in the database column data:
+ * 
+ * <pre>
+ * var store = new qcl.data.store.JsonRpc(null, "my.service");
+ * store.setAutoLoadMethod("myAutoCompleteValuesMethod");
+ * var textfield = new qx.ui.form.TextField();
+ * var controller = new qcl.data.controller.AutoComplete(null,textfield, ";",true);
+ * controller.bind("input", store, "autoLoadParams",{
+ *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input, ';' ] : null } 
+ * });
+ * store.bind("model", controller,"model");
+ * </pre>
+ * 
+ * Autocomplete with a multi-valued TextArea which contains values separated
+ * by newline. In the database backend, values are separated by ";" in the
+ * database column data:
+ * 
+ * <pre>
+ * var store = new qcl.data.store.JsonRpc(null, "my.service");
+ * store.setAutoLoadMethod("myAutoCompleteValuesMethod");
+ * var textarea = new qx.ui.form.TextArea();
+ * var controller = new qcl.data.controller.AutoComplete(null,textarea,"\n");
+ * controller.bind("input", store, "autoLoadParams",{
+ *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input, ';' ] : null } 
+ * });
+ * store.bind("model", controller,"model");
+ * </pre>
  */
 qx.Class.define("qcl.data.controller.AutoComplete",
 {
-
+  extend : qx.core.Object,
+  
   /*
   *****************************************************************************
      PROPERTIES
@@ -54,12 +101,6 @@ qx.Class.define("qcl.data.controller.AutoComplete",
 
   properties :
   {
-    /*
-    ---------------------------------------------------------------------------
-      PROPERTIES
-    ---------------------------------------------------------------------------
-    */
-
     /** 
      * The autocomplete data model 
      */
@@ -88,6 +129,16 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       init : "",
       nullable : true
     },    
+    
+    /**  
+     * Whether an additional space should be inserted after the
+     * separator for aestetic reasons.
+     */
+    additionalSpace :
+    {
+      check : "Boolean",
+      init : false 
+    },        
 
     /**  
      * Delay between keysstrockes in milliseconds before autocompleting action
@@ -97,7 +148,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
     delay :
     {
       check : "Integer",
-      init : 100,
+      init : 500,
       nullable : false
     },
     
@@ -109,7 +160,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
     minCharNumber :
     {
       check : "Integer",
-      init : 2,
+      init : 3,
       nullable : false
     },
     
@@ -136,36 +187,42 @@ qx.Class.define("qcl.data.controller.AutoComplete",
 
   },
   
-  
-  /*
-  *****************************************************************************
-     EVENTS
-  *****************************************************************************
-  */
-
-  events: 
-  {
-
-  },  
-  
   /*
   *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
 
-  construct : function( model, target )  
+  /**
+   * Constructor.
+   * @param model {qx.core.Object} The model of the autocomplete data
+   * @param target {qx.ui.form.TextField|qx.ui.form.TextArea|qx.ui.form.ComboBox}
+   * @param separator {String ? undefined} If given, use as separator
+   * @param additionalSpace {Boolean ? undefined} Whether to add an additional
+   * space character after separators such as a semicolon (for aesthetic purposes
+   * only).
+   */
+  construct : function( model, target, separator, additionalSpace )  
   {
-	  if ( model )
+	  if ( model !== undefined )
     {
       this.setModel( model );
     }
     
-    if ( target )
+    if ( target !== undefined )
     {
       this.setTarget( target );
     }
     
+    if ( separator !== undefined )
+    {
+      this.setSeparator( separator );
+    }
+    
+    if ( additionalSpace !== undefined )
+    {
+      this.setAdditionalSpace( additionalSpace );
+    }
   },
   
   /*
@@ -193,7 +250,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
     {
       if ( model )
       {
-        this._handleAutoCompleteValues();
+        this._handleModelChange();
       }
     },
     
@@ -224,25 +281,22 @@ qx.Class.define("qcl.data.controller.AutoComplete",
           this.error("Invalid widget!");
           return;
       }
-      
      
       /*
        * setup or remove event listeners
        */
       var tf = this.getTextField();
-      if ( tf )
+      if ( old )
       {
-        tf.removeEventListener("keydown", this._handleTextFieldKeypress,this);
-        tf.removeEventListener("input",this._onInput,this);
-        tf.removeEventListener("changeValue",this._onChangeValue,this);
+        tf.removeListener("keydown", this._handleTextFieldKeypress,this);
+        tf.removeListener("input",this._on_changeInput,this);
       }      
       
       if ( target )
       {
         this._lastKeyPress = (new Date).valueOf();
-        tf.addEventListener("keydown", this._handleTextFieldKeypress,this);
-        tf.addEventListener("input",this._onInput,this);
-        tf.addEventListener("changeValue",this._onChangeValue,this);
+        tf.addListener("keydown", this._handleTextFieldKeypress,this);
+        tf.addListener("input",this._on_changeInput,this);
       }
 
     },    
@@ -256,125 +310,70 @@ qx.Class.define("qcl.data.controller.AutoComplete",
      */
     _handleTextFieldKeypress : function(e)
     {
-      var keyEvent, key = e.getKeyIdentifier();
-      var content = this.getTextField().getValue();
-      var tf = this.getTextField();
+      var key = e.getKeyIdentifier();
+      var tf  = this.getTextField();
+      console.log("Keypress event:" +  key );
       
-      console.log("Text field content:" + content + ", keypress event:" +  key );
+      var selLength = tf.getTextSelectionLength();
+      console.log("Selection length:" + selLength);
+      
       switch( key )
       {
+        /* 
+         * pressing enter when text is selected should
+         * not delete the text, this is the common
+         * user experience for autocomplete, i.e. in 
+         * openoffice
+         */        
         case "Enter": 
-
-          /* 
-           * pressing enter when text is selected should
-           * not delete the text, this is the common
-           * user experience for autocomplete, i.e. in 
-           * openoffice
-           */
-          var selLength = tf.getTextSelectionLength();
-          console.log("Selection length:" + selLength, ", auto text selection: " + this._autoTextSelection);
-          if ( selLength )
+          
+          if ( selLength > 0 )
           {
-            if ( this._autoTextSelection )
-            {
-              console.log("Auto-Selection: Putting caret at the end of the selection");
-              var selStart  = tf.getTextSelectionStart();
-              tf.setTextSelection( selStart+selLength,selStart+selLength);              
-            }
+            console.log("Putting caret at the end of the selection");
+            var selStart  = tf.getTextSelectionStart();
+            tf.setTextSelection( selStart+selLength,selStart+selLength);
+            e.preventDefault();
           }
-
-        case "Tab": 
-        case "Up": 
-        case "Down":
-        case "Left": 
-        case "Right": 
           break;
+        
+        /*
+         * Pressing backspace should prevent autocomplete 
+         */
+        case "Backspace":
+          this.__preventAutocomplete = true;
+          break;
+          
+        /*
+         * turn off the prevent flag on next keystroke
+         */
+        default:
+          this.__preventAutocomplete = false;
+          break;
+        
       }
      
     },
 
-    
-    /**
-     * Replaces a text fragment at the current position of the
-     * caret. If a separator has been defined, the text will replace
-     * all characters between the previous and the next separator
-     * seen from the current caret position. When no separator
-     * has been defined, replace the whole textbox content.
-     * This will select the inserted text.
-     * @param text {String}
-     */
-    replaceAtCaretPosition : function ( text )
-    {
-      var tf = this.getTextField();
-      var content  = tf.getValue();
-      var sep      = this.getSeparator();
-      
-      if ( sep )
-      {
-      
-        /*
-         * rewind
-         */
-        var selStart = this.getTextSelectionStart();
-        while ( selStart > 0 
-                && content.charAt(selStart-1) != sep ) selStart--;
-        
-        /*
-         * forward
-         */
-        var selEnd = selStart;
-        while ( selEnd < content.length 
-                && content.charAt(selEnd) != sep ) selEnd++;
-        //console.log("Selecting from " + selStart + " to " + selEnd );
-      }
-      else
-      {
-        //console.log("Selecting all");
-        var selStart = 0;
-        var selEnd   = content.length;
-      }
-      
-      this.setTextSelection(selStart,selEnd);
-      this.setTextSelectionText( text );
-      
-      /*
-       * set caret to the end of the inserted text
-       */
-      qx.client.Timer.once( function(){
-        this.setTextSelection(selStart+text.length,0);     
-      },this,50);      
-    },
-
-
     /**
      * event handler for event triggering the autocomplete action
      */    
-    _onInput : function(e)
+    _on_changeInput : function(e)
     {
       
+      if ( this.__preventAutocomplete )
+      {
+        console.log("Not handling changeInput event...");
+        return;
+      }
       
       var tf =  this.getTextField();
+      
       /*
        * get and save current content of text field
        */
-      var content = tf.getValue();  
+      var content = e.getData();  
+      console.log("Handling changeInput event, content: " + content );
       
-      /*
-       * do not start query if only whitespace has been added
-       */
-       if ( qx.lang.String.trim( content ) != tf.getValue() )
-       {
-         console.log("Only whitespace added ...");
-         return;
-       }
-       
-      /*
-       * cache content
-       */ 
-      this._lastContent = content;
-      
-      console.log( "user typed: " + content );
-    
     	/*
     	 * delay before sending request
     	 */
@@ -399,10 +398,12 @@ qx.Class.define("qcl.data.controller.AutoComplete",
          */
         var _this = this;
         this.__deferredInput = window.setTimeout(function(){
-          _this._onInput(e);
+          _this._on_changeInput(e);
         }, this.getDelay() );
         return;
       }
+      
+      var start, end;
       
       /*
        * separator for multi-valued fields
@@ -411,31 +412,40 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        
       if ( sep )
       {  
-         /*
-          * rewind
-          */
-         var selStart = tf.getTextSelectionStart();
-         while ( selStart > 0 
-                 && content.charAt(selStart-1) != sep ) selStart--;
+        start = tf.getTextSelectionStart();
+        console.log( "Selection start: " + start );
+        
+        /*
+         * rewind
+         */
+        while ( start > 0  && content.charAt(start-1) != sep ) start--;
          
-         /*
-          * forward
-          */
-         var selEnd = selStart;
-         while ( selEnd < content.length 
-                 && content.charAt(selEnd) != sep ) selEnd++;
+        /*
+         * forward
+         */
+        end = start;
+        while ( end < content.length && content.charAt(end) != sep ) end++;
       }
       else
       {
-        var selStart = 0;
-        var selEnd   = content.length-1;
+        start = 0;
+        end   = content.length;
       }
       
       /*
        * text fragment
        */
-      var input = qx.lang.String.trim( content.substring( selStart,selEnd ) );
+      var input = qx.lang.String.trim( content.substring( start, end ) );
       console.log( "Input is '" + input +"'");
+      
+      /*
+       * do not start query if only whitespace has been added
+       */
+       if ( qx.lang.String.trim( input ) != input )
+       {
+         console.log("Only whitespace added ...");
+         return;
+       }
       
       /*
        * Store timestamp
@@ -443,149 +453,152 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       this._lastKeyPress = (new Date).valueOf();
 
       /*
-       * check if we have a matching model
+       * if we have model data, search this first
        */
-      if ( this.getModel() && this.getModel().getInput() == input )
+      var model = this.getModel();
+      
+      if( model )
       {
-        this._handleAutoCompleteValues();  
+        console.log("Using existing model data...");
+        var suggestions = model.getSuggestions().toArray();
+        console.log( suggestions.length  + " suggestions.");
+        for ( var i=0; i<suggestions.length; i++ )
+        {
+          var item = suggestions[i];
+          console.log( "Next item: '" + item.substring(0,input.length ) + "'");
+          if ( item.substring(0,input.length ) == input )
+          {
+            console.log( "... matches! " );
+            model.setInput( input );
+            suggestions.unshift( item );
+            model.setSuggestions( new qx.data.Array( suggestions ) );
+            this._handleModelChange();
+            return true;
+          }
+          else
+          {
+            console.log( "...doesn't match." );
+          }
+        }
+      }      
+      
+      /*
+       * Send request if we have enough characters
+       */
+      if ( input.length >= this.getMinCharNumber() )
+      {
+        console.log( "sending request for " + input );
+        this.setInput(input);  
       }
       else
       {
-        /*
-         * Send request if we have enough characters
-         */
-        if ( input.length >= this.getMinCharNumber() )
-        {
-          console.log( "sending request for " + input );
-          this.setInput(input);  
-        }
-        else
-        {
-          console.log("Not enough characters...");
-        }
+        console.log("Not enough characters...");
       }
+
     },    
   
     /**
      * Called when autocomplete data is available
      */  
-    _handleAutoCompleteValues : function ()
+    _handleModelChange : function ()
     {
       /*
        * compare the input that was used to query
        * the autocompletion data and the current input
        */
       var tf = this.getTextField();
-      var model = this.getModel();
       var content = tf.getValue() || ""; 
-      var input = model.getInput();  
-      var suggestions = model.suggestions();
+      
+      var model = this.getModel();
+      var input = model.getInput();
+      
+      var suggestions = model.getSuggestions().toArray();
       
       /*
-       * if no suggestions, abort
+       * if nothing to match, abort
        */
-      if ( ! suggestions || suggestions.length == 0 )
+      if ( ! model || ! content || ! input || ! suggestions || suggestions.length == 0 )
       {
+        console.log( [model,content,input,suggestions]);
+        console.log( "Nothing to match, aborting...");
         return false;
       }
+      console.log( suggestions.toString() );
+      
+      var match, start, end; 
       
       /*
        * separator for multi-value fields
        */
       var sep = this.getSeparator();                            
-      console.log("Separator '"+sep+"'");
       if ( sep )
-      { 
+      {
+        console.log("Separator '"+sep+"'");
         /*
          * rewind
          */
-        var selStart = tf.getTextSelectionStart();
-        while ( selStart > 0 
-                && content.charAt(selStart-1) != sep ) selStart--;
+        start = tf.getTextSelectionStart();
+        while ( start > 0 && content.charAt(start-1) != sep ) start--;
         
         /*
          * forward
          */
-        var selEnd = selStart;
-        while ( selEnd < content.length 
-                && content.charAt(selEnd) != sep ) selEnd++;
-        console.log("Selecting from " + selStart + " to " + selEnd);
+        end = start;
+        while ( end < content.length && content.charAt(end) != sep ) end++;
+        console.log("Selecting from " + start + " to " + end);
       }
       else
       {
-        console.log("Selecting all...");
-        var selStart = 0;
-        var selEnd   = content.length-1;
+        start = 0;
+        end   = content.length;
+        //match = qx.lang.String.trim( content.substring( start, end-1 ) );
       }
       
       /*
        * get text fragment
        */
-      var cInput = qx.lang.String.trim( content.substring(selStart,selEnd) );
-      console.log ("trying to match '" +  input + "' with '" + cInput + "'." );
+      match = qx.lang.String.trim( content.substring( start, end ) ); 
+      console.log ("trying to match response '" +  match + "' with input '" + input  + "'." );
       
       /*
        * check whether input is still the same so that latecoming request
        * do not mess up the content
        */
-      if ( input != cInput )
+      if ( input != match )
       {
-        console.log ("we're late: '" +  input + "' != '" + cInput + "'." );
+        console.log ("Response doesn't fit current input: '" +   match + "' != '" + input + "'." );
         return false;
       }
       
       /*
        * apply matched text and suggestion to content
        */
-      var text = suggestions[0];
-      console.log("Suggestion: " + text );
-      console.log("Matching '" + text.substr(0,input.length) + "' with '" + input + "'");
+      var suggestion = suggestions[0];
+      var pre  = content.substring(0,start);
+      var post = content.substring(end);
       
-      /*
-       * replace all if suggestion is not like the input
-       */
-      if ( text.substr(0,input.length) != input )
+      if( pre.length && this.getAdditionalSpace() )
       {
-        selStart = 0;
-        selEnd   = text.length -1
+        pre += " ";
       }
+      end = (pre + suggestion).length;
+      console.log( "'" + pre + "' + '"+ suggestion + "' + '" + post +"'" );
       
       /* 
        * set value, preventing that other parts of this 
        * controller to mess this up.
        */ 
-      this.__autocompleteActive = true;
-      this.__preventChange = true;
-      
-      tf.setTextSelection(selStart,selEnd);     
-      //tf.setTextSelectionText( text );
-      
-      this.__preventChange = false;
-      this.__autocompleteActive = false;
-      this._lastContent = tf.getValue();
-      
-      /*
-       * remember what is selected
-       */
-      this._autoTextTextSelection = text.substr(input.length);
+      this.__preventAutocomplete = true;      
+      tf.setValue( pre + suggestion + post );   
+      this.__preventAutocomplete = false;
       
       /*
        * select the added text
        */
-      if ( text.substr(0,input.length) == input )
-      {
-        qx.client.Timer.once( function(){
-          //console.log("TextSelection start " + (selStart+input.length) );
-          tf.setTextSelectionStart( selStart+input.length );
-        },this,0);
-      }
-      else
-      {
-        qx.client.Timer.once( function(){
-          //console.log("selectAll()" );
-          tf.selectAll();
-        },this,0);          
-      }
+      qx.event.Timer.once( function(){
+        console.log("TextSelection: " + start+input.length + " - " + end );
+        tf.setTextSelection( start+input.length, end );
+      },this,10);
     }
   }
 
