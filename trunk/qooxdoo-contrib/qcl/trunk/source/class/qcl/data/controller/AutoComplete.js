@@ -308,10 +308,10 @@ qx.Class.define("qcl.data.controller.AutoComplete",
     {
       var key = e.getKeyIdentifier();
       var tf  = this.getTextField();
-      console.log("Keypress event:" +  key );
+      //console.log("Keypress event:" +  key );
       
       var selLength = tf.getTextSelectionLength();
-      console.log("Selection length:" + selLength);
+      //console.log("Selection length:" + selLength);
       
       switch( key )
       {
@@ -325,7 +325,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
           
           if ( selLength > 0 )
           {
-            console.log("Putting caret at the end of the selection");
+            //console.log("Putting caret at the end of the selection");
             var selStart  = tf.getTextSelectionStart();
             tf.setTextSelection( selStart+selLength,selStart+selLength);
             e.preventDefault();
@@ -358,7 +358,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       
       if ( this.__preventAutocomplete )
       {
-        console.log("Not handling changeInput event...");
+        //console.log("Not handling changeInput event...");
         return;
       }
       
@@ -368,7 +368,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * get and save current content of text field
        */
       var content = e.getData();  
-      console.log("Handling changeInput event, content: " + content );
+      //console.log("Handling changeInput event, content: " + content );
       
     	/*
     	 * delay before sending request
@@ -377,7 +377,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       
       if (( now - this._lastKeyPress) < this.getDelay() ) 
       {
-        console.log( "delay not reached");
+        //console.log( "delay not reached");
         this._lastKeyPress = now;
         
         /*
@@ -409,7 +409,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       if ( sep )
       {  
         start = tf.getTextSelectionStart();
-        console.log( "Selection start: " + start );
+        //console.log( "Selection start: " + start );
         
         /*
          * rewind
@@ -432,14 +432,14 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * text fragment
        */
       var input = qx.lang.String.trim( content.substring( start, end ) );
-      console.log( "Input is '" + input +"'");
+      //console.log( "Input is '" + input +"'");
       
       /*
        * do not start query if only whitespace has been added
        */
        if ( qx.lang.String.trim( input ) != input )
        {
-         console.log("Only whitespace added ...");
+         //console.log("Only whitespace added ...");
          return;
        }
       
@@ -455,16 +455,16 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       
       if( model )
       {
-        console.log("Using existing model data...");
+        //console.log("Using existing model data...");
         var suggestions = model.getSuggestions().toArray();
-        console.log( suggestions.length  + " suggestions.");
+        //console.log( suggestions.length  + " suggestions.");
         for ( var i=0; i<suggestions.length; i++ )
         {
           var item = suggestions[i];
-          console.log( "Next item: '" + item.substring(0,input.length ) + "'");
+          //console.log( "Next item: '" + item.substring(0,input.length ) + "'");
           if ( item.substring(0,input.length ) == input )
           {
-            console.log( "... matches! " );
+            //console.log( "... matches! " );
             model.setInput( input );
             suggestions.unshift( item );
             model.setSuggestions( new qx.data.Array( suggestions ) );
@@ -473,7 +473,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
           }
           else
           {
-            console.log( "...doesn't match." );
+            //console.log( "...doesn't match." );
           }
         }
       }      
@@ -483,12 +483,12 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        */
       if ( input.length >= this.getMinCharNumber() )
       {
-        console.log( "sending request for " + input );
+        //console.log( "sending request for " + input );
         this.setInput(input);  
       }
       else
       {
-        console.log("Not enough characters...");
+        //console.log("Not enough characters...");
       }
 
     },    
@@ -515,11 +515,11 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        */
       if ( ! model || ! content || ! input || ! suggestions || suggestions.length == 0 )
       {
-        console.log( [model,content,input,suggestions]);
-        console.log( "Nothing to match, aborting...");
+        //console.log( [model,content,input,suggestions]);
+        //console.log( "Nothing to match, aborting...");
         return false;
       }
-      console.log( suggestions.toString() );
+      //console.log( suggestions.toString() );
       
       var match, start, end; 
       
@@ -529,7 +529,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       var sep = this.getSeparator();                            
       if ( sep )
       {
-        console.log("Separator '"+sep+"'");
+        //console.log("Separator '"+sep+"'");
         /*
          * rewind
          */
@@ -541,7 +541,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
          */
         end = start;
         while ( end < content.length && content.charAt(end) != sep ) end++;
-        console.log("Selecting from " + start + " to " + end);
+        //console.log("Selecting from " + start + " to " + end);
       }
       else
       {
@@ -554,7 +554,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * get text fragment
        */
       match = qx.lang.String.trim( content.substring( start, end ) ); 
-      console.log ("trying to match response '" +  match + "' with input '" + input  + "'." );
+      //console.log ("trying to match response '" +  match + "' with input '" + input  + "'." );
       
       /*
        * check whether input is still the same so that latecoming request
@@ -562,7 +562,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        */
       if ( input != match )
       {
-        console.log ("Response doesn't fit current input: '" +   match + "' != '" + input + "'." );
+        //console.log ("Response doesn't fit current input: '" +   match + "' != '" + input + "'." );
         return false;
       }
       
@@ -578,7 +578,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
         pre += " ";
       }
       end = (pre + suggestion).length;
-      console.log( "'" + pre + "' + '"+ suggestion + "' + '" + post +"'" );
+      //console.log( "'" + pre + "' + '"+ suggestion + "' + '" + post +"'" );
       
       /* 
        * set value, preventing that other parts of this 
@@ -592,7 +592,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * select the added text
        */
       qx.event.Timer.once( function(){
-        console.log("TextSelection: " + start+input.length + " - " + end );
+        //console.log("TextSelection: " + start+input.length + " - " + end );
         tf.setTextSelection( start+input.length, end );
       },this,10);
     }
