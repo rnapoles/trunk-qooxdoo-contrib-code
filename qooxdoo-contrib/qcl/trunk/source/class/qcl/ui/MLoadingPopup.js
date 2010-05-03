@@ -74,7 +74,7 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
      _centerPopup :function()
      {
         var bounds = this.__popup.getBounds();
-        if ( this.__target && "left" in this.__target.getLayoutProperties() )
+        if ( this.__target && ( "left" in this.__target.getLayoutProperties() ) )
         {
           var l = this.__target.getLayoutProperties();
           this.__popup.placeToPoint({
