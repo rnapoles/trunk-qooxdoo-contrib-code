@@ -56,8 +56,7 @@
  * </pre>
  * 
  * Autocomplete with a multi-valued TextField which contains values separated
- * by a semicolon (";"). In the database backend, values are also separated by 
- * ";" in the database column data:
+ * by a semicolon (";").
  * 
  * <pre>
  * var store = new qcl.data.store.JsonRpc(null, "my.service");
@@ -65,14 +64,13 @@
  * var textfield = new qx.ui.form.TextField();
  * var controller = new qcl.data.controller.AutoComplete(null,textfield, ";",true);
  * controller.bind("input", store, "autoLoadParams",{
- *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input, ';' ] : null } 
+ *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input ] : null } 
  * });
  * store.bind("model", controller,"model");
  * </pre>
  * 
  * Autocomplete with a multi-valued TextArea which contains values separated
- * by newline. In the database backend, values are separated by ";" in the
- * database column data:
+ * by newline. 
  * 
  * <pre>
  * var store = new qcl.data.store.JsonRpc(null, "my.service");
@@ -80,7 +78,7 @@
  * var textarea = new qx.ui.form.TextArea();
  * var controller = new qcl.data.controller.AutoComplete(null,textarea,"\n");
  * controller.bind("input", store, "autoLoadParams",{
- *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input, ';' ] : null } 
+ *   'converter' : function( input ){ return input ? ["param1", "param2", "param3", input ] : null } 
  * });
  * store.bind("model", controller,"model");
  * </pre>

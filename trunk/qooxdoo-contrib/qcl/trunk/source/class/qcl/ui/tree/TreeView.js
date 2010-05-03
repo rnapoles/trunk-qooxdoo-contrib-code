@@ -481,7 +481,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
        var storeId = store.getStoreId();
        this.clearSelection();
        
-       this.showPopup("Loading tree data...");
+       this.showPopup("Loading folder data ...", this);
 
        /*
         * get node count and transaction id from server
@@ -559,7 +559,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                         && data.queue.length )
                {
                  counter += data.nodeData.length;
-                 this.showPopup("Loading tree data... " +  Math.floor( 100* (counter/nodeCount) ) + "%" );
+                 this.showPopup("Loading folder data... " +  Math.floor( 100* (counter/nodeCount) ) + "%", this );
                  store.load(
                    this.getChildNodeDataMethod(), 
                    [ datasource, data.queue, this.getChildrenPerRequest(), 
