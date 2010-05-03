@@ -34,6 +34,9 @@
  * marshalled from data received by the server. Most conveniently, you can connect
  * the controller qith a qc.data.store.Json (see below).
  * 
+ * You can accept a autocomplete suggestion by pressing "Enter" and cycle through
+ * the suggestions, if there is more than one, with the "Cursor Down" key. 
+ * 
  * Autocompletion is not limited to single-value fields, i.e. fields that contain
  * only one value. You can also use separators such as semicolon, comma or newline
  * to use autocomplete for the individual values. For example, in the "TO" field
@@ -338,6 +341,14 @@ qx.Class.define("qcl.data.controller.AutoComplete",
           break;
           
         /*
+         * Pressing backspace should prevent autocomplete 
+         */
+        case "Down":
+          e.preventDefault();
+          this.showNextSuggestion();
+          break;          
+          
+        /*
          * turn off the prevent flag on next keystroke
          */
         default:
@@ -490,6 +501,24 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       }
 
     },    
+    
+    showNextSuggestion : function()
+    {
+      var tf    = this.getTextField();
+      var value = tf.getValue();
+      var start = tf.getTextSelectionStart();
+      var end   = tf.getTextSelectionEnd();
+      if ( start == end ) return;
+      this.__preventAutocomplete = true;      
+      qcl.data.controller.AutoComplete.active = true;
+      tf.setValue( value.substring(0,start) + value.substring(end) );
+      qcl.data.controller.AutoComplete.active = false;
+      this.__preventAutocomplete = false;      
+      var suggestions = this.getModel().getSuggestions().toArray();
+      suggestions.push( suggestions.shift() );
+      this.getModel().setSuggestions(new qx.data.Array(suggestions));
+      this._handleModelChange();
+    },
   
     /**
      * Called when autocomplete data is available
@@ -501,6 +530,14 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * the autocompletion data and the current input
        */
       var tf = this.getTextField();
+      
+      if( ! qx.ui.core.FocusHandler.getInstance().isFocused(  this.getTarget() ) )
+      {
+        //console.warn("Textfield no longer focused, aborting ...");
+        return;
+      }
+      
+      
       var content = tf.getValue() || ""; 
       
       var model = this.getModel();
@@ -583,7 +620,9 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * controller to mess this up.
        */ 
       this.__preventAutocomplete = true;      
+      qcl.data.controller.AutoComplete.active = true;
       tf.setValue( pre + suggestion + post );   
+      qcl.data.controller.AutoComplete.active = false;
       this.__preventAutocomplete = false;
       
       /*
