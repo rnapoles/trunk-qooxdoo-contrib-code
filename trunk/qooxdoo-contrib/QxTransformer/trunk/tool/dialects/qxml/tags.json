@@ -144,7 +144,8 @@
             "qx:window": "add/setLayout.mako",
             "groupBox": "add/setLayout.mako",
             "qx:slideBar": "add/setLayout.mako",
-            "qx:page": "add/setLayout.mako"
+            "qx:page": "add/setLayout.mako",
+            "qx:widget" : "add/setLayout.mako"
         }
     },
 
