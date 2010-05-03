@@ -310,7 +310,6 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       var key = e.getKeyIdentifier();
       var tf  = this.getTextField();
       //console.log("Keypress event:" +  key );
-      
       var selLength = tf.getTextSelectionLength();
       //console.log("Selection length:" + selLength);
       
@@ -341,12 +340,23 @@ qx.Class.define("qcl.data.controller.AutoComplete",
           break;
           
         /*
-         * Pressing backspace should prevent autocomplete 
+         * Pressing the down and up keys cycles through the 
+         * suggestions
          */
         case "Down":
-          e.preventDefault();
-          this.showNextSuggestion();
+          if ( selLength > 0 )
+          {
+            e.preventDefault();
+            this.showNextSuggestion(1);
+          }
           break;          
+        case "Up":
+          if ( selLength > 0 )
+          {
+            e.preventDefault();
+            this.showNextSuggestion(-1);
+          }
+          break;   
           
         /*
          * turn off the prevent flag on next keystroke
@@ -376,7 +386,10 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       /*
        * get and save current content of text field
        */
-      var content = e.getData();  
+      var content = e.getData();
+      console.warn( content );
+      if ( ! content ) return;
+      
       //console.log("Handling changeInput event, content: " + content );
       
     	/*
@@ -470,6 +483,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
         for ( var i=0; i<suggestions.length; i++ )
         {
           var item = suggestions[i];
+          if ( ! item ) continue;
           //console.log( "Next item: '" + item.substring(0,input.length ) + "'");
           if ( item.substring(0,input.length ) == input )
           {
@@ -502,20 +516,36 @@ qx.Class.define("qcl.data.controller.AutoComplete",
 
     },    
     
-    showNextSuggestion : function()
+    /**
+     * Shows the next suggestion
+     * @param direction {Integer} 1 for forward, -1 for backwards
+     */
+    showNextSuggestion : function( direction )
     {
       var tf    = this.getTextField();
       var value = tf.getValue();
       var start = tf.getTextSelectionStart();
       var end   = tf.getTextSelectionEnd();
-      if ( start == end ) return;
-      this.__preventAutocomplete = true;      
-      qcl.data.controller.AutoComplete.active = true;
-      tf.setValue( value.substring(0,start) + value.substring(end) );
-      qcl.data.controller.AutoComplete.active = false;
-      this.__preventAutocomplete = false;      
+      if ( end > start ) 
+      {
+        this.__preventAutocomplete = true;      
+        qcl.data.controller.AutoComplete.active = true;
+        tf.setValue( value.substring(0,start) + value.substring(end) );
+        qcl.data.controller.AutoComplete.active = false;
+        this.__preventAutocomplete = false;
+      }
       var suggestions = this.getModel().getSuggestions().toArray();
-      suggestions.push( suggestions.shift() );
+      switch( direction )
+      {
+        case 1: 
+          suggestions.push( suggestions.shift() );
+          break;
+        case -1:
+          suggestions.unshift( suggestions.pop() );
+          break;
+        default:
+          this.error("Invalid argument");
+      }
       this.getModel().setSuggestions(new qx.data.Array(suggestions));
       this._handleModelChange();
     },
@@ -595,7 +625,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * check whether input is still the same so that latecoming request
        * do not mess up the content
        */
-      if ( input != match )
+      if ( input.toLowerCase() != match.toLowerCase() )
       {
         //console.log ("Response doesn't fit current input: '" +   match + "' != '" + input + "'." );
         return false;
