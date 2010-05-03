@@ -387,7 +387,6 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * get and save current content of text field
        */
       var content = e.getData();
-      console.warn( content );
       if ( ! content ) return;
       
       //console.log("Handling changeInput event, content: " + content );
