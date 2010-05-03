@@ -35,7 +35,7 @@
  * the controller qith a qc.data.store.Json (see below).
  * 
  * You can accept a autocomplete suggestion by pressing "Enter" and cycle through
- * the suggestions, if there is more than one, with the "Cursor Down" key. 
+ * the suggestions, if there is more than one, with the "Cursor Down" and "Cursor Up" key. 
  * 
  * Autocompletion is not limited to single-value fields, i.e. fields that contain
  * only one value. You can also use separators such as semicolon, comma or newline

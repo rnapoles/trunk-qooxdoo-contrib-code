@@ -189,11 +189,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
    /**
     * The member property name of the tree widget 
     */
-   treeWidgetContainerMemberName :
+   treeWidgetContainer :
    {
-      check : "String",
-      nullable : false,
-      init : "treeWidgetContainer"
+      check : "qx.ui.core.Widget",
+      nullable : true
    }
   },
   
@@ -214,6 +213,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
     this.__datasources = {}; 
     
     this.__prompt = new dialog.Prompt();
+    
+    this.setTreeWidgetContainer(this);
     
     /*
      * pupup
@@ -382,14 +383,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      tree.addListener("dblclick", this._on_treeDblClick, this );
      
      ds.treeWidget = tree;
-     var memberName = this.getTreeWidgetContainerMemberName();
-     if ( ! memberName || 
-          ! this[memberName] ||
-          ! this[memberName] instanceof qx.ui.container.Composite )
-     {
-       this.error( "Container for tree widget (member name " + memberName + ") must exist and must be an instance of qx.ui.container.Composite! ")
-     }
-     this[memberName].add( tree, { flex : 10, height: null } );
+     this.getTreeWidgetContainer().add( tree, { flex : 10, height: null } );
      
      /*
       * Store
@@ -398,19 +392,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      ds.store = new qcl.data.store.JsonRpc( 
        null, this.getServiceName(), this.getMarshaler() 
      );
-     //ds.store.registerStore();
-     
-     /*
-      * bind the server-supplied status text to the tree's status bar.
-      */
-     ds.store.bind(
-       "model.statusText", 
-       this._statusLabel, "value", {
-         converter : function( text ){
-           return text;
-         }
-       } 
-     );       
+     //ds.store.registerStore();   
      
      /*
       * Controller
