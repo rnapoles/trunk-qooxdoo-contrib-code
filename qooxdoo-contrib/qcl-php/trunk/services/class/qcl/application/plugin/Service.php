@@ -45,6 +45,8 @@ class qcl_application_plugin_Service
      */
     foreach ( scandir($plugin_path) as $namedId )
     {
+      if ( $namedId[0] == "." ) continue;
+
       $file = "$plugin_path/$namedId/Plugin.php";
       if ( qcl_file_exists( $file) )
       {
