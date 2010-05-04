@@ -956,20 +956,28 @@ class qcl_data_db_adapter_PdoMysql
   }
 
   /**
-   * Checks if a column exists in the table
+   * Checks if a column exists in the table. Caches the result for better
+   * performance. To get around the cache, pass false as third parameter.
+   *
    * @param string $table
    * @param string $column
+   * @param boolean $useCache Default: true
    * @return boolean
    */
-  public function columnExists( $table, $column )
+  public function columnExists( $table, $column, $useCache = true )
   {
-    $database = $this->getDatabase();
-    $table = $this->formatTableName( $table );
-    return (bool) count( $this->fetchAll("
-      SHOW COLUMNS FROM $table FROM `$database` LIKE :column
-    ", array(
-      ":column"   => $column
-    ) ) );
+    static $cache = array();
+    if ( $useCache === false or ! isset( $cache[$table][$column] ) )
+    {
+      $database = $this->getDatabase();
+      $table = $this->formatTableName( $table );
+      $cache[$table][$column] = (bool) count( $this->fetchAll("
+        SHOW COLUMNS FROM $table FROM `$database` LIKE :column
+      ", array(
+        ":column"   => $column
+      ) ) );
+    }
+    return $cache[$table][$column];
   }
 
   /**
