@@ -1,0 +1,198 @@
+/* ************************************************************************
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+
+   Authors:
+     saaj <mail@saaj.me>
+
+************************************************************************ */
+qx.Class.define("treevirtualdd.TreeModel",
+{
+  extend     : qx.ui.treevirtual.SimpleTreeDataModel,
+
+  members : {
+
+  	loadData : function()
+  	{
+  		var data = [
+        {"title":"Mogwai","parentId":1,"visible":true,"folder":true},
+        {"title":"Incubus","parentId":1,"visible":true,"folder":true},
+        {"title":"dredg","parentId":1,"visible":true,"folder":true},
+        {"title":"Oceansize","parentId":1,"visible":true,"folder":true},
+        {"title":"Radiohead","parentId":1,"visible":true,"folder":true},
+        {"title":"Yourcodenameis:milo","parentId":1,"visible":true,"folder":true},
+        {"title":"Tool","parentId":1,"visible":true,"folder":true},
+        {"title":"Aereogramme","parentId":1,"visible":true,"folder":true},
+        {"title":"Rishloo","parentId":1,"visible":true,"folder":true},
+        {"title":"Balmorhea","parentId":1,"visible":true,"folder":true}
+      ];
+
+    	this._appendNodes(data);
+  	},
+
+  	_appendNodes : function(nodes)
+  	{
+      if(!(nodes instanceof Array))
+      {
+        throw new Error("Nodes must be represented by Array");
+      }
+
+      var tree = this.getTree();
+      var nodeId;
+      nodes.forEach(function(node)
+      {
+      	node.parentId = node.parentId == 1 ? null : node.parentId;
+
+        if(node.folder)
+        {
+          nodeId = this.addBranch(node.parentId, node.title, node.visible, false, false);
+          tree.setNodeDragType && tree.setNodeDragType(nodeId, "folder");
+        }
+        else
+        {
+          nodeId = this.addLeaf(node.parentId, node.title, node.visible);
+          tree.setNodeDragType && tree.setNodeDragType(nodeId, "leaf");
+        }
+      }, this);
+
+      this.getTree().setNodeDragType(0, "root");
+
+      this.setData();
+  	},
+
+    /**
+     * moves or copies a node to a different place. if you supply only one argument, it is treated as
+     * the result of the getDropData() method. Otherwise use the parameter list below.
+     * @param first {Object} "this" if moving within the same tree
+     * @param sourceNode {Object}
+     * @param targetNode {Object}
+     * @param position {Integer}
+     * @param action {String}
+     *    position source node will be inserted above target if -1,
+     *    below target if 1, and as a child if 0 or undefined
+     */
+    moveNode : function(first, sourceNodes, targetNode, position, action)
+    {
+      // one-parameter signature
+      if(arguments.length == 1)
+      {
+        var sourceWidget = first.sourceWidget,
+            sourceNodes  = first.nodeData,
+            targetNode   = first.targetNode,
+            position     = first.position,
+            action       = first.action;
+      }
+      else
+      {
+        var sourceWidget = first;
+      }
+
+      if(!sourceNodes)
+      {
+        this.error("No source node(s) supplied. Aborting.");
+      }
+
+      // if sourceNodes parameter is an array of source nodes, move each
+      if(typeof sourceNodes == "object" && sourceNodes.length)
+      {
+        sourceNodes.forEach(function(sourceNode)
+        {
+          this.moveNode(sourceWidget, sourceNode, targetNode, position, action);
+        },this);
+
+        return true;
+      }
+
+      //this.debug([sourceNodes.label, targetNode.label, position]);
+
+      // clear selection
+      sourceWidget.getSelectionModel().clearSelection();
+
+      // source
+      var sourceNode       = sourceNodes;
+      var sourceNodeId     = sourceNode.nodeId;
+      var sourceParentNode = sourceWidget.nodeGet(sourceNode.parentNodeId);
+      var sourceNodeIndex  = sourceParentNode.children.indexOf(sourceNodeId);
+
+      // target
+      var targetNodeId       = targetNode.nodeId;
+      var targetParentNodeId = targetNode.parentNodeId || 0;
+      var targetParentNode   = this.getTree().nodeGet(targetParentNodeId);
+      if(!targetParentNode)
+      {
+        throw new Error("Request to move a child to a non-existent parent");
+      }
+
+      var targetNodeIndex = targetParentNode.children.indexOf(targetNodeId);
+      if(targetParentNode.type == qx.ui.treevirtual.SimpleTreeDataModel.Type.LEAF)
+      {
+        throw new Error("Sorry, a LEAF may not have children.");
+      }
+
+      // moving / copying the node
+      // copy action
+      // if we move a copy or from a different tree, we need to create a new node
+      if(action == "copy" || sourceWidget != this.getTree())
+      {
+        // get a new node id for the copy
+        var sourceNodeId = this._nodeArr.length;
+
+        // Set the data for this node
+        var sourceNode = qx.lang.Object.copy(sourceNode);
+        sourceNode.nodeId = sourceNodeId;
+
+        // Add this node to the array
+        this._nodeArr.push(sourceNode);
+
+        // handle children
+        if(sourceNode.children.length)
+        {
+          this.warn("Copying of node children not implemented yet!")
+          sourceNode.children = [];
+        }
+      }
+
+      // move action
+      if(action == "move")
+      {
+        qx.lang.Array.removeAt(sourceParentNode.children, sourceNodeIndex);
+        sourceWidget.getDataModel().setData();
+        if(sourceParentNode.nodeId == targetParentNodeId)
+        {
+          targetNodeIndex = targetParentNode.children.indexOf(targetNodeId);
+        }
+      }
+
+      // insert node
+      if(position > 0)
+      {
+        // insert source below target
+        sourceNode.level        = targetNode.level;
+        sourceNode.parentNodeId = targetParentNodeId;
+        qx.lang.Array.insertAt(targetParentNode.children, sourceNodeId, targetNodeIndex + 1);
+      }
+      else if(position < 0)
+      {
+        // insert source above target
+        sourceNode.level        = targetNode.level;
+        sourceNode.parentNodeId = targetParentNodeId;
+        qx.lang.Array.insertAt(targetParentNode.children, sourceNodeId, targetNodeIndex);
+      }
+      else if(targetNode.type != qx.ui.treevirtual.SimpleTreeDataModel.Type.LEAF)
+      {
+        // insert source as a child of target
+        sourceNode.level        = targetNode.level + 1;
+        sourceNode.parentNodeId = targetNodeId;
+        targetNode.children.push(sourceNodeId);
+      }
+
+      this.setData();
+
+      // Return the node we just moved
+      return sourceNode;
+    }
+
+  }
+
+});
