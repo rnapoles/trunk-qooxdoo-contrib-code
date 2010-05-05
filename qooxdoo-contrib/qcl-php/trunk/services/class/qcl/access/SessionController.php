@@ -66,7 +66,6 @@ class qcl_access_SessionController
     if ( ! $sessionId )
     {
       throw new qcl_access_InvalidSessionException("No valid session.");
-      return false;
     }
 
     /*
@@ -406,7 +405,7 @@ class qcl_access_SessionController
    */
   public function cleanup()
   {
-
+return;
     /*
      * clean up stale users
      */
@@ -429,8 +428,7 @@ class qcl_access_SessionController
     $sessionModel = $this->getSessionModel();
     $ids = $sessionModel->getQueryBehavior()->deleteWhere("id",
       new qcl_data_db_Query( array( 'where' =>
-      "anonymous = 1 AND
-      TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 3600"
+      "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
     ) ) );
   }
 }

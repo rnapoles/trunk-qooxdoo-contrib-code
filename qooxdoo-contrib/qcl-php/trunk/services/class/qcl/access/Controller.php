@@ -71,11 +71,11 @@ class qcl_access_Controller
   );
 
   /**
-   * The currently active user, determined from request or
-   * from session variable. Is a user model instance
-   * @var qcl_access_model_User
+   * The id of the currently active user, determined from request or
+   * from session variable.
+   * @var int
    */
-  private $activeUser = null;
+  private $activeUserId = null;
 
   //-------------------------------------------------------------
   // initialization
@@ -104,8 +104,9 @@ class qcl_access_Controller
 
   /**
    * Gets the user data model
-   * @param string|int $id Load record if given
+   * @param string|int $id Load record if given. Deprecated.
    * @return qcl_access_model_User
+   * @deprecated Do not pass id as argument
    * FIXME Get from access datasource
    * FIXME Remove argument
    */
@@ -118,8 +119,9 @@ class qcl_access_Controller
 
   /**
    * Gets the permission data model
-   * @param string|int $id Load record if given
+   * @param string|int $id Load record if given.Deprecated.
    * @return qcl_access_model_Permission
+   * @deprecated Do not pass id as argument
    * FIXME Get from access datasource
    * FIXME Remove argument
    */
@@ -132,8 +134,9 @@ class qcl_access_Controller
 
   /**
    * Gets the role data model
-   * @param string|int $id Load record if given
+   * @param string|int $id Load record if given.Deprecated.
    * @return qcl_access_model_Role
+   * @deprecated Do not pass id as argument
    * FIXME Get from access datasource
    * FIXME Remove argument
    */
@@ -150,7 +153,10 @@ class qcl_access_Controller
    */
   public function getActiveUser()
   {
-    return $this->activeUser;
+    if( $this->activeUserId === null ) return null;
+    $userModel = $this->getUserModel();
+    $userModel->load( $this->activeUserId );
+    return $userModel;
   }
 
   /**
@@ -160,9 +166,13 @@ class qcl_access_Controller
    */
   public function setActiveUser( $userObject )
   {
-    if ( $userObject === null or $userObject instanceof qcl_access_model_User )
+    if ( $userObject === null )
     {
-      $this->activeUser = $userObject;
+      $this->activeUserId = null;
+    }
+    elseif ( $userObject instanceof qcl_access_model_User )
+    {
+      $this->activeUserId = $userObject->id();
     }
     else
     {
@@ -356,8 +366,9 @@ class qcl_access_Controller
       else
       {
         $userId = qcl_util_registry_Session::get("activeUserId");
-        $userModel = $this->getUserModel( $userId );
-        $this->setActiveUser( $userModel );
+        $activeUser = $this->getUserModel();
+        $activeUser->load($userId);
+        $this->setActiveUser( $activeUser );
 
         /*
          * If we have an authenticated user, check for timeout
@@ -556,8 +567,8 @@ class qcl_access_Controller
      * save a copy of the current user model as
      * the new active user and reset its timestamp
      */
-    $userModel  = $this->getUserModel( $userId );
-    $activeUser = $userModel->cloneObject();
+    $activeUser  = $this->getUserModel();
+    $activeUser->load( $userId );
     $this->setActiveUser( $activeUser );
     $activeUser->resetLastAction();
 
