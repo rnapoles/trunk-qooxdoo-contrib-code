@@ -58,7 +58,7 @@ class qcl_data_model_db_TreeNodeModel
    * @param $datasourceModel
    * @return unknown_type
    */
-  function __construct( $datasourceModel )
+  public function __construct( $datasourceModel )
   {
     parent::__construct( $datasourceModel );
     $this->addProperties( $this->properties );
@@ -73,7 +73,7 @@ class qcl_data_model_db_TreeNodeModel
    * Getter for the id of the parent node.
    * @return int
    */
-  function getParentId()
+  public function getParentId()
   {
     return $this->get("parentId");
   }
@@ -82,7 +82,7 @@ class qcl_data_model_db_TreeNodeModel
    * Setter for the id of the parent node.
    * @return int
    */
-  function setParentId( $id )
+  public function setParentId( $id )
   {
     return $this->set("parentId", $id);
   }
@@ -128,7 +128,7 @@ class qcl_data_model_db_TreeNodeModel
    * Returns the number of children of the given node
    * @return int
    */
-	function getChildCount()
+	public function getChildCount()
 	{
 		return $this->countWhere( array( "parentId" => $this->id() ) );
 	}
@@ -138,7 +138,7 @@ class qcl_data_model_db_TreeNodeModel
 	 * Returns the current position among the node's siblings
 	 * @return int
 	 */
-	function getPosition()
+  public function getPosition()
 	{
 	  return $this->get("position");
 	}
@@ -149,7 +149,7 @@ class qcl_data_model_db_TreeNodeModel
     *   or relative ("+1", "-3" etc.)
     *
    	*/
-	function changePosition ( $position )
+  public function changePosition ( $position )
 	{
 		if ( ! $this->supportsPositioning() )
 		{
@@ -204,7 +204,7 @@ class qcl_data_model_db_TreeNodeModel
     * @param int $parentId  New parent node id
     * @return int Old parent id
     */
-	function changeParent( $parentId )
+	public function changeParent( $parentId )
 	{
 		$oldParentId = $this->getParentId();
     $this->setParentId( $parentId );
@@ -219,7 +219,7 @@ class qcl_data_model_db_TreeNodeModel
    * @param string $separator Separator character, defaults to "/"
    * @return string
    */
-  function getLabelPath( $separator="/"  )
+  public function getLabelPath( $separator="/"  )
   {
 
     /*
@@ -300,7 +300,7 @@ class qcl_data_model_db_TreeNodeModel
    *
    * @return string
    */
-  function getIdPath()
+  public function getIdPath()
   {
     $this->notImplemented(__METHOD__);
   }
@@ -311,7 +311,7 @@ class qcl_data_model_db_TreeNodeModel
    * @param string $separator Separator character, defaults to "/"
    * @return int|null The id of the node or null if node does not exist
    */
-  function getIdByPath ( $path, $separator="/" )
+  public function getIdByPath ( $path, $separator="/" )
   {
     $this->notImplemented(__METHOD__);
   }
@@ -322,7 +322,7 @@ class qcl_data_model_db_TreeNodeModel
    * @param string $separator Separator character, defaults to "/"
    * @return int Node id
    */
-  function createPath( $path, $separator="/" )
+  public function createPath( $path, $separator="/" )
   {
     $this->notImplemented(__METHOD__);
   }
