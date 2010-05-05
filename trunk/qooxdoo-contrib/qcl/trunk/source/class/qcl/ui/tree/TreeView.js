@@ -276,7 +276,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
     */
     _applyDatasource : function( value, old )
     {
-      this._setupTree( value, true );
+      if( value )
+      {
+        this._setupTree( value, true );  
+      }
     },
    
    /**
@@ -485,11 +488,12 @@ qx.Class.define("qcl.ui.tree.TreeView",
          /*
           * now asynchronously retrieve tree cache, based on the transaction id
           */
-         this.getCachedTreeData( datasource, function( cache )
+         //this.warn("getting tree data for " +  this.getTreeCacheId(datasource) );
+         this.getCachedTreeData( this.getTreeCacheId(datasource), function( cache )
          {
            /*
             * use cached data if available, if the node count matches
-            * and if the transaction id is  not out of date
+            * and if the transaction id is not out of date
             */
            if ( cache && cache.treeData 
                 && data.transactionId == cache.transactionId 
@@ -575,7 +579,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
                  /*
                   * save new cache
                   */
-                 this.cacheTreeData( datasource, {
+                 //this.warn("saving tree data for " +  this.getTreeCacheId(datasource) );
+                 this.cacheTreeData( this.getTreeCacheId(datasource), {
                    treeData : this.getTreeView().getDataModel().getData(),
                    transactionId : transactionId
                  } );
@@ -587,7 +592,18 @@ qx.Class.define("qcl.ui.tree.TreeView",
            };  // end if
          }, this ); // end method call this.getCachedTreeData
        }, this ); // end method call store.load
-     },
+    },
+    
+    /**
+     * Returns the id used to cache tree data in the browser. Defaults
+     * to datasource plus user name or anoymous.
+     * @param datasource {String}
+     */
+    getTreeCacheId : function(datasource)
+    {
+      var activeUser = this.getApplication().getAccessManager().getActiveUser();
+      return this.getServiceName() + "-" + datasource + "-" + ( activeUser.isAnonymous() ? "anonymous" : activeUser.getUsername() );
+    },
      
     /**
      * Returns optional request data for automatically called 
@@ -613,12 +629,12 @@ qx.Class.define("qcl.ui.tree.TreeView",
     /**
      * Returns the cached tree data for a given datasource. 
      *
-     * @param id {String} Identifier
+     * @param storageId {String} The id of the stored data
      * @param callback Function called with the cached data
      * @param context
      * @return {void}
      */
-    getCachedTreeData : function( id, callback, context )
+    getCachedTreeData : function( storageId, callback, context )
     {
        
        /*
@@ -633,7 +649,6 @@ qx.Class.define("qcl.ui.tree.TreeView",
         * get cache
         */
        var persistentStore = this.getApplication().getPersistentStore();
-       var storageId = this.getServiceName() + "-" + id;    
        persistentStore.load( storageId, function( ok, cache )
        {
          if ( ok && cache )
@@ -658,18 +673,17 @@ qx.Class.define("qcl.ui.tree.TreeView",
     
     /**
      * Save the tree data into the cache
-     * @param datasource
+     * @param storageId {String} The id of the cached data
      * @param data
      * @return {void}
      */
-    cacheTreeData : function( datasource, data )
+    cacheTreeData : function( storageId, data )
     {
        //try{
         
        if ( this.getUseCache() ) 
        {
          var persistentStore = this.getApplication().getPersistentStore();
-         var storageId = this.getServiceName() + "-" + datasource;
          persistentStore.save(
            storageId,
            qx.util.Json.stringify(data)
@@ -680,13 +694,12 @@ qx.Class.define("qcl.ui.tree.TreeView",
     
     /**
      * Clears the client-side cache of tree data 
-     * @param datasource
+     * @param id {String} Id for cached data
      * @return {void}
      */
-    clearTreeCache : function( datasource )
+    clearTreeCache : function( storageId )
     {
       var persistentStore = this.getApplication().getPersistentStore();
-      var storageId = this.getServiceName() + "-" + datasource;
       persistentStore.save( storageId, "" );
     },    
 
@@ -831,7 +844,6 @@ qx.Class.define("qcl.ui.tree.TreeView",
        */
       var datasource = this.getDatasource();
       this.clearTree();
-      this.clearTreeCache( datasource )
       this.load( datasource );
     },    
     

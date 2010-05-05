@@ -452,6 +452,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       /*
        * text fragment
        */
+      if ( ! content instanceof String ) return; // HACK to suppress strange error
       var input = qx.lang.String.trim( content.substring( start, end ) );
       //console.log( "Input is '" + input +"'");
       
