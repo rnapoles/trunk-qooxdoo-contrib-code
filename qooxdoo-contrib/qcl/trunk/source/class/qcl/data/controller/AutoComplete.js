@@ -459,8 +459,15 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       /*
        * text fragment
        */
+      try
+      {
+        var input = qx.lang.String.trim( content.substring( start, end ) );  
+      }
+      catch(e)
+      {
+        return;
+      }
       
-      var input = qx.lang.String.trim( content.substring( start, end ) );
       //console.log( "Input is '" + input +"'");
       
       /*

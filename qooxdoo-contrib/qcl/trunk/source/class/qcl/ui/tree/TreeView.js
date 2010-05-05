@@ -453,8 +453,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
        {
          this.error("Invalid arguments: no datasource given");
        }
+       // @todo: get from datasource, passing the datasource argument makes no sense.
        var store = this.getStore();
        var tree  = this.getTreeView();
+       var controller = this.getController();
        var nodeId = nodeId || 0;
 
        /*
@@ -495,6 +497,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
             * use cached data if available, if the node count matches
             * and if the transaction id is not out of date
             */
+          //console.warn( [data.transactionId, cache.transactionId ]); 
            if ( cache && cache.treeData 
                 && data.transactionId == cache.transactionId 
            ){
@@ -502,7 +505,9 @@ qx.Class.define("qcl.ui.tree.TreeView",
               * set the tree data
               */
              tree.getDataModel().setData( cache.treeData );
+             controller.remapNodeIds();
              this.hidePopup();
+             return;
            }
            
            /*
@@ -512,7 +517,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
            {
              var counter = 0;
              
-             this.getTreeView().setEnabled(false);
+             //this.getTreeView().setEnabled(false);
              
              /*
               * Create a function that can recursively call itself
@@ -601,6 +606,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */
     getTreeCacheId : function(datasource)
     {
+      if ( datasource === undefined )
+      {
+        datasource = this.getDatasource();
+      }
       var activeUser = this.getApplication().getAccessManager().getActiveUser();
       return this.getServiceName() + "-" + datasource + "-" + ( activeUser.isAnonymous() ? "anonymous" : activeUser.getUsername() );
     },
@@ -699,6 +708,10 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */
     clearTreeCache : function( storageId )
     {
+      if ( storageId === undefined )
+      {
+        storageId = this.getTreeCacheId();
+      }
       var persistentStore = this.getApplication().getPersistentStore();
       persistentStore.save( storageId, "" );
     },    
@@ -852,6 +865,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      */
     clearTree : function()
     {
+      this.getTreeView().resetSelection();
       this.getTreeView().getDataModel().prune(0);
     },
  
