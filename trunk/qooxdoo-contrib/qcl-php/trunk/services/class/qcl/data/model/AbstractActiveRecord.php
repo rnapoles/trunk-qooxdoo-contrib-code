@@ -341,6 +341,11 @@ class qcl_data_model_AbstractActiveRecord
       $this->_loaded = true;
 
       /*
+       * save a copy so we can check whether properties have changed
+       */
+      $this->_data = $this->data();
+
+      /*
        * return myself
        */
       return $this;
@@ -416,6 +421,11 @@ class qcl_data_model_AbstractActiveRecord
        * mark that a record is loaded
        */
       $this->_loaded = true;
+
+      /*
+       * save a copy so we can check whether properties have changed
+       */
+      $this->_data = $this->data();
 
       /*
        * return the number of rows found
@@ -576,6 +586,11 @@ class qcl_data_model_AbstractActiveRecord
     $this->_loaded = true;
 
     /*
+     * save a copy so we can check whether properties have changed
+     */
+    $this->_data = $this->data();
+
+    /*
      * return the record
      */
     return $result;
@@ -672,6 +687,17 @@ class qcl_data_model_AbstractActiveRecord
     $this->incrementTransactionId();
 
     /*
+     * fire event
+     */
+    $this->fireDataEvent("change", array(
+      'start' => $id,
+      'end'   => $id,
+      'type'  => "add",
+      'items' => array( $this->data() )
+    ));
+    $this->fireEvent("changeLength");
+
+    /*
      * return the id
      */
     return $id;
@@ -685,12 +711,46 @@ class qcl_data_model_AbstractActiveRecord
   {
     $this->checkLoaded();
 
-    $success = $this->getQueryBehavior()->update( $this->data() );
+    $oldData = $this->_data;
+    $newData = $this->data();
+    $data = array(
+      'id'  => $newData['id']
+    );
 
     /*
      * increment transaciton id since data has changed
      */
     $this->incrementTransactionId();
+
+    foreach( $newData as $property => $value )
+    {
+      if( $oldData[$property] !== $value )
+      {
+        /*
+         * store changed data for commit into the database
+         */
+        $data[$property] = $value;
+      }
+    }
+
+    $success = $this->getQueryBehavior()->update( $data );
+
+    /*
+     * fire event for changed properties
+     */
+    foreach( $data as $property => $value )
+    {
+      $this->fireDataEvent("changeBubble", array(
+        'value' => $value,
+        'name'  => $property,
+        'old'  => $oldData[$property]
+      ) );
+    }
+
+    /*
+     * save changed data
+     */
+    $this->_data = $newData;
 
     return $success;
   }
@@ -751,6 +811,17 @@ class qcl_data_model_AbstractActiveRecord
      */
     $this->incrementTransactionId();
 
+    /*
+     * fire event
+     */
+    $this->fireDataEvent("change", array(
+      'start' => $id,
+      'end'   => $id,
+      'type'  => "remove",
+      'items' => array( $id )
+    ));
+    $this->fireEvent("changeLength");
+
     return $succes;
   }
 
@@ -779,12 +850,15 @@ class qcl_data_model_AbstractActiveRecord
      */
     $this->incrementTransactionId();
 
+    // FIXME implement change event
+
     return $rowCount;
   }
 
   /**
    * Deletes all records from the database. Also deletes references
-   * to other model instances.
+   * to other model instances. Don't use this method on really large
+   * datasets.
    *
    * @return number of affected rows
    */
@@ -796,6 +870,13 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     $this->log( "Unlinking all records for model $this", QCL_LOG_MODEL );
+
+    /*
+     * fetch all ids - careful this might bust the application
+     * if tables are huge - but then you should not use this
+     * method anyways.
+     */
+    $ids = $this->getQueryBehavior()->fetchValues("id");
 
     /*
      * initialize all dependent models so that he dependencies are set up
@@ -841,6 +922,8 @@ class qcl_data_model_AbstractActiveRecord
      * increment transaciton id since data has changed
      */
     $this->incrementTransactionId();
+
+    // FIXME change event
   }
 
   /**
@@ -866,6 +949,8 @@ class qcl_data_model_AbstractActiveRecord
      * increment transaciton id since data has changed
      */
     $this->incrementTransactionId();
+
+    // FIXME need to fire changeBubble event!
 
     return $rowCount;
   }
