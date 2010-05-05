@@ -426,22 +426,29 @@ qx.Class.define("qcl.data.controller.AutoComplete",
        * separator for multi-valued fields
        */
       var sep = this.getSeparator();
-       
+      
+      
       if ( sep )
       {  
-        start = tf.getTextSelectionStart();
-        //console.log( "Selection start: " + start );
-        
-        /*
-         * rewind
-         */
-        while ( start > 0  && content.charAt(start-1) != sep ) start--;
-         
-        /*
-         * forward
-         */
-        end = start;
-        while ( end < content.length && content.charAt(end) != sep ) end++;
+        try{
+          start = tf.getTextSelectionStart();
+          //console.log( "Selection start: " + start );
+          
+          /*
+           * rewind
+           */
+          while ( start > 0  && content.charAt(start-1) != sep ) start--;
+           
+          /*
+           * forward
+           */
+          end = start;
+          while ( end < content.length && content.charAt(end) != sep ) end++;
+        }
+        catch(e)
+        {
+          return;
+        }
       }
       else
       {
@@ -452,7 +459,7 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       /*
        * text fragment
        */
-      if ( ! content instanceof String ) return; // HACK to suppress strange error
+      
       var input = qx.lang.String.trim( content.substring( start, end ) );
       //console.log( "Input is '" + input +"'");
       
@@ -591,7 +598,8 @@ qx.Class.define("qcl.data.controller.AutoComplete",
       /*
        * separator for multi-value fields
        */
-      var sep = this.getSeparator();                            
+      var sep = this.getSeparator();  
+      if ( ! content instanceof String ) return; // HACK to suppress strange error
       if ( sep )
       {
         //console.log("Separator '"+sep+"'");
