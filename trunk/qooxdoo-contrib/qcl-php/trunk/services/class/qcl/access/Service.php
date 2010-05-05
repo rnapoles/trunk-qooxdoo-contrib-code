@@ -62,6 +62,7 @@ class qcl_access_Service
       $password   = utf8_decode($password);
       $this->log("Authenticating from username/password ...", QCL_LOG_ACCESS);
       $userId = $accessController->authenticate( $username, $password );
+      $this->log("Authenticated user: #$userId", QCL_LOG_ACCESS);
 
       /*
        * authentication successful, logout the accessing user to log in the
