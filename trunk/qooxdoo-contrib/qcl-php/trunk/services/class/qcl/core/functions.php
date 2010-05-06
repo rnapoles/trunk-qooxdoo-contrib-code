@@ -147,10 +147,6 @@ function qcl_is_file( $file )
   return true;
 }
 
-
-
-
-
 /**
  * Returns a reference to the singleton instance of the given class
  * @param $clazz Class name
@@ -170,6 +166,8 @@ function qcl_getInstance( $clazz )
  * Asserts that argument is of the given type
  * @param mixed $value
  * @param string $type
+ * @return void
+ * @throws InvalidArgumentException
  */
 function qcl_assert_type( $value, $type )
 {
@@ -185,6 +183,8 @@ function qcl_assert_type( $value, $type )
 /**
  * Asserts that argument is boolean
  * @param $value
+ * @return void
+ * @throws InvalidArgumentException
  */
 function qcl_assert_boolean( $value )
 {
@@ -194,6 +194,8 @@ function qcl_assert_boolean( $value )
 /**
  * Asserts that argument is a string
  * @param mixed $value
+ * @return void
+ * @throws InvalidArgumentException
  */
 function qcl_assert_string( $value )
 {
@@ -203,6 +205,8 @@ function qcl_assert_string( $value )
 /**
  * Asserts that argument is a non-empty string
  * @param mixed $value
+ * @return void
+ * @throws InvalidArgumentException
  */
 function qcl_assert_valid_string( $value )
 {
@@ -218,6 +222,8 @@ function qcl_assert_valid_string( $value )
 /**
  * Asserts that argument is an array
  * @param mixed $value
+ * @return void
+ * @throws InvalidArgumentException
  */
 function qcl_assert_array( $value )
 {
@@ -227,6 +233,9 @@ function qcl_assert_array( $value )
 /**
  * Asserts that argument is an integer value
  * @param mixed $value
+ * @return void
+ * @throws InvalidArgumentException
+ *
  */
 function qcl_assert_integer( $value )
 {
@@ -236,12 +245,29 @@ function qcl_assert_integer( $value )
 /**
  * Asserts that argument is an object
  * @param mixed $value
+ * @return void
+ * @throws InvalidArgumentException
  */
 function qcl_assert_object( $value )
 {
   qcl_assert_type( $value, "object" );
 }
 
+/**
+ * Asserts that the given value matches the given regular expression
+ * @param $regexp
+ * @param $value
+ * @return void
+ * @throws InvalidArgumentException
+ */
+function qcl_assert_regexp( $regexp, $value )
+{
+  qcl_assert_string( $value );
+  if( preg_match( $regexp, $value ) == 0 )
+  {
+    throw new InvalidArgumentException("'$value' does not match $regexp.");
+  }
+}
 
 /**
  * Asserts that the given object has the given method.
