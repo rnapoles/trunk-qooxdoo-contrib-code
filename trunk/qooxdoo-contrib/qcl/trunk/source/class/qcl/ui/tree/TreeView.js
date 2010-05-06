@@ -228,7 +228,8 @@ qx.Class.define("qcl.ui.tree.TreeView",
     
     /*
      * server databinding
-     */    
+     */
+    this.__lastTransactionId = 0;
     qx.event.message.Bus.subscribe("folderTreeUpdateNode", this._updateNode,this);
     qx.event.message.Bus.subscribe("folderTreeAddNode", this._addNode,this);
     qx.event.message.Bus.subscribe("folderTreeDeleteNode", this._deleteNode,this);
@@ -283,6 +284,9 @@ qx.Class.define("qcl.ui.tree.TreeView",
     * @type Number
     */
    __selectAttempts : 0,    
+   
+   
+   __lastTransactionId : 0,
     
     /*
     ---------------------------------------------------------------------------
@@ -509,21 +513,17 @@ qx.Class.define("qcl.ui.tree.TreeView",
          /*
           * now asynchronously retrieve tree cache, based on the transaction id
           */
-         //this.warn("getting tree data for " +  this.getTreeCacheId(datasource) );
-         this.getCachedTreeData( this.getTreeCacheId(datasource), function( cache )
+         this.getCachedTreeData( transactionId, function( treeData )
          {
            /*
             * use cached data if available, if the node count matches
             * and if the transaction id is not out of date
             */
-          //console.warn( "Transaction id on server: " + data.transactionId + ", on client: " + cache.transactionId ); 
-           if ( cache && cache.treeData 
-                && data.transactionId == cache.transactionId 
-           ){
+           if ( treeData ){
              /*
               * set the tree data
               */
-             tree.getDataModel().setData( cache.treeData );
+             tree.getDataModel().setData( treeData );
              controller.remapNodeIds();
              this.hidePopup();
              return;
@@ -603,11 +603,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
                  /*
                   * save new cache
                   */
-                 //this.warn("saving tree data for " +  this.getTreeCacheId(datasource) );
-                 this.cacheTreeData( this.getTreeCacheId(datasource), {
-                   treeData : this.getTreeView().getDataModel().getData(),
-                   transactionId : transactionId
-                 } );
+                 this.cacheTreeData( transactionId );
                  
                  this.hidePopup();
                  
@@ -657,12 +653,12 @@ qx.Class.define("qcl.ui.tree.TreeView",
     /**
      * Returns the cached tree data for a given datasource. 
      *
-     * @param storageId {String} The id of the stored data
+     * @param transactionId
      * @param callback Function called with the cached data
      * @param context
      * @return {void}
      */
-    getCachedTreeData : function( storageId, callback, context )
+    getCachedTreeData : function( transactionId, callback, context )
     {
        
        /*
@@ -677,6 +673,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
         * get cache
         */
        var persistentStore = this.getApplication().getPersistentStore();
+       var storageId = this.getTreeCacheId( this.getDatasource() ); 
        persistentStore.load( storageId, function( ok, cache )
        {
          if ( ok && cache )
@@ -695,30 +692,43 @@ qx.Class.define("qcl.ui.tree.TreeView",
          {
            cache = null;
          }
-         callback.call( context, cache );
+         
+        //console.warn( "Transaction from server: " + transactionId + ", on client: " + cache.transactionId );
+        /*
+         * Invalidate the cache if the transaction id has changed.
+         */
+        if ( cache && transactionId == cache.transactionId )
+        {
+          callback.call( context, cache.data );
+        }
+        else
+        {
+          callback.call( context, null );
+        }
+        
        } );
     },
     
     /**
      * Save the tree data into the cache
-     * @param storageId {String} The id of the cached data
-     * @param data
+     * @param transactionId 
      * @return {void}
-     * FIXME remove selection before saving the data!
      */
-    cacheTreeData : function( storageId, data )
+    cacheTreeData : function( transactionId )
     {
-       //try{
-        
-       if ( this.getUseCache() ) 
+       if ( this.getUseCache() && transactionId > this.__lastTransactionId ) 
        {
+         this.clearSelection();
+         var storageId = this.getTreeCacheId( this.getDatasource() );
+         var data  = { 
+           'data'          : this.getTreeView().getDataModel().getData(),
+           'transactionId' : transactionId
+         }
          var persistentStore = this.getApplication().getPersistentStore();
-         persistentStore.save(
-           storageId,
-           qx.util.Json.stringify(data)
-         );        
+         persistentStore.save( storageId, qx.util.Json.stringify(data) ); 
+         this.__lastTransactionId = transactionId; 
+         //console.warn("Saving tree cache with transaction id " + transactionId);
        }
-       //}catch(e){console.warn(e)}
     },
     
     /**
@@ -726,12 +736,9 @@ qx.Class.define("qcl.ui.tree.TreeView",
      * @param id {String} Id for cached data
      * @return {void}
      */
-    clearTreeCache : function( storageId )
+    clearTreeCache : function()
     {
-      if ( storageId === undefined )
-      {
-        storageId = this.getTreeCacheId();
-      }
+      storageId = this.getTreeCacheId( this.getDatasource() );
       var persistentStore = this.getApplication().getPersistentStore();
       persistentStore.save( storageId, "" );
     },    
@@ -867,10 +874,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
           dataModel.setState( nodeId, data.nodeData );
           dataModel.setData();
           controller.setTransactionId( data.transactionId );
-          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
-            treeData : tree.getDataModel().getData(),
-            transactionId : data.transactionId
-          } );          
+          this.cacheTreeData( data.transactionId );          
         }
       }
     },
@@ -900,10 +904,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
           dataModel.setState( nodeId, data.nodeData );
           dataModel.setData();
           controller.setTransactionId( data.transactionId );
-          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
-            treeData : tree.getDataModel().getData(),
-            transactionId : data.transactionId
-          } );          
+          this.cacheTreeData( data.transactionId );          
         }
       }
     },
@@ -931,10 +932,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
           newParentNode.children.push( nodeId );
           dataModel.setData();
           controller.setTransactionId( data.transactionId );
-          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
-            treeData : tree.getDataModel().getData(),
-            transactionId : data.transactionId
-          } );          
+          this.cacheTreeData( data.transactionId );          
         }
       }
     },
@@ -956,10 +954,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
           dataModel.prune( nodeId, true );
           dataModel.setData();
           controller.setTransactionId( data.transactionId );
-          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
-            treeData : tree.getDataModel().getData(),
-            transactionId : data.transactionId
-          } );          
+          this.cacheTreeData( data.transactionId );          
         }
       }
     },
