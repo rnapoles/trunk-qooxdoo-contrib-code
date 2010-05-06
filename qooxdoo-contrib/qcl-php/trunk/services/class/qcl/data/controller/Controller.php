@@ -836,7 +836,7 @@ class qcl_data_controller_Controller
    * data preloaded.
    *
    * @param string $datasource
-   * @return qcl_data_model_db_AbstractActiveRecord
+   * @return qcl_data_datasource_DbModel
    */
   public function getDatasourceModel( $datasource=null )
   {
@@ -848,6 +848,7 @@ class qcl_data_controller_Controller
     {
       return $this->getDatasourceManager()->getDatasourceModel();
     }
+
   }
 
   //-------------------------------------------------------------
