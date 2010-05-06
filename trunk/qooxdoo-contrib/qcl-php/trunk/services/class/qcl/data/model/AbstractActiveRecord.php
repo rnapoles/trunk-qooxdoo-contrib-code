@@ -485,7 +485,8 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * Find all model records for iteration
+   * Find all model records for iteration. The order of the records
+   * is not specified.
    * @return qcl_data_db_Query The query object to use for iteration
    */
   public function findAll()
@@ -499,7 +500,29 @@ class qcl_data_model_AbstractActiveRecord
      * run query
      */
     $this->lastQuery = new qcl_data_db_Query( array(
-      "select" => "*"
+      'select'  => "*"
+    ) );
+    $this->getQueryBehavior()->select( $this->lastQuery );
+    return $this->lastQuery;
+  }
+
+  /**
+   * Find all model records for iteration, ordered by a property
+   * @return qcl_data_db_Query The query object to use for iteration
+   */
+  public function findAllOrderBy( $property )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * run query
+     */
+    $this->lastQuery = new qcl_data_db_Query( array(
+      'select'  => "*",
+      'orderBy' => $property
     ) );
     $this->getQueryBehavior()->select( $this->lastQuery );
     return $this->lastQuery;
