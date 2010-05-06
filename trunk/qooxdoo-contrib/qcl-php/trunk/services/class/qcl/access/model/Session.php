@@ -148,6 +148,12 @@ class qcl_access_model_Session
       'ip'                 => $ip
     ) );
 
+    /*
+     * update the modified column
+     */
+    $this->setModified(null);
+    $this->save();
+
     return true;
 
   }
@@ -190,6 +196,11 @@ class qcl_access_model_Session
     {
       $this->log( "Session #$sessionId does not exist.", QCL_LOG_ACCESS );
     }
+
+    /*
+     * clean up stale sessions
+     */
+    //$this->cleanUp();
   }
 
   /**
