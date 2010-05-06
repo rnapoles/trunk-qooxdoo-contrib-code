@@ -193,7 +193,18 @@ qx.Class.define("qcl.ui.tree.TreeView",
    {
       check : "qx.ui.core.Widget",
       nullable : true
+   },
+   
+   /**
+    * The type of model that is displayed as tree data.
+    * Used to identify server messages.
+    */
+   modelType : 
+   {
+      check: "String"
    }
+   
+   
   },
   
   /*
@@ -213,8 +224,16 @@ qx.Class.define("qcl.ui.tree.TreeView",
     this.__datasources = {}; 
     
     this.__prompt = new dialog.Prompt();
-    
     this.setTreeWidgetContainer(this);
+    
+    /*
+     * server databinding
+     */    
+    qx.event.message.Bus.subscribe("folderTreeUpdateNode", this._updateNode,this);
+    qx.event.message.Bus.subscribe("folderTreeAddNode", this._addNode,this);
+    qx.event.message.Bus.subscribe("folderTreeDeleteNode", this._deleteNode,this);
+    qx.event.message.Bus.subscribe("folderTreeMoveNode", this._moveNode,this);
+    
     
     /*
      * pupup
@@ -497,7 +516,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
             * use cached data if available, if the node count matches
             * and if the transaction id is not out of date
             */
-          //console.warn( [data.transactionId, cache.transactionId ]); 
+          //console.warn( "Transaction id on server: " + data.transactionId + ", on client: " + cache.transactionId ); 
            if ( cache && cache.treeData 
                 && data.transactionId == cache.transactionId 
            ){
@@ -685,6 +704,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
      * @param storageId {String} The id of the cached data
      * @param data
      * @return {void}
+     * FIXME remove selection before saving the data!
      */
     cacheTreeData : function( storageId, data )
     {
@@ -819,6 +839,131 @@ qx.Class.define("qcl.ui.tree.TreeView",
     },
 
    
+    
+    /*
+    ---------------------------------------------------------------------------
+       SERVER DATABINDING
+    ---------------------------------------------------------------------------
+    */  
+    
+    /**
+     * @todo rewrite the cache stuff! if the transaction id doesnt'change,
+     * no need to update the cache!
+     */
+    _updateNode : function(e)
+    {
+      var data = e.getData();
+      var tree = this.getTreeView();
+      if( ! tree ) return;
+      var dataModel = tree.getDataModel();
+      var controller = this.getController();
+      if( data.datasource == this.getDatasource() 
+        && data.modelType == this.getModelType() )
+      {
+        var nodeId = controller.getClientNodeId( data.nodeData.data.id );
+        //console.warn( "updating client #" + nodeId + " server #" + data.nodeData.data.id);
+        if( nodeId )
+        {
+          dataModel.setState( nodeId, data.nodeData );
+          dataModel.setData();
+          controller.setTransactionId( data.transactionId );
+          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
+            treeData : tree.getDataModel().getData(),
+            transactionId : data.transactionId
+          } );          
+        }
+      }
+    },
+    
+    _addNode : function(e)
+    {
+      var data = e.getData();
+      var tree = this.getTreeView();
+      if( ! tree ) return;
+      var dataModel = tree.getDataModel();
+      var controller = this.getController();
+      if( data.datasource == this.getDatasource() 
+        && data.modelType == this.getModelType() )
+      {
+        var parentNodeId = controller.getClientNodeId( data.nodeData.data.parentId );
+        //console.warn( "adding node to #" + parentNodeId );
+        if( parentNodeId )
+        {
+          if ( data.nodeData.isBranch )
+          {
+            var nodeId = dataModel.addBranch( parentNodeId );
+          }
+          else
+          {
+            var nodeId = dataModel.addLeaf( parentNodeId )
+          }
+          dataModel.setState( nodeId, data.nodeData );
+          dataModel.setData();
+          controller.setTransactionId( data.transactionId );
+          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
+            treeData : tree.getDataModel().getData(),
+            transactionId : data.transactionId
+          } );          
+        }
+      }
+    },
+    
+    _moveNode : function(e)
+    {
+      var data = e.getData();
+      var tree = this.getTreeView();
+      if( ! tree ) return;
+      var dataModel = tree.getDataModel();
+      var controller = this.getController();
+      if( data.datasource == this.getDatasource() 
+        && data.modelType == this.getModelType() )
+      {
+        var nodeId   = controller.getClientNodeId( data.nodeId );
+        var parentNodeId = controller.getClientNodeId( data.parentId );
+        //console.warn( "moving #" + nodeId + " to #" + parentNodeId );
+        if( nodeId && parentNodeId !== undefined )
+        {          
+          var node = dataModel.getData()[nodeId];
+          var oldParentNode = dataModel.getData()[node.parentNodeId]; 
+          var newParentNode = dataModel.getData()[parentNodeId];
+          node.parentNodeId = parentNodeId;
+          oldParentNode.children.splice( oldParentNode.children.indexOf( nodeId ),1 );
+          newParentNode.children.push( nodeId );
+          dataModel.setData();
+          controller.setTransactionId( data.transactionId );
+          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
+            treeData : tree.getDataModel().getData(),
+            transactionId : data.transactionId
+          } );          
+        }
+      }
+    },
+    
+    _deleteNode : function(e)
+    {
+      var data = e.getData();
+      var tree = this.getTreeView();
+      if( ! tree ) return;
+      var dataModel = tree.getDataModel();
+      var controller = this.getController();
+      if( data.datasource == this.getDatasource() 
+        && data.modelType == this.getModelType() )
+      {
+        var nodeId = controller.getClientNodeId( data.nodeId );
+        //console.warn( "deleting #" + nodeId );
+        if( nodeId )
+        {
+          dataModel.prune( nodeId, true );
+          dataModel.setData();
+          controller.setTransactionId( data.transactionId );
+          this.cacheTreeData( this.getTreeCacheId(data.datasource), {
+            treeData : tree.getDataModel().getData(),
+            transactionId : data.transactionId
+          } );          
+        }
+      }
+    },
+    
     /*
     ---------------------------------------------------------------------------
        PUBLIC API
@@ -887,217 +1032,7 @@ qx.Class.define("qcl.ui.tree.TreeView",
     clearSelection : function()
     {
       this.getTreeView().getSelectionModel().resetSelection();
-    },
+    }    
     
-    /**
-     * Adds a node. If no label is supplied, the user will be prompted
-     * @param serverParentNodeId {Integer}
-     * @param label {String}
-     */
-    addNode : function( serverParentNodeId, label )
-    {
-
-      if ( label === undefined )
-      {
-         this.__prompt.set({
-           message: this.tr( "Please enter the title of the new node:" ),
-           value : "",
-           callback : qx.lang.Function.bind( function( label )
-           {
-             this._addNode( serverParentNodeId, label );
-           }, this)
-         }).show();
-      }
-    },
-    
-    /**
-     * Adds a node
-     * @param serverParentNodeId {Integer}
-     * @param label {String}
-     */    
-    _addNode : function( serverParentNodeId, label )
-    {
-      if ( ! qx.lang.Type.isNumber( serverParentNodeId ) 
-        || ! qx.lang.Type.isString( label ) || ! label )
-      {
-        this.error("Invalid arguments");
-      }
-      this.getApplication().executeService(
-        "bibliograph.controller.Folder","create",
-        [ this.getDatasource(), {
-          "label" : label,
-          "parentId" : serverParentNodeId
-        }]
-      );
-      
-    },
-    
-    /**
-     * Marks the current folder to be cut & pasted
-     * @return {void} void
-     */
-    cutToClipboard : function()
-    {
-
-      var tree = this.treeWidget;
-      var clipboard = qcl.clipboard.Manager.getInstance();
-
-      var data =
-      {
-        'sourceWidget' : tree,
-        'datasource'   : this.getApplication().getStateManager().getState("datasource"),
-        'node'         : this.getSelectedNode()
-      };
-
-      clipboard.addData("bibliograph.types.Folder", data);
-      clipboard.setAction("move");
-    },
-
-
-    /**
-     * Marks the current folder for copy & paste
-     * @return {void} void
-     */
-    copyToClipboard : function()
-    {
-      var tree      = this.treeWidget;
-      var clipboard = qcl.clipboard.Manager.getInstance();
-
-      var data =
-      {
-        'sourceWidget' : tree,
-        'datasource'   : this.getApplication().getStateManager().getState("datasource"),
-        'node'         : this.getSelectedNode()
-      };
-
-      clipboard.addData("bibliograph.types.Folder", data);
-      clipboard.setAction("copy");
-    },
-
-
-    /**  
-     * Paste from the clipboard to the folder tree
-     * @param datasource {String} Optional
-     * @param nodeId {Int} Optional
-     * @return {void} void
-     */
-    pasteFromClipboard : function( datasource, nodeId )
-    {
-      var tree       = this.treeWidget;
-      var app        = this.getApplication();
-      var clipboard  = app.getClipboard();
-      var targetNode = this.getSelectedNode();
-      
-      if ( datasource === undefined || nodeId === undefined )
-      {
-        datasource    = this.getDatasource();
-        var nodeId  = targetNode.data.id;
-      }
-
-      if ( clipboard.getData("bibliograph.types.RecordIdList") )
-      {
-        var source     = clipboard.getData("bibliograph.types.RecordIdList");
-
-        switch( clipboard.getCurrentAction() )
-        {
-          /*
-           * copy to folder
-           */        
-          case "copy":
-            tree.updateServer(
-              "bibliograph.controllers.records.copy", 
-              source.datasource,
-              source.idList,
-              datasource,  
-              nodeId,
-              true /* skip confirmation message */
-            );
-            break;
-
-          /* 
-           * move to folder, only allowed within same datasource
-           */            
-          case "move":
-            if  (source.datasource != app.getStateManager().getState("datasource") )
-            {
-              alert(
-                this.tr("Moving references between different datasource is not allowed. Use copy instead.")
-              );
-              return;
-            }
-
-            tree.updateServer(
-              "bibliograph.controllers.records.move", 
-              source.datasource, 
-              source.idList, 
-              source.nodeId, 
-              nodeId,
-              true /* skip confirmation message */
-            );
-            break;
-        }
-      }
-      
-      /*
-       * pasting a folder
-       */
-      else if ( clipboard.getData("bibliograph.types.Folder") )
-      {
-        var sourceNode = clipboard.getData("bibliograph.types.Folder");
-
-        switch( clipboard.getCurrentAction() )
-        {
-          /* 
-           * move
-           */
-          case "move":
-            
-            var position = targetNode.data.children ? 
-                targetNode.data.children.length : 0;
-            
-            /*
-             * notify server
-             */
-            tree.updateServer(
-              "bibliograph.controllers.folders.changeParent", 
-              sourceNode.datasource, 
-              sourceNode.node.data.id, 
-              nodeId, 
-              position
-            );
-            
-            break;
-
-          /*
-           * copy
-           */
-          case "copy":
-
-            if ( sourceNode.datasource == this.getDatasource() )
-            {
-              app.alert(
-               this.tr("Copying folders within the same datasource is not allowed.")
-              );
-              return;
-            }
-
-            /*
-             * notify server
-             */
-            tree.executeService(
-              "bibliograph.controllers.folders.copy",
-              sourceNode.datasource,
-              sourceNode.node.data.id,
-              datasource,
-              nodeId,
-              targetNode.data.children ? targetNode.data.children.length : 0,
-              targetNode.nodeId
-            );
-            break;
-        }
-      }
-
-      clipboard.clearData();
-    }
   }
 });
