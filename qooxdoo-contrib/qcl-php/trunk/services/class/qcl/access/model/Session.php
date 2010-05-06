@@ -17,6 +17,7 @@
  */
 
 qcl_import( "qcl_data_model_db_NamedActiveRecord" );
+qcl_import( "qcl_event_message_db_Message" ); // FIXME shouldn't be necessary
 
 /**
  * Model for session data bases on a mysql database model.
@@ -64,7 +65,16 @@ class qcl_access_model_Session
   private $relations = array(
     'User_Session'  => array(
       'type'    => QCL_RELATIONS_HAS_ONE,
-      'target'  => array( 'class'  => "qcl_access_model_User" )
+      'target'  => array(
+        'class'  => "qcl_access_model_User"
+      )
+    ),
+    'Message_Session' => array(
+      'type'    => QCL_RELATIONS_HAS_MANY,
+      'target'  => array(
+        'class'     => "qcl_event_message_db_Message",
+        'dependent' => true
+      )
     )
   );
 

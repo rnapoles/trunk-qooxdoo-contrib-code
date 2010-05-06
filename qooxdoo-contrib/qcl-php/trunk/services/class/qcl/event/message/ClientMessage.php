@@ -16,17 +16,20 @@
  *  * Christian Boulanger (cboulanger)
  */
 qcl_import( "qcl_event_message_Message" );
+
 /**
  * A server message that is forwarded to the client
  */
 class qcl_event_message_ClientMessage
   extends qcl_event_message_Message
 {
+
   /**
    * Whether the message should be broadcasted to all connected clients
    * @var bool
    */
   protected $broadcast = false;
+
 
   public function setBroadcast( $value )
   {

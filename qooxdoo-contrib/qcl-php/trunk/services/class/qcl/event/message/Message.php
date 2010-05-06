@@ -45,7 +45,7 @@ class qcl_event_message_Message
    * @param mixed $data
    * @return void
    */
-  public function __construct( $name, $data )
+  public function __construct( $name=null, $data=null )
   {
     $this->name = $name;
     $this->data = $data;

@@ -52,12 +52,25 @@ class qcl_event_message_db_Message
   );
 
   /**
-   * Constructor. Adds properties
+   * Relations of the model
+   */
+  private $relations = array(
+    'Message_Session' => array(
+      'type'    => QCL_RELATIONS_HAS_ONE,
+      'target'  => array(
+        'class'     => "qcl_access_model_Session"
+      )
+    )
+  );
+
+  /**
+   * Constructor. Adds properties and relations
    */
   function __construct()
   {
     parent::__construct();
     $this->addProperties( $this->properties );
+    $this->addRelations( $this->relations, __CLASS__ );
   }
 
   /**
