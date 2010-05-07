@@ -303,6 +303,22 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
         return this.__nodeIdMap[serverNodeId];
      },
      
+     /**
+      * Remap the server node id to the client node id if the
+      * node data has not been loaded with the store.
+      */
+     remapNodeIds : function()
+     {
+        var data = this.getTarget().getDataModel().getData();
+        data.forEach(function(node){
+          try
+          {
+            this.__nodeIdMap[node.data.id] = node.nodeId;
+          }
+          catch(e){}
+        },this);
+     },
+     
      /*
      ---------------------------------------------------------------------------
         EVENT LISTENERS
