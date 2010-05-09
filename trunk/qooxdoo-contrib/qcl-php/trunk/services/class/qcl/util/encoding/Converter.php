@@ -15,14 +15,12 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/model/ActiveRecord.php";
 
 /**
  * class to convert from one text encoding to another
  */
-class qcl_util_encoding_Converter extends qcl_data_model_ActiveRecord
+class qcl_util_encoding_Converter
 {
-  var $converter_cmd = "";
 
 	//-------------------------------------------------------------
   // API methods
@@ -37,7 +35,7 @@ class qcl_util_encoding_Converter extends qcl_data_model_ActiveRecord
    * @param string $string
    * @return string
    */
-	function convert ($src_encoding, $tgt_encoding, $string)
+	static public function convert ($src_encoding, $tgt_encoding, $string)
 	{
     if ( function_exists ( "iconv" ) )
     {
