@@ -414,6 +414,21 @@ class qcl_data_datasource_DbModel
   }
 
   /**
+   * Returns the class name of the model of the given type.
+   * A model instance does not need to exist at this point.
+   * @param string $type
+   * @return string The class name
+   */
+  public function getModelClassByType( $type )
+  {
+    if ( ! isset( $this->modelMap[$type] ) )
+    {
+      throw new InvalidArgumentException("Model of type '$type' is not registered");
+    }
+    return $this->modelMap[$type]['class'];
+  }
+
+  /**
    * Return the model that corresponds to the given class
    * @param string $class
    * @return qcl_data_model_db_AbstractActiveRecord
