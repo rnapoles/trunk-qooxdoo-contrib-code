@@ -329,12 +329,24 @@ class qcl_data_model_db_RelationBehavior
   {
     if ( ! isset( $relData['target']['class'] ) )
     {
-      throw new qcl_data_model_Exception( sprintf(
-        "Missing target model class in class '%s', relation '%s'.",
-         $this->getModel()->className(), $relation
-      ) );
+      if ( isset( $relData['target']['modelType'] ) )
+      {
+        $modelType = $relData['target']['modelType'];
+        $dsModel = $this->getModel()->datasourceModel();
+        $class = $dsModel->getModelClassByType( $modelType );
+      }
+      else
+      {
+        throw new qcl_data_model_Exception( sprintf(
+          "Missing target model class or type in class '%s', relation '%s'.",
+           $this->getModel()->className(), $relation
+        ) );
+      }
     }
-    $class = $relData['target']['class'];
+    else
+    {
+      $class = $relData['target']['class'];
+    }
 
     /*
      * replace the class name by a name provided by subclasses?
@@ -490,9 +502,26 @@ class qcl_data_model_db_RelationBehavior
   protected function getTargetModelClass( $relation )
   {
     $this->checkRelation( $relation );
-    $class = $this->relations[$relation]['target']['class'];
 
-    if ( ! $class )
+    if ( isset( $this->relations[$relation]['target']['class'] ) )
+    {
+      $class = $this->relations[$relation]['target']['class'];
+    }
+    elseif ( isset( $this->relations[$relation]['target']['modelType'] ) )
+    {
+      $type = $this->relations[$relation]['target']['modelType'];
+      $dsModel = $this->getModel()->datasourceModel();
+      if ( ! $dsModel )
+      {
+        throw new qcl_data_model_Exception( sprintf(
+          "Cannot determine class name for target model of type %s in relation '%s': no datasource model.",
+          $type, $relation
+        ) );
+      }
+
+      $class = $dsModel->getModelClassByType( $type );
+    }
+    else
     {
       throw new qcl_data_model_Exception( sprintf(
         "Cannot determine class name for target model in relation '%s'.",
@@ -538,7 +567,7 @@ class qcl_data_model_db_RelationBehavior
       /*
        * use getInstance() method if no datasource
        */
-      if( is_object( $datasourceModel )  )
+      if ( is_object( $datasourceModel )  )
       {
         /*
          * if no getInstance() method exists, create a new object
