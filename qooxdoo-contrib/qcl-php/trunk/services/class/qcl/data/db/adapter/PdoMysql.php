@@ -90,7 +90,7 @@ class qcl_data_db_adapter_PdoMysql
    * @param string $host
    * return void
    */
-  protected function setHost( $host )
+  public function setHost( $host )
   {
     $this->host = $host;
   }
@@ -109,7 +109,7 @@ class qcl_data_db_adapter_PdoMysql
    * @param string $port
    * return string
    */
-  protected function setPort( $port )
+  public function setPort( $port )
   {
     $this->port = port;
   }
@@ -127,7 +127,7 @@ class qcl_data_db_adapter_PdoMysql
    * Setter for database name
    * @return void
    */
-  protected function setDatabase( $database )
+  public function setDatabase( $database )
   {
     $this->database = $database;
   }

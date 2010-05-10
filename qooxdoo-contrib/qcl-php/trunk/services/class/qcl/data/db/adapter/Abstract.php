@@ -120,7 +120,7 @@ abstract class qcl_data_db_adapter_Abstract
    * @param  string dsn
    * @return
    */
-  protected function setDsn($dsn)
+  public function setDsn($dsn)
   {
     $this->extractDsnProperties( $dsn );
     $this->dsn = $dsn;
@@ -139,7 +139,7 @@ abstract class qcl_data_db_adapter_Abstract
    * Setter for type
    * return void
    */
-  protected function setType( $type )
+  public function setType( $type )
   {
     $this->type = $type;
   }
@@ -157,7 +157,7 @@ abstract class qcl_data_db_adapter_Abstract
    * Setter for database user
    * return void
    */
-  protected function setUser( $user )
+  public function setUser( $user )
   {
     $this->user = $user;
   }
@@ -176,7 +176,7 @@ abstract class qcl_data_db_adapter_Abstract
    * @param string $password
    * return void
    */
-  protected function setPassword( $password )
+  public function setPassword( $password )
   {
     $this->password = $password;
   }
@@ -194,7 +194,7 @@ abstract class qcl_data_db_adapter_Abstract
    * Setter for options
    * return void
    */
-  protected function setOptions( $options )
+  public function setOptions( $options )
   {
     $this->options = $options;
   }

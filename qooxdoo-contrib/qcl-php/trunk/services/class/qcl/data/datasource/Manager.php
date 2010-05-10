@@ -178,7 +178,7 @@ class qcl_data_datasource_Manager
    * on which all other datasource models are based.
    * @return qcl_data_datasource_DbModel
    */
-  protected function getDatasourceModel()
+  public function getDatasourceModel()
   {
     static $dsModel = null;
     if ( $dsModel === null )
