@@ -1,0 +1,42 @@
+{
+  "serverId" : 0,
+  "clazz" : {
+    "className" : "com.zenesis.qx.remote.test.serialisation.F",
+    "methods" : {
+      "getInt" : {
+      }
+    },
+    "properties" : {
+      "propertyInt" : {
+        "sync" : "queue",
+        "nullable" : true,
+        "readOnly" : true
+      }
+    }
+  },
+  "values" : {
+    "propertyInt" : 34
+  }
+}
+{
+  "serverId" : 1,
+  "clazz" : {
+    "className" : "com.zenesis.qx.remote.test.serialisation.G",
+    "extends" : "com.zenesis.qx.remote.test.serialisation.F",
+    "methods" : {
+      "getString" : {
+      }
+    },
+    "properties" : {
+      "stringProperty" : {
+        "sync" : "queue",
+        "nullable" : true,
+        "readOnly" : true
+      }
+    }
+  },
+  "values" : {
+    "stringProperty" : "34"
+  }
+}
+
