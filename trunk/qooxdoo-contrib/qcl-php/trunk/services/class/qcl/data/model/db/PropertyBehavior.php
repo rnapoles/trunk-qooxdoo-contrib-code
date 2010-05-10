@@ -25,8 +25,7 @@ qcl_import( "qcl_data_model_PropertyBehavior" );
  * defines the properties "id", "created", "modified".
  *
  * Since the properties will be persisted in the database, non-scalar
- * value types will be serialized to a string representation. (not
- * implemented yet).
+ * value types can be serialized to a string representation on demand.
  *
  * This behavior adds the following keys to the property definition:
  *
@@ -41,7 +40,7 @@ qcl_import( "qcl_data_model_PropertyBehavior" );
  *
  * 'unique'     Easy way to add a unique index on the column
  *
- * 'serialize'  If <true>, non-scalar values will be serialized before
+ * 'serialize'  If <true>, non-scalar values will be serialized before being
  *              stored in the database, and unserialized before when the
  *              record is loaded. Since serialized objects have a variable
  *              and potentially very large size, make sure to use
