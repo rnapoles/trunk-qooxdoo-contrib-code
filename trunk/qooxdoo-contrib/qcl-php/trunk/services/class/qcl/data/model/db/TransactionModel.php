@@ -80,12 +80,12 @@ class qcl_data_model_db_TransactionModel
   /**
    * Overridden to deactive transaction for this model
    */
-  protected function getTransactionId(){}
+  public function getTransactionId(){}
 
   /**
    * Overridden to deactive transaction for this model
    */
-  protected function incrementTransactionId(){}
+  public function incrementTransactionId(){}
 
   //-------------------------------------------------------------
   // API
@@ -96,7 +96,7 @@ class qcl_data_model_db_TransactionModel
    * @param qcl_data_model_AbstractActiveRecord $model
    * @return int The transaction id
    */
-  function getTransactionIdFor( qcl_data_model_AbstractActiveRecord $model )
+  public function getTransactionIdFor( qcl_data_model_AbstractActiveRecord $model )
   {
     $class      = $model->className();
     $datasource = $model->datasourceModel() ? $model->datasourceModel()->namedId() : null;
@@ -122,7 +122,7 @@ class qcl_data_model_db_TransactionModel
    * @param qcl_data_model_AbstractActiveRecord $model
    * @return int The new transaction id
    */
-  function incrementTransactionIdFor( qcl_data_model_AbstractActiveRecord $model )
+  public function incrementTransactionIdFor( qcl_data_model_AbstractActiveRecord $model )
   {
     $id = $this->getTransactionIdFor( $model );
     $this->set("transactionId", $id+1);

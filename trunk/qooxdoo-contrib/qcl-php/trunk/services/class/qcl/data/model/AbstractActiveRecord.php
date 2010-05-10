@@ -987,7 +987,7 @@ class qcl_data_model_AbstractActiveRecord
    * @return qcl_data_model_db_TransactionModel
    * FIXME: Create interface, move into db_models, don't implement here
    */
-  protected function getTransactionModel()
+  public function getTransactionModel()
   {
     qcl_import("qcl_data_model_db_TransactionModel");
     return qcl_data_model_db_TransactionModel::getInstance();
@@ -997,7 +997,7 @@ class qcl_data_model_AbstractActiveRecord
    * Use transaction model to get transaction id of this model
    * @return int The current transaction id
    */
-  protected function getTransactionId()
+  public function getTransactionId()
   {
     return $this->getTransactionModel()->getTransactionIdFor( $this );
   }
@@ -1006,7 +1006,7 @@ class qcl_data_model_AbstractActiveRecord
    * Use transaction model to increment transaction id of this model
    * @return int The current transaction id
    */
-  protected function incrementTransactionId()
+  public function incrementTransactionId()
   {
     return $this->getTransactionModel()->incrementTransactionIdFor( $this );
   }
