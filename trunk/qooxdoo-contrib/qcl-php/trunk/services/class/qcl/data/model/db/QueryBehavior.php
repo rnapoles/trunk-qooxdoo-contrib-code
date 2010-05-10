@@ -16,13 +16,13 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-qcl_import( "qcl_data_model_IQueryBehavior" );
+//qcl_import( "qcl_data_model_IQueryBehavior" );
 qcl_import( "qcl_data_db_Table" );
 
 
 /**
  * Query behavior for (PDO) database driver.
- * @todo Outsource relations management into a separate RelationsBehavior
+ * FIXME ORDER BY clause must be sanitized, remains unchecked!
  */
 class qcl_data_model_db_QueryBehavior
 //implements qcl_data_model_IQueryBehavior
