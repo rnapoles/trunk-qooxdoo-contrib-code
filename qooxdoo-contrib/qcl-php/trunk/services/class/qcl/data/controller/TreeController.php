@@ -450,8 +450,10 @@ class qcl_data_controller_TreeController
       $parentId = (int) array_shift( $queue );
       $childIds = (array) $this->getChildIds( $datasource, $parentId, "position" );
 
-      foreach ( $childIds as $childId )
+      while( count ($childIds ) )
       {
+        $childId = array_shift( $childIds );
+
         /*
          * get child data
          */
@@ -460,7 +462,11 @@ class qcl_data_controller_TreeController
         /*
          * ingnore inaccessible nodes
          */
-        if ( $childData === null ) continue;
+        if ( $childData === null )
+        {
+          $this->debug("Node #$childId is not accessible");
+          continue;
+        }
 
         qcl_assert_array( $childData ); // FIXME assert kes
 
@@ -476,12 +482,6 @@ class qcl_data_controller_TreeController
          * add child data to result
          */
         $nodeArr[] = $childData;
-
-        /*
-         * break if maximum number of nodes has been reached
-         */
-        $counter++;
-        if ( $max and $counter > $max ) break;
       }
       if ( $max and $counter > $max ) break;
     }
@@ -489,7 +489,10 @@ class qcl_data_controller_TreeController
    /*
     * return the node data
     */
+    $nodeCount  = count( $nodeArr );
     $queueCount = count($queue);
+    //$this->debug("Returning $nodeCount nodes, remaining nodes $queueCount");
+
     return array(
       'nodeData'    => $nodeArr,
       'queue'       => $queue,
