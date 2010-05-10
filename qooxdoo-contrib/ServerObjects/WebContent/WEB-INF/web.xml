@@ -9,11 +9,13 @@
 	<servlet>
 		<servlet-name>sampleServlet</servlet-name>
 		<servlet-class>com.zenesis.qx.remote.test.SampleServlet</servlet-class>
+		<load-on-startup>0</load-on-startup> 
 	</servlet>
 	
 	<servlet>
 		<servlet-name>explorerServlet</servlet-name>
 		<servlet-class>com.zenesis.qx.remote.explorer.FileExplorerServlet</servlet-class>
+		<load-on-startup>0</load-on-startup> 
 	</servlet>
 	
 	<servlet-mapping>
@@ -31,23 +33,23 @@
 		<filter-class>com.zenesis.qx.utils.QxUrlRewriteFilter</filter-class>
 		<init-param>
 			<param-name>rewrite-1</param-name>
-			<param-value>/qooxdoo=D:/dev/QRJO/qooxdoo</param-value>
+			<param-value>/qooxdoo=D:/dev/Qooxdoo Server Objects/qooxdoo</param-value>
 		</init-param>
 		<init-param>
 			<param-name>rewrite-2</param-name>
-			<param-value>/qrjo-lib=D:/dev/QRJO/WebContent/qrjo-lib</param-value>
+			<param-value>/qrjo-lib=D:/dev/Qooxdoo Server Objects/WebContent/qrjo-lib</param-value>
 		</init-param>
 		<init-param>
 			<param-name>rewrite-3</param-name>
-			<param-value>/demoapp=D:/dev/QRJO/WebContent/demoapp</param-value>
+			<param-value>/demoapp=D:/dev/Qooxdoo Server Objects/WebContent/demoapp</param-value>
 		</init-param>
 		<init-param>
 			<param-name>rewrite-4</param-name>
-			<param-value>/explorer=D:/dev/QRJO/WebContent/explorer</param-value>
+			<param-value>/explorer=D:/dev/Qooxdoo Server Objects/WebContent/explorer</param-value>
 		</init-param>
 		<init-param>
 			<param-name>rewrite-5</param-name>
-			<param-value>/arraytest=D:/dev/QRJO/WebContent/arraytest</param-value>
+			<param-value>/arraytest=D:/dev/Qooxdoo Server Objects/WebContent/arraytest</param-value>
 		</init-param>
 	</filter>
 	

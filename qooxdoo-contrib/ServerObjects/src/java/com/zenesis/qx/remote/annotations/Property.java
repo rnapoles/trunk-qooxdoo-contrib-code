@@ -56,7 +56,7 @@ public @interface Property {
 	 * as qx.data.Array (which is required for binding).  The default is to wrap.  
 	 * @return
 	 */
-	public Remote.Array array() default Remote.Array.WRAP;
+	public Remote.Array array() default Remote.Array.DEFAULT;
 	
 	/**
 	 * If a property array is an ArrayList instead of an actual array then we loose

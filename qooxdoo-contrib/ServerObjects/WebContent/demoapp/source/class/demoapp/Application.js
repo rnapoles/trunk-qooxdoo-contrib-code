@@ -64,7 +64,7 @@ qx.Class.define("demoapp.Application", {
 			 * -------------------------------------------------------------------------
 			 */
 			
-			var manager = new com.zenesis.qx.remote.ProxyManager("/qrjo/sampleServlet/ajax");
+			var manager = new com.zenesis.qx.remote.ProxyManager("/sampleServlet/ajax");
 			
 			var boot = manager.getBootstrapObject();
 			var testScalars = boot.getTestScalars();

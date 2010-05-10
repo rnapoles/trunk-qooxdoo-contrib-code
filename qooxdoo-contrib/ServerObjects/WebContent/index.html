@@ -1,0 +1,135 @@
+<html>
+	<head>
+		<title>Qooxdoo Server Objects</title>
+		<link href="/css/default.css" rel="stylesheet" type="text/css"> 
+	</head>
+	<body>
+		<div id="header_logo"> </div>
+		<div id="header_nav"> </div>
+		<div id="wrapper">
+			<div id="content">
+				<h1>Qooxdoo Server Objects</h1>
+				<p>The server-objects contrib. integrates Java POJO objects on the server with the Qooxdoo client application in a natural and seamless manner.  
+				Objects on the server support properties and events, and can fine tune how data is transferred and cached with annotations.  Objects can be passed 
+				by value between the client and server which allow (for example) server objects to be bound to a Qooxdoo form without requiring any boiler plate 
+				code for communication.</p>
+				<p>You can <a href="/qso-0.2.zip">download the source code from here</a> or you can browse or checkout the code from
+				SourceForge at 
+				<a href="https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/ServerObjects">https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/ServerObjects</a>.</p>
+				<p><a href="/Overview.pdf">Documentation can be downloaded here</a>, below is an excerpt of the Quick Start guide</p>
+				<h3>Sample Applications</h3>
+				<p>QSO includes two sample applications – “demoapp” which aims to test every aspect of QSO and report “All tests passed!” at the end, and “explorer” 
+				which is a simple file explorer that can navigate a tree of files, loaded on demand and bound to a Qooxdoo form.</p>
+				<ul>
+					<li>"demoapp" sample: Run the <a href="/demoapp/source/index.html">Source</a> or the <a href="/demoapp/build/index.html">Build</a> version</li>
+					<li>"explorer" sample: Run the <a href="/explorer/source/index.html">Source</a> or the <a href="/explorer/build/index.html">Build</a> version</li>
+				</ul>
+				<br/>
+				
+				<h2>Defining a Java POJO</h2>
+				<p>There is only one basic requirement when defining a POJO on the server – the class or interface must implement com.zenesis.qx.remote.Proxied, 
+				after which your methods can be called (synchronously) from the client.  A more useful object will add properties to the class by using the Properties 
+				and Property annotations; for example:</p>
+				<pre>
+@Properties({
+	@Property(value="name",event="changeName")
+})
+public class ServerFile implements Proxied {
+	private String name;
+	public String getName(){
+		return name;
+	}
+	public boolean rename(String name) {
+		...
+	}
+}
+				</pre>
+				<p>
+				The Property annotation tells the QSO library about the property “name”, that it fires a “changeName” event whenever it is modified, and when 
+				QSO copies a ServerFile object from the server to the client, the property value must be delivered at the same time and then cached on the server.  
+				If the server changes the value of the property, it will fire a “changeName” event and QSO will relay the new value to the client.</p>
+				<p>QSO knows that the “name” property is read only because there is only a getXxxx method, but you can have read-write properties too:</p>
+				<pre>
+@Properties({
+	@Property(value="name",event="changeName"),
+	@Property("readOnly")
+})
+public class ServerFile implements Proxied {
+	private boolean readOnly;
+	public boolean isReadOnly() { return readOnly; }
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly; }
+				</pre>
+				<p>In this example, the readOnly property will be defined on the client and the server and QSO will make sure that changes on the client will be 
+				copied to the server and vice-versa.</p>
+				
+				<h2>Properties On Demand</h2> 
+				<p>Some properties you only want to get on demand, but once they have been fetched the value should be cached on the client.  For example:</p>
+				<pre>
+@Properties({
+	@Property(value="name",event="changeName"),
+	@Property("readOnly"),
+	@Property(value="children", onDemand=true, event="changeChildren")
+})
+public class ServerFile implements Proxied {
+	private ServerFile[] children;
+	public ServerFile[] getChildren() {
+		if (children != null || !file.isDirectory())
+			return children;
+		
+		File[] files = file.listFiles();
+		[ ... snip ... ]
+		return children;
+	}
+				</pre>
+				<p>Note the “onDemand=true” that’s been added to the @Property definition; the getChildren() method will only be called once by the Qooxdoo 
+				client and the result is then cached on the client for future use.</p>
+				
+				<h2>Connecting the Servlet to the Client</h2>
+				<p>Accessing objects on the server is just like any other method call (static methods are not supported) and to call a method you need an object.  
+				In QSO, the first object is called a “bootstrap” and is created on demand by QSO; the client application uses the bootstrap object to get everything else.  
+				Bootstrap objects are nothing special – they must support the Proxied interface and have a no-args constructor.</p>
+				
+				<p>Your Java Servlet needs to connect requests coming from the QSO library on the client to the QSO library on the server.  First, choose a 
+				URL that is exclusively for QSO to use for your application (e.g. “/explorerServlet/ ajax”) and then add the following code to your doPost 
+				method:</p>
+				<pre>
+ProxyManager.handleRequest(request, response, FileExplorer.class, "fileExplorer");
+				</pre>
+				<p>The first two parameters are the request and response objects passed to doPost() by the servlet container; the third parameter is the 
+				bootstrap class for your application and the fourth is a unique name for the application (it’s used as a key in the HttpSession so make 
+				sure it’s unique!)</p>
+				<p>In your client app, pass the URL to ProxyManager and then you can call getBootstrapObject() to get an instance of your bootstrap object:</p>
+				<pre>
+var manager = new com.zenesis.qx.remote.ProxyManager("/explorerServlet/ajax");	
+var boot = manager.getBootstrapObject();
+				</pre>
+				<p>In the “explorer” sample client app, the source code is copied from the Qooxdoo example for virtual trees with a minor addition to get the 
+				tree nodes on demand:</p>
+				<pre>
+tree.addListener("treeOpenWhileEmpty", function(evt) {
+	var node = evt.getData();
+	var children = node.serverFile.getChildren();
+	for (var i = 0; i < children.length; i++) {
+		var file = children[i];
+		var nodeId;
+		if (file.getFolder())
+			nodeId = dataModel.addBranch(node.nodeId, file.getName(), null);
+		else
+			nodeId = dataModel.addLeaf(node.nodeId, file.getName(), null);
+		tree.nodeGet(nodeId).serverFile = file;
+	};
+}, this);
+			
+// Create the root node
+var rootNode = tree.nodeGet(dataModel.addBranch(null, "Desktop", 	false));
+rootNode.serverFile = boot.getRoot();
+</pre>
+				<p>The client code above is pure Qooxdoo – there is no boiler plate code for talking to the server.  The “treeOpenWhileEmpty” event creates 
+				new nodes in the tree according to the children returned by ServerFile.getChildren(), and the root node is created by calling the bootstrap 
+				object’s getRoot().</p>
+				
+			</div>
+		</div>
+	</body>
+</html>
