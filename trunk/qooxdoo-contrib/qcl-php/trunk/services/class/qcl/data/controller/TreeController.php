@@ -449,10 +449,11 @@ class qcl_data_controller_TreeController
        */
       $parentId = (int) array_shift( $queue );
       $childIds = (array) $this->getChildIds( $datasource, $parentId, "position" );
-
+      $queueLater = array();
       while( count ($childIds ) )
       {
         $childId = array_shift( $childIds );
+
 
         /*
          * get child data
@@ -468,20 +469,28 @@ class qcl_data_controller_TreeController
           continue;
         }
 
-        qcl_assert_array( $childData ); // FIXME assert kes
+        qcl_assert_array( $childData ); // FIXME assert keys
 
         /*
          * if the child has children itself, load those
          */
         if ( $recurse and $childData['data']['childCount'] )
         {
-          array_push( $queue, (int) $childId );
+          if ( $max and $counter > $max )
+          {
+            $queueLater[]= (int) $childId;
+          }
+          else
+          {
+            array_push( $queue, (int) $childId );
+          }
         }
 
         /*
          * add child data to result
          */
         $nodeArr[] = $childData;
+        $counter++;
       }
       if ( $max and $counter > $max ) break;
     }
@@ -489,6 +498,7 @@ class qcl_data_controller_TreeController
    /*
     * return the node data
     */
+    $queue = array_merge( $queue, $queueLater );
     $nodeCount  = count( $nodeArr );
     $queueCount = count($queue);
     //$this->debug("Returning $nodeCount nodes, remaining nodes $queueCount");
