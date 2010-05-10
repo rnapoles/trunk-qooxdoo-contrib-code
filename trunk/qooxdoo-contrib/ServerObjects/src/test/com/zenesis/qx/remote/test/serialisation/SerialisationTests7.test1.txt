@@ -1,0 +1,69 @@
+{
+  "serverId" : 0,
+  "clazz" : {
+    "className" : "com.zenesis.qx.remote.test.properties.TestProperties",
+    "interfaces" : [ {
+      "className" : "com.zenesis.qx.remote.test.properties.ITestProperties",
+      "isInterface" : true,
+      "methods" : {
+        "getChangeLog" : {
+        },
+        "triggerChangeWatchedString" : {
+        },
+        "triggerSomeEvent" : {
+        }
+      }
+    } ],
+    "methods" : {
+        "getChangeLog" : {
+        },
+        "triggerChangeWatchedString" : {
+        },
+        "triggerSomeEvent" : {
+        }
+    },
+    "properties" : {
+      "immediate" : {
+        "sync" : "immediate",
+        "nullable" : true
+      },
+      "watchedString" : {
+        "sync" : "queue",
+        "event" : "changeWatchedString",
+        "nullable" : true
+      },
+      "onDemandString" : {
+        "sync" : "queue",
+        "event" : "changeDemandString",
+        "nullable" : true,
+        "onDemand" : true
+      },
+      "queued" : {
+        "sync" : "queue",
+        "nullable" : true
+      },
+      "readOnlyString" : {
+        "sync" : "queue",
+        "nullable" : true,
+        "readOnly" : true
+      }
+    },
+    "events" : {
+      "someEvent" : {
+      },
+      "changeWatchedString" : {
+        "isProperty" : true
+      },
+      "changeDemandString" : {
+        "isProperty" : true
+      }
+    }
+  },
+  "values" : {
+    "immediate" : "Server Immediate",
+    "watchedString" : null,
+    "queued" : "Server Queued",
+    "readOnlyString" : "read-only"
+  }
+}
+
