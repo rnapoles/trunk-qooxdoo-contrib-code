@@ -31,7 +31,7 @@
   "let" :
   {
     "APPLICATION"  : "explorer",
-    "QOOXDOO_PATH" : "../../../qso/qooxdoo",
+    "QOOXDOO_PATH" : "../../qooxdoo",
     "QXTHEME"      : "explorer.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
@@ -47,13 +47,25 @@
       [
         {
           "manifest" : "${QOOXDOO_PATH}/framework/Manifest.json",
-          "uri" : "/qso/qooxdoo/framework"
+          "uri" : "/qooxdoo/framework"
         },
         {
           "manifest" : "../qso-lib/Manifest.json",
-          "uri" : "/qso/qso-lib"
+          "uri" : "/qso-lib"
         }
       ]
-    }
+    } /*,
+    "build-script": {
+        "compile-options": {
+    		"format": true,
+	    	"code": {
+	    		"=optimize": [ "variables", "privates", "strings" ]
+	    	}
+	    },
+	    "variants" : {
+	    	"=qx.debug" : ["on"]
+	    }
+
+    }*/
   }
 }

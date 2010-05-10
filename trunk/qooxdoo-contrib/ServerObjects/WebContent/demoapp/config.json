@@ -47,11 +47,11 @@
       [
         {
           "manifest" : "${QOOXDOO_PATH}/framework/Manifest.json",
-          "uri" : "/qso/qooxdoo/framework"
+          "uri" : "/qooxdoo/framework"
         },
         {
           "manifest" : "../qso-lib/Manifest.json",
-          "uri" : "/qso/qso-lib"
+          "uri" : "/qso-lib"
         }
       ]
     }

@@ -50,7 +50,7 @@ public class SampleServlet extends HttpServlet {
 		String uri = request.getPathInfo();
 		
 		if ("/ajax".equals(uri)) {
-			ProxyManager.handleRequest(request, response, FileExplorer.class, "sampleServlet");
+			ProxyManager.handleRequest(request, response, TestBootstrap.class, "sampleServlet");
 		} else
 			throw new ServletException("Unrecognised URL " + uri);
 	}

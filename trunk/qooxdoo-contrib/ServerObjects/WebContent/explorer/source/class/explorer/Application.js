@@ -67,7 +67,7 @@ qx.Class.define("explorer.Application", {
 			qx.Class.include(qx.ui.treevirtual.TreeVirtual, qx.ui.treevirtual.MNode);			
 		
 			// manager is our conduit to the server
-			var manager = new com.zenesis.qx.remote.ProxyManager("/qrjo/explorerServlet/ajax");
+			var manager = new com.zenesis.qx.remote.ProxyManager("/explorerServlet/ajax");
 			var boot = manager.getBootstrapObject();
 		
 			// create the tree
@@ -81,14 +81,16 @@ qx.Class.define("explorer.Application", {
 			// Add a listener to get nodes on demand
 			tree.addListener("treeOpenWhileEmpty", function(evt) {
 					var node = evt.getData();
-					node.serverFile.getChildren().forEach(function(file) {
-							var nodeId;
-							if (file.getFolder())
-								nodeId = dataModel.addBranch(node.nodeId, file.getName(), null);
-							else
-								nodeId = dataModel.addLeaf(node.nodeId, file.getName(), null);
-							tree.nodeGet(nodeId).serverFile = file;
-						}, this);
+					var children = node.serverFile.getChildren();
+					for (var i = 0; i < children.length; i++) {
+						var file = children[i];
+						var nodeId;
+						if (file.getFolder())
+							nodeId = dataModel.addBranch(node.nodeId, file.getName(), null);
+						else
+							nodeId = dataModel.addLeaf(node.nodeId, file.getName(), null);
+						tree.nodeGet(nodeId).serverFile = file;
+					};
 				}, this);
 			
 			// Create the root node
