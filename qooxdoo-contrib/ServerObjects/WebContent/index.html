@@ -13,6 +13,17 @@
 				Objects on the server support properties and events, and can fine tune how data is transferred and cached with annotations.  Objects can be passed 
 				by value between the client and server which allow (for example) server objects to be bound to a Qooxdoo form without requiring any boiler plate 
 				code for communication.</p>
+				<p>The objects passed to the client are created as actual Qooxdoo objects, in that a class and interfaces are defined with calls to qx.Class.define() 
+				etc so that the object model on the client exactly matches the interfaces defined on the server and all the normal OO rules apply.</p>
+				<p>The methods in the generated classes trigger synchronous calls to the server object, and any return value is seamlessly translated back into a 
+				Qooxdoo JS object; the Qooxdoo JS objects can be passed back to the server as parameters to a method call, where they are translated back into the 
+				original Java objects before reaching your code.</p> 
+				<p>Annotations are used to define properties on the object server and declare how they are translated to the client (EG on demand vs pre-fetched, 
+				or wrapped arrays on the client); changes to property values are queued and copied to the other side when a synchronous event occurs.  The only 
+				requirement on the server side is that the objects implement a marker interface– but this is not necessary for method return types or parameters.  
+				If a server method returns a value which does not support the marker interface it will be serialised to JSON and sent anyway; similarly, an arbitrary 
+				JSON object can be sent to the server as a parameter providing that the receiving parameter is suitable (E.G. a Collection or a Map).</p>
+				
 				<p>You can <a href="/qso-0.2.zip">download the source code from here</a> or you can browse or checkout the code from
 				SourceForge at 
 				<a href="https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/ServerObjects">https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/ServerObjects</a>.</p>
