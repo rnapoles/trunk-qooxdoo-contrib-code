@@ -216,7 +216,7 @@ class qcl_access_SessionController
      * and cleanup session data
      */
     $this->unregisterSession();
-    $this->cleanup();
+    //$this->cleanup();
 
     /*
      * logout
@@ -269,6 +269,11 @@ class qcl_access_SessionController
      */
     $this->log( sprintf("Registering session '%s', for %s from IP %s ", $sessionId, $user, $remoteIp ), QCL_LOG_ACCESS );
     $this->getSessionModel()->registerSession( $sessionId, $user, $remoteIp );
+
+    /*
+     * remove stale users and sessions, doesn't work yet
+     */
+    //$this->cleanup();
   }
 
   /**
@@ -299,7 +304,6 @@ class qcl_access_SessionController
    */
   public function terminate()
   {
-    $this->cleanup(); // FIXME move somewhere else
     $sessionModel = $this->getSessionModel();
     $activeUser   = $this->getActiveUser();
     $sessionId    = $this->getSessionId();
@@ -405,7 +409,6 @@ class qcl_access_SessionController
    */
   public function cleanup()
   {
-return;
     /*
      * clean up stale users
      */
@@ -413,8 +416,8 @@ return;
     $ids = $userModel->getQueryBehavior()->fetchValues("id",
       new qcl_data_db_Query( array( 'where' =>
         "anonymous = 1 AND
-        ( TIME_TO_SEC( TIMEDIFF( NOW(), lastAction ) ) > 3600
-          OR TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 3600 )"
+        ( TIME_TO_SEC( TIMEDIFF( NOW(), lastAction ) ) > 86400
+          OR TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400 )"
     ) ) );
     foreach( $ids as $id )
     {
