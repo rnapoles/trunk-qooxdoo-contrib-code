@@ -47,10 +47,10 @@ class qcl_data_model_db_RelationBehavior
 
 
   /**
-   * The prefix used for the join table
+   * The default prefix used for the join table
    * @var string
    */
-  protected $joinTablePrefix = "join_";
+  protected $defaultJoinTablePrefix = "join_";
 
   /**
    * Whether the relations have been initialized
@@ -214,6 +214,14 @@ class qcl_data_model_db_RelationBehavior
         'foreignKey'  => $this->checkRelationForeignKey( $relData, $relation )
       );
 
+      /*
+       * join table
+       */
+      if( $relData['jointable'] )
+      {
+        $this->checkJoinTableName( $relData['jointable'] );
+        $this->relations[$relation]['jointable'] = $relData['jointable'];
+      }
       /*
        * add a lookup index for class names
        */
@@ -845,19 +853,19 @@ class qcl_data_model_db_RelationBehavior
    * Getter for the prefix used for the join table
    * @return string
    */
-  public function getJoinTablePrefix()
+  public function getDefaultJoinTablePrefix()
   {
-    return $this->joinTablePrefix;
+    return $this->defaultJoinTablePrefix;
   }
 
   /**
    * Setter for the prefix used for the join table
    * @return string
    */
-  public function setJoinTablePrefix( $prefix )
+  public function setDefaultJoinTablePrefix( $prefix )
   {
     qcl_assert_valid_string( $prefix );
-    $this->joinTablePrefix = $prefix;
+    $this->defaultJoinTablePrefix = $prefix;
   }
 
   /**
@@ -878,7 +886,7 @@ class qcl_data_model_db_RelationBehavior
          or ! $this->relations[$relation]['jointable']  )
     {
       $this->relations[$relation]['jointable'] =
-        $this->getJoinTablePrefix() . $relation;
+        $this->getDefaultJoinTablePrefix() . $relation;
     }
     $joinTableName = $this->relations[$relation]['jointable'];
     $this->checkJoinTableName( $joinTableName, $relation );
