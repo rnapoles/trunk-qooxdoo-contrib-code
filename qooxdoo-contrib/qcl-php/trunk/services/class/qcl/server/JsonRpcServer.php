@@ -357,7 +357,8 @@ class qcl_server_JsonRpcServer
      * events and messages
      */
     $app = $this->getApplication();
-    if ( $app and $app->getIniValue("service.event_transport") == "on" )
+    $event_transport = $app->getIniValue("service.event_transport");
+    if ( $app and  $event_transport )
     {
       $events    = $app->getEventDispatcher()->getClientEvents();
       $response->setEvents( $events );
