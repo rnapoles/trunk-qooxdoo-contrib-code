@@ -219,7 +219,7 @@ class qcl_data_model_db_RelationBehavior
        */
       if( $relData['jointable'] )
       {
-        $this->checkJoinTableName( $relData['jointable'] );
+        $this->checkJoinTableName( $relData['jointable'], $relation );
         $this->relations[$relation]['jointable'] = $relData['jointable'];
       }
       /*
