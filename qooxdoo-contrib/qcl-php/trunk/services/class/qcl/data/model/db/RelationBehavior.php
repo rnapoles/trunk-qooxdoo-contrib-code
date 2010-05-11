@@ -45,6 +45,13 @@ class qcl_data_model_db_RelationBehavior
    */
   private $relationModels = array();
 
+
+  /**
+   * The prefix used for the join table
+   * @var string
+   */
+  protected $joinTablePrefix = "join_";
+
   /**
    * Whether the relations have been initialized
    * @var bool
@@ -832,8 +839,25 @@ class qcl_data_model_db_RelationBehavior
         "unique", $indexName, array( $foreignKey, $targetForeignKey )
       );
     }
+  }
 
+  /**
+   * Getter for the prefix used for the join table
+   * @return string
+   */
+  public function getJoinTablePrefix()
+  {
+    return $this->joinTablePrefix;
+  }
 
+  /**
+   * Setter for the prefix used for the join table
+   * @return string
+   */
+  public function setJoinTablePrefix( $prefix )
+  {
+    qcl_assert_valid_string( $prefix );
+    $this->joinTablePrefix = $prefix;
   }
 
   /**
@@ -853,7 +877,8 @@ class qcl_data_model_db_RelationBehavior
     if ( ! isset( $this->relations[$relation]['jointable'] )
          or ! $this->relations[$relation]['jointable']  )
     {
-      $this->relations[$relation]['jointable'] = "join_" .$relation;
+      $this->relations[$relation]['jointable'] =
+        $this->getJoinTablePrefix() . $relation;
     }
     $joinTableName = $this->relations[$relation]['jointable'];
     $this->checkJoinTableName( $joinTableName, $relation );

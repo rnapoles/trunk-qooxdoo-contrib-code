@@ -39,6 +39,12 @@ class qcl_data_model_db_QueryBehavior
   protected $model;
 
   /**
+   * The default prefix used for data tables
+   * @var string
+   */
+  protected $getDefaultTablePrefix = "data_";
+
+  /**
    * The database driver adapter. Acces with getAdapter()
    */
   private $adapter;
@@ -155,11 +161,32 @@ class qcl_data_model_db_QueryBehavior
       $this->tableName = $this->getModel()->tableName();
       if ( ! $this->tableName )
       {
-        $this->tableName = "data_" . $this->getModel()->className();
+        $this->tableName =
+          $this->getDefaultTablePrefix() . $this->getModel()->className();
       }
     }
     return $this->getTablePrefix() . $this->tableName;
   }
+
+  /**
+   * Getter for the default prefix for data tables
+   * @return string
+   */
+  public function getDefaultTablePrefix()
+  {
+    return $this->getDefaultTablePrefix;
+  }
+
+  /**
+   * Setter for the default prefix for data tables
+   * @return string
+   */
+  public function setDefaultTablePrefix( $prefix )
+  {
+    qcl_assert_valid_string( $prefix );
+    $this->getDefaultTablePrefix = $prefix;
+  }
+
 
   /**
    * Getter for persistent cache object
