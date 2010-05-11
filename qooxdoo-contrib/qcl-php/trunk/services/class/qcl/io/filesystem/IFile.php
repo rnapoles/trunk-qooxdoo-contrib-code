@@ -42,7 +42,7 @@ interface qcl_io_filesystem_IFile
    * Opens the file resource for reading or writing
    * @param string $mode r(ead)|w(rite)|a(append)
    */
-  function open($mode);
+  function open($mode="r");
 
   /**
    * Reads a variable number of bytes from the resource
