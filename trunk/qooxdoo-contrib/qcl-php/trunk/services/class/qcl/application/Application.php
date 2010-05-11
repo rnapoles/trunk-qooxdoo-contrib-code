@@ -215,7 +215,16 @@ abstract class qcl_application_Application
    */
   public function getIniValue( $path )
   {
-    return $this->getIniManager()->getIniValue( $path );
+    $value =  $this->getIniManager()->getIniValue( $path );
+    if( $value == "on" or $value == "yes" )
+    {
+      $value = true;
+    }
+    elseif ( $value == "off" or $value == "no" )
+    {
+      $value = false;
+    }
+    return $value;
   }
 
   /**

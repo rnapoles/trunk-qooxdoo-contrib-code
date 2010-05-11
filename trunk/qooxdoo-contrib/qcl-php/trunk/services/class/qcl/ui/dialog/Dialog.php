@@ -33,7 +33,7 @@ class qcl_ui_dialog_Dialog
     /*
      * only dispatch the message if event transport is on
      */
-    if ( $this->getApplication()->getIniValue("service.event_transport") == "on" )
+    if ( $this->getApplication()->getIniValue("service.event_transport") )
     {
       $this->getMessageBus()->dispatchClientMessage(
         null, "qcl.ui.dialog.Dialog.createDialog", $data

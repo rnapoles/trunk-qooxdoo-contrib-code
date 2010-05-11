@@ -966,7 +966,11 @@ class qcl_data_db_adapter_PdoMysql
    */
   public function columnExists( $table, $column, $useCache = true )
   {
-    static $cache = array();
+    $cache = &$_SESSION['qcl_data_db_adapter_PdoMysql_ColumnCache'];
+    if ( ! is_array( $cache ) )
+    {
+      $cache = array();
+    }
     if ( $useCache === false or ! isset( $cache[$table][$column] ) )
     {
       $database = $this->getDatabase();
