@@ -312,6 +312,14 @@ simulation.Simulation.prototype.checkSampleLoad = function(sampleArr)
   // Select and check each sample
   for (var i=0; i<sampleArr.length; i++) {
     if (sampleArr[i] !== "") {
+    // Webbrowser and YQL Binding cause mixed content warning popups in IE
+    // when SSL is used.
+    if ( (sampleArr[i] == "Webbrowser" || sampleArr[i] == "YQL Binding")
+           && this.getConfigSetting("autHost").indexOf("https:") == 0 
+       && this.getConfigSetting("testBrowser").indexOf("iexplore") >= 0 ) {
+      this.log("Skipping sample " + sampleArr[i] + " in IE/SSL", "info");
+      continue;
+    }
       this.__sel.chooseOkOnNextConfirmation();
       print("Selecting next sample: " + sampleArr[i]);
       this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
