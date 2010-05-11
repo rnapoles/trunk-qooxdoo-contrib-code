@@ -87,7 +87,7 @@ qx.Class.define("qcl.application.StateManager",
     stateSeparatorChar :
     {
       check : "String",
-      init : "~~~",
+      init : "^",
       nullable : false 
     },
     
