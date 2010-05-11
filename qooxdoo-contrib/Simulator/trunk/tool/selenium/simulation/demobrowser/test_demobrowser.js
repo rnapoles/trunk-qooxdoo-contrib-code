@@ -362,13 +362,6 @@ simulation.Simulation.prototype.runTest = function()
   
   // Remove the text from the search field so no demos are filtered
   this.qxType('qxh=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Composite/qx.ui.form.TextField', "");
-  
-  if (this.getConfigSetting("theme", false)) {
-    var chosenTheme = this.getConfigSetting("theme");
-    this.log("Switching theme to " + chosenTheme, "info");
-    this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]', "", "Clicking Theme button");
-    this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
-  }
 
   if (include.length === 0) {
     this.runScript(treeSelect(2), "Selecting first category");
@@ -381,6 +374,13 @@ simulation.Simulation.prototype.runTest = function()
     var currentCatSam = this.sampleRunner(runSample);
     this.currentCategory = currentCatSam[0];
     this.currentSample = currentCatSam[1];
+    
+    if (this.getConfigSetting("theme", false)) {
+      var chosenTheme = this.getConfigSetting("theme");
+      this.log("Switching theme to " + chosenTheme, "info");
+      this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]', "", "Clicking Theme button");
+      this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
+    }
     
     while (this.currentSample != this.lastSample) {
       /*
