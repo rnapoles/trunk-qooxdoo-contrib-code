@@ -27,11 +27,18 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = 'selenium.qxStoredVars["autWindow"]';
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
-simulation.Simulation.prototype.bomTest = function()
+simulation.Simulation.prototype.bomTest = function(nativeApp)
 {
-  this.__sel.focus('//html/body/div[@id="logger"]');
-  this.__sel.typeKeys('//html/body/div[@id="logger"]', 'A');
-  var divContent = this.getEval(selWin + '.document.getElementById("logger").innerHTML', "Getting logger div content.");
+  var eventDivLocator = '//html/body/div[@id="logger"]';
+  var eventDivElem = '.document.getElementById("logger")';
+  if (nativeApp) {
+    eventDivLocator = '//html/body/div';
+    eventDivElem = '.document.getElementsByTagName("div")[0]';
+  }
+  
+  this.__sel.focus(eventDivLocator);
+  this.__sel.typeKeys(eventDivLocator, 'A');
+  var divContent = this.getEval(selWin + eventDivElem + '.innerHTML', "Getting logger div content.");
   if (divContent.indexOf("A") === 0) {
     this.log("qooxdoo event system seems to work.", "info");
   }
@@ -49,9 +56,11 @@ simulation.Simulation.prototype.inlineTest = function()
 
 simulation.Simulation.prototype.runTest = function()
 { 
-  if (this.getConfigSetting("autPath").indexOf("/bomapplication") >= 0
-      || this.getConfigSetting("autPath").indexOf("/nativeapplication") >= 0) {
+  if (this.getConfigSetting("autPath").indexOf("/bomapplication") >= 0) {
     this.bomTest();
+  }
+  else if (this.getConfigSetting("autPath").indexOf("/nativeapplication") >= 0) {
+    this.bomTest("native");
   }
   else if (this.getConfigSetting("autPath").indexOf("/inlineapplication") >= 0) {
     this.inlineTest();
