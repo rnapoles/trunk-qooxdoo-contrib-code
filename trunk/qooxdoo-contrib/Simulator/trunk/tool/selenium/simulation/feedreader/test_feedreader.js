@@ -41,13 +41,21 @@ var locators = {
   feedWindowButton : 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.renderer.SinglePlaceholder/qx.ui.container.Composite/qx.ui.form.Button'
 };
 
+if (mySim.getConfigSetting("branch") == "branch_1_1_x") {
+  locators.feedWindowButton = 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button';
+}
+
 simulation.Simulation.prototype.checkArticle = function()
 {
   var articleScript = 'selenium.getQxObjectFunction(\'' + locators.articleView + '\', "getArticle")';
   //var articleScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
   var article = this.getEval(articleScript, "Checking for article");
 
-  if (String(article).indexOf("qx.data.model") >= 0) {
+  var modelClassName = "qx.data.model";
+  if (this.getConfigSetting("branch") == "branch_1_1_x") {
+    modelClassName = "feedreader.model.Article"
+  }
+  if (String(article).indexOf(modelClassName) >= 0) {
     this.log("Article found.", "info");
   }
   else {
@@ -181,9 +189,17 @@ mySim.runTest = function()
   }
   
   // Enter new feed details
-  this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[1]", "Golem");
-  this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[2]", "http://rss.golem.de/rss.php?feed=ATOM1.0");
-
+  if (this.getConfigSetting("branch") == "branch_1_1_x") {
+    var setFeedTitle = feedWindowScript + ".getChildren()[0].getChildren()[1].setValue('Golem')";  
+    this.getEval(setFeedTitle, "Setting feed title");
+    var setFeedUrl = feedWindowScript + ".getChildren()[0].getChildren()[3].setValue('http://rss.golem.de/rss.php?feed=ATOM1.0')";  
+    this.getEval(setFeedUrl, "Setting feed URL");
+  }
+  else {
+    this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[1]", "Golem");
+    this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[2]", "http://rss.golem.de/rss.php?feed=ATOM1.0");
+  }
+  
   this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   Packages.java.lang.Thread.sleep(2000);
   
