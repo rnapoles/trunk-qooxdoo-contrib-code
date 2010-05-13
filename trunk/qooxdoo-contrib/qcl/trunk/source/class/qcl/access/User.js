@@ -91,6 +91,15 @@ qx.Class.define("qcl.access.User",
     },
     
     /**
+     * Whether the user data is editable
+     */
+    editable :
+    {
+      check : "Boolean",
+      init : false
+    },    
+    
+    /**
      * An array of permission objects
      */
     permissions :

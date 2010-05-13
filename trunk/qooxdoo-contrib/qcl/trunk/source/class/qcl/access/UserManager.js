@@ -109,6 +109,7 @@ qx.Class.define("qcl.access.UserManager",
 		     */
 		    user.setFullname( model.getFullname() );
 		    user.setAnonymous( model.getAnonymous() );
+        user.setEditable( model.getEditable() );
 		    user.setPermissions([]);
 		    user.addPermissionsByName( model.getPermissions().toArray() );
 		    
