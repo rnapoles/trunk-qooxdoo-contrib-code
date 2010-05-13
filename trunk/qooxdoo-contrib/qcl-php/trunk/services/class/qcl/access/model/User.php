@@ -93,6 +93,10 @@ class qcl_access_model_User
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
       'target'      => array( 'class' => "qcl_access_model_Role" )
     ),
+    'Group_User' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_Group" )
+    ),
     'User_UserConfig' => array(
       'type'        => QCL_RELATIONS_HAS_MANY,
       'target'      => array(

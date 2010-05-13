@@ -148,6 +148,10 @@ class qcl_data_datasource_DbModel
     'Datasource_Role' => array(
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
       'target'      => array( 'class' => "qcl_access_model_Role" )
+    ),
+    'Datasource_Group' => array(
+      'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
+      'target'      => array( 'class' => "qcl_access_model_Group" )
     )
   );
 

@@ -17,8 +17,13 @@
    *  Christian Boulanger (cboulanger)
 
 ************************************************************************ */
+
+/*
+ * access models
+ */
 qcl_import( "qcl_access_model_User" );
 qcl_import( "qcl_access_model_Role" );
+qcl_import( "qcl_access_model_Group" );
 qcl_import( "qcl_access_model_Permission" );
 qcl_import( "qcl_access_model_Session" );
 qcl_import( "qcl_config_ConfigModel" );

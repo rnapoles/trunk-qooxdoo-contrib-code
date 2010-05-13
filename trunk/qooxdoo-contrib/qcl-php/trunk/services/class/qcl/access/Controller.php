@@ -148,6 +148,18 @@ class qcl_access_Controller
   }
 
   /**
+   * Gets the group data model
+   * @return qcl_access_model_Role
+   * @deprecated Do not pass id as argument
+   * FIXME Get from access datasource
+   */
+  public function getGroupModel()
+  {
+    qcl_import("qcl_access_model_Group");
+    return qcl_access_model_Group::getInstance();
+  }
+
+  /**
    * Returns active user object
    * @return qcl_access_model_User
    */
