@@ -39,6 +39,13 @@ class qcl_access_SessionController
   private $sessionModel;
 
   /**
+   * seconds of inactivity after which anonymous users or
+   * sessions will be deleted
+   * @var int
+   */
+  public $secondsUntilPurge = 3600;
+
+  /**
    * This overrides and extends the parent method by providing a way to determine
    * the user by a given session id in the request.
    *
@@ -403,7 +410,7 @@ class qcl_access_SessionController
   /**
    * Clean up the access data:
    * - Purge all anonymous guests that are inactive for more than
-   *   one hour
+   *   one day
    * - delete all state sessions.
    * FIXME rewrite as portable query!
    */
@@ -413,26 +420,28 @@ class qcl_access_SessionController
      * clean up stale users
      */
     $userModel = $this->getUserModel();
-    $ids = $userModel->getQueryBehavior()->fetchValues("id",
-      new qcl_data_db_Query( array( 'where' =>
-        "anonymous = 1 AND
-        ( TIME_TO_SEC( TIMEDIFF( NOW(), lastAction ) ) > 86400
-          OR TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400 )"
-    ) ) );
-    foreach( $ids as $id )
+    $seconds = $this->secondsUntilPurge;
+    if ( $seconds )
     {
-      $userModel->load( $id );
-      $userModel->delete();
-    }
+      $ids = $userModel->getQueryBehavior()->fetchValues("id",
+          "anonymous = 1 AND
+          ( TIME_TO_SEC( TIMEDIFF( NOW(), lastAction ) ) > 86400
+            OR TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400 )"
+      );
+      foreach( $ids as $id )
+      {
+        $userModel->load( $id );
+        $userModel->delete();
+      }
 
-    /*
-     * clean up stale sessions
-     */
-    $sessionModel = $this->getSessionModel();
-    $ids = $sessionModel->getQueryBehavior()->deleteWhere("id",
-      new qcl_data_db_Query( array( 'where' =>
-      "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
-    ) ) );
+      /*
+       * clean up stale sessions
+       */
+      $sessionModel = $this->getSessionModel();
+      $ids = $sessionModel->getQueryBehavior()->deleteWhere(
+        "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
+      );
+    }
   }
 }
 ?>

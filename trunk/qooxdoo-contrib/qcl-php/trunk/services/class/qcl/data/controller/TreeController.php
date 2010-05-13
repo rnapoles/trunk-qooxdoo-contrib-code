@@ -465,7 +465,7 @@ class qcl_data_controller_TreeController
          */
         if ( $childData === null )
         {
-          $this->debug("Node #$childId is not accessible");
+          //$this->debug("Node #$childId is not accessible");
           continue;
         }
 

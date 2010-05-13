@@ -24,42 +24,48 @@ class qcl_access_AuthenticationResult
     * Authentication error, if any
     * @var false|string
     */
-   var $error;
+   public $error;
 
    /**
     * An array of permissions
     * @var array
     */
-   var $permissions;
+   public $permissions;
 
    /**
     * The session id
     * @var string
     */
-   var $sessionId;
+   public $sessionId;
 
    /**
     * The login name of the user
     * @var string
     */
-   var $username;
+   public $username;
 
    /**
     * The full name of the user
     * @var string
     */
-   var $fullname;
+   public $fullname;
 
    /**
     * The user id
     * @var int
     */
-   var $userId;
+   public $userId;
 
    /**
     * Whether the user is an unauthenticated guest
     * @var boolean
     */
-   var $anonymous;
+   public $anonymous;
+
+   /**
+    * Whether the user data is editable
+    * @var boolean
+    */
+   public $editable = false;
 }
 ?>

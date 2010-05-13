@@ -137,11 +137,18 @@ class qcl_config_IniConfigManager
     $value   = $this->getIniConfig();
 
     /*
-     * traverse array
+     * traverse path
      */
     while( is_array($value) and $part = array_shift($parts) )
     {
-      $value = $value[$part];
+      if ( isset( $value[$part] ) )
+      {
+        $value = $value[$part];
+      }
+      else
+      {
+        $value = null; break;
+      }
     }
 
     /*
