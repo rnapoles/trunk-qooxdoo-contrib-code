@@ -58,6 +58,7 @@ class qcl_access_DatasourceModel
         'user'        => array( 'class' => "qcl_access_model_User" ),
         'permission'  => array( 'class' => "qcl_access_model_Permission" ),
         'role'        => array( 'class' => "qcl_access_model_Role" ),
+        'group'       => array( 'class' => "qcl_access_model_Group" ),
         'session'     => array( 'class' => "qcl_access_model_Session" ),
         'config'      => array( 'class' => "qcl_config_ConfigModel" ),
         'userConfig'  => array( 'class' => "qcl_config_UserConfigModel" )
