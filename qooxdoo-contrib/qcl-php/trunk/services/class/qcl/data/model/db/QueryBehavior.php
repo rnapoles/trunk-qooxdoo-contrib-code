@@ -1194,7 +1194,7 @@ class qcl_data_model_db_QueryBehavior
   /**
    * Returns all values of a model property that match a query
    * @param string $property Name of property
-   * @param qcl_data_db_Query|array|null $query "Where" query information
+   * @param qcl_data_db_Query|array|string|null $query "Where" query information
    * as string or qcl_data_db_Query object. If null, select all property values
    * in the model data
    * @param bool $distinct If true, return only distinct values. Defaults to true
@@ -1206,7 +1206,7 @@ class qcl_data_model_db_QueryBehavior
     /*
      * create query object from arguments
      */
-    if ( is_array ( $query ) or is_null ( $query ) )
+    if ( is_array ( $query ) or is_null ( $query ) or is_string( $query ) )
     {
       $query = new qcl_data_db_Query( array(
         'properties' => $property,
@@ -1420,6 +1420,10 @@ class qcl_data_model_db_QueryBehavior
    */
   public function deleteWhere ( $where )
   {
+    if( ! is_string( $where ) and ! is_array( $where ) )
+    {
+      throw new InvalidArgumentException("Invalid argument");
+    }
     $query = new qcl_data_db_Query( array( 'where' => $where ) );
     $sql   = $this->createWhereStatement( $query );
     return $this->getTable()->deleteWhere(

@@ -554,7 +554,10 @@ class qcl_access_Controller
     {
       if ( $activeUser->getId() != $userId )
       {
-        throw new qcl_access_AuthenticationException("A different user is already logged in.");
+        $this->warn(sprintf(
+          "User %s (#%s) is already logged in, although we're about to login in user with id #%s. This should normally not be the case",
+          $activeUser, $activeUser->id(), $userId
+        ) );
       }
       else
       {
@@ -564,10 +567,10 @@ class qcl_access_Controller
     }
 
     /*
-     * save a copy of the current user model as
+     * save the current user model as
      * the new active user and reset its timestamp
      */
-    $activeUser  = $this->getUserModel();
+    $activeUser = $this->getUserModel();
     $activeUser->load( $userId );
     $this->setActiveUser( $activeUser );
     $activeUser->resetLastAction();

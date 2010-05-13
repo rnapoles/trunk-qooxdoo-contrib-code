@@ -57,7 +57,13 @@ class qcl_access_model_User
     ),
     'anonymous'  => array(
       'check'     => "boolean",
-      'sqltype'   => "int(1)",
+      'sqltype'   => "int(1) NOT NULL DEFAULT 0",
+      'nullable'  => false,
+      'init'      => false
+    ),
+    'ldap'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1) NOT NULL DEFAULT 0",
       'nullable'  => false,
       'init'      => false
     ),
