@@ -82,6 +82,7 @@
             </manifest>
             <metainf file="./license.txt"/>
         </jar>
+        <delete dir="${bin-dir}"/>
         <echo message="Creating ${rpc-jar-name}. Done."/>
     </target>
 
