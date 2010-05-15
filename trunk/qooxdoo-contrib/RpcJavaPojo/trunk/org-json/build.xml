@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<project name="org.json build file" basedir="." default="jar">
+
+    <property name="src-dir" value="src"/>
+    <property name="lib-dir" value="lib"/>
+    <property name="bin-dir" value="bin"/>
+
+    <property name="org.json-jar-name" value="org-json.jar"/>
+
+    <target name="compile">
+        <echo message="Compiling org.json..."/>
+
+        <mkdir dir="${bin-dir}/classes"/>
+        <javac srcdir="${src-dir}" destdir="${bin-dir}/classes"
+               includes="org/json/**"
+               verbose="yes" debug="yes" optimize="yes" target="1.6" source="1.6"
+               failonerror="yes">
+        </javac>
+
+        <echo message="Compiling org.json. Done"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <echo message="Creating ${org.json-jar-name} ..."/>
+
+        <mkdir dir="${lib-dir}"/>
+        <jar basedir="${bin-dir}/classes" destfile="${lib-dir}/${org.json-jar-name}"
+             includes="org/json/**"
+             compress="yes" index="true">
+        </jar>
+
+        <echo message="Creating ${org.json-jar-name} . Done."/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${bin-dir}"/>
+    </target>
+
+    <target name="distclean" depends="clean">
+        <delete dir="${lib-dir}"/>
+    </target>
+
+</project>
