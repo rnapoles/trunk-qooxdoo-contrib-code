@@ -1,0 +1,7 @@
+This org.json library differs slightly from the one available on org-json.com,
+because conversion of Dates objects needed to be added.
+
+Search for the following comments to see where modifications have been done.
+        /////////////
+        // Begin date modification
+        /////////////
