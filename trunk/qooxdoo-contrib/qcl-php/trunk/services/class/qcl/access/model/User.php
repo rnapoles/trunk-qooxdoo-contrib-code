@@ -417,11 +417,12 @@ class qcl_access_model_User
   }
 
   /**
-   * Internato function to check the password
+   * Function to check the match between the password and the repeated
+   * password
    * @param $value
-   * @return unknown_type
+   * @return string
    */
-  protected function checkFormPassword ( $value )
+  public function checkFormPassword ( $value )
   {
     if ( ! isset( $this->__password ) )
     {
