@@ -125,21 +125,25 @@ class class_qcl_test_access_ModelAccessControl
     $data = $this->method_fetchRecords( "access","user", $query );
     $expected =  array (
       array (
+        'id'      => 1,
         'namedId' => 'user1',
         'name' => 'User 1',
         'password' => 'user1'
       ),
       array (
+        'id'      => 2,
         'namedId' => 'user2',
         'name' => 'User 2',
         'password' => 'user2'
       ),
       array (
+        'id'      => 3,
         'namedId' => 'user3',
         'name' => 'User 3',
         'password' => 'user3'
       ),
       array (
+        'id'      => 4,
         'namedId' => 'admin',
         'name' => 'Administrator',
         'password' => 'admin'

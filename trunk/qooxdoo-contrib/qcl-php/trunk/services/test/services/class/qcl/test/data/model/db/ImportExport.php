@@ -239,7 +239,7 @@ class class_qcl_test_data_model_db_ImportExport
     $this->info( "Hash for group xml: " . md5( $groupXml) );
     $this->info( "Hash for category xml: " . md5( $categoryXml ) );
 
-    $userXmlHash     = "0ffa1efdb2e0c562741eaddc50bd704c";
+    $userXmlHash     = "eeb93b093269986c6a7f6ce2baea73ac";
     $groupXmlHash    = "f338fc49f036c179b32daf25e27e8500";
     $categoryXmlHash = "a4f67a444b39ee50810e355e385707a7";
 

@@ -107,7 +107,7 @@ class ds_AddressbookManager
   /**
    * @return ds_Addressbook
    */
-  protected function getDatasourceModel()
+  public function getDatasourceModel()
   {
     return ds_Addressbook::getInstance();
   }
