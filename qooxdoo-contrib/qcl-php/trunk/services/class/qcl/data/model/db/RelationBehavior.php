@@ -105,10 +105,10 @@ class qcl_data_model_db_RelationBehavior
   {
     if ( ! $this->isInitialized )
     {
-      $this->getModel()->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "* Initializing relations for '%s' using '%s'",
         $this->getModel()->className(), get_class( $this )
-      ), QCL_LOG_MODEL_RELATIONS );
+      ) );
       foreach( $this->relations() as $relation )
       {
         $this->setupRelation( $relation );
@@ -117,9 +117,9 @@ class qcl_data_model_db_RelationBehavior
     }
 //    else
 //    {
-//      $this->getModel()->log( sprintf(
+//      if( $this->hasLog() ) $this->log( sprintf(
 //        "- Relations for '%s' are already initialized", $this->getModel()->className()
-//      ), QCL_LOG_MODEL_RELATIONS );
+//      ) );
 //    }
   }
 
@@ -223,11 +223,11 @@ class qcl_data_model_db_RelationBehavior
     foreach( $relations as $relation => $relData )
     {
 
-      $this->getModel()->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "Adding relation '%s' for model %s.", $relation,
         $definingClass == $modelClass ?
           "'$modelClass'" :  "'$modelClass' (defined in '$definingClass')"
-      ), QCL_LOG_MODEL_RELATIONS );
+      ) );
 
       /*
        * add to relations map
@@ -694,7 +694,7 @@ class qcl_data_model_db_RelationBehavior
     {
       if (  $propBeh->type( $key ) != "integer" )
       {
-        throw new qcl_data_model_Exception(sprintf(
+        throw new qcl_data_model_Exception( sprintf(
           "Model '%s' has no valid integer property '%s' needed as key for relation '%s'.",
           get_class($model), $key, $relation
         ) );
@@ -706,10 +706,10 @@ class qcl_data_model_db_RelationBehavior
     }
     else
     {
-      $this->getModel()->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "Relation '%s': Adding foreign key property '%s' to model '%s'.",
         $relation, $key, $model->className()
-      ), QCL_LOG_MODEL_RELATIONS  );
+      )  );
 
       /*
        * add the property definition
