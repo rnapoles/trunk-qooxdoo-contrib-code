@@ -262,7 +262,7 @@ class class_qcl_test_data_model_db_ModelAccessControl
       $result =  $this->method_fetchRecords( "acl_test", "personaldata", $queryData );
       $hash = md5( print_r( $result, true) );
       //$this->info( $hash );
-      $this->assertEquals("358fcf3177a26fdf0fcdb7b1df74c102",$hash,null,__CLASS__,__LINE__);
+      $this->assertEquals("d7f92dcda8029c87180c2396efc263de",$hash,null,__CLASS__,__LINE__);
 
       /*
        * a non-existent user must return an empty array
