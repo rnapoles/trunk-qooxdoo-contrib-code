@@ -156,8 +156,11 @@ public class ProxyTypeImpl implements ProxyType {
 	}
 	
 	protected void addMethods(Class targetClass, HashMap<String, Method> methods, Class fromClass, boolean defaultProxy) {
+		boolean explicitOnly = fromClass.isAnnotationPresent(ExplicitProxyOnly.class);
 		Method[] ifcMethods = fromClass.getDeclaredMethods();
 		for (Method method : ifcMethods) {
+			if (explicitOnly && !method.isAnnotationPresent(AlwaysProxy.class))
+				continue;
 			Method existing = methods.get(method.getName());
 			
 			// The same method can appear more than once, but only if they are

@@ -44,7 +44,7 @@
   serverId : 1,
   clazz : {
     className : "com.zenesis.qx.remote.test.serialisation.B",
-    "extends" : "com.zenesis.qx.remote.test.serialisation.A",
+    "extend" : "com.zenesis.qx.remote.test.serialisation.A",
     interfaces : [ {
       className : "com.zenesis.qx.remote.test.serialisation.IB",
       isInterface : true,
