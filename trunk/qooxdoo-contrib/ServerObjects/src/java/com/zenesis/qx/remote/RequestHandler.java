@@ -263,6 +263,9 @@ public class RequestHandler {
 			Throwable t = e.getCause();
 			log.error("Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
 			throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
+		}catch(RuntimeException e) {
+			log.error("Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
+			throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
 		}catch(IllegalAccessException e) {
 			throw new ServletException("Exception while running " + method + ": " + e.getMessage(), e);
 		}

@@ -11,7 +11,7 @@
         "sync" : "queue",
         "nullable" : true,
         "readOnly" : true,
-        "array" : "wrap",
+        "array" : "native",
         "clazz" : {
           "className" : "com.zenesis.qx.remote.test.serialisation.IEightB",
           "isInterface" : true,
@@ -40,7 +40,7 @@
         "sync" : "queue",
         "nullable" : true,
         "readOnly" : true,
-        "array" : "wrap",
+        "array" : "native",
         "clazz" : "com.zenesis.qx.remote.test.serialisation.IEightB"
       }
     }

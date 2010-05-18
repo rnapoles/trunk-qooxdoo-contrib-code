@@ -177,9 +177,10 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 		 * @Override
 		 */
 		addListener: function(name, listener, context, capture) {
-			this.base(arguments, name, listener, context, capture);
+			var result = this.base(arguments, name, listener, context, capture);
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
 			PM.addListener(this, name);
+			return result;
 		},
 		
 		/*
@@ -191,6 +192,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				return;
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
 			PM.removeListener(this, name);
+			return existed;
 		}
 	}
 	

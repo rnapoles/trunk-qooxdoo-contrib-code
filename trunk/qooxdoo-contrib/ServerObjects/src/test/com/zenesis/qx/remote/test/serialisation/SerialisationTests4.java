@@ -62,7 +62,7 @@ public class SerialisationTests4 extends AbstractRemoteTestCase {
 
 		try {
 			pw.println(tracker.toJSON(new TestDoNotProxyConflict()));
-			assertTrue("Exception expected for DoNotProxy conflisting with proxy from another interface", false);
+			assertTrue("Exception expected for DoNotProxy conflicting with proxy from another interface", false);
 		}catch(IllegalArgumentException e) {
 			if (!e.getMessage().startsWith("org.codehaus.jackson.map.JsonMappingException: Cannot create a proxy for class") ||
 					!e.getMessage().contains("because it has conflicting DoNotProxy between"))

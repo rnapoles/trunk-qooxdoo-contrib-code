@@ -112,7 +112,7 @@ public class ProxyTypeManager implements ProxyTypeFactory {
 		//	this will recursively discover other interfaces
 		HashSet<ProxyType> interfaces = new HashSet<ProxyType>();
 		for (Class ifc : clazz.getInterfaces())
-			if (ifc != Proxied.class) {
+			if (ifc != Proxied.class && Proxied.class.isAssignableFrom(ifc)) {
 				ProxyType newType = getProxyType(ifc, factory);
 				if (newType != null)
 					interfaces.add(newType);
