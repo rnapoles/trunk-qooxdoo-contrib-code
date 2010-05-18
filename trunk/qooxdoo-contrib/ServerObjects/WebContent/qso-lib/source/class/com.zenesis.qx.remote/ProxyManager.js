@@ -296,7 +296,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 							members: { }
 						};
 					if (data.extend)
-						def.extend = this.getClassOrCreate(def.extend);
+						def.extend = this.getClassOrCreate(data.extend);
 					else
 						def.extend = com.zenesis.qx.remote.Proxy;
 				}
@@ -732,8 +732,11 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				if (def.properties)
 					for (var propName in def.properties) {
 						var pd = def.properties[propName];
-						if (!pd.readOnly && !pd.onDemand)
-							data.properties[propName] = clientObject.get(propName);
+						if (!pd.readOnly && !pd.onDemand) {
+							var value = clientObject.get(propName);
+							if (value)
+								data.properties[propName] = value;
+						}
 					}
 				queue[queue.length] = data;
 				clientObject.setSentToServer();
