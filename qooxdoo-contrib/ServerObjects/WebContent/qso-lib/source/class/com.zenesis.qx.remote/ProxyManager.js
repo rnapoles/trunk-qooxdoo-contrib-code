@@ -140,16 +140,24 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 */
 		_processResponse: function(evt) {
 			var txt = evt.getContent();
-			txt = qx.lang.String.trim(txt);
-			try {
-				this.debug("received: txt=" + txt);
-				if (!txt.length)
-					return null;
-				var data = eval("(" + txt + ")");
-				return this._processData(data);
-			} catch(e) {
-				this.debug("Exception during receive: " + this.__describeException(e));
-				throw e;
+			var statusCode = evt.getStatusCode();
+			
+			if (statusCode == 200) {
+				txt = qx.lang.String.trim(txt);
+				try {
+					this.debug("received: txt=" + txt);
+					if (!txt.length)
+						return null;
+					var data = eval("(" + txt + ")");
+					return this._processData(data);
+				} catch(e) {
+					this.debug("Exception during receive: " + this.__describeException(e));
+					throw e;
+				}
+				
+			} else {
+				this.debug("Error returned by server, code=" + statusCode);
+				throw new Error("Error returned by server, code=" + statusCode);
 			}
 		},
 		
@@ -439,7 +447,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 */
 		_serializeValue: function(value) {
 			if (!value)
-				return null;
+				return value;
 			
 			if (qx.lang.Type.isArray(value)) {
 				var send = [];
@@ -450,6 +458,10 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						send[j] = this._serializeValue(value[j]);
 				}
 				return send;
+			}
+			
+			if (qx.lang.Type.isDate(value)) {
+				return value.getTime();
 			}
 			
 			if (!value.classname)
@@ -488,10 +500,12 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			var result = null;
 			this._sendCommandToServer(data, function(evt) {
 				result = this._processResponse(evt);
-				var md = serverObject.$$proxyDef.methods[methodName];
-				var array = md && md.returnArray;  // On-Demand property accessors don't have a method definition 
-				if (array == "wrap")
-					result = new qx.data.Array(result);
+				if (!this.getException()) {
+					var md = serverObject.$$proxyDef.methods[methodName];
+					var array = md && md.returnArray;  // On-Demand property accessors don't have a method definition 
+					if (array == "wrap")
+						result = new qx.data.Array(result||[]);
+				}
 				return result;
 			}, this);
 			return result;
@@ -506,25 +520,6 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 */
 		onWrappedArrayChange: function(evt, serverObject, propDef) {
 			var data = evt.getData();
-			/*
-			var cmdData = {
-					cmd: "edit-array",
-					serverId: serverObject.getServerId(),
-					propertyName: propDef.name,
-					type: data.type,
-					start: data.start,
-					end: data.end
-				};
-			if (data.type != "remove" && data.items) {
-				cmdData.items = [];
-				for (var i = 0; i < data.items.length; i++)
-					cmdData.items[i] = this._serializeValue(data.items[i]);
-			}
-			if (propDef.sync == "queue")
-				this._queueCommandToServer(data);
-			else
-				this._sendCommandToServer(data);
-			*/
 			
 			// The change event for qx.data.Array doesn't give enough information to replicate 
 			//	the change, so for now we just hack it by remembering the array is dirty and 
@@ -699,6 +694,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 	      	// Send it
 	      	this.debug("Sending to server: " + text);
       		req.addListener("completed", callback||this._processResponse, context||this);
+      		req.addListener("failed", callback||this._processResponse, context||this);
 	      	req.send();
 	      	this.__numberOfCalls++;
 		},
