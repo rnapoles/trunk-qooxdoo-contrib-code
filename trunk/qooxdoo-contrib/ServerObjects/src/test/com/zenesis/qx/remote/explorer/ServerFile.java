@@ -101,7 +101,7 @@ public class ServerFile implements Proxied {
 		}
 		String oldName = name;
 		this.name = name;
-		ProxyManager.propertyChanged(this, "name", oldName, name);
+		ProxyManager.propertyChanged(this, "name", name, oldName);
 		return true;
 	}
 

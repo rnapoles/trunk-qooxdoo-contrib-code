@@ -355,8 +355,16 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 							toDef.event = fromDef.event;
 						
 						// Handle arrays
-						if (fromDef.array == "wrap")
-							toDef.transform = "_transformToDataArray";
+						if (fromDef.array) {
+							if (fromDef.array == "wrap") {
+								toDef.transform = "_transformToDataArray";
+								toDef.check = "qx.data.Array";
+							} else
+								toDef.check = "Array";
+							
+						// Other checks
+						} else if (fromDef.check)
+							toDef.check = fromDef.check;
 						
 						// Create an apply method
 						var applyName = "_apply" + qx.lang.String.firstUp(propName);

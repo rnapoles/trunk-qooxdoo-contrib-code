@@ -102,4 +102,18 @@ public @interface Property {
 	 * @return
 	 */
 	public boolean nullable() default true;
+	
+	/**
+	 * The name of the method to use to serialize the property value for
+	 * sending to the server
+	 * @return
+	 */
+	public String serialize() default "";
+	
+	/**
+	 * The name of the method to call to deserialize the property value when 
+	 * received from the client 
+	 * @return
+	 */
+	public String deserialize() default "";
 }

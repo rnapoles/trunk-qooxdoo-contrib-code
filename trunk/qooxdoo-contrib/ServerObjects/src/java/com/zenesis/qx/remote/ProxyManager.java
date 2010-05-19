@@ -133,6 +133,13 @@ public class ProxyManager implements EventListener {
 	public static ProxySessionTracker getTracker() {
 		return s_currentTracker.get();
 	}
+	
+	public static <T> T changeProperty(Proxied keyObject, String propertyName, T newValue, T oldValue) {
+		if (newValue == oldValue || (newValue != null && oldValue != null && newValue.equals(oldValue)))
+			return oldValue;
+		propertyChanged(keyObject, propertyName, oldValue, newValue);
+		return newValue;
+	}
 
 	/**
 	 * Helper static method to register that a property has changed; this also fires a server event for
@@ -142,7 +149,7 @@ public class ProxyManager implements EventListener {
 	 * @param oldValue
 	 * @param newValue
 	 */
-	public static void propertyChanged(Proxied keyObject, String propertyName, Object oldValue, Object newValue) {
+	public static void propertyChanged(Proxied keyObject, String propertyName, Object newValue, Object oldValue) {
 		ProxySessionTracker tracker = getTracker();
 		CommandQueue queue = tracker.getQueue();
 		RequestHandler handler = tracker.getRequestHandler();

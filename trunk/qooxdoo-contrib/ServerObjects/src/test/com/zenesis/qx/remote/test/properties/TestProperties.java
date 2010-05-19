@@ -50,22 +50,14 @@ public class TestProperties implements ITestProperties {
 	}
 	
 	@Override
-	public void setImmediate(String value) {
-		if (value == immediate || (value != null && value.equals(immediate)))
-			return;
-		Object oldValue = this.immediate;
-		this.immediate = value;
-		ProxyManager.propertyChanged(this, "immediate", oldValue, value);
-		changeLog += "immediate=" + value + "; ";
+	public void setImmediate(String newValue) {
+		this.immediate = ProxyManager.changeProperty(this, "immediate", newValue, immediate);
+		changeLog += "immediate=" + immediate + "; ";
 	}
 	
 	@Override
 	public void setQueued(String value) {
-		if (value == queued || (value != null && value.equals(queued)))
-			return;
-		Object oldValue = this.queued;
-		this.queued = value;
-		ProxyManager.propertyChanged(this, "queued", oldValue, value);
+		this.queued = ProxyManager.changeProperty(this, "queued", value, queued);
 		changeLog += "queued=" + value + "; ";
 	}
 
@@ -95,11 +87,7 @@ public class TestProperties implements ITestProperties {
 
 	@Override
 	public void setWatchedString(String value) {
-		if (value == watchedString || (value != null && value.equals(watchedString)))
-			return;
-		Object oldValue = this.watchedString;
-		this.watchedString = value;
-		ProxyManager.propertyChanged(this, "watchedString", oldValue, value);
+		this.watchedString = ProxyManager.changeProperty(this, "watchedString", value, watchedString);
 		changeLog += "watchedString=" + value + "; ";
 	}
 
