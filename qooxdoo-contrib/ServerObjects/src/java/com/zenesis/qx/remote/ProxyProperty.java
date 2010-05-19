@@ -33,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
@@ -75,6 +76,8 @@ public class ProxyProperty implements JsonSerializable {
 	
 	private Method getMethod;
 	private Method setMethod;
+	private Method serializeMethod;
+	private Method deserializeMethod;
 	private Field field;
 	private Class propertyClass;
 	private Class propertyArrayClass;
@@ -126,6 +129,26 @@ public class ProxyProperty implements JsonSerializable {
 			propertyArrayClass = anno.arrayType();
 		if (anno.readOnly() != Remote.Toggle.DEFAULT)
 			readOnly = anno.readOnly().booleanValue;
+		if (anno.serialize().length() > 0)
+			serializeMethod = getSerializeMethod(anno.serialize());
+		if (anno.deserialize().length() > 0)
+			deserializeMethod = getSerializeMethod(anno.deserialize());
+	}
+
+	/**
+	 * Helper method to get a (de-)serializer method
+	 * @param name
+	 * @return
+	 */
+	private Method getSerializeMethod(String name) {
+		try {
+			Method method = clazz.getMethod(name, new Class[] { ProxyProperty.class, Object.class });
+			if (method.getReturnType() == Void.TYPE)
+				throw new IllegalArgumentException("Cannot find suitable de/serialisation method (void return types not allowed): " + method);
+			return method;
+		}catch(NoSuchMethodException e) {
+			throw new IllegalArgumentException("Cannot find a de/serialisation method called " + name + ": " + e.getMessage());
+		}
 	}
 	
 	/**
@@ -224,6 +247,8 @@ public class ProxyProperty implements JsonSerializable {
 				result = field.get(proxied);
 			else
 				result = getMethod.invoke(proxied);
+			
+			result = serialize(proxied, result);
 		} catch(InvocationTargetException e) {
 			Throwable t = e.getTargetException();
 			throw new IllegalArgumentException("Cannot read property " + name + " in class " + clazz + " in object " + proxied + ": " + t.getMessage(), t);
@@ -240,6 +265,7 @@ public class ProxyProperty implements JsonSerializable {
 	 */
 	public void setValue(Proxied proxied, Object value) {
 		getAccessors();
+		value = deserialize(proxied, value);
 		try {
 			if (field != null) {
 				if (!readOnly)
@@ -252,8 +278,54 @@ public class ProxyProperty implements JsonSerializable {
 		} catch(IllegalAccessException e) {
 			throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + e.getMessage(), e);
 		} catch(IllegalArgumentException e) {
-			throw e;
+			throw new IllegalArgumentException("Failed to set value for property " + name + " in class " + clazz + " to value " + value, e);
 		}
+	}
+	
+	/**
+	 * Called internally to serialize a value to the client
+	 * @param proxied
+	 * @param value
+	 * @return
+	 */
+	protected Object serialize(Proxied proxied, Object value) {
+		try {
+			if (serializeMethod != null)
+				value = serializeMethod.invoke(proxied, this, value);
+		} catch(InvocationTargetException e) {
+			Throwable t = e.getTargetException();
+			throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + t.getMessage(), t);
+		} catch(IllegalAccessException e) {
+			throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + e.getMessage(), e);
+		} catch(IllegalArgumentException e) {
+			throw new IllegalArgumentException("Failed to set value for property " + name + " in class " + clazz + " to value " + value, e);
+		}
+		return value;
+	}
+	
+	/**
+	 * Called internally to deserialize a value from the client
+	 * @param proxied
+	 * @param value
+	 * @return
+	 */
+	protected Object deserialize(Proxied proxied, Object value) {
+		try {
+			if (value != null && Date.class.isAssignableFrom(propertyClass)) {
+				long millis = ((Number)value).longValue();
+				value = new Date(millis);
+			}
+			if (deserializeMethod != null)
+				value = deserializeMethod.invoke(proxied, this, value);
+		} catch(InvocationTargetException e) {
+			Throwable t = e.getTargetException();
+			throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + t.getMessage(), t);
+		} catch(IllegalAccessException e) {
+			throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + e.getMessage(), e);
+		} catch(IllegalArgumentException e) {
+			throw new IllegalArgumentException("Failed to set value for property " + name + " in class " + clazz + " to value " + value, e);
+		}
+		return value;
 	}
 	
 	/**
@@ -285,8 +357,19 @@ public class ProxyProperty implements JsonSerializable {
 				gen.writeStringField("array", "native");
 			else
 				gen.writeStringField("array", "wrap");
-		} else 
+		} else { 
 			clazz = propertyClass;
+			if (clazz == boolean.class || clazz == Boolean.class)
+				gen.writeStringField("check", "Boolean");
+			else if (clazz == int.class || clazz == Integer.class)
+				gen.writeStringField("check", "Integer");
+			else if (clazz == double.class || clazz == Double.class)
+				gen.writeStringField("check", "Double");
+			else if (clazz == float.class || clazz == Float.class)
+				gen.writeStringField("check", "Float");
+			else if (clazz == char.class || clazz == String.class)
+				gen.writeStringField("check", "String");
+		}
 		if (Proxied.class.isAssignableFrom(clazz)) {
 			ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(clazz);
 			gen.writeObjectField("clazz", type);
