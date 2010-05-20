@@ -35,8 +35,9 @@ public class CommandId {
 		FUNCTION_RETURN("return"),
 		EXCEPTION("exception"),
 		MAP_CLIENT_ID("mapClientId"),
-		RESET_VALUE("reset"),
-		SET_VALUE("set");
+		RESTORE_VALUE("restore"),
+		SET_VALUE("set"),
+		EXPIRE("expire");
 		
 		public String remoteId;
 
