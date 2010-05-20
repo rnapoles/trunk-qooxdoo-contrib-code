@@ -146,6 +146,14 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 		},
 		
 		/**
+		 * Called when an on-demand property's expire method is called
+		 */
+		_expirePropertyOnDemand: function(propName, value) {
+			if (this.$$proxyUser)
+				delete this.$$proxyUser[propName];
+		},
+		
+		/**
 		 * Called when an on-demand property's set method is called
 		 */
 		_setPropertyOnDemand: function(propName, value) {
