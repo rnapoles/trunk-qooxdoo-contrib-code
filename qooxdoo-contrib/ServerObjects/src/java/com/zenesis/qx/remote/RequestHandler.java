@@ -497,7 +497,7 @@ public class RequestHandler {
 				try {
 					property.setValue(proxied, value);
 				} catch(Exception e) {
-					tracker.getQueue().queueCommand(CommandId.CommandType.RESET_VALUE, proxied, propertyName, new PropertyReset(oldValue, e.getClass().getName(), e.getMessage()));
+					tracker.getQueue().queueCommand(CommandId.CommandType.RESTORE_VALUE, proxied, propertyName, new PropertyReset(oldValue, e.getClass().getName(), e.getMessage()));
 				}
 			}
 		}finally {

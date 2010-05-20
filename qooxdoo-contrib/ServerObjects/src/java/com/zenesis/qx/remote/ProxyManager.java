@@ -137,7 +137,7 @@ public class ProxyManager implements EventListener {
 	public static <T> T changeProperty(Proxied keyObject, String propertyName, T newValue, T oldValue) {
 		if (newValue == oldValue || (newValue != null && oldValue != null && newValue.equals(oldValue)))
 			return oldValue;
-		propertyChanged(keyObject, propertyName, oldValue, newValue);
+		propertyChanged(keyObject, propertyName, newValue, oldValue);
 		return newValue;
 	}
 
@@ -157,7 +157,10 @@ public class ProxyManager implements EventListener {
 			return;
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
 		ProxyProperty property = type.getProperty(propertyName);
-		queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, newValue);
+		if (property.isOnDemand())
+			queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
+		else
+			queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, newValue);
 		if (property.getEvent() != null)
 			EventManager.getInstance().fireDataEvent(keyObject, property.getEvent().getName(), newValue);
 	}
