@@ -112,6 +112,18 @@
       }
     },
     
+    "build-data-copydemos" :
+    {
+      "desc"    : "generates the build version of all valid demos and the index file (demodata.json) for the demobrowser. Copies the built demos to the demobrowser's demo directory.",
+
+      "extend" : ["common"],
+
+      "shell" :
+      {
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build -d . --copy-demos"
+      }
+    },
+    
     "build-copy" :
     {
     
@@ -133,7 +145,7 @@
       "run" :
       [
         // preparations
-        "build-data",
+        "build-data-copydemos",
         "build-copy"
       ]
     },
