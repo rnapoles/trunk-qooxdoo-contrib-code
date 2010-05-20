@@ -192,7 +192,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					this.__serverObjects[elem.data.serverId] = clientObject;
 					
 				// Setting a property failed with an exception - change the value back and handle the exception 
-				} else if (type == "reset") {
+				} else if (type == "restore") {
 					var obj = this._readProxyObject(elem.object);
 					try {
 						var set = {};
@@ -209,6 +209,12 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					var set = {};
 					set[elem.name] = elem.data;
 					obj.set(set);
+					
+				// An on demand server property value changed, clear the cache
+				} else if (type == "expire") {
+					var obj = this._readProxyObject(elem.object);
+					var upname = qx.lang.String.upname(elem.name);
+					obj["expire" + upname]();
 					
 				// An event was fired on the server
 				} else if (type == "fire") {
@@ -426,6 +432,9 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			var upname = qx.lang.String.firstUp(propName);
 			clazz.prototype["get" + upname] = function() {
 				return this._getPropertyOnDemand(propName);
+			};
+			clazz.prototype["expire" + upname] = function(value) {
+				return this._expirePropertyOnDemand(propName, value);
 			};
 			if (!readOnly)
 				clazz.prototype["set" + upname] = function(value) {
