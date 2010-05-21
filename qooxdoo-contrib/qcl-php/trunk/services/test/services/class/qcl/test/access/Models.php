@@ -51,11 +51,12 @@ class access_User extends qcl_access_model_User
     parent::__construct();
 
     /*
-     * selectively alter the name of the join table without redefining the
+     * selectively alter the name of join tables without redefining the
      * relations in this class. This is needed so that the join tables of
      * the "original" access models are not overwritten by this test.
      */
     $this->getRelationBehavior()->setJoinTableName( "User_Role", "test_join_User_Role" );
+    $this->getRelationBehavior()->setJoinTableName( "Group_User", "test_join_Group_User" );
   }
 
   /**
@@ -85,6 +86,28 @@ class access_Role extends qcl_access_model_Role
   }
   /**
    * @return access_Role
+   */
+  public static function getInstance() {
+    return qcl_getInstance( __CLASS__ );
+  }
+}
+
+
+/**
+ * Class to model the group data
+ * @see access_User
+ */
+class access_Group extends qcl_access_model_Group
+{
+  protected $tableName = "test_data_Group";
+  protected $foreignKey = "test_GroupId";
+
+  function __construct() {
+    parent::__construct();
+        $this->getRelationBehavior()->setJoinTableName( "Group_User", "test_join_Group_User" );
+  }
+  /**
+   * @return access_Group
    */
   public static function getInstance() {
     return qcl_getInstance( __CLASS__ );
