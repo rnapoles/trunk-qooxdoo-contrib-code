@@ -87,6 +87,12 @@ class qcl_access_Controller
   function __construct()
   {
     $this->addModelAcl( $this->modelAcl );
+
+    /*
+     * instantiate the user model
+     */
+    qcl_access_model_User::getInstance();
+
   }
 
   //-------------------------------------------------------------

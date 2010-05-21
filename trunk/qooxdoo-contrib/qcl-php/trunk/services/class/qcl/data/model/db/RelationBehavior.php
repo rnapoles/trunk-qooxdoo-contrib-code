@@ -246,6 +246,22 @@ class qcl_data_model_db_RelationBehavior
         $this->checkJoinTableName( $relData['jointable'], $relation );
         $this->relations[$relation]['jointable'] = $relData['jointable'];
       }
+
+      /*
+       * check if this relation has dependencies
+       */
+      if( isset( $relData['depends'] ) )
+      {
+        if ( is_list( $relData['depends'] ) )
+        {
+          $this->relations[$relation]['depends'] = $relData['depends'];
+        }
+        else
+        {
+          throw new InvalidArgumentException("Invalid 'depends' property. Must be indexed array.");
+        }
+      }
+
       /*
        * add a lookup index for class names
        */
@@ -370,8 +386,15 @@ class qcl_data_model_db_RelationBehavior
     {
       if ( isset( $relData['target']['modelType'] ) )
       {
-        $modelType = $relData['target']['modelType'];
         $dsModel = $this->getModel()->datasourceModel();
+        if( ! $dsModel )
+        {
+          throw new qcl_data_model_Exception( sprintf(
+            "Cannot reference target model of class '%s' by type '%s' in relation '%s': %s has no datasource model instance.",
+             $this->getModel()->className(), $relData['target']['modelType'],$relation,$this->getModel()
+          ) );
+        }
+        $modelType = $relData['target']['modelType'];
         $class = $dsModel->getModelClassByType( $modelType );
       }
       else
@@ -491,6 +514,17 @@ class qcl_data_model_db_RelationBehavior
       ) );
     }
     return isset( $this->relations[ $relation ] );
+  }
+
+  /**
+   * Returns the data of a relation. For internal use only.
+   * @param string $relation The name of the relation
+   * @return array Map of relation data
+   */
+  protected function relationData ( $relation )
+  {
+    $this->checkRelation( $relation );
+    return $this->relations[ $relation ];
   }
 
   /**
@@ -674,6 +708,64 @@ class qcl_data_model_db_RelationBehavior
     return $isDependent;
   }
 
+  /**
+   * Returns true if the relation is dependent on a third model
+   * @param string $relation Relation name
+   * @return bool
+   */
+  protected function hasRelationDependencies( $relation )
+  {
+    $relData = $this->relationData( $relation );
+    return isset( $relData['depends' ] );
+  }
+
+  /**
+   * Returns the dependencies of the relation
+   * @param $relation
+   * @return array
+   */
+  protected function getRelationDependencies( $relation )
+  {
+    $relData = $this->relationData( $relation );
+    if ( ! isset( $relData['depends' ] ) )
+    {
+      throw new InvalidArgumentException("Relation '$relation' has no dependencies.");
+    }
+    return $relData[ 'depends' ];
+  }
+
+  /**
+   * Checks whether the given model is a relation dependency and
+   * throws an error if not.
+   * @param string $relation
+   * @param qcl_data_model_db_ActiveRecord $model
+   * @todo this is very inefficient
+   * @return void
+   */
+  protected function getRelationDependencyByModel( $relation, $model )
+  {
+    if( ! $model instanceof qcl_data_model_AbstractActiveRecord )
+    {
+      throw new InvalidArgumentException( sprintf(
+        "Invalid dependency argument. Expected a qcl_data_model_AbstractActiveRecord, got %s",
+        typeof( $model, true )
+      ) );
+    }
+    foreach( $this->getRelationDependencies( $relation ) as $depData )
+    {
+      $depRelation   = $depData['relation'];
+      $depClass      = $this->getTargetModelClass( $depRelation );
+      if ( $depClass == $model->className() )
+      {
+        return $depRelation;
+      }
+    }
+    throw new InvalidArgumentException( sprintf(
+      "Model class '%s' is not a dependency of relation '%s'",
+      $model->className(), $relation
+    ) );
+  }
+
   //-------------------------------------------------------------
   // Setup the realtions from the data
   //-------------------------------------------------------------
@@ -851,7 +943,53 @@ class qcl_data_model_db_RelationBehavior
         'export'    => true,
         'column'    => $targetForeignKey //FIXME
       )
-    ));
+    ) );
+
+    /*
+     * index
+     */
+    $indexColumns = array( $foreignKey, $targetForeignKey );
+
+    /*
+     * is there a dependency on a third relation?
+     */
+    if( $this->hasRelationDependencies( $relation ) )
+    {
+      $dependencies = $this->getRelationDependencies( $relation );
+
+      if( $this->hasLog() ) $this->log( sprintf(
+        "Relation %s has %s dependencies",
+        $relation, count( $dependencies )
+      ) );
+
+      foreach( $dependencies as $depData )
+      {
+        if( ! isset( $depData['relation'] ) )
+        {
+          throw new InvalidArgumentException("Invalid relation dependency data. Must contain key 'relation'.");
+        }
+
+        $depRelation    = $depData['relation'];
+        $depTargetModel = $this->getTargetModel( $depRelation );
+        $depForeignKey  = $depTargetModel->getRelationBehavior()->getForeignKey( $depRelation );
+
+        if( $this->hasLog() ) $this->log( sprintf(
+          "Setting up dependency on %s:  Adding foreign key '%s' to join model ...",
+          $depRelation, $depForeignKey
+        ) );
+
+        $joinModel->addProperties( array(
+          $depForeignKey => array(
+            'check'     => "integer",
+            'sqltype'   => "INT(11)",
+            'export'    => true,
+            'column'    => $depForeignKey //FIXME
+          )
+        ));
+
+        $indexColumns[] = $depForeignKey;
+      }
+    }
 
     /*
      * initialize join model
@@ -861,12 +999,20 @@ class qcl_data_model_db_RelationBehavior
     /*
      * add additional indexes
      */
-    $jointable =  $joinModel->getQueryBehavior() ->getTable();
-    $indexName = "unique_" . $foreignKey . "_" . $targetForeignKey;
+    $jointable = $joinModel->getQueryBehavior() ->getTable();
+    sort( $indexColumns );
+    $indexName = "index_" . $relation;
     if ( ! $jointable->indexExists( $indexName ) )
     {
+      // hack, this will go away
+      $oldIndexName = "unique_" . $foreignKey . "_" . $targetForeignKey;
+      if ( $jointable->indexExists( $oldIndexName ) )
+      {
+        $jointable->dropIndex( $oldIndexName );
+      }
+
       $jointable->addIndex(
-        "unique", $indexName, array( $foreignKey, $targetForeignKey )
+        "unique", $indexName, $indexColumns
       );
     }
   }
@@ -1105,10 +1251,11 @@ class qcl_data_model_db_RelationBehavior
    * if models are already linked.
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @param array $dependencies Optional array dependencies
    * @return void
    * @throws qcl_data_model_RecordExistsException If link already exists
    */
-  public function linkModel( $targetModel )
+  public function linkModel( $targetModel, $dependencies=array() )
   {
     /*
      * call  method depending on relation type
@@ -1122,7 +1269,7 @@ class qcl_data_model_db_RelationBehavior
     ) );
 
 
-    if ( $this->$method( $relation, $targetModel ) )
+    if ( $this->$method( $relation, $targetModel, $dependencies ) )
     {
       return;
     }
@@ -1189,26 +1336,43 @@ class qcl_data_model_db_RelationBehavior
    *
    * @param string $relation Name of the relation
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
-   * @return bool True if new link was created, false if link
-   *   already existed.
+   * @param array $dependencies Optional array of all models that the
+   *   source model must be linked to
+   * @throws qcl_data_model_RecordExistsException If link already exists
    */
-  protected function linkModelManyToMany( $relation, $targetModel )
+  protected function linkModelManyToMany( $relation, $targetModel, $dependencies=array() )
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $joinModel = $this->getJoinModel( $relation );
 
-    if ( ! $this->isLinkedModelManyToMany( $relation, $targetModel ) )
-    {
-      $joinModel->create( array(
-        $foreignKey        => $this->getModel()->id(),
-        $targetForeignKey  => $targetModel->id()
-      ) );
-      return true;
-    }
-    return false;
-  }
+    /*
+     * simple n:m relation
+     */
+    $data = array(
+      $foreignKey        => $this->getModel()->id(),
+      $targetForeignKey  => $targetModel->id()
+    );
 
+    /*
+     * additional relation dependencies
+     */
+    if( count( $dependencies ) )
+    {
+      foreach( $dependencies as $model )
+      {
+        $depForeignKey = $model->getRelationBehavior()->getForeignKeyFromModel(); //FIXME This ignores custom-set FK
+        $data[$depForeignKey] = $model->id();
+      }
+    }
+
+    /*
+     * create link
+     */
+    $joinModel->create( $data );
+    return true;
+
+  }
 
   //-------------------------------------------------------------
   // Unlink two model records
@@ -1219,9 +1383,10 @@ class qcl_data_model_db_RelationBehavior
    * if models were not linked.
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param array $dependencies Optional array dependencies
    * @return void
    */
-  public function unlinkModel( $targetModel )
+  public function unlinkModel( $targetModel, $dependencies=array() )
   {
     /*
      * call method depending on relation type
@@ -1229,7 +1394,7 @@ class qcl_data_model_db_RelationBehavior
     $relation = $this->checkModelRelation( $targetModel );
     $method = "unlinkModel" .
       $this->convertLinkType( $this->getRelationType( $relation ) );
-    if ( $this->$method( $relation, $targetModel ) )
+    if ( $this->$method( $relation, $targetModel, $dependencies ) )
     {
       if( $this->hasLog() ) $this->log( sprintf(
         "Unlinked model instances %s and %s.",
@@ -1293,9 +1458,11 @@ class qcl_data_model_db_RelationBehavior
    *
    * @param string $relation Name of the relation
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param array $dependencies Optional array of all models that the
+   *   source model must be linked to
    * @return bool
    */
-  protected function unlinkModelManyToMany( $relation, $targetModel )
+  protected function unlinkModelManyToMany( $relation, $targetModel, $dependencies=array() )
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
@@ -1303,10 +1470,27 @@ class qcl_data_model_db_RelationBehavior
     $joinModel     = $this->getJoinModel( $relation );
     $queryBehavior = $joinModel->getQueryBehavior();
 
-    return $queryBehavior->deleteWhere( array(
-        $foreignKey       => $this->getModel()->id(),
-        $targetForeignKey => $targetModel->id()
-    ) );
+    /*
+     * simple n:m relation
+     */
+    $where = array(
+      $foreignKey       => $this->getModel()->id(),
+      $targetForeignKey => $targetModel->id()
+    );
+
+    /*
+     * additional relation dependencies
+     */
+    if( count( $dependencies ) )
+    {
+      foreach( $dependencies as $model )
+      {
+        $depForeignKey = $model->getRelationBehavior()->getForeignKeyFromModel(); //FIXME This ignores custom-set FK
+        $where[$depForeignKey] = $model->id();
+      }
+    }
+
+    return $queryBehavior->deleteWhere( $where );
   }
 
   //-------------------------------------------------------------
@@ -1538,9 +1722,10 @@ class qcl_data_model_db_RelationBehavior
    * Checks if the managed modeland the given target model are linked.
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param array $dependencies Optional array dependencies
    * @return bool
    */
-  public function islinkedModel( $targetModel )
+  public function islinkedModel( $targetModel, $dependencies=array() )
   {
     /*
      * call method depending on relation type
@@ -1548,7 +1733,7 @@ class qcl_data_model_db_RelationBehavior
     $relation = $this->checkModelRelation( $targetModel );
     $method = "isLinkedModel" .
       $this->convertLinkType( $this->getRelationType( $relation ) );
-    return $this->$method( $relation, $targetModel );
+    return $this->$method( $relation, $targetModel, $dependencies );
   }
 
   /**
@@ -1587,18 +1772,38 @@ class qcl_data_model_db_RelationBehavior
    *
    * @param string $relation Name of the relation
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param array $dependencies Optional array of all models that the
+   *   source model must be linked to
    * @return bool
    */
-  protected function islinkedModelManyToMany( $relation, $targetModel )
+  protected function islinkedModelManyToMany( $relation, $targetModel, $dependencies=array() )
   {
     $foreignKey       = $this->getForeignKey( $relation );
     $targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $joinModel        = $this->getJoinModel( $relation );
 
-    return (bool) $joinModel->getQueryBehavior()->countWhere( array(
+    /*
+     * simple n:m relation
+     */
+    $where = array(
       $foreignKey       => $this->getModel()->id(),
       $targetForeignKey => $targetModel->id()
-    ) );
+    );
+
+    /*
+     * additional relation dependencies
+     */
+    if( count( $dependencies ) )
+    {
+      foreach( $dependencies as $model )
+      {
+        $depForeignKey = $model->getRelationBehavior()->getForeignKeyFromModel(); //FIXME This ignores custom-set FK
+        $where[$depForeignKey] = $model->id();
+      }
+    }
+
+    return (bool) $joinModel->getQueryBehavior()->countWhere( $where );
+
   }
 
   /**
@@ -1608,21 +1813,22 @@ class qcl_data_model_db_RelationBehavior
    * one-to-many relations make no sense in this context.
    *
    * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @param array $dependencies Optional array dependencies
    * @return array
    */
-  public function linkedModelIds( $targetModel )
+  public function linkedModelIds( $targetModel, $dependencies=array() )
   {
     /*
      * call method depending on relation type
      */
     $relation = $this->checkModelRelation( $targetModel );
     $method = "linkedModelIds" . $this->convertLinkType( $this->getRelationType( $relation ) );
-    return $this->$method( $relation, $targetModel );
+    return $this->$method( $relation, $targetModel, $dependencies );
   }
 
   /**
    * Implementation for linkedModelIds() for 1:n relations.
-   * Returns an empty.
+   * Returns an empty arry.
    * @param string $relation
    * @param qcl_data_model_db_ActiveRecord $targetModel
    * @return array An empty array
@@ -1654,19 +1860,36 @@ class qcl_data_model_db_RelationBehavior
    * Implementation for linkedModelIds() for n:n relations
    * @param string $relation
    * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @param array $dependencies Optional array of all models that the
+   *   source model must be linked to
    * @return array
    */
-  protected function linkedModelIdsManyToMany( $relation, $targetModel )
+  protected function linkedModelIdsManyToMany( $relation, $targetModel, $dependencies=array() )
   {
     $foreignKey        = $this->getForeignKey( $relation );
     $targetForeignKey  = $targetModel->getRelationBehavior()->getForeignKey( $relation );
     $joinQueryBehavior = $this->getJoinModel( $relation )->getQueryBehavior();
 
-    return  $joinQueryBehavior->fetchValues($foreignKey,
-      array(
-        $targetForeignKey => $targetModel->id()
-      )
+    /*
+     * simple n:m relation
+     */
+    $where = array(
+      $targetForeignKey => $targetModel->id()
     );
+
+    /*
+     * additional relation dependencies
+     */
+    if( count( $dependencies ) )
+    {
+      foreach( $dependencies as $model )
+      {
+        $depForeignKey = $model->getRelationBehavior()->getForeignKeyFromModel(); //FIXME This ignores custom-set FK
+        $where[$depForeignKey] = $model->id();
+      }
+    }
+
+    return  $joinQueryBehavior->fetchValues( $foreignKey, $where );
   }
 
   //-------------------------------------------------------------

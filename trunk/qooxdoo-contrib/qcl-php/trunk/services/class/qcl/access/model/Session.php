@@ -34,6 +34,11 @@ class qcl_access_model_Session
   protected $tableName = "data_Session";
 
   /**
+   * The foreign key of this model
+   */
+  protected $foreignKey = "SessionId";
+
+  /**
    * Properties of the model
    * @var unknown_type
    */

@@ -153,15 +153,14 @@ class qcl_event_message_Bus
       if ( $message->isBroadcast() )
       {
         $sessionModel = $this->getApplication()->getAccessController()->getSessionModel();
-        $sessionIds = $sessionModel->getQueryBehavior()->fetchValues("namedId");
-
-        foreach( $sessionIds as $sessionId )
+        $sessionModel->findAll();
+        while( $sessionModel->loadNext() )
         {
           $msgModel->create( array(
-            'sessionId' => $sessionId,
             'name'      => $name,
             'data'      => addSlashes( serialize( $data ) )
           ) );
+          $msgModel->linkModel( $sessionModel );
         }
       }
 
@@ -170,12 +169,15 @@ class qcl_event_message_Bus
        */
       else
       {
-        $sessionId = $this->getApplication()->getAccessController()->getSessionId();
+        $accessController = $this->getApplication()->getAccessController();
+        $sessionModel = $accessController->getSessionModel();
+        $sessionId    = $accessController->getSessionId();
+        $sessionModel->load( $sessionId );
         $msgModel->create( array(
-          'sessionId' => $sessionId,
           'name'      => $name,
           'data'      => addSlashes( serialize( $data ) )
         ) );
+        $msgModel->linkModel( $sessionModel );
       }
     }
   }
@@ -246,14 +248,24 @@ class qcl_event_message_Bus
   public function getClientMessages( $sessionId )
   {
     $msgModel = $this->getModel();
+    $sessionModel = $this->getApplication()->getAccessController()->getSessionModel();
+    $sessionModel->load( $sessionId );
 
     /*
-     * get messages that have been stored for session id
+     * find messages that have been stored for session id
      */
-    $msgModel->findWhere( array(
-      'sessionId' => $sessionId
-    ) );
+    try
+    {
+      $msgModel->findLinked( $sessionModel );
+    }
+    catch( qcl_data_model_RecordNotFoundException $e )
+    {
+      return array();
+    }
 
+    /*
+     * get name and data and delete message
+     */
     $messages = array();
     while ( $msgModel->loadNext() )
     {
@@ -261,14 +273,8 @@ class qcl_event_message_Bus
         'name'  => $msgModel->get( "name" ),
         'data'  => unserialize( stripslashes( $msgModel->get("data") ) )
       );
-    };
-
-    /*
-     * delete messages
-     */
-    $msgModel->deleteWhere( array(
-      'sessionId' => $sessionId
-    ) );
+      $msgModel->delete();
+    }
 
     /*
      * return message array

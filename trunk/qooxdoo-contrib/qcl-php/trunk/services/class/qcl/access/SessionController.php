@@ -278,9 +278,9 @@ class qcl_access_SessionController
     $this->getSessionModel()->registerSession( $sessionId, $user, $remoteIp );
 
     /*
-     * remove stale users and sessions, doesn't work yet
+     * remove stale users and sessions, doesn't work really well yet
      */
-    //$this->cleanup();
+    $this->cleanup();
   }
 
   /**
@@ -437,10 +437,10 @@ class qcl_access_SessionController
       /*
        * clean up stale sessions
        */
-      $sessionModel = $this->getSessionModel();
-      $ids = $sessionModel->getQueryBehavior()->deleteWhere(
-        "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
-      );
+//      $sessionModel = $this->getSessionModel();
+//      $ids = $sessionModel->getQueryBehavior()->deleteWhere(
+//        "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
+//      );
     }
   }
 }

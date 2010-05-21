@@ -299,6 +299,29 @@ class qcl_data_model_AbstractActiveRecord
   //-------------------------------------------------------------
 
   /**
+   * Sets the properties from a query result
+   * @param array $result
+   * @return void
+   */
+  protected function setFromQuery( $result )
+  {
+    $propBehavior = $this->getPropertyBehavior();
+    foreach( $result as $property => $value )
+    {
+      if ( $this->hasProperty( $property ) )
+      {
+        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
+      }
+      else
+      {
+        if( $this->getLogger()->isFilterEnabled(QCL_LOG_PROPERTIES) ) $this->log( sprintf(
+          "### Model class '%s' does not have a property '%s'. Please check the database and remove column '%s' if necessary."
+        ), QCL_LOG_PROPERTIES );
+      }
+    }
+  }
+
+  /**
    * Loads a model record identified by id. Does not return anything.
    * Throws an exception if no model data could be found. Returns
    * itself in order to allow changed method calling ($model->load(1)->delete();
@@ -328,12 +351,10 @@ class qcl_data_model_AbstractActiveRecord
      */
     if ( $result )
     {
-
-      $propBehavior = $this->getPropertyBehavior();
-      foreach( $result as $property => $value )
-      {
-        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
-      }
+      /*
+       * Set all the properties
+       */
+      $this->setFromQuery( $result );
 
       /*
        * Mark that we're loaded
@@ -412,10 +433,7 @@ class qcl_data_model_AbstractActiveRecord
       /*
        * Set all the properties
        */
-      foreach( $result as $property => $value )
-      {
-        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
-      }
+      $this->setFromQuery( $result );
 
       /*
        * mark that a record is loaded
@@ -535,6 +553,7 @@ class qcl_data_model_AbstractActiveRecord
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
    * @return qcl_data_db_Query
    * @throws qcl_data_model_RecordNotFoundException
+   * @todo Rename to findLinkedModel to align with other method names?
    */
   public function findLinked( $targetModel )
   {
@@ -544,9 +563,15 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     /*
+     * dependencies?
+     */
+    $dependencies = func_get_args();
+    array_shift($dependencies);
+
+    /*
      * find linked ids
      */
-    $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel );
+    $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel, $dependencies );
     if ( count( $ids ) )
     {
       $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
@@ -596,11 +621,10 @@ class qcl_data_model_AbstractActiveRecord
     $result = $this->getQueryBehavior()->fetch( $query );
     if( $result )
     {
-      $propBehavior = $this->getPropertyBehavior();
-      foreach( $result as $property => $value )
-      {
-        $this->set( $property, $propBehavior->typecast( $property, $value ), false );
-      }
+      /*
+       * Set all the properties
+       */
+      $this->setFromQuery( $result );
     }
 
     /*
@@ -1136,8 +1160,7 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Creates a link between two associated models.
    * @param qcl_data_model_db_ActiveRecord $targetModel
-   * @return bool True if new link was created, false if link
-   *   already existed.
+   * @throws qcl_data_model_RecordExistsException If link already exists
    */
   public function linkModel( $targetModel )
   {
@@ -1147,9 +1170,15 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     /*
+     * dependencies, if any
+     */
+    $dependencies = func_get_args();
+    array_shift( $dependencies );
+
+    /*
      * call behavior method do do the actual work
      */
-    return $this->getRelationBehavior()->linkModel( $targetModel );
+    return $this->getRelationBehavior()->linkModel( $targetModel, $dependencies );
   }
 
   /**
@@ -1166,9 +1195,15 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     /*
+     * dependencies, if any
+     */
+    $dependencies = func_get_args();
+    array_shift( $dependencies );
+
+    /*
      * call behavior method do do the actual work
      */
-    return $this->getRelationBehavior()->isLinkedModel( $targetModel );
+    return $this->getRelationBehavior()->isLinkedModel( $targetModel, $dependencies );
   }
 
   /**
@@ -1185,9 +1220,15 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     /*
+     * dependencies, if any
+     */
+    $dependencies = func_get_args();
+    array_shift( $dependencies );
+
+    /*
      * call behavior method do do the actual work
      */
-    return $this->getRelationBehavior()->linkedModelIds( $targetModel );
+    return $this->getRelationBehavior()->linkedModelIds( $targetModel, $dependencies );
   }
 
   /**
@@ -1204,9 +1245,15 @@ class qcl_data_model_AbstractActiveRecord
     $this->init();
 
     /*
+     * dependencies, if any
+     */
+    $dependencies = func_get_args();
+    array_shift( $dependencies );
+
+    /*
      * call behavior method do do the actual work
      */
-    return $this->getRelationBehavior()->unlinkModel( $targetModel );
+    return $this->getRelationBehavior()->unlinkModel( $targetModel, $dependencies );
   }
 
   //-----------------------------------------------------------------------
