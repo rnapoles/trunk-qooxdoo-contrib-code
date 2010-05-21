@@ -72,13 +72,12 @@ class qcl_server_JsonRpcTestServer
     /*
      * Ensure that this was a valid JSON-RPC service request
      */
-    if ( isset($input->service) || ! isset($input->method) || ! isset($input->params))
-    {
+    if (!(isset ($input->service) && isset ($input->method) && isset ($input->params))) {
       /*
        * This request was not issued with JSON-RPC so echo the error rather than
        * issuing a JsonRpcError response.
        */
-      throw new JsonRpcError( "JSON-RPC request expected; service, method or params missing");
+       throw new JsonRpcError("JSON-RPC request expected; service, method or params missing");
     }
 
     /*

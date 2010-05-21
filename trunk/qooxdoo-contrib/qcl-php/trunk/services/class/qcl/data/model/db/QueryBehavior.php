@@ -848,7 +848,7 @@ class qcl_data_model_db_QueryBehavior
         {
           $column[] =
             $adpt->formatColumnName(
-              $this->getColumnName( substr( $property, 0 -5 ) ) ) . " DESC";
+              $this->getColumnName( substr( $property, 0, -5 ) ) ) . " DESC";
         }
         else
         {
