@@ -36,6 +36,7 @@ var locators = {
   gitHubButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[3]',
   gistMenu : 'qxh=[@classname="playground.view.gist.GistMenu"]',
   gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
+  gistLoadButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/[@classname="playground.view.gist.UserNameMenuItem"]/qx.ui.form.Button',
   gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]',
   shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="URL"]'
 };
@@ -296,12 +297,7 @@ simulation.Simulation.prototype.runTest = function()
   
   this.checkSampleLoad(sampleArr);
   
-  // Selenium Bug: http://jira.openqa.org/browse/SEL-646
-  if (this.getConfigSetting("testBrowser").indexOf("googlechrome") >= 0 ) {
-    this.log("Skipping Gist test for Chrome since pressing enter doesn't work.", "info");
-  } else {
-    this.checkGistFromList();
-  }
+  this.checkGistFromList();
   
   //this.checkGistFromUrl();
   
@@ -366,7 +362,18 @@ simulation.Simulation.prototype.checkGistFromList = function()
   // focused (qx bug #3456), so we click it first.
   this.qxClick(locators.gistUserNameField, "");
   this.qxType(locators.gistUserNameField, "danielwagner");
-  this.__sel.keyPress(locators.gistUserNameField, "13");
+  
+  // Selenium Bug: http://jira.openqa.org/browse/SEL-646
+  // Pressing Return only works in IE and FF, so click the button instead for
+  // the other browsers.
+  var browser = this.getConfigSetting("testBrowser");
+  if (browser.indexOf("googlechrome") >= 0 || browser.indexOf("opera") >= 0
+    || browser.indexOf("safari") >= 0) {
+    this.qxClick(locators.gistLoadButton, "", "Clicking Gist load button");
+  }
+  else {
+    this.__sel.keyPress(locators.gistUserNameField, "13");
+  }
   
   var checkGistReady = function()
   {
