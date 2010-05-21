@@ -534,6 +534,7 @@ function stripquotes( $string )
  * an associative array
  * @param array $var
  * @return bool
+ * FIXME rename to qcl_is_list()
  */
 function is_list( $var )
 {
@@ -557,6 +558,7 @@ function is_list( $var )
  * Checks whether the input an associative array
  * @param array $var
  * @return bool
+ * FIXME rename to qcl_is_map()
  */
 function is_map( $var )
 {

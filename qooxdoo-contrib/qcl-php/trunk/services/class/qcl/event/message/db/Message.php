@@ -37,10 +37,6 @@ class qcl_event_message_db_Message
    * @var array
    */
   private $properties = array(
-    'sessionId' => array(
-      'check'     => "string",
-      'sqltype'   => "varchar(50)"
-    ),
     'name' => array(
       'check'     => "string",
       'sqltype'   => "varchar(100)"

@@ -20,7 +20,7 @@ require_once "qcl/core/IPropertyBehavior.php";
 /**
  * Exceptions thrown in this class
  */
-class qcl_core_PropertyBehaviorException extends JsonRpcException {}
+class qcl_core_PropertyBehaviorException extends LogicException {}
 
 /**
  * Default property behvior. Provides access to the named

@@ -20,11 +20,7 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 qcl_import( "qcl_data_datasource_DbModel" );
 
 /**
- * class providing data on users
- * providing a backend to the qcl.auth client package
- *
- * Class cannot be used directly, you need to subclass it
- * in your application service class folder
+ * Class modelling a user record
  */
 class qcl_access_model_User
   extends qcl_data_model_db_NamedActiveRecord
@@ -91,7 +87,10 @@ class qcl_access_model_User
   private $relations = array(
     'User_Role' => array(
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
-      'target'      => array( 'class' => "qcl_access_model_Role" )
+      'target'      => array( 'class'    => "qcl_access_model_Role" ),
+      'depends'     => array(
+         array( 'relation'  => "Group_User" )
+      )
     ),
     'Group_User' => array(
       'type'        => QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY,
@@ -218,6 +217,15 @@ class qcl_access_model_User
   }
 
   /**
+   * Getter for group model instance
+   * @return qcl_access_model_Role
+   */
+  protected function getGroupModel()
+  {
+    return $this->getRelationBehavior()->getTargetModel("Group_User");
+  }
+
+  /**
    * Return the username (login name) of the current user.
    * Alias of getNamedId()
    * @return string
@@ -329,46 +337,58 @@ class qcl_access_model_User
   }
 
   /**
-   * Returns list of role that belong to a user
+   * Returns list of roles that a user has. If you supply a group
+   * model instance, only those roles will be returned that the user
+   * has in this group.
+   *
+   * @param qcl_access_model_Group|null $groupModel Optional group model
    * @return array Array of values
    */
-  public function roles()
+  public function roles( $groupModel=null )
   {
-    if ( ! $this->roles )
+    if ( $groupModel or ! $this->roles )
     {
       $roleModel = $this->getRoleModel();
-      $roleModel->findLinked( $this );
-      $roles = array();
-      while( $roleModel->loadNext() )
+      try
       {
-        $roles[] = $roleModel->namedId();
+        if ( $groupModel )
+        {
+          $roleModel->findLinked( $this, $groupModel );
+        }
+        else
+        {
+          $roleModel->findLinked( $this );
+        }
+        $roles = array();
+        while( $roleModel->loadNext() )
+        {
+          $roles[] = $roleModel->namedId();
+        }
       }
-      $this->roles = $roles;
+      catch( qcl_data_model_RecordNotFoundException $e )
+      {
+        $roles = array();
+      }
+      $this->roles = array_unique( $roles );
     }
     return $this->roles;
   }
 
   /**
-   * Returns list of the ids of the role that belong to a user
-   * @return array Array of values
-   */
-  public function roleIds()
-  {
-    $roleModel = $this->getRoleModel();
-    return $roleModel->linkedModelIds( $this );
-  }
-
-  /**
-   * Returns list of role that belong to a user
+   * Returns list of role that belong to a user. If you supply
+   * a group model instance, only those permissions will be returned
+   * that the user has in the group.
+   *
    * @param string $prop Property to retrieve, defaults to "id"
+   * @param qcl_access_model_Group|null $groupModel
    * @return array Array of values
    */
-  public function permissions()
+  public function permissions( $groupModel=null )
   {
-    if ( ! $this->permissions )
+    if ( $groupModel or ! $this->permissions )
     {
       $roleModel = $this->getRoleModel();
-      $roles = $this->roles();
+      $roles = $this->roles( $groupModel );
       $permissions =  array();
       foreach( $roles as $roleName )
       {
