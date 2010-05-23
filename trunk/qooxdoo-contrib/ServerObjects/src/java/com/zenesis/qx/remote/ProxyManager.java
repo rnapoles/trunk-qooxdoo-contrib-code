@@ -27,8 +27,10 @@
  */
 package com.zenesis.qx.remote;
 
+import java.io.File;
 import java.io.IOException;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +58,9 @@ public class ProxyManager implements EventListener {
 	// Current Tracker for this thread
 	private static final ThreadLocal<ProxySessionTracker> s_currentTracker = new ThreadLocal<ProxySessionTracker>();
 	
+	// MIME type mapper, null until first use
+	private static MimetypesFileTypeMap s_fileTypeMap;
+	
 	/**
 	 * Constructor; will set the singleton instance if it has not already been set 
 	 */
@@ -70,6 +75,39 @@ public class ProxyManager implements EventListener {
 	@Override
 	public void handleEvent(Event event) {
 		getTracker().getQueue().queueCommand(CommandType.FIRE_EVENT, event.getCurrentTarget(), event.getEventName(), event.getData());
+	}
+	
+	/**
+	 * Creates a temporary file
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	public File createTemporaryFile(String fileName) throws IOException {
+		String body;
+		String ext;
+		int pos = fileName.indexOf('.');
+		if (pos < 0) {
+			body = fileName;
+			ext = "";
+		} else {
+			body = fileName.substring(0, pos);
+			ext = fileName.substring(pos);
+		}
+		File file = File.createTempFile("upload-" + body, ext);
+		return file;
+	}
+	
+	/**
+	 * Returns the MIME content type for a file 
+	 * @param file
+	 * @return
+	 */
+	public String getContentType(File file) {
+		if (s_fileTypeMap == null)
+			s_fileTypeMap = new MimetypesFileTypeMap();
+		String contentType = s_fileTypeMap.getContentType(file);
+		return contentType;
 	}
 	
 	/**
@@ -97,7 +135,11 @@ public class ProxyManager implements EventListener {
 		selectTracker(tracker);
 		try {
 			// Process the request
-			new RequestHandler(tracker).processRequest(request.getReader(), response.getWriter());
+	        String contentType = request.getContentType();
+			if (request.getMethod().toUpperCase().equals("POST") && contentType != null && contentType.startsWith("multipart/form-data"))
+				new UploadHandler(tracker).processUpload(request, response);
+			else
+				new RequestHandler(tracker).processRequest(request.getReader(), response.getWriter());
 		}finally {
 			// Done
 			deselectTracker(tracker);

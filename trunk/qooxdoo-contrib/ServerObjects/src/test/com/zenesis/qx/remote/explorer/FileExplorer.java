@@ -27,6 +27,8 @@
  */
 package com.zenesis.qx.remote.explorer;
 
+import com.zenesis.qx.remote.AppFile;
+import com.zenesis.qx.remote.BasicBootstrap;
 import com.zenesis.qx.remote.Proxied;
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
@@ -36,17 +38,13 @@ import com.zenesis.qx.remote.annotations.Property;
  * 
  * @author "John Spackman <john.spackman@zenesis.com>"
  */
-@Properties({
-	@Property("root")
-})
-public class FileExplorer implements Proxied {
-	
-	private ServerFile root;
+public class FileExplorer extends BasicBootstrap {
 
-	public ServerFile getRoot() {
-		if (root == null)
-			root = new ServerFile(FileExplorerServlet.getInstance().getRoot(), null);
-		return root;
+	public FileExplorer() {
+		super();
+		AppFile root = new AppFile(FileExplorerServlet.getInstance().getRoot(), "/public/all-files");
+		setAppFilesRoot(root);
+		setUploadFolder(root);
 	}
 
 }

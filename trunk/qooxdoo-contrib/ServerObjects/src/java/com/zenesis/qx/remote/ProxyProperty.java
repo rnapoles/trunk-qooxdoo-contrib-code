@@ -369,6 +369,8 @@ public class ProxyProperty implements JsonSerializable {
 				gen.writeStringField("check", "Float");
 			else if (clazz == char.class || clazz == String.class)
 				gen.writeStringField("check", "String");
+			else if (Date.class.isAssignableFrom(clazz))
+				gen.writeStringField("check", "Date");
 		}
 		if (Proxied.class.isAssignableFrom(clazz)) {
 			ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(clazz);

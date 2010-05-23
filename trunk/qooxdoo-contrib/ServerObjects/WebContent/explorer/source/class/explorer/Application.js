@@ -82,8 +82,8 @@ qx.Class.define("explorer.Application", {
 			tree.addListener("treeOpenWhileEmpty", function(evt) {
 					var node = evt.getData();
 					var children = node.serverFile.getChildren();
-					for (var i = 0; i < children.length; i++) {
-						var file = children[i];
+					for (var i = 0; i < children.getLength(); i++) {
+						var file = children.getItem(i);
 						var nodeId;
 						if (file.getFolder())
 							nodeId = dataModel.addBranch(node.nodeId, file.getName(), null);
@@ -95,8 +95,27 @@ qx.Class.define("explorer.Application", {
 			
 			// Create the root node
 			var rootNode = tree.nodeGet(dataModel.addBranch(null, "Desktop", false));
-			rootNode.serverFile = boot.getRoot();
+			rootNode.serverFile = boot.getAppFilesRoot();
 			tree.nodeSetOpened(rootNode, true);
+			
+    		var uploadForm = new uploadwidget.UploadForm("uploadForm", manager.getProxyUrl());
+    		uploadForm.setLayout(new qx.ui.layout.Basic());
+			uploadForm.addListener("completed", function(evt) {
+	            var strResponse = uploadForm.getIframeHtmlContent();
+	            var appFiles = manager.uploadResponse(strResponse);
+	            this.debug("Response after uploading to server: " + strResponse);
+			}, this);
+    		
+            var uploadButton = new uploadwidget.UploadButton('uploadfile', 'Upload a File');
+            uploadButton.addListener("changeFieldValue", function(evt) {
+                if (evt.getData() == "")
+                	return;
+                
+                uploadForm.setParameter("myParam", "testParam");
+               	uploadForm.send();
+            }, this);
+            uploadForm.add(uploadButton);
+            this.getRoot().add(uploadForm, { left: 10, top: 50 });
 		}
 	}
 });

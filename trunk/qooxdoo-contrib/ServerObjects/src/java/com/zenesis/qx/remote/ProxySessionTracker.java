@@ -117,17 +117,17 @@ public class ProxySessionTracker {
 			if (proxyType != null) {
 				jgen.writeObjectField("clazz", proxyType);
 				if (!proxyType.isInterface()) {
-					Collection<ProxyProperty> props = proxyType.getProperties().values();
-					if (!props.isEmpty()) {
-						jgen.writeObjectFieldStart("values");
+					jgen.writeObjectFieldStart("values");
+					for (ProxyType type = proxyType; type != null; type = type.getSuperType()) {
+						Collection<ProxyProperty> props = type.getProperties().values();
 						for (ProxyProperty prop : props) {
 							if (prop.isOnDemand())
 								continue;
 							Object value = prop.getValue(proxied);
 							jgen.writeObjectField(prop.getName(), value);
 						}
-						jgen.writeEndObject();
 					}
+					jgen.writeEndObject();
 				}
 			}
 			jgen.writeEndObject();

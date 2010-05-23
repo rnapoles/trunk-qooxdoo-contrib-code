@@ -98,7 +98,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 		 */
 		_applyProperty: function(propertyName, value, oldValue) {
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
-			var propDef = this.$$proxyDef.properties[propertyName];
+			var propDef = this.getPropertyDef(propertyName);
 			if (propDef.array == "wrap" && !propDef.noArrayEdits) {
 				if (oldValue)
 					oldValue.removeListenerById(propDef.changeListenerId);
@@ -132,7 +132,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 			// Call the server
 			var upname = qx.lang.String.firstUp(propName);
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
-			var propDef = this.$$proxyDef.properties[propName];
+			var propDef = this.getPropertyDef(propName);
 			var value = PM.callServerMethod(this, "get" + upname, []);
 			var ex = PM.clearException();
 			if (ex)
@@ -163,7 +163,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				this.$$proxyUser = {};
 			else
 				oldValue = this.$$proxyUser[propName];
-			var propDef = this.$$proxyDef.properties[propName];
+			var propDef = this.getPropertyDef(propertyName);
 			if (propDef.array == "wrap")
 				value = new qx.data.Array(value);
 			this.$$proxyUser[propName] = value;
@@ -201,6 +201,22 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
 			PM.removeListener(this, name);
 			return existed;
+		},
+		
+		/**
+		 * Gets the proxy property definition for a named property
+		 * @param propertyName {String} the name of the property
+		 * @return {Map} the property definition received from the server
+		 */
+		getPropertyDef: function(propertyName) {
+			for (var $$proxyDef = this.$$proxyDef; $$proxyDef; $$proxyDef = $$proxyDef.extend) {
+				if ($$proxyDef.properties) {
+					var propDef = $$proxyDef.properties[propertyName];
+					if (propDef)
+						return propDef;
+				}
+			}
+			return null;
 		}
 	}
 	

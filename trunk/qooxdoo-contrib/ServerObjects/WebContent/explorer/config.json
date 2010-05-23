@@ -38,7 +38,7 @@
     "CACHE"        : "../../qooxdoo/cache",
     "ROOT"         : "."
   },
-
+  
   "jobs" :
   {
     "libraries" : 
@@ -52,6 +52,10 @@
         {
           "manifest" : "../qso-lib/Manifest.json",
           "uri" : "/qso-lib"
+        },
+        {
+        	"manifest" : "contrib://UploadWidget/trunk/Manifest.json",
+        	"uri" : "../cache-downloads/UploadWidget/trunk"
         }
       ]
     } /*,
