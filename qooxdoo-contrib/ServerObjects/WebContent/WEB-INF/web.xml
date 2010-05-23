@@ -49,6 +49,10 @@
 		</init-param>
 		<init-param>
 			<param-name>rewrite-5</param-name>
+			<param-value>/explorer/cache-downloads=D:/dev/Qooxdoo Server Objects/qooxdoo/cache/downloads</param-value>
+		</init-param>
+		<init-param>
+			<param-name>rewrite-6</param-name>
 			<param-value>/arraytest=D:/dev/Qooxdoo Server Objects/WebContent/arraytest</param-value>
 		</init-param>
 	</filter>

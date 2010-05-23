@@ -162,6 +162,23 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		},
 		
 		/**
+		 * Called to handle the response from an upload
+		 */
+		uploadResponse: function(txt) {
+			txt = qx.lang.String.trim(txt);
+			try {
+				this.debug("received: txt=" + txt);
+				if (!txt.length)
+					return null;
+				var data = eval("(" + txt + ")");
+				return this._processData(data);
+			} catch(e) {
+				this.debug("Exception during uploadResponse: " + this.__describeException(e));
+				throw e;
+			}
+		},
+		
+		/**
 		 * Called to interpret the text returned by the server and perform any commands
 		 * @param data {Object} the response compiled from JSON
 		 */
@@ -599,6 +616,13 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			this.__setPropertyObject = serverObject;
 			this.__setPropertyName = propertyName;
 			try {
+				var def = serverObject.getPropertyDef(propertyName);
+				if (def && def.check && def.check == "Date") {
+					if (value)
+						value = new Date(value);
+					else
+						value = null;
+				}
 				var upname = qx.lang.String.firstUp(propertyName);
 				serverObject["set" + upname](value);
 			}catch(e) {
