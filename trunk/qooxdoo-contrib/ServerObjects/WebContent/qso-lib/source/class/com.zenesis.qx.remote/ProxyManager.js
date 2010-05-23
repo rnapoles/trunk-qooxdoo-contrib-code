@@ -471,7 +471,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		/**
 		 * Serialises a value for sending to the server
 		 */
-		_serializeValue: function(value) {
+		serializeValue: function(value) {
 			if (!value)
 				return value;
 			
@@ -481,7 +481,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					if (!value[j])
 						send[j] = null;
 					else
-						send[j] = this._serializeValue(value[j]);
+						send[j] = this.serializeValue(value[j]);
 				}
 				return send;
 			}
@@ -516,7 +516,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		callServerMethod: function(serverObject, methodName, args) {
 			var parameters = [];
 			for (var i = 0; i < args.length; i++)
-				parameters[i] = this._serializeValue(args[i]);
+				parameters[i] = this.serializeValue(args[i]);
 			var data = {
 				cmd: "call",
 				serverId: serverObject.getServerId(),
@@ -573,7 +573,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						serverId: arrData.serverObject.getServerId(),
 						propertyName: arrData.propertyName,
 						type: "replaceAll",
-						items: this._serializeValue(arrData.array.toArray())
+						items: this.serializeValue(arrData.array.toArray())
 					};
 				this._queueCommandToServer(data);
 			}
@@ -594,7 +594,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				cmd: "set",
 				serverId: serverObject.getServerId(),
 				propertyName: propertyName,
-				value: this._serializeValue(value)
+				value: this.serializeValue(value)
 			};
 			var def = this.__classInfo[serverObject.classname];
 			var pd = def.properties[propertyName];
