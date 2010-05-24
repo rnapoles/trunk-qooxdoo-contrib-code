@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class UploadHandler {
 		response.setContentType("text/html");
         
 		// Accumulate POST parameters
-		HashMap<String, String> params = new HashMap<String, String>();
+		HashMap<String, Object> params = new HashMap<String, Object>();
 		
 	    // Get query parameters
 		if (request.getQueryString() != null)
@@ -128,7 +129,22 @@ public class UploadHandler {
 				
 				if (part.isParam()) {
 					ParamPart paramPart = (ParamPart) part;
-					String value = paramPart.getStringValue();
+					Object value = paramPart.getStringValue();
+					
+					/*
+					 * TODO/HACK
+					 * This is a quick hack for getting server objects passed as parameters
+					 * 
+					 */
+					try {
+						if (value != null) {
+							int serverId = Integer.parseInt((String)value);
+							if (serverId > -1)
+								value = tracker.getProxied(serverId);
+						}
+					} catch(IllegalArgumentException e) {
+						// Nothing
+					}
 					params.put(name, value);
 					
 				} else {
@@ -138,7 +154,7 @@ public class UploadHandler {
 						fileName = "unnamed-upload";
 					filePart.setRenamePolicy(null);
 					File file = ProxyManager.getInstance().createTemporaryFile(fileName);
-					String uploadId = params.get("uploadId");
+					String uploadId = (String)params.get("uploadId");
 					s_numberOfUploads++;
 					if (uploadId == null)
 						uploadId = "__UPLOAD_ID_" + s_numberOfUploads;
@@ -188,6 +204,7 @@ public class UploadHandler {
 			}
 			tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, null, null, files);
         }catch(IOException e) {
+        	log.error(e.getMessage(), e);
     		tracker.getQueue().queueCommand(CommandType.EXCEPTION, null, null, new ExceptionDetails(e.getClass().getName(), e.getMessage()));
         }
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -201,7 +218,7 @@ public class UploadHandler {
      * @param query
      * @return
      */
-    private static void parseQuery(HashMap<String, String> params, String query) {
+    private static void parseQuery(HashMap<String, Object> params, String query) {
     	if (query == null || query.length() == 0)
     		return;
 		StringTokenizer st = new StringTokenizer(query, "&");

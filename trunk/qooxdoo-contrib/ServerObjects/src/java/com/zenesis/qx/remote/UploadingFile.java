@@ -29,7 +29,7 @@ public class UploadingFile implements Proxied {
 	private final String uploadId;
 	
 	// Parameters sent with the form POST
-	private Map<String, String> params;
+	private Map<String, Object> params;
 	
 	// Where the file is being uploaded to; temporary file initially
 	private File file;
@@ -48,7 +48,7 @@ public class UploadingFile implements Proxied {
 	 * @param uploadId
 	 * @param file
 	 */
-	public UploadingFile(String uploadId, File file, String originalName, Map<String, String> params) {
+	public UploadingFile(String uploadId, File file, String originalName, Map<String, Object> params) {
 		super();
 		this.uploadId = uploadId;
 		this.file = file;
@@ -104,6 +104,21 @@ public class UploadingFile implements Proxied {
 	 */
 	public String getOriginalName() {
 		return originalName;
+	}
+
+	/**
+	 * @return the params
+	 */
+	public Map<String, Object> getParams() {
+		return params;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return file.toString() + " " + bytesUploaded + "/" + file.length();
 	}
 	
 }

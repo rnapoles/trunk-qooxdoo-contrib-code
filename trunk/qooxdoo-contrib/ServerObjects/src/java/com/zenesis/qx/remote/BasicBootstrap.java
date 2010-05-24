@@ -3,6 +3,8 @@ package com.zenesis.qx.remote;
 import java.io.IOException;
 import java.util.HashMap;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
 import com.zenesis.qx.remote.annotations.Remote;
@@ -46,8 +48,6 @@ public class BasicBootstrap implements UploadReceiver {
 	 */
 	@Override
 	public void beginUploadingFile(UploadingFile upfile) throws IOException {
-		if (getUploadFolder() == null)
-			throw new IOException("Cannot upload " + upfile + " because there is no root to upload to");
 		uploading.put(upfile.getUploadId(), upfile);
 	}
 
@@ -61,7 +61,21 @@ public class BasicBootstrap implements UploadReceiver {
 			return null;
 		}
 		
-		AppFile appFile = appFilesRoot.addFile(upfile.getFile(), upfile.getOriginalName(), false, true);
+		Object obj = upfile.getParams().get("uploadFolder");
+		AppFile uploadFolder = (AppFile)obj;
+		if (uploadFolder != null) {
+			if (getAppFilesRoot() != null) {
+				String strUF = uploadFolder.getFile().getAbsolutePath();
+				String strRF = getAppFilesRoot().getFile().getAbsolutePath();
+				int lenRF = strRF.length();
+				if (!strUF.startsWith(strRF) || (strUF.length() > lenRF && "\\/".indexOf(strUF.charAt(lenRF)) < 0))
+					throw new IOException("Cannot upload " + upfile + " because the upload folder is outside the root folder");
+			}
+		} else
+			uploadFolder = getUploadFolder();
+		if (uploadFolder == null)
+			throw new IOException("Cannot upload " + upfile + " because there is no root to upload to");
+		AppFile appFile = uploadFolder.addFile(upfile.getFile(), upfile.getOriginalName(), false, true);
 		return appFile;
 	}
 
