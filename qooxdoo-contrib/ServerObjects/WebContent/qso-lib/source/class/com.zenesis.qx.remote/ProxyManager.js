@@ -230,7 +230,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				// An on demand server property value changed, clear the cache
 				} else if (type == "expire") {
 					var obj = this._readProxyObject(elem.object);
-					var upname = qx.lang.String.upname(elem.name);
+					var upname = qx.lang.String.firstUp(elem.name);
 					obj["expire" + upname]();
 					
 				// An event was fired on the server
