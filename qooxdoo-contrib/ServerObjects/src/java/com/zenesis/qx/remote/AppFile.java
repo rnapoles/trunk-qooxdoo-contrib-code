@@ -98,7 +98,7 @@ public class AppFile implements Proxied {
 		AppFile child = new AppFile(dir, this);
 		if (children != null)
 			children.add(child);
-		ProxyManager.changeProperty(this, "children", children, children);
+		ProxyManager.propertyChanged(this, "children", children, children);
 		return child;
 	}
 	
@@ -194,7 +194,7 @@ public class AppFile implements Proxied {
 		// Add the new file to the list
 		AppFile newChild = new AppFile(dest, this);
 		children.add(newChild);
-		ProxyManager.changeProperty(this, "children", children, children);
+		ProxyManager.propertyChanged(this, "children", children, children);
 		
 		return newChild;
 	}

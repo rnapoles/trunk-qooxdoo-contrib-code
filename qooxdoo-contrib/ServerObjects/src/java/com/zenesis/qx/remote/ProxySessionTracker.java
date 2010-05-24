@@ -235,6 +235,15 @@ public class ProxySessionTracker {
 	}
 	
 	/**
+	 * Called to initialise a new Bootstrap object after it has been set; this allows
+	 * initialisation of bootstrap to call getBootstrap.
+	 * @param boot
+	 */
+	protected void initialiseBootstrap(Proxied bootstrap) {
+		// Nothing
+	}
+	
+	/**
 	 * Returns the bootstrap, creating one if necessary
 	 * @return
 	 */
@@ -243,6 +252,7 @@ public class ProxySessionTracker {
 			bootstrap = createBootstrap();
 			if (bootstrap == null)
 				throw new IllegalStateException("createBootstrap returned null");
+			initialiseBootstrap(bootstrap);
 		}
 		return bootstrap;
 	}
