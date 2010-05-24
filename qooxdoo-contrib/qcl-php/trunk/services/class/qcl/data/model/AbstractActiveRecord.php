@@ -136,6 +136,35 @@ class qcl_data_model_AbstractActiveRecord
     return false;
   }
 
+  //-----------------------------------------------------------------------
+  // Internal methods
+  //-----------------------------------------------------------------------
+
+  /**
+   * Converts an argument to an array. If the argument is null, return
+   * an empty array. If the argument is not an array, return an arra with
+   * the argument as single element. If the argument is an array already,
+   * return this array.
+   *
+   * @param mixed $arg
+   * @return array
+   */
+  protected function argToArray( $arg )
+  {
+    if( is_array( $arg ) )
+    {
+      return $arg;
+    }
+    elseif ( is_null( $arg ) )
+    {
+      return array();
+    }
+    else
+    {
+      return array( $arg );
+    }
+  }
+
   //-------------------------------------------------------------
   // Getters & setters
   //-------------------------------------------------------------
@@ -550,12 +579,17 @@ class qcl_data_model_AbstractActiveRecord
    * Find the models instances that are linked with the target model
    * for iteration.
    *
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
+   * @param string|array $orderBy
+   *    Optional order by argument
    * @return qcl_data_db_Query
    * @throws qcl_data_model_RecordNotFoundException
-   * @todo Rename to findLinkedModel to align with other method names?
    */
-  public function findLinked( $targetModel )
+  public function findLinked( $targetModel, $dependencies=null, $orderBy=null )
   {
     /*
      * initialize model and behaviors
@@ -565,8 +599,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * dependencies?
      */
-    $dependencies = func_get_args();
-    array_shift($dependencies);
+    $dependencies = $this->argToArray( $dependencies );
 
     /*
      * find linked ids
@@ -574,7 +607,7 @@ class qcl_data_model_AbstractActiveRecord
     $ids = $this->getRelationBehavior()->linkedModelIds( $targetModel, $dependencies );
     if ( count( $ids ) )
     {
-      $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids );
+      $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids, $orderBy );
       return $this->lastQuery;
     }
     else
@@ -584,6 +617,82 @@ class qcl_data_model_AbstractActiveRecord
         $this->className(), $targetModel
       ) );
     }
+  }
+
+  /**
+   * Find the models instances that are linked with the target model,
+   * having no dependency to the model instances that are given as
+   * second argument and after. This typically means that the join
+   * table contains a NULL value in the foreign key columns of these
+   * models in the join table.
+   *
+   * @param qcl_data_model_db_ActiveRecord $targetModel
+   *    Target model
+   * @param qcl_data_model_db_ActiveRecord|qcl_data_model_db_ActiveRecord[] $notDependsModel
+   *    Optional model instance or array of instances of which the target model link is not
+   *    dependent. There can be a variable number of such model instances.
+   *    Since the check is for NO dependency, the models do not need
+   *    to be loaded with a record.
+   * @param string|array $orderBy
+   *    Optional order by argument
+   *
+   * @return qcl_data_db_Query
+   * @throws qcl_data_model_RecordNotFoundException
+   * @todo Missing order by argument
+   */
+  public function findLinkedNotDepends( $targetModel, $notDependencies, $orderBy=null )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * models which shouldn't be dependencies
+     */
+    $notDependencies = $this->argToArray( $notDependencies );
+
+    if( count( $notDependencies ) == 0 )
+    {
+      throw new InvalidArgumentException("You must provide at least one model as second argument.");
+    }
+
+    $relBehavior   = $this->getRelationBehavior();
+    $relation      = $relBehavior->getRelationNameForModel( $targetModel );
+    $foreignKey    = $relBehavior->getForeignKey( $relation );
+
+    if ( $relBehavior->getRelationType( $relation ) != QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY )
+    {
+      throw new InvalidArgumentException("findLinkedNotDepends() supports only n:m relations.");
+    }
+
+    /*
+     * find linked ids which are not dependent on the
+     * given models
+     */
+    $where = array(
+      $targetModel->foreignKey() => $targetModel->id()
+    );
+
+    foreach( $notDependencies as $model )
+    {
+      $where[ $model->foreignKey() ] = null;
+    }
+    $ids = $relBehavior
+      ->getJoinModel( $relation )
+      ->getQueryBehavior()
+      ->fetchValues( $foreignKey, $where );
+
+    if ( ! count( $ids ) )
+    {
+      throw new qcl_data_model_RecordNotFoundException("No linked records found.");
+    }
+
+    $query = $this
+      ->getQueryBehavior()
+      ->selectIds( $ids, $orderBy );
+
+    return $query;
   }
 
   /**
@@ -1134,7 +1243,7 @@ class qcl_data_model_AbstractActiveRecord
    * Returns true if the managed model has a relation with the given
    * model.
    *
-   * @param qcl_data_model_db_ActiveRecord $model
+   * @param qcl_data_model_AbstractActiveRecord $model
    * @return bool
    */
   public function hasRelationWithModel( $model )
@@ -1158,11 +1267,51 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
+   * Returns true if the managed model has a link with the given
+   * model.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $model
+   *  Target model to check
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
+   * @return bool
+   */
+  public function hasLinkWithModel( $model, $dependencies=null )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * dependencies
+     */
+    $dependencies = $this->argToArray( $dependencies );
+
+    /*
+     * call behavior method do do the actual work
+     */
+    try
+    {
+      return $this->getRelationBehavior()->hasLinkWithModel( $model, $dependencies );
+    }
+    catch( qcl_data_model_Exception $e )
+    {
+      return false;
+    }
+  }
+
+  /**
    * Creates a link between two associated models.
-   * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model instance
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
    * @throws qcl_data_model_RecordExistsException If link already exists
    */
-  public function linkModel( $targetModel )
+  public function linkModel( $targetModel, $dependencies=null )
   {
     /*
      * initialize model and behaviors
@@ -1172,8 +1321,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * dependencies, if any
      */
-    $dependencies = func_get_args();
-    array_shift( $dependencies );
+    $dependencies = $this->argToArray( $dependencies );
 
     /*
      * call behavior method do do the actual work
@@ -1184,10 +1332,14 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Checks if this model and the given target model are linked.
    *
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model instance
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
    * @return bool
    */
-  public function islinkedModel( $targetModel )
+  public function islinkedModel( $targetModel, $dependencies=null )
   {
     /*
      * initialize model and behaviors
@@ -1197,8 +1349,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * dependencies, if any
      */
-    $dependencies = func_get_args();
-    array_shift( $dependencies );
+    $dependencies = $this->argToArray( $dependencies );
 
     /*
      * call behavior method do do the actual work
@@ -1209,10 +1360,14 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Returns the ids of all model records linked to the target model.
    *
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model instance
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
    * @return array
    */
-  public function linkedModelIds( $targetModel )
+  public function linkedModelIds( $targetModel, $dependencies=null )
   {
     /*
      * initialize model and behaviors
@@ -1222,8 +1377,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * dependencies, if any
      */
-    $dependencies = func_get_args();
-    array_shift( $dependencies );
+    $dependencies = $this->argToArray( $dependencies );
 
     /*
      * call behavior method do do the actual work
@@ -1234,10 +1388,14 @@ class qcl_data_model_AbstractActiveRecord
   /**
    * Unlinks the given target model from this model.
    *
-   * @param qcl_data_model_db_ActiveRecord $targetModel Target model
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model instance
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
    * @return bool
    */
-  public function unlinkModel( $targetModel )
+  public function unlinkModel( $targetModel, $dependencies=null )
   {
     /*
      * initialize model and behaviors
@@ -1247,8 +1405,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * dependencies, if any
      */
-    $dependencies = func_get_args();
-    array_shift( $dependencies );
+    $dependencies = $this->argToArray( $dependencies );
 
     /*
      * call behavior method do do the actual work
