@@ -271,6 +271,19 @@ class qcl_data_datasource_DbModel
   //-------------------------------------------------------------
 
   /**
+   * Alias of getTitle()
+   * @return string
+   */
+  public function getName()
+  {
+    return $this->getTitle();
+  }
+
+  //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
+
+  /**
    * Checks whether the model has a valid schema name
    */
   protected function checkSchemaName()

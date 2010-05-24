@@ -359,10 +359,16 @@ class qcl_data_controller_TreeController
    */
   function method_getNodeCount( $datasource, $options=null )
   {
-    if ( ! $datasource )
-    {
-      throw new InvalidJsonRpcArgumentException("Invalid datasource argument");
-    }
+    /*
+     * check arguments
+     */
+    qcl_assert_valid_string( $datasource );
+
+    /*
+     * check access
+     */
+    $this->checkDatasourceAccess( $datasource );
+
     $model = $this->getTreeNodeModel( $datasource );
     $nodeCount = $model->countRecords();
     return array(
@@ -417,6 +423,11 @@ class qcl_data_controller_TreeController
   function method_getChildNodeData(
     $datasource, $ids, $max=null, $recurse=false, $storeId=null, $options=null )
   {
+    /*
+     * check access
+     */
+    $this->checkDatasourceAccess( $datasource );
+
 
     $counter = 0;
 
@@ -520,6 +531,17 @@ class qcl_data_controller_TreeController
    */
   function method_getNodeData( $datasource, $nodeId, $parentId=null, $options=null )
   {
+    /*
+     * check arguments
+     */
+    qcl_assert_valid_string( $datasource );
+    qcl_assert_integer( $nodeId );
+
+    /*
+     * check access
+     */
+    $this->checkDatasourceAccess( $datasource );
+
     return $this->getNodeData( $datasource, $nodeId, $parentId, $options );
   }
 }

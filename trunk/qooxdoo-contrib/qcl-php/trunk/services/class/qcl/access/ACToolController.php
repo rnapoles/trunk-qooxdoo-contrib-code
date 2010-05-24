@@ -182,11 +182,21 @@ class qcl_access_ACToolController
     throw new InvalidJsonRpcArgumentException( "Invalid type '$type'" );
   }
 
-  public function method_getAccessElementTree( $type, $namedId )
+  /**
+   * Returns the tree of model relationships based on the selected element
+   * @param $elementType
+   * @param $namedId
+   * @return unknown_type
+   */
+  public function method_getAccessElementTree( $elementType, $namedId )
   {
     $this->requirePermission("manageAccess");
+
     $models = $this->modelMap();
 
+    /*
+     * top node
+     */
     $tree = array(
       'icon'      => "icon/16/actions/address-book-new.png",
       'children'  => array(),
@@ -195,51 +205,173 @@ class qcl_access_ACToolController
       'type'      => null
     );
 
-    $thisModel = $this->getElementModel( $type );
+    /*
+     * the edited model element
+     */
+    $thisModel = $this->getElementModel( $elementType );
     if( ! $thisModel )
     {
-      throw new InvalidJsonRpcArgumentException("Invalid type argument $type");
+      throw new InvalidJsonRpcArgumentException("Invalid type argument $elementType");
     }
     $thisModel->load( $namedId );
 
+    /*
+     * iterate through the models and display relations as
+     * tree structure
+     */
     foreach( $models as $type => $data )
     {
 
       $model = $data['model'];
 
-      if ( $thisModel->hasRelationWithModel( $model)  )
+      if ( $thisModel->hasRelationWithModel( $model )  )
       {
 
         $node = array(
           'icon'      => "icon/16/actions/address-book-new.png",
           'label'     => $data['label'],
-          'value'     => null,
+          'value'     => $elementType . "=" . $namedId,
           'type'      => $type,
+          'mode'      => "link",
           'children'  => array()
         );
 
-        try
+        /*
+         * special case role - users: skip, would have to be
+         * displayed in dependenc of group, we leave this
+         * to user - roles
+         */
+        if( $thisModel instanceof $models['role']['model']
+            and $model instanceof $models['user']['model'] )
         {
-          $model->findLinked( $thisModel );
-
-          while( $model->loadNext() )
-          {
-            $node['children'][] = array(
-              'icon'      => "icon/16/actions/address-book-new.png",
-              'label'     => $model->get($data['labelProp']),
-              'type'      => $type,
-              'value'     => $model->namedId(),
-              'children'  => array()
-            );
-          }
-
+          continue;
         }
-        catch( qcl_data_model_Exception $e) {}
 
+        /*
+         * special case: user - role, which can be dependent on the group
+         */
+        elseif( $thisModel instanceof $models['user']['model']
+            and $model instanceof $models['role']['model'] )
+        {
+          $userModel  = $thisModel;
+          $roleModel  = $model;
+          $groupModel = $models['group']['model'];
+
+          /*
+           * you cannot link to this node
+           */
+          $node['mode'] = null;
+
+          /*
+           * find all groups that the user is member of
+           */
+          try
+          {
+            $groupModel->findLinked( $userModel );
+
+            while( $groupModel->loadNext() )
+            {
+              $groupNode = array(
+                'icon'      => "icon/16/actions/address-book-new.png",
+                'label'     => "in " .$groupModel->get( $models['group']['labelProp'] ),
+                'type'      => "role",
+                'mode'      => "link",
+                'value'     => "group=" . $groupModel->namedId() . ",user=" . $userModel->namedId(),
+                'children'  => array()
+              );
+              try
+              {
+                $roleModel->findLinked( $userModel, $groupModel );
+                while( $roleModel->loadNext() )
+                {
+                  $roleNode = array(
+                    'icon'      => "icon/16/actions/address-book-new.png",
+                    'label'     => $roleModel->get( $models['role']['labelProp'] ),
+                    'type'      => "role",
+                    'mode'      => "unlink",
+                    'value'     => "group=" . $groupModel->namedId() . ",role=" . $roleModel->namedId(),
+                    'children'  => array()
+                  );
+                  $groupNode['children'][] = $roleNode;
+                }
+              }
+              catch( qcl_data_model_RecordNotFoundException $e) {}
+
+              /*
+               * add group node to roles node
+               */
+              $node['children'][] = $groupNode;
+            }
+          }
+          catch( qcl_data_model_RecordNotFoundException $e ){}
+
+          /*
+           * no group dependency
+           */
+          $groupNode = array(
+            'icon'      => "icon/16/actions/address-book-new.png",
+            'label'     => "In all groups",
+            'type'      => "role",
+            'value'     => null,
+            'mode'      => null,
+            'children'  => array()
+          );
+
+          /*
+           * find all roles that are linked to the user
+           * but not dendent on a group
+           */
+          try
+          {
+            $query = $roleModel->findLinkedNotDepends( $userModel, $groupModel );
+
+            while( $roleModel->loadNext( $query ) )
+            {
+              $roleNode = array(
+                'icon'      => "icon/16/actions/address-book-new.png",
+                'label'     => $roleModel->get( $models['role']['labelProp'] ),
+                'type'      => "role",
+                'mode'      => "unlink",
+                'value'     => "role=" . $roleModel->namedId(),
+                'children'  => array()
+              );
+              $groupNode['children'][] = $roleNode;
+            }
+          }
+          catch( qcl_data_model_RecordNotFoundException $e) {}
+
+          /*
+           * add group node to roles node
+           */
+          $node['children'][] = $groupNode;
+        }
+
+        /*
+         * no dependencies
+         */
+        else
+        {
+          try
+          {
+            $model->findLinked( $thisModel );
+
+            while( $model->loadNext() )
+            {
+              $node['children'][] = array(
+                'icon'      => "icon/16/actions/address-book-new.png",
+                'label'     => $model->get($data['labelProp']),
+                'type'      => $type,
+                'value'     => $type . "=" . $model->namedId(),
+                'mode'      => "unlink",
+                'children'  => array()
+              );
+            }
+          }
+          catch( qcl_data_model_RecordNotFoundException $e) {}
+        }
         $tree['children'][] = $node;
       }
     }
-
     return $tree;
   }
 
@@ -306,7 +438,6 @@ class qcl_access_ACToolController
         }
     }
 
-
     return "OK";
   }
 
@@ -343,26 +474,60 @@ class qcl_access_ACToolController
     return new  qcl_ui_dialog_Alert("Datasource '$namedId' successfully deleted ... ");
   }
 
-  /**
-   * Link two model records
-   * @param $type1
-   * @param $namedId1
-   * @param $type2
-   * @param $namedId2
-   * @return "OK"
-   */
-  public function method_linkElements( $type1, $namedId1, $type2, $namedId2 )
+  protected function getLinkModels( $treeElement, $type, $namedId )
   {
-    $this->requirePermission("manageAccess");
     $models = $this->modelMap();
 
-    $model1 = $this->getElementModel( $type1 );
-    $model1->load( $namedId1 );
+    $elementParts = explode( ",", $treeElement );
 
-    $model2 = $this->getElementModel( $type2 );
-    $model2->load( $namedId2 );
+    if ( count( $elementParts ) > 1 )
+    {
+      $depModelInfo = explode( "=", $elementParts[0] );
+      $depModel = $this->getElementModel( $depModelInfo[0] );
+      qcl_assert_valid_string( $depModelInfo[1] );
+      $depModel->load( $depModelInfo[1] );
+      $modelInfo = explode( "=", $elementParts[1] );
+    }
+    else
+    {
+      $depModel = null;
+      $modelInfo = explode( "=", $elementParts[0] );
+    }
 
-    $model1->linkModel( $model2 );
+    qcl_assert_valid_string( $modelInfo[0] );
+    qcl_assert_valid_string( $modelInfo[1] );
+
+    $model1 = $this->getElementModel( $modelInfo[0] );
+    $model1->load( $modelInfo[1] );
+
+    $model2 = $this->getElementModel( $type );
+    $model2->load( $namedId );
+
+    return array( $model1, $model2, $depModel );
+  }
+
+  /**
+   * Link two model records
+   * @param $treeElement
+   * @param $type
+   * @param $namedId
+   * @return "OK"
+   */
+  public function method_linkElements( $treeElement, $type, $namedId )
+  {
+    $this->requirePermission("manageAccess");
+
+    list( $model1, $model2, $depModel ) =
+      $this->getLinkModels( $treeElement, $type, $namedId );
+
+    if( $depModel )
+    {
+      $model1->linkModel( $model2, $depModel );
+    }
+    else
+    {
+      $model1->linkModel( $model2 );
+    }
 
     return "OK";
   }
@@ -370,25 +535,26 @@ class qcl_access_ACToolController
   /**
    * Unlink two model records
    *
-   * @param $type1
-   * @param $namedId1
-   * @param $type2
-   * @param $namedId2
+   * @param $treeElement
+   * @param $type
+   * @param $namedId
    * @return "OK"
    */
-  public function method_unlinkElements( $type1, $namedId1, $type2, $namedId2 )
+  public function method_unlinkElements( $treeElement, $type, $namedId )
   {
     $this->requirePermission("manageAccess");
 
-    $models = $this->modelMap();
+    list( $model1, $model2, $depModel ) =
+      $this->getLinkModels( $treeElement, $type, $namedId );
 
-    $model1 = $this->getElementModel( $type1 );
-    $model1->load( $namedId1 );
-
-    $model2 = $this->getElementModel( $type2 );
-    $model2->load( $namedId2 );
-
-    $model1->unlinkModel( $model2 );
+    if( $depModel )
+    {
+      $model1->unlinkModel( $model2, $depModel );
+    }
+    else
+    {
+      $model1->unlinkModel( $model2 );
+    }
 
     return "OK";
   }
@@ -469,7 +635,7 @@ class qcl_access_ACToolController
         qcl_import("qcl_ui_dialog_Alert");
         return new qcl_ui_dialog_Alert(
           "Passwords do not match. Please try again",
-          "bibliograph.model", "editElement", array( "user", $namedId )
+          $this->serviceName(), "editElement", array( "user", $namedId )
         );
       }
     }
@@ -482,7 +648,5 @@ class qcl_access_ACToolController
 
     return "OK";
   }
-
-
 }
 ?>

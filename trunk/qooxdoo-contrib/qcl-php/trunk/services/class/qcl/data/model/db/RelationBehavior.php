@@ -1185,12 +1185,26 @@ class qcl_data_model_db_RelationBehavior
    * Returns true if the managed model has a relation with the given
    * model.
    *
-   * @param qcl_data_model_db_ActiveRecord $targetModel
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
    * @return bool
    */
   public function hasRelationWithModel( $targetModel )
   {
     return ! is_null( $this->getRelationNameForModel( $targetModel ) );
+  }
+
+  /**
+   * Returns true if the managed model has at least one link with the given
+   * model.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   * @param qcl_data_model_AbstractActiveRecord[] $dependencies Optional array of
+   *  model instances on which the link depends.
+   * @return bool
+   */
+  public function hasLinkWithModel( $targetModel, $dependencies=array() )
+  {
+    return ( count( $this->linkedModelIds( $targetModel, $dependencies ) ) > 0 );
   }
 
   /**

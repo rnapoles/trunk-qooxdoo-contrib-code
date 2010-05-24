@@ -1055,15 +1055,16 @@ class qcl_data_model_db_QueryBehavior
   }
 
   /**
-   * Select an array of ids for fetching
+   * Select an array of ids for fetching.
    * @param array $ids
+   * @param string|array|null $orderBy
    * @return qcl_data_db_Query
    */
-  public function selectIds( $ids )
+  public function selectIds( $ids, $orderBy=null )
   {
-    if ( ! is_array( $ids) )
+    if ( ! is_array( $ids) or ! count( $ids ) )
     {
-      $this->getModel()->raiseError("Invalid argument");
+      $this->getModel()->raiseError("Invalid argument: Expected array with one or more elements.");
     }
 
     /*
@@ -1080,11 +1081,12 @@ class qcl_data_model_db_QueryBehavior
      * select
      */
     $query = new qcl_data_db_Query( array(
-      "select" => "*",
-      "where" => "id IN (" . implode(",", $ids ) .")"
-      ) );
-      $this->select( $query );
-      return $query;
+      'select'    => "*",
+      'where'     => "id IN (" . implode(",", $ids ) .")",
+      'orderBy'   => $orderBy
+    ) );
+    $this->select( $query );
+    return $query;
   }
 
   /**

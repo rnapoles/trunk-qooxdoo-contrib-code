@@ -45,6 +45,15 @@ class qcl_data_controller_Controller
    */
   protected $aclTypes = array( "model", "record" );
 
+  /**
+   * Whether datasource access should be restricted according
+   * to the current user. The implementation of this behavior is
+   * done by the getAccessibleDatasources() and checkDatasourceAccess()
+   * methods.
+   *
+   * @var bool
+   */
+  protected $controlDatasourceAccess = false;
 
   //-------------------------------------------------------------
   // initialization
@@ -136,6 +145,114 @@ class qcl_data_controller_Controller
         $this->getActiveUser(), $role
       ) );
       throw new qcl_access_AccessDeniedException("Access denied.");
+    }
+  }
+
+  //-------------------------------------------------------------
+  // access control on the datasource-level
+  //-------------------------------------------------------------
+
+  /**
+   * Returns a list of datasources that is accessible to the current user.
+   * Accessibility is restricted by the group-datasource, the role-datasource
+   * relation and the user-datasource relation.
+   *
+   * @return array
+   */
+  public function getAccessibleDatasources()
+  {
+    static $datasources = null;
+
+    if ( $datasources === null )
+    {
+
+      $datasources  = array();
+      $activeUser   = $this->getAccessController()->getActiveUser();
+      $roleModel    = $this->getAccessController()->getRoleModel();
+      $groupModel   = $this->getAccessController()->getGroupModel();
+      $dsModel      = $this->getDatasourceModel();
+
+      /*
+       * find all groups that the current user belangs to
+       */
+      try
+      {
+        $groupModel->findLinked( $activeUser );
+        /*
+         * find all datasources this groups have access to
+         */
+        while( $groupModel->loadNext() )
+        {
+          try
+          {
+            $dsModel->findLinked( $groupModel );
+            while( $dsModel->loadNext() )
+            {
+              $datasources[] = $dsModel->namedId();
+            }
+          }
+          catch( qcl_data_model_RecordNotFoundException $e ){}
+        }
+      }
+      catch( qcl_data_model_RecordNotFoundException $e ){}
+
+      /*
+       * find all datasources that are linked to a (global) role
+       */
+      try
+      {
+        $roleModel->findLinkedNotDepends( $activeUser, $groupModel );
+        while( $roleModel->loadNext() )
+        {
+          try
+          {
+            $dsModel->findLinked( $roleModel );
+            while( $dsModel->loadNext() )
+            {
+              $datasources[] = $dsModel->namedId();
+            }
+          }
+          catch( qcl_data_model_RecordNotFoundException $e ){}
+        }
+      }
+      catch( qcl_data_model_RecordNotFoundException $e ){}
+
+      /*
+       * find all datasources that are linked to the user
+       */
+      try
+      {
+        $dsModel->findLinked( $activeUser );
+        while( $dsModel->loadNext() )
+        {
+          $datasources[] = $dsModel->namedId();
+        }
+      }
+      catch( qcl_data_model_RecordNotFoundException $e ){}
+    }
+
+    /*
+     * return unique list
+     */
+    return array_unique( $datasources );
+  }
+
+  /**
+   * Checks if user has access to the given datasource. If not,
+   * throws JsonRpcException.
+   * @param string $datasource
+   * @return void
+   * @throws JsonRpcException
+   */
+  public function checkDatasourceAccess( $datasource )
+  {
+    $this->debug(" Checking $datasource ?" . boolString($this->controlDatasourceAccess),__CLASS__,__LINE__);
+    $this->debug(" Result:" . boolString(in_array( $datasource, $this->getAccessibleDatasources() ) ),__CLASS__,__LINE__);
+    if ( $this->controlDatasourceAccess === true and
+        ! in_array( $datasource, $this->getAccessibleDatasources() ) )
+    {
+      $dsModel = $this->getDatasourceModel( $datasource );
+      throw new JsonRpcException( $this->tr("You don't have access to '%s'", $dsModel->getName() ) );
     }
   }
 
