@@ -10,7 +10,7 @@
 
 /* ************************************************************************
 
-#asset(openflashchart.demo/*)
+#asset(openflashchart/demo/*)
 
 ************************************************************************ */
 
@@ -21,55 +21,65 @@ qx.Class.define("openflashchart.demo.Application",
 {
   extend : qx.application.Standalone,
 
-
-
-  /*
-  *****************************************************************************
-     MEMBERS
-  *****************************************************************************
-  */
-
   members :
   {
+    __label : null,
+    
+    __data : null,
+    
     /**
      * This method contains the initial application code and gets called 
      * during startup of the application
-     * 
-     * @lint ignoreDeprecated(alert)
      */
     main : function()
     {
-      // Call super class
       this.base(arguments);
 
-      // Enable logging in debug variant
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
-        // support native logging capabilities, e.g. Firebug for Firefox
         qx.log.appender.Native;
-        // support additional cross-browser console. Press F7 to toggle visibility
         qx.log.appender.Console;
       }
 
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
+      if (location.protocol == "file:")
+      {
+        alert("This demo can only be used from a web server. Please make sure that "
+          + "this HTML page is loaded from a web server and not from the file system.");
+        return
+      }
 
-      // Create a button
-      var button1 = new openflashchart.Contribution("First Contribution", "openflashchart/test.png");
-
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
+      var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
+      this.getRoot().add(container, {edge: 20});
+      
+      this.__label = new qx.ui.basic.Label("Please click on one item.");
+      container.add(this.__label);
+      
+      var chart = new openflashchart.Chart();
+      container.add(chart, {flex: 1});
+      
+      var url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json");
+      var request = new qx.io.remote.Request(url, "GET", "application/json");
+        
+      request.addListener("completed", function(e) {
+        this.__data = e.getContent();
+        chart.load(this.__data);
+      }, this);
+        
+      request.send();
+    },
+    
+    onLineOneClick : function(index) {
+      var line = this.__data.elements[0];
+      this.__log(line.text, line.values[index]);
+    },
+    
+    onLineTwoClick : function(index) {
+      var line = this.__data.elements[1];
+      this.__log(line.text, line.values[index]);
+    },
+    
+    __log : function(line, value) {
+      this.__label.setValue(line + " -> " + value + " clicked.");
     }
   }
 });
