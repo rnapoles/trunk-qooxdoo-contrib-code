@@ -15,36 +15,46 @@
 
 /* ************************************************************************
 
-#asset(openflashchart/*)
+#asset(openflashchart/open-flash-chart.swf)
+#asset(openflashchart/empty.json)
 
 ************************************************************************ */
-
 /**
  * This is the main class of contribution "OpenFlashChart"
  * 
  * TODO: Replace the sample code of a custom button with the actual code of 
  * your contribution.
+ * 
  */
-qx.Class.define("openflashchart.Contribution",
+qx.Class.define("openflashchart.Chart",
 {
-  extend : qx.ui.form.Button,
+  extend : qx.ui.embed.Flash,
 
-
-
-  /*
-  *****************************************************************************
-     CONSTRUCTOR
-  *****************************************************************************
-  */
-
-  /**
-   * Create a new custom button
-   * 
-   * @param label {String} Label to use
-   * @param icon {String?null} Icon to use
-   */
-  construct : function(label, icon) 
+  construct : function()
   {
-    this.base(arguments, label.toUpperCase(), icon);
+    this.base(arguments, "openflashchart/open-flash-chart.swf");
+    
+    var initData = qx.util.ResourceManager.getInstance().toUri("openflashchart/empty.json");
+    this.setVariables({"data-file": initData});
+  },
+
+  members :
+  {
+    load : function(data)
+    {
+      var chart = this.getFlashElement();
+      
+      if (chart != null && chart.load != null) {
+        chart.load(qx.lang.Json.stringify(data));
+      } else {
+        this.__deferredLoad(data);
+      }
+    },
+    
+    __deferredLoad : function(data) {
+      qx.event.Timer.once(function() {
+        this.load(data);
+      }, this, 100);
+    }
   }
 });
