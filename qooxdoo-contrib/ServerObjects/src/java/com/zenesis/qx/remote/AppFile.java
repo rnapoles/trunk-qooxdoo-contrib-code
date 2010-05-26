@@ -50,6 +50,7 @@ public class AppFile implements Proxied {
 	 */
 	public AppFile(File file, String url) {
 		super();
+		file.mkdirs();
 		if (!file.isDirectory())
 			throw new IllegalArgumentException("Cannot have a root folder which is not a directory!");
 		this.file = file;
@@ -263,17 +264,49 @@ public class AppFile implements Proxied {
 	public ArrayList<AppFile> getChildren() {
 		if (children != null || !file.isDirectory())
 			return children;
+		loadChildren();
+		return children;
+	}
+	
+	/**
+	 * Loads the children, discarding any existing children
+	 */
+	private void loadChildren() {
+		if (children == null)
+			children = new ArrayList<AppFile>();
+		else
+			children.clear();
 		
 		File[] files = file.listFiles();
 		if (files != null) {
-			ArrayList<AppFile> found = new ArrayList<AppFile>();
 			for (File child : files) {
 				if (!child.getName().startsWith("."))
-					found.add(new AppFile(child, this));
+					children.add(new AppFile(child, this));
 			}
-			this.children = found;
 		}
-		return children;
+	}
+
+	/**
+	 * Returns a child with the given name, or null if the file could not be found
+	 * @param name
+	 * @param refreshIfNecessary if true, causes the children to be reloaded if the file was not found
+	 * @return
+	 */
+	public AppFile getChild(String name, boolean refreshIfNecessary) {
+		boolean alreadyLoadedChildren = children != null;
+		getChildren();
+		for (AppFile child : children) {
+			if (child.getName().equalsIgnoreCase(name))
+				return child;
+		}
+		if (alreadyLoadedChildren) {
+			loadChildren();
+			for (AppFile child : children) {
+				if (child.getName().equalsIgnoreCase(name))
+					return child;
+			}
+		}
+		return null;
 	}
 
 	/**
