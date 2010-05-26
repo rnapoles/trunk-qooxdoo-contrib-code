@@ -103,7 +103,9 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				if (oldValue)
 					oldValue.removeListenerById(propDef.changeListenerId);
 				if (value)
-					propDef.changeListenerId = value.addListener("change", function(evt) { PM.onWrappedArrayChange(evt, this, propDef); }, this);
+					propDef.changeListenerId = value.addListener("change", function(evt) { 
+						PM.onWrappedArrayChange(evt, this, propDef); 
+					}, this);
 				else
 					propDef.changeListenerId = null;
 			}
