@@ -63,5 +63,7 @@ if ( ! defined('QCL_ACCESS_TIMEOUT') )
  */
 define("QCL_LOG_ACCESS", "access");
 qcl_log_Logger::getInstance()->registerFilter(QCL_LOG_ACCESS,"Access-related log messages",false);
+define("QCL_LOG_LDAP", "ldap");
+qcl_log_Logger::getInstance()->registerFilter(QCL_LOG_LDAP,"LDAP-related log messages",false);
 
 ?>

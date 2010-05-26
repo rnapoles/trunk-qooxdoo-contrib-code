@@ -312,8 +312,8 @@ class qcl_access_ACToolController
             'icon'      => "icon/16/actions/address-book-new.png",
             'label'     => "In all groups",
             'type'      => "role",
-            'value'     => null,
-            'mode'      => null,
+            'value'     => "user=" . $userModel->namedId(),
+            'mode'      => "link",
             'children'  => array()
           );
 

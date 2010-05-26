@@ -162,7 +162,7 @@ class qcl_access_model_User
   /**
    * names that cannot be used as namedId
    */
-  protected $reservedNames = array("default","admin","global");
+  protected $reservedNames = array("anonymous","admin");
 
   /**
    * Cache for user permissions
@@ -173,6 +173,11 @@ class qcl_access_model_User
    * Cache for user roles
    */
   private $roles;
+
+  /**
+   * Cache for user groups
+   */
+  private $groups;
 
   //-------------------------------------------------------------
   // Initialization
@@ -304,6 +309,11 @@ class qcl_access_model_User
     $permissions = $this->permissions();
 
     /*
+     * use wildcard?
+     */
+    $useWildcard = strstr( $permission, "*" );
+
+    /*
      * check if permission is granted
      */
     foreach( $permissions as $permission )
@@ -312,7 +322,7 @@ class qcl_access_model_User
       {
         return true;
       }
-      elseif ( strstr($permission,"*") )
+      elseif ( $useWildcard )
       {
         $pos = strpos($permission,"*");
         if ( substr($permission,0,$pos) == substr($requestedPermission,0,$pos) )
@@ -337,37 +347,74 @@ class qcl_access_model_User
   }
 
   /**
-   * Returns list of roles that a user has. If you supply a group
-   * model instance, only those roles will be returned that the user
-   * has in this group.
-   *
-   * @param qcl_access_model_Group|null $groupModel Optional group model
-   * @return array Array of values
+   * Returns list of roles that a user has.
+   * @param bool $refresh
+   *    If true, reload group memberships. If false(default),
+   *    use cached values
+   * @return string[]
+   *    Array of role names
    */
-  public function roles( $groupModel=null )
+  public function roles( $refresh=false )
   {
-    if ( $groupModel or ! $this->roles )
+    if ( $refresh or ! $this->roles )
     {
       $roleModel = $this->getRoleModel();
-      try
+      $roles = array();
+
+      /*
+       * simple user-role link
+       * FIXME rewrite this, now group-specific roles ar NOT ignored
+       */
+      if ( $this->getApplication()->getIniValue("access.global_roles_only") )
       {
-        if ( $groupModel )
-        {
-          $roleModel->findLinked( $this, $groupModel );
-        }
-        else
+        try
         {
           $roleModel->findLinked( $this );
+          while( $roleModel->loadNext() )
+          {
+            $roles[] = $roleModel->namedId();
+          }
         }
-        $roles = array();
-        while( $roleModel->loadNext() )
-        {
-          $roles[] = $roleModel->namedId();
-        }
+        catch( qcl_data_model_RecordNotFoundException $e ){}
       }
-      catch( qcl_data_model_RecordNotFoundException $e )
+
+      /*
+       * users have roles dependent on group
+       */
+      else
       {
-        $roles = array();
+        $groups = $this->groups();
+        $groupModel = $this->getGroupModel();
+
+        /*
+         * get the group-dependent role
+         */
+        foreach( $groups as $groupName )
+        {
+          $groupModel->load( $groupName );
+          try
+          {
+            $roleModel->findLinked( $this, $groupModel );
+            while( $roleModel->loadNext() )
+            {
+              $roles[] = $roleModel->namedId();
+            }
+          }
+          catch( qcl_data_model_RecordNotFoundException $e ){}
+        }
+
+        /*
+         * add the global roles
+         */
+        try
+        {
+          $roleModel->findLinkedNotDepends( $this, $groupModel );
+          while( $roleModel->loadNext() )
+          {
+            $roles[] = $roleModel->namedId();
+          }
+        }
+        catch( qcl_data_model_RecordNotFoundException $e ){}
       }
       $this->roles = array_unique( $roles );
     }
@@ -375,21 +422,52 @@ class qcl_access_model_User
   }
 
   /**
-   * Returns list of role that belong to a user. If you supply
-   * a group model instance, only those permissions will be returned
-   * that the user has in the group.
+   * Returns list of groups that a user belongs to.
    *
-   * @param string $prop Property to retrieve, defaults to "id"
-   * @param qcl_access_model_Group|null $groupModel
-   * @return array Array of values
+   * @param bool $refresh
+   *    If true, reload group memberships. If false(default),
+   *    use cached values
+   *
+   * @return array
+   *    Array of string values: group named ids.
    */
-  public function permissions( $groupModel=null )
+  public function groups( $refresh=false )
   {
-    if ( $groupModel or ! $this->permissions )
+    $groupModel = $this->getGroupModel();
+    if ( $refresh or ! $this->groups )
+    {
+      $groups= array();
+      try
+      {
+        $groupModel->findLinked( $this );
+        while ( $groupModel->loadNext() )
+        {
+          $groups[] = $groupModel->namedId();
+        }
+      }
+      catch( qcl_data_model_RecordNotFoundException $e){}
+      $this->groups = $groups;
+    }
+    return $this->groups;
+  }
+
+
+  /**
+   * Returns list of permissions that the user has
+   *
+   * @param bool $refresh
+   *    If true, reload group memberships. If false(default),
+   *    use cached values
+   * @return string[]
+   *    Array of permission ids
+   */
+  public function permissions( $refresh=false )
+  {
+    if ( $refresh or ! $this->permissions )
     {
       $roleModel = $this->getRoleModel();
-      $roles = $this->roles( $groupModel );
-      $permissions =  array();
+      $roles = $this->roles( $refresh );
+      $permissions = array();
       foreach( $roles as $roleName )
       {
         $roleModel->load( $roleName );
@@ -411,6 +489,7 @@ class qcl_access_model_User
   {
     $this->roles = null;
     $this->permissions = null;
+    $this->groups = null;
     return parent::load( $id );
   }
 

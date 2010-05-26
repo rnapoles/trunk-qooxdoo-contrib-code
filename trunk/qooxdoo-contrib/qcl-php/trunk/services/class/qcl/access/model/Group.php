@@ -44,6 +44,16 @@ class qcl_access_model_Group
       'check'     => "string",
       'sqltype'   => "varchar(100)"
     ),
+    'ldap'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1) NOT NULL DEFAULT 0",
+      'nullable'  => false,
+      'init'      => false
+    ),
+    'defaultRole'  => array(
+      'check'     => "string",
+      'sqltype'   => "varchar(30)"
+    ),
     'active'  => array(
       'check'     => "boolean",
       'sqltype'   => "int(1)",
@@ -83,7 +93,14 @@ class qcl_access_model_Group
       'label'       => "Group name"
     ),
     'description' => array(
-      'label'       => "Group Description"
+      'label'       => "Group description"
+    ),
+    'defaultRole'      => array(
+      'type'        => "selectbox",
+      'label'       => "Default role for new users",
+      'delegate'    => array(
+        'options'     => "getRoleListData"
+      )
     )
   );
 
@@ -108,6 +125,34 @@ class qcl_access_model_Group
   }
 
   /**
+   * Getter for name property
+   * @return string
+   */
+  public function getName()
+  {
+    return $this->get("name");
+  }
+
+  /**
+   * Getter for description property
+   * @return string|null
+   */
+  public function getDescription()
+  {
+    return $this->get("description");
+  }
+
+  /**
+   * Getter for default role property
+   * @return string|null
+   */
+  public function getDefaultRole()
+  {
+    return $this->get("defaultRole");
+  }
+
+
+  /**
    * Returns a list of users connected to the current model record.
    * @return array
    */
@@ -121,6 +166,29 @@ class qcl_access_model_Group
       $users[] = $userModel->namedId();
     }
     return $users;
+  }
+
+  /**
+   * Returns data for a select box with the role names
+   *
+   * @return array
+   */
+  public function getRoleListData()
+  {
+    $listData = array( array(
+      'label' => "No role",
+      'value' => ""
+    ) );
+    $roleModel = $this->getApplication()->getAccessController()->getRoleModel();
+    $roleModel->findAllOrderBy("name");
+    while( $roleModel->loadNext() )
+    {
+      $listData[] = array(
+        'label' => $roleModel->getName(),
+        'value' => $roleModel->namedId()
+      );
+    }
+    return $listData;
   }
 }
 ?>
