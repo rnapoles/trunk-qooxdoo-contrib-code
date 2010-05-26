@@ -166,89 +166,101 @@ function qcl_getInstance( $clazz )
  * Asserts that argument is of the given type
  * @param mixed $value
  * @param string $type
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  */
-function qcl_assert_type( $value, $type )
+function qcl_assert_type( $value, $type, $msg=null )
 {
   if ( gettype( $value ) != $type )
   {
-    throw new InvalidArgumentException( sprintf(
-      "Invalid argument type. Expected '%s', got '%s'",
+    if ( $msg === null )
+    {
+      $msg = sprintf(
+        "Invalid argument type. Expected '%s', got '%s'",
       $type, gettype( $value )
-    ) );
+      );
+    }
+    throw new InvalidArgumentException( $msg );
   }
 }
 
 /**
  * Asserts that argument is boolean
  * @param $value
+ * @param string $msg Optional error message
  * @return void
+ *
  * @throws InvalidArgumentException
  */
-function qcl_assert_boolean( $value )
+function qcl_assert_boolean( $value, $msg=null )
 {
-  qcl_assert_type( $value, "boolean" );
+  qcl_assert_type( $value, "boolean", $msg );
 }
 
 /**
  * Asserts that argument is a string
  * @param mixed $value
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  */
-function qcl_assert_string( $value )
+function qcl_assert_string( $value, $msg=null )
 {
-  qcl_assert_type( $value, "string" );
+  qcl_assert_type( $value, "string", $msg );
 }
 
 /**
  * Asserts that argument is a non-empty string
  * @param mixed $value
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  */
-function qcl_assert_valid_string( $value )
+function qcl_assert_valid_string( $value, $msg=null )
 {
   if ( $value === "" )
   {
     throw new InvalidArgumentException(
       "Invalid argument type. Expected valid string, got empty string"
-    );
+      );
   }
-  qcl_assert_string( $value );
+  qcl_assert_string( $value, $msg );
 }
 
 /**
  * Asserts that argument is an array
  * @param mixed $value
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  */
-function qcl_assert_array( $value )
+function qcl_assert_array( $value, $msg=null )
 {
-  qcl_assert_type( $value, "array" );
+  qcl_assert_type( $value, "array", $msg );
 }
 
 /**
  * Asserts that argument is an integer value
  * @param mixed $value
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  *
  */
-function qcl_assert_integer( $value )
+function qcl_assert_integer( $value, $msg=null )
 {
-  qcl_assert_type( $value, "integer" );
+  qcl_assert_type( $value, "integer", $msg );
 }
 
 /**
  * Asserts that argument is an object
  * @param mixed $value
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  */
-function qcl_assert_object( $value )
+function qcl_assert_object( $value, $msg=null )
 {
   qcl_assert_type( $value, "object" );
 }
@@ -257,15 +269,20 @@ function qcl_assert_object( $value )
  * Asserts that the given value matches the given regular expression
  * @param $regexp
  * @param $value
+ * @param string $msg Optional error message
  * @return void
  * @throws InvalidArgumentException
  */
-function qcl_assert_regexp( $regexp, $value )
+function qcl_assert_regexp( $regexp, $value, $msg=null )
 {
-  qcl_assert_string( $value );
+  qcl_assert_string( $value, $msg );
   if( preg_match( $regexp, $value ) == 0 )
   {
-    throw new InvalidArgumentException("'$value' does not match $regexp.");
+    if ( $msg === null )
+    {
+      $msg = "'$value' does not match $regexp.";
+    }
+    throw new InvalidArgumentException( $msg );
   }
 }
 
@@ -284,7 +301,7 @@ function qcl_assert_method_exists( $object, $method )
   {
     throw new InvalidArgumentException( sprintf(
       "Object of class %s does not have a method %s",
-      get_class( $object ), $method
+    get_class( $object ), $method
     ));
   }
 }
@@ -365,7 +382,7 @@ function qcl_array_assert_keys( $array, $keys )
   {
     throw new InvalidArgumentException( sprintf(
       "Assertion failed: keys ['%s'] are missing from given array,",
-      implode("', '",array_diff( $keys, array_keys( $array ) ) )
+    implode("', '",array_diff( $keys, array_keys( $array ) ) )
     ) );
   }
 }
@@ -829,19 +846,17 @@ if(!function_exists('get_called_class'))
             return $matches[1];
         }
         // won't get here.
-          case '->':
-            switch ($bt[$l]['function'])
-            {
-              case '__get':
-                // edge case -> get class of calling object
-                if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
-                return get_class($bt[$l]['object']);
-              default: return $bt[$l]['class'];
-            }
-              default: throw new Exception ("Unknown backtrace method type");
+        case '->':
+          switch ($bt[$l]['function'])
+          {
+            case '__get':
+              // edge case -> get class of calling object
+              if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
+              return get_class($bt[$l]['object']);
+            default: return $bt[$l]['class'];
+          }
+        default: throw new Exception ("Unknown backtrace method type");
     }
   }
 }
-
-
 ?>

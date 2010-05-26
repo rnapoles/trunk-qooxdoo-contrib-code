@@ -19,11 +19,15 @@
 /**
  * ArrayList class
  * from http://www.phpclasses.org/browse/package/1169.html
+ * @author Tim Anlauf <schranzistorradio@gmx.de>
+ *
  * adapted for  for qcl library:
  * - small documentation cleanup and additions
+ * - PHP 5 upgrade
  *
- * @version 0.2
- * @author Tim Anlauf <schranzistorradio@gmx.de>
+ * @todo Implement Iterator interface
+ * @todo Use PSL Class instead?
+ *
  */
 class ArrayList
 {
@@ -32,13 +36,13 @@ class ArrayList
    * Array, representing the arrayList
    * @var array
    */
-  var $arrayList;
+  protected $arrayList;
 
   /**
    * Pointer variable. used to detect the last element of the list in hasNext() method.
    * @var int
    */
-  var $pointer=0;
+  protected $pointer=0;
 
   /**
    * Constructor
@@ -46,8 +50,9 @@ class ArrayList
    * with the elements in array is created. Otherwise a empty list is constructed.
    * @param array[optional] $arr - one dimensional array
    */
-  function ArrayList( $arr=array() )
+  public function __construct( $arr=array() )
   {
+    qcl_assert_array( $arr );
     $this->arrayList = $arr;
   }
 
@@ -56,19 +61,17 @@ class ArrayList
    * @param index integer - position in list
    * @param $obj
    **/
-  function addToPos($index, $obj)
+  public function addToPos($index, $obj)
   {
-    if ( $this->isInteger($index) )
-      $this->arrayList[$index] = $obj;
-    else
-      trigger_error("ERROR in ArrayList.addToPos <br> Integer value required");
+    qcl_assert_integer( $index );
+    $this->arrayList[$index] = $obj;
   }
 
   /**
    * Appends the specified element to the end of this list.
    * @param mixed $obj
    */
-  function add($obj)
+  public function add($obj)
   {
     array_push($this->arrayList, $obj);
   }
@@ -77,7 +80,7 @@ class ArrayList
    * Appends all of the elements in the specified Array to the end of this list
    * @param mixed $elem ArrayList or array
    */
-  function addAll($elem)
+  public function addAll($elem)
   {
     if ( is_a($elem,"ArrayList") )
     {
@@ -97,7 +100,7 @@ class ArrayList
   /**
    * Removes all of the elements from this list.
    */
-  function clear()
+  public function clear()
   {
     $this->arrayList = array();
   }
@@ -107,7 +110,7 @@ class ArrayList
    * @param mixed $obj
    * @return boolean
    */
-  function contains($obj)
+  public function contains($obj)
   {
     return in_array($obj, $this->arrayList);
   }
@@ -116,12 +119,10 @@ class ArrayList
    * Returns the element at the specified position in this list.
    * @param int $index
    */
-  function get($index)
+  public function get($index)
   {
-    if ($this->isInteger($index))
-      return $this->arrayList[$index];
-    else
-      trigger_error("ERROR in ArrayList.get <br> Integer value required");
+    qcl_assert_integer( $index );
+    return $this->arrayList[$index];
   }
 
   /**
@@ -130,7 +131,7 @@ class ArrayList
    * @param obj
    * @return integer
    */
-  function indexOf($obj)
+  public function indexOf($obj)
   {
     while (list ($key, $val) = each ($this->arrayList) )
     if ($obj == $val) return $key;
@@ -141,7 +142,7 @@ class ArrayList
    * Tests if this list has no elements.
    * @return boolean
    **/
-  function isEmpty()
+  public function isEmpty()
   {
     if ( count($this->arrayList) == 0) return true;
     else return false;
@@ -152,7 +153,7 @@ class ArrayList
    * @param mixed $obj
    * @return int
    **/
-  function lastIndexOf($obj)
+  public function lastIndexOf($obj)
   {
     return array_search($obj, $this->arrayList);
   }
@@ -161,21 +162,18 @@ class ArrayList
    * removes the element at the specified position in this list.
    * @param index
    **/
-  function remove($index)
+  public function remove($index)
   {
-    if ( $this->isInteger($index) )
+    qcl_assert_integer( $index );
+    $newArrayList = array();
+    for ($i=0; $i < $this->size(); $i++)
     {
-      $newArrayList = array();
-
-      for ($i=0; $i < $this->size(); $i++)
-      if ($index != $i) $newArrayList[] = $this->get($i);
-
-      $this->arrayList = $newArrayList;
+      if ($index != $i)
+      {
+        $newArrayList[] = $this->get($i);
+      }
     }
-    else
-    {
-      trigger_error("ERROR in ArrayList.remove <br> Integer value required");
-    }
+    $this->arrayList = $newArrayList;
   }
 
   /**
@@ -183,32 +181,27 @@ class ArrayList
    * @param int $formIndex
    * @param int $toIndex
    */
-  function removeRange($fromIndex, $toIndex)
+  public function removeRange($fromIndex, $toIndex)
   {
-    if ( $this->isInteger($fromIndex) && $this->isInteger($toIndex))
-    {
-      $newArrayList = array();
+    qcl_assert_integer( $fromIndex );
+    qcl_assert_integer( $toIndex );
+    $newArrayList = array();
 
-      for ($i=0; $i < $this->size(); $i++)
-      {
-        if ($i < $fromIndex || $i > $toIndex )
-        {
-          $newArrayList[] = $this->get($i);
-        }
-      }
-      $this->arrayList = $newArrayList;
-    }
-    else
+    for ($i=0; $i < $this->size(); $i++)
     {
-      trigger_error ("ERROR in ArrayList.removeRange <br> Integer value required");
+      if ($i < $fromIndex || $i > $toIndex )
+      {
+        $newArrayList[] = $this->get($i);
+      }
     }
+    $this->arrayList = $newArrayList;
   }
 
   /**
    * Returns the number of elements in this list.
    * return integer
    */
-  function size()
+  public function size()
   {
     return count($this->arrayList);
   }
@@ -216,7 +209,7 @@ class ArrayList
   /**
    * Sorts the list in alphabetical order. Keys are not kept in position.
    */
-  function sort()
+  public function sort()
   {
     sort($this->arrayList);
   }
@@ -225,7 +218,7 @@ class ArrayList
    * Returns an array containing all of the elements in this list in the correct order.
    * @return array
    */
-  function toArray()
+  public function toArray()
   {
     return $this->arrayList;
   }
@@ -239,7 +232,7 @@ class ArrayList
    * using this method
    * @return boolean
    **/
-  function hasNext()
+  public function hasNext()
   {
 
     if ($this->pointer < $this->size() )
@@ -252,7 +245,7 @@ class ArrayList
   /**
    * Set the pointer of the list to the first element
    */
-  function reset()
+  public function reset()
   {
     reset($this->arrayList);
     $this->pointer=0;
@@ -262,7 +255,7 @@ class ArrayList
    * Set the pointer of the next element of the list
    * @return mixed current element
    */
-  function next()
+  public function next()
   {
     $cur = current($this->arrayList);
     next($this->arrayList);
@@ -270,23 +263,12 @@ class ArrayList
     return $cur;
   }
 
-  /* private Methods */
-
-  /**
-   * Returns true if the parameter holds an integer value
-   * @return boolean
-   */
-  function isInteger($toCheck)
-  {
-    return eregi("^-?[0-9]+$", $toCheck);
-  }
-
   /**
    * Joins array elemnt with given glue character(s)
    * @param string $glue
    * @return string
    */
-  function join( $glue )
+  public function join( $glue )
   {
     return implode($glue,$this->arrayList);
   }

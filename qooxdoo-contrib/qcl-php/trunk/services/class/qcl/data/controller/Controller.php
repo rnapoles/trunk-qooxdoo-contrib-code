@@ -246,8 +246,6 @@ class qcl_data_controller_Controller
    */
   public function checkDatasourceAccess( $datasource )
   {
-    $this->debug(" Checking $datasource ?" . boolString($this->controlDatasourceAccess),__CLASS__,__LINE__);
-    $this->debug(" Result:" . boolString(in_array( $datasource, $this->getAccessibleDatasources() ) ),__CLASS__,__LINE__);
     if ( $this->controlDatasourceAccess === true and
         ! in_array( $datasource, $this->getAccessibleDatasources() ) )
     {

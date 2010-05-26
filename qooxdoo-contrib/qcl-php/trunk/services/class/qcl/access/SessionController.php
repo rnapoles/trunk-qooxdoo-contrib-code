@@ -46,6 +46,15 @@ class qcl_access_SessionController
   public $secondsUntilPurge = 3600;
 
   /**
+   * Returns singleton instance of this class
+   * @return qcl_access_SessionController
+   */
+  public static function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }
+
+  /**
    * This overrides and extends the parent method by providing a way to determine
    * the user by a given session id in the request.
    *

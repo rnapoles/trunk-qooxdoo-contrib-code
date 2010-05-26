@@ -77,6 +77,8 @@ class qcl_access_Controller
    */
   private $activeUserId = null;
 
+  private $activeUser = null;
+
   //-------------------------------------------------------------
   // initialization
   //-------------------------------------------------------------
@@ -171,10 +173,7 @@ class qcl_access_Controller
    */
   public function getActiveUser()
   {
-    if( $this->activeUserId === null ) return null;
-    $userModel = $this->getUserModel();
-    $userModel->load( $this->activeUserId );
-    return $userModel;
+    return $this->activeUser;
   }
 
   /**
@@ -186,11 +185,13 @@ class qcl_access_Controller
   {
     if ( $userObject === null )
     {
-      $this->activeUserId = null;
+      $this->activeUser = null;
     }
     elseif ( $userObject instanceof qcl_access_model_User )
     {
-      $this->activeUserId = $userObject->id();
+      $activeUserClass = $userObject->className();
+      $this->activeUser = new $activeUserClass;
+      $this->activeUser->load( $userObject->namedId() );
     }
     else
     {

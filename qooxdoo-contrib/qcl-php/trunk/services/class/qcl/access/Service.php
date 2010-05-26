@@ -133,6 +133,10 @@ class qcl_access_Service
      * response data
      */
     $response = new qcl_access_AuthenticationResult();
+
+    /*
+     * permissions
+     */
     $activeUser = $accessController->getActiveUser();
     $permissions = $activeUser->permissions();
     $response->set( "permissions", $permissions );
@@ -176,15 +180,17 @@ class qcl_access_Service
    */
   protected function authenticateByLdap( $username, $password )
   {
-    $this->log("Authenticating against LDAP server...", QCL_LOG_ACCESS);
+    $this->log("Authenticating against LDAP server...", QCL_LOG_LDAP);
 
     $app = $this->getApplication();
     $host = $app->getIniValue( "ldap.host" );
     $port = (int) $app->getIniValue( "ldap.port" );
     $user_base_dn = $app->getIniValue( "ldap.user_base_dn" );
+    $user_id_attr = $app->getIniValue( "ldap.user_id_attr" );
 
     qcl_assert_valid_string( $host );
-    qcl_assert_valid_string( $user_base_dn );
+    qcl_assert_valid_string( $user_base_dn, "Invalid config value ldap.user_base_dn " );
+    qcl_assert_valid_string( $user_id_attr, "Invalid config value ldap.user_id_attr " );
 
     /*
      * create new LDAP server object
@@ -193,15 +199,16 @@ class qcl_access_Service
     $ldap = new qcl_access_LdapServer( $host, $port );
 
     /*
-     * authenticate in remote
+     * authenticate against ldap server
      */
-    $userdn = "uid=$username,$user_base_dn";
-    $this->log("Authenticating $userdn against $host:$port.", QCL_LOG_ACCESS);
+    $userdn = "$user_id_attr=$username,$user_base_dn";
+    $this->log("Authenticating $userdn against $host:$port.", QCL_LOG_LDAP);
     $ldap->authenticate( $userdn, $password );
 
     /*
      * if LDAP authentication succeeds, assume we have a valid
      * user. if this user does not exist, create it with "user" role
+     * and assign it to the groups specified by the ldap source
      */
     $userModel = $app->getAccessController()->getUserModel();
     try
@@ -214,6 +221,11 @@ class qcl_access_Service
       $userId = $this->createUserFromLdap( $ldap, $username );
       $this->newUser = $username;
     }
+
+    /*
+     * update group membership
+     */
+    $this->updateGroupMembershipFromLdap( $ldap, $username );
     return $userId;
   }
 
@@ -236,11 +248,15 @@ class qcl_access_Service
   {
     $app = $this->getApplication();
     $userModel = $app->getAccessController()->getUserModel();
-    $user_base_dn = $app->getIniValue("ldap.user_base_dn");
-    $attributes = array( "cn", "sn","givenName","mail" );
-    $filter = "(uid=$username)";
 
-    $this->log("Retrieving user data from LDAP base dn '$user_base_dn' with filter '$filter'", QCL_LOG_ACCESS);
+    $user_base_dn = $app->getIniValue("ldap.user_base_dn");
+    $user_id_attr = $app->getIniValue( "ldap.user_id_attr" );
+    $mail_domain  = $app->getIniValue( "ldap.mail_domain" );
+
+    $attributes = array( "cn", "sn","givenName","mail" );
+    $filter = "($user_id_attr=$username)";
+
+    $this->log("Retrieving user data from LDAP base dn '$user_base_dn' with filter '$filter'", QCL_LOG_LDAP);
     $ldap->search( $user_base_dn, $filter, $attributes);
     if ( $ldap->countEntries() == 0 )
     {
@@ -274,6 +290,10 @@ class qcl_access_Service
     if ( isset( $entries[0]['mail'][0] ) )
     {
       $email = $entries[0]['mail'][0];
+      if ( $mail_domain )
+      {
+        $email .= "@" . $mail_domain;
+      }
     }
     else
     {
@@ -281,20 +301,126 @@ class qcl_access_Service
     }
 
     /*
-     * create new user
+     * create new user without any role
      */
     $userModel->create( $username, array(
       'name'  => $name,
       'email' => $email,
       'ldap'  => true
     ) );
-    $roleModel = $app->getAccessController()->getRoleModel();
-    $roleModel->load(QCL_ROLE_USER);
-    $userModel->linkModel($roleModel);
 
     return $userModel->id();
   }
 
+  /**
+   * Updates the group memberships of the user from the ldap database
+   * @param $ldap
+   * @param $username
+   * @return void
+   */
+  protected function updateGroupMembershipFromLdap( qcl_access_LdapServer $ldap, $username )
+  {
+    $app = $this->getApplication();
+    if ( $app->getIniValue("ldap.use_groups") === false )
+    {
+      // don't use groups
+      return;
+    }
+
+    $group_base_dn   = $app->getIniValue( "ldap.group_base_dn" );
+    $member_id_attr  = $app->getIniValue( "ldap.member_id_attr" );
+    $group_name_attr = $app->getIniValue( "ldap.group_name_attr" );
+
+    qcl_assert_valid_string( $group_base_dn,   "Invalid config value ldap.group_base_dn " );
+    qcl_assert_valid_string( $member_id_attr,  "Invalid config value ldap.member_id_attr " );
+    qcl_assert_valid_string( $group_name_attr, "Invalid config value ldap.group_name_attr " );
+
+    $attributes = array( "cn", $group_name_attr );
+    $filter = "($member_id_attr=$username)";
+
+    $this->log("Retrieving group data from LDAP base dn '$group_base_dn' with filter '$filter'", QCL_LOG_LDAP );
+    $ldap->search( $group_base_dn, $filter, $attributes);
+    if ( $ldap->countEntries() == 0 )
+    {
+      $this->log("User $username belongs to no groups", QCL_LOG_LDAP );
+    }
+
+    /*
+     * load user model
+     */
+    $userModel = $app->getAccessController()->getUserModel();
+    $userModel->load( $username );
+
+    /*
+     * parse entries and update groups if neccessary
+     */
+    $entries = $ldap->getEntries();
+    $count = $entries['count'];
+    $groupModel= $app->getAccessController()->getGroupModel();
+    $groups = new ArrayList( $userModel->groups() );
+
+    for( $i=0; $i<$count; $i++ )
+    {
+      $namedId = $entries[$i]['cn'][0];
+      try
+      {
+        $groupModel->load( $namedId );
+      }
+      catch( qcl_data_model_RecordNotFoundException $e)
+      {
+        $name    = $entries[$i][$group_name_attr][0];
+        $this->log("Creating group '$namedId' ('$name') from LDAP", QCL_LOG_LDAP );
+        $groupModel->create( $namedId, array(
+          'name'  => $name,
+          'ldap'  => true
+        ) );
+      }
+
+      /*
+       * make user a group member
+       */
+      if ( ! $userModel->islinkedModel( $groupModel ) )
+      {
+        $this->log("Adding user '$username' to group '$namedId'", QCL_LOG_LDAP );
+        $groupModel->linkModel( $userModel );
+      }
+
+      /*
+       * if group provides a default role
+       */
+      $defaultRole = $groupModel->getDefaultRole();
+      if ( $defaultRole )
+      {
+        $roleModel = $this->getApplication()->getAccessController()->getRoleModel();
+        $roleModel->load( $defaultRole );
+        if( ! $userModel->islinkedModel( $roleModel, $groupModel ) )
+        {
+          $this->log("Granting user '$username' the default role '$defaultRole' in group '$namedId'", QCL_LOG_LDAP );
+          $userModel->linkModel( $roleModel, $groupModel );
+        }
+      }
+
+      /*
+       * tick off (remove) group name from the list
+       */
+      $groups->remove( $groups->indexOf( $namedId ) );
+    }
+
+    /*
+     * remove all remaining user from all groups that are not listed in LDAP
+     */
+    foreach( $groups->toArray() as $groupToRemove )
+    {
+      $groupModel->load( $groupToRemove );
+      if ( $groupModel->getLdap() === true )
+      {
+        $this->log("Removing user '$username' from group '$groupToRemove'", QCL_LOG_LDAP );
+        $groupModel->unlinkModel( $userModel );
+      }
+    }
+
+    $this->log( "User '$username' is member of the following groups: " . implode(",", $userModel->groups(true) ), QCL_LOG_LDAP );
+  }
 
   /**
    * Service method to log out the active user. Automatically creates guest
