@@ -1,10 +1,13 @@
 package com.zenesis.qx.remote;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
+import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
 import com.zenesis.qx.remote.annotations.Remote;
@@ -42,7 +45,72 @@ public class BasicBootstrap implements UploadReceiver {
 		super();
 		this.appFilesRoot = appFilesRoot;
 	}
-
+	
+	/**
+	 * Converts <code>file</code>into an <code>AppFile</code>; the file must be within the root folder
+	 * @param file
+	 * @return  
+	 */
+	@DoNotProxy
+	public AppFile getAppFile(File file) throws IllegalArgumentException {
+		AppFile appFile = getAppFilesRoot();
+		if (appFile == null)
+			throw new IllegalArgumentException("Cannot convert file because there is no app files root");
+		
+		// Check it's within the root folder
+		String strRF = appFile.getFile().getAbsolutePath().toLowerCase();
+		String strF = file.getAbsolutePath().toLowerCase();
+		int lenRF = strRF.length();
+		if (!strF.startsWith(strRF) || (strF.length() > lenRF && "\\/".indexOf(strF.charAt(lenRF)) < 0))
+			throw new IllegalArgumentException("Cannot convert " + strF + " because it is outside the root folder");
+		
+		// Exact match for the app root
+		if (lenRF == strF.length())
+			return appFile;
+		
+		// Walk the tree to find the child
+		strF = strF.substring(lenRF + 1).replace('\\', '/');
+		StringTokenizer st = new StringTokenizer(strF, "/");
+		while (st.hasMoreTokens()) {
+			String name = st.nextToken();
+			appFile = appFile.getChild(name, true);
+			if (appFile == null)
+				return null;
+		}
+		
+		return appFile;
+	}
+	
+	/**
+	 * Returns the AppFile for a given download URL (i.e. AppFile.getUrl() matches the result of this method)
+	 * @param partialUrl
+	 * @return null if the file cannot be found
+	 */
+	public AppFile getAppFileFromURL(String partialUrl) {
+		AppFile appFile = getAppFilesRoot();
+		if (appFile == null)
+			throw new IllegalArgumentException("Cannot convert file because there is no app files root");
+		
+		int pos = partialUrl.indexOf('?');
+		if (pos > 0)
+			partialUrl = partialUrl.substring(0, pos);
+		partialUrl = partialUrl.replace('\\', '/');
+		
+		if (!partialUrl.startsWith(appFile.getUrl()))
+			throw new IllegalArgumentException("Cannot get AppFile because the url " + partialUrl + " is not inside the app files root");
+		partialUrl = partialUrl.substring(appFile.getUrl().length());
+		
+		StringTokenizer st = new StringTokenizer(partialUrl, "/");
+		while (st.hasMoreTokens()) {
+			String name = st.nextToken();
+			appFile = appFile.getChild(name, true);
+			if (appFile == null)
+				return null;
+		}
+		
+		return appFile;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.zenesis.qx.remote.UploadReceiver#beginUploadingFile(com.zenesis.qx.remote.UploadingFile)
 	 */

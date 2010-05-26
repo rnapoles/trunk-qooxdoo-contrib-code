@@ -204,6 +204,9 @@ public class ProxyProperty implements JsonSerializable {
 			propertyClass = getMethod.getReturnType();
 		}
 		
+		if (serializeMethod != null && serializeMethod.getReturnType() != Object.class)
+			propertyClass = serializeMethod.getReturnType();
+		
 		boolean isArrayList = ArrayList.class.isAssignableFrom(getMethod.getReturnType());
 		
 		// ArrayList
@@ -433,6 +436,20 @@ public class ProxyProperty implements JsonSerializable {
 	 */
 	public Class getPropertyArrayClass() {
 		return propertyArrayClass;
+	}
+
+	/**
+	 * @return the serializeMethod
+	 */
+	public Method getSerializeMethod() {
+		return serializeMethod;
+	}
+
+	/**
+	 * @return the deserializeMethod
+	 */
+	public Method getDeserializeMethod() {
+		return deserializeMethod;
 	}
 
 	/* (non-Javadoc)

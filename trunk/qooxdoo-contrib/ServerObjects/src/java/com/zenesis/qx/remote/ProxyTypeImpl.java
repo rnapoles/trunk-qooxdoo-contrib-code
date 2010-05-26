@@ -124,6 +124,10 @@ public class ProxyTypeImpl implements ProxyType {
 			methods.remove("get" + upname);
 			methods.remove("set" + upname);
 			methods.remove("is" + upname);
+			if (prop.getSerializeMethod() != null)
+				methods.remove(prop.getSerializeMethod().getName());
+			if (prop.getDeserializeMethod() != null)
+				methods.remove(prop.getDeserializeMethod().getName());
 		}
 		
 		// Load events
