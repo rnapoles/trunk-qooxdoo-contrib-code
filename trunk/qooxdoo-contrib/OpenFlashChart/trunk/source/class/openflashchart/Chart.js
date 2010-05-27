@@ -54,7 +54,7 @@ qx.Class.define("openflashchart.Chart",
     __deferredLoad : function(data) {
       qx.event.Timer.once(function() {
         this.load(data);
-      }, this, 100);
+      }, this, 200);
     }
   }
 });
