@@ -51,13 +51,20 @@ qx.Class.define("openflashchart.demo.Application",
       var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
       this.getRoot().add(container, {edge: 20});
       
+      var url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json.txt");
+      container.add(new qx.ui.embed.Html("This demo shows how to use a qooxdoo based wrapper for " +
+        "Open Flash Chart. It loads a <a href='" + url + "' target='_blank'>JSON</a> configuration file " +
+        "for Open Flash Chart and configer the chart. Fore more details about the JSON file structure, " +
+        "have a look at the <a href='http://teethgrinder.co.uk/open-flash-chart-2/' target='_blank'>" +
+        "Open Flash Chart</a> project."));
+
       this.__label = new qx.ui.basic.Label("Please click on one item.");
       container.add(this.__label);
       
       var chart = new openflashchart.Chart();
       container.add(chart, {flex: 1});
       
-      var url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json");
+      url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json");
       var request = new qx.io.remote.Request(url, "GET", "application/json");
         
       request.addListener("completed", function(e) {
