@@ -1,0 +1,33 @@
+{
+  "info" : 
+  {
+    "name" : "RpcConsole Demo",
+
+    "summary" : "RpcConsole Demo",
+    "description" : "This is the demo for the RpcConsole contribution",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/RpcConsole",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "c.boulanger@qxtransformer.org"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.0","trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "rpcconsole.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
