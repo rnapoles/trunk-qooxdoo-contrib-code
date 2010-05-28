@@ -343,8 +343,9 @@ class qcl_data_model_AbstractActiveRecord
       }
       else
       {
-        if( $this->getLogger()->isFilterEnabled(QCL_LOG_PROPERTIES) ) $this->log( sprintf(
-          "### Model class '%s' does not have a property '%s'. Please check the database and remove column '%s' if necessary."
+        if( $this->getLogger()->isFilterEnabled( QCL_LOG_PROPERTIES) ) $this->log( sprintf(
+          "### Model class '%s' does not have a property '%s'. Please check the database and remove column '%s' if necessary.",
+          $this->className(), $property, $property
         ), QCL_LOG_PROPERTIES );
       }
     }
