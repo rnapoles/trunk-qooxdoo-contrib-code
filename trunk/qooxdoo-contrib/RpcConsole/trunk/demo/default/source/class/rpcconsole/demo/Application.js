@@ -55,7 +55,7 @@ qx.Class.define("rpcconsole.demo.Application",
     */
     desktop   : null,
     counter   : 1,
-    serverUrl : "../../../../../RpcPhp/1.1.0/services/index.php",
+    serverUrl : "../../../../../RpcPhp/trunk/services/index.php",
     testDataUrl : "resource/rpcconsole/demo/testData.js",
 
     /*
