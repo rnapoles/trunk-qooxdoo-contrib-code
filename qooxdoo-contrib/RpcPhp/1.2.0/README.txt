@@ -61,3 +61,8 @@ Important Changes since version 1.1.0:
   it was (int $code, string $message, int $origin). Now it behaves like a 
   normal PHP Exception and the signature is (string $message, int $code, 
   Exception $previous, int $origin). Please update your code accordingly.
+  
+- Note that you no longer need to use the signature ($params, $error) in for
+  the service methods. Arguments are passed to the service methods as they are
+  in normal php functions/methods. For backward compatibility, method introspection
+  is used. See AbstractServer.php, lines 68-88, for more information on that.
