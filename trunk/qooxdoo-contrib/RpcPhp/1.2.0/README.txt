@@ -7,15 +7,13 @@ Authors:
  * Christian Boulanger (cboulanger)
 
 This is the object-oriented rewrite of the PHP JSON-RPC server for PHP.  
-It should be 100% backward-compatible to the existing server script.
-If not, please file a bug in the qooxdoo bugzilla. 
 
-How it works: It receives a service name in
-dot-separated path format and expect to find the class containing the
-service in a file of the service name (with dots converted to slashes and
-".php" appended). If the service name is "foo.bar.Baz", the class can
-be named "class_Baz" or "class_foo_bar_Baz". The name of the service
-method is prefixed by "method_", so "doFoo" becomes "method_doFoo()".
+How it works: It receives a service name in dot-separated path format and 
+expect to find the class containing the service in a file of the service
+name (with dots converted to slashes and ".php" appended). If the service 
+name is "foo.bar.Baz", the class can be named "class_Baz" or 
+"class_foo_bar_Baz". The name of the service method is prefixed by "method_",
+so "doFoo" becomes "method_doFoo()". The prefixes can be changed.
 
 Usage:
 
@@ -33,8 +31,7 @@ a trailing slash.
 
 The server is extremely flexible, you can subclass the JsonRpcServer and
 finetune almost every aspect of its behavior by overriding the different
-methods. Also, the class uses the behavior design pattern by delegation
-of accessibility and error behaviors to separate objects.
+methods.
 
 As an example for the subclassing of the server, a PostRpcServer class
 has been included which can be used for testing purposes. This class
@@ -52,16 +49,15 @@ Important Changes since version 1.1.0:
 
 - The handleQooxdooDates constant has been changed to false as default value.
   This means that by default, the json response doesn't encode dates as
-  javascript objects.
+  javascript objects. The main reason is performance: the PHP-based JSON encoder 
+  class performes really poor with large datasets compared to using json_encode()
+  or json_decode(), so the default is now to use these functions.
 
 - The error behavior has changed. We now fully rely on native PHP exceptions 
-  for handling errors, except for uncatchable errors, which are trapped
-  by set_error_handler() and ini_set('error_(pre|ap)pend_string', ...).
+  for handling errors.Instead of returning an error object, use 
+    throw new JsonRpcException("Error message", <Optional error code>);
 
 - The signature of JsonRpcError has been changed. In previous versions,
   it was (int $code, string $message, int $origin). Now it behaves like a 
   normal PHP Exception and the signature is (string $message, int $code, 
   Exception $previous, int $origin). Please update your code accordingly.
-
-
-
