@@ -36,7 +36,7 @@ class JsonWrapper
 	}
 
 	/**
-	 * Decode a JSON string into a PHP data structure
+	 * Decode a JSON string into a PHP data structure.
 	 * @param $string
 	 * @return mixed
 	 */
@@ -46,7 +46,10 @@ class JsonWrapper
     {
       return $this->_json->decode( $string );
     }
-	  return json_decode ( $string );
+    else
+    {
+      return json_decode ( $string );
+    }
 	}
 }
 ?>

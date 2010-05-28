@@ -46,14 +46,9 @@ define( "defaultAccessibility", "public" );
 
 /*
  * signature mode, defaults to "check"
+ * see AbstractServer.php, lines 69-90
  */
 //define( "RpcMethodSignatureMode", "check" );
-
-/*
- * Whether to encode and decode Date objects the "qooxdoo way"
- * See JsonRpcServer.php
- */
-//define( "handleQooxdooDates", false );
 
 /*
  * turn debugging on or off, defaults to false
@@ -64,5 +59,14 @@ define( "defaultAccessibility", "public" );
  * log file
  */
 //define( "JsonRpcDebugFile", "/tmp/jsonrpc.log");
+
+/*
+ * Whether to encode and decode Date objects the "qooxdoo way"
+ * See JsonRpcServer.php, line 72-101
+ */
+if ( ! defined("handleQooxdooDates") )
+{
+  define( "handleQooxdooDates", true );
+}
 
 ?>

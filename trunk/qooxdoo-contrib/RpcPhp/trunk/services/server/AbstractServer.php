@@ -20,10 +20,9 @@
 
 
 /*
- * Include json class, either a wrapper around a php extension/php-only implementation
- * (php4) or built-in functions (php4 with json-extension/php5). If you want to use
- * a custom json encoder/decoder, write a custom JsonWrapper class and include it
- * before you include this script.
+ * Include json class, either a wrapper around the native php json de/encoder or
+ * the "date hack" JSON encoding class. If you want to use a custom json encoder/decoder,
+ * write a custom JsonWrapper class and include it before you include this script.
  */
 if ( ! class_exists("JsonWrapper") )
 {
@@ -73,8 +72,7 @@ if ( ! defined("servicePathPrefix") )
  * 1) 'array': The signature used in RpcPhp 1.0, passing all
  * parameters as an array in the first method argument, and the error
  * object as the second argument.This is the default mode (if the
- * constant is not defined by the user) and the only one that works
- * in PHP4.
+ * constant is not defined by the user).
  *
  * 2) 'args': Pass the parameters as a normal method call, so that
  * the method definition can use them as named arguments. This also
@@ -126,18 +124,6 @@ if (! defined("JsonRpcDebug"))
 if (! defined("JsonRpcDebugFile"))
 {
   define("JsonRpcDebugFile", "/tmp/phpinfo");
-}
-
-/**
- * Whether the server should include a package index file before instantiating
- * a service class file. It could be a file named "__index__.php" (similar to
- * python) exists in the same directory as the service class script file, it is
- * included before the service class file is included. This is useful, for example,
- * to sort out complex include dependencies before a class is instantiated.
- */
-if (! defined("JsonRpcPackageIndexFile") )
-{
-  define("JsonRpcPackageIndexFile", "__init__.php" );
 }
 
 /**
@@ -733,19 +719,6 @@ class AbstractServer
       $classFile = "$prefix/$path.php";
       if ( file_exists( $classFile ) )
       {
-        /*
-         * if package index file exists, which loads package
-         * dependencies (usually '__init__.php'), load this first
-         */
-        if ( JsonRpcPackageIndexFile )
-        {
-          $packageIndexFile = "$prefix/$packagePath/" . JsonRpcPackageIndexFile;
-          if ( file_exists( $packageIndexFile ) )
-          {
-            $this->debug("Loading package index file '$packageIndexFile'...");
-            require_once $packageIndexFile;
-          }
-        }
         $this->debug("Loading class file '$classFile'...");
         require_once $classFile;
         return $classFile;
@@ -755,7 +728,6 @@ class AbstractServer
     /*
      * Couldn't find the requested service
      */
-
     $serviceName = implode( ".", $serviceComponents );
     throw new AbstractError(
       "Service `$serviceName` not found.",
@@ -901,7 +873,6 @@ class AbstractServer
    * Call the requested method passing it the provided params
    * plus the error object plus a reference to the server
    * instance. Override this method for a different behavior.
-   * The method handles PHP4 and PHP5.
    * @param object $serviceObject
    * @param string $method
    * @param array $params
@@ -972,11 +943,26 @@ class AbstractServer
       }
 
     }
-    catch ( AbstractError $exception )
+
+    /*
+     * catch logic errors. Log backtrace
+     */
+    catch ( LogicException $e )
     {
-      $result = $exception;
+      $result = $this->getErrorBehavior();
+      $result->SetError( $e->getCode(), $e->getMessage() );
       $result->setId( $this->getId() );
-      $this->logError( $exception->getMessage() );
+      $this->logError( (string) $e );
+    }
+
+    /*
+     * catch "old style" jsonrpc errors. No backtrace
+     */
+    catch ( AbstractError $e )
+    {
+      $result = $e;
+      $result->setId( $this->getId() );
+      $this->logError( $e->getMessage() );
     }
     return $result;
   }
