@@ -40,8 +40,8 @@ transforms GET and POST requests into jsonrpc requests. This can serve
  (for example, using XML-RPC, etc.).
 
 For more information see
-  * http://qooxdoo.org/documentation/RPC
-  * http://qooxdoo.org/documentation/RPC_PHP
+  * http://qooxdoo.org/documentation/1.1/RPC
+  * http://qooxdoo.org/documentation/1.1/rpc_php
   
 Important Changes since version 1.1.0:
 
