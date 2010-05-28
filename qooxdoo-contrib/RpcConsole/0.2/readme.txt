@@ -2,7 +2,7 @@ RpcConsole
 ==========
 
    Copyright:
-     2009 Christian Boulanger
+     2009-2010 Christian Boulanger
      
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
