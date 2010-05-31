@@ -24,6 +24,7 @@
 #asset(qx/icon/Oxygen/16/actions/dialog-ok.png)
 
 ************************************************************************ */
+
 /**
  * progressbar Example application
  */
@@ -35,50 +36,95 @@ qx.Class.define("progressbar.Application",
 
 
   /*
-  *****************************************************************************
-     MEMBERS
-  *****************************************************************************
-  */
+    *****************************************************************************
+       MEMBERS
+    *****************************************************************************
+    */
 
   members :
   {
     /**
      * Main method - application start point
      *
-     * @return {void}
+     * @return {void} 
      */
     main : function()
     {
       this.base(arguments);
-      
+
       // Add log appenders
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
         qx.log.appender.Native;
         qx.log.appender.Console;
-        if (qx.bom.client.Engine.MSHTML)
-        {
+
+        if (qx.bom.client.Engine.MSHTML) {
           qx.log.appender.Console.init();
         }
       }
 
-		var bar1 = new progressbar.ProgressBar();
-		bar1.set({ width: 300, showPcntStatus: true, proportion: "50%" });
-		this.getRoot().add(bar1, { top:100, left: 100 });
+      var bar1 = new progressbar.ProgressBar();
 
-		var bar2 = new progressbar.ProgressBar();
-		bar2.set({ width: 300, showStepStatus: true, proportion: "50/100" });
-		this.getRoot().add(bar2, { top:150, left: 100 });
+      bar1.set(
+      {
+        width          : 300,
+        showPcntStatus : true,
+        proportion     : "50%"
+      });
 
-		var bar3 = new progressbar.ProgressBar();
-		bar3.set({ width: 300, showStepStatus: true, showPcntStatus: true, proportion: "50/100" });
-		this.getRoot().add(bar3, { top:200, left: 100 });
+      this.getRoot().add(bar1,
+      {
+        top  : 100,
+        left : 100
+      });
 
-		var bar4 = new progressbar.ProgressBar();
-		bar4.set({ width: 300, showStepStatus: true, showPcntStatus: true });
-		this.getRoot().add(bar4, { top:250, left: 100 });
-		bar4.showOff();
+      var bar2 = new progressbar.ProgressBar();
+
+      bar2.set(
+      {
+        width          : 300,
+        showStepStatus : true,
+        proportion     : "50/100"
+      });
+
+      this.getRoot().add(bar2,
+      {
+        top  : 150,
+        left : 100
+      });
+
+      var bar3 = new progressbar.ProgressBar();
+
+      bar3.set(
+      {
+        width          : 300,
+        showStepStatus : true,
+        showPcntStatus : true,
+        proportion     : "50/100"
+      });
+
+      this.getRoot().add(bar3,
+      {
+        top  : 200,
+        left : 100
+      });
+
+      var bar4 = new progressbar.ProgressBar();
+
+      bar4.set(
+      {
+        width          : 300,
+        showStepStatus : true,
+        showPcntStatus : true
+      });
+
+      this.getRoot().add(bar4,
+      {
+        top  : 250,
+        left : 100
+      });
+
+      bar4.showOff();
     }
   }
-  
 });

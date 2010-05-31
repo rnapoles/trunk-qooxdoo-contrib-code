@@ -27,24 +27,29 @@ qx.Class.define("progressbar.test.DemoTest",
   members :
   {
     /*
-    ---------------------------------------------------------------------------
-      TESTS
-    ---------------------------------------------------------------------------
-    */
-  
+        ---------------------------------------------------------------------------
+          TESTS
+        ---------------------------------------------------------------------------
+        */
+
     /**
      * Here are some simple tests
+     *
+     * @return {void} 
      */
     testSimple : function()
     {
-      this.assertEquals(4, 3+1, "This should never fail!");
+      this.assertEquals(4, 3 + 1, "This should never fail!");
       this.assertFalse(false, "Can false be true?!");
     },
 
+
     /**
      * Here are some more advanced tests
+     *
+     * @return {void} 
      */
-    testAdvanced: function () 
+    testAdvanced : function()
     {
       var a = 3;
       var b = a;
