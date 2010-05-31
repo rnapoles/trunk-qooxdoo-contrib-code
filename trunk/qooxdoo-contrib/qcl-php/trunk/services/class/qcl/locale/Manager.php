@@ -18,11 +18,11 @@
 
 
 /**
- * Manages locales and translations. uses a gettext model by default
- * extending controllers should set the "locale" model before calling the
- * parent constructor if they want to use a different locale model.
+ * Manages locales and translations. uses the php gettext
+ * extension by default.
+ * @see http://mel.melaxis.com/devblog/2005/08/06/localizing-php-web-sites-using-gettext/
  */
-class qcl_locale_Manager  extends qcl_core_Object
+class qcl_locale_Manager extends qcl_core_Object
 {
 
 	//-------------------------------------------------------------
@@ -33,13 +33,13 @@ class qcl_locale_Manager  extends qcl_core_Object
    * The default locale
    * @var string
    */
-  var $default_locale = "en";
+  public $default_locale = "en";
 
   /**
-   * The locale model. Access with getLocaleModel()
-   * @var qcl_locale_QooxdooModel
+   * The curren locale
+   * @var string
    */
-  var $localeModel;
+  public $locale;
 
 	//-------------------------------------------------------------
   // setup
@@ -48,8 +48,13 @@ class qcl_locale_Manager  extends qcl_core_Object
 	/**
  	* constructor
  	*/
-	function __construct()
+	public function __construct()
 	{
+	  if ( ! function_exists("gettext") )
+	  {
+	    throw new JsonRpcException("You must install the php5-gettext extension.");
+	  }
+
   	/*
   	 * initialize parent class
   	 */
@@ -70,19 +75,6 @@ class qcl_locale_Manager  extends qcl_core_Object
     return qcl_getInstance( __CLASS__ );
   }
 
-  /**
-   * returns the locale model
-   * @return qcl_locale_QooxdooModel
-   */
-  function getLocaleModel()
-  {
-    if ( ! $this->localeModel )
-    {
-      qcl_import( "qcl_locale_QooxdooModel" );
-      $this->localeModel = new qcl_locale_QooxdooModel();
-    }
-    return $this->localeModel;
-  }
 
   /**
    * sets the default locale. if no value is given, the locale is determined on
@@ -90,31 +82,28 @@ class qcl_locale_Manager  extends qcl_core_Object
    * @return void
    * @param $locale Mixed Locale string or null if locale should be automatically be determined
    */
-	function setLocale($locale=null)
+	public function setLocale($locale=null)
 	{
-		$localeModel = $this->getLocaleModel();
-    $locale =  either(
-      $locale,
-      $this->getUserLocale(),
-      $this->default_locale
-    );
-    //$this->debug("Setting locale '$locale' (was: '". $localeModel->getLocale() . "')");
-    $localeModel->setLocale( $locale );
+    $locale = either( $locale, $this->getUserLocale() );
+    putenv("LC_ALL=$locale");
+    setlocale(LC_ALL, $locale);
+    bindtextdomain("messages", "./locale");
+    textdomain("messages");
+    $this->locale = $locale;
 	}
 
   /**
    * determines the user locale from the system or browser
    * @return
    */
-  function getUserLocale()
+  public function getUserLocale()
   {
-    $localeModel = $this->getLocaleModel();
     $browser_locales = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"] );
     $locale = null;
     foreach ( $browser_locales as $brlc )
     {
       $lc = strtolower( substr( $brlc, 0, 2 ) );
-      if ( $localeModel->hasLocale( $lc ) )
+      if ( in_array( $lc, $this->getAvailableLocales() ) )
       {
         $locale = $lc;
         break;
@@ -130,7 +119,7 @@ class qcl_locale_Manager  extends qcl_core_Object
        }
     }
 
-    if ( !$locale )
+    if ( ! $locale )
     {
       $locale = $this->default_locale;
     }
@@ -140,14 +129,12 @@ class qcl_locale_Manager  extends qcl_core_Object
 
   /**
    * Return the available application locales
-   *
-   * This corresponds to the Makefile APPLICATION_LOCALES setting
+   * FIXME currently hardcoded
    * @return {String[]} array of available locales
    */
-  function getAvailableLocales()
+  public function getAvailableLocales()
   {
-    $localeModel = $this->getLocaleModel();
-    return $localeModel->getAvailableLocales();
+    return array("de","en");
   }
 
   /**
@@ -157,10 +144,9 @@ class qcl_locale_Manager  extends qcl_core_Object
    * @param Array  $varargs (optional) variable number of argumes applied to the format string
    * @return string
    */
-  function tr ( $messageId, $varargs=array() )
+  public function tr ( $messageId, $varargs=array() )
   {
-		$localeModel = $this->getLocaleModel();
-    $translation =  either( $localeModel->translate( $messageId ), $messageId );
+    $translation =  gettext( $messageId );
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);
   }
@@ -175,13 +161,9 @@ class qcl_locale_Manager  extends qcl_core_Object
    * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
    * @return string
    */
-  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  public function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
-    $localeModel = $this->getLocaleModel();
-    $translation =  either(
-      $localeModel->trn( $singularMessageId, $pluralMessageId, $count, $varargs ),
-      $count > 1 ? $pluralMessageId : $singularMessageId
-    );
+    $translation =  ngettext( $singularMessageId, $pluralMessageId, $count );
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);
   }
@@ -190,17 +172,14 @@ class qcl_locale_Manager  extends qcl_core_Object
    * dumps information on the translation engine to the log
    * @return void
    */
-  function logLocaleInfo()
+  public function logLocaleInfo()
   {
-    // todo: check access
-    $localeModel = $this->getLocaleModel();
-
     $this->info( "Locale information: ");
-    $this->info( "  Available locales: " . implode(",", $localeModel->getAvailableLocales() ) . " ... ");
-    $this->info( "  Browser locales : " . $_SERVER["HTTP_ACCEPT_LANGUAGE"]  );
-    $this->info( "  System locale : " . getenv("LANGUAGE") );
-    $this->info( "  User locale: " . $this->getUserLocale() );
-    $this->info( "  Current locale: " . $localeModel->getLocale() );
+    $this->info( "  Available locales:  " . implode(",", $this->getAvailableLocales() ) . " ... ");
+    $this->info( "  Browser locales :   " . $_SERVER["HTTP_ACCEPT_LANGUAGE"]  );
+    $this->info( "  System locale :     " . getenv("LANGUAGE") );
+    $this->info( "  User locale:        " . $this->getUserLocale() );
+    $this->info( "  Current locale:     " . $this->getLocale() );
   }
 }
 ?>
