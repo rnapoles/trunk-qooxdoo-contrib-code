@@ -45,7 +45,7 @@ class qcl_access_model_User
     ),
     'password'  => array(
       'check'     => "string",
-      'sqltype'   => "varchar(32)"
+      'sqltype'   => "varchar(50)"
     ),
     'email'  => array(
       'check'     => "string",
@@ -531,7 +531,7 @@ class qcl_access_model_User
     {
       throw new InvalidJsonRpcArgumentException( "Passwords do not match..." );
     }
-    return $value;
+    return $this->getApplication()->getAccessController()->generateHash( $value );
   }
 }
 ?>

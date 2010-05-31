@@ -59,6 +59,11 @@ if ( ! defined('QCL_ACCESS_TIMEOUT') )
 }
 
 /*
+ * the salt used for storing encrypted passwords
+ */
+define('QCL_ACCESS_SALT_LENGTH', 9);
+
+/*
  * log filter
  */
 define("QCL_LOG_ACCESS", "access");
