@@ -83,7 +83,7 @@ class qcl_core_Object
      */
     $this->objectId();
 
-    $this->log( "* Constructing $this", QCL_LOG_OBJECT );
+    //$this->log( "* Constructing $this", QCL_LOG_OBJECT );
   }
 
   /**
