@@ -20,7 +20,7 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 
 /**
  * Configuration management class, using a database backend
- *
+ * FIXME override set() method to secure 'final' config values.
  */
 class qcl_config_ConfigModel
   extends qcl_data_model_db_NamedActiveRecord
@@ -47,7 +47,13 @@ class qcl_config_ConfigModel
     ),
     'customize' => array(
       'check'     => "boolean",
-      'sqltype'   => "int(11)",
+      'sqltype'   => "int(1) default 0",
+      'nullable'  => false,
+      'init'      => false
+    ),
+    'final' => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1) default 0",
       'nullable'  => false,
       'init'      => false
     )
@@ -331,16 +337,24 @@ class qcl_config_ConfigModel
 
 	/**
 	 * Creates a config property, overwriting any previous entry
-	 * requires permission "qcl.config.permissions.manage"
 	 *
-	 * @param string $key The name of the property (i.e., myapplication.config.locale)
-	 * @param string $type The type of the property (string|number|object|boolean)
-	 * @param boolean $customize If true, allow users to create their
-	 * 		  own variant of the configuration setting
-	 * @param mixed|null $default If not null, set a default value
-	 * @return id of created config entry
-	 */
-	public function createKey( $key, $type, $customize=false, $default=null )
+   * @param $key
+   *     The name ("key") of the config value
+   * @param $type
+   *     The type of the config value
+   *     @see qcl_config_ConfigModel::$types
+   * @param boolean $customize
+   *     If true, allow users to create their
+   *     own variant of the configuration setting
+   * @param mixed|null $default
+   *     If not null, set a default value
+   * @param bool $final
+   *     If true, the value cannot be modified after creation
+   * @return int|bool
+   *     Returns the id of the newly created record, or false if
+   *     key was not created.
+   */
+	public function createKey( $key, $type, $customize=false, $default=null, $final=false )
 	{
 
 		/*
@@ -365,25 +379,36 @@ class qcl_config_ConfigModel
 		return $this->create( $key, array(
 		  'type'      => $this->getTypeIndex( $type ),
 		  'default'   => $this->castType( $default, $type, false ),
-		  'customize' => $customize
+		  'customize' => $customize,
+		  'final'     => $final
 		));
 	}
 
 	/**
-	 * Create a config key if it doesn't exist already
+	 * Create a config key if it doesn't exist already.
+	 *
 	 * @param $key
+	 *     The name ("key") of the config value
 	 * @param $type
-   * @param boolean $customize If true, allow users to create their
-   *      own variant of the configuration setting
-   * @param mixed|null $default If not null, set a default value
-	 * @return int|bool  Returns the id of the newly created record, or false if
-	 * key was not created.
+	 *     The type of the config value
+	 *     @see qcl_config_ConfigModel::$types
+   * @param boolean $customize
+   *     If true, allow users to create their
+   *     own variant of the configuration setting
+   * @param mixed|null $default
+   *     If not null, set a default value
+	 * @param bool $final
+	 *     If true, the value cannot be modified after creation
+	 * @return int|bool
+	 *     Returns the id of the newly created record, or false if
+	 *     key was not created.
+	 *
 	 */
-	public function createKeyIfNotExists( $key, $type, $customize=false, $default=null )
+	public function createKeyIfNotExists( $key, $type, $customize=false, $default=null, $final=false )
 	{
     if ( ! $this->keyExists( $key ) )
     {
-      return $this->createKey( $key, $type, $customize, $default );
+      return $this->createKey( $key, $type, $customize, $default, $final );
     }
     else
     {
@@ -410,7 +435,15 @@ class qcl_config_ConfigModel
   {
     $this->checkKey( $key );
     $this->load( $key );
-    $this->setDefault( $this->castType( $value, $this->getType(), false ) );
+    if ( ! $this->getFinal() )
+    {
+      $this->setDefault( $this->castType( $value, $this->getType(), false ) );
+      $this->save();
+    }
+    else
+    {
+      throw new qcl_config_Exception("Config key '$key' cannot be changed.");
+    }
   }
 
   /**
@@ -503,11 +536,17 @@ class qcl_config_ConfigModel
      * whether this model allows customized values
      */
     $this->load( $key );
+
     if( ! $this->getCustomize() )
     {
       throw new qcl_config_Exception( sprintf(
         "Config key '%s' does not allow user values.", $key
       ) );
+    }
+
+    if ( $this->getFinal() )
+    {
+      throw new qcl_config_Exception("Config key '$key' cannot be changed.");
     }
 
     /*

@@ -448,10 +448,8 @@ class qcl_access_Controller
      */
     $savedPw = $userModel->getPassword();
 
-    if ( ! $savedPw or
-      $password === $savedPw or
-      md5( $password ) === $savedPw or
-      $password === md5 ( $savedPw ) )
+    if ( $password == $savedPw or
+      $this->generateHash( $password, $savedPw ) == $savedPw )
     {
       return $userModel->getId();
     }
@@ -462,8 +460,64 @@ class qcl_access_Controller
   }
 
   /**
+   * Registers a new user. When exposing this method in a
+   * service class, make sure to protect it adequately.
+   *
+   * @param string $username
+   * @param string $password
+   * @param array $data
+   *    Optional user data
+   * @return qcl_access_model_User
+   *    The newly created user model instance
+   */
+  public function register( $username, $password, $data= array() )
+  {
+    qcl_assert_valid_string( $username );
+    qcl_assert_valid_string( $password );
+
+    $userModel = $this->getUserModel();
+    $data['password'] = $this->generateHash( $password );
+    if( ! $data['name'])
+    {
+      $data['name'] = $username;
+    }
+    $userModel->create( $username, $data );
+    return $userModel;
+  }
+
+
+  /**
+   * Calling this method with a single argument (the plain text password)
+   * will cause a random string to be generated and used for the salt.
+   * The resulting string consists of the salt followed by the SHA-1 hash
+   * - this is to be stored away in your database. When you're checking a
+   * user's login, the situation is slightly different in that you already
+   * know the salt you'd like to use. The string stored in your database
+   * can be passed to generateHash() as the second argument when generating
+   * the hash of a user-supplied password for comparison.
+   *
+   * See http://phpsec.org/articles/2005/password-hashing.html
+   * @param $plainText
+   * @param $salt
+   * @return string
+   */
+  public function generateHash( $plainText, $salt = null)
+  {
+    if ( $salt === null )
+    {
+      $salt = substr( md5(uniqid(rand(), true)), 0, QCL_ACCESS_SALT_LENGTH);
+    }
+    else
+    {
+      $salt = substr($salt, 0, QCL_ACCESS_SALT_LENGTH );
+    }
+    return $salt . sha1( $salt . $plainText);
+  }
+
+
+  /**
    * Terminates and destroys the active session
-   * @return unknown_type
+   * @return void
    */
   public function terminate()
   {

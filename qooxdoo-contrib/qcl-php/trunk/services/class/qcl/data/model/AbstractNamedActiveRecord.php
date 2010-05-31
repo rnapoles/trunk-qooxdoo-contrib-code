@@ -146,11 +146,14 @@ class qcl_data_model_AbstractNamedActiveRecord
    * not already exist.
    *
    * @param string  $namedId
-   * @param array $data The data of the properties that should be set in the model
-   * @return int the id of the inserted or existing record
-   * @todo this could be optimized to avoid queries
+   * @param array $data
+   *    An option array of the properties that should be set in the model
+   * @return int
+   *    The id of the inserted or existing record
+   * @todo
+   *    This could be optimized to avoid queries
    */
-  public function createIfNotExists( $namedId, $data  )
+  public function createIfNotExists( $namedId, $data=array()  )
   {
     /*
      * initialize if not already initialized

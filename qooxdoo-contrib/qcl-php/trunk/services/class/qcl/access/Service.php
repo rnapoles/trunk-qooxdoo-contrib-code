@@ -62,6 +62,24 @@ class qcl_access_Service
     $activeUserId = $this->getActiveUser()->id();
 
     /*
+     * check if authentication must be done through https
+     * although technically, it is already to late since the
+     * user has sent the password already.
+     */
+    if ( $first and $password and $app->getIniValue("access.enforce_https_login") === true )
+    {
+      /*
+       * check if this is a https connection
+       */
+      if ( $_ENV['HTTPS'] != "on" )
+      {
+        throw new JsonRpcException(
+          "Authentication must be done through a secure connection, using the https:// protocol."
+         );
+      }
+    }
+
+    /*
      * purge inactive users and sessions
      */
     $accessController->cleanup();
@@ -422,6 +440,7 @@ class qcl_access_Service
     $this->log( "User '$username' is member of the following groups: " . implode(",", $userModel->groups(true) ), QCL_LOG_LDAP );
   }
 
+
   /**
    * Service method to log out the active user. Automatically creates guest
    * access. Override this method if this is not what you want.
@@ -460,16 +479,6 @@ class qcl_access_Service
   {
     $this->getApplication()->getAccessController()->terminate();
     return null;
-  }
-
-  public function method_testLdap()
-  {
-    $username = "YYYYY";
-    $password = "XXXX";
-
-    $ldappassword = $this->ssha_encode($password);
-    $this->debug("'$ldappassword'",__CLASS__,__LINE__);
-    $this->authenticateByLdap($username,$ldappassword);
   }
 
   public function makeSshaPassword($password)
