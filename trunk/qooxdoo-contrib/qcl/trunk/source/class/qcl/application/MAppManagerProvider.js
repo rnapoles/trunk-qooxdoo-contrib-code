@@ -170,7 +170,18 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
       check    : "qx.core.Object", // @todo: create interface
       nullable : false,
       event    : "changeClipboardManager"
-    }    
+    },
+    
+    /**
+     * Whether the application should ask users if they "really" want 
+     * to quit the application.
+     * @type {Boolean} 
+     */
+    confirmQuit : 
+    {
+      check : "Boolean",
+      init : true
+    }
     
   },
 
@@ -304,7 +315,7 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
      */
     close : function()
     {  
-      if ( this.isMainApplication() )
+      if ( this.isMainApplication() && this.isConfirmQuit() )
       {  
         return this.tr("Do you really want to quit %1?",  this.getApplicationName() );
       }
