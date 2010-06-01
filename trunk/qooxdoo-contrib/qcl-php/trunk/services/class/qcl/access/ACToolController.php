@@ -45,28 +45,32 @@ class qcl_access_ACToolController
       'user'        => array(
         'model'       => $this->getAccessController()->getUserModel(),
         'label'       => $this->tr("Users"),
-        'labelProp'   => "name"
+        'labelProp'   => "name",
+        'icon'        => "icon/16/apps/system-users.png"
       ),
       'role'        => array(
         'model'       => $this->getAccessController()->getRoleModel(),
         'label'       => $this->tr("Roles"),
-        'labelProp'   => "name"
+        'labelProp'   => "name",
+        'icon'        => "icon/16/apps/internet-feed-reader.png"
       ),
       'group'        => array(
         'model'       => $this->getAccessController()->getGroupModel(),
         'label'       => $this->tr("Groups"),
-        'labelProp'   => "name"
+        'labelProp'   => "name",
+        'icon'        => "icon/16/actions/address-book-new.png"
       ),
       'permission'  => array(
         'model'       => $this->getAccessController()->getPermissionModel(),
         'label'       => $this->tr("Permissions"),
-        'labelProp'   => "namedId"
+        'labelProp'   => "namedId",
+        'icon'        => "icon/16/apps/preferences-security.png"
       ),
       'datasource'  => array(
         'model'       => $this->getDatasourceModel(),
         'label'       => $this->tr("Datasources"),
         'labelProp'   => "title",
-
+        'icon'        => "icon/16/apps/internet-transfer.png"
       )
     );
   }
@@ -80,30 +84,30 @@ class qcl_access_ACToolController
   public function method_getAccessElementTypes()
   {
     $this->requirePermission("manageAccess");
-
+    $models = $this->modelMap();
     return array(
       array(
-        'icon'    => null,
+        'icon'    => $models['user']['icon'],
         'label'   => $this->tr("Users"),
         'value'   => "user"
       ),
       array(
-        'icon'    => null,
+        'icon'    => $models['role']['icon'],
         'label'   => $this->tr("Roles"),
         'value'   => "role"
       ),
       array(
-        'icon'    => null,
+        'icon'    => $models['group']['icon'],
         'label'   => $this->tr("Groups"),
         'value'   => "group"
       ),
       array(
-        'icon'    => null,
+        'icon'    => $models['permission']['icon'],
         'label'   => $this->tr("Permissions"),
         'value'   => "permission"
       ),
       array(
-        'icon'    => null,
+        'icon'    => $models['datasource']['icon'],
         'label'   => $this->tr("Datasources"),
         'value'   => "datasource"
       ),
@@ -152,12 +156,21 @@ class qcl_access_ACToolController
     }
 
     $result = array();
+    $models = $this->modelMap();
     while( $model->loadNext() )
     {
-      $value = $model->namedId();
+      $value  = $model->namedId();
+      $icon   = $models[$type]['icon'];
+      $label  = $model->get($labelProp);
+
+      if ( $model->hasProperty("ldap") and $model->getLdap() )
+      {
+        $label .= " (LDAP)";
+      }
+
       $result[] = array(
-        'icon'      => null,
-        'label'     => $model->get($labelProp),
+        'icon'      => $icon,
+        'label'     => $label,
         'params'    => $type . "," . $value,
         'type'      => $type,
         'value'     => $value
@@ -198,7 +211,7 @@ class qcl_access_ACToolController
      * top node
      */
     $tree = array(
-      'icon'      => "icon/16/actions/address-book-new.png",
+      'icon'      => "icon/16/apps/utilities-network-manager.png",
       'children'  => array(),
       'label'     => $this->tr("Relations"),
       'value'     => null,
@@ -228,7 +241,7 @@ class qcl_access_ACToolController
       {
 
         $node = array(
-          'icon'      => "icon/16/actions/address-book-new.png",
+          'icon'      => $data['icon'],
           'label'     => $data['label'],
           'value'     => $elementType . "=" . $namedId,
           'type'      => $type,
@@ -272,8 +285,8 @@ class qcl_access_ACToolController
             while( $groupModel->loadNext() )
             {
               $groupNode = array(
-                'icon'      => "icon/16/actions/address-book-new.png",
-                'label'     => $this->tr("in") . " " .$groupModel->get( $models['group']['labelProp'] ),
+                'icon'      => $models['group']['icon'],
+                'label'     => $this->tr("in") . " " . $groupModel->get( $models['group']['labelProp'] ),
                 'type'      => "role",
                 'mode'      => "link",
                 'value'     => "group=" . $groupModel->namedId() . ",user=" . $userModel->namedId(),
@@ -285,7 +298,7 @@ class qcl_access_ACToolController
                 while( $roleModel->loadNext() )
                 {
                   $roleNode = array(
-                    'icon'      => "icon/16/actions/address-book-new.png",
+                    'icon'      => $models['role']['icon'],
                     'label'     => $roleModel->get( $models['role']['labelProp'] ),
                     'type'      => "role",
                     'mode'      => "unlink",
@@ -309,7 +322,7 @@ class qcl_access_ACToolController
            * no group dependency
            */
           $groupNode = array(
-            'icon'      => "icon/16/actions/address-book-new.png",
+            'icon'      => $models['group']['icon'],
             'label'     => $this->tr("In all groups"),
             'type'      => "role",
             'value'     => "user=" . $userModel->namedId(),
@@ -328,7 +341,7 @@ class qcl_access_ACToolController
             while( $roleModel->loadNext( $query ) )
             {
               $roleNode = array(
-                'icon'      => "icon/16/actions/address-book-new.png",
+                'icon'      => $models['role']['icon'],
                 'label'     => $roleModel->get( $models['role']['labelProp'] ),
                 'type'      => "role",
                 'mode'      => "unlink",
@@ -358,7 +371,7 @@ class qcl_access_ACToolController
             while( $model->loadNext() )
             {
               $node['children'][] = array(
-                'icon'      => "icon/16/actions/address-book-new.png",
+                'icon'      => $data['icon'],
                 'label'     => $model->get($data['labelProp']),
                 'type'      => $type,
                 'value'     => $type . "=" . $model->namedId(),
