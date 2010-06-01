@@ -27,5 +27,5 @@ class qcl_locale_Exception extends JsonRpcException {}
  * log filters
  */
 define( "QCL_LOG_LOCALE", "locale" );
-qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_LOCALE, "Translation-related log messages");
+qcl_log_Logger::getInstance()->registerFilter( QCL_LOG_LOCALE, "Translation-related log messages", false);
 ?>
