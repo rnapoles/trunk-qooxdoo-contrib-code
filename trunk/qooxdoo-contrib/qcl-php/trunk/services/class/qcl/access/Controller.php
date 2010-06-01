@@ -440,7 +440,7 @@ class qcl_access_Controller
     }
     catch( qcl_data_model_RecordNotFoundException $e)
     {
-      throw new qcl_access_AuthenticationException("Invalid user name.");
+      throw new qcl_access_AuthenticationException( $this->tr("Invalid user name.") );
     }
 
     /*
@@ -455,7 +455,7 @@ class qcl_access_Controller
     }
     else
     {
-      throw new qcl_access_AuthenticationException("Wrong password.");
+      throw new qcl_access_AuthenticationException( $this->tr("Wrong password.") );
     }
   }
 
@@ -699,8 +699,6 @@ class qcl_access_Controller
     $userModel->resetLastAction();
     return true;
   }
-
-
 
   //-------------------------------------------------------------
   // events and messages

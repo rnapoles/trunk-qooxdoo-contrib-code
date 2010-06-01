@@ -74,7 +74,7 @@ class qcl_access_Service
       if ( $_ENV['HTTPS'] != "on" )
       {
         throw new JsonRpcException(
-          "Authentication must be done through a secure connection, using the https:// protocol."
+          $this->tr("Authentication must be done through a secure connection, using the https:// protocol.")
          );
       }
     }

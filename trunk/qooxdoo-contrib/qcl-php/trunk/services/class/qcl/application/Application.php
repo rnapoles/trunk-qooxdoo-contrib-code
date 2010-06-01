@@ -32,6 +32,24 @@ abstract class qcl_application_Application
   //-------------------------------------------------------------
 
   /**
+   * The id of the application, usually the namespace
+   * @var string
+   */
+  protected $applicationId;
+
+  /**
+   * The descriptive name of the application
+   * @var string
+   */
+  protected $applicationName;
+
+  /**
+   * The version of the application
+   * @var string
+   */
+  protected $applicationVersion;
+
+  /**
    * Whether anoynmous access is allowed
    * @var boolean
    */
@@ -69,6 +87,33 @@ abstract class qcl_application_Application
   //-------------------------------------------------------------
   // property getters
   //-------------------------------------------------------------
+
+  /**
+   * Getter for application id
+   * @return string
+   */
+  public function id()
+  {
+    return $this->applicationId;
+  }
+
+  /**
+   * Getter for application name
+   * @return string
+   */
+  public function name()
+  {
+    return $this->applicationName;
+  }
+
+  /**
+   * Getter for application version
+   * @return string
+   */
+  public function version()
+  {
+    return $this->applicationVersion;
+  }
 
   /**
    * Whether anonymous access is allowed or not

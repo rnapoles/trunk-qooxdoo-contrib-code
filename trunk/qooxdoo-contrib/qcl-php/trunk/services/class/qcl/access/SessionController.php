@@ -81,7 +81,7 @@ class qcl_access_SessionController
      */
     if ( ! $sessionId )
     {
-      throw new qcl_access_InvalidSessionException("No valid session.");
+      throw new qcl_access_InvalidSessionException($this->tr("No valid session."));
     }
 
     /*

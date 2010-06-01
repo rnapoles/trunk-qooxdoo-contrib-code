@@ -1132,11 +1132,17 @@ class qcl_core_Object
   //-------------------------------------------------------------
 
   /**
-   * Translates a message.
+   * Translates a message. If the standard qcl_locale_Manager class
+   * is used, the gettext domain is taken from the first
+   * segment of the class name. Class foo_bar_Baz will use translations of
+   * domain "foo", stored in "foo/class/locale/xx/LC_MESSAGES/foo.po".
+   *
+   * @param  string  $msgId
+   *    Message id of the string to be translated
+   * @param   array|string  $varargs
+   *    (optional) Variable number of arguments for the sprintf formatting either as an array
+   *    or as parameters
    * @return  String
-   * @param   String  $msgId    Message id of the string to be translated
-   * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
-   * or as parameters
    */
   public function tr( $msgId, $varargs=null )
   {
@@ -1146,23 +1152,36 @@ class qcl_core_Object
       array_shift($varargs);
     }
     $manager = $this->getApplication()->getLocaleManager();
-    return $manager->tr($msgId, $varargs);
+    return $manager->tr($msgId, $varargs, $this->className() );
   }
 
   /**
-   * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+   * Translate a plural message.Depending on the third argument the plural
+   * or the singular form is chosen.
    *
-   *
-   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
-   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
-   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
-   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
+   * @see qcl_core_Object::tr()
+   * @param string $singularMessageId
+   *    Message id of the singular form (may contain format strings)
+   * @param string $pluralMessageId
+   *    Message id of the plural form (may contain format strings)
+   * @param int $count
+   *    If greater than 1 the plural form otherwhise the singular form
+   *    is returned.
+   * @param array|string $varargs
+   *    (optional) Variable number of arguments for the sprintf formatting
    * @return string
    */
-  public function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  public function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=null )
   {
+    if ( ! is_array($varargs) )
+    {
+      $varargs = func_get_args();
+      array_shift($varargs);
+      array_shift($varargs);
+      array_shift($varargs);
+    }
     $manager = $this->getApplication()->getLocaleManager();
-    return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
+    return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs, $this->className() );
   }
 
   //-------------------------------------------------------------
