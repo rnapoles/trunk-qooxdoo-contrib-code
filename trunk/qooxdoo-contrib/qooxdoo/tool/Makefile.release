@@ -1,0 +1,85 @@
+################################################################################
+#
+#  qooxdoo - the new era of web development
+#
+#  http://qooxdoo.org
+#
+#  Copyright:
+#    2006-2010 1&1 Internet AG, Germany, http://www.1and1.org
+#
+#  License:
+#    LGPL: http://www.gnu.org/licenses/lgpl.html
+#    EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#    See the LICENSE file in the project's top-level directory for details.
+#
+#  Authors:
+#    * Sebastian Werner (wpbasti)
+#    * Andreas Ecker (ecker)
+#    * Fabian Jakobs (fjakobs)
+#    * Thomas Herchenroeder (thron7)
+#    * Daniel Wagner (d_wagner)
+#
+################################################################################
+
+################################################################################
+# VARIABLES
+################################################################################
+
+CMD_NICE = nice -n 10
+export PYTHONPATH = $(CURDIR)/tool/pylib
+CMD_PYTHON = $(CMD_NICE) python -t -O
+CMD_REMOVE = $(CMD_NICE) rm -rf
+CMD_DIR = $(CMD_NICE) mkdir -p
+
+CMD_GENERATOR := $(CMD_PYTHON) "$(CURDIR)/tool/bin/generator.py"
+
+CMD_SYNC_ONLINE = $(CMD_NICE) rsync --checksum --compress --recursive --delete --inplace --links --safe-links --exclude .svn
+
+APPLICATIONS = contribDemobrowser
+
+
+################################################################################
+# BASIC TARGETS
+################################################################################
+
+distclean:
+	@for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) distclean ) || exit 1; done
+
+build: build-apps
+build-apps:
+	@time for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) build ) || exit 1; done
+
+source: source-apps
+source-apps:
+	@time for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) source ) || exit 1; done
+
+
+################################################################################
+# PUBLISH TARGETS
+################################################################################
+
+publish-build: build-apps
+
+publish-check:
+	@echo "  * Checking kit is complete..."
+	@for TARGET in $(APPLICATIONS); do F="$$TARGET/build/script/$$TARGET.js"; [ -s $$F ] || ( echo "Missing $$F; run 'make publish-build' first!"; exit 1 ); done
+	@echo "    - Looks good"
+
+#publish: publish-check
+publish:
+#	@echo "  * Preparing index.html..."	
+#	@$(CMD_DIR) temp/
+#	@cat tool/data/publish/index.html | \
+#		sed 's/class="local"/class="local hide"/g' | \
+#		sed 's/ class="publish"//g' > temp/index.html
+#	@echo "  * Syncing index.html..."
+#	@$(CMD_SYNC_ONLINE) temp/index.html root@qooxdoo.org:/var/www/qooxdoo/demo/contrib/
+#	@$(CMD_REMOVE) temp
+	
+	@echo "  * Syncing applications..."
+	@for APPLICATION in $(APPLICATIONS); do \
+	  echo "    - $$APPLICATION..."; \
+	  if [ "$$APPLICATION" = "contribDemobrowser" ]; then \
+      rsync --checksum --compress --recursive --delete --inplace --links --safe-links --exclude .svn $$APPLICATION/build/* root@qooxdoo.org:/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
+    fi; \
+	done
