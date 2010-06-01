@@ -60,6 +60,23 @@ class qcl_locale_Manager extends qcl_core_Object
   	 */
 	  parent::__construct();
 
+	  /*
+	   * bind textdomains and set application textdomain
+	   * as default domain
+	   */
+    $appId = $this->getApplication()->id();
+    $path = bindtextdomain( $appId, "./locale" );
+    bind_textdomain_codeset( $appId, 'UTF-8');
+    textdomain($appId);
+    if ( $this->hasLog() ) $this->log( "textdomain path for '$appId': '$path'", QCL_LOG_LOCALE );
+
+    /*
+     * bind qcl textdomain
+     */
+    $path = bindtextdomain( "qcl", dirname(__FILE__) );
+    bind_textdomain_codeset( "qcl", 'UTF-8');
+    if ( $this->hasLog() ) $this->log( "qcl textdomain path: '$path'", QCL_LOG_LOCALE );
+
     /*
      *  automatically determine locale
      */
@@ -75,21 +92,52 @@ class qcl_locale_Manager extends qcl_core_Object
     return qcl_getInstance( __CLASS__ );
   }
 
+  //-------------------------------------------------------------
+  // logging
+  //-------------------------------------------------------------
+
+  public function hasLog()
+  {
+    return $this->getLogger()->isFilterEnabled( QCL_LOG_LOCALE );
+  }
+
+  //-------------------------------------------------------------
+  // API
+  //-------------------------------------------------------------
+
 
   /**
    * sets the default locale. if no value is given, the locale is determined on
    * system and browser settings.
+   *
+   * @param $locale mixed
+   *    Locale string or null if locale should be automatically be
+   *    determined.
    * @return void
-   * @param $locale Mixed Locale string or null if locale should be automatically be determined
    */
 	public function setLocale($locale=null)
 	{
     $locale = either( $locale, $this->getUserLocale() );
-    putenv("LC_ALL=$locale");
-    setlocale(LC_ALL, $locale);
-    bindtextdomain("messages", "./locale");
-    textdomain("messages");
+    $locales = array( $locale );
+    if ( ! strstr( $locale, "_" ) )
+    {
+      $loc = $locale . "_" . strtoupper( $locale );
+      $locales[] = $loc;
+      $locales[] = $loc . ".utf8";
+    }
+    else
+    {
+      $locales[] = $locale . ".utf8";
+    }
+
+    $locale = setlocale( LC_MESSAGES, $locales );
+    putenv("LC_MESSAGES=$locale");
     $this->locale = $locale;
+    if ( $this->hasLog() )
+    {
+      $this->log( "Setting locale '$locale'", QCL_LOG_LOCALE);
+      $this->logLocaleInfo();
+    }
 	}
 
   /**
@@ -129,41 +177,84 @@ class qcl_locale_Manager extends qcl_core_Object
 
   /**
    * Return the available application locales
-   * FIXME currently hardcoded
-   * @return {String[]} array of available locales
+   * @return array of available locales
    */
   public function getAvailableLocales()
   {
-    return array("de","en");
+    static $availableLocales = null;
+    if ( $availableLocales === null )
+    {
+      $availableLocales = array();
+      foreach ( scandir( "./locale" ) as $dir )
+      {
+        if ( $dir[0] != "." )
+        {
+          $availableLocales[] = $dir;
+        }
+      }
+    }
+    return $availableLocales;
   }
 
   /**
    * Translates a message and applies sprintf formatting to it.
+   * The gettext domain is taken from the first segment of the class
+   * name. Class foo_bar_Baz will use translations of
+   * domain "foo", stored in "foo/class/locale/xx/LC_MESSAGES/foo.po".
    *
-   * @param String $messageId message id (may contain format strings)
-   * @param Array  $varargs (optional) variable number of argumes applied to the format string
+   * @param string $messageId
+   *    Message id (may contain format strings)
+   * @param array $varargs
+   *    Optional arguments applied to the format string
+   * @param string $className
+   *    If given, use the first segment of the class name as domain
+   *    for the translation.
    * @return string
    */
-  public function tr ( $messageId, $varargs=array() )
+  public function tr( $messageId, $varargs=array(), $className=null )
   {
-    $translation =  gettext( $messageId );
+    if ( $className and ( count( $segments = explode( "_", $className) ) > 1 ) )
+    {
+      $translation = dgettext( $segments[0], $messageId );
+      if ( $this->hasLog() ) $this->log( "Translating '$messageId' into '$translation' using domain '$segments[0]'", QCL_LOG_LOCALE);
+    }
+    else
+    {
+      $tranlation = gettext( $messageId );
+      if ( $this->hasLog() ) $this->log( "Translating '$messageId' into '$translation'.", QCL_LOG_LOCALE);
+    }
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);
   }
 
   /**
-   * Translate a plural message.Depending on the third argument the plural or the singular form is chosen.
-   * sprintf formatting is applied to the result string
+   * Like tr(), but translate a plural message.
+   * Depending on the third argument the plural or the singular form is
+   * chosen.
    *
-   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
-   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
-   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
-   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
+   * @param string $singularMessageId
+   *    Message id of the singular form (may contain format strings)
+   * @param string $pluralMessageId
+   *    Message id of the plural form (may contain format strings)
+   * @param int $count
+   *    If greater than 1 the plural form otherwhise the singular form is returned.
+   * @param array $varargs
+   *    (optional) Variable number of arguments for the sprintf formatting
+   * @param string $className
+   *    If given, use the first segment of the class name as domain
+   *    for the translation.
    * @return string
    */
-  public function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  public function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array(), $className=null )
   {
-    $translation =  ngettext( $singularMessageId, $pluralMessageId, $count );
+    if ( $className and ( count( $segments = explode( "_", $className) ) > 1 ) )
+    {
+      $translation =  dngettext( $segments[0], $singularMessageId, $pluralMessageId, $count );
+    }
+    else
+    {
+      $translation =  ngettext( $singularMessageId, $pluralMessageId, $count );
+    }
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);
   }

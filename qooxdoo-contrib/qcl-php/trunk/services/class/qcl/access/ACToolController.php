@@ -44,27 +44,27 @@ class qcl_access_ACToolController
     return  array(
       'user'        => array(
         'model'       => $this->getAccessController()->getUserModel(),
-        'label'       => "Users",
+        'label'       => $this->tr("Users"),
         'labelProp'   => "name"
       ),
       'role'        => array(
         'model'       => $this->getAccessController()->getRoleModel(),
-        'label'       => "Roles",
+        'label'       => $this->tr("Roles"),
         'labelProp'   => "name"
       ),
       'group'        => array(
         'model'       => $this->getAccessController()->getGroupModel(),
-        'label'       => "Groups",
+        'label'       => $this->tr("Groups"),
         'labelProp'   => "name"
       ),
       'permission'  => array(
         'model'       => $this->getAccessController()->getPermissionModel(),
-        'label'       => "Permissions",
+        'label'       => $this->tr("Permissions"),
         'labelProp'   => "namedId"
       ),
       'datasource'  => array(
         'model'       => $this->getDatasourceModel(),
-        'label'       => "Datasources",
+        'label'       => $this->tr("Datasources"),
         'labelProp'   => "title",
 
       )
@@ -84,27 +84,27 @@ class qcl_access_ACToolController
     return array(
       array(
         'icon'    => null,
-        'label'   => "Users",
+        'label'   => $this->tr("Users"),
         'value'   => "user"
       ),
       array(
         'icon'    => null,
-        'label'   => "Roles",
+        'label'   => $this->tr("Roles"),
         'value'   => "role"
       ),
       array(
         'icon'    => null,
-        'label'   => "Groups",
+        'label'   => $this->tr("Groups"),
         'value'   => "group"
       ),
       array(
         'icon'    => null,
-        'label'   => "Permissions",
+        'label'   => $this->tr("Permissions"),
         'value'   => "permission"
       ),
       array(
         'icon'    => null,
-        'label'   => "Datasources",
+        'label'   => $this->tr("Datasources"),
         'value'   => "datasource"
       ),
     );
@@ -200,7 +200,7 @@ class qcl_access_ACToolController
     $tree = array(
       'icon'      => "icon/16/actions/address-book-new.png",
       'children'  => array(),
-      'label'     => "Relations",
+      'label'     => $this->tr("Relations"),
       'value'     => null,
       'type'      => null
     );
@@ -273,7 +273,7 @@ class qcl_access_ACToolController
             {
               $groupNode = array(
                 'icon'      => "icon/16/actions/address-book-new.png",
-                'label'     => "in " .$groupModel->get( $models['group']['labelProp'] ),
+                'label'     => $this->tr("in") . " " .$groupModel->get( $models['group']['labelProp'] ),
                 'type'      => "role",
                 'mode'      => "link",
                 'value'     => "group=" . $groupModel->namedId() . ",user=" . $userModel->namedId(),
@@ -310,7 +310,7 @@ class qcl_access_ACToolController
            */
           $groupNode = array(
             'icon'      => "icon/16/actions/address-book-new.png",
-            'label'     => "In all groups",
+            'label'     => $this->tr("In all groups"),
             'type'      => "role",
             'value'     => "user=" . $userModel->namedId(),
             'mode'      => "link",
@@ -407,8 +407,6 @@ class qcl_access_ACToolController
     return "OK";
   }
 
-
-
   /**
    * Delete a model record
    * @param $type
@@ -423,7 +421,7 @@ class qcl_access_ACToolController
       case "datasource":
         qcl_import("qcl_ui_dialog_Confirm");
         return new qcl_ui_dialog_Confirm(
-          "Do you want to remove only the datasource entry or all associated data?",
+          $this->tr("Do you want to remove only the datasource entry or all associated data?"),
           array( "All data", "Entry only", true),
           $this->serviceName(), "deleteDatasource", array($ids)
         );

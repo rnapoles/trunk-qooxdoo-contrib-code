@@ -176,7 +176,7 @@ class qcl_access_model_Group
   public function getRoleListData()
   {
     $listData = array( array(
-      'label' => "No role",
+      'label' => $this->tr("No role"),
       'value' => ""
     ) );
     $roleModel = $this->getApplication()->getAccessController()->getRoleModel();
