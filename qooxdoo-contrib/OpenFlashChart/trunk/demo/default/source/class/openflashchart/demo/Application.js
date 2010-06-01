@@ -24,11 +24,11 @@ qx.Class.define("openflashchart.demo.Application",
   members :
   {
     __label : null,
-    
+
     __data : null,
-    
+
     /**
-     * This method contains the initial application code and gets called 
+     * This method contains the initial application code and gets called
      * during startup of the application
      */
     main : function()
@@ -50,7 +50,7 @@ qx.Class.define("openflashchart.demo.Application",
 
       var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
       this.getRoot().add(container, {edge: 20});
-      
+
       var url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json.txt");
       container.add(new qx.ui.embed.Html("This demo shows how to use a qooxdoo based wrapper for " +
         "Open Flash Chart. It loads a <a href='" + url + "' target='_blank'>JSON</a> configuration file " +
@@ -60,31 +60,31 @@ qx.Class.define("openflashchart.demo.Application",
 
       this.__label = new qx.ui.basic.Label("Please click on one item.");
       container.add(this.__label);
-      
+
       var chart = new openflashchart.Chart();
       container.add(chart, {flex: 1});
-      
+
       url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json");
       var request = new qx.io.remote.Request(url, "GET", "application/json");
-        
+
       request.addListener("completed", function(e) {
         this.__data = e.getContent();
         chart.load(this.__data);
       }, this);
-        
+
       request.send();
     },
-    
+
     onLineOneClick : function(index) {
       var line = this.__data.elements[0];
       this.__log(line.text, line.values[index]);
     },
-    
+
     onLineTwoClick : function(index) {
       var line = this.__data.elements[1];
       this.__log(line.text, line.values[index]);
     },
-    
+
     __log : function(line, value) {
       this.__label.setValue(line + " -> " + value + " clicked.");
     }
