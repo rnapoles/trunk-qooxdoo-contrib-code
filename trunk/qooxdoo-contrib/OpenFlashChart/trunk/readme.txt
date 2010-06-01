@@ -1,9 +1,8 @@
-Your qooxdoo Contribution
+Open Flash Chart Contribution
 =========================
 
-This is a qooxdoo contribution skeleton which is used as a template. The 
-'create-application.py' script (usually under tool/bin/create-application.py)
-will use this and expand it into a self-contained qooxdoo contribution which 
-can then be further extended. Please refer to the script and other documentation
-for further information.
+This is a qooxdoo based wrapper for the Open Flash Chart (OFC) charting solution.
+The contribution can be used to draw OFC charts with qooxdoo. 
 
+For more details in OFC have a look at the project page:
+http://teethgrinder.co.uk/open-flash-chart-2/

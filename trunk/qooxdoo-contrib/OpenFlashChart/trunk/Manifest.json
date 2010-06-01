@@ -4,7 +4,7 @@
     "name" : "OpenFlashChart",
 
     "summary" : "OpenFlashChart Contribution",
-    "description" : "This is a skeleton for a qooxdoo contribution.",
+    "description" : "Qooxdoo based wrapper for Open Flash Chart (OFC), it can be used to draw OFC charts.",
     
     "homepage" : "http://contrib.qooxdoo.org/project/OpenFlashChart",
 
@@ -12,8 +12,8 @@
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Christian Hagendorn (chris_schmidt)",
+        "email" : "chris_schmidt@users.sourceforge.net"
       }
     ],
 
