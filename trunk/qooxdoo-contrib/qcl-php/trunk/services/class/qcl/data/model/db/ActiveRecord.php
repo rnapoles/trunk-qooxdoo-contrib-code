@@ -123,6 +123,7 @@ class qcl_data_model_db_ActiveRecord
   {
     parent::__construct( $datasourceModel );
     $this->addProperties( $this->properties );
+    $this->addPrimaryIndexProperties(array('id'));
   }
 
   //-------------------------------------------------------------

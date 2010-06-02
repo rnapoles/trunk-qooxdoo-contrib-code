@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 qcl_import( "qcl_data_model_Model" );
@@ -321,6 +322,21 @@ class qcl_data_model_AbstractActiveRecord
   public function addIndexes( $indexes )
   {
     return $this->getQueryBehavior()->addIndexes( $indexes );
+  }
+
+  /**
+   * Add properties to the primary index of the model
+   *
+   * Be aware, that you extend the primary key so it needs more space ind the database files
+   *
+   * @see qcl_data_model_IQueryBehavior::addPrimaryIndexProperties()
+   * @param string[] $properties Array of the property names of the model that should be inserted into the primary key
+   * @return qcl_data_model_AbstractActiveRecord Current model
+   * @since 2010-05-21
+   */
+  public function addPrimaryIndexProperties($properties) {
+      $this->getQueryBehavior()->addPrimaryIndexProperties($properties);
+      return $this;
   }
 
   //-------------------------------------------------------------

@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 /**
@@ -94,6 +95,12 @@ class qcl_data_db_Query
    * @var string|array|null
    */
   public $orderBy  =null;
+
+  /**
+   * Group by property/properties.
+   * @var string|array|null
+   */
+  public $groupBy  =null;
 
   /**
    * The first row to retrieve

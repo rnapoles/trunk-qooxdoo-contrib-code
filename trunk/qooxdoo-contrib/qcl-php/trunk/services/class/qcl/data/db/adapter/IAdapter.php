@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 /**
@@ -415,6 +416,13 @@ interface qcl_data_db_adapter_IAdapter
    * @param string $table
    */
   public function dropPrimaryKey( $table );
+
+  /**
+   * Modify the primary key index from a table
+   * @param string $table
+   * @param string[] $columns Columns for the primary key
+   */
+  public function modifyPrimaryKey( $table, $columns );
 
   /**
    * Removes an index

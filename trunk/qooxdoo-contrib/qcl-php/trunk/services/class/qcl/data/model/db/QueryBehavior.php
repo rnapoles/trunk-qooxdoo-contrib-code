@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 //qcl_import( "qcl_data_model_IQueryBehavior" );
@@ -77,6 +78,10 @@ class qcl_data_model_db_QueryBehavior
    */
   private $indexes = array();
 
+  /**
+   * @var string[] Properties for the primary index
+   */
+  private $primaryIndexProperties = array();
 
   /**
    * Whether the object is initialized
@@ -340,6 +345,31 @@ class qcl_data_model_db_QueryBehavior
       $this->indexes[$name] = $index;
     }
   }
+
+  /**
+   * Add properties to the primary index of the model
+   *
+   * Be aware, that you extend the primary key so it needs more space ind the database files
+   *
+   * @see qcl_data_model_IQueryBehavior::addPrimaryIndexProperties()
+   * @param string[] $properties Array of the property names of the model that should be inserted into the primary key
+   * @return qcl_data_model_AbstractActiveRecord Current model
+   * @since 2010-05-21
+   */
+   public function addPrimaryIndexProperties(array $properties) {
+       foreach($properties as $property) {
+           $this->primaryIndexProperties[] = $property;
+       }
+   }
+
+   /**
+    * Gets the properties for the primary index
+    *
+    * @return string[]
+    */
+   public function getPrimaryIndexProperties() {
+       return $this->primaryIndexProperties;
+   }
 
   /**
    * Sets up the indexes. This must be called from the init()
@@ -833,8 +863,10 @@ class qcl_data_model_db_QueryBehavior
       {
         $orderBy = explode(",", $query->orderBy );
       }
-      else if ( ! is_array( $orderBy ) )
+      else if ( is_array(  $query->orderBy ) )
       {
+        $orderBy =  $query->orderBy;
+      } else {
         throw new InvalidArgumentException("Invalid 'orderBy' data.");
       }
 
@@ -857,6 +889,35 @@ class qcl_data_model_db_QueryBehavior
       }
       $orderBy = implode(",", (array) $column );
       $sql .= "\n    ORDER BY $orderBy $direction";
+
+    }
+
+    /*
+     * GROUP BY
+     */
+    if ( $query->groupBy )
+    {
+      if ( is_string( $query->groupBy ) )
+      {
+        $groupBy = explode(",", $query->groupBy );
+      }
+      else if (is_array( $query->groupBy ) )
+      {
+        $groupBy = $query->groupBy;
+      } else {
+        throw new InvalidArgumentException("Invalid 'groupBy' data.");
+      }
+
+      /*
+       * group columns
+       */
+      $column = array();
+      foreach ( $groupBy as $property )
+      {
+        $column[] = $adpt->formatColumnName( $this->getColumnName( $property ) );
+      }
+      $groupBy = implode(",", (array) $column );
+      $sql .= "\n    GROUP BY $groupBy";
 
     }
 

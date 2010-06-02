@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 class qcl_data_db_Table
@@ -229,6 +230,15 @@ class qcl_data_db_Table
   public function dropPrimaryKey()
   {
     return $this->getAdapter()->dropPrimaryKey( $this->getName() );
+  }
+
+  /**
+   * Modify the primary key index from the table
+   * @param string[] $columns Columns for the primary key
+   */
+  public function modifyPrimaryKey($columns)
+  {
+    return $this->getAdapter()->modifyPrimaryKey( $this->getName(), $columns);
   }
 
   /**
