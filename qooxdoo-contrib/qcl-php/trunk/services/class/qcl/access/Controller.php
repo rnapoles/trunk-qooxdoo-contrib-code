@@ -444,9 +444,20 @@ class qcl_access_Controller
     }
 
     /*
-     * compare provided password with stored password
+     * Compare provided password with stored password
      */
     $savedPw = $userModel->getPassword();
+
+    /*
+     * upgrade md5-passwords to new sha1-salted passwords
+     * FIXME only for upgrade, will be removed
+     */
+    if( md5( $password ) == $savedPw )
+    {
+      $savedPw = $this->generateHash( $password );
+      $userModel->setPassword( $savedPw );
+      $userModel->save();
+    }
 
     if ( $password == $savedPw or
       $this->generateHash( $password, $savedPw ) == $savedPw )
