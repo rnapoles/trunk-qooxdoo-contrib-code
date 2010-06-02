@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 /**
@@ -102,6 +103,22 @@ interface qcl_data_model_IQueryBehavior
    * @param string $property Property name
    */
   public function getColumnName( $name );
+
+  /**
+   * Add properties to the primary index of the model
+   *
+   * @param string[] $properties Array of the property names of the model that should be inserted into the primary key
+   * @since 2010-05-21
+   */
+   public function addPrimaryIndexProperties(array $properties);
+
+
+  /**
+   * Gets the properties for the primary index
+   *
+   * @return string[]
+   */
+  public function getPrimaryIndexProperties();
 
   //-------------------------------------------------------------
   // Record search and retrieval methods (select/fetch methods)
@@ -258,6 +275,5 @@ interface qcl_data_model_IQueryBehavior
    * @return void
    */
   public function reset();
-
 }
 ?>

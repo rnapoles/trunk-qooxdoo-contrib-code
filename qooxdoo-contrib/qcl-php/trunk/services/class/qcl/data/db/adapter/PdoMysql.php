@@ -1152,6 +1152,23 @@ class qcl_data_db_adapter_PdoMysql
   }
 
   /**
+   * Modify the primary key index from a table
+   *
+   * @param string $table
+   * @param string[] $columns Columns for the primary key
+   */
+  public function modifyPrimaryKey( $table, $columns )
+  {
+    $table   = $this->formatTableName( $table );
+    $columns = (array) $columns;
+    $this->execute("
+      ALTER TABLE $table DROP PRIMARY KEY, ADD PRIMARY KEY  (`" . implode("`,`", $columns) . "`);
+    ");
+
+     $this->log("Primary key from table $table modified.",QCL_LOG_TABLES );
+  }
+
+  /**
    * Removes an index
    * @param string $table table name
    * @param string $index index name

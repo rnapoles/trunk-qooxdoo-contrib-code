@@ -14,6 +14,7 @@
  *
  * Authors:
  *  * Christian Boulanger (cboulanger)
+ *  * Oliver Friedrich (jesus77)
  */
 
 qcl_import( "qcl_data_model_PropertyBehavior" );
@@ -147,6 +148,11 @@ class qcl_data_model_db_PropertyBehavior
        * set up the properties
        */
       $this->setupProperties();
+
+      /*
+       * set up the primary index
+       */
+      $this->setupPrimaryIndex();
 
       /*
        * initialize the property values
