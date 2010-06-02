@@ -65,7 +65,11 @@ class qcl_locale_Manager extends qcl_core_Object
 	   * as default domain
 	   */
     $appId = $this->getApplication()->id();
-    $path = bindtextdomain( $appId, "./locale" );
+    $i18nAppPath = './locale';
+    if(!is_dir($i18nAppPath)) {
+        throw new JsonRpcException('Directory `' . $i18nAppPath . '` missing in services directory for i18n.');
+    }
+    $path = bindtextdomain( $appId, $i18nAppPath );
     bind_textdomain_codeset( $appId, 'UTF-8');
     textdomain($appId);
     if ( $this->hasLog() ) $this->log( "textdomain path for '$appId': '$path'", QCL_LOG_LOCALE );
