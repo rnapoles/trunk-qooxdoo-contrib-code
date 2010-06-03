@@ -28,9 +28,18 @@ class qcl_application_plugin_Service
   extends qcl_data_controller_Controller
 {
 
+  /**
+   * Returns a new instance of the registry model
+   * @return qcl_application_plugin_RegistryModel
+   */
+  public function getRegistryModel()
+  {
+    return new qcl_application_plugin_RegistryModel();
+  }
 
   /**
    * Creates form to install or uninstall plugins
+   * @return qcl_ui_dialog_Form
    */
   public function method_manage()
   {
@@ -38,7 +47,7 @@ class qcl_application_plugin_Service
     $plugin_path = $app->pluginPath();
     $formData = array();
 
-    $registryModel = new qcl_application_plugin_RegistryModel();
+    $registryModel = $this->getRegistryModel();
 
     /*
      * scan plugin directory
@@ -66,7 +75,8 @@ class qcl_application_plugin_Service
         {
           $options = array(
             array( 'label'  => $this->tr("Plugin is installed"), 'value' => "" ),
-            array( 'label'  => $this->tr("Uninstall plugin"), 'value' => "uninstall" )
+            array( 'label'  => $this->tr("Uninstall plugin"), 'value' => "uninstall" ),
+            array( 'label'  => $this->tr("Reinstall plugin"), 'value' => "reinstall" )
           );
         }
 
@@ -94,7 +104,8 @@ class qcl_application_plugin_Service
     {
       return "ABORTED";
     }
-    $registryModel = new qcl_application_plugin_RegistryModel();
+
+    $registryModel = $this->getRegistryModel();
     $messages = array();
 
     foreach( $data as $namedId => $action )
@@ -102,7 +113,8 @@ class qcl_application_plugin_Service
       $plugin_path = $this->getApplication()->pluginPath();
       $file = "$plugin_path/$namedId/Plugin.php";
       require_once ( $file );
-      $class  = "{$namedId}_Plugin";
+
+      $class  = $namedId ."_Plugin";
       $plugin = new $class();
       $msg = "";
 
@@ -117,13 +129,48 @@ class qcl_application_plugin_Service
             $plugin->install();
             $registryModel->create( $namedId, array(
               'name'        => $plugin->getName(),
-              'description' => $plugin->getDescription()
+              'description' => $plugin->getDescription(),
+              'data'        => $plugin->getData(),
+              'active'      => true
             ));
+            $msg = sprintf(
+              "Installed plugin '%s'",
+              $plugin->getName()
+            );
           }
           catch( qcl_application_plugin_Exception $e )
           {
             $msg = sprintf(
               "Installation of plugin '%s' failed: %s",
+              $plugin->getName(), $e->getMessage()
+            );
+            $this->getLogger()->log($msg, QCL_LOG_PLUGIN );
+          }
+          break;
+
+        case "reinstall":
+          $this->getLogger()->log(sprintf(
+            "Reinstalling plugin '%s'", $plugin->getName()
+          ), QCL_LOG_PLUGIN );
+          try
+          {
+            $plugin->reinstall();
+            $registryModel->load($namedId);
+            $registryModel->set( array(
+              'description' => $plugin->getDescription(),
+              'data'        => $plugin->getData(),
+              'active'      => true
+            ) );
+            $registryModel->save();
+            $msg = sprintf(
+              "Reinstalled plugin '%s'",
+              $plugin->getName()
+            );
+          }
+          catch( qcl_application_plugin_Exception $e )
+          {
+            $msg = sprintf(
+              "Re-Installation of plugin '%s' failed: %s",
               $plugin->getName(), $e->getMessage()
             );
             $this->getLogger()->log($msg, QCL_LOG_PLUGIN );
@@ -139,6 +186,10 @@ class qcl_application_plugin_Service
             $plugin->uninstall();
             $registryModel->load( $namedId );
             $registryModel->delete();
+            $msg = sprintf(
+              "Uninstalled plugin '%s'",
+              $plugin->getName()
+            );
           }
           catch( qcl_application_plugin_Exception $e )
           {
@@ -161,6 +212,23 @@ class qcl_application_plugin_Service
       return new qcl_ui_dialog_Alert( implode("<br/>", $messages ) );
     }
     return "OK";
+  }
+
+  /**
+   * Returns an array of plugin data, with at least the url
+   * from which client plugin code is loaded.
+   * @return array
+   */
+  public function method_getPluginData()
+  {
+    $data = array();
+    $registryModel = $this->getRegistryModel();
+    $registryModel->findWhere( array( 'active' => true ) );
+    while( $registryModel->loadNext() )
+    {
+      $data = array_merge( $data, $registryModel->get("data") );
+    }
+    return $data;
   }
 }
 ?>

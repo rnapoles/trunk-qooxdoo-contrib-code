@@ -25,12 +25,23 @@ class qcl_application_plugin_RegistryModel
 
   private $properties = array(
     'name'  => array(
-      'check'   => "string",
-      'sqltype' => "varchar(255)"
+      'check'       => "string",
+      'sqltype'     => "varchar(255)"
     ),
     'description'  => array(
-      'check'   => "string",
-      'sqltype' => "varchar(50)"
+      'check'       => "string",
+      'sqltype'     => "varchar(50)"
+    ),
+    'data'  => array(
+      'check'       => "array",
+      'init'        => array(),
+      'serialize'   => true
+    ),
+    'active'      => array(
+      'check'       => "boolean",
+      'sqltype'     => "int(1)",
+      'nullable'    => false,
+      'init'        => true
     )
   );
 
