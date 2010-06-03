@@ -43,6 +43,27 @@ abstract class qcl_application_plugin_AbstractPlugin
   protected $description;
 
   /**
+   * An array of associative arrays to load which at least contain
+   * the url from which to load client-side plugin code. Currently,
+   * the array structure looks like this:
+   * <pre>
+   * array(
+   *   'name'  => "Name of the plugin",
+   *   'url' => 'resource/<yourapp>/plugin/<pluginname>/Plugin.js'
+   * ),
+   * </pre>
+   * As you can see from the url, it is suggested to put the plugin
+   * code into a subfolder of the resource folder.
+   *
+   * @var array
+   */
+  protected $data = array();
+
+  //-------------------------------------------------------------
+  // properties
+  //-------------------------------------------------------------
+
+  /**
    * Returns the descriptive name of the plugin
    * @return string
    */
@@ -52,9 +73,22 @@ abstract class qcl_application_plugin_AbstractPlugin
     return $this->name;
   }
 
+  /**
+   * Getter for plugin description
+   * @return string
+   */
   public function getDescription()
   {
     return $this->description;
+  }
+
+  /**
+   * Getter for plugin data
+   * @return array
+   */
+  public function getData()
+  {
+    return $this->data;
   }
 
  	/**
@@ -66,6 +100,19 @@ abstract class qcl_application_plugin_AbstractPlugin
   public function install()
   {
     throw new qcl_core_NotImplementedException(__METHOD__);
+  }
+
+  /**
+   * Re-installs the plugin. If not overridden, this simply calls the
+   * uninstall() and install() methods in order.
+   * Throws qcl_application_plugin_Exception if something goes wrong.
+   *
+   * @throws qcl_application_plugin_Exception
+   */
+  public function reinstall()
+  {
+    $this->uninstall();
+    $this->install();
   }
 
   /**
