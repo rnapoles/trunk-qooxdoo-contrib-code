@@ -49,7 +49,7 @@ abstract class qcl_application_plugin_AbstractPlugin
    * <pre>
    * array(
    *   'name'  => "Name of the plugin",
-   *   'url' => 'resource/<yourapp>/plugin/<pluginname>/Plugin.js'
+   *   'url' => 'resource/yourapp/plugin/pluginname/Plugin.js'
    * ),
    * </pre>
    * As you can see from the url, it is suggested to put the plugin
