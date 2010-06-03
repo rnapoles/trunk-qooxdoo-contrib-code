@@ -36,6 +36,16 @@ class qcl_core_PropertyBehavior
   protected $object = null;
 
   /**
+   * The logger instance
+   * @var qcl_log_Logger
+   */
+  protected $logger;
+
+  //-------------------------------------------------------------
+  // initialization
+  //-------------------------------------------------------------
+
+  /**
    * Constructor
    * @param qcl_core_Object $object Object affected by this behavior
    * @return unknown_type
@@ -43,6 +53,7 @@ class qcl_core_PropertyBehavior
   function __construct( $object )
   {
     $this->object = $object;
+    $this->logger = qcl_log_Logger::getInstance();
   }
 
 
@@ -67,6 +78,34 @@ class qcl_core_PropertyBehavior
     }
     return false;
   }
+
+  //-------------------------------------------------------------
+  // logging
+  //-------------------------------------------------------------
+
+  /**
+   * Checks if the QCL_LOG_PROPERTIES is enabled
+   * @return unknown_type
+   */
+  protected function hasLog()
+  {
+    return $this->logger->isFilterEnabled( QCL_LOG_PROPERTIES );
+  }
+
+  /**
+   * Logs a message with the QCL_LOG_PROPERTIES filter
+   * @param $msg
+   * @return void
+   */
+  protected function log( $msg )
+  {
+    $this->logger->log( $msg, QCL_LOG_PROPERTIES );
+  }
+
+  //-------------------------------------------------------------
+  // API
+  //-------------------------------------------------------------
+
 
   /**
    * Getter for object
@@ -302,17 +341,6 @@ class qcl_core_PropertyBehavior
   public function reset()
   {
     // do nothing
-  }
-
-  /**
-   * Forwards log method request to object
-   * @param $msg
-   * @param $filters
-   * @return void
-   */
-  protected function log( $msg, $filters )
-  {
-    $this->getObject()->log( $msg, $filters );
   }
 }
 ?>
