@@ -125,7 +125,7 @@ qx.Class.define("egg.ui.plot.Plot",
       var id = "jqplot_" + this.toHashCode();
       var div = this.getContainerElement().getDomElement();
       qx.bom.element.Attribute.set(div, "id", id);
-      this.__jqPlot = $.jqplot(id, this.getData());
+      this.__jqPlot = $.jqplot(id, this.getData(), this.getOptions());
     },
     
     /**
@@ -135,6 +135,9 @@ qx.Class.define("egg.ui.plot.Plot",
      */
     __plot: function (e)
     {
+      if (this.__jqPlot) {
+        this.__appearHandler();
+      }  
       // wait when dom element is resized and then draw a plot
       var timer = qx.util.TimerManager.getInstance();
       timer.start(function(userData, timerId) {this.__jqPlot && this.__jqPlot.replot();}, 0, this, null, 0);
