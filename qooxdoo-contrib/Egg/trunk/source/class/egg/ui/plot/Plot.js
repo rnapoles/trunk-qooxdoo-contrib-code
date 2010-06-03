@@ -107,12 +107,14 @@ qx.Class.define("egg.ui.plot.Plot",
     _applyData: function (value, old)
     {
       //TODO: not implemented yet
+      this.__plot();
     },
     
     // property modifier
     _applyOptions: function (value, old)
     {
       //TODO: not implemented yet
+      this.__plot();
     },
     
     /**
