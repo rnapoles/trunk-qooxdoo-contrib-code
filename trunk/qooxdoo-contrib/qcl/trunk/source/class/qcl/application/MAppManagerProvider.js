@@ -51,13 +51,23 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
   properties : {
     
     /**
+     * The named id of the application === application namespace
+     */
+    applicationId : 
+    {
+      check : "String",
+      nullable : false,
+      init : "qooxdoo"
+    },    
+    
+    /**
      * The name of the application
      */
     applicationName : 
     {
       check : "String",
       nullable : false,
-      init : "qooxdoo"
+      init : "A qooxdoo application"
     },
     
     /**
@@ -137,6 +147,18 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
       nullable : false,
       event    : "changeClipboardManager"
     },
+    
+    /**
+     * The manager for loading the client-side code of the
+     * plugins of the application
+     * @type 
+     */
+    pluginManager :
+    {
+      check    : "qx.core.Object", // @todo: create interface
+      nullable : false,
+      event    : "changePluginManager"
+    },    
     
     /**
      * The manager for native child windows
@@ -236,6 +258,7 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
       this.setRpcManager( new qcl.io.RpcManager );
       this.setAccessManager( new qcl.access.AccessManager );
       this.setConfigManager( new qcl.application.ConfigManager );
+      this.setPluginManager( new qcl.application.PluginManager );
       // this.setClipboardManager ( new qcl.application.ClipboardManager );
    
       /*
