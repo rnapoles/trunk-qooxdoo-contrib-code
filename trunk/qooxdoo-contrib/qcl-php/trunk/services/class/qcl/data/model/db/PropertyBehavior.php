@@ -134,7 +134,7 @@ class qcl_data_model_db_PropertyBehavior
   {
     if ( ! $this->isInitialized )
     {
-      $this->getModel()->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "* Initializing model properties for '%s' using '%s'",
         $this->getModel()->className(), get_class( $this )
       ), QCL_LOG_PROPERTIES );
@@ -192,7 +192,7 @@ class qcl_data_model_db_PropertyBehavior
       $table = $model->getQueryBehavior()->getTable();
       if( ! $table->exists() )
       {
-        $model->log( sprintf(
+        if( $this->hasLog() ) $this->log( sprintf(
           "Creating table '%s' for model '%s'.",
           $tableName, $model->className()
         ), QCL_LOG_PROPERTIES );
@@ -207,7 +207,7 @@ class qcl_data_model_db_PropertyBehavior
       }
       else
       {
-        $model->log( sprintf(
+        if( $this->hasLog() ) $this->log( sprintf(
           "Table '%s' for model '%s' already exists.",
           $tableName, $model->className()
         ), QCL_LOG_PROPERTIES );
@@ -215,7 +215,7 @@ class qcl_data_model_db_PropertyBehavior
     }
     else
     {
-      $model->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "Cache: Table '%s' for model '%s' already exists.",
         $tableName, $model->className()
       ), QCL_LOG_PROPERTIES );
@@ -244,7 +244,7 @@ class qcl_data_model_db_PropertyBehavior
      */
     if ( ! $tableName )
     {
-      $model->raiseError("Cannot setup properties. No table name!");
+      throw new qcl_core_PropertyBehaviorException("Cannot setup properties. No table name!");
     }
 
     /*
@@ -271,7 +271,7 @@ class qcl_data_model_db_PropertyBehavior
       if ( isset( $cachedProps[$property] )
         and $cachedProps[$property] == $serializedProps )
       {
-        $model->log( sprintf(
+        if( $this->hasLog() ) $this->log( sprintf(
           "Property '%s' of class '%s', table '%s' has not changed.",
           $property, $model->className(), $tableName
         ), QCL_LOG_PROPERTIES );
@@ -310,6 +310,11 @@ class qcl_data_model_db_PropertyBehavior
         {
           // FIXME: this is MySQL-specific -> delegate to adapter!
           $sqltype = "blob";
+          if (  isset( $prop['init'] ) )
+          {
+            // FIXME doesn't work: blobs cannot have default value in mysql
+            //$sqltype .= " DEFAULT '" . serialize( $prop['init'] ) . "'";
+          }
         }
         elseif ( $this->isPrimitive( $prop['check'] ) )
         {
@@ -373,16 +378,14 @@ class qcl_data_model_db_PropertyBehavior
         $curr_sqltype = $table->getColumnDefinition( $column );
         if (strtolower( $curr_sqltype )  != strtolower( $sqltype ) )
         {
-          $model->log( sprintf(
+          if( $this->hasLog() ) $this->log( sprintf(
             "Column '%s' has changed from '%s' to '%s'",
             $column, $curr_sqltype, $sqltype
-          ), QCL_LOG_PROPERTIES);
+          ) );
         }
         else
         {
-          $model->log(
-            "Column '$column' has not changed.", QCL_LOG_PROPERTIES
-          );
+          if( $this->hasLog() ) $this->log( "Column '$column' has not changed.");
         }
       }
 
@@ -408,7 +411,7 @@ class qcl_data_model_db_PropertyBehavior
     {
       // FIXME - Bad hack, doesn't work if foreign keys are manually set!
       return $property;
-      $this->getModel()->raiseError( sprintf(
+      throw new qcl_core_PropertyBehaviorException( sprintf(
         "Cannot convert property '%s' into column name", $property
       ) );
     }
