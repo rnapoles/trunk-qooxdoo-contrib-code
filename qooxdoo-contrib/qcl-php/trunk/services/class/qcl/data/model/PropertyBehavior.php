@@ -95,6 +95,7 @@ class qcl_data_model_PropertyBehavior
    */
   private $isInitialized = false;
 
+
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
@@ -117,7 +118,7 @@ class qcl_data_model_PropertyBehavior
   {
     if ( ! $this->isInitialized )
     {
-      $this->getModel()->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "* Initializing model properties for '%s' using '%s'",
         $this->getModel()->className(), get_class( $this )
       ), QCL_LOG_PROPERTIES );
@@ -144,6 +145,13 @@ class qcl_data_model_PropertyBehavior
     }
   }
 
+
+
+  //-------------------------------------------------------------
+  // API
+  //-------------------------------------------------------------
+
+
   /**
    * Set initial values unless the model has been restored from persistent
    * data.
@@ -169,10 +177,10 @@ class qcl_data_model_PropertyBehavior
        */
       if ( isset( $prop['init'] )  )
       {
-        $this->getModel()->log( sprintf(
+        if( $this->hasLog() ) $this->log( sprintf(
           "Initializing property '%s' with '%s'",
           $property, $prop['init']
-        ), QCL_LOG_PROPERTIES );
+        ) );
         $this->set( $property, $prop['init'] );
       }
 
@@ -183,7 +191,7 @@ class qcl_data_model_PropertyBehavior
       {
         if ( $prop['nullable'] == true )
         {
-        $this->getModel()->log(  "Initializing property '$property' with NULL", QCL_LOG_PROPERTIES );
+          if ( $this->hasLog() ) $this->log(  "Initializing property '$property' with NULL" );
           $this->set( $property, null );
         }
         else
@@ -415,7 +423,7 @@ class qcl_data_model_PropertyBehavior
      */
     foreach ( $properties as $name => $map )
     {
-      $this->getModel()->log( sprintf(
+      if( $this->hasLog() ) $this->log( sprintf(
         "Adding property '%s' for model '%s'.", $name, $this->getModel()->className()
       ), QCL_LOG_PROPERTIES );
 
@@ -447,7 +455,8 @@ class qcl_data_model_PropertyBehavior
    * Setups the primary index of the table
    * @return void
    */
-  public function setupPrimaryIndex() {
+  public function setupPrimaryIndex()
+  {
 
     $table = $this->getModel()->getQueryBehavior()->getTable();
     $tableName = $this->getModel()->getQueryBehavior()->getTableName();
@@ -480,8 +489,10 @@ class qcl_data_model_PropertyBehavior
    * object with the value as the constructor argument. If the
    * 'serialize' flag has been set, unserialize the value into
    * a string before saving it.
+   *
    * FIXME this is a mess. Typecasting and unserializing should be
    * dealt with separately.
+   *
    * @param string $propertyName
    * @param mixed $value
    * @return mixed
@@ -493,16 +504,38 @@ class qcl_data_model_PropertyBehavior
     $type = $this->type( $propertyName );
     //$this->getModel()->debug( "$propertyName=$value($type)");
 
+    /*
+     * serialized array values
+     */
     if ( $type == "array"
           and isset( $this->properties[$propertyName]['serialize'] )
-            and  $this->properties[$propertyName]['serialize'] === true)
+          and $this->properties[$propertyName]['serialize'] === true)
     {
-      $value = unserialize( $value );
-      if ( ! is_array( $value ) )
+      /*
+       * If the value is NULL in the backend and we have an init
+       * value, use the init value instead.
+       */
+      if( $value === null and isset( $this->properties[$propertyName]['init'] ) )
       {
-        $this->getModel()->raiseError("Serialized value is not an array!");
+        $value = $this->properties[$propertyName]['init'];
+      }
+
+      /*
+       * else, unserialize. This must fail without a default value
+       */
+      else
+      {
+        $value = unserialize( $value );
+        if ( ! is_array( $value ) )
+        {
+          throw new qcl_core_PropertyBehaviorException("Serialized value is not an array!");
+        }
       }
     }
+
+    /*
+     * FIXME: now we check for a very similar setup!
+     */
     elseif ( is_null( $value ) )
     {
       if ( ! isset( $this->properties[$propertyName]['nullable' ] )
@@ -512,15 +545,23 @@ class qcl_data_model_PropertyBehavior
       }
       else
       {
-        $this->getModel()->raiseError(
+        throw new qcl_core_PropertyBehaviorException(
           "Non-nullable property '$propertyName' cannot take a null value"
         );
       }
     }
+
+    /*
+     * native types
+     */
     elseif ( in_array( $type, self::$native_types ) )
     {
       settype( $value, $type );
     }
+
+    /*
+     * objects
+     */
     elseif ( class_exists( $type ) )
     {
       if ( is_string( $value) )
@@ -580,7 +621,7 @@ class qcl_data_model_PropertyBehavior
     }
     elseif( ! is_object( $value) )
     {
-      $this->getModel()->raiseError(
+      throw new qcl_core_PropertyBehaviorException(
         "Unable to stringify '" . typeof( $value, true ) . "' type value. " .
         "Use the 'serialize' flag in the definition of property '$propertyName'."
       );
@@ -591,7 +632,7 @@ class qcl_data_model_PropertyBehavior
     }
     else
     {
-      $this->getModel()->raiseError(
+      throw new qcl_core_PropertyBehaviorException(
         "Unable to stringify a " . get_class( $value ) . " class object. " .
         "Use the 'serialize' flag in the definition of property '$propertyName'."
       );
@@ -634,21 +675,6 @@ class qcl_data_model_PropertyBehavior
       }
     }
     return $propList;
-  }
-
-  //-------------------------------------------------------------
-  // convenience methods
-  //-------------------------------------------------------------
-
-  /**
-   * Forwards log method request to model
-   * @param $msg
-   * @param $filters
-   * @return void
-   */
-  protected function log( $msg, $filters )
-  {
-    $this->getModel()->log( $msg, $filters );
   }
 }
 ?>
