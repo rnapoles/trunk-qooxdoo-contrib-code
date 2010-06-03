@@ -46,7 +46,7 @@ class qcl_access_ACToolController
         'model'       => $this->getAccessController()->getUserModel(),
         'label'       => $this->tr("Users"),
         'labelProp'   => "name",
-        'icon'        => "icon/16/apps/system-users.png"
+        'icon'        => "icon/16/apps/preferences-users.png"
       ),
       'role'        => array(
         'model'       => $this->getAccessController()->getRoleModel(),
