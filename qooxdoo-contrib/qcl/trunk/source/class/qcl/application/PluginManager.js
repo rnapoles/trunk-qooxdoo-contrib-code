@@ -137,12 +137,16 @@ qx.Class.define("qcl.application.PluginManager",
             count++;
             self.fireDataEvent("loadingPlugin", {
               'name'  : data.name,
-              'url'   : data.url + ( self.getPreventCache() ? ( "?nocache" + (new Date).getTime() ) : "" ),
+              'url'   : data.url,
               'count' : count,
               'sum'   : sum
             });
             var loader = new qx.io.ScriptLoader();
-            loader.load( data.url, loadScript );
+            var url = self.getPreventCache() 
+              ? data.url + "?nocache=" + (new Date).getTime() 
+              : data.url;
+              
+            loader.load( url, loadScript );
           })();
           
         },this
