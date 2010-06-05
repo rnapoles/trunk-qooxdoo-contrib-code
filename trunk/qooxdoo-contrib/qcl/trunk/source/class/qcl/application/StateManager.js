@@ -473,7 +473,15 @@ qx.Class.define("qcl.application.StateManager",
             break;
             
           case "Array":
-            value = value.split(",");
+            if ( value == "" )
+            {
+              value = [];
+            }
+            else
+            {
+              value = value.split(",");
+            }
+            break; 
             
           case undefined:
           case "String":
