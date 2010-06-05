@@ -846,17 +846,99 @@ if(!function_exists('get_called_class'))
             return $matches[1];
         }
         // won't get here.
-        case '->':
-          switch ($bt[$l]['function'])
-          {
-            case '__get':
-              // edge case -> get class of calling object
-              if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
-              return get_class($bt[$l]['object']);
-            default: return $bt[$l]['class'];
-          }
-        default: throw new Exception ("Unknown backtrace method type");
+          case '->':
+            switch ($bt[$l]['function'])
+            {
+              case '__get':
+                // edge case -> get class of calling object
+                if (!is_object($bt[$l]['object'])) throw new Exception ("Edge case fail. __get called on non object.");
+                return get_class($bt[$l]['object']);
+              default: return $bt[$l]['class'];
+            }
+              default: throw new Exception ("Unknown backtrace method type");
     }
   }
 }
+
+/**
+ * Encodes as json and pretty-prints the resulting json data.
+ * Posted by umbrae at gmail dot com on
+ * http://www.php.net/manual/de/function.json-encode.php#80339
+ *
+ * @param mixed $data
+ * @return string
+ */
+function json_format($data)
+{
+  $tab = "  ";
+  $new_json = "";
+  $indent_level = 0;
+  $in_string = false;
+
+  $json = json_encode($data);
+  $len = strlen($json);
+
+  for($c = 0; $c < $len; $c++)
+  {
+    $char = $json[$c];
+    switch($char)
+    {
+      case '{':
+      case '[':
+        if(!$in_string)
+        {
+          $new_json .= $char . "\n" . str_repeat($tab, $indent_level+1);
+          $indent_level++;
+        }
+        else
+        {
+          $new_json .= $char;
+        }
+        break;
+      case '}':
+      case ']':
+        if(!$in_string)
+        {
+          $indent_level--;
+          $new_json .= "\n" . str_repeat($tab, $indent_level) . $char;
+        }
+        else
+        {
+          $new_json .= $char;
+        }
+        break;
+      case ',':
+        if(!$in_string)
+        {
+          $new_json .= ",\n" . str_repeat($tab, $indent_level);
+        }
+        else
+        {
+          $new_json .= $char;
+        }
+        break;
+      case ':':
+        if(!$in_string)
+        {
+          $new_json .= ": ";
+        }
+        else
+        {
+          $new_json .= $char;
+        }
+        break;
+      case '"':
+        if($c > 0 && $json[$c-1] != '\\')
+        {
+          $in_string = !$in_string;
+        }
+      default:
+        $new_json .= $char;
+        break;
+    }
+  }
+
+  return $new_json;
+}
+
 ?>
