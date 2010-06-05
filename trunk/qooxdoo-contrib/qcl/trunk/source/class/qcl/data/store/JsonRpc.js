@@ -370,7 +370,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
             qx.Class.getByName( app.classname ), 
             qcl.application.MAppManagerProvider ) )
       {
-        rpc.setServerData( app.getStateManager().getStates() );  
+        rpc.setServerData( app.getStateManager().getServerStates() );  
       }
 
       return rpc;

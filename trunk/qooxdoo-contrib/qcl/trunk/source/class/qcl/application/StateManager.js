@@ -113,6 +113,17 @@ qx.Class.define("qcl.application.StateManager",
       init : false,
       apply : "_applyHistorySupport",
       event : "changeHistorySupport"
+    },
+    
+    /**
+     * An array of names of the states that should be synchronized.
+     * with the server. By default, only the "sessionId" state is synchronized.
+     * @type Array
+     */
+    serverStateNames :
+    {
+      check : "Array",
+      event : "changeServerStateNames"
     }
   
   }, 
@@ -131,6 +142,11 @@ qx.Class.define("qcl.application.StateManager",
      */
     this.__backHistoryStack = [];
     this.__forwardHistoryStack = [];
+    
+    /*
+     * server states
+     */
+    this.setServerStateNames(["sessionId"]);
   },  
 
   /*
@@ -376,13 +392,16 @@ qx.Class.define("qcl.application.StateManager",
     */     
     
     /** 
-     * Sets a state aspect of the application. 
+     * Sets a state aspect of the application. Primitive values will be
+     * converted in String representations, Arrays into a list of values
+     * separated by comma. 
      * 
      * @param name {String} 
      * @param value {String} 
      * @param description {String} Optional description of the state that 
      *   will appear in the title bar and the browser history
      * @return {void}
+     * @todo handle null or undefined
      */
     setState : function( name, value, description )
     {
@@ -396,7 +415,7 @@ qx.Class.define("qcl.application.StateManager",
        */
       if ( typeof value != "string" )
       {
-        value = new String(value);
+        value = new String(value).toString();
       }
       
       var oldValue = this.getState( name );
@@ -426,7 +445,7 @@ qx.Class.define("qcl.application.StateManager",
     
     /**
      * Sets a property of the main application instance, if it exists, 
-     * casting values to the correct type, if necessary
+     * casting values to the correct type, if necessary.
      * @param name
      * @param value
      * @return {void}
@@ -453,7 +472,12 @@ qx.Class.define("qcl.application.StateManager",
             value = new Boolean( value );
             break;
             
+          case "Array":
+            value = value.split(",");
+            
+          case undefined:
           case "String":
+          case "Object":
             break;
             
           default:
@@ -491,6 +515,27 @@ qx.Class.define("qcl.application.StateManager",
     {
       return this._analyzeHashString();
     },
+    
+    /**
+     * Returns a map with the application state values that
+     * should be tranparent to the server and will be synchronized
+     * with the server
+     * @return {Map}
+     */
+    getServerStates : function()
+    {
+      var states = this.getStates();
+      var names = this.getServerStateNames();
+      var serverStates = {};
+      for( key in states )
+      {
+        if ( qx.lang.Array.contains( names, key ) )
+        {
+          serverStates[key] = states[key];  
+        }
+      }
+      return serverStates;
+    },    
 
     /**
      * Updates the current state, firing all change events even if 
