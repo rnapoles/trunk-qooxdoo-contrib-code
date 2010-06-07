@@ -558,7 +558,7 @@
                 "class": "qx.ui.table.Table",
                 "constructor-args": "model,custom",
                 // put listed attributes to custom map and pass to constructor
-                "customAttrs":["treeDataCellRenderer", "defaultDataCellRenderer", "dataRowRenderer", "selectionManager", "tableColumnModel"],
+                "customAttrs":["treeDataCellRenderer", "defaultDataCellRenderer", "dataRowRenderer", "selectionManager", "tableColumnModel","resizeBehavior"],
                 "selectionModelAttributes" : ["selectionMode"]
             }
         },
@@ -570,7 +570,8 @@
            "defaultDataCellRenderer":"",
            "dataRowRenderer":"",
            "selectionManager":"",
-           "tableColumnModel":""
+           "tableColumnModel":"",
+           "initializeWidthsOnEveryAppear":""
       }        
     },
     
@@ -601,8 +602,12 @@
       "data" : {
           "props" : {
               // table column attributes
-              "attributesTable" : ["editable"],
-              "attributes" : [ "width" ],
+              "attributesTableModel" : ["editable"],
+              // column model attributes
+              "attributesColumnModel" : [ "visible","width" ],
+              // resize model attributes
+              "attributesResizeBehavior": ["width"],
+              // renderers and editors
               "attributesRenderersEditors" : [ "dataCellRenderer", "cellEditorFactory" ]
           }
       },

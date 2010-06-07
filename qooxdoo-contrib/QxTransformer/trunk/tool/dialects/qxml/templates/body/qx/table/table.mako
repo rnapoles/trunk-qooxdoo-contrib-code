@@ -9,8 +9,9 @@
   === example ===
   <qx:table 
     id="mainTable"
-    tableModel="qcl.data.model.Table" 
+    tableColumnModel="qx.ui.table.columnmodel.Resize"
     selectionMode="{js}qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION">
+    <qx:tableModel class="qx.ui.table.model.Simple" />     
     <qx:tableColumn id="id" label="ID" editable="false" width="50" />
     <qx:tableColumn id="test" label="Some text" editable="true" width="150" />
     <qx:tableColumn id="boolean" label=" " editable="true" width="30" 
@@ -20,10 +21,15 @@
     <qx:tableColumn id="date" label="A date" editable="true" />
   </qx:table>
   === result ===
-  var mainTable_tableModel = new qcl.data.model.Table;
-  mainTable_tableModel.setColumns([ "ID", "Some text", " ", "A number", "A date" ], [ "id", "test", "boolean", "number", "date" ]);
-  var mainTable = new qx.ui.table.Table(mainTable_tableModel, {});
+  var mainTable = new qx.ui.table.Table(null, {
+		tableColumnModel : function(obj) {
+			return new qx.ui.table.columnmodel.Resize(obj);
+		}
+	});
   mainTable.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION);
+  var qxTableModel1 = new qx.ui.table.model.Simple();
+	qxTableModel1.setColumns(["ID", "Some text", " ","A Number","A date"], ["id", "test", "booelan","number","date"]);
+  containingFoldersTable.setTableModel(qxTableModel1);  
   parent.add(mainTable);
   mainTable.getTableColumnModel().setColumnWidth(0, 50);
   mainTable.getTableModel().setColumnEditable(0, false);
@@ -57,3 +63,7 @@
 <%def name="children()">\
     ${tag.children("*")}
 </%def>
+
+% if utils.rawAttrib("initializeWidthsOnEveryAppear") is not None: 
+${utils.rawAttrib("id")}.getTableColumnModel().getBehavior().setInitializeWidthsOnEveryAppear(${attr.rawAttrib("initializeWidthsOnEveryAppear")});
+% endif
