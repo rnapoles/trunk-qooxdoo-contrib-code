@@ -216,81 +216,30 @@ class qcl_data_model_db_TreeNodeModel
    * Returns the path of a node in the folder hierarchy as a
    * string of the node labels, separated by the a given character
    *
-   * @param string $separator Separator character, defaults to "/"
+   * @param string $separator
+   *    Separator character, defaults to "/"
    * @return string
    */
-  public function getLabelPath( $separator="/"  )
+  public function getLabelPath( $separator="/" )
   {
 
-    /*
-     * return when top node has been reached
-     */
-    if ( $id === 0 )
-    {
-      return "";
-    }
-
-    /*
-     * if not given, use current record
-     */
-    elseif ( $id === null )
-    {
-      $id = $this->getId();
-    }
-
-    /*
-     * otherwise load data for current node
-     */
-    else
-    {
-      $this->load( $id );
-    }
-
-    /*
-     * if the tree path is cached, return it
-     */
-    if ( ! $this->__cachePath and $this->has("path") )
-    {
-      if ( $path = $this->getPath() )
-      {
-        return $path;
-      }
-      else
-      {
-        $this->__cachePath = $id;
-      }
-    }
+    $id= $this->id();
 
     /*
      * get path of parent if any
      */
-    $label    =  trim( str_replace( "/", "\\/", $this->getLabel() ) );
-    $parentId = $this->getParentId();
+    $path = str_replace( $separator, '\\' . $separator, $this->getLabel() );
+    $count = 0;
 
-    if ( $parentId )
+    while (  $parentId = $this->getParentId() and $count++ < 10 )
     {
-      /*
-       * get parent path
-       */
-      $parentPath = $this->getPath( $parentId );
-      $path .= $parentPath . "|" . $label;
+      $this->load( $parentId );
+      $label = str_replace( $separator, '\\' . $separator, $this->getLabel() );
+      $path = $label . $separator . $path;
+    }
 
-      /*
-       * cache path
-       */
-      if ( $id == $this->__cachePath )
-      {
-        $this->update(array(
-          'id'    => $id,
-          'path'  => $path
-        ));
-        $this->__cachePath = null;
-      }
-    }
-    else
-    {
-      $path = $label;
-    }
+    $this->load($id);
+
     return $path;
   }
 
