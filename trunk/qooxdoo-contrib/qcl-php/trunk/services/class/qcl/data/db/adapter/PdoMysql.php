@@ -782,30 +782,43 @@ class qcl_data_db_adapter_PdoMysql
   }
 
   /**
-   * Returns the sql to do a fulltext search. Uses boolean mode.
+   * Returns the sql to do a fulltext search.
    *
    * @param string $table
+   *    The name of the table that is searched.
    * @param string $indexName
+   *    The name of the index that is used in the search.
    * @param string $expr
-   * @param string|null $mode Matching mode. Defaults to "and", i.e. the
-   * searched records have to match all the words contained in the expression, unless
-   * they are prefixed by a minus sign ("-"), which indicates that the word should
-   * not be part of the record.
-   * Currently, only "and" is implemented.
+   *    The search expression against which the records are matched.
+   * @param string|null $mode
+   *    Matching mode. Currently, "fuzzy" and "boolean" are implemented.
+   *    "Fuzzy" returns records that are similar to the query, "boolean" forces strict
+   *    comparisons. Defaults to "boolean", i.e. the searched records have
+   *    to match all the words contained in the expression, unless
+   *    they are prefixed by a minus sign ("-"), which indicates that the
+   *    word should not be part of the record.
    * @return string
+   *    The sql expression that to use in a WHERE statement
    *
    * @todo this needs to be reworked in connection with
-   * qcl_data_model_db_QueryBehavior::createWhereStatement and
-   * qcl_data_db_Query
+   *    qcl_data_model_db_QueryBehavior::createWhereStatement and
+   *    qcl_data_db_Query
    */
-  public function fullTextSql( $table, $indexName, $expr, $mode="and" )
+  public function fullTextSql( $table, $indexName, $expr, $mode="boolean" )
   {
     /*
      * match mode
      */
+    $searchMode = "";
     switch ( $mode )
     {
-      case "and":
+      case "fuzzy":
+        break;
+
+      case "boolean":
+
+        $searchMode = "IN BOOLEAN MODE";
+
          /*
           *  add a plus sign ( AND operator) to each search word
           */
@@ -840,7 +853,7 @@ class qcl_data_db_adapter_PdoMysql
      * construct sql query
      */
     $fullTextCols = implode( ",",$fullTextCols );
-    $sql = "MATCH ($fullTextCols) AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
+    $sql = "MATCH ($fullTextCols) AGAINST ('" . addslashes ( $expr ) . "' $searchMode)" ;
 
     return $sql;
   }
