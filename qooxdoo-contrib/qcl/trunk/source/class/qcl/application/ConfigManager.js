@@ -338,6 +338,16 @@ qx.Class.define("qcl.application.ConfigManager",
         this.error("You cannot bind a config key before config values have been loaded!");
       }
       
+      if ( ! targetObject instanceof qx.core.Object )
+      {
+        this.error( "Invalid target object." );
+      }
+      
+      if ( ! qx.lang.Type.isString( targetPath ) )
+      {
+        this.error( "Invalid target path." );
+      }
+      
       /*
        * if the target path is a property and not a property chain,
        * use event listeners. This also solves a problem with a bug
