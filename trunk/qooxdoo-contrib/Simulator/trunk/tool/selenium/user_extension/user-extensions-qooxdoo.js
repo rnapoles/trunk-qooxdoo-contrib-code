@@ -794,10 +794,10 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
 Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
 {
   var columnModel = table.getTableColumnModel();
-  var columnArray = columnModel.getVisibleColumns();
+  var colCount = columnModel.getOverallColumnCount();
   var tableModel = table.getTableModel();
-  for (var i=0,l=columnArray.length; i<l; i++) {
-    var columnName = tableModel.getColumnName(columnArray[i]);
+  for (var i=0; i<colCount; i++) {
+    var columnName = tableModel.getColumnName(i);
     if (columnName == name) {
       return i;
     }
@@ -967,6 +967,16 @@ Selenium.prototype.__getUpdatedFirstVisibleRow = function(column, row, qxTable)
   return firstRow;
 };
 
+/**
+ * Calculates a table cell's pixel coordinates.
+ * 
+ * @param {Integer} column Index of the cell's column
+ * @param {Integer} row Index of the cell's row
+ * @param {qx.ui.table.Table} qxTable The table object
+ * @param {element} clipperElement The DOM Element of the table's clipper
+ * @return {Array} Array containing the cell's X and Y coordinates
+ * @throws SeleniumError if the target column is invisible
+ */
 Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipperElement) {
   // Get the coordinates of the table:
   var coordsXY = getClientXY(clipperElement);
@@ -976,12 +986,18 @@ Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipper
   LOG.debug("Table Row Height = " + qxTable.getRowHeight() );
   coordsXY[1] = coordsXY[1] + ( row * qxTable.getRowHeight() );
 
-  // Add in the column widths for each column:
+  var columnModel = qxTable.getTableColumnModel();
+  if (!columnModel.isColumnVisible(column)) {
+    throw new SeleniumError("Unable to get coordinates for invisible column " + column);
+  }
+  // Add in the column widths for each visible column:
   for (var i = 0; i < column; i++) {
-    LOG.debug("Column (" + i + ") Width = (" 
-      + qxTable.getTableColumnModel().getColumnWidth( i ) + ")" );
-    coordsXY[0] = coordsXY[0] + 
-      qxTable.getTableColumnModel().getColumnWidth( i );
+    if (columnModel.isColumnVisible( i ) ) {
+      LOG.debug("Column (" + i + ") Width = (" 
+        + columnModel.getColumnWidth( i ) + ")" );
+      coordsXY[0] = coordsXY[0] + 
+        columnModel.getColumnWidth( i );
+    }
   }
 
   LOG.debug("updated coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
