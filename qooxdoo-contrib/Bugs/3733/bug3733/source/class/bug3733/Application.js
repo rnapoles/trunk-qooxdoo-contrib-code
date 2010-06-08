@@ -57,42 +57,48 @@ qx.Class.define("bug3733.Application",
       -------------------------------------------------------------------------
       */
 
+      // Create a horizontal split pane
+      var pane = new qx.ui.splitpane.Pane("vertical").set({
+        width : 450,
+        height : 600
+      });
+      this.getRoot().add(pane);
+      
+      var table = this.createTable();
+      pane.add(table, 1);
+      
+      var box = new qx.ui.core.Widget();
+      pane.add(box, 1);      
+    },
+    
+    createTable : function()
+    {
+      // Create the initial data
+      var rowData = this.createRandomRows(20);
 
-var tableModel = new qx.ui.table.model.Simple();
-tableModel.setColumns([ "ID", "Number 1", "Number 2", "Image" ]);
+      // table model
+      var tableModel = this._tableModel = new qx.ui.table.model.Simple();
+      tableModel.setColumns([ "ID", "A number", "A date", "Boolean" ]);
+      tableModel.setData(rowData);
 
-var image = [
-  "icon/16/actions/dialog-ok.png",
-  "icon/16/actions/dialog-cancel.png"
-];
-
-// table
-var table = new qx.ui.table.Table(tableModel);
-table.set(
-  {
-    width  : 400,
-    height : 200
-  });
-
-table.setMetaColumnCounts([1, -1]);
-var selectionMode =
-    qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION;
-table.getSelectionModel().setSelectionMode(selectionMode);
-
-var rowData = [];
-for (var row = 0; row < 100; row++)
-{
-  var x = Math.random() * 1000;
-  rowData.push([ row, x, x, image[Math.floor(x) % 2] ]);
-}
-tableModel.setData(rowData);
-tableModel.setColumnEditable(1, true);
-tableModel.setColumnEditable(2, true);
-var renderer = new qx.ui.table.cellrenderer.Image(19, 16);
-table.getTableColumnModel().setDataCellRenderer(3, renderer);
-
-this.getRoot().add(table, {left:10, top:10});
-
-    }
+      // table
+      var table = new qx.ui.table.Table(tableModel);
+      table.setFocusCellOnMouseMove(true);
+      return table;
+    },
+    
+    
+    nextId : 0,
+    createRandomRows : function(rowCount)
+    {
+      var rowData = [];
+      var now = new Date().getTime();
+      var dateRange = 400 * 24 * 60 * 60 * 1000; // 400 days
+      for (var row = 0; row < rowCount; row++) {
+        var date = new Date(now + Math.random() * dateRange - dateRange / 2);
+        rowData.push([ this.nextId++, Math.random() * 10000, date, (Math.random() > 0.5) ]);
+      }
+      return rowData;
+    }      
   }
 });
