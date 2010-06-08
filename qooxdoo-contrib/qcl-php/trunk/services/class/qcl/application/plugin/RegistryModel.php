@@ -34,6 +34,7 @@ class qcl_application_plugin_RegistryModel
     ),
     'data'  => array(
       'check'       => "array",
+      'sqltype'     => "text NULL default NULL",
       'init'        => array(),
       'serialize'   => true
     ),
