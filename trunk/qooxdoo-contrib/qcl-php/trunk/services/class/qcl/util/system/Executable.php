@@ -16,6 +16,11 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+/**
+ * A wrapper around proc_open()
+ * @author bibliograph
+ *
+ */
 class qcl_util_system_Executable
 {
 
@@ -31,14 +36,33 @@ class qcl_util_system_Executable
 
   protected $exitcode;
 
+  protected $cwd;
+
+  protected $env;
+
+  protected $options;
 
   /**
-   * Constructor. Takes the name of the executable as argument
-   * @param string $cmd Name of the command
+   * Constructor.
+   * @param string $cmd
+   *    Name of the command
+   * @param string $cwd
+   *    Optional working directory
+   * @param array $env
+   *    Optional array of environment variables
+   * @param $options
+   *    Optional additional options for proc_open
+   * @return unknown_type
    */
-  public function __construct( $cmd )
+  public function __construct( $cmd, $cwd=null, $env=null, $options=array() )
   {
-    $this->cmd = $cmd;
+    $this->cmd      = $cmd;
+    $this->cwd      = $cwd;
+    $this->options  = $options;
+
+    $this->env = $env ? $env : array(
+      'PATH' => QCL_UTIL_SYSTEM_ENV_PATH
+    );
   }
 
   /**
@@ -92,7 +116,7 @@ class qcl_util_system_Executable
       array("pipe","r"),
       array("pipe","w"),
       array("pipe","w")
-    ), $pipes );
+    ), $pipes, $this->cwd, $this->env, $this->options );
     if ( is_resource( $proc ) )
     {
       if( $input) fwrite($pipes[0], $input);
