@@ -18,6 +18,7 @@
 
 /*
  * @todo rename functions to have a qcl_ prefix
+ * @todo move assert functions to qcl_util_Assert class
  */
 
 
@@ -311,7 +312,7 @@ function qcl_assert_method_exists( $object, $method )
  * class
  * @param object $object
  * @param string $class
- * @return boolean
+ * @return void
  */
 function qcl_assert_instanceof( $object, $class )
 {
@@ -325,6 +326,23 @@ function qcl_assert_instanceof( $object, $class )
     ));
   }
 }
+
+/**
+ * Asserts that the given path is an existing file
+ * @param object $path
+ * @return void
+ */
+function qcl_assert_file_exists( $path )
+{
+  qcl_assert_valid_string( $path, "Argument must be a string" );
+  if ( ! qcl_file_exists( $path ) )
+  {
+    throw new InvalidArgumentException( sprintf(
+      "File '%s' does not exist", $path
+    ));
+  }
+}
+
 
 /**
  * Returns the first non-null argument.
