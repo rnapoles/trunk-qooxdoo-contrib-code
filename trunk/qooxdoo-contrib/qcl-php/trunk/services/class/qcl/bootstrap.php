@@ -75,14 +75,6 @@ if ( ! defined("QCL_LOG_FILE") )
 }
 
 /*
- * the path where files are uploaded to / downloaded from
- */
-if ( ! defined("QCL_UPLOAD_PATH") )
-{
-  define( "QCL_UPLOAD_PATH", realpath ( QCL_SERVICE_PATH . "../../var/upload") );
-}
-
-/*
  * load core functions
  */
 require_once "qcl/core/functions.php";
