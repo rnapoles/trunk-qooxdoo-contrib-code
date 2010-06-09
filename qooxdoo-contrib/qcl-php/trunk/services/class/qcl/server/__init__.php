@@ -27,7 +27,7 @@ class InvalidJsonRpcArgumentException extends JsonRpcException {}
  */
 if ( ! defined("QCL_UPLOAD_PATH") )
 {
-  define("QCL_UPLOAD_PATH", "../../var/tmp" );
+  define("QCL_UPLOAD_PATH", sys_get_temp_dir() );
 }
 
 /**

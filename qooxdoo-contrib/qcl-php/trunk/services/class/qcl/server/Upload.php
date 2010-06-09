@@ -16,19 +16,18 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+qcl_import("qcl_application_Application");
+
 /**
- * Upload server
- * -- not yet functional --
- *
+ * Upload server. Expects an uploaded file and the request parameter
+ * 'sessionId' and 'application', the latter being the application id.
+ * An additional parameter 'replace', if set to true, will cause the
+ * upload server to overwrite existing files.
  */
-class qcl_server_Upload extends qcl_core_Object
+class qcl_server_Upload
+  extends qcl_core_Object
 {
 
-  /**
-   * Not used, only here for compatibility
-   * @var array
-   */
-  public $servicePaths = array();
 
   /**
    * Uploads a single file to the temporary folder.
@@ -38,24 +37,35 @@ class qcl_server_Upload extends qcl_core_Object
    */
   public function start()
   {
-    $this->info("Starting upload ...");
+    $this->log("Starting upload ...",QCL_LOG_REQUEST);
 
     /*
      * check if upload directory is writeable
      */
     if ( ! is_writable( QCL_UPLOAD_PATH ) )
     {
-      $this->info("### Error: Upload path is not writeable.");
+      $this->warn( sprintf(
+        "Upload path '%s' is not writeable."
+      ) );
       $this->abort("Error on Server.");
     }
 
     /*
      * authentication
      */
+    if ( ! isset( $_REQUEST['sessionId'] ) )
+    {
+      $this->abort("Missing paramenter 'sessionId'");
+    }
+    $application = $this->getApplication();
+    $accessController = $application->getAccessController();
     $sessionId = $_REQUEST['sessionId'];
-    $accessController = $this->getAccessController();
-    if ( ! $sessionId or
-         ! $accessController->isValidUserSession( $sessionId ) )
+
+    try
+    {
+      $userId = $accessController->getUserIdFromSession( $sessionId );
+    }
+    catch( qcl_access_InvalidSessionException $e )
     {
       /*
        * check http basic authentication
@@ -73,18 +83,17 @@ class qcl_server_Upload extends qcl_core_Object
 
     /*
      * Check active user
-     * @todo add config key to allow anonymous uploads
      */
-    $activeUser  = $accessController->getActiveUser();
-    //$configModel = $accessController->getConfigModel();
-    if ( $activeUser->isAnonymous() )
+    $userModel = $accessController->getUserModel();
+    $userModel->load( $userId );
+    if ( $userModel->isAnonymous() )
     {
       $this->abort( "Anonymous uploads are not permitted.");
     }
 
-    $this->info(
-      "Upload authorized for " . $activeUser->username() .
-      "(Session #" . $accessController->getSessionId() . ")."
+    $this->log(
+      "Upload authorized for " . $userModel->username() .
+      "(Session #" . $sessionId . ").", QCL_LOG_REQUEST
     );
 
     /*
@@ -125,8 +134,16 @@ class qcl_server_Upload extends qcl_core_Object
        */
       if ( file_exists ( $tgt_path) )
       {
-        $this->info( "File '$tgt_path' exists. Not uploading" );
-        $this->abort( "File '$file_name' exists." );
+        if ( isset( $_REQUEST['replace'] ) and $_REQUEST['replace'] )
+        {
+          $this->log( "Replacing existing file '$tgt_path'.",QCL_LOG_REQUEST );
+          unlink ( $tgt_path );
+        }
+        else
+        {
+          $this->log( "File '$tgt_path' exists. Not uploading",QCL_LOG_REQUEST );
+          $this->abort( "File '$file_name' exists." );
+        }
       }
 
       /*
@@ -135,7 +152,7 @@ class qcl_server_Upload extends qcl_core_Object
       if ( ! move_uploaded_file( $tmp_name, $tgt_path ) or
            ! file_exists( $tgt_path ) )
       {
-        $this->info( "Problem saving the file to '$tgt_path'." );
+        $this->log( "Problem saving the file to '$tgt_path'.", QCL_LOG_REQUEST );
         $this->echoWarning( "Problem saving file '$file_name'." );
       }
 
@@ -144,8 +161,8 @@ class qcl_server_Upload extends qcl_core_Object
        */
       else
       {
-        $this->echoReply( "Upload of '$file_name' successful." );
-        $this->info("Uploaded file to '$tgt_path'");
+        $this->echoReply( "<span qcl_file='$tgt_path'>Upload of '$file_name' successful.</span>" );
+        $this->log("Uploaded file to '$tgt_path'", QCL_LOG_REQUEST);
       }
     }
 
@@ -155,8 +172,49 @@ class qcl_server_Upload extends qcl_core_Object
     exit;
   }
 
+ /**
+   * Returns the current application or false if no application exists.
+   * @return qcl_application_Application|false
+   */
+  public function getApplication()
+  {
+    if ( ! isset( $_REQUEST['application'] ) )
+    {
+      $this->abort("Missing paramenter 'application'");
+    }
 
+    $service = new String( $_REQUEST['application'] );
+    $appClass = (string) $service
+      ->replace("/\./","_")
+      ->concat( "_Application" );
 
+    try
+    {
+      /*
+       * import class file
+       */
+      qcl_import( $appClass );
+
+      /*
+       * instantiate new application object
+       */
+      $app = new $appClass;
+      if ( ! $app instanceof qcl_application_Application )
+      {
+        throw new qcl_InvalidClassException(
+          "Application class '$appClass' must be a subclass of 'qcl_application_Application'"
+        );
+      }
+    }
+    catch( qcl_FileNotFoundException $e )
+    {
+      $this->abort("No valid application.");
+    }
+
+    qcl_application_Application::setInstance( $app );
+
+    return $app;
+  }
 
   /**
    * Echo a HTML reply
@@ -165,7 +223,7 @@ class qcl_server_Upload extends qcl_core_Object
    */
   public function echoReply ( $msg )
   {
-    echo "<FONT COLOR=GREEN>$msg</FONT>";
+    echo $msg;
   }
 
   /**
@@ -175,7 +233,7 @@ class qcl_server_Upload extends qcl_core_Object
    */
   public function echoWarning ( $msg )
   {
-   echo "<FONT COLOR=RED>$msg</FONT>";
+   echo "<span qcl_error='true'>$msg</span>";
   }
 
   /**
@@ -185,6 +243,7 @@ class qcl_server_Upload extends qcl_core_Object
    */
   public function abort ( $msg )
   {
+    $this->echoWarning( $msg );
     $this->warn( $msg );
     exit;
   }

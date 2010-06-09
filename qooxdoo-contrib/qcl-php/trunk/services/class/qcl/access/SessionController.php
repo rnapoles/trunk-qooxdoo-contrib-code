@@ -336,9 +336,11 @@ class qcl_access_SessionController
    */
   public function getUserIdFromSession( $sessionId )
   {
-    /*
-     * look if session exists
-     */
+    if ( ! $sessionId )
+    {
+      throw new qcl_access_InvalidSessionException( "Missing session id.");
+    }
+
     $sessionModel = $this->getSessionModel();
     try
     {

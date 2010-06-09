@@ -295,13 +295,33 @@ function qcl_assert_regexp( $regexp, $value, $msg=null )
  */
 function qcl_assert_method_exists( $object, $method )
 {
-  qcl_assert_object( $object );
-  qcl_assert_string( $method );
+  qcl_assert_object( $object, "First argument must be an object" );
+  qcl_assert_valid_string( $method, "Second argument must be a string" );
   if ( ! method_exists( $object, $method ) )
   {
     throw new InvalidArgumentException( sprintf(
       "Object of class %s does not have a method %s",
     get_class( $object ), $method
+    ));
+  }
+}
+
+/**
+ * Asserts that the given object is an instance of the given
+ * class
+ * @param object $object
+ * @param string $class
+ * @return boolean
+ */
+function qcl_assert_instanceof( $object, $class )
+{
+  qcl_assert_object( $object, "First argument must be an object" );
+  qcl_assert_valid_string( $class, "Second argument must be a string" );
+  if ( ! $object instanceof $class )
+  {
+    throw new InvalidArgumentException( sprintf(
+      "Object of class %s is not an instance of %s",
+    get_class( $object ), $class
     ));
   }
 }

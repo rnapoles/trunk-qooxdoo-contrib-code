@@ -16,6 +16,8 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+require_once "services/server/access/IAccessibilityBehavior.php";
+
 qcl_import( "qcl_data_controller_Controller" );
 qcl_import( "qcl_util_registry_Session" );
 
