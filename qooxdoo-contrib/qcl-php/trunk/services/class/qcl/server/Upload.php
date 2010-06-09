@@ -30,10 +30,20 @@ class qcl_server_Upload
 
 
   /**
-   * Uploads a single file to the temporary folder.
+   * Uploads a single file to the system temporary folder.
    * Authentication an be done in two different ways:
-   * 1) The calling client provides a valid session id in the URL ("?sessionId=a8dab9das...")
-   * 2) If this is not provided, the server responds by presenting a http authentication request
+   * 1) The calling client provides a valid session id in the URL
+   *    ("?sessionId=a8dab9das...") or in the request parameter 'sessionId'.
+   * 2) If this is not provided, the server responds by presenting a http
+   *    authentication request.
+   * You also need to provide a 'application' parameter, and optionally
+   * can overwrite existing files with the 'replace' paramenter
+   *
+   * The script returns a HTML string as response. If successful, the
+   * response is a SPAN element with the qcl_file attribute containing
+   * the path to the uploaded file. Otherwise, it is a SPAN element
+   * with an attribute 'qcl_error' set to true, and containing the error
+   * message.
    */
   public function start()
   {
