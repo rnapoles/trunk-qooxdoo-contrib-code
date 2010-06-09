@@ -331,15 +331,30 @@ class qcl_data_model_db_PropertyBehavior
       }
 
       /*
-       * add "NULL" to sql type if not specified (default)
-       * tied to the "nullable" property, but sqltype has preference
+       * Allow NULL? sqltype definition has preference
        */
-      if ( ! (strstr( $sqltype, 'NULL') || strstr( $sqltype, 'null'))) {
-         if(isset( $prop['nullable'] ) && $prop['nullable'] === true)
+      if ( ! (strstr( $sqltype, 'NULL') || strstr( $sqltype, 'null') ) )
+      {
+        /*
+         * if 'nullable' property is provided
+         */
+         if( isset( $prop['nullable'] ) )
+         {
+           if ( $prop['nullable'] === true)
+           {
+              $sqltype .= ' NULL';
+           }
+           else
+           {
+              $sqltype .= ' NOT NULL';
+           }
+         }
+         /*
+          * otherwise, by default add "NULL" to sql type
+          */
+         else
          {
             $sqltype .= ' NULL';
-         } else {
-            $sqltype .= ' NOT NULL';
          }
       }
 
