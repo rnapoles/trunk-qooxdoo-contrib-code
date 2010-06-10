@@ -179,6 +179,7 @@ class qcl_log_Logger
     /*
      * check if a matching filter has been enabled
      */
+    static $counter = 0;
     $found = false;
     foreach ( (array) $filters as $filter )
     {
@@ -188,6 +189,7 @@ class qcl_log_Logger
          if ( $this->filters[$filter]['enabled'] )
          {
            $message = date( "y-m-j H:i:s" );
+           $message .=  "-" . $counter++;
            $message .= ": [$filter] $msg\n";
            $this->writeLog( $message );
            break;
