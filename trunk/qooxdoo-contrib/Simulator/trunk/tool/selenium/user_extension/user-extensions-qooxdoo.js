@@ -806,6 +806,37 @@ Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
 };
 
 /**
+ * Searches the given table's data for a value (interpreted as a Regular 
+ * Expression) and returns the first matching cell's row and column indices.
+ * 
+ * @param {qx.ui.table.Table} table The table object
+ * @param {String} value The value to search for
+ * @return {Array|null} A [row, column] array or null if no matching cell was found
+ */
+Selenium.prototype.getQxTableRowColByCellValue = function(table, value)
+{
+  var regEx = RegExp(value);
+  var tableModel = table.getTableModel();
+  var tableColumnModel = table.getTableColumnModel();
+  var dataMapArray = tableModel.getDataAsMapArray();
+  for (var i=0, l=dataMapArray.length; i<l; i++) {
+    row = dataMapArray[i];
+    for (field in row) {
+      if (regEx.exec(row[field])) {
+        var modelCol = Number(tableModel.getColumnIndexById(field));
+        var col = tableColumnModel.getVisibleX(modelCol);
+        if (!col) {
+          return null;
+        }
+        LOG.debug("getQxTableRowColByCellValue found row " + i + " col " + col);
+        return [i,col];
+      }
+    }
+  }
+  return null;  
+};
+
+/**
  * Searches the table identified by the given locator for a column with the 
  * given name and returns the column index.
  * 
@@ -1007,14 +1038,15 @@ Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipper
 };
 
 /**
- * Uses the standard qx locators to find a table, and then processes a click on 
- * the table at the given row/column position.  Note, your locator should only 
- * find the table itself, and not the clipper child of the table. We'll add the 
- * extra Composite/Scroller/Clipper to the locator as required.
+ * Uses the given locator to find a table, and then processes a click on the 
+ * table at the given row/column position.  Note, your locator should only find 
+ * the table itself, and not the clipper child of the table. We'll add the extra 
+ * Composite/Scroller/Clipper to the locator as required.
  *
  * <p>
  * The column to click can be located using the index, ID or name by specifying 
- * one of the col, colId or colName parameters.
+ * one of the col, colId or colName parameters. Alternatively, a specific cell
+ * can be located by RegExp matching its content using the cellValue parameter. 
  * 
  * <p>
  * mousedown, mouseup will be fired instead of only click
@@ -1022,21 +1054,19 @@ Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipper
  * be determined.
  * TODO: implement it like doFooAt, where additional coordinates will be added 
  * to the element-coords
+ * 
  * <p>
- * eventParams example: button=left|right|middle, clientX=300, shiftKey=true
- * for a full list of properties see "function 
- * Selenium.prototype.qx.triggerMouseEventQx"
+ * Supported eventParams keys:
+ * - All mouse event parameters as accepted by 
+ *   Selenium.prototype.qx.triggerMouseEventQx
+ * - row Index of the table row to click
+ * - col Index of the table column to click
+ * - colId ID of the column to click
+ * - colName Name of the column to click
+ * - cellValue Content of a (text) cell to click
  *
- * @type member
- * @param locator {var} an element locator
- * @param row {var} index of the table row to click
- * @param col {var} index of the table column to click
- * @param colId {var} ID of the column to click
- * @param colName {var} Name of the column to click
- * @param eventParams {var} additional parameter for the mouse-event to set. 
- * e.g. clientX.
- * If no eventParams are set, defaults will be: left mousebutton, all keys false
- * and all coordinates 0
+ * @param locator {String} an element locator
+ * @param eventParams {String} List of comma-separated key=value pairs
  * @return {void}
  */
 Selenium.prototype.doQxTableClick = function(locator, eventParams)
@@ -1055,8 +1085,19 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
 
   var additionalParamsForClick = this.__getParameterMap(eventParams);
   
-  var row = Number(additionalParamsForClick["row"]);
-  var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);  
+  if (additionalParamsForClick["cellValue"]) {
+    LOG.debug("Getting target row and column from cell value");
+    var rowCol = this.getQxTableRowColByCellValue(qxObject, additionalParamsForClick["cellValue"]);
+    if (!rowCol) {
+      throw new SeleniumError("Could not find a visible with the given value");
+    }
+    var row = rowCol[0];
+    var col = rowCol[1];
+  }
+  else {
+    var row = Number(additionalParamsForClick["row"]);
+    var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);
+  }
   
   LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
 
