@@ -293,6 +293,17 @@ class qcl_core_Object
   }
 
   /**
+   * Returns a human-readable string representation of the data
+   * that can alsoe be parsed with eval(). Internally, this is
+   * a simple var_export() of the resutl of the data() method.
+   * @return string
+   */
+  public function exportData()
+  {
+    return var_export( $this->data(), true );
+  }
+
+  /**
    * Returns a array of property values according to the
    * array of property names that were passes as arguments.
    * @param $prop1
