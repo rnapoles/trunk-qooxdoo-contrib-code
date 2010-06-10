@@ -794,10 +794,10 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
 Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
 {
   var columnModel = table.getTableColumnModel();
-  var colCount = columnModel.getOverallColumnCount();
+  var columnArray = columnModel.getVisibleColumns();
   var tableModel = table.getTableModel();
-  for (var i=0; i<colCount; i++) {
-    var columnName = tableModel.getColumnName(i);
+  for (var i=0,l=columnArray.length; i<l; i++) {
+    var columnName = tableModel.getColumnName(columnArray[i]);
     if (columnName == name) {
       return i;
     }
@@ -982,27 +982,25 @@ Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipper
   var coordsXY = getClientXY(clipperElement);
   LOG.debug("computed coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
   // Add in table height plus row height to get to the right row:
-  LOG.debug("Table Header Height = " + qxTable.getHeaderCellHeight() );
-  LOG.debug("Table Row Height = " + qxTable.getRowHeight() );
+  //LOG.debug("Table Header Height = " + qxTable.getHeaderCellHeight() );
+  //LOG.debug("Table Row Height = " + qxTable.getRowHeight() );
   coordsXY[1] = coordsXY[1] + ( row * qxTable.getRowHeight() );
 
+  // Add in the column widths for each visible column to the left of the selected one:
   var columnModel = qxTable.getTableColumnModel();
-  if (!columnModel.isColumnVisible(column)) {
-    throw new SeleniumError("Unable to get coordinates for invisible column " + column);
-  }
-  // Add in the column widths for each visible column:
-  for (var i = 0; i < column; i++) {
-    if (columnModel.isColumnVisible( i ) ) {
-      LOG.debug("Column (" + i + ") Width = (" 
-        + columnModel.getColumnWidth( i ) + ")" );
-      coordsXY[0] = coordsXY[0] + 
-        columnModel.getColumnWidth( i );
+  var visibleColumns = columnModel.getVisibleColumns();
+  for (var i=0,l=visibleColumns.length; i<l; i++) {
+    if (column == i) {
+      break;
     }
+    colWidth = columnModel.getColumnWidth(visibleColumns[i]);
+    LOG.debug("Column " + visibleColumns[i] + " width: " + colWidth);
+    coordsXY[0] = coordsXY[0] + colWidth;
   }
 
   LOG.debug("updated coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
-  coordsXY[0] = coordsXY[0] + 5;
-  coordsXY[1] = coordsXY[1] + 5;
+  coordsXY[0] = coordsXY[0] + 3;
+  coordsXY[1] = coordsXY[1] + 3;
   LOG.debug("final coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
   
   return coordsXY;
