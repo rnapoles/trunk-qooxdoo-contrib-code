@@ -71,7 +71,6 @@ class qcl_data_model_db_RelationBehavior
    */
   static private $cache;
 
-
   /**
    * A map of key value pairs that is looked up each time a class name
    * is used during the setup of the model. This allows child classes to
@@ -105,13 +104,17 @@ class qcl_data_model_db_RelationBehavior
   {
     if ( ! $this->isInitialized )
     {
-      if( $this->hasLog() ) $this->log( sprintf(
-        "* Initializing relations for '%s' using '%s'",
-        $this->getModel()->className(), get_class( $this )
-      ) );
-      foreach( $this->relations() as $relation )
+      $relations = $this->relations();
+      if( count( $relations ) )
       {
-        $this->setupRelation( $relation );
+        if( $this->hasLog() ) $this->log( sprintf(
+          "* Initializing relations for '%s' using '%s'",
+          $this->getModel()->className(), get_class( $this )
+        ) );
+        foreach( $relations as $relation )
+        {
+          $this->setupRelation( $relation );
+        }
       }
       $this->isInitialized = true;
     }
@@ -858,7 +861,7 @@ class qcl_data_model_db_RelationBehavior
       $method = "setupRelation" . $this->convertLinkType( $relationType );
 
       if( $this->hasLog() ) $this->log( sprintf(
-        "Setting up relation '%s' for %s using '%s'...",
+        "- Setting up relation '%s' for %s using '%s'...",
         $relation, $model, $method
       ));
 
@@ -871,7 +874,7 @@ class qcl_data_model_db_RelationBehavior
       return true;
     }
     if( $this->hasLog() ) $this->log( sprintf(
-      "Relation '%s' is already set up for %s.",
+      "- Relation '%s' is already set up for %s.",
       $relation, $model
     ));
     return false;
@@ -926,7 +929,7 @@ class qcl_data_model_db_RelationBehavior
     $joinModel = $this->getJoinModel( $relation );
 
     if( $this->hasLog() ) $this->log( sprintf(
-      "Creating join model, using table '%s' with properties '%s' and '%s' ...",
+      "    Creating join model, using table '%s' with properties '%s' and '%s' ...",
       $joinModel->tableName(), $foreignKey, $targetForeignKey
     ) );
 
@@ -958,7 +961,7 @@ class qcl_data_model_db_RelationBehavior
       $dependencies = $this->getRelationDependencies( $relation );
 
       if( $this->hasLog() ) $this->log( sprintf(
-        "Relation %s has %s dependencies",
+        "    Relation %s has %s dependencies",
         $relation, count( $dependencies )
       ) );
 
@@ -974,7 +977,7 @@ class qcl_data_model_db_RelationBehavior
         $depForeignKey  = $depTargetModel->getRelationBehavior()->getForeignKey( $depRelation );
 
         if( $this->hasLog() ) $this->log( sprintf(
-          "Setting up dependency on %s:  Adding foreign key '%s' to join model ...",
+          "    Setting up dependency on %s:  Adding foreign key '%s' to join model ...",
           $depRelation, $depForeignKey
         ) );
 
@@ -1107,30 +1110,39 @@ class qcl_data_model_db_RelationBehavior
    */
   public function getJoinModel( $relation )
   {
-    $joinTableName = $this->getJoinTableName( $relation, false );
+    $joinTableName  = $this->getJoinTableName( $relation, false );
+    $model          = $this->getModel();
+    $className      = $model->className();
+    $dsModel        = $this->getModel()->datasourceModel();
+    $dsModelName    = $dsModel ? $dsModel->namedId() : "[global]";
+
+    static $joinModels = array();
 
     /*
      * use cached  object or create new one
      */
-    static $joinModels = array();
-    if ( ! isset( $joinModels[$joinTableName] ) )
+    if ( ! isset( $joinModels[$dsModelName][$joinTableName] ) )
     {
+      qcl_import( "qcl_data_model_db_JoinModel" );
+      $joinModel = new qcl_data_model_db_JoinModel( $dsModel, $joinTableName );
+
       if ( $this->hasLog() ) $this->log( sprintf(
-        "Creating new join model with table name '%s' ...", $joinTableName
+        "    Created new join model %s (%s) for datasource '%s' with table name '%s'.",
+         $joinModel, $joinModel->objectId(), $dsModelName, $joinTableName
       ));
 
-      qcl_import( "qcl_data_model_db_JoinModel" );
-      $datasourceModel = $this->getModel()->datasourceModel();
-      $joinModel = new qcl_data_model_db_JoinModel( $datasourceModel, $joinTableName );
-      $joinModels[$joinTableName] = $joinModel;
+      //$joinModel->init();
+      $joinModels[$dsModelName][$joinTableName] = $joinModel;
     }
     else
     {
+      $joinModel=$joinModels[$dsModelName][$joinTableName];
       if ( $this->hasLog() ) $this->log( sprintf(
-        "Using cached join model with table name '%s' ...", $joinTableName
+        "    Using cached join model (%s) for datasource '%s' with table '%s' for model %s ...",
+        $joinModel->objectId(), $dsModelName, $joinTableName, $model
       ));
     }
-    return $joinModels[$joinTableName];
+    return $joinModel;
   }
 
   /**
