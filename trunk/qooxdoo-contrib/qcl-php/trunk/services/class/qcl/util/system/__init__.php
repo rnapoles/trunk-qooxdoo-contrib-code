@@ -18,11 +18,4 @@
 
 ************************************************************************ */
 
-/**
- * The path evironment variable for calls to executables
- */
-if ( ! defined("QCL_UTIL_SYSTEM_ENV_PATH") )
-{
-  define("QCL_UTIL_SYSTEM_ENV_PATH","opt/local/bin:/usr/bin:/bin:/usr/sbin:/sbi");
-}
 ?>
