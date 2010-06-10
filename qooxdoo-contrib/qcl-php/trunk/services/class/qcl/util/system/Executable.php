@@ -59,10 +59,6 @@ class qcl_util_system_Executable
     $this->cmd      = $cmd;
     $this->cwd      = $cwd;
     $this->options  = $options;
-
-    $this->env = $env ? $env : array(
-      'PATH' => QCL_UTIL_SYSTEM_ENV_PATH
-    );
   }
 
   /**
@@ -148,7 +144,9 @@ class qcl_util_system_Executable
   {
     $this->arguments = $arguments;
     $this->stdin = $stdin;
-    $result = $this->call_executable( $this->cmd . " " . $arguments, $stdin );
+    $result = $this->call_executable(
+      $this->cmd . " " . $arguments, $stdin
+    );
     $this->stdout   = $result['stdout'];
     $this->stderr   = $result['stderr'];
     $this->exitcode = $result['exitcode'];
