@@ -77,16 +77,6 @@ abstract class qcl_io_filesystem_remote_Datasource
     $this->addProperties( $this->properties );
   }
 
-
-  /**
-   * Returns singleton instance of this class.
-   * @return qcl_io_filesystem_remote_Datasource
-   */
-  public static function getInstance()
-  {
-    return qcl_getInstance( __CLASS__ );
-  }
-
   /**
    * If the datasource is a file storage. True for this datasource
    * @return bool

@@ -445,13 +445,18 @@ class qcl_access_SessionController
         $userModel->delete();
       }
 
-      /*
+      /* FIXME
        * clean up stale sessions
        */
-//      $sessionModel = $this->getSessionModel();
-//      $ids = $sessionModel->getQueryBehavior()->deleteWhere(
-//        "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
-//      );
+      $sessionModel = $this->getSessionModel();
+      $ids = $sessionModel->getQueryBehavior()->deleteWhere(
+        "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
+      );
+      // FIXME
+      $msgModel = $this->getMessageBus()->getModel();
+      $msgModel->getQueryBehavior()->deleteWhere(
+        "sessionId NOT IN (SELECT namedId FROM data_Session )"
+      );
     }
   }
 }

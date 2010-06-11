@@ -160,8 +160,25 @@ class qcl_access_ACToolController
     while( $model->loadNext() )
     {
       $value  = $model->namedId();
+
+//      /*
+//       * don't show hidden records
+//       */
+//      if( $model->has("hidden" ) )
+//      {
+//        if( $model->get("hidden") )
+//        {
+//          continue;
+//        }
+//      }
+
       $icon   = $models[$type]['icon'];
       $label  = $model->get($labelProp);
+
+      if ( ! trim($label ) )
+      {
+        $label = $value;
+      }
 
       if ( $model->hasProperty("ldap") and $model->getLdap() )
       {
@@ -297,9 +314,10 @@ class qcl_access_ACToolController
                 $roleModel->findLinked( $userModel, $groupModel );
                 while( $roleModel->loadNext() )
                 {
+                  $label = $roleModel->get( $models['role']['labelProp'] );
                   $roleNode = array(
                     'icon'      => $models['role']['icon'],
-                    'label'     => $roleModel->get( $models['role']['labelProp'] ),
+                    'label'     => either( $label,$model->namedId()),
                     'type'      => "role",
                     'mode'      => "unlink",
                     'value'     => "group=" . $groupModel->namedId() . ",role=" . $roleModel->namedId(),
@@ -340,9 +358,10 @@ class qcl_access_ACToolController
 
             while( $roleModel->loadNext( $query ) )
             {
+              $label = $roleModel->get( $models['role']['labelProp'] );
               $roleNode = array(
                 'icon'      => $models['role']['icon'],
-                'label'     => $roleModel->get( $models['role']['labelProp'] ),
+                'label'     => either( $roleModel->get( $models['role']['labelProp'] ), $roleModel->namedId() ),
                 'type'      => "role",
                 'mode'      => "unlink",
                 'value'     => "role=" . $roleModel->namedId(),
@@ -370,9 +389,10 @@ class qcl_access_ACToolController
 
             while( $model->loadNext() )
             {
+              $label = $model->get($data['labelProp']);
               $node['children'][] = array(
                 'icon'      => $data['icon'],
-                'label'     => $model->get($data['labelProp']),
+                'label'     => either( $model->get($data['labelProp']),  $model->namedId() ),
                 'type'      => $type,
                 'value'     => $type . "=" . $model->namedId(),
                 'mode'      => "unlink",
@@ -404,7 +424,7 @@ class qcl_access_ACToolController
     {
       qcl_import( "qcl_data_datasource_Manager" );
       $mgr = qcl_data_datasource_Manager::getInstance();
-      $mgr->createDatasource( $namedId, "bibliograph" );
+      $mgr->createDatasource( $namedId, "bibliograph.schema.bibliograph2" ); // FIXME !!
       $model = $mgr->getDatasourceModelByName( $namedId );
       $model->set("title", $namedId );
       $model->save();

@@ -94,7 +94,7 @@ class qcl_io_filesystem_local_Datasource
   /**
    * Returns the file object to do read and write operations with.
    * @param string $filename
-   * @var qcl_io_filesystem_remote_File
+   * @var qcl_io_filesystem_local_File
    * @throws LogicException
    */
   public function getFile($filename)
