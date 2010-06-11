@@ -82,8 +82,13 @@ class qcl_server_Upload
        */
       $username = $_SERVER['PHP_AUTH_USER'];
       $password = $_SERVER['PHP_AUTH_PW'];
-      if ( ! $username or
-           ! $accessController->authenticate( $username, $password ) )
+      $userId = null;
+
+      if ( $username and $password )
+      {
+        $userId = $accessController->authenticate( $username, $password );
+      }
+      if ( ! $userId )
       {
         header('WWW-Authenticate: Basic realm="Upload Area"');
         header('HTTP/1.0 401 Unauthorized');
