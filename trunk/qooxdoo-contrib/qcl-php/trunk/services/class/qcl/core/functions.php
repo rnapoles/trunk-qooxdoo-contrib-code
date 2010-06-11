@@ -387,7 +387,7 @@ function qcl_assert_file_exists( $path )
  * @return array.
  * @throws InvalidArgumentException
  */
-function qcl_array_assert_keys( $array, $keys )
+function qcl_assert_array_keys( $array, $keys )
 {
   if ( ! is_array( $array ) or ! is_array( $keys ) )
   {
