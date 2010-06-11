@@ -32,44 +32,44 @@ interface qcl_io_filesystem_IFolder
    * @param string $name
    * @return qcl_io_filesystem_local_File
    */
-  function createOrGetFile( $name );
+  public function createOrGetFile( $name );
 
   /**
    * Creates a folder resource if it doesn't exist. Return resource
    * @param string $name
    * @return qcl_io_filesystem_local_Folder
    */
-  function createOrGetFolder( $name );
+  public function createOrGetFolder( $name );
 
   /**
    * Returns the file or folder with the name
    * @return qcl_io_file_AbstractFile
    */
-  function get( $name );
+  public function get( $name );
 
   /**
    * Checks if resource of the given name exists in this folder
    * @param string $name
    * @return boolean
    */
-  function has( $name );
+  public function has( $name );
 
   /**
    * Opens the folder to iterate through its contents
    * @return void
    */
-  function open();
+  public function open();
 
   /**
    * Gets the next entry in the folder
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function next();
+  public function next();
 
   /**
    * Closes the folder resource
    */
-  function close();
+  public function close();
 
 
 }

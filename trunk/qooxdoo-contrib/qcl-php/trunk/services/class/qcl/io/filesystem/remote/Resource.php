@@ -32,7 +32,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
    * the class to work) and registers s3 streamwrapper if necessary
    * @param string $resourcePath
    */
-  function __construct ( $resourcePath )
+  public function __construct ( $resourcePath )
   {
     /*
      * parent constructor takes care of resource path
@@ -46,11 +46,11 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     {
       if ( ! defined('S3_KEY') )
       {
-        $this->raiseError("You need to define the S3_KEY constant");
+        throw new qcl_io_filesystem_Exception("You need to define the S3_KEY constant");
       }
       if ( ! defined('S3_PRIVATE') )
       {
-        $this->raiseError("You need to define the S3_PRIVATE constant");
+        throw new qcl_io_filesystem_Exception("You need to define the S3_PRIVATE constant");
       }
       require_once "qcl/lib/gs3/gs3.php";
     }
@@ -60,7 +60,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
      */
     if ( ! ini_get("allow_url_fopen") )
     {
-      $this->raiseError("You need to enable 'allow_url_fopen' in the php.ini file for this to work.");
+      throw new qcl_io_filesystem_Exception("You need to enable 'allow_url_fopen' in the php.ini file for this to work.");
     }
   }
 
@@ -70,7 +70,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
    * @param string[optional] $resourcePath
    * @return bool
    */
-  function isFile( $resourcePath = null )
+  public function isFile( $resourcePath = null )
   {
     $rp  = either ( $resourcePath, $this->resourcePath() );
     if ( $rp[strlen($rp)-1] == "/" ) return false;
@@ -85,7 +85,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
    * @return bool
    * @todo this should be clear from the file name!
    */
-  function isDir( $resourcePath=null )
+  public function isDir( $resourcePath=null )
   {
     $rp  = either ( $resourcePath, $this->resourcePath() );
     if ( $rp[strlen($rp)-1] == "/" ) return true;
@@ -96,7 +96,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
   /**
    * Checks if file or folder exists
    */
-  function exists()
+  public function exists()
   {
     if ( $this->open() )
     {
@@ -111,11 +111,11 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
    * @todo implement, if possible at all
    * @return booelean Result
    */
-  function delete()
+  public function delete()
   {
     if ( ! unlink( $this->resourcePath() ) )
     {
-      $this->setError("Problem deleting " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem deleting " . $this->resourcePath() );
       return false;
     }
     return true;
@@ -127,15 +127,15 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
    * @param string $name New name
    * @return boolean Result
    */
-  function rename($name)
+  public function rename($name)
   {
-    $this->raiseError("Renaming remote Files/Folders not implemented.");
+    throw new qcl_io_filesystem_Exception("Renaming remote Files/Folders not implemented.");
   }
 
   /**
    * Returns the last modification date
    */
-  function lastModified()
+  public function lastModified()
   {
     $this->notImplemented(__CLASS__);
   }

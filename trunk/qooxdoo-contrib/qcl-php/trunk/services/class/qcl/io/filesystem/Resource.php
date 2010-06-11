@@ -29,35 +29,32 @@ class qcl_io_filesystem_Resource
    * @var string
    * @var access private
    */
-  var $_resourcePath;
+  protected $resourcePath;
 
   /**
    * The supported / allowed protocols
    */
-  var $resourceTypes = array();
+  protected $resourceTypes = array();
 
   /**
    * The currently used protocol
    */
-  var $resourceType;
+  protected $resourceType;
 
   /**
    * Constructor
    * @param string $resourcePath
    */
-  function __construct ( $resourcePath )
+  public function __construct ( $resourcePath )
   {
-    /*
-     * parent constructor takes care of controller
-     */
-    parent::__construct( $controller );
+    parent::__construct();
 
     /*
      * check resource path
      */
     if ( ! $this->checkResourcePath( $resourcePath ) )
     {
-      $this->raiseError("'$resourcePath' is not a valid resource for " . $this->className() );
+      throw new qcl_io_filesystem_Exception("'$resourcePath' is not a valid resource for " . $this->className() );
     }
 
     /*
@@ -76,9 +73,9 @@ class qcl_io_filesystem_Resource
    * @param string $resourcePath
    * @return void
    */
-  function setResourcePath( $resourcePath )
+  public function setResourcePath( $resourcePath )
   {
-    $this->_resourcePath = $resourcePath;
+    $this->resourcePath = $resourcePath;
   }
 
   /**
@@ -140,7 +137,7 @@ class qcl_io_filesystem_Resource
    * @param string $resourcePath
    * @retrun boolean
    */
-  function checkResourcePath( $resourcePath )
+  public function checkResourcePath( $resourcePath )
   {
     $pos = strpos($resourcePath,":");
     return  in_array( substr($resourcePath, 0, $pos), $this->resourceTypes )
@@ -151,9 +148,9 @@ class qcl_io_filesystem_Resource
    * Gets the file's resource path
    * @return string
    */
-  function resourcePath()
+  public function resourcePath()
   {
-    return $this->_resourcePath;
+    return $this->resourcePath;
   }
 
   /**
@@ -162,10 +159,10 @@ class qcl_io_filesystem_Resource
    * of the current resource object
    * @return string
    */
-  function filePath( $resourcePath=null )
+  public function filePath( $resourcePath=null )
   {
     $rp = either( $resourcePath, $this->resourcePath() );
-    return substr( $rp, strpos($rp,":") +3 );
+    return substr( $rp, strlen( $this->resourceType ) +3 );
   }
 
   /**
@@ -173,7 +170,7 @@ class qcl_io_filesystem_Resource
    * @param string[optional] $resourcePath
    * @return string
    */
-  function dirname( $resourcePath = null)
+  public function dirname( $resourcePath = null)
   {
     $rp  = either ( $resourcePath, $this->resourcePath() );
     return substr( $rp, 0, strrpos($rp, "/" ) );
@@ -184,17 +181,17 @@ class qcl_io_filesystem_Resource
    * @param string[optional] $resourcePath
    * @return string
    */
-  function basename( $resourcePath=null )
+  public function basename( $resourcePath=null )
   {
     $rp  = either ( $resourcePath, $this->resourcePath() );
     $pos = strrpos( $rp, "/" );
-    if ( $pos == strlen($rp)-1 )
+    if ( $pos == strlen( $rp )-1 )
     {
-      $pos = strrpos(substr($rp,0,-1),"/");
+      $pos = strrpos(substr( $rp, 0, -1), "/");
     }
     if ( $pos !== false )
     {
-      return substr($this->resourcePath(),$pos+1);
+      return substr( $this->resourcePath(), $pos+1 );
     }
     return $rp;
   }
@@ -204,7 +201,7 @@ class qcl_io_filesystem_Resource
    * @param string[optional] $resourcePath
    * @return string
    */
-  function extension( $resourcePath=null )
+  public function extension( $resourcePath=null )
   {
     $rp  = either ( $resourcePath, $this->resourcePath() );
     $bn  = $this->basename( $rp );
@@ -220,10 +217,9 @@ class qcl_io_filesystem_Resource
    * Casting as string, returns the resource path
    * @return string
    */
-  function toString()
+  public function __toString()
   {
     return $this->resourcePath();
   }
 }
-
 ?>

@@ -38,7 +38,7 @@ class qcl_io_filesystem_local_File
    * Constructor
    * @param string $resourcePath
    */
-  function __construct ( $resourcePath )
+  public function __construct ( $resourcePath )
   {
     /*
      * parent constructor takes care of  resource path
@@ -52,42 +52,34 @@ class qcl_io_filesystem_local_File
    * @param int $mode File permissions, defaults to 0666
    * @return bool if file could be created
    */
-  function create( $mode=0666 )
+  public function create( $mode=0666 )
   {
     /*
      * create file if it doesn't exist
      */
     $filePath = $this->filePath();
-    $dirname  = dirname( $filePath );
-    $basename = basename( $filePath );
-
     if ( ! file_exists( $filePath ) )
     {
-      if ( is_writable( dirname( $dirname ) ) )
+      if ( touch( $filePath ) )
       {
-        touch( $filePath );
-        //chmod( $filePath, $mode );
         return true;
       }
       else
       {
-        $this->setError("File '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
-        return false;
+        throw new qcl_io_filesystem_Exception("File '$filePath' could not be created." );
       }
     }
     else
     {
-      $this->setError("File '$basename' exist." );
-      return false;
+      throw new qcl_io_filesystem_FileExistsException("File '$filePath' already exist." );
     }
   }
-
 
   /**
    * Load the whole file resource into memory
    * @return mixed string content or false if file could not be loaded
    */
-  function load()
+  public function load()
   {
     return file_get_contents($this->filePath());
   }
@@ -97,7 +89,7 @@ class qcl_io_filesystem_local_File
    * @param string $data
    * @return void
    */
-  function save( $data )
+  public function save( $data )
   {
     if ( file_put_contents( $this->filePath(), $data ) )
     {
@@ -105,7 +97,7 @@ class qcl_io_filesystem_local_File
     }
     else
     {
-      $this->setError("Problems saving to " . $this->filePath() );
+      throw new qcl_io_filesystem_Exception("Problems saving to " . $this->filePath() );
       return false;
     }
   }
@@ -115,12 +107,12 @@ class qcl_io_filesystem_local_File
    * @param string $mode r(ead)|w(rite)|a(append)
    * @param boolean Result
    */
-  function open($mode="r")
+  public function open($mode="r")
   {
     $fp = fopen( $this->filePath(), $mode );
     if ( ! $fp )
     {
-      $this->setError("Problem opening " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem opening " . $this->resourcePath() );
       return false;
     }
     $this->_fp = $fp;
@@ -132,7 +124,7 @@ class qcl_io_filesystem_local_File
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function read( $bytes )
+  public function read( $bytes )
   {
     if ( feof( $this->_fp) )
     {
@@ -141,7 +133,7 @@ class qcl_io_filesystem_local_File
     $result = fread($this->_fp,$bytes);
     if ( ! $result )
     {
-      $this->setError("Problem reading $bytes from " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem reading $bytes from " . $this->resourcePath() );
       return false;
     }
     return $result;
@@ -152,7 +144,7 @@ class qcl_io_filesystem_local_File
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function readLine()
+  public function readLine()
   {
     if ( feof( $this->_fp) )
     {
@@ -161,7 +153,7 @@ class qcl_io_filesystem_local_File
     $result = fgets($this->_fp);
     if ( ! $result )
     {
-      $this->setError("Problem reading line from " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem reading line from " . $this->resourcePath() );
       return false;
     }
     return $result;
@@ -171,11 +163,11 @@ class qcl_io_filesystem_local_File
    * Writes to the file resource a variable number of bytes
    * @param string $data
    */
-  function write( $data )
+  public function write( $data )
   {
-    if ( ! fputs($this->_fp,$data ) )
+    if ( ! fputs( $this->_fp, $data ) )
     {
-      $this->setError("Problem writing to " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem writing to " . $this->resourcePath() );
       return false;
     }
     return true;
@@ -185,11 +177,11 @@ class qcl_io_filesystem_local_File
    * Closes the file resource
    * @return booelean Result
    */
-  function close()
+  public function close()
   {
-    if ( ! fclose($this->_fp) )
+    if ( ! fclose( $this->_fp ) )
     {
-      $this->setError("Problem closing " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem closing " . $this->resourcePath() );
       return false;
     }
     return true;
@@ -199,7 +191,7 @@ class qcl_io_filesystem_local_File
    * Stores data in the file. Shortcut for open("w"), write, close.
    * @param string $data
    */
-  function store( $data )
+  public function store( $data )
   {
     $this->open("w");
     $this->write($data);
@@ -210,13 +202,21 @@ class qcl_io_filesystem_local_File
    * Apends data to file. Shortcut for open("a"), write, close
    * @param string $data
    */
-  function append( $data )
+  public function append( $data )
   {
     $this->open("a");
     $this->write($data);
     $this->close();
   }
 
+  /**
+   * Returns the size of the file
+   * @return int
+   */
+  public function size()
+  {
+    return filesize( $this->filePath() );
+  }
 
   /**
    * Returns an associative array containing information about path.
@@ -224,7 +224,7 @@ class qcl_io_filesystem_local_File
    * dirname, basename extension (if any), and filename.
    * @return array
    **/
-  function info()
+  public function pathinfo()
   {
     return pathinfo($this->resourcePath());
   }
