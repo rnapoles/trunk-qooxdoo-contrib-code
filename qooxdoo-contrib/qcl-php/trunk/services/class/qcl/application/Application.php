@@ -306,16 +306,10 @@ abstract class qcl_application_Application
     try
     {
       $this->log( "Registering 'access' datasource schema" , QCL_LOG_APPLICATION );
-      $dsManager = qcl_data_datasource_Manager::getInstance();
-      $dsManager->registerSchema("access",array(
-        'class'       => "qcl_access_DatasourceModel",
-        'description' => "Datasource for the user, permission, role, config and userconfig models"
-      ) );
+      qcl_import("qcl_access_DatasourceModel");
+      qcl_access_DatasourceModel::getInstance()->registerSchema();
     }
-    catch( qcl_data_model_RecordExistsException $e )
-    {
-      $this->warn("'Access' datasource schema already exists.");
-    }
+    catch( qcl_data_model_RecordExistsException $e ){}
 
     /*
      * create datasources
@@ -324,12 +318,9 @@ abstract class qcl_application_Application
     try
     {
       $this->log( "Creating 'access' datasource" , QCL_LOG_APPLICATION );
-      $dsManager->createDatasource("access","access");
+      $dsManager->createDatasource("access","qcl.schema.access");
     }
-    catch( qcl_data_model_RecordExistsException $e )
-    {
-      $this->warn("'Access' datasource already exists.");
-    }
+    catch( qcl_data_model_RecordExistsException $e ){}
 
     /*
      * Import data

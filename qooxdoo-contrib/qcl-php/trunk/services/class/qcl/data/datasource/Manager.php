@@ -75,9 +75,10 @@ class qcl_data_datasource_Manager
     {
       throw new InvalidArgumentException("Missing 'class' argument");
     }
+
     $class = $options['class'];
 
-    // FIXME FIXME : decide if class must exists at time of registering so that we can do dependency checks or not
+    // FIXME decide if class must exists at time of registering so that we can do dependency checks or not
     if ( ! is_string( $class) ) //or ! $class instanceof qcl_data_datasource_DbModel )
     {
       throw new InvalidArgumentException("Invalid class '$class'. Must implement qcl_data_datasource_IModel ");
@@ -85,6 +86,9 @@ class qcl_data_datasource_Manager
 
     $this->log("Registering class '$class' for schema '$schemaName'", QCL_LOG_DATASOURCE);
 
+    /*
+     * create schema
+     */
     return $this->getRegistryModel()->create( $schemaName, $options );
   }
 
@@ -141,22 +145,24 @@ class qcl_data_datasource_Manager
    */
   public function schemaClass( $schemaName )
   {
-    if ( ! $schemaName )
-    {
-      throw new InvalidArgumentException( "No schema given" );
-    }
+    qcl_assert_valid_string( $schemaName );
 
     $registry = $this->getRegistryModel();
-
     try
     {
       $registry->load( $schemaName );
-      return $registry->getClass();
+      $class = $registry->getClass();
+      if ( ! $class )
+      {
+        throw new InvalidArgumentException( "No class registered for schema '$schemaName'" );
+      }
+      return $class;
     }
     catch ( qcl_data_model_RecordNotFoundException $e )
     {
-      throw new JsonRpcException( "No class registered for schema '$namedId'" );
+      throw new InvalidArgumentException( "Schema '$schemaName' does not exist." );
     }
+
   }
 
   /**
@@ -208,20 +214,32 @@ class qcl_data_datasource_Manager
    */
   public function createDatasource( $name, $schema )
   {
-    if ( ! is_string( $name ) or ! is_string( $schema ) )
-    {
-      throw new InvalidArgumentException(" Invalid arguments ");
-    }
+    qcl_assert_valid_string( $name, "Invalid name argument" );
+    qcl_assert_valid_string( $schema, "Invalid schema argument" );
+
+    /*
+     * create a new generic model
+     */
     $dsModel = $this->getDatasourceModel();
-    $dsModel->create( $name, array( "schema" => $schema, "type" => "placeholder" ) );
+    $dsModel->create( $name, array(
+      "schema" => $schema,
+      "type" => "placeholder"
+    ) );
     $dsModel->setDsn( $this->getApplication()->getUserDsn() ); //FIXME generalize this
     $dsModel->save();
 
-    return $this->getDatasourceModelByName( $name );
+    /*
+     * get the new specialized model
+     */
+    $dsModel = $this->getDatasourceModelByName( $name );
+    if ( $dsModel->getType() == "placeholder" )
+    {
+      $dsModel->setType( $dsModel->getDefaultType() );
+      $dsModel->save();
+    }
+
+    return $dsModel;
   }
-
-
-
 
   /**
    * Retrieves and initializes the datasource model object for a
@@ -233,11 +251,7 @@ class qcl_data_datasource_Manager
    */
   public function getDatasourceModelByName( $name )
   {
-
-    if ( ! $name or !is_string($name) )
-    {
-      throw new InvalidArgumentException("Invalid datasource name '$name'.");
-    }
+    qcl_assert_valid_string("Invalid datasource name '$name'.");
 
     /*
      * create model object if it hasn't been created already
@@ -263,6 +277,10 @@ class qcl_data_datasource_Manager
        * get schema name and class
        */
       $schemaName = $dsModel->getSchema();
+      if( ! $schemaName )
+      {
+        throw new InvalidArgumentException("Datasource '$name' does not have a schema.");
+      }
       $schemaClass = $this->schemaClass( $schemaName );
 
       $this->log( "Datasource '$name' has schema name '$schemaName' and class '$schemaClass'.", QCL_LOG_DATASOURCE );
