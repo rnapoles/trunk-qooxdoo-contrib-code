@@ -164,11 +164,17 @@ function qcl_getInstance( $clazz )
 }
 
 /**
- * Asserts that argument is of the given type
+ * Asserts that argument is of the given type. Returns the arguent if
+ * successful.
+ *
  * @param mixed $value
+ *    The value to check.
  * @param string $type
- * @param string $msg Optional error message
- * @return void
+ *    The type to match.
+ * @param string $msg
+ *    Optional error message
+ * @return mixed
+ *    The argument that was passed to the function
  * @throws InvalidArgumentException
  */
 function qcl_assert_type( $value, $type, $msg=null )
@@ -187,35 +193,44 @@ function qcl_assert_type( $value, $type, $msg=null )
 }
 
 /**
- * Asserts that argument is boolean
- * @param $value
- * @param string $msg Optional error message
- * @return void
+ * Asserts that argument is boolean. Returns the argument if successful.
+ *
+ * @param bool $value
+ * @param string $msg
+ *    Optional error message
+ * @return bool
  *
  * @throws InvalidArgumentException
  */
 function qcl_assert_boolean( $value, $msg=null )
 {
   qcl_assert_type( $value, "boolean", $msg );
+  return $value;
 }
 
 /**
- * Asserts that argument is a string
+ * Asserts that argument is a string. Returns the argument if successful.
+ *
  * @param mixed $value
- * @param string $msg Optional error message
- * @return void
+ * @param string $msg
+ *    Optional error message
+ * @return string
  * @throws InvalidArgumentException
  */
 function qcl_assert_string( $value, $msg=null )
 {
   qcl_assert_type( $value, "string", $msg );
+  return $value;
 }
 
 /**
- * Asserts that argument is a non-empty string
+ * Asserts that argument is a non-empty string.
+ * Returns the argument if successful.
+ *
  * @param mixed $value
- * @param string $msg Optional error message
- * @return void
+ * @param string $msg
+ *    Optional error message
+ * @return string
  * @throws InvalidArgumentException
  */
 function qcl_assert_valid_string( $value, $msg=null )
@@ -226,52 +241,63 @@ function qcl_assert_valid_string( $value, $msg=null )
       "Invalid argument type. Expected valid string, got empty string"
       );
   }
-  qcl_assert_string( $value, $msg );
+  return qcl_assert_string( $value, $msg );
+
 }
 
 /**
- * Asserts that argument is an array
- * @param mixed $value
- * @param string $msg Optional error message
- * @return void
+ * Asserts that argument is an array. Returns the argument if successful.
+ *
+ * @param array $value
+ * @param string $msg
+ *    Optional error message
+ * @return array
  * @throws InvalidArgumentException
  */
 function qcl_assert_array( $value, $msg=null )
 {
-  qcl_assert_type( $value, "array", $msg );
+  return qcl_assert_type( $value, "array", $msg );
 }
 
 /**
- * Asserts that argument is an integer value
+ * Asserts that argument is an integer value.
+ * Returns the argument if successful.
+ *
  * @param mixed $value
- * @param string $msg Optional error message
- * @return void
+ * @param string $msg
+ *    Optional error message
+ * @return int
  * @throws InvalidArgumentException
  *
  */
 function qcl_assert_integer( $value, $msg=null )
 {
-  qcl_assert_type( $value, "integer", $msg );
+  return qcl_assert_type( $value, "integer", $msg );
 }
 
 /**
- * Asserts that argument is an object
+ * Asserts that argument is an object. Returns the argument if successful.
+ *
  * @param mixed $value
- * @param string $msg Optional error message
- * @return void
+ * @param string $msg
+ *    Optional error message
+ * @return object
  * @throws InvalidArgumentException
  */
 function qcl_assert_object( $value, $msg=null )
 {
-  qcl_assert_type( $value, "object" );
+  return qcl_assert_type( $value, "object" );
 }
 
 /**
- * Asserts that the given value matches the given regular expression
+ * Asserts that the given value matches the given regular expression.
+ * Returns the argument if successful.
+ *
  * @param $regexp
  * @param $value
- * @param string $msg Optional error message
- * @return void
+ * @param string $msg
+ *    Optional error message
+ * @return string
  * @throws InvalidArgumentException
  */
 function qcl_assert_regexp( $regexp, $value, $msg=null )
@@ -285,14 +311,16 @@ function qcl_assert_regexp( $regexp, $value, $msg=null )
     }
     throw new InvalidArgumentException( $msg );
   }
+  return $value;
 }
 
 /**
  * Asserts that the given object has the given method.
+ * Returns the object if successful.
  *
  * @param object $object
  * @param string $method
- * @return void
+ * @return object
  */
 function qcl_assert_method_exists( $object, $method )
 {
@@ -305,14 +333,16 @@ function qcl_assert_method_exists( $object, $method )
     get_class( $object ), $method
     ));
   }
+  return $object;
 }
 
 /**
  * Asserts that the given object is an instance of the given
- * class
+ * class. Returns the argument if successful.
+ *
  * @param object $object
  * @param string $class
- * @return void
+ * @return $object
  */
 function qcl_assert_instanceof( $object, $class )
 {
@@ -325,12 +355,15 @@ function qcl_assert_instanceof( $object, $class )
     get_class( $object ), $class
     ));
   }
+  return $object;
 }
 
 /**
- * Asserts that the given path is an existing file
+ * Asserts that the given path is an existing file.
+ * Returns the path if successful.
+ *
  * @param object $path
- * @return void
+ * @return string
  */
 function qcl_assert_file_exists( $path )
 {
@@ -341,6 +374,33 @@ function qcl_assert_file_exists( $path )
       "File '%s' does not exist", $path
     ));
   }
+  return $path;
+}
+
+
+/**
+ * Asserts that all keys in the second argument exist in the first argument.
+ * Returns the array if successful.
+ *
+ * @param array $array
+ * @param array $keys
+ * @return array.
+ * @throws InvalidArgumentException
+ */
+function qcl_array_assert_keys( $array, $keys )
+{
+  if ( ! is_array( $array ) or ! is_array( $keys ) )
+  {
+    throw new InvalidArgumentException( "Invalid arguments." );
+  }
+  if ( count( array_intersect( array_keys( $array ), $keys) ) < count( $keys ) )
+  {
+    throw new InvalidArgumentException( sprintf(
+      "Assertion failed: keys ['%s'] are missing from given array,",
+    implode("', '",array_diff( $keys, array_keys( $array ) ) )
+    ) );
+  }
+  return array();
 }
 
 
@@ -404,36 +464,32 @@ function object2array( $var )
 
 
 /**
- * Asserts that all keys in the second argument exist in the first argument.
- * @param array $array
- * @param array $keys
- * @return void.
- * @throws InvalidArgumentException
- */
-function qcl_array_assert_keys( $array, $keys )
-{
-  if ( ! is_array( $array ) or ! is_array( $keys ) )
-  {
-    throw new InvalidArgumentException( "Invalid arguments." );
-  }
-  if ( count( array_intersect( array_keys( $array ), $keys) ) < count( $keys ) )
-  {
-    throw new InvalidArgumentException( sprintf(
-      "Assertion failed: keys ['%s'] are missing from given array,",
-    implode("', '",array_diff( $keys, array_keys( $array ) ) )
-    ) );
-  }
-}
-
-
-/**
  * Converts a boolean value to a string representation
  * @param bool $value
  * @return string
  */
-function boolString($value = false)
+function boolString( $value )
 {
+  qcl_assert_boolean( $value, "Argument must be a boolean value.");
   return ($value ? 'true' : 'false');
+}
+
+/**
+ * Parses a string, which must be "true" or "false". The match is
+ * case-insensitive.
+ *
+ * @param $string
+ * @return unknown_type
+ */
+function qcl_parseBoolString( $string )
+{
+  qcl_assert_valid_string( $string, "Argument must be a string value");
+  switch( strtolower($string) )
+  {
+    case "true":  return true;
+    case "false": return false;
+    default: throw new InvalidArgumentException( "Argument must be 'true' or 'false'");
+  }
 }
 
 /**
