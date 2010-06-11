@@ -22,9 +22,9 @@
  */
 
 
-class qcl_FileNotFoundException extends Exception {}
-class qcl_ClassNotDefinedException extends Exception {}
-class qcl_InvalidClassException extends Exception {}
+class qcl_FileNotFoundException extends LogicException {}
+class qcl_ClassNotDefinedException extends LogicException {}
+class qcl_InvalidClassException extends LogicException {}
 
 /**
  * Imports a class file, loading __init__.php package initialization files

@@ -47,7 +47,7 @@ if ( ! defined( "QCL_SERVICE_PATH") )
  */
 if ( ! defined( "QCL_TMP_PATH" ) )
 {
-  define( "QCL_TMP_PATH", sys_get_temp_dir() ."/" );
+  define( "QCL_TMP_PATH", sys_get_temp_dir() );
 }
 
 /*

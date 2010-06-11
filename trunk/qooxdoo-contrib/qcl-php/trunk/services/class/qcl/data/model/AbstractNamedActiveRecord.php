@@ -48,6 +48,7 @@ class qcl_data_model_AbstractNamedActiveRecord
    * @param string|array|object $first If string, use as named id. If array,
    * or object, use as record data to extract the named id from.
    * @param array|null Optional map of properties to set
+   * @throws qcl_data_model_RecordExistsException if the named id alredy exists
    * @return int Id of the record
    */
   public function create( $first, $data=null )
@@ -87,8 +88,9 @@ class qcl_data_model_AbstractNamedActiveRecord
     {
       unset( $this->__namedIdExistChecked );
     }
-    elseif ( $this->namedIdExists( $namedId) )
+    elseif ( $id=$this->namedIdExists( $namedId ) )
     {
+      $this->debug("Record: $id in table " . $this->getQueryBehavior()->getTableName(),__CLASS__,__LINE__);
       throw new qcl_data_model_RecordExistsException("Named id '$namedId' already exists");
     }
 

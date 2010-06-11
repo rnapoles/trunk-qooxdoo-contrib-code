@@ -48,9 +48,15 @@ class qcl_data_datasource_DbModel
   /**
    * The description of the schema, needed for self-
    * registering
-   * @var unknown_type
+   * @var string
    */
   protected $description = null;
+
+  /**
+   * The type of the datasource. Defaults to "mysql"
+   * @var string
+   */
+  protected $type = "mysql";
 
   /**
    * Table name
@@ -77,7 +83,7 @@ class qcl_data_datasource_DbModel
     ),
     'schema' => array(
       'check'   => "string",
-      'sqltype' => "varchar(20) NOT NULL"
+      'sqltype' => "varchar(100) NOT NULL"
     ),
     'type' => array(
       'check'   => "string",
@@ -85,7 +91,7 @@ class qcl_data_datasource_DbModel
     ),
     'host' => array(
       'check'   => "string",
-      'sqltype' => "varchar(50)"
+      'sqltype' => "varchar(100)"
     ),
     'port' => array(
       'check'   => "integer",
@@ -267,8 +273,17 @@ class qcl_data_datasource_DbModel
   }
 
   //-------------------------------------------------------------
-  // internal methods
+  // Getters and setters for model properties
   //-------------------------------------------------------------
+
+  /**
+   * Getter for 'title' property
+   * @return string
+   */
+  public function getTitle()
+  {
+    return $this->get("title");
+  }
 
   /**
    * Alias of getTitle()
@@ -277,6 +292,142 @@ class qcl_data_datasource_DbModel
   public function getName()
   {
     return $this->getTitle();
+  }
+
+  /**
+   * Getter for 'schema' property
+   * @return string
+   */
+  public function getSchema()
+  {
+    return $this->get("schema");
+  }
+
+  /**
+   * Getter for 'description' property
+   * @return string
+   */
+  public function getDescription()
+  {
+    return $this->get("description");
+  }
+
+  /**
+   * Getter for 'type' property
+   * @return string
+   */
+  public function getType()
+  {
+    return $this->get("type");
+  }
+
+  /**
+   * Returns the default type set by the class
+   * @return string
+   */
+  public function getDefaultType()
+  {
+    return $this->type;
+  }
+
+  /**
+   * Getter for 'host' property
+   * @return string
+   */
+  public function getHost()
+  {
+    return $this->get("host");
+  }
+
+  /**
+   * Getter for 'port' property
+   * @return int
+   */
+  public function getPort()
+  {
+    return $this->get("port");
+  }
+
+  /**
+   * Getter for 'database' property
+   * @return string
+   */
+  public function getDatabase()
+  {
+    return $this->get("database");
+  }
+
+  /**
+   * Getter for 'username' property
+   * @return string
+   */
+  public function getUsername()
+  {
+    return $this->get("username");
+  }
+
+  /**
+   * Getter for 'password' property
+   * @return string
+   */
+  public function getPassword()
+  {
+    return $this->get("password");
+  }
+
+  /**
+   * Getter for 'encoding' property
+   * @return string
+   */
+  public function getEncoding()
+  {
+    return $this->get("encoding");
+  }
+
+  /**
+   * Getter for 'prefix' property
+   * @return string
+   */
+  public function getPrefix()
+  {
+    return $this->get("prefix");
+  }
+
+  /**
+   * Getter for 'resourcepath' property
+   * @return string
+   */
+  public function getResourcepath()
+  {
+    return $this->get("resourcepath");
+  }
+
+  /**
+   * Boolean getter for 'active' property
+   * @return bool
+   */
+  public function isActive()
+  {
+    return $this->get("active");
+  }
+
+//  /**
+//   * Boolean getter for 'readonly' property
+//   * @return boolean
+//   * FIXME results in an infinite loop when uncommented
+//   */
+//  public function isReadonly()
+//  {
+//    return $this->get("readonly");
+//  }
+
+  /**
+   * Boolean getter for 'hidden' property
+   * @return bool
+   */
+  public function isHidden()
+  {
+    return $this->get("hidden");
   }
 
   //-------------------------------------------------------------
@@ -329,14 +480,18 @@ class qcl_data_datasource_DbModel
   //-------------------------------------------------------------
 
   /**
-   * Self-registers the datasource model with the manager
-   * @return void
+   * Self-registers the datasource model with the manager.
+   * Returns the registry model instance.
+   *
+   * @return qcl_data_datasource_RegistryModel
+   * @throws qcl_data_model_RecordExistsException
+   *    Thrown if schema name already exists
    */
   public function registerSchema()
   {
     $this->checkSchemaName();
     $dsManager = qcl_data_datasource_Manager::getInstance();
-    $dsManager->registerSchema( $this->schemaName, array(
+    return $dsManager->registerSchema( $this->schemaName, array(
       'class'       => $this->className(),
       'description' => $this->description
     ) );
@@ -542,7 +697,6 @@ class qcl_data_datasource_DbModel
   {
     return false;
   }
-
 
   //-------------------------------------------------------------
   // Overwritten methods

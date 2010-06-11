@@ -30,6 +30,19 @@ class qcl_access_DatasourceModel
 {
 
   /**
+   * The name of the datasource schema
+   * @var string
+   */
+  protected $schemaName = "qcl.schema.access";
+
+  /**
+   * The description of the datasource schema
+   * @var string
+   */
+  protected $description =
+    "The schema the qcl datasource supplying the models for access control";
+
+  /**
    * Returns singleton instance of this class.
    * @return qcl_access_DatasourceModel
    */
