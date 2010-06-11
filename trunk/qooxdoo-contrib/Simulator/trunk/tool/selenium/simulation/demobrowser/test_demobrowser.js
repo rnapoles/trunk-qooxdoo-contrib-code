@@ -157,7 +157,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     return [nextSampleCategory,nextSampleLabel];
   }
   else {
-    this.log('Loading demo ' + nextSampleCategory + ' - ' + nextSampleLabel, "debug");
+    //this.log('Loading demo ' + nextSampleCategory + ' - ' + nextSampleLabel, "debug");
     // run the sample
     this.runScript(scriptCode, "Running sample");
     
@@ -219,7 +219,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);  
 
-  this.log('Last loaded demo: ' + category + ' - ' + currentSample, "debug");
+  //this.log('Last loaded demo: ' + category + ' - ' + currentSample, "debug");
   
   var expectedLogEntries = [
     "Load runtime",
