@@ -35,7 +35,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * @param string $resourcePath
    * @param int $mode File permissions, defaults to 0777
    */
-  function __construct ( $resourcePath, $mode=0777 )
+  public function __construct ( $resourcePath, $mode=0777 )
   {
     /*
      * parent constructor takes care of controller and resource path
@@ -47,7 +47,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
      */
     if ( substr($resourcePath,-1) != "/" )
     {
-      $this->raiseError("Invalid resource path '$resourcePath': must end with a slash for folders!");
+      throw new qcl_io_filesystem_Exception("Invalid resource path '$resourcePath': must end with a slash for folders!");
     }
   }
 
@@ -56,7 +56,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * @param string $name
    * @return qcl_io_filesystem_remote_File|false
    */
-  function createOrGetFile( $name )
+  public function createOrGetFile( $name )
   {
     /*
      * create file if it doesn't exist
@@ -69,7 +69,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
     }
     if ( $fileObj->getError() )
     {
-      $this->setError( $fileObj->getError() );
+      throw new qcl_io_filesystem_Exception( $fileObj->getError() );
       return false;
     }
     return $fileObj;
@@ -81,7 +81,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * @param string $name
    * @return qcl_io_filesystem_remote_Folder|false
    */
-  function createOrGetFolder( $name )
+  public function createOrGetFolder( $name )
   {
     /*
      * create directory if it doesn't exist
@@ -94,7 +94,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
     }
     if ( $folderObj->getError() )
     {
-      $this->setError( $folderObj->getError() );
+      throw new qcl_io_filesystem_Exception( $folderObj->getError() );
       return false;
     }
     return $folderObj;
@@ -105,7 +105,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * @param string $name
    * @return boolean
    */
-  function has( $name )
+  public function has( $name )
   {
     $file = $this->get($name);
     if ( $file->open() )
@@ -120,7 +120,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * Returns the file or folder with the name if it exists
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function get( $name )
+  public function get( $name )
   {
     $resourcePath = $this->resourcePath() . $name;
 
@@ -134,7 +134,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
     }
     else
     {
-      $this->raiseError("Invalid file type '$filePath'." ) ;
+      throw new qcl_io_filesystem_Exception("Invalid file type '$filePath'." ) ;
     }
   }
 
@@ -142,7 +142,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * Opens the folder to iterate through its contents
    * @return void
    */
-  function open()
+  public function open()
   {
     $this->_dir = opendir( $this->resourcePath() );
   }
@@ -151,14 +151,14 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    * Gets the next entry in the folder
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function next()
+  public function next()
   {
     /*
      * check if dir has been opened
      */
     if ( ! $this->_dir )
     {
-      $this->raiseError("You have to open() the directory first.");
+      throw new qcl_io_filesystem_Exception("You have to open() the directory first.");
     }
 
     /*
@@ -187,7 +187,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
   /**
    * Closes the folder resource
    */
-  function close()
+  public function close()
   {
     closedir($this->_dir);
   }

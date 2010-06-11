@@ -30,44 +30,49 @@ interface qcl_io_filesystem_IFile
    * Load the whole file resource into memory
    * @return bool false if file could not be loaded
    */
-  function load();
+  public function load();
 
   /**
    * save a string of data back into the file resource
    * @param string $data
    */
-  function save($data);
+  public function save($data);
 
   /**
    * Opens the file resource for reading or writing
    * @param string $mode r(ead)|w(rite)|a(append)
    */
-  function open($mode="r");
+  public function open($mode="r");
 
   /**
    * Reads a variable number of bytes from the resource
    * @param int $bytes
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function read($bytes);
+  public function read($bytes);
 
   /**
    * Reads a line from the resource
    * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
-  function readLine();
+  public function readLine();
 
   /**
    * Writes to the file resource a variable number of bytes
    * @param string $data
    */
-  function write($data);
+  public function write($data);
 
   /**
    * Closes the file resource
    */
-  function close();
+  public function close();
 
+  /**
+   * Returns the size of the file
+   * @return int
+   */
+  public function size();
 
 }
 ?>

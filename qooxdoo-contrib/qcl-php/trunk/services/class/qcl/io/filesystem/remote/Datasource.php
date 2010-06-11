@@ -15,131 +15,120 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/datasource/type/db/Model.php";
-require_once "qcl/io/filesystem/remote/File.php";
-require_once "qcl/io/filesystem/remote/Folder.php";
+
+qcl_import( "qcl_data_datasource_DbModel");
+qcl_import( "qcl_io_filesystem_remote_File");
+qcl_import( "qcl_io_filesystem_remote_Folder");
 
 /**
- * Class modeling a datasource containing files stored on a remote computer.
- * Currently does not support subfolders. Supports all protocols supported by php plus amazon s3
+ * Class modeling a datasource containing files stored on a
+ * remote computer. Currently does not support subfolders.
+ * Supports all protocols supported by php plus amazon s3.
+ * Must be sublassed in order to be used.
  */
-class qcl_io_filesystem_remote_Datasource extends qcl_data_datasource_DbModel
+abstract class qcl_io_filesystem_remote_Datasource
+  extends qcl_data_datasource_DbModel
 {
+
+  /**
+   * The name of the schema
+   * @var string
+   */
+  protected $schemaName = "qcl.schema.filesystem.remote";
+
+  /**
+   * The description of the schema
+   * @var string
+   */
+  protected $description =
+    "A datasource providing access to remote files ...";
+
+  /**
+   * The type of the datasource. Needs to be set by the
+   * subclass
+   *
+   * @var string
+   */
+  protected $type = null;
 
   /**
    * The folder containing the files in this datasource
    * @var qcl_io_filesystem_remote_Folder
    */
-  var $folderObj = null;
+  protected $folderObj = null;
+
+ /**
+   * The model properties
+   */
+  private $properties = array(
+    'schema' => array(
+      'nullable'  => false,
+      'init'      => "qcl.schema.filesystem.remote"
+    )
+  );
 
   /**
-   * The name of the schema
+   * Constructor, overrides some properties
+   * @return void
    */
-  var $schemaName = "remoteFiles";
+  public function __construct()
+  {
+    parent::__construct();
+    $this->addProperties( $this->properties );
+  }
+
+
+  /**
+   * Returns singleton instance of this class.
+   * @return qcl_io_filesystem_remote_Datasource
+   */
+  public static function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }
 
   /**
    * If the datasource is a file storage. True for this datasource
    * @return bool
    */
-  function isFileStorage()
+  public function isFileStorage()
   {
     return true;
-  }
-
-  /**
-   * initializes all models that belong to this datasource
-   * @abstract
-   * @param string $datasource Name of the datasource
-   */
-  function initializeModels( $datasource )
-  {
-    if ( $this->getResourcePath() && $this->getUsername() && $this->getPassword() )
-    {
-      $resourcePath = $this->getType() . "://" . $this->getResourcePath();
-      define("S3_KEY",     $this->getUsername() );
-      define('S3_PRIVATE', $this->getPassword() );
-      $this->folderObj = new qcl_io_filesystem_remote_Folder( $resourcePath);
-    }
   }
 
   /**
    * Returns the file object to do read and write operations with.
    * @param string $filename
    * @var qcl_io_filesystem_remote_File
+   * @throws LogicException
    */
-  function getFile($filename)
+  public function getFile($filename)
   {
-    if ( $this->folderObj )
-    {
-      return $this->folderObj->get($filename);
-    }
-    $this->raiseError("Datasource not initialized.");
+    return $this->getFolderObj()->get($filename);
   }
 
   /**
    * Returns the folder object of the datasource
+   * @throws LogicException
    */
-  function getFolderObject()
+  public function getFolderObject()
   {
-    if ( $this->folderObj )
+    if ( ! $this->folderObj )
     {
-      return $this->folderObj;
+      /*
+       * initialize s3 file storages
+       * FIXME must go into specialized s3 sublcass
+       */
+      if ( $this->getType() == "s3" )
+      {
+        qcl_assert_array_keys( $this->data(), array("resourcePath","username","password") );
+        $resourcePath = $this->getType() . "://" . $this->getResourcePath();
+        define("S3_KEY",     $this->getUsername() );
+        define('S3_PRIVATE', $this->getPassword() );
+      }
+      $this->folderObj = new qcl_io_filesystem_remote_Folder( $resourcePath);
     }
-    $this->raiseError("Datasource not initialized.");
+    return $this->folderObj;
   }
-
-  /**
-   * Returns a list of fields that should be disabled in a form
-   * @override
-   * @return array
-   */
-  function unusedFields()
-  {
-    if ( $this->folderObj && $this->folderObj->resourceType == "s3" )
-    {
-      return array( "host", "port", "database", "prefix" );
-    }
-    return array( "database", "prefix" );
-  }
-
-  /**
-   * Creates a local filesystem datasource
-   * @return void
-   * @param string $datasource datasource name
-   * @param array  $options    connection data etc.
-   */
-  function create ( $datasource, $options = array()  )
-  {
-    /*
-     * check datasource name
-     */
-    if ( ! $this->_checkCreate($datasource) ) return false;
-
-    /*
-     * create entry
-     */
-    $this->insert(array(
-      "namedId"      => $datasource,
-      "active"       => isset($options['active']) ? $options['active'] : 1,
-      "readonly"     => isset($options['readonly']) ? $options['readonly'] : 0,
-      "native"       => 0,
-      "name"         => either($options['name'],$datasource),
-      "schema"       => $this->schemaName(),
-      "type"         => either($options['type'],"s3"),
-      "host"         => either($options['host'],""),
-      "port"         => either($options['port'],""),
-      "username"     => either($options['username'],""),
-      "password"     => either($options['password'],""),
-      "resourcepath" => either($options['resourcepath'],""),
-      "description"  => either($options['description'],""),
-      "owner"        => either($options['owner'],""),
-      "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,
-    ));
-
-    return true;
-  }
-
-
 }
-
 ?>

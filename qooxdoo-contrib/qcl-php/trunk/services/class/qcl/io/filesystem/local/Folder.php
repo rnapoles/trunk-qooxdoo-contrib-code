@@ -15,32 +15,29 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/io/filesystem/local/Resource.php";
-require_once "qcl/io/filesystem/IFolder.php";
+
+qcl_import( "qcl_io_filesystem_local_Resource");
+qcl_import( "qcl_io_filesystem_IFolder");
 
 /**
  * Folder-like ressources
  */
-class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
+class qcl_io_filesystem_local_Folder
+  extends qcl_io_filesystem_local_Resource
 {
-
-  /**
-   * php 4 interface implementaion
-   */
-  var $implements = array("qcl_io_filesystem_IFolder");
 
   /**
    * PHP directory object
    * @var Directory
    * @access private
    */
-  var $_dir;
+  private $_dir;
 
   /**
    * Constructor
    * @param string $resourcePath
    */
-  function __construct ( $resourcePath )
+  public function __construct ( $resourcePath )
   {
     /*
      * parent constructor takes care of controller and resource path
@@ -54,30 +51,23 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * @param int $mode File permissions, defaults to 0777
    * @return bool if file could be created
    */
-  function create($mode=0777)
+  public function create($mode=0777)
   {
     /*
      * create folder if it doesn't exist
      */
     $filePath = $this->filePath();
-    $dirname  = dirname( $filePath );
-    $basename = basename( $filePath );
 
     if ( ! file_exists( $filePath ) )
     {
-      if ( is_writable( $dirname ) )
+      if ( ! mkdir( $filePath, $mode ) )
       {
-        if ( ! mkdir( $filePath, $mode ) )
-        {
-          $this->setError("Problems creating folder '$filePath' with permissions $mode." );
-          return false;
-        }
+        throw new qcl_io_filesystem_Exception("Problems creating folder '$filePath' with permissions $mode." );
       }
-      else
-      {
-        $this->setError("Folder '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
-        return false;
-      }
+    }
+    elseif ( ! is_dir($filePath) )
+    {
+      throw new qcl_io_filesystem_FileExistsException("File '$filepath' exists but is not a folder.");
     }
     return true;
   }
@@ -87,18 +77,13 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * @param string $name
    * @return qcl_io_filesystem_local_File | false
    */
-  function createOrGetFile( $name )
+  public function createOrGetFile( $name )
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
     $fileObj = new qcl_io_filesystem_local_File( $resourcePath );
     if ( ! $fileObj->exists() )
     {
       $fileObj->create();
-    }
-    if ( $fileObj->getError() )
-    {
-      $this->setError( $fileObj->getError() );
-      return false;
     }
     return $fileObj;
   }
@@ -108,7 +93,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * @param string $name
    * @return qcl_io_filesystem_local_Folder | false
    */
-  function createOrGetFolder( $name )
+  public function createOrGetFolder( $name )
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
     $folderObj = new qcl_io_filesystem_local_Folder( $resourcePath );
@@ -118,7 +103,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
     }
     if ( $folderObj->getError() )
     {
-      $this->setError( $folderObj->getError() );
+      throw new qcl_io_filesystem_Exception( $folderObj->getError() );
       return false;
     }
     return $folderObj;
@@ -129,7 +114,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * @param string $name
    * @return boolean
    */
-  function has( $name )
+  public function has( $name )
   {
     $filePath = $this->filePath() . "/" . $name;
     return file_exists( $filePath );
@@ -140,9 +125,10 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * Returns the file or folder with the name if it exists
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function get( $name )
+  public function get( $name )
   {
     $filePath     = $this->filePath() . "/" . $name;
+    $resourcePath = $this->resourcePath() . "/" . $name;
 
     if ( is_file( $filePath ) )
     {
@@ -154,7 +140,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
     }
     else
     {
-      $this->raiseError("File '$filePath' does not exist." ) ;
+      throw new qcl_io_filesystem_FileNotFoundException("File '$filePath' does not exist." ) ;
     }
   }
 
@@ -162,7 +148,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * Opens the folder to iterate through its contents
    * @return void
    */
-  function open()
+  public function open()
   {
     $this->_dir = dir( $this->filePath() );
   }
@@ -171,14 +157,14 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
    * Gets the next entry in the folder
    * @return qcl_io_filesystem_local_File | qcl_io_filesystem_local_Folder
    */
-  function next()
+  public function next()
   {
     /*
      * check if dir has been opened
      */
     if ( ! $this->_dir )
     {
-      $this->raiseError("You have to open() the directory first.");
+      throw new qcl_io_filesystem_Exception("You have to open() the directory first.");
     }
 
     /*
@@ -207,7 +193,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
   /**
    * Closes the folder resource
    */
-  function close()
+  public function close()
   {
     $this->_dir->close();
   }

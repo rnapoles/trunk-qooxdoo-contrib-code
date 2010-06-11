@@ -27,7 +27,7 @@ class qcl_io_filesystem_local_TempFile extends qcl_io_filesystem_local_File
    * Constructor. Will create the file if it doesn't exist and will
    * throw an error if that is not possible.
    */
-  function __construct ( )
+  public function __construct ( )
   {
     /*
      * resource path is a temporary file
@@ -35,7 +35,7 @@ class qcl_io_filesystem_local_TempFile extends qcl_io_filesystem_local_File
     $resourcePath = "file://" . tempnam(null,"");
     if ( ! $resourcePath )
     {
-      $this->raiseError("Problem creating temporary file.");
+      throw new qcl_io_filesystem_Exception("Problem creating temporary file.");
     }
 
     /*
@@ -47,7 +47,7 @@ class qcl_io_filesystem_local_TempFile extends qcl_io_filesystem_local_File
   /**
    * Destructor. Deletes file at the end of the script.
    */
-  function __destruct()
+  public function __destruct()
   {
     $this->delete();
   }

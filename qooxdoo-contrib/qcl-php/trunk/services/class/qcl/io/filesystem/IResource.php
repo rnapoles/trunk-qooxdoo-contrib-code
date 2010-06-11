@@ -27,71 +27,71 @@ interface qcl_io_filesystem_IResource
    * @param string $resourcePath
    * @retrun boolean
    */
-  function checkResourcePath( $resourcePath );
+  public function checkResourcePath( $resourcePath );
 
   /**
    * Gets the file's resource path
    * @return string
    */
-  function resourcePath();
+  public function resourcePath();
 
   /**
    * Checks if file exists
    * @return bool
    */
-  function exists();
+  public function exists();
 
   /**
    * Creates the file
    * @return bool if file could be created
    */
-  function create();
+  public function create();
 
   /**
    * Deletes the file/folder
    * @return booelean Result
    */
-  function delete();
+  public function delete();
 
   /**
    * Renames the file/folder Fails if new name exists.
    * @param string $name New name
    * @return boolean Result
    */
-  function rename($name);
+  public function rename($name);
 
   /**
    * Returns the directory in which the resource is located.
    * @param string[optional] $resourcePath
    * @return string
    */
-  function dirname($resourcePath=null);
+  public function dirname($resourcePath=null);
 
   /**
    * Returns the name of the (given) resource without the containing directory
    * @param string[optional] $resourcePath
    * @return string
    */
-  function basename($resourcePath=null);
+  public function basename($resourcePath=null);
 
   /**
    * Returns the extension of the (given) resource path, if any.
    * @param string[optional] $resourcePath
    * @return string
    */
-  function extension($resourcePath=null);
-
-  /**
-   * Casting as string, returns the resource path
-   * @return string
-   */
-  function toString();
+  public function extension($resourcePath=null);
 
   /**
    * Last modification date
    * @return string
    */
-  function lastModified();
+  public function lastModified();
+
+  /**
+   * Casting as string, returns the resource path
+   * @return string
+   */
+  public function __toString();
 }
 
 ?>

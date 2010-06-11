@@ -26,18 +26,6 @@ class qcl_io_filesystem_local_Resource
 {
 
   /**
-   * Setter for resource path. This will also find files that are on the
-   * include_path and on the PATH.
-   * @param string $resourcePath
-   * @return void
-   */
-  function setResourcePath( $resourcePath )
-  {
-    $path = qcl_realpath( $this->filePath( $resourcePath ) );
-    $this->_resourcePath = "file://" . $path; // FIXME ? $path : $resourcePath;
-  }
-
-  /**
    * The supported / allowed protocols
    */
   var $resourceTypes = array("file");
@@ -48,9 +36,9 @@ class qcl_io_filesystem_local_Resource
    * @param string[optional] $resourcePath
    * @return bool
    */
-  function isFile($resourcePath = null)
+  public function isFile( $resourcePath = null )
   {
-    return is_file( $this->filePath($resourcePath) );
+    return is_file( $this->filePath( $resourcePath ) );
   }
 
   /**
@@ -58,7 +46,7 @@ class qcl_io_filesystem_local_Resource
    * @param string[optional] $resourcePath
    * @return bool
    */
-  function isDir($resourcePath=null)
+  public function isDir($resourcePath=null)
   {
     return is_dir( $this->filePath($resourcePath) );
   }
@@ -66,7 +54,7 @@ class qcl_io_filesystem_local_Resource
   /**
    * Checks if file exists
    */
-  function exists()
+  public function exists()
   {
     return file_exists( $this->filePath() );
   }
@@ -76,11 +64,11 @@ class qcl_io_filesystem_local_Resource
    * @return booelean Result
    * @todo implement seperately for folder
    */
-  function delete()
+  public function delete()
   {
     if ( ! @unlink( $this->filePath() ) )
     {
-      $this->setError("Problem deleting " . $this->resourcePath() );
+      throw new qcl_io_filesystem_Exception("Problem deleting " . $this->resourcePath() );
       return false;
     }
     return true;
@@ -91,31 +79,30 @@ class qcl_io_filesystem_local_Resource
    * @param string $name New name
    * @return boolean Result
    */
-  function rename($name)
+  public function rename($name)
   {
     $newFileName = dirname( $this->filePath() ) . "/$name";
 
     if ( file_exists($newFileName) )
     {
-      $this->setError("Cannot rename '" . $this->resourcePath() . "' to '$name'. File exists.");
+      throw new qcl_io_filesystem_Exception("Cannot rename '" . $this->resourcePath() . "' to '$name'. File exists.");
       return false;
     }
     if ( rename( $this->filePath(), $newFileName ) )
     {
-      $this->_resourcePath = "file://" . $newFileName;
+      $this->resourcePath = "file://" . $newFileName;
       return true;
     }
-    $this->setError("Problem renaming '" . $this->resourcePath() . "' to '$name'.");
+    throw new qcl_io_filesystem_Exception("Problem renaming '" . $this->resourcePath() . "' to '$name'.");
     return false;
   }
 
   /**
    * Returns the last modification date
    */
-  function lastModified()
+  public function lastModified()
   {
     return filectime( $this->filePath() );
   }
-
 }
 ?>

@@ -15,9 +15,10 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/datasource/type/db/Model.php";
-require_once "qcl/io/filesystem/local/File.php";
-require_once "qcl/io/filesystem/local/Folder.php";
+
+qcl_import( "qcl_data_datasource_DbModel");
+qcl_import( "qcl_io_filesystem_local_File");
+qcl_import( "qcl_io_filesystem_local_Folder");
 
 /**
  * Class modeling a datasource containing files stored on the local computer.
@@ -28,43 +29,97 @@ class qcl_io_filesystem_local_Datasource
 {
 
   /**
+   * The name of the schema
+   * @var string
+   */
+  protected $schemaName = "qcl.schema.filesystem.local";
+
+  /**
+   * The description of the schema
+   * @var string
+   */
+  protected $description =
+    "A datasource providing access to local files ...";
+
+  /**
+   * The type of the datasource.
+   * @var string
+   */
+  protected $type = "file";
+
+  /**
    * The folder containing the files in this datasource
    * @var qcl_io_filesystem_local_Folder
    */
-  var $folderObj = null;
+  protected $folderObj = null;
+
+ /**
+   * The model properties
+   */
+  private $properties = array(
+    'schema' => array(
+      'nullable'  => false,
+      'init'      => "qcl.schema.filesystem.local"
+    ),
+    'type' => array(
+      'nullable'  => false,
+      'init'      => "file"
+    )
+  );
 
   /**
-   * The name of the schema
+   * Constructor, overrides some properties
+   * @return void
    */
-  var $schemaName = "localFiles";
-
-  /**
-   * initializes all models that belong to this datasource
-   * @abstract
-   * @param string $datasource Name of the datasource
-   */
-  function init()
+  public function __construct()
   {
-    $resourcePath = $this->getType() . "://" . $this->getResourcePath();
-    $this->folderObj = new qcl_io_filesystem_local_Folder( $resourcePath );
+    parent::__construct();
+    $this->addProperties( $this->properties );
+  }
+
+  /**
+   * Returns singleton instance of this class.
+   * @return qcl_io_filesystem_local_Datasource
+   */
+  public static function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }
+
+  public function isFileStorage()
+  {
+    return true;
   }
 
   /**
    * Returns the file object to do read and write operations with.
    * @param string $filename
-   * @var qcl_io_filesystem_local_File
+   * @var qcl_io_filesystem_remote_File
+   * @throws LogicException
    */
-  function getFileObject($filename)
+  public function getFile($filename)
   {
-    return $this->folderObj->get($filename);
+    return $this->getFolderObject()->get($filename);
   }
 
   /**
-   * Returns the folder object
-   * @var qcl_io_filesystem_local_Folder
+   * Returns the folder object of the datasource
+   * @throws LogicException
    */
-  function getFolderObject()
+  public function getFolderObject()
   {
+    if ( ! $this->folderObj )
+    {
+      $resourcePath = $this->getType() . "://" . $this->getResourcepath();
+      $this->folderObj = new qcl_io_filesystem_local_Folder( $resourcePath );
+      if( ! $this->folderObj->exists() )
+      {
+        throw new JsonRpcException( sprintf(
+          "Resource path '%s' of datasource '%s' points to a non-existing or non-accessible resource.",
+           $resourcePath, $this->namedId()
+        ) );
+      }
+    }
     return $this->folderObj;
   }
 
@@ -73,14 +128,9 @@ class qcl_io_filesystem_local_Datasource
    * @override
    * @return array
    */
-  function unusedFields()
+  public function unusedFields()
   {
     return array( "host", "port", "username", "password", "database", "prefix");
-  }
-
-  function isFileStorage()
-  {
-    return true;
   }
 }
 ?>
