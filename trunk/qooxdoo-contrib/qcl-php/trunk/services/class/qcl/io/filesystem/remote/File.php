@@ -214,5 +214,10 @@ class qcl_io_filesystem_remote_File
   {
     return pathinfo($this->resourcePath());
   }
+
+  function size()
+  {
+    throw new qcl_core_NotImplementedException(__METHOD__);
+  }
 }
 ?>

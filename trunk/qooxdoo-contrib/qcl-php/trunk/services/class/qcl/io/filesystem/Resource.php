@@ -107,6 +107,7 @@ class qcl_io_filesystem_Resource
         break;
 
       default:
+        throw new qcl_core_NotImplementedException("Cannot create resource instance for '$resourcePath'");
         if ( substr($resourcePath,-1) == "/" )
         {
           require_once "qcl/io/filesystem/remote/Folder.php";

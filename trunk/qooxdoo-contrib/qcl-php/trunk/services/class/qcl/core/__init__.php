@@ -39,7 +39,7 @@ $logger->registerFilter( QCL_LOG_PROPERTIES, "Messages concerning the setup and 
 /*
  * Exceptions
  */
-class qcl_core_NotImplementedException extends JsonRpcException
+class qcl_core_NotImplementedException extends LogicException
 {
   function __construct( $method )
   {
