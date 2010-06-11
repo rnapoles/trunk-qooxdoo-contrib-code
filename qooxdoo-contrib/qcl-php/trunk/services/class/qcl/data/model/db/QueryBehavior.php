@@ -393,7 +393,7 @@ class qcl_data_model_db_QueryBehavior
        */
       try
       {
-         qcl_array_assert_keys( $index, array( "type", "properties" ) );
+         qcl_assert_array_keys( $index, array( "type", "properties" ) );
       }
       catch ( InvalidArgumentException $e )
       {
