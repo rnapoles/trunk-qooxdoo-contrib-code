@@ -81,7 +81,8 @@ class qcl_ui_dialog_Form
        'properties'  => array(
           'message'     => $message,
           'formData'    => $formData,
-          'allowCancel' => $allowCancel
+          'allowCancel' => $allowCancel,
+          'maxWidth'    => 500 // FIXME Hardcoding this is BAD!
         ),
        'service' => $callbackService,
        'method'  => $callbackMethod,
