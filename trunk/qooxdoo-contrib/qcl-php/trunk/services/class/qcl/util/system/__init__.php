@@ -29,10 +29,10 @@ class qcl_util_system_MailException extends LogicException {}
  */
 $logger = qcl_log_Logger::getInstance();
 define("QCL_LOG_SHELL","shell");
-$logger->registerFilter( QCL_LOG_PROPERTIES, "Shell commands",false);
+$logger->registerFilter( QCL_LOG_SHELL, "Shell commands",false);
 
 define("QCL_LOG_MAIL","mail");
-$logger->registerFilter( QCL_LOG_PROPERTIES, "Sending mails",true);
+$logger->registerFilter( QCL_LOG_MAIL, "Sending mails", false);
 
 /*
  * configure mail
@@ -45,7 +45,14 @@ else
 {
   ini_set("SMTP", QCL_MAIL_SMTP_HOST );
 }
-
+if( ! defined('QCL_MAIL_SMTP_PORT') )
+{
+  define( 'QCL_MAIL_SMTP_PORT', 25 );
+}
+else
+{
+  ini_set("smtp_port", QCL_MAIL_SMTP_PORT );
+}
 if( ! defined( 'QCL_MAIL_SENDER' ) )
 {
   define( 'QCL_MAIL_SENDER', $_SERVER["SERVER_ADMIN"] );
