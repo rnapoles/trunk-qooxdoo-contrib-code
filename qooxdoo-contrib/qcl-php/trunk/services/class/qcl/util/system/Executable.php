@@ -156,12 +156,12 @@ class qcl_util_system_Executable
   /**
    * Calls the executable, returning the stdout data. If
    * the exit code is not 0, throw an exeption using the
-   * stderr data as exception message.
+   * stderr data as message for qcl_util_system_ShellException.
    *
    * @param string $arguments Optional command-line arguements
    * @param string $stdin Optional data fed into the executable
    * @return string Data returned by the executable to stdout.
-   * @throws Exception
+   * @throws qcl_util_system_ShellException
    */
   public function call( $arguments="", $stdin="" )
   {
@@ -171,7 +171,7 @@ class qcl_util_system_Executable
     }
     else
     {
-      throw new Exception( $this->getStdErr() );
+      throw new qcl_util_system_ShellException( $this->getStdErr() );
     }
   }
 }
