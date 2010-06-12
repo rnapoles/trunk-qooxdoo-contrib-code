@@ -1487,10 +1487,12 @@ class qcl_data_model_db_QueryBehavior
     {
       throw new InvalidArgumentException("Invalid argument");
     }
+
     $query = new qcl_data_db_Query( array( 'where' => $where ) );
     $sql   = $this->createWhereStatement( $query );
+
     return $this->getTable()->deleteWhere(
-    $sql,$query->getParameters(), $query->getParameterTypes()
+      $sql,$query->getParameters(), $query->getParameterTypes()
     );
   }
 
