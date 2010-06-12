@@ -89,8 +89,12 @@ class qcl_util_system_Mail
      */
     $this->addHeader( 'X-Mailer: PHP/' . phpversion() );
 
+    /*
+     * logging
+     */
     $this->log( "SMTP host: " . ini_get("SMTP"), QCL_LOG_MAIL );
     $this->log( "SMTP port: " . ini_get("smtp_port"), QCL_LOG_MAIL );
+    $this->log( "Sendmail from: " . ini_get("sendmail_from"), QCL_LOG_MAIL );
     $this->log( "Sendmail path: " . ini_get("sendmail_path"), QCL_LOG_MAIL );
   }
 
