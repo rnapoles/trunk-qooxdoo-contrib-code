@@ -1,21 +1,36 @@
 /* ************************************************************************
 
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
+  
+   Copyright:
+     2007-2010 Christian Boulanger
+  
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
-
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+  
    Authors:
-     saaj <mail@saaj.me>
-
-   Based on MDragAndDropSupport mixin by Christian Boulanger for 0.7.x branch
-
+   *  Christian Boulanger (cboulanger)
+   *  saaj <mail@saaj.me>
+  
 ************************************************************************ */
+
 /**
  * Provides drag&drop to TreeVirtual
  */
-qx.Class.define("treevirtualdd.DragDropTree", {
+qx.Class.define("qcl.ui.tree.DragDropTree", 
+{
 
 	extend : qx.ui.treevirtual.TreeVirtual,
 
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */  
   construct : function(headings, custom)
   {
   	this._patchCodebase();
@@ -46,12 +61,18 @@ qx.Class.define("treevirtualdd.DragDropTree", {
     this.setDroppable(true);
 
     this.setAllowDragTypes(["*"]);
-    //this.setAllowDropTypes(["*"]);
+    this.setAllowDropTypes(["*"]);
 
     this.setEnableDragDrop(true);
   },
-
-  properties : {
+  
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+  properties : 
+  {
 
   	/**
      * enable/disable drag and drop
@@ -81,7 +102,8 @@ qx.Class.define("treevirtualdd.DragDropTree", {
     dragAction :
     {
       nullable : false,
-      init     : "move"
+      init     : "move",
+      apply    : "_applyDragAction"
     },
 
     /**
@@ -144,26 +166,47 @@ qx.Class.define("treevirtualdd.DragDropTree", {
 
   },
 
-  members : {
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+  members : 
+  {
 
+   /*
+   ---------------------------------------------------------------------------
+      PRIVATE MEMBERS
+   ---------------------------------------------------------------------------
+    */
+    
+    /**
+     * The indicator widget
+     */
   	_indicator : null,
+    
+   /*
+   ---------------------------------------------------------------------------
+      INTERNAL METHODS
+   ---------------------------------------------------------------------------
+    */    
 
-
+    /**
+     * Patch the codebase to make drag & drop in the table
+     */
   	_patchCodebase : function()
   	{
       qx.Class.include(qx.ui.treevirtual.TreeVirtual, qx.ui.treevirtual.MNode);
-
-      // eliminate deprication message, its not for me ;)
-      if(qx.core.Variant.isSet("qx.debug", "on"))
-      {
-        qx.ui.table.selection.Model.prototype._clearSelection = function()
-        {
-          this._resetSelection();
-        };
-        qx.ui.table.selection.Model.prototype.clearSelection = function()
-        {
-          this.resetSelection();
-        };
+      
+      /*
+       * the __dropTarget property is not properly initialized int the TreeVirtual
+       * widget for some reason, and is therefore often not available in the
+       * __onMouseMove() method.  A call to _onMouseOver() seems to fix that.
+       */
+      var _onMouseMove = qx.event.handler.DragDrop.prototype._onMouseMove;
+      qx.event.handler.DragDrop.prototype._onMouseMove = function(e){
+        this._onMouseOver(e);
+        _onMouseMove.call(this,e);
       }
 
       // have not found official way to set validness check for events within widget
@@ -183,6 +226,9 @@ qx.Class.define("treevirtualdd.DragDropTree", {
       };
   	},
 
+    /**
+     * Create drop indicator
+     */
   	_createIndicator : function()
   	{
       this._indicator = new qx.ui.core.Widget();
@@ -196,16 +242,27 @@ qx.Class.define("treevirtualdd.DragDropTree", {
       this._getPaneClipper().add(this._indicator);
   	},
 
+    /**
+     * Hide indicator
+     */
   	_hideIndicator : function()
   	{
       this._indicator.setOpacity(0);
   	},
 
+    /**
+     * Show indicator
+     */
   	_showIndicator : function()
   	{
       this._indicator.setOpacity(0.5);
   	},
 
+    /**
+     * Calculate indicator position and display indicator
+     * @param dragEvent {} 
+     * @return {Map}
+     */
   	_getDragDetails : function(dragEvent)
   	{
       // pane scroller widget takes care of mouse events
@@ -233,7 +290,6 @@ qx.Class.define("treevirtualdd.DragDropTree", {
       var topDelta    = row - firstRow;
       var bottomDelta = lastRow - row;
 
-
       return {
         rowHeight   : rowHeight,
         row         : row,
@@ -244,6 +300,13 @@ qx.Class.define("treevirtualdd.DragDropTree", {
       };
   	},
 
+    /**
+     * Check if drag element can be dropped
+     * @param sourceData {Map} 
+     * @param dropTargetRelativePosition {Integer}
+     * @param dragDetails {Map}
+     * @return {Boolean}
+     */
   	_checkDroppable : function(sourceData, dropTargetRelativePosition, dragDetails)
   	{
       if(!sourceData)
@@ -344,6 +407,12 @@ qx.Class.define("treevirtualdd.DragDropTree", {
       return false;
   	},
 
+    /**
+     * Handle behavior connected to automatic scrolling at the top and the
+     * bottom of the tree
+     * 
+     * @param dragDetails {Map}
+     */
   	_processAutoscroll : function(dragDetails)
   	{
       var interval = this.getAutoScrollInterval();
@@ -377,6 +446,11 @@ qx.Class.define("treevirtualdd.DragDropTree", {
       }
   	},
 
+    /**
+     * Handle the bahavior of the indicator in between tree nodes
+     * @param dragDetails {Map} 
+     * @return {Integer}
+     */
   	_processDragInBetween : function(dragDetails)
   	{
       var result = 0;
@@ -405,6 +479,17 @@ qx.Class.define("treevirtualdd.DragDropTree", {
 
       return result;
   	},
+    
+    _getPaneClipper : function()
+    {
+      return this.getTreePaneScroller().getPaneClipper();
+    },    
+    
+     /*
+     ---------------------------------------------------------------------------
+        APPLY METHODS
+     ---------------------------------------------------------------------------
+      */    
 
   	/**
      * enables or disables drag and drop, adds event listeners
@@ -413,20 +498,40 @@ qx.Class.define("treevirtualdd.DragDropTree", {
     {
       if(old && !value)
       {
-        this.removeListener("dragstart", this.__onDragStart);
-        this.removeListener("dragend",   this.__onDragEnd);
-        this.removeListener("dragover",  this.__onDrag);
-        this.removeListener("drag",      this.__onDrag);
+        this.removeListener("dragstart",    this.__onDragStart);
+        this.removeListener("drag",         this.__onDrag);
+        this.removeListener("dragover",     this.__onDrag);
+        this.removeListener("dragend",      this.__onDragEnd);
+        this.removeListener("dragleave",    this.__onDragEnd);
+        this.removeListener("droprequest",  this.__onDropRequest);
+        this.removeListener("drop",         this.__onDrop);
       }
 
       if(value && !old)
       {
-        this.addListener("dragstart", this.__onDragStart, this);
-        this.addListener("dragend",   this.__onDragEnd,   this);
-        this.addListener("dragover",  this.__onDrag,      this);
-        this.addListener("drag",      this.__onDrag,      this);
+        this.addListener("dragstart",   this.__onDragStart,   this);
+        this.addListener("dragover",    this.__onDrag,        this); // dragover must be called *before* drag
+        this.addListener("dragleave",   this.__onDragEnd,     this);
+        this.addListener("drag",        this.__onDrag,        this);
+        this.addListener("dragend",     this.__onDragEnd,     this);
+        this.addListener("droprequest", this.__onDropRequest, this);
+        this.addListener("drop",        this.__onDrop,        this);
       }
     },
+    
+    _applyDragAction : function( value, old )
+    {
+      if ( value !== "move" )
+      {
+        this.error("Invalid drag action. Currently only 'move' is supported.");
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       EVENT HANDLERS
+    ---------------------------------------------------------------------------
+     */
 
     /**
      * Handles event fired whem a drag session starts.
@@ -434,31 +539,26 @@ qx.Class.define("treevirtualdd.DragDropTree", {
      */
     __onDragStart : function(event)
     {
-      var scroller = this.getTreePaneScroller();
-      var row      = scroller.getRowForPagePos(event.getDocumentLeft(), event.getDocumentTop());
-      if(row < 0)
+      var selection = this.getDataModel().getSelectedNodes();
+      var types     = this.getAllowDragTypes();
+      
+      /*
+       * no drag types, no drag is allowed
+       */
+      if( types === null )
       {
         return event.preventDefault();
       }
-
-      // stop if no node drag type
-      if(!this.getNodeDragType(this.getDataModel().getNodeFromRow(row).nodeId))
+      
+      /*
+       * check drag type
+       */
+      if( types[0] != "*" )
       {
-      	return event.preventDefault();
-      }
-
-      var selection = this.getDataModel().getSelectedNodes();
-      var types     = this.getAllowDragTypes();
-
-      if(types === null)
-      {
-      	return event.preventDefault();
-      }
-
-      if(types[0] != "*")
-      {
-        // check for allowed types for all of he selection, i.e. if one
-        // doesn't match, drag is not allowed.
+        /*
+         * check for allowed types for all of the selection, i.e. if one
+         * doesn't match, drag is not allowed.
+         */
         for(var i = 0; i < selection.length; i++)
         {
           var type = null;
@@ -468,7 +568,9 @@ qx.Class.define("treevirtualdd.DragDropTree", {
           }
           catch(e) {}
 
-          // type is not among the allowed types, do not allow drag
+          /*
+           * type is not among the allowed types, do not allow drag
+           */
           if(types.indexOf(type) < 0)
           {
           	return event.preventDefault();
@@ -476,61 +578,154 @@ qx.Class.define("treevirtualdd.DragDropTree", {
         }
       }
 
-      // prepare drag data
+      // prepare drag data, old style
       var dragData = {
         'nodeData'     : selection,
         'sourceWidget' : this,
         'action'       : this.getDragAction()
       };
-
-      event.addAction(this.getDragAction());
       event.setUserData("treevirtualnode", dragData);
+      
+      /*
+       * drag data, new style
+       */
+      event.addAction(this.getDragAction());
+      event.addType("qx/treevirtual-node");
     },
 
     /**
      * Handles the event fired when a drag session ends (with or without drop).
-     * To replace this handler, define and add your custom event listener before you setEnableDragDrop(true).
      */
     __onDragEnd : function(event)
     {
-    	if(this.getAllowDropBetweenNodes())
+    	if( this.getAllowDropBetweenNodes() )
     	{
     	  this._hideIndicator();
     	}
     },
+      
 
     /**
-     * the main method of this mixin, providing a check on whether drop is allowed, displaying a
-     * insertion cursor for drop-between-nodes
+     * Drag event handler. Provides a check on whether drop is allowed, 
+     * displaying a insertion cursor for drop-between-nodes
      * @param event {Object} the drag event fired
      */
-    __onDrag : function(event)
+    __onDrag : function(e)
     {
-      var sourceData  = event.getUserData("treevirtualnode");
-      var dragDetails = this._getDragDetails(event);
+      var target = e.getTarget();
+      var relatedTarget =  e.getRelatedTarget ? e.getRelatedTarget():null;
+      
+      var sourceData  = e.getUserData("treevirtualnode");
+      
+      var dragDetails = this._getDragDetails(e);
 
       this._processAutoscroll(dragDetails);
       var dropTargetRelativePosition = this._processDragInBetween(dragDetails);
 
-
       var valid = this._checkDroppable(sourceData, dropTargetRelativePosition, dragDetails);
-      event.getManager().setValidDrop(valid);
+      e.getManager().setValidDrop(valid);
       if(valid)
       {
-        qx.ui.core.DragDropCursor.getInstance().setAction(event.getCurrentAction());
+        qx.ui.core.DragDropCursor.getInstance().setAction(e.getCurrentAction());
       }
       else
       {
       	qx.ui.core.DragDropCursor.getInstance().resetAction();
       }
-      //this.debug([event.getType(), dropTargetRelativePosition, valid, sourceData.action]);
+      //this.debug([e.getType(), dropTargetRelativePosition, valid, sourceData.action]);
     },
-
-    _getPaneClipper : function()
+    
+    /**
+     * Drop request
+     * @param e
+     */
+    __onDropRequest :  function(e)
     {
-    	return this.getTreePaneScroller().getPaneClipper();
+      
+      var action = e.getCurrentAction();
+      var type   = e.getCurrentType();
+      var source = e.getCurrentTarget();
+      
+      if (type === "qx/treevirtual-node")
+      {
+        /*
+         * make a copy of the selection
+         */
+        var selection = this.getSelectedNodes();
+        var copy = [];
+        for (var i=0, l=selection.length; i<l; i++) 
+        {
+          if ( ! qx.lang.Type.isObject( selection[i] ) )
+          {
+            continue;
+          }
+          copy[i] = selection[i];
+        }        
+        
+        /*
+         * remove selection
+         */
+        this.getSelectionModel().resetSelection();
+        
+        /*
+         * Add data to manager
+         */
+        if ( copy.length )
+        {
+          e.addData(type, copy);  
+        }
+          
+        
+        return;
+      }
+      
+      this.error("Invalid type '" + type + "'");
+    
     },
-
+    
+    
+    /**
+     * Drop event
+     * @param {} e
+     */
+    __onDrop : function(e)
+    {
+      var nodes       = e.getData("qx/treevirtual-node");
+      var action      = e.getCurrentAction();
+      var type        = e.getCurrentType();
+      var dropTarget  = this.getDropTarget()
+      
+      if( ! qx.lang.Type.isObject(dropTarget) )
+      {
+        this.error("No valid drop target!");
+      }
+      
+      if ( type === "qx/treevirtual-node")
+      {
+        if( ! dropTarget.children )
+        {
+          this.error("Drop target is not a folder!");
+        }        
+        for (var i=0, l=nodes.length; i<l; i++) 
+        { 
+          var nodeArr = this.getDataModel().getData();
+          var node = nodes[i];
+          var parentNode = nodeArr[node.parentNodeId];
+          var pnc = parentNode.children;
+          pnc.splice( pnc.indexOf( node.nodeId ), 1 );
+          dropTarget.children.push( node.nodeId  );
+          node.parentNodeId = dropTarget.nodeId;
+        }
+        this.getDataModel().setData();
+      }      
+    },
+  
+    /*
+    ---------------------------------------------------------------------------
+       API
+    ---------------------------------------------------------------------------
+     */
+    
     /**
      * get tree column pane scroller widget
      */
@@ -611,7 +806,5 @@ qx.Class.define("treevirtualdd.DragDropTree", {
 
       node.data.DragDrop.type = type;
     }
-
   }
-
 });
