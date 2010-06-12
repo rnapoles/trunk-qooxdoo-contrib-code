@@ -403,6 +403,57 @@ function qcl_assert_array_keys( $array, $keys )
   return array();
 }
 
+/**
+ * Asserts that the given expression evaluates to booean TRUE.
+ *
+ * @param mixed $value
+ * @return bool The value
+ * @throws InvalidArgumentException
+ */
+function qcl_assert_true( $value )
+{
+  qcl_assert_boolean( $value, "Value is not a boolean" );
+  if ( $expr === false )
+  {
+    throw new InvalidArgumentException( "Value is not boolean true.");
+  }
+  return $value;
+}
+
+/**
+ * Asserts that the given expression evaluates to booean FALSE.
+ *
+ * @param mixed $value
+ * @return bool The value
+ * @throws InvalidArgumentException
+ */
+function qcl_assert_false( $value )
+{
+  qcl_assert_boolean( $value, "Value is not a boolean" );
+  if ( $expr === true )
+  {
+    throw new InvalidArgumentException( "Value is not boolean false.");
+  }
+  return $value;
+}
+
+/**
+ * Asserts that the given string is a valid email address.
+ * Returns the email address if successful.
+ *
+ * @param $email
+ * @return string
+ * @throws InvalidArgumentException
+ */
+function qcl_assert_valid_email( $email )
+{
+  qcl_import("qcl_util_system_Mail");
+  if ( ! qcl_util_system_Mail::isValidEmail( $email ) )
+  {
+    throw new InvalidArgumentException( "'$email ist not a valid email address.'");
+  }
+  return $email;
+}
 
 /**
  * Returns the first non-null argument.
