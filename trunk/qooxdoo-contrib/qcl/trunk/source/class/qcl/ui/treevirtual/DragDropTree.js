@@ -19,9 +19,10 @@
 ************************************************************************ */
 
 /**
- * Provides drag&drop to TreeVirtual
+ * Provides drag&drop to TreeVirtual. Currently, only the "move" action is
+ * supported.
  */
-qx.Class.define("qcl.ui.tree.DragDropTree", 
+qx.Class.define("qcl.ui.treevirtual.DragDropTree", 
 {
 
 	extend : qx.ui.treevirtual.TreeVirtual,
@@ -55,15 +56,10 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
 
     this.base(arguments, headings, custom);
 
-    this._createIndicator();
-
-    this.setDraggable(true);
-    this.setDroppable(true);
-
     this.setAllowDragTypes(["*"]);
     this.setAllowDropTypes(["*"]);
-
-    this.setEnableDragDrop(true);
+    
+    this._createIndicator();
   },
   
   /*
@@ -162,7 +158,26 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
     {
       check : [-1, 0, 1],
       init  : 0
+    },
+    
+    /**
+     * Whether Drag & Drop should be limited to reordering
+     */
+    allowReorderOnly : 
+    {
+      check : "Boolean",
+      init : false
     }
+
+  },
+  
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */
+  events : 
+  {
 
   },
 
@@ -192,30 +207,41 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
     */    
 
     /**
-     * Patch the codebase to make drag & drop in the table
+     * Patch the codebase to make drag & drop in the table possible in
+     * the first place
      */
   	_patchCodebase : function()
   	{
       qx.Class.include(qx.ui.treevirtual.TreeVirtual, qx.ui.treevirtual.MNode);
       
       /*
-       * the __dropTarget property is not properly initialized int the TreeVirtual
+       * The __dropTarget property is not properly initialized int the TreeVirtual
        * widget for some reason, and is therefore often not available in the
-       * __onMouseMove() method.  A call to _onMouseOver() seems to fix that.
+       * __onMouseMove() method.  A call to _onMouseOver(e) seems to fix that.
+       * Also, when dragging into the tree from a different widget, the drag 
+       * cursor is not updated. For this, _onMouseOut(e) has to be called.
+       * Don't really understand why, but it works this way.
        */
       var _onMouseMove = qx.event.handler.DragDrop.prototype._onMouseMove;
       qx.event.handler.DragDrop.prototype._onMouseMove = function(e){
+        this._onMouseOut(e);
         this._onMouseOver(e);
         _onMouseMove.call(this,e);
       }
 
-      // have not found official way to set validness check for events within widget
+      /*
+       * have not found official way to set validness check for events within widget.
+       * this only works with private optimization turned off
+       */
       qx.event.handler.DragDrop.prototype.setValidDrop = function(value)
       {
         this.__validDrop = !!value;
       };
 
-      // sanitize the api access required
+      /*
+       * sanitize the api access required; this only works if private
+       * optimization is turned off.
+       */
       qx.ui.table.pane.Scroller.prototype.getPaneClipper = function()
       {
         return this.__paneClipper;
@@ -259,48 +285,6 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
   	},
 
     /**
-     * Calculate indicator position and display indicator
-     * @param dragEvent {} 
-     * @return {Map}
-     */
-  	_getDragDetails : function(dragEvent)
-  	{
-      // pane scroller widget takes care of mouse events
-      var scroller = this.getTreePaneScroller();
-
-      // calculate row and mouse Y position within row
-      var paneClipperElem = this._getPaneClipper().getContentElement().getDomElement();
-      var paneClipperTopY = qx.bom.element.Location.get(paneClipperElem, "box").top;
-      var rowHeight       = scroller.getTable().getRowHeight();
-      var scrollY         = scroller.getScrollY();
-      if(scroller.getTable().getKeepFirstVisibleRowComplete())
-      {
-        scrollY = Math.floor(scrollY / rowHeight) * rowHeight;
-      }
-
-      var tableY = scrollY + dragEvent.getDocumentTop() - paneClipperTopY;
-      var row    = Math.floor(tableY / rowHeight);
-      var deltaY = tableY % rowHeight;
-
-      // calculate relative row position in table
-      var firstRow    = scroller.getChildControl("pane").getFirstVisibleRow();
-      var rowCount    = scroller.getChildControl("pane").getVisibleRowCount();
-      var lastRow     = firstRow + rowCount;
-      var scrollY     = parseInt(scroller.getScrollY());
-      var topDelta    = row - firstRow;
-      var bottomDelta = lastRow - row;
-
-      return {
-        rowHeight   : rowHeight,
-        row         : row,
-        deltaY      : deltaY,
-        firstRow    : firstRow,
-        topDelta    : topDelta,
-        bottomDelta : bottomDelta
-      };
-  	},
-
-    /**
      * Check if drag element can be dropped
      * @param sourceData {Map} 
      * @param dropTargetRelativePosition {Integer}
@@ -309,22 +293,6 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
      */
   	_checkDroppable : function(sourceData, dropTargetRelativePosition, dragDetails)
   	{
-      if(!sourceData)
-      {
-        // we do not have any compatible datatype
-        return false;
-      }
-
-      // use only the first node to determine node type
-      var sourceNode = sourceData.nodeData[0];
-      if(!sourceNode)
-      {
-        // no node to drag
-        return false;
-      }
-
-      var sourceWidget = sourceData.sourceWidget;
-
       // get and save drag target
       var targetWidget  = this;
       var targetRowData = this.getDataModel().getRowData(dragDetails.row);
@@ -342,6 +310,39 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
       var targetParentNode = this.nodeGet(targetNode.parentNodeId);
       this.setDropTarget(targetNode);
       this.setDropTargetRelativePosition(dropTargetRelativePosition);
+     
+      
+      /*
+       * @todo the following has to be rewritten to work without the 
+       * source data. we should be able to get everything from the event
+       * data.
+       */
+      if(!sourceData)
+      {
+        // we do not have any compatible datatype
+        return false;
+      }
+
+      // use only the first node to determine node type
+      var sourceNode = sourceData.nodeData[0];
+      if(!sourceNode)
+      {
+        // no node to drag
+        return false;
+      }
+
+      /*
+       * Whether drag & drop is limited to reordering
+       */
+      if ( this.isAllowReorderOnly() )
+      {
+        if ( dropTargetRelativePosition === 0 || targetNode.level !== sourceNode.level )
+        {
+          return false;  
+        }
+      }            
+      
+      var sourceWidget = sourceData.sourceWidget;      
 
       // if we are dragging within the same widget
       if(sourceWidget == targetWidget)
@@ -356,7 +357,7 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
         var traverseNode = targetNode;
         while(traverseNode.parentNodeId)
         {
-          if(traverseNode.parentNodeId == sourceNode.nodeId)
+          if( traverseNode.parentNodeId == sourceNode.nodeId )
           {
             return false;
           }
@@ -420,7 +421,7 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
 
       if(interval)
       {
-      	var scroller = this.getTreePaneScroller();
+      	var scroller = this._getTreePaneScroller();
 
         if(!this.__scrollFunctionId && (details.topDelta > -1 && details.topDelta < 2) && details.row != 0)
         {
@@ -454,7 +455,7 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
   	_processDragInBetween : function(dragDetails)
   	{
       var result = 0;
-      if(this.getAllowDropBetweenNodes())
+      if( this.getAllowDropBetweenNodes() )
       {
         if(dragDetails.deltaY < 4 || dragDetails.deltaY > (dragDetails.rowHeight - 4))
         {
@@ -480,9 +481,87 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
       return result;
   	},
     
+   /**
+     * Calculate indicator position and display indicator
+     * @param dragEvent {} 
+     * @return {Map}
+     */
+    _getDragDetails : function(dragEvent)
+    {
+      // pane scroller widget takes care of mouse events
+      var scroller = this._getTreePaneScroller();
+
+      // calculate row and mouse Y position within row
+      var paneClipperElem = this._getPaneClipper().getContentElement().getDomElement();
+      var paneClipperTopY = qx.bom.element.Location.get(paneClipperElem, "box").top;
+      var rowHeight       = scroller.getTable().getRowHeight();
+      var scrollY         = scroller.getScrollY();
+      if(scroller.getTable().getKeepFirstVisibleRowComplete())
+      {
+        scrollY = Math.floor(scrollY / rowHeight) * rowHeight;
+      }
+
+      var tableY = scrollY + dragEvent.getDocumentTop() - paneClipperTopY;
+      var row    = Math.floor(tableY / rowHeight);
+      var deltaY = tableY % rowHeight;
+
+      // calculate relative row position in table
+      var firstRow    = scroller.getChildControl("pane").getFirstVisibleRow();
+      var rowCount    = scroller.getChildControl("pane").getVisibleRowCount();
+      var lastRow     = firstRow + rowCount;
+      var scrollY     = parseInt(scroller.getScrollY());
+      var topDelta    = row - firstRow;
+      var bottomDelta = lastRow - row;
+
+      return {
+        rowHeight   : rowHeight,
+        row         : row,
+        deltaY      : deltaY,
+        firstRow    : firstRow,
+        topDelta    : topDelta,
+        bottomDelta : bottomDelta
+      };
+    },        
+    
+//    /**
+//     * Returns information on the drag session after the drop has occurred
+//     * @param event {Object} the drag event fired
+//     * @return {Object} map with the following information:
+//     * {
+//     *  'nodeData' : an array of selected nodes in the source widget, i.e. those nodes which were dragged,
+//     *  'sourceWidget' : the source widget,
+//     *  'targetNode' : the node on which the data was dropped,
+//     *  'position' : the relative position of the drop action: -1 = above, 0=on, 1= below the node
+//     * }
+//     * @todo this method should not be necessary and will be removed. All information
+//     * can be gathered by using event and widget properties.
+//     * @deprecated
+//     */
+//    _getDropData : function(event)
+//    {
+//      var dragData = event.getUserData("treevirtualnode");
+//      return {
+//        'nodeData'     : dragData.nodeData,
+//        'sourceWidget' : dragData.sourceWidget,
+//        //don't use event.getCurrentAction() 'cause event looses action sometimes on dragchange event
+//        'action'       : dragData.action,
+//        'targetNode'   : this.getDropTarget(),
+//        'position'     : this.getDropTargetRelativePosition()
+//      };
+//    },    
+    
     _getPaneClipper : function()
     {
-      return this.getTreePaneScroller().getPaneClipper();
+      return this._getTreePaneScroller().getPaneClipper();
+    },
+    
+    /**
+     * get tree column pane scroller widget
+     */
+    _getTreePaneScroller : function()
+    {
+      var column = this.getDataModel().getTreeColumn();
+      return this._getPaneScrollerArr()[column];
     },    
     
      /*
@@ -496,26 +575,29 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
      */
     _applyEnableDragDrop : function(value, old)
     {
-      if(old && !value)
+      if( old && ! value )
       {
-        this.removeListener("dragstart",    this.__onDragStart);
-        this.removeListener("drag",         this.__onDrag);
-        this.removeListener("dragover",     this.__onDrag);
-        this.removeListener("dragend",      this.__onDragEnd);
-        this.removeListener("dragleave",    this.__onDragEnd);
-        this.removeListener("droprequest",  this.__onDropRequest);
-        this.removeListener("drop",         this.__onDrop);
+        this.setDraggable(true);
+        this.setDroppable(true);
+        this.removeListener("dragstart",    this.__onDragStart,   this);
+        this.removeListener("drag",         this.__onDrag,        this);
+        this.removeListener("dragover",     this.__onDragOver,    this);
+        this.removeListener("dragend",      this.__onDragEnd,     this);
+        this.removeListener("dragleave",    this.__onDragEnd,     this);
+        this.removeListener("droprequest",  this.__onDropRequest, this);
+        
       }
 
-      if(value && !old)
+      if( value && ! old )
       {
         this.addListener("dragstart",   this.__onDragStart,   this);
-        this.addListener("dragover",    this.__onDrag,        this); // dragover must be called *before* drag
+        this.addListener("dragover",    this.__onDragOver,    this); // dragover must be called *before* drag
         this.addListener("dragleave",   this.__onDragEnd,     this);
         this.addListener("drag",        this.__onDrag,        this);
         this.addListener("dragend",     this.__onDragEnd,     this);
         this.addListener("droprequest", this.__onDropRequest, this);
-        this.addListener("drop",        this.__onDrop,        this);
+        this.setDraggable(true);
+        this.setDroppable(true);     
       }
     },
     
@@ -539,6 +621,7 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
      */
     __onDragStart : function(event)
     {
+      
       var selection = this.getDataModel().getSelectedNodes();
       var types     = this.getAllowDragTypes();
       
@@ -592,38 +675,101 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
       event.addAction(this.getDragAction());
       event.addType("qx/treevirtual-node");
     },
-
+    
     /**
      * Handles the event fired when a drag session ends (with or without drop).
      */
-    __onDragEnd : function(event)
+    __onDragEnd : function(e)
     {
-    	if( this.getAllowDropBetweenNodes() )
-    	{
-    	  this._hideIndicator();
-    	}
-    },
-      
+      this._hideIndicator(); 
+    },    
+    
+    /**
+     * Fired when dragging over another widget. You'll need to attach
+     * this
+     * @param event {qx.event.type.Drag} the drag event fired
+     */
+    __onDragOver : function(e)
+    {
+      /*
+       * do not display an indicator if we have a related target,
+       * i.e. we are not hovering over this wiget
+       */
+      if ( ! e.getRelatedTarget() )
+      {
+        this.__onDragEnd(e);
+      }
+      else
+      {
+        this.__onDragAction(e);
+      }
+      return;
+    },    
 
     /**
-     * Drag event handler. Provides a check on whether drop is allowed, 
-     * displaying a insertion cursor for drop-between-nodes
-     * @param event {Object} the drag event fired
+     * Fired when dragging over the source widget. 
+     * Provides a check on whether drop is allowed, displaying a 
+     * insertion cursor for drop-between-nodes.
+     * 
+     * @param event {qx.event.type.Drag} the drag event fired
+     * @param forceDisplayIndicator {Boolean} Internal use only
      */
     __onDrag : function(e)
     {
-      var target = e.getTarget();
-      var relatedTarget =  e.getRelatedTarget ? e.getRelatedTarget():null;
-      
+      if ( ! e.getRelatedTarget() )
+      {
+        this.__onDragAction(e);
+      }
+      else
+      {
+        this.__onDragEnd(e);
+      }      
+    },
+    
+    /**
+     * Implementation of drag action for drag & dragover
+     * @param {} e
+     */
+    __onDragAction : function(e)
+    {
+      var target = e.getTarget();      
       var sourceData  = e.getUserData("treevirtualnode");
-      
       var dragDetails = this._getDragDetails(e);
-
-      this._processAutoscroll(dragDetails);
-      var dropTargetRelativePosition = this._processDragInBetween(dragDetails);
-
-      var valid = this._checkDroppable(sourceData, dropTargetRelativePosition, dragDetails);
+      var valid = false;
+      
+      /*
+       * show indicator if we're within the available rows
+       */
+      if ( dragDetails.row < this.getDataModel().getRowCount() )
+      {
+        /*
+         * auto-scroll at the beginning and at the end of the column
+         */
+        this._processAutoscroll( dragDetails );
+        
+        /*
+         * show indicator and return the relative position
+         */
+        var dropTargetRelativePosition = 
+          this._processDragInBetween( dragDetails );
+  
+        /*
+         * check if the dragged item can be dropped at the current
+         * position and change drag cursor accordingly
+         */
+        var valid = this._checkDroppable(
+          sourceData, dropTargetRelativePosition, dragDetails
+        );
+      }
+     
+      /*
+       * set flag whether drop is allowed
+       */
       e.getManager().setValidDrop(valid);
+      
+      /*
+       * drag curson
+       */
       if(valid)
       {
         qx.ui.core.DragDropCursor.getInstance().setAction(e.getCurrentAction());
@@ -636,12 +782,12 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
     },
     
     /**
-     * Drop request
-     * @param e
+     * Drop request handler
+     * @param e {qx.event.type.Drag}
      */
     __onDropRequest :  function(e)
     {
-      
+      this.__onDragEnd(e);
       var action = e.getCurrentAction();
       var type   = e.getCurrentType();
       var source = e.getCurrentTarget();
@@ -683,80 +829,223 @@ qx.Class.define("qcl.ui.tree.DragDropTree",
     
     },
     
+  
+    /*
+    ---------------------------------------------------------------------------
+       API METHODS
+    ---------------------------------------------------------------------------
+     */
+    
     
     /**
-     * Drop event
-     * @param {} e
+     * Move the dragged node from the source to the target node. Takes
+     * the drag even received by the "drop" even handler
+     * @param  e {qx.event.type.Drag}
      */
-    __onDrop : function(e)
+    moveNode : function(e)
     {
-      var nodes       = e.getData("qx/treevirtual-node");
-      var action      = e.getCurrentAction();
-      var type        = e.getCurrentType();
-      var dropTarget  = this.getDropTarget()
+      var action        = e.getCurrentAction() || "move";
+      var dropTarget    = this.getDropTarget();
+      var dropPosition  = this.getDropTargetRelativePosition();
       
       if( ! qx.lang.Type.isObject(dropTarget) )
       {
-        this.error("No valid drop target!");
+        //this.warn("No valid drop target!");
+        return false;
       }
       
-      if ( type === "qx/treevirtual-node")
+      /*
+       * this method only supports treevirtual nodes
+       */
+      if ( e.supportsType("qx/treevirtual-node") )
       {
         if( ! dropTarget.children )
         {
           this.error("Drop target is not a folder!");
-        }        
+          return false;
+        }
+        
+        /*
+         * check action - only moving nodes is supported inside the
+         * tree
+         */
+        if( action !== "move" )
+        {
+          this.error("Only the 'move' action is supported.");
+          return false;
+        }
+        
+        /*
+         * dragged nodes
+         */
+        var nodes = e.getData("qx/treevirtual-node");
+        if ( ! qx.lang.Type.isArray( nodes) )
+        {
+          this.error("No dragged node data");
+          return false;
+        }
+        
+        /*
+         * move nodes
+         */
+        var nodeArr = this.getDataModel().getData();
         for (var i=0, l=nodes.length; i<l; i++) 
         { 
-          var nodeArr = this.getDataModel().getData();
           var node = nodes[i];
+          
+          /*
+           * remove from parent node of dropped node
+           */
           var parentNode = nodeArr[node.parentNodeId];
+          if( ! parentNode ) this.error("Cannot find the dropped node's parent node!");
           var pnc = parentNode.children;
           pnc.splice( pnc.indexOf( node.nodeId ), 1 );
-          dropTarget.children.push( node.nodeId  );
-          node.parentNodeId = dropTarget.nodeId;
+          
+          /*
+           * drop on the node itself: add to the children of the target node
+           */
+          if ( dropPosition === 0 )
+          {
+            dropTarget.children.push( node.nodeId  );
+            node.parentNodeId = dropTarget.nodeId;
+          }
+          /*
+           * drop between nodes: add as a sibling of the drop target
+           */
+          else if ( this.getAllowDropBetweenNodes() )
+          {
+            var targetParentNode = nodeArr[ dropTarget.parentNodeId ]
+            if( ! targetParentNode ) this.error("Cannot find the target node's parent node!");
+            var tpnc = targetParentNode.children;
+            var delta = dropPosition > 0 ? 1 : 0;
+            tpnc.splice( tpnc.indexOf(dropTarget.nodeId) + delta, 0, node.nodeId );
+            node.parentNodeId = targetParentNode.nodeId;
+          }
+          /*
+           * else, we have a logic error
+           */
+          else
+          {
+            this.error("Dropping in between nodes is not allowed!");
+          }          
         }
         this.getDataModel().setData();
       }      
-    },
-  
-    /*
-    ---------------------------------------------------------------------------
-       API
-    ---------------------------------------------------------------------------
-     */
+    },    
     
     /**
-     * get tree column pane scroller widget
+     * Creates an empty branch (=folder) object. This should really
+     * be part of the data model.
+     * @return {Object}
      */
-    getTreePaneScroller : function()
+    createBranch : function( label, icon )
     {
-      return this._getPaneScrollerArr()[this.getDataModel().getTreeColumn()];
-    },
-
-    /**
-     * gets information on the drag session after the drop has occurred
-     * @param event {Object} the drag event fired
-     * @return {Object} map with the following information:
-     * {
-     *  'nodeData' : an array of selected nodes in the source widget, i.e. those nodes which were dragged,
-     *  'sourceWidget' : the source widget,
-     *  'targetNode' : the node on which the data was dropped,
-     *  'position' : the relative position of the drop action: -1 = above, 0=on, 1= below the node
-     * }
-     */
-    getDropData : function(event)
-    {
-      var dragData = event.getUserData("treevirtualnode");
       return {
-        'nodeData'     : dragData.nodeData,
-        'sourceWidget' : dragData.sourceWidget,
-        //don't use event.getCurrentAction() 'cause event looses action sometimes on dragchange event
-        'action'       : dragData.action,
-        'targetNode'   : this.getDropTarget(),
-        'position'     : this.getDropTargetRelativePosition()
+        type           : qx.ui.treevirtual.SimpleTreeDataModel.Type.BRANCH,
+        nodeId         : null, // must be set
+        parentNodeId   : null, // must be set
+        label          : label,
+        bSelected      : false,
+        bOpened        : false,
+        bHideOpenClose : false,
+        icon           : icon,
+        iconSelected   : icon,
+        children       : [ ],
+        columnData     : [ ]
       };
     },
+    
+    /**
+     * Creates an empty leaf object. This should really
+     * be part of the data model.
+     * @return {Object}
+     */
+    createLeaf : function( label, icon )
+    {
+      var node = this.createBranch( label, icon );
+      node.type =  qx.ui.treevirtual.SimpleTreeDataModel.Type.LEAF;
+      return node;
+    },    
+    
+    /**
+     * Imports a node into the tree at the current drop position. Takes
+     * the drag even received by the "drop" even handler and an array of
+     * node data. Make sure that the node data is valid, since it is not 
+     * checked. You can create an empty node using the createBranch() and
+     * createLeaf() methods.
+     * 
+     * @param e {qx.event.type.Drag}
+     * @param nodes {Object[]} Array of node data.
+     */
+    importNode : function(e, nodes)
+    {
+      var dropTarget    = this.getDropTarget();
+      var dropPosition  = this.getDropTargetRelativePosition();
+      
+      if( ! qx.lang.Type.isObject(dropTarget) )
+      {
+        //this.warn("No valid drop target!");
+        return false;
+      }
+
+      if( ! dropTarget.children )
+      {
+        this.error("Drop target is not a folder!");
+        return false;
+      }
+      
+      if ( ! qx.lang.Type.isArray( nodes) )
+      {
+        this.error("Invalid nodes data");
+        return false;
+      }
+      
+      /*
+       * move nodes
+       */
+      var nodeArr = this.getDataModel().getData();
+      
+      for (var i=0, l=nodes.length; i<l; i++) 
+      { 
+        /*
+         * import the node into the tree's node array
+         */
+        var nodeData = nodes[i];
+        node.nodeId = nodeArr.length;
+        nodeArr.push(node);
+        
+        /*
+         * drop on the node itself: add to the children of the target node
+         */
+        if ( dropPosition === 0 )
+        {
+          dropTarget.children.push( node.nodeId  );
+          node.parentNodeId = dropTarget.nodeId;
+        }
+        /*
+         * drop between nodes: add as a sibling of the drop target
+         */
+        else if ( this.getAllowDropBetweenNodes() )
+        {
+          var targetParentNode = nodeArr[ dropTarget.parentNodeId ]
+          if( ! targetParentNode ) this.error("Cannot find the target node's parent node!");
+          var tpnc = targetParentNode.children;
+          var delta = dropPosition > 0 ? 1 : 0;
+          tpnc.splice( tpnc.indexOf(dropTarget.nodeId) + delta, 0, node.nodeId );
+          node.parentNodeId = targetParentNode.nodeId;
+        }
+        /*
+         * else, we have a logic error
+         */
+        else
+        {
+          this.error("Dropping in between nodes is not allowed!");
+        }          
+      }
+      this.getDataModel().setData();  
+    },        
+
+ 
 
     /**
      * gets the (drag) type of a node
