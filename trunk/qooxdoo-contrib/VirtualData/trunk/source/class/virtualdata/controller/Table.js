@@ -275,11 +275,12 @@ qx.Class.define("virtualdata.controller.Table",
        var tableModel = this.getTarget().getTableModel();
        var marshaler  = store.getMarshaler();
        var params     = marshaler.getQueryParams();
+       var app        = this.getApplication();
        
        /*
         * show popup centered to table
         */
-       this.showPopup( "Getting number of rows...", this.getTarget() );
+       this.showPopup( app.tr( "Getting number of rows..." ), this.getTarget() );
 
        /*
         * load the row count and pass it to th model
@@ -307,6 +308,7 @@ qx.Class.define("virtualdata.controller.Table",
        var store = this.getStore();
        var marshaler = store.getMarshaler();
        var tableModel = this.getTarget().getTableModel();
+       var app = this.getApplication();
 
        /*
         * store request id so that we can differentiate different
@@ -325,9 +327,10 @@ qx.Class.define("virtualdata.controller.Table",
        /*
         * show popup
         */
-       this.showPopup(
-        "Loading rows " + firstRow + " - " + Math.min( lastRow, this.__rowCount ) + " of " + this.__rowCount,
-        this.getTarget()
+       this.showPopup( app.tr(
+          "Loading rows %1 - %2 of %3 ...",
+          firstRow, Math.min( lastRow, this.__rowCount), this.__rowCount 
+        ),this.getTarget()
        );
        
        /*
