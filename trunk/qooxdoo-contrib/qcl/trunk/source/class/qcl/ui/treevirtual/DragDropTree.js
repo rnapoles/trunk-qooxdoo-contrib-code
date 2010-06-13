@@ -25,7 +25,7 @@
 qx.Class.define("qcl.ui.treevirtual.DragDropTree", 
 {
 
-	extend : qx.ui.treevirtual.TreeVirtual,
+  extend : qx.ui.treevirtual.TreeVirtual,
 
   /*
   *****************************************************************************
@@ -34,10 +34,10 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
   */  
   construct : function(headings, custom)
   {
-  	this._patchCodebase();
+    this._patchCodebase();
 
-  	custom = !custom ? {} : custom;
-  	custom.tablePaneHeader = function(obj)
+    custom = !custom ? {} : custom;
+    custom.tablePaneHeader = function(obj)
     {
       /*
        * This is workaround for disabling draggable tree column.
@@ -70,15 +70,14 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
   properties : 
   {
 
-  	/**
-     * enable/disable drag and drop
-     * This needs to be the last property set since it configures
-     * the drag and drop behavior based on the other properties
+    /**
+     * Enable/disable drag and drop
      */
     enableDragDrop :
     {
       check : "Boolean",
       apply : "_applyEnableDragDrop",
+      event : "changeEnableDragDrop",
       init  : false
     },
 
@@ -166,7 +165,8 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
     allowReorderOnly : 
     {
       check : "Boolean",
-      init : false
+      init : false,
+      event : "changeAllowReorderOnly"
     }
 
   },
@@ -178,7 +178,27 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
   */
   events : 
   {
-
+    /**
+     * Fired before a node is added to the tree. Returns the node, which
+     * can be manipulated.
+     */
+    "beforeAddNode" : "qx.event.type.Data",
+    
+    /**
+     * Fired when a node is remove from tree. Returns the node.
+     * Node will be deleted after event handling quits
+     * Not yet implemented, override prune method
+     */
+    //"beforeDeleteNode"   : "qx.event.type.Data",
+    
+    /**
+     * Fired when a node changes the position. Returns an object: 
+     * {
+     *    'node' : <the node which has changed position>
+     *    'position' : <numeric position within the parent node's children> 
+     * }
+     */
+    "changeNodePosition" : "qx.event.type.Data"
   },
 
   /*
@@ -198,7 +218,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
     /**
      * The indicator widget
      */
-  	_indicator : null,
+    _indicator : null,
     
    /*
    ---------------------------------------------------------------------------
@@ -210,8 +230,8 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
      * Patch the codebase to make drag & drop in the table possible in
      * the first place
      */
-  	_patchCodebase : function()
-  	{
+    _patchCodebase : function()
+    {
       qx.Class.include(qx.ui.treevirtual.TreeVirtual, qx.ui.treevirtual.MNode);
       
       /*
@@ -250,13 +270,13 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
       {
         return this._getRowForPagePos(pageX, pageY);
       };
-  	},
+    },
 
     /**
      * Create drop indicator
      */
-  	_createIndicator : function()
-  	{
+    _createIndicator : function()
+    {
       this._indicator = new qx.ui.core.Widget();
       this._indicator.set({
         decorator  : new qx.ui.decoration.Single().set({top : [2, "solid", "#333"]}),
@@ -266,23 +286,23 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
       this._hideIndicator();
 
       this._getPaneClipper().add(this._indicator);
-  	},
+    },
 
     /**
      * Hide indicator
      */
-  	_hideIndicator : function()
-  	{
+    _hideIndicator : function()
+    {
       this._indicator.setOpacity(0);
-  	},
+    },
 
     /**
      * Show indicator
      */
-  	_showIndicator : function()
-  	{
+    _showIndicator : function()
+    {
       this._indicator.setOpacity(0.5);
-  	},
+    },
 
     /**
      * Check if drag element can be dropped
@@ -291,19 +311,23 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
      * @param dragDetails {Map}
      * @return {Boolean}
      */
-  	_checkDroppable : function(sourceData, dropTargetRelativePosition, dragDetails)
-  	{
-      // get and save drag target
+    _checkDroppable : function(sourceData, dropTargetRelativePosition, dragDetails)
+    {
+      /*
+       * get and save drag target
+       */
       var targetWidget  = this;
       var targetRowData = this.getDataModel().getRowData(dragDetails.row);
-      if(!targetRowData)
+      if( ! targetRowData )
       {
+        //this.debug("No targetRowData");
         return false;
       }
 
       var targetNode = targetRowData[0];
-      if(!targetNode)
+      if( ! targetNode )
       {
+        //this.debug("No targetNode");
         return false;
       }
 
@@ -311,23 +335,28 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
       this.setDropTarget(targetNode);
       this.setDropTargetRelativePosition(dropTargetRelativePosition);
      
-      
       /*
        * @todo the following has to be rewritten to work without the 
-       * source data. we should be able to get everything from the event
-       * data.
+       * sourceData var. we should be able to get everything from the
+       * event data.
        */
-      if(!sourceData)
+      if( ! sourceData )
       {
         // we do not have any compatible datatype
+        //this.debug("No sourceData");
         return false;
       }
 
-      // use only the first node to determine node type
+      /*
+       * use only the first node to determine node type
+       */
       var sourceNode = sourceData.nodeData[0];
-      if(!sourceNode)
+      if( ! sourceNode )
       {
-        // no node to drag
+        /*
+         * no node to drag
+         */
+        //this.debug("No sourceNode");
         return false;
       }
 
@@ -336,63 +365,90 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
        */
       if ( this.isAllowReorderOnly() )
       {
-        if ( dropTargetRelativePosition === 0 || targetNode.level !== sourceNode.level )
+        if ( dropTargetRelativePosition === 0 )
         {
+          //this.debug("Reordering only and dropped on node");
           return false;  
         }
+        if ( targetNode.level !== sourceNode.level )
+        {
+          //this.debug("Reordering only and dropped on/between subnodes");
+          return false;  
+        }        
       }            
       
       var sourceWidget = sourceData.sourceWidget;      
 
-      // if we are dragging within the same widget
+      /*
+       * if we are dragging within the same widget
+       */
       if(sourceWidget == targetWidget)
       {
-        // prevent drop of nodes on themself
+        /*
+         * prevent drop of nodes on themself
+         */
         if(sourceNode.nodeId == targetNode.nodeId)
         {
+          //this.debug("Drop on itself");
           return false;
         }
 
-        // prevent drop of parents on children
+        /*
+         * prevent drop of parents on children
+         */
         var traverseNode = targetNode;
         while(traverseNode.parentNodeId)
         {
           if( traverseNode.parentNodeId == sourceNode.nodeId )
           {
+            //this.debug("Drop on subnode");
             return false;
           }
           traverseNode = this.nodeGet(traverseNode.parentNodeId);
         }
       }
-
-      // check legitimate source and target type combinations
-      var sourceType     = this.getNodeDragType(sourceNode);
-      var targetTypeNode = (dropTargetRelativePosition != 0) ? targetParentNode : targetNode;
-      var targetType     = this.getNodeDragType(targetTypeNode);
-
-      if(!targetType)
+      
+      // ??
+      if ( dropTargetRelativePosition != 0 ) 
       {
+        if ( sourceNode.parentNodeId == targetNode.parentNodeId)
+        {
+          return true;
+        }
+      }
+
+      /*
+       * get allowed drop types. disallow drop if none
+       */
+      var allowDropTypes = this.getAllowDropTypes();
+      if ( ! allowDropTypes )
+      {
+        //this.debug("No allowDropTypes!");
         return false;
       }
 
-      if(dropTargetRelativePosition != 0 && sourceNode.parentNodeId == targetNode.parentNodeId)
+      /*
+       * everything can be dropped, allow
+       */
+      if( allowDropTypes[0] == "*" )
       {
         return true;
-      }
+      }      
 
-      var allowDropTypes = this.getAllowDropTypes();
+      /*
+       * check legitimate source and target type combinations
+       */
+      var sourceType     = this.getNodeDragType(sourceNode);
+      var targetTypeNode = (dropTargetRelativePosition != 0) 
+                            ? targetParentNode : targetNode;
+      var targetType     = this.getNodeDragType(targetTypeNode);
 
-      if(!allowDropTypes)
+      if ( ! targetType)
       {
-      	return false;
+        //this.debug("No target type!");
+        return false;
       }
 
-      if(allowDropTypes[0] == "*")
-      {
-      	return true;
-      }
-
-      // check more closely
       for(var i = 0; i < allowDropTypes.length; i++)
       {
         if(
@@ -404,9 +460,12 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
         }
       }
 
-      // do not allow any drop
+      /*
+       * do not allow any drop
+       */
+      //this.debug("No matching allowDropType!");
       return false;
-  	},
+    },
 
     /**
      * Handle behavior connected to automatic scrolling at the top and the
@@ -414,14 +473,14 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
      * 
      * @param dragDetails {Map}
      */
-  	_processAutoscroll : function(dragDetails)
-  	{
+    _processAutoscroll : function(dragDetails)
+    {
       var interval = this.getAutoScrollInterval();
       var details  = dragDetails;
 
       if(interval)
       {
-      	var scroller = this._getTreePaneScroller();
+        var scroller = this._getTreePaneScroller();
 
         if(!this.__scrollFunctionId && (details.topDelta > -1 && details.topDelta < 2) && details.row != 0)
         {
@@ -445,15 +504,15 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
           this.__scrollFunctionId = null;
         }
       }
-  	},
+    },
 
     /**
      * Handle the bahavior of the indicator in between tree nodes
      * @param dragDetails {Map} 
      * @return {Integer}
      */
-  	_processDragInBetween : function(dragDetails)
-  	{
+    _processDragInBetween : function(dragDetails)
+    {
       var result = 0;
       if( this.getAllowDropBetweenNodes() )
       {
@@ -479,7 +538,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
       }
 
       return result;
-  	},
+    },
     
    /**
      * Calculate indicator position and display indicator
@@ -570,7 +629,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
      ---------------------------------------------------------------------------
       */    
 
-  	/**
+    /**
      * enables or disables drag and drop, adds event listeners
      */
     _applyEnableDragDrop : function(value, old)
@@ -656,7 +715,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
            */
           if(types.indexOf(type) < 0)
           {
-          	return event.preventDefault();
+            return event.preventDefault();
           }
         }
       }
@@ -776,7 +835,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
       }
       else
       {
-      	qx.ui.core.DragDropCursor.getInstance().resetAction();
+        qx.ui.core.DragDropCursor.getInstance().resetAction();
       }
       //this.debug([e.getType(), dropTargetRelativePosition, valid, sourceData.action]);
     },
@@ -906,9 +965,15 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
            */
           if ( dropPosition === 0 )
           {
+            var position = dropTarget.children;
             dropTarget.children.push( node.nodeId  );
             node.parentNodeId = dropTarget.nodeId;
+            this.fireDataEvent("changeNodePosition", {
+              'node' : node,
+              'position' : position
+            });
           }
+          
           /*
            * drop between nodes: add as a sibling of the drop target
            */
@@ -918,8 +983,13 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
             if( ! targetParentNode ) this.error("Cannot find the target node's parent node!");
             var tpnc = targetParentNode.children;
             var delta = dropPosition > 0 ? 1 : 0;
-            tpnc.splice( tpnc.indexOf(dropTarget.nodeId) + delta, 0, node.nodeId );
+            var position = tpnc.indexOf(dropTarget.nodeId) + delta;
+            tpnc.splice( position, 0, node.nodeId );
             node.parentNodeId = targetParentNode.nodeId;
+            this.fireDataEvent("changeNodePosition", {
+              'node' : node,
+              'position' : position
+            });            
           }
           /*
            * else, we have a logic error
@@ -929,6 +999,10 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
             this.error("Dropping in between nodes is not allowed!");
           }          
         }
+        
+        /*
+         * re-render the tree
+         */
         this.getDataModel().setData();
       }      
     },    
@@ -1020,7 +1094,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
         if ( dropPosition === 0 )
         {
           dropTarget.children.push( node.nodeId  );
-          node.parentNodeId = dropTarget.nodeId;
+          node.parentNodeId = dropTarget.nodeId;           
         }
         /*
          * drop between nodes: add as a sibling of the drop target
@@ -1042,6 +1116,15 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
           this.error("Dropping in between nodes is not allowed!");
         }          
       }
+      
+      /*
+       * event
+       */
+      this.fireDataEvent("beforeAddNode", node);
+      
+      /*
+       * re-render the tree
+       */
       this.getDataModel().setData();  
     },        
 

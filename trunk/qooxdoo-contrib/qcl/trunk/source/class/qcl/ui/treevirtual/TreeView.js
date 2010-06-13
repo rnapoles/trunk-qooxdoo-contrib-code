@@ -204,7 +204,27 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
    modelType : 
    {
       check: "String"
-   }
+   },
+   
+    /**
+     * Enable/disable drag and drop
+     */
+    enableDragDrop :
+    {
+      check : "Boolean",
+      init  : false,
+      event : "changeEnableDragDrop"
+    },
+    
+    /**
+     * Whether Drag & Drop should be limited to reordering
+     */
+    allowReorderOnly : 
+    {
+      check : "Boolean",
+      init  : false,
+      event : "changeAllowReorderOnly"
+    }   
    
    
   },
@@ -232,11 +252,16 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      * server databinding
      */
     this.__lastTransactionId = 0;
-    qx.event.message.Bus.subscribe("folderTreeUpdateNode", this._updateNode,this);
-    qx.event.message.Bus.subscribe("folderTreeAddNode", this._addNode,this);
-    qx.event.message.Bus.subscribe("folderTreeDeleteNode", this._deleteNode,this);
-    qx.event.message.Bus.subscribe("folderTreeMoveNode", this._moveNode,this);
+    qx.event.message.Bus.subscribe("folderTreeUpdateNode",  this._updateNode,this);
+    qx.event.message.Bus.subscribe("folderTreeAddNode",     this._addNode,this);
+    qx.event.message.Bus.subscribe("folderTreeDeleteNode",  this._deleteNode,this);
+    qx.event.message.Bus.subscribe("folderTreeMoveNode",    this._moveNode,this);
+    qx.event.message.Bus.subscribe("folderTreeReorder",     this._reorderNodeChildren,this);
     
+    /*
+     * drag & drop
+     */
+    this.setAllowReorderOnly(true);
     
     /*
      * pupup
@@ -377,11 +402,10 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      /*
       * tree
       */
-     var tree = new qx.ui.treevirtual.TreeVirtual( this.getColumnHeaders(),{
-       dataModel : new virtualdata.model.SimpleTreeDataModel,
-        tableColumnModel : function(obj) {
-          return new qx.ui.table.columnmodel.Resize(obj);
-        }       
+     var tree = new qcl.ui.treevirtual.DragDropTree( 
+      this.getColumnHeaders(),{
+       dataModel        : new virtualdata.model.SimpleTreeDataModel,
+       tableColumnModel : function(obj) { return new qx.ui.table.columnmodel.Resize(obj);}       
      } );
      tree.set({
        allowStretchY : true,
@@ -390,9 +414,18 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
        backgroundColor : "white",
        useTreeLines : true,
        showCellFocusIndicator : false,
-       rowFocusChangeModifiesSelection : false     
+       rowFocusChangeModifiesSelection : false
      });
-
+     
+     /*
+      * drag & drop
+      */
+     this.bind("enableDragDrop", tree, "enableDragDrop");
+     this.bind("allowReorderOnly", tree, "allowReorderOnly");
+     tree.addListener("dragstart", this._on_dragstart, this );
+     tree.addListener("dragend", this._on_dragend, this );
+     tree.addListener("drop", this._on_drop, this );
+     
      tree.getTableColumnModel().getBehavior().setMinWidth( 0, 80 );
      tree.getTableColumnModel().getBehavior().setWidth( 0, "10*" );
      tree.getTableColumnModel().getBehavior().setMinWidth( 1, 20 );
@@ -409,6 +442,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      tree.addListener("changeSelection", this._on_treeChangeSelection, this );
      tree.addListener("click", this._on_treeClick, this );
      tree.addListener("dblclick", this._on_treeDblClick, this );
+
      
      ds.treeWidget = tree;
      this.getTreeWidgetContainer().add( tree, { flex : 10, height: null } );
@@ -846,8 +880,43 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       //console.log("Selecting folder server#"+nodeId);
       
     },
-
-   
+    
+    /*
+    ---------------------------------------------------------------------------
+       DRAG & DROP
+    ---------------------------------------------------------------------------
+    */   
+    
+    /**
+     * Called when the user starts dragging a node
+     * @param e {qx.event.type.Drag}
+     */
+    _on_dragstart : function(e)
+    {
+      this.__dragsession = true;
+    },    
+    
+    /**
+     * Called when the drag session ends
+     * @param e {qx.event.type.Drag}
+     */
+    _on_dragend : function(e)
+    {
+      this.__dragsession = false;
+    },        
+    
+    /**
+     * Called when a dragged element is dropped onto the tree widget.
+     * Override for your own behavior
+     * @param e {qx.event.type.Drag}
+     */
+    _on_drop : function(e)
+    {
+      if ( e.supportsType("qx/treevirtual-node") )
+      {
+        this.moveNode( e );  
+      }
+    },
     
     /*
     ---------------------------------------------------------------------------
@@ -959,6 +1028,58 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
           this.cacheTreeData( data.transactionId );          
         }
       }
+    },
+    
+    /**
+     * Called by a server message to reorder the child nodes of
+     * a given node.
+     * @param e {qx.event.message.Message}
+     */
+    _reorderNodeChildren : function(e)
+    {
+      var data = e.getData();
+      var tree = this.getTreeView();
+      if( ! tree ) return;
+      
+      /*
+       * check if the message concerns us
+       */
+      var dataModel = tree.getDataModel();
+      var controller = this.getController();
+      if( data.datasource != this.getDatasource() 
+        || data.modelType != this.getModelType() ) return;
+     
+      /*
+       * get the node data
+       */
+      var nodeId = controller.getClientNodeId( data.nodeId );
+      var parentNodeId = controller.getClientNodeId( data.parentNodeId );
+      var parentNode = dataModel.getData()[parentNodeId];
+      
+      /*
+       * reorder node children
+       */
+      var pnc = parentNode.children;
+      var oldPos = pnc.indexOf( nodeId );
+      if( oldPos == data.position )
+      {
+        //this.debug("Node already at new position");
+        return;
+      }
+      pnc.splice( oldPos,1 );
+      pnc.splice( data.position,0, nodeId );
+      //this.debug("Changed child position");
+      
+      /*
+       * render tree
+       */
+      dataModel.setData();
+      
+      /*
+       * save new tree state in cache
+       */
+      controller.setTransactionId( data.transactionId );
+      this.cacheTreeData( data.transactionId );          
     },
     
     /*
