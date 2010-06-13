@@ -49,6 +49,18 @@
           "manifest" : "../../../trunk/Manifest.json"
         }
       ]
-    }
+    },
+     // build generation only
+    "build" :
+    {
+      // don't optimize privates
+      "compile-options" :
+      { 
+        "code" :
+        {
+          "=optimize" : ["variables", "basecalls", "strings"]
+        }
+      }
+    }    
   }
 }

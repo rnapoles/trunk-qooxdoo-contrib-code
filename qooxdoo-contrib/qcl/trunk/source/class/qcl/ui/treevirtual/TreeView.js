@@ -25,7 +25,7 @@
  * Base class for virtual tree widgets which load their data from different datasources
  * 
  */
-qx.Class.define("qcl.ui.tree.TreeView",
+qx.Class.define("qcl.ui.treevirtual.TreeView",
 {
   extend : qx.ui.container.Composite,
   include : [qcl.ui.MLoadingPopup],
