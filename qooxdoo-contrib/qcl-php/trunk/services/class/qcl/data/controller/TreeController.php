@@ -126,10 +126,12 @@ class qcl_data_controller_TreeController
 
   /**
    * Returns the ids of the child node ids optionally ordered by a property
-   * @param string $datasource Name of the datasource
+   * @param string $datasource
+   *    Name of the datasource
    * @param int $parentId
-   * @param string|null $orderBy Optional propert name by which the returned
-   *   data should be ordered.
+   * @param string|null $orderBy
+   *    Optional property name by which the returned
+   *    data should be ordered.
    * @return array
    */
   function getChildIds ( $datasource, $parentId, $orderBy=null )

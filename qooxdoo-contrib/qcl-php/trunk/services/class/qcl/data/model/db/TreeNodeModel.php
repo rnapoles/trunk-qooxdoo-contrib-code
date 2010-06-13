@@ -93,14 +93,14 @@ class qcl_data_model_db_TreeNodeModel
 
   /**
    * Returns the data of child nodes of a branch ordered by the order field
-   * @param string|null $orderBy Optional propert name by which the returned
-   *   data should be ordered
+   * @param string|null $orderBy
+   *    Optional propert name by which the returned data should be ordered.
+   *    Defaults to "position".
    * @return array
    */
-	function getChildrenData( $orderBy=null )
+	function getChildrenData( $orderBy="position" )
 	{
 	  $query = new qcl_data_db_Query( array(
-	   'properties'  => "*", // FIXME
 	   'where'       => array( 'parentId' => $this->id() ),
 	   'orderBy'     => $orderBy
 	  ) );
@@ -110,18 +110,36 @@ class qcl_data_model_db_TreeNodeModel
 
   /**
    * Returns the ids of the child node ids optionally ordered by a property
-   * @param string|null $orderBy Optional propert name by which the returned
-   *   data should be ordered
+   * @param string|null $orderBy
+   *    Optional propert name by which the returned ids should be ordered.
+   *    Defaults to "position".
    * @return array
    */
-	function getChildIds ( $orderBy=null )
+	function getChildIds ( $orderBy="position" )
 	{
     $query = new qcl_data_db_Query( array(
-     'properties'  => null, // FIXME
      'where'       => array( 'parentId' => $this->id() ),
      'orderBy'     => $orderBy
     ) );
     return $this->getQueryBehavior()->fetchValues("id", $query );
+	}
+
+	/**
+	 * Finds all model records which are children of the current node
+   * @param string|null $orderBy
+   *    Optional propert name by which the records should be ordered.
+   *    Defaults to "position".
+	 * @return qcl_data_db_Query
+	 */
+	function findChildren( $orderBy="position" )
+	{
+	  $query = new qcl_data_db_Query( array(
+     'where'       => array( 'parentId' => $this->id() ),
+     'orderBy'     => $orderBy
+    ) );
+    $this->lastQuery = $query;
+	  $this->getQueryBehavior()->select( $query );
+	  return $query;
 	}
 
   /**
@@ -144,60 +162,88 @@ class qcl_data_model_db_TreeNodeModel
 	}
 
    /**
-    * Change position within folder siblings
-    * @param int|string	$position	New position, either absolute (integer)
+    * Change position within folder siblings. Returns itself
+    * @param int|string $position New position, either absolute (integer)
     *   or relative ("+1", "-3" etc.)
-    *
-   	*/
-  public function changePosition ( $position )
-	{
-		if ( ! $this->supportsPositioning() )
-		{
-			throw new JsonRpcException("Setting a position is not supported");
-		}
+    * return qcl_data_model_db_TreeNodeModel
+    */
+  function changePosition ( $position )
+  {
+    $this->checkLoaded();
 
-		if ( is_string($position) )
-		{
-		  if ( $position[0] == "-" or $position[0] == "+" )
-		  {
-		    $position = $this->getPosition() + (int) substr( $position, 1);
-		  }
-		  else
-		  {
-		    throw new InvalidArgumentException("Invalid position");
-		  }
-		}
-		elseif ( ! is_int( $position ) )
-		{
-		  throw new InvalidArgumentException("Invalid position");
-		}
+    /*
+     * relative position
+     */
+    if ( is_string($position) )
+    {
+      if ( $position[0] == "-" or $position[0] == "+" )
+      {
+        $position = $this->getPosition() + (int) substr( $position, 1);
+      }
+      else
+      {
+        throw new InvalidArgumentException("Invalid relative position");
+      }
+    }
+    elseif ( ! is_int( $position ) )
+    {
+      throw new InvalidArgumentException("Position must be relative or integer");
+    }
 
-		$id = $this->getId();
-		$parentId = $this->getParentId();
-		$this->load( $parentId );
-		$children = $this->getChildren();
-		$index = 0;
+    /*
+     * change to parent node
+     */
+    $id = $this->id();
+    $parentId = $this->getParentId();
+    $this->load( $parentId );
 
-		foreach ( $children as $child )
-		{
-			$data = array();
-			$data['id'] = $child['id'];
+    /*
+     * check position
+     */
+    if ( $position < 0 or $position > $this->getChildCount() )
+    {
+      throw new InvalidArgumentException("Invalid position '$position'");
+    }
 
-			if ( $child['id'] == $id )
-			{
-				$data['position'] = $position;
-			}
-			else
-			{
-				if ( $index == $position ) $index++; // skip over target position
-				$data['position'] = $index++;
-			}
+    /*
+     * iterate over the parent node's children
+     */
+    $query = $this->findChildren();
+    $index = 0;
+    while ( $this->loadNext($query) )
+    {
+      $this->debug("Looking at child " . $this->getLabel(),__CLASS__,__LINE__);
+      if ( $this->id() == $id )
+      {
+        $this->setPosition( $position );
+//        $this->debug(sprintf(
+//          "Setting node %s to position %s",
+//          $this->getLabel(), $position
+//        ),__CLASS__,__LINE__);
+        $this->save();
+      }
+      else
+      {
+        if ( $index == $position )
+        {
+//          $this->debug("Skipping $index ",__CLASS__,__LINE__);
+          $index++; // skip over target position
+        }
+//        $this->debug(sprintf(
+//          "Setting sibling node %s to position %s",
+//          $this->getLabel(), $index
+//        ),__CLASS__,__LINE__);
+        $this->setPosition( $index++ );
+        $this->save();
+      }
+    }
 
-			$this->set($data);
-			$this->save();
-		}
-		return true;
-	}
+    /*
+     * switch back to original record
+     */
+    $this->load( $id );
+    return $this;
+  }
 
    /**
     * Change parent node
