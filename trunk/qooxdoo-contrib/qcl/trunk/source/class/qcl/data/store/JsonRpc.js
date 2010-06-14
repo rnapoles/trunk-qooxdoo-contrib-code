@@ -243,7 +243,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
     timeout :
     {
       check : "Integer",
-      init : 30000
+      init : 180000 // 3 Minutes
     },
   
     /**  
