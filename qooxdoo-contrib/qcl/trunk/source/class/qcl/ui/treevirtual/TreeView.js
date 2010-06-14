@@ -1044,14 +1044,14 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       /*
        * check if the message concerns us
        */
-      var dataModel = tree.getDataModel();
-      var controller = this.getController();
       if( data.datasource != this.getDatasource() 
         || data.modelType != this.getModelType() ) return;
      
       /*
        * get the node data
        */
+      var dataModel = tree.getDataModel();
+      var controller = this.getController();
       var nodeId = controller.getClientNodeId( data.nodeId );
       var parentNodeId = controller.getClientNodeId( data.parentNodeId );
       var parentNode = dataModel.getData()[parentNodeId];
