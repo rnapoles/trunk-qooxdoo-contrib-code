@@ -195,12 +195,14 @@ class qcl_data_model_db_TreeNodeModel
      */
     $id = $this->id();
     $parentId = $this->getParentId();
-    $this->load( $parentId );
+    $where = array( 'parentId' => $parentId ) ;
+    $childCount = $this->countWhere( $where );
+    $query = $this->findWhere( $where );
 
     /*
      * check position
      */
-    if ( $position < 0 or $position > $this->getChildCount() )
+    if ( $position < 0 or $position > $childCount )
     {
       throw new InvalidArgumentException("Invalid position '$position'");
     }
@@ -208,11 +210,9 @@ class qcl_data_model_db_TreeNodeModel
     /*
      * iterate over the parent node's children
      */
-    $query = $this->findChildren();
     $index = 0;
     while ( $this->loadNext($query) )
     {
-      $this->debug("Looking at child " . $this->getLabel(),__CLASS__,__LINE__);
       if ( $this->id() == $id )
       {
         $this->setPosition( $position );
