@@ -55,11 +55,11 @@ class qcl_data_model_import_Xml
     {
       if ( ! $xml->exists() )
       {
-        $this->raiseError( sprintf( "File '%s' does not exist: ", $xml->filePath() ) );
+        throw new InvalidArgumentException( sprintf(
+          "File '%s' does not exist: ", $xml->filePath()
+        ) );
       }
-      $this->xmlDoc = qcl_data_xml_SimpleXMLElement::createFromFile(
-        $xml->resourcePath()
-      );
+      $this->xmlDoc = qcl_data_xml_SimpleXMLElement::createFromFile($xml);
     }
     else
     {
