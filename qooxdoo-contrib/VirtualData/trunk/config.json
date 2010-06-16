@@ -28,11 +28,11 @@
   {
     "APPLICATION"  : "virtualdata",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.0.1-pre",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
     //"QXTHEME"      : "virtualdata.theme.modern.Theme",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "virtualdata.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
-    "LOCALES"      : [ "en" ],
+    "LOCALES"      : [ "en","de" ],
     "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   },
@@ -43,9 +43,6 @@
     {
       "library" :
       [
-        {
-          "manifest" : "contrib://cometd/trunk/Manifest.json"
-        },
         {
           "manifest" : "contrib://Persist/trunk/Manifest.json"
         }        
