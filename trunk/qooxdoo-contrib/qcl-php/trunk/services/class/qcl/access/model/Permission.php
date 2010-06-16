@@ -47,7 +47,7 @@ class qcl_access_model_Permission
       'check'     => "boolean",
       'sqltype'   => "int(1)",
       'nullable'  => false,
-      'init'      => false
+      'init'      => true
     )
   );
 
