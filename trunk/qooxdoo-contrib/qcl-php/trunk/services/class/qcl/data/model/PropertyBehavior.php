@@ -676,5 +676,15 @@ class qcl_data_model_PropertyBehavior
     }
     return $propList;
   }
+
+  /**
+   * Returns the "init" value of the property
+   * @param $property
+   * @return unknown_type
+   */
+  public function getInitValue( $property )
+  {
+    return $this->properties[$property]['init'];
+  }
 }
 ?>
