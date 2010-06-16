@@ -83,7 +83,7 @@ class qcl_access_ACToolController
    */
   public function method_getAccessElementTypes()
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
     $models = $this->modelMap();
     return array(
       array(
@@ -122,7 +122,7 @@ class qcl_access_ACToolController
    */
   public function method_getAccessElements( $type )
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
 
     switch ( $type )
     {
@@ -185,6 +185,15 @@ class qcl_access_ACToolController
         $label .= " (LDAP)";
       }
 
+      if ( $type == "permission" )
+      {
+        $description = $model->getDescription();
+        if ( $description )
+        {
+          $label .= sprintf( " (%s)", $description );
+        }
+      }
+
       $result[] = array(
         'icon'      => $icon,
         'label'     => $label,
@@ -220,7 +229,7 @@ class qcl_access_ACToolController
    */
   public function method_getAccessElementTree( $elementType, $namedId )
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
 
     $models = $this->modelMap();
 
@@ -417,7 +426,7 @@ class qcl_access_ACToolController
    */
   public function method_addElement( $type, $namedId )
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
     $models = $this->modelMap();
 
     if ( $type == "datasource" )
@@ -448,7 +457,7 @@ class qcl_access_ACToolController
    */
   public function method_deleteElement( $type, $ids )
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
     switch( $type )
     {
       case "datasource":
@@ -486,7 +495,7 @@ class qcl_access_ACToolController
       return "ABORTED";
     }
 
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
     qcl_import("qcl_ui_dialog_Alert");
 
     try
@@ -546,7 +555,7 @@ class qcl_access_ACToolController
    */
   public function method_linkElements( $treeElement, $type, $namedId )
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
 
     list( $model1, $model2, $depModel ) =
       $this->getLinkModels( $treeElement, $type, $namedId );
@@ -573,7 +582,7 @@ class qcl_access_ACToolController
    */
   public function method_unlinkElements( $treeElement, $type, $namedId )
   {
-    $this->requirePermission("manageAccess");
+    $this->requirePermission("access.manage");
 
     list( $model1, $model2, $depModel ) =
       $this->getLinkModels( $treeElement, $type, $namedId );
@@ -619,7 +628,7 @@ class qcl_access_ACToolController
 
     if( $type != "user" or $namedId != $this->getActiveUser()->namedId() )
     {
-      $this->requirePermission("manageAccess");
+      $this->requirePermission("access.manage");
     }
 
     $model = $this->getElementModel( $type );
@@ -651,7 +660,7 @@ class qcl_access_ACToolController
 
     if( $type != "user" or $namedId != $this->getActiveUser()->namedId() )
     {
-      $this->requirePermission("manageAccess");
+      $this->requirePermission("access.manage");
       $this->dispatchClientMessage("accessControlTool.reloadLeftList");
     }
 
