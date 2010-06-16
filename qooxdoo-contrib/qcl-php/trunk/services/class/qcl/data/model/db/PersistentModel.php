@@ -76,11 +76,20 @@ class qcl_data_model_db_PersistentModel
   /**
    * Getter for persistence behavior. Defaults to persistence in
    * the session.
-   * @return qcl_data_persistence_behavior_Session
+   * @return qcl_data_model_db_PersistenceBehavior
    */
   function getPersistenceBehavior()
   {
     return qcl_data_model_db_PersistenceBehavior::getInstance();
+  }
+
+  /**
+   * Returns the query behavior.
+   * @return qcl_data_model_db_QueryBehavior
+   */
+  public function getQueryBehavior()
+  {
+    return $this->getPersistenceBehavior()->getQueryBehavior();
   }
 }
 ?>

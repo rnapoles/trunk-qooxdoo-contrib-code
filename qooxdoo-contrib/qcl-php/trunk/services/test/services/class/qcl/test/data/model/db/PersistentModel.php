@@ -22,7 +22,6 @@ qcl_import( "qcl_data_model_db_PersistentModel" );
 class PersistentClass
   extends qcl_data_model_db_PersistentModel
 {
-  protected $tableName = "test_persistent_db_class";
 
   protected $isBoundToSession = true;
 
