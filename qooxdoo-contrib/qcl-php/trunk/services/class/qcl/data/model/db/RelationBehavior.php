@@ -657,16 +657,8 @@ class qcl_data_model_db_RelationBehavior
        */
       else
       {
-        $this->getModel()->log( "Using singleton instance '$class'.", QCL_LOG_MODEL_RELATIONS );
-
-        if ( version_compare ( PHP_VERSION, '5.3', '<') )
-        {
-          $model = call_user_func_array( array( $class, "getInstance" ), array() );
-        }
-        else
-        {
-          $model = call_user_func_array( "$class::getInstance", array() );
-        }
+        if ($this->hasLog() ) $this->log( "Using singleton instance '$class'.");
+        $model = qcl_getInstance( $class );
       }
 
       /*
