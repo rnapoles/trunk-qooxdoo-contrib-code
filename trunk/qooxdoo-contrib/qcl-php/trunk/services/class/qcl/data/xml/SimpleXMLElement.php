@@ -62,6 +62,16 @@ class qcl_data_xml_SimpleXMLElement
   static public function createFromFile( $file )
   {
     libxml_use_internal_errors(true);
+
+    if( is_qcl_file( $file ) )
+    {
+      $file = qcl_realpath( $file->filePath() );
+    }
+    else
+    {
+      throw new InvalidArgumentException("Loading XML from remote hosts not yet implemented.");
+    }
+
     $xmlDoc =  simplexml_load_file( $file, "qcl_data_xml_SimpleXMLElement" );
     if ( ! $xmlDoc )
     {

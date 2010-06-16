@@ -56,7 +56,7 @@ class qcl_io_filesystem_local_Resource
    */
   public function exists()
   {
-    return file_exists( $this->filePath() );
+    return qcl_file_exists( $this->filePath() );
   }
 
   /**
