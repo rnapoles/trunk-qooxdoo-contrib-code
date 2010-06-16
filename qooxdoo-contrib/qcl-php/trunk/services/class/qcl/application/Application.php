@@ -185,8 +185,7 @@ abstract class qcl_application_Application
    */
   public function getConfigModel()
   {
-    qcl_import( "qcl_config_ConfigModel" );
-    return qcl_config_ConfigModel::getInstance();
+    return $this->getAccessController()->getConfigModel();
   }
 
   /**
@@ -289,15 +288,34 @@ abstract class qcl_application_Application
 
   /**
    * Imports initial data
-   * @param array $datat - map of model types and paths to the
-   * xml data files
+   * @param array $data
+   *    Map of model types and paths to the xml data files
+   * @param qcl_access_DatasourceModel $accessDatasource
+   *    Optional. If not given, qcl_access_DatasourceModel is used.
+   *    You can provide a subclass of qcl_access_DatasourceModel which
+   *    selectively override the used model types in the init() method by
+   *    using the registerModels() method and a map of the models to
+   *    override.
+   * @see qcl_access_DatasourceModel::init()
    */
-  protected function importInitialData( $data )
+  protected function importInitialData( $data, $accessDatasource=null )
   {
     qcl_import( "qcl_data_model_import_Xml" );
     qcl_import( "qcl_io_filesystem_local_File" );
     qcl_import( "qcl_data_datasource_Manager" );
-    qcl_import( "qcl_access_DatasourceModel" );
+
+    if ( $accessDatasource === null )
+    {
+      qcl_import( "qcl_access_DatasourceModel" );
+      $accessDatasource = qcl_access_DatasourceModel::getInstance();
+    }
+    else
+    {
+      if ( ! $accessDatasource instanceof qcl_access_DatasourceModel )
+      {
+        throw new InvalidArgumentException( "The accessDatasource parameter must be an instance of a class inheriting from qcl_access_DatasourceModel");
+      }
+    }
 
     /*
      * Register the access models as a datasource to make
@@ -305,9 +323,8 @@ abstract class qcl_application_Application
      */
     try
     {
-      $this->log( "Registering 'access' datasource schema" , QCL_LOG_APPLICATION );
-      qcl_import("qcl_access_DatasourceModel");
-      qcl_access_DatasourceModel::getInstance()->registerSchema();
+      $this->log( "Registering access datasource schema" , QCL_LOG_APPLICATION );
+      $accessDatasource->registerSchema();
     }
     catch( qcl_data_model_RecordExistsException $e ){}
 
@@ -317,7 +334,7 @@ abstract class qcl_application_Application
     $dsManager = qcl_data_datasource_Manager::getInstance();
     try
     {
-      $this->log( "Creating 'access' datasource" , QCL_LOG_APPLICATION );
+      $this->log( "Creating datasource named 'access'." , QCL_LOG_APPLICATION );
       $dsManager->createDatasource("access","qcl.schema.access");
     }
     catch( qcl_data_model_RecordExistsException $e ){}

@@ -99,17 +99,33 @@ class qcl_access_Controller
 
   }
 
-  //-------------------------------------------------------------
-  // Object getters
-  //-------------------------------------------------------------
-
   /**
    * Shorthand getter for access controller. Overridden to return itself
+   * when called from from subclasses
    * @return qcl_access_Controller
    */
   public function getAccessController()
   {
     return $this;
+  }
+
+  //-------------------------------------------------------------
+  // model getters
+  //-------------------------------------------------------------
+
+  /**
+   * Returns the datasource that provides access to the different
+   * access models
+   * @return qcl_access_DatasourceModel
+   */
+  public function getAccessDatasource()
+  {
+    static $accessDatasource = null;
+    if( $accessDatasource === null )
+    {
+      $accessDatasource = $this->getDatasourceModel("access");
+    }
+    return $accessDatasource;
   }
 
   /**
@@ -165,9 +181,21 @@ class qcl_access_Controller
    */
   public function getGroupModel()
   {
-    qcl_import("qcl_access_model_Group");
     return qcl_access_model_Group::getInstance();
   }
+
+  /**
+   * Returns the configuration data model
+   * @return qcl_config_ConfigModel
+   */
+  public function getConfigModel()
+  {
+    return qcl_config_ConfigModel::getInstance();
+  }
+
+  //-------------------------------------------------------------
+  // active user
+  //-------------------------------------------------------------
 
   /**
    * Returns active user object
