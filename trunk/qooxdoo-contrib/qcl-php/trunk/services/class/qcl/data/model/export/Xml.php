@@ -37,6 +37,7 @@ class qcl_data_model_export_Xml
     $dataNode         = $modelNode->addChild("data");
     $linksNode        = $modelNode->addChild("links");
     $relationBehavior = $model->getRelationBehavior();
+    $propertyBehavior = $model->getPropertyBehavior();
 
     /*
      * metadata
@@ -54,13 +55,19 @@ class qcl_data_model_export_Xml
     ), QCL_LOG_MODEL );
 
     /*
-     * record data
+     * record data, sorted by named id if supported
      */
-    $model->findAll();
+    if( $model instanceof qcl_data_model_AbstractNamedActiveRecord )
+    {
+      $model->findAllOrderBy("namedId");
+    }
+    else
+    {
+      $model->findAll();
+    }
+
     while( $model->loadNext() )
     {
-
-
       $recordNode = $dataNode->addChild("record");
 
       /*
@@ -72,6 +79,14 @@ class qcl_data_model_export_Xml
          * column data; skip empty columns
          */
         $columnData = $model->get( $propName );
+
+        /*
+         * no need to export init values
+         */
+        if ( $columnData === $propertyBehavior->getInitValue( $propName ) )
+        {
+          continue;
+        }
 
         if ( $columnData === null )
         {
@@ -114,7 +129,14 @@ class qcl_data_model_export_Xml
     {
       $relNode = $linksNode->addChild("relation");
       $relNode->addAttribute( "name", $relation );
-      $model->findAll();
+      if( $model instanceof qcl_data_model_AbstractNamedActiveRecord )
+      {
+        $model->findAllOrderBy("namedId");
+      }
+      else
+      {
+        $model->findAll();
+      }
       while( $model->loadNext() )
       {
         $targetModel = $relationBehavior->getTargetModel( $relation );
