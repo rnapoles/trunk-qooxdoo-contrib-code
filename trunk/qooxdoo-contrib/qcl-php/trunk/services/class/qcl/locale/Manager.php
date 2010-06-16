@@ -66,26 +66,33 @@ class qcl_locale_Manager extends qcl_core_Object
 	   */
     $appId = $this->getApplication()->id();
     $i18nAppPath = './locale';
-    if(!is_dir($i18nAppPath)) {
-        throw new JsonRpcException('Directory `' . $i18nAppPath . '` missing in services directory for i18n.');
+    if( is_dir($i18nAppPath) )
+    {
+
+      $path = bindtextdomain( $appId, $i18nAppPath );
+      bind_textdomain_codeset( $appId, 'UTF-8');
+      textdomain($appId);
+      if ( $this->hasLog() ) $this->log( "textdomain path for '$appId': '$path'", QCL_LOG_LOCALE );
+
+      /*
+       * bind qcl textdomain
+       */
+      $path = bindtextdomain( "qcl", dirname(__FILE__) );
+      bind_textdomain_codeset( "qcl", 'UTF-8');
+      if ( $this->hasLog() ) $this->log( "qcl textdomain path: '$path'", QCL_LOG_LOCALE );
+
+      /*
+       *  automatically determine locale
+       */
+      $this->setLocale();
     }
-    $path = bindtextdomain( $appId, $i18nAppPath );
-    bind_textdomain_codeset( $appId, 'UTF-8');
-    textdomain($appId);
-    if ( $this->hasLog() ) $this->log( "textdomain path for '$appId': '$path'", QCL_LOG_LOCALE );
-
-    /*
-     * bind qcl textdomain
-     */
-    $path = bindtextdomain( "qcl", dirname(__FILE__) );
-    bind_textdomain_codeset( "qcl", 'UTF-8');
-    if ( $this->hasLog() ) $this->log( "qcl textdomain path: '$path'", QCL_LOG_LOCALE );
-
-    /*
-     *  automatically determine locale
-     */
-    $this->setLocale();
-
+    else
+    {
+      if ( $this->hasLog() ) $this->log( sprintf(
+        'Directory %s missing in services directory for i18n.',
+        $i18nAppPath
+      ), QCL_LOG_LOCALE );
+    }
 	}
 
 	/**
