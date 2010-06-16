@@ -43,7 +43,8 @@ class qcl_access_DatasourceModel
     "The schema the qcl datasource supplying the models for access control";
 
   /**
-   * Returns singleton instance of this class.
+   * Returns singleton instance of this class. Subclasses must
+   * implement this method verbatim
    * @return qcl_access_DatasourceModel
    */
   public static function getInstance()
@@ -80,6 +81,22 @@ class qcl_access_DatasourceModel
   }
 
   /**
+   * Getter for schema name
+   * @return string
+   */
+  public function getSchemaName()
+  {
+    if ( $this->schemaName == "qcl.schema.access" and $this->className() !== __CLASS__ )
+    {
+      throw new LogicException( sprintf(
+        "You need to define the protected 'schemaName' property in class %s",
+        $this->className()
+      ) );
+    }
+    return $this->schemaName;
+  }
+
+  /**
    * Returns the user model
    * @return qcl_access_model_User
    */
@@ -104,6 +121,24 @@ class qcl_access_DatasourceModel
   public function getRoleModel()
   {
     return $this->getModelOfType("role");
+  }
+
+  /**
+   * Returns the role model
+   * @return qcl_access_model_Group
+   */
+  public function getGroupModel()
+  {
+    return $this->getModelOfType("group");
+  }
+
+  /**
+   * Returns the session model
+   * @return qcl_access_model_Session
+   */
+  public function getSessionModel()
+  {
+    return $this->getModelOfType("session");
   }
 
   /**
