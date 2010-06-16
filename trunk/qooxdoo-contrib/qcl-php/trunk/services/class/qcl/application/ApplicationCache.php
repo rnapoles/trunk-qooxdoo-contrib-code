@@ -22,6 +22,7 @@ class qcl_application_ApplicationCache
   extends qcl_data_model_db_PersistentObject
 {
   public $datasourceRegistered = false;
+  public $dataImported = false;
 
   /**
    * @return qcl_application_ApplicationCache
