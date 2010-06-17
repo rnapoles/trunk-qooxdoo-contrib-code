@@ -1090,7 +1090,9 @@ class qcl_data_model_db_QueryBehavior
    * is created and returned.
    *
    * @param array $where
-   * @param string $oderBy Optional order by clause
+   *    Array containing the where data
+   * @param string $oderBy
+   *    Optional order by clause
    * @return qcl_data_db_Query
    */
   public function selectWhere( $where, $orderBy=null )

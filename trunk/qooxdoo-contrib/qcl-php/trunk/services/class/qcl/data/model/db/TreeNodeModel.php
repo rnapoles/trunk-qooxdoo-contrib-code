@@ -197,12 +197,12 @@ class qcl_data_model_db_TreeNodeModel
     $parentId = $this->getParentId();
     $where = array( 'parentId' => $parentId ) ;
     $childCount = $this->countWhere( $where );
-    $query = $this->findWhere( $where );
+    $query = $this->findWhere( $where, "position" );
 
     /*
      * check position
      */
-    if ( $position < 0 or $position > $childCount )
+    if ( $position < 0 or $position >= $childCount )
     {
       throw new InvalidArgumentException("Invalid position '$position'");
     }
@@ -216,23 +216,17 @@ class qcl_data_model_db_TreeNodeModel
       if ( $this->id() == $id )
       {
         $this->setPosition( $position );
-//        $this->debug(sprintf(
-//          "Setting node %s to position %s",
-//          $this->getLabel(), $position
-//        ),__CLASS__,__LINE__);
+        //$this->debug(sprintf("Setting node %s to position %s",$this->getLabel(), $position ),__CLASS__,__LINE__);
         $this->save();
       }
       else
       {
         if ( $index == $position )
         {
-//          $this->debug("Skipping $index ",__CLASS__,__LINE__);
+          //$this->debug("Skipping $index ",__CLASS__,__LINE__);
           $index++; // skip over target position
         }
-//        $this->debug(sprintf(
-//          "Setting sibling node %s to position %s",
-//          $this->getLabel(), $index
-//        ),__CLASS__,__LINE__);
+        //$this->debug(sprintf( "Setting sibling node %s to position %s", $this->getLabel(), $index),__CLASS__,__LINE__);
         $this->setPosition( $index++ );
         $this->save();
       }
