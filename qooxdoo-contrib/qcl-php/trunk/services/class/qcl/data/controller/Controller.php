@@ -114,7 +114,7 @@ class qcl_data_controller_Controller
     if ( !  $this->hasPermission( $permission ) )
     {
       $this->warn( sprintf(
-        "Active user %s does hat required permission %s",
+        "Active user %s does not have required permission %s",
         $this->getActiveUser(), $permission
       ) );
       throw new qcl_access_AccessDeniedException("Access denied.");
