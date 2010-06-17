@@ -1208,7 +1208,21 @@ class qcl_data_model_db_RelationBehavior
    */
   public function hasLinkWithModel( $targetModel, $dependencies=array() )
   {
-    return ( count( $this->linkedModelIds( $targetModel, $dependencies ) ) > 0 );
+    return ( $this->countLinks( $targetModel, $dependencies ) > 0 );
+  }
+
+  /**
+   * Returns the number of links of this model record with the given
+   * model.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   * @param qcl_data_model_AbstractActiveRecord[] $dependencies Optional array of
+   *  model instances on which the link depends.
+   * @return int
+   */
+  public function countLinksWithModel( $targetModel, $dependencies=array() )
+  {
+    return count( $this->linkedModelIds( $targetModel, $dependencies ) );
   }
 
   /**
