@@ -532,9 +532,12 @@ class qcl_data_model_AbstractActiveRecord
    * find model records that match the given where array data
    * for iteration
    * @param array $where
+   *    Array containing the where data
+   * @param mixed $oderBy
+   *    Optional data for the ordering of the retrieved records
    * @return qcl_data_db_Query Result query object
    */
-  public function findWhere( $query )
+  public function findWhere( $query, $orderBy=null )
   {
     /*
      * initialize model and behaviors
@@ -544,7 +547,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * execute query
      */
-    $this->lastQuery =  $this->getQueryBehavior()->selectWhere( $query );
+    $this->lastQuery =  $this->getQueryBehavior()->selectWhere( $query, $orderBy );
     return $this->lastQuery;
   }
 
@@ -974,12 +977,6 @@ class qcl_data_model_AbstractActiveRecord
     }
 
     /*
-     * delete the model data
-     */
-    $this->log( sprintf( "Deleting record data for %s ...", $this ), QCL_LOG_MODEL );
-    $succes = $this->getQueryBehavior()->deleteRow( $id );
-
-    /*
      * increment transaciton id since data has changed
      */
     $this->incrementTransactionId();
@@ -994,6 +991,12 @@ class qcl_data_model_AbstractActiveRecord
       'items' => array( $id )
     ));
     $this->fireEvent("changeLength");
+
+    /*
+     * delete the model data
+     */
+    $this->log( sprintf( "Deleting record data for %s ...", $this ), QCL_LOG_MODEL );
+    $succes = $this->getQueryBehavior()->deleteRow( $id );
 
     return $succes;
   }
@@ -1276,6 +1279,42 @@ class qcl_data_model_AbstractActiveRecord
     try
     {
       return $this->getRelationBehavior()->hasRelationWithModel( $model );
+    }
+    catch( qcl_data_model_Exception $e )
+    {
+      return false;
+    }
+  }
+
+  /**
+   * Returns the number of links of this model record with the given
+   * model.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $model
+   *  Target model to check
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
+   * @return bool
+   */
+  public function countLinksWithModel( $model, $dependencies=null )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * dependencies
+     */
+    $dependencies = $this->argToArray( $dependencies );
+
+    /*
+     * call behavior method do do the actual work
+     */
+    try
+    {
+      return $this->getRelationBehavior()->countLinksWithModel( $model, $dependencies );
     }
     catch( qcl_data_model_Exception $e )
     {
