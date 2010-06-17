@@ -252,11 +252,11 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      * server databinding
      */
     this.__lastTransactionId = 0;
-    qx.event.message.Bus.subscribe("folderTreeUpdateNode",  this._updateNode,this);
-    qx.event.message.Bus.subscribe("folderTreeAddNode",     this._addNode,this);
-    qx.event.message.Bus.subscribe("folderTreeDeleteNode",  this._deleteNode,this);
-    qx.event.message.Bus.subscribe("folderTreeMoveNode",    this._moveNode,this);
-    qx.event.message.Bus.subscribe("folderTreeReorder",     this._reorderNodeChildren,this);
+    qx.event.message.Bus.subscribe("folder.node.update",  this._updateNode,this);
+    qx.event.message.Bus.subscribe("folder.node.add",     this._addNode,this);
+    qx.event.message.Bus.subscribe("folder.node.delete",  this._deleteNode,this);
+    qx.event.message.Bus.subscribe("folder.node.move",    this._moveNode,this);
+    qx.event.message.Bus.subscribe("folder.node.reorder", this._reorderNodeChildren,this);
     
     /*
      * drag & drop
@@ -774,7 +774,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      */
     clearTreeCache : function()
     {
-      storageId = this.getTreeCacheId( this.getDatasource() );
+      var storageId = this.getTreeCacheId( this.getDatasource() );
       var persistentStore = this.getApplication().getPersistentStore();
       persistentStore.save( storageId, "" );
     },    
@@ -1008,6 +1008,10 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       }
     },
     
+    /**
+     * Called when the message "folder.node.delete" is received
+     * @param e {qx.event.message.Message}
+     */
     _deleteNode : function(e)
     {
       var data = e.getData();
@@ -1024,6 +1028,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
         {
           dataModel.prune( nodeId, true );
           dataModel.setData();
+          controller.remapNodeIds();
           controller.setTransactionId( data.transactionId );
           this.cacheTreeData( data.transactionId );          
         }
