@@ -28,7 +28,7 @@
   {
     "APPLICATION"  : "accordion",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.0.1",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
     //"QXTHEME"      : "accordion.theme.modern.Theme",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "accordion.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],

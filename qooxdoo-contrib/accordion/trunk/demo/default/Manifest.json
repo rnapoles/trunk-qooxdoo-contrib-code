@@ -1,24 +1,24 @@
 {
   "info" : 
   {
-    "name" : "accordion Demo",
+    "name" : "Accordion Demo",
 
-    "summary" : "accordion Demo",
-    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    "summary" : "Accordion Demo",
+    "description" : "A widget that consists of an array of buttons and content to be displayed once a button gets clicked",
     
-    "homepage" : "http://demo.qooxdoo.org/contrib/accordion",
+    "homepage" : "http://demo.qooxdoo.org/contrib/Accordion",
 
     "license" : "LGPL/EPL",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Raimund Mann (simply-notes)",
+        "email" : "info AT simply-notes DOT de"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.0.1"]
+    "qooxdoo-versions": ["1.0.1", "1.1", "trunk"]
   },
   
   "provides" : 
