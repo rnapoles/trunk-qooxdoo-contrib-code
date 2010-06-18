@@ -231,6 +231,20 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
   
   /*
   *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */
+  events :
+  {
+    /**
+     * Dispatched when the tree data has been fully loaded
+     */
+    "loaded" : "qx.event.type.Event"
+  },
+
+  
+  /*
+  *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
@@ -355,7 +369,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     */
    _applyNodeId : function ( value, old )
    {
-      //this.selectByServerNodeId( value ); // FIXME
+      this.selectByServerNodeId( value ); 
    },   
    
    _applySelectedNode : function ( value, old )
@@ -528,6 +542,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
        this.clearSelection();
        
        this.showPopup("Loading folder data ...", this);
+       this.__loadingTreeData = true;
 
        /*
         * get node count and transaction id from server
@@ -543,6 +558,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
          if ( ! nodeCount )
          {
             this.hidePopup();
+            this.__loadingTreeData = false;
             return;
          }
          
@@ -561,6 +577,8 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
               */
              tree.getDataModel().setData( treeData );
              controller.remapNodeIds();
+             this.__loadingTreeData = false;
+             this.fireEvent("loaded");
              this.hidePopup();
              return;
            }
@@ -623,7 +641,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
                  * @todo: fire event
                  */
                 this.hidePopup();
-                this.getTreeView().setEnabled(true);
+                this.__loadingTreeData = false;
                }
 
                /*
@@ -631,16 +649,16 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
                 */
                else
                {
-                /*
-                 * @todo: fire data event
-                 */
-                 this.getTreeView().setEnabled(true);
-                 
                  /*
                   * save new cache
                   */
                  this.cacheTreeData( transactionId );
                  
+                 /*
+                  * notify listeners and hide popup
+                  */
+                 this.__loadingTreeData = false;                 
+                 this.fireEvent("loaded")
                  this.hidePopup();
                  
                } // end if
@@ -1136,17 +1154,71 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       this.getTreeView().resetSelection();
       this.getTreeView().getDataModel().prune(0);
     },
- 
+    
     /**
-     * Selects a tree node by its server-side node id 
-     * @param serverNodeId {} 
+     * Returns true if the tree is still loading data.
+     * @return {Boolean}
+     */
+    isLoading : function()
+    {
+      return this.__loadingTreeData;
+    },
+    
+    /**
+     * Selects a tree node by its server-side node id. If the tree is not
+     * loaded, we wait for the "loaded" event first 
+     * @param {Integer} serverNodeId  
      */
     selectByServerNodeId : function( serverNodeId )
     {
-      var clientId = this.getController().getClientNodeId( serverNodeId );
-      var row = this.getTreeView().getDataModel().getRowFromNodeId( clientId ); 
-      this.clearSelection();
-      this.getTreeView().getSelectionModel().setSelectionInterval( row, row );
+      if ( this.isLoading() )
+      {
+        this.addListenerOnce("loaded",function(){
+          this._selectByServerNodeId(serverNodeId);
+        },this);
+      }
+      else
+      {
+        this._selectByServerNodeId(serverNodeId);  
+      }
+    },
+    
+    /**
+     * Selects a tree node by its server-side node id. Implements 
+     * the selectByServerNodeId() method.
+     * @param {Integer} serverNodeId  
+     */
+    _selectByServerNodeId : function( serverNodeId )
+    {
+//      var id    = this.getController().getClientNodeId( serverNodeId );
+//      if ( ! id ) return;
+//      var tree  = this.getTreeView();
+//      var model = tree.getDataModel();
+//      var node  = tree.nodeGet(id);
+//      
+//      /*
+//       * open the tree so that the node is rendered
+//       */
+//      for (var parentId = node.parentNodeId; parentId; parentId = node.parentNodeId)
+//      {
+//        node = tree.nodeGet(parentId);
+//        model.setState(node, { bOpened : true });
+//      }
+//      model.setData();
+//      
+//      /*
+//       * we need a timeout because tree rendering also uses
+//       * timeouts, so this is not synchronous
+//       */
+//      qx.event.Timer.once(function(){
+//        var row = model.getRowFromNodeId( id );
+//        if( row )
+//        {
+//          this.clearSelection();
+//          tree.getSelectionModel().setSelectionInterval( row, row );
+//        }
+//      },this,500);
+
     },
     
     /**
@@ -1155,7 +1227,6 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     clearSelection : function()
     {
       this.getTreeView().getSelectionModel().resetSelection();
-    }    
-    
+    }
   }
 });

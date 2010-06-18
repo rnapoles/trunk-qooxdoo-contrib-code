@@ -25,7 +25,8 @@
 qx.Class.define("qcl.ui.treevirtual.DragDropTree", 
 {
 
-  extend : qx.ui.treevirtual.TreeVirtual,
+  extend  : qx.ui.treevirtual.TreeVirtual,
+  include : [qx.ui.treevirtual.MNode],
 
   /*
   *****************************************************************************
