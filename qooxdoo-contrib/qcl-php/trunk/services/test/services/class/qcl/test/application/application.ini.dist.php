@@ -2,9 +2,25 @@
 ;; Leave the above line to make sure nobody can access this file ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; ================================================================
-;; Configure the values below to your needs
-;; ================================================================
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; These are the server-side default configuration values
+;; for your application. They are unchangeable by the application
+;; and typically should not be exposed to the client.
+;;
+;; You can access a configuration value with
+;;    $app = qcl_application_Application::getInstance();
+;;    $myconfigValue = $app->getIniValue( "sectionname.keyname" );
+;;
+;; The section name is found in square brackets below, the key name
+;; is the string before the "=" character.
+;;
+;; Please note:
+;;   - If values contain whitespace, they have to be quoted
+;;   - values "on" and "yes" will be converted in boolean true,
+;;     values "off" and "no" into boolean false
+;;   - you can use macros (see below in the section 'macros' to
+;;     compose values from other values.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 [database]
 
@@ -36,16 +52,24 @@ userpassw = test
 adminname  = test
 adminpassw = test
 
-;; database.userdb
-;; The name of the databases that contains the user data
-userdb = qcl_test
-
 ;; database.admindb
 ;; The name of the database holding all the tables with global and
-;; administrative information. Can be the same as database.userdb,
-;; but if you can access or create more than one database,
-;; is recommended to keep a separate database for this.
+;; administrative information.
 admindb = qcl_test
+
+;; database.userdb
+;; The name of the databases that contains the user data.
+;; Can be the same as database.admindb, but if you have access
+;; to more than one database, is recommended to keep a separate
+;; database for this.
+userdb = qcl_test
+
+;; database.tmpdb
+;; The name of the database holding all the tables with temporary data.
+;; Can be the same as database.admindb, but if you have access
+;; to more than one database, is recommended to keep a separate
+;; database for this.
+tmp_db = qcl_test
 
 ;; database.tableprefix
 ;; A global prefix for all tables that are created, which makes
@@ -76,6 +100,7 @@ event_transport = on
 ;; definitions, it is replaced by "&" in the the dsn string.
 dsn_user = "${database.type}:host=${database.host}&port=${database.port}&dbname=${database.admindb}"
 dsn_admin ="${database.type}:host=${database.host}&port=${database.port}&dbname=${database.admindb}"
+dsn_tmp = "${database.type}:host=${database.host}&port=${database.port}&dbname=${database.tmp_db}"
 
 ;; ================================================================
 ;; End
