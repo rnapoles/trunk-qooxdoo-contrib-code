@@ -97,6 +97,7 @@ class qcl_locale_Manager extends qcl_core_Object
 
 	/**
 	 * function to return singleton instance
+	 * @return qcl_locale_Manager
 	 */
   public static function getInstance()
   {
@@ -149,6 +150,15 @@ class qcl_locale_Manager extends qcl_core_Object
       $this->log( "Setting locale '$locale'", QCL_LOG_LOCALE);
       $this->logLocaleInfo();
     }
+	}
+
+	/**
+	 * Getter for locale property
+	 * @return string
+	 */
+	public function getLocale()
+	{
+	  return $this->locale;
 	}
 
   /**
