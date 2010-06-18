@@ -83,7 +83,13 @@ public class QxSelenium extends DefaultSelenium
   }
 
   public int qxTableGetCols(String locator) {
-    String ret = this.commandProcessor.getString("getQxTableCols", 
+    String ret = this.commandProcessor.getString("getQxTableModelCols", 
+      new String[] {locator,});
+    return Integer.parseInt(ret);    
+  }
+  
+  public int qxTableGetVisibleCols(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableVisibleCols", 
       new String[] {locator,});
     return Integer.parseInt(ret);    
   }
@@ -95,13 +101,19 @@ public class QxSelenium extends DefaultSelenium
   }
 
   public String qxTableGetColumnIds(String locator) {
-    String ret = this.commandProcessor.getString("getQxTableColumnIds", 
+    String ret = this.commandProcessor.getString("getQxTableModelColumnIds", 
+      new String[] {locator,});
+    return ret;
+  }
+  
+  public String qxTableGetVisibleColumnIds(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableVisibleColumnIds", 
       new String[] {locator,});
     return ret;
   }
   
   public String qxTableGetColumnIndexByName(String locator, String name) {
-    String ret = this.commandProcessor.getString("getQxTableColumnIndexByNameLocator",
+    String ret = this.commandProcessor.getString("getQxTableColumnIndexByName",
       new String[] {locator, name});
     return ret;
   }
