@@ -58,13 +58,19 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
         return self.do_command("getQxTableRows", [locator,])
 
     def qxTableGetCols(self, locator):
-        return self.do_command("getQxTableCols", [locator,])
+        return self.do_command("getQxTableModelCols", [locator,])
+    
+    def qxTableGetVisibleCols(self, locator):
+        return self.do_command("getQxTableVisibleCols", [locator,])
     
     def qxTableGetColumnIds(self, locator):
-        return self.do_command("getQxTableIds", [locator,])      
+        return self.do_command("getQxTableModelColumnIds", [locator,])
 
+    def qxTableGetVisibleColumnIds(self, locator):
+        return self.do_command("getQxTableVisibleColumnIds", [locator,])
+    
     def qxTableGetColumnIndexByName(self, locator, name):
-        return self.do_command("getQxTableColumnIndexByNameLocator", [locator, name,])
+        return self.do_command("getQxTableColumnIndexByName", [locator, name,])
     
     def qxTableGetValue(self, locator, opts=None):
         if opts==None:
