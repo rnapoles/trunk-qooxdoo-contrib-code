@@ -104,6 +104,20 @@ qx.Class.define("virtualdata.controller.Table",
        nullable: true
      }
    },
+   
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */
+  
+  events :
+  {
+    /**
+     * Fired when a block has been loaded from the server
+     */
+    "blockLoaded" : "qx.event.type.Data"
+  },
 
   /*
   *****************************************************************************
@@ -336,15 +350,33 @@ qx.Class.define("virtualdata.controller.Table",
        /*
         * load data
         */
-       store.load( marshaler.getMethodGetRowData(), params, function(){
+       store.load( marshaler.getMethodGetRowData(), params, function()
+       {
+        
         this.hidePopup();
+        
+        /*
+         * check data
+         */
         var rowData = store.getModel().getRowData();
         if ( ! qx.lang.Type.isArray( rowData ) || ! rowData.length )
         {
           this.warn("Invalid server response"); // FIXME
           rowData = null;
         }
+        
+        /*
+         * pass data to the table model
+         */
         tableModel._onRowDataLoaded( rowData );
+        
+        /*
+         * fire event
+         */
+        this.fireDataEvent("blockLoaded",{
+          'firstRow' : firstRow,
+          'lastRow'  : lastRow
+        });
        }, this );
      },
      
