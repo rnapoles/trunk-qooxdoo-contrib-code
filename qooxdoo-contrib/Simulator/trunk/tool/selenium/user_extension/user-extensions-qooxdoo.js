@@ -417,8 +417,8 @@ Selenium.prototype.doGetViewport = function(locator, eventParams)
     LOG.debug("e.screenX,e.screenY: "+e.screenX+','+e.screenY);
     var originX = e.screenX - mouseX;
     var originY = e.screenY - mouseY;
-    width   = PageBot.prototype._getWinWidth(win);
-    height  = PageBot.prototype._getWinHeight(win);
+    var width   = PageBot.prototype._getWinWidth(win);
+    var height  = PageBot.prototype._getWinHeight(win);
     var geom = width+'x'+height+'+'+originX+'+'+originY;
     LOG.info("Page geometry (WxH+X+Y): "+ geom);
     // write to var
@@ -598,26 +598,38 @@ Selenium.prototype.isQxInstanceOf = function (object, qxclass) {
   return false;
 };
 
-
 /**
  * Uses the standard qx locators to find a table, and then returns a semicolon-
- * separated list of column IDs.
+ * separated list of column IDs from the table model
  *
- * @type member
+ * @deprecated
  * @param locator {String} an element locator
- * @return {String} A list of column IDs
+ * @return {String} A list of column IDs 
  */
 Selenium.prototype.getQxTableColumnIds = function(locator)
 {
+  LOG.warn("getQxTableColumnIds is deprecated, please use either getQxTableVisibleColumnIds or getQxTableModelColumnIds.");
+  return this.getQxTableModelColumnIds(locator);
+};
+
+
+/**
+ * Uses the standard qx locators to find a table, and then returns a semicolon-
+ * separated list of column IDs from the table model. Note that this can differ
+ * from the columns that are actually visible in the table.
+ *
+ * @param locator {String} an element locator
+ * @return {String} A list of column IDs
+ */
+Selenium.prototype.getQxTableModelColumnIds = function(locator)
+{
   var qxObject = this.getQxWidgetByLocator(locator);
   
-  if (qxObject) {
-    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
-      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
-    }
-  }
-  else {
+  if (!qxObject) {
     throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+    throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
   }
   
   var columnIds = [];    
@@ -625,6 +637,39 @@ Selenium.prototype.getQxTableColumnIds = function(locator)
   var colCount = model.getColumnCount();
   for (var i=0; i<colCount; i++) {
     columnIds.push(model.getColumnId(i));
+  }
+  
+  return columnIds.join(";");
+};
+
+
+/**
+ * Uses the standard qx locators to find a table, and then returns a semicolon-
+ * separated list of column IDs. This corresponds to the columns currently
+ * visible in the table.
+ *
+ * @type member
+ * @param locator {String} an element locator
+ * @return {String} A list of column IDs
+ */
+Selenium.prototype.getQxTableVisibleColumnIds = function(locator)
+{
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
+  if (!qxObject) {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+    throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
+  }
+  
+  var columnIds = [];
+  var tableModel = qxObject.getTableModel();
+  var columnModel = qxObject.getTableColumnModel();
+  var visibleColumns = columnModel.getVisibleColumns();
+  for (var i=0; i<visibleColumns.length; i++) {
+    var colId = visibleColumns[i]
+    columnIds.push(tableModel.getColumnId(colId));
   }
   
   return columnIds.join(";");
@@ -655,16 +700,27 @@ Selenium.prototype.getQxTableRows = function(locator)
   return String(qxObject.getTableModel().getRowCount());
 };
 
+/**
+ * Uses the standard qx locators to find a table, and then returns the number of
+ * columns from the table model.
+ *
+ * @param locator {var} an element locator
+ * @return {var} The number of columns in the table.
+ */
+Selenium.prototype.getQxTableCols = function(locator)
+{
+  LOG.warn("getQxTableCols is deprecated, please use either getQxTableVisibleCols or getQxTableModelCols.");
+  return this.getQxTableModelCols(locator);
+};
 
 /**
  * Uses the standard qx locators to find a table, and then returns the number of
  * columns from the table model.
  *
- * @type member
  * @param locator {var} an element locator
  * @return {var} The number of columns in the table.
  */
-Selenium.prototype.getQxTableCols = function(locator)
+Selenium.prototype.getQxTableModelCols = function(locator)
 {
   var qxObject = this.getQxWidgetByLocator(locator);
   
@@ -678,6 +734,32 @@ Selenium.prototype.getQxTableCols = function(locator)
   }
   
   return String(qxObject.getTableModel().getColumnCount());
+};
+
+/**
+ * Uses the standard qx locators to find a table, and then returns the number of
+ * columns from the table model.
+ *
+ * @param locator {var} an element locator
+ * @return {var} The number of columns in the table.
+ */
+Selenium.prototype.getQxTableVisibleCols = function(locator)
+{
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
+    }
+  }
+  else {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  
+  var columnModel = qxObject.getTableColumnModel();
+  var visibleColumns = columnModel.getVisibleColumns();
+  
+  return String(visibleColumns.length);
 };
 
 
@@ -777,15 +859,20 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
     }
   }
   var row = Number(additionalParamsForClick["row"]);
-  var col = Number(additionalParamsForClick["col"]);
+  var col = this.__getColumnIdFromParameters(additionalParamsForClick, qxObject);
   LOG.debug("Targeting Row(" + row + ") Column(" + col + ")");
 
-  return String(qxObject.getTableModel().getValue(col, row));
+  var columnModel = qxObject.getTableColumnModel();
+  var visibleColumns = columnModel.getVisibleColumns();
+  
+  return String(qxObject.getTableModel().getValue(visibleColumns[col], row));
 };
 
 /**
  * Searches the given table for a column with the given name and returns the 
- * column index.
+ * visible column index. Note that this can differ from the column's index in 
+ * the table model if there are invisible columns and/or the column order has 
+ * been changed. 
  * 
  * @param {qx.ui.table.Table} table The table to be searched
  * @param {String} name The column name to be searched for
@@ -793,6 +880,10 @@ Selenium.prototype.getQxTableValue = function(locator, eventParams)
  */
 Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
 {
+  if (typeof table == "string") {
+    table = this.getQxWidgetByLocator(table);    
+  }
+  
   var columnModel = table.getTableColumnModel();
   var columnArray = columnModel.getVisibleColumns();
   var tableModel = table.getTableModel();
@@ -805,22 +896,56 @@ Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
   return null;
 };
 
+
+/**
+ * Searches the given table for a column with the given ID and returns the 
+ * visible column index. Note that this can differ from the column's index in 
+ * the table model if there are invisible columns and/or the column order has 
+ * been changed. 
+ * 
+ * @param {qx.ui.table.Table|String} table The table object or a locator that finds it
+ * @param {String} id The column ID to be searched for
+ * @return {Integer|null} The found column index
+ */
+Selenium.prototype.getQxTableColumnIndexById = function(table, id)
+{
+  if (typeof table == "string") {
+    table = this.getQxWidgetByLocator(table);    
+  }
+  
+  var columnModel = table.getTableColumnModel();
+  var columnArray = columnModel.getVisibleColumns();
+  var tableModel = table.getTableModel();
+  for (var i=0,l=columnArray.length; i<l; i++) {
+    var columnId = tableModel.getColumnId(columnArray[i]);
+    if (columnId == id) {
+      return i;
+    }
+  }
+  return null;
+};
+
+
 /**
  * Searches the given table's data for a value (interpreted as a Regular 
  * Expression) and returns the first matching cell's row and column indices.
  * 
- * @param {qx.ui.table.Table} table The table object
+ * @param {qx.ui.table.Table|String} table The table object or a locator that finds it
  * @param {String} value The value to search for
  * @return {Array|null} A [row, column] array or null if no matching cell was found
  */
 Selenium.prototype.getQxTableRowColByCellValue = function(table, value)
 {
+  if (typeof table == "string") {
+    table = this.getQxWidgetByLocator(table);    
+  }
+  
   var regEx = RegExp(value);
   var tableModel = table.getTableModel();
   var tableColumnModel = table.getTableColumnModel();
   var dataMapArray = tableModel.getDataAsMapArray();
   for (var i=0, l=dataMapArray.length; i<l; i++) {
-    row = dataMapArray[i];
+    var row = dataMapArray[i];
     for (field in row) {
       if (regEx.exec(row[field])) {
         var modelCol = Number(tableModel.getColumnIndexById(field));
@@ -840,14 +965,15 @@ Selenium.prototype.getQxTableRowColByCellValue = function(table, value)
  * Searches the table identified by the given locator for a column with the 
  * given name and returns the column index.
  * 
+ * @deprecated
  * @param {String} A locator that returns the table to be searched
  * @param {String} name The column name to be searched for
  * @return {Integer|null} The found column index
  */
 Selenium.prototype.getQxTableColumnIndexByNameLocator = function(locator, name)
 {
-  var table = this.getQxWidgetByLocator(locator);
-  return this.getQxTableColumnIndexByName(table, name);
+  LOG.warn("getQxTableColumnIndexByNameLocator is deprecated, please use getQxTableColumnIndexByName directly.");
+  return this.getQxTableColumnIndexByName(locator, name);
 };
 
 
@@ -882,8 +1008,7 @@ Selenium.prototype.__getColumnIdFromParameters = function(additionalParamsForCli
   }
   if (additionalParamsForClick["colId"]) {
     // get column index by columnID
-    var model = qxObject.getTableModel();
-    var col = Number(model.getColumnIndexById(additionalParamsForClick["colId"]));
+    var col = Number(this.getQxTableColumnIndexById(qxObject, additionalParamsForClick["colId"]));
     LOG.debug("Got column index " + col + " from colId");
     return col;
   } 
@@ -917,7 +1042,7 @@ Selenium.prototype.__getTableClipperElement = function(locator, qxTable)
   else {
     var qxhParts = subLocator.split('/');
     try {
-      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
+      var qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
     } catch(ex) {
       throw new SeleniumError("Couldn't find table clipper widget: " + ex);
     }
@@ -941,7 +1066,7 @@ Selenium.prototype.__getTableHeaderCellElement = function(column, locator, qxTab
   else {
     var qxhParts = subLocator.split('/');
     try {
-      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
+      var qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
     } catch(ex) {
       LOG.error("Couldn't find header cell widget: " + ex);
       return null;
@@ -968,7 +1093,7 @@ Selenium.prototype.__getTableFocusIndicatorElement = function(locator, qxTable)
   else {
     var qxhParts = subLocator.split('/');
     try {
-      qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
+      var qxResultObject = this.page()._searchQxObjectByQxHierarchy(qxTable, qxhParts);
     } catch(ex) {
       throw new SeleniumError("Couldn't find table focus indicator: " + ex);
     }
@@ -1024,7 +1149,7 @@ Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipper
     if (column == i) {
       break;
     }
-    colWidth = columnModel.getColumnWidth(visibleColumns[i]);
+    var colWidth = columnModel.getColumnWidth(visibleColumns[i]);
     LOG.debug("Column " + visibleColumns[i] + " width: " + colWidth);
     coordsXY[0] = coordsXY[0] + colWidth;
   }
@@ -1046,7 +1171,9 @@ Selenium.prototype.__getCellCoordinates = function(column, row, qxTable, clipper
  * <p>
  * The column to click can be located using the index, ID or name by specifying 
  * one of the col, colId or colName parameters. Alternatively, a specific cell
- * can be located by RegExp matching its content using the cellValue parameter. 
+ * can be located by RegExp matching its content using the cellValue parameter.
+ * NOTE: This currently only works with tables using a Simple table model 
+ * (qx.ui.table.model.Simple)!
  * 
  * <p>
  * mousedown, mouseup will be fired instead of only click
@@ -1089,7 +1216,7 @@ Selenium.prototype.doQxTableClick = function(locator, eventParams)
     LOG.debug("Getting target row and column from cell value");
     var rowCol = this.getQxTableRowColByCellValue(qxObject, additionalParamsForClick["cellValue"]);
     if (!rowCol) {
-      throw new SeleniumError("Could not find a visible with the given value");
+      throw new SeleniumError("Could not find a visible cell with the given value");
     }
     var row = rowCol[0];
     var col = rowCol[1];
