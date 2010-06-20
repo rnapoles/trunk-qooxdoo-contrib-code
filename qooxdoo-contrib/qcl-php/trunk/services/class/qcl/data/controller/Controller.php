@@ -173,6 +173,21 @@ class qcl_data_controller_Controller
       $dsModel      = $this->getDatasourceModel();
 
       /*
+       * if the active user is the admin, return all datasources
+       * matching the default datasource schema
+       */
+      if ( $activeUser->hasRole("admin") )
+      {
+        $datasources = $dsModel
+          ->getQueryBehavior()
+          ->fetchValues("namedId", array(
+            'schema'  => $this->getApplication()->defaultSchema(),
+            'hidden'  => false
+          ) );
+        return $datasources;
+      }
+
+      /*
        * find all groups that the current user belangs to
        */
       try

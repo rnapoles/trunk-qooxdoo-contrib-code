@@ -80,6 +80,12 @@ abstract class qcl_application_Application
    */
   static private $application;
 
+  /**
+   * The default datasource schema of the application
+   * @var string
+   */
+  protected $defaultSchema;
+
   //-------------------------------------------------------------
   // initialization
   //-------------------------------------------------------------
@@ -145,6 +151,15 @@ abstract class qcl_application_Application
       throw new qcl_application_plugin_Exception("No plugin path defined");
     }
     return $this->pluginPath;
+  }
+
+  /**
+   * Returns the default datasource schema of the application
+   * @return string
+   */
+  public function defaultSchema()
+  {
+    return $this->defaultSchema;
   }
 
   //-------------------------------------------------------------
@@ -335,7 +350,11 @@ abstract class qcl_application_Application
     try
     {
       $this->log( "Creating datasource named 'access'." , QCL_LOG_APPLICATION );
-      $dsManager->createDatasource("access","qcl.schema.access");
+      $dsManager->createDatasource(
+        "access","qcl.schema.access", array(
+          'hidden' => true
+        )
+      );
     }
     catch( qcl_data_model_RecordExistsException $e ){}
 
@@ -422,6 +441,27 @@ abstract class qcl_application_Application
     throw new JsonRpcException(sprintf(
       "Application class '%s' must implement main() method.", $this->className()
     ) );
+  }
+
+  //-------------------------------------------------------------
+  // application datasources
+  //-------------------------------------------------------------
+
+  /**
+   * Create a dasource with the given name, of the default type that the
+   * application supports
+   * @param $namedId
+   * @return void
+   */
+  function createDatasource( $namedId, $data= array() )
+  {
+    qcl_import( "qcl_data_datasource_Manager" );
+    $mgr = qcl_data_datasource_Manager::getInstance();
+    if ( ! isset( $data['dsn'] ) )
+    {
+      $data['dsn'] = $this->getUserDsn();
+    }
+    $mgr->createDatasource( $namedId, $this->defaultSchema(), $data );
   }
 }
 ?>
