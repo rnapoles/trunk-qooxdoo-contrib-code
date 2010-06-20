@@ -199,17 +199,14 @@ qx.Class.define("virtualdata.model.Table",
   
     /**
      * Reloads the model and clears the local cache.
-     *
      * @return {void}
      */
     reloadData : function()
     {
-      // FIXME This a hack and will cause problems when the data is reloaded whe
-      // there is still a request underway
-      // it also cannot work with private optimization - must be turned off 
-      // for this to work. 
-      this.__loadRowCountRequestRunning = false;
+      var blockConcurrentLoadRowCount = this.getBlockConcurrentLoadRowCount();
+      this.setBlockConcurrentLoadRowCount(false);
       this.base(arguments);
+      this.setBlockConcurrentLoadRowCount(blockConcurrentLoadRowCount);      
     },
    
     /**
