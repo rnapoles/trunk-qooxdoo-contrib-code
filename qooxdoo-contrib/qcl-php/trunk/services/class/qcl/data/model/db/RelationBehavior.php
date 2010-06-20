@@ -1371,7 +1371,8 @@ class qcl_data_model_db_RelationBehavior
    * @param qcl_data_model_db_ActiveRecord $targetModel Target model
    * @param array $dependencies Optional array of all models that the
    *   source model must be linked to
-   * @throws qcl_data_model_RecordExistsException If link already exists
+   * @return bool True if new link was created, false if link
+   *   already existed.
    */
   protected function linkModelManyToMany( $relation, $targetModel, $dependencies=array() )
   {
@@ -1401,10 +1402,17 @@ class qcl_data_model_db_RelationBehavior
 
     /*
      * create link
+     * @todo catch only "record exists" Exception
      */
-    $joinModel->create( $data );
-    return true;
-
+    try
+    {
+      $joinModel->create( $data );
+      return true;
+    }
+    catch( PDOException $e)
+    {
+      return false;
+    }
   }
 
   //-------------------------------------------------------------
