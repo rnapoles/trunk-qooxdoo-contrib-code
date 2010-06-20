@@ -90,7 +90,6 @@ class qcl_data_model_AbstractNamedActiveRecord
     }
     elseif ( $id=$this->namedIdExists( $namedId ) )
     {
-      $this->debug("Record: $id in table " . $this->getQueryBehavior()->getTableName(),__CLASS__,__LINE__);
       throw new qcl_data_model_RecordExistsException("Named id '$namedId' already exists");
     }
 

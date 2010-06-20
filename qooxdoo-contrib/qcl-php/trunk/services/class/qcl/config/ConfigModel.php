@@ -178,12 +178,14 @@ class qcl_config_ConfigModel
   //-------------------------------------------------------------
 
   /**
-   * Casts the given config value to given value type
+   * Casts the given config value to given value type.
+   *
    * @param mixed $value
    * @param string $type
    * @param bool $phpType If false, convert the value for saving in the database,
    *   if true (default), convert them into the corresponding php type
    * @return mixed $value
+   * @todo rewrite the typecasting stuff, this is confusing.
    */
   protected function castType( $value, $type, $phpType = true )
   {
@@ -373,15 +375,21 @@ class qcl_config_ConfigModel
       throw new qcl_config_Exception("Config key '$key' already exists.");
     }
 
+    $data = array(
+      'type'      => $this->getTypeIndex( $type ),
+      'customize' => $customize,
+      'final'     => $final
+    );
+
+    if ( $default !== null )
+    {
+      $data['default'] = $this->castType( $default, $type, false );
+    }
+
     /*
      * create new entry
      */
-		return $this->create( $key, array(
-		  'type'      => $this->getTypeIndex( $type ),
-		  'default'   => $this->castType( $default, $type, false ),
-		  'customize' => $customize,
-		  'final'     => $final
-		));
+		return $this->create( $key, $data);
 	}
 
 	/**
