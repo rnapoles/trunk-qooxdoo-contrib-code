@@ -262,7 +262,13 @@ class qcl_data_model_db_PropertyBehavior
      */
     foreach( $properties as $property => $prop )
     {
-      if ( is_array( $filter ) and ! in_array( $property, $filter ) ) continue;
+      /*
+       * skip elements that are not in the filter if filter has been set
+       */
+      if ( is_array( $filter ) and ! in_array( $property, $filter ) )
+      {
+        continue;
+      }
 
       /*
        * save the property definition in serialized form
@@ -308,17 +314,12 @@ class qcl_data_model_db_PropertyBehavior
       {
         if ( isset( $prop['serialize'] ) and $prop['serialize'] == true )
         {
-          // FIXME: this is MySQL-specific -> delegate to adapter!
-          $sqltype = "blob";
-          if (  isset( $prop['init'] ) )
-          {
-            // FIXME doesn't work: blobs cannot have default value in mysql
-            //$sqltype .= " DEFAULT '" . serialize( $prop['init'] ) . "'";
-          }
+          $sqltype = $adpt->getColumnTypeDefinition( "serialized-data" );
         }
-        elseif ( $this->isPrimitive( $prop['check'] ) )
+        else
         {
-          //$sqltype = $adpt->getSqlDataType( $prop['check'] );
+          // @todo implement automatic sqltype determination
+          throw new LogicException("No 'sqltype' provided for '$property'");
         }
       }
 

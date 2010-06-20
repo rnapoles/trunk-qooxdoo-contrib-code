@@ -90,8 +90,7 @@ function qcl_realpath( $file )
     return realpath( $file );
   }
 
-  // FIXME Windows!
-  $paths = explode(":", ini_get('include_path') );
+  $paths = explode( PATH_SEPARATOR, ini_get('include_path') );
 
   foreach($paths as $path)
   {

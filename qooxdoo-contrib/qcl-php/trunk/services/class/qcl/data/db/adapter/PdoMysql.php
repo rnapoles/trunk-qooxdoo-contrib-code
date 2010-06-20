@@ -71,7 +71,8 @@ class qcl_data_db_adapter_PdoMysql
   //-------------------------------------------------------------
 
   protected $columnTypeDefinitions = array(
-    'primary-key' => "int(11)"
+    'primary-key'     => "int(11)",
+    'serialized-data' => "blob"
   );
 
   //-------------------------------------------------------------
@@ -231,11 +232,12 @@ class qcl_data_db_adapter_PdoMysql
         }
         else
         {
-          $this->raiseError("Object of class " . get_class( $value )  .
-            " cannot be converted into a string" );
+          throw new LogicException(
+            "Object of class " . get_class( $value ) . " cannot be converted into a string"
+         );
         }
       default:
-        $this->raiseError("Unsupported type: " . typeof( $value ) );
+        throw new InvalidArgumentException("Unsupported type: " . typeof( $value ) );
     }
   }
 

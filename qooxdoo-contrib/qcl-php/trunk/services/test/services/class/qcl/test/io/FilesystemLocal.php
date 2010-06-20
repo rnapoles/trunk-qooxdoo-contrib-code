@@ -16,14 +16,14 @@
  *  * Christian Boulanger (cboulanger)
  */
 require_once "qcl/jsonrpc/controller.php";
-require_once "qcl/util/registry/session.php"; // @todo
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/io/filesystem/local/Folder.php";
 
 /**
  * Service class containing test methods
  */
-class class_qcl_io_filesystem_local_Tests extends qcl_data_controller_Controller
+class class_qcl_io_filesystem_local_Tests
+  extends qcl_data_controller_Controller
 {
 
   function method_testCreate()

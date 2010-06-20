@@ -74,7 +74,7 @@ class class_qcl_test_core_Object
     $this->assertEquals( "bar", $obj->getBar() );
 
     /*
-     * using setXXX acccess
+     * using setFoo acccess
      */
     $obj->setBaz("bla");
     $this->assertEquals( "bla", $obj->getBaz() );

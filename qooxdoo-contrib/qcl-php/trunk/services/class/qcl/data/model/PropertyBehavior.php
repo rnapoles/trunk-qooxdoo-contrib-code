@@ -485,13 +485,12 @@ class qcl_data_model_PropertyBehavior
    * object with the value as the constructor argument. If the
    * 'serialize' flag has been set, unserialize the value into
    * a string before saving it.
-   *
-   * FIXME this is a mess. Typecasting and unserializing should be
-   * dealt with separately.
-   *
    * @param string $propertyName
    * @param mixed $value
    * @return mixed
+   * @throws qcl_core_PropertyBehaviorException
+   * @todo This is a mess. Typecasting and unserializing should be
+   * dealt with separately.
    */
   public function typecast( $propertyName, $value )
   {
