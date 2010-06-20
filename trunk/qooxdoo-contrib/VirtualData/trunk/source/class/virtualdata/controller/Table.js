@@ -334,7 +334,7 @@ qx.Class.define("virtualdata.controller.Table",
        /*
         * add firstRow, lastRow, requestId at the beginning of the 
         * parameters
-        * FIXME do we really need the request id?
+        * @todo do we really need the request id?
         */
        var params = [firstRow, lastRow, requestId].concat( marshaler.getQueryParams() );
          
@@ -349,6 +349,8 @@ qx.Class.define("virtualdata.controller.Table",
        
        /*
         * load data
+        * @todo Catch server errors to avoid to break the remote table
+        * model when something goes wrong on the server
         */
        store.load( marshaler.getMethodGetRowData(), params, function()
        {
@@ -361,7 +363,7 @@ qx.Class.define("virtualdata.controller.Table",
         var rowData = store.getModel().getRowData();
         if ( ! qx.lang.Type.isArray( rowData ) || ! rowData.length )
         {
-          this.warn("Invalid server response"); // FIXME
+          this.warn("Invalid server response"); 
           rowData = null;
         }
         

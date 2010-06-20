@@ -227,7 +227,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
        var nodeData = model.getNodeData();   
        if ( ! qx.lang.Type.isArray( nodeData ) )
        {
-          throw new Error("Invalid node data!"); // FIXME Proper error handling
+          throw new Error("Invalid node data!");
        }
        if ( ! nodeData.length ) return;
        
@@ -336,7 +336,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
      {
        //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
        
-        // FIXME: not implemented
+        // @todo: not implemented
      },
 
      /**
@@ -349,7 +349,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
      {
         //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
         
-        //FIXME: not implemented
+        //@todo: not implemented
      },
 
      /**
@@ -361,8 +361,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
       {
         
          //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
-
-         
+         // @todo : not implemented
       },
       
       /**
@@ -374,8 +373,7 @@ qx.Class.define("virtualdata.controller.TreeVirtual",
       {
         
          //this.info( "Received event '" + event.getType() + "' from " + event.getTarget() );
-         
-          // FIXME : not implemented
+         // @todo : not implemented
       }     
      
   }
