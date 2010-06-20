@@ -397,7 +397,7 @@ qx.Class.define("qcl.application.ConfigManager",
       
       /* 
        * use SigleValueBinding, was not working last time I checked.
-       * FIXME needs testing to find out why
+       * @todo check with current qooxdoo code, but might have been fixed.
        */
       else
       {

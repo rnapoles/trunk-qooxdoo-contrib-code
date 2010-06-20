@@ -81,7 +81,7 @@ qx.Class.define("access.Main",
         qx.log.appender.Native;
       }
 
-      dialog.Dialog.init(); // FIXME
+      dialog.Dialog.init(); // @todo remove this after it has been fixed in the dialog package
       
       this.info("Starting Application...");
       

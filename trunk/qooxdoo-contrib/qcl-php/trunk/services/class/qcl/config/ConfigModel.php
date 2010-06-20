@@ -263,10 +263,10 @@ class qcl_config_ConfigModel
 
   /**
    * Checks if a configuration key exists and throws an exception if not.
-   * FIXME This is inefficient. Methods should try to load the record and
-   * abort if not found.
    * @param $key
    * @return void
+   * @todo This is inefficient. Methods should try to load the record and
+   * abort if not found.
    */
   protected function checkKey( $key )
   {

@@ -103,7 +103,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
 
     /**
      * The widget displaying the tree
-     * FIXME: rename?
+     * FIXME: rename to tree
      */
     treeView :
     {
@@ -446,7 +446,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      tree.getTableColumnModel().getBehavior().setWidth( 1, "1*" );     
      
      tree.addListener("appear", function(){
-        // FIXME: remove table header
+        // @todo: remove table header
        //tree.setHeaderCellHeight(0);
      },this);
 
@@ -463,12 +463,11 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      
      /*
       * Store
-      * FIXME: we don't need a qcl AND a virtualdata jsonrpc store!
+      * @todo: we don't need a qcl AND a virtualdata jsonrpc store!
       */
      ds.store = new qcl.data.store.JsonRpc( 
        null, this.getServiceName(), this.getMarshaler() 
      );
-     //ds.store.registerStore();   
      
      /*
       * Controller

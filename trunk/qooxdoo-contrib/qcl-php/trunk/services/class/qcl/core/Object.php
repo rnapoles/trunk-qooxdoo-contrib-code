@@ -1004,8 +1004,9 @@ class qcl_core_Object
    * @param int    $number
    * @param string $file
    * @param int    $line
-   * return void
-   * FIXME make this consistent with qcl_log_Logger
+   * @return void
+   * @todo Replace all occurrences of $this->raiseError with Exceptions
+   * and add @throws tag to all methods throwing exceptions
    */
   public function raiseError( $message, $number=null, $file=null, $line=null )
   {
