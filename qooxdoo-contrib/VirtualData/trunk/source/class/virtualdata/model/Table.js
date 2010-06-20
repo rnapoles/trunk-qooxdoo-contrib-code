@@ -211,6 +211,21 @@ qx.Class.define("virtualdata.model.Table",
       this.__loadRowCountRequestRunning = false;
       this.base(arguments);
     },
+   
+    /**
+     * Removes a row from the model. Overridden to remove id of row
+     * from id index.
+     *
+     * @param rowIndex {Integer} the index of the row to remove.
+     * @return {void}
+     */
+    removeRow : function( rowIndex )
+    {
+      var rowData = this.getRowData( rowIndex );
+      var idCol = this.getIdColumn();
+      delete this.__idIndex[rowData[idCol]];
+      this.base(arguments, rowIndex);
+    },
     
     /*
     ---------------------------------------------------------------------------
