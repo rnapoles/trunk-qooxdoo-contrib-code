@@ -230,12 +230,13 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
     /**
      * Patch the codebase to make drag & drop in the table possible in
      * the first place
+     * FIXME get rid of patches
      */
     _patchCodebase : function()
     {
       qx.Class.include(qx.ui.treevirtual.TreeVirtual, qx.ui.treevirtual.MNode);
       
-      /*
+      /* 
        * The __dropTarget property is not properly initialized int the TreeVirtual
        * widget for some reason, and is therefore often not available in the
        * __onMouseMove() method.  A call to _onMouseOver(e) seems to fix that.
