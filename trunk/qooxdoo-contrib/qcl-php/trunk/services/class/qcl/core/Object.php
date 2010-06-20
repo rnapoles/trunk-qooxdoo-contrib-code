@@ -134,12 +134,17 @@ class qcl_core_Object
 
   /**
    * Getter for application singleton instance.
-   * Returns false if no application exists.
+   * @throws LogicException if no application exists.
    * @return qcl_application_Application
    */
   public function getApplication()
   {
-    return qcl_application_Application::getInstance();
+    $app = qcl_application_Application::getInstance();
+    if ( $app )
+    {
+      return $app;
+    }
+    throw new LogicException("No application instance is available. Please check your setup.");
   }
 
   //-------------------------------------------------------------

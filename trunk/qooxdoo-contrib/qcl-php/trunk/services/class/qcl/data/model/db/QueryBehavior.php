@@ -262,10 +262,11 @@ class qcl_data_model_db_QueryBehavior
   /**
    * Returns application instance
    * @return qcl_application_Application
+   * @throws LogicException if no application exists.
    */
   protected function getApplication()
   {
-    return qcl_server_Server::getInstance()->getServerInstance()->getApplication();
+    return $this->getModel()->getApplication();
   }
 
   //-------------------------------------------------------------
