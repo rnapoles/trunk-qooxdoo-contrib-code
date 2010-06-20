@@ -70,7 +70,7 @@ class qcl_util_system_Lock
    */
   public function release()
   {
-    unlink( $this->file );
+    @unlink( $this->file );
   }
 }
 ?>
