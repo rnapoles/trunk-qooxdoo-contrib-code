@@ -241,7 +241,7 @@ class class_qcl_test_data_model_db_ImportExport
 
     $userXmlHash     = "eeb93b093269986c6a7f6ce2baea73ac";
     $groupXmlHash    = "f338fc49f036c179b32daf25e27e8500";
-    $categoryXmlHash = "a4f67a444b39ee50810e355e385707a7";
+    $categoryXmlHash = "8bc86efaf0e9c5222930b1610e01df06";
 
     $message = "XML was not correctly exported: ";
     $this->assertEquals( $userXmlHash, md5( $userXml ), $message . "user", __CLASS__, __LINE__ );
