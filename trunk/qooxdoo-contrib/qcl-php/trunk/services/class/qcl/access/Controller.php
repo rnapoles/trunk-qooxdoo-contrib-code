@@ -237,11 +237,10 @@ class qcl_access_Controller
   /**
    * Whether guest access to the service classes is allowed
    * @return boolean
-   * FIXME
    */
   public function isAnonymousAccessAllowed()
   {
-    return $this->getApplication()->allowAnonymousAccess();
+    return $this->getApplication()->isAnonymousAccessAllowed();
   }
 
   /**

@@ -424,7 +424,7 @@ class qcl_data_model_db_PropertyBehavior
     $column = $this->properties[$property]['column'];
     if ( ! $column )
     {
-      // FIXME - Bad hack, doesn't work if foreign keys are manually set!
+      // @todo Doesn't work if foreign keys are manually set
       return $property;
       throw new qcl_core_PropertyBehaviorException( sprintf(
         "Cannot convert property '%s' into column name", $property

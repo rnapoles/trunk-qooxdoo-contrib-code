@@ -38,7 +38,7 @@ class qcl_data_model_AbstractNamedActiveRecord
    */
   public function namedId()
   {
-    return $this->get("namedId");
+    return $this->_get("namedId");
   }
 
   /**
@@ -268,7 +268,7 @@ class qcl_data_model_AbstractNamedActiveRecord
    */
   public function __toString()
   {
-    $namedId = $this->getPropertyBehavior()->get("namedId");
+    $namedId = $this->getPropertyBehavior()->_get("namedId");
     $ds = $this->datasourceModel();
     return sprintf( "[%s%s/%s]", ( $ds ? $ds->namedId() . "/" : "" ) , $this->className(),  ( $namedId ? $namedId : "--" ) );
   }

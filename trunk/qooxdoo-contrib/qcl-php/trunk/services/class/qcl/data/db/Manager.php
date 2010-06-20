@@ -31,6 +31,13 @@ class qcl_data_db_Manager
   private $cache = array();
 
   /**
+   * The base string to which the database type will be appended
+   * to form the class of the adapter
+   * @var string
+   */
+  protected $adapterClassBase = "qcl_data_db_adapter_Pdo";
+
+  /**
    * Returns singleton instance of the class. Must be called
    * statically.
    * @return qcl_data_db_Manager
@@ -89,7 +96,7 @@ class qcl_data_db_Manager
        * type and class of database adapter
        */
       $type  = $this->getDbType( $dsn );
-      $class = "qcl_data_db_adapter_Pdo" . ucfirst( $type ); // FIXME
+      $class = $this->adapterClassBase . ucfirst( $type ); // FIXME
 
       /*
        * include class file

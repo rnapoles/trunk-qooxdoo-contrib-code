@@ -775,6 +775,7 @@ class qcl_data_model_db_RelationBehavior
   {
     $model   = $this->getModel();
     $model->init();
+    $adapter = $model->getQueryBehavior()->getAdapter();
 
     $propBeh = $model->getPropertyBehavior();
     if ( $propBeh->has( $key ) )
@@ -804,10 +805,10 @@ class qcl_data_model_db_RelationBehavior
       $propBeh->add( array(
         $key => array(
           "check"    => "integer",
-          "sqltype"  => "int(11)", // FIXME Is this portable?
+          "sqltype"  => $adapter->getColumnTypeDefinition("primary-key"),
           "export"   => false,
           "nullable" => true,
-          "column"   => $key // FIXME make this configurable
+          "column"   => $key // @todo make this configurable
         )
       ) );
 
@@ -930,13 +931,13 @@ class qcl_data_model_db_RelationBehavior
         'check'     => "integer",
         'sqltype'   => "INT(11)",
         'export'    => true,
-        'column'    => $foreignKey //FIXME
+        'column'    => $foreignKey
       ),
       $targetForeignKey => array(
         'check'     => "integer",
         'sqltype'   => "INT(11)",
         'export'    => true,
-        'column'    => $targetForeignKey //FIXME
+        'column'    => $targetForeignKey
       )
     ) );
 

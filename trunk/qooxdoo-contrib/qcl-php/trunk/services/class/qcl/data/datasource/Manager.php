@@ -207,25 +207,28 @@ class qcl_data_datasource_Manager
 
   /**
    * Creates a datasource with the given name, of the given schema.
-   * @param $name
-   * @param $schema
+   * @param string $name
+   * @param string $schema
+   * @param array $properties
+   *    An optional map of properties of the datasource model instance
+   *    to create. You can, for example, set the "dsn" property this way.
    * @return qcl_data_datasource_DbModel
    * @throws qcl_data_model_RecordExistsException
    */
-  public function createDatasource( $name, $schema )
+  public function createDatasource( $name, $schema, $properties=array() )
   {
     qcl_assert_valid_string( $name, "Invalid name argument" );
     qcl_assert_valid_string( $schema, "Invalid schema argument" );
 
     /*
-     * create a new generic model
+     * create a new generic model with the given properties
      */
     $dsModel = $this->getDatasourceModel();
     $dsModel->create( $name, array(
       "schema" => $schema,
       "type" => "placeholder"
     ) );
-    $dsModel->setDsn( $this->getApplication()->getUserDsn() ); //FIXME generalize this
+    $dsModel->set( $properties );
     $dsModel->save();
 
     /*

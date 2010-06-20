@@ -649,7 +649,7 @@ class qcl_config_ConfigModel
    */
   public function getType()
   {
-    return $this->getTypeString( $this->get("type") );
+    return $this->getTypeString( $this->_get("type") );
   }
 
 	/**

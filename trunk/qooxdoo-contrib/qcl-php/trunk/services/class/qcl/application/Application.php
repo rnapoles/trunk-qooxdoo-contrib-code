@@ -119,7 +119,7 @@ abstract class qcl_application_Application
    * Whether anonymous access is allowed or not
    * @return bool
    */
-  public function allowAnonymousAccess()
+  public function isAnonymousAccessAllowed()
   {
     return $this->allowAnonymousAccess;
   }

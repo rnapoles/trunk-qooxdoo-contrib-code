@@ -75,7 +75,7 @@ class qcl_data_model_db_TreeNodeModel
    */
   public function getParentId()
   {
-    return $this->get("parentId");
+    return $this->_get("parentId");
   }
 
   /**
@@ -84,7 +84,7 @@ class qcl_data_model_db_TreeNodeModel
    */
   public function setParentId( $id )
   {
-    return $this->set("parentId", $id);
+    return $this->_set("parentId", $id);
   }
 
   //-------------------------------------------------------------
@@ -158,7 +158,7 @@ class qcl_data_model_db_TreeNodeModel
 	 */
   public function getPosition()
 	{
-	  return $this->get("position");
+	  return $this->_get("position");
 	}
 
    /**

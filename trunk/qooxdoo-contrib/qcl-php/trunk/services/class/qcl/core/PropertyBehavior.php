@@ -157,6 +157,22 @@ class qcl_core_PropertyBehavior
    */
   public function get( $property )
   {
+    //if( is_string($property ) ) $this->getObject()->info("get '$property'" );
+    if ( $this->hasGetter( $property ) )
+    {
+      $getterMethod = $this->getterMethod( $property );
+      return $this->getObject()->$getterMethod();
+    }
+    return $this->_get( $property );
+  }
+
+  /**
+   * Implementation for getter for properties
+   * @param $property
+   * @return unknown_type
+   */
+  public function _get( $property )
+  {
     $this->check( $property );
     if ( $this->hasGetter( $property ) )
     {
@@ -176,12 +192,13 @@ class qcl_core_PropertyBehavior
    */
   public function set( $property, $value=null )
   {
+    //if( is_string($property ) ) $this->getObject()->info("set '$property'" );
     /*
      * readonly?
      */
     if ( $this->getObject()->isReadonly() )
     {
-      $this->getObject()->raiseError("Object is readonly.");
+      throw new LogicException("Object is readonly.");
     }
 
     /*
@@ -191,7 +208,7 @@ class qcl_core_PropertyBehavior
     {
       foreach ( $property as $key => $value )
       {
-        $this->_set( $key, $value );
+        $this->set( $key, $value );
       }
       return $this->getObject();
     }
@@ -203,7 +220,7 @@ class qcl_core_PropertyBehavior
     {
       foreach( get_object_vars( $property )  as $key => $value )
       {
-        $this->_set( $key, $value );
+        $this->set( $key, $value );
       }
       return $this->getObject();
     }
@@ -213,7 +230,15 @@ class qcl_core_PropertyBehavior
      */
     elseif ( is_string( $property ) )
     {
-      return $this->_set( $property, $value );
+      if ( $this->hasSetter( $property ) )
+      {
+        $setterMethod = $this->setterMethod( $property );
+        return $this->getObject()->$setterMethod( $value );
+      }
+      else
+      {
+        return $this->_set( $property, $value );
+      }
     }
 
     /*
@@ -234,17 +259,8 @@ class qcl_core_PropertyBehavior
   protected function _set( $property, $value )
   {
     $this->check( $property );
-
-    if ( $this->hasSetter( $property ) )
-    {
-      $setterMethod = $this->setterMethod( $property );
-      return $this->getObject()->$setterMethod( $value );
-    }
-    else
-    {
-      $this->getObject()->$property = $value;
-      return $this->getObject();
-    }
+    $this->getObject()->$property = $value;
+    return $this->getObject();
   }
 
   /**
