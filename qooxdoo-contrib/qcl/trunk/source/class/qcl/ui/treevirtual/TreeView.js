@@ -103,14 +103,13 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
 
     /**
      * The widget displaying the tree
-     * FIXME: rename to tree
      */
-    treeView :
+    tree :
     {
       check : "qx.ui.treevirtual.TreeVirtual",
       nullable : true,
-      apply : "_applyTreeView",
-      event : "changeTreeView"
+      apply : "_applyTree",
+      event : "changeTree"
     },    
     
     /**
@@ -352,7 +351,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     * @param old
     * @return
     */
-   _applyTreeView : function ( value, old )
+   _applyTree : function ( value, old )
    {
      if ( old )
      {
@@ -499,7 +498,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
             loadData = true;
           }
           var ds = this._getDatasourceObjects( datasource );
-          this.setTreeView( ds.treeWidget );
+          this.setTree( ds.treeWidget );
           this.setStore( ds.store );
           this.setController( ds.controller );
   
@@ -527,7 +526,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
        }
        // @todo: get from datasource, passing the datasource argument makes no sense.
        var store = this.getStore();
-       var tree  = this.getTreeView();
+       var tree  = this.getTree();
        var controller = this.getController();
        var nodeId = nodeId || 0;
 
@@ -589,7 +588,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
            {
              var counter = 0;
              
-             //this.getTreeView().setEnabled(false);
+             //this.getTree().setEnabled(false);
              
              /*
               * Create a function that can recursively call itself
@@ -774,7 +773,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
          this.clearSelection();
          var storageId = this.getTreeCacheId( this.getDatasource() );
          var data  = { 
-           'data'          : this.getTreeView().getDataModel().getData(),
+           'data'          : this.getTree().getDataModel().getData(),
            'transactionId' : transactionId
          }
          var persistentStore = this.getApplication().getPersistentStore();
@@ -817,7 +816,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     _on_treeDblClick : function(){
       var selNode = this.getSelectedNode();
       if ( ! selNode ) return;
-      var dataModel = this.getTreeView().getDataModel();
+      var dataModel = this.getTree().getDataModel();
       dataModel.setState( selNode, {'bOpened':!selNode.bOpened} );
       dataModel.setData();
     },
@@ -858,7 +857,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       /*
        * get data
        */
-      var tree          = this.getTreeView();
+      var tree          = this.getTree();
       var app           = this.getApplication();
       var node          = selection[0];
       var data          = node.data;
@@ -948,7 +947,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     _updateNode : function(e)
     {
       var data = e.getData();
-      var tree = this.getTreeView();
+      var tree = this.getTree();
       if( ! tree ) return;
       var dataModel = tree.getDataModel();
       var controller = this.getController();
@@ -970,7 +969,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     _addNode : function(e)
     {
       var data = e.getData();
-      var tree = this.getTreeView();
+      var tree = this.getTree();
       if( ! tree ) return;
       var dataModel = tree.getDataModel();
       var controller = this.getController();
@@ -1000,7 +999,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     _moveNode : function(e)
     {
       var data = e.getData();
-      var tree = this.getTreeView();
+      var tree = this.getTree();
       if( ! tree ) return;
       var dataModel = tree.getDataModel();
       var controller = this.getController();
@@ -1032,7 +1031,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     _deleteNode : function(e)
     {
       var data = e.getData();
-      var tree = this.getTreeView();
+      var tree = this.getTree();
       if( ! tree ) return;
       var dataModel = tree.getDataModel();
       var controller = this.getController();
@@ -1060,7 +1059,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     _reorderNodeChildren : function(e)
     {
       var data = e.getData();
-      var tree = this.getTreeView();
+      var tree = this.getTree();
       if( ! tree ) return;
       
       /*
@@ -1150,8 +1149,8 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      */
     clearTree : function()
     {
-      this.getTreeView().resetSelection();
-      this.getTreeView().getDataModel().prune(0);
+      this.getTree().resetSelection();
+      this.getTree().getDataModel().prune(0);
     },
     
     /**
@@ -1191,7 +1190,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     {
 //      var id    = this.getController().getClientNodeId( serverNodeId );
 //      if ( ! id ) return;
-//      var tree  = this.getTreeView();
+//      var tree  = this.getTree);
 //      var model = tree.getDataModel();
 //      var node  = tree.nodeGet(id);
 //      
@@ -1225,7 +1224,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      */
     clearSelection : function()
     {
-      this.getTreeView().getSelectionModel().resetSelection();
+      this.getTree().getSelectionModel().resetSelection();
     }
   }
 });
