@@ -187,6 +187,7 @@ function qcl_assert_type( $value, $type, $msg=null )
       $type, gettype( $value )
       );
     }
+    qcl_log_Logger::getInstance()->info(debug_get_backtrace());
     throw new InvalidArgumentException( $msg );
   }
 }
