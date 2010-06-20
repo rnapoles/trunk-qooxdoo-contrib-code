@@ -113,7 +113,8 @@ class qcl_data_model_db_TransactionModel
         'datasource'  => $datasource
       ) );
     }
-    return $this->get("transactionId");
+
+    return $this->_get("transactionId");
   }
 
   /**
@@ -124,7 +125,7 @@ class qcl_data_model_db_TransactionModel
   public function incrementTransactionIdFor( qcl_data_model_AbstractActiveRecord $model )
   {
     $id = $this->getTransactionIdFor( $model );
-    $this->set("transactionId", $id+1);
+    $this->_set("transactionId", $id+1);
     $this->save();
   }
 }
