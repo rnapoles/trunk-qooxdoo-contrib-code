@@ -130,7 +130,7 @@ class qcl_access_model_Group
    */
   public function getName()
   {
-    return $this->get("name");
+    return $this->_get("name");
   }
 
   /**
@@ -139,7 +139,7 @@ class qcl_access_model_Group
    */
   public function getDescription()
   {
-    return $this->get("description");
+    return $this->_get("description");
   }
 
   /**
@@ -148,7 +148,7 @@ class qcl_access_model_Group
    */
   public function getDefaultRole()
   {
-    return $this->get("defaultRole");
+    return $this->_get("defaultRole");
   }
 
 

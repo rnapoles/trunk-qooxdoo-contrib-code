@@ -30,7 +30,6 @@ class qcl_io_filesystem_local_Resource
    */
   var $resourceTypes = array("file");
 
-
   /**
    * Checks whether (given) resource path is a file
    * @param string[optional] $resourcePath

@@ -261,6 +261,14 @@ class qcl_data_model_db_PersistenceBehavior
     return $object->isBoundToSession() ? $sessionId : null;
   }
 
+  /**
+   * Forwards to the property behavior
+   */
+  public function _get( $property )
+  {
+    return $this->getPropertyBehavior()->_get( $property );
+  }
+
 
 }
 ?>

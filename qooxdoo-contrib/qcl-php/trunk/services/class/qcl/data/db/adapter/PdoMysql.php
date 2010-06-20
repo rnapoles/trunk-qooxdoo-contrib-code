@@ -33,6 +33,10 @@ class qcl_data_db_adapter_PdoMysql
              qcl_data_db_adapter_IRemoteHostAdapter
 {
 
+  //-------------------------------------------------------------
+  // class properties
+  //-------------------------------------------------------------
+
   /**
    * @var string $database name of database, read from dsn
    */
@@ -62,6 +66,13 @@ class qcl_data_db_adapter_PdoMysql
    */
   protected $resultSet;
 
+  //-------------------------------------------------------------
+  // sql definitions
+  //-------------------------------------------------------------
+
+  protected $columnTypeDefinitions = array(
+    'primary-key' => "int(11)"
+  );
 
   //-------------------------------------------------------------
   // accessors
@@ -179,6 +190,21 @@ class qcl_data_db_adapter_PdoMysql
   //-------------------------------------------------------------
   // PDO-specific and helper methods
   //-------------------------------------------------------------
+
+  /**
+   * Return the backend-specific column defintion for the given
+   * type.
+   * @param $type
+   * @return string
+   */
+  public function getColumnTypeDefinition( $type )
+  {
+    if( isset( $this->columnTypeDefinitions[$type] ) )
+    {
+      return $this->columnTypeDefinitions[$type];
+    }
+    throw new InvalidArgumentException("No column definition for '$type'");
+  }
 
   /**
    * Given a scalar value, returns the PDO parameter type value

@@ -167,7 +167,7 @@ class qcl_data_model_PropertyBehavior
        */
       if ( $property == "id" )
       {
-        $this->properties[ "id" ][ 'nullable' ] = true; // FIXME Hack!
+        $this->properties[ "id" ][ 'nullable' ] = true; // to prevent an exception
         $this->set( "id", null );
         continue;
       }
@@ -220,7 +220,7 @@ class qcl_data_model_PropertyBehavior
   //-------------------------------------------------------------
 
   /**
-   * Getter for managed model FIXME
+   * Getter for managed model
    * @return qcl_data_model_AbstractActiveRecord
    */
   protected function getModel()
@@ -232,7 +232,7 @@ class qcl_data_model_PropertyBehavior
    * Getter for definition of properties in the managed model
    * @return array
    */
-  public function _propertyMap()
+  public function propertyMap()
   {
     $this->getModel()->warn(sprintf("Use %s() only for debugging", __METHOD__ ) );
     return $this->properties;
@@ -283,16 +283,14 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * Generic getter for properties
+   * Implementation of property getter
    * @param $property
-   * @return unknown_type
+   * @return mixed
    */
-  public function get( $property )
+  public function _get( $property )
   {
-    //$this->check( $property ); // FIXME This must be uncommented, but something in Persistence behavior borks then.
     return $this->data[$property];
   }
-
 
   /**
    * Implementation for model property setter
@@ -302,7 +300,6 @@ class qcl_data_model_PropertyBehavior
    */
   public function _set( $property, $value )
   {
-
     $props    = $this->properties;
     $def      = $props[$property];
     $type     = isset( $def['check'] )    ? $def['check']    : null;
@@ -313,7 +310,6 @@ class qcl_data_model_PropertyBehavior
     /*
      * check type/nullable
      */
-
     if ( $nullable and $value === null )
     {
       $fail = false;

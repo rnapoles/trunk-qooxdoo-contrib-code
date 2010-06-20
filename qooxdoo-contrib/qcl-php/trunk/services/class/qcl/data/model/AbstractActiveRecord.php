@@ -189,7 +189,7 @@ class qcl_data_model_AbstractActiveRecord
   public function getModified()
   {
     $this->checkLoaded();
-    return $this->get("modified");
+    return $this->_get("modified");
   }
 
   /**
@@ -199,7 +199,7 @@ class qcl_data_model_AbstractActiveRecord
   public function getCreated()
   {
     $this->checkLoaded();
-    return $this->get("created");
+    return $this->_get("created");
   }
 
   /**
@@ -286,7 +286,7 @@ class qcl_data_model_AbstractActiveRecord
   public function getId()
   {
     $this->checkLoaded();
-    $id = (int) $this->get("id");
+    $id = (int) $this->_get("id");
     return $id;
   }
 
@@ -298,7 +298,6 @@ class qcl_data_model_AbstractActiveRecord
   {
     return $this->getId();
   }
-
 
   //-------------------------------------------------------------
   // Query behavior
@@ -1576,9 +1575,13 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function __toString()
   {
-    $id = $this->getPropertyBehavior()->get("id");
+    $id = $this->_loaded ? $this->id() : "--";
     $ds = $this->datasourceModel();
-    return sprintf( "[%s%s/%s]", ( $ds ? $ds->namedId() . "/" : "" ) , $this->className(),  ( $id ? $id : "--" ) );
+    return sprintf(
+      "[%s%s/%s]",
+      ( $ds ? $ds->namedId() . "/" : "" ) ,
+      $this->className(), $id
+    );
   }
 }
 ?>

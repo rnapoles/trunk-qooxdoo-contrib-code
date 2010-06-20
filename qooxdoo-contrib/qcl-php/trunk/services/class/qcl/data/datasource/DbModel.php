@@ -282,7 +282,7 @@ class qcl_data_datasource_DbModel
    */
   public function getTitle()
   {
-    return $this->get("title");
+    return $this->_get("title");
   }
 
   /**
@@ -300,7 +300,7 @@ class qcl_data_datasource_DbModel
    */
   public function getSchema()
   {
-    return $this->get("schema");
+    return $this->_get("schema");
   }
 
   /**
@@ -309,7 +309,7 @@ class qcl_data_datasource_DbModel
    */
   public function getDescription()
   {
-    return $this->get("description");
+    return $this->_get("description");
   }
 
   /**
@@ -318,7 +318,7 @@ class qcl_data_datasource_DbModel
    */
   public function getType()
   {
-    return $this->get("type");
+    return $this->_get("type");
   }
 
   /**
@@ -336,7 +336,7 @@ class qcl_data_datasource_DbModel
    */
   public function getHost()
   {
-    return $this->get("host");
+    return $this->_get("host");
   }
 
   /**
@@ -345,7 +345,7 @@ class qcl_data_datasource_DbModel
    */
   public function getPort()
   {
-    return $this->get("port");
+    return $this->_get("port");
   }
 
   /**
@@ -354,7 +354,7 @@ class qcl_data_datasource_DbModel
    */
   public function getDatabase()
   {
-    return $this->get("database");
+    return $this->_get("database");
   }
 
   /**
@@ -363,7 +363,7 @@ class qcl_data_datasource_DbModel
    */
   public function getUsername()
   {
-    return $this->get("username");
+    return $this->_get("username");
   }
 
   /**
@@ -372,7 +372,7 @@ class qcl_data_datasource_DbModel
    */
   public function getPassword()
   {
-    return $this->get("password");
+    return $this->_get("password");
   }
 
   /**
@@ -381,7 +381,7 @@ class qcl_data_datasource_DbModel
    */
   public function getEncoding()
   {
-    return $this->get("encoding");
+    return $this->_get("encoding");
   }
 
   /**
@@ -390,7 +390,7 @@ class qcl_data_datasource_DbModel
    */
   public function getPrefix()
   {
-    return $this->get("prefix");
+    return $this->_get("prefix");
   }
 
   /**
@@ -399,7 +399,7 @@ class qcl_data_datasource_DbModel
    */
   public function getResourcepath()
   {
-    return $this->get("resourcepath");
+    return $this->_get("resourcepath");
   }
 
   /**
@@ -408,7 +408,7 @@ class qcl_data_datasource_DbModel
    */
   public function isActive()
   {
-    return $this->get("active");
+    return $this->_get("active");
   }
 
 //  /**
@@ -418,7 +418,7 @@ class qcl_data_datasource_DbModel
 //   */
 //  public function isReadonly()
 //  {
-//    return $this->get("readonly");
+//    return $this->_get("readonly");
 //  }
 
   /**
@@ -427,7 +427,7 @@ class qcl_data_datasource_DbModel
    */
   public function isHidden()
   {
-    return $this->get("hidden");
+    return $this->_get("hidden");
   }
 
   //-------------------------------------------------------------

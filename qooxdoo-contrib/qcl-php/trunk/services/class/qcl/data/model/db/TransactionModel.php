@@ -44,8 +44,7 @@ class qcl_data_model_db_TransactionModel
     ),
     'transactionId'  => array(
       'check'     => "integer",
-      'sqltype'   => "int(11) NOT NULL",
-      'nullable'  => false,
+      'sqltype'   => "int(11)",
       'init'      => 0
     )
   );

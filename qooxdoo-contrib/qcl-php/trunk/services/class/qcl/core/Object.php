@@ -95,7 +95,6 @@ class qcl_core_Object
   {
     if ( ! $this->isInitialized )
     {
-      $this->log( "* Initializing $this", QCL_LOG_OBJECT );
       $this->getPropertyBehavior()->init();
       $this->isInitialized = true;
       return true;
@@ -255,9 +254,19 @@ class qcl_core_Object
   }
 
   /**
+   * Gets the property directly. Internal method used to skip overrridden
+   * property getters.
+   */
+  public function _get( $property )
+  {
+    return $this->getPropertyBehavior()->_get( $property );
+  }
+
+  /**
    * Generic setter for properties.
-   * @param string|array $property If string, set the corresponding property to $value.
-   *   If array, assume it is a map and set each key-value pair. Returns the object.
+   * @param string|array $property
+   *    If string, set the corresponding property to $value.
+   *    If array, assume it is a map and set each key-value pair. Returns the object.
    * @param mixed $value
    * @return qcl_core_Object
    */
@@ -272,6 +281,15 @@ class qcl_core_Object
      * call the behvior method to do the work
      */
     return $this->getPropertyBehavior()->set( $property, $value );
+  }
+
+  /**
+   * Sets the property directly. Internal method used to skip overrridden
+   * property setters.
+   */
+  public function _set( $property,  $value )
+  {
+    return $this->getPropertyBehavior()->_set( $property, $value );
   }
 
   /**
