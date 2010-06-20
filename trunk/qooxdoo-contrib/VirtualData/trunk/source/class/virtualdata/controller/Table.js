@@ -28,7 +28,7 @@
 qx.Class.define("virtualdata.controller.Table", 
 {
   extend : qx.core.Object,
-  include: [ qx.data.controller.MSelection, qcl.ui.MLoadingPopup ],
+  include: [ qx.data.controller.MSelection, virtualdata.controller.MLoadingPopup ],
 
   /*
    *****************************************************************************
@@ -259,13 +259,8 @@ qx.Class.define("virtualdata.controller.Table",
          var table = this.getTarget();
          var model = table.getTableModel();
          table.resetSelection();
-         
-         //model.clearCache();
-         
          model.reloadData();
          table.scrollCellVisible(0,0);
-         
-         
        }
      },
      
@@ -289,12 +284,14 @@ qx.Class.define("virtualdata.controller.Table",
        var tableModel = this.getTarget().getTableModel();
        var marshaler  = store.getMarshaler();
        var params     = marshaler.getQueryParams();
-       var app        = this.getApplication();
+       var app        = qx.core.Init.getApplication();
        
        /*
         * show popup centered to table
         */
-       this.showPopup( app.tr( "Getting number of rows..." ), this.getTarget() );
+       this.showPopup( 
+          app.tr( "Getting number of rows..." ) /*, this.getTarget()*/ 
+       );
 
        /*
         * load the row count and pass it to th model
@@ -322,7 +319,7 @@ qx.Class.define("virtualdata.controller.Table",
        var store = this.getStore();
        var marshaler = store.getMarshaler();
        var tableModel = this.getTarget().getTableModel();
-       var app = this.getApplication();
+       var app = qx.core.Init.getApplication();
 
        /*
         * store request id so that we can differentiate different
@@ -344,8 +341,7 @@ qx.Class.define("virtualdata.controller.Table",
        this.showPopup( app.tr(
           "Loading rows %1 - %2 of %3 ...",
           firstRow, Math.min( lastRow, this.__rowCount), this.__rowCount 
-        ),this.getTarget()
-       );
+        ) /*,this.getTarget() */);
        
        /*
         * load data
