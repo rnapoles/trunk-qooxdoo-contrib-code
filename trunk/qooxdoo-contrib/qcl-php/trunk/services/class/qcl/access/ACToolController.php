@@ -433,7 +433,7 @@ class qcl_access_ACToolController
     {
       qcl_import( "qcl_data_datasource_Manager" );
       $mgr = qcl_data_datasource_Manager::getInstance();
-      $mgr->createDatasource( $namedId, "bibliograph.schema.bibliograph2" ); // FIXME !!
+      $this->getApplication()->createDatasource( $namedId );
       $model = $mgr->getDatasourceModelByName( $namedId );
       $model->set("title", $namedId );
       $model->save();
@@ -464,7 +464,7 @@ class qcl_access_ACToolController
         qcl_import("qcl_ui_dialog_Confirm");
         return new qcl_ui_dialog_Confirm(
           $this->tr("Do you want to remove only the datasource entry or all associated data?"),
-          array( "All data", "Entry only", true),
+          array( $this->tr("All data"), $this->tr("Entry only"), true),
           $this->serviceName(), "deleteDatasource", array($ids)
         );
 
@@ -508,10 +508,10 @@ class qcl_access_ACToolController
     catch ( PDOException $e )
     {
       $this->warn(  $e->getMessage() );
-      return new  qcl_ui_dialog_Alert("Deleting datasource '$namedId' failed... ");
+      return new  qcl_ui_dialog_Alert($this->tr("Deleting datasource '%s' failed... ",$namedId));
     }
 
-    return new  qcl_ui_dialog_Alert("Datasource '$namedId' successfully deleted ... ");
+    return new  qcl_ui_dialog_Alert($this->tr("Datasource '%s' successfully deleted ... ",$namedId));
   }
 
   protected function getLinkModels( $treeElement, $type, $namedId )
@@ -674,7 +674,7 @@ class qcl_access_ACToolController
       {
         qcl_import("qcl_ui_dialog_Alert");
         return new qcl_ui_dialog_Alert(
-          "Passwords do not match. Please try again",
+          $this->tr("Passwords do not match. Please try again"),
           $this->serviceName(), "editElement", array( "user", $namedId )
         );
       }
