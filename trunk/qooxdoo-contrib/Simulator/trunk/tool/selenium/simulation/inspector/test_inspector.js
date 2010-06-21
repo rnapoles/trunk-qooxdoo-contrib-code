@@ -31,7 +31,13 @@ mySim.locators = {
   windowWidgets : "qxh=[@classname=inspector.widgets.WidgetsWindow]",
   windowProperty : "qxh=[@classname=inspector.property.PropertyWindow]",
   windowObjects : "qxh=[@classname=inspector.objects2.Window]",
-  windowConsole : "qxh=[@classname=inspector.console.ConsoleWindow]"
+  windowConsole : "qxh=[@classname=inspector.console.ConsoleWindow]",
+  //windowSelenium : "qxh=[@classname=inspector.selenium.SeleniumWindow]",
+  buttonObjects : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Objects]",
+  buttonWidgets : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Widgets]",
+  buttonProperties : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Properties]",
+  buttonConsole : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Console]",
+  //buttonSelenium : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Selenium]"
 };
 
 var selWin = 'selenium.qxStoredVars["autWindow"]';
@@ -78,6 +84,27 @@ simulation.Simulation.prototype.checkWindows = function()
   }
 };
 
+simulation.Simulation.prototype.checkButtons = function()
+{
+  for (locName in this.locators) {
+    if (locName.indexOf("button") == 0) {
+      var loc = this.locators[locName];
+      var buttonValue = null;
+      try {
+        buttonValue = this.__sel.qxObjectExecFunction(loc, "getValue");
+      } catch(ex) {
+        this.log("Error checking button value: " + ex, "error");
+      }
+      
+      if (buttonValue == "false") {
+        this.qxClick(loc, "", "Clicking button");
+        Packages.java.lang.Thread.sleep(3000);
+      }
+     
+    }
+  }
+};
+
 simulation.Simulation.prototype.testInspectWidget = function()
 {
   var selectedWidgetOld = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar + "/child[8]", "getValue"));
@@ -117,6 +144,7 @@ simulation.Simulation.prototype.runTest = function()
     return;
   }
 
+  this.checkButtons();
   this.checkWindows();
   
   // TODO: reload - workaround for inspector bug
