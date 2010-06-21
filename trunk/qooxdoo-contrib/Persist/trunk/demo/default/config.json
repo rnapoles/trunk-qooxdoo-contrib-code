@@ -55,7 +55,7 @@
       "add-script" :
       [ 
         {
-          "uri" : "persist:resource/persist/persist-all-min.js"
+          "uri" : "../build/resource/persist/persist-all-min.js"
         }
       ]
     },
@@ -64,7 +64,7 @@
       "add-script" :
       [ 
         {
-          "uri" : "persist:resource/persist/persist-all-min.js"
+          "uri" : "../build/resource/persist/persist-all-min.js"
         }
       ]
     }    

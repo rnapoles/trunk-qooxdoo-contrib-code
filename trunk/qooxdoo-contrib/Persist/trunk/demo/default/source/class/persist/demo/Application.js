@@ -84,7 +84,18 @@ qx.Class.define("persist.demo.Application",
         var value = e.getData();
         store.save("text",value);
       },this);
-      this.getRoot().add(new qx.ui.basic.Label("Enter a string and reload the browser. The string will be stored locally."), {
+      var label = new qx.ui.basic.Label(
+        "<h3>Local data persistence</h3>" +
+        "<p>Enter a string and reload the browser. The string will be stored locally. " +
+        "This should work cross-browser and even with older browsers.</p> " +
+        "<p>You can persist complex data by simply en/decoding them into/from JSON and them storing/retrieving them as a string.</p>"+
+        "<p>This contribution uses the <a href='http://pablotron.org/software/persist-js/' target='_blank'>persist-js library</a> written by Paul Duncan.</p>"
+      );
+      label.set({
+        width : 300,
+        rich  : true
+      });
+      this.getRoot().add(label, {
         top: 110, left: 50
       });
     }
