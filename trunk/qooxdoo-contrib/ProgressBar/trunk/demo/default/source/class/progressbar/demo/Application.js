@@ -28,11 +28,9 @@
 /**
  * progressbar Example application
  */
-qx.Class.define("progressbar.Application",
+qx.Class.define("progressbar.demo.Application",
 {
   extend : qx.application.Standalone,
-
-
 
 
   /*
