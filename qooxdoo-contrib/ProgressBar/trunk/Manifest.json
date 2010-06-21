@@ -27,8 +27,8 @@
 		}
     ],
 
-    "version" : "0.8-pre",
-    "qooxdoo-versions": ["0.8.2"]
+    "version" : "trunk",
+    "qooxdoo-versions": ["trunk"]
   },
   
   "provides" : 
@@ -38,7 +38,7 @@
     "class"       : "source/class",
     "resource"    : "source/resource",
     "translation" : "source/translation",
-    "type"        : "application"
+    "type"        : "contribution"
   }
 }
 
