@@ -143,7 +143,7 @@
         
     for asset in renderIcons:
         if asset.startswith(("icon/")):
-            context.write("#asset(icon/${qx.icontheme}/%s)\n" %asset[5:])
+            context.write("#asset(qx/icon/${qx.icontheme}/%s)\n" %asset[5:])
         else:
             context.write("#asset(%s)\n" %asset)
 %></%def>
