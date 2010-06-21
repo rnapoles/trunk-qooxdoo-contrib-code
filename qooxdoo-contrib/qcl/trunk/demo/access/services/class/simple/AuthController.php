@@ -108,6 +108,7 @@ class class_simple_AuthController
       "username"    => $username,
       "fullname"    => $this->userdata['users'][$userId]['fullname'],
       "permissions" => $permissions,
+      "editable"    => false,
       "sessionId"   => $sessionId,
       "error"       => false,
       "anonymous"   => ($userId == 4)

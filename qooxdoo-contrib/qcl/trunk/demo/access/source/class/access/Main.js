@@ -20,7 +20,6 @@
 /* ************************************************************************
 
 #asset(access/*)
-#require(qcl.application.*)
 
 ************************************************************************ */
 
@@ -80,8 +79,6 @@ qx.Class.define("access.Main",
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         qx.log.appender.Native;
       }
-
-      dialog.Dialog.init(); // @todo remove this after it has been fixed in the dialog package
       
       this.info("Starting Application...");
       
