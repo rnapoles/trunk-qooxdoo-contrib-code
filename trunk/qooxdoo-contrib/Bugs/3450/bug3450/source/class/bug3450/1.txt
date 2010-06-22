@@ -1,7 +1,0 @@
-<div qxtype="container" qxclass="qx.ui.core.Widget" qxselectable="off" style="z-index: 0; position: absolute; -moz-user-select: -moz-none; cursor: default; left: 100px; top: 50px; width: 102px; height: 53px;">
-  <div qxtype="content" qxselectable="off" style="overflow: hidden; position: absolute; z-index: 10; -moz-user-select: -moz-none; left: 1px; top: 3px; width: 100px; height: 50px;">
-  </div>
-  <div style="position: absolute; top: 0pt; left: 0pt; border-top: 1px solid blue; border-right: 1px solid blue; border-left: 1px solid blue; pointer-events: none; z-index: 5;" qxtype="decorator">
-    <img style="border-top: 2px solid green; background-position: 0pt 0pt; position: absolute; width: 100px; height: 50px;" src="../source/resource/bug3450/test.png">
-  </div>
-</div>
