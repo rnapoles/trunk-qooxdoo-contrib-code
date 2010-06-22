@@ -1,1 +1,0 @@
-/* ************************************************************************     Copyright:     License:     Authors:  ************************************************************************ */  qx.Theme.define("gui4.theme.Decoration", {   extend : qx.theme.modern.Decoration,    decorations :   {   } });
