@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "Accordion Demo",
+
+    "summary" : "Accordion Demo",
+    "description" : "A widget that consists of an array of buttons and content to be displayed once a button gets clicked",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/Accordion",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Raimund Mann (simply-notes)",
+        "email" : "info AT simply-notes DOT de"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.0.1", "1.1", "trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "accordion.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
