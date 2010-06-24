@@ -196,18 +196,7 @@ qx.Class.define("virtualdata.model.Table",
        OVERRIDDEN METHODS
     ---------------------------------------------------------------------------
     */      
-  
-    /**
-     * Reloads the model and clears the local cache.
-     * @return {void}
-     */
-    reloadData : function()
-    {
-      var blockConcurrentLoadRowCount = this.getBlockConcurrentLoadRowCount();
-      this.setBlockConcurrentLoadRowCount(false);
-      this.base(arguments);
-      this.setBlockConcurrentLoadRowCount(blockConcurrentLoadRowCount);      
-    },
+ 
    
     /**
      * Removes a row from the model. Overridden to remove id of row
