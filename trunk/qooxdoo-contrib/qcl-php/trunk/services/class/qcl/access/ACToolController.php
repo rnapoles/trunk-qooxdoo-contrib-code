@@ -175,6 +175,11 @@ class qcl_access_ACToolController
       $icon   = $models[$type]['icon'];
       $label  = $model->get($labelProp);
 
+      if ( $model->hasProperty("hidden") and $model->isHidden() )
+      {
+        continue;
+      }
+
       if ( ! trim($label ) )
       {
         $label = $value;
