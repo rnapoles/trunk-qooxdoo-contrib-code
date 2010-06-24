@@ -80,7 +80,10 @@ class qcl_data_model_db_TransactionModel
   /**
    * Overridden to deactive transaction for this model
    */
-  public function getTransactionId(){}
+  public function getTransactionId()
+  {
+    return 0;
+  }
 
   /**
    * Overridden to deactive transaction for this model
@@ -109,9 +112,11 @@ class qcl_data_model_db_TransactionModel
     }
     catch ( qcl_data_model_RecordNotFoundException $e)
     {
+      $this->debug("Creating transaction entry ",__CLASS__,__LINE__);
       $this->create( array(
-        'class'       => $class,
-        'datasource'  => $datasource
+        'class'         => $class,
+        'datasource'    => $datasource,
+        'transactionId' => 0
       ) );
     }
 
