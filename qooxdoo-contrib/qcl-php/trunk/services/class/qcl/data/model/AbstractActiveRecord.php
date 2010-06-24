@@ -840,7 +840,7 @@ class qcl_data_model_AbstractActiveRecord
     {
       $this->set( $data );
     }
-
+$this->debug($this->data(),__CLASS__,__LINE__);
     /*
      * inserting values
      */
