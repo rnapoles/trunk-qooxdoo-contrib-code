@@ -285,6 +285,8 @@ qx.Class.define("virtualdata.controller.Table",
        var marshaler  = store.getMarshaler();
        var params     = marshaler.getQueryParams();
        var app        = qx.core.Init.getApplication();
+      
+       delete this.__firstRow;
        
        /*
         * show popup centered to table
@@ -312,9 +314,18 @@ qx.Class.define("virtualdata.controller.Table",
      */
      _loadRowData : function( firstRow, lastRow ) 
      {
+        
        //if ( this.__rowDataRequest ) return;
        //this.info( "Requesting " + firstRow + " - " + lastRow );
       
+       /*
+        * prevent retrieving the same data more than once
+        */
+       if ( firstRow === this.__firstRow )
+       {
+         return;
+       }      
+       this.__firstRow = firstRow;
        
        var store = this.getStore();
        var marshaler = store.getMarshaler();
