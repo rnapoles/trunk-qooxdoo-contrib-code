@@ -40,12 +40,13 @@ class qcl_data_model_db_TransactionModel
     ),
     'class'  => array(
       'check'     => "string",
-      'sqltype'   => "varchar(50)"
+      'sqltype'   => "varchar(100)"
     ),
     'transactionId'  => array(
       'check'     => "integer",
-      'sqltype'   => "int(11)",
-      'init'      => 0
+      'sqltype'   => "int(11) default 0",
+      'nullable'  => false,
+      'init'      => 0 // FIXME init-->default
     )
   );
 

@@ -71,6 +71,7 @@ class qcl_data_datasource_DbModel
 
   /**
    * The model properties
+   * FIME Replace "title" with "name"
    */
   private $properties = array(
     'title' => array(
@@ -91,7 +92,7 @@ class qcl_data_datasource_DbModel
     ),
     'host' => array(
       'check'   => "string",
-      'sqltype' => "varchar(100)"
+      'sqltype' => "varchar(200)"
     ),
     'port' => array(
       'check'   => "integer",
@@ -99,7 +100,7 @@ class qcl_data_datasource_DbModel
     ),
     'database' => array(
       'check'   => "string",
-      'sqltype' => "varchar(50)"
+      'sqltype' => "varchar(100)"
     ),
     'username' => array(
       'check'   => "string",
