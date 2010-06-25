@@ -1,10 +1,24 @@
 {
+
   "libraries" :
   {
-    "*" : {
-      "types" : ["contribution"],
-      "versions" : ["*"],
-      "qooxdoo-versions" : ["*"]
+    "include" : {
+      "*" : {
+        "types" : ["application", "contribution", "library"],
+        "versions" : ["*"],
+        "qooxdoo-versions" : ["*"]
+      }
     }
+    
+    /*
+    //Use wildcards for all attributes to exclude a library:
+    "exclude" : {
+      "fooLib" : {
+        "types" : ["*"],
+        "versions" : ["*"],
+        "qooxdoo-versions" : ["*"]
+      }
+    }
+    */    
   }
 }
