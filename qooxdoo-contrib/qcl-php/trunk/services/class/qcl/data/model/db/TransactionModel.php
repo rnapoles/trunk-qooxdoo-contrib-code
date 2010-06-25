@@ -112,7 +112,6 @@ class qcl_data_model_db_TransactionModel
     }
     catch ( qcl_data_model_RecordNotFoundException $e)
     {
-      $this->debug("Creating transaction entry ",__CLASS__,__LINE__);
       $this->create( array(
         'class'         => $class,
         'datasource'    => $datasource,
