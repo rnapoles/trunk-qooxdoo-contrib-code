@@ -53,17 +53,42 @@ class qcl_config_Service
    */
   function method_set( $key, $value )
   {
+    $configModel = $this->getApplication()->getConfigModel();
 
     /*
-     * set key
+     * check key
      */
-    $configModel = $this->getApplication()->getConfigModel();
-    $configModel->setKey( $key, $value );
+    if ( ! $configModel->keyExists( $key ) )
+    {
+      throw new JsonRpcException("Configuration key '$key' does not exist");
+    }
+    if ( ! $configModel->valueIsEditable( $key ) )
+    {
+      throw new JsonRpcException("The value of configuration key '$key' is not editable");
+    }
+
+    /*
+     * if value is customizable, set the user variant of the key
+     */
+    if ( $configModel->valueIsCustomizable( $key ) )
+    {
+      $this->requirePermission("config.value.edit");
+      $configModel->setKey( $key, $value );
+    }
+
+    /*
+     * else, you need special permission to edit the default
+     */
+    else
+    {
+      $this->requirePermission("config.default.edit");
+      $configModel->setKeyDefault( $key, $value );
+    }
 
     /*
      * result
      */
-    return true;
+    return "OK";
   }
 
 

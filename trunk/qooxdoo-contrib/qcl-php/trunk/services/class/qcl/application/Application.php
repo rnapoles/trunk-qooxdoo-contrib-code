@@ -194,14 +194,7 @@ abstract class qcl_application_Application
     return qcl_server_Server::getInstance()->getServerInstance();
   }
 
-  /**
-   * Returns the config model singleton instance used by the application
-   * @return qcl_config_ConfigModel
-   */
-  public function getConfigModel()
-  {
-    return $this->getAccessController()->getConfigModel();
-  }
+
 
   /**
    * gets the locale controller and sets the default locale. default is
@@ -383,6 +376,40 @@ abstract class qcl_application_Application
       $xmlFile = new qcl_io_filesystem_local_File( "file://" . $path );
       $this->log( "     ... from $path" , QCL_LOG_APPLICATION );
       $model->import( new qcl_data_model_import_Xml( $xmlFile ) );
+    }
+  }
+
+  //-------------------------------------------------------------
+  // configuration
+  //-------------------------------------------------------------
+
+  /**
+   * Returns the config model singleton instance used by the application
+   * @return qcl_config_ConfigModel
+   */
+  public function getConfigModel()
+  {
+    return $this->getAccessController()->getConfigModel();
+  }
+
+  /**
+   * Sets up configuration keys if they do not already exist
+   * @param array Map of maps with the name of the config key as
+   * key and a map of "type","custom", "default", and "final" keys with values
+   * as value.
+   * @return void
+   */
+  public function setupConfigKeys( $map )
+  {
+    qcl_assert_array( $map, "Invalid map argument");
+    $configModel = $this->getConfigModel();
+    foreach( $map as $key => $data )
+    {
+      qcl_assert_valid_string( $key, "Invalid key $key");
+      qcl_assert_array_keys( $data, array("type","custom","default","final") );
+      $configModel->createKeyIfNotExists(
+        $key, $data['type'], $data['custom'], $data['default'], $data['final']
+      );
     }
   }
 
