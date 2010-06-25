@@ -22,6 +22,14 @@ qcl_import( "qcl_access_model_User" );
 qcl_import( "qcl_config_UserConfigModel" );
 
 /*
+ * constants
+ */
+define( "QCL_CONFIG_TYPE_STRING",   "string");
+define( "QCL_CONFIG_TYPE_NUMBER",   "number");
+define( "QCL_CONFIG_TYPE_BOOLEAN",  "boolean");
+define( "QCL_CONFIG_TYPE_LIST",     "list");
+
+/*
  * exceptions
  */
 class qcl_config_Exception extends JsonRpcException {}
