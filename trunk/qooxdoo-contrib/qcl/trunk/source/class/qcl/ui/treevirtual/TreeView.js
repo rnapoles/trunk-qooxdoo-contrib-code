@@ -223,7 +223,18 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       check : "Boolean",
       init  : false,
       event : "changeAllowReorderOnly"
-    }   
+    },
+   
+    /**
+     * Whether the tree columns should have headers. This works only
+     * when set before the creation of the tree - it is not dynamically
+     * toggable.
+     */
+    showColumnHeaders :
+    {
+      check : "Boolean",
+      init  : true
+    }
    
    
   },
@@ -449,12 +460,13 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      
      /*
       * optionally hide header column
-      * @todo doesn't work yet
       */
-     tree.addListener("appear", function(){
-        // @todo: remove table header
-       //tree.setHeaderCellHeight(0);
-     },this);
+    tree.addListener("appear", function(){
+      if( ! this.getShowColumnHeaders() )
+      {
+        tree.setHeaderCellsVisible(false);
+      }
+    },this);
 
      /*
       * event listeners
