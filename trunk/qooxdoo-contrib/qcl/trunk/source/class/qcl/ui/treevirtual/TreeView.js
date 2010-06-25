@@ -439,11 +439,18 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      tree.addListener("dragend", this._on_dragend, this );
      tree.addListener("drop", this._on_drop, this );
      
+     /*
+      * configure columns
+      */
      tree.getTableColumnModel().getBehavior().setMinWidth( 0, 80 );
-     tree.getTableColumnModel().getBehavior().setWidth( 0, "10*" );
+     tree.getTableColumnModel().getBehavior().setWidth( 0, "8*" );
      tree.getTableColumnModel().getBehavior().setMinWidth( 1, 20 );
      tree.getTableColumnModel().getBehavior().setWidth( 1, "1*" );     
      
+     /*
+      * optionally hide header column
+      * @todo doesn't work yet
+      */
      tree.addListener("appear", function(){
         // @todo: remove table header
        //tree.setHeaderCellHeight(0);
