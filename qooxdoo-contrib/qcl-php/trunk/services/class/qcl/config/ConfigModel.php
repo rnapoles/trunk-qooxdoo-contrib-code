@@ -21,10 +21,11 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
 /**
  * Configuration management class, using a database backend
  * FIXME override set() method to secure 'final' config values.
+ * @todo replace checkKey() with try/catch to avoid unneccessary lookups.
  */
 class qcl_config_ConfigModel
   extends qcl_data_model_db_NamedActiveRecord
-//  implements qcl_config_IConfigModel
+//  implements qcl_config_IConfigModel FIXME
 {
 
   /**
@@ -332,6 +333,26 @@ class qcl_config_ConfigModel
     return $userModel;
   }
 
+  //-------------------------------------------------------------
+  // overridden methods
+  //-------------------------------------------------------------
+
+  /**
+   * Overridden to avoid multiple lookups of the same value
+   * @see qcl_data_model_AbstractNamedActiveRecord#load()
+   * @return qcl_data_model_db_NamedActiveRecord
+   */
+  public function load( $key )
+  {
+    if ( $this->isLoaded() and $this->namedId() === $key)
+    {
+      return $this;
+    }
+    else
+    {
+      return parent::load( $key );
+    }
+  }
 
   //-------------------------------------------------------------
   // qcl_config_IConfigModel interface
@@ -452,6 +473,30 @@ class qcl_config_ConfigModel
     {
       throw new qcl_config_Exception("Config key '$key' cannot be changed.");
     }
+  }
+
+  /**
+   * Returns true if value of the key can be edited
+   * @param $key
+   * @return bool
+   */
+  public function valueIsEditable( $key )
+  {
+    $this->checkKey( $key );
+    $this->load( $key );
+    return ! $this->getFinal();
+  }
+
+  /**
+   * Returns true if value of the key is customizable by the user
+   * @param $key
+   * @return bool
+   */
+  public function valueIsCustomizable( $key )
+  {
+    $this->checkKey( $key );
+    $this->load( $key );
+    return $this->getCustomize();
   }
 
   /**
