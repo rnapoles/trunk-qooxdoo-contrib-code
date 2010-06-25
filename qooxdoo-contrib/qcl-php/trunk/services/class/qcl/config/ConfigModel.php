@@ -23,6 +23,8 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
  * FIXME override set() method to secure 'final' config values.
  * @todo replace checkKey() with try/catch to avoid unneccessary lookups.
  * @todo move operational code into manager and only leave model code here
+ * @todo distinguish between config values that are always sent to the client
+ * and those which are requested only on demand
  */
 class qcl_config_ConfigModel
   extends qcl_data_model_db_NamedActiveRecord
