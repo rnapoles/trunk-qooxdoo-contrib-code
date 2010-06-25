@@ -118,7 +118,10 @@ class qcl_data_model_AbstractNamedActiveRecord
     /*
      * log message
      */
-    $this->log( sprintf( "Created new model record '%s'.", $this ), QCL_LOG_MODEL );
+    if ( $this->getLogger()->isFilterEnabled ( QCL_LOG_MODEL ) )
+    {
+      $this->log( sprintf( "Created new model record '%s'.", $this ), QCL_LOG_MODEL );
+    }
 
     /*
      * increment transaciton id since data has changed
@@ -208,7 +211,7 @@ class qcl_data_model_AbstractNamedActiveRecord
    * Loads a model record by numeric id or string-type named id.
    * Returns itself to allow chained method calling.
    * @param string|int $id
-   * @return qcl_data_model_db_ActiveRecord
+   * @return qcl_data_model_AbstractNamedActiveRecord
    * @throws qcl_data_model_RecordNotFoundException
    */
   public function load( $id )
@@ -259,7 +262,7 @@ class qcl_data_model_AbstractNamedActiveRecord
     {
       return parent::load( $id );
     }
-    $this->raiseError("Invalid parameter.");
+    throw new InvalidArgumentException("Invalid namedId argument.");
   }
 
   /**

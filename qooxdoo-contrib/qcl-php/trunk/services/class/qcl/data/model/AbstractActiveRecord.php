@@ -1163,6 +1163,15 @@ $this->debug($this->data(),__CLASS__,__LINE__);
     return $this->getTransactionModel()->incrementTransactionIdFor( $this );
   }
 
+  /**
+   * Reset the transaction id
+   * @return void
+   */
+  public function resetTransactionId()
+  {
+    return $this->getTransactionModel()->resetTransactionIdFor( $this );
+  }
+
   //-----------------------------------------------------------------------
   // Information on records/queries
   //-----------------------------------------------------------------------
