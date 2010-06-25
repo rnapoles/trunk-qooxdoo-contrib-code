@@ -215,7 +215,7 @@ qx.Class.define("qcl.application.ConfigManager",
       var index = this._index[key];
       if ( index == undefined )
       {
-        this.error("Invalid config key '" + key + "'.");
+        throw new Error("Invalid config key '" + key + "'.");
       }
       return index;
     },
@@ -289,6 +289,24 @@ qx.Class.define("qcl.application.ConfigManager",
     {
       this.getStore().load( null, null, callback, context );
     },
+    
+    /**
+     * Checks if a config key exists
+     * @param key {String}
+     * @return {Boolean}
+     */
+    keyExists : function( key )
+    {
+      try 
+      {
+        this._getIndex( key );
+        return true;
+      }
+      catch( e )
+      {
+        return false;
+      }
+    },
    
     /**
      * Returns a config value
@@ -297,7 +315,7 @@ qx.Class.define("qcl.application.ConfigManager",
      */
     getKey : function ( key )
     {
-      var index = this._getIndex(key);
+      var index = this._getIndex( key );
       return this.getModel().getValues().getItem( index );
     },
     
@@ -308,7 +326,7 @@ qx.Class.define("qcl.application.ConfigManager",
      */
     setKey : function (key, value)
     {
-       var index = this._getIndex(key);
+       var index = this._getIndex( key) ;
        var old = this.getModel().getValues().getItem( index );
        if ( value != old )
        {
