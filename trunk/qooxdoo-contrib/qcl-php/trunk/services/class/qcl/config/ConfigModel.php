@@ -22,6 +22,7 @@ qcl_import( "qcl_data_model_db_NamedActiveRecord" );
  * Configuration management class, using a database backend
  * FIXME override set() method to secure 'final' config values.
  * @todo replace checkKey() with try/catch to avoid unneccessary lookups.
+ * @todo move operational code into manager and only leave model code here
  */
 class qcl_config_ConfigModel
   extends qcl_data_model_db_NamedActiveRecord
@@ -87,7 +88,12 @@ class qcl_config_ConfigModel
    * types that config values may have
    * @var array
    */
-  protected $types = array("string","number","boolean","list");
+  protected $types = array(
+    QCL_CONFIG_TYPE_STRING,
+    QCL_CONFIG_TYPE_NUMBER,
+    QCL_CONFIG_TYPE_BOOLEAN,
+    QCL_CONFIG_TYPE_LIST
+  );
 
   /**
    * Results are cached for faster access
@@ -199,8 +205,31 @@ class qcl_config_ConfigModel
         if ( $phpType ) return $value == "true" ? true : false;
         return boolString($value);
       case "list" :
-        if ( $phpType ) return explode(",", $value);
-        return implode( ",", $value );
+        if ( $phpType )
+        {
+          switch ( gettype( $value ) )
+          {
+            case "string":
+              return explode(",", $value);
+            case "array":
+              return $value;
+            default:
+              throw new InvalidArgumentException("Type mismatch for '$type': value is " . typeof( $value, true ) );
+          }
+        }
+        else
+        {
+          switch ( gettype( $value ) )
+          {
+            case "string":
+              return $value;
+            case "array":
+              return implode( ",", $value );
+            default:
+              throw new InvalidArgumentException("Type mismatch for '$type': value is " . typeof( $value, true ) );
+          }
+        }
+
       case "string":
         if ( $phpType ) return strval($value);
         return (string) $value;
@@ -410,7 +439,8 @@ class qcl_config_ConfigModel
     /*
      * create new entry
      */
-		return $this->create( $key, $data);
+		return $this->create( $key, $data );
+
 	}
 
 	/**
@@ -466,7 +496,7 @@ class qcl_config_ConfigModel
     $this->load( $key );
     if ( ! $this->getFinal() )
     {
-      $this->setDefault( $this->castType( $value, $this->getType(), false ) );
+      $this->setDefault( $this->castType( $value, $this->keyType(), false ) );
       $this->save();
     }
     else
@@ -508,7 +538,7 @@ class qcl_config_ConfigModel
   {
     $this->checkKey( $key );
     $this->load( $key );
-    return $this->castType( $this->getDefault(), $this->getType(), true );
+    return $this->castType( $this->getDefault(), $this->keyType(), true );
   }
 
   /**
@@ -555,7 +585,7 @@ class qcl_config_ConfigModel
     {
       $value = $this->getDefault();
     }
-    $value = $this->castType( $value, $this->getType(), true );
+    $value = $this->castType( $value, $this->keyType(), true );
 
     /*
      * retrieve, cache and return value
@@ -615,7 +645,7 @@ class qcl_config_ConfigModel
      * convert value into format that can be stored into
      * the database
      */
-    $storeValue = $this->castType( $value, $this->getType(), false );
+    $storeValue = $this->castType( $value, $this->keyType(), false );
 
     /*
      * if the custom user value exists, update it,
@@ -684,24 +714,19 @@ class qcl_config_ConfigModel
   }
 
   /**
-   * Returns the type of a key
+   * Returns the type of a key, either of the currently loaded record
+   * or of the given key.
+   * @todo bad bad
    * @param string $key
    * @return string
    */
-  public function keyType( $key )
+  public function keyType( $key=null )
   {
-    $this->checkKey( $key );
-    $this->load( $key );
-    return $this->getType();
-  }
-
-
-  /**
-   * Returns the type of the currently loaded config key
-   * @return string
-   */
-  public function getType()
-  {
+    if ( $key !== null )
+    {
+      $this->checkKey( $key );
+      $this->load( $key );
+    }
     return $this->getTypeString( $this->_get("type") );
   }
 
@@ -734,7 +759,7 @@ class qcl_config_ConfigModel
     {
       $keys[]   = $key;
       $values[] = $this->getKey( $key, $userId );
-      $types[]  = $this->getType();
+      $types[]  = $this->keyType();
     }
 
 		return array(
