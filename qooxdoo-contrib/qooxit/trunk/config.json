@@ -30,7 +30,7 @@
   "let" :
   {
     "APPLICATION"  : "qooxit",
-    "QOOXDOO_PATH" : "../../../../../trunk/qooxdoo",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
     "QXTHEME"      : "qooxit.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
