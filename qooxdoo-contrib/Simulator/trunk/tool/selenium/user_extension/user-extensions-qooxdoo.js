@@ -1363,7 +1363,7 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
  * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "selectFromBox=[@label=Germany]");
  * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "selectFromBox=child[2]");
  * 
- * Checkboxes (qx.ui.table.celleditor.ComboBox): Use the "toggleCheckBox" 
+ * Checkboxes (qx.ui.table.celleditor.CheckBox): Use the "toggleCheckBox" 
  * parameter. Example:
  * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "toggleCheckBox=foo");
  * (toggleCheckBox needs a value to be recognized as a valid parameter even 
