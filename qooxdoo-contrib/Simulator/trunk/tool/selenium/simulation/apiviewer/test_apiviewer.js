@@ -47,6 +47,13 @@ simulation.Simulation.prototype.runTest = function()
   
   this.addOwnFunction("getSpanByContent", getSpanByContent);
   
+  var getInnerHtml = function(locator) {
+    var widget = selenium.getQxWidgetByLocator(locator);
+    return widget.getContentElement().getDomElement().innerHTML;
+  };
+  
+  this.addOwnFunction("getInnerHtml", getInnerHtml);
+  
   this.checkSearch();
   this.checkView("getActive", "Properties");
   this.checkView("addChildrenToQueue", "Inherited");
@@ -73,8 +80,7 @@ simulation.Simulation.prototype.runTest = function()
   
   if (clickedLink) {
     // Check if the HTML embed's content has changed.
-    var classViewerHtmlScript = selWin + '.document.getElementById("ClassViewer").innerHTML';
-    var classViewerHtml = this.getEval(classViewerHtmlScript);
+    var classViewerHtml = this.checkViewerContent();
     if (!(classViewerHtml.indexOf("qx.ui.core.Widget") > 0)) {
       this.log("Unexpected class viewer HTML content", "error");
     }
@@ -104,14 +110,29 @@ simulation.Simulation.prototype.checkSearch = function()
   Packages.java.lang.Thread.sleep(4000);
 
   // Check if the HTML embed's content has changed.
-  var classViewerHtmlScript = selWin + '.document.getElementById("ClassViewer").innerHTML';
-  var classViewerHtml = this.getEval(classViewerHtmlScript);
-  if (!(classViewerHtml.indexOf("qx.ui.window.Window") > 0)) {
+  var classViewerHtml = this.checkViewerContent();
+  if (!(classViewerHtml.indexOf("qx.ui.window") > 0)) {
     this.log("Unexpected class viewer HTML content", "error");
   }
   else {
     this.log("Successfully opened search result", "info");
   }  
+};
+
+simulation.Simulation.prototype.checkViewerContent = function()
+{
+  try {
+    var loc = 'qxh=[@classname="apiviewer.Viewer"]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tabview.TabView/qx.ui.container.Stack/child[1]/[@classname="apiviewer.ui.ClassViewer"]';
+    var html = this.__sel.getEval(selWin + ".qx.Simulation.getInnerHtml('" + loc + "')");
+    return html;
+  } catch(ex) {
+    try {
+      var classViewerHtmlScript = selWin + '.document.getElementById("ClassViewer").innerHTML';
+      return this.__sel.getEval(classViewerHtmlScript);
+    } catch(ex) {
+      return "";
+    }
+  }
 };
 
 simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
