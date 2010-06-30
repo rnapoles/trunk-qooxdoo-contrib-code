@@ -19,11 +19,11 @@
  *
  * The namespace used is *http://www.w3.org/2000/svg*.
  */
-qx.Class.define("svg.Element",
+qx.Class.define("svg.core.Element",
 {
   extend : qx.html.Element,
   
-  include : [ svg.struct.MTitleDescription ],
+  include : [ svg.core.MTitleDescription ],
 
 
   /**
@@ -42,7 +42,7 @@ qx.Class.define("svg.Element",
    */
   construct : function(tagName, styles, attributes)
   {
-    this.__svgElement = document.createElementNS(svg.Element.SVG_NAMESPACE, tagName);
+    this.__svgElement = document.createElementNS(svg.core.Element.SVG_NAMESPACE, tagName);
     this.base(arguments, tagName, styles, attributes);
   },
 

@@ -23,7 +23,7 @@
  */
 qx.Class.define("svg.shape.Polygon",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MFill,
               svg.attributes.MStroke,

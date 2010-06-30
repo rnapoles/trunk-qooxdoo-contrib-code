@@ -37,7 +37,7 @@
  */
 qx.Class.define("svg.struct.Symbol",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MViewBox,
               svg.attributes.MPreserveAspectRatio,

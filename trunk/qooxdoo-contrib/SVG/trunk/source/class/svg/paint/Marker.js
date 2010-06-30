@@ -31,7 +31,7 @@
  */
 qx.Class.define("svg.paint.Marker",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MFill,
               svg.attributes.MStroke,
