@@ -17,7 +17,7 @@
       }
     ],
 
-    "version" : "trunk",
+    "version" : "0.2",
     "qooxdoo-versions": ["1.0","1.1","trunk"]
   },
   
@@ -28,7 +28,7 @@
     "class"       : "source/class",
     "resource"    : "source/resource",
     "translation" : "source/translation",
-    "type"        : "contribution"
+    "type"        : "backend"
   }
 }
 
