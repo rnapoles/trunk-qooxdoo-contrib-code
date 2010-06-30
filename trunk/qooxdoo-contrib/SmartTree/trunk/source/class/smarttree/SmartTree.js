@@ -1,8 +1,8 @@
 /* ************************************************************************
 
    Copyright:
-     (c) 2010 Derrell Lipman <derrell.lipman@unwireduniverse.com>,
-     (c) 2010 David Baggett
+     (c) 2010 Derrell Lipman
+     (c) 2010 Arcode Corporation
      
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
