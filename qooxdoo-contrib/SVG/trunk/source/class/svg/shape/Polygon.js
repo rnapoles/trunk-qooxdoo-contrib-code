@@ -14,11 +14,14 @@
 ************************************************************************ */
 
 /**
- * A set of connected straight line segments. Typically, Polylines define open shapes.
+ * A closed shape consisting of a set of connected straight line segments.
  *
- * More info: http://www.w3.org/TR/SVG/shapes.html#PolylineElement
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/shapes.html#PolygonElement</li>
+ * </ul>
  */
-qx.Class.define("svg.Polyline",
+qx.Class.define("svg.shape.Polygon",
 {
   extend : svg.Element,
   
@@ -38,13 +41,13 @@ qx.Class.define("svg.Polyline",
    *   the name of the attribute and the value is the value to use.
    */
   construct : function(styles, attributes) {
-    this.base(arguments, "polyline", styles, attributes);
+    this.base(arguments, "polygon", styles, attributes);
   },
 
   members :
   {
     /**
-     * The points that make up the polyline. All coordinate values are in the
+     * The points that make up the polygon. All coordinate values are in the
      *  user coordinate system.
      *
      *  More info: http://www.w3.org/TR/SVG11/shapes.html#PointsBNF
@@ -58,7 +61,7 @@ qx.Class.define("svg.Polyline",
 
 
     /**
-     * Gets the list of points that make up the polyline.
+     * Gets the list of points that make up the polygon.
      *
      * @return {String} TODOC
      * @see #setPoints

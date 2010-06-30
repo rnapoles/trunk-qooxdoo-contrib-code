@@ -14,6 +14,8 @@
 ************************************************************************ */
 
 /**
+ * Control uniform scaling.
+ * 
  * In some cases, typically when using the viewBox attribute, it is desirable that the
  * graphics stretch to fit non-uniformly to take up the entire viewport. In other cases,
  * it is desirable that uniform scaling be used for the purposes of preserving the
@@ -21,7 +23,10 @@
  *
  * Attribute preserveAspectRatio indicates whether or not to force uniform scaling.
  *
- * More info: http://www.w3.org/TR/SVG11/coords.html#PreserveAspectRatioAttribute
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/coords.html#PreserveAspectRatioAttribute</li>
+ * </ul>
  */
 qx.Mixin.define("svg.attributes.MPreserveAspectRatio",
 {

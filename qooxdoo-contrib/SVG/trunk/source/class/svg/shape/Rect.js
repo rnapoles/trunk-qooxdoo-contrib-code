@@ -17,10 +17,12 @@
  * A rectangle. Rounded rectangles can be achieved by setting appropriate values
  * for attributes rx and ry.
  *
- * More info: http://www.w3.org/TR/SVG/shapes.html#RectElement
- *
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElement</li>
+ * </ul>
  */
-qx.Class.define("svg.Rect",
+qx.Class.define("svg.shape.Rect",
 {
   extend : svg.Element,
   

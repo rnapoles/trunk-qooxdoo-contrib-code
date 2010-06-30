@@ -18,12 +18,15 @@
  * usually used as the "d" attribute of a path element.
  *
  * While it is possible to write path data by hand, using this class
- * you take advantage of Svg's path shortcuts and therefore create
- * compact data.
+ * will make the job a little easier while also taking advantage
+ * of SVG's path shortcuts.
  *
- * More info: http://www.w3.org/TR/SVG11/paths.html#PathData
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/paths.html#PathData</li>
+ * </ul>
  */
-qx.Class.define("svg.util.PathData",
+qx.Class.define("svg.path.PathData",
 {
   extend : qx.core.Object,
 
@@ -213,7 +216,7 @@ qx.Class.define("svg.util.PathData",
      * @param x {Number} x-coordinate of end point
      * @param relative {Boolean ? false} *false*: x is an absolute coordinate.
      *    *true*: x is specified relative to the current pen location.
-     * @return {svg.util.PathData} this object (for chaining support)
+     * @return {svg.path.PathData} this object (for chaining support)
      */
     lineToX : function(x, relative)
     {

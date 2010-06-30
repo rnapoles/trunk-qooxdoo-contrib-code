@@ -14,9 +14,12 @@
 ************************************************************************ */
 
 /**
- * Adds marker properties to shapes and paths that support markers.
+ * Add marker properties to shapes and paths that support markers.
  *
- * More info: http://www.w3.org/TR/SVG11/painting.html#MarkerProperties
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerProperties</li>
+ * </ul>
  */
 qx.Mixin.define("svg.attributes.MMarkerProperties",
 {

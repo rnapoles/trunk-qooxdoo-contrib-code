@@ -14,20 +14,20 @@
 ************************************************************************ */
 
 /**
- * An ellipse based on a center point and two radii.
- * 
- * The ellipse is axis-aligned with the current user coordinate system.
+ * A circle based on a center point and a radius.
  *
- * More info: http://www.w3.org/TR/SVG/shapes.html#EllipseElement
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElement</li>
+ * </ul>
  */
-qx.Class.define("svg.Ellipse",
+qx.Class.define("svg.shape.Circle",
 {
   extend : svg.Element,
   
   include : [ svg.attributes.MFill,
               svg.attributes.MStroke,
               svg.attributes.MTransform ],
-
 
   /**
    * @param styles {Map?null}
@@ -39,13 +39,13 @@ qx.Class.define("svg.Ellipse",
    *   the name of the attribute and the value is the value to use.
    */
   construct : function(styles, attributes) {
-    this.base(arguments, "ellipse", styles, attributes);
+    this.base(arguments, "circle", styles, attributes);
   },
 
   members :
   {
     /**
-     * The x-axis coordinate of the center of the ellipse. If the attribute is not
+     * The x-axis coordinate of the center of the circle. If the attribute is not
      *  specified, the effect is as if a value of "0" were specified.
      *
      * @param coordinate {Integer} value to set
@@ -57,10 +57,10 @@ qx.Class.define("svg.Ellipse",
 
 
     /**
-     * Gets the x-axis coordinate of the center of the ellipse.
+     * Gets the x-axis coordinate of the center of the circle.
      *
      * @return {Integer} TODOC
-     * @see #setX
+     * @see #setCx
      */
     getCx : function() {
       return this.getAttribute("cx");
@@ -68,7 +68,7 @@ qx.Class.define("svg.Ellipse",
 
 
     /**
-     * The y-axis coordinate of the center of the ellipse. If the attribute is not
+     * The y-axis coordinate of the center of the circle. If the attribute is not
      *  specified, the effect is as if a value of "0" were specified.
      *
      * @param coordinate {Integer} value to set
@@ -80,10 +80,10 @@ qx.Class.define("svg.Ellipse",
 
 
     /**
-     * Gets the y-axis coordinate of the center of the ellipse.
+     * Gets the y-axis coordinate of the center of the circle.
      *
      * @return {Integer} TODOC
-     * @see #setY
+     * @see #setCy
      */
     getCy : function() {
       return this.getAttribute("cy");
@@ -91,48 +91,25 @@ qx.Class.define("svg.Ellipse",
 
 
     /**
-     * The x-axis radius of the ellipse. A negative value is an error. A value of zero
-     *  disables rendering of the element.
+     * The radius of the circle. A negative value is an error. A value of zero disables
+     *  rendering of the element.
      *
      * @param length {Integer} value to set
      * @return {void}
      */
-    setXradius : function(length) {
-      this.setAttribute("rx", length);
+    setRadius : function(length) {
+      this.setAttribute("r", length);
     },
 
 
     /**
-     * Gets the x-axis radius of the ellipse.
+     * Gets the radius of the circle.
      *
      * @return {Integer} TODOC
-     * @see #setXradius
+     * @see #setRadius
      */
-    getXradius : function() {
-      return this.getAttribute("rx");
-    },
-
-
-    /**
-     * The y-axis radius of the ellipse. A negative value is an error. A value of zero
-     *  disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setYradius : function(length) {
-      this.setAttribute("ry", length);
-    },
-
-
-    /**
-     * Gets the y-axis radius of the ellipse.
-     *
-     * @return {Integer} TODOC
-     * @see #setYradius
-     */
-    getYradius : function() {
-      return this.getAttribute("ry");
+    getRadius : function() {
+      return this.getAttribute("r");
     }
   }
 });

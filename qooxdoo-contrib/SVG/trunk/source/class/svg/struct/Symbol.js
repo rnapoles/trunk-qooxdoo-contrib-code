@@ -17,7 +17,7 @@
  * Defines graphical template objects which can be instantiated by a {@link svg.Use} element.
  *
  * The use of Symbols for graphics that are used multiple times in the same document adds
- * structure and semantics.
+ * struct and semantics.
  *
  * The key distinctions between a symbol and a {@link svg.Group} are:
  * <ul>
@@ -30,9 +30,12 @@
  *   </li>
  * </ul>
  *
- * More info: http://www.w3.org/TR/SVG/struct.html#SymbolElement
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/struct.html#SymbolElement</li>
+ * </ul>
  */
-qx.Class.define("svg.Symbol",
+qx.Class.define("svg.struct.Symbol",
 {
   extend : svg.Element,
   

@@ -32,7 +32,7 @@ qx.Class.define("svg.embed.Svg",
    */
   construct : function(styles, attributes)
   {
-    this.__svg = new svg.Svg(styles, attributes);
+    this.__svg = new svg.struct.Svg(styles, attributes);
     this.base(arguments);
     this.setBackgroundColor("white");
   },
@@ -44,7 +44,7 @@ qx.Class.define("svg.embed.Svg",
     /**
      * Overrides {@link qx.ui.core.Widget#_createContentElement}
      *
-     * @return {svg.Svg}
+     * @return {svg.struct.Svg}
      */
     _createContentElement : function() {
       return this.__svg;
@@ -54,7 +54,8 @@ qx.Class.define("svg.embed.Svg",
     /**
      * Gets the SVG root element of the drawing.
      *
-     * @return {svg.Svg} TODOC
+     * @return {svg.struct.Svg}
+     *   The SVG document fragment that is the root of the widget's content.
      */
     getSvg : function() {
       return this.__svg;

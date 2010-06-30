@@ -16,16 +16,19 @@
 /**
  * A container element for grouping together related graphics elements.
  *
- * Grouping constructs provides information about document structure and semantics.
+ * Grouping constructs provides information about document struct and semantics.
  *
  * A group of elements, as well as individual objects, can be given a name using the id
  * attribute. Named groups are needed for several purposes such as animation and re-usable
  * objects.
  *
- * More info: http://www.w3.org/TR/SVG11/struct.html#Groups
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/struct.html#Groups</li>
+ * </ul>
  *
  */
-qx.Class.define("svg.Group",
+qx.Class.define("svg.struct.Group",
 {
   extend : svg.Element,
 

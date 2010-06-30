@@ -15,16 +15,19 @@
 
 /**
  * It is often desirable to specify that a given set of graphics stretch to fit a
- * particular container element. The viewBox attribute provides this capability.
+ * particular container element. The _viewBox_ attribute provides this capability.
  *
- * The value of the viewBox attribute is a list of four numbers <min-x>, <min-y>, <width> and
- * <height>, separated by whitespace and/or a comma, which specify a rectangle in user
+ * The value of the viewBox attribute is a list of four numbers _min-x_, _min-y_, _width_ and
+ * _height_, separated by whitespace and/or a comma, which specify a rectangle in user
  * space which should be mapped to the bounds of the viewport established by the given
  * element, taking into account attribute preserveAspectRatio. If specified, an
  * additional transformation is applied to all descendants of the given element to achieve
  * the specified effect.
  *
- * More info: http://www.w3.org/TR/SVG11/coords.html#ViewBoxAttribute
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/coords.html#ViewBoxAttribute</li>
+ * </ul>
  */
 qx.Mixin.define("svg.attributes.MViewBox",
 {

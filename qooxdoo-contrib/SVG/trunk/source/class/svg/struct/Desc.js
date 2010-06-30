@@ -14,19 +14,22 @@
 ************************************************************************ */
 
 /**
- * A SVG &lt;desc&gt; element.
+ * A description element that can be added to any SVG element. The content will not
+ * be displayed on the screen.
+ * 
+ * It is recommended to use {@link svg.struct.MTitleDescription#setDescription}
+ * instead of using this class directly.
  *
- * In SVG, all elements can have a 'desc' element as a child. The content will not
- * be displayed on the screen. The implementation of this element is left to the
- * SVG viewer.
- *
- * More info: http://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements</li>
+ * </ul>
  */
-qx.Class.define("svg.core.Desc",
+qx.Class.define("svg.struct.Desc",
 {
   extend : svg.Element,
   
-  include : [ svg.core.MTextContainer ],
+  include : [ svg.struct.MTextContainer ],
 
 
   /**

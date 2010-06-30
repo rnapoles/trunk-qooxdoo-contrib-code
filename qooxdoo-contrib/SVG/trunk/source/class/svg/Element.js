@@ -14,20 +14,20 @@
 ************************************************************************ */
 
 /**
- * Managed wrapper for an element that resides in the svg namespace. Using the correct
+ * An element that resides in the SVG namespace. Using the correct
  * SVG namespace is required for embedding SVG into XHTML.
  *
- * The namespace is *http://www.w3.org/2000/svg*
+ * The namespace used is *http://www.w3.org/2000/svg*.
  */
 qx.Class.define("svg.Element",
 {
   extend : qx.html.Element,
   
-  include : [ svg.attributes.MTitleDescription ],
+  include : [ svg.struct.MTitleDescription ],
 
 
   /**
-   * Constructs a new element that resides in the svg namespace.
+   * Constructs a new element that resides in the SVG namespace.
    *
    * @param tagName {String}
    *   Tag name of the element to create.

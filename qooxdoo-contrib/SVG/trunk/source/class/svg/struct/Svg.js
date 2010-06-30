@@ -15,25 +15,20 @@
 
 /**
  * An SVG document fragment.
- *
- * An SVG document fragment consists of any number of SVG elements contained within
- * an {@link svg.Svg} element.
- *
- * An SVG document fragment can range from an empty fragment (i.e., no content inside
- * of the 'svg' element), to a very simple SVG document fragment containing a single
- * SVG graphics element such as a 'rect', to a complex, deeply nested collection of
- * container elements and graphics elements.
- *
- * 'svg' elements can appear in the middle of SVG content. This is the mechanism by
- * which SVG document fragments can be embedded within other SVG document fragments.
- *
- * Another use for 'svg' elements within the middle of SVG content is to establish a
- * new viewport. (See <a href="http://www.w3.org/TR/SVG11/coords.html#EstablishingANewViewport">
- * Establishing a new viewport</a>.)
- *
- * More info: http://www.w3.org/TR/SVG/struct.html#SVGElement
+ * 
+ * The SVG element is the root element of any SVG document. It can also appear
+ * in the middle of SVG content. This allows SVG document fragments to be
+ * embedded within other SVG document fragments.
+ * 
+ * The SVG element can also be used to establish a new viewport.
+ * 
+ * More info:
+ * <ul>
+ *   <li><b>SVG element:</b> http://www.w3.org/TR/SVG/struct.html#SVGElement</li> 
+ *   <li><b>Viewport:</b> http://www.w3.org/TR/SVG11/coords.html#EstablishingANewViewport</li> 
+ *  </ul>
  */
-qx.Class.define("svg.Svg",
+qx.Class.define("svg.struct.Svg",
 {
   extend : svg.Element,
   
