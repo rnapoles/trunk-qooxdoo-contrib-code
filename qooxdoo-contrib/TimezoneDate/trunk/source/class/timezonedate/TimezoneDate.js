@@ -374,6 +374,496 @@ qx.Class.define("timezonedate.TimezoneDate",
       return this.__date.getTime();
     },
     
+    getTimezoneOffset : function()
+    {
+      return this.constructor.__timezoneOffset;
+    },
+
+    /**
+     * Set the day of month field of the date
+     *
+     * @param dayOfMonth {Integer}
+     *   The day of the month, in the range 1-31
+     */
+    setDate : function(dayOfMonth)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + dayOfMonth).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 7) + newpart + dateString.slice(9);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(value));
+    },
+
+    /**
+     * Set the day of month field of the date (universal time)
+     *
+     * @param dayOfMonth {Integer}
+     *   The day of the month, in the range 1-31
+     */
+    setUTCDate : function(dayOfMonth)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + dayOfMonth).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 7) + newpart + dateString.slice(9);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(value));
+    },
+
+    /**
+     * Set the year field of the date
+     *
+     * @param year {Integer}
+     *   The year to set
+     *
+     * @param month {Integer|null}
+     *   The month to set, in the range 0-11
+     *
+     * @param dayOfMonth {Integer|null}
+     *   The day of month to set, in the range 1-31
+     */
+    setFullYear : function(year, month, day)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("0000" + year).slice(-4);
+      
+      // Splice the new part in to the formatted date
+      dateString = newpart + dateString.slice(4);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(value));
+      
+      // If the month was specified...
+      if (month !== undefined)
+      {
+        // ... set it too
+        this.setMonth(month);
+      }
+
+      // If the optional day of month was specified...
+      if (dayOfMonth !== undefined)
+      {
+        // ... set it too
+        this.setDate(dayOfMonth);
+      }
+    },
+
+    /**
+     * Set the year field of the date (universal time)
+     *
+     * @param year {Integer}
+     *   The year to set
+     *
+     * @param month {Integer|null}
+     *   The month to set, in the range 0-11
+     *
+     * @param dayOfMonth {Integer|null}
+     *   The day of month to set, in the range 1-31
+     */
+    setUTCFullYear : function(year)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("0000" + year).slice(-4);
+      
+      // Splice the new part in to the formatted date
+      dateString = newpart + dateString.slice(4);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(value));
+      
+      // If the month was specified...
+      if (month !== undefined)
+      {
+        // ... set it too
+        this.setMonth(month);
+      }
+
+      // If the optional day of month was specified...
+      if (dayOfMonth !== undefined)
+      {
+        // ... set it too
+        this.setDate(dayOfMonth);
+      }
+    },
+
+    /**
+     * Set the hours field of the date
+     *
+     * @param hours {Integer}
+     *   The hours to set, in the range 0-23
+     *
+     * @param minutes {Integer|null}
+     *   The minutes to set, in the range 0-59
+     *
+     * @param seconds {Integer|null}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setHours : function(hours, minutes, seconds, milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + hours).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 11) + newpart + dateString.slice(13);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional minutes was specified...
+      if (minutes !== undefined)
+      {
+        // ... set it too
+        this.setMinutes(minutes);
+      }
+
+      // If the optional seconds was specified...
+      if (seconds !== undefined)
+      {
+        // ... set it too
+        this.setSeconds(seconds);
+      }
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this.setMilliseconds(milliseconds);
+      }
+    },
+
+    /**
+     * Set the hours field of the date (universal time)
+     *
+     * @param hours {Integer}
+     *   The hours to set, in the range 0-23
+     *
+     * @param minutes {Integer|null}
+     *   The minutes to set, in the range 0-59
+     *
+     * @param seconds {Integer|null}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setUTCHours : function(hours)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + hours).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 11) + newpart + dateString.slice(13);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional minutes was specified...
+      if (minutes !== undefined)
+      {
+        // ... set it too
+        this.setMinutes(minutes);
+      }
+
+      // If the optional seconds was specified...
+      if (seconds !== undefined)
+      {
+        // ... set it too
+        this.setSeconds(seconds);
+      }
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this.setMilliseconds(milliseconds);
+      }
+    },
+
+    /**
+     * Set the milliseconds field of the date
+     *
+     * @param milliseconds {Integer}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setMilliseconds : function(milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = (milliseconds + "000").slice(0, 3);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 20) + newpart + dateString.slice(23);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+    },
+
+    /**
+     * Set the milliseconds field of the date (universal time)
+     *
+     * @param milliseconds {Integer}
+     *   The hours to set, in the range 0-23
+     */
+    setUTCMilliseconds : function(hours)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = (milliseconds + "000").slice(0, 3);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 20) + newpart + dateString.slice(23);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+    },
+
+    /**
+     * Set the minutes field of the date
+     *
+     * @param minutes {Integer}
+     *   The minutes to set, in the range 0-59
+     *
+     * @param seconds {Integer|null}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setMinutes : function(minutes, seconds, milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + minutes).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 14) + newpart + dateString.slice(16);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional seconds was specified...
+      if (seconds !== undefined)
+      {
+        // ... set it too
+        this.setSeconds(seconds);
+      }
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this.setMilliseconds(milliseconds);
+      }
+    },
+
+    /**
+     * Set the minutes field of the date (universal time)
+     *
+     * @param minutes {Integer}
+     *   The minutes to set, in the range 0-59
+     *
+     * @param seconds {Integer|null}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setUTCMinutes : function(minutes, seconds, milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + minutes).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 14) + newpart + dateString.slice(16);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional seconds was specified...
+      if (seconds !== undefined)
+      {
+        // ... set it too
+        this.setSeconds(seconds);
+      }
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this.setMilliseconds(milliseconds);
+      }
+    },
+
+    /**
+     * Set the month field of the date
+     *
+     * @param month {Integer}
+     *   The month to set, in the range 0-11
+     *
+     * @param dayOfMonth {Integer|null}
+     *   The day of the month, in the range 1-31
+     */
+    setMonth : function(month, dayOfMonth)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the minutes parameter to an appropriate string
+      var newpart = ("00" + (month + 1)).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional day of month was specified...
+      if (dayOfMonth !== undefined)
+      {
+        // ... set it too
+        this.setDate(dayOfMonth);
+      }
+    },
+
+    /**
+     * Set the month field of the date (universal time)
+     *
+     * @param month {Integer}
+     *   The month to set, in the range 0-11
+     */
+    setUTCMonth : function(month, dayOfMonth)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + (month + 1)).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional day of month was specified...
+      if (dayOfMonth !== undefined)
+      {
+        // ... set it too
+        this.setDate(dayOfMonth);
+      }
+    },
+
+    /**
+     * Set the seconds field of the date
+     *
+     * @param seconds {Integer}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setSeconds : function(seconds, milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the minutes parameter to an appropriate string
+      var newpart = ("00" + seconds).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 17) + newpart + dateString.slice(19);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this.setMilliseconds(milliseconds);
+      }
+    },
+
+    /**
+     * Set the seconds field of the date (universal time)
+     *
+     * @param seconds {Integer}
+     *   The month to set, in the range 0-11
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setUTCSeconds : function(seconds, milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(0,
+                                   this.constructor._formatIso8601);
+
+      // Convert the parameter to an appropriate string
+      var newpart = ("00" + seconds).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this.setMilliseconds(milliseconds);
+      }
+    },
+
     /**
      * Format a date.
      *
@@ -437,16 +927,12 @@ qx.Class.define("timezonedate.TimezoneDate",
       }
       catch (e)
       {
-        this.debug("Failed to parse as RFC2822; trying ISO8601.");
-
         try
         {
           time = this.__parseIso8601(dateString);
         }
         catch (e)
         {
-          this.debug("Failed to parse as ISO8601; trying native Date parse.");
-          
           return Date.parse(dateString);
         }
       }
@@ -469,13 +955,13 @@ qx.Class.define("timezonedate.TimezoneDate",
           "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
         ];
       var dayName = dayNames[date.getUTCDay()];
-      var day = ("00" + date.getUTCDate()).substr(-2);
+      var day = ("00" + date.getUTCDate()).slice(-2);
       var monthName = 
         timezonedate.TimezoneDate.__monthNames[date.getUTCMonth()];
-      var year = ("0000" + date.getUTCFullYear()).substr(-4);
-      var hours = ("00" + date.getUTCHours()).substr(-2);
-      var minutes = ("00" + date.getUTCMinutes()).substr(-2);
-      var seconds = ("00" + date.getUTCSeconds()).substr(-2);
+      var year = ("0000" + date.getUTCFullYear()).slice(-4);
+      var hours = ("00" + date.getUTCHours()).slice(-2);
+      var minutes = ("00" + date.getUTCMinutes()).slice(-2);
+      var seconds = ("00" + date.getUTCSeconds()).slice(-2);
       var timezone;
       
       // Was a timezone specified, or was it 0?
@@ -493,8 +979,8 @@ qx.Class.define("timezonedate.TimezoneDate",
 timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", offsetHours=" + offsetHours);
         timezone = 
           offsetSign +
-          ("00" + offsetHours).substr(-2) +
-          ("00" + offsetMinutes).substr(-2);
+          ("00" + offsetHours).slice(-2) +
+          ("00" + offsetMinutes).slice(-2);
       }
       
       return (
@@ -506,12 +992,13 @@ timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", o
     
     _formatIso8601 : function(date, tzOffset)
     {
-      var year = ("0000" + date.getUTCFullYear()).substr(-4);
-      var month = ("00" + (date.getUTCMonth() + 1)).substr(-2);
-      var day = ("00" + date.getUTCDate()).substr(-2);
-      var hours = ("00" + date.getUTCHours()).substr(-2);
-      var minutes = ("00" + date.getUTCMinutes()).substr(-2);
-      var seconds = ("00" + date.getUTCSeconds()).substr(-2);
+      var year = ("0000" + date.getUTCFullYear()).slice(-4);
+      var month = ("00" + (date.getUTCMonth() + 1)).slice(-2);
+      var day = ("00" + date.getUTCDate()).slice(-2);
+      var hours = ("00" + date.getUTCHours()).slice(-2);
+      var minutes = ("00" + date.getUTCMinutes()).slice(-2);
+      var seconds = ("00" + date.getUTCSeconds()).slice(-2);
+      var milliseconds = (date.getUTCMilliseconds() + "000").slice(0, 3);
       var timezone;
 
       // Was a timezone specified, or was it 0?
@@ -528,14 +1015,14 @@ timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", o
         var offsetMinutes = tzOffset % 60;
         timezone = 
           offsetSign +
-          ("00" + offsetHours).substr(-2) +
+          ("00" + offsetHours).slice(-2) +
           ":"
-          ("00" + offsetMinutes).substr(-2);
+          ("00" + offsetMinutes).slice(-2);
       }
       
       return (
         year + "-" + month + "-" + day + 
-        "T" + hours + ":" + minutes + ":" + seconds +
+        "T" + hours + ":" + minutes + ":" + seconds + "." + milliseconds +
         timezone);
     },
     
@@ -646,8 +1133,8 @@ timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", o
       {
         // A numeric timezone was provided. Ensure hours and minutes values
         // are reasonable.
-        var offsetHours = numericTimezone.substr(1, 2);
-        var offsetMinutes = numericTimezone.substr(3, 2);
+        var offsetHours = numericTimezone.slice(1, 2);
+        var offsetMinutes = numericTimezone.slice(3, 2);
         
         if (offsetHours > 12 || offsetMinutes > 59)
         {
@@ -658,7 +1145,7 @@ timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", o
         timezoneOffset = (offsetHours * 60) + offsetMinutes;
         
         // If the offset was negative...
-        if (numericTimezone.substr(0, 1) == "-")
+        if (numericTimezone.slice(0, 1) == "-")
         {
           // ... then negate the timezone offset
           timezoneOffset = -timezoneOffset;
@@ -747,7 +1234,7 @@ timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", o
       var hours         = result[5] - 0;
       var minutes       = result[6] - 0;
       var seconds       = (result[8] || 0) - 0;
-      var fractional    = ((result[9] || 0) + "000").substr(0, 3) - 0;
+      var fractional    = ((result[9] || 0) + "000").slice(0, 3) - 0;
       var fullTimezone  = result[10];
       var offsetHours   = (result[12] || 0) - 0;
       var offsetMinutes = (result[13] || 0) - 0;
@@ -782,7 +1269,7 @@ timezonedate.TimezoneDate.debug("_formatRfc2822 got tzOffset=" + tzOffset + ", o
         timezoneOffset = (offsetHours * 60) + offsetMinutes;
         
         // If the offset was negative...
-        if (fullTimezone.substr(0, 1) == "-")
+        if (fullTimezone.slice(0, 1) == "-")
         {
           // ... then negate the timezone offset
           timezoneOffset = -timezoneOffset;
