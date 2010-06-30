@@ -14,9 +14,8 @@
 ************************************************************************ */
 
 /**
- * Adds stroking properties to elements that can be stroked (which means painting
- * along the outline of the object). Stroking can be thought of as a painting
- * operation.
+ * Add stroking properties to elements that can be stroked (which means painting
+ * along the outline of the object).
  *
  * With SVG, you can paint (i.e., fill or stroke) with:
  * <ul>
@@ -31,9 +30,11 @@
  * using a URI reference on a 'fill' property. Gradients, patterns
  * and solid colors are just specific types of paint servers.
  *
- * More info: http://www.w3.org/TR/SVG11/painting.html
- * Also see: http://www.w3.org/TR/SVG11/painting.html#StrokeProperties
- *
+ * More info:
+ * <ul>
+ *   <li><b>Stroke properties</b> http://www.w3.org/TR/SVG11/painting.html#StrokeProperties</li>
+ *   <li><b>Painting</b> http://www.w3.org/TR/SVG11/painting.html</li>
+ * </ul>
  */
 qx.Mixin.define("svg.attributes.MStroke",
 {

@@ -14,11 +14,15 @@
 ************************************************************************ */
 
 /**
- * A line segment that starts at one point and ends at another.
+ * A straight line segment.
  *
- * More info: http://www.w3.org/TR/SVG/shapes.html#LineElement
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/shapes.html#LineElement</li>
+ * </ul>
+ *  
  */
-qx.Class.define("svg.Line",
+qx.Class.define("svg.shape.Line",
 {
   extend : svg.Element,
   

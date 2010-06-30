@@ -24,9 +24,12 @@
  * 
  * @see svg.attributes.MMarkerProperties 
  *
- * More info: http://www.w3.org/TR/SVG11/painting.html#Markers
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/painting.html#Markers</li>
+ * </ul>
  */
-qx.Class.define("svg.Marker",
+qx.Class.define("svg.paint.Marker",
 {
   extend : svg.Element,
   

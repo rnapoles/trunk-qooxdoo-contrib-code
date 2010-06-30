@@ -14,10 +14,34 @@
 ************************************************************************ */
 
 /**
- * Provides easy access to the 'title' and 'desc' elements that can be set
- * on every svg element.
+ * Any SVG element can have a {@link svg.struct.Title} and/or
+ * {@link svg.struct.Desc} element as a child.
+ * 
+ * This mixin provides easy access to those elements.
+ * 
+ * Instead of writing:
+ * <pre>
+ * var title = new svg.struct.Title("MyElement");
+ * title.setValue();
+ * someElement.add(title);
+ *   
+ * var desc = new svg.struct.Desc();
+ * desc.setValue("This is my favourite element!");
+ * someElement.add(desc);
+ * </pre>
+ * 
+ * You can now write:
+ * <pre>
+ * someElement.setTitle("MyElement");
+ * someElement.setDescription("This is my favourite element!");
+ * </pre>
+ * 
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements</li>
+ * </ul>
  */
-qx.Mixin.define("svg.attributes.MTitleDescription",
+qx.Mixin.define("svg.struct.MTitleDescription",
 {
   members :
   {
@@ -34,7 +58,7 @@ qx.Mixin.define("svg.attributes.MTitleDescription",
     setTitle : function(value)
     {
       if (null == this.__titleElement) {
-        this.add(this.__titleElement = new svg.core.Title(value));
+        this.add(this.__titleElement = new svg.struct.Title(value));
       } else {
         this.__titleElement.setValue(value);
       }
@@ -65,7 +89,7 @@ qx.Mixin.define("svg.attributes.MTitleDescription",
     setDescription : function(value)
     {
       if (null == this.__descElement) {
-        this.add(this.__descElement = new svg.core.Desc(value));
+        this.add(this.__descElement = new svg.struct.Desc(value));
       } else {
         this.__descElement.setValue(value);
       }

@@ -17,9 +17,9 @@
  * Paths represent the outline of a shape which can be filled, stroked, used
  * as a clipping path, or any combination of the three.
  *
- * More info: http://www.w3.org/TR/SVG11/paths.html
+ * More info: http://www.w3.org/TR/SVG11/paths.html#Introduction
  */
-qx.Class.define("svg.Path",
+qx.Class.define("svg.path.Path",
 {
   extend : svg.Element,
   
@@ -48,12 +48,12 @@ qx.Class.define("svg.Path",
      *
      *  More info: http://www.w3.org/TR/SVG11/paths.html#PathData
      *
-     * @param d {String | svg.util.PathData} value to set
+     * @param d {String | svg.path.PathData} value to set
      * @return {void}
      */
     setPathData : function(d)
     {
-      if (d instanceof svg.util.PathData) {
+      if (d instanceof svg.path.PathData) {
         this.setAttribute("d", d.toString());
       } else {
         this.setAttribute("d", d);

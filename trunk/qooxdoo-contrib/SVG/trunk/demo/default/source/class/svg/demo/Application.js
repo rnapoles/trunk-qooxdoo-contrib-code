@@ -54,11 +54,11 @@ qx.Class.define("svg.demo.Application",
       var svgroot = svgWidget.getSvg();
 
       // create a defs section
-      var defs = new svg.Defs();
+      var defs = new svg.struct.Defs();
       svgroot.add(defs);
 
       // prepare a pattern for the grid
-      var gridPattern = new svg.Pattern();
+      var gridPattern = new svg.paint.Pattern();
       gridPattern.setId("gridPattern");
       gridPattern.setX(0);
       gridPattern.setY(0);
@@ -68,7 +68,7 @@ qx.Class.define("svg.demo.Application",
       defs.add(gridPattern);
 
       // prepare the grid pattern body
-      var gridPath = new svg.Path();
+      var gridPath = new svg.path.Path();
       gridPath.setStroke("black");
       gridPath.setStrokeWidth(0.25);
       gridPath.setFill("#EEF");
@@ -76,7 +76,7 @@ qx.Class.define("svg.demo.Application",
       gridPattern.add(gridPath);
 
       // create and add the grid
-      var gridRect = new svg.Rect();
+      var gridRect = new svg.shape.Rect();
       gridRect.setId("grid");
       gridRect.setWidth("100%");
       gridRect.setHeight("100%");
@@ -84,12 +84,12 @@ qx.Class.define("svg.demo.Application",
       svgroot.add(gridRect);
 
       // prepare a group for the circle chunks
-      var circleGroup = new svg.Group();
+      var circleGroup = new svg.struct.Group();
       circleGroup.setId("circle");
       svgroot.add(circleGroup);
 
       // create the big chunk
-      var bigChunk = new svg.Path();
+      var bigChunk = new svg.path.Path();
       bigChunk.setTitle("bigChunk");
       bigChunk.setDescription("test");
       bigChunk.setStroke("black");
@@ -98,7 +98,7 @@ qx.Class.define("svg.demo.Application",
       circleGroup.add(bigChunk);
 
       // create the pathdata for the big chunk
-      var bigChunkPD = new svg.util.PathData();
+      var bigChunkPD = new svg.path.PathData();
       bigChunkPD.moveTo(300, 200);
       bigChunkPD.lineTo(-150, 0, true);
       bigChunkPD.arc(150, 150, 0, true, false, 150, -150, true);
@@ -108,7 +108,7 @@ qx.Class.define("svg.demo.Application",
       bigChunk.setPathData(bigChunkPD);
 
       // create the small chunk
-      var smallChunk = new svg.Path();
+      var smallChunk = new svg.path.Path();
       smallChunk.setTitle("smallChunk");
       smallChunk.setStroke("black");
       smallChunk.setStrokeWidth(4);
@@ -116,7 +116,7 @@ qx.Class.define("svg.demo.Application",
       circleGroup.add(smallChunk);
 
       // create the pathdata for the small chunk
-      var smallChunkPD = new svg.util.PathData();
+      var smallChunkPD = new svg.path.PathData();
       smallChunkPD.moveTo(275, 175);
       smallChunkPD.lineTo(0, -150, true);
       smallChunkPD.arc(150, 150, 0, false, false, -150, 150, true);

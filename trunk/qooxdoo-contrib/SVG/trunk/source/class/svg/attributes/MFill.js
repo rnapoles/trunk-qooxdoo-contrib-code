@@ -14,9 +14,8 @@
 ************************************************************************ */
 
 /**
- * Adds filling properties to elements that can be filled (which means painting
- * the interior of the object). Filling can be thought of as a painting
- * operation.
+ * Add filling properties to elements that can be filled (which means painting
+ * the interior of the object).
  *
  * With SVG, you can paint (i.e., fill or stroke) with:
  * <ul>
@@ -31,8 +30,10 @@
  * using a URI reference on a 'fill' property. Gradients, patterns
  * and solid colors are just specific types of paint servers.
  *
- * More info: http://www.w3.org/TR/SVG11/painting.html
- *
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/painting.html</li>
+ * </ul>
  */
 qx.Mixin.define("svg.attributes.MFill",
 {

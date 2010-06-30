@@ -14,13 +14,15 @@
 ************************************************************************ */
 
 /**
- * Set uri references to other elements or fragments.
+ * Refer to other elements or fragments.
  * 
  * *Important!*
  * The _xlink:href_ attribute must be set using the {@link #setHref} method.
  * Setting it through the {@link qx.html.Element#set} method will *NOT* work.
  * This is because the attribute must be placed in the xlink xml
  * namespace. This method takes care of that, the set method does not.
+ * 
+ * The namespace used is *http://www.w3.org/1999/xlink*.
  */
 qx.Mixin.define("svg.attributes.MHref",
 {

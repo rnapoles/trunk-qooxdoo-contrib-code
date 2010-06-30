@@ -16,7 +16,7 @@
 /**
  * Adds a getter and setter for the textContent property of SVG elements.
  */
-qx.Mixin.define("svg.core.MTextContainer",
+qx.Mixin.define("svg.struct.MTextContainer",
 {
   members :
   {

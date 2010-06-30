@@ -18,9 +18,13 @@
  * object which can be replicated ("tiled") at fixed intervals in x and y to
  * cover the areas to be painted.
  *
- * More info: http://www.w3.org/TR/SVG11/pservers.html#Patterns
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG11/pservers.html#Patterns</li>
+ * </ul>
+ * 
  */
-qx.Class.define("svg.Pattern",
+qx.Class.define("svg.paint.Pattern",
 {
   extend : svg.Element,
   
