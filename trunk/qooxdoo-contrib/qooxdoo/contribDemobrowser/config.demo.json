@@ -2,12 +2,28 @@
 
   "libraries" :
   {
+    // Currently use the following contributions explicitly
     "include" : {
+      "Accordion" : {},
+      "Cropper" : {},
+      "Dialog" : {},
+      "OpenFlashChart" : {},
+      "QxJqPlot" : {},
+      "SVG" : {},
+      "SearchBox" : {},
+      "SmartTableModel" : {},
+      "VirtualData" : {},
+      "collapsablePanel" : {},
+      "progressbar" : {}
+      
+    /*
+      // Use all supported contributions
       "*" : {
         "types" : ["application", "contribution", "library"],
         "versions" : ["*"],
         "qooxdoo-versions" : ["*"]
       }
+    */
     }
     
     /*
