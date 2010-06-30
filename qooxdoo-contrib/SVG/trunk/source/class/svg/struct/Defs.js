@@ -22,7 +22,7 @@
  */
 qx.Class.define("svg.struct.Defs",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
 
 
   /**

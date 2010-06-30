@@ -27,9 +27,9 @@
  */
 qx.Class.define("svg.struct.Desc",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
-  include : [ svg.struct.MTextContainer ],
+  include : [ svg.core.MTextContainer ],
 
 
   /**

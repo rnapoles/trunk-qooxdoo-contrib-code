@@ -30,7 +30,7 @@
  */
 qx.Class.define("svg.struct.Group",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
 
   /**
    * @param styles {Map?null}

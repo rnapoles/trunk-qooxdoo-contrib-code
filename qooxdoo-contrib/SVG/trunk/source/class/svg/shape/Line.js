@@ -24,7 +24,7 @@
  */
 qx.Class.define("svg.shape.Line",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MFill,
               svg.attributes.MStroke,

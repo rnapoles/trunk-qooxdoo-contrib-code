@@ -27,7 +27,7 @@
  */
 qx.Class.define("svg.struct.Use",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MHref ],
 

@@ -41,7 +41,7 @@
  *   <li>http://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements</li>
  * </ul>
  */
-qx.Mixin.define("svg.struct.MTitleDescription",
+qx.Mixin.define("svg.core.MTitleDescription",
 {
   members :
   {

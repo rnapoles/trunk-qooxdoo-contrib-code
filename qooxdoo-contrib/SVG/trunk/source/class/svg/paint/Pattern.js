@@ -26,7 +26,7 @@
  */
 qx.Class.define("svg.paint.Pattern",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MHref,
               svg.attributes.MPreserveAspectRatio,

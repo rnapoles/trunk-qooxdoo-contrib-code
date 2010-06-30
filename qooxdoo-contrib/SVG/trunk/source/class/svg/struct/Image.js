@@ -25,7 +25,7 @@
  */
 qx.Class.define("svg.struct.Image",
 {
-  extend : svg.Element,
+  extend : svg.core.Element,
   
   include : [ svg.attributes.MTransform,
               svg.attributes.MPreserveAspectRatio,
