@@ -1,12 +1,10 @@
-====================================
-===  svg (qooxdoo contribution)  ===
-====================================
+=== SVG ===
 
 This file contains an unorganized list of todo's, ideas and improvements.
 
 
 
-[= ViewPort and ViewBox =]
+== ViewPort and ViewBox ==
 
    Resizing the Svg Widget changes the size of the ViewPort. In some cases,
    you'll want the image to be stretched to fit the new ViewPort size. In
@@ -28,7 +26,7 @@ This file contains an unorganized list of todo's, ideas and improvements.
 
   
   
-[= Referencing elements =]
+== Referencing elements ==
 
     Some attributes can refer to another element using an URI reference. For
     example a <circle fill="url(#myPattern)" /> where #myPattern is a pattern
@@ -44,7 +42,7 @@ This file contains an unorganized list of todo's, ideas and improvements.
       circle.setFill(pattern);
 
 
-[= Check incoming values =]
+== Check incoming values ==
 
    Incoming attribute values should, at least when the "debug" variant is set,
    be checked if they comply with the SVG 1.1 standard.
@@ -52,7 +50,7 @@ This file contains an unorganized list of todo's, ideas and improvements.
    If not, a warning should be given.
     
     
-[= Add features =]
+== Add features ==
 
      Add support for...
      - text
@@ -63,7 +61,7 @@ This file contains an unorganized list of todo's, ideas and improvements.
      - animation
 
     
-[= Adding behaviour to elements =]
+== Adding behaviour to elements ==
 
      Some types of behaviour could be useful on several occasions. An example
      would be to be able to drag. For windows, this behaviour is added through
@@ -74,7 +72,7 @@ This file contains an unorganized list of todo's, ideas and improvements.
      runtime.
 
 
-[= Better readable API documentation =]
+== Better readable API documentation ==
 
      Most of the current API documentation is copied directly from the
      W3 SVG 1.1 specification. The text tends to be a bit verbose.

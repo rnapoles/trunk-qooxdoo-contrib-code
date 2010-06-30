@@ -1,19 +1,19 @@
 {
   "info" : 
   {
-    "name" : "svg Demo",
+    "name" : "SVG Demo",
 
-    "summary" : "svg Demo",
-    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    "summary" : "SVG Demo",
+    "description" : "",
     
-    "homepage" : "http://demo.qooxdoo.org/contrib/svg",
+    "homepage" : "http://demo.qooxdoo.org/contrib/SVG",
 
     "license" : "LGPL/EPL",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Marc Puts",
+        "email" : "marc.puts@realtimesolutions.nl"
       }
     ],
 
