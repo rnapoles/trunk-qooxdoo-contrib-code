@@ -6,10 +6,6 @@
 
    Authors:
 
-************************************************************************ */
-
-/* ************************************************************************
-
 #asset(timezonedate.demo/*)
 
 ************************************************************************ */
@@ -20,14 +16,6 @@
 qx.Class.define("timezonedate.demo.Application",
 {
   extend : qx.application.Standalone,
-
-
-
-  /*
-  *****************************************************************************
-     MEMBERS
-  *****************************************************************************
-  */
 
   members :
   {
@@ -45,31 +33,29 @@ qx.Class.define("timezonedate.demo.Application",
       // Enable logging in debug variant
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
-        // support native logging capabilities, e.g. Firebug for Firefox
-        qx.log.appender.Native;
-        // support additional cross-browser console. Press F7 to toggle visibility
-        qx.log.appender.Console;
+        var appender;
+        appender = qx.log.appender.Native;
+        appender = qx.log.appender.Console;
       }
 
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
+      var tzDate;
 
-      // Create a button
-      var button1 = new timezonedate.Contribution("First Contribution", "timezonedate/test.png");
+      this.debug("test 1");
+      tzDate = new timezonedate.TimezoneDate(0);
+      this.assertEquals((new Date(0)).getTime(), tzDate.getTime());
+      this.debug("date: " + tzDate);
 
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      this.debug("test 2");
+      tzDate = new timezonedate.TimezoneDate("1970-01-01T00:00Z");
+      this.assertEquals((new Date(0)).getTime(), tzDate.getTime());
+      this.debug("date: " + tzDate);
 
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
+      this.debug("test 3");
+      tzDate = new timezonedate.TimezoneDate("1970-01-01T04:00-04:00");
+      tzDate.setOutputFormatter(tzDate.constructor._formatRfc2822);
+      this.assertEquals((new Date(0)).getTime(), tzDate.getTime());
+      this.debug("date: " + tzDate);
+      this.debug(tzDate.format(240));
     }
   }
 });
