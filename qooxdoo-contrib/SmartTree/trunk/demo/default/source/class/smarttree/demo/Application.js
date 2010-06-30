@@ -61,26 +61,26 @@ qx.Class.define("smarttree.demo.Application",
           [
             "Subject",
             "Sender",
-            "Received Date"
+            "Date"
           ]);
       tree.set(
         {
-          width : 400
+          width : 800
         });
       tree.setAlwaysShowOpenCloseSymbol(true);
 
       // Obtain the resize behavior object to manipulate
       var resizeBehavior = tree.getTableColumnModel().getBehavior();
 
-      // Ensure that the tree column remains sufficiently wide
+      // Ensure that the Subject column remains sufficiently wide
       resizeBehavior.set(0, { width:"1*", minWidth:180  });
 
       this.getRoot().add(tree);
 
       // Generate a static data model for a series of email messages.
       // Each row consists, first, of the displayed column data, and finally
-      // the message id and then a map of additional information (headers)
-      // which may be used to build a tree from the data.
+      // the message id and then a map of additional information which may be
+      // used to build a tree from the data.
       var data = 
         [
           [
@@ -292,7 +292,7 @@ qx.Class.define("smarttree.demo.Application",
           ],
           [
             "Re: [qooxdoo-devel] Extending application to native window (my favorite bug)",
-            "panaysan",
+            "panyasan",
             "2010-06-09 13:05",
             24,
             {
@@ -309,6 +309,18 @@ qx.Class.define("smarttree.demo.Application",
             }
           ]
         ];
+
+      // Provide a dictionary which maps column names to their index in the
+      // row arrays in the data model.
+      data.dictionary =
+        {
+          subject   : 0,
+          sender    : 1,
+          date      : 2,
+          messageId : 3,
+          extra     : 4
+        };
+      
 
       // tree data model
       var dataModel = tree.getDataModel();
