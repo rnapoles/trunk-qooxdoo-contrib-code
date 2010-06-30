@@ -1,12 +1,12 @@
 {
   "info" : 
   {
-    "name" : "svg",
+    "name" : "SVG",
 
-    "summary" : "svg Contribution",
+    "summary" : "SVG Contribution",
     "description" : "A qooxdoo interface to native SVG",
     
-    "homepage" : "http://contrib.qooxdoo.org/project/svg",
+    "homepage" : "http://contrib.qooxdoo.org/project/SVG",
 
     "license" : "LGPL/EPL",
     "authors" : 
