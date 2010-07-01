@@ -43,152 +43,162 @@ qx.Class.define("svg.shape.Rect",
   construct : function(styles, attributes) {
     this.base(arguments, "rect", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * x-coord of the rectangle.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementXAttribute</li>
+     * </ul>
+  	 */
+  	x : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyX",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * y-coord of the rectangle.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementYAttribute</li>
+     * </ul>
+  	 */
+  	y : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyY",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * Width of the rectangle.
+  	 * A value of zero disables rendering of the element.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementWidthAttribute</li>
+     * </ul>
+  	 */
+    width : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyWidth",
+  	  check: "svg.core.Types.isLength(value)"
+    },
+    
+  	/**
+  	 * Height of the rectangle.
+  	 * A value of zero disables rendering of the element.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementHeightAttribute</li>
+     * </ul>
+  	 */
+    height : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyHeight",
+  	  check: "svg.core.Types.isLength(value)"
+    },
+    
+    /**
+     * For rounded rectangles, the x-axis radius of the ellipse used
+     * to round off the corners of the rectangle.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementRXAttribute</li>
+     * </ul>
+     */
+    roundX : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRoundX",
+  	  check: "svg.core.Types.isLength(value)"
+    },
+    
+    /**
+     * For rounded rectangles, the y-axis radius of the ellipse used
+     * to round off the corners of the rectangle.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementRYAttribute</li>
+     * </ul>
+     */
+    roundY : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRoundY",
+  	  check: "svg.core.Types.isLength(value)"
+    }
+    
+    
+  },
 
   members :
   {
-    /**
-     * The x-axis coordinate of the side of the rectangle which has the smaller x-axis
-     *  coordinate value in the current user coordinate system. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setX : function(coordinate) {
-      this.setAttribute("x", coordinate);
+  	
+  	//applies x
+  	_applyX: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("x");
+	    } else {
+        this.setAttribute("x", value);
+	    }
     },
-
-
-    /**
-     * Gets the x-axis coordinate of the rectangle.
-     *
-     * @return {Integer} TODOC
-     * @see #setX
-     */
-    getX : function() {
-      return this.getAttribute("x");
+  
+  	//applies y
+  	_applyY: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("y");
+	    } else {
+        this.setAttribute("y", value);
+	    }
     },
-
-
-    /**
-     * The y-axis coordinate of the side of the rectangle which has the smaller y-axis
-     *  coordinate value in the current user coordinate system. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setY : function(coordinate) {
-      this.setAttribute("y", coordinate);
+  
+  	//applies width
+  	_applyWidth: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("width");
+	    } else {
+        this.setAttribute("width", value);
+	    }
     },
-
-
-    /**
-     * Gets the y-axis coordinate of the rectangle.
-     *
-     * @return {Integer} TODOC
-     * @see #setY
-     */
-    getY : function() {
-      return this.getAttribute("y");
+  
+  	//applies height
+  	_applyHeight: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("height");
+	    } else {
+        this.setAttribute("height", value);
+	    }
     },
-
-
-    /**
-     * The width of the rectangle. A negative value is an error. A value of zero disables
-     *  rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setWidth : function(length) {
-      this.setAttribute("width", length);
+  
+  	//applies rx
+  	_applyRoundX: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("rx");
+	    } else {
+        this.setAttribute("rx", value);
+	    }
     },
-
-
-    /**
-     * Gets the width of the rectangle.
-     *
-     * @return {Integer} TODOC
-     * @see #setWidth
-     */
-    getWidth : function() {
-      return this.getAttribute("width");
-    },
-
-
-    /**
-     * The height of the rectangle. A negative value is an error. A value of zero disables
-     *  rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setHeight : function(length) {
-      this.setAttribute("height", length);
-    },
-
-
-    /**
-     * Gets the height of the rectangle.
-     *
-     * @return {Integer} TODOC
-     * @see #setHeight
-     */
-    getHeight : function() {
-      return this.getAttribute("height");
-    },
-
-
-    /**
-     * For rounded rectangles, the x-axis radius of the ellipse used to round off the
-     *  corners of the rectangle. A negative value is an error.
-     *
-     *  See http://www.w3.org/TR/SVG/shapes.html#RectElement about what happens
-     *  if the attribute is not specified.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setRx : function(length) {
-      this.setAttribute("rx", length);
-    },
-
-
-    /**
-     * Gets x-axis radius of the round off corner of the rectangle.
-     *
-     * @return {Integer} TODOC
-     * @see #setRx
-     */
-    getRx : function() {
-      return this.getAttribute("rx");
-    },
-
-
-    /**
-     * For rounded rectangles, the y-axis radius of the ellipse used to round off the
-     *  corners of the rectangle. A negative value is an error.
-     *
-     *  See http://www.w3.org/TR/SVG/shapes.html#RectElement about what happens
-     *  if the attribute is not specified.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setRy : function(length) {
-      this.setAttribute("ry", length);
-    },
-
-
-    /**
-     * Gets y-axis radius of the round off corner of the rectangle.
-     *
-     * @return {Integer} TODOC
-     * @see #setRy
-     */
-    getRy : function() {
-      return this.getAttribute("ry");
+  
+  	//applies ry
+  	_applyRoundY: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("ry");
+	    } else {
+        this.setAttribute("ry", value);
+	    }
     }
+
   }
 });

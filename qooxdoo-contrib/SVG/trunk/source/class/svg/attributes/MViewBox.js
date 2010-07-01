@@ -46,14 +46,18 @@ qx.Mixin.define("svg.attributes.MViewBox",
      * @return {void}
      */
     setViewBox : function(minX, minY, width, height) {
-      this.setAttribute("viewBox", "" + minX + " " + minY + " " + width + " " + height);
+	    if (null == minX) {
+	    	this.removeAttribute("viewBox");
+	    } else {
+	      this.setAttribute("viewBox", "" + minX + " " + minY + " " + width + " " + height);
+	    }
     },
 
 
     /**
      * Gets the viewbox rectangle.
      *
-     * @return {String} TODOC
+     * @return {String}
      * @see #setViewBox
      */
     getViewBox : function() {

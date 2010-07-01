@@ -41,75 +41,85 @@ qx.Class.define("svg.shape.Circle",
   construct : function(styles, attributes) {
     this.base(arguments, "circle", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * The x-axis coordinate of the center of the circle.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElementCXAttribute</li>
+     * </ul>
+  	 */
+  	cx : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyCx",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * The y-axis coordinate of the center of the circle.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElementCYAttribute</li>
+     * </ul>
+  	 */
+  	cy : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyCy",
+  	  check: "Number"
+    },
+
+  	/**
+  	 * The radius of the circle. A value of zero disables rendering of the element.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElementRAttribute</li>
+     * </ul>
+  	 */
+    radius : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRadius",
+  	  check: "!isNaN(value) && value >= 0"
+    }
+    
+  },
 
   members :
   {
-    /**
-     * The x-axis coordinate of the center of the circle. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setCx : function(coordinate) {
-      this.setAttribute("cx", coordinate);
+  	
+  	//applies cx
+  	_applyCx: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("cx");
+	    } else {
+        this.setAttribute("cy", value);
+	    }
+    },
+    
+  	//applies cy
+  	_applyCy: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("cy");
+	    } else {
+        this.setAttribute("cy", value);
+	    }
     },
 
-
-    /**
-     * Gets the x-axis coordinate of the center of the circle.
-     *
-     * @return {Integer} TODOC
-     * @see #setCx
-     */
-    getCx : function() {
-      return this.getAttribute("cx");
-    },
-
-
-    /**
-     * The y-axis coordinate of the center of the circle. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setCy : function(coordinate) {
-      this.setAttribute("cy", coordinate);
-    },
-
-
-    /**
-     * Gets the y-axis coordinate of the center of the circle.
-     *
-     * @return {Integer} TODOC
-     * @see #setCy
-     */
-    getCy : function() {
-      return this.getAttribute("cy");
-    },
-
-
-    /**
-     * The radius of the circle. A negative value is an error. A value of zero disables
-     *  rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setRadius : function(length) {
-      this.setAttribute("r", length);
-    },
-
-
-    /**
-     * Gets the radius of the circle.
-     *
-     * @return {Integer} TODOC
-     * @see #setRadius
-     */
-    getRadius : function() {
-      return this.getAttribute("r");
+  	//applies r
+  	_applyRadius: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("r");
+	    } else {
+        this.setAttribute("r", value);
+	    }
     }
+
   }
 });

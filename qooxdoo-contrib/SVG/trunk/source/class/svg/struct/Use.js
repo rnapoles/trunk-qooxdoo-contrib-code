@@ -43,101 +43,108 @@ qx.Class.define("svg.struct.Use",
   construct : function(styles, attributes) {
     this.base(arguments, "use", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * x-coord of the region into which the referenced element is placed.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementXAttribute</li>
+     * </ul>
+  	 */
+  	x : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyX",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * y-coord of the region into which the referenced element is placed.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementYAttribute</li>
+     * </ul>
+  	 */
+  	y : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyY",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * width of the region into which the referenced element is placed.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementWidthAttribute</li>
+     * </ul>
+  	 */
+    width : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyWidth",
+  	  check: "svg.core.Types.isLength(value)"
+    },
+    
+  	/**
+  	 * height of the region into which the referenced element is placed.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementHeightAttribute</li>
+     * </ul>
+  	 */
+    height : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyHeight",
+  	  check: "svg.core.Types.isLength(value)"
+    }
+  },
+
 
   members :
   {
-    /**
-     * The x-axis coordinate of one corner of the rectangular region into which
-     *  the referenced element is placed. If the attribute is not specified, the
-     *  effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setX : function(coordinate) {
-      this.setAttribute("x", coordinate);
+   	//applies x
+  	_applyX: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("x");
+	    } else {
+        this.setAttribute("x", value);
+	    }
     },
-
-
-    /**
-     * Gets the x-axis coordinate of the region.
-     *
-     * @return {Integer} TODOC
-     * @see #setX
-     */
-    getX : function() {
-      return this.getAttribute("x");
+  
+  	//applies y
+  	_applyY: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("y");
+	    } else {
+        this.setAttribute("y", value);
+	    }
     },
-
-
-    /**
-     * The y-axis coordinate of one corner of the rectangular region into which
-     *  the referenced element is placed. If the attribute is not specified, the
-     *  effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setY : function(coordinate) {
-      this.setAttribute("y", coordinate);
+  
+  	//applies width
+  	_applyWidth: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("width");
+	    } else {
+        this.setAttribute("width", value);
+	    }
     },
-
-
-    /**
-     * Gets the y-axis coordinate of the region.
-     *
-     * @return {Integer} TODOC
-     * @see #setY
-     */
-    getY : function() {
-      return this.getAttribute("y");
-    },
-
-
-    /**
-     * The width of the rectangular region into which the referenced element is placed.
-     *  A negative value is an error. A value of zero disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setWidth : function(length) {
-      this.setAttribute("width", length);
-    },
-
-
-    /**
-     * Gets the width of the region.
-     *
-     * @return {Integer} TODOC
-     * @see #setWidth
-     */
-    getWidth : function() {
-      return this.getAttribute("width");
-    },
-
-
-    /**
-     * The height of the rectangular region into which the referenced element is placed.
-     *  A negative value is an error. A value of zero disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setHeight : function(length) {
-      this.setAttribute("height", length);
-    },
-
-
-    /**
-     * Gets the height of the region.
-     *
-     * @return {Integer} TODOC
-     * @see #setHeight
-     */
-    getHeight : function() {
-      return this.getAttribute("height");
+  
+  	//applies height
+  	_applyHeight: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("height");
+	    } else {
+        this.setAttribute("height", value);
+	    }
     }
-
-  }
+  }  
+  
 });

@@ -23,98 +23,111 @@
  */
 qx.Mixin.define("svg.attributes.MMarkerProperties",
 {
+	properties :
+	{
+	
+    /**
+     * The marker that must be drawn at the first vertex.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerStartProperty</li>
+     * </ul>
+     */
+	  markerStart: {
+      nullable: true,
+      init: null,
+      apply: "_applyMarkerStart"
+    },
+
+    /**
+     * The marker that must be drawn at every other vertex
+     * (i.e., every vertex except the first and last).
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerMidProperty</li>
+     * </ul>
+     */
+    markerMid: {
+      nullable: true,
+      init: null,
+      apply: "_applyMarkerMid"
+    },
+
+    /**
+     * The marker that must be drawn at the last vertex.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerEndProperty</li>
+     * </ul>
+     */
+    markerEnd: {
+      nullable: true,
+      init: null,
+      apply: "_applyMarkerEnd"
+    },
+    
+    /**
+     * The marker for all vertices on the given ‘path’ element or basic
+     * shape. It is a short-hand for the three individual marker properties
+     * {@link #markerStart}, {@link #markerMid}, {@link #markerEnd}.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerProperty</li>
+     * </ul>
+     */
+    marker: {
+    	nullable: true,
+    	init: null,
+    	apply: "_applyMarker"
+    }
+    
+	},
+	
   members :
   {
-    /**
-     * ‘marker-start’ defines the arrowhead or polymarker that shall be
-     * drawn at the first vertex.
-     *
-     * @param uri {String} value to set
-     * @return {void}
-     */
-    setMarkerStart : function(uri) {
-      this.setAttribute("marker-start", uri);
-    },
-
-
-    /**
-     * Gets the marker-start property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setMarkerStart
-     */
-    getMarkerStart : function() {
-      return this.getAttribute("marker-start");
-    },
-
-
-    /**
-     * ‘marker-mid’ defines the arrowhead or polymarker that shall be drawn
-     *  at every other vertex (i.e., every vertex except the first and last).
-     *
-     * @param uri {String} value to set
-     * @return {void}
-     */
-    setMarkerMid : function(uri) {
-      this.setAttribute("marker-mid", uri);
-    },
-
-
-    /**
-     * Gets the marker-mid property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setMarkerMid
-     */
-    getMarkerMid : function() {
-      return this.getAttribute("marker-mid");
-    },
-
-
-    /**
-     * ‘marker-end’ defines the arrowhead or polymarker that shall be drawn
-     *  at the final vertex.
-     *
-     * @param uri {String} value to set
-     * @return {void}
-     */
-    setMarkerEnd : function(uri) {
-      this.setAttribute("marker-end", uri);
-    },
-
-
-    /**
-     * Gets the marker-end property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setMarkerEnd
-     */
-    getMarkerEnd : function() {
-      return this.getAttribute("marker-end");
-    },
-
-
-    /**
-     * ‘marker’ sets the value for all vertices on the given ‘path’ element or basic
-     *  shape. It is a short-hand for the three individual marker properties 'marker-start',
-     *  'marker-mid', 'marker-end'.
-     *
-     * @param uri {String} value to set
-     * @return {void}
-     */
-    setMarker : function(uri) {
-      this.setAttribute("marker", uri);
-    },
-
-
-    /**
-     * Gets the marker property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setMarker
-     */
-    getMarker : function() {
-      return this.getAttribute("marker");
-    }
+    	
+    //applies marker-start 
+   	_applyMarkerStart: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("marker-start");
+		  } else {
+        this.setAttribute("marker-start", value);
+		  }
+		},
+		
+    //applies marker-mid
+		_applyMarkerMid: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("marker-mid");
+		  } else {
+        this.setAttribute("marker-mid", value);
+		  }
+		},
+		
+    //applies marker-end
+		_applyMarkerEnd: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("marker-end");
+		  } else {
+        this.setAttribute("marker-end", value);
+		  }
+		},
+		
+    //applies marker
+		_applyMarker: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("marker");
+		  } else {
+		  	//should the other marker properties be reset here??
+		  	//this.resetMarkerStart();
+		  	//this.resetMarkerMid();
+		  	//this.resetMarkerEnd();
+        this.setAttribute("marker", value);
+		  }
+		}
   }
 });

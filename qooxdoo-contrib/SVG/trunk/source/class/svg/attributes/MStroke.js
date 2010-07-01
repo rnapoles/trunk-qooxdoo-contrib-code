@@ -38,229 +38,232 @@
  */
 qx.Mixin.define("svg.attributes.MStroke",
 {
+	
+	properties :
+	{
+	  /**
+	   * The paint used when stroking the shape outline.
+	   * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeProperty</li>
+     * </ul>
+   	 */
+	  stroke : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyStroke"
+    },
+    
+    /**
+     * The width of the stroke on the current object.
+     * The value can either be a _length_ or a _percentage_.
+     *
+     * If a percentage is used, the value represents a percentage of the current
+     * viewport.
+     *
+     * A zero value causes no stroke to be painted.
+	   * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeWidthProperty</li>
+     * </ul>
+     */
+    strokeWidth : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyStrokeWidth",
+	    check: "!isNaN(value) && value >= 0"
+    },
+    
+    /**
+     * The opacity of the stroke.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeOpacityProperty</li>
+     * </ul>
+     */
+    strokeOpacity : {
+    	nullable: true,
+    	init: null,
+    	apply: "_applyStrokeOpacity",
+    	check: "!isNaN(value) && value >= 0 && value <= 100"
+    },
+    
+    /**
+     * The shape to be used at the end of open subpaths when they are stroked.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeLinecapProperty</li>
+     * </ul>
+     */
+    linecap : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyLinecap",
+	    check: ["butt", "round", "square"]
+    },
+    
+    /**
+     * The shape to be used at the corners of paths or basic shapes when they are stroked.
+	   * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeLinejoinProperty</li>
+     * </ul>
+     */
+    linejoin : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyLinejoin",
+	    check: ["miter", "round", "bevel"]
+    },
+    
+    /**
+     * The limit on the ratio of the miter length to the {@link #strokeWidth}.
+     * 
+     * When two line segments meet at a sharp angle and miter joins have been
+     * specified, it is possible for the miter to extend far beyond the thickness
+     * of the line stroking the path.
+     *
+     * A miterlimit imposes a limit on the ratio of the miter length to the
+     * strokeWidth. When the limit is exceeded, the join is converted from a
+     * miter to a bevel.
+     * 
+     * Value must be 1 or greater.
+	   * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeMiterlimitProperty</li>
+     * </ul>
+     */
+    miterLimit : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyMiterLimit",
+	    check: "!isNaN(value) && value >= 1"
+    },
+    
+    /**
+     * The pattern of dashes and gaps used to stroke paths.
+     * 
+     * It contains a list of comma and/or white space separated lengths
+     * and percentages that specify the lengths of alternating dashes and gaps.
+     *
+     * If an odd number of values is provided, then the list of values is repeated
+     * to yield an even number of values. Thus, stroke-dasharray: 5,3,2 is equivalent
+     * to stroke-dasharray: 5,3,2,5,3,2.
+	   * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeDasharrayProperty</li>
+     * </ul>
+     */
+    dashArray : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyDashArray",
+	    check: "String"
+    },
+    
+    /**
+     * Distance into the dash pattern to start the dash.
+     * 
+     * If a percentage is used, the value represents a percentage of the current
+     * viewport. Values can be negative.
+     *  
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeDashoffsetProperty</li>
+     * </ul>
+     */
+    dashOffset : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyDashOffset"
+    }
+   
+	},
+	
   members :
   {
-    /**
-     * The 'stroke' property paints along the outline of the given graphical element.
-     *
-     * @param paint {String} the paint to use when stroking
-     * @return {void}
-     */
-    setStroke : function(paint) {
-      this.setAttribute("stroke", paint);
+    //applies stroke
+		_applyStroke : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke");
+		  	return;
+		  }
+		  if (value instanceof svg.core.Element) {
+		  	value = value.getUri();
+		  }
+      this.setAttribute("stroke", value);
+		  
     },
 
-
-    /**
-     * Gets the stroke property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setStroke
-     */
-    getStroke : function() {
-      return this.getAttribute("stroke");
+    //applies stroke-width
+		_applyStrokeWidth : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-width");
+		  } else {
+        this.setAttribute("stroke-width", value);
+		  }
     },
 
-
-    /**
-     * This property specifies the width of the stroke on the current object.
-     *  The value can either be a *length* or a *percentage*.
-     *
-     *  If a percentage is used, the value represents a percentage of the current
-     *  viewport.
-     *
-     *  A zero value causes no stroke to be painted. A negative value is an error.
-     *
-     * @param length {Number | Percentage} value to set
-     * @return {void}
-     */
-    setStrokeWidth : function(length) {
-      this.setAttribute("stroke-width", length);
+    //applies stroke-opacity
+		_applyStrokeOpacity : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-opacity");
+		  } else {
+        this.setAttribute("stroke-opacity", value);
+		  }
     },
 
-
-    /**
-     * Gets the stroke width property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setStrokeWidth
-     */
-    getStrokeWidth : function() {
-      return this.getAttribute("stroke-width");
+    //applies stroke-linecap
+		_applyLinecap : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-linecap");
+		  } else {
+        this.setAttribute("stroke-linecap", value);
+		  }
+    },
+    
+    //applies stroke-linejoin
+		_applyLinejoin : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-linejoin");
+		  } else {
+        this.setAttribute("stroke-linejoin", value);
+		  }
+    },
+    
+    //applies stroke-miterlimit
+		_applyMiterLimit : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-miterlimit");
+		  } else {
+        this.setAttribute("stroke-miterlimit", value);
+		  }
     },
 
-
-    /**
-     * Linecap specifies the shape to be used at the end of open subpaths
-     *  when they are stroked.
-     *
-     *  Possible values are:
-     *  <ul>
-     *    <li>butt (default)</li>
-     *    <li>round</li>
-     *    <li>square</li>
-     *  </ul>
-     *
-     *  <img src="http://www.w3.org/TR/SVG11/images/painting/linecap.png" />
-     *
-     * @param value {String} value to set.
-     * @return {void}
-     */
-    setLinecap : function(value) {
-      this.setAttribute("stroke-linecap", value);
+    //applies stroke-dasharray
+		_applyDashArray : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-dasharray");
+		  } else {
+        this.setAttribute("stroke-dasharray", value);
+		  }
     },
 
-
-    /**
-     * Gets the linecap property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setLinecap
-     */
-    getLinecap : function() {
-      return this.getAttribute("stroke-linecap");
-    },
-
-
-    /**
-     * Linejoin specifies the shape to be used at the corners of paths or basic
-     *  shapes when they are stroked.
-     *
-     *  Possible values are:
-     *  <ul>
-     *    <li>miter (default)</li>
-     *    <li>round</li>
-     *    <li>bevel</li>
-     *  </ul>
-     *
-     *  <img src="http://www.w3.org/TR/SVG11/images/painting/linejoin.png" />
-     *
-     * @param value {String} value to set
-     * @return {void}
-     */
-    setLinejoin : function(value) {
-      this.setAttribute("stroke-linejoin", value);
-    },
-
-
-    /**
-     * Gets the linejoin property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setLinejoin
-     */
-    getLinejoin : function() {
-      return this.getAttribute("stroke-linejoin");
-    },
-
-
-    /**
-     * When two line segments meet at a sharp angle and miter joins have been
-     *  specified, it is possible for the miter to extend far beyond the thickness
-     *  of the line stroking the path.
-     *
-     *  A 'miterlimit’ imposes a limit on the ratio of the miter length to the
-     *  ‘stroke-width’. When the limit is exceeded, the join is converted from a
-     *  miter to a bevel.
-     *
-     * @param miterlimit {Number} The limit on the ratio of the miter length to the ‘stroke-width’.
-     *                The value of must be greater than or equal to 1. Any other value is an error.
-     * @return {void}
-     */
-    setMiterLimit : function(miterlimit) {
-      this.setAttribute("stroke-miterlimit", miterlimit);
-    },
-
-
-    /**
-     * Gets the MiterLimit property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setMiterLimit
-     */
-    getMiterLimit : function() {
-      return this.getAttribute("stroke-miterlimit");
-    },
-
-
-    /**
-     * DashArray controls the pattern of dashes and gaps used to stroke paths.
-     *  It contains a list of comma and/or white space separated lengths
-     *  and percentages that specify the lengths of alternating dashes and gaps.
-     *
-     *  If an odd number of values is provided, then the list of values is repeated
-     *  to yield an even number of values. Thus, stroke-dasharray: 5,3,2 is equivalent
-     *  to stroke-dasharray: 5,3,2,5,3,2.
-     *
-     * @param list {String} A list of lengths and percentages. A percentage represents a distance as a
-     *                percentage of the current viewport. A negative value is an error. If the
-     *                sum of the values is zero, then the stroke is rendered as a solid line.
-     * @return {void}
-     */
-    setDashArray : function(list) {
-      this.setAttribute("stroke-dasharray", list);
-    },
-
-
-    /**
-     * Gets the DashArray property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setDashArray
-     */
-    getDashArray : function() {
-      return this.getAttribute("stroke-dasharray");
-    },
-
-
-    /**
-     * Specifies the distance into the dash pattern to start the dash. If a
-     *  percentage is used, the value represents a percentage of the current
-     *  viewport. Values can be negative.
-     *
-     * @param value {Number} value to set
-     * @return {void}
-     */
-    setDashOffset : function(value) {
-      this.setAttribute("stroke-dashoffset", value);
-    },
-
-
-    /**
-     * Gets the 'dash offset' property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setDashOffset
-     */
-    getDashOffset : function() {
-      return this.getAttribute("stroke-dashoffset");
-    },
-
-
-    /**
-     * Stroke Opacity specifies the opacity of the painting operation used
-     *  to stroke the current object.
-     *
-     *  See http://www.w3.org/TR/SVG11/render.html#PaintingShapesAndText
-     *
-     * @param opacityValue {Number} The opacity of the painting operation used to stroke the current object.
-     *                Any values outside the range 0.0 (fully transparent) to 1.0 (fully opaque)
-     *                will be clamped to this range.
-     * @return {void}
-     */
-    setStrokeOpacity : function(opacityValue) {
-      this.setAttribute("stroke-opacity", opacityValue);
-    },
-
-
-    /**
-     * Gets the fill opacity property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setStrokeOpacity
-     */
-    getStrokeOpacity : function() {
-      return this.getAttribute("stroke-opacity");
+    //applies stroke-dashoffset
+		_applyDashOffset : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("stroke-dashoffset");
+		  } else {
+        this.setAttribute("stroke-dashoffset", value);
+		  }
     }
+
   }
 });

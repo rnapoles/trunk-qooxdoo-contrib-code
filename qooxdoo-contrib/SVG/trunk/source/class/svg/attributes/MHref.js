@@ -27,30 +27,109 @@
 qx.Mixin.define("svg.attributes.MHref",
 {
   statics : { XLINK_NAMESPACE : "http://www.w3.org/1999/xlink" },
+  
+  properties :
+  {
+  	
+  	/**
+  	 * Reference to an element/fragment within an SVG document. Sets the _xlink:href_ attribute.
+  	 * 
+  	 * There are two ways to refer to an element:
+  	 * 
+  	 * <pre class="javascript>
+  	 * var circle = new svg.shape.Line();
+  	 * circle.setId("myCircle");
+  	 * 
+  	 * //option 1: refer to element object
+  	 * element.setHref(circle);
+  	 * 
+  	 * //option 2: refer to element using url():
+  	 * element.setHref("url(#myCircle)");
+  	 * </pre>
+  	 * 
+  	 * Using the first option will keep the reference alive even if the target's id is changed!
+  	 * 
+  	 */
+  	href : {
+      nullable: true,
+      init: null,
+      apply: "_applyHref",
+      check: "value instanceof svg.core.Element || typeof(value) == 'string'"
+    }
+  },
 
   members :
   {
-    /**
-     * A URI reference to an element/fragment within an SVG document.
-     *  Sets the 'xlink:href' attribute.
-     *
-     * @param uri {String}
-     *   value to set
-     */
-    setHref : function(uri) {
-      this.getDomElement().setAttributeNS(svg.attributes.MHref.XLINK_NAMESPACE, "xlink:href", uri);
-    },
-
-
-    /**
-     * Gets the URI reference.
-     *
-     * @return {String} 
-     * 
-     * @see #setHref
-     */
-    getHref : function() {
-      return this.getAttribute("xlink:href");
+  	
+  	__listenerId: null,
+  	
+  	_applyHref : function(value, old) {
+  	
+	    if (value == null) {
+  	    this.removeAttribute("xlink:href");
+  	    return;
+      }
+	    
+	    if (value instanceof svg.core.Element) {
+  	    value = value.getUri();
+  	  }
+      this.getDomElement().setAttributeNS(svg.attributes.MHref.XLINK_NAMESPACE, "xlink:href", value);
+  	
     }
+
+  	
+/*  	
+  	//applies xlink:href
+  	_applyHref : function(value, old) {
+  	
+  	  //break binding with previous value if needed
+  	  if (old != null && old instanceof svg.core.Element) {
+      	this.getHref().removeListenerById(this.__listenerId);
+      	this.__listenerId = null;
+  	  }
+  	
+	    //if new value is null, remove attribute
+  	  if (value == null) {
+	  	  this.removeAttribute("xlink:href");
+	    }
+	  	
+  	  //if it's an element, bind the id
+  	  else if (value instanceof svg.core.Element) {
+	  		if (value.getId() != null) {
+		  		this.__updateAttribute(value.getUri());
+	      	this.__listenerId = value.addListener("changeId", this.__listener, this);    	
+	  		}	
+	  		else {
+	  			//the target element does not have an id
+		  	  this.removeAttribute("xlink:href");
+		  	  
+		  	  if (qx.core.Variant.isSet("qx.debug", "on")) {
+		      	this.warn("Refering to element requires an id!");
+		      }
+	  		}
+	  	}
+  	  
+  	  //just set to the string value
+	  	else {
+	  		this.__updateAttribute(value);
+	    }  	
+    },
+    
+    __updateAttribute: function(value) {
+	    this.getDomElement().setAttributeNS(svg.attributes.MHref.XLINK_NAMESPACE, "xlink:href", value);
+    },
+    
+    __listener: function(e) {
+  		var newId = e.getData();
+  		
+  		if (null != newId) {
+  			this.__updateAttribute(newId);
+  		} else {
+  			this.resetHref();
+  		}
+    }
+*/
+  	
+  	
   }
 });

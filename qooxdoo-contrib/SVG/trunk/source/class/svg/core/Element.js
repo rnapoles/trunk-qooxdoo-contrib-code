@@ -27,8 +27,6 @@ qx.Class.define("svg.core.Element",
 
 
   /**
-   * Constructs a new element that resides in the SVG namespace.
-   *
    * @param tagName {String}
    *   Tag name of the element to create.
    *
@@ -46,12 +44,36 @@ qx.Class.define("svg.core.Element",
     this.base(arguments, tagName, styles, attributes);
   },
 
-  statics : { SVG_NAMESPACE : "http://www.w3.org/2000/svg" },
+  statics : {
+  	SVG_NAMESPACE : "http://www.w3.org/2000/svg"
+  },
+  
+  properties :
+  {
+  	/**
+  	 * Unique name for this element.
+  	 */
+  	id : {
+      nullable: true,
+      init: null,
+      apply: "_applyId",
+      check: "String",
+      event: "changeId"
+    }
+  },
 
   members :
   {
     __svgElement : null,
 
+    //applies id
+    _applyId : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("id");
+		  } else {
+        this.setAttribute("id", value);
+		  }
+		},
 
     /**
      * Internal helper to generate the DOM element
@@ -62,7 +84,6 @@ qx.Class.define("svg.core.Element",
     _createDomElement : function() {
       return this.__svgElement;
     },
-
 
     /**
      * Returns the DOM element. Please use this with caution.
@@ -76,27 +97,27 @@ qx.Class.define("svg.core.Element",
     getDomElement : function() {
       return this.__svgElement;
     },
-
-
+    
     /**
-     * Assigns a unique _name_ to the element.
-     *
-     * @param name {String} value to set
-     * @return {void}
+     * Gets an Uri reference to this element. An {@link #id} must have been set for this.
+     * 
+     * Returns _null_ if no id is set. 
+     * 
+     * @return {String}
+     *   an uri reference, i.e.  
      */
-    setId : function(name) {
-      this.setAttribute("id", name);
-    },
-
-
-    /**
-     * Gets the unique name of the element.
-     *
-     * @return {String} The unique name of this element.
-     */
-    getId : function() {
-      return this.getAttribute("id");
+    getUri : function () {
+    	var id = this.getId();
+    	
+    	if (null == id) {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+    		  this.warn("Can't create uri reference; id is null.");
+    	  }
+    		return null;
+    	}
+  		return "url(#" + id + ")"; 
     }
+
   },
 
   destruct : function() {

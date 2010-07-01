@@ -37,96 +37,100 @@
  */
 qx.Mixin.define("svg.attributes.MFill",
 {
+	
+	properties :
+	{
+	
+    /**
+     * The paint used for filling the interior.
+     * The interior is determined according to the rules associated with the
+     * current value of the {@link #fillRule} property.
+     *
+     * Example usage:
+     *
+     * <pre>
+     * myShape.setFill(patternElement);
+     * myShape.setFill("black");
+     * myShape.setFill("#1044A6");
+     * myShape.setFill("url(#myGradient)");
+     * </pre>
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#FillProperty</li>
+     * </ul>
+     */
+	  fill: {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyFill"
+    },
+    
+    /**
+     * The algorithm used to determine the interior. 
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#FillRuleProperty</li>
+     * </ul>
+     */
+    fillRule: {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyFillRule",
+	    check: ["nonzero", "evenodd", "inherit"]
+    },
+    
+    /**
+     * The opacity of the interior.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#FillOpacityProperty</li>
+     * </ul>
+     */
+    fillOpacity: {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyFillOpacity",
+	    check: "!isNaN(value) && value >= 0 && value <= 100"
+    }
+	
+	},
+	
   members :
   {
-    /**
-     * The 'fill' property paints the interior of the given graphical element.
-     *  The interior is determined according to the rules associated with the
-     *  current value of the 'fill-rule' property.
-     *
-     *  More info: http://www.w3.org/TR/SVG11/painting.html#FillProperties
-     *
-     *  Example usage:
-     *
-     *  <pre> myShape.setFill("black");
-     *  myShape.setFill("#1044A6");
-     *  myShape.setFill("url(#myPattern)");</pre>
-     *
-     * @param paint {String} the paint to use when filling
-     * @return {void}
-     */
-    setFill : function(paint) {
-      this.setAttribute("fill", paint);
-    },
+		
+		//applies fill
+		_applyFill : function(value, old) {
+		
+		  if (null == value) {
+		  	this.removeAttribute("fill");
+		  	return;
+		  }
+	    if (value instanceof svg.core.Element) {
+  	    value = value.getUri();
+  	  }
+      this.setAttribute("fill", value);
+		},
+		
+		//applies fill-rule
+		_applyFillRule : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("fill-rule");
+		  } else {
+        this.setAttribute("fill-rule", value);
+		  }
+		},
 
+		//applies fill-opacity
+		_applyFillOpacity : function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("fill-opacity");
+		  } else {
+        this.setAttribute("fill-opacity", value);
+		  }
+		}
 
-    /**
-     * Gets the fill property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setFill
-     */
-    getFill : function() {
-      return this.getAttribute("fill");
-    },
-
-
-    /**
-     * The 'fill-rule' property indicates the algorithm which is to be used to
-     *  determine what parts of the canvas are included inside the shape.
-     *
-     *  Valid values are:
-     *  <ul>
-     *    <li>nonzero</li>
-     *    <li>evenodd</li>
-     *    <li>inherit</li>
-     *  </ul>
-     *
-     *  More info: http://www.w3.org/TR/SVG11/painting.html#FillProperties
-     *
-     * @param value {String} value to set
-     * @return {void}
-     */
-    setFillRule : function(value) {
-      this.setAttribute("fill-rule", value);
-    },
-
-
-    /**
-     * Gets the fill-rule property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setFillRule
-     */
-    getFillRule : function() {
-      return this.getAttribute("fill-rule");
-    },
-
-
-    /**
-     * Fill Opacity specifies the opacity of the painting operation used to
-     *  paint the interior the current object.
-     *
-     *  See http://www.w3.org/TR/SVG11/render.html#PaintingShapesAndText
-     *
-     * @param opacityValue {Number} The opacity of the painting operation used to fill the current object.
-     *                Any values outside the range 0.0 (fully transparent) to 1.0 (fully opaque)
-     *                will be clamped to this range.
-     * @return {void}
-     */
-    setFillOpacity : function(opacityValue) {
-      this.setAttribute("fill-opacity", opacityValue);
-    },
-
-
-    /**
-     * Gets the fill opacity property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setFillOpacity
-     */
-    getFillOpacity : function() {
-      return this.getAttribute("fill-opacity");
-    }
   }
 });
