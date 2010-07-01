@@ -43,31 +43,37 @@ qx.Class.define("svg.shape.Polygon",
   construct : function(styles, attributes) {
     this.base(arguments, "polygon", styles, attributes);
   },
+  
+  properties : {
+  	
+  	/**
+  	 * The points that make up the polygon. All coordinate values are in the
+     * user coordinate system.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#PolygonElementPointsAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG11/shapes.html#PointsBNF</li>
+     * </ul>
+  	 */
+  	points : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyPoints",
+  	  check: "String"
+    }
+  },
 
   members :
   {
-    /**
-     * The points that make up the polygon. All coordinate values are in the
-     *  user coordinate system.
-     *
-     *  More info: http://www.w3.org/TR/SVG11/shapes.html#PointsBNF
-     *
-     * @param listOfPoints {String} value to set
-     * @return {void}
-     */
-    setPoints : function(listOfPoints) {
-      this.setAttribute("points", listOfPoints);
-    },
-
-
-    /**
-     * Gets the list of points that make up the polygon.
-     *
-     * @return {String} TODOC
-     * @see #setPoints
-     */
-    getPoints : function() {
-      return this.getAttribute("points");
+  	
+  	//applies points
+  	_applyPoints: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("points");
+	    } else {
+        this.setAttribute("points", value);
+	    }
     }
   }
 });

@@ -24,30 +24,6 @@ This file contains an unorganized list of todo's, ideas and improvements.
    Some additional intellegence is needed here. Attribute "preserveAspectRatio"
    probably plays a role there too.
 
-  
-  
-== Referencing elements ==
-
-    Some attributes can refer to another element using an URI reference. For
-    example a <circle fill="url(#myPattern)" /> where #myPattern is a pattern
-    element defined in a defs section.
-
-      var pattern = new svg.Pattern({id: "myPattern"});
-      var circle = new svg.Circle();
-
-    Current way to add the reference:
-      circle.setFill("url(#myPattern)");
-      
-    A better way to do this should be implemented:
-      circle.setFill(pattern);
-
-
-== Check incoming values ==
-
-   Incoming attribute values should, at least when the "debug" variant is set,
-   be checked if they comply with the SVG 1.1 standard.
-   
-   If not, a warning should be given.
     
     
 == Add features ==
@@ -70,11 +46,4 @@ This file contains an unorganized list of todo's, ideas and improvements.
      Idea: encapsulate behaviour (such as "movable") in special objects which
      can then be applied to compatible svg elements (for example, a circle) at
      runtime.
-
-
-== Better readable API documentation ==
-
-     Most of the current API documentation is copied directly from the
-     W3 SVG 1.1 specification. The text tends to be a bit verbose.
-     It should be replaced by something more human-readable, with hyperlinks to
-     the W3 spec for when more details are needed.      
+   

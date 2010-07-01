@@ -56,7 +56,5 @@ qx.Class.define("svg.struct.Symbol",
    */
   construct : function(styles, attributes) {
     this.base(arguments, "symbol", styles, attributes);
-  },
-
-  members : {}
+  }
 });

@@ -58,30 +58,38 @@
  */
 qx.Mixin.define("svg.attributes.MTransform",
 {
+	
+	properties :
+	{
+	  /**
+	   * A list of transformations which are applied in order.
+	   * 
+	   * Possible transforms are matrix, translate, scale, rotate, skewX and skewY.
+	   * 
+     * More info:
+     * <ul>
+     *   <li>{@link MTransform}</li>
+     *   <li>http://www.w3.org/TR/SVG11/coords.html#TransformAttribute</li>
+     * </ul>
+     */
+	  transform : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyTransform",
+	    check: "String"
+    }
+	},
+	
   members :
   {
-    /**
-     * Specifies one or more transforms which are applied in order. Possible transforms are
-     *  matrix, translate, scale, rotate, skewX and skewY.
-     *
-     *  More info: http://www.w3.org/TR/SVG11/coords.html#TransformAttribute
-     *
-     * @param transformlist {String} value to set
-     * @return {void}
-     */
-    setTransform : function(transformlist) {
-      this.setAttribute("transform", transformlist);
-    },
-
-
-    /**
-     * Gets the transform property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setTransform
-     */
-    getTransform : function() {
-      return this.getAttribute("transform");
-    }
+		
+		//applies transform
+		_applyTransform: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("transform");
+		  } else {
+        this.setAttribute("transform", value);
+		  }
+	  }
   }
 });

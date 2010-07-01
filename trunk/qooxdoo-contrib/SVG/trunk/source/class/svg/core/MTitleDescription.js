@@ -20,7 +20,7 @@
  * This mixin provides easy access to those elements.
  * 
  * Instead of writing:
- * <pre>
+ * <pre class="javascript">
  * var title = new svg.struct.Title("MyElement");
  * title.setValue();
  * someElement.add(title);
@@ -31,7 +31,7 @@
  * </pre>
  * 
  * You can now write:
- * <pre>
+ * <pre class="javascript">
  * someElement.setTitle("MyElement");
  * someElement.setDescription("This is my favourite element!");
  * </pre>

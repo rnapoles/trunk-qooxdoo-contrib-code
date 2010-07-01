@@ -45,187 +45,205 @@ qx.Class.define("svg.paint.Pattern",
   construct : function(styles, attributes) {
     this.base(arguments, "pattern", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * Coordinate system for attributes {@link #x}, {@link #y},
+  	 * {@link #width} and {@link #height}.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementPatternUnitsAttribute</li>
+     * </ul>
+  	 */
+  	patternUnits : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyPatternUnits",
+  	  check: ["userSpaceOnUse", "objectBoundingBox"]
+    },
+    
+    
+  	/**
+	   * Coordinate system for the contents of the pattern.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementPatternContentUnitsAttribute</li>
+     * </ul>
+	   */
+	  contentUnits : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyContentUnits",
+	    check: ["userSpaceOnUse", "objectBoundingBox"]
+    },
+    
+    
+  	/**
+	   * Additional transformation from the pattern coordinate system onto
+     * the target coordinate system. This allows for things such as skewing the
+     * pattern tiles.
+     * 
+     * The available transformation are the same as those in {@link svg.attributes.MTransform}.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementPatternTransformAttribute</li>
+     * </ul>
+	   */
+	  patternTransform : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyPatternTransform",
+	    check: ["userSpaceOnUse", "objectBoundingBox"]
+    },
+    
+  	/**
+  	 * See {@link #placement}.
+  	 * If x is not specified, the effect is as if a value of zero were specified.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementXAttribute</li>
+     * </ul>
+	   */
+    x : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyX",
+	    check: "Number"
+    },
+    
+  	/**
+  	 * See {@link #placement}.
+  	 * If y is not specified, the effect is as if a value of zero were specified.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementYAttribute</li>
+     * </ul>
+	   */
+    y : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyY",
+	    check: "Number"
+    },
+    
+  	/**
+  	 * See {@link #placement}.
+  	 * A value of zero disables rendering of the element.
+  	 * If width is not specified, the effect is as if a value of zero were specified.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementWidthAttribute</li>
+     * </ul>
+	   */
+    width : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyWidth",
+	    check: "!isNaN(value) && value >= 0"
+    },
+    
+  	/**
+  	 * See {@link #placement}.
+  	 * A value of zero disables rendering of the element.
+  	 * If height is not specified, the effect is as if a value of zero were specified.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementHeightAttribute</li>
+     * </ul>
+	   */
+    height : {
+	    nullable: true,
+	    init: null,
+	    apply: "_applyHeight",
+	    check: "!isNaN(value) && value >= 0"
+    },
+    
+    /**
+  	 * _x_, _y_, _width_ and _height_ indicate how the
+  	 * pattern tiles are placed and spaced. These attributes represent coordinates
+  	 * and values in the coordinate space specified by the combination of attributes
+  	 * {@link #patternUnits} and {@link #patternTransform}.
+     */
+    placement : {
+    	group: ["x", "y", "width", "height"]
+    }
+        
+
+  },
 
   members :
   {
-    /**
-     * Defines the coordinate system for attributes ‘x’, ‘y’, ‘width’ and ‘height’.
-     *
-     *  Possible values are:
-     *  <ul>
-     *    <li>userSpaceOnUse</li>
-     *    <li>objectBoundingBox (default)</li>
-     *  </ul>
-     *
-     * @param value {String} value to set
-     * @return {void}
-     */
-    setPatternUnits : function(value) {
-      this.setAttribute("patternUnits", value);
-    },
-
-
-    /**
-     * Gets the 'patternUnits' property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setPatternUnits
-     */
-    getPatternUnits : function() {
-      return this.getAttribute("patternUnits");
-    },
-
-
-    /**
-     * Defines the coordinate system for the contents of the ‘pattern’.
-     *
-     *  Possible values are:
-     *  <ul>
-     *    <li>userSpaceOnUse</li>
-     *    <li>objectBoundingBox (default)</li>
-     *  </ul>
-     *
-     * @param value {String} value to set
-     * @return {void}
-     */
-    setContentUnits : function(value) {
-      this.setAttribute("patternContentUnits", value);
-    },
-
-
-    /**
-     * Gets the 'patternContentUnits' property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setContentUnits
-     */
-    getContentUnits : function() {
-      return this.getAttribute("patternContentUnits");
-    },
-
-
-    /**
-     * An optional additional transformation from the pattern coordinate system onto
-     *  the target coordinate system (i.e., 'userSpaceOnUse' or 'objectBoundingBox').
-     *  This allows for things such as skewing the pattern tiles.
-     *
-     * @param transformlist {String} See http://www.w3.org/TR/SVG11/coords.html#TransformAttribute for more info.
-     * @return {void}
-     */
-    setPatternTransform : function(transformlist) {
-      this.setAttribute("patternTransform", transformlist);
-    },
-
-
-    /**
-     * Gets the 'patternTransform' property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setPatternTransform
-     */
-    getPatternTransform : function() {
-      return this.getAttribute("patternTransform");
-    },
-
-
-    /**
-     * ‘x’, ‘y’, ‘width’ and ‘height’ indicate how the pattern tiles are placed and
-     *  spaced. These attributes represent coordinates and values in the coordinate
-     *  space specified by the combination of attributes ‘patternUnits’ and ‘patternTransform’.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setX : function(coordinate) {
-      this.setAttribute("x", coordinate);
-    },
-
-
-    /**
-     * Gets the 'x' attribute.
-     *
-     * @return {Integer} TODOC
-     * @see #setX
-     */
-    getX : function() {
-      return this.getAttribute("x");
-    },
-
-
-    /**
-     * ‘x’, ‘y’, ‘width’ and ‘height’ indicate how the pattern tiles are placed and
-     *  spaced. These attributes represent coordinates and values in the coordinate
-     *  space specified by the combination of attributes ‘patternUnits’ and ‘patternTransform’.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setY : function(coordinate) {
-      this.setAttribute("y", coordinate);
-    },
-
-
-    /**
-     * Gets the 'y' attribute.
-     *
-     * @return {Integer} TODOC
-     * @see #setY
-     */
-    getY : function() {
-      return this.getAttribute("y");
-    },
-
-
-    /**
-     * ‘x’, ‘y’, ‘width’ and ‘height’ indicate how the pattern tiles are placed and
-     *  spaced. These attributes represent coordinates and values in the coordinate
-     *  space specified by the combination of attributes ‘patternUnits’ and ‘patternTransform’.
-     *
-     *  A negative value is an error. A value of zero disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setWidth : function(length) {
-      this.setAttribute("width", length);
-    },
-
-
-    /**
-     * Gets the 'width' attribute.
-     *
-     * @return {Integer} TODOC
-     * @see #setWidth
-     */
-    getWidth : function() {
-      return this.getAttribute("width");
-    },
-
-
-    /**
-     * ‘x’, ‘y’, ‘width’ and ‘height’ indicate how the pattern tiles are placed and
-     *  spaced. These attributes represent coordinates and values in the coordinate
-     *  space specified by the combination of attributes ‘patternUnits’ and ‘patternTransform’.
-     *
-     *  A negative value is an error. A value of zero disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setHeight : function(length) {
-      this.setAttribute("height", length);
-    },
-
-
-    /**
-     * Gets the 'height' attribute.
-     *
-     * @return {Integer} TODOC
-     * @see #setHeight
-     */
-    getHeight : function() {
-      return this.getAttribute("height");
-    }
-
+  	
+  	//applies patternUnits
+  	_applyPatternUnits: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("patternUnits");
+		  } else {
+        this.setAttribute("patternUnits", value);
+		  }
+		},
+		
+		//applies patternContentUnits
+		_applyContentUnits: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("patternContentUnits");
+		  } else {
+        this.setAttribute("patternContentUnits", value);
+		  }
+		},
+		
+		//applies patternTransform
+		_applyPatternTransform: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("patternTransform");
+		  } else {
+        this.setAttribute("patternTransform", value);
+		  }
+		},
+		
+		//applies x
+		_applyX: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("x");
+		  } else {
+        this.setAttribute("x", value);
+		  }
+		},
+		
+		//applies y
+		_applyY: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("y");
+		  } else {
+        this.setAttribute("y", value);
+		  }
+		},
+		
+		//applies width
+		_applyWidth: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("width");
+		  } else {
+        this.setAttribute("width", value);
+		  }
+		},
+		
+		//applies height
+		_applyHeight: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("height");
+		  } else {
+        this.setAttribute("height", value);
+		  }
+		}
+		
   }
 });

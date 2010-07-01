@@ -45,97 +45,119 @@ qx.Class.define("svg.shape.Ellipse",
     this.base(arguments, "ellipse", styles, attributes);
   },
 
+  properties :
+  {
+  	/**
+  	 * The x-axis coordinate of the center of the ellipse.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#EllipseElementCXAttribute</li>
+     * </ul>
+  	 */
+  	cx : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyCx",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * The y-axis coordinate of the center of the ellipse.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#EllipseElementCYAttribute</li>
+     * </ul>
+  	 */
+  	cy : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyCy",
+  	  check: "Number"
+    },
+
+  	/**
+  	 * The x-axis radius of the ellipse.
+  	 * A value of zero disables rendering of the element.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#EllipseElementRXAttribute</li>
+     * </ul>
+  	 */
+    radiusX : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRadiusX",
+  	  check: "!isNaN(value) && value >= 0"
+    },
+    
+  	/**
+  	 * The y-axis radius of the ellipse.
+  	 * A value of zero disables rendering of the element.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#EllipseElementRYAttribute</li>
+     * </ul>
+  	 */
+    radiusY : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRadiusY",
+  	  check: "!isNaN(value) && value >= 0"
+    },
+    
+    /**
+     * Short-hand property for radiusX and radiusY.
+     */
+    radius : {
+    	group : ["radiusX", "radiusY"],
+    	mode : "shorthand"
+    }
+    
+  },
+  
+  
   members :
   {
-    /**
-     * The x-axis coordinate of the center of the ellipse. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setCx : function(coordinate) {
-      this.setAttribute("cx", coordinate);
+  	
+  	//applies cx
+  	_applyCx: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("cx");
+	    } else {
+        this.setAttribute("cy", value);
+	    }
+    },
+    
+  	//applies cy
+  	_applyCy: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("cy");
+	    } else {
+        this.setAttribute("cy", value);
+	    }
     },
 
-
-    /**
-     * Gets the x-axis coordinate of the center of the ellipse.
-     *
-     * @return {Integer} TODOC
-     * @see #setX
-     */
-    getCx : function() {
-      return this.getAttribute("cx");
+  	//applies rx
+  	_applyRadiusX: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("rx");
+	    } else {
+        this.setAttribute("rx", value);
+	    }
     },
 
-
-    /**
-     * The y-axis coordinate of the center of the ellipse. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setCy : function(coordinate) {
-      this.setAttribute("cy", coordinate);
-    },
-
-
-    /**
-     * Gets the y-axis coordinate of the center of the ellipse.
-     *
-     * @return {Integer} TODOC
-     * @see #setY
-     */
-    getCy : function() {
-      return this.getAttribute("cy");
-    },
-
-
-    /**
-     * The x-axis radius of the ellipse. A negative value is an error. A value of zero
-     *  disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setXradius : function(length) {
-      this.setAttribute("rx", length);
-    },
-
-
-    /**
-     * Gets the x-axis radius of the ellipse.
-     *
-     * @return {Integer} TODOC
-     * @see #setXradius
-     */
-    getXradius : function() {
-      return this.getAttribute("rx");
-    },
-
-
-    /**
-     * The y-axis radius of the ellipse. A negative value is an error. A value of zero
-     *  disables rendering of the element.
-     *
-     * @param length {Integer} value to set
-     * @return {void}
-     */
-    setYradius : function(length) {
-      this.setAttribute("ry", length);
-    },
-
-
-    /**
-     * Gets the y-axis radius of the ellipse.
-     *
-     * @return {Integer} TODOC
-     * @see #setYradius
-     */
-    getYradius : function() {
-      return this.getAttribute("ry");
+  	//applies ry
+  	_applyRadiusY: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("ry");
+	    } else {
+        this.setAttribute("ry", value);
+	    }
     }
+
   }
 });

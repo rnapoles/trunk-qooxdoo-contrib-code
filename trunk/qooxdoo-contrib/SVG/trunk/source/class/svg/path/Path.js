@@ -40,63 +40,67 @@ qx.Class.define("svg.path.Path",
   construct : function(styles, attributes) {
     this.base(arguments, "path", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * The definition of the outline of a shape.
+  	 * 
+  	 * You can provide an instance of {@link PathData} (recommended!),
+  	 * or a string with hand-written path data. 
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathData</li>
+     * </ul>
+  	 */
+  	pathData: {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyPathData",
+  	  check: "value instanceof svg.path.PathData || typeof(value) == 'string'"
+    },
+    
+    /**
+     * The author's computation of the total length of the path, in user units.
+     * This value is used to calibrate the user agent's own distance-along-a-path
+     * calculations with that of the author.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathLengthAttribute</li>
+     * </ul>
+     */
+    pathLength: {
+    	nullable: true,
+    	init: null,
+    	apply: "_applyPathLength",
+    	check: "!isNaN(value) && value >= 0"
+    }
+  },
 
   members :
   {
-    /**
-     * The definition of the outline of a shape.
-     *
-     *  More info: http://www.w3.org/TR/SVG11/paths.html#PathData
-     *
-     * @param d {String | svg.path.PathData} value to set
-     * @return {void}
-     */
-    setPathData : function(d)
-    {
-      if (d instanceof svg.path.PathData) {
-        this.setAttribute("d", d.toString());
-      } else {
-        this.setAttribute("d", d);
-      }
+  	
+  	//applies path data
+  	_applyPathData: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("d");
+		  } else if (value instanceof svg.path.PathData) {
+		  	this.setAttribute("d", value.toString());
+  	  } else {
+        this.setAttribute("d", value);
+		  }
     },
+    
+    //applies path length
+    _applyPathLength: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("pathLength");
+  	  } else {
+        this.setAttribute("pathLength", value);
+		  }
+		}
 
-
-    /**
-     * Gets the path data attribute of this element.
-     *
-     * @return {String} TODOC
-     * @see #setPathData
-     */
-    getPathData : function() {
-      return this.getAttribute("d");
-    },
-
-
-    /**
-     * The author's computation of the total length of the path, in user units.
-     *  This value is used to calibrate the user agent's own distance-along-a-path
-     *  calculations with that of the author.
-     *
-     *  A negative value is an error (see Error processing).
-     *
-     *  More info: http://www.w3.org/TR/SVG11/paths.html#PathLengthAttribute
-     *
-     * @param length {Number} value to set
-     * @return {void}
-     */
-    setPathLength : function(length) {
-      this.setAttribute("pathLength", length);
-    },
-
-
-    /**
-     * Gets the path length attribute of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setPathLength
-     */
-    getPathLength : function() {
-      return this.getAttribute("pathLength");
-    }
   }
 });

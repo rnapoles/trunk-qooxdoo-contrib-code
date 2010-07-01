@@ -44,98 +44,123 @@ qx.Class.define("svg.shape.Line",
   construct : function(styles, attributes) {
     this.base(arguments, "line", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * x-coord of the start of the line.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#LineElementX1Attribute</li>
+     * </ul>
+  	 */
+  	x1: {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyX1",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * y-coord of the start of the line.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#LineElementY1Attribute</li>
+     * </ul>
+  	 */
+    y1: {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyY1",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * x-coord of the end of the line.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#LineElementX2Attribute</li>
+     * </ul>
+  	 */
+    x2: {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyX2",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * y-coord of the end of the line.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#LineElementY2Attribute</li>
+     * </ul>
+  	 */
+    y2: {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyY2",
+  	  check: "Number"
+    },
+    
+    /**
+     * Line start coords (x1,y1).
+     */
+    start: {
+    	group: ["x1", "y1"]
+    },
+    
+    /**
+     * Line end coords (x2,y2).
+     */
+    end: {
+    	group: ["x2", "y2"]
+    }
+    
+  },
 
   members :
   {
-    /**
-     * The x-axis coordinate of the start of the line. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setX1 : function(coordinate) {
-      this.setAttribute("x1", coordinate);
+    
+  	//applies x1
+  	_applyX1: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("x1");
+	    } else {
+        this.setAttribute("x1", value);
+	    }
     },
-
-
-    /**
-     * Gets the x-axis coordinate of the start of the line.
-     *
-     * @return {Integer} TODOC
-     * @see #setX1
-     */
-    getX1 : function() {
-      return this.getAttribute("x1");
+  
+  	//applies y1
+  	_applyY1: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("y1");
+	    } else {
+        this.setAttribute("y1", value);
+	    }
     },
-
-
-    /**
-     * The y-axis coordinate of the start of the line. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setY1 : function(coordinate) {
-      this.setAttribute("y1", coordinate);
+  
+  	//applies x2
+  	_applyX2: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("x2");
+	    } else {
+        this.setAttribute("x2", value);
+	    }
     },
-
-
-    /**
-     * Gets the y-axis coordinate of the start of the line.
-     *
-     * @return {Integer} TODOC
-     * @see #setY1
-     */
-    getY1 : function() {
-      return this.getAttribute("y1");
-    },
-
-
-    /**
-     * The x-axis coordinate of the end of the line. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setX2 : function(coordinate) {
-      this.setAttribute("x2", coordinate);
-    },
-
-
-    /**
-     * Gets the x-axis coordinate of the end of the line.
-     *
-     * @return {Integer} TODOC
-     * @see #setX2
-     */
-    getX2 : function() {
-      return this.getAttribute("x2");
-    },
-
-
-    /**
-     * The y-axis coordinate of the end of the line. If the attribute is not
-     *  specified, the effect is as if a value of "0" were specified.
-     *
-     * @param coordinate {Integer} value to set
-     * @return {void}
-     */
-    setY2 : function(coordinate) {
-      this.setAttribute("y2", coordinate);
-    },
-
-
-    /**
-     * Gets the y-axis coordinate of the end of the line.
-     *
-     * @return {Integer} TODOC
-     * @see #setY2
-     */
-    getY2 : function() {
-      return this.getAttribute("y2");
+  
+  	//applies y2
+  	_applyY2: function(value, old) {
+	    if (null == value) {
+	  	  this.removeAttribute("y2");
+	    } else {
+        this.setAttribute("y2", value);
+	    }
     }
+  
   }
 });

@@ -52,6 +52,8 @@ qx.Class.define("svg.demo.Application",
       });
       
       var svgroot = svgWidget.getSvg();
+      
+      x = svg.core.Types;
 
       // create a defs section
       var defs = new svg.struct.Defs();
@@ -59,6 +61,8 @@ qx.Class.define("svg.demo.Application",
 
       // prepare a pattern for the grid
       var gridPattern = new svg.paint.Pattern();
+      x = gridPattern;
+      
       gridPattern.setId("gridPattern");
       gridPattern.setX(0);
       gridPattern.setY(0);
@@ -80,7 +84,7 @@ qx.Class.define("svg.demo.Application",
       gridRect.setId("grid");
       gridRect.setWidth("100%");
       gridRect.setHeight("100%");
-      gridRect.setFill("url(#gridPattern)");
+      gridRect.setFill(gridPattern);
       svgroot.add(gridRect);
 
       // prepare a group for the circle chunks
@@ -90,8 +94,6 @@ qx.Class.define("svg.demo.Application",
 
       // create the big chunk
       var bigChunk = new svg.path.Path();
-      bigChunk.setTitle("bigChunk");
-      bigChunk.setDescription("test");
       bigChunk.setStroke("black");
       bigChunk.setStrokeWidth(2);
       bigChunk.setFill("red");
@@ -109,7 +111,6 @@ qx.Class.define("svg.demo.Application",
 
       // create the small chunk
       var smallChunk = new svg.path.Path();
-      smallChunk.setTitle("smallChunk");
       smallChunk.setStroke("black");
       smallChunk.setStrokeWidth(4);
       smallChunk.setFill("yellow");

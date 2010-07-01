@@ -51,173 +51,171 @@ qx.Class.define("svg.paint.Marker",
   construct : function(styles, attributes) {
     this.base(arguments, "marker", styles, attributes);
   },
+  
+  properties :
+  {
+  	/**
+  	 * Defines the coordinate system used by {@link #markerWidth},
+  	 * {@link #markerHeight}, and the contents of the marker.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerUnitsAttribute</li>
+     * </ul>
+  	 */
+  	markerUnits : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyMarkerUnits",
+  	  check: ["strokeWidth", "userSpaceOnUse"]
+    },
+    
+  	/**
+  	 * The x-axis coordinate of the reference point.
+  	 * 
+  	 * The coordinate is defined in the coordinate system after application
+  	 * of the {@link svg.attributes.MViewBox#viewBox} and 
+  	 * {@link svg.attributes.MPreserveAspectRatio} attributes.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerElementRefXAttribute</li>
+     * </ul>
+  	 */
+  	refX : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRefX",
+  	  check: "Number"
+    },
+    
+  	/**
+  	 * The y-axis coordinate of the reference point.
+  	 * 
+  	 * The coordinate is defined in the coordinate system after application
+  	 * of the {@link svg.attributes.MViewBox#viewBox} and 
+  	 * {@link svg.attributes.MPreserveAspectRatio} attributes.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerElementRefYAttribute</li>
+     * </ul>
+  	 */
+  	refY : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyRefY",
+  	  check: "Number"
+    },
+    
+    /**
+     * The width of the viewport into which the marker is to be fitted when it is rendered.
+     * 
+     * A value of zero disables rendering of the element.
+     * If unspecified, the effect is as if a value of "3" were specified.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerWidthAttribute</li>
+     * </ul>
+     */
+    markerWidth : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyMarkerWidth",
+  	  check: "!isNaN(value) && value >= 0"
+    },
+    
+    /**
+     * The height of the viewport into which the marker is to be fitted when it is rendered.
+     * 
+     * A value of zero disables rendering of the element.
+     * If unspecified, the effect is as if a value of "3" were specified.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerHeightAttribute</li>
+     * </ul>
+     */
+    markerHeight : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyMarkerHeight",
+  	  check: "!isNaN(value) && value >= 0"
+    },
+    
+    /**
+     * Indicates how the marker is rotated.
+  	 * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/painting.html#OrientAttribute</li>
+     * </ul>
+     */
+    orient : {
+  	  nullable: true,
+  	  init: null,
+  	  apply: "_applyOrient",
+  	  check: "!isNaN(value) || value == 'auto'"
+    }
+    
+  },
 
   members :
   {
-    /**
-     * Defines the coordinate system for attributes ‘markerWidth’, ‘markerHeight’
-     *  and the contents of the ‘marker’.
-     *
-     *  Possible values are:
-     *  <ul>
-     *    <li>strokeWidth</li>
-     *    <li>userSpaceOnUse</li>
-     *  </ul>
-     *
-     *  More info: http://www.w3.org/TR/SVG11/painting.html#MarkerUnitsAttribute
-     *
-     * @param markerunits {String} value to set
-     * @return {void}
-     */
-    setMarkerUnits : function(markerunits) {
-      this.setAttribute("markerUnits", markerunits);
-    },
+  	
+  	//applies markerUnits
+  	_applyMarkerUnits: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("markerUnits");
+		  } else {
+        this.setAttribute("markerUnits", value);
+		  }
+		},
 
+  	//applies refX
+  	_applyRefX: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("refX");
+		  } else {
+        this.setAttribute("refX", value);
+		  }
+		},
 
-    /**
-     * Gets the markerUnits property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setMarkerUnits
-     */
-    getMarkerUnits : function() {
-      return this.getAttribute("markerUnits");
-    },
+  	//applies refY
+  	_applyRefY: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("refY");
+		  } else {
+        this.setAttribute("refY", value);
+		  }
+		},
 
+  	//applies markerWidth
+  	_applyMarkerWidth: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("markerWidth");
+		  } else {
+        this.setAttribute("markerWidth", value);
+		  }
+		},
 
-    /**
-     * The x-axis coordinate of the reference point which is to be aligned exactly
-     *  at the marker position. The coordinate is defined in the coordinate system
-     *  after application of the ‘viewBox’ and ‘preserveAspectRatio’ attributes.
-     *  If the attribute is not specified, the effect is as if a value of "0" were
-     *  specified.
-     *
-     * @param coordinate {Number} value to set
-     * @return {void}
-     */
-    setRefX : function(coordinate) {
-      this.setAttribute("refX", coordinate);
-    },
+  	//applies markerHeight
+  	_applyMarkerHeight: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("markerHeight");
+		  } else {
+        this.setAttribute("markerHeight", value);
+		  }
+		},
 
-
-    /**
-     * Gets the refX property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setRefX
-     */
-    getRefX : function() {
-      return this.getAttribute("refX");
-    },
-
-
-    /**
-     * The y-axis coordinate of the reference point which is to be aligned exactly
-     *  at the marker position. The coordinate is defined in the coordinate system
-     *  after application of the ‘viewBox’ and ‘preserveAspectRatio’ attributes.
-     *  If the attribute is not specified, the effect is as if a value of "0" were
-     *  specified.
-     *
-     * @param coordinate {Number} value to set
-     * @return {void}
-     */
-    setRefY : function(coordinate) {
-      this.setAttribute("refY", coordinate);
-    },
-
-
-    /**
-     * Gets the refY property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setRefY
-     */
-    getRefY : function() {
-      return this.getAttribute("refY");
-    },
-
-
-    /**
-     * Represents the width of the viewport into which the marker is to be fitted
-     *  when it is rendered.
-     *
-     *  A negative value is an error.
-     *  A value of zero disables rendering of the element.
-     *  If unspecified, the effect is as if a value of "3" were specified.
-     *
-     * @param length {Number} value to set
-     * @return {void}
-     */
-    setMarkerWidth : function(length) {
-      this.setAttribute("markerWidth", length);
-    },
-
-
-    /**
-     * Gets the markerWidth property of this element.
-     *
-     * @return {var} TODOC
-     * @see #setMarkerWidth
-     */
-    getMarkerWidth : function() {
-      return this.getAttribute("markerWidth");
-    },
-
-
-    /**
-     * Represents the height of the viewport into which the marker is to be fitted
-     *  when it is rendered.
-     *
-     *  A negative value is an error.
-     *  A value of zero disables rendering of the element.
-     *  If unspecified, the effect is as if a value of "3" were specified.
-     *
-     * @param length {Number} value to set
-     * @return {void}
-     */
-    setMarkerHeight : function(length) {
-      this.setAttribute("markerHeight", length);
-    },
-
-
-    /**
-     * Gets the markerHeight property of this element.
-     *
-     * @return {Number} TODOC
-     * @see #setMarkerHeight
-     */
-    getMarkerHeight : function() {
-      return this.getAttribute("markerHeight");
-    },
-
-
-    /**
-     * Indicates how the marker is rotated.
-     *
-     *  Possible values are:
-     *  <ul>
-     *    <li>auto</li>
-     *    <li>&lt;angle&rt;</li>
-     *  </ul>
-     *
-     *  More info: http://www.w3.org/TR/SVG11/painting.html#OrientAttribute
-     *
-     * @param orient {String} value to set
-     * @return {void}
-     */
-    setOrient : function(orient) {
-      this.setAttribute("orient", orient);
-    },
-
-
-    /**
-     * Gets the 'orient' property of this element.
-     *
-     * @return {String} TODOC
-     * @see #setOrient
-     */
-    getOrient : function() {
-      return this.getAttribute("orient");
-    }
+  	//applies orient
+  	_applyOrient: function(value, old) {
+		  if (null == value) {
+		  	this.removeAttribute("orient");
+		  } else {
+        this.setAttribute("orient", value);
+		  }
+		}
   }
 });
