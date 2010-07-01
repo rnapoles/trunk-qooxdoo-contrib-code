@@ -153,6 +153,8 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 		_expirePropertyOnDemand: function(propName, value) {
 			if (this.$$proxyUser)
 				delete this.$$proxyUser[propName];
+			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
+			PM.expireProperty(this, propName);
 		},
 		
 		/**
