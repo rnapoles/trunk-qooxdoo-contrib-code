@@ -605,7 +605,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 */
 		callServerMethod: function(serverObject, methodName, args) {
 			// Can we get it from the cache?
-			var methodDef = serverObject.$$proxyDef.methods[methodName];
+			var methodDef = this._getMethodDef(serverObject, methodName);
 			if (methodDef && methodDef.cacheResult && methodDef.cachedValue)
 				return methodDef.cachedValue;
 			
@@ -707,6 +707,19 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			// OnDemand properties need to have their event fired for them
 			if (pd.onDemand && pd.event)
 				serverObject.fireDataEvent(pd.event, value, oldValue);
+		},
+		
+		/**
+		 * Called by Proxy when cached property value is expired; causes the
+		 * expire method to be queued to the server
+		 */
+		expireProperty: function(serverObject, propertyName) {
+			var data = {
+				cmd: "expire",
+				serverId: serverObject.getServerId(),
+				propertyName: propertyName
+			};
+			this._queueCommandToServer(data);
 		},
 		
 		/**
@@ -910,6 +923,22 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				return this.__clientObjects(0 - serverId);
 			
 			return this.__serverObjects[serverId];
+		},
+		
+		/**
+		 * Returns the proxy definition for a named method
+		 * @param serverObject the object to get the method from
+		 * @param methodName {String} the name of the method
+		 */
+		_getMethodDef: function(serverObject, methodName) {
+			for (var def = serverObject.$$proxyDef; def != null; def = def.extend) {
+				if (def.methods) {
+					var methodDef = def.methods[methodName];
+					if (def)
+						return def;
+				}
+			}
+			return null;
 		},
 		
 		/**
