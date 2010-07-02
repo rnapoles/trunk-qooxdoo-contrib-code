@@ -23,9 +23,9 @@ qx.Class.define("svg.path.Path",
 {
   extend : svg.core.Element,
   
-//  include : [ svg.attributes.MFill,
-//              svg.attributes.MStroke,
-//              svg.attributes.MMarkerProperties ],
+  include : [ svg.attributes.MFill,
+              svg.attributes.MStroke,
+              svg.attributes.MMarkerProperties ],
 
   construct : function() {
     this.base(arguments, "path");
