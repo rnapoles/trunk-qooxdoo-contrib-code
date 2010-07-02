@@ -90,7 +90,7 @@ qx.Class.define("svg.shape.Circle",
 	    if (null == value) {
 	  	  this.removeAttribute("cx");
 	    } else {
-        this.setAttribute("cy", value);
+        this.setAttribute("cx", value);
 	    }
     },
     
