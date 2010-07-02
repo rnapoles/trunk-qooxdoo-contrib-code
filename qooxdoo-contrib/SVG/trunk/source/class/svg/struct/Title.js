@@ -34,7 +34,9 @@ qx.Class.define("svg.struct.Title",
 
   /**
    * Creates a new 'title' element, which can then be added to any SVG element.
-   * @param title {String?null} the title text.
+   * 
+   * @param title {String?}
+   *   the title text.
    */
   construct : function(title)
   {

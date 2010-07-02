@@ -24,11 +24,7 @@ qx.Class.define("svg.struct.Defs",
 {
   extend : svg.core.Element,
 
-
-  /**
-   * Constructs a new 'defs' container.
-   */
   construct : function() {
-    this.base(arguments, "defs", null, null);
+    this.base(arguments, "defs");
   }
 });

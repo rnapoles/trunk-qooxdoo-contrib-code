@@ -35,26 +35,18 @@ qx.Class.define("svg.struct.Svg",
   include : [ svg.attributes.MViewBox,
               svg.attributes.MPreserveAspectRatio ],
 
-
-  /**
-   * @param styles {Map?null}
-   *   Optional map of CSS styles, where the key is the name
-   *   of the style and the value is the value to use.
-   *
-   * @param attributes {Map?null}
-   *   Optional map of element attributes, where the key is
-   *   the name of the attribute and the value is the value to use.
-   */
-  construct : function(styles, attributes)
+  construct : function()
   {
-    attributes = attributes | {};
-    attributes["version"] = "1.1";
-    attributes["baseProfile"] = "full";
-    attributes["xmlns"] = "http://www.w3.org/2000/svg";
-    attributes["xmlns:xlink"] = "http://www.w3.org/1999/xlink";
-    attributes["xmlns:ev"] = "http://www.w3.org/2001/xml-events";
+    this.base(arguments, "svg");
 
-    this.base(arguments, "svg", styles, attributes);
+    this.setAttributes({
+  		"version"     : "1.1",
+      "baseProfile" : "full",
+      "xmlns"       : "http://www.w3.org/2000/svg",
+      "xmlns:xlink" : "http://www.w3.org/1999/xlink",
+      "xmlns:ev"    : "http://www.w3.org/2001/xml-events"
+    });
+	  
   },
 
   properties :

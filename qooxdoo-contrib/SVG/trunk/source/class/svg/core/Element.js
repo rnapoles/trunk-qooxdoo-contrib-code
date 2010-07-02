@@ -29,19 +29,11 @@ qx.Class.define("svg.core.Element",
   /**
    * @param tagName {String}
    *   Tag name of the element to create.
-   *
-   * @param styles {Map?null}
-   *   Optional map of CSS styles, where the key is the name
-   *   of the style and the value is the value to use.
-   *
-   * @param attributes {Map?null}
-   *   Optional map of element attributes, where the key is
-   *   the name of the attribute and the value is the value to use.
    */
-  construct : function(tagName, styles, attributes)
+  construct : function(tagName)
   {
     this.__svgElement = document.createElementNS(svg.core.Element.SVG_NAMESPACE, tagName);
-    this.base(arguments, tagName, styles, attributes);
+    this.base(arguments, tagName);
   },
 
   statics : {
