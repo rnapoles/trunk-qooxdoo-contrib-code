@@ -30,10 +30,6 @@ qx.Class.define("svg.path.PathData",
 {
   extend : qx.core.Object,
 
-
-  /**
-   * Constructs new path data builder.
-   */
   construct : function()
   {
     this.base(arguments);
@@ -46,6 +42,9 @@ qx.Class.define("svg.path.PathData",
   
   events :
   {
+    /**
+     * Fired when the path data changed. Event will contain the new value.
+     */
   	"change" : "qx.event.type.Data"
   },
 
@@ -60,8 +59,6 @@ qx.Class.define("svg.path.PathData",
 
     /**
      * Internally track the starting of a subpath.
-     *
-     * @return {void}
      */
     _startSubPath : function()
     {
@@ -75,8 +72,6 @@ qx.Class.define("svg.path.PathData",
 
     /**
      * Internally track the closure of a subpath.
-     *
-     * @return {void}
      */
     _endSubPath : function()
     {
@@ -90,11 +85,15 @@ qx.Class.define("svg.path.PathData",
      * Internally track the pen location. The location can be used by various
      *  commands to find shortcuts. This is used by {@link #lineTo}.
      *
-     * @param x {Number | null} new x-coordinate of the pen, or use _null_ if unchanged.
-     * @param y {Number | null} new x-coordinate of the pen, or use _null_ if unchanged.
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates.
-     *    *true*: x and y are specified relative to the current pen location.
-     * @return {void}
+     * @param x {Number | null}
+     *   new x-coordinate of the pen, or use _null_ if unchanged.
+     *   
+     * @param y {Number | null}
+     *   new x-coordinate of the pen, or use _null_ if unchanged.
+     * 
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates.
+     *   *true*: x and y are specified relative to the current pen location.
      */
     _setPen : function(x, y, relative)
     {
@@ -124,11 +123,15 @@ qx.Class.define("svg.path.PathData",
     /**
      * Adds a command and the end of the path data.
      *
-     * @param cmd {String} one letter path command
-     * @param params {String} the parameters for the specified command
-     * @param allowShortcut {Boolean | true} whether or not command shortcuts are allowed. If true, omits the
-     *                command when it is the same as the 'active' (last used) command.
-     * @return {void}
+     * @param cmd {String}
+     *   one letter path command
+     *   
+     * @param params {String}
+     *   the parameters for the specified command
+     *   
+     * @param allowShortcut {Boolean | true}
+     *   whether or not command shortcuts are allowed. If true, omits the
+     *   command when it is the same as the 'active' (last used) command.
      */
     _addCmd : function(cmd, params, allowShortcut)
     {
@@ -159,11 +162,23 @@ qx.Class.define("svg.path.PathData",
     /**
      * Moves the pen and starts a new sub-path.
      *
-     * @param x {Number} x-coordinate to move to
-     * @param y {Number} y-coordinate to move to
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates.
-     *    *true*: x and y are specified relative to the current pen location.
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataMovetoCommands</li>
+     * </ul>
+     *
+     * @param x {Number}
+     *   x-coordinate to move to
+     *   
+     * @param y {Number}
+     *   y-coordinate to move to
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates.
+     *   *true*: x and y are specified relative to the current pen location.
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     moveTo : function(x, y, relative)
     {
@@ -177,11 +192,23 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws a line.
      *
-     * @param x {Number} x-coordinate of end point
-     * @param y {Number} y-coordinate of end point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates.
-     *    *true*: x and y are specified relative to the current pen location.
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataLinetoCommands</li>
+     * </ul>
+     *
+     * @param x {Number}
+     *   x-coordinate of end point
+     *   
+     * @param y {Number}
+     *   y-coordinate of end point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates.
+     *   *true*: x and y are specified relative to the current pen location.
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     lineTo : function(x, y, relative)
     {
@@ -220,10 +247,20 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws a horizontal line.
      *
-     * @param x {Number} x-coordinate of end point
-     * @param relative {Boolean ? false} *false*: x is an absolute coordinate.
-     *    *true*: x is specified relative to the current pen location.
-     * @return {svg.path.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataLinetoCommands</li>
+     * </ul>
+     *
+     * @param x {Number}
+     *   x-coordinate of end point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x is an absolute coordinate.
+     *   *true*: x is specified relative to the current pen location.
+     *   
+     * @return {svg.path.PathData}
+     *   this object (for chaining support)
      */
     lineToX : function(x, relative)
     {
@@ -236,10 +273,20 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws a vertical line.
      *
-     * @param y {Number} y-coordinate of end point
-     * @param relative {Boolean ? false} *false*: y is an absolute coordinate.
-     *    *true*: y is specified relative to the current pen location.
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataLinetoCommands</li>
+     * </ul>
+     *
+     * @param y {Number}
+     *   y-coordinate of end point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: y is an absolute coordinate.
+     *   *true*: y is specified relative to the current pen location.
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     lineToY : function(y, relative)
     {
@@ -252,9 +299,15 @@ qx.Class.define("svg.path.PathData",
     /**
      * Closes a sub-path using a line segment.
      *
-     *  Use {@link #moveTo} to start a sub-path.
+     * Use {@link #moveTo} to start a sub-path.
      *
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataClosePathCommand</li>
+     * </ul>
+     *
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     closePath : function()
     {
@@ -268,20 +321,40 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws an elliptical arc.
      *
-     *  More info: http://www.w3.org/TR/SVG11/paths.html#PathDataEllipticalArcCommands
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCurveCommands</li>
+     * </ul>
      *
-     * @param rx {Number} x-axis radius
-     * @param ry {Number} y-axis radius
-     * @param rotation {Number} x-axis rotation
-     * @param largeArcFlag {Boolean} *true*: draw the largest arc,
-     *    *false*: draws the smallest arc
-     * @param sweepFlag {Boolean} *true*: positive angular orientation,
-     *    *false*: negative angular orientation
-     * @param x {Number} x-coord of new point
-     * @param y {Number} y-coord of new point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates
-     *    *true*: x and y are specified relative to the current pen location
-     * @return {svg.util.PathData} this object (for chaining support)
+     * @param rx {Number}
+     *   x-axis radius
+     *   
+     * @param ry {Number}
+     *   y-axis radius
+     *   
+     * @param rotation {Number}
+     *   x-axis rotation
+     *   
+     * @param largeArcFlag {Boolean}
+     *   *true*: draw the largest arc,
+     *   *false*: draws the smallest arc
+     *   
+     * @param sweepFlag {Boolean}
+     *   *true*: positive angular orientation,
+     *   *false*: negative angular orientation
+     *   
+     * @param x {Number}
+     *   x-coord of new point
+     *   
+     * @param y {Number}
+     *   y-coord of new point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates
+     *   *true*: x and y are specified relative to the current pen location
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     arc : function(rx, ry, rotation, largeArcFlag, sweepFlag, x, y, relative)
     {
@@ -299,16 +372,34 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws a circular arc. This is a special case of the eliptical {@link #arc}.
      *
-     * @param r {Number} circle radius
-     * @param largeArcFlag {Boolean} <b>true</b>: draw the largest arc,
-     *                <b>false</b>: draws the smallest arc
-     * @param sweepFlag {Boolean} <b>true</b>: positive angular orientation,
-     *                <b>false</b>: negative angular orientation
-     * @param x {Number} x-coord of new point
-     * @param y {Number} y-coord of new point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates
-     *    *true*: x and y are specified relative to the current pen location
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCurveCommands</li>
+     * </ul>
+     *
+     * @param r {Number}
+     *   circle radius
+     *   
+     * @param largeArcFlag {Boolean}
+     *   <b>true</b>: draw the largest arc,
+     *   <b>false</b>: draws the smallest arc
+     *   
+     * @param sweepFlag {Boolean}
+     *   <b>true</b>: positive angular orientation,
+     *   <b>false</b>: negative angular orientation
+     *   
+     * @param x {Number}
+     *   x-coord of new point
+     *   
+     * @param y {Number}
+     *   y-coord of new point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates
+     *   *true*: x and y are specified relative to the current pen location
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     circularArc : function(r, largeArcFlag, sweepFlag, x, y, relative) {
       return this.arcTo(r, r, 0, largeArcFlag, sweepFlag, x, y, relative);
@@ -318,15 +409,31 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws a quadratic bézier curve.
      *
-     *  <img src="http://www.learnsvg.com/html/bitmap/chapter04/pictures/page042.jpg" />
+     * <img src="http://www.learnsvg.com/html/bitmap/chapter04/pictures/page042.jpg" />
      *
-     * @param x1 {Number} x-coordinate of the approximating control point
-     * @param y1 {Number} y-coordinate of the approximating control point
-     * @param x {Number} x-coordinate of the new curve point
-     * @param y {Number} y-coordinate of the new curve point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates
-     *    *true*: x and y are specified relative to the current pen location
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataQuadraticBezierCommands</li>
+     * </ul>
+     *
+     * @param x1 {Number}
+     *   x-coordinate of the approximating control point
+     *   
+     * @param y1 {Number}
+     *   y-coordinate of the approximating control point
+     *   
+     * @param x {Number}
+     *   x-coordinate of the new curve point
+     *   
+     * @param y {Number}
+     *   y-coordinate of the new curve point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates
+     *   *true*: x and y are specified relative to the current pen location
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     qCurve : function(x1, y1, x, y, relative)
     {
@@ -339,17 +446,29 @@ qx.Class.define("svg.path.PathData",
 
     /**
      * Draws a smooth (shorthand) quadratic bézier curve. The control point
-     *  will be automatically created from the previous curve's control point.
-     *  This results in a smooth junction between this and the previous curve.
+     * will be automatically created from the previous curve's control point.
+     * This results in a smooth junction between this and the previous curve.
      *
-     *  A smooth quadratic curve must be preceded by either a regular
-     *  quadratic curve or another smooth quadratic curve to work correctly.
+     * A smooth quadratic curve must be preceded by either a regular
+     * quadratic curve or another smooth quadratic curve to work correctly.
      *
-     * @param x {Number} x-coordinate of the new curve point
-     * @param y {Number} y-coordinate of the new curve point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates
-     *    *true*: x and y are specified relative to the current pen location
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataQuadraticBezierCommands</li>
+     * </ul>
+     *
+     * @param x {Number}
+     *   x-coordinate of the new curve point
+     *   
+     * @param y {Number}
+     *   y-coordinate of the new curve point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates
+     *   *true*: x and y are specified relative to the current pen location
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     qCurveSmooth : function(x, y, relative)
     {
@@ -370,15 +489,35 @@ qx.Class.define("svg.path.PathData",
     /**
      * Draws a cubic bézier curve.
      *
-     * @param x1 {Number} x-coordinate of the first approximating control point
-     * @param y1 {Number} y-coordinate of the first approximating control point
-     * @param x2 {Number} x-coordinate of the second approximating control point
-     * @param y2 {Number} y-coordinate of the second approximating control point
-     * @param x {Number} x-coordinate of the new curve point
-     * @param y {Number} y-coordinate of the new curve point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates
-     *    *true*: x and y are specified relative to the current pen location
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCubicBezierCommands</li>
+     * </ul>
+     *
+     * @param x1 {Number}
+     *   x-coordinate of the first approximating control point
+     *   
+     * @param y1 {Number}
+     *   y-coordinate of the first approximating control point
+     *   
+     * @param x2 {Number} 
+     *   x-coordinate of the second approximating control point
+     *   
+     * @param y2 {Number}
+     *   y-coordinate of the second approximating control point
+     *   
+     * @param x {Number}
+     *   x-coordinate of the new curve point
+     *   
+     * @param y {Number}
+     *   y-coordinate of the new curve point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates
+     *   *true*: x and y are specified relative to the current pen location
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     cCurve : function(x1, y1, x2, y2, x, y, relative)
     {
@@ -391,20 +530,36 @@ qx.Class.define("svg.path.PathData",
 
     /**
      * Draws a smooth (shorthand) cubic bézier curve. The first control point
-     *  will be automatically created from the previous curve's last control
-     *  point. This results in a smooth junction between this and the previous
-     *  curve.
+     * will be automatically created from the previous curve's last control
+     * point. This results in a smooth junction between this and the previous
+     * curve.
      *
-     *  A smooth cubic curve must be preceded by either a regular
-     *  cubic curve or another smooth cubic curve to work correctly.
+     * A smooth cubic curve must be preceded by either a regular
+     * cubic curve or another smooth cubic curve to work correctly.
      *
-     * @param x2 {Number} x-coordinate of the second approximating control point
-     * @param y2 {Number} y-coordinate of the second approximating control point
-     * @param x {Number} x-coordinate of the new curve point
-     * @param y {Number} y-coordinate of the new curve point
-     * @param relative {Boolean ? false} *false*: x and y are absolute coordinates
-     *    *true*: x and y are specified relative to the current pen location
-     * @return {svg.util.PathData} this object (for chaining support)
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCubicBezierCommands</li>
+     * </ul>
+     *
+     * @param x2 {Number}
+     *   x-coordinate of the second approximating control point
+     *   
+     * @param y2 {Number}
+     *   y-coordinate of the second approximating control point
+     *   
+     * @param x {Number}
+     *   x-coordinate of the new curve point
+     *   
+     * @param y {Number}
+     *   y-coordinate of the new curve point
+     *   
+     * @param relative {Boolean ? false}
+     *   *false*: x and y are absolute coordinates
+     *   *true*: x and y are specified relative to the current pen location
+     *   
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
      */
     cCurveSmooth : function(x2, y2, x, y, relative)
     {
@@ -420,16 +575,33 @@ qx.Class.define("svg.path.PathData",
       this._setPen(x, y, relative);
       return this;
     },
+    
+    /**
+     * Clears all path data.
+     * 
+     * @return {svg.util.PathData}
+     *   this object (for chaining support)
+     */
+    clear : function() {
+      this.__path = "";
+      this.__penX = 0;
+      this.__penY = 0;
+      this.__subPaths = [];
+      this.fireDataEvent("change", this.__path);
+      return this;
+    },
 
 
     /**
      * Returns the created path data as a string. The string can be directly used
-     *  as value for the "d" attribute of a Path element.
+     * as value for the "d" attribute of a Path element.
      *
-     * @return {String} the path data
+     * @return {String}
+     *   the path data
      */
     toString : function() {
       return this.__path;
     }
   }
+  
 });

@@ -19,20 +19,10 @@
 qx.Class.define("svg.embed.Svg",
 {
   extend : qx.ui.core.Widget,
-
-
-  /**
-   * @param styles {Map?null}
-   *   Optional map of CSS styles, where the key is the name
-   *   of the style and the value is the value to use.
-   *
-   * @param attributes {Map?null}
-   *   Optional map of element attributes, where the key is
-   *   the name of the attribute and the value is the value to use.
-   */
-  construct : function(styles, attributes)
+   
+  construct : function()
   {
-    this.__svg = new svg.struct.Svg(styles, attributes);
+    this.__svg = new svg.struct.Svg();
     this.base(arguments);
     this.setBackgroundColor("white");
   },

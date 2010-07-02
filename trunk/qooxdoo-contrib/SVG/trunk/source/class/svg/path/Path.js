@@ -23,22 +23,12 @@ qx.Class.define("svg.path.Path",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MMarkerProperties ],
+//  include : [ svg.attributes.MFill,
+//              svg.attributes.MStroke,
+//              svg.attributes.MMarkerProperties ],
 
-
-  /**
-   * @param styles {Map?null}
-   *   Optional map of CSS styles, where the key is the name
-   *   of the style and the value is the value to use.
-   *
-   * @param attributes {Map?null}
-   *   Optional map of element attributes, where the key is
-   *   the name of the attribute and the value is the value to use.
-   */
-  construct : function(styles, attributes) {
-    this.base(arguments, "path", styles, attributes);
+  construct : function() {
+    this.base(arguments, "path");
   },
   
   properties :
@@ -109,6 +99,12 @@ qx.Class.define("svg.path.Path",
 		  }
 		},
 		
+		/**
+		 * Updates the "d" attribute when PathData has changed.
+		 * 
+		 * @param ev {qx.event.Data}
+		 *   data event fired by PathData
+		 */
 		__changeListener: function(ev) {
 			this._applyPathData(ev.getData());
 		}

@@ -34,7 +34,9 @@ qx.Class.define("svg.struct.Desc",
 
   /**
    * Creates a new 'desc' element, which can then be added to any SVG element.
-   * @param desc {String?null} the description text.
+   * 
+   * @param desc {String?}
+   *   the description text.
    */
   construct : function(desc)
   {
