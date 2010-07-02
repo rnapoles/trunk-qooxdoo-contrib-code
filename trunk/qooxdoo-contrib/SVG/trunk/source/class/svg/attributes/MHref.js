@@ -47,7 +47,8 @@ qx.Mixin.define("svg.attributes.MHref",
   	 * element.setHref("url(#myCircle)");
   	 * </pre>
   	 * 
-  	 * Using the first option will keep the reference alive even if the target's id is changed!
+  	 * <span class="item-deprecated">Using the first option will keep the reference alive even
+  	 * if the target's id is changed!</span> (feature not yet implemented)
   	 * 
   	 */
   	href : {

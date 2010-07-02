@@ -87,7 +87,14 @@ qx.Class.define("svg.path.Path",
 		  if (null == value) {
 		  	this.removeAttribute("d");
 		  } else if (value instanceof svg.path.PathData) {
+		  	
+		  	if (old instanceof svg.path.PathData) {
+	  		  old.removeListener("change", this.__changeListener, this);
+		  	}
+		  	
 		  	this.setAttribute("d", value.toString());
+		  	value.addListener("change", this.__changeListener, this);
+		  	
   	  } else {
         this.setAttribute("d", value);
 		  }
@@ -100,6 +107,10 @@ qx.Class.define("svg.path.Path",
   	  } else {
         this.setAttribute("pathLength", value);
 		  }
+		},
+		
+		__changeListener: function(ev) {
+			this._applyPathData(ev.getData());
 		}
 
   }
