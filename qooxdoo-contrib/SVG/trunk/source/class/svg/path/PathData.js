@@ -43,6 +43,11 @@ qx.Class.define("svg.path.PathData",
     this.__penY = 0;
     this.__subPaths = [];
   },
+  
+  events :
+  {
+  	"change" : "qx.event.type.Data"
+  },
 
   members :
   {
@@ -146,6 +151,8 @@ qx.Class.define("svg.path.PathData",
       }
 
       this.__lastCommand = cmd;
+      
+      this.fireDataEvent("change", this.__path);
     },
 
 
