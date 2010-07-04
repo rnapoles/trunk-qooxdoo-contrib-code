@@ -978,6 +978,7 @@ class qcl_data_db_adapter_PdoMysql
    * add backticks for MySql tables and database names.
    * @param string $table Table name
    * @return string
+   * FIXME sanitize string
    */
   public function formatTableName( $table )
   {
@@ -990,6 +991,7 @@ class qcl_data_db_adapter_PdoMysql
    * add backticks for MySql columns.
    * @param string $table Column name
    * @return string
+   * FIXME sanitize string
    */
   public function formatColumnName( $column )
   {

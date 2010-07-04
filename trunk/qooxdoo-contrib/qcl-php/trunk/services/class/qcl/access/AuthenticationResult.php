@@ -15,7 +15,7 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/data/Result.php";
+require_once "qcl/data/Result.php"; // FIXME replace with qcl_import
 
 class qcl_access_AuthenticationResult
   extends qcl_data_Result

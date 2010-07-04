@@ -524,5 +524,34 @@ class qcl_data_db_Table
     $table = $this->getAdapter()->formatTableName( $this->getName() );
     return $this->getAdapter()->getResultValue("SELECT MAX($idCol) FROM $table");
   }
+
+  //-------------------------------------------------------------
+  // higher-level table manipulation
+  //-------------------------------------------------------------
+
+  /**
+   * Executes a simple find/replace operation on the given column
+   * @param string $column The name of the table column
+   * @param string $find The expression to find
+   * @param string $replace The expression to replace with
+   * @return int The number of replacements made
+   */
+  public function replace( $column, $find, $replace )
+  {
+    qcl_assert_valid_string( $column, "Invalid column argument");
+    qcl_assert_valid_string( $find, "Invalid find argument");
+    qcl_assert_string( $replace, "Invalid find argument");
+
+    $adapter = $this->getAdapter();
+    $parameters = array(
+      ":find"     => $find,
+      ":replace"  => $replace
+    );
+    $tableName  = $adapter->formatTableName( $this->getName() );
+    $columnName = $adapter->formatColumnName( $column );
+    $sql = "UPDATE $tableName SET $columnName = REPLACE($columnName,:find,:replace)";
+    $pdoStmt = $adapter->execute($sql, $parameters );
+    return $pdoStmt->rowCount();
+  }
 }
 ?>

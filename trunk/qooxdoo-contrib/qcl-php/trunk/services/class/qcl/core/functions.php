@@ -286,7 +286,30 @@ function qcl_assert_integer( $value, $msg=null )
  */
 function qcl_assert_object( $value, $msg=null )
 {
-  return qcl_assert_type( $value, "object" );
+  return qcl_assert_type( $value, "object", $msg );
+}
+
+/**
+ * Asserts that argument is an object and has the given property.
+ * Returns the argument if successful.
+ *
+ * @param object $value
+ * @param string $msg
+ *    Optional error message
+ * @return object
+ * @throws InvalidArgumentException
+ */
+function qcl_assert_has_property( $value, $property, $msg=null )
+{
+  qcl_assert_object( $value, "object", $msg );
+  if ( isset( $value->$property ) )
+  {
+    return $value;
+  }
+  else
+  {
+    throw new InvalidArgumentException( either( $msg, "Argument must have a property '$property'.") );
+  }
 }
 
 /**
