@@ -454,7 +454,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
       * configure columns
       */
      tree.getTableColumnModel().getBehavior().setMinWidth( 0, 80 );
-     tree.getTableColumnModel().getBehavior().setWidth( 0, "8*" );
+     tree.getTableColumnModel().getBehavior().setWidth( 0, "6*" );
      tree.getTableColumnModel().getBehavior().setMinWidth( 1, 20 );
      tree.getTableColumnModel().getBehavior().setWidth( 1, "1*" );     
      
@@ -731,7 +731,6 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      */
     getCachedTreeData : function( transactionId, callback, context )
     {
-       
        /*
         * don't use a cache
         */
@@ -745,6 +744,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
         */
        var persistentStore = this.getApplication().getPersistentStore();
        var storageId = this.getTreeCacheId( this.getDatasource() ); 
+       
        persistentStore.load( storageId, function( ok, cache )
        {
          if ( ok && cache )
@@ -752,6 +752,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
            try
            {
              cache = qx.util.Json.parse( cache );
+             //console.warn( "Transaction from server: " + transactionId + ", on client: " + cache.transactionId );
            }
            catch(e)
            {
@@ -764,7 +765,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
            cache = null;
          }
          
-        //console.warn( "Transaction from server: " + transactionId + ", on client: " + cache.transactionId );
+        
         /*
          * Invalidate the cache if the transaction id has changed.
          */
@@ -787,7 +788,8 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      */
     cacheTreeData : function( transactionId )
     {
-       if ( this.getUseCache() && transactionId > this.__lastTransactionId ) 
+       //console.warn("Saving tree cache with transaction id " + transactionId, "last transaction id:" + this.__lastTransactionId);
+       if ( this.getUseCache() && ( transactionId == 0 || transactionId > this.__lastTransactionId ) ) 
        {
          this.clearSelection();
          var storageId = this.getTreeCacheId( this.getDatasource() );
@@ -798,7 +800,6 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
          var persistentStore = this.getApplication().getPersistentStore();
          persistentStore.save( storageId, qx.util.Json.stringify(data) ); 
          this.__lastTransactionId = transactionId; 
-         //console.warn("Saving tree cache with transaction id " + transactionId);
        }
     },
     
@@ -1168,8 +1169,12 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
      */
     clearTree : function()
     {
-      this.getTree().resetSelection();
-      this.getTree().getDataModel().prune(0);
+      try
+      {
+        this.getTree().resetSelection();
+        this.getTree().getDataModel().prune(0);
+      }
+      catch(e){}
     },
     
     /**
