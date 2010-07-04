@@ -8,18 +8,24 @@
   @see qxt:bind
   @see qxt:observe
   @attr propertyChain {String}
+  @attr sourceConverter {Function|null}
+  @attr sourceOnSetOk {Function|null} 
+  @attr sourceOnSetFail {Function|null}  
   @attr target {Object} 
   @attr targetPropertyChain {String}
-  @attr converter {Function|null}
-  @attr onSetOk {Function|null} 
-  @attr onSetFail {Function|null}
+  @attr targetConverter {Function|null}
+  @attr targetOnSetOk {Function|null} 
+  @attr targetOnSetFail {Function|null}
   === example ===
   <qcl:sync 
     propertyChain="foo" 
+    sourceConverter="function(data,model){return data;}"
+    sourceOnSetOk="function(source,targe,data){}"
+    sourceOnSetFail="function(source,targe,data){}"    
     target="widget" targetPropertyChain="bar" 
-    converter="function(data,model){return data;}"
-    onSetOk="function(source,targe,data){}"
-    onSetFail="function(source,targe,data){}" />
+    targetConverter="function(data,model){return data;}"
+    targetOnSetOk="function(source,targe,data){}"
+    targetOnSetFail="function(source,targe,data){}" />
   <qcl:sync propertyChain="foo" configKey="configKey.foo.bar" />
   === result ===
   parent.bind("foo",widget,"bar",{
@@ -42,7 +48,7 @@ qx.core.Init.getApplication().getConfigManager().addListener("ready",function(){
 });
 % else:
 ${utils.parentRawAttrib("id")}.bind(${utils.attrib("propertyChain")},${utils.rawAttrib("target")},${utils.attrib("targetPropertyChain")},{\
-${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
+${attr.rattrsByComma(["sourceConverter","sourceOnSetOk","sourceOnSetFail"])}});
 ${utils.rawAttrib("target")}.bind(${utils.attrib("targetPropertyChain")},${utils.parentRawAttrib("id")},${utils.attrib("propertyChain")},{\
-${attr.rattrsByComma(["converter","onSetOk","onSetFail"])}});
+${attr.rattrsByComma(["targetConverter","targetOnSetOk","targetOnSetFail"])}});
 % endif

@@ -136,7 +136,7 @@
     for icon in icons:
         #TODO: need to check is this is generic way
         #probably own images also can be included in asset
-        if icon.startswith(("icon/",topPackage)):
+        #if icon.startswith(("icon/",topPackage)):
             renderIcons.append(icon)
     
     renderIcons = set(renderIcons)
