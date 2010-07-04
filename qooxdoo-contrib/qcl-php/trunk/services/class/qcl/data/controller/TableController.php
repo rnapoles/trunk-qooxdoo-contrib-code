@@ -61,6 +61,10 @@ class qcl_data_controller_TableController
 
     $datasource = $queryData->datasource;
     $modelType  = $queryData->modelType;
+    qcl_assert_valid_string( $datasource, "Invalid datasource argument" );
+    qcl_assert_valid_string( $modelType, "Invalid model type argument" );
+
+    $model = $this->getModel( $datasource, $modelType );
 
     if ( ! $datasource or ! $modelType )
     {
@@ -81,25 +85,27 @@ class qcl_data_controller_TableController
      * sanitize query data
      */
     $qclQuery = new qcl_data_db_Query( array(
-      'properties' => $query->properties
+      'properties' => $query->properties // FIXME
     ) );
 
     /*
      * now add the query conditions
      */
-    $qclQuery = $this->addQueryConditions( $query, $qclQuery );
+    $qclQuery = $this->addQueryConditions( $query, $qclQuery, $model );
 
     /*
      * check access
      */
-    $model = $this->getModel( $datasource, $modelType );
+
     $this->checkAccess( QCL_ACCESS_READ, $datasource, $modelType, $query->properties );
 
     /*
      * return data
      */
+    $rowCount = $model->countWhere( $qclQuery );
     return array(
-      "rowCount" => $model->countWhere( $qclQuery )
+      "rowCount"    => $rowCount,
+      'statusText'  => $this->tr("%s records",$rowCount)
     );
   }
 
@@ -123,14 +129,16 @@ class qcl_data_controller_TableController
 
     $datasource = $queryData->datasource;
     $modelType  = $queryData->modelType;
+    qcl_assert_valid_string( $datasource, "Invalid datasource argument" );
+    qcl_assert_valid_string( $modelType, "Invalid model type argument" );
+    qcl_assert_integer( $firstRow, "Invalid firstRow argument");
+    qcl_assert_integer( $lastRow, "Invalid lastRow argument");
 
-    if ( ! $datasource or ! $modelType or
-         ! is_numeric( $firstRow ) or
-         ! is_numeric( $lastRow ) )
-    {
-      throw new InvalidArgumentException("Invalid arguments.");
-    }
+    $model = $this->getModel( $datasource, $modelType, $model );
 
+    /*
+     * query
+     */
     $query = $queryData->query;
     if ( ! is_object( $query ) or
          ! is_array(  $query->properties ) )
@@ -155,7 +163,7 @@ class qcl_data_controller_TableController
     /*
      * now add the query conditions
      */
-    $qclQuery = $this->addQueryConditions( $query, $qclQuery );
+    $qclQuery = $this->addQueryConditions( $query, $qclQuery, $model );
 
     /*
      * run query
@@ -163,8 +171,8 @@ class qcl_data_controller_TableController
     $rowData = $this->method_fetchRecords( $datasource, $modelType, $qclQuery );
     return array(
       'requestId'  => $requestId,
-      'rowData'    =>  $rowData,
-      'statusText' => "$firstRow - $lastRow"
+      'rowData'    =>  $rowData
+      //'statusText' => $this->tr("Loaded records %s - %s ...", $firstRow, $lastRow)
     );
   }
 
@@ -175,11 +183,15 @@ class qcl_data_controller_TableController
    * simply converts the 'link' and 'where' properties of the request object
    * into arrays if set and copies them into the database query object.
    *
-   * @param stdClass $query The query data object from the json-rpc request
-   * @param qcl_data_db_Query $qclQuery The query object used by the query behavior
+   * @param stdClass $query
+   *    The query data object from the json-rpc request
+   * @param qcl_data_db_Query $qclQuery
+   *    The query object used by the query behavior
+   * @param qcl_data_model_AbstractActiveRecord $model
+   *    The model on which the query should be performed
    * @return qcl_data_db_Query
    */
-  protected function addQueryConditions( stdClass $query, qcl_data_db_Query $qclQuery )
+  protected function addQueryConditions( stdClass $query, qcl_data_db_Query $qclQuery, qcl_data_model_AbstractActiveRecord $model )
   {
     $qclQuery->link  = isset( $query->link ) ? object2array( $query->link ): null ;
     $qclQuery->where = isset( $query->where ) ? object2array( $query->where ): null ;

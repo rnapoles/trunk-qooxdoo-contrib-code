@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qcl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-01 12:57+0100\n"
-"PO-Revision-Date: 2010-06-01 13:01+0100\n"
+"POT-Creation-Date: 2010-07-03 20:59+0100\n"
+"PO-Revision-Date: 2010-07-03 21:01+0100\n"
 "Last-Translator: Christian Boulanger <c.boulanger@qxtransformer.org>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,51 +15,73 @@ msgstr ""
 "X-Poedit-SearchPath-0: /Users/bibliograph/Sites/Bibliograph/qcl-php/class\n"
 
 #: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:47
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:87
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:91
 msgid "Users"
 msgstr "Benutzer/innen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:52
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:92
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:53
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:96
 msgid "Roles"
 msgstr "Rollen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:57
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:97
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:59
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:101
 msgid "Groups"
 msgstr "Gruppen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:62
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:102
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:65
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:106
 msgid "Permissions"
 msgstr "Erlaubnisse"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:67
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:107
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:71
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:111
 msgid "Datasources"
 msgstr "Datenquellen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:203
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:247
 msgid "Relations"
 msgstr "Beziehungen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:276
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:320
 msgid "in"
 msgstr "in"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:313
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:358
 msgid "In all groups"
 msgstr "In allen Gruppen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:424
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:471
 msgid "Do you want to remove only the datasource entry or all associated data?"
 msgstr "Wollen Sie nur den Datenquellen-Eintrag löschen oder auch die zugehörigen Daten?"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/Controller.php:443
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:472
+msgid "All data"
+msgstr "Alle Daten"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:472
+msgid "Entry only"
+msgstr "Nur den Eintrag"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:516
+#, php-format
+msgid "Deleting datasource '%s' failed... "
+msgstr "Das Löschen der Datenquelle '%s' war nicht erfolgreich ..."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:519
+#, php-format
+msgid "Datasource '%s' successfully deleted ... "
+msgstr "Datenquelle '%s' wurde gelöscht ..."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:682
+msgid "Passwords do not match. Please try again"
+msgstr "Die Passwörter stimmen nicht überein"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/Controller.php:472
 msgid "Invalid user name."
 msgstr "Ungültiger Benutzer/innen/name"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/Controller.php:458
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/Controller.php:498
 msgid "Wrong password."
 msgstr "Ungültiges Passwort"
 
@@ -79,34 +101,48 @@ msgstr "Keine Rolle"
 msgid "Anonymous User"
 msgstr "Anonyme/r Benutzer/in"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:61
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:70
 msgid "Plugin is not installed"
 msgstr "Plugin nicht installiert"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:62
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:71
 msgid "Install plugin"
 msgstr "Plugin installieren"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:68
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:77
 msgid "Plugin is installed"
 msgstr "Plugin ist installiert"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:69
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:78
 msgid "Uninstall plugin"
 msgstr "Plugin deinstallieren"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:85
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:79
+msgid "Reinstall plugin"
+msgstr "Plugin reinstallieren"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/application/plugin/Service.php:95
 msgid "Please configure the plugins"
 msgstr "Bitte konfigurieren sie die Plugins"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/config/Service.php:122
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/config/Service.php:147
 msgid "Log file deleted."
 msgstr "Die Logdatei wurde gelöscht"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/controller/Controller.php:253
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/controller/Controller.php:254
 #, php-format
 msgid "You don't have access to '%s'"
 msgstr "Sie haben keinen Zugang zu '%s'"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/controller/TableController.php:108
+#, php-format
+msgid "%s records"
+msgstr "%s Datensätze"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/server/Download.php:132
+#, php-format
+msgid "File '%s' does not exist in datasource '%s'"
+msgstr "Datei '%s' existiert nicht in Datenquelle '%s'"
 
 #: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/ui/dialog/Confirm.php:47
 #: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/ui/dialog/Confirm.php:51

@@ -16,10 +16,12 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+qcl_log_Logger::getInstance()->warn("Utf8String class is deprecated and wil be removed");
+
 /**
  * UTF8-String manipulation class
  * Relies heavily on functions from the source code of PunBB
- *
+ * @deptrecated will be removed
  */
 class Utf8String
 {

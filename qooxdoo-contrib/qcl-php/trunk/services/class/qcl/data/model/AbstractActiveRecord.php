@@ -59,7 +59,7 @@ class qcl_data_model_AbstractActiveRecord
    * non-SQL-type models
    */
   public $operators= array(
-    "like","is","is not","=",">","<","!=","in","not in"
+    "like","is","is not","=",">","<",">=","<=","!=","in","not in", "not like"
   );
 
   protected $_loaded = false;

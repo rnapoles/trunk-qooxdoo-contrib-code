@@ -231,5 +231,10 @@ class qcl_data_db_Query
   {
     return $this->link;
   }
+
+  public function __toString()
+  {
+    return print_r( get_object_vars( $this ), true );
+  }
 }
 ?>

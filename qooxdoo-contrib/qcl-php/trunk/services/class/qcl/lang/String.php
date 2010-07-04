@@ -23,6 +23,7 @@
  * Adapted from http://www.phpclasses.org/browse/package/2396.html
  * @author Original author: Alexander Ramos Jardim (http://www.labma.ufrj.br/~alex/)
  * @author Adapted for qcl library: Christian Boulanger
+ * @deprecated, will be replaced by qcl_MbString
  *
  */
 class String
