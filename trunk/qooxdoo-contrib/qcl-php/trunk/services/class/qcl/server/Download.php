@@ -115,7 +115,7 @@ class qcl_server_Download
     /*
      * check access
      */
-    if ( ! $dsModel->isActive() or $dsModel->isHidden() )
+    if ( ! $dsModel->isActive() )
     {
       $this->abort( "Access to '$datasource' forbidden." );
     }
