@@ -123,6 +123,8 @@ class qcl_access_ACToolController
   public function method_getAccessElements( $type )
   {
     $this->requirePermission("access.manage");
+    $activeUser   = $this->getActiveUser();
+    $isAdmin      = $activeUser->hasRole( QCL_ROLE_ADMIN );
 
     switch ( $type )
     {
@@ -175,7 +177,7 @@ class qcl_access_ACToolController
       $icon   = $models[$type]['icon'];
       $label  = $model->get($labelProp);
 
-      if ( $model->hasProperty("hidden") and $model->isHidden() )
+      if ( $model->hasProperty("hidden") and $model->isHidden() and ! $isAdmin )
       {
         continue;
       }
