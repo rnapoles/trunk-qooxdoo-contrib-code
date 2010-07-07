@@ -31,7 +31,7 @@
   "let" :
   {
     "APPLICATION"  : "progressbar.demo",
-    "QOOXDOO_PATH" : "../../../../../qooxdoo-trunk",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
     "QXTHEME"      : "progressbar.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
