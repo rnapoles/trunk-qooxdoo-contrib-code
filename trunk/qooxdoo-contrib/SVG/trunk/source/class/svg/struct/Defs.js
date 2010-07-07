@@ -18,7 +18,7 @@
  * understandability and accessibility reasons, it is recommended that,
  * whenever possible, referenced elements be defined inside of a Defs.
  *
- * More info: http://www.w3.org/TR/SVG11/struct.html#DefsElement
+ * More info: http://www.w3.org/TR/SVG/struct.html#DefsElement
  */
 qx.Class.define("svg.struct.Defs",
 {

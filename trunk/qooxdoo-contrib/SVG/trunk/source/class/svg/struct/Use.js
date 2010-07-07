@@ -29,7 +29,7 @@ qx.Class.define("svg.struct.Use",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MHref ],
+  include : [ svg.core.MHref ],
 
   construct : function() {
     this.base(arguments, "use");

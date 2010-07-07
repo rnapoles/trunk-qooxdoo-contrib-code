@@ -17,15 +17,15 @@
  * Paths represent the outline of a shape which can be filled, stroked, used
  * as a clipping path, or any combination of the three.
  *
- * More info: http://www.w3.org/TR/SVG11/paths.html#Introduction
+ * More info: http://www.w3.org/TR/SVG/paths.html#Introduction
  */
 qx.Class.define("svg.path.Path",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MMarkerProperties ],
+  include : [ svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.paint.MMarkerProperties ],
 
   construct : function() {
     this.base(arguments, "path");
@@ -41,7 +41,7 @@ qx.Class.define("svg.path.Path",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathData</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathData</li>
      * </ul>
   	 */
   	pathData: {
@@ -58,7 +58,7 @@ qx.Class.define("svg.path.Path",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathLengthAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathLengthAttribute</li>
      * </ul>
      */
     pathLength: {

@@ -39,10 +39,10 @@ qx.Class.define("svg.struct.Symbol",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MViewBox,
-              svg.attributes.MPreserveAspectRatio,
-              svg.attributes.MStroke,
-              svg.attributes.MTransform ],
+  include : [ svg.coords.MViewBox,
+              svg.coords.MPreserveAspectRatio,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform ],
 
   construct : function() {
     this.base(arguments, "symbol");

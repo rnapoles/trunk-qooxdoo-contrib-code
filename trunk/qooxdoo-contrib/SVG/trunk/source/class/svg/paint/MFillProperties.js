@@ -32,10 +32,10 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/painting.html</li>
+ *   <li>http://www.w3.org/TR/SVG/painting.html#FillProperties</li>
  * </ul>
  */
-qx.Mixin.define("svg.attributes.MFill",
+qx.Mixin.define("svg.paint.MFillProperties",
 {
 	
 	properties :
@@ -57,7 +57,7 @@ qx.Mixin.define("svg.attributes.MFill",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#FillProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#FillProperty</li>
      * </ul>
      */
 	  fill: {
@@ -71,7 +71,7 @@ qx.Mixin.define("svg.attributes.MFill",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#FillRuleProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#FillRuleProperty</li>
      * </ul>
      */
     fillRule: {
@@ -86,7 +86,7 @@ qx.Mixin.define("svg.attributes.MFill",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#FillOpacityProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#FillOpacityProperty</li>
      * </ul>
      */
     fillOpacity: {

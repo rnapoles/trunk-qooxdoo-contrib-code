@@ -18,10 +18,10 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerProperties</li>
+ *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerProperties</li>
  * </ul>
  */
-qx.Mixin.define("svg.attributes.MMarkerProperties",
+qx.Mixin.define("svg.paint.MMarkerProperties",
 {
 	properties :
 	{
@@ -31,7 +31,7 @@ qx.Mixin.define("svg.attributes.MMarkerProperties",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerStartProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerStartProperty</li>
      * </ul>
      */
 	  markerStart: {
@@ -46,7 +46,7 @@ qx.Mixin.define("svg.attributes.MMarkerProperties",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerMidProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerMidProperty</li>
      * </ul>
      */
     markerMid: {
@@ -60,7 +60,7 @@ qx.Mixin.define("svg.attributes.MMarkerProperties",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerEndProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerEndProperty</li>
      * </ul>
      */
     markerEnd: {
@@ -76,7 +76,7 @@ qx.Mixin.define("svg.attributes.MMarkerProperties",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerProperty</li>
      * </ul>
      */
     marker: {

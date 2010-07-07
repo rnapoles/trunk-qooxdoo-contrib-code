@@ -23,7 +23,7 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/paths.html#PathData</li>
+ *   <li>http://www.w3.org/TR/SVG/paths.html#PathData</li>
  * </ul>
  */
 qx.Class.define("svg.path.PathData",
@@ -164,7 +164,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataMovetoCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataMovetoCommands</li>
      * </ul>
      *
      * @param x {Number}
@@ -194,7 +194,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataLinetoCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands</li>
      * </ul>
      *
      * @param x {Number}
@@ -249,7 +249,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataLinetoCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands</li>
      * </ul>
      *
      * @param x {Number}
@@ -275,7 +275,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataLinetoCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands</li>
      * </ul>
      *
      * @param y {Number}
@@ -303,7 +303,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataClosePathCommand</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataClosePathCommand</li>
      * </ul>
      *
      * @return {svg.util.PathData}
@@ -323,7 +323,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCurveCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataCurveCommands</li>
      * </ul>
      *
      * @param rx {Number}
@@ -374,7 +374,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCurveCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataCurveCommands</li>
      * </ul>
      *
      * @param r {Number}
@@ -413,7 +413,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataQuadraticBezierCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands</li>
      * </ul>
      *
      * @param x1 {Number}
@@ -454,7 +454,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataQuadraticBezierCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands</li>
      * </ul>
      *
      * @param x {Number}
@@ -491,7 +491,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCubicBezierCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands</li>
      * </ul>
      *
      * @param x1 {Number}
@@ -539,7 +539,7 @@ qx.Class.define("svg.path.PathData",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/paths.html#PathDataCubicBezierCommands</li>
+     *   <li>http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands</li>
      * </ul>
      *
      * @param x2 {Number}

@@ -22,22 +22,22 @@
  * vertices of a particular element, set one or more marker properties
  * to reference the marker element.
  * 
- * @see svg.attributes.MMarkerProperties 
+ * @see svg.paint.MMarkerProperties 
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/painting.html#Markers</li>
+ *   <li>http://www.w3.org/TR/SVG/painting.html#Markers</li>
  * </ul>
  */
 qx.Class.define("svg.paint.Marker",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MTransform,
-              svg.attributes.MViewBox,
-              svg.attributes.MPreserveAspectRatio ],
+  include : [ svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform,
+              svg.coords.MViewBox,
+              svg.coords.MPreserveAspectRatio ],
 
   construct : function() {
     this.base(arguments, "marker");
@@ -51,7 +51,7 @@ qx.Class.define("svg.paint.Marker",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerUnitsAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerUnitsAttribute</li>
      * </ul>
   	 */
   	markerUnits : {
@@ -65,12 +65,12 @@ qx.Class.define("svg.paint.Marker",
   	 * The x-axis coordinate of the reference point.
   	 * 
   	 * The coordinate is defined in the coordinate system after application
-  	 * of the {@link svg.attributes.MViewBox#viewBox} and 
-  	 * {@link svg.attributes.MPreserveAspectRatio} attributes.
+  	 * of the {@link svg.coords.MViewBox#viewBox} and 
+  	 * {@link svg.coords.MPreserveAspectRatio} attributes.
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerElementRefXAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerElementRefXAttribute</li>
      * </ul>
   	 */
   	refX : {
@@ -84,12 +84,12 @@ qx.Class.define("svg.paint.Marker",
   	 * The y-axis coordinate of the reference point.
   	 * 
   	 * The coordinate is defined in the coordinate system after application
-  	 * of the {@link svg.attributes.MViewBox#viewBox} and 
-  	 * {@link svg.attributes.MPreserveAspectRatio} attributes.
+  	 * of the {@link svg.coords.MViewBox#viewBox} and 
+  	 * {@link svg.coords.MPreserveAspectRatio} attributes.
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerElementRefYAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerElementRefYAttribute</li>
      * </ul>
   	 */
   	refY : {
@@ -107,7 +107,7 @@ qx.Class.define("svg.paint.Marker",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerWidthAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerWidthAttribute</li>
      * </ul>
      */
     markerWidth : {
@@ -125,7 +125,7 @@ qx.Class.define("svg.paint.Marker",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#MarkerHeightAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerHeightAttribute</li>
      * </ul>
      */
     markerHeight : {
@@ -140,7 +140,7 @@ qx.Class.define("svg.paint.Marker",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#OrientAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#OrientAttribute</li>
      * </ul>
      */
     orient : {

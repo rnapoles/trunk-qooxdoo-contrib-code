@@ -27,9 +27,9 @@ qx.Class.define("svg.shape.Ellipse",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MTransform ],
+  include : [ svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform ],
 
   construct : function() {
     this.base(arguments, "ellipse");
@@ -118,7 +118,7 @@ qx.Class.define("svg.shape.Ellipse",
 	    if (null == value) {
 	  	  this.removeAttribute("cx");
 	    } else {
-        this.setAttribute("cy", value);
+        this.setAttribute("cx", value);
 	    }
     },
     

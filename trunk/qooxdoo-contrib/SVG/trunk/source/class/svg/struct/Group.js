@@ -24,7 +24,7 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/struct.html#Groups</li>
+ *   <li>http://www.w3.org/TR/SVG/struct.html#Groups</li>
  * </ul>
  *
  */

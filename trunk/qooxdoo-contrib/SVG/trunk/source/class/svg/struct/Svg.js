@@ -25,15 +25,15 @@
  * More info:
  * <ul>
  *   <li><b>SVG element:</b> http://www.w3.org/TR/SVG/struct.html#SVGElement</li> 
- *   <li><b>Viewport:</b> http://www.w3.org/TR/SVG11/coords.html#EstablishingANewViewport</li> 
+ *   <li><b>Viewport:</b> http://www.w3.org/TR/SVG/coords.html#EstablishingANewViewport</li> 
  *  </ul>
  */
 qx.Class.define("svg.struct.Svg",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MViewBox,
-              svg.attributes.MPreserveAspectRatio ],
+  include : [ svg.coords.MViewBox,
+              svg.coords.MPreserveAspectRatio ],
 
   construct : function()
   {

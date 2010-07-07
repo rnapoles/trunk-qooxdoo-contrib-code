@@ -25,10 +25,10 @@ qx.Class.define("svg.shape.Polygon",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MTransform,
-              svg.attributes.MMarkerProperties ],
+  include : [ svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform,
+              svg.paint.MMarkerProperties ],
 
   construct : function() {
     this.base(arguments, "polygon");
@@ -43,7 +43,7 @@ qx.Class.define("svg.shape.Polygon",
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#PolygonElementPointsAttribute</li>
-     *   <li>http://www.w3.org/TR/SVG11/shapes.html#PointsBNF</li>
+     *   <li>http://www.w3.org/TR/SVG/shapes.html#PointsBNF</li>
      * </ul>
   	 */
   	points : {

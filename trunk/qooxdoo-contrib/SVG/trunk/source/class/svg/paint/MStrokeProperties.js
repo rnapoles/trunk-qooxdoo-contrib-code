@@ -32,11 +32,10 @@
  *
  * More info:
  * <ul>
- *   <li><b>Stroke properties</b> http://www.w3.org/TR/SVG11/painting.html#StrokeProperties</li>
- *   <li><b>Painting</b> http://www.w3.org/TR/SVG11/painting.html</li>
+ *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeProperties</li>
  * </ul>
  */
-qx.Mixin.define("svg.attributes.MStroke",
+qx.Mixin.define("svg.paint.MStrokeProperties",
 {
 	
 	properties :
@@ -46,7 +45,7 @@ qx.Mixin.define("svg.attributes.MStroke",
 	   * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeProperty</li>
      * </ul>
    	 */
 	  stroke : {
@@ -66,7 +65,7 @@ qx.Mixin.define("svg.attributes.MStroke",
 	   * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeWidthProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeWidthProperty</li>
      * </ul>
      */
     strokeWidth : {
@@ -81,7 +80,7 @@ qx.Mixin.define("svg.attributes.MStroke",
      *
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeOpacityProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeOpacityProperty</li>
      * </ul>
      */
     strokeOpacity : {
@@ -96,7 +95,7 @@ qx.Mixin.define("svg.attributes.MStroke",
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeLinecapProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeLinecapProperty</li>
      * </ul>
      */
     linecap : {
@@ -111,7 +110,7 @@ qx.Mixin.define("svg.attributes.MStroke",
 	   * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeLinejoinProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeLinejoinProperty</li>
      * </ul>
      */
     linejoin : {
@@ -136,7 +135,7 @@ qx.Mixin.define("svg.attributes.MStroke",
 	   * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeMiterlimitProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeMiterlimitProperty</li>
      * </ul>
      */
     miterLimit : {
@@ -158,7 +157,7 @@ qx.Mixin.define("svg.attributes.MStroke",
 	   * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeDasharrayProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty</li>
      * </ul>
      */
     dashArray : {
@@ -176,7 +175,7 @@ qx.Mixin.define("svg.attributes.MStroke",
      *  
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/painting.html#StrokeDashoffsetProperty</li>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeDashoffsetProperty</li>
      * </ul>
      */
     dashOffset : {
