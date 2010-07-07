@@ -24,7 +24,7 @@
  * 
  * The namespace used is *http://www.w3.org/1999/xlink*.
  */
-qx.Mixin.define("svg.attributes.MHref",
+qx.Mixin.define("svg.core.MHref",
 {
   statics : { XLINK_NAMESPACE : "http://www.w3.org/1999/xlink" },
   
@@ -74,7 +74,7 @@ qx.Mixin.define("svg.attributes.MHref",
 	    if (value instanceof svg.core.Element) {
   	    value = value.getUri();
   	  }
-      this.getDomElement().setAttributeNS(svg.attributes.MHref.XLINK_NAMESPACE, "xlink:href", value);
+      this.getDomElement().setAttributeNS(svg.core.MHref.XLINK_NAMESPACE, "xlink:href", value);
   	
     }
 
@@ -117,7 +117,7 @@ qx.Mixin.define("svg.attributes.MHref",
     },
     
     __updateAttribute: function(value) {
-	    this.getDomElement().setAttributeNS(svg.attributes.MHref.XLINK_NAMESPACE, "xlink:href", value);
+	    this.getDomElement().setAttributeNS(svg.core.MHref.XLINK_NAMESPACE, "xlink:href", value);
     },
     
     __listener: function(e) {

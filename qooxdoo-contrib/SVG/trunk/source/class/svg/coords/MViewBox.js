@@ -26,10 +26,10 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/coords.html#ViewBoxAttribute</li>
+ *   <li>http://www.w3.org/TR/SVG/coords.html#ViewBoxAttribute</li>
  * </ul>
  */
-qx.Mixin.define("svg.attributes.MViewBox",
+qx.Mixin.define("svg.coords.MViewBox",
 {
   members :
   {

@@ -26,9 +26,9 @@ qx.Class.define("svg.shape.Rect",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MTransform ],
+  include : [ svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform ],
 
   construct : function() {
     this.base(arguments, "rect");

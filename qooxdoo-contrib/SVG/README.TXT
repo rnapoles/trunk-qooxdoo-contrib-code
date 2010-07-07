@@ -23,5 +23,10 @@
    - http://www.w3schools.com/svg/   
    
    E-book: "Learn SVG: The Web Graphics Standard" 
-   - http://www.learnsvg.com/
+   - http://www.learnsvg.com/   
    
+   Mozilla SVG project
+   - http://www.mozilla.org/projects/svg/
+   
+   WebKit SVG project
+   - http://webkit.org/projects/svg/

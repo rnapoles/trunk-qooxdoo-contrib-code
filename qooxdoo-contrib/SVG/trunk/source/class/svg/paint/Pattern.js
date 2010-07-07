@@ -20,7 +20,7 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/pservers.html#Patterns</li>
+ *   <li>http://www.w3.org/TR/SVG/pservers.html#Patterns</li>
  * </ul>
  * 
  */
@@ -28,9 +28,9 @@ qx.Class.define("svg.paint.Pattern",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MHref,
-              svg.attributes.MPreserveAspectRatio,
-              svg.attributes.MViewBox ],
+  include : [ svg.core.MHref,
+              svg.coords.MPreserveAspectRatio,
+              svg.coords.MViewBox ],
 
 
   construct : function() {
@@ -45,7 +45,7 @@ qx.Class.define("svg.paint.Pattern",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementPatternUnitsAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementPatternUnitsAttribute</li>
      * </ul>
   	 */
   	patternUnits : {
@@ -61,7 +61,7 @@ qx.Class.define("svg.paint.Pattern",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementPatternContentUnitsAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementPatternContentUnitsAttribute</li>
      * </ul>
 	   */
 	  contentUnits : {
@@ -77,11 +77,11 @@ qx.Class.define("svg.paint.Pattern",
      * the target coordinate system. This allows for things such as skewing the
      * pattern tiles.
      * 
-     * The available transformation are the same as those in {@link svg.attributes.MTransform}.
+     * The available transformation are the same as those in {@link svg.coords.MTransform}.
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementPatternTransformAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementPatternTransformAttribute</li>
      * </ul>
 	   */
 	  patternTransform : {
@@ -97,7 +97,7 @@ qx.Class.define("svg.paint.Pattern",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementXAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementXAttribute</li>
      * </ul>
 	   */
     x : {
@@ -113,7 +113,7 @@ qx.Class.define("svg.paint.Pattern",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementYAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementYAttribute</li>
      * </ul>
 	   */
     y : {
@@ -130,7 +130,7 @@ qx.Class.define("svg.paint.Pattern",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementWidthAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementWidthAttribute</li>
      * </ul>
 	   */
     width : {
@@ -147,7 +147,7 @@ qx.Class.define("svg.paint.Pattern",
   	 * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/pservers.html#PatternElementHeightAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/pservers.html#PatternElementHeightAttribute</li>
      * </ul>
 	   */
     height : {

@@ -26,10 +26,10 @@ qx.Class.define("svg.shape.Line",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MFill,
-              svg.attributes.MStroke,
-              svg.attributes.MTransform,
-              svg.attributes.MMarkerProperties ],
+  include : [ svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform,
+              svg.paint.MMarkerProperties ],
 
   construct : function() {
     this.base(arguments, "line");

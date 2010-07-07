@@ -53,10 +53,10 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/coords.html#TransformAttribute</li>
+ *   <li>http://www.w3.org/TR/SVG/coords.html#TransformAttribute</li>
  * </ul>
  */
-qx.Mixin.define("svg.attributes.MTransform",
+qx.Mixin.define("svg.coords.MTransform",
 {
 	
 	properties :
@@ -69,7 +69,7 @@ qx.Mixin.define("svg.attributes.MTransform",
      * More info:
      * <ul>
      *   <li>{@link MTransform}</li>
-     *   <li>http://www.w3.org/TR/SVG11/coords.html#TransformAttribute</li>
+     *   <li>http://www.w3.org/TR/SVG/coords.html#TransformAttribute</li>
      * </ul>
      */
 	  transform : {

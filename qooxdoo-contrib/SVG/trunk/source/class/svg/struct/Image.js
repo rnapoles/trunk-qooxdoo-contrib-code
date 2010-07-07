@@ -27,10 +27,10 @@ qx.Class.define("svg.struct.Image",
 {
   extend : svg.core.Element,
   
-  include : [ svg.attributes.MTransform,
-              svg.attributes.MPreserveAspectRatio,
-              svg.attributes.MHref,
-              svg.attributes.MViewBox ],
+  include : [ svg.coords.MTransform,
+              svg.coords.MPreserveAspectRatio,
+              svg.core.MHref,
+              svg.coords.MViewBox ],
 
   construct : function() {
     this.base(arguments, "image");

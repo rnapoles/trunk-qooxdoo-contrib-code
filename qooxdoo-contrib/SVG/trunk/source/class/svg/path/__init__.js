@@ -3,6 +3,6 @@
  * 
  * More info:
   * <ul>
- *   <li>http://www.w3.org/TR/SVG11/paths.html</li>
+ *   <li>http://www.w3.org/TR/SVG/paths.html</li>
  * </ul>
 */

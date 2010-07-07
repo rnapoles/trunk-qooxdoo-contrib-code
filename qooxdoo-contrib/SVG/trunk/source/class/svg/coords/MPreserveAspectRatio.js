@@ -25,10 +25,10 @@
  *
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG11/coords.html#PreserveAspectRatioAttribute</li>
+ *   <li>http://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute</li>
  * </ul>
  */
-qx.Mixin.define("svg.attributes.MPreserveAspectRatio",
+qx.Mixin.define("svg.coords.MPreserveAspectRatio",
 {
   members :
   {
