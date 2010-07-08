@@ -1084,7 +1084,7 @@ class qcl_data_db_adapter_PdoMysql
     }
     else
     {
-      $this->raiseError("Column $table.$column exists, not added.");
+      $this->warn("Column $table.$column exists, not added.");
     }
   }
 
