@@ -10,7 +10,8 @@ var baseConf = {
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
   'getAutLog' : false,
-  'runAll' : false
+  'runAll' : false,
+  'reloadRunner' : false
 };
 
 var args = arguments ? arguments : "";
@@ -213,7 +214,11 @@ simulation.Simulation.prototype.runTestsSteps = function()
 
   var elapsedTotal = 0;
   for (var i=0; i<packages.length; i++) {
-    this.loadPackage(packages[i]);
+    if (this.getConfigSetting("reloadRunner")) {
+      this.loadPackageWithReload(packages[i]);  
+    } else {
+      this.loadPackage(packages[i]);
+    }
     if (!this.testFailed) {
       this.runPackage(packages[i]);
     }
@@ -293,6 +298,38 @@ simulation.Simulation.prototype.loadPackage = function(packageName)
   }
 
 };
+
+
+/**
+ * Reloads the Testrunner GUI before loading a test package.
+ * 
+ * @param packageName {String} The name of the package to be processed
+ */
+simulation.Simulation.prototype.loadPackageWithReload = function(packageName)
+{
+  this.log("Reloading Testrunner before loading " + packageName, "debug");
+  Packages.java.lang.Thread.sleep(3000);
+  try {
+    this.__sel.open("about:blank");
+  } catch(ex) {
+    Packages.java.lang.Thread.sleep(3000);
+    this.__sel.open("about:blank");
+  }
+  Packages.java.lang.Thread.sleep(3000);
+  autHost = this.getConfigSetting("autHost");
+  autPath = this.getConfigSetting("autPath");
+  var uri = autHost + autPath + "?testclass=" + packageName;
+  this.qxOpen(uri);
+
+  var isAutReady = this.waitForCondition(isStatusReady, 120000,
+                   "Waiting for test package " + packageName + " to load");
+
+  if (!isAutReady) {
+    this.testFailed = true;
+    return;
+  }
+};
+
 
 /**
  * Gets HTML content from the result iframe, splits it up into individual test
@@ -433,7 +470,9 @@ simulation.Simulation.prototype.logAutLog = function()
     mySim.log(msg, "error");
   }
 
-  mySim.logGlobalErrors();
+  if (!mySim.getConfigSetting("reloadRunner")) {
+    mySim.logGlobalErrors();
+  }
 
   if (!mySim.testFailed) {
     if (mySim.getConfigSetting("debug")) {
