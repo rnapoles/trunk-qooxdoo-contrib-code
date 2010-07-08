@@ -46,6 +46,15 @@ class qcl_util_system_Lock
   }
 
   /**
+   * Checks if lock is already taken
+   * @return boolean
+   */
+  public function isLocked()
+  {
+    return file_exists( $this->file );
+  }
+
+  /**
    * Tries to get the lock
    * @return bool
    *    True if the lock for this file was available,
