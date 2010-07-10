@@ -16,13 +16,22 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+qcl_import("qcl_core_Object");
+
 /**
  * A simple locking system to make sure two users aren't accessing
  * the same resource at the same time.
  *
  */
 class qcl_util_system_Lock
+  extends qcl_core_Object
 {
+
+  /**
+   * The name of the lock
+   * @var string
+   */
+  private $name;
 
   /**
    * A file pointer for this lock
@@ -42,6 +51,7 @@ class qcl_util_system_Lock
    */
   public function __construct( $name )
   {
+    $this->name = $name;
     $this->file = sys_get_temp_dir() . "/$name";
   }
 
@@ -79,7 +89,14 @@ class qcl_util_system_Lock
    */
   public function release()
   {
-    @unlink( $this->file );
+    if ( file_exists( $this->file ) )
+    {
+      unlink( $this->file );
+    }
+    else
+    {
+      $this->warn("Lock '{$this->name}' does not exist");
+    }
   }
 }
 ?>
