@@ -1477,6 +1477,32 @@ class qcl_data_model_AbstractActiveRecord
     return $this->getRelationBehavior()->unlinkModel( $targetModel, $dependencies );
   }
 
+  /**
+   * Unlinks all linked records of the given target model from
+   * the currently loaded model record.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model instance. Does not need to be loaded.
+   * @param bool $allLinks If true, remove all links, i.e. not only
+   *   of the model instance (with the present id), but all other
+   *   instances as well.
+   * @param bool $delete If true, delete all linked records in addition
+   *   to unlinking them. This is needed for dependend models.
+   * @return bool
+   */
+  public function unlinkAll( $targetModel, $allLinks = false, $delete = false )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * call behavior method do do the actual work
+     */
+    return $this->getRelationBehavior()->unlinkAll( $targetModel, $allLinks, $delete );
+  }
+
   //-----------------------------------------------------------------------
   // Import / export
   //-----------------------------------------------------------------------
