@@ -480,7 +480,7 @@ abstract class qcl_application_Application
    * @param $namedId
    * @return void
    */
-  function createDatasource( $namedId, $data= array() )
+  public function createDatasource( $namedId, $data= array() )
   {
     qcl_import( "qcl_data_datasource_Manager" );
     $mgr = qcl_data_datasource_Manager::getInstance();
@@ -489,6 +489,30 @@ abstract class qcl_application_Application
       $data['dsn'] = $this->getUserDsn();
     }
     $mgr->createDatasource( $namedId, $this->defaultSchema(), $data );
+  }
+
+  //-------------------------------------------------------------
+  // etc
+  //-------------------------------------------------------------
+
+  /**
+   * Returns the url of the client application's build directory
+   * @return string
+   */
+  public function getClientUrl()
+  {
+    return "http://" . $_SERVER["HTTP_HOST"] .
+      dirname( dirname( $_SERVER["SCRIPT_NAME"] ) ) .
+      "/build";
+  }
+
+  /**
+   * Alias of qcl_server_Server::getUrl()
+   * @return string
+   */
+  public function getServerUrl()
+  {
+    return qcl_server_Server::getUrl();
   }
 }
 ?>
