@@ -89,27 +89,27 @@ class qcl_access_ACToolController
       array(
         'icon'    => $models['user']['icon'],
         'label'   => $this->tr("Users"),
-        'value'   => "user"
+        'value'   => $this->marktr("user")
       ),
       array(
         'icon'    => $models['role']['icon'],
         'label'   => $this->tr("Roles"),
-        'value'   => "role"
+        'value'   => $this->marktr("role")
       ),
       array(
         'icon'    => $models['group']['icon'],
         'label'   => $this->tr("Groups"),
-        'value'   => "group"
+        'value'   => $this->marktr("group")
       ),
       array(
         'icon'    => $models['permission']['icon'],
         'label'   => $this->tr("Permissions"),
-        'value'   => "permission"
+        'value'   => $this->marktr("permission")
       ),
       array(
         'icon'    => $models['datasource']['icon'],
         'label'   => $this->tr("Datasources"),
-        'value'   => "datasource"
+        'value'   => $this->marktr("datasource")
       ),
     );
   }
@@ -641,7 +641,7 @@ class qcl_access_ACToolController
     $model = $this->getElementModel( $type );
     $model->load( $namedId );
     $formData = $this->createFormData( $model );
-    $message = "<h3>" . ucfirst( $type ) . " '" . $namedId . "'</h3>";
+    $message = "<h3>" . $this->tr( $type ) . " '" . $namedId . "'</h3>";
     qcl_import("qcl_ui_dialog_Form");
     return new qcl_ui_dialog_Form(
       $message, $formData, true,
@@ -671,7 +671,15 @@ class qcl_access_ACToolController
       $this->dispatchClientMessage("accessControlTool.reloadLeftList");
     }
 
-    /**
+    /*
+     * no ldap user data
+     */
+    if ( $type == "user" and $model->get("ldap") )
+    {
+      throw new JsonRpcException("LDAP user data cannot be edited.");
+    }
+
+    /*
      * if we have a password field, we expect to have a password2 field
      * as well to match. return to dialog if passwords do not match.
      */
@@ -689,11 +697,157 @@ class qcl_access_ACToolController
 
     $model = $this->getElementModel( $type );
     $model->load( $namedId );
-    $data = $this->parseFormData( $model, $data );
-    $model->set( $data );
+    $parsed = (object) $this->parseFormData( $model, $data );
+
+    /*
+     * user model:
+     * as long as the user is not confirmed, a password must be specified
+     * and will be sent to the user
+     */
+    if ( $type == "user" )
+    {
+      if ( ! $data->password and ! $model->getPassword() )
+      {
+        $data->password = $parsed->password = qcl_generate_password(5);
+      }
+      if ( $data->password and $parsed->password != $model->getPassword() )
+      {
+        if ( ! $model->get("confirmed") )
+        {
+          $this->sendConfirmationLinkEmail( $data->email, $namedId, $data->name, $data->password );
+          qcl_import("qcl_ui_dialog_Alert");
+          new qcl_ui_dialog_Alert(
+            $this->tr("An email has been sent to %s (%s) with information on the registration.", $data->name, $data->email)
+          );
+        }
+        else
+        {
+          $this->sendPasswordChangeEmail( $data->email, $namedId, $data->name, $data->password );
+          qcl_import("qcl_ui_dialog_Alert");
+          new qcl_ui_dialog_Alert(
+            $this->tr("An email has been sent to %s (%s) to inform about the change of password.", $data->name, $data->email)
+          );
+        }
+      }
+    }
+
+    /*
+     * set data
+     */
+    $model->set( $parsed );
     $model->save();
 
     return "OK";
   }
+
+  protected function sendConfirmationLinkEmail( $email, $username, $name, $password )
+  {
+    $app = $this->getApplication();
+
+    /*
+     * mail subject
+     */
+    $configModel = $app->getConfigModel();
+    $applicationTitle =
+      $configModel->keyExists("application.title")
+        ? $configModel->getKey("application.title")
+        : $app->name();
+    $subject = $this->tr("Your registration at %s", $applicationTitle );
+
+    /*
+     * mail body
+     */
+    $confirmationLink = qcl_server_Server::getUrl() .
+      "?service="   . $this->serviceName() .
+      "&method="    . "confirmEmail" .
+      "&params="    . $email;
+
+    $body  = $this->tr("Dear %s,", $name);
+    $body .= "\n\n" . $this->tr("You have been registered as a user at  '%s'.", $applicationTitle );
+    $body .= "\n\n" . $this->tr("Your username is '%s' and your password is '%s'", $username, $password );
+    $body .= "\n\n" . $this->tr("Please confirm your account by visiting the following link:" );
+    $body .= "\n\n" . $confirmationLink;
+    $body .= "\n\n" . $this->tr("Thank you." );
+
+    /*
+     * send mail
+     */
+    qcl_import("qcl_util_system_Mail");
+    $adminEmail  = $app->getIniValue("email.admin");
+    $mail = new qcl_util_system_Mail( array(
+      'senderEmail'     => $adminEmail,
+      'recipient'       => $name,
+      'recipientEmail'  => $email,
+      'subject'         => $subject,
+      'body'            => $body
+    ) );
+    $mail->send();
+  }
+
+  protected function sendPasswordChangeEmail( $email, $username, $name, $password )
+  {
+    $app = $this->getApplication();
+
+    /*
+     * mail subject
+     */
+    $configModel = $app->getConfigModel();
+    $applicationTitle =
+      $configModel->keyExists("application.title")
+        ? $configModel->getKey("application.title")
+        : $app->name();
+    $subject = $this->tr("Password change at %s", $applicationTitle );
+
+    /*
+     * mail body
+     */
+    $body  = $this->tr("Dear %s,", $name);
+    $body .= "\n\n" . $this->tr("This is to inform you that your password has changed at '%s'.", $applicationTitle );
+    $body .= "\n\n" . $this->tr("Your username is '%s' and your password is '%s'", $username, $password );
+
+    /*
+     * send mail
+     */
+    qcl_import("qcl_util_system_Mail");
+    $adminEmail  = $app->getIniValue("email.admin");
+    $mail = new qcl_util_system_Mail( array(
+      'senderEmail'     => $adminEmail,
+      'recipient'       => $name,
+      'recipientEmail'  => $email,
+      'subject'         => $subject,
+      'body'            => $body
+    ) );
+    $mail->send();
+  }
+
+  public function method_confirmEmail( $email )
+  {
+    $app = $this->getApplication();
+    $userModel = $app->getAccessController()->getUserModel();
+    try
+    {
+      $userModel->findWhere( array(
+        'email' => $email
+      ));
+      while( $userModel->loadNext() )
+      {
+        $userModel->set("confirmed", true);
+        $userModel->save();
+      }
+
+      $msg1 = $this->tr( "Thank you, %s, your email address has been confirmed.", $userModel->getName() );
+      $msg2 = $this->tr( "You can now log in at <a href='%s'>this link</a>", $app->getClientUrl() );
+      echo "<p>$msg1<p>";
+      echo "<p>$msg2</p>";
+      exit;
+    }
+    catch( qcl_data_model_RecordNotFoundException $e )
+    {
+      // should never be the case
+      echo "Invalid email $email";
+      exit;
+    }
+  }
+
 }
 ?>
