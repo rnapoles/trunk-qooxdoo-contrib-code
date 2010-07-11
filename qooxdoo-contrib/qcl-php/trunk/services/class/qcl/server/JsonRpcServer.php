@@ -262,7 +262,7 @@ class qcl_server_JsonRpcServer
     }
     else
     {
-      return $service;
+      return array($service);
     }
   }
 
