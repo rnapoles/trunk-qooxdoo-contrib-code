@@ -275,7 +275,7 @@ class qcl_access_Controller
       }
       else
       {
-        throw new $e;
+        throw $e;
       }
     }
   }

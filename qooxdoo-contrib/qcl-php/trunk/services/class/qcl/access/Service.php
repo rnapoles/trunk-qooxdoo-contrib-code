@@ -322,9 +322,10 @@ class qcl_access_Service
      * create new user without any role
      */
     $userModel->create( $username, array(
-      'name'  => $name,
-      'email' => $email,
-      'ldap'  => true
+      'name'      => $name,
+      'email'     => $email,
+      'ldap'      => true,
+      'confirmed' => true // an LDAP user needs no confirmation
     ) );
 
     return $userModel->id();

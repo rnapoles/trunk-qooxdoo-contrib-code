@@ -1080,7 +1080,7 @@ class qcl_data_controller_Controller
    * Parses data returned by  dialog.Form widget based on a model
    * @param qcl_data_model_AbstractActiveRecord $model
    * @param object $data;
-   * @return unknown_type
+   * @return array
    */
   protected function parseFormData( qcl_data_model_AbstractActiveRecord $model, $data )
   {
