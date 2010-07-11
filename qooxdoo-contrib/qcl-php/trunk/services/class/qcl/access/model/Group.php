@@ -81,29 +81,6 @@ class qcl_access_model_Group
     )
   );
 
-
-  /**
-   * dialog.Form - compatible form data for the editable properties
-   * of this model.
-   *
-   * @var array
-   */
-  protected $formData = array(
-    'name'        => array(
-      'label'       => "Group name"
-    ),
-    'description' => array(
-      'label'       => "Group description"
-    ),
-    'defaultRole'      => array(
-      'type'        => "selectbox",
-      'label'       => "Default role for new users",
-      'delegate'    => array(
-        'options'     => "getRoleListData"
-      )
-    )
-  );
-
   /**
    * Constructor
    */
@@ -112,6 +89,22 @@ class qcl_access_model_Group
     parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
+
+    $this->formData = array(
+      'name'        => array(
+        'label'       => $this->tr("Name")
+      ),
+      'description' => array(
+        'label'       => $this->tr("Description")
+      ),
+      'defaultRole'      => array(
+        'type'        => "selectbox",
+        'label'       => $this->tr("Default role for new users"),
+        'delegate'    => array(
+          'options'     => "getRoleListData"
+        )
+      )
+    );
   }
 
   /**

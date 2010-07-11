@@ -162,77 +162,6 @@ class qcl_data_datasource_DbModel
     )
   );
 
-
-  /**
-   * dialog.Form - compatible form data for the editable properties
-   * of this model.
-   *
-   * @var array
-   */
-  protected $formData = array(
-    'title'       => array(
-      'label'       => "Datasource name"
-    ),
-    'description' => array(
-      'type'        => "TextArea",
-      'lines'       => 3,
-      'label'       => "Description"
-    ),
-    'schema'      => array(
-      'type'        => "selectbox",
-      'label'       => "Datasource schema",
-      'delegate'    => array(
-        'options'     => "getSchemaOptions"
-      )
-    ),
-    'type'        => array(
-      'label'       => "Datasource type"
-    ),
-    'host'        => array(
-      'label'       => "Server host",
-      'placeholder' => "The database server host, usually 'localhost'"
-    ),
-    'port'        => array(
-      'label'       => "Server port",
-      'marshaler'   => array(
-        'marshal'    => array( 'function' => "qcl_toString" ),
-        'unmarshal'  => array( 'function' => "qcl_toInteger" )
-      ),
-      'placeholder' => "The database server port, usually 3306 for MySql"
-    ),
-    'database'    => array(
-      'label'       => "Database name",
-      'placeholder' => "The name of the database",
-      'validation'  => array(
-        'required'    => true
-      )
-    ),
-    'username'    => array(
-      'label'       => "Database user name"
-    ),
-    'password'    => array(
-      'label'       => "Database user password"
-    ),
-    'encoding'    => array(
-      'label'       => "Database encoding",
-      'default'     => 'utf-8'
-    ),
-    'prefix'      => array(
-      'label'       => "Datasource prefix"
-    ),
-    'ressourcepath' => array(
-      'label'       => "Ressource path"
-    ),
-    'active'        => array(
-      'type'    => "SelectBox",
-      'label'   => "Status",
-      'options' => array(
-        array( 'label' => "Disabled", 'value' => false ),
-        array( 'label' => "Active",   'value' => true )
-      )
-    )
-  );
-
   //-------------------------------------------------------------
   // Class properties
   //-------------------------------------------------------------
@@ -262,6 +191,70 @@ class qcl_data_datasource_DbModel
     parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
+
+    $this->formData = array(
+      'title'       => array(
+        'label'       => $this->tr("Name")
+      ),
+      'description' => array(
+        'type'        => "TextArea",
+        'lines'       => 3,
+        'label'       => $this->tr("Description")
+      ),
+      'schema'      => array(
+        'type'        => "selectbox",
+        'label'       => $this->tr("Schema"),
+        'delegate'    => array(
+          'options'     => "getSchemaOptions"
+        )
+      ),
+      'type'        => array(
+        'label'       => $this->tr("Type")
+      ),
+      'host'        => array(
+        'label'       => $this->tr("Server host"),
+        'placeholder' => "The database server host, usually 'localhost'"
+      ),
+      'port'        => array(
+        'label'       => $this->tr("Server port"),
+        'marshaler'   => array(
+          'marshal'    => array( 'function' => "qcl_toString" ),
+          'unmarshal'  => array( 'function' => "qcl_toInteger" )
+        ),
+        'placeholder' => "The database server port, usually 3306 for MySql"
+      ),
+      'database'    => array(
+        'label'       => $this->tr("Database name"),
+        'placeholder' => "The name of the database",
+        'validation'  => array(
+          'required'    => true
+        )
+      ),
+      'username'    => array(
+        'label'       => $this->tr("Database user name")
+      ),
+      'password'    => array(
+        'label'       => $this->tr("Database user password")
+      ),
+      'encoding'    => array(
+        'label'       => $this->tr("Database encoding"),
+        'default'     => 'utf-8'
+      ),
+      'prefix'      => array(
+        'label'       => $this->tr("Datasource prefix")
+      ),
+      'ressourcepath' => array(
+        'label'       =>  $this->tr("Resource path")
+      ),
+      'active'        => array(
+        'type'    => "SelectBox",
+        'label'   =>  $this->tr("Status"),
+        'options' => array(
+          array( 'label' => "Disabled", 'value' => false ),
+          array( 'label' => "Active",   'value' => true )
+        )
+      )
+    );
   }
 
   /**

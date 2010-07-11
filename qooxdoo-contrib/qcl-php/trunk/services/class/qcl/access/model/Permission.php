@@ -71,18 +71,6 @@ class qcl_access_model_Permission
   );
 
   /**
-   * dialog.Form - compatible form data for the editable properties
-   * of this model.
-   *
-   * @var array
-   */
-  protected $formData = array(
-    'description' => array(
-      'label'       => "Permission description"
-    )
-  );
-
-  /**
    * Constructor
    */
   function __construct()
@@ -90,6 +78,12 @@ class qcl_access_model_Permission
     parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
+
+    $this->formData = array(
+      'description' => array(
+        'label'       => $this->tr("Description")
+      )
+    );
   }
 
   /**

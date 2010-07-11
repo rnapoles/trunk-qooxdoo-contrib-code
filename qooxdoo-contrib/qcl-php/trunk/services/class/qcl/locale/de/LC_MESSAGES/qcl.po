@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qcl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-03 20:59+0100\n"
-"PO-Revision-Date: 2010-07-03 21:01+0100\n"
+"POT-Creation-Date: 2010-07-11 21:21+0100\n"
+"PO-Revision-Date: 2010-07-11 21:27+0100\n"
 "Last-Translator: Christian Boulanger <c.boulanger@qxtransformer.org>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: _;gettext;gettext_noop;tr;trn\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;tr;trn;marktr\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-Language: de\n"
 "X-Poedit-SearchPath-0: /Users/bibliograph/Sites/Bibliograph/qcl-php/class\n"
@@ -39,43 +39,123 @@ msgstr "Erlaubnisse"
 msgid "Datasources"
 msgstr "Datenquellen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:247
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:92
+msgid "user"
+msgstr "Benutzer/in"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:97
+msgid "role"
+msgstr "Rolle"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:102
+msgid "group"
+msgstr "Gruppe"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:107
+msgid "permission"
+msgstr "Erlaubnis"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:112
+msgid "datasource"
+msgstr "Datenquelle"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:249
 msgid "Relations"
 msgstr "Beziehungen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:320
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:322
 msgid "in"
 msgstr "in"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:358
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:360
 msgid "In all groups"
 msgstr "In allen Gruppen"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:471
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:473
 msgid "Do you want to remove only the datasource entry or all associated data?"
 msgstr "Wollen Sie nur den Datenquellen-Eintrag löschen oder auch die zugehörigen Daten?"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:472
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:474
 msgid "All data"
 msgstr "Alle Daten"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:472
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:474
 msgid "Entry only"
 msgstr "Nur den Eintrag"
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:516
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:518
 #, php-format
 msgid "Deleting datasource '%s' failed... "
 msgstr "Das Löschen der Datenquelle '%s' war nicht erfolgreich ..."
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:519
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:521
 #, php-format
 msgid "Datasource '%s' successfully deleted ... "
 msgstr "Datenquelle '%s' wurde gelöscht ..."
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:682
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:692
 msgid "Passwords do not match. Please try again"
 msgstr "Die Passwörter stimmen nicht überein"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:720
+#, php-format
+msgid "An email has been sent to %s (%s) with information on the registration."
+msgstr "Eine Email mit Informationen zur Registrierung wurde an %s (%s) gesendet."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:728
+#, php-format
+msgid "An email has been sent to %s (%s) to inform about the change of password."
+msgstr "%s (%s) wurde über die Änderung des Passworts per E-Mail informiert. "
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:755
+#, php-format
+msgid "Your registration at %s"
+msgstr "Ihre Registrierung bei %s"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:765
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:804
+#, php-format
+msgid "Dear %s,"
+msgstr "Sehr geehrte/r %s,"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:766
+#, php-format
+msgid "You have been registered as a user at  '%s'."
+msgstr "Sie wurden auf bei '%s' als Benutzer/in registriert."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:767
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:806
+#, php-format
+msgid "Your username is '%s' and your password is '%s'"
+msgstr "Ihr Benutzername ist '%s' und Ihr Passwort ist '%s'. Nach dem Einloggen können Sie das Passwort verändern."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:768
+msgid "Please confirm your account by visiting the following link:"
+msgstr "Bitte bestätigen Sie Ihr Konto, in dem Sie den folgenden Link besuchen:"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:770
+msgid "Thank you."
+msgstr "Vielen Dank."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:799
+#, php-format
+msgid "Password change at %s"
+msgstr "Passwortänderung %s"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:805
+#, php-format
+msgid "This is to inform you that your password has changed at '%s'."
+msgstr "Hiermit möchten wir Sie darüber benachrichtigen, dass Ihr Passwort bei '%s' geändert wurde."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:838
+#, php-format
+msgid "Thank you, %s, your email address has been confirmed."
+msgstr "Vielen Dank, %s, Ihre E-Mailadresse wurde bestätigt."
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/ACToolController.php:839
+#, php-format
+msgid "You can now log in at <a href='%s'>this link</a>"
+msgstr "Sie können sich nun unter <a href='%s'>diesem Link</a> einloggen. "
 
 #: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/Controller.php:472
 msgid "Invalid user name."
@@ -93,9 +173,49 @@ msgstr "Die Anmeldung muss über eine sichere Verbindung erfolgen (https:)."
 msgid "No valid session."
 msgstr "Ungültige Sitzung."
 
-#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Group.php:179
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Group.php:95
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Role.php:90
+msgid "Name"
+msgstr "Name"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Group.php:98
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Permission.php:84
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Role.php:93
+msgid "Description"
+msgstr "Beschreibung"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Group.php:102
+msgid "Default role for new users"
+msgstr "Standardrolle für neue Benutzer/innen"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/Group.php:172
 msgid "No role"
 msgstr "Keine Rolle"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:166
+msgid "Full name"
+msgstr "Vollständiger Name"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:169
+msgid "Email address"
+msgstr "E-Mailadresse"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:170
+msgid "Enter a valid Email address"
+msgstr "Geben Sie eine gültige E-Mailadresse ein"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:176
+msgid "Password"
+msgstr "Passwort"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:179
+msgid "Leave blank if you don't want to change the password"
+msgstr "Bitte leer lassen, wenn Sie das Passwort nicht ändern möchten"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:185
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:189
+msgid "Repeat password"
+msgstr "Passwort wiederholen"
 
 #: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/access/model/User.php:277
 msgid "Anonymous User"
@@ -138,6 +258,50 @@ msgstr "Sie haben keinen Zugang zu '%s'"
 #, php-format
 msgid "%s records"
 msgstr "%s Datensätze"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:206
+msgid "Schema"
+msgstr "Schema"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:212
+msgid "Type"
+msgstr "Typ"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:215
+msgid "Server host"
+msgstr "Server Host"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:219
+msgid "Server port"
+msgstr "Server-Port"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:227
+msgid "Database name"
+msgstr "Name der Datenbank"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:234
+msgid "Database user name"
+msgstr "Benutzername für die Datenbank"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:237
+msgid "Database user password"
+msgstr "Passwort für die Datenbank"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:240
+msgid "Database encoding"
+msgstr "Kodierung"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:244
+msgid "Datasource prefix"
+msgstr "Datenquellen-Präfix"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:247
+msgid "Resource path"
+msgstr "Ressourcenpfad"
+
+#: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/data/datasource/DbModel.php:251
+msgid "Status"
+msgstr "Status"
 
 #: /Users/bibliograph/Sites/Bibliograph/qcl-php/class/qcl/server/Download.php:132
 #, php-format
