@@ -87,8 +87,8 @@ class qcl_server_Server
      */
     elseif ( isset( $_REQUEST['service'] )  )
     {
-      require_once "services/server/PostRpcServer.php";
-      $serverObj = new PostRpcServer();
+      qcl_import( "qcl_server_JsonRpcRestServer" );
+      $serverObj = new qcl_server_JsonRpcRestServer();
       $serverObj->setServicePaths( $servicePaths );
     }
 

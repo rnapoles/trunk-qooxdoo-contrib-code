@@ -87,6 +87,12 @@ class qcl_server_JsonRpcTestServer
     $request->set( $input );
 
     /*
+     * call the application so that the service->class mapping
+     * is setup before the services are called.
+     */
+    $this->getApplication();
+
+    /*
      * return data
      */
     return $input;
