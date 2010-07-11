@@ -1219,6 +1219,19 @@ class qcl_core_Object
     return $manager->trn( $singularMessageId, $pluralMessageId, $count, $varargs, $this->className() );
   }
 
+  /**
+   * Marks a message string for translation without actually translating it.
+   * This might make sense where a translation is needed at a different
+   * place in the code using the content of a variable.
+   *
+   * @param $msgId
+   * @return string Returns the input string
+   */
+  public function marktr( $msgId )
+  {
+    return $msgId;
+  }
+
   //-------------------------------------------------------------
   // Converting object into other formats
   //-------------------------------------------------------------
