@@ -75,20 +75,6 @@ class qcl_access_model_Role
   );
 
 
-  /**
-   * dialog.Form - compatible form data for the editable properties
-   * of this model.
-   *
-   * @var array
-   */
-  protected $formData = array(
-    'name'        => array(
-      'label'       => "Role name"
-    ),
-    'description' => array(
-      'label'       => "Description"
-    )
-  );
 
   /**
    * Constructor
@@ -98,6 +84,15 @@ class qcl_access_model_Role
     parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
+
+    $this->formData = array(
+      'name'        => array(
+        'label'       => $this->tr("Name")
+      ),
+      'description' => array(
+        'label'       => $this->tr("Description")
+      )
+    );
   }
 
   /**

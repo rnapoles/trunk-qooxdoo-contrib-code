@@ -73,6 +73,12 @@ class qcl_access_model_User
       'check'     => "qcl_data_db_Timestamp",
       'sqltype'   => "timestamp",
       'export'    => false
+    ),
+    'confirmed'  => array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1) NOT NULL DEFAULT 0",
+      'nullable'  => false,
+      'init'      => false
     )
   );
 
@@ -116,45 +122,6 @@ class qcl_access_model_User
     )
   );
 
-  /**
-   * dialog.Form - compatible form data for the editable properties
-   * of this model.
-   *
-   * @var array
-   */
-  protected $formData = array(
-    'name'        => array(
-      'name'        => "name",
-      'label'       => "Full name"
-    ),
-    'email'       => array(
-      'label'       => "E-Mail address",
-      'placeholder' => "Enter a valid E-mail address",
-      'validation'  => array(
-        'validator'   => "email"
-      )
-    ),
-    'password'    => array(
-      'label'       => "Password",
-      'type'        => "PasswordField",
-      'value'       => "",
-      'placeholder' => "Leave blank if you don't want to change the password",
-      'marshaler'   => array(
-        'unmarshal'  => array( 'callback' => array( "this", "checkFormPassword" ) )
-      )
-    ),
-    'password2' => array(
-      'label'       => "Repeat Password",
-      'type'        => "PasswordField",
-      'value'       => "",
-      'ignore'      => true,
-      'placeholder' => "Repeat password",
-      'marshaler'   => array(
-        'unmarshal'  => array( 'callback' => array( "this", "checkFormPassword" ) )
-      )
-    )
-  );
-
   //-------------------------------------------------------------
   // Class properties
   //-------------------------------------------------------------
@@ -192,6 +159,39 @@ class qcl_access_model_User
     parent::__construct();
     $this->addProperties( $this->properties );
     $this->addRelations( $this->relations, __CLASS__ );
+
+    $this->formData = array(
+      'name'        => array(
+        'name'        => "name",
+        'label'       => $this->tr("Full name")
+      ),
+      'email'       => array(
+        'label'       => $this->tr("Email address"),
+        'placeholder' => $this->tr("Enter a valid Email address"),
+        'validation'  => array(
+          'validator'   => "email"
+        )
+      ),
+      'password'    => array(
+        'label'       => $this->tr("Password"),
+        'type'        => "PasswordField",
+        'value'       => "",
+        'placeholder' => $this->tr("Leave blank if you don't want to change the password"),
+        'marshaler'   => array(
+          'unmarshal'  => array( 'callback' => array( "this", "checkFormPassword" ) )
+        )
+      ),
+      'password2' => array(
+        'label'       => $this->tr("Repeat password"),
+        'type'        => "PasswordField",
+        'value'       => "",
+        'ignore'      => true,
+        'placeholder' => $this->tr("Repeat password"),
+        'marshaler'   => array(
+          'unmarshal'  => array( 'callback' => array( "this", "checkFormPassword" ) )
+        )
+      )
+    );
   }
 
   /**
