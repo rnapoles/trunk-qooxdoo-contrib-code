@@ -52,7 +52,7 @@ qx.Class.define("contribdemobrowser.Application",
       }
 
       // Initialize the viewer
-      this.viewer = new demobrowser.DemoBrowser;
+      this.viewer = new contribdemobrowser.DemoBrowser;
       this.getRoot().add(this.viewer, {edge:0});
     },
 
