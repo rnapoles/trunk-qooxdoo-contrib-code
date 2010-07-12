@@ -33,6 +33,8 @@ CMD_DIR = $(CMD_NICE) mkdir -p
 
 CMD_GENERATOR := $(CMD_PYTHON) "$(CURDIR)/tool/bin/generator.py"
 
+PUBLISH_HOST = qooxdoo@webtechfe-test01.schlund.de
+
 CMD_SYNC_ONLINE = $(CMD_NICE) rsync --checksum --compress --recursive --delete --inplace --links --safe-links --exclude .svn
 
 APPLICATIONS = contribDemobrowser
@@ -66,20 +68,12 @@ publish-check:
 	@echo "    - Looks good"
 
 #publish: publish-check
-publish:
-#	@echo "  * Preparing index.html..."	
-#	@$(CMD_DIR) temp/
-#	@cat tool/data/publish/index.html | \
-#		sed 's/class="local"/class="local hide"/g' | \
-#		sed 's/ class="publish"//g' > temp/index.html
-#	@echo "  * Syncing index.html..."
-#	@$(CMD_SYNC_ONLINE) temp/index.html root@qooxdoo.org:/var/www/qooxdoo/demo/contrib/
-#	@$(CMD_REMOVE) temp
-	
+publish:	
 	@echo "  * Syncing applications..."
 	@for APPLICATION in $(APPLICATIONS); do \
 	  echo "    - $$APPLICATION..."; \
 	  if [ "$$APPLICATION" = "contribDemobrowser" ]; then \
-      rsync --checksum --compress --recursive --delete --inplace --links --safe-links --exclude .svn $$APPLICATION/build/* root@qooxdoo.org:/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
+      $(CMD_SYNC_ONLINE) $$APPLICATION/build/* $(PUBLISH_HOST):/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
     fi; \
+	@ssh -A qooxdoo@webtechfe-test01.schlund.de /var/www/qooxdoo/bin/webtechfe01.mirror.contrib.sh
 	done
