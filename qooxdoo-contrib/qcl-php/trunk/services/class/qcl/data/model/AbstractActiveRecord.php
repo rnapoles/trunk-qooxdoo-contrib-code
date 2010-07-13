@@ -53,15 +53,10 @@ class qcl_data_model_AbstractActiveRecord
    */
   private $lastQuery;
 
-
   /**
-   * Valid operators for where queries. Override for
-   * non-SQL-type models
+   * Whether model record data is loaded
+   * @var bool
    */
-  public $operators= array(
-    "like","is","is not","=",">","<",">=","<=","!=","in","not in", "not like"
-  );
-
   protected $_loaded = false;
 
   //-------------------------------------------------------------
@@ -254,14 +249,6 @@ class qcl_data_model_AbstractActiveRecord
     return (object) $this->data();
   }
 
-  /**
-   * Returns the legal operators for "where" queries
-   * @return array
-   */
-  public function operators()
-  {
-    return $this->operators;
-  }
 
   /**
    * Return dialog.Form - compatible  form data for editable properties of

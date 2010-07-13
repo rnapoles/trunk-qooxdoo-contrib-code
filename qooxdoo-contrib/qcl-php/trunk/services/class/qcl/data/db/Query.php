@@ -19,18 +19,6 @@
 
 /**
  * An object holding data for use in a SQL query by a QueryBehavior class.
- * The data should be evaluated by the behavior class as follows:
- * <ul>
- * <li>
- *
- *
- *
- * @param
- * @param
- * @param [optional]  $properties
- * @param string[optional] $link
- * @param bool $distinct Whether only distinct values should be returned
- *
  *
  * @todo Remove dependency on qcl_core_Object by providing manual getter and
  * setter methods for all properties
@@ -109,10 +97,18 @@ class qcl_data_db_Query
   public $firstRow = null;
 
   /**
-   * The last row to retrieve
+   * The last row to retrieve.
+   * @deprecated use $numberOfRows instead
    * @var int|null
    */
   public $lastRow = null;
+
+
+  /**
+   * The number of rows to retrieve.
+   * @var int|null
+   */
+  public $numberOfRows = null;
 
 
   /**
@@ -166,6 +162,12 @@ class qcl_data_db_Query
    */
   public $as = array();
 
+  /**
+   * Valid operators for where queries
+   */
+  public $operators= array(
+    "like","is","is not","=",">","<",">=","<=","!=","in","not in", "not like"
+  );
 
   //-------------------------------------------------------------
   // Constructor
@@ -232,6 +234,627 @@ class qcl_data_db_Query
     return $this->link;
   }
 
+  /**
+   * Returns the legal operators for "where" queries
+   * @return array
+   */
+  public function operators()
+  {
+    return $this->operators;
+  }
+
+  //-------------------------------------------------------------
+  // converters
+  //-------------------------------------------------------------
+
+
+  /**
+   * Checks if the operator used in the where query is valid and throws
+   * an InvalidArgumentException if not.
+   * @param string $operator
+   * @return void
+   * @throws InvalidArgumentException
+   */
+  protected function checkOperator( $operator )
+  {
+    if ( in_array( strtolower( $operator ), $this->operators() ) )
+    {
+      return true;
+    }
+    throw new InvalidArgumentException("Operator '$operator' is invalid.");
+  }
+
+  /**
+   * Converts the object to an sql statement. If necessary,
+   * the 'parameter' and 'parameter_types' members will be modified.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $model
+   * @return string sql statement
+   * @todo rewrite this from scratch. We need a query parser that
+   * translates string queries into a query-language-neutral intermediary
+   * format and then allows to recompile the query in the output format,
+   * thus allowing a) to separate instructions from data and preventing
+   * injections and b) to use the same queries for a variety of backends.
+   *
+   */
+  public function toSql( qcl_data_model_AbstractActiveRecord $model)
+  {
+    $queryBehavior = $model->getQueryBehavior();
+    $adpt    = $queryBehavior->getAdapter();
+    $propArg = $this->getProperties();
+
+    /*
+     * check for relations
+     */
+    $link    = $this->getLink();
+    if ( $link and isset( $link['relation'] ) )
+    {
+      $relBeh = $model->getRelationBehavior();
+      $relation = $link['relation'];
+      $relBeh->checkRelation( $relation );
+      $targetModel = $relBeh->getTargetModel( $relation );
+    }
+    else
+    {
+      $targetModel = null;
+    }
+
+    /*
+     * determine the column to select and the names under
+     * which the columns should be returned ('properties')
+     * properties is an array, one element for each model
+     * involved, of arrays of property names.
+     */
+    $columns    = array();
+    $properties = array();
+
+    /*
+     * if string, split at the pipe and comma characters
+     */
+    if ( is_string( $propArg ) )
+    {
+      $parts = explode("|", $propArg );
+
+      /*
+       * if we have "p1,p2,p3|p4,p5,p6"
+       */
+      if ( count( $parts ) > 1 )
+      {
+        for ( $i=0; $i<count( $parts ); $i++  )
+        {
+          $properties[$i] = explode(",",$parts[$i] );
+        }
+      }
+
+      /*
+       * no only "p1,p2,p3"
+       */
+      else
+      {
+        $properties[0] = explode(",",$parts[0]);
+      }
+    }
+
+    /*
+     * We have an array.
+     * If first element is a string, only the properties
+     * of the current model are requested. Convert
+     * the properties array accordingly
+     */
+    elseif ( is_array( $propArg ) )
+    {
+      if ( is_array( $propArg[0] ) )
+      {
+        $properties = $propArg;
+      }
+      elseif ( is_string( $propArg[0] ) )
+      {
+        $properties = array( $propArg );
+      }
+      else
+      {
+        throw new InvalidArgumentException("Invalid property argument");
+      }
+    }
+
+    /*
+     * if null, all the properties of the current model
+     */
+    elseif ( is_null( $propArg ) )
+    {
+      $properties = array( "*" );
+    }
+
+    /*
+     * invalid property arguments
+     */
+    else
+    {
+      throw new InvalidArgumentException("Invalid 'properties'.");
+    }
+
+    /*
+     * query involves linked tables
+     */
+    if ( $targetModel )
+    {
+      for ( $i=0; $i<2; $i++ )
+      {
+
+        /*
+         * break if no more properties
+         */
+        if ( ! isset( $properties[$i] ) ) break;
+
+        /*
+         * get model
+         */
+        switch( $i )
+        {
+          case 0:
+            $alias="t1";
+            $m = $model;
+            break;
+          case 1:
+            $alias="t2";
+            $m = $targetModel;
+            break;
+        }
+
+        /*
+         * replace "*" with all properties
+         */
+        if ( $properties[$i]== "*" )
+        {
+          $properties[$i] = $m->properties();
+        }
+
+        /*
+         * convert single properties to array
+         */
+        if ( is_string( $properties[$i] ) )
+        {
+           $properties[$i] = array( $properties[$i] );
+        }
+
+        /*
+         * otherwise abort
+         */
+        elseif ( ! is_array( $properties[$i] ) )
+        {
+          throw new InvalidArgumentException("Invalid property argument" );
+        }
+
+        /*
+         * construct column query
+         */
+        foreach ( $properties[$i] as $property )
+        {
+          /*
+           * skip empty parameters
+           */
+          if ( ! $property ) continue;
+
+          /*
+           * get column name of given property
+           */
+          $column = $queryBehavior->getColumnName( $property );
+          $col = $adpt->formatColumnName( $column );
+          //$queryBehavior->info( $model->className() . ": $property -> $col");
+
+          /*
+           * alias
+           */
+          if( isset( $this->as[$property] ) )
+          {
+            $as = $this->as[$property];
+            if ( preg_match('/[^0-9A-Za-z_]/',$as) )
+            {
+              throw new InvalidArgumentException("Invalid alias '$as'");
+            }
+          }
+          else
+          {
+            $as = null;
+          }
+
+          /*
+           * table and column alias
+           */
+          $str = "$alias.$col";
+          if ( $col != $property or $i > 0 )
+          {
+            if ( $i > 0 )
+            {
+              $str .= " AS '$relation.$property'";
+            }
+            elseif ( $as )
+            {
+              $str .= " AS '$as'";
+            }
+            elseif( $property != $column )
+            {
+              $str .= " AS '$property'";
+            }
+          }
+          $columns[] = $str;
+        }
+      }
+    }
+
+    /*
+     * query involves only one unlinked table
+     */
+    else
+    {
+
+      /*
+       * replace "*" with all properties
+       */
+      if ( $properties[0] == "*" )
+      {
+        $properties = $model->properties();
+      }
+      else
+      {
+        $properties = $properties[0];
+      }
+
+
+      /*
+       * columns, use alias if needed
+       */
+      $needAlias = false;
+      foreach ( $properties as $property )
+      {
+        if ( ! $property or ! is_string( $property ) )
+        {
+          throw new InvalidArgumentException("Invalid property argument!");
+        }
+
+        $column = $queryBehavior->getColumnName( $property );
+
+        /*
+         * alias
+         */
+        if( isset( $this->as[$property] ) )
+        {
+          $as = $this->as[$property];
+          if ( preg_match('/[^0-9A-Za-z_]/',$as) )
+          {
+            throw new InvalidArgumentException("Invalid alias '$as'");
+          }
+        }
+        else
+        {
+          $as = null;
+        }
+
+        $str = "\n     " . $adpt->formatColumnName( $column );
+        if ( $column != $property )
+        {
+          $str .= " AS '$property'";
+          $needAlias = true;
+        }
+        elseif ( $as )
+        {
+          $str .= " AS '$as'";
+        }
+        $columns[] = $str;
+      }
+    }
+
+
+    /*
+     * select
+     */
+    $sql = "\n   SELECT ";
+
+    /*
+     * distinct values?
+     */
+    if ( $this->distinct )
+    {
+      $sql .= "DISTINCT ";
+    }
+
+    /*
+     * columns
+     */
+    if ( $needAlias or count( $properties) != count( $model->properties() ) )
+    {
+      $sql .= implode(",",  $columns );
+    }
+    else
+    {
+      $sql .= " * ";
+    }
+
+    /*
+     * from
+     */
+    $thisTable = $adpt->formatTableName( $queryBehavior->getTableName() );
+    $sql .= "\n     FROM $thisTable AS t1 ";
+
+    /*
+     * join linked records. The "link" property mus be an array
+     * of the following structure:
+     *
+     * array(
+     *  'relation' => "name-of-relation"
+     * )
+     *
+     */
+    if ( $targetModel )
+    {
+      $foreignKey   = $adpt->formatColumnName( $model->foreignKey() );
+      $targetTable  = $adpt->formatTableName( $targetModel->getQueryBehavior()->getTableName() );
+      $targetFKey   = $adpt->formatColumnName( $targetModel->foreignKey() );
+
+      // for now, we do only foreign id
+      $foreignId = $link['foreignId'];
+      if( ! $foreignId )
+      {
+        throw new InvalidArgumentException("For now, only foreign id links are allowed.");
+      }
+      // check foreign id!
+      if( ! is_numeric( $foreignId )  )
+      {
+        throw new InvalidArgumentException("Invalid foreign id '$foreignId'");
+      }
+
+      $relType = $relBeh->getRelationType( $relation );
+
+      switch( $relType )
+      {
+        case QCL_RELATIONS_HAS_ONE:
+          $sql .= "\n     JOIN $targetTable AS t2 ON ( t1.id = t2.$foreignKey AND t2.id = $foreignId ) ";
+          break;
+
+        case QCL_RELATIONS_HAS_MANY:
+          //$sql .= "\n     JOIN $targetTable AS t2 ON ( t1.$targetFKey = t2.id ) ";
+          throw new InvalidArgumentException("1:n relations make no sense with foreign id.'");
+          break;
+
+        case QCL_RELATIONS_HAS_AND_BELONGS_TO_MANY:
+
+          $joinTable = $adpt->formatColumnName( $relBeh->getJoinTableName( $relation ) );
+          $sql .= "\n     JOIN ( $joinTable AS l,$targetTable AS t2) ";
+          $sql .= "\n       ON ( t1.id = l.$foreignKey AND l.$targetFKey = t2.id AND t2.id = $foreignId ) ";
+          break;
+
+        default:
+          // should never get here
+          throw new LogicException("Invalid relation type");
+      }
+    }
+
+    /*
+     * construct 'where' statement from the 'where' and
+     * 'match' properties of the query object
+     */
+    if ( $this->where or  $this->match )
+    {
+      $where = $this->createWhereStatement( $model );
+      $sql .= "\n    WHERE $where ";
+    }
+
+    /*
+     * ORDER BY
+     */
+    if ( $this->orderBy )
+    {
+      if ( is_string( $this->orderBy ) )
+      {
+        $orderBy = explode(",", $this->orderBy );
+      }
+      else if ( is_array(  $this->orderBy ) )
+      {
+        $orderBy =  $this->orderBy;
+      } else {
+        throw new InvalidArgumentException("Invalid 'orderBy' data.");
+      }
+
+      /*
+       * order columns
+       */
+      $column = array();
+      foreach ( $orderBy as $property )
+      {
+        if ( substr( $property, -4 ) == "DESC" )
+        {
+          $column[] =
+            $adpt->formatColumnName(
+              $queryBehavior->getColumnName( substr( $property, 0, -5 ) ) ) . " DESC";
+        }
+        else
+        {
+          $column[] = $adpt->formatColumnName( $queryBehavior->getColumnName( $property ) );
+        }
+      }
+      $orderBy = implode(",", (array) $column );
+      $sql .= "\n    ORDER BY $orderBy $direction";
+
+    }
+
+    /*
+     * GROUP BY
+     */
+    if ( $this->groupBy )
+    {
+      if ( is_string( $this->groupBy ) )
+      {
+        $groupBy = explode(",", $this->groupBy );
+      }
+      else if ( is_array( $this->groupBy ) )
+      {
+        $groupBy = $this->groupBy;
+      }
+      else
+      {
+        throw new InvalidArgumentException("Invalid 'groupBy' data.");
+      }
+
+      /*
+       * group columns
+       */
+      $column = array();
+      foreach ( $groupBy as $property )
+      {
+        $column[] = $adpt->formatColumnName( $queryBehavior->getColumnName( $property ) );
+      }
+      $groupBy = implode(",", (array) $column );
+      $sql .= "\n    GROUP BY $groupBy";
+
+    }
+
+    /*
+     * Retrieve only subset of all rows
+     */
+    if ( ! is_null( $this->firstRow )
+        or ! is_null( $this->lastRow )
+        or ! is_null( $this->numberOfRows ) )
+    {
+      if ( ! is_null( $this->firstRow ) and ! is_null( $this->numberOfRows ) )
+      {
+        $first  = $this->firstRow;
+        $second = $this->numberOfRows;
+      }
+      elseif ( ! is_null( $this->firstRow ) and ! is_null( $this->lastRow ) )
+      {
+        $first  = $this->firstRow;
+        $second = "$this->lastRow - $this->firstRow"; // since there might be placeholder
+      }
+      elseif ( ! is_null( $this->numberOfRows ) )
+      {
+        $first  = $this->numberOfRows;
+        $second = null;
+      }
+      else
+      {
+        throw new InvalidArgumentException( "Invalid firstRow, lastRow or numberOfRow parameter");
+      }
+      $sql .=   "\n    " .
+      $queryBehavior->getAdapter()->createLimitStatement( $first, $second  );
+    }
+
+    return $sql;
+  }
+
+  /**
+   * Converts data to the 'where' part of a sql statement. If necessary,
+   * this will add to the parameter and parameter_types members of the query
+   * object.
+   *
+   * @param qcl_data_model_AbstractActiveRecord $model
+   * @return string|null Returns a string if there are conditions that can
+   * be expressed in the 'where' query and NULL if not.
+   * @todo rewrite to allow other boolean operators
+   */
+  public function createWhereStatement( qcl_data_model_AbstractActiveRecord $model )
+  {
+    $queryBehavior = $model->getQueryBehavior();
+    $adpt   = $queryBehavior->getAdapter();
+    $where  = object2array( $this->getWhere() );
+    $match  = object2array( $this->getMatch() );
+
+    /*
+     * if we have a string type where statement, return it. Use this with
+     * caution, since the string is not sanitized
+     * FIXME: Remove this?
+     */
+    if ( is_string( $where ) )
+    {
+      return $where;
+    }
+    elseif ( ! is_array( $where ) and ! is_array( $match ) )
+    {
+      throw new InvalidArgumentException("Cannot create where query. Invalid query data.");
+    }
+
+    /*
+     * otherwise create sql from it
+     */
+    $sql = array();
+
+    /*
+     * first use 'where' info
+     */
+    if( $where)
+    {
+      foreach( $where as $property => $value )
+      {
+        $type   = $model->getPropertyBehavior()->type( $property );
+        $column = $adpt->formatColumnName( $queryBehavior->getColumnName( $property ) );
+        $param  = ":$property";
+
+        /*
+         * null value
+         */
+        if ( is_null($value) )
+        {
+          $operator = "IS";
+        }
+
+        /*
+         * if the value is scalar, use "="
+         */
+        elseif ( is_scalar($value) )
+        {
+          $operator = "=";
+        }
+
+        /*
+         * if an array has been passed, the first element is the
+         * operator, the second the value
+         */
+        elseif ( is_array( $value ) )
+        {
+          $operator = $value[0];
+          $this->checkOperator( $operator );
+          $value    = $value[1];
+        }
+        else
+        {
+          throw new InvalidArgumentException("Property '$property': Invalid value of type " . typeof($value,true) );
+        }
+
+        $this->parameters[$param] = $value;
+        $sql[]  = "$column $operator $param" ;
+      }
+    }
+
+    /*
+     * now analyse "match" data
+     */
+    if( $match )
+    {
+      foreach( $match as $index => $expr )
+      {
+        // @todo check if index exists, but only from cached data
+        //$sql[]  = "MATCH($index) AGAINST '$expr' IN BOOLEAN MODE";
+        $sql[]  = $adpt->fullTextSql( $queryBehavior->getTableName(), $index, $expr );
+      }
+    }
+
+    /*
+     * return the result
+     */
+    if ( count ( $sql ) )
+    {
+      return implode("\n           AND ", $sql );
+    }
+    else
+    {
+      return null;
+    }
+
+  }
+
+  /**
+   * Converts object to string
+   * @return string
+   */
   public function __toString()
   {
     return print_r( get_object_vars( $this ), true );

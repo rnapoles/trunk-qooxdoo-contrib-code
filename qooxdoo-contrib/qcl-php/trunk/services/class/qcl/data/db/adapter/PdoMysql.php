@@ -1309,24 +1309,32 @@ class qcl_data_db_adapter_PdoMysql
   }
 
   /**
-   * Creates a "LIMIT" statement from a first-row, last-row information
-   * @param $firstRow
-   * @param $lastRow
-   * @return string
+   * Creates a "LIMIT" statement to return only a subset of the
+   * result. Takes either one or two arguments. If one, this is
+   * the number of rows to retrieved. If two, the first is the
+   * first row to retrieve, the second is the number of rows to
+   * retrieve.
+   *
+   * @param int $first
+   *    If a second argument is provided, this is the first record
+   *    to retrieve. If no second argument, this is the number
+   *    of rows to retrieve
+   * @param int|null $second
+   *    If provided, this is the number of rows to retrieve
+   * @return array
    */
-  public function createLimitStatement( $firstRow, $lastRow )
+  public function createLimitStatement( $first, $second=null )
   {
-    if ( ! $firstRow and $lastRow )
+    /*
+     * if no second argument
+     */
+    if ( $second === null )
     {
-      return "LIMIT $lastRow";
-    }
-    elseif ( $firstRow and $lastRow )
-    {
-      return "LIMIT $firstRow, $lastRow";
+      return "LIMIT $first";
     }
     else
     {
-      throw new InvalidArgumentException("Invalid LIMIT arguments");
+      return "LIMIT $first, $second";
     }
   }
 
