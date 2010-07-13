@@ -215,7 +215,36 @@ class qcl_log_Logger
       if ( is_writable( QCL_LOG_FILE )
         or is_writable( dirname( QCL_LOG_FILE ) ) )
       {
+        /*
+         * create log file if it doesn't exist
+         */
+        if( ! file_exists( QCL_LOG_FILE ) )
+        {
+          touch( QCL_LOG_FILE );
+        }
+
+        /*
+         * write message to file
+         */
         error_log( $message, 3, QCL_LOG_FILE );
+
+        /*
+         * truncated logfile if maximum size has been reached
+         */
+        if( defined( "QCL_LOG_MAX_FILESIZE" ) and QCL_LOG_MAX_FILESIZE > 0 )
+        {
+          if( filesize( QCL_LOG_FILE ) > QCL_LOG_MAX_FILESIZE )
+          {
+            if ( @unlink( QCL_LOG_FILE ) )
+            {
+              touch( QCL_LOG_FILE );
+            }
+            else
+            {
+              throw new JsonRpcError("Cannot delete logfile.");
+            }
+          }
+        }
       }
 
       /*

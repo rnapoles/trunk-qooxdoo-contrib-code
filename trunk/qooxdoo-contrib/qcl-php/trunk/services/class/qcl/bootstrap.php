@@ -75,6 +75,14 @@ if ( ! defined("QCL_LOG_FILE") )
 }
 
 /*
+ * The maximum size of the logfile, defaults to 500 KB
+ */
+if ( ! defined("QCL_LOG_MAX_FILESIZE") )
+{
+  define( "QCL_LOG_MAX_FILESIZE" , 1024 * 500 );
+}
+
+/*
  * load core functions
  */
 require_once "qcl/core/functions.php";
