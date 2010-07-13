@@ -117,8 +117,7 @@ class class_qcl_test_access_ModelAccessControl
     $where = new stdClass();
     $where->anonymous = false;
     $users = $this->method_fetchValues( "access", "user", "namedId", $where );
-    $this->assertEquals( array( "user1","user2","user3","admin" ), $users, null, __CLASS__, __LINE__ );
-
+    $this->assertTrue( 0 === count( array_diff( $users,array( "user1","user2","user3","admin" ) ) ), "Users are incorrect", __CLASS__, __LINE__ );
     $query = new stdClass();
     $query->properties = array( NAMED_ID, "name", "password" );
     $query->where = array( "anonymous" => false );
@@ -189,7 +188,7 @@ class class_qcl_test_access_ModelAccessControl
     $where = new stdClass();
     $where->anonymous = false;
     $users = $this->method_fetchValues( "access", "user", "namedId", $where );
-    $this->assertEquals( array( "user1","user2","user3","admin" ), $users, null, __CLASS__, __LINE__ );
+    $this->assertTrue( 0 === count( array_diff( $users,array( "user1","user2","user3","admin" ) ) ), "Users are incorrect", __CLASS__, __LINE__ );
 
     /*
      * the following test must all fail, otherwise there is a failure
