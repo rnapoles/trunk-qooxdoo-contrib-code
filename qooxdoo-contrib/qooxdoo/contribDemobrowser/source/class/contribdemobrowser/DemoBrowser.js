@@ -24,17 +24,20 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     this.base(arguments);
     
     this.__versionSelect.addListener("changeSelection", function(ev) {
-      this.__versionFilter = ev.getData()[0].getModel();
-      this.filter(this.__searchTextField.getValue() || "");
-  }, this);
+      this._versionFilter = ev.getData()[0].getModel();
+      this.filter(this._searchTextField.getValue() || "");
+    }, this);
+    
+    this.__demoStack = this.__makeDemoStack();
+    this._infosplit.add(this.__demoStack, 2);
   },
   
   members :
   {
     __versionSelect : null,
+    __versionTags : null,
     __infoView : null,
     __readmeView : null,
-    __demoView : null,
     __demoStack : null,
     
     /**
@@ -53,22 +56,22 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     },
     
     
-    __makeDemoStack : function(demoView)
+    __makeDemoStack : function()
     {
       var demoStack = new qx.ui.container.Stack();
       this.__infoView = new demobrowser.Manifest();
       this.__readmeView = new demobrowser.Readme();
-      demoStack.add(demoView);
+      demoStack.add(this._demoView);
       demoStack.add(this.__infoView);
       demoStack.add(this.__readmeView);
       return demoStack;
     },
     
-    __makeVersionSelect : function(leftComposite)
+    _makeVersionSelect : function()
     {
       var versionComposite = new qx.ui.container.Composite();
       versionComposite.setLayout(new qx.ui.layout.HBox(3));
-      leftComposite.add(versionComposite);
+      this._leftComposite.add(versionComposite);
       var versionLabel = new qx.ui.basic.Label("Compatible with: ")
       versionLabel.setPadding(4, 5, 0, 2);
       versionComposite.add(versionLabel);
@@ -87,7 +90,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
      *
      * @param tagList {Array} A tree node's tags
      */
-    __getVersionTags : function(tagList)
+    _getVersionTags : function(tagList)
     {
       if (!this.__versionTags) {
         this.__versionTags = {};
@@ -106,7 +109,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     /**
      * Add an option for each version to the version select box
      */
-    __getVersionItems : function()
+    _getVersionItems : function()
     {
       var versions = [];
       for (var tag in this.__versionTags) {
@@ -138,11 +141,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           this.__demoStack.setSelection([this.__readmeView]);
         }
         else {
-          this.__demoStack.setSelection([this.__demoView]);
+          this.__demoStack.setSelection([this._demoView]);
         }
       }
       else {
-        this.__demoStack.setSelection([this.__demoView]);
+        this.__demoStack.setSelection([this._demoView]);
       }
     },
     
@@ -154,7 +157,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
      */
     runSample : function(e)
     {
-      this.__demoStack.setSelection([this.__demoView]);
+      this.__demoStack.setSelection([this._demoView]);
       
       this._runbutton.setVisibility("excluded");
       this._stopbutton.setVisibility("visible");
