@@ -39,7 +39,7 @@ define( "CONTRIB_PATH", "../../../../../" ); // CB development path
  * Path to the RpcPhp package in qooxdoo-contrib
  * @var string
  */
-define( "RPCPHP_SERVER_PATH",  "../../../RpcPhp/trunk/" );
+define( "RPCPHP_SERVER_PATH",  "../../../RpcPhp/1.2.0/" );
 
 /**
  * Path to the qcl php library
@@ -59,6 +59,11 @@ define( "APPLICATION_CLASS_PATH", "./class" );
  * is located must be writable so it can be created.
  */
 define( "QCL_LOG_FILE", "log/test.log" );
+
+/*
+ * The maximum size of the logfile, defaults to 500 KB
+ */
+//define( "QCL_LOG_MAX_FILESIZE" , 1024 * 500 );
 
 /*
  * don't touch anything beyong this point
