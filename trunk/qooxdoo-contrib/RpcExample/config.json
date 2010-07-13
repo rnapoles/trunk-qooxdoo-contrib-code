@@ -11,7 +11,7 @@
   "let" :
   {
     "APPLICATION"  : "rpcexample",
-    "QOOXDOO_PATH" : "../qooxdoo/current",
+    "QOOXDOO_PATH" : "../qooxdoo/trunk",
     "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*"],
