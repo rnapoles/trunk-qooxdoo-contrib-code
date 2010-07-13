@@ -132,6 +132,9 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this.tests.selected = this.tests.handler.getFullName(modelNode);
       if (modelNode) {
         if (modelNode.manifest) {
+          if (modelNode.children.length == 0) {
+            modelNode.manifest.isPlayable = true;          
+          }
           this.__infoView.setManifestData(modelNode.manifest);
           this.__demoStack.setSelection([this.__infoView]);
         }
