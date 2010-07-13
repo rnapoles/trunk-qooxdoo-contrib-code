@@ -75,5 +75,5 @@ publish:
 	  if [ "$$APPLICATION" = "contribDemobrowser" ]; then \
       $(CMD_SYNC_ONLINE) $$APPLICATION/build/* $(PUBLISH_HOST):/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
     fi; \
-	@ssh -A qooxdoo@webtechfe-test01.schlund.de /var/www/qooxdoo/bin/webtechfe01.mirror.contrib.sh
 	done
+	@ssh -A qooxdoo@webtechfe-test01.schlund.de /var/www/qooxdoo/bin/webtechfe01.mirror.contrib.sh
