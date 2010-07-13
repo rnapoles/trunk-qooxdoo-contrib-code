@@ -206,7 +206,7 @@ class qcl_test_AbstractTestController
     if ( $msg === null ) {
       $msg = sprintf(
         "Values are not equal: Expected '%s', found '%s'",
-        $expected, $found
+        qcl_toString($expected), qcl_toString($found)
       );
     }
     if ( $class === null ) $class = "Unknown class"; //FIXME

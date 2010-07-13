@@ -60,9 +60,18 @@ class qcl_test_application_Application
     $this->getLogger()->setFilterEnabled(QCL_LOG_APPLICATION, true );
 
     $request = qcl_server_Request::getInstance();
+    $params = array();
+    foreach( $request->getParams() as $param )
+    {
+      if ( ! is_scalar( $param ) )
+      {
+        $param = typeof( $param, true );
+      }
+      $params[] = $param;
+    }
     $this->log( sprintf(
       "Starting qcl test service: %s.%s( %s ) ...",
-      $request->getService(), $request->getMethod(), implode(", ", $request->getParams() )
+      $request->getService(), $request->getMethod(), implode(", ", $params )
     ), QCL_LOG_APPLICATION );
 
     //$this->startLogging();
