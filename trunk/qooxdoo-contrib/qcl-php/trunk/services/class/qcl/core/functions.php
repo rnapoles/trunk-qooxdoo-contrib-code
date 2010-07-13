@@ -162,6 +162,7 @@ function qcl_getInstance( $clazz )
   return $singletons[ $clazz ];
 }
 
+
 /**
  * Asserts that argument is of the given type. Returns the arguent if
  * successful.
@@ -752,16 +753,6 @@ function is_map( $var )
 }
 
 /**
- * Converts to string value
- * @param mixed $value
- * @return string
- */
-function qcl_toString( $value )
-{
-  return (string) $value;
-}
-
-/**
  * Converts to integer value
  * @param mixed $value
  * @return integer
@@ -769,6 +760,29 @@ function qcl_toString( $value )
 function qcl_toInteger( $value )
 {
   return (integer) $value;
+}
+
+/**
+ * Returns a string representation of a value, usually for debugging.
+ * @param mixed $value
+ * @return string
+ */
+function qcl_toString( $value )
+{
+  switch( gettype( $value ) )
+  {
+    case "object":
+      if( method_exists( $value, "__toString" ) )
+      {
+        return (string) $value;
+      }
+      return "{" . get_class( $value ) . " object}";
+    case "array":
+      //FIXME provide proper output!
+      return "[" . implode( ",", array_values( $value ) ) . "]";
+    default:
+      return (string) $value;
+  }
 }
 
 /**
