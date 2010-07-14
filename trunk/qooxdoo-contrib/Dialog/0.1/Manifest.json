@@ -18,7 +18,7 @@
     ],
 
     "version" : "0.1",
-    "qooxdoo-versions": ["1.0"]
+    "qooxdoo-versions": ["0.8","1.0"]
   },
   
   "provides" : 
