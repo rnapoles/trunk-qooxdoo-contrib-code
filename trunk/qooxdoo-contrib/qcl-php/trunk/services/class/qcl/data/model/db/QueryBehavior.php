@@ -489,7 +489,9 @@ class qcl_data_model_db_QueryBehavior
    * it can be used by the fetch() command.
    *
    * @param qcl_data_db_Query $query
-   * @return int number of rows selected
+   *    The query object
+   * @return int
+   *    The number of rows selected
    */
   public function select( qcl_data_db_Query $query)
   {
@@ -498,7 +500,7 @@ class qcl_data_model_db_QueryBehavior
       $sql, $query->getParameters(), $query->getParameterTypes()
     );
     $query->rowCount = $this->getAdapter()->rowCount();
-    return $this->rowCount();
+    return $query->rowCount;
   }
 
   /**
@@ -516,7 +518,7 @@ class qcl_data_model_db_QueryBehavior
   {
     if( ! is_array( $where ) )
     {
-      $this->getModel()->raiseError("Invalid query data. Must be array.");
+      new InvalidArgumentException("Invalid query data. Must be array.");
     }
 
     /*
