@@ -91,7 +91,22 @@ class qcl_access_Service
     {
       $sessionId = either( $first, $this->getSessionId() );
       $this->log("Authenticating from existing session '$sessionId'...", QCL_LOG_ACCESS);
-      $userId = $accessController->getUserIdFromSession( $sessionId );
+      try
+      {
+        $userId = $accessController->getUserIdFromSession( $sessionId );
+      }
+      catch( qcl_access_InvalidSessionException $e )
+      {
+        if ( $accessController->isAnonymousAccessAllowed() )
+        {
+          $this->warn( $e->getMessage() );
+          $userId = $accessController->grantAnonymousAccess();
+        }
+        else
+        {
+          throw $e;
+        }
+      }
     }
 
     /*
