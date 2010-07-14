@@ -20,11 +20,17 @@
 /**
  * An object holding data for use in a SQL query by a QueryBehavior class.
  *
- * @todo Remove dependency on qcl_core_Object by providing manual getter and
- * setter methods for all properties
- * @todo Rewrite using the planned qcl_data_query_* architecture
+ * @todo Rewrite using the planned qcl_data_query_* architecture. This
+ * class should inherit from an abstract class or implement an interface
+ * so that it can be replaced by a more sophisticated query object.
+ * The goal is to parse string-type queries into an intermediate object
+ * tree structure that then can be converted into the desired target format
+ * this might include an sql -> object tree -> sql conversion for the sake
+ * of data sanitation (in order to avoid injection), but more importantly,
+ * it will make it possible to convert seamlessly from client-side queries
+ * into server-side queries which can be safely executed across backends,
+ * thus allowing to treat SQL-, XML-, or Hashtable-based etc. backends uniformly.
  */
-
 class qcl_data_db_Query
   extends qcl_core_Object
 {
@@ -175,11 +181,15 @@ class qcl_data_db_Query
 
   /**
    * Constructor
-   * @param array $map Map of properties to be set.
+   * @param array|null $map
+   *   Optional map of properties to be set.
    */
-  function __construct( $map )
+  function __construct( $map = null )
   {
-    $this->set( $map );
+    if ( $map !== null )
+    {
+      $this->set( $map );
+    }
   }
 
   //-------------------------------------------------------------

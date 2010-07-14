@@ -460,7 +460,6 @@ class qcl_data_model_AbstractActiveRecord
     if ( $query->getRowCount() > 0 )
     {
       $result = $this->getQueryBehavior()->fetch();
-      $propBehavior = $this->getPropertyBehavior();
 
       /*
        * Set all the properties
