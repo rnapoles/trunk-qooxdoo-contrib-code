@@ -56,6 +56,13 @@ abstract class qcl_application_Application
   protected $allowAnonymousAccess = true;
 
   /**
+   * Whether authentication should be skipped altogether.
+   * This is currently unsupported.
+   * @var boolean
+   */
+  protected $skipAuthentication = false;
+
+  /**
    * The path to the ini file containing initial configuration
    * such as database connectivity etc.
    * @var string
@@ -87,8 +94,28 @@ abstract class qcl_application_Application
   protected $defaultSchema;
 
   //-------------------------------------------------------------
-  // initialization
+  // authentication
   //-------------------------------------------------------------
+
+  /**
+   * Whether anonymous access is allowed or not
+   * @return bool
+   */
+  public function isAnonymousAccessAllowed()
+  {
+    return $this->allowAnonymousAccess;
+  }
+
+  /**
+   * Can be used to allow unauthenticated access to selected service
+   * methods or, if you set the skipAuthentication property to true, to
+   * suppress authentication altogether.
+   * @return bool
+   */
+  public function skipAuthentication()
+  {
+    return $this->skipAuthentication;
+  }
 
   //-------------------------------------------------------------
   // property getters
@@ -121,14 +148,7 @@ abstract class qcl_application_Application
     return $this->applicationVersion;
   }
 
-  /**
-   * Whether anonymous access is allowed or not
-   * @return bool
-   */
-  public function isAnonymousAccessAllowed()
-  {
-    return $this->allowAnonymousAccess;
-  }
+
 
   /**
    * Returns the path to the ini file containing initial configuration
