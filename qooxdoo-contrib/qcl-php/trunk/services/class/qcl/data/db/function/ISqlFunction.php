@@ -7,7 +7,7 @@
  * Implementations are currently just format helpers to avoid several
  * changes in QueryBehavior
  *
- * @package comunici.com/lib/html
+ * @package qcl_data_db_function
  * @experimental
  *
  * @author Oliver Friedrich <oliver@familie-friedrich.de>
@@ -23,7 +23,7 @@
  * Implementations are currently just format helpers to avoid several
  * changes in QueryBehavior
  *
- * @package comunici.com/lib/html
+ * @package qcl_data_db_function
  * @experimental
  *
  * @author Oliver Friedrich <oliver@familie-friedrich.de>
