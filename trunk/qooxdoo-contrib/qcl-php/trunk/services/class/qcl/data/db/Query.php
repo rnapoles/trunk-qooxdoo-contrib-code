@@ -46,6 +46,8 @@ class qcl_data_db_Query
    * their keys as follows:  'column' => name of the column, 'as' => name
    * of the key in which the value is returned in the result row, this
    * allows to use tables that differ from the property schema.
+   * 'function' => function object
+   * @see qcl_data_db_function_ISqlFunction
    * @var string|array|null.
    */
   public $select = null;
@@ -206,6 +208,10 @@ class qcl_data_db_Query
     return $this->table;
   }
 
+  public function getSelect() {
+    return $this->select;
+  }
+
   public function getWhere()
   {
     return $this->where;
@@ -292,6 +298,7 @@ class qcl_data_db_Query
     $queryBehavior = $model->getQueryBehavior();
     $adpt    = $queryBehavior->getAdapter();
     $propArg = $this->getProperties();
+    $selectArgs = $this->getSelect();
 
     /*
      * check for relations
@@ -556,6 +563,48 @@ class qcl_data_db_Query
 
 
     /*
+     * functions in 'select' argument of query
+     */
+    $functions = array ();
+    if (!is_null($selectArgs)) {
+        $selectArgs = (array) $selectArgs;
+        foreach ($selectArgs as $argument) {
+            if (is_array($argument)) {
+                if (isset ($argument['function']) && $argument['function'] instanceof qcl_data_db_function_ISqlFunction) {
+                    $params = array ();
+                    if (isset ($argument['column'])) {
+                        $argument['column'] = (array) $argument['column'];
+                        foreach ($argument['column'] as $column) {
+                            $params[] = $adpt->formatColumnName($column);
+                        }
+                    }
+                    if (isset ($argument['property'])) {
+                        $argument['property'] = (array) $argument['property'];
+                        foreach ($argument['property'] as $property) {
+                            $params[] = $adpt->formatColumnName($this->getColumnName($property));
+                        }
+                    }
+                    try {
+                        $functioncall = $argument['function']->toSql($params);
+                        if (isset ($argument['as'])) {
+                            $as = $argument['as'];
+                            if (preg_match('/[^0-9A-Za-z_]/', $as)) {
+                                throw new InvalidArgumentException("Invalid alias '$as'");
+                            }
+                            $functioncall .= " AS '$as'";
+                        }
+                        $functions[] = "\n     " . $functioncall;
+                    } catch (SqlFunctionException $e) {
+                        throw new InvalidArgumentException('Invalid arguments for function call. Error: ' . $e->getMessage());
+                    }
+                }
+            } else {
+                // ignore, as done before. Why the heck it exists in the query object???
+            }
+        }
+    }
+
+    /*
      * select
      */
     $sql = "\n   SELECT ";
@@ -578,6 +627,11 @@ class qcl_data_db_Query
     else
     {
       $sql .= " * ";
+    }
+
+    // functions
+    if (count($functions) != 0) {
+        $sql .= ',' . implode(',', $functions);
     }
 
     /*
@@ -650,6 +704,38 @@ class qcl_data_db_Query
     }
 
     /*
+     * GROUP BY
+     */
+    if ( $this->groupBy )
+    {
+      if ( is_string( $this->groupBy ) )
+      {
+        $groupBy = explode(",", $this->groupBy );
+      }
+      else if ( is_array( $this->groupBy ) )
+      {
+        $groupBy = $this->groupBy;
+      }
+      else
+      {
+        throw new InvalidArgumentException("Invalid 'groupBy' data.");
+      }
+
+      /*
+       * group columns
+       */
+      $column = array();
+      foreach ( $groupBy as $property )
+      {
+        $column[] = $adpt->formatColumnName( $queryBehavior->getColumnName( $property ) );
+      }
+      $groupBy = implode(",", (array) $column );
+      $sql .= "\n    GROUP BY $groupBy";
+
+    }
+
+
+    /*
      * ORDER BY
      */
     if ( $this->orderBy )
@@ -687,36 +773,7 @@ class qcl_data_db_Query
 
     }
 
-    /*
-     * GROUP BY
-     */
-    if ( $this->groupBy )
-    {
-      if ( is_string( $this->groupBy ) )
-      {
-        $groupBy = explode(",", $this->groupBy );
-      }
-      else if ( is_array( $this->groupBy ) )
-      {
-        $groupBy = $this->groupBy;
-      }
-      else
-      {
-        throw new InvalidArgumentException("Invalid 'groupBy' data.");
-      }
 
-      /*
-       * group columns
-       */
-      $column = array();
-      foreach ( $groupBy as $property )
-      {
-        $column[] = $adpt->formatColumnName( $queryBehavior->getColumnName( $property ) );
-      }
-      $groupBy = implode(",", (array) $column );
-      $sql .= "\n    GROUP BY $groupBy";
-
-    }
 
     /*
      * Retrieve only subset of all rows
