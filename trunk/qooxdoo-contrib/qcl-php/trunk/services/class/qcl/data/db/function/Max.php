@@ -5,7 +5,7 @@
  * Sql Function "MAX()"
  * Gets the maximum of a grouped column inside the query
  *
- * @package comunici.com/lib/html
+ * @package qcl_data_db_function
  * @experimental
  *
  * @author Oliver Friedrich <oliver@familie-friedrich.de>
@@ -21,7 +21,7 @@ qcl_import('qcl_data_db_function_ISqlFunction');
  * Sql Function "MAX()"
  * Gets the maximum of a grouped column inside the query
  *
- * @package comunici.com/lib/html
+ * @package qcl_data_db_function
  * @experimental
  *
  * @author Oliver Friedrich <oliver@familie-friedrich.de>
