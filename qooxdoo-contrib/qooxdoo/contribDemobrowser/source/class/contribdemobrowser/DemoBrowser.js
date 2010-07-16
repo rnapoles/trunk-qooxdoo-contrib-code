@@ -133,7 +133,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       if (modelNode) {
         if (modelNode.manifest) {
           if (modelNode.children.length == 0) {
-            modelNode.manifest.isPlayable = true;          
+            modelNode.manifest.isPlayable = true;
           }
           this.__infoView.setManifestData(modelNode.manifest);
           this.__demoStack.setSelection([this.__infoView]);
@@ -148,6 +148,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         }
       }
       else {
+        this.setCurrentSample("default");
         this.__demoStack.setSelection([this._demoView]);
       }
     },
