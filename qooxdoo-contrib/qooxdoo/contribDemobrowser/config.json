@@ -8,12 +8,13 @@
     }
   ],
 
-  "export" :
+  "=export" :
   [
     "api",
     "build",
     "clean",
     "build",
+    "build-data",
     "distclean",
     "fix",
     "info",
@@ -24,6 +25,8 @@
     "profiling",
     "source",
     "source-all",
+    "source-data",
+    "source-with-build-data",
     "test",
     "test-source",
     "translation"
@@ -97,6 +100,45 @@
         "source-data"
       ]
     },
+    
+    "source-with-build-demos" :
+    {
+      "desc" : "create source version of demobrowser with build versions of demos",
+      
+      "extend" : ["source"],
+      
+      "=run" :
+      [
+        "source-data-copydemos",
+        "source-copy"
+      ]
+    },
+    
+    "source-data-copydemos" :
+    {
+      "desc"    : "generates the build version of all valid demos and the index file (demodata.json) for the demobrowser. Copies the built demos to the demobrowser's demo directory.",
+
+      "extend" : ["common"],
+
+      "shell" :
+      {
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build -d ./source --copy-demos"
+      }
+    },
+    
+    "source-copy" :
+    {
+    
+    "copy-files" :
+      {
+        "source" : "source/resource/${APPLICATION}",
+        
+        "files" : [ "welcome.html" ],
+
+        "target" : "source/demo"
+      }
+    
+    },
 
 
     // -- Build jobs -----------------------------------------------------------
@@ -121,7 +163,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build -d . --copy-demos"
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build -d $BUILD_PATH --copy-demos"
       }
     },
     
