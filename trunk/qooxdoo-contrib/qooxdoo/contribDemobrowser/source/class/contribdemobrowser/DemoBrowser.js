@@ -79,9 +79,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this.__versionSelect = new qx.ui.form.SelectBox();
       versionComposite.add(this.__versionSelect,{flex: 1});
 
+      /*
       var itemAll = new qx.ui.form.ListItem("Any qooxdoo version");
       itemAll.setModel(null);
       this.__versionSelect.add(itemAll);
+      */
     },
     
     
@@ -132,25 +134,49 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this.tests.selected = this.tests.handler.getFullName(modelNode);
       if (modelNode) {
         if (modelNode.manifest) {
+          // Demo node
           if (modelNode.children.length == 0) {
+            // Instruct Manifest to display "run" button(s)
             modelNode.manifest.isPlayable = true;
+            // Don't display redundant "homepage" manifest entry
+            if (modelNode.manifest.info.homepage) {
+              delete modelNode.manifest.info.homepage; 
+            }
           }
+          // Library version node
           this.__infoView.setManifestData(modelNode.manifest);
-          this.__demoStack.setSelection([this.__infoView]);
+          this.setActiveView("manifest");
         }
+        // Library node
         else if (modelNode.readme) {
           this.__readmeView.setTitle(treeNode.getLabel());
           this.__readmeView.setReadmeData(modelNode.readme);
-          this.__demoStack.setSelection([this.__readmeView]);
+          this.setActiveView("readme");
         }
+        // Node without a readme or manifest, this shouldn't happen
         else {
-          this.__demoStack.setSelection([this._demoView]);
+          this.setActiveView("demo");
         }
       }
+      // Root node ("Demos")
       else {
         this.setCurrentSample("default");
-        this.__demoStack.setSelection([this._demoView]);
+        this.setActiveView("demo");
       }
+    },
+    
+    setActiveView : function(view)
+    {
+      switch (view) {
+        case "manifest":
+          this.__demoStack.setSelection([this.__infoView]);
+          break;
+        case "readme":
+          this.__demoStack.setSelection([this.__readmeView]);
+          break;
+        default:
+          this.__demoStack.setSelection([this._demoView]);
+      }      
     },
     
     /**
@@ -161,7 +187,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
      */
     runSample : function(e)
     {
-      this.__demoStack.setSelection([this._demoView]);
+      this.setActiveView("demo");
       
       this._runbutton.setVisibility("excluded");
       this._stopbutton.setVisibility("visible");
@@ -169,7 +195,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       if (this.tests.selected.indexOf(".html") > 0) {
         var file = this.tests.selected.replace(".", "/");
         // contribDemobrowser has an additional hierarchy level
-        file = file.replace(".", "/");
+        var file = file.replace(".", "/");
         this.setCurrentSample(file);
       } else {
         this.playNext();
@@ -193,7 +219,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var sample = currSamp;
       while (sample) {
         var prev = this.tree.getPreviousNodeOf(sample);
-        if (prev instanceof qx.ui.tree.TreeFile) {
+        if (prev instanceof qx.ui.tree.TreeFile  && prev.isVisible()) {
           otherSamp = prev;
           break;
         } else {
@@ -228,7 +254,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var sample = currSamp;
       while (sample) {
         var next = this.tree.getNextNodeOf(sample);
-        if (next instanceof qx.ui.tree.TreeFile) {
+        if (next instanceof qx.ui.tree.TreeFile && next.isVisible()) {
           otherSamp = next;
           break;
         } else {
@@ -244,10 +270,117 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         this._stopbutton.setVisibility("excluded");
         this._runbutton.setVisibility("visible");
       }
+    },
+  
+    /**
+     * TODOC
+     *
+     * @param value {var} TODOC
+     * @return {void}
+     */
+    setCurrentSample : function(value)
+    {
+      if (!value) {
+        return;
+      }
+
+      if (!this._sampleToTreeNodeMap) {
+        return;
+      }
+
+      var url;
+      var treeNode = this._sampleToTreeNodeMap[value];
+      if (treeNode)
+      {
+        treeNode.getTree().setSelection([treeNode]);
+        url = 'demo/' + value;
+        url = url.replace(".", "/");
+        url = url.replace(".html", "/index.html");
+        if (qx.core.Variant.isSet("qx.contrib", "off")) {
+          url += "?qx.theme=" + this.__currentTheme;
+        }
+      }
+      else
+      {
+        url = this.defaultUrl;
+      }
+
+      if (this.__iframe.getSource() == url)
+      {
+        this.__iframe.reload();
+      }
+      else
+      {
+        this.__logDone = false;
+        this.__iframe.setSource(url);
+      }
+
+      // Toggle menu buttons
+      if (url == this.defaultUrl) {
+        this.disableMenuButtons();
+      } else {
+        this.enableMenuButtons();
+      }
+
+      this._currentSample = value;
+      this._currentSampleUrl = url;
+    },
+  
+    /**
+     * This method filters the folders in the tree.
+     * @param term {String} The search term.
+     */
+    filter : function(term)
+    {
+      var searchRegExp = new RegExp("^.*" + term + ".*", "ig");
+      var items = this.__tree.getRoot().getItems(true, true);
+      
+      var showing = 0;
+      var count = 0;
+      for (var i = 0; i < items.length; i++) {
+        items[i].setOpen(false);
+        if (items[i].getChildren().length > 0 && items[i].getChildren()[0].getChildren().length == 0) {
+          count++;        
+        }
+      }
+            
+      for (var i = 0; i < items.length; i++) {
+        var file = items[i];
+        var tags = file.getUserData("tags");
+        if (!tags) {
+          continue;
+        }
+        
+        var inTags, selectedVersion = false;
+        for (var j = 0; j < tags.length; j++) {
+          
+          if (tags[j].indexOf("qxVersion") > 0 || !!tags[j].match(searchRegExp)) {
+            inTags = true;
+          }
+          
+          if (!this._versionFilter || tags[j] == this._versionFilter) {
+            selectedVersion = true;
+          }
+        }
+        
+        if (inTags && selectedVersion) {
+          file.show();
+          showing++;
+          var parent = file.getParent();
+          while (parent) {
+            parent.setOpen(true);
+            parent = parent.getParent();
+          }
+        }
+        else {
+          file.exclude();
+        }
+      }
+      
+      this.__status.setValue(showing + "/" + count);
     }
+  
   },
-  
-  
   
   /*
   *****************************************************************************
