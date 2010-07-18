@@ -274,6 +274,32 @@ class qcl_data_model_db_RelationBehavior
   }
 
   /**
+   * Removes a relation from the model
+   * @param string $relation
+   * @return void
+   */
+  public function removeRelation( $relation )
+  {
+    if( $this->hasLog() ) $this->log( sprintf(
+      "Removing relation '%s' from model %s.",
+      $relation, $this->getModel()
+    ) );
+
+    $this->checkRelation( $relation );
+
+    /*
+     * remove from lookup index for class names
+     */
+    $class = $this->getTargetModelClass( $relation );
+    unset( $this->relationModels[ $class ] );
+
+    /*
+     * remove relation data
+     */
+    unset( $this->relations[$relation] );
+  }
+
+  /**
    * Check the relation type. Throws an error if incorrect type is detected.
    *
    * @param array $relData The relation data
