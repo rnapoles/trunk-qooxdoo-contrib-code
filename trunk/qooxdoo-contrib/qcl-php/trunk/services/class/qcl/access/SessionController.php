@@ -81,7 +81,18 @@ class qcl_access_SessionController
      */
     if ( ! $sessionId )
     {
-      throw new qcl_access_InvalidSessionException($this->tr("No valid session."));
+      /*
+       * if the application allows unauthenticated acces,
+       * try to use the PHP session id
+       */
+      if ( $this->getApplication()->skipAuthentication() )
+      {
+        $sessionId = session_id();
+      }
+      else
+      {
+        throw new qcl_access_InvalidSessionException($this->tr("No valid session."));
+      }
     }
 
     /*
@@ -90,8 +101,25 @@ class qcl_access_SessionController
     $userId = $this->getUserIdFromSession( $sessionId );
     if ( ! $userId )
     {
-      $this->warn( $this->getError() );
-      throw new qcl_access_InvalidSessionException("Invalid session id.");
+      /*
+       * if the application allows unauthenticated acces,
+       * and the PHP session id is not yet linked to a user,
+       * create an anonymous user for all unauthenticated
+       * requests
+       */
+      if ( $this->getApplication()->skipAuthentication() )
+      {
+        $userId = $this->grantAnonymousAccess();
+      }
+
+      /*
+       * else, deny access
+       */
+      else
+      {
+        $this->warn( $this->getError() );
+        throw new qcl_access_InvalidSessionException("Invalid session id.");
+      }
     }
 
     /*
