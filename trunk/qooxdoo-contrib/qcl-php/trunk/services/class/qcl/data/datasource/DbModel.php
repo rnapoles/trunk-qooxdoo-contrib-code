@@ -173,12 +173,6 @@ class qcl_data_datasource_DbModel
    */
   private $modelMap = array();
 
-  /**
-   * Cache for model instances
-   * @var array
-   */
-  private $modelCache = array();
-
   //-------------------------------------------------------------
   // Initialization
   //-------------------------------------------------------------
@@ -508,6 +502,7 @@ class qcl_data_datasource_DbModel
    * @param array $modelMap Associative array that maps the
    * type of model to the model classes
    * @return void
+   * @todo fix and document data schema
    */
   public function registerModels( $modelMap )
   {
@@ -521,15 +516,41 @@ class qcl_data_datasource_DbModel
      */
     foreach( $modelMap as $type => $data )
     {
-      $class = $data['class'];
+      $class = null;
+      if ( isset( $data['class'] ) ) // legacy
+      {
+        $class = $data['class'];
+        $data['model']['class'] = $class;
+      }
+      elseif ( isset( $data['model']['class'] ) )
+      {
+        $class = $data['model']['class'];
+      }
+      else
+      {
+        throw new InvalidArgumentException( sprintf(
+          "No class given for datasource %s, model type %s",
+          $this, $type
+        ) );
+      }
+
+      // legacy
+      if ( isset( $data['replace'] ) )
+      {
+        $data['model']['replace'] = $data['replace'];
+      }
+
+      /*
+       * import class
+       */
       qcl_import( $class );
-      if ( ! class_exists( $class )  ) // FIXME check interface
+      if ( ! class_exists( $class )  ) // @todo check interface
       {
         throw new InvalidArgumentException("Invalid model class '$class'");
       }
 
       /*
-       * store reference
+       * store data
        */
       $this->modelMap[$type] = $data;
 
@@ -564,19 +585,18 @@ class qcl_data_datasource_DbModel
     }
 
     /*
-     * get, initialize and return the model
+     * get and return the model
      */
-    $class = $this->modelMap[$type]['class'];
+    $class = $this->modelMap[$type]['model']['class'];
     $namedId = $this->namedId();
 
-    if ( ! isset( $this->modelCache[$class] ) )
+    if ( ! isset( $this->modelMap[$type]['model']['instance'] ) )
     {
       $model = new $class( $this );
-      //$model->init();
-      $this->modelCache[$class] = $model;
+      $this->modelMap[$type]['model']['instance'] = $model;
     }
 
-    return $this->modelCache[$class];
+    return $this->modelMap[$type]['model']['instance'];
   }
 
   /**
@@ -591,7 +611,7 @@ class qcl_data_datasource_DbModel
     {
       throw new InvalidArgumentException("Model of type '$type' is not registered");
     }
-    return $this->modelMap[$type]['class'];
+    return $this->modelMap[$type]['model']['class'];
   }
 
   /**
@@ -603,12 +623,66 @@ class qcl_data_datasource_DbModel
   {
     foreach( $this->modelMap as $type => $data )
     {
-      if ( $data['class'] == $class or ( isset( $data['replace'] ) and $data['replace']== $class  ) )
+      if ( $data['model']['class'] == $class
+        or ( isset( $data['model']['replace'] )
+        and $data['model']['replace'] == $class  ) )
       {
         return $this->getModelOfType( $type );
       }
     }
     throw new InvalidArgumentException("Datasource $this does not have a model of class '$class'.");
+  }
+
+  /**
+   * Checks if the model type exists and throws an exception if not.
+   * @param string $type
+   * @throws InvalidArgumentException
+   * @return void
+   */
+  public function checkType( $type )
+  {
+    if ( ! isset( $this->modelMap[$type] ) )
+    {
+      throw new InvalidArgumentException("Datasource $this has no model type '$type'." );
+    }
+  }
+
+  /**
+   * Returns the controller for the given model type, if defined.
+   * @param string $type
+   *    The model type
+   * @return qcl_data_controller_Controller|null
+   *    The singleton instance of the controller or null if none exists
+   */
+  public function getControllerForType( $type )
+  {
+    $this->checkType( $type );
+    if ( ! isset( $this->modelMap[$type]['controller']['class'] ) )
+    {
+      return null;
+    }
+    else
+    {
+      $class = $this->modelMap[$type]['controller']['class'];
+      return qcl_getInstance( $class );
+    }
+  }
+
+  /**
+   * Returns the rpc service name for the given model type, if defined.
+   * @param string $type
+   *    The model type
+   * @return string|null
+   *    The service name or null if none exists
+   */
+  public function getServiceNameForType( $type )
+  {
+    $this->checkType( $type );
+    if ( ! isset( $this->modelMap[$type]['controller']['service'] ) )
+    {
+      return null;
+    }
+    return $this->modelMap[$type]['controller']['service'];
   }
 
   /**

@@ -344,6 +344,9 @@ class qcl_data_controller_Controller
    */
   protected function getModel( $datasource, $modelType )
   {
+    qcl_assert_valid_string( $datasource, "Invalid datasource argument" );
+    qcl_assert_valid_string( $modelType, "Invalid model type argument" );
+
     /*
      * check access to model
      */
@@ -627,6 +630,35 @@ class qcl_data_controller_Controller
       throw new qcl_access_AccessDeniedException("Access to model record denied.");
     }
   }
+
+  //-------------------------------------------------------------
+  // Service API
+  //-------------------------------------------------------------
+
+  /**
+   * Returns data on service and model type that provides data for the
+   * given datasource.
+   *
+   * @param string $datasource
+   * @return array
+   * @throws InvalidArgument
+   */
+  public function method_getModelInfo( $datasource, $modelType )
+  {
+    $datasourceModel = $this->getDatasourceModel( $datasource );
+    $serviceName = $datasourceModel->getServiceNameForType( $modelType );
+    if ( ! $serviceName )
+    {
+      throw new InvalidJsonRpcArgumentException( sprintf(
+        "No service defined for datasource class %s, model type %s",
+         $datasourceModel->className(), $modelType
+      ) );
+    }
+    return array(
+      'serviceName' => $serviceName
+    );
+  }
+
 
   /**
    * Creates a record in the given model.
