@@ -29,29 +29,29 @@ error_reporting( E_ALL ^ E_NOTICE  );
 
 /**
  * Path to the folder where projects from qooxdoo-contrib are
- * downloaded.
+ * downloaded. Must be adapted.
  * @var string
  */
 //define("CONTRIB_PATH", "../contrib/" ); // standard path
-define( "CONTRIB_PATH", "../../../../../" ); // CB development path
+define( "CONTRIB_PATH", realpath( dirname(__FILE__) . "/../../.." ) ); // CB development path
 
 /**
  * Path to the RpcPhp package in qooxdoo-contrib
  * @var string
  */
-define( "RPCPHP_SERVER_PATH",  "../../../RpcPhp/1.2.0/" );
+define( "RPCPHP_SERVER_PATH",  CONTRIB_PATH . "/RpcPhp/1.2.0/" );
 
 /**
  * Path to the qcl php library
  * @var string
  */
-define( "QCL_CLASS_PATH", "../../class/" );
+define( "QCL_CLASS_PATH", realpath( dirname(__FILE__) .  "/../../class" ) );
 
 /**
  * Path to the application backend classes. Usually "./class".
  * @var string
  */
-define( "APPLICATION_CLASS_PATH", "./class" );
+define( "APPLICATION_CLASS_PATH", realpath( dirname(__FILE__) . "/class" ) );
 
 /*
  * Path to file where the server and application writes log messagges
