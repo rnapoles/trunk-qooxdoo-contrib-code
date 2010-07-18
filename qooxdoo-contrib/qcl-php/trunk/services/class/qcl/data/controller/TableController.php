@@ -35,6 +35,7 @@ class qcl_data_controller_TableController
   ---------------------------------------------------------------------------
   */
 
+
   /**
    * Returns the layout of the columns of the table displaying
    * the records
@@ -42,7 +43,7 @@ class qcl_data_controller_TableController
    * @param $datasource
    * @return unknown_type
    */
-  function method_getTableLayout( $datasource )
+  public function method_getTableLayout( $datasource )
   {
     $this->notImplemented(__METHOD__);
   }
@@ -56,7 +57,7 @@ class qcl_data_controller_TableController
    * "modelType" with the type of the model.
    * @return array
    */
-  function method_getRowCount( $queryData )
+  public function method_getRowCount( $queryData )
   {
 
     $datasource = $queryData->datasource;
