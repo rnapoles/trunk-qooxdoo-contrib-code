@@ -342,6 +342,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var count = 0;
       for (var i = 0; i < items.length; i++) {
         items[i].setOpen(false);
+        items[i].exclude();
         if (items[i].getChildren().length > 0 && items[i].getChildren()[0].getChildren().length == 0) {
           count++;        
         }
@@ -372,6 +373,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           var parent = file.getParent();
           while (parent) {
             parent.setOpen(true);
+            parent.show();
             parent = parent.getParent();
           }
         }
