@@ -106,7 +106,7 @@
       
       "extend" : ["source"],
       
-      "=run" :
+      "run" :
       [
         "source-data-copydemos",
         "source-copy"
