@@ -32,12 +32,22 @@ qcl_import( "qcl_core_PropertyBehavior");
 class qcl_core_Object
 //  implements qcl_core_IPropertyAccessors
 {
-
   /**
    * Whether the model properties can be modified
    * @var unknown_type
    */
   protected $readonly = false;
+
+  /**
+   * An array of names of the properties that are
+   * allowed to be exported to a client copy of this
+   * object. This can include "virtual properties" which
+   * have a getter Method but no stored value.
+   * Defaults to null;
+   *
+   * @var array
+   */
+  protected $clientProperties;
 
   /**
    * If this object produces a recoverable error, the error message will be stored here
@@ -126,6 +136,19 @@ class qcl_core_Object
   public function resetInitialized()
   {
     $this->isInitialized = false;
+  }
+
+  /**
+   * Return an array with  the names of the properties that are
+   * allowed to be exported to a client copy of this
+   * object. This can include "virtual properties" which
+   * have a getter Method but no stored value.
+   *
+   * @return array
+   */
+  public function clientProperties()
+  {
+    return $this->clientProperties;
   }
 
   //-------------------------------------------------------------
@@ -313,6 +336,34 @@ class qcl_core_Object
      * call the behvior method to do the work
      */
     return $this->getPropertyBehavior()->data();
+  }
+
+  /**
+   * Returns a map of properties that are allowed to be
+   * exported to the client. This includes "virtual" properties
+   * which have a getter method but no stored value.
+   *
+   * @see qcl_core_Object::clientProperties()
+   * @return array
+   *    Associative array of property names and property
+   *    values.
+   */
+  public function clientData()
+  {
+    /*
+     * initialize object and behaviors
+     */
+    $this->init();
+
+    /*
+     * get client properties
+     */
+    $data = array();
+    foreach( $this->clientProperties() as $property )
+    {
+      $data[$property] = $this->get( $property );
+    }
+    return $data;
   }
 
   /**
