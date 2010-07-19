@@ -14,7 +14,6 @@
     "build",
     "clean",
     "build",
-    "build-data",
     "distclean",
     "fix",
     "info",
@@ -75,7 +74,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-source -d ."
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-source -d ./source"
       }
     },
 
@@ -142,18 +141,6 @@
 
 
     // -- Build jobs -----------------------------------------------------------
-
-    "build-data" :
-    {
-      "desc"    : "generates the build version of all valid demos and the index file (demodata.json) for the demobrowser",
-
-      "extend" : ["common"],
-
-      "shell" :
-      {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build -d ."
-      }
-    },
     
     "build-data-copydemos" :
     {
