@@ -292,27 +292,30 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var treeNode = this._sampleToTreeNodeMap[value];
       if (treeNode)
       {
-        treeNode.getTree().setSelection([treeNode]);
-        url = 'demo/' + value;
-        url = url.replace(".", "/");
-        url = url.replace(".html", "/index.html");
-        if (qx.core.Variant.isSet("qx.contrib", "off")) {
-          url += "?qx.theme=" + this.__currentTheme;
+        var tags = treeNode.getUserData("modelLink").tags;
+        var linkedAgainst = "trunk";
+        for (var i=0; i<tags.length; i++) {
+          if (tags[i].indexOf("qxVersion_") >= 0 ) {
+            linkedAgainst = tags[i].substr(10);
+          }
         }
+        url = 'demo/' + value;
+        url = url.replace(".html", "/" + linkedAgainst + "/index.html");
+        treeNode.getTree().setSelection([treeNode]);
       }
       else
       {
         url = this.defaultUrl;
       }
 
-      if (this.__iframe.getSource() == url)
+      if (this._iframe.getSource() == url)
       {
-        this.__iframe.reload();
+        this._iframe.reload();
       }
       else
       {
         this.__logDone = false;
-        this.__iframe.setSource(url);
+        this._iframe.setSource(url);
       }
 
       // Toggle menu buttons
@@ -333,7 +336,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     filter : function(term)
     {
       var searchRegExp = new RegExp("^.*" + term + ".*", "ig");
-      var items = this.__tree.getRoot().getItems(true, true);
+      var items = this._tree.getRoot().getItems(true, true);
       
       var showing = 0;
       var count = 0;
@@ -377,7 +380,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         }
       }
       
-      this.__status.setValue(showing + "/" + count);
+      this._status.setValue(showing + "/" + count);
     }
   
   },
