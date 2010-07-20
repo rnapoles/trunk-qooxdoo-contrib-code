@@ -2,7 +2,7 @@
 <project name="qooxdoo-java-backend" default="make" basedir=".">
 
     <property file="build.properties"/>
-    <property name="frontendDir" value ="../../frontend"/>
+    <property name="qooxdooDir" value ="../../qooxdoo/trunk"/>
 
     <target name="compile">
         <mkdir dir="classes"/>
@@ -18,10 +18,10 @@
     <target name="war">
         <mkdir dir="build"/>
         <copy todir="build/apiviewer">
-            <fileset dir="${frontendDir}/application/apiviewer/build"/>
+            <fileset dir="${qooxdooDir}/framework/api"/>
         </copy>
         <copy todir="build/demobrowser">
-            <fileset dir="${frontendDir}/application/demobrowser/build"/>
+            <fileset dir="${qooxdooDir}/application/demobrowser/build"/>
         </copy>
         <war destfile="qooxdoo.war" webxml="webapp/WEB-INF/web.xml">
             <fileset dir="build"/>
