@@ -210,7 +210,8 @@ qx.Class.define("qcl.data.store.JsonRpc",
     serviceName :
     {
       check : "String",
-      nullable: false
+      event : "changeServiceName",
+      nullable: true
     },
  
     /**
