@@ -168,7 +168,8 @@ qx.Class.define("virtualdata.store.JsonRpc",
     serviceName :
     {
       check : "String",
-      nullable: false
+      event : "changeServiceName",
+      nullable: true
     },
  
     /**
