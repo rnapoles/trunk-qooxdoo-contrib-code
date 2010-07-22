@@ -191,8 +191,9 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       
       this._runbutton.setVisibility("excluded");
       this._stopbutton.setVisibility("visible");
-
-      if (this.tests.selected.indexOf(".html") > 0) {
+      
+      if (this.tests.selected &&
+          this.tests.selected.indexOf(".html") > 0) {
         var file = this.tests.selected.replace(".", "/");
         // contribDemobrowser has an additional hierarchy level
         var file = file.replace(".", "/");
