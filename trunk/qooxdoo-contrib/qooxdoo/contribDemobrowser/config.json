@@ -216,7 +216,20 @@
     
       "run" : ["clean-demos"]
     
-    }
+    },
+    
+    // -- Misc jobs ------------------------------------------------------------
+    
+    "lint-libraries" :
+    {
+      "desc" : "runs a Lint check on each library",
+    
+      "shell" :
+      {
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j lint-check"
+      }
+      
+    }    
     
   }
 
