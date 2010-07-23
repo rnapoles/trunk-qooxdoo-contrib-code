@@ -139,6 +139,15 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		},
 		
 		/**
+		 * Detects whether the connection has ever been made, i.e. whether getBootstrapObject() has
+		 * already been called.
+		 * @return true if connected
+		 */
+		hasConnected: function() {
+			return this.__serverObjects.length > 0;
+		},
+		
+		/**
 		 * Registers a client object
 		 * @return the new ID for this object
 		 */
