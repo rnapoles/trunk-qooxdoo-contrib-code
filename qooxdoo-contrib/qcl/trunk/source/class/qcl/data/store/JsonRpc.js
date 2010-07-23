@@ -401,103 +401,124 @@ qx.Class.define("qcl.data.store.JsonRpc",
        */
       var callbackFunc = qx.lang.Function.bind( function( result, ex, id ) 
       { 
-        try{
-        /*
-         * decrement counter and reset cursor
-         */
-        if ( --this.__requestCounter < 1)
-        {
-          qx.core.Init.getApplication().getRoot().setGlobalCursor("default");
-        }
-        
-        /*
-         * save data for debugging etc.
-         */
-        this._responseData = result;
-
-        /*
-         * show that no request is underway
-         */
-        this.__opaqueCallRef = null ;      
-
-        /*
-         * check for error
-         */
-        if ( ex == null ) 
-        {  
-
-          /* 
-           * The result data is either in the 'data' property of the object (qcl) or the object
-           * itself. If we have a 'data' property, also check for 'messages' and 'events' 
-           * property.
+          /*
+           * decrement counter and reset cursor
            */
-          var data;
-          if ( this._is_qcl_result( result ) )
+          if ( --this.__requestCounter < 1)
           {
-            /*
-             * handle messages and events
-             */
-            if ( result.messages || result.events ) 
-            {
-              this.__handleEventsAndMessages( this, result );
-            }              
-            data = result.data; 
-          }
-          else
-          {
-            data = result;
+            qx.core.Init.getApplication().getRoot().setGlobalCursor("default");
           }
           
-          /* 
-           * create the model if requested
+          /*
+           * save data for debugging etc.
            */
-          if ( createModel )
-          {
-            /*
-             * create the class
+          this._responseData = result;
+  
+          /*
+           * show that no request is underway
+           */
+          this.__opaqueCallRef = null ;      
+  
+          /*
+           * check for error
+           */
+          if ( ex == null ) 
+          {  
+  
+            /* 
+             * The result data is either in the 'data' property of the object (qcl) or the object
+             * itself. If we have a 'data' property, also check for 'messages' and 'events' 
+             * property.
              */
-            this.getMarshaler().toClass( data, true);
-       
-            /*
-             * set the initial data
+            var data;
+            if ( this._is_qcl_result( result ) )
+            {
+              /*
+               * handle messages and events
+               */
+              if ( result.messages || result.events ) 
+              {
+                this.__handleEventsAndMessages( this, result );
+              }              
+              data = result.data; 
+            }
+            else
+            {
+              data = result;
+            }
+            
+            /* 
+             * create the model if requested
              */
-            this.setModel( this.getMarshaler().toModel(data) );
+            if ( createModel )
+            {
+              try
+              {
+                /*
+                 * create the class
+                 */
+                this.getMarshaler().toClass( data, true);
+
+                if( this.getModel() )
+                {
+                  //this.getModel().dispose();
+                  //debugger;
+                }
+                
+                /*
+                 * set the initial data
+                 */
+                var model = this.getMarshaler().toModel(data);
+                this.setModel( model );
+              }
+              catch(e)
+              {
+                this.warn("Error during marshaling of data: ");
+                this.info(qx.dev.StackTrace.getStackTrace().join("\n")); 
+                this.error(e);
+                return;
+              }
+              
+              /*
+               * fire 'loaded' event only if we created a model
+               */
+              this.fireDataEvent( "loaded", this.getModel() );             
+            }
              
             /*
-             * fire 'loaded' event only if we creat a model
+             * final callback, only sent if request was successful
              */
-            this.fireDataEvent( "loaded", this.getModel() );             
-          }
-           
-          /*
-           * final callback, only sent if request was successful
-           */
-          if ( typeof finalCallback == "function" )
+            if ( typeof finalCallback == "function" )
+            {
+              try
+              {
+                finalCallback.call( context, data );
+              }
+              catch(e)
+              {
+                this.warn("Error in final callback: ");
+                this.error(e);
+              }
+            }            
+          } 
+          else 
           {
-            try{
-              finalCallback.call( context, data );
-            }catch(e){this.error(e)}
-          }            
-        } 
-        else 
-        {
-          /* 
-           * dispatch error event  
-           */
-          this.fireDataEvent( "error", ex );
-          
-          /*
-           * handle event
-           */
-          this._handleError( ex, id );
-          
-          /*
-           * notify that data has been received but failed
-           */
-          this.fireDataEvent("loaded",null);
-        }
-        
-        }catch(e){this.error(e)}
+            /* 
+             * dispatch error event  
+             */
+            this.fireDataEvent( "error", ex );
+            
+            /*
+             * handle event
+             */
+            this._handleError( ex, id );
+            
+            /*
+             * notify that data has been received but failed
+             */
+            this.fireDataEvent("loaded",null);
+          }
+
       }, this );    
 
       /*
