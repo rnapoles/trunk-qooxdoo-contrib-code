@@ -277,7 +277,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
      * @param value {var} TODOC
      * @return {void}
      */
-    setCurrentSample : function(value)
+    setCurrentSample : function(value, setFilter)
     {
       if (!value) {
         return;
@@ -291,16 +291,17 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var treeNode = this._sampleToTreeNodeMap[value];
       if (treeNode)
       {
-        var tags = treeNode.getUserData("modelLink").tags;
-        var linkedAgainst = "trunk";
-        for (var i=0; i<tags.length; i++) {
-          if (tags[i].indexOf("qxVersion_") >= 0 ) {
-            linkedAgainst = tags[i].substr(10);
+        if (setFilter) {
+          var qxVersion = /\/.*?\/.*?\/(.*?)\/index.html$/.exec(value);
+          if (qxVersion) {
+            this._setVersionFilter(qxVersion[1]);
           }
         }
         url = 'demo/' + value;
-        url = url.replace(".html", "/" + linkedAgainst + "/index.html");
         treeNode.getTree().setSelection([treeNode]);
+        if (setFilter) {
+          this.setActiveView("demo");
+        }
       }
       else
       {
@@ -328,6 +329,19 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this._currentSampleUrl = url;
     },
   
+    
+    _setVersionFilter : function(qxVersion)
+    {
+      var items = this.__versionSelect.getSelectables(true);
+      for (var i=0,l=items.length; i<l; i++) {
+        if (items[i].getModel() == "qxVersion_" + qxVersion) {
+          this.__versionSelect.setSelection([items[i]]);
+        }
+      }
+    
+    },
+    
+    
     /**
      * This method filters the folders in the tree.
      * @param term {String} The search term.
@@ -354,10 +368,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           continue;
         }
         
-        var inTags, selectedVersion = false;
+        var inTags = false;
+        var selectedVersion = false;
         for (var j = 0; j < tags.length; j++) {
           
-          if (tags[j].indexOf("qxVersion") > 0 || !!tags[j].match(searchRegExp)) {
+          if (!!tags[j].match(searchRegExp)) {
             inTags = true;
           }
           
@@ -420,7 +435,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           var state = this._history.getState();
 
           if (state) {
-            this.setCurrentSample(state.replace("~", "/"));
+            this.setCurrentSample(state.replace("~", "/"), true);
           } else {
             this.setCurrentSample(this.defaultUrl);
           }
