@@ -194,9 +194,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       
       if (this.tests.selected &&
           this.tests.selected.indexOf(".html") > 0) {
-        var file = this.tests.selected.replace(".", "/");
-        // contribDemobrowser has an additional hierarchy level
-        var file = file.replace(".", "/");
+        var file = this.tests.selected.replace(/\|/g, "/");
         this.setCurrentSample(file);
       } else {
         this.playNext();
@@ -384,7 +382,60 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       }
       
       this._status.setValue(showing + "/" + count);
+    },
+    
+    
+    /**
+     * TODOC
+     *
+     * @param url {var} TODOC
+     * @return {void}
+     */
+    dataLoader : function(url)
+    {
+      var req = new qx.io.remote.Request(url);
+
+      req.setTimeout(180000);
+      req.setProhibitCaching(false);
+
+      /**
+       * TODOC
+       *
+       * @param evt {var} TODOC
+       * @lint ignoreDeprecated(eval)
+       */
+      req.addListener("completed", function(evt)
+      {
+        var content = evt.getContent();
+
+        var treeData = eval(content);
+
+        // give the browser a chance to update its UI before doing more
+        qx.event.Timer.once(function()
+        {
+          this.tests.handler = new contribdemobrowser.TreeDataHandler(treeData);
+          this.leftReloadTree();
+
+          // read initial state
+          var state = this._history.getState();
+
+          if (state) {
+            this.setCurrentSample(state.replace("~", "/"));
+          } else {
+            this.setCurrentSample(this.defaultUrl);
+          }
+        },
+        this, 0);
+      },
+      this);
+
+      req.addListener("failed", function(evt) {
+        this.error("Couldn't load file: " + url);
+      }, this);
+
+      req.send();
     }
+    
   
   },
   
