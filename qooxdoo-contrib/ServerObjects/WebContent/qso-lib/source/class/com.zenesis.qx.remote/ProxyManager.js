@@ -106,6 +106,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		
 		// Queue of commands to send to the server at the next flush
 		__queue: null,
+		__queuedProperties: null,
 
 		// The property currently being set, if any (used to prevent recursive sets)
 		__setPropertyObject: null,
@@ -707,10 +708,19 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				value: this.serializeValue(value)
 			};
 			var def = this.__classInfo[serverObject.classname];
+			var id = serverObject.toHashCode() + "." + propertyName;
+			if (this.__queuedProperties) {
+				var index = this.__queuedProperties[id];
+				if (index != undefined)
+					qx.lang.Array.removeAt(this.__queue, index);
+			}
 			var pd = def.properties[propertyName];
-			if (pd.sync == "queue")
-				this._queueCommandToServer(data);
-			else
+			if (pd.sync == "queue") {
+				var index = this._queueCommandToServer(data);
+				if (!this.__queuedProperties)
+					this.__queuedProperties = {};
+				this.__queuedProperties[id] = index;
+			} else
 				this._sendCommandToServer(data);
 			
 			// OnDemand properties need to have their event fired for them
@@ -853,6 +863,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			var queue = this.__queue;
 			if (queue) {
 				this.__queue = null;
+				this.__queuedProperties = null;
 				queue[queue.length] = obj;
 				obj = queue;
 			}
@@ -878,6 +889,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				this.__queue = queue = [];
 			this._queueClientObjects();
 			queue[queue.length] = obj;
+			return queue.length - 1;
 		},
 		
 		/**
