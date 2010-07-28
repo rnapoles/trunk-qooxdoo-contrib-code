@@ -386,7 +386,6 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           showing++;
           var parent = file.getParent();
           while (parent) {
-            parent.setOpen(true);
             parent.show();
             parent = parent.getParent();
           }
