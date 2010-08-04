@@ -356,9 +356,6 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       for (var i = 0; i < items.length; i++) {
         items[i].setOpen(false);
         items[i].exclude();
-        if (items[i].getChildren().length > 0 && items[i].getChildren()[0].getChildren().length == 0) {
-          count++;        
-        }
       }
             
       for (var i = 0; i < items.length; i++) {
@@ -367,6 +364,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         if (!tags) {
           continue;
         }
+        count++;
         
         var inTags = false;
         var selectedVersion = false;
