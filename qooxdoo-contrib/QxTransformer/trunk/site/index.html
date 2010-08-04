@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>QxTransformer - XML-&gt;JavaScript Converter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="keywords" content="qooxdoo, javascript, toolkit, web, web-2.0, ajax, dom, style, interface, widget, library, open-source, java-script, gui, ui, user-interface, application, web-application, xml, declarative ui, qxtransformer, qx transformer, convertor " >
+    <meta name="description" content="QxTransformer is an open source framework providing conversion from a transparent XML description of the graphical user interface (GUI) to JavaScript code." >
+    <meta name="author" content="Siarhei Barysiuk, Christian Boulanger" >
+    
+    
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link href="style.css?ver=2" rel="stylesheet" type="text/css">
+    <link href="css/lightbox/jquery.lightbox.css" rel="stylesheet" type="text/css">
+    <!--[if gte IE 6]>
+        <link href="css/iefix.css" rel="stylesheet" type="text/css">
+	<![endif]-->
+    
+    <script language="javascript" type="text/javascript" src="scripts/jquery-1.2.6.min.js"></script>
+    <script language="javascript" type="text/javascript" src="scripts/jquery.newsticker.min.js"></script>
+    <script language="javascript" type="text/javascript" src="scripts/jquery.lightbox.min.js"></script>
+    <!--[if IE 6]>
+    <script language="javascript" type="text/javascript" src="scripts/pngfix.js"></script>
+    <script language="javascript" type="text/javascript">
+        DD_belatedPNG.fix('.icon_sm');
+        DD_belatedPNG.fix('.icon');
+        DD_belatedPNG.fix('.twit_border');
+    </script>
+    <![endif]-->
+    <script language="javascript" type="text/javascript" src="scripts/init.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div id="content">
+            <div id="top">
+                <div id="version" class="caption">
+                    <div class="icon new"> </div>
+                    <span>Version 0.4 alpha is finally here.</span>
+                </div>
+            </div>
+            <div>
+            
+                <div id="twitter">
+                    <div class="twit_border twit_left"> </div>
+                    <a href="http://twitter.com/qxtransformer">
+                        <div class="icon twitter" title="Follow us on Twitter."> </div>
+                    </a>
+                    <div class="twit_border twit_right"> </div>
+                    <div class="tcontent"> 
+                        <ul id="twitter_update_list">
+                            <li></li>
+                        </ul>
+                    </div>
+                </div>
+            
+                <div id="illustration" class="doc">
+                    <div class="illustration_info">
+                        QxTransformer is an open source framework providing conversion from a transparent XML description 
+                        of the graphical user interface (GUI) to JavaScript code.
+                    </div>
+                    <div class="illustration_links">
+                        <div class="caption">
+                            <div class="icon tick"> </div>
+                            <span><a href="https://www.ohloh.net/p/qxtransformer/download?package=QxTransformer&release=0.4+alpha">
+                                Download the latest version
+                            </a></span>
+                        </div>
+                        <div class="caption">
+                            <div class="icon resources"> </div>
+                            <span><a href="http://qxtransformer.org/wiki">How to get started</a></span>
+                        </div>
+                        <div class="caption">
+                            <div class="icon demo"> </div>
+                            <span><a href="demos/demobrowser/build/index.html">See it in action</a></span>
+                        </div>
+                    </div>
+                    
+                    <div class="illustration_links illustration_links_right">
+                    	<div class="caption">
+                            <div class="icon resources"> </div>
+                            <span><a href="http://qxtransformer.org/docs">QxTransformer Tags Reference</a></span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div id="sections">
+                    <div class="line">
+                        <div class="section">
+                            <div class="caption">
+                                <div class="icon overview"> </div>
+                                <span>Overview</span>
+                            </div>
+                    
+                            <div class="scontent">
+                                <p>
+                                    QxTransformer is a toolkit for rapid application development with the qooxdoo framework. It 
+                                    takes care of the most tedious parts of writing applications with qooxdoo: GUI building can be 
+                                    done almost entirely without javascript, which is only needed for event handling and business logic.
+                                </p>
+                                <p>QxTransformer is open source under a <a href="http://qooxdoo.org/license">LGPL/EPL</a> dual license.</p>
+                        
+                                <p>The main advantages of QxTransformer:</p>
+                                <ul>
+                                    <li>Platform Independence</li>
+                                    <li>Self-Validation</li>
+                                    <li>Portability</li>
+                                    <li>Supports multiple markup dialects</li>
+                                    <li>Plugin support</li>
+                                    <li><a href="http://www.qxtransformer.org/wiki/Why-use-QxTransformer-">More information...</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                
+                        <div class="section">
+                            <div class="caption">
+                                <div class="icon demo"> </div>
+                                <span>Demos</span>
+                            </div>
+                    
+                            <div class="scontent">
+                                <p>We provide some demonstration examples which shows how to use QxTransformer 
+                                    and build web UI with help of it.</p>
+                                
+                                <div class="demoblock">
+                                    <div class="caption">
+                                        <p>Demo browser</p>
+                                        <div class="controls">
+                                            <div class="icon_sm info" title="See additional information."> </div>
+                                            <a href="demos/demobrowser/build/index.html">
+                                                <div class="icon_sm run" title="Run and check it out in action."> </div>
+                                            </a>
+                                            <div class="icon_sm screens" title="See screenshots."> </div>
+                                            <div class="icon_sm download_demo" title="Download code. Not available yet."> </div>
+                                        </div>
+                                    </div>
+                                    <div class="infoblock">
+                                        <p>This is a ported qooxdoo demobrowser. Contains small examples and tests for most 
+                                            widgets and GUI features. Source code is available in both variants: XML and 
+                                            JavaScript.
+                                            <span class="blue">It is now available!</span>
+                                        </p>
+                                        <!-- this block is invisible, lightbox uses it -->
+                                        <div class="gallery" style="display:none">
+                                            <a href="demos/demobrowser/screenshots/tree.gif" title="Convenient tree navigation."> </a>
+                                            <a href="demos/demobrowser/screenshots/code.gif" title="Source code is available in both varians: XML and generated JavaScript."> </a>
+                                            <a href="demos/demobrowser/screenshots/workspace.gif" title="It's how workspace looks like."> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="demoblock">
+                                    <div class="caption">
+                                        <p>Address Book Sample <sup class="blue">New!</sup></p>
+                                        <div class="controls">
+                                            <div class="icon_sm info" title="See additional information."> </div>
+                                            <a href="demos/addressbook/build/index.html">
+                                                <div class="icon_sm run" title="Run and check it out in action."> </div>
+                                            </a>
+                                            <div class="icon_sm screens" title="See screenshots."> </div>
+                                            <a href="https://www.ohloh.net/p/qxtransformer/download?filename=qxtransformer-0.4a-addressbook.zip">
+                                                <div class="icon_sm download_demo" title="Download code."> </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="infoblock">
+                                        <p>Small nice address book with Google Gears integration. 
+                                            <span class="blue">It is now available!</span>
+                                        </p>
+                                        <!-- this block is invisible, lightbox uses it -->
+                                        <div class="gallery" style="display:none">
+                                            <a href="demos/addressbook/screenshots/layout.png" title="Address Book Layout."> </a>
+                                            <a href="demos/addressbook/screenshots/create_contact.png" title="Creating a new contact..."> </a>
+                                            <a href="demos/addressbook/screenshots/edit_contact.png" title="Editing a contact..."> </a>
+                                            <a href="demos/addressbook/screenshots/edit_group.png" title="Editing a group name..."> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="line">
+                        <div class="section">
+                            <div class="caption">
+                                <div class="icon download"> </div>
+                                <span>Download</span>
+                            </div>
+                    
+                            <div class="scontent">
+                                <div class="downloadblock">
+                                    <div class="caption">
+                                        <p>Version 0.4 alpha</p>
+                                        <div class="controls">
+                                            <div class="icon_sm info" title="See additional information."> </div>
+                                            <a href="https://www.ohloh.net/p/qxtransformer/download?package=QxTransformer&release=0.4+alpha">
+                                                <div class="icon_sm download_demo" title="Download version."> </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="infoblock">
+                                        <p>Rewritten from scratch (in Python) toolkit which supports qooxdoo 0.8 version, has improved
+                                            architecture, performance and build system integration.
+                                            <span class="blue">It is now available!</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            
+                                <div class="downloadblock">
+                                    <div class="caption">
+                                        <p>Version 0.3</p>
+                                        <div class="controls">
+                                            <div class="icon_sm info" title="See additional information."> </div>
+                                            <a href="https://www.ohloh.net/p/qxtransformer/download?package=QxTransformer&release=0.3+alpha">
+                                                <div class="icon_sm download_demo" title="Download version."> </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="infoblock">
+                                        <p>
+                                            This version supports only 0.7 qooxdoo version. The next major version is 0.4.
+                                            It is not maintained anymore. Please use 0.4 version.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="section">
+                            <div class="caption">
+                                <div class="icon resources"> </div>
+                                <span>Resources</span>
+                            </div>
+                    
+                            <div class="scontent">
+                                <p><a href="http://qxtransformer.org/trac"><big>Bug tracking system</big></a>.</p>
+                        
+                                <p>QxTransformer uses Trac to handle bugs and issues and to manage the development roadmap.
+                                If you notice any problem, find a bug, or if you have a suggestion, please 
+                                <a href="http://qxtransformer.org/qxtransformer/newticket">submit a report</a>.</p>
+                        
+                                <p><a href="http://qxtransformer.org/wiki"><big>Project wiki</big></a>.</p>
+                        
+                                <p>We keep all our documentation in a wiki. There, you can find information on how to install QxTransformer, how to write and to run your first 
+                                application, and how to use the toolkit in your projects.
+                                </p>
+                                
+                                <p><a href="http://qxtransformer.org/docs"><big>Tags Reference</big></a>.</p>
+                        
+                                <p>In tags reference you can find description of each tag, its attributes and samples how to use it in your application.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="line">
+                        <div class="section">
+                            <div class="caption">
+                                <div class="icon repository"> </div>
+                                <span>Repository</span>
+                            </div>
+                    
+                            <div class="scontent">
+                                <p>QxTransformer uses a public Subversion repository which is available in "read"-mode for all users.
+                                    You can track all changes in real time and you are welcome to contribute.
+                                </p>
+                        
+                                <p>Check out the latest version from our Subversion repository.</p>
+                                <p class="repo">svn co https://qxtransformer.org/svn/qxtransformer/trunk/</p>
+                        
+                                <p>For more information on how to work with a SVN repository, see <a href="http://qooxdoo.org/documentation/general/checking_out_from_svn">qooxdoo site</a>.</p>
+                            </div>
+                        </div>
+                
+                        <div class="section">
+                            <div class="caption">
+                                <div class="icon community"> </div>
+                                <span>Community</span>
+                            </div>
+                    
+                            <div class="scontent">
+                                <p>QxTransformer is a small part of the large and vibrant qooxdoo community.
+                                    If you have questions on the javascript part of the framework, you can ask 
+                                    your question on the qooxdoo mailing list. For all questions relating to 
+                                    the qxtransformer, we offer a discussion group where we will provide support.
+                                    If you feel that qxtransformer makes your life easier, contribute back
+                                    and share ideas and code with the developers and other users.
+                                </p>
+                                <p style="text-align:center;">
+                                    <a href="http://groups.google.com/group/qxtransformer?hl=en">Google Group</a>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="http://twitter.com/qxtransformer">Twitter</a>
+                                </p>
+                                <p>
+                                    You can use direct mail to contact with developers: 
+                                    <a href="s.barysiuk(at)qxtransformer.org">Siarhei Barysiuk</a> and 
+                                    <a href="c.boulanger(at)qxtransformer.org">Christian Boulanger</a>.
+                                </p>
+                                <p>Join qooxdoo community! More information on the qooxdoo web site.</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+            
+            </div>
+            <div id="bottom">
+                <p>LGPL, EPL &copy; 2008 QxTransformer  |  <a class="bottom" href="mailto:s.barysiuk(at)qxtransformer.org">Siarhei Barysiuk</a> &amp; 
+                    <a class="bottom" href="mailto:c.boulanger(at)qxtransformer.org">Christian Boulanger</a>. <br>
+                Site design and illustrations by  <a class="bottom" href="mailto:s.barysiuk(at)qxtransformer.org">Siarhei Barysiuk</a>.  |  Icons by <a class="bottom" href="http://dryicons.com">Dry Icons</a>.</p>
+                <img src="images/qx_logo.png" alt="qooxdoo">
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+            var pageTracker = _gat._getTracker("UA-3968375-1");
+            pageTracker._initData();
+            pageTracker._trackPageview();
+    </script>
+</body>
+</html>

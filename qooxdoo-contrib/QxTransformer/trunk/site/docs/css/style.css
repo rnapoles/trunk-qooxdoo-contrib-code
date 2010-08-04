@@ -1,0 +1,246 @@
+#panes {
+	margin: 5px 0;
+	overflow: hidden;
+	width: 100%;
+}
+
+#nav_pane {
+	padding:0 10px;
+	width: 230px;
+	float: left;	
+	overflow: hidden;
+}
+
+#content_pane {
+	padding: 0 10px;
+	width: 530px;
+	float: left;	
+	overflow: hidden;
+}
+
+#nav_pane div.caption, #content_pane div.caption{
+	border-bottom:1px solid #423B37;
+	margin:0 5px;
+	text-shadow:1px 1px #423B37;
+	font-size: 18px;		
+}
+
+#nav_pane ul {
+	font-size: 14px;
+	list-style: none;
+	line-height: 20px;
+	margin-top: 22px;
+}
+
+#nav_pane ul li {
+	padding-left: 18px;
+}
+
+#nav_pane ul li a {
+    text-decoration:none;
+    color:#FFF;
+}
+
+#nav_pane ul li.selected a{
+	color: #FFFFCC;
+}
+
+#nav_pane ul li.selected {
+	background: url("../images/next.png") no-repeat bottom left;
+}
+
+#nav_pane ul li.disabled.selected {
+	background: url("../images/next_disabled.png") no-repeat bottom left;
+}
+
+#nav_pane ul li.disabled a {
+	color: #3a3430;
+}
+
+div.search_panel {
+	background-color: #423B37;
+	margin-top: 2px;
+	height: 32px;
+	position: relative;
+}
+
+div.search_panel div.hint{
+	position: absolute;
+	display: block;
+	bottom: -30px;
+	left: 40px;
+	width: 195px;
+	height: 35px;
+	z-index: 10;
+	background: url("../images/hint.png") no-repeat top left;
+	opacity: 0;
+	filter: alpha(opacity=0);
+	zoom=1;
+}
+
+div.search_panel div.hint div {
+	color: #3a3430;
+	font-size: 12px;
+	padding: 13px 0 0 20px;
+}
+
+
+div.search_panel .left_border, div.search_panel .right_border {
+	width: 10px;
+	height: 32px;
+	background: url("../images/box-bg.png") no-repeat bottom left;
+}
+
+div.search_panel .left_border {
+	float: left;	
+}
+div.search_panel .right_border {
+	background-position: -90px bottom;
+	float: right;
+}
+
+div.search_panel div.center {
+	padding-top: 4px;
+	height: 28px;
+	margin-left: 20px;
+	padding-left: 24px;
+	background: url("../images/search_icon.png") no-repeat center left;
+}
+
+div.search_panel div.center input[type="text"] {
+	border: 1px solid #6a605b;
+	padding: 2px 4px;
+	width: 150px;
+	float: left;
+}
+
+div.search_panel div.center input[type="image"] {
+	float: left;
+	margin-left: 4px;
+	outline: none;
+}
+
+
+div.description {
+	margin: 15px 0;
+	font-size: 19px;
+}
+
+div.description span.qxtag {
+	background: url("../images/tag_icon_sm.png") no-repeat center left;
+	padding-left: 24px;
+	line-height: 24px;
+}
+
+div.description span.qxclass {
+	background: url("../images/class_icon_sm.png") no-repeat center left;
+	padding-left: 24px;
+	line-height: 24px;
+}
+
+div.description span.qxclass a {
+	color: #FFF;
+	text-decoration: underline;
+}
+
+div.description div.info {
+	font-size: 13px;
+}
+
+#content_pane ul.nav {
+	list-style: none;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	padding-bottom: 2px;
+	border-bottom: 1px solid #423B37;
+	font-size: 14px;
+}
+
+#content_pane ul.nav li {
+	display: block;
+	float: left;
+	margin: 0 3px;
+	width: 100px;
+	text-align: center;
+	height: 28px;
+}
+
+#content_pane ul.nav li.active {
+	background: url("../images/box-bg.png") no-repeat top center;
+}
+
+#content_pane ul.nav li a {
+	color: #FFF;
+	display: block;
+	padding-top: 5px;
+	text-decoration: none;
+	outline-style: none;
+}
+
+#attributes .search_panel {
+	width: 250px;	
+}
+
+#attributes dl {
+	width: 100%;	
+	overflow: hidden;
+	display: block;
+	font-size: 13px;
+}
+
+#attributes dt, #attributes dd {
+	padding: 5px 0;
+	margin: 0;
+}
+
+#attributes dl dt {
+	overflow: hidden;
+	display: block;
+	border-top: 1px solid #423B37;	
+}
+
+#attributes dl dt span.attr{
+	background: url("../images/attr_icon_sm.png") no-repeat center left;
+	padding-left: 17px;
+/*	line-height: 17px;*/
+}
+
+#attributes dl dd {
+	display: block;
+	font-style: italic;
+}
+
+#attributes dl dd div.values {
+	font-size: 11px;
+	margin: 5px 0 5px 5px;
+}
+
+#attributes dl dd div.values span {
+	display: block;
+}
+
+
+/*disabled attributes*/
+#attributes dl .disabled, #attributes dl .disabled a {
+	color: #3a3430;	
+}
+
+#attributes dl dt.disabled span.attr {
+	background-image: url("../images/attr_icon_sm_disabled.png");	
+}
+
+
+
+/*icons*/
+.icon {
+	background-position: center center;
+}
+
+.tags {
+	background-image: url("../images/tag_icon.png");	
+}
+
+.reference {
+	background-image: url("../images/reference_icon.png");	
+}

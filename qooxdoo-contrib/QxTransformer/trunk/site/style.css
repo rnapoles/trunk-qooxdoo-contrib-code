@@ -1,0 +1,318 @@
+body {
+    margin:0px; 
+    padding:0px;
+    text-align:center;
+    background-color: #48413d;
+    font-family:"Lucida Grande",verdana,arial,helvetica,sans-serif;
+    color:#FFF;
+}
+p {
+    margin:10px 0px;
+}
+
+/* reusable classes */
+.icon {
+    background-image:url("images/icons.png");
+    background-repeat:no-repeat;
+    width:32px;
+    height:32px;
+    border:none;
+}
+ 
+.icon_sm {
+    background-image:url("images/icons.png");
+    background-repeat:no-repeat;
+    width:24px;
+    height:24px;
+    border:none;
+}
+/* big icons */
+.new {
+    background-position:0px 0px;
+}
+ 
+.overview {
+    background-position:-32px 0px;
+}
+ 
+.demo {
+    background-position:-64px 0px;
+}
+ 
+.download {
+    background-position:-96px 0px;
+}
+ 
+.community {
+    background-position:-128px 0px;
+}
+ 
+.repository {
+    background-position:-160px 0px;
+}
+ 
+.resources {
+    background-position:-192px 0px;
+}
+ 
+.twitter {
+    background-position:-224px 0px;
+}
+
+.tick {
+    background-position:-256px 0px;
+}
+ 
+/* small icons */
+.info {
+    background-position:-72px -32px;
+}
+ 
+.run {
+    background-position:0px -32px;
+}
+ 
+.screens {
+    background-position:-24px -32px;
+}
+ 
+.download_demo {
+    background-position:-48px -32px;
+}
+ 
+ 
+ 
+/* Caption with an icon */
+.caption span {
+    margin-left:3px;
+    line-height:32px;
+    vertical-align:middle;
+}
+.caption div {
+    float:left;
+}
+ 
+/* styles */
+a {
+    color:#ffffcc;
+}
+ 
+a.bottom {
+    color:#887d77;
+}
+#container {
+    width:1100px;
+    margin:0px auto;
+    background-image:url(images/top_bg.png);
+    background-position:20px -3px;
+    background-repeat:no-repeat;
+}
+ 
+#content {
+    width:800px;
+    margin:0px auto;
+    text-align:left;
+    padding-top:5px;
+}
+ 
+#top {
+    overflow:hidden;
+    height:55px;
+}
+#top img {
+    float:left;
+}
+ 
+#version {
+    float:right;
+}
+ 
+/* twitter box */
+#twitter {
+    margin-top:35px;
+    color:#ffffcc;
+    overflow:hidden;
+/*    width:100%;*/
+    background-color:#423b37;
+}
+ 
+ 
+.twit_border {
+    width:15px;
+    height:40px;
+    background-image:url("images/twit_borders.png");
+    background-repeat:no-repeat;
+    background-color: #48413d;
+}
+.twit_left {
+    background-position:0px 0px;
+    float:left;
+}
+.twit_right {
+    background-position:-15px 0px;
+    float:right;
+}
+ 
+#twitter .tcontent {
+    margin-top: 10px;
+    padding-left:30px;
+    height:30px;
+}
+#twitter .icon {
+    margin-top:3px;
+    float:left;
+}
+ 
+#illustration {
+    width:100%;
+    height:330px;
+    background-image:url("images/illustration.png");
+    background-position:top left;
+    background-repeat:no-repeat;
+    margin-top:10px;
+    position: relative;
+}
+
+#illustration div.illustration_links_right {
+	display: none;
+}
+
+#illustration.doc {
+	background:url("images/illustration-doc.png") no-repeat top left;
+}
+
+#illustration.doc div.illustration_links_right{
+	display: block;
+	position: absolute;
+	top:250px;
+    left:440px;
+    width: 320px;
+}
+ 
+#illustration div.illustration_info {
+    position:relative;
+    top:75px;
+    left:45px;
+    color: #423b37;
+    width:320px;
+}
+
+#illustration div.illustration_links {
+    position:relative;
+    top:100px;
+    left:55px;
+    color: #423b37;
+    width:320px;
+}
+
+#illustration div.illustration_links  a {
+    color: #423b37;
+}
+#sections {
+    margin-top:10px;
+    overflow:hidden;
+}
+.line {
+    overflow:hidden;
+    margin-top:20px;
+    clear:both;
+}
+.section {
+    float:left;
+    width:50%;
+    /*height:235px;*/
+    overflow:hidden;
+}
+ 
+.section > .caption {
+    text-shadow:1px 1px #423b37;
+/*    border-top: solid 1px #423b37;*/
+    border-bottom: solid 1px #423b37;
+    margin:0px 5px 0px 5px;
+}
+ 
+.section .scontent {
+    font-size:10px;
+    text-align:left;
+    padding:0px 30px 0px 15px;
+}
+ 
+#bottom {
+    background-image:url("images/bottom_bg.png");
+    background-position:left bottom;
+    background-repeat:repeat-x;
+    width:100%;
+    height:105px;
+    position:relative;
+}
+#bottom p {
+    text-align:center;
+    width:100%;
+    padding-top:75px;
+    font-size:9px;
+    color: #48413d;
+}
+ 
+#bottom img {
+    position:absolute;
+    right:20px;
+    bottom:12px;
+}
+ 
+/* demoblock */
+.caption {
+    overflow:hidden;
+    clear:both;
+}
+.caption p {
+    float:left;
+    font-size:13px;
+/*    line-height:5px;*/
+}
+.caption .controls{
+    float:right;
+    margin-top:7px;
+}
+.caption .controls div {
+    cursor:pointer;
+}
+ 
+.infoblock {
+    background-color:#423b37;
+    width:100%;
+    overflow:hidden;
+    padding:5px;
+    display:none;
+}
+ 
+.red {
+    color:#CC6666;
+}
+
+.blue {
+    color:#99ccff;
+}
+ 
+.repo {
+    color:#ffffcc;
+    padding-top:10px;
+    padding-bottom:10px;
+    background-color:#423b37;
+    text-align:center;
+}
+ 
+/* Twitter line */
+#twitter_update_list {
+    font-size: 10px;
+    width:100%;
+    display: inline;
+    padding-left:4px;
+}
+#twitter_update_list li {
+    list-style: none;
+    display: inline;
+}
+#twitter_update_list li > a {
+    color: #887d77 !important;
+    margin-left:3px;
+}
