@@ -124,6 +124,12 @@ public class QxSelenium extends DefaultSelenium
     return ret;
   }
   
+  public String getQxObjectHash(String locator) {
+    String ret = this.commandProcessor.getString("getQxObjectHash", 
+        new String[] {locator,});
+    return ret;
+  }
+  
   public String qxDragAndDrop(String locator, String opts) {
     return this.commandProcessor.doCommand("qxDragAndDrop", new String[] {locator, opts,});
   }
