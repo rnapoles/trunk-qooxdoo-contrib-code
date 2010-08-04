@@ -81,6 +81,9 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
     def qxObjectExecFunction(self, locator, functionName):
         return self.do_command("getQxObjectFunction", [locator, functionName,])
 
+    def getQxObjectHash(self, locator):
+        return self.do_command("getQxObjectHash", [locator])
+    
     def qxDragAndDrop(self, locator, opts=None):
         if opts==None:
             return self.do_command("qxDragAndDrop", [locator,])
