@@ -1829,6 +1829,82 @@ PageBot.prototype.locateElementByQxidv = function(qxLocator, inDocument, inWindo
 };
 
 /**
+ * Hybrid locator consisting of multiple sub-locators using different 
+ * strategies. The first sub-locator can be of any type, the following 
+ * sub-locators must be either qxh/qxhv or XPath. Sub-locators are delimited by
+ * double ampersands ("&&").
+ * 
+ * In the following example, the default ID locator is combined with a qxh 
+ * locator to find the first child of a widget with the HTML id "myWidget":
+ * 
+ * qxhybrid=myWidget&&qxh=child[0]
+ * 
+ * @param qxLocator {String} The locator
+ * @param inDocument {Document} The AUT's document object
+ * @param inWindow {Window} The AUT's window object
+ * @return {Element} The found DOM element
+ */
+PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWindow)
+{
+  var locatorParts = qxLocator.split("&&");
+  var firstPart = locatorParts.shift();
+  LOG.debug("qxhybrid first part: " + firstPart);
+  try {
+    var domElem = this.findElement(firstPart);
+    if (domElem.wrappedJSObject) {
+      domElem = domElem.wrappedJSObject;
+    }
+  } catch(ex) {
+    throw new SeleniumError("Hybrid locator couldn't find element using" + 
+      firstPart + ": " + ex);
+  }
+  
+  var qx = inWindow.qx;
+  
+  var nextPart = locatorParts.shift();
+  while (nextPart) {
+    if (nextPart.indexOf("qxh") == 0) {
+      // qooxdoo hierarchical locator
+      LOG.debug("qxhybrid next part is a qxh locator: " + nextPart);
+      try {
+        var rootWidget = qx.ui.core.Widget.getWidgetByElement(domElem);
+        var subLocator = nextPart.substr(nextPart.indexOf("=") + 1);
+        var qxhParts = subLocator.split('/');
+        var widget = this._searchQxObjectByQxHierarchy(rootWidget, qxhParts);
+        domElem = widget.getContentElement().getDomElement();
+        if (domElem.wrappedJSObject) {
+          domElem = domElem.wrappedJSObject;
+        }
+      }
+      catch(e) {
+        throw new SeleniumError("Hybrid locator couldn't find element using" + 
+          nextPart);
+      }
+    }
+    else if (nextPart.indexOf("//") == 0) {
+      // XPath locator
+      LOG.debug("qxhybrid next part is an XPath locator: " + nextPart);
+      var subLocator = nextPart.substr(2);
+      if (this.locateElementByXPath){
+        //Selenium 1.0: Use public function locateElementByXPath
+        domElem = this.locateElementByXPath('descendant-or-self::node()/' + subLocator, domElem, inWindow);
+      } else {
+        //Selenium 0.9.2: Use internal function _findElementUsingFullXPath
+        domElem = this._findElementUsingFullXPath('descendant-or-self::node()/' + subLocator, domElem, inWindow);
+      }
+    }
+    else {
+      // Unsupported locator
+      throw new SeleniumError("Hybrid locator doesn't support this locator type: " +
+        nextPart);
+    }
+    nextPart = locatorParts.shift();
+  }
+  
+  return domElem;
+};
+
+/**
  * Returns the client document instance or null if Init.getApplication() returned null. 
  * Reason is that qooxdoo 0.7 relies on the application being set when the client document
  * is accessed  
