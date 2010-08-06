@@ -1,0 +1,71 @@
+{
+  "name"    : "Socket Demo",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "api-data",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "info",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "nodesocket.demo",
+    
+    // If you plan to do "source" development, make a symlink to the 
+    // qooxdoo sdk inside the top-level release version folder (for example,
+    // "0.1" or "trunk". The reason is that the server script that 
+    // comes with this demo doesn't serve files outside this folder.
+    // If you just want to run the demo, adapt the config.json file
+    // and point the QOOXDOO_PATH constant to the path of the qooxdoo sdk.      
+    "QOOXDOO_PATH" : "../../qooxdoo-trunk",
+    "QXTHEME"      : "nodesocket.demo.theme.Theme",
+    "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",
+    "ROOT"         : "."
+  },
+
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [
+        {
+          "manifest" : "../../Manifest.json"
+        }
+      ]
+    },
+
+    "common":
+    {
+      // load Socket.IO client
+      "add-script" :
+      [ 
+        { "uri" : "../socket/client.js" }
+      ]      
+    } 
+  }
+}
