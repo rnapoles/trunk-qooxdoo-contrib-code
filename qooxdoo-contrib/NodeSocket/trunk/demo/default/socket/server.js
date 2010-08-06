@@ -12,19 +12,19 @@ const HTTP_SERVER_PORT = 8088;
  */
 var 
   http   = require('http'), 
-	url    = require('url'),
-	fs     = require('fs'),
+  url    = require('url'),
+  fs     = require('fs'),
   sys    = require('sys'),
-	socket = require('./socket.io');
+  socket = require('./socket.io');
   
 
 /*
  * http error
  */
 var send404 = function(req,res){
-	res.writeHead(404);
-	res.write('The page you requested cannot be found:' + req.url );
-	res.end();
+  res.writeHead(404);
+  res.write('The page you requested cannot be found:' + req.url );
+  res.end();
 };
 
 /*
@@ -32,7 +32,7 @@ var send404 = function(req,res){
  */
 var server = http.createServer(function(req, res)
 {
-	var path = url.parse(req.url).pathname;
+  var path = url.parse(req.url).pathname;
   var documentRoot = __dirname + "/../../..";
   //console.log( "Requesting  '" + documentRoot + path + "'");
   
@@ -41,7 +41,7 @@ var server = http.createServer(function(req, res)
    * @todo replace with static file server with caching
    * @see http://wiki.github.com/ry/node/modules
    */
-	try 
+  try 
   {
     switch (  path.substr( path.lastIndexOf(".") ) )
     {
@@ -77,16 +77,16 @@ var server = http.createServer(function(req, res)
      * end of response
      */
     res.end();
-	} 
+  } 
   catch(e)
   { 
     console.log(e);
-		send404(req,res); 
-	}
+    send404(req,res); 
+  }
 });
 
 server.listen(HTTP_SERVER_PORT);
-		
+    
 /*
  * the chat server
  */
@@ -94,7 +94,7 @@ var
   buffer = [],
   members = [],
   membersIndex = {},
-	listener = socket.listen(server);
+  listener = socket.listen(server);
   
 var updateMemberList = function( client )
 {
@@ -105,15 +105,15 @@ var updateMemberList = function( client )
  client.broadcast(msg);  
  client.send(msg);
 }
-		
+    
 listener.on('connection', function(client)
 {
   // client connects
-	client.send(JSON.stringify({ buffer: buffer }));
+  client.send(JSON.stringify({ buffer: buffer }));
   updateMemberList(client);
 
   // register callbacks for this client
-	client.on('message', function(message){
+  client.on('message', function(message){
     //console.log(message);
     var msg = JSON.parse(message);
     
@@ -138,18 +138,18 @@ listener.on('connection', function(client)
     }
     
     // add to buffer and limit buffer to 15 entries
-		buffer.push(msg);
-		if (buffer.length > 15)
+    buffer.push(msg);
+    if (buffer.length > 15)
     { 
       buffer.shift();
     }
     
     // broadcast to all other clients
-		client.broadcast(message);
-	});
+    client.broadcast(message);
+  });
 
   // disconnect client
-	client.on('disconnect', function(){
-		updateMemberList(client);
-	});
+  client.on('disconnect', function(){
+    updateMemberList(client);
+  });
 });

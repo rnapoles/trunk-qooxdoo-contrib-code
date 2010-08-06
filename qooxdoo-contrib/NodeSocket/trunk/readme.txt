@@ -28,7 +28,7 @@ Run the demo:
 ============
 - If you just want to run the demo, adapt the config.json file
   and point the QOOXDOO_PATH constant to the path of the qooxdoo sdk.
-- Run ./generate.py build 
+- Run ./generate.py build in the demo/default folder
 - Go to demo/default/server/ and start the server with 'node server.js'
 - Load http://localhost:8088/demo/default/build/index.html in several
   browser windows.
