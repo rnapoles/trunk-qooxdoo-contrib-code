@@ -30,14 +30,14 @@ mySim.locators = {
   inspectedAppRoot : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application",
   windowWidgets : "qxh=[@classname=inspector.widgets.WidgetsWindow]",
   windowProperty : "qxh=[@classname=inspector.property.PropertyWindow]",
-  windowObjects : "qxh=[@classname=inspector.objects2.Window]",
+  windowObjects : "qxh=[@classname=inspector.objects.Window]",
   windowConsole : "qxh=[@classname=inspector.console.ConsoleWindow]",
-  //windowSelenium : "qxh=[@classname=inspector.selenium.SeleniumWindow]",
+  windowSelenium : "qxh=[@classname=inspector.selenium.SeleniumWindow]",
   buttonObjects : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Objects]",
   buttonWidgets : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Widgets]",
   buttonProperties : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Properties]",
   buttonConsole : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Console]",
-  //buttonSelenium : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Selenium]"
+  buttonSelenium : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Selenium]"
 };
 
 var selWin = 'selenium.qxStoredVars["autWindow"]';
