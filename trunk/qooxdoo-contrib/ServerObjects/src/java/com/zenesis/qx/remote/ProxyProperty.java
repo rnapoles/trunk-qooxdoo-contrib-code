@@ -434,10 +434,10 @@ public class ProxyProperty implements JsonSerializable {
 				gen.writeStringField("check", "Boolean");
 			else if (clazz == int.class || clazz == Integer.class)
 				gen.writeStringField("check", "Integer");
-//			else if (clazz == double.class || clazz == Double.class)
-//				gen.writeStringField("check", "Double");
-//			else if (clazz == float.class || clazz == Float.class)
-//				gen.writeStringField("check", "Float");
+			else if (clazz == double.class || clazz == Double.class)
+				gen.writeStringField("check", "Number");
+			else if (clazz == float.class || clazz == Float.class)
+				gen.writeStringField("check", "Number");
 			else if (clazz == char.class || clazz == String.class)
 				gen.writeStringField("check", "String");
 			else if (Date.class.isAssignableFrom(clazz))

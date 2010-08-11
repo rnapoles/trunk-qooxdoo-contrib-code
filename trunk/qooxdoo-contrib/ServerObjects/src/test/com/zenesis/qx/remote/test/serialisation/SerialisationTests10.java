@@ -70,10 +70,12 @@ class C10 implements Proxied, I10NotProxiedB {
 		return 0;
 	}
 
+	@Override
 	public int getA() {
 		return 1;
 	}
 
+	@Override
 	public int getB() {
 		return 2;
 	}

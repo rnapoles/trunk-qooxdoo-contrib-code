@@ -99,12 +99,14 @@
     "properties" : {
       "testProperties" : {
         "sync" : "queue",
+        "event" : "changeTestProperties",
         "nullable" : true,
         "readOnly" : true,
         "clazz" : "com.zenesis.qx.remote.test.properties.ITestProperties"
       },
       "clientTestProperties" : {
         "sync" : "queue",
+        "event" : "changeClientTestProperties",
         "nullable" : true,
         "clazz" : {
           "className" : "com.zenesis.qx.remote.test.properties.TestProperties",
@@ -120,30 +122,41 @@
           "properties" : {
             "immediate" : {
               "sync" : "immediate",
-              "nullable" : true
+              "event" : "changeImmediate",
+              "nullable" : true,
+              "check" : "String"
             },
             "watchedString" : {
               "sync" : "queue",
               "event" : "changeWatchedString",
-              "nullable" : true
+              "nullable" : true,
+              "check" : "String"
             },
             "onDemandString" : {
               "sync" : "queue",
               "event" : "changeDemandString",
               "nullable" : true,
-              "onDemand" : true
+              "onDemand" : true,
+              "check" : "String"
             },
             "queued" : {
               "sync" : "queue",
-              "nullable" : true
+              "event" : "changeQueued",
+              "nullable" : true,
+              "check" : "String"
             },
             "readOnlyString" : {
               "sync" : "queue",
+              "event" : "changeReadOnlyString",
               "nullable" : true,
-              "readOnly" : true
+              "readOnly" : true,
+              "check" : "String"
             }
           },
           "events" : {
+            "changeQueued" : {
+              "isProperty" : true
+            },
             "someEvent" : {
             },
             "changeWatchedString" : {
@@ -151,9 +164,23 @@
             },
             "changeDemandString" : {
               "isProperty" : true
+            },
+            "changeImmediate" : {
+              "isProperty" : true
+            },
+            "changeReadOnlyString" : {
+              "isProperty" : true
             }
           }
         }
+      }
+    },
+    "events" : {
+      "changeClientTestProperties" : {
+        "isProperty" : true
+      },
+      "changeTestProperties" : {
+        "isProperty" : true
       }
     }
   },
@@ -166,8 +193,11 @@
         "watchedString" : null,
         "queued" : "Server Queued",
         "readOnlyString" : "read-only"
-      }
+      },
+      "order" : [ "immediate", "watchedString", "queued", "readOnlyString" ]
     },
     "clientTestProperties" : null
-  }
+  },
+  "order" : [ "testProperties", "clientTestProperties" ]
 }
+

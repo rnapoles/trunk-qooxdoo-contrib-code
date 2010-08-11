@@ -60,6 +60,7 @@ interface IEightA extends Proxied {
 }
 
 class EightA implements IEightA {
+	@Override
 	public IEightB[] getEightB() {
 		return null;
 	}
@@ -70,6 +71,7 @@ interface IEightB extends Proxied {
 }
 
 class EightB implements IEightB {
+	@Override
 	public void doSomething() { };
 }
 
@@ -79,6 +81,7 @@ interface IEightC extends Proxied {
 }
 
 class EightC implements IEightC {
+	@Override
 	public IEightB[] getEightB() {
 		return null;
 	}

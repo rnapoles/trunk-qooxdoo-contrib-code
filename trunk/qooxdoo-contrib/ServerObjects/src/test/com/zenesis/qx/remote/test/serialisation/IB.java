@@ -29,6 +29,7 @@ package com.zenesis.qx.remote.test.serialisation;
 
 public interface IB extends IA {
 
+	@Override
 	public String getValueA(int value);
 	
 	public String getValueB(int value, A a);
