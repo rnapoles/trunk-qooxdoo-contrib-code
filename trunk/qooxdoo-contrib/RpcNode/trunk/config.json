@@ -4,25 +4,13 @@
   "include" :
   [
     {
-      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+      "path" : "${QOOXDOO_PATH}/framework/config.json"
     }
   ],
 
   "export" :
   [
-    "api",
-    "api-data",
-    "clean",
-    "distclean",
-    "fix",
-    "info",
-    "inspector",
-    "lint",
-    "migration",
-    "pretty",
-    "test",
-    "test-source",
-    "translation"
+    "qxoo-ext-build"
   ],
 
   "let" :
@@ -30,47 +18,33 @@
     "APPLICATION"  : "rpcnode",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
     "QOOXDOO_PATH" : "../../qooxdoo/1.3-pre",
-    //"QXTHEME"      : "rpcnode.theme.modern.Theme",
-    "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "rpcnode.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
-  }
+  },
 
-  // You only need to edit the remainder of this file, if you want to customize
-  // specific jobs, or add own job definitions.
-
-  /*
   "jobs" :
   {
-    // Uncomment the following entry to add a contrib or library to your
-    // project; make sure to adapt the path to the Manifest.json; if you are
-    // using a contrib: library, it will be downloaded into the path specified
-    // by the 'cache/downloads' config key
-    "libraries" : 
+    "qxoo-ext-build" : 
     {
-      "library" :
+      "extend" : [ "qxoo-build" ],
+      
+      "include" : 
       [
-        {
-          "manifest" : "contrib://SkeletonApplication/trunk/Manifest.json"
-        }
-      ]
-    },
-
-    // If you want to tweak a job setting, see the following sample where
-    // the "format" feature of the "build-script" job is overridden.
-    // To see a list of available jobs, invoke 'generate.py x'.
-    "build-script" :
-    {
-      "compile-options" : 
+        "qx.Class",
+        "qx.Mixin",
+        "qx.Interface",
+        "qx.lang.*"
+      ],
+      
+      "compile-options" :
       {
-        "code" :
+        "paths" :
         {
-          "format" : false
+          "file" : "server/lib/qx-oo-ext.js"
         }
       }      
-    }
+    }    
   }
-  */
 }

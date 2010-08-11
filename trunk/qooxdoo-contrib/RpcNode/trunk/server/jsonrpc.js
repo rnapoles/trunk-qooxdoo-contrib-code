@@ -12,27 +12,32 @@
 
    Authors:
      * Martin Wittemann (original implementation)
-     * Christian Boulanger (port to qooxdoo-contrib)
+     * Christian Boulanger (port to qooxdoo-contrib & to qooxdoo-rpc )
+   
+   Dependencies:
+     * node-promise (http://github.com/kriszyp/node-promise)
 
 ************************************************************************ */
 
 /*
- * import objects
+ * import node modules as local vars
  */
 var
-  qx      = require('./qx-oo').qx,
-  url     = require('url'),
-  promise = require("promise"),     // Async operations
-  fs      = require('fs-promise'),  // Async filesystem operations
-  sys     = require('sys');  
-  
+  url     = require('url'),  
+  sys     = require('sys'),
+  promise = require("./lib/promise"); // Async operations
+
+/*
+ * import qx as global var 
+ */
+qx = require('./lib/qx-oo');
   
 /**  
  * Marker interface for services that are dynamically loaded 
  * from the filesystem. This is to prevent malicious clients 
  * from trying to execute non-rpc service methods. 
  */
-qx.Interface.define("rpcnode.Service",{}); 
+qx.Interface.define("rpcnode.IService",{}); 
 
 
 /**
@@ -42,9 +47,6 @@ qx.Interface.define("rpcnode.Service",{});
  * http://groups.google.com/group/json-rpc/web/json-rpc-1-2-proposal
  * http://groups.google.com/group/json-rpc/web/json-rpc-over-http
  * 
- * http://nodejs.org/
- * 
- * Creator: Martin Wittemann
  */
 qx.Class.define("rpcnode.Server",
 { 
@@ -116,7 +118,8 @@ qx.Class.define("rpcnode.Server",
      */    
     
     __services : null,
-    __serviceObjectCounter : 0,
+    __anonymousServicesCounter : 0,
+    __namedServicesCounter : 0,
     
     /*
      -------------------------------------------------------------------------
@@ -129,8 +132,13 @@ qx.Class.define("rpcnode.Server",
      */
     start : function()
     {
-
-      if ( __services.length === 0) 
+      if( ! this.getPort() )
+      {
+        throw new Error("You need to set a port first.");
+      }
+      
+      
+      if ( this.__anonymousServicesCounter === 0 && this.__namedServicesCounter === 0 ) 
       {
         throw new Error("You need to add at least one service object");
       }      
@@ -138,9 +146,14 @@ qx.Class.define("rpcnode.Server",
       /*
        * create http server
        */
-      var server = require('http').createServer( qx.lang.Function.bind( this._onHttpRequest, this ) );
+      var self = this;
+      var server = require('http').createServer( function( req, res ){
+        return self._onHttpRequest( req, res );
+      } );
       server.listen( this.getPort() );
       this.setHttpServer(server);
+      
+      console.log("json-rpc server accepting requests on port " + this.getPort() );
       
     },        
     
@@ -151,57 +164,78 @@ qx.Class.define("rpcnode.Server",
      */        
  
     /**
+     * Main event handler. Called when the Server receives a http request.
      * 
-     * @param {} req
-     * @param {} res
+     * @param {http.ServerRequest} req
+     * @param {http.ServerResponse} res
      */
     _onHttpRequest : function(req, res)
     {
-      /*
-       * handle GET requests
-       */
-      if (req.method === "GET" && req.uri.params.method) 
+      var query = url.parse(req.url,true).query;
+      console.log(sys.inspect(query));
+      
+      try
       {
-        try 
+        /*
+         * Handle "old-style" qooxdoo cross-domain json-rpc requests 
+         */
+        if ( req.method === "GET" && query._ScriptTransport_id )
+        {
+          var data = JSON.parse( query._ScriptTransport_data );
+          var rpcRequest = {
+            service : data.service || null,
+            method  : data.method,
+            params  : data.params,
+            id      : data.id
+          };
+          res._ScriptTransport_id = query._ScriptTransport_id;
+          this.processRequest( rpcRequest, res );
+        }
+        
+        /*
+         * handle normal GET requests
+         */
+        else if ( req.method === "GET" && req.uri && query.method  ) 
         {
           var rpcRequest = {
-            method: req.uri.params.method,
-            params: JSON.parse(req.uri.params.params),
-            id: req.uri.params.id
+            service : query.service || null,
+            method  : query.method,
+            params  : JSON.parse(query.params),
+            id      : query.id
           };
           this.processRequest( rpcRequest, res );
         } 
-        catch (e) 
+        
+        /*
+         * handle POST requests
+         */
+        else if ( req.method === "POST" )
         {
-          var error = this.parseError();
-          this.send( res, error.response, error.httpCode );
-        }
-  
-      /*
-       * handle POST requests
-       */
-      } 
-      else 
-      {
-        req.setBodyEncoding("utf8");
-        var body = "";
-        req.addListener("body", function(chunk) {
-          body += chunk;
-        });
-  
-        req.addListener("complete", qx.lang.Type.bind( function() {
-          try 
-          {
+          req.setBodyEncoding("utf8");
+          var body = "";
+          req.addListener("body", function(chunk) {
+            body += chunk;
+          });
+    
+          var self = this;
+          req.addListener("complete", function() {
             var rpcRequest = JSON.parse(body);        
-            this.processRequest(rpcRequest, res);
-          } 
-          catch (e) 
-          {
-            var error = this.parseError();
-            this.send(res, error.response, error.httpCode);        
-          }
-        }, this) );
-      } 
+            self.processRequest(rpcRequest, res);    
+          }); 
+        } 
+        
+        /*
+         * otherwise, invalid request
+         */
+        else
+        {
+          this.sendError( res, this.invalidRequest() );
+        }
+      }
+      catch( error )
+      {
+        this.sendError( res, error );
+      }
     },      
     
     /*
@@ -218,19 +252,23 @@ qx.Class.define("rpcnode.Server",
      * stack of service object in which the requested service methods will be
      * looked up. 
      * 
-     * @param {qx.core.Object} serviceObject
+     * @param {Object} serviceObject
      * @param {String|undefined} name
      */
-    addServiceObject : function( serviceObject, name )
+    addService : function( serviceObject, name )
     {
       if( ! typeof serviceObject == "object" )
       {
         throw new Error("Invalid argument.");
       }
       
-      if ( ! name )
+      if ( name )
       {
-        name = this.__serviceObjectCounter++;
+        this.__namedServicesCounter++;
+      }
+      else
+      {
+        name = this.__anonymousServicesCounter++;
       }
       this.__services[name] = serviceObject;
     },
@@ -270,6 +308,7 @@ qx.Class.define("rpcnode.Server",
           {
             response[i] = result;
           } 
+          
           /*
            * sync handling
            */
@@ -278,15 +317,14 @@ qx.Class.define("rpcnode.Server",
             response[i] = result.httpCode == 204 ? "NOTIFICATION" : result.response;
           }
         }
-       
-        
+ 
         /*
          * when all processes have returned, send the assembled result
          */
         var self=this;
         promises.all( response, function( finish ) 
         { 
-          finish.when( function(result) {
+          finish.when( function( result ) {
             /* success */
             self.send(
               res, 
@@ -296,11 +334,10 @@ qx.Class.define("rpcnode.Server",
           }, 
           function(e) {
             /* error */
-            var error = self.internalError(rpcRequest);
-            self.send(res, error.response, error.httpCode);            
+           throw self.internalError( rpcRequest );
+           return;
           });
         });
-
       } 
       
       /*
@@ -314,7 +351,8 @@ qx.Class.define("rpcnode.Server",
          * async handling
          */
         var self = this;
-        if (response instanceof promise.Promise) {
+        if (response instanceof promise.Promise) 
+        {
           response.when( function(result) {
             /* success */
             self.send(
@@ -325,8 +363,8 @@ qx.Class.define("rpcnode.Server",
           }, 
           function(e) {
             /* error */
-            var error = self.internalError(rpcRequest);
-            self.send(res, error.response, error.httpCode);            
+             throw self.internalError( rpcRequest );   
+             return;
           });
         } 
         
@@ -342,22 +380,21 @@ qx.Class.define("rpcnode.Server",
     
     
     /**
-     * Processes a single request
+     * Processes a single request.
+     * 
      * @param {Object} rpcRequest
+     *    The rpc request map
      * @param {Object} res
      *    The response object
-     * @return {}
+     * @return {unknown}
+     *    The return value of the request
      */
-    processSingleRequest : function(rpcRequest, res ) 
+    processSingleRequest : function( rpcRequest, res ) 
     {
       /*
        * validate
        */
-      var error = this.checkValidRequest( rpcRequest );
-      if ( typeof error == "object" ) 
-      { 
-        return error;
-      };
+      this.checkValidRequest( rpcRequest );
       
       /*
        * named parameter handling
@@ -366,42 +403,42 @@ qx.Class.define("rpcnode.Server",
       {
         if( rpcRequest.params instanceof Object && ! rpcRequest.params instanceof Array )
         {
-          rpcRequest.params = this.paramsObjToArr(rpcRequest);
+          rpcRequest.params = this.paramsObjToArr( rpcRequest );
         }
       }
       
       /*
        * execute method on service object
        */
-      var serviceObject = this.getServiceObject( rpcRequest, res );
-      
+      var serviceObject = this.getServiceObject( rpcRequest );
+      var method = rpcRequest.method;
 
       /*
        * check if method exists
        */
-      if ( typeof serviceObject[rpcRequest.method] != "function" )
+      if ( typeof serviceObject[method] != "function" )
       {
-        return this.methodNotFound( rpcRequest );
+        throw this.methodNotFound( rpcRequest, method );
       }
       
       /*
        * check for param count
        */
-      if ( serviceObject[rpcRequest.method].length != rpcRequest.params.length) 
+      if ( serviceObject[method].length != rpcRequest.params.length) 
       {
-        return this.invalidParams( rpcRequest );
+        throw this.invalidParams( rpcRequest );
       }
       
       /*
-       * get result of method call
+       * get result of method call. if an error is thrown inside the function,
+       * throw an internal error
        */
       try
       {
-        var result = serviceObject[rpcRequest.method].apply( serviceObject, rpcRequest.params );
+        var result = serviceObject[method].apply( serviceObject, rpcRequest.params );
       }
       catch (e) 
       {
-        console.log(e);
         return this.internalError( rpcRequest );
       }
       
@@ -426,63 +463,57 @@ qx.Class.define("rpcnode.Server",
     },
     
     /**
-     * Checks if the request is valid. Returns true if valid, or an
-     * error object if false
+     * Checks if the request is valid. Throws an error object 
+     * in case it isn't.
      * 
      * @param {Object} rpcRequest
-     * @return {true|Object}
+     * @return {void}
      */
     checkValidRequest : function( rpcRequest ) 
     {
       if ( ! typeof rpcRequest == "object" || ! rpcRequest.method 
            || ! rpcRequest.params || rpcRequest.id === undefined ) 
       {    
-        return invalidRequest(rpcRequest);
+        throw this.invalidRequest(rpcRequest);
       }
       
       var params = rpcRequest.params;
-      
       if ( this.getVersion() == "2.0") 
       {
         if ( params instanceof Array || params instanceof Object) 
         {
-          return true;
+          return;
         }
       } 
-      else 
+      else if ( params instanceof Array ) 
       {
-        if ( params instanceof Array ) 
-        {
-          return true;
-        }
+        return;
       }
-      return this.invalidRequest(rpcRequest);
+      throw this.invalidRequest(rpcRequest);
     },    
     
     
     /**
      * Returns the service object on which the service method will
-     * be called
+     * be called.
      * 
-     * @param {Object} rpcObject
-     * @param {Object} res The response object
+     * @param {Object} rpcRequest
      */
-    getServiceObject : function( rpcReq, res )
+    getServiceObject : function( rpcRequest )
     {
       /*
-       * if a service name has been supplied ...
+       * if a service name has been supplied ... (non-standard)
+       * 
        */
-      if( rpcReq.service )
+      if( rpcRequest.service && rpcRequest.service !== "none" ) //FIXME
       {
         /*
          * ... check and sanitize service name 
          */
-        var service = rpcReq.service;
-        if ( ! typeof service == "string" || service.match(/[^a-zA-Z_]/) )
+        var service = rpcRequest.service;
+        if ( typeof service != "string" || service.match(/[^a-zA-Z_]/) )
         {
-          var error = this.invalidService( rpcReq );
-          this.send( res, error.response, error.httpCode );
-          return;
+          throw this.invalidService( rpcRequest, service );
         }
         
         /*
@@ -490,7 +521,7 @@ qx.Class.define("rpcnode.Server",
          */
         if ( this.__services[ service ] )
         {
-          return  this.__services[ service ];
+          return this.__services[ service ];
         }
         
         /*
@@ -500,38 +531,74 @@ qx.Class.define("rpcnode.Server",
         try
         {
           var obj = require( "./" + service );
-          if( ! qx.class.hasInterface(rpcnode.Service) )
+          if( ! qx.class.hasInterface( rpcnode.Service ) )
           {
-            var error = this.invalidService( rpcReq );
-            this.send( res, error.response, error.httpCode );
-            return;
+            throw this.invalidService( rpcRequest, service );
           }
+          
+          /*
+           * cache object and return it
+           */
+          this.__services[ service ] = obj;
           return obj;
         }
         catch( e )
         {
-          var error = this.serviceNotFound( rpcReq );
-          this.send( res, error.response, error.httpCode );
-          return;
+          throw this.serviceNotFound( rpcRequest, service );
         }
+      }
+      
+      /*
+       * no service name (standard 1.0/2.0 json-rpc spec)
+       */
+      else
+      {
+        /*
+         * iterate through all registered services to find the method
+         * and return the service if found.
+         */
+        for ( var i=0; i < this.__anonymousServicesCounter; i++)
+        {
+          if ( typeof this.__services[i][rpcRequest.method] == "function" )
+          {
+            return this.__services[i];
+          }
+        }
+        
+        /*
+         * if not found, return with with error
+         */
+        throw this.methodNotFound( rpcRequest, rpcRequest.method );
       }
     },
     
     /**
      * Sends the jsonrpc response
-     * @param {Object} res
-     * @param {Object} rpcRespone
-     * @param {Object} httpCode
+     * @param {http.ServerRequest} res
+     * @param {http.ServerResponse} rpcRespone
+     * @param {Integer} httpCode
      */
-    send : function(res, rpcRespone, httpCode) 
+    send : function(res, rpcResponse, httpCode) 
     {
+      var headers, body = JSON.stringify(rpcResponse);
+      
+      /*
+       * "old-style" qooxdoo script transport
+       */
+      if ( res._ScriptTransport_id )
+      {
+        httpCode = 200;
+        headers = {'Content-Type': 'text/javascript'};
+        body = 'qx.io.remote.transport.Script._requestFinished(';
+        body += res._ScriptTransport_id +',' + JSON.stringify(rpcResponse) + ');';
+      }
+      
       /*
        * default resposes
        */
-      if (httpCode != 204) 
+      else if ( httpCode != 204 ) 
       {
-        res.sendHeader(httpCode, {'Content-Type': 'application/json-rpc'});
-        res.sendBody(JSON.stringify(rpcRespone));    
+        headers = {'Content-Type': 'application/json-rpc'};
       } 
       
       /*
@@ -539,12 +606,35 @@ qx.Class.define("rpcnode.Server",
        */
       else 
       {
-        res.sendHeader(204, {'Connection': 'close'});    
+        headers = {'Connection': 'close'};
+        body = "";
       }
       
-      res.finish();
+      console.log("http code: " + httpCode );
+      console.log("headers: " + JSON.stringify(headers));
+      console.log("body: " + body);
+      
+      /*
+       * send output
+       */
+      res.writeHead(httpCode, headers );
+      res.write(body);
+      res.end();
     },
     
+    /**
+     * Send an error message and log it to the console
+     * 
+     * @param {Object} res
+     *    The response object
+     * @param {Object} error
+     *    The error object
+     */
+    sendError : function (res, error )
+    {
+      console.log( JSON.stringify( error.response ) ); // FIXME 
+      this.send( res, error.response, error.httpCode );
+    },
     
     /**
      * Helper method to create json response
@@ -573,12 +663,6 @@ qx.Class.define("rpcnode.Server",
         };    
       }
     },
-
-    /*
-     -------------------------------------------------------------------------
-       NAMED ARGUMENT HANDLING
-     -------------------------------------------------------------------------
-     */ 
     
     /**
      * Takes a rpc object and populates the arguments parameter by inspecting
@@ -612,6 +696,7 @@ qx.Class.define("rpcnode.Server",
     /*
      -------------------------------------------------------------------------
        ERROR HANDLING
+       @todo use real error objects
      -------------------------------------------------------------------------
      */ 
 
@@ -647,27 +732,27 @@ qx.Class.define("rpcnode.Server",
       };
     },
     
-    invalidService : function(request) 
+    invalidService : function(request, service ) 
     {
       return {
         httpCode: 400, 
-        response: this.createResponse(null, this.createError(-32600, "Invalid Service."), request)
+        response: this.createResponse(null, this.createError(-32600, "Invalid Service '" + service + "'."), request)
       };
     },    
     
-    serviceNotFound : function(request) 
+    serviceNotFound : function(request, service ) 
     {
       return {
         httpCode: 404, 
-        response: this.createResponse(null, this.createError(-32601, "Service not found."), request)
+        response: this.createResponse(null, this.createError(-32601, "Service '" + service + "' not found."), request)
       };  
     },    
     
-    methodNotFound : function(request) 
+    methodNotFound : function(request, method ) 
     {
       return {
         httpCode: 404, 
-        response: this.createResponse(null, this.createError(-32601, "Method not found."), request)
+        response: this.createResponse(null, this.createError(-32601, "Method '" + method + "' not found."), request)
       };  
     },
     
@@ -688,3 +773,6 @@ qx.Class.define("rpcnode.Server",
     }
   } 
 });
+
+exports.Server   = rpcnode.Server;
+exports.IService = rpcnode.IService;
