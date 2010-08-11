@@ -20,7 +20,7 @@ import com.zenesis.qx.remote.annotations.Property;
  * @author "John Spackman <john.spackman@zenesis.com>"
  */
 @Properties({
-	@Property(value="children", onDemand=true, event="changeChildren", arrayType=AppFile.class),
+	@Property(value="children", onDemand=true, event="changeChildren", arrayType=AppFile.class, expire="expireChildren"),
 	@Property("contentType"),
 	@Property("folder"),
 	@Property("lastModified"),
@@ -266,6 +266,14 @@ public class AppFile implements Proxied {
 			return children;
 		loadChildren();
 		return children;
+	}
+	
+	/**
+	 * Flushes the cached value for the children property
+	 * @param property
+	 */
+	public void expireChildren(ProxyProperty property) {
+		children = null;
 	}
 	
 	/**

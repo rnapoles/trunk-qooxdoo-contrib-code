@@ -32,9 +32,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParseException;
@@ -77,17 +79,19 @@ public class ProxySessionTracker {
 		public final Proxied proxied;
 		public final ProxyType proxyType;
 		public final HashSet<ProxyType> extraTypes;
+		public final boolean sendProperties;
 
 		/**
 		 * Constructor, used for existing objects
 		 * @param serverId
 		 */
-		public Proxy(Proxied proxied, int serverId) {
+		public Proxy(Proxied proxied, int serverId, ProxyType proxyType, boolean sendProperties) {
 			super();
 			this.proxied = proxied;
 			this.serverId = serverId;
-			this.proxyType = null;
+			this.proxyType = proxyType;
 			this.extraTypes = null;
+			this.sendProperties = sendProperties;
 		}
 
 		/**
@@ -95,12 +99,13 @@ public class ProxySessionTracker {
 		 * @param proxyType
 		 * @param createNew
 		 */
-		public Proxy(Proxied proxied, int serverId, ProxyType proxyType) {
+		public Proxy(Proxied proxied, int serverId) {
 			super();
 			this.proxied = proxied;
 			this.serverId = serverId;
-			this.proxyType = proxyType;
+			this.proxyType = null;
 			this.extraTypes = null;
+			this.sendProperties = false;
 		}
 
 		/* (non-Javadoc)
@@ -114,10 +119,12 @@ public class ProxySessionTracker {
 				jgen.writeObjectField("classes", extraTypes);
 			
 			// If we have a proxyType, it also means that this is the first time the object is sent to the server
-			if (proxyType != null) {
+			if (sendProperties) {
 				jgen.writeObjectField("clazz", proxyType);
 				if (!proxyType.isInterface()) {
+					// Write property values
 					jgen.writeObjectFieldStart("values");
+					ArrayList<String> order = new ArrayList<String>();
 					for (ProxyType type = proxyType; type != null; type = type.getSuperType()) {
 						Collection<ProxyProperty> props = type.getProperties().values();
 						for (ProxyProperty prop : props) {
@@ -125,9 +132,29 @@ public class ProxySessionTracker {
 								continue;
 							Object value = prop.getValue(proxied);
 							jgen.writeObjectField(prop.getName(), value);
+							order.add(prop.getName());
 						}
 					}
 					jgen.writeEndObject();
+					if (!order.isEmpty())
+						jgen.writeObjectField("order", order);
+
+					// Write prefetch values
+					boolean prefetch = false;
+					for (ProxyType type = proxyType; type != null; type = type.getSuperType()) {
+						ProxyMethod[] methods = type.getMethods();
+						for (ProxyMethod method : methods) {
+							if (!method.isPrefetchResult())
+								continue;
+							if (!prefetch) {
+								jgen.writeObjectFieldStart("prefetch");
+								prefetch = true;
+							}
+							jgen.writeObjectField(method.getName(), method.getPrefetchValue(proxied));
+						}
+					}
+					if (prefetch)
+						jgen.writeEndObject();
 				}
 			}
 			jgen.writeEndObject();
@@ -180,6 +207,7 @@ public class ProxySessionTracker {
 	// Mapping all objects that the client knows about against the ID we assigned to them
 	private final HashMap<Integer, Proxied> objectsById = new HashMap<Integer, Proxied>();
 	private final HashMap<Proxied, Integer> objectIds = new HashMap<Proxied, Integer>();
+	private final HashSet<Proxied> invalidObjects = new HashSet<Proxied>();
 
 	// The Object mapper
 	private ProxyObjectMapper objectMapper = new ProxyObjectMapper(this);
@@ -269,8 +297,13 @@ public class ProxySessionTracker {
 		
 		// See if it's an object the client already knows about
 		Integer serverId = objectIds.get(obj);
-		if (serverId != null)
+		if (serverId != null) {
+			if (invalidObjects.remove(obj)) {
+				ProxyType type = ProxyTypeManager.INSTANCE.getProxyType((Class<Proxied>)obj.getClass());
+				return new Proxy(obj, serverId, type, true);
+			}
 			return new Proxy(obj, serverId);
+		}
 		
 		// See if the client already knows about the type
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType((Class<Proxied>)obj.getClass());
@@ -283,7 +316,17 @@ public class ProxySessionTracker {
 		objectIds.put(obj, serverId);
 		
 		// Return the information for the client
-		return new Proxy(obj, serverId, type);
+		return new Proxy(obj, serverId, type, true);
+	}
+	
+	/**
+	 * Marks an object as invalid so that the next time it's sent to the client, all of the
+	 * property values will be resent
+	 * @param obj
+	 */
+	public synchronized void invalidateCache(Proxied proxied) {
+		if (objectIds.containsKey(proxied))
+			invalidObjects.add(proxied);
 	}
 	
 	/**
@@ -361,7 +404,7 @@ public class ProxySessionTracker {
 	 * Returns the RequestHandler (if there is one)
 	 * @return null if no RequestHandler is in use
 	 */
-	/*package*/ RequestHandler getRequestHandler() {
+	public RequestHandler getRequestHandler() {
 		return requestHandler;
 	}
 	

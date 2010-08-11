@@ -27,8 +27,6 @@
  */
 package com.zenesis.qx.remote;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,8 +34,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.zenesis.qx.event.EventManager;
-import com.zenesis.qx.remote.annotations.AlwaysProxy;
-import com.zenesis.qx.remote.annotations.DoNotProxy;
 
 /**
  * This class is responsible for creating JSON proxy definitions for the client based
@@ -53,7 +49,7 @@ import com.zenesis.qx.remote.annotations.DoNotProxy;
  * @author John Spackman
  *
  */
-public class ProxyTypeManager implements ProxyTypeFactory {
+public class ProxyTypeManager {
 	
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ProxyTypeManager.class);
@@ -64,6 +60,9 @@ public class ProxyTypeManager implements ProxyTypeFactory {
 	// Cache of known ProxyTypes
 	private final HashMap<Class, ProxyType> proxyTypes = new HashMap<Class, ProxyType>();
 	
+	// Cache of known type factories
+	private final HashMap<Class, ProxyTypeFactory> factories = new HashMap<Class, ProxyTypeFactory>();
+	
 	/**
 	 * Constructor; also creates a default EventManager if one has not been set yet
 	 */
@@ -73,23 +72,13 @@ public class ProxyTypeManager implements ProxyTypeFactory {
 			new ProxyEventManager(this);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.zenesis.qx.remote.ProxyTypeFactory#newProxyType(com.zenesis.qx.remote.ProxyType, java.lang.Class, java.util.Set)
-	 */
-	@Override
-	public ProxyType newProxyType(ProxyType superType, Class clazz, Set<ProxyType> interfaces) {
-		if (!Proxied.class.isAssignableFrom(clazz))
-			return null;
-		return new ProxyTypeImpl(superType, clazz, interfaces);
-	}
-
 	/**
 	 * Returns a ProxyType for a given class, caching the result for future use
 	 * @param clazz
 	 * @return
 	 */
 	public ProxyType getProxyType(Class<? extends Proxied> clazz) {
-		return getProxyType(clazz, this);
+		return getProxyType(clazz, null);
 	}
 	
 	/**
@@ -136,10 +125,74 @@ public class ProxyTypeManager implements ProxyTypeFactory {
 			superType = getProxyType(clazz.getSuperclass(), factory);
 		
 		// Create the type
-		type = factory.newProxyType(superType, clazz, interfaces);
+		type = newProxyType(factory, superType, clazz, interfaces);
 		if (type != null)
 			proxyTypes.put(clazz, type);
 		return type;
+	}
+	
+	/**
+	 * Creates an instance of ProxyType; tries the factory first, then looks for annotations about the factory,
+	 * and falls back to default ProxyTypeImpl action.  This method is not expected to do anything other than
+	 * create the ProxyType because it is intended to be overridden if required.
+	 * @param factory the factory (can be null)
+	 * @param superType ProxyType for the superclass
+	 * @param clazz the class being instantiated
+	 * @param interfaces a list of ProxyType's for interfaces implemented by the clazz
+	 * @return
+	 */
+	protected ProxyType newProxyType(ProxyTypeFactory factory, ProxyType superType, Class clazz, Set<ProxyType> interfaces) {
+		ProxyType type = null;
+		
+		if (factory != null)
+			type = factory.newProxyType(superType, clazz, interfaces);
+		
+		if (type == null) {
+			com.zenesis.qx.remote.annotations.Proxied ann = getAnnotation(clazz, com.zenesis.qx.remote.annotations.Proxied.class);
+			if (ann != null && ann.factory() != ProxyTypeFactory.class) {
+				factory = getTypeFactory(ann.factory());
+				type = factory.newProxyType(superType, clazz, interfaces);
+			}
+		}
+		
+		if (type == null && Proxied.class.isAssignableFrom(clazz))
+			type = new ProxyTypeImpl(superType, clazz, interfaces);
+		
+		return type;
+	}	
+	
+	/**
+	 * Gets a ProxyTypeFactory instance from the cache, creating one if necessary
+	 * @param clazz
+	 * @return
+	 */
+	public ProxyTypeFactory getTypeFactory(Class<? extends ProxyTypeFactory> clazz) {
+		if (clazz == null)
+			return null;
+		ProxyTypeFactory factory = factories.get(clazz);
+		if (factory == null) {
+			try {
+				factory = clazz.newInstance();
+			} catch(IllegalAccessException e) {
+				throw new IllegalArgumentException("Cannot create factory " + clazz + ": " + e.getClass() + ": " + e.getMessage());
+			} catch(InstantiationException e) {
+				throw new IllegalArgumentException("Cannot create factory " + clazz + ": " + e.getClass() + ": " + e.getMessage());
+			}
+			factories.put(clazz, factory);
+		}
+		
+		return factory;
+	}
+
+	/**
+	 * Tiny helper method to get an annotation (uses generics to reduce the text typed in code)
+	 * @param <T>
+	 * @param clazz
+	 * @param annotationClass
+	 * @return
+	 */
+	private <T> T getAnnotation(Class clazz, Class<T> annotationClass) {
+		return (T)clazz.getAnnotation(annotationClass);
 	}
 	
 }

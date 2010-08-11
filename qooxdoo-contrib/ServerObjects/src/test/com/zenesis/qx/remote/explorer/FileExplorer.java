@@ -29,9 +29,6 @@ package com.zenesis.qx.remote.explorer;
 
 import com.zenesis.qx.remote.AppFile;
 import com.zenesis.qx.remote.BasicBootstrap;
-import com.zenesis.qx.remote.Proxied;
-import com.zenesis.qx.remote.annotations.Properties;
-import com.zenesis.qx.remote.annotations.Property;
 
 /**
  * Bootstrap class for FileExplorer demo

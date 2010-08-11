@@ -27,8 +27,9 @@
  */
 package com.zenesis.qx.remote;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -37,7 +38,6 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonSerializable;
 import org.codehaus.jackson.map.SerializerProvider;
 
-import com.zenesis.qx.remote.annotations.Function;
 import com.zenesis.qx.remote.annotations.Remote;
 
 /**
@@ -63,6 +63,8 @@ public class ProxyMethod implements JsonSerializable {
 	private final Method method;
 	private final Remote.Array array;
 	private final Class arrayType;
+	private final boolean prefetchResult;
+	private final boolean cacheResult;
 	
 	/**
 	 * @param name
@@ -74,10 +76,13 @@ public class ProxyMethod implements JsonSerializable {
 		this.method = method;
 		
 		Class arrayType = method.getReturnType();
-		if (arrayType.isArray() || ArrayList.class.isAssignableFrom(arrayType)) {
-			// How to present on the client
+		boolean prefetchResult = false;
+		boolean cacheResult = false;
+		
+		if (arrayType.isArray() || Iterable.class.isAssignableFrom(arrayType)) {
+			// How to present on the client - only ArrayList by default is wrapped on the client
 			Remote.Array array;
-			if (arrayType.isArray()) {
+			if (arrayType.isArray() || !ArrayList.class.isAssignableFrom(arrayType)) {
 				arrayType = arrayType.getComponentType();
 				array = Remote.Array.NATIVE;
 			} else {
@@ -86,12 +91,17 @@ public class ProxyMethod implements JsonSerializable {
 			}
 			
 			// Component type
-			Function anno = method.getAnnotation(Function.class);
+			com.zenesis.qx.remote.annotations.Method anno = method.getAnnotation(com.zenesis.qx.remote.annotations.Method.class);
 			if (anno != null) {
 				if (anno.array() != Remote.Array.DEFAULT)
 					array = anno.array();
 				if (anno.arrayType() != Object.class)
 					arrayType = anno.arrayType();
+				method.getReturnType();
+				if (method.getParameterTypes().length == 0) {
+					prefetchResult = anno.prefetchResult();
+					cacheResult = anno.cacheResult()||prefetchResult;
+				}
 			}
 			this.array = array;
 			this.arrayType = arrayType;
@@ -99,6 +109,8 @@ public class ProxyMethod implements JsonSerializable {
 			array = null;
 			this.arrayType = null;
 		}
+		this.prefetchResult = prefetchResult;
+		this.cacheResult = cacheResult;
 	}
 
 	/* (non-Javadoc)
@@ -113,6 +125,8 @@ public class ProxyMethod implements JsonSerializable {
 		if (Proxied.class.isAssignableFrom(clazz)) {
 			ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(clazz);
 			jgen.writeObjectField("returnType", type);
+			if (cacheResult)
+				jgen.writeBooleanField("cacheResult", cacheResult);
 		}
 		
 		// Whether to wrap the return
@@ -134,12 +148,48 @@ public class ProxyMethod implements JsonSerializable {
 		
 		jgen.writeEndObject();
 	}
+	
+	/**
+	 * Gets the prefetch value
+	 * @param self
+	 * @return
+	 */
+	public Object getPrefetchValue(Object self) {
+		try {
+			return method.invoke(self);
+		}catch(InvocationTargetException e) {
+			throw new IllegalStateException("Error while invoking " + method + " on " + self + ": " + e.getCause().getMessage(), e.getCause());
+		}catch(IllegalAccessException e) {
+			throw new IllegalStateException("Error while invoking " + method + " on " + self + ": " + e.getMessage(), e);
+		}
+	}
 
 	/**
 	 * @return the name
 	 */
 	public String getName() {
 		return method.getName();
+	}
+
+	/**
+	 * @return the method
+	 */
+	public Method getMethod() {
+		return method;
+	}
+
+	/**
+	 * @return the prefetchResult
+	 */
+	public boolean isPrefetchResult() {
+		return prefetchResult;
+	}
+
+	/**
+	 * @return the cacheResult
+	 */
+	public boolean isCacheResult() {
+		return cacheResult;
 	}
 
 	/* (non-Javadoc)

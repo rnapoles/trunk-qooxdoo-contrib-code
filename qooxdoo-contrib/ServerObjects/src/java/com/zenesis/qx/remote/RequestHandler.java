@@ -66,6 +66,7 @@ public class RequestHandler {
 	private static final String CMD_BOOTSTRAP = "bootstrap";	// Reset application session and get bootstrap
 	private static final String CMD_CALL = "call";				// Call server object method 
 	private static final String CMD_EDIT_ARRAY = "edit-array";	// Changes to an array 
+	private static final String CMD_EXPIRE = "expire";			// Expires a flushed property value 
 	private static final String CMD_LISTEN = "listen";			// Add an event listener 
 	private static final String CMD_NEW = "new";				// Create a new object 
 	private static final String CMD_SET = "set";				// Set a property value 
@@ -184,6 +185,9 @@ public class RequestHandler {
 		else if (cmd.equals(CMD_EDIT_ARRAY))
 			cmdEditArray(jp);
 		
+		else if (cmd.equals(CMD_EXPIRE))
+			cmdExpire(jp);
+		
 		else if (cmd.equals(CMD_LISTEN))
 			cmdAddListener(jp);
 		
@@ -223,6 +227,7 @@ public class RequestHandler {
 		String methodName = getFieldValue(jp, "methodName", String.class);
 		Proxied serverObject = getProxied(serverId);
 		
+		
 		// Onto what should be parameters
 		jp.nextToken();
 		
@@ -230,10 +235,29 @@ public class RequestHandler {
 		//	method names (ie no overridden methods) but Java needs a list of parameter types
 		//	so we do it ourselves.
 		Method method = null;
-		for (Method m : serverObject.getClass().getMethods())
-			if (m.getName().equals(methodName)) {
-				method = m;
-				break;
+		if (methodName.length() > 3 && (methodName.startsWith("get") || methodName.startsWith("set"))) {
+			String name = methodName.substring(3, 4).toLowerCase();
+			if (methodName.length() > 4)
+				name += methodName.substring(4);
+			for (ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass()); type != null; type = type.getSuperType()) {
+				ProxyProperty property = type.getProperty(name);
+				if (property != null) {
+					if (methodName.startsWith("get"))
+						method = property.getGetMethod();
+					else
+						method = property.getSetMethod();
+					break;
+				}
+			}
+		}
+		if (method == null)
+			for (ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass()); type != null && method == null; type = type.getSuperType()) {
+				ProxyMethod[] methods = type.getMethods();
+				for (int i = 0; i < methods.length; i++)
+					if (methods[i].getName().equals(methodName)) {
+						method = methods[i].getMethod();
+						break;
+					}
 			}
 		if (method == null)
 			throw new ServletException("Cannot find method called " + methodName + " in " + serverObject);
@@ -301,6 +325,26 @@ public class RequestHandler {
 	}
 	
 	/**
+	 * Sent when the client expires a cached property value, allowing the server property 
+	 * to also its flush caches; expects a serverId and propertyName
+	 * @param jp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void cmdExpire(JsonParser jp) throws ServletException, IOException {
+		// Get the basics
+		int serverId = getFieldValue(jp, "serverId", Integer.class);
+		String propertyName = getFieldValue(jp, "propertyName", String.class);
+
+		Proxied serverObject = getProxied(serverId);
+		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass());
+		ProxyProperty prop = type.getProperty(propertyName);
+		prop.expire(serverObject);
+		
+		jp.nextToken();
+	}
+	
+	/**
 	 * Handles dynamic changes to a qa.data.Array instance without having a complete replacement; expects a 
 	 * serverId, propertyName, type (one of "add", "remove", "order"), start, end, and optional array of items 
 	 * @param jp
@@ -325,7 +369,6 @@ public class RequestHandler {
 		Proxied serverObject = getProxied(serverId);
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass());
 		ProxyProperty prop = type.getProperty(propertyName);
-		Class propClass = prop.getPropertyArrayClass();
 		
 		// Get the optional array of items
 		if (jp.nextToken() == JsonToken.FIELD_NAME &&

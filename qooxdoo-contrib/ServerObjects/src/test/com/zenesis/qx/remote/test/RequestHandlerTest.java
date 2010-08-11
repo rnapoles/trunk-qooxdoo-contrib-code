@@ -31,6 +31,6 @@ public class RequestHandlerTest extends AbstractRemoteTestCase {
 
 	public void testBootstrap() throws Exception {
 		String str = postRequest("{ \"cmd\": \"bootstrap\" }");
-		//System.out.println(str);
+		System.out.println(str);
 	}
 }

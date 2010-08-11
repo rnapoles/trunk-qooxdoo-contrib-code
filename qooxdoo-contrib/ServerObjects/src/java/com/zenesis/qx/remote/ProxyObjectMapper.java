@@ -41,6 +41,7 @@ import com.zenesis.qx.json.JsonSerialiserFactory;
  */
 public class ProxyObjectMapper extends ObjectMapper {
 	
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(ProxyObjectMapper.class);
 	
 	private final ProxySessionTracker tracker;

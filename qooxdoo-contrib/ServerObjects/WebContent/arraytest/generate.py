@@ -25,7 +25,7 @@
 import sys, os, re, subprocess
 
 CMD_PYTHON = 'python'
-QOOXDOO_PATH = '../../../qrjo/qooxdoo'
+QOOXDOO_PATH = '../../qooxdoo'
 
 def getQxPath():
     path = QOOXDOO_PATH
