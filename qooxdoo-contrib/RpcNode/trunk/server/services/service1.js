@@ -13,21 +13,35 @@
    Authors:
      * Martin Wittemann (original implementation)
      * Christian Boulanger (port to qooxdoo-contrib & to qooxdoo-rpc )
-   
-   Dependencies:
-     * node-promise (http://github.com/kriszyp/node-promise)
 
 ************************************************************************ */
 
 var 
-  jsonrpc  = require('./jsonrpc');
-  service1 = require('./services/service1');
-  
-var server = new jsonrpc.Server(8888);
-server.addService( service1 );
-server.addService( service1, "test" );
-server.start();
+  sys = require('sys'),
+  fs  = require('../lib/fs-promise');  // Async filesystem operations;
+ 
+/**
+ * RPC-Methods
+ */ 
+ 
+this.echo = function(a) {
+  return a;
+}
 
+this.add = function(a, b) {
+  return a + b;
+}
 
+this.note = function(a, b) {
+  sys.debug("notification " + a + " - " + b);
+}
 
-  
+// async call
+this.ls = function() {
+  return sys.exec("ls .");
+}
+
+// async call
+this.pwd = function() {
+  return sys.exec("pwd");
+}
