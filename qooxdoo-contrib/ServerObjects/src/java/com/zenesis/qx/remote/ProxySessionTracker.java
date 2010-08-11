@@ -123,19 +123,24 @@ public class ProxySessionTracker {
 				jgen.writeObjectField("clazz", proxyType);
 				if (!proxyType.isInterface()) {
 					// Write property values
-					jgen.writeObjectFieldStart("values");
+					boolean sentValues = false;
 					ArrayList<String> order = new ArrayList<String>();
 					for (ProxyType type = proxyType; type != null; type = type.getSuperType()) {
 						Collection<ProxyProperty> props = type.getProperties().values();
 						for (ProxyProperty prop : props) {
 							if (prop.isOnDemand())
 								continue;
+							if (!sentValues) {
+								jgen.writeObjectFieldStart("values");
+								sentValues = true;
+							}
 							Object value = prop.getValue(proxied);
 							jgen.writeObjectField(prop.getName(), value);
 							order.add(prop.getName());
 						}
 					}
-					jgen.writeEndObject();
+					if (sentValues)
+						jgen.writeEndObject();
 					if (!order.isEmpty())
 						jgen.writeObjectField("order", order);
 

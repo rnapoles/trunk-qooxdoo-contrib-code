@@ -9,6 +9,7 @@
     "properties" : {
       "eightB" : {
         "sync" : "queue",
+        "event" : "changeEightB",
         "nullable" : true,
         "readOnly" : true,
         "array" : "native",
@@ -21,11 +22,17 @@
           }
         }
       }
+    },
+    "events" : {
+      "changeEightB" : {
+        "isProperty" : true
+      }
     }
   },
   "values" : {
     "eightB" : null
-  }
+  },
+  "order" : [ "eightB" ]
 }
 {
   "serverId" : 1,
@@ -38,15 +45,22 @@
     "properties" : {
       "eightB" : {
         "sync" : "queue",
+        "event" : "changeEightB",
         "nullable" : true,
         "readOnly" : true,
         "array" : "native",
         "clazz" : "com.zenesis.qx.remote.test.serialisation.IEightB"
       }
+    },
+    "events" : {
+      "changeEightB" : {
+        "isProperty" : true
+      }
     }
   },
   "values" : {
     "eightB" : null
-  }
+  },
+  "order" : [ "eightB" ]
 }
 

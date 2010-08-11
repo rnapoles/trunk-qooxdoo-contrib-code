@@ -76,6 +76,7 @@ public class TestProperties implements ITestProperties {
 		return "read-only";
 	}
 
+	@Override
 	public String getChangeLog() {
 		return changeLog;
 	}

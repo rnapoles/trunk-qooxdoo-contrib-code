@@ -9,14 +9,22 @@
     "properties" : {
       "propertyInt" : {
         "sync" : "queue",
+        "event" : "changePropertyInt",
         "nullable" : true,
-        "readOnly" : true
+        "readOnly" : true,
+        "check" : "Integer"
+      }
+    },
+    "events" : {
+      "changePropertyInt" : {
+        "isProperty" : true
       }
     }
   },
   "values" : {
     "propertyInt" : 34
-  }
+  },
+  "order" : [ "propertyInt" ]
 }
 {
   "serverId" : 1,
@@ -30,13 +38,22 @@
     "properties" : {
       "stringProperty" : {
         "sync" : "queue",
+        "event" : "changeStringProperty",
         "nullable" : true,
-        "readOnly" : true
+        "readOnly" : true,
+        "check" : "String"
+      }
+    },
+    "events" : {
+      "changeStringProperty" : {
+        "isProperty" : true
       }
     }
   },
   "values" : {
-    "stringProperty" : "34"
-  }
+    "stringProperty" : "34",
+    "propertyInt" : 34
+  },
+  "order" : [ "stringProperty", "propertyInt" ]
 }
 

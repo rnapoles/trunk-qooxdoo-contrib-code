@@ -53,6 +53,101 @@ import com.zenesis.qx.remote.annotations.Remote.Array;
 
 public class ProxyTypeImpl implements ProxyType {
 
+	/*
+	 * Helper class to track methods
+	 */
+	private final class MethodsCompiler {
+		// Methods we found
+		final HashMap<String, Method> methods = new HashMap<String, Method>();
+		
+		// Methods that should not be proxied
+		final HashSet<String> doNotProxyMethods = new HashSet<String>();
+		
+		/**
+		 * Adds all methods from a given class
+		 * @param fromClass
+		 * @param defaultProxy
+		 */
+		public void addMethods(Class fromClass, boolean defaultProxy) {
+			boolean explicitOnly = fromClass.isAnnotationPresent(ExplicitProxyOnly.class);
+			Method[] ifcMethods = fromClass.getDeclaredMethods();
+			for (Method method : ifcMethods) {
+				method.setAccessible(true);// Short cut access controls validation
+				if (explicitOnly && !method.isAnnotationPresent(AlwaysProxy.class) && !method.isAnnotationPresent(com.zenesis.qx.remote.annotations.Method.class))
+					continue;
+
+				if (method.isAnnotationPresent(DoNotProxy.class)) {
+					doNotProxyMethods.add(method.getName());
+					continue;
+				}
+				
+				Method existing = methods.get(method.getName());
+				if (existing != null) {
+					// Method overloading is not possible
+					if (isConflicting(method, existing))
+						throw new IllegalArgumentException("Cannot create a proxy for " + clazz + 
+								" because it has overloaded method " + method + " first seen in " + existing);
+				}
+				Boolean canProxy = canProxy(fromClass, method);
+				if (canProxy == null)
+					canProxy = defaultProxy;
+				if (canProxy)
+					methods.put(method.getName(), method);
+			}
+		}
+		
+		/**
+		 * Removes all methods listed in the super type (because super type is already
+		 * defined)
+		 */
+		public void removeSuperTypeMethods() {
+			for (ProxyType tmpType = superType; tmpType != null; tmpType = tmpType.getSuperType()) {
+				for (ProxyMethod method : tmpType.getMethods())
+					methods.remove(method.getName());
+			}
+		}
+		
+		/**
+		 * Removes any methods which are property accessor methods
+		 * @param prop
+		 */
+		public void removePropertyAccessors(ProxyProperty prop) {
+			String upname = Character.toUpperCase(prop.getName().charAt(0)) + prop.getName().substring(1);
+			methods.remove("get" + upname);
+			methods.remove("set" + upname);
+			methods.remove("is" + upname);
+			if (prop.getSerializeMethod() != null)
+				methods.remove(prop.getSerializeMethod().getName());
+			if (prop.getDeserializeMethod() != null)
+				methods.remove(prop.getDeserializeMethod().getName());
+		}
+		
+		/**
+		 * Checks that the list of methods is valid, i.e. that there are no conflicts with DoNotProxy
+		 * @throws IllegalArgumentException
+		 */
+		public void checkValid() throws IllegalArgumentException {
+			for (String name : doNotProxyMethods)
+				if (methods.containsKey(name)) {
+					throw new IllegalArgumentException("Cannot create a proxy for " + clazz + 
+							" because it has conflicting DoNotProxy for method " + name);
+				}
+		}
+		
+		/**
+		 * Converts the list of methods to a sorted array of ProxyMethods
+		 * @return
+		 */
+		public ProxyMethod[] toArray() {
+			ArrayList<ProxyMethod> proxyMethods = new ArrayList<ProxyMethod>();
+			for (Method method : methods.values())
+				proxyMethods.add(new ProxyMethod(method));
+			Collections.sort(proxyMethods, ProxyMethod.ALPHA_COMPARATOR);
+			
+			return proxyMethods.toArray(new ProxyMethod[proxyMethods.size()]);
+		}
+	}
+
 	// The class being represented
 	private final Class clazz;
 	
@@ -87,29 +182,27 @@ public class ProxyTypeImpl implements ProxyType {
 		this.interfaces = interfaces;
 		this.clazz = clazz;
 		
+		MethodsCompiler methodsCompiler = new MethodsCompiler();
+		
 		// Get a complete list of methods from the interfaces that the new class has to 
 		//	implement; we include methods marked as DoNotProxy so that we can check for 
 		//	conflicting instructions
-		HashMap<String, Method> methods = new HashMap<String, Method>();
 		if (!clazz.isInterface()) {
 			// Get a full list of the interfaces which our class has to implement
 			HashSet<ProxyType> allInterfaces = new HashSet<ProxyType>();
 			getAllInterfaces(allInterfaces, interfaces);
 
 			for (ProxyType ifcType : allInterfaces)
-				addMethods(clazz, methods, ifcType.getClazz(), true);
+				methodsCompiler.addMethods(ifcType.getClazz(), true);
 		}
 		
 		// If the class does not have any proxied interfaces or the class is marked with
 		//	the AlwaysProxy annotation, then we take methods from the class definition
-		addMethods(clazz, methods, clazz, !clazz.isAnnotationPresent(ExplicitProxyOnly.class) &&
+		methodsCompiler.addMethods(clazz, !clazz.isAnnotationPresent(ExplicitProxyOnly.class) &&
 				(clazz.isInterface() || interfaces.isEmpty() || clazz.isAnnotationPresent(AlwaysProxy.class)));
 			
-		// Remove any methods which are already defined in the super types
-		for (ProxyType tmpType = superType; tmpType != null; tmpType = tmpType.getSuperType()) {
-			for (ProxyMethod method : tmpType.getMethods())
-				methods.remove(method.getName());
-		}
+		methodsCompiler.checkValid();
+		methodsCompiler.removeSuperTypeMethods();
 		
 		// Load properties
 		HashMap<String, ProxyEvent> events = new HashMap<String, ProxyEvent>();
@@ -132,16 +225,8 @@ public class ProxyTypeImpl implements ProxyType {
 		}
 		
 		// Remove property accessors
-		for (ProxyProperty prop : properties.values()) {
-			String upname = Character.toUpperCase(prop.getName().charAt(0)) + prop.getName().substring(1);
-			methods.remove("get" + upname);
-			methods.remove("set" + upname);
-			methods.remove("is" + upname);
-			if (prop.getSerializeMethod() != null)
-				methods.remove(prop.getSerializeMethod().getName());
-			if (prop.getDeserializeMethod() != null)
-				methods.remove(prop.getDeserializeMethod().getName());
-		}
+		for (ProxyProperty prop : properties.values())
+			methodsCompiler.removePropertyAccessors(prop);
 		
 		// Load events
 		if (clazz.isAnnotationPresent(Events.class)) {
@@ -161,50 +246,7 @@ public class ProxyTypeImpl implements ProxyType {
 		// Save
 		this.properties = properties.isEmpty() ? null : properties;
 		this.events = events.isEmpty() ? null : events;
-		
-		// Now remove the DoNotProxy methods
-		ArrayList<ProxyMethod> proxyMethods = new ArrayList<ProxyMethod>();
-		for (Method method : methods.values())
-			if (!method.isAnnotationPresent(DoNotProxy.class))
-				proxyMethods.add(new ProxyMethod(method));
-		Collections.sort(proxyMethods, ProxyMethod.ALPHA_COMPARATOR);
-		
-		this.methods = proxyMethods.toArray(new ProxyMethod[proxyMethods.size()]);
-	}
-	
-	protected void addMethods(Class targetClass, HashMap<String, Method> methods, Class fromClass, boolean defaultProxy) {
-		boolean explicitOnly = fromClass.isAnnotationPresent(ExplicitProxyOnly.class);
-		Method[] ifcMethods = fromClass.getDeclaredMethods();
-		for (Method method : ifcMethods) {
-			method.setAccessible(true);// Short cut access controls validation
-			if (explicitOnly && !method.isAnnotationPresent(AlwaysProxy.class) && !method.isAnnotationPresent(com.zenesis.qx.remote.annotations.Method.class))
-				continue;
-			Method existing = methods.get(method.getName());
-			
-			// The same method can appear more than once, but only if they are
-			//	identical - we just ignore it
-			if (existing != null) {
-				// If the class is declaring a DoNotProxy method that a parent interface is allowing,
-				//	that's an error
-				boolean dnpMethod = method.isAnnotationPresent(DoNotProxy.class);
-				boolean dnpExisting = existing.isAnnotationPresent(DoNotProxy.class);
-				if (existing != null && dnpMethod && !dnpExisting)
-					throw new IllegalArgumentException("Cannot create a proxy for " + clazz + 
-							" because it has conflicting DoNotProxy between " + method + " and " + existing);
-				
-				// Method overloading is not possible
-				if (isConflicting(method, existing))
-					throw new IllegalArgumentException("Cannot create a proxy for " + targetClass + 
-							" because it has overloaded method " + method + " first seen in " + existing);
-				continue;
-			}
-			
-			Boolean canProxy = canProxy(fromClass, method);
-			if (canProxy == null)
-				canProxy = defaultProxy;
-			if (canProxy)
-				methods.put(method.getName(), method);
-		}
+		this.methods = methodsCompiler.toArray();
 	}
 	
 	protected boolean isConflicting(Method method, Method existing) {
