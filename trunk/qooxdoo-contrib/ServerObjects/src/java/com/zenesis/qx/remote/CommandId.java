@@ -37,12 +37,21 @@ public class CommandId {
 		MAP_CLIENT_ID("mapClientId"),
 		RESTORE_VALUE("restore"),
 		SET_VALUE("set"),
-		EXPIRE("expire");
+		EXPIRE("expire"),
+		DEFINE("define"),
+		EDIT_ARRAY("edit-array", true);
 		
-		public String remoteId;
+		public final String remoteId;
+		public final boolean cumulative;
 
 		private CommandType(String remoteId) {
 			this.remoteId = remoteId;
+			this.cumulative = false;
+		}
+
+		private CommandType(String remoteId, boolean cumulative) {
+			this.remoteId = remoteId;
+			this.cumulative = cumulative;
 		}
 	}
 	public final CommandType type;

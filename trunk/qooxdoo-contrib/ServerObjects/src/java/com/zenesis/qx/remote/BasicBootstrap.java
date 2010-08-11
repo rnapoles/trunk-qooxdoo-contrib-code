@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-
 import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
@@ -96,7 +94,7 @@ public class BasicBootstrap implements UploadReceiver {
 			partialUrl = partialUrl.substring(0, pos);
 		partialUrl = partialUrl.replace('\\', '/');
 		
-		if (!partialUrl.startsWith(appFile.getUrl()))
+		if (partialUrl.startsWith("/") && !partialUrl.startsWith(appFile.getUrl()))
 			throw new IllegalArgumentException("Cannot get AppFile because the url " + partialUrl + " is not inside the app files root");
 		partialUrl = partialUrl.substring(appFile.getUrl().length());
 		

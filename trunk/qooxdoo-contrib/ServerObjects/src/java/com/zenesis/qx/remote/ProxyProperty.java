@@ -40,6 +40,7 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonSerializable;
 import org.codehaus.jackson.map.SerializerProvider;
 
+import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
 import com.zenesis.qx.remote.annotations.Remote;
 import com.zenesis.qx.remote.annotations.Remote.Sync;
@@ -64,23 +65,46 @@ public class ProxyProperty implements JsonSerializable {
 	
 	private static final Class[] NO_CLASSES = {};
 
+	// The class the property belongs to
 	private final Class clazz;
+	
+	// Name of the property
 	private final String name;
+	
+	// Whether to sync
 	private final Remote.Sync sync;
+	
+	// Whether on demand
 	private final boolean onDemand;
+	
+	// Any event that gets fired
 	private final ProxyEvent event;
+	
+	// Whether null is a valid value
 	private final boolean nullable;
+	
+	// Whether to send exceptions which occur while setting a value received from teh client
 	private Boolean sendExceptions;
+	
+	// If it's an array, how to represent on the client
 	private Remote.Array array;
+	
+	// Whether readonly
 	private Boolean readOnly;
 	
-	private Method getMethod;
-	private Method setMethod;
-	private Method serializeMethod;
-	private Method deserializeMethod;
-	private Field field;
+	// The data type of the property and  (if an array) the component type of the array
 	private Class propertyClass;
 	private Class propertyArrayClass;
+	
+	// Accessors or field
+	private Method getMethod;
+	private Method setMethod;
+	private Field field;
+	
+	// Translators
+	private Method serializeMethod;
+	private Method deserializeMethod;
+	private Method expireMethod;
 	
 	/**
 	 * @param name
@@ -111,14 +135,17 @@ public class ProxyProperty implements JsonSerializable {
 	 * Creates a ProxyProperty from a Property annotation
 	 * @param anno
 	 */
-	public ProxyProperty(Class clazz, Property anno) {
+	public ProxyProperty(Class clazz, Property anno, Properties annoProperties) {
 		super();
 		this.clazz = clazz;
 		name = anno.value();
 		sync = anno.sync();
-		if (anno.event().length() == 0)
-			event = null;
-		else 
+		if (anno.event().length() == 0) {
+			if (annoProperties.autoEvents())
+				event = new ProxyEvent("change" + upname(name));
+			else
+				event = null;
+		} else 
 			event = new ProxyEvent(anno.event());
 		nullable = anno.nullable();
 		onDemand = anno.onDemand();
@@ -130,9 +157,11 @@ public class ProxyProperty implements JsonSerializable {
 		if (anno.readOnly() != Remote.Toggle.DEFAULT)
 			readOnly = anno.readOnly().booleanValue;
 		if (anno.serialize().length() > 0)
-			serializeMethod = getSerializeMethod(anno.serialize());
+			serializeMethod = findSerializeMethod(anno.serialize());
 		if (anno.deserialize().length() > 0)
-			deserializeMethod = getSerializeMethod(anno.deserialize());
+			deserializeMethod = findSerializeMethod(anno.deserialize());
+		if (anno.expire().length() > 0)
+			expireMethod = findExpireMethod(anno.expire());
 	}
 
 	/**
@@ -140,14 +169,30 @@ public class ProxyProperty implements JsonSerializable {
 	 * @param name
 	 * @return
 	 */
-	private Method getSerializeMethod(String name) {
+	private Method findSerializeMethod(String name) {
 		try {
 			Method method = clazz.getMethod(name, new Class[] { ProxyProperty.class, Object.class });
 			if (method.getReturnType() == Void.TYPE)
 				throw new IllegalArgumentException("Cannot find suitable de/serialisation method (void return types not allowed): " + method);
+			method.setAccessible(true);
 			return method;
 		}catch(NoSuchMethodException e) {
 			throw new IllegalArgumentException("Cannot find a de/serialisation method called " + name + ": " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Helper method to get a (de-)serializer method
+	 * @param name
+	 * @return
+	 */
+	private Method findExpireMethod(String name) {
+		try {
+			Method method = clazz.getMethod(name, new Class[] { ProxyProperty.class });
+			method.setAccessible(true);
+			return method;
+		}catch(NoSuchMethodException e) {
+			throw new IllegalArgumentException("Cannot find an expire method called " + name + ": " + e.getMessage());
 		}
 	}
 	
@@ -171,7 +216,7 @@ public class ProxyProperty implements JsonSerializable {
 
 		if (field == null) {
 			// Try for a getXxxx() method
-			String upname = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+			String upname = upname(name);
 			try {
 				getMethod = clazz.getMethod("get" + upname, NO_CLASSES);
 				getMethod.setAccessible(true); // Disable access tests, MAJOR performance improvement
@@ -207,13 +252,17 @@ public class ProxyProperty implements JsonSerializable {
 		if (serializeMethod != null && serializeMethod.getReturnType() != Object.class)
 			propertyClass = serializeMethod.getReturnType();
 		
-		boolean isArrayList = ArrayList.class.isAssignableFrom(getMethod.getReturnType());
+		boolean isCollection = Iterable.class.isAssignableFrom(propertyClass);
 		
 		// ArrayList
-		if (isArrayList && propertyArrayClass == null) {
+		if (isCollection && propertyArrayClass == null) {
 			propertyArrayClass = Object.class;
-			if (array == null)
-				array = Remote.Array.WRAP;
+			if (array == null) {
+				if (ArrayList.class.isAssignableFrom(getMethod.getReturnType()))
+					array = Remote.Array.WRAP;
+				else
+					array = Remote.Array.NATIVE;
+			}
 			
 		// Array
 		} else if (propertyClass.isArray()) {
@@ -230,7 +279,7 @@ public class ProxyProperty implements JsonSerializable {
 		if (readOnly == null) {
 			if (field != null || setMethod != null)
 				readOnly = false;
-			else if (setMethod == null && isArrayList)
+			else if (setMethod == null && isCollection)
 				readOnly = false;
 			else
 				readOnly = true;
@@ -283,6 +332,25 @@ public class ProxyProperty implements JsonSerializable {
 		} catch(IllegalArgumentException e) {
 			throw new IllegalArgumentException("Failed to set value for property " + name + " in class " + clazz + " to value " + value, e);
 		}
+	}
+
+	/**
+	 * Expires the cached value, in response to the same event on the client
+	 * @param proxied
+	 */
+	public void expire(Proxied proxied) {
+		getAccessors();
+		if (expireMethod != null)
+			try {
+				expireMethod.invoke(proxied, this);
+			} catch(InvocationTargetException e) {
+				Throwable t = e.getTargetException();
+				throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + t.getMessage(), t);
+			} catch(IllegalAccessException e) {
+				throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + e.getMessage(), e);
+			} catch(IllegalArgumentException e) {
+				throw new IllegalArgumentException("Failed to expire value for property " + name + " in class " + clazz, e);
+			}
 	}
 	
 	/**
@@ -366,10 +434,10 @@ public class ProxyProperty implements JsonSerializable {
 				gen.writeStringField("check", "Boolean");
 			else if (clazz == int.class || clazz == Integer.class)
 				gen.writeStringField("check", "Integer");
-			else if (clazz == double.class || clazz == Double.class)
-				gen.writeStringField("check", "Double");
-			else if (clazz == float.class || clazz == Float.class)
-				gen.writeStringField("check", "Float");
+//			else if (clazz == double.class || clazz == Double.class)
+//				gen.writeStringField("check", "Double");
+//			else if (clazz == float.class || clazz == Float.class)
+//				gen.writeStringField("check", "Float");
 			else if (clazz == char.class || clazz == String.class)
 				gen.writeStringField("check", "String");
 			else if (Date.class.isAssignableFrom(clazz))
@@ -452,6 +520,20 @@ public class ProxyProperty implements JsonSerializable {
 		return deserializeMethod;
 	}
 
+	/**
+	 * @return the getMethod
+	 */
+	public Method getGetMethod() {
+		return getMethod;
+	}
+
+	/**
+	 * @return the setMethod
+	 */
+	public Method getSetMethod() {
+		return setMethod;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -460,4 +542,13 @@ public class ProxyProperty implements JsonSerializable {
 		return clazz.toString() + "." + name;
 	}
 	
+	/**
+	 * Converts the first character of name to uppercase
+	 * @param name
+	 * @return
+	 */
+	private String upname(String name) {
+		String upname = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+		return upname;
+	}
 }

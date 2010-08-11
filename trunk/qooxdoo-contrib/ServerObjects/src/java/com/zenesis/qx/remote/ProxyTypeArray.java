@@ -47,6 +47,7 @@ import com.zenesis.qx.remote.annotations.Remote;
 public class ProxyTypeArray implements ProxyType {
 	
 	private final ProxyTypeImpl type;
+	@SuppressWarnings("unused")
 	private final Remote.Array array;
 
 	public ProxyTypeArray(ProxyTypeImpl type, Remote.Array array) {

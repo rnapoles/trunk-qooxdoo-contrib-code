@@ -116,4 +116,11 @@ public @interface Property {
 	 * @return
 	 */
 	public String deserialize() default "";
+	
+	/**
+	 * The name of the method to call to expire the cached property value when 
+	 * received from the client 
+	 * @return
+	 */
+	public String expire() default "";
 }

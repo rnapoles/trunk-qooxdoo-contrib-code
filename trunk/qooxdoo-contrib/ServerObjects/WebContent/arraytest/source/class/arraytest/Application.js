@@ -86,10 +86,11 @@ qx.Class.define("arraytest.Application", {
 			
 			purpose="setItem";		arr.setItem(5, "Nine");
 			purpose="shift";		arr.shift();
-			//purpose="slice";		arr.slice(...);
+			
 			purpose="sort";			arr.sort();
-			//purpose="splice";		arr.splice(...);
-			purpose="unshift";		arr.unshift("Ten")
+			purpose="splice";		arr.splice(1, 2, "Lemon");
+			
+			purpose="unshift";		arr.unshift("Ten");
 			
 			purpose="removeAll";	arr.removeAll();
 		}

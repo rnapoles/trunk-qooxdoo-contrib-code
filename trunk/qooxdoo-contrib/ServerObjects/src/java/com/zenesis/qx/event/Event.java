@@ -44,8 +44,7 @@ public class Event {
 	 * @param currentTarget
 	 * @param data
 	 */
-	public Event(String eventName, Object originalTarget, Object currentTarget,
-			Object data) {
+	public Event(Object originalTarget, Object currentTarget, String eventName, Object data) {
 		super();
 		this.eventName = eventName;
 		this.originalTarget = originalTarget;

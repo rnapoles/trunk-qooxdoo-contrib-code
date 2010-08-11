@@ -29,6 +29,7 @@ package com.zenesis.qx.remote;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
@@ -74,6 +75,9 @@ public class ProxyManager implements EventListener {
 
 	@Override
 	public void handleEvent(Event event) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
 		getTracker().getQueue().queueCommand(CommandType.FIRE_EVENT, event.getCurrentTarget(), event.getEventName(), event.getData());
 	}
 	
@@ -176,7 +180,24 @@ public class ProxyManager implements EventListener {
 		return s_currentTracker.get();
 	}
 	
+	/**
+	 * Changes a value, but only fires the event if the value is changed 
+	 * @param <T>
+	 * @param keyObject
+	 * @param propertyName
+	 * @param newValue
+	 * @param oldValue
+	 * @return
+	 */
 	public static <T> T changeProperty(Proxied keyObject, String propertyName, T newValue, T oldValue) {
+		if (newValue instanceof String) {
+			if (((String) newValue).trim().length() == 0)
+				newValue = null;
+		}
+		if (oldValue instanceof String) {
+			if (((String) oldValue).trim().length() == 0)
+				oldValue = null;
+		}
 		if (newValue == oldValue || (newValue != null && oldValue != null && newValue.equals(oldValue)))
 			return oldValue;
 		propertyChanged(keyObject, propertyName, newValue, oldValue);
@@ -193,6 +214,8 @@ public class ProxyManager implements EventListener {
 	 */
 	public static void propertyChanged(Proxied keyObject, String propertyName, Object newValue, Object oldValue) {
 		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
 		CommandQueue queue = tracker.getQueue();
 		RequestHandler handler = tracker.getRequestHandler();
 		if (handler != null && handler.isSettingProperty(keyObject, propertyName))
@@ -208,11 +231,65 @@ public class ProxyManager implements EventListener {
 	}
 	
 	/**
+	 * Invalidates the client cache for the object
+	 * @param keyObject
+	 */
+	public static void invalidateCache(Proxied keyObject) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		tracker.invalidateCache(keyObject);
+	}
+
+	/**
+	 * Invalidates the client cache for the objects
+	 * @param keyObjects
+	 */
+	public static void invalidateCache(Proxied[] keyObjects) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		for (Proxied obj : keyObjects)
+			tracker.invalidateCache(obj);
+	}
+
+	/**
+	 * Invalidates the client cache for the objects
+	 * @param keyObjects
+	 */
+	public static void invalidateCache(Iterable list) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		for (Iterator iter = list.iterator(); iter.hasNext(); ) {
+			Object obj = iter.next();
+			if (obj instanceof Proxied)
+				tracker.invalidateCache((Proxied)obj);
+		}
+	}
+
+	/**
+	 * Sends a class definition to the server
+	 * @param clazz
+	 */
+	public static void sendClass(Class<? extends Proxied> clazz) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		CommandQueue queue = tracker.getQueue();
+		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(clazz);
+		queue.queueCommand(CommandId.CommandType.DEFINE, type, null, null);
+	}
+	
+	/**
 	 * Helper method to fire an event remotely
 	 * @param event
 	 */
 	public static void fireEvent(Event event) {
-		getTracker().getQueue().queueCommand(CommandId.CommandType.FIRE_EVENT, event.getCurrentTarget(), event.getEventName(), null);
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		tracker.getQueue().queueCommand(CommandId.CommandType.FIRE_EVENT, event.getCurrentTarget(), event.getEventName(), null);
 	}
 
 	/**
@@ -221,7 +298,10 @@ public class ProxyManager implements EventListener {
 	 * @param eventName
 	 */
 	public static void fireEvent(Object keyObject, String eventName) {
-		getTracker().getQueue().queueCommand(CommandId.CommandType.FIRE_EVENT, keyObject, eventName, null);
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		tracker.getQueue().queueCommand(CommandId.CommandType.FIRE_EVENT, keyObject, eventName, null);
 	}
 
 	/**
@@ -231,7 +311,10 @@ public class ProxyManager implements EventListener {
 	 * @param data
 	 */
 	public static void fireDataEvent(Object keyObject, String eventName, Object data) {
-		getTracker().getQueue().queueCommand(CommandId.CommandType.FIRE_EVENT, keyObject, eventName, data);
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		tracker.getQueue().queueCommand(CommandId.CommandType.FIRE_EVENT, keyObject, eventName, data);
 	}
 	
 	/**
@@ -240,7 +323,10 @@ public class ProxyManager implements EventListener {
 	 * @return
 	 */
 	public static boolean needsFlush() {
-		return getTracker().needsFlush();
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return false;
+		return tracker.needsFlush();
 	}
 
 	/**

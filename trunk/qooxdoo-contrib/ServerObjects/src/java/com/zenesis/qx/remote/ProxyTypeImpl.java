@@ -30,7 +30,7 @@ package com.zenesis.qx.remote;
 import java.lang.reflect.Method;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,12 +53,25 @@ import com.zenesis.qx.remote.annotations.Remote.Array;
 
 public class ProxyTypeImpl implements ProxyType {
 
-	private final ProxyType superType;
-	private final Set<ProxyType> interfaces;
+	// The class being represented
 	private final Class clazz;
+	
+	// Base ProxyType that represents the class that clazz is derived from
+	private final ProxyType superType;
+	
+	// Interfaces implements by clazz 
+	private final Set<ProxyType> interfaces;
+	
+	// Methods (not including property accessors)
 	private final ProxyMethod[] methods;
+	
+	// Properties
 	private final HashMap<String, ProxyProperty> properties;
+	
+	// Property Event Names
 	private Set<String> propertyEventNames;
+	
+	// Events
 	private final HashMap<String, ProxyEvent> events;
 	
 	/**
@@ -104,7 +117,7 @@ public class ProxyTypeImpl implements ProxyType {
 		if (clazz.isAnnotationPresent(Properties.class)) {
 			Properties annoProperties = (Properties)clazz.getAnnotation(Properties.class);
 			for (Property anno : annoProperties.value()) {
-				ProxyProperty property = new ProxyProperty(clazz, anno);
+				ProxyProperty property = new ProxyProperty(clazz, anno, annoProperties);
 				properties.put(anno.value(), property);
 				ProxyEvent event = property.getEvent();
 				if (event != null)
@@ -163,7 +176,8 @@ public class ProxyTypeImpl implements ProxyType {
 		boolean explicitOnly = fromClass.isAnnotationPresent(ExplicitProxyOnly.class);
 		Method[] ifcMethods = fromClass.getDeclaredMethods();
 		for (Method method : ifcMethods) {
-			if (explicitOnly && !method.isAnnotationPresent(AlwaysProxy.class))
+			method.setAccessible(true);// Short cut access controls validation
+			if (explicitOnly && !method.isAnnotationPresent(AlwaysProxy.class) && !method.isAnnotationPresent(com.zenesis.qx.remote.annotations.Method.class))
 				continue;
 			Method existing = methods.get(method.getName());
 			
@@ -211,7 +225,7 @@ public class ProxyTypeImpl implements ProxyType {
 	}
 	
 	protected Boolean canProxy(Class clazz, Method method) {
-		if (method.isAnnotationPresent(AlwaysProxy.class))
+		if (method.isAnnotationPresent(AlwaysProxy.class) || method.isAnnotationPresent(com.zenesis.qx.remote.annotations.Method.class))
 			return true;
 		return null;
 	}
@@ -294,6 +308,7 @@ public class ProxyTypeImpl implements ProxyType {
 	/**
 	 * @return the superType
 	 */
+	@Override
 	public ProxyType getSuperType() {
 		return superType;
 	}

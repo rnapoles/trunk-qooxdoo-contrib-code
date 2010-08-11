@@ -31,11 +31,11 @@
   "let" :
   {
     "APPLICATION"  : "arraytest",
-    "QOOXDOO_PATH" : "../../../qrjo/qooxdoo",
+    "QOOXDOO_PATH" : "../../qooxdoo",
     "QXTHEME"      : "arraytest.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
+    "CACHE"        : "../../qooxdoo/cache",
     "ROOT"         : "."
   }
 

@@ -30,6 +30,7 @@ package com.zenesis.qx.json;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
@@ -72,6 +73,50 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 		}
 	};
 
+	private static final JsonSerializer<Iterable> SER_ITERABLE = new JsonSerializer<Iterable>() {
+
+		/* (non-Javadoc)
+		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
+		 */
+		@Override
+		public void serialize(Iterable iterable, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+			if (iterable == null)
+				jgen.writeNull();
+			else {
+				jgen.writeStartArray();
+				for (Object obj : iterable)
+					if (obj == null)
+						jgen.writeNull();
+					else
+						jgen.writeObject(obj);
+				jgen.writeEndArray();
+			}
+		}
+	};
+
+	private static final JsonSerializer<Iterator> SER_ITERATOR = new JsonSerializer<Iterator>() {
+
+		/* (non-Javadoc)
+		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
+		 */
+		@Override
+		public void serialize(Iterator iter, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+			if (iter == null)
+				jgen.writeNull();
+			else {
+				jgen.writeStartArray();
+				while (iter.hasNext()) {
+					Object obj = iter.next();
+					if (obj == null)
+						jgen.writeNull();
+					else
+						jgen.writeObject(obj);
+				}
+				jgen.writeEndArray();
+			}
+		}
+	};
+
 	/* (non-Javadoc)
 	 * @see org.codehaus.jackson.map.ser.BasicSerializerFactory#createSerializer(java.lang.Class, org.codehaus.jackson.map.SerializationConfig)
 	 */
@@ -81,6 +126,10 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 			return (JsonSerializer<T>)SER_DATE;
 		if (Enum.class.isAssignableFrom(type))
 			return (JsonSerializer<T>)SER_ENUM;
+		if (Iterator.class.isAssignableFrom(type))
+			return (JsonSerializer<T>)SER_ITERATOR;
+		if (Iterable.class.isAssignableFrom(type))
+			return (JsonSerializer<T>)SER_ITERABLE;
 		
 		return super.createSerializer(type, config);
 	}

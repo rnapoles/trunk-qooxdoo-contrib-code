@@ -28,15 +28,11 @@
 package com.zenesis.qx.remote;
 
 import java.io.File;
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -74,6 +70,7 @@ public class UploadHandler {
 	private long maxUploadSize = MAX_UPLOAD_SIZE;
 	
 	// String encoding for parameters
+	@SuppressWarnings("unused")
 	private String encoding = DEFAULT_ENCODING;
 	
 	/**

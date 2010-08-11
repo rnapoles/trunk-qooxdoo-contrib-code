@@ -46,4 +46,9 @@ public @interface Properties {
 	 * @return
 	 */
 	public Property[] value();
+	
+	/**
+	 * Whether to automatically generate events
+	 */
+	public boolean autoEvents() default true;
 }

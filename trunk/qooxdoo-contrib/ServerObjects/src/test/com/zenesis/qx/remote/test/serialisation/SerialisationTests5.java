@@ -29,15 +29,9 @@ package com.zenesis.qx.remote.test.serialisation;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.util.Set;
-
 import com.zenesis.qx.remote.Proxied;
-import com.zenesis.qx.remote.ProxyType;
-import com.zenesis.qx.remote.ProxyTypeFactory;
 import com.zenesis.qx.remote.ProxyTypeManager;
 import com.zenesis.qx.remote.annotations.AlwaysProxy;
-import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.ExplicitProxyOnly;
 import com.zenesis.qx.remote.test.AbstractRemoteTestCase;
 
