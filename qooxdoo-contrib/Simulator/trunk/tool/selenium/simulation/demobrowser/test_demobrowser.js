@@ -12,7 +12,8 @@ var baseConf = {
   'logAll' : false,
   'ignore' : 'data:Gears,showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,virtual:List,virtual:Cells,virtual:ListBinding,virtual:Messenger,progressive:*,legacy:*',
   'sampleGlobalErrorLogging' : false,
-  'shutdownSample' : false
+  'shutdownSample' : false,
+  'reloadBrowser' : false
 };
 
 var args = arguments ? arguments : "";
@@ -372,7 +373,7 @@ simulation.Simulation.prototype.runTest = function()
     var finalCategory = this.getEval(finalCategoryScript, "Getting final category name");
     print("Final demo: " + finalCategory + ":" + finalSample);
     var currentCatSam = this.sampleRunner(runSample);
-    this.currentCategory = currentCatSam[0];
+    this.currentCategory = this.lastCategory = currentCatSam[0];
     this.currentSample = currentCatSam[1];
     
     if (this.getConfigSetting("theme", false)) {
@@ -383,9 +384,8 @@ simulation.Simulation.prototype.runTest = function()
     }
     
     while (this.currentSample != this.lastSample) {
-      /*
       if (this.lastCategory) {
-        if (this.currentCategory != this.lastCategory) {
+        if (this.currentCategory != this.lastCategory && this.getConfigSetting("reloadBrowser")) {
           print("New category, reloading application");
           this.log("New category " + this.currentCategory + ", reloading application", "debug");
           this.qxOpen();
@@ -394,7 +394,6 @@ simulation.Simulation.prototype.runTest = function()
           this.getEval(selWin + ".qx.Simulation.chooseDemo('" + this.currentCategory + "','" + this.currentSample + "');");
         }
       }
-      */
       
       if (this.currentCategory != finalCategory || (this.currentCategory == finalCategory && this.currentSample != finalSample) ) {
         this.lastCategory = this.currentCategory;
@@ -434,18 +433,14 @@ simulation.Simulation.prototype.runTest = function()
         }
       }
       else {
-        /*
-        if (this.currentCategory) {
-          if (cat != this.currentCategory) {
-            print("New category, reloading application");
-            this.log("New category " + this.currentCategory + ", reloading application", "debug");
-            this.qxOpen();
-            this.addGlobalErrorHandler();
-            this.addOwnFunction("chooseDemo", chooseDemo);
-            this.addOwnFunction("getDemosByCategory", getDemosByCategory);
-          }
+        if (this.currentCategory && cat != this.currentCategory && this.getConfigSetting("reloadBrowser")) {
+          print("New category, reloading application");
+          this.log("New category " + this.currentCategory + ", reloading application", "debug");
+          this.qxOpen();
+          this.addGlobalErrorHandler();
+          this.addOwnFunction("chooseDemo", chooseDemo);
+          this.addOwnFunction("getDemosByCategory", getDemosByCategory);
         }
-        */
         
         var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";
         var currentCatSam = this.sampleRunner(runIncluded);
