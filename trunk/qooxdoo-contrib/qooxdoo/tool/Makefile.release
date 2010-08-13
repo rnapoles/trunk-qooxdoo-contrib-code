@@ -67,8 +67,7 @@ publish-check:
 	@for TARGET in $(APPLICATIONS); do F="$$TARGET/build/script/$$TARGET.js"; [ -s $$F ] || ( echo "Missing $$F; run 'make publish-build' first!"; exit 1 ); done
 	@echo "    - Looks good"
 
-#publish: publish-check
-publish:	
+publish-apps:	
 	@echo "  * Syncing applications..."
 	@for APPLICATION in $(APPLICATIONS); do \
 	  echo "    - $$APPLICATION..."; \
@@ -76,4 +75,9 @@ publish:
       $(CMD_SYNC_ONLINE) $$APPLICATION/build/* $(PUBLISH_HOST):/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
     fi; \
 	done
+
+publish-production:
+  @echo "  * Pushing to production host..."
 	@ssh -A qooxdoo@webtechfe-test01.schlund.de /var/www/qooxdoo/bin/webtechfe01.mirror.contrib.sh
+
+publish: publish-apps publish-production
