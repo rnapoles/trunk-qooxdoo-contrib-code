@@ -41,10 +41,30 @@ qx.Class.define("rpcconsole.demo.Application",
 
   /*
   *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+  properties :
+  {
+    serverUrl :
+    {
+      check : "String",
+      init : "../../../../../RpcPhp/trunk/services/index.php"
+    },
+    
+    testDataUrl : 
+    {
+      check : "String",
+      init  : "resource/rpcconsole/demo/testData.js"
+    }
+  },
+  
+  /*
+  *****************************************************************************
      MEMBERS
   *****************************************************************************
   */
-
+  
   members :
   {
     
@@ -55,8 +75,6 @@ qx.Class.define("rpcconsole.demo.Application",
     */
     desktop   : null,
     counter   : 1,
-    serverUrl : "../../../../../RpcPhp/trunk/services/index.php",
-    testDataUrl : "resource/rpcconsole/demo/testData.js",
 
     /*
     -------------------------------------------------------------------------
@@ -65,7 +83,6 @@ qx.Class.define("rpcconsole.demo.Application",
     */        
     __activeConsole : null,
     __testData : null,
-    __testDataUrl : null,
     __testsMenu : null,
     __helpWindow : null,
     __editorWindow : null,
@@ -197,7 +214,7 @@ qx.Class.define("rpcconsole.demo.Application",
       /*
        * load initial test data
        */
-      var testDataUrl = window.location.parameters.testDataUrl || this.testDataUrl;
+      var testDataUrl = window.location.parameters.testDataUrl || this.getTestDataUrl();
       if ( testDataUrl )
       {
         this.loadTestData( testDataUrl, function(){
@@ -223,7 +240,8 @@ qx.Class.define("rpcconsole.demo.Application",
       if ( ! testDataUrl ) return;
       try 
       {
-        qx.util.Validate.url()(testDataUrl); 
+        qx.util.Validate.url()(testDataUrl);
+        this.setTestDataUrl( testDataUrl )
         this.loadTestData( testDataUrl );  
       }
       catch(e)
@@ -339,7 +357,7 @@ qx.Class.define("rpcconsole.demo.Application",
       } 
       else
       {
-        var serverUrl = this.serverUrl;
+        var serverUrl = this.getServerUrl();
       }
       
       /*
@@ -403,15 +421,6 @@ qx.Class.define("rpcconsole.demo.Application",
         this.__testsMenu = new qx.ui.menu.Menu();
       }
       return this.__testsMenu;
-    },
-    
-    /**
-     * Return the url of the last test data loaded
-     * @return {String}
-     */
-    getTestDataUrl : function()
-    {
-      return this.__testDataUrl;
     },
     
     /**
@@ -591,7 +600,6 @@ qx.Class.define("rpcconsole.demo.Application",
      */
     loadTestData : function( testDataUrl, callback, context )
     {
-      this.__testDataUrl = testDataUrl;
       new qx.io.ScriptLoader().load( 
         testDataUrl+"?"+(new Date).getTime(),  // disable caching of script file
         callback, context  

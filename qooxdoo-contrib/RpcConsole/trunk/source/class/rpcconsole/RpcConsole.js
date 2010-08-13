@@ -86,6 +86,20 @@ qx.Class.define("rpcconsole.RpcConsole",
       nullable : true,
       apply : "_applyMethodListModel",
       event : "changeMethodListModel"
+    },
+    
+    /**
+     * The useage mode of the console. Currently supported is json-rpc 1.0 and
+     * the backwards-compatible non-standard json-rpc as currently used in the 
+     * qooxdoo backends.Defaults to non-standard.
+     *  
+     */
+    mode :
+    {
+      check : ["1.0","non-standard"],
+      init : "non-standard",
+      apply : "_applyMode",
+      event : "changeMode"
     }
   },
   
@@ -110,7 +124,6 @@ qx.Class.define("rpcconsole.RpcConsole",
     /*
      * use patched rpc object
      */
-    qx.Class.patch( qx.io.remote.Rpc, rpcconsole.MRpcMockup );
     this.__rpc = new qx.io.remote.Rpc();  
     
     /*
@@ -155,6 +168,7 @@ qx.Class.define("rpcconsole.RpcConsole",
     __reportTable           : null,
     __responseCache         : null,
     __requestCache          : null,
+    __serverDataPage        : null,
     
     /*
     -------------------------------------------------------------------------
@@ -236,11 +250,13 @@ qx.Class.define("rpcconsole.RpcConsole",
     {
       return this.__formController;
     },    
+    
     /*
     -------------------------------------------------------------------------
       GUI
     -------------------------------------------------------------------------
-    */    
+    */
+    
     /**
      * Creates the UI
      */
@@ -399,6 +415,27 @@ qx.Class.define("rpcconsole.RpcConsole",
       hbox.add( new qx.ui.basic.Label("sec.") );
       this.__form.add( timeoutSpinner, null, null, "timeout" );
       
+      /*
+       * mode
+       */
+      hbox.add( new qx.ui.basic.Label("Mode:") );
+      var modeCb = new qx.ui.form.SelectBox();
+      modeCb.add( new qx.ui.form.ListItem( "non-standard",null,"non-standard" ) );
+      modeCb.add( new qx.ui.form.ListItem( "1.0 (strict)",null,"1.0" ) );
+      
+      //FIXME this is not part of the request model yet but should be
+      // add this when new rpc layer is ready and add reverse binding
+      modeCb.addListener("changeSelection",function(e){
+        var sel = e.getData();
+        if( sel.length )
+        {
+          this.setMode(sel[0].getModel());  
+        }
+      },this);
+      
+      //this.__form.add( modeCb, null, null, "mode" ); 
+      hbox.add( modeCb );
+      
       servicePage.add( new qx.ui.basic.Label("Options:"), {row: 3, column: 0 });
       servicePage.add(hbox, {row: 3, column: 1 });
      
@@ -465,6 +502,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       var serverDataTextArea = new qx.ui.form.TextArea();
       serverDataTextArea.setPlaceholder("You can send arbitrary json data with your request here.");
       serverDataPage.add( serverDataTextArea );
+      this.__serverDataPage = serverDataPage;
       this.__form.add( serverDataTextArea , null, null, "serverData" );
       this.__formController.addBindingOptions("serverData", {
         converter : function( data ) {
@@ -653,6 +691,17 @@ qx.Class.define("rpcconsole.RpcConsole",
     -------------------------------------------------------------------------
     */     
     
+    _applyMode : function( value, old )
+    {
+      this.__serverDataPage.setEnabled( value=="non-standard" );
+      this.__serviceComboBox.setEnabled( value=="non-standard" ); 
+      if ( value != "non-standard" )
+      {
+        this.getRequestModel().setServerData(null);  
+        this.getRequestModel().setService(null);  
+      }
+    },
+    
     /**
      * Applies a new value to the serviceListModel property
      * @param value {qx.data.Array|null}
@@ -713,7 +762,7 @@ qx.Class.define("rpcconsole.RpcConsole",
       var requestModel = this.getRequestModel();
       
       if ( ! requestModel.getUrl() || 
-           ! requestModel.getService() ||
+           ( this.getMode() == "non-standard" && ! requestModel.getService() ) ||
            ! requestModel.getMethod() )
       {
         alert("Insufficient request data.");
