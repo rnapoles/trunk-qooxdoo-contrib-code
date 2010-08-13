@@ -31,7 +31,7 @@ CMD_PYTHON = $(CMD_NICE) python -t -O
 CMD_REMOVE = $(CMD_NICE) rm -rf
 CMD_DIR = $(CMD_NICE) mkdir -p
 
-CMD_GENERATOR := $(CMD_PYTHON) "$(CURDIR)/tool/bin/generator.py"
+CMD_GENERATOR := $(CMD_PYTHON) "./generate.py"
 
 PUBLISH_HOST = qooxdoo@webtechfe-test01.schlund.de
 
@@ -49,11 +49,11 @@ distclean:
 
 build: build-apps
 build-apps:
-	@time for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) build ) || exit 1; done
+	@for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) build ) || exit 1; done
 
 source: source-apps
 source-apps:
-	@time for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) source ) || exit 1; done
+	@for APPLICATION in $(APPLICATIONS); do ( cd $$APPLICATION && $(CMD_GENERATOR) source ) || exit 1; done
 
 
 ################################################################################
@@ -70,14 +70,14 @@ publish-check:
 publish-apps:	
 	@echo "  * Syncing applications..."
 	@for APPLICATION in $(APPLICATIONS); do \
-	  echo "    - $$APPLICATION..."; \
-	  if [ "$$APPLICATION" = "contribDemobrowser" ]; then \
-      $(CMD_SYNC_ONLINE) $$APPLICATION/build/* $(PUBLISH_HOST):/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
-    fi; \
+		echo "    - $$APPLICATION..."; \
+		if [ "$$APPLICATION" = "contribDemobrowser" ]; then \
+			$(CMD_SYNC_ONLINE) $$APPLICATION/build/* $(PUBLISH_HOST):/var/www/qooxdoo/demo/contrib/demobrowser || exit 1; \
+		fi; \
 	done
 
 publish-production:
-  @echo "  * Pushing to production host..."
+	@echo "  * Pushing to production host..."
 	@ssh -A qooxdoo@webtechfe-test01.schlund.de /var/www/qooxdoo/bin/webtechfe01.mirror.contrib.sh
 
 publish: publish-apps publish-production
