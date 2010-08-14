@@ -16,8 +16,11 @@
 
 ************************************************************************ */
 
+/* ************************************************************************
+#ignore(rpcnode.InvalidParameterException)
+************************************************************************ */
 
-/*
+/**
  * This is the standard qooxdoo test class.  There are tests for each of the
  * primitive types here, along with standard named tests "echo", "sink" and
  * "sleep".
@@ -33,7 +36,7 @@ qx.Class.define("rpcnode.demo.service.RpcTest",
     /**
      * Echo the (one and only) parameter.
      *
-     * @param {String} msg The message to be echo'ed
+     * @param msg {String} The message to be echo'ed
      * @return {String}
      */
     echo : function( msg )
@@ -46,21 +49,14 @@ qx.Class.define("rpcnode.demo.service.RpcTest",
     },
   
     /**
-     * Sink all data and never return.
-     * Not implemented
-     */
-    sink : function()
-    {
-      return;
-    },
-  
-    /**
      * Sleep for the number of seconds specified by the parameter.
-     * not implemented
+     * @param seconds {Integer}
      */
-    sleep : function(params)
+    sleep : function(seconds)
     {
-      return;
+      return nodejs.promise.when( nodejs.promise.delay(seconds*1000), function(){
+        return "Waited " + seconds + " seconds!";
+      });
     },
 
     /**
@@ -110,7 +106,7 @@ qx.Class.define("rpcnode.demo.service.RpcTest",
   
     /**
      * Returns an array of strings
-     * @return {}
+     * @return {Array}
      */
     getArrayString : function()
     {
@@ -155,7 +151,7 @@ qx.Class.define("rpcnode.demo.service.RpcTest",
   
     /**
      * Checks if the given argument is an integer
-     * @param {Integer} arg
+     * @param arg {Integer}
      * @return {Boolean}
      */
     isInteger : function( arg )
@@ -165,7 +161,7 @@ qx.Class.define("rpcnode.demo.service.RpcTest",
   
     /**
      * Checks if the given argument is a floating point number
-     * @param {Integer} arg
+     * @param arg {Integer} 
      * @return {Boolean}
      */    
     isFloat : function( arg )
@@ -173,46 +169,106 @@ qx.Class.define("rpcnode.demo.service.RpcTest",
       return qx.lang.Type.isNumber( arg );
     },
   
+    /**
+     * Checks if argument is a string
+     * @param  arg {String} 
+     * @return {Boolean}
+     */
     isString : function( arg )
     {
       return qx.lang.Type.isString( arg );
     },
   
+    /**
+     * Checks if argument is a boolean
+     * @param arg {Boolean} 
+     * @return {Boolean}
+     */
     isBoolean : function( arg )
     {
       return qx.lang.Type.isBoolean( arg );
     },
   
+    /**
+     * Checks if argument is an array
+     * @param arg {Array}
+     * @return {Boolean}
+     */
     isArray : function( arg )
     {
       return qx.lang.Type.isArray( arg );
     },
   
+    /**
+     * Checks if argument is an object
+     * @param arg {Object}
+     * @return {Boolean}
+     */
     isObject : function( arg )
     {
       return qx.lang.Type.isObject( arg );
     },
   
+    /**
+     * Checks if argument is null
+     * @param arg {null}
+     * @return {Boolean}
+     */
     isNull : function( arg )
     {
       return arg === null;
     },
   
+    /**
+     * Returns the arguments as an array. The test suite
+     * sends six arguments. Since the number of arguments
+     * is strictly enforced, we need to provide them all in
+     * the signature.
+     * 
+     * @param a {}
+     * @param b {}
+     * @param c {}
+     * @param d {}
+     * @param e {}
+     * @param f {}
+     * @return {Array}
+     */
     getParams : function(a,b,c,d,e,f)
     {
       return qx.lang.Array.fromArguments( arguments );
     },
   
+    /**
+     * Return the first parameter. The test suite
+     * sends six arguments. Since the number of arguments
+     * is strictly enforced, we need to provide them all in
+     * the signature.
+     * 
+     * @param a {}
+     * @param b {}
+     * @param c {}
+     * @param d {}
+     * @param e {}
+     * @param f {}
+     * @return {}
+     */
     getParam : function( a,b,c,d,e,f )
     {
       return arguments[0];
     },
   
+    /**
+     * Return the current timestamp
+     * @return {String}
+     */
     getCurrentTimestamp : function()
     {
       return (new Date()).toLocaleString();
     },
   
+    /**
+     * Raise an error
+     */
     getError : function()
     {
        throw new rpcnode.RpcException("This is an application-provided error thrown on purpose.",1000);
