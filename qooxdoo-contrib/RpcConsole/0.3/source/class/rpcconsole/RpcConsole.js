@@ -17,7 +17,6 @@
 
 #asset(rpcconsole/*)
 #require(qx.ui.form.ListItem)
-#require(rpcconsole.MRpcMockup)
 #asset(qx/icon/${qx.icontheme}/16/actions/dialog-apply.png)
 #asset(qx/icon/${qx.icontheme}/16/status/dialog-warning.png)
 #asset(qx/icon/${qx.icontheme}/16/status/dialog-error.png)
