@@ -236,7 +236,7 @@ qx.Class.define("rpcnode.Server",
          */
         else
         {
-          this.sendError( response, this.invalidRequest() );
+          this.sendError( response, this.invalidRequest( rpcRequest ) );
         }
       }
       catch( e )
@@ -751,7 +751,6 @@ qx.Class.define("rpcnode.Server",
       this.send( response, error.response, error.httpCode );
     },    
 
-    
     createError : function(code, message) 
     {
       return {
@@ -776,7 +775,7 @@ qx.Class.define("rpcnode.Server",
       };
     },    
     
-    invalidrpcRequest : function(rpcRequest) 
+    invalidRequest : function(rpcRequest) 
     {
       return {
         httpCode: 400, 
