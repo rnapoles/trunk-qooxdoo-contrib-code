@@ -17,8 +17,7 @@
 ************************************************************************ */
 
 /**  
- * Marker interface for services that are dynamically loaded 
- * from the filesystem. This is to prevent malicious clients 
+ * Marker interface for services. This is to prevent malicious code 
  * from trying to execute non-rpc service methods. 
  */
 qx.Interface.define("rpcnode.IService",{}); 

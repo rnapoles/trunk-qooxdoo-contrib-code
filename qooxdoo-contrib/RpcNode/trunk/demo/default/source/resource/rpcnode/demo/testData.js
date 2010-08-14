@@ -1,89 +1,7 @@
-/**
- * Calls the setTestData() method of the rpcconsole.demo.Application app with
- * a map of test data from which the test menu will be populated. The map
- * must have the following structure:
- * <pre>
- * {
- *   testName : {
- *     label : "The label in the menu",
- *     icon : "path/to/the/optional-icon.png",
- *     /**
- *      * Optional initialization function called when the 
- *      * button is created. If the function returns boolean false,
- *      * the button is not attached to the menu.
- *      * The menu button and the name of test are passed as arguments. 
- *      * /
- *     init : function( button, testName ){
- *      // "this" refers to the main application
- *      return true;
- *     },
- *     /**
- *      * Optional function called when the menu button is executed.
- *      * If the function returns boolean false, the request is not
- *      * send. The name of the test is passed as argument.
- *      * /
- *     execute : function( testName )
- *     {
- *        // "this" refers to the main application
- *        return true;
- *     },
- *     /**
- *      * The request model data. Each value overrides an existing
- *      * property. Other properties are kept.
- *      * / 
- *     requestData : {
- *       url     : "http://", 
- *       service : "my.service.name",
- *       method : "myMethodName",
- *       params : ["arg1", "arg2", [ "arg", 3] ]
- *     },
- *     /**
- *      * Optional callback function called after the result of the
- *      * request has returned from the server.
- *      * /
- *     callback : function( result ){
- *        // do something with the response, for example, change
- *        // the server data like here
- *        // "this" refers to the main application    
- *       this.getActiveConsole().getRequestModel().setServerData(
- *         foo : response.bar
- *       );
- *     },
- *     /**
- *      * Optional data to compare the result with an expected.
- *      * If the value is a function, this function must return
- *      * true if the result is correct, false, if the result is 
- *      * wrong. You can also return a string which is taken as
- *      * an error message.  
- *      * Alternatively, the data can be of any native data type
- *      * (boolean, null, string, array, object) and will be
- *      * compared verbatim to the result by jsonifying both 
- *      * values. "callback" and "checkResult" are mutually
- *      * exclusive. 
- *      * /
- *     checkResult : function( result )
- *     {
- *       if (result == "foo!")
- *       {
- *         return true;
- *       }
- *       return "Result is wrong!"; 
- *     }
- *   },
- *   
- *   testName2 : {
- *    // don't show a corresponding menu button 
- *    visible : false,
- *    ...
- *   },
- *   
- *   testName3 : {
- *    ...
- *   }
- *   ...
- * }
- * </pre>
- */
+ /**
+  * qooxdoo.test test suite
+  * designed by Derrell Lipman
+  */
 qx.core.Init.getApplication().setTestData(
 {  
   
@@ -119,13 +37,23 @@ qx.core.Init.getApplication().setTestData(
     execute : function(){
       this.info( "Starting test suite ");
       this.runTests("qooxdoo.test.*");
+      this.runTests("nodetest.*");
     }
   },
- 
-  /**
-   * qooxdoo.test test suite
-   * powered by Derrell Lipman
-   */
+
+  
+  "qooxdoo.test.sleep" : 
+  {
+    visible : false,
+    mode : "non-standard",
+    requestData : {
+      service : "qooxdoo.test",
+      method  : "sleep",
+      timeout : 10,
+      params : [2]
+    }
+  }, 
+  
   "qooxdoo.test.getInteger" : 
   {
     visible : false,
@@ -354,5 +282,70 @@ qx.core.Init.getApplication().setTestData(
       "method":"getError",
       "params" : []
     }
-  } 
+  },
+  
+  
+  "nodetest.add" : 
+  {
+    visible : false,
+    requestData : {
+      service : "nodetest",
+      method  : "add",
+      params : [ 1,2 ]
+    },
+    checkResult : 3    
+  },
+  
+ "nodetest.add" : 
+  {
+    visible : false,
+    requestData : {
+      service : "nodetest",
+      method  : "note",
+      params : [ "foo","bar" ]
+    },
+    checkResult : "foo:bar"
+  },
+  
+  "nodetest.ls" : 
+  {
+    visible : false,
+    requestData : {
+      service : "nodetest",
+      method  : "ls",
+      params : []
+    },
+    checkResult : "Application.js\nservice\nstart-server.js\ntest\ntheme\n"
+  },
+  
+  "nodetest.pwd" : 
+  {
+    visible : false,
+    requestData : {
+      service : "nodetest",
+      method  : "pwd",
+      params : []
+    }
+  },
+  
+  "nodetest.shell_echo" : 
+  {
+    visible : false,
+    requestData : {
+      service : "nodetest",
+      method  : "shell_echo",
+      params : ["hello world"]
+    },
+    checkResult : "hello world\n"
+  },
+  
+  "nodetest.shell_error" : 
+  {
+    visible : false,
+    requestData : {
+      service : "nodetest",
+      method  : "shell_error",
+      params : []
+    }
+  }
 });

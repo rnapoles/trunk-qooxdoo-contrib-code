@@ -19,19 +19,28 @@
 
 ************************************************************************ */
 
+/* ************************************************************************
+#ignore(require)
+#ignore(nodejs)
+#ignore(nodejs.url)
+#ignore(nodejs.promise)
+#ignore(nodejs.promise.Promise)
+************************************************************************ */
+
 /*
  * import node modules as properties of global 
  * 'nodejs' object
  */
 nodejs = {
-  url     : require('url'),  
-  sys     : require('sys'),
-  promise : require("./lib/promise"), // Async operations
-  fs      : require("./lib/fs-promise") // Async operations
+  url         : require('url'),  
+  sys         : require('sys'),
+  proc        : require("child_process"),     // Child process management
+  promise     : require("./lib/promise"),     // Async operations
+  promise_fs  : require("./lib/fs-promise")   // Async file system operations
 };
 
 /*
- * import qooxdoo-style classes
+ * import qooxdoo-style classes as global objects
  */
 qx = require('./lib/qx-oo');
 require('./IService');
@@ -144,8 +153,8 @@ qx.Class.define("rpcnode.Server",
        * create http server
        */
       var self = this;
-      var server = require('http').createServer( function( req, res ){
-        return self._onHttpRequest( req, res );
+      var server = require('http').createServer( function( request, response ){
+        return self._onHttpRequest( request, response );
       } );
       server.listen( this.getPort() );
       this.setHttpServer(server);
@@ -163,61 +172,62 @@ qx.Class.define("rpcnode.Server",
     /**
      * Main event handler. Called when the Server receives a http request.
      * 
-     * @param {http.ServerRequest} req
-     * @param {http.ServerResponse} res
+     * @param request {http.ServerRequest}
+     * @param response {http.ServerResponse}
      */
-    _onHttpRequest : function(req, res)
+    _onHttpRequest : function( request, response)
     {
+      var rpcRequest = null;
       try
       {
-        var query = nodejs.url.parse(req.url,true).query;
+        var query = nodejs.url.parse(request.url,true).query;
         //console.log(nodejs.sys.inspect(query));
         
         /*
          * Handle "old-style" qooxdoo cross-domain json-rpc requests 
          */
-        if ( req.method === "GET" && typeof query == "object" && query._ScriptTransport_id )
+        if ( request.method === "GET" && typeof query == "object" && query._ScriptTransport_id )
         {
           var data = JSON.parse( query._ScriptTransport_data );
-          var rpcRequest = {
+          rpcRequest = {
             service : data.service || null,
             method  : data.method,
             params  : data.params,
             id      : data.id
           };
-          res._ScriptTransport_id = query._ScriptTransport_id;
-          this.processRequest( rpcRequest, res );
+          response._ScriptTransport_id = query._ScriptTransport_id;
+          this.processRequest( rpcRequest, request, response );
         }
         
         /*
          * handle normal GET requests
          */
-        else if ( req.method === "GET" && req.uri && query.method  ) 
+        else if ( request.method === "GET" && request.uri && query.method  ) 
         {
-          var rpcRequest = {
+          rpcRequest = {
             service : query.service || null,
             method  : query.method,
             params  : JSON.parse(query.params),
             id      : query.id
           };
-          this.processRequest( rpcRequest, res );
+          this.processRequest( rpcRequest, request, response );
         } 
         
         /*
          * handle POST requests
          */
-        else if ( req.method === "POST" )
+        else if ( request.method === "POST" )
         {
-          req.setBodyEncoding("utf8");
+          request.setBodyEncoding("utf8");
           var body = "";
-          req.addListener("body", function(chunk) {
+          request.addListener("body", function(chunk) {
             body += chunk;
           });
     
           var self = this;
-          req.addListener("complete", function() {
-            var rpcRequest = JSON.parse(body);        
-            self.processRequest(rpcRequest, res);    
+          request.addListener("complete", function() {
+            rpcRequest = JSON.parse(body);        
+            self.processRequest( rpcRequest, request, response );
           }); 
         } 
         
@@ -226,36 +236,12 @@ qx.Class.define("rpcnode.Server",
          */
         else
         {
-          this.sendError( res, this.invalidRequest( res ) );
+          this.sendError( response, this.invalidRequest() );
         }
       }
       catch( e )
       {
-        /*
-         * native error, indicates a programmer mistake
-         */
-        if( e instanceof Error )
-        {
-          console.log( e.stack );
-          this.sendError( res, this.nativeError( res, e ) ); 
-        }
-        
-        /*
-         * this is a user-generated exception, that is, thrown
-         * in a service method
-         */
-        else if ( e instanceof rpcnode.RpcException )
-        {
-          this.sendError( res, this.userError( res, e ) );
-        }
-        
-        /*
-         * an exception generated in the server itself
-         */
-        else
-        {
-          this.sendError( res, e );
-        }
+        this.handleError( e, rpcRequest, response );
       }
     },      
     
@@ -273,8 +259,8 @@ qx.Class.define("rpcnode.Server",
      * stack of service object in which the requested service methods will be
      * looked up. 
      * 
-     * @param {Object} serviceObject
-     * @param {String|undefined} name
+     * @param serviceObject {Object}
+     * @param name {String|undefined}
      */
     addService : function( serviceObject, name )
     {
@@ -297,20 +283,20 @@ qx.Class.define("rpcnode.Server",
     
     /**
      * Process a rpc request
-     * @param {Object|Array} rpcRequest 
+     * @param rpcRequest  {Object|Array}
      *    A map with the request parameters as properties (ver. 1.0 or 2.0)
      *    or an array of maps (ver. 2.0)
-     * @param {Object} res 
-     *    The response object
+     * @param request {http.ServerRequest}
+     * @param response {http.ServerResponse}
      */
-    processRequest : function( rpcRequest, res ) 
+    processRequest : function( rpcRequest, request, response ) 
     {
       /*
        * batch case for version 2.0
        */
       if ( this.getVersion() == "2.0" && qx.lang.Type.isArray(rpcRequest) ) 
       {
-        var response = [];
+        var results = [];
         var httpCode = 200;
         
         /*
@@ -319,15 +305,15 @@ qx.Class.define("rpcnode.Server",
         for (var i = 0; i < rpcRequest.length; i++) 
         {
           
-          response[i] = null;
-          var result = this.processSingleRequest( rpcRequest[i], res );
+          results[i] = null;
+          var result = this.processSingleRequest( rpcRequest[i], response );
           
           /*
            * async handling
            */
-          if (result instanceof nodejs.promise.Promise) 
+          if ( typeof result == "object" && typeof result.then == "function" ) // FIXME check for promise class 
           {
-            response[i] = result;
+            results[i] = result;
           } 
           
           /*
@@ -335,7 +321,7 @@ qx.Class.define("rpcnode.Server",
            */
           else 
           {
-            response[i] = result.httpCode == 204 ? "NOTIFICATION" : result.response;
+            results[i] = result.httpCode == 204 ? "NOTIFICATION" : result.response;
           }
         }
  
@@ -343,51 +329,47 @@ qx.Class.define("rpcnode.Server",
          * when all processes have returned, send the assembled result
          */
         var self=this;
-        nodejs.promise.all( response, function( finish ) 
+        nodejs.promise.all( results, function( promise ) 
         { 
-          finish.when( function( result ) {
+          promise.then( function( res ) {
             /* success */
             self.send(
-              res, 
-              self.createResponse(result, null, rpcRequest), 
+              response, 
+              self.createResponse( res, null, rpcRequest ), 
               rpcRequest.id != null ? 200 : 204
             );                    
           }, 
           function(e) {
             /* error */
-            console.log(e);
-           throw self.internalError( rpcRequest );
-           return;
+            self.handleError(e, rpcRequest, response);
           });
         });
       } 
       
       /*
-       * non batch case
+       * non batch case for non-standard, 1.0 and 2.0
        */      
       else 
       {
-        var response = this.processSingleRequest(rpcRequest, res);
+        var result = this.processSingleRequest( rpcRequest );
         
         /*
          * async handling
          */
         var self = this;
-        if (response instanceof nodejs.promise.Promise) 
+        if ( this.isPromise( result ) )  
         {
-          response.when( function(result) {
+          result.then( function( res ) {
             /* success */
             self.send(
-              res, 
-              self.createResponse(result, null, rpcRequest), 
+              response, 
+              self.createResponse( res, null, rpcRequest ), 
               rpcRequest.id != null ? 200 : 204
             );                    
           }, 
           function(e) {
             /* error */
-              console.log(e);
-             throw self.internalError( rpcRequest );   
-             return;
+            self.handleError(e, rpcRequest, response);
           });
         } 
         
@@ -396,7 +378,7 @@ qx.Class.define("rpcnode.Server",
          */
         else 
         {
-          this.send(res, response.response, response.httpCode);
+          this.send( response, result.response, result.httpCode );
         }
       } 
     },
@@ -405,14 +387,12 @@ qx.Class.define("rpcnode.Server",
     /**
      * Processes a single request.
      * 
-     * @param {Object} rpcRequest
+     * @param rpcRequest {Object}
      *    The rpc request map
-     * @param {Object} res
-     *    The response object
      * @return {unknown}
      *    The return value of the request
      */
-    processSingleRequest : function( rpcRequest, res ) 
+    processSingleRequest : function( rpcRequest ) 
     {
       /*
        * validate
@@ -460,7 +440,7 @@ qx.Class.define("rpcnode.Server",
       /*
        * check for async requests
        */
-      if ( result instanceof nodejs.promise.Promise ) 
+      if ( this.isPromise( result ) ) 
       {
         return result;
       } 
@@ -478,10 +458,20 @@ qx.Class.define("rpcnode.Server",
     },
     
     /**
+     * Checks if a return value is a promise/deferred object.
+     * @param value {unknown} 
+     * @return {Boolean}
+     */
+    isPromise : function( value )
+    {
+      return ( value && typeof value == "object" && typeof value.then == "function" );
+    },
+    
+    /**
      * Checks if the request is valid. Throws an error object 
      * in case it isn't.
      * 
-     * @param {Object} rpcRequest
+     * @param rpcRequest {Object}
      * @return {void}
      */
     checkValidRequest : function( rpcRequest ) 
@@ -512,7 +502,7 @@ qx.Class.define("rpcnode.Server",
      * Returns the service object on which the service method will
      * be called.
      * 
-     * @param {Object} rpcRequest
+     * @param rpcRequest {Object}
      */
     getServiceObject : function( rpcRequest )
     {
@@ -572,23 +562,23 @@ qx.Class.define("rpcnode.Server",
     
     /**
      * Sends the jsonrpc response
-     * @param {http.ServerRequest} res
-     * @param {http.ServerResponse} rpcRespone
-     * @param {Integer} httpCode
+     * @param response {http.ServerRequest}
+     * @param rpcResponse {http.ServerResponse}
+     * @param httpCode {Integer}
      */
-    send : function(res, rpcResponse, httpCode) 
+    send : function( response, rpcResponse, httpCode) 
     {
       var headers, body;
       
       /*
        * "old-style" qooxdoo script transport
        */
-      if ( res._ScriptTransport_id )
+      if ( response._ScriptTransport_id )
       {
         httpCode = 200; // overwrite the http code since we're loading an iframe
         headers = {'Content-Type': 'text/javascript'};
         body = 'qx.io.remote.transport.Script._requestFinished(';
-        body += res._ScriptTransport_id +',' + JSON.stringify(rpcResponse) + ');';
+        body += response._ScriptTransport_id +',' + JSON.stringify(rpcResponse) + ');';
       }
       
       /*
@@ -597,7 +587,7 @@ qx.Class.define("rpcnode.Server",
       else if ( httpCode != 204 ) 
       {
         headers = {'Content-Type': 'application/json-rpc'};
-        body = JSON.stringify(rpcResponse);
+        body = JSON.stringify( rpcResponse );
       } 
       
       /*
@@ -608,39 +598,27 @@ qx.Class.define("rpcnode.Server",
         headers = {'Connection': 'close'};
       }
       
-      console.log("-----------------------------");
-      console.log("http code: " + httpCode );
-      console.log("headers: " + JSON.stringify(headers));
-      console.log("body: " + body);
-      console.log("-----------------------------");
+//      console.log("-----------------------------");
+//      console.log("http code: " + httpCode );
+//      console.log("headers: " + JSON.stringify(headers));
+//      console.log("body: " + body);
+//      console.log("-----------------------------");
       
       /*
        * send output
        */
       try
       {
-        res.writeHead( httpCode, headers );
-        if( body) res.write( body );
+        response.writeHead( httpCode, headers );
+        if( body) response.write( body );
       }
       catch(e)
       {
-        console.log(e);
+        console.log(e); //FIXME
       }
-      res.end();
+      response.end();
     },
-    
-    /**
-     * Send an error message and log it to the console
-     * 
-     * @param {Object} res
-     *    The response object
-     * @param {Object} error
-     *    The error object
-     */
-    sendError : function (res, error )
-    {
-      this.send( res, error.response, error.httpCode );
-    },
+   
     
     /*
      -------------------------------------------------------------------------
@@ -650,20 +628,34 @@ qx.Class.define("rpcnode.Server",
     
     /**
      * Helper method to create json response
-     * @param {unknown} result
-     * @param {Object|null} error
-     * @param {Object} rpcRequest
+     * @param result {unknown}
+     * @param error {Object|null}
+     * @param rpcRequest {Object}
      * @return {Object}
      */
     createResponse : function( result, error, rpcRequest ) 
     {
+      /*
+       * convert void/undefined result into null value
+       * FIXME what do the specs say here?
+       */
+      if ( typeof result == "undefined" )
+      {
+        result = null;  
+      }
+      
+      /*
+       * create response object
+       */
       var rpcResponse = {
-        jsonrpc   : "2.0",
-        id        : rpcRequest && rpcRequest.id ? rpcRequest.id : null,
-        error     : error,
-        result    : result
+        'id'        : ( rpcRequest && rpcRequest.id ) ? rpcRequest.id : null,
+        'error'     : error,
+        'result'    : result
       };      
       
+      /*
+       * add 2.0 marker if necessary
+       */
       if (this.getVersion() === "2.0") 
       {
         rpcResponse.jsonrpc = "2.0"
@@ -679,7 +671,8 @@ qx.Class.define("rpcnode.Server",
     paramsObjToArr : function(rpcRequest) 
     {
       var argumentsArray = [];
-      var argumentNames = this.getArgumentNames(exports.service[rpcRequest.method]);
+      var service = this.getServiceObject( rpcRequest );
+      var argumentNames = this.getArgumentNames(service[rpcRequest.method]);
       for (var i=0; i < argumentNames.length; i++) {
         argumentsArray.push(rpcRequest.params[argumentNames[i]]);
       }
@@ -708,7 +701,57 @@ qx.Class.define("rpcnode.Server",
        based on throwing exceptions which are turned into a json-rpc response
      -------------------------------------------------------------------------
      */ 
+    
+    /**
+     * Handles an error message, which can be either a simple object,
+     * a native error object or a dedicated user exception object.
+     * @param e {Object} The error object
+     * @param rpcRequest {Object} The rpc object
+     * @param response {http.ServerResponse} The response object
+     */
+    handleError : function( e, rpcRequest, response )
+    {
+      /*
+       * native error, indicates a programmer mistake
+       */
+      if( e instanceof Error )
+      {
+        console.log( e.stack );
+        this.sendError( response, this.nativeError( rpcRequest, e ) ); 
+      }
+      
+      /*
+       * this is a user-generated exception, that is, thrown
+       * in a service method
+       */
+      else if ( e instanceof rpcnode.RpcException )
+      {
+        this.sendError( response, this.userError( rpcRequest, e ) );
+      }
+      
+      /*
+       * an exception generated in the following methods
+       */
+      else
+      {
+        this.sendError( response, e );
+      }      
+    },
+    
+    /**
+     * Send an error message and log it to the console
+     * 
+     * @param response {http.ServerResponse}
+     *    The response object
+     * @param error {Object}
+     *    The error object
+     */
+    sendError : function ( response, error )
+    {
+      this.send( response, error.response, error.httpCode );
+    },    
 
+    
     createError : function(code, message) 
     {
       return {
@@ -717,83 +760,83 @@ qx.Class.define("rpcnode.Server",
       };
     },
     
-    parseError : function() 
+    parseError : function(rpcRequest) 
     {
       return {
         httpCode: 500, 
-        response: this.createResponse(null, this.createError(-32700, "Parse error."), null)
+        response: this.createResponse(null, this.createError(-32700, "Parse error."), rpcRequest)
       };
     },
     
-    versionMismatch : function(request) 
+    versionMismatch : function(rpcRequest) 
     {
       return {
         httpCode: 400, 
-        response: this.createResponse(null, this.createError(-32600, "Version mismatch. This server accepts only json-rpc version " + this.getVersion() ), request)
+        response: this.createResponse(null, this.createError(-32600, "Version mismatch. This server accepts only json-rpc version " + this.getVersion() ), rpcRequest)
       };
     },    
     
-    invalidRequest : function(request) 
+    invalidrpcRequest : function(rpcRequest) 
     {
       return {
         httpCode: 400, 
-        response: this.createResponse(null, this.createError(-32600, "Invalid Request."), request)
+        response: this.createResponse(null, this.createError(-32600, "Invalid rpcRequest."), rpcRequest)
       };
     },
     
-    invalidService : function(request, service ) 
+    invalidService : function(rpcRequest, service ) 
     {
       return {
         httpCode: 400, 
-        response: this.createResponse(null, this.createError(-32600, "Invalid Service '" + service + "'."), request)
+        response: this.createResponse(null, this.createError(-32600, "Invalid Service '" + service + "'."), rpcRequest)
       };
     },    
     
-    serviceNotFound : function(request, service ) 
+    serviceNotFound : function(rpcRequest, service ) 
     {
       return {
         httpCode: 404, 
-        response: this.createResponse(null, this.createError(-32601, "Service '" + service + "' not found."), request)
+        response: this.createResponse(null, this.createError(-32601, "Service '" + service + "' not found."), rpcRequest)
       };  
     },    
     
-    methodNotFound : function(request, method ) 
+    methodNotFound : function(rpcRequest, method ) 
     {
       return {
         httpCode: 404, 
-        response: this.createResponse(null, this.createError(-32601, "Method '" + method + "' not found."), request)
+        response: this.createResponse(null, this.createError(-32601, "Method '" + method + "' not found."), rpcRequest)
       };  
     },
     
-    invalidParams : function(request)
+    invalidParams : function(rpcRequest)
     {
       return {
         httpCode: 500, 
-        response: this.createResponse(null, this.createError(-32602, "Invalid parameters."), request)
+        response: this.createResponse(null, this.createError(-32602, "Invalid parameters."), rpcRequest)
       };
     },
     
-    internalError : function(request) 
+    internalError : function(rpcRequest) 
     {
       return {
         httpCode: 500, 
-        response: this.createResponse(null, this.createError(-32603, "Internal error."), request)
+        response: this.createResponse(null, this.createError(-32603, "Internal error."), rpcRequest)
       };  
     },
     
-    userError : function( request, e )
+    userError : function( rpcRequest, e )
     {
       return {
         httpCode: e.getHttpCode(), 
-        response: this.createResponse(null, this.createError( e.getCode(), e.getMessage() ), request)
+        response: this.createResponse(null, this.createError( e.getCode(), e.getMessage() ), rpcRequest)
       };  
     },
     
-    nativeError : function( request, e )
+    nativeError : function( rpcRequest, e )
     {
       return {
         httpCode: 500, 
-        response: this.createResponse(null, this.createError( -32700, e.message ), request)
+        response: this.createResponse(null, this.createError( -32700, e.message ), rpcRequest)
       };  
     }    
   } 

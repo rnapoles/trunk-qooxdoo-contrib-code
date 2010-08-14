@@ -16,8 +16,15 @@
 
 ************************************************************************ */
 
+/* ************************************************************************
+#ignore(nodejs.sys)
+#ignore(nodejs.proc)
+#ignore(rpcnode.InvalidParameterException)
+************************************************************************ */
+
 /**
- * RPC-Methods
+ * RPC-Methods that test the integration with the node.js backend,
+ * in particular asynchronous operations.
  */ 
 qx.Class.define("rpcnode.demo.service.NodeTest",
 {
@@ -27,26 +34,99 @@ qx.Class.define("rpcnode.demo.service.NodeTest",
   members:
   {
     
+    /**
+     * Adds two values
+     * @param a {Integer}
+     * @param b {Integer}
+     * @return {Integer}
+     */
     add : function(a, b) 
     {
+      a = parseFloat( a );
+      b = parseFloat( b );
+      if ( isNaN( a ) || isNaN( b ) )
+      {
+        throw new rpcnode.InvalidParameterException("Arguments must be numeric")
+      }
       return a + b;
     },
     
+    /**
+     * Logs a notification
+     * @param a {String}
+     * @param b {String}
+     */
     note : function(a, b)
     {
-      nodejs.sys.debug("notification " + a + " - " + b);
+      var msg = a + ":" + b
+      nodejs.sys.debug( msg );
+      return msg;
+      
     },
     
-    // async call
+ 
+    
+    /**
+     * Returns the output of the "ls" shell command asynchronously.
+     * We have to wrap the used method because it's callback function
+     * returns more than one value.
+     * 
+     * @return {Object} A promise object
+     */
     ls : function() 
     {
-      //return nodejs.sys.exec("ls .");
-    },
+      return nodejs.promise.execute( function( callback ){
+        nodejs.proc.exec("ls", function (error, stdout, stderr) {
+          callback( error, stdout );
+        })
+      });
+    },    
     
-    // async call
+    /**
+     * Returns the current working directory, using a promise
+     * object
+     * @return {Object}
+     */
     pwd : function() 
     {
-      //return nodejs.sys.exec("pwd");
-    }    
+      return nodejs.promise.execute( function( callback ){
+        nodejs.proc.exec("pwd", function (error, stdout, stderr) {
+          callback( error, stdout );
+        })
+      });
+    },
+    
+    /**
+     * Echos the given parameter on the shell, asychronously.
+     * You can only use ANSI characters and space, for security.
+     * @param msg {String} The message to echo
+     * @return {Object}
+     */
+    shell_echo : function( msg ) 
+    {
+      if( typeof msg != "string" || msg.match(/[^a-zA-Z ]/))
+      {
+        throw new rpcnode.InvalidParameterException("Invalid string!");
+      }
+      return nodejs.promise.execute( function( msg, callback ){
+        nodejs.proc.exec("echo \"" + msg + "\"", function (error, stdout, stderr) {
+          callback( error, stdout );
+        });
+      }, msg );
+    },
+    
+    /**
+     * Generates an error by calling a non-existing command on the
+     * shell
+     * @return {void}
+     */
+    shell_error : function()
+    {
+      return nodejs.promise.execute( function( callback ){
+        nodejs.proc.exec("thisdoesnotexist", function (error, stdout, stderr) {
+          callback( error );
+        })
+      });      
+    }
   }
 });
