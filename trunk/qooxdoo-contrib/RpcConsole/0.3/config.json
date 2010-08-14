@@ -1,0 +1,41 @@
+{
+  "name"    : "RpcConsole",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "rpcconsole",
+    "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Application",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.test.*", "rpcconsole.demo.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/cache",    
+    "ROOT"         : "."
+  }
+}
