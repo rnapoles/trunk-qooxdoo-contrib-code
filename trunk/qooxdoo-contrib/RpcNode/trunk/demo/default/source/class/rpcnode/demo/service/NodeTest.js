@@ -19,6 +19,7 @@
 /* ************************************************************************
 #ignore(nodejs.sys)
 #ignore(nodejs.proc)
+#ignore(nodejs.promise)
 #ignore(rpcnode.InvalidParameterException)
 ************************************************************************ */
 
@@ -60,12 +61,10 @@ qx.Class.define("rpcnode.demo.service.NodeTest",
     {
       var msg = a + ":" + b
       nodejs.sys.debug( msg );
-      return msg;
-      
+      return msg; 
     },
     
- 
-    
+
     /**
      * Returns the output of the "ls" shell command asynchronously.
      * We have to wrap the used method because it's callback function
