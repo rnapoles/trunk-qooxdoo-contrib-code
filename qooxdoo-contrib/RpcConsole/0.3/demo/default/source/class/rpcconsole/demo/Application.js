@@ -33,12 +33,20 @@ qx.Class.define("rpcconsole.demo.Application",
   */
   properties :
   {
+    /**
+     * The url of the server,
+     * @todo move to RpcPhp demo
+     */
     serverUrl :
     {
       refine : true,
-      init : "../../../../../RpcPhp/trunk/services/index.php"
+      init : "../../../../../RpcPhp/1.2.0/services/index.php"
     },
     
+    /**
+     * The url of the test data
+     * @todo move to RpcPhp demo 
+     */
     testDataUrl : 
     {
       refine : true,
