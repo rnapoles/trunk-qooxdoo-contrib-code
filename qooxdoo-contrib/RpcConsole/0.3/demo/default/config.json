@@ -1,0 +1,65 @@
+{
+  "name"    : "RpcConsole Demo",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "rpcconsole.demo",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
+//    "QXTHEME"      : "rpcconsole.demo.theme.Theme",
+    "API_EXCLUDE"  : ["qx.*"],
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  },
+  
+
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [   
+        {
+          "manifest" : "../../Manifest.json"
+        },
+        {
+          "manifest" : "contrib://Crypto/trunk/Manifest.json"
+        }         
+      ]
+    },
+    
+    // download contrib code to location that is accessible to web server in source version
+    "source-script":
+    {
+      "cache" :
+      {
+        "downloads" : "cache-downloads"
+      }
+    } 
+  }
+}
