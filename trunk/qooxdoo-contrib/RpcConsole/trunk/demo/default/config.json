@@ -46,10 +46,7 @@
       [   
         {
           "manifest" : "../../Manifest.json"
-        },
-        {
-          "manifest" : "contrib://Crypto/trunk/Manifest.json"
-        }         
+        }        
       ]
     },
     
