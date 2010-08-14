@@ -432,6 +432,14 @@ qx.Class.define("rpcconsole.RpcConsole",
           this.setMode(sel[0].getModel());  
         }
       },this);
+      this.addListener("changeMode",function(e){
+        modeCb.getSelectables().forEach( function(item){
+          if( item.getModel() == e.getData())
+          {
+            modeCb.setSelection([item]);
+          }
+        },this);
+      },this);
       
       //this.__form.add( modeCb, null, null, "mode" ); 
       hbox.add( modeCb );

@@ -148,7 +148,7 @@ qx.core.Init.getApplication().setTestData(
    * Load introspection tests
    */
   loadIntrospectionTests : {
-    label : "Load introspection tests",
+    label : "Load introspection tests (RpcPhp only)",
     execute : function(){
       this.loadTestData("resource/rpcconsole/demo/testIntrospection.js");
     }
