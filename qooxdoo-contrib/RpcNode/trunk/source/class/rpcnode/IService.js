@@ -13,21 +13,12 @@
    Authors:
      * Martin Wittemann (original implementation)
      * Christian Boulanger (port to qooxdoo-contrib & to qooxdoo-rpc )
-   
-   Dependencies:
-     * node-promise (http://github.com/kriszyp/node-promise)
 
 ************************************************************************ */
 
-var 
-  jsonrpc  = require('./jsonrpc');
-  service1 = require('./services/service1');
-  
-var server = new jsonrpc.Server(8888);
-server.addService( service1 );
-server.addService( service1, "test" );
-server.start();
-
-
-
-  
+/**  
+ * Marker interface for services that are dynamically loaded 
+ * from the filesystem. This is to prevent malicious clients 
+ * from trying to execute non-rpc service methods. 
+ */
+qx.Interface.define("rpcnode.IService",{}); 

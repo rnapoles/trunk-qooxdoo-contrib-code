@@ -1,75 +1,46 @@
 /* ************************************************************************
 
    Copyright:
-
+     2009-2010 Christian Boulanger
+     
    License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
 
    Authors:
+     * Christian Boulanger (cboulanger)
 
 ************************************************************************ */
 
 /* ************************************************************************
-
-#asset(rpcnode.demo/*)
-
+#asset(rpcnode/*)
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "rpcnode"
+ * An adapted RpcConsole demo
  */
 qx.Class.define("rpcnode.demo.Application",
 {
-  extend : qx.application.Standalone,
-
-
-
+  extend : rpcconsole.Application,
+  
   /*
   *****************************************************************************
-     MEMBERS
+     OVERRIDDEN PROPERTIES
   *****************************************************************************
   */
-
-  members :
+  properties :
   {
-    /**
-     * This method contains the initial application code and gets called 
-     * during startup of the application
-     * 
-     * @lint ignoreDeprecated(alert)
-     */
-    main : function()
+    serverUrl :
     {
-      // Call super class
-      this.base(arguments);
-
-      // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
-      {
-        // support native logging capabilities, e.g. Firebug for Firefox
-        qx.log.appender.Native;
-        // support additional cross-browser console. Press F7 to toggle visibility
-        qx.log.appender.Console;
-      }
-
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
-
-      // Create a button
-      var button1 = new rpcnode.Contribution("First Contribution", "rpcnode/test.png");
-
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
+      refine : true,
+      init : "http://localhost:8888"
+    },
+    
+    testDataUrl : 
+    {
+      refine : true,
+      init  : "resource/rpcnode/demo/testData.js"
     }
   }
 });

@@ -16,32 +16,37 @@
 
 ************************************************************************ */
 
-var 
-  sys = require('sys'),
-  fs  = require('../lib/fs-promise');  // Async filesystem operations;
- 
 /**
  * RPC-Methods
  */ 
- 
-this.echo = function(a) {
-  return a;
-}
-
-this.add = function(a, b) {
-  return a + b;
-}
-
-this.note = function(a, b) {
-  sys.debug("notification " + a + " - " + b);
-}
-
-// async call
-this.ls = function() {
-  return sys.exec("ls .");
-}
-
-// async call
-this.pwd = function() {
-  return sys.exec("pwd");
-}
+qx.Class.define("rpcnode.demo.service.NodeTest",
+{
+  extend : qx.core.Object,
+  implement : [ rpcnode.IService ],
+  
+  members:
+  {
+    
+    add : function(a, b) 
+    {
+      return a + b;
+    },
+    
+    note : function(a, b)
+    {
+      nodejs.sys.debug("notification " + a + " - " + b);
+    },
+    
+    // async call
+    ls : function() 
+    {
+      //return nodejs.sys.exec("ls .");
+    },
+    
+    // async call
+    pwd : function() 
+    {
+      //return nodejs.sys.exec("pwd");
+    }    
+  }
+});

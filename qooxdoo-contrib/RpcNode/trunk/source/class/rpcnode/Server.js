@@ -20,25 +20,22 @@
 ************************************************************************ */
 
 /*
- * import node modules as local vars
+ * import node modules as properties of global 
+ * 'nodejs' object
  */
-var
-  url     = require('url'),  
-  sys     = require('sys'),
-  promise = require("./lib/promise"); // Async operations
+nodejs = {
+  url     : require('url'),  
+  sys     : require('sys'),
+  promise : require("./lib/promise"), // Async operations
+  fs      : require("./lib/fs-promise") // Async operations
+};
 
 /*
- * import qx as global var 
+ * import qooxdoo-style classes
  */
 qx = require('./lib/qx-oo');
-  
-/**  
- * Marker interface for services that are dynamically loaded 
- * from the filesystem. This is to prevent malicious clients 
- * from trying to execute non-rpc service methods. 
- */
-qx.Interface.define("rpcnode.IService",{}); 
-
+require('./IService');
+require('./RpcException');
 
 /**
  * Server class implementing JSON-RPC 1.0 and 2.0
@@ -171,15 +168,15 @@ qx.Class.define("rpcnode.Server",
      */
     _onHttpRequest : function(req, res)
     {
-      var query = url.parse(req.url,true).query;
-      console.log(sys.inspect(query));
-      
       try
       {
+        var query = nodejs.url.parse(req.url,true).query;
+        //console.log(nodejs.sys.inspect(query));
+        
         /*
          * Handle "old-style" qooxdoo cross-domain json-rpc requests 
          */
-        if ( req.method === "GET" && query._ScriptTransport_id )
+        if ( req.method === "GET" && typeof query == "object" && query._ScriptTransport_id )
         {
           var data = JSON.parse( query._ScriptTransport_data );
           var rpcRequest = {
@@ -229,12 +226,36 @@ qx.Class.define("rpcnode.Server",
          */
         else
         {
-          this.sendError( res, this.invalidRequest() );
+          this.sendError( res, this.invalidRequest( res ) );
         }
       }
-      catch( error )
+      catch( e )
       {
-        this.sendError( res, error );
+        /*
+         * native error, indicates a programmer mistake
+         */
+        if( e instanceof Error )
+        {
+          console.log( e.stack );
+          this.sendError( res, this.nativeError( res, e ) ); 
+        }
+        
+        /*
+         * this is a user-generated exception, that is, thrown
+         * in a service method
+         */
+        else if ( e instanceof rpcnode.RpcException )
+        {
+          this.sendError( res, this.userError( res, e ) );
+        }
+        
+        /*
+         * an exception generated in the server itself
+         */
+        else
+        {
+          this.sendError( res, e );
+        }
       }
     },      
     
@@ -304,7 +325,7 @@ qx.Class.define("rpcnode.Server",
           /*
            * async handling
            */
-          if (result instanceof promise.Promise) 
+          if (result instanceof nodejs.promise.Promise) 
           {
             response[i] = result;
           } 
@@ -322,7 +343,7 @@ qx.Class.define("rpcnode.Server",
          * when all processes have returned, send the assembled result
          */
         var self=this;
-        promises.all( response, function( finish ) 
+        nodejs.promise.all( response, function( finish ) 
         { 
           finish.when( function( result ) {
             /* success */
@@ -334,6 +355,7 @@ qx.Class.define("rpcnode.Server",
           }, 
           function(e) {
             /* error */
+            console.log(e);
            throw self.internalError( rpcRequest );
            return;
           });
@@ -351,7 +373,7 @@ qx.Class.define("rpcnode.Server",
          * async handling
          */
         var self = this;
-        if (response instanceof promise.Promise) 
+        if (response instanceof nodejs.promise.Promise) 
         {
           response.when( function(result) {
             /* success */
@@ -363,6 +385,7 @@ qx.Class.define("rpcnode.Server",
           }, 
           function(e) {
             /* error */
+              console.log(e);
              throw self.internalError( rpcRequest );   
              return;
           });
@@ -430,22 +453,14 @@ qx.Class.define("rpcnode.Server",
       }
       
       /*
-       * get result of method call. if an error is thrown inside the function,
-       * throw an internal error
+       * get result of method call. 
        */
-      try
-      {
-        var result = serviceObject[method].apply( serviceObject, rpcRequest.params );
-      }
-      catch (e) 
-      {
-        return this.internalError( rpcRequest );
-      }
-      
+      var result = serviceObject[method].apply( serviceObject, rpcRequest.params );
+
       /*
        * check for async requests
        */
-      if (result instanceof promise.Promise) 
+      if ( result instanceof nodejs.promise.Promise ) 
       {
         return result;
       } 
@@ -457,7 +472,7 @@ qx.Class.define("rpcnode.Server",
       {
         return {
           httpCode: rpcRequest.id != null ? 200 : 204, 
-          response: this.createResponse(result, null, rpcRequest)
+          response: this.createResponse( result, null, rpcRequest )
         };      
       }
     },
@@ -502,8 +517,9 @@ qx.Class.define("rpcnode.Server",
     getServiceObject : function( rpcRequest )
     {
       /*
-       * if a service name has been supplied ... (non-standard)
-       * 
+       * if a service name has been supplied ... (non-standard).
+       * currently accepts "none" for no service name to work with 
+       * the current version of the RpcConsole. This will be removed.
        */
       if( rpcRequest.service && rpcRequest.service !== "none" ) //FIXME
       {
@@ -511,7 +527,7 @@ qx.Class.define("rpcnode.Server",
          * ... check and sanitize service name 
          */
         var service = rpcRequest.service;
-        if ( typeof service != "string" || service.match(/[^a-zA-Z_]/) )
+        if ( typeof service != "string" || service.match(/[^a-zA-Z\._]/) )
         {
           throw this.invalidService( rpcRequest, service );
         }
@@ -525,27 +541,9 @@ qx.Class.define("rpcnode.Server",
         }
         
         /*
-         * ok, not there, try loading it. Must be placed in the same directory
-         * and implement the rpcnode.Service marker interface.
+         * not found
          */
-        try
-        {
-          var obj = require( "./" + service );
-          if( ! qx.class.hasInterface( rpcnode.Service ) )
-          {
-            throw this.invalidService( rpcRequest, service );
-          }
-          
-          /*
-           * cache object and return it
-           */
-          this.__services[ service ] = obj;
-          return obj;
-        }
-        catch( e )
-        {
-          throw this.serviceNotFound( rpcRequest, service );
-        }
+        throw this.serviceNotFound( rpcRequest, service );
       }
       
       /*
@@ -580,14 +578,14 @@ qx.Class.define("rpcnode.Server",
      */
     send : function(res, rpcResponse, httpCode) 
     {
-      var headers, body = JSON.stringify(rpcResponse);
+      var headers, body;
       
       /*
        * "old-style" qooxdoo script transport
        */
       if ( res._ScriptTransport_id )
       {
-        httpCode = 200;
+        httpCode = 200; // overwrite the http code since we're loading an iframe
         headers = {'Content-Type': 'text/javascript'};
         body = 'qx.io.remote.transport.Script._requestFinished(';
         body += res._ScriptTransport_id +',' + JSON.stringify(rpcResponse) + ');';
@@ -599,6 +597,7 @@ qx.Class.define("rpcnode.Server",
       else if ( httpCode != 204 ) 
       {
         headers = {'Content-Type': 'application/json-rpc'};
+        body = JSON.stringify(rpcResponse);
       } 
       
       /*
@@ -607,18 +606,26 @@ qx.Class.define("rpcnode.Server",
       else 
       {
         headers = {'Connection': 'close'};
-        body = "";
       }
       
+      console.log("-----------------------------");
       console.log("http code: " + httpCode );
       console.log("headers: " + JSON.stringify(headers));
       console.log("body: " + body);
+      console.log("-----------------------------");
       
       /*
        * send output
        */
-      res.writeHead(httpCode, headers );
-      res.write(body);
+      try
+      {
+        res.writeHead( httpCode, headers );
+        if( body) res.write( body );
+      }
+      catch(e)
+      {
+        console.log(e);
+      }
       res.end();
     },
     
@@ -632,9 +639,14 @@ qx.Class.define("rpcnode.Server",
      */
     sendError : function (res, error )
     {
-      console.log( JSON.stringify( error.response ) ); // FIXME 
       this.send( res, error.response, error.httpCode );
     },
+    
+    /*
+     -------------------------------------------------------------------------
+       HELPER METHODS
+     -------------------------------------------------------------------------
+     */     
     
     /**
      * Helper method to create json response
@@ -643,25 +655,21 @@ qx.Class.define("rpcnode.Server",
      * @param {Object} rpcRequest
      * @return {Object}
      */
-    createResponse : function(result, error, rpcRequest) 
+    createResponse : function( result, error, rpcRequest ) 
     {
+      var rpcResponse = {
+        jsonrpc   : "2.0",
+        id        : rpcRequest && rpcRequest.id ? rpcRequest.id : null,
+        error     : error,
+        result    : result
+      };      
+      
       if (this.getVersion() === "2.0") 
       {
-        var rpcResponse = {
-          jsonrpc: "2.0"
-        };
-        error != null ? rpcResponse.error = error : rpcResponse.result = result
-        rpcResponse.id = rpcRequest && rpcRequest.id ? rpcRequest.id : null;
-        return rpcResponse;
-      } 
-      else 
-      {
-        return {
-          result : result || null,
-          error : error || null,
-          id : rpcRequest && rpcRequest.id ? rpcRequest.id : null 
-        };    
+        rpcResponse.jsonrpc = "2.0"
       }
+      
+      return rpcResponse;
     },
     
     /**
@@ -696,7 +704,8 @@ qx.Class.define("rpcnode.Server",
     /*
      -------------------------------------------------------------------------
        ERROR HANDLING
-       @todo use real error objects
+       @todo This is too complicated currently. We need a uniform error handling
+       based on throwing exceptions which are turned into a json-rpc response
      -------------------------------------------------------------------------
      */ 
 
@@ -760,7 +769,7 @@ qx.Class.define("rpcnode.Server",
     {
       return {
         httpCode: 500, 
-        response: this.createResponse(null, this.createError(-32602, "Invalid params."), request)
+        response: this.createResponse(null, this.createError(-32602, "Invalid parameters."), request)
       };
     },
     
@@ -770,9 +779,22 @@ qx.Class.define("rpcnode.Server",
         httpCode: 500, 
         response: this.createResponse(null, this.createError(-32603, "Internal error."), request)
       };  
-    }
+    },
+    
+    userError : function( request, e )
+    {
+      return {
+        httpCode: e.getHttpCode(), 
+        response: this.createResponse(null, this.createError( e.getCode(), e.getMessage() ), request)
+      };  
+    },
+    
+    nativeError : function( request, e )
+    {
+      return {
+        httpCode: 500, 
+        response: this.createResponse(null, this.createError( -32700, e.message ), request)
+      };  
+    }    
   } 
 });
-
-exports.Server   = rpcnode.Server;
-exports.IService = rpcnode.IService;
