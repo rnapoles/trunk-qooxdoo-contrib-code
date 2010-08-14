@@ -186,10 +186,7 @@ qx.Class.define("rpcconsole.Application",
       button.setShowArrow(true);
       var menu = new qx.ui.menu.Menu();
       button.setMenu(menu);
-//      var mbutton = new qx.ui.menu.Button("About RpcConsole");
-//      mbutton.addListener("execute", this._onAboutButtonExecute, this);
-//      menu.add(mbutton);
-      mbutton = new qx.ui.menu.Button("RpcConsole Website");
+      var mbutton = new qx.ui.menu.Button("RpcConsole Website");
       mbutton.addListener("execute", function(){
         window.open("http://qooxdoo.org/contrib/project/rpcconsole")
       }, this);
