@@ -438,8 +438,8 @@ qx.Class.define("rpcconsole.Application",
     
     /**
      * Reports the result of a test in the rep
-     * @param {} success
-     * @param {} status
+     * @param success {}
+     * @param status {}
      */
     displayTestResult : function( success, status )
     {
