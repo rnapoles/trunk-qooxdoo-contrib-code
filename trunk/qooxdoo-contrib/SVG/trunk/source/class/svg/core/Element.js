@@ -12,6 +12,9 @@
      * Marc Puts (marcputs)
 
 ************************************************************************ */
+/*
+#require(svg.core.Types)
+*/
 
 /**
  * An element that resides in the SVG namespace. Using the correct

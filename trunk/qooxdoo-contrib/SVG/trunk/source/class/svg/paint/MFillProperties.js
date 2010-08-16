@@ -93,7 +93,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
 	    nullable: true,
 	    init: null,
 	    apply: "_applyFillOpacity",
-	    check: "!isNaN(value) && value >= 0 && value <= 100"
+	    check: "!isNaN(value) && value >= 0 && value <= 1"
     }
 	
 	},
