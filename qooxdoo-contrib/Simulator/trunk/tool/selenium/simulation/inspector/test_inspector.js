@@ -27,6 +27,8 @@ var mySim = new simulation.Simulation(baseConf,args);
 
 mySim.locators = {
   inspectorToolBar : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar",
+  inspectButton : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label='Inspect']",
+  inspectedWidgetLabel : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[9]",
   inspectedAppRoot : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application",
   windowWidgets : "qxh=[@classname=inspector.widgets.WidgetsWindow]",
   windowProperty : "qxh=[@classname=inspector.property.PropertyWindow]",
@@ -37,7 +39,10 @@ mySim.locators = {
   buttonWidgets : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Widgets]",
   buttonProperties : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Properties]",
   buttonConsole : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Console]",
-  buttonSelenium : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Selenium]"
+  buttonSelenium : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Selenium]",
+  windowConsoleHtml : "qxh=[@classname=inspector.console.ConsoleWindow]/[@classname=inspector.console.View]/qx.ui.container.Stack/[@classname=inspector.console.ConsoleView]/qx.ui.embed.Html",
+  windowConsoleTextField : "qxh=[@classname=inspector.console.ConsoleWindow]/[@classname=inspector.console.View]/qx.ui.container.Stack/[@classname=inspector.console.ConsoleView]/qx.ui.container.Composite/qx.ui.form.TextField",
+  catchClickLayer : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application/child[1]"
 };
 
 var selWin = 'selenium.qxStoredVars["autWindow"]';
@@ -46,7 +51,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 simulation.Simulation.prototype.addAppChecker = function()
 {
-  checkApp = function() {
+  var checkApp = function() {
     var ready = false;
     try {
       if (selenium.qxStoredVars["autWindow"].qx.core.Init.getApplication()._loadedWindow.qx.core.Init.getApplication()) {
@@ -81,6 +86,36 @@ simulation.Simulation.prototype.checkWindows = function()
         }
       }
     }
+  }
+};
+
+simulation.Simulation.prototype.selectWidgetByClick = function()
+{
+  this.log("Selecting widget by click", "info");
+  this.qxClick(this.locators.inspectButton);
+  this.qxClick(this.locators.catchClickLayer, "clientX=55,clientY=60");
+  var inspectedWidget = String(this.__sel.qxObjectExecFunction(this.locators.inspectedWidgetLabel, "getValue"));
+  if (inspectedWidget.indexOf("<tt>") >= 0) {
+    inspectedWidget = inspectedWidget.substring(4, inspectedWidget.length - 5);
+  }
+  this.log("Selected widget: " + inspectedWidget);
+  return inspectedWidget;
+};
+
+simulation.Simulation.prototype.checkConsole = function(expectedWidget)
+{
+  if (expectedWidget.indexOf(" ") < 0) {
+    expectedWidget = expectedWidget.split("[").join(" [");
+  }
+  var loc = this.locators.windowConsoleTextField;
+  this.__sel.type(loc, "this");
+  this.qxClick(loc);
+  this.__sel.keyDown(loc, "\\13");
+  var html = String(this.__sel.qxObjectExecFunction(this.locators.windowConsoleHtml, "getHtml"));
+  if (html.indexOf(expectedWidget) >= 0) {
+    this.log("this in console returned expected widget", "info");
+  } else {
+    this.log("this in console did not return expected widget " + expectedWidget, "error");
   }
 };
 
@@ -126,7 +161,7 @@ simulation.Simulation.prototype.runTest = function()
 {  
   var inspectedAppPath = this.getConfigSetting("inspectedApplication");
   if (this.getConfigSetting("debug")) {
-    print("Loading application " + inspectedAppPath + " in Inspector");
+    this.log("Loading application " + inspectedAppPath + " in Inspector", "debug");
   }
   this.qxType("xpath=//input", inspectedAppPath);
   Packages.java.lang.Thread.sleep(10000);
@@ -157,6 +192,9 @@ simulation.Simulation.prototype.runTest = function()
     this.log("Inspector toolbar is enabled.", "info");
     //this.testInspectWidget();
   }
+  
+  var selectedWidget = this.selectWidgetByClick();
+  this.checkConsole(selectedWidget);
   
 };
 
