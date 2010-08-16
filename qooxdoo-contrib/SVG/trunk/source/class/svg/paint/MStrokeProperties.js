@@ -87,7 +87,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     	nullable: true,
     	init: null,
     	apply: "_applyStrokeOpacity",
-    	check: "!isNaN(value) && value >= 0 && value <= 100"
+    	check: "!isNaN(value) && value >= 0 && value <= 1"
     },
     
     /**
