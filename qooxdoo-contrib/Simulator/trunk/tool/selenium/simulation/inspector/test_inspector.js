@@ -45,7 +45,7 @@ mySim.locators = {
   windowConsoleHtml : "qxh=[@classname=inspector.console.ConsoleWindow]/[@classname=inspector.console.View]/qx.ui.container.Stack/[@classname=inspector.console.ConsoleView]/qx.ui.embed.Html",
   windowConsoleTextField : "qxh=[@classname=inspector.console.ConsoleWindow]/[@classname=inspector.console.View]/qx.ui.container.Stack/[@classname=inspector.console.ConsoleView]/qx.ui.container.Composite/qx.ui.form.TextField",
   windowObjectsTable : "qxh=[@classname=inspector.objects.Window]/[@classname=inspector.objects.View]/qx.ui.table.Table",
-  catchClickLayer : "qxhv=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application/child[1]"
+  catchClickLayer : "qxhv=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application/[@testId=catchClickLayer]"
 };
 
 var selWin = 'selenium.qxStoredVars["autWindow"]';
