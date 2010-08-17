@@ -26,19 +26,19 @@ var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 var locators = {
-  menuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton',
-  syntaxHighlightingButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[0]/qx.ui.form.ToggleButton',
+  menuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.MenuButton',
+  syntaxHighlightingButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.form.ToggleButton',
   editorTextArea : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/[@classname="playground.view.Editor"]/qx.ui.form.TextArea',
-  runButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[0]',
+  runButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[0]',
   playgroundApplication : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Scroll/qx.ui.root.Inline',
-  logButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/qx.ui.toolbar.CheckBox',
-  sampleMenuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton',
-  gitHubButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[3]',
+  logButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.CheckBox',
+  sampleMenuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.MenuButton',
+  gitHubButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[3]',
   gistMenu : 'qxh=[@classname="playground.view.gist.GistMenu"]',
   gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
   gistLoadButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/[@classname="playground.view.gist.UserNameMenuItem"]/qx.ui.form.Button',
   gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]',
-  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="URL"]'
+  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/[@label="URL"]'
 };
 
 var getLogHtml = function()
@@ -49,7 +49,7 @@ var getLogHtml = function()
 
 var getSampleNames = function()
 {  
-  var menuWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton');
+  var menuWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.MenuButton');
   var kids = menuWidget.getMenu().getChildren();  
   var sampleNames = "";
   for(var i=0,l=kids.length; i<l; i++) {  
