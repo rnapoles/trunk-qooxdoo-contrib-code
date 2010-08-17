@@ -220,9 +220,6 @@ simulation.Simulation.prototype.checkWidgets = function()
   } else {
     this.log("Widgets window: Expected selected widget to match tree selection " + expectedWidget + " but found " + selectedWidget, "error");
   }
-  
-  
-  Packages.java.lang.Thread.sleep(10000000);
 };
 
 simulation.Simulation.prototype.runTest = function()
