@@ -29,14 +29,14 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 var locators = {
   articleView : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname="feedreader.view.Article"]',
   feedTree : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.tree.Tree',
-  reloadButton : 'qxh=app:[@classname="feedreader.view.ToolBar"]/qx.ui.toolbar.Part/child[3]',
+  reloadButton : 'qxh=app:[@classname="feedreader.view.ToolBar"]/child[3]',
   firstFeed : 'qxh=app:qx.ui.tree.Tree/child[0]/child[0]/child[0]',
   firstFeedItem : 'qxh=app:[@classname="feedreader.view.List"]/qx.ui.container.Stack/qx.ui.form.List/child[0]',
-  preferencesButton : 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]',
+  preferencesButton : 'qxh=qx.ui.container.Composite/child[1]/child[5]',
   preferencesWindow : 'qxh=[@classname="feedreader.view.PreferenceWindow"]',
   buttonItalian : 'qxh=app:[@caption=".*"]/qx.ui.groupbox.GroupBox/[@label="Italiano"]',
   buttonOk : 'qxh=app:[@caption=".*"]/qx.ui.container.Composite/[@label="OK"]',
-  addFeedButton : 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]',
+  addFeedButton : 'qxh=qx.ui.container.Composite/child[1]/child[0]',
   feedWindow : 'qxh=[@classname="feedreader.view.AddFeedWindow"]',
   feedWindowButton : 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.renderer.SinglePlaceholder/qx.ui.container.Composite/qx.ui.form.Button'
 };
