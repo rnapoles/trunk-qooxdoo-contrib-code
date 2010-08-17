@@ -34,6 +34,7 @@ mySim.locators = {
   windowWidgetsTree : "qxh=[@classname=inspector.widgets.WidgetsWindow]/[@classname=inspector.widgets.View]/qx.ui.tree.Tree",
   windowProperty : "qxh=[@classname=inspector.property.PropertyWindow]",
   windowObjects : "qxh=[@classname=inspector.objects.Window]",
+  windowObjectsReloadButton : "qxh=[@classname=inspector.objects.Window]/[@classname=inspector.objects.View]/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Button",
   windowObjectsTextField : "qxh=[@classname=inspector.objects.Window]/[@classname=inspector.objects.View]/qx.ui.toolbar.ToolBar/qx.ui.form.TextField",
   windowConsole : "qxh=[@classname=inspector.console.ConsoleWindow]",
   windowSelenium : "qxh=[@classname=inspector.selenium.SeleniumWindow]",
@@ -151,6 +152,10 @@ simulation.Simulation.prototype.checkButtons = function()
 
 simulation.Simulation.prototype.checkObjects = function()
 {
+  // Refresh the view to include objects created after application start
+  this.qxClick(this.locators.windowObjectsReloadButton);
+  Packages.java.lang.Thread.sleep(1000);
+  
   var expectedWidget = this.getSelectedWidget();
   // Check if the currently inspected widget is selected in the table
   var selected = String(this.__sel.qxTableGetSelectedRowData(this.locators.windowObjectsTable));
@@ -168,7 +173,6 @@ simulation.Simulation.prototype.checkObjects = function()
   var firstRowHash = String(this.__sel.qxTableGetValue(this.locators.windowObjectsTable, "row=0,col=0"));
   var firstRowWidget = String(this.__sel.qxTableGetValue(this.locators.windowObjectsTable, "row=0,col=1"));
   var firstRowWidgetFull = firstRowWidget + "[" + firstRowHash + "]";
-  this.log("First widget in objects table: " + firstRowWidgetFull, "debug");
   this.__sel.qxTableClick(this.locators.windowObjectsTable, "row=0,col=0");
   Packages.java.lang.Thread.sleep(2000);
   var selectedWidget = this.getSelectedWidget();
