@@ -269,10 +269,13 @@ simulation.Simulation.prototype.runTest = function()
     this.log("Selected widget did not change", "error");
   }
   
-  try {
-    this.checkConsole();
-  } catch(ex) {
-    this.log("Exception while checking Console window: " + ex, "error");
+  var browser = this.getEval("navigator.userAgent");
+  if (browser.indexOf("AppleWebKit") < 0) {
+    try {
+      this.checkConsole();
+    } catch(ex) {
+      this.log("Exception while checking Console window: " + ex, "error");
+    }
   }
   
   try {
