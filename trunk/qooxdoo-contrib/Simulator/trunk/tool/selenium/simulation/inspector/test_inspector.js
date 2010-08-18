@@ -10,6 +10,7 @@ var baseConf = {
   'autPath' : '/qx/trunk/qooxdoo/component/inspector/build/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
+  'windowMaximize' : true,
   'inspectedApplication' : '/qx/trunk/qooxdoo/application/feedreader/build/'
 };
 
@@ -169,7 +170,7 @@ simulation.Simulation.prototype.checkObjects = function()
   
   // Filter the table and select the first row
   this.qxType(this.locators.windowObjectsTextField, "qx.ui.toolbar.Button");
-  Packages.java.lang.Thread.sleep(15000);
+  Packages.java.lang.Thread.sleep(25000);
   var firstRowHash = String(this.__sel.qxTableGetValue(this.locators.windowObjectsTable, "row=0,col=0"));
   var firstRowWidget = String(this.__sel.qxTableGetValue(this.locators.windowObjectsTable, "row=0,col=1"));
   var firstRowWidgetFull = firstRowWidget + "[" + firstRowHash + "]";
@@ -227,7 +228,7 @@ simulation.Simulation.prototype.checkWidgets = function()
 };
 
 simulation.Simulation.prototype.runTest = function()
-{  
+{
   var inspectedAppPath = this.getConfigSetting("inspectedApplication");
   if (this.getConfigSetting("debug")) {
     this.log("Loading application " + inspectedAppPath + " in Inspector", "debug");
