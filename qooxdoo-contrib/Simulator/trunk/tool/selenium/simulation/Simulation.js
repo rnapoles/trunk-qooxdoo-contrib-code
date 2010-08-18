@@ -310,7 +310,10 @@ simulation.Simulation.prototype.startSession = function()
 
   try {
     this.__sel.start();
-    this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));    
+    if (this.getConfigSetting("windowMaximize", false)) {
+      this.__sel.windowMaximize();
+    }
+    this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));
     this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
     this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
     this.setupEnvironment();
