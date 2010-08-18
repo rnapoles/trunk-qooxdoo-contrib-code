@@ -362,7 +362,7 @@ simulation.Simulation.prototype.setupEnvironment = function()
  */
 simulation.Simulation.prototype.qxOpen = function(uri)
 {
-  openUri = uri || this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath");
+  var openUri = uri || this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath");
   this.__sel.open(openUri);
   this.setupEnvironment();
 };
@@ -1067,7 +1067,7 @@ simulation.Simulation.prototype.logRingBufferEntries = function()
 {
   var debugLog = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getRingBufferEntries()", "Retrieving log messages");
   debugLog = String(debugLog);
-  debugLogArray = debugLog.split("|");
+  var debugLogArray = debugLog.split("|");
   
   for (var i=0,l=debugLogArray.length; i<l; i++) {
     this.log(debugLogArray[i], "info");
@@ -1156,7 +1156,7 @@ simulation.Simulation.prototype.addGlobalErrorHandler = function(win)
  */
 simulation.Simulation.prototype.logGlobalErrors = function(win)
 {
-  targetWin = win || "";
+  var targetWin = win || "";
   var exceptions = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.getGlobalErrors(" + targetWin + ")", "Retrieving global error store");
   var ex = String(exceptions);
   if (ex.length > 0) {
