@@ -41,6 +41,16 @@ var locators = {
   shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/[@label="URL"]'
 };
 
+if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
+  locators.menuButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton';
+  locators.syntaxHighlightingButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[0]/qx.ui.form.ToggleButton';
+  locators.runButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[0]',
+  locators.logButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/qx.ui.toolbar.CheckBox';
+  locators.sampleMenuButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton',
+  locators.gitHubButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[3]';
+  locators.shortenUrlButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="URL"]'
+}
+
 var getLogHtml = function()
 {
   var logWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/child[1]/[@classname="playground.view.Log"]/qx.ui.embed.Html');
