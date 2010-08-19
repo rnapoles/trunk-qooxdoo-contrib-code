@@ -41,8 +41,10 @@ var locators = {
   feedWindowButton : 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.renderer.SinglePlaceholder/qx.ui.container.Composite/qx.ui.form.Button'
 };
 
-if (mySim.getConfigSetting("branch") == "branch_1_1_x") {
-  locators.feedWindowButton = 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.Button';
+if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
+  locators.reloadButton = 'qxh=app:[@classname="feedreader.view.ToolBar"]/qx.ui.toolbar.Part/child[3]';
+  locators.preferencesButton = 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]';
+  locators.addFeedButton = 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]';
 }
 
 simulation.Simulation.prototype.checkArticle = function()
@@ -82,7 +84,7 @@ simulation.Simulation.prototype.checkFeeds = function()
   var invalidFeeds = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.checkFeeds()");
   invalidFeeds = String(invalidFeeds);
   if (invalidFeeds != "") {
-    invalidFeedArray = invalidFeeds.split("|");
+    var invalidFeedArray = invalidFeeds.split("|");
     for (var i = 0, l = invalidFeedArray.length; i < l; i++) {
       this.log("Feed not loaded: " + invalidFeedArray[i], "warn");
     }
