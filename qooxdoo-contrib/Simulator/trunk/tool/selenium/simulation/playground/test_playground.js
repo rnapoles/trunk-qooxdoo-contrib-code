@@ -57,9 +57,9 @@ var getLogHtml = function()
   return logWidget.getContentElement().getDomElement().innerHTML;
 };
 
-var getSampleNames = function()
+var getSampleNames = function(sampleMenuButtonLocator)
 {  
-  var menuWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/qx.ui.toolbar.MenuButton');
+  var menuWidget = selenium.getQxWidgetByLocator(sampleMenuButtonLocator);
   var kids = menuWidget.getMenu().getChildren();  
   var sampleNames = "";
   for(var i=0,l=kids.length; i<l; i++) {  
@@ -272,7 +272,7 @@ simulation.Simulation.prototype.runTest = function()
   this.qxClick(locators.runButton, '', 'Pressing Run button');
 
   this.addOwnFunction("getSampleNames", getSampleNames);  
-  var sampleNames = this.getEval(selWin + ".qx.Simulation.getSampleNames();", "Getting sample names");
+  var sampleNames = this.getEval(selWin + ".qx.Simulation.getSampleNames('" + locators.menuButton +"');", "Getting sample names");
   sampleNames = String(sampleNames);
   var sampleArr = sampleNames.split(",");
   print("Found " + sampleArr.length + " samples: " + sampleArr); 
