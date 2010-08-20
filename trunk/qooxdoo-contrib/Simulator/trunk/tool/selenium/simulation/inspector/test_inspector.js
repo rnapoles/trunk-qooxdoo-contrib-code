@@ -34,11 +34,18 @@ mySim.locators = {
   windowWidgets : "qxh=[@classname=inspector.widgets.WidgetsWindow]",
   windowWidgetsTree : "qxh=[@classname=inspector.widgets.WidgetsWindow]/[@classname=inspector.widgets.View]/qx.ui.tree.Tree",
   windowProperty : "qxh=[@classname=inspector.property.PropertyWindow]",
+  windowPropertyInspectedAtom : "qxh=[@classname=inspector.property.PropertyWindow]/[@classname=inspector.property.View]/qx.ui.container.Scroll/[@classname=inspector.property.PropertyList]/qx.ui.basic.Atom",
   windowObjects : "qxh=[@classname=inspector.objects.Window]",
   windowObjectsReloadButton : "qxh=[@classname=inspector.objects.Window]/[@classname=inspector.objects.View]/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Button",
   windowObjectsTextField : "qxh=[@classname=inspector.objects.Window]/[@classname=inspector.objects.View]/qx.ui.toolbar.ToolBar/qx.ui.form.TextField",
   windowConsole : "qxh=[@classname=inspector.console.ConsoleWindow]",
   windowSelenium : "qxh=[@classname=inspector.selenium.SeleniumWindow]",
+  windowSeleniumToolbarFirstPart : "qxh=[@classname=inspector.selenium.SeleniumWindow]/[@classname=inspector.selenium.View]/qx.ui.toolbar.ToolBar/child[0]",
+  windowSeleniumOptionsButton : "qxh=[@classname=inspector.selenium.SeleniumWindow]/[@classname=inspector.selenium.View]/qx.ui.toolbar.ToolBar/child[3]/qx.ui.toolbar.Button",
+  windowSeleniumOptions : "qxh=[@classname=inspector.selenium.OptionsWindow]",
+  windowSeleniumOptionsSeleniumCoreField : "qxh=[@classname=inspector.selenium.OptionsWindow]/qx.ui.container.Composite/qx.ui.form.renderer.Single/child[2]",
+  windowSeleniumOptionsUserExtensionsField : "qxh=[@classname=inspector.selenium.OptionsWindow]/qx.ui.container.Composite/qx.ui.form.renderer.Single/child[4]",
+  windowSeleniumOptionsOkButton : "qxh=[@classname=inspector.selenium.OptionsWindow]/qx.ui.container.Composite/qx.ui.form.renderer.Single/qx.ui.container.Composite/[@label=OK]",
   buttonObjects : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Objects]",
   buttonWidgets : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Widgets]",
   buttonProperties : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Properties]",
@@ -68,30 +75,6 @@ simulation.Simulation.prototype.addAppChecker = function()
   };
   
   this.addOwnFunction("checkApp", checkApp);
-};
-
-simulation.Simulation.prototype.checkWindows = function()
-{
-  for (locName in this.locators) {
-    if (locName.indexOf("window") == 0) {
-      try {
-        this.__sel.qxClick(this.locators[locName]);
-        this.log("Found window " + locName.substr(6), "info");
-      } catch (ex) {
-        var errMsg = "Error while checking window " + locName.substr(6) + ": ";
-        if (locName == "windowObjects") {
-          try {
-            this.__sel.qxClick("qxh=[@classname=inspector.objects.ObjectsWindow]");
-            this.log("Found window Objects", "info");
-          } catch(ex) {
-            this.log(errMsg + ex, "error");
-          }
-        } else {
-          this.log(errMsg + ex, "error");
-        }
-      }
-    }
-  }
 };
 
 simulation.Simulation.prototype.getSelectedWidget = function()
@@ -148,6 +131,21 @@ simulation.Simulation.prototype.checkButtons = function()
       }
      
     }
+  }
+};
+
+simulation.Simulation.prototype.checkProperties = function()
+{
+  var expectedWidget = this.getSelectedWidget();
+  expectedWidget = expectedWidget.split("[")[0];
+  var inspectedWidget = String(this.__sel.qxObjectExecFunction(this.locators.windowPropertyInspectedAtom, "getLabel"));
+  if (inspectedWidget.indexOf("<b>") >= 0) {
+    inspectedWidget = inspectedWidget.substring(3, inspectedWidget.length - 4);
+  }
+  if (inspectedWidget != expectedWidget) {
+    this.log("Properties window: Expected selected widget to be " + expectedWidget + " but found " + inspectedWidget, "error");
+  } else {
+    this.log("Properties window has correct selection", "info");
   }
 };
 
@@ -227,6 +225,23 @@ simulation.Simulation.prototype.checkWidgets = function()
   }
 };
 
+simulation.Simulation.prototype.checkSelenium = function()
+{
+  var firstPartEnabled = String(this.__sel.qxObjectExecFunction(this.locators.windowSeleniumToolbarFirstPart, "getEnabled"));
+  this.qxClick(this.locators.windowSeleniumOptionsButton);
+  Packages.java.lang.Thread.sleep(1000);
+  this.qxType(this.locators.windowSeleniumOptionsSeleniumCoreField, "http://172.17.12.142/selenium-core");
+  this.qxType(this.locators.windowSeleniumOptionsUserExtensionsField, "http://172.17.12.142/user-extensions-qooxdoo.js");
+  this.qxClick(this.locators.windowSeleniumOptionsOkButton);
+  Packages.java.lang.Thread.sleep(1000);
+  var firstPartEnabled = String(this.__sel.qxObjectExecFunction(this.locators.windowSeleniumToolbarFirstPart, "getEnabled"));
+  if (firstPartEnabled != "true") {
+    this.log("Selenium toolbar not enabled!", "error");
+  } else {
+    this.log("Selenium toolbar enabled", "info");
+  }
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   var inspectedAppPath = this.getConfigSetting("inspectedApplication");
@@ -250,7 +265,6 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   this.checkButtons();
-  this.checkWindows();
   
   var toolbarEnabled = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar, "getEnabled"));
   if (toolbarEnabled == "false") {
@@ -284,6 +298,13 @@ simulation.Simulation.prototype.runTest = function()
   }
   
   try {
+    this.checkProperties();
+  } catch(ex) {
+    this.log("Exception while checking Properties window: " + ex, "error");
+  }
+  
+  /*
+  try {
     this.checkObjects();
   } catch(ex) {
     this.log("Exception while checking Objects window: " + ex, "error");
@@ -294,6 +315,15 @@ simulation.Simulation.prototype.runTest = function()
   } catch(ex) {
     this.log("Exception while checking Widgets window: " + ex, "error");
   }
+  
+  if (!this.getConfigSetting("autHost").indexOf("file") == 0 ) {
+    try {
+      this.checkSelenium();
+    } catch(ex) {
+      this.log("Exception while checking Selenium window: " + ex, "error");
+    }
+  }
+  */
 
 };
 
