@@ -60,12 +60,9 @@
       // load third-party scripts
       "add-script" :
       [ 
-        { "uri" : "cometd:resource/cometd/dojo.js" }
-        ,{ "uri" : "cometd:resource/cometd/cometd.js" }
-        ,{ "uri" : "cometd:resource/cometd/AckExtension.js" }
-        //,{ "uri" : "cometd:resource/cometd/ReloadExtension.js" }
-        //,{ "uri" : "cometd:resource/cometd/TimeStampExtension.js" }
-        //,{ "uri" : "cometd:resource/cometd/TimeSyncExtension.js" }
+        { "uri" : "resource/cometd/dojo.js" }
+        ,{ "uri" : "resource/cometd/cometd.js" }
+        ,{ "uri" : "resource/cometd/AckExtension.js" }
       ]      
     } 
   }

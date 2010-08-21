@@ -1,6 +1,11 @@
 This is a wrapper for the cometd javascript library. 
 See http://cometdproject.dojotoolkit.org/
 
+######################################################################
+This project is discontinued. Use the server-push solutions based on
+the node.js server instead, for example the Node/Socket contribution. 
+######################################################################
+
 Prerequisites:
 -------------
 - You need a working cometd server (http://cometd.org/documentation/cometd).
@@ -31,3 +36,4 @@ Todo
   to work with the qooxdoo transport API.
 - At the moment, the required libraries need to be manually imported in index.html.
   Need to find a way to programmatically load them at load time.  
+ 
