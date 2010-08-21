@@ -20,17 +20,33 @@
 ************************************************************************ */
 
 /*
- * imports
+ * CONSTANTS
  */
-libpath  = "../../../../../../";
-require( libpath + 'source/class/rpcnode/Server' );
+const LIB_PATH    = "../../../../../../";
+const CLASS_PATH  = LIB_PATH + 'source/class/rpcnode/';
+const SERVER_PORT = 8888;
+
+/*
+ * qx imports
+ */
+require( CLASS_PATH + 'Server' );
 require( "./service/NodeTest" );
 require( "./service/RpcTest" );
 
 /*
- * create new server on port 8888
+ * node-js modules
  */
-var server = new rpcnode.Server(8888);
+var nodestatic = require( CLASS_PATH + "lib/node-static" );
+
+/*
+ * create new server on the given port
+ */
+var server = new rpcnode.Server(SERVER_PORT);
+
+/*
+ * add a static file server
+ */
+server.setStaticFileServer( new nodestatic.Server(LIB_PATH) );
 
 /*
  * add anonymous services (strict 1.0/2.0):

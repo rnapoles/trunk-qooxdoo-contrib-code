@@ -76,12 +76,24 @@ qx.Class.define("rpcnode.Server",
     },
     
     /**
-     * The file server object responsible for serving static content
+     * The http server object created when the server is started.
      * @type 
      */
     httpServer :
     {
-      check : "Object",
+      check    : "Object",
+      nullable : true
+    },
+    
+    /**
+     * If set, the http request will be redirected to this server
+     * if no json-rpc request can be detected. The file server object must
+     * provide one method, serve( request, response ). For example,
+     * the "node-static" does that (see http://github.com/cloudhead/node-static) 
+     */
+    staticFileServer :
+    {
+      check    : "Object",
       nullable : true
     },
     
@@ -150,16 +162,58 @@ qx.Class.define("rpcnode.Server",
       }      
       
       /*
-       * create http server
+       * create http server 
        */
       var self = this;
       var server = require('http').createServer( function( request, response ){
-        return self._onHttpRequest( request, response );
+        var response = self._onHttpRequest( request, response );
+        
+        /*
+         * if we have a non-false response, return it 
+         */
+        if( response )
+        {
+          return response;
+        }
+        
+        else
+        {
+          /*
+           * if we have a static file server, redirect request to it
+           */
+          var fileServer = self.getStaticFileServer();
+          if ( fileServer )
+          {
+            request.addListener('end', function () {
+              file.serve( request, response );
+            });
+            return;
+          }
+          
+          /*
+           * else, the request is invalid
+           */
+          self.sendError( response, self.invalidRequest( rpcRequest ) );  
+        }
       } );
+      
+      /*
+       * start server
+       */
       server.listen( this.getPort() );
       this.setHttpServer(server);
       
-      console.log("json-rpc server accepting requests on port " + this.getPort() );
+      /*
+       * console message
+       */
+      if( this.getStaticFileServer() )
+      {
+        console.log("Static file and json-rpc server accepting requests on port " + this.getPort() );
+      }
+      else
+      {
+        console.log("json-rpc server accepting requests on port " + this.getPort() );
+      }
       
     },        
     
@@ -186,7 +240,7 @@ qx.Class.define("rpcnode.Server",
         /*
          * Handle "old-style" qooxdoo cross-domain json-rpc requests 
          */
-        if ( request.method === "GET" && typeof query == "object" && query._ScriptTransport_id )
+        if ( request.method === "GET" && query && typeof query == "object" && query._ScriptTransport_id )
         {
           var data = JSON.parse( query._ScriptTransport_data );
           rpcRequest = {
@@ -232,11 +286,11 @@ qx.Class.define("rpcnode.Server",
         } 
         
         /*
-         * otherwise, invalid request
+         * no json-rpc request found, return false
          */
         else
         {
-          this.sendError( response, this.invalidRequest( rpcRequest ) );
+          return false;
         }
       }
       catch( e )
@@ -311,7 +365,7 @@ qx.Class.define("rpcnode.Server",
           /*
            * async handling
            */
-          if ( typeof result == "object" && typeof result.then == "function" ) // FIXME check for promise class 
+          if ( this.isPromise( result ) )  
           {
             results[i] = result;
           } 
