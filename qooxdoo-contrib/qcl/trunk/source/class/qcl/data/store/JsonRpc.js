@@ -455,12 +455,21 @@ qx.Class.define("qcl.data.store.JsonRpc",
               try
               {
                 /*
-                 * create the class
+                 * create the class if neccessary
                  */
                 this.getMarshaler().toClass( data, true);
 
+                /*
+                 * create model
+                 */
+                var model = this.getMarshaler().toModel(data);
+                
+                /*
+                 * tear down old model?
+                 */
                 if( this.getModel() )
                 {
+                  //this.getModel().removeAllBindings();
                   //this.getModel().dispose();
                   //debugger;
                 }
@@ -468,7 +477,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
                 /*
                  * set the initial data
                  */
-                var model = this.getMarshaler().toModel(data);
                 this.setModel( model );
               }
               catch(e)
