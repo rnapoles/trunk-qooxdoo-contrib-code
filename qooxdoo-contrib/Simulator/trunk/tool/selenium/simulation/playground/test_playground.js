@@ -388,7 +388,7 @@ simulation.Simulation.prototype.checkGistFromList = function()
   var checkGistReady = function()
   {
     try {
-      var item = selenium.getQxWidgetByLocator('qxh=[@classname="playground.view.gist.GistMenu"]/child[4]');
+      var item = selenium.getQxWidgetByLocator('qxh=[@classname="playground.view.gist.GistMenu"]/child[5]');
       if (item.getLabel().toString().indexOf("[qx]") >= 0) {
         return true;
       }
