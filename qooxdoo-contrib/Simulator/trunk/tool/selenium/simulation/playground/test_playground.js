@@ -411,14 +411,12 @@ simulation.Simulation.prototype.checkGistFromList = function()
   
   Packages.java.lang.Thread.sleep(3000);
   
-  var sampleLoaded = this.isSampleLoaded(gistLabel);
   var sampleStarted = this.isSampleStarted(gistLabel);
 
   this.logGlobalErrors();
   this.clearGlobalErrorStore();  
 
-  if (sampleLoaded && sampleStarted) {
-    //print("Gist " + gistLabel + " loaded and started.");
+  if (sampleStarted) {
     this.log("Gist " + gistLabel + " started without errors.", "info");
   }
   else {
