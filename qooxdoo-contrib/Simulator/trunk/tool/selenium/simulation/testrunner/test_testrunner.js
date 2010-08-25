@@ -463,9 +463,9 @@ simulation.Simulation.prototype.logAutLog = function()
     mySim.runTest();
   }
   catch(ex) {
-    var msg = "Unexpected error while running tests!";
+    var msg = "Unexpected error while running tests: " + ex;
     if (mySim.getConfigSetting("debug")) {
-      print(msg + "\n" + ex);
+      print(msg + "\n");
     }
     mySim.log(msg, "error");
   }
