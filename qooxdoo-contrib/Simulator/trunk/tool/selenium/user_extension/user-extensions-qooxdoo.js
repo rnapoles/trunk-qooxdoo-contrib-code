@@ -900,13 +900,13 @@ Selenium.prototype.getQxTableColumnIndexByName = function(table, name)
   if (typeof table == "string") {
     table = this.getQxWidgetByLocator(table);    
   }
-  
+  var regEx = RegExp(name);
   var columnModel = table.getTableColumnModel();
   var columnArray = columnModel.getVisibleColumns();
   var tableModel = table.getTableModel();
   for (var i=0,l=columnArray.length; i<l; i++) {
     var columnName = tableModel.getColumnName(columnArray[i]);
-    if (columnName == name) {
+    if (regEx.exec(columnName)) {
       return i;
     }
   }
