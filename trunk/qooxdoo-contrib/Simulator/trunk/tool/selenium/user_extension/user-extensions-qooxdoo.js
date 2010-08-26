@@ -929,13 +929,13 @@ Selenium.prototype.getQxTableColumnIndexById = function(table, id)
   if (typeof table == "string") {
     table = this.getQxWidgetByLocator(table);    
   }
-  
+  var regEx = RegExp(id);
   var columnModel = table.getTableColumnModel();
   var columnArray = columnModel.getVisibleColumns();
   var tableModel = table.getTableModel();
   for (var i=0,l=columnArray.length; i<l; i++) {
     var columnId = tableModel.getColumnId(columnArray[i]);
-    if (columnId == id) {
+    if (regEx.exec(columnId)) {
       return i;
     }
   }
