@@ -762,6 +762,64 @@ Selenium.prototype.getQxTableVisibleCols = function(locator)
   return String(visibleColumns.length);
 };
 
+/**
+ * EXPERIMENTAL - NOT READY FOR PRODUCTION
+ * 
+ * Returns a qooxdoo table's selected row data (an array of rows which are 
+ * arrays of cell values). Data will be returned as a JSON string if a JSON 
+ * implementation is available (either the browser's or qooxdoo's). 
+ * Otherwise, the return value is a comma-separated string that must be parsed 
+ * by the test code.
+ * 
+ * @param locator {String} Table locator
+ * @return {String} Selected row data
+ */
+Selenium.prototype.getQxTableSelectedRowData = function(locator)
+{
+  var qxObject = this.getQxWidgetByLocator(locator);
+  
+  if (qxObject) {
+    if (!this.isQxInstanceOf(qxObject, "qx.ui.table.Table")) {
+      throw new SeleniumError("Object is not an instance of qx.ui.table.Table: " + locator);
+    }
+  }
+  else {
+    throw new SeleniumError("No qooxdoo object found for locator: " + locator);
+  }
+  var tableModel = qxObject.getTableModel();
+  var rowData = [];
+  var selectionModel = qxObject.getSelectionModel();
+  var iterator = function(index) {
+    rowData.push(tableModel.getRowData(index));
+  };
+  selectionModel.iterateSelection(iterator, this);
+  
+  return this.toJson(rowData);
+};
+
+/**
+ * EXPERIMENTAL - NOT READY FOR PRODUCTION
+ * 
+ * Uses any available JSON implementation from the browser or qooxdoo to 
+ * serialize the given data. Returns the unchanged data if no JSON 
+ * implementation is available.
+ * 
+ * @param data {Object} Data to be stringified
+ * @return {String} Data as JSON string
+ */
+Selenium.prototype.toJson = function(data)
+{
+ var qx = this.getQxGlobalObject();
+ if (window.JSON && typeof window.JSON.stringify == "function") {
+   // browser's native JSON implementation
+   return window.JSON.stringify(data);
+ } else if (qx.lang && qx.lang.Json && qx.lang.Json.stringify) {
+   // qooxdoo's JSON implementation
+   return qx.lang.Json.stringify(data);
+ } else {
+   return data;
+ }
+};
 
 /**
  * Executes the given function of a qooxdoo object identified by a locator. If 
