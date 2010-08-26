@@ -967,7 +967,7 @@ Selenium.prototype.getQxTableRowColByCellValue = function(table, value)
       if (regEx.exec(row[field])) {
         var modelCol = Number(tableModel.getColumnIndexById(field));
         var col = tableColumnModel.getVisibleX(modelCol);
-        if (!col) {
+        if (isNaN(col)) {
           LOG.warn("getQxTableRowColByCellValue: Couldn't determine visible column, returning model column!");
           LOG.debug("getQxTableRowColByCellValue found row " + i + " col " + col);
           return [i, modelCol];
