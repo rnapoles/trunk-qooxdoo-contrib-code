@@ -1373,7 +1373,7 @@ Selenium.prototype.doQxTableHeaderClick = function(locator, eventParams)
  * either the "type" or "typeKeys" parameters (typeKeys triggers 
  * keydown/keyup/keypress events). Examples:
  * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "type=Some text");
- * selenium.qxEditTableCell("qxh=qx.ui.table.Table", "typeKeys=Lots of events");
+ * selenium.qxEditTableCell("myTable", "typeKeys=Lots of events");
  * 
  * Select boxes (qx.ui.table.celleditor.SelectBox, 
  * qx.ui.table.celleditor.ComboBox): Use the "selectFromBox" parameter. The 
@@ -1400,43 +1400,43 @@ Selenium.prototype.doQxEditTableCell = function(locator, parameters)
   }
 
   var parameterMap = this.__getParameterMap(parameters);
-  
-  var focusIndicatorLocator = "/qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper/qx.ui.table.pane.FocusIndicator";
+
+  var focusIndicatorLocator = "qxhybrid=" + locator + "&&qxh=qx.ui.container.Composite/qx.ui.table.pane.Scroller/qx.ui.table.pane.Clipper/qx.ui.table.pane.FocusIndicator";
   
   if (parameterMap["type"]) {
     try {
-      this.doQxType(locator + focusIndicatorLocator, parameterMap["type"]);
+      this.doQxType(focusIndicatorLocator, parameterMap["type"]);
     } catch(ex) {
       // The textfield of a comboBox is located one level deeper
-      this.doQxType(locator + focusIndicatorLocator + "/child[0]", parameterMap["type"]);
+      this.doQxType(focusIndicatorLocator + "/child[0]", parameterMap["type"]);
     }
   }
   
   if (parameterMap["typeKeys"]) {
     try {
-      this.doQxTypeKeys(locator + focusIndicatorLocator, parameterMap["typeKeys"]);
+      this.doQxTypeKeys(focusIndicatorLocator, parameterMap["typeKeys"]);
     } catch(ex) {
       // The textfield of a comboBox is located one level deeper
-      this.doQxTypeKeys(locator + focusIndicatorLocator + "/child[0]", parameterMap["typeKeys"]);
+      this.doQxTypeKeys(focusIndicatorLocator + "/child[0]", parameterMap["typeKeys"]);
     }
   }
   
   if (parameterMap["toggleCheckBox"]) {
     // The boolean cell renderer's checkbox is inside a container widget
-    this.doQxClick(locator + focusIndicatorLocator + "/child[0]/child[0]", parameters);
+    this.doQxClick(focusIndicatorLocator + "/child[0]/child[0]", parameters);
   }
   
   if (parameterMap["selectFromBox"]) {
     try {
       // comboBoxes have a button child
-      var buttonLocator = locator + focusIndicatorLocator + "/child[0]/qx.ui.form.Button";
+      var buttonLocator = focusIndicatorLocator + "/child[0]/qx.ui.form.Button";
       this.doQxClick(buttonLocator);
-      var itemLocator = locator + focusIndicatorLocator + "/child[0]/" + parameterMap["selectFromBox"];
+      var itemLocator = focusIndicatorLocator + "/child[0]/" + parameterMap["selectFromBox"];
       this.doQxClick(itemLocator, parameters);
     } catch(ex) {
       // selectBoxes are themselves clickable
-      this.doQxClick(locator + focusIndicatorLocator + "/child[0]");
-      var itemLocator = locator + focusIndicatorLocator + "/child[0]/" + parameterMap["selectFromBox"]; 
+      this.doQxClick(focusIndicatorLocator + "/child[0]");
+      var itemLocator = focusIndicatorLocator + "/child[0]/" + parameterMap["selectFromBox"]; 
       this.doQxClick(itemLocator, parameters)
     }
   }
@@ -2440,12 +2440,17 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
   var curr;
 
   // need to get to the global 'qx' object
-  if (this._globalQxObject) {
-    var qx = this._globalQxObject;
-    var myClass = qx.Class.getByName(qxclass);
-  } else {
-    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
+  var qx = this._globalQxObject;
+  if (!qx) {
+    if (this.currentWindow.wrappedJSObject) {
+      qx = this.currentWindow.wrappedJSObject.qx;
+    } else {
+      qx = this.currentWindow.qx;
+    }
+    this._globalQxObject = qx;
   }
+  
+  var myClass = qx.Class.getByName(qxclass);
 
   childs = this._getQxNodeDescendants(root);
 
@@ -2536,10 +2541,14 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
 
 
   // need to get to the global 'qx' object
-  if (this._globalQxObject) {
-    var qx = this._globalQxObject;
-  } else {
-    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
+  var qx = this._globalQxObject;
+  if (!qx) {
+    if (this.currentWindow.wrappedJSObject) {
+      qx = this.currentWindow.wrappedJSObject.qx;
+    } else {
+      qx = this.currentWindow.qx;
+    }
+    this._globalQxObject = qx;
   }
 
   // extract attribute and value
