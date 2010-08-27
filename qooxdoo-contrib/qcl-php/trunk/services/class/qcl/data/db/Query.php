@@ -886,8 +886,28 @@ class qcl_data_db_Query
           throw new InvalidArgumentException("Property '$property': Invalid value of type " . typeof($value,true) );
         }
 
-        $this->parameters[$param] = $value;
-        $sql[]  = "$column $operator $param" ;
+        switch(strtoupper($operator)) {
+            case 'IN':
+                if(is_array($value)) {
+                    $data = array();
+                    foreach($value as $tmp) {
+                        if(is_numeric($tmp)) {
+                            $data[] = $tmp;
+                        } else {
+                            $data[] = '"' . $tmp . '"';
+                        }
+                    }
+                    $value = implode(', ', $data);
+                }
+                $sql[] = $column . ' IN(' . $value . ')';
+                break;
+
+            default:
+                $this->parameters[$param] = $value;
+                $sql[]  = "$column $operator $param" ;
+                break;
+        }
+
       }
     }
 
