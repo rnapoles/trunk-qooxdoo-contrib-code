@@ -1915,7 +1915,7 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
       domElem = domElem.wrappedJSObject;
     }
   } catch(ex) {
-    throw new SeleniumError("Hybrid locator couldn't find element using" + 
+    throw new SeleniumError("Hybrid locator couldn't find element using " + 
       firstPart + ": " + ex);
   }
   
@@ -1929,6 +1929,11 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
     if (nextPart.indexOf("qxh") == 0) {
       // qooxdoo hierarchical locator
       LOG.debug("qxhybrid next part is a qxh locator: " + nextPart);
+      if (nextPart.indexOf("qxhv") == 0 ) {
+        this.qx.findOnlyVisible = true;
+      } else {
+        this.qx.findOnlyVisible = false;
+      }
       try {
         var rootWidget = qx.ui.core.Widget.getWidgetByElement(domElem);
         var subLocator = nextPart.substr(nextPart.indexOf("=") + 1);
@@ -1940,7 +1945,7 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
         }
       }
       catch(e) {
-        throw new SeleniumError("Hybrid locator couldn't find element using" + 
+        throw new SeleniumError("Hybrid locator couldn't find element using " + 
           nextPart);
       }
     }
