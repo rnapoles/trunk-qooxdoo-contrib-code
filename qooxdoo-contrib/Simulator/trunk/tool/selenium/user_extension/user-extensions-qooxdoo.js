@@ -1919,6 +1919,9 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
       firstPart + ": " + ex);
   }
   
+  if (inWindow.wrappedJSObject) {
+    inWindow = inWindow.wrappedJSObject; 
+  }
   var qx = inWindow.qx;
   
   var nextPart = locatorParts.shift();
