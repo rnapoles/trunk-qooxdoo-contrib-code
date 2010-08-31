@@ -92,6 +92,26 @@ simulation.Simulation.prototype.checkFeeds = function()
   
 };
 
+simulation.Simulation.prototype.checkCombinedImage = function()
+{
+  var getImageBackground = function(locator) {
+    var qxImg = selenium.getQxWidgetByLocator(locator);
+    return qxImg.getContentElement().getDomElement().style.backgroundImage;
+  }
+  this.addOwnFunction("getImageBackground", getImageBackground);
+  
+  var imgLoc = locators.addFeedButton + "/child[0]";
+  var imageBackground = this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation.getImageBackground("' + imgLoc +'")');
+  imageBackground = String(imageBackground);
+  print("imageBackground: " + imageBackground);
+  if (imageBackground.indexOf("combined") >= 0) {
+    this.log("Add Feed button icon uses combined image.", "info");
+  } else {
+    this.log("Add Feed button icon does not use combined image.", "error");
+  }
+  
+};
+
 mySim.runTest = function()
 {
   var feedLoadTimeout = 30000;
@@ -243,6 +263,8 @@ mySim.runTest = function()
   this.qxClick(locators.firstFeedItem, "", "Selecting first item from new feed.");  
   
   this.checkArticle();
+  
+  this.checkCombinedImage();
 };
 
 // - Main --------------------------------------------------------------------
