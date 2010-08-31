@@ -103,7 +103,7 @@ simulation.Simulation.prototype.checkCombinedImage = function()
   var imgLoc = locators.addFeedButton + "/child[0]";
   var imageBackground = this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation.getImageBackground("' + imgLoc +'")');
   imageBackground = String(imageBackground);
-  print("imageBackground: " + imageBackground);
+  
   if (imageBackground.indexOf("combined") >= 0) {
     this.log("Add Feed button icon uses combined image.", "info");
   } else {
