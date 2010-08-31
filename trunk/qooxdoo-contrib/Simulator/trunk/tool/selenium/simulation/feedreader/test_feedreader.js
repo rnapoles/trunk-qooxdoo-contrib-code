@@ -264,7 +264,10 @@ mySim.runTest = function()
   
   this.checkArticle();
   
-  this.checkCombinedImage();
+  // IE uses the AlphaImageLoader so no combined images
+  if (this.getConfigSetting("testBrowser").indexOf("iexplore") < 0 ) {
+    this.checkCombinedImage();
+  }
 };
 
 // - Main --------------------------------------------------------------------
