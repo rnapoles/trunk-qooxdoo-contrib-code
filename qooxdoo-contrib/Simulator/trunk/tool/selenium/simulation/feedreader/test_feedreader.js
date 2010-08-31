@@ -107,7 +107,7 @@ simulation.Simulation.prototype.checkCombinedImage = function()
   if (imageBackground.indexOf("combined") >= 0) {
     this.log("Add Feed button icon uses combined image.", "info");
   } else {
-    this.log("Add Feed button icon does not use combined image.", "error");
+    this.log("Add Feed button icon does not use combined image: " + imageBackground, "error");
   }
   
 };
