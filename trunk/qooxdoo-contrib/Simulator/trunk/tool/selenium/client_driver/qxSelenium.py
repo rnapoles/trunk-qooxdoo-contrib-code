@@ -72,6 +72,9 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
     def qxTableGetColumnIndexByName(self, locator, name):
         return self.do_command("getQxTableColumnIndexByName", [locator, name,])
     
+    def qxTableGetSelectedRowData(self, locator):
+        return self.do_command("getQxTableSelectedRowData", [locator,])
+    
     def qxTableGetValue(self, locator, opts=None):
         if opts==None:
             return self.do_command("getQxTableValue", [locator,])
@@ -81,8 +84,11 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
     def qxObjectExecFunction(self, locator, functionName):
         return self.do_command("getQxObjectFunction", [locator, functionName,])
 
-    def getQxObjectHash(self, locator):
-        return self.do_command("getQxObjectHash", [locator])
+    def getQxObjectHash(self, locator, script=None):
+        if script==None:
+            return self.do_command("getQxObjectHash", [locator])
+        else:
+            return self.do_command("getQxObjectHash", [locator, script,])
     
     def qxDragAndDrop(self, locator, opts=None):
         if opts==None:

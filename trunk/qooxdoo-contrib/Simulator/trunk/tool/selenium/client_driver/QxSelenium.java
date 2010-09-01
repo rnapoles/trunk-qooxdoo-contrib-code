@@ -117,6 +117,12 @@ public class QxSelenium extends DefaultSelenium
       new String[] {locator, name});
     return ret;
   }
+  
+  public String qxTableGetSelectedRowData(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableSelectedRowData",
+      new String[] {locator,});
+    return ret;
+  }
 
   public String qxObjectExecFunction(String locator, String functionName) {
     String ret = this.commandProcessor.getString("getQxObjectFunction", 
@@ -127,6 +133,12 @@ public class QxSelenium extends DefaultSelenium
   public String getQxObjectHash(String locator) {
     String ret = this.commandProcessor.getString("getQxObjectHash", 
         new String[] {locator,});
+    return ret;
+  }
+  
+  public String getQxObjectHash(String locator, String script) {
+    String ret = this.commandProcessor.getString("getQxObjectHash", 
+        new String[] {locator, script,});
     return ret;
   }
   
