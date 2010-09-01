@@ -25,9 +25,15 @@
  */
 qx.Class.define("tokenfield.Token",
 {
-  extend : qx.ui.form.ComboBox,
-  implement : [ qx.ui.core.IMultiSelection, qx.ui.form.IForm, qx.ui.form.IModelSelection ],
-  include : [ qx.ui.core.MRemoteChildrenHandling, qx.ui.core.MMultiSelectionHandling, qx.ui.form.MForm, qx.ui.form.MModelSelection ],
+  extend : qx.ui.form.AbstractSelectBox,
+  implement : [ 
+    qx.ui.core.IMultiSelection, 
+  	qx.ui.form.IModelSelection 
+  ],
+  include : [ 
+    qx.ui.core.MMultiSelectionHandling, 
+  	qx.ui.form.MModelSelection 
+  ],
 
   /*
   *****************************************************************************
@@ -91,16 +97,6 @@ qx.Class.define("tokenfield.Token",
     /**
      * 
      */
-    url :
-    {
-      init     : null,
-      event    : "changeUrl",
-      nullable : true
-    },
-
-    /**
-     * 
-     */
     hintText : 
     { 
       init : "Type in a search term" 
@@ -141,69 +137,18 @@ qx.Class.define("tokenfield.Token",
     /**
      * 
      */
-    store :
-    {
-      event    : "changeStore",
-      init     : null,
-      nullable : true
-    },
-
-    /**
-     * 
-     */
     tokenLimit :
     {
       init     : null,
       nullable : true
     },
-
-    /**
-     * 
-     */
-    jsonContainer : 
-    { 
-      init : null 
-    },
-    
-    /**
-     * 
-     */
-    method : 
-    { 
-      init : "GET" 
-    },
-    
-    /**
-     * 
-     */
-    contentType : 
-    { 
-      init : "json" 
-    },
-    
-    /**
-     * 
-     */
-    queryParam : 
-    {  
-      init : "q" 
-    },
-    
+        
     /**
      * 
      */
     labelPath : 
     { 
       init : "label" 
-    },
-
-    /**
-     * 
-     */
-    onResult :
-    {
-      init     : null,
-      nullable : true
     },
 
     /**
@@ -223,21 +168,18 @@ qx.Class.define("tokenfield.Token",
   */
   construct : function()
   {
-    qx.ui.form.AbstractSelectBox.prototype.constructor.call(this);
+    this.base(arguments);
 
     this.cache = new tokenfield.Cache();
 
-    //this._getLayout().setReversed(true);
     this._setLayout(new qx.ui.layout.Flow());
 
-    //var content = this._createChildControl("content");
     var textField = this._createChildControl("textfield");
 
     textField.addListener("mousedown", function(e) {
       e.stop();
     });
 
-    //tokens.add(textField);
     this.addListener("click", this._onClick);
 
     // forward the focusin and focusout events to the textfield. The textfield
@@ -259,16 +201,8 @@ qx.Class.define("tokenfield.Token",
     this._dummy.setLabel(this.getHintText());
     this.getChildControl('list').add(this._dummy);
 
-    //this._store = store;
-    //this._urlFn = urlFn;
   },
 
-  /* var controller = new qx.data.controller.List(null, this.getChildControl("list"));
-              controller.bind("model", store, "model"); */
-
-  //this.addListener("changeSelection", function(e) { debugger; console.log(e.getData()); });
-  //textField.addListener("keypress", this._onKeyPress, this);
-  
   /*
   *****************************************************************************
      MEMBERS
@@ -276,12 +210,7 @@ qx.Class.define("tokenfield.Token",
   */  
   members :
   {
-    
-    
     SELECTION_MANAGER : qx.ui.core.selection.Widget,
-
-
-
     
     /*
     ---------------------------------------------------------------------------
@@ -305,26 +234,23 @@ qx.Class.define("tokenfield.Token",
           return null;
           break;
 
-          /*   case "content":
-            control = new qx.ui.container.Composite();
-
-            control.setLayout(new qx.ui.layout.Flow());
-
-             control.setMaxWidth(this.getMaxWidth());
-                        control.setWidth(this.getMaxWidth()); 
-
-            this._add(control);
-            break; */
-
         case "textfield":
           control = new qx.ui.form.TextField();
           control.setFocusable(false);
           control.addState("inner");
-          control.addListener("changeValue", this._onTextFieldChangeValue, this);
+          //control.addListener("changeValue", this._onTextFieldChangeValue, this);
           control.addListener("blur", this.close, this);
           this._add(control);
           break;
 
+        case "list":
+          // Get the list from the AbstractSelectBox
+          control = this.base(arguments, id)
+
+          // Change selection mode
+          control.setSelectionMode("single");
+          break;
+          
         case "selectContainer":
           control = new qx.ui.container.Composite();
           control.setLayout(new qx.ui.layout.HBox());
@@ -333,6 +259,22 @@ qx.Class.define("tokenfield.Token",
       }
 
       return control || this.base(arguments, id);
+    },
+    
+    // overridden
+    tabFocus : function()
+    {
+      var field = this.getChildControl("textfield");
+
+      field.getFocusElement().focus();
+      //field.selectAllText();
+    },
+    // overridden
+    /**
+     * @lint ignoreReferenceField(_forwardStates)
+     */
+    _forwardStates : {
+      focused : true
     },
     
     /*
@@ -370,7 +312,7 @@ qx.Class.define("tokenfield.Token",
       if (popup.isVisible())
       {
         var list = this.getChildControl("list");
-        var value = this.getValue();
+        var value = this.getChildControl('textfield').getValue();
         var item = null;
 
         if (value) {
@@ -440,7 +382,11 @@ qx.Class.define("tokenfield.Token",
           this._selectItem(this._preSelectedItem);
           this._preSelectedItem = null;
         }
-
+        else if (key == "Space")
+        {
+        	var textfield = this.getChildControl('textfield');
+        	textfield.setValue(textfield.getValue() + " ");
+        }
         this.toggle();
       }
       else
@@ -523,20 +469,28 @@ qx.Class.define("tokenfield.Token",
       }
     },  
     
+    // overridden
+    _onPopupChangeVisibility : function(e)
+    {
+      // Synchronize the list with the current value on every
+      // opening of the popup. This is useful because through
+      // the quick selection mode, the list may keep an invalid
+      // selection on close or the user may enter text while
+      // the combobox is closed and reopen it afterwards.
+      var popup = this.getChildControl("popup");
+      if (!popup.isVisible())
+      {
+        // When closing the popup text should selected and field should
+        // have the focus. Identical to when reaching the field using the TAB key.
+        this.tabFocus();
+      }
+    },
+    
     /*
     ---------------------------------------------------------------------------
        API
     ---------------------------------------------------------------------------
     */
-    
-    /**
-     * TODOC
-     *
-     * @return {void} 
-     */
-    refocus : function() {
-      this.getChildControl("textfield").getFocusElement().focus();
-    },    
     
     /**
      * TODOC
@@ -550,25 +504,7 @@ qx.Class.define("tokenfield.Token",
       this._dummy.setLabel(this.getSearchingText());
       this.getChildControl('list').add(this._dummy);
       this.open();
-
-      // CB: We shouldn't be doing I/O in the widget itself,
-      // this should be handled by the outside code
-      
-//      var url = this._urlFn.apply(this, [ str ]);
-//
-//      var req = new qx.io.remote.Request(url, 'GET', 'application/json');
-//
-//      req.addListener("completed", function(response)
-//      {
-//        var data = response.getContent();
-//        // CB: moved to populateList()
-//        this.cache.add(str, qx.data.marshal.Json.createModel(data));
-//        this.populateList(this.cache.get(str), str);
-//      },
-//      this);
-//
-//      req.send();
-      
+     
       this.fireDataEvent("loadData", str );
     },
     
@@ -585,7 +521,6 @@ qx.Class.define("tokenfield.Token",
     {
       this.cache.add( str, qx.data.marshal.Json.createModel(data) );
       var result = this.cache.get(str);       
-      console.log(result);
       this.getChildControl('list').removeAll();
 
       for (var i=0; i<result.getLength(); i++)
@@ -622,8 +557,7 @@ qx.Class.define("tokenfield.Token",
         this._addBefore(item, this.getChildControl('textfield'));
         this.addToSelection(item);
 
-        //console.log("added " + item.getLabel());
-        this.setValue("");
+        this.getChildControl('textfield').setValue("");
       }
     },
 
