@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "TokenField Demo",
+
+    "summary" : "TokenField Demo",
+    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/TokenField",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Guilherme R. Aiolfi",
+        "email" : "gradinf@gmail.com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.2","1.3-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "tokenfield.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
