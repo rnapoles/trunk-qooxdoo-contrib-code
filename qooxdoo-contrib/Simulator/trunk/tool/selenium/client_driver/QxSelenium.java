@@ -130,6 +130,12 @@ public class QxSelenium extends DefaultSelenium
     return ret;
   }
   
+  public String getRunInContext(String locator, String script) {
+    String ret = this.commandProcessor.getString("getRunInContext", 
+      new String[] {locator, script, });
+    return ret;
+  }
+  
   public String getQxObjectHash(String locator) {
     String ret = this.commandProcessor.getString("getQxObjectHash", 
         new String[] {locator,});
