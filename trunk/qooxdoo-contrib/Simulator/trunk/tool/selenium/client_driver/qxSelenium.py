@@ -84,6 +84,9 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
     def qxObjectExecFunction(self, locator, functionName):
         return self.do_command("getQxObjectFunction", [locator, functionName,])
 
+    def getRunInContext(self, locator, script):
+        return self.do_command("getRunInContext", [locator, script,])
+    
     def getQxObjectHash(self, locator, script=None):
         if script==None:
             return self.do_command("getQxObjectHash", [locator])
