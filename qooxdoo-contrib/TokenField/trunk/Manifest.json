@@ -4,7 +4,7 @@
     "name" : "TokenField",
 
     "summary" : "TokenField Contribution",
-    "description" : "This is a skeleton for a qooxdoo contribution.",
+    "description" : "A widget implementing the token field concept known from Mac OS X (http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TokenField_Guide/Introduction/Introduction.html)",
     
     "homepage" : "http://contrib.qooxdoo.org/project/TokenField",
 
