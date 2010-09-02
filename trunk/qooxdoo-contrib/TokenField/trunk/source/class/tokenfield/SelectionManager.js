@@ -22,12 +22,12 @@ qx.Class.define("tokenfield.SelectionManager",
 
   members :
   {
-	  handleKeyPress : function(e)
+	  handleKeyPress : function(event)
 	  {
-	  	var key = e.getKeyIdentifier();
-	  	if (key != "Left" && key != "Rigth")
+	  	var key = event.getKeyIdentifier();
+	  	if (key != "Left" && key != "Right")
 	  	{
-	  		this.base(arguments);
+	  		qx.ui.core.selection.Abstract.prototype.handleKeyPress.apply(this, [event]);// this.base(arguments);
 	  	}
 	  }
   }
