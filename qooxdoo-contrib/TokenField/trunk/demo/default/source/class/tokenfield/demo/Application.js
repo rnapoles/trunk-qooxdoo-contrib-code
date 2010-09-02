@@ -56,38 +56,6 @@ qx.Class.define("tokenfield.demo.Application",
         qx.log.appender.Console;
       }
 
-      // defining theme, 
-      // FIXME this must go into the theme in the library
-      qx.Theme.define("MyNewAppearance",
-      {
-        title : 'Token',
-        extend : qx.theme.manager.Appearance.getInstance().getTheme(),
-
-        appearances :
-        {
-          'token' : 'combobox',
-
-          'tokenitem' :
-          {
-            include : 'listitem',
-
-            style : function(states)
-            {
-              return {
-                decorator : 'group',
-                textColor : states.hovered ? '#314a6e' : '#000000',
-                height    : 18,
-                padding   : [ 1, 6, 1, 6 ],
-                margin    : 0,
-                icon      : states.close ? "decoration/window/close-active.png" : "decoration/window/close-inactive.png"
-              };
-            }
-          }
-        }
-      });
-
-      qx.theme.manager.Appearance.getInstance().setTheme(MyNewAppearance);
-
       var t = new tokenfield.Token();
 
       t.setWidth(500);
