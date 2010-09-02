@@ -81,7 +81,7 @@ qx.Class.define("tokenfield.Token",
     orientation :
     {
       check : [ "horizontal", "vertical" ],
-      init  : "horizontal",
+      init  : "vertical",
       apply : "_applyOrientation"
     },
 
@@ -245,16 +245,10 @@ qx.Class.define("tokenfield.Token",
 
         case "list":
           // Get the list from the AbstractSelectBox
-          control = this.base(arguments, id)
+          control = this.base(arguments, id);
 
           // Change selection mode
           control.setSelectionMode("single");
-          break;
-          
-        case "selectContainer":
-          control = new qx.ui.container.Composite();
-          control.setLayout(new qx.ui.layout.HBox());
-          this._add(control);
           break;
       }
 
@@ -348,7 +342,6 @@ qx.Class.define("tokenfield.Token",
 
       if (key == "Down" && !list.isVisible())
       {
-        //this.getChildControl("button").addState("selected");
         this.open();
         e.stopPropagation();
         e.stop();
@@ -369,7 +362,6 @@ qx.Class.define("tokenfield.Token",
             {
               this.removeFromSelection(item);
 
-              //console.log("removed " + item.getLabel());
               item.destroy();
             }
           }
@@ -389,9 +381,16 @@ qx.Class.define("tokenfield.Token",
         }
         this.toggle();
       }
-      else
+      else if (key == "Left" || key == "Right")
       {
-        //qx.ui.form.AbstractSelectBox.prototype._onKeyPress.apply(this, [e]);
+      	//FIXME: need to handle those navegation keys, both have been consumed by MMultiSelectionHandling
+      }
+      else if (key == "Esc")
+      {
+      	this.close();      	
+      }
+      else if (key != "Left" && key != "Right") 
+      {
         this.getChildControl("list").handleKeyPress(e);
       }
     },
@@ -438,8 +437,6 @@ qx.Class.define("tokenfield.Token",
      */
     _onListMouseDown : function(e)
     {
-      this.base(arguments);
-
       this._selectItem(this._preSelectedItem);
     },    
 
