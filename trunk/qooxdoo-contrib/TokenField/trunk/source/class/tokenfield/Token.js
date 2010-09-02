@@ -217,12 +217,7 @@ qx.Class.define("tokenfield.Token",
     ---------------------------------------------------------------------------
     */        
     
-    /**
-     * TODOC
-     *
-     * @param id {var} TODOC
-     * @return {null | var} TODOC
-     */
+    // overridden
     _createChildControlImpl : function(id)
     {
       var control;
@@ -262,6 +257,7 @@ qx.Class.define("tokenfield.Token",
       field.getFocusElement().focus();
       //field.selectAllText();
     },
+    
     // overridden
     /**
      * @lint ignoreReferenceField(_forwardStates)
@@ -278,21 +274,15 @@ qx.Class.define("tokenfield.Token",
     
     
     /**
-     * TODOC
+     * Toggles the popup's visibility.
      *
-     * @param e {Event} TODOC
-     * @return {void} 
+     * @param e {qx.event.type.Mouse} Mouse click event
      */
     _onClick : function(e) {
       this.toggle();
     },
 
-    /**
-     * TODOC
-     *
-     * @param e {Event} TODOC
-     * @return {void} 
-     */
+    // overridden
     _onPopupChangeVisibility : function(e)
     {
       // Synchronize the list with the current value on every
@@ -326,14 +316,7 @@ qx.Class.define("tokenfield.Token",
       }
     },
 
-    // In all cases: Remove focused state from button
-    //this.getChildControl("button").removeState("selected");
-    /**
-     * TODOC
-     *
-     * @param e {Event} TODOC
-     * @return {void} 
-     */
+    // overridden
     _onKeyPress : function(e)
     {
       var key = e.getKeyIdentifier();
@@ -392,10 +375,9 @@ qx.Class.define("tokenfield.Token",
 
 
     /**
-     * TODOC
+     * Event listener for <code>input</code> event on the textfield child
      *
-     * @param e {Event} TODOC
-     * @return {boolean} TODOC
+     * @param e {qx.event.type.Data} Data Event
      */
     _onInputChange : function(e)
     {
@@ -424,23 +406,13 @@ qx.Class.define("tokenfield.Token",
       0, this, null, this.getSearchDelay());
     },
     
-    /**
-     * TODOC
-     *
-     * @param e {Event} TODOC
-     * @return {void} 
-     */
+    // overridden
     _onListMouseDown : function(e)
     {
       this._selectItem(this._preSelectedItem);
     },    
 
-    /**
-     * TODOC
-     *
-     * @param e {Event} TODOC
-     * @return {void} 
-     */
+    // overridden
     _onListChangeSelection : function(e)
     {
       var current = e.getData();
@@ -485,10 +457,9 @@ qx.Class.define("tokenfield.Token",
     */
     
     /**
-     * TODOC
+     * Fire a event to search for a string
      *
-     * @param str {String} TODOC
-     * @return {void} 
+     * @param str {String} query to search for
      */
     search : function(str)
     {
@@ -526,10 +497,9 @@ qx.Class.define("tokenfield.Token",
     },
 
     /**
-     * TODOC
+     * Adds an item to the selection
      *
-     * @param item {var} TODOC
-     * @return {void} 
+     * @param item {qx.ui.form.ListItem} The List Item to be added to the selection 
      */
     _selectItem : function(item)
     {
@@ -555,11 +525,11 @@ qx.Class.define("tokenfield.Token",
 
 
     /**
-     * TODOC
+     * Highlight the searched string fragment
      *
-     * @param value {var} TODOC
-     * @param query {var} TODOC
-     * @return {var} TODOC
+     * @param value {String} The phrase containing the frament to be highlighted
+     * @param query {String} The string fragment that should be highlited
+     * @return {String} TODOC
      */
     highlight : function(value, query) {
       return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
