@@ -200,7 +200,6 @@ qx.Class.define("tokenfield.Token",
     this._dummy.setEnabled(false);
     this._dummy.setLabel(this.getHintText());
     this.getChildControl('list').add(this._dummy);
-
   },
 
   /*
@@ -210,7 +209,7 @@ qx.Class.define("tokenfield.Token",
   */  
   members :
   {
-    SELECTION_MANAGER : qx.ui.core.selection.Widget,
+    SELECTION_MANAGER : tokenfield.SelectionManager,
     
     /*
     ---------------------------------------------------------------------------
@@ -380,10 +379,6 @@ qx.Class.define("tokenfield.Token",
         	textfield.setValue(textfield.getValue() + " ");
         }
         this.toggle();
-      }
-      else if (key == "Left" || key == "Right")
-      {
-      	//FIXME: need to handle those navegation keys, both have been consumed by MMultiSelectionHandling
       }
       else if (key == "Esc")
       {
