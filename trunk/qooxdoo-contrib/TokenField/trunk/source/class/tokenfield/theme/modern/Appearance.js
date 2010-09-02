@@ -12,7 +12,7 @@
 
 ************************************************************************ */
 
-qx.Theme.define("tokenfield.demo.theme.Appearance",
+qx.Theme.define("tokenfield.theme.modern.Appearance",
 {
   extend      : qx.theme.modern.Appearance,
   appearances : 
