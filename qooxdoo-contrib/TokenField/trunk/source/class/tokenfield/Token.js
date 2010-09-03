@@ -342,9 +342,7 @@ qx.Class.define("tokenfield.Token",
 
             if (item = children[children.length - 2])
             {
-              this.removeFromSelection(item);
-
-              item.destroy();
+              this._deselectItem(item);
             }
           }
         }
@@ -497,6 +495,19 @@ qx.Class.define("tokenfield.Token",
     },
 
     /**
+     * Removes an item from the selection
+     *
+     * @param item {qx.ui.form.ListItem} The List Item to be added to the selection
+     */
+    _deselectItem : function(item)
+    {
+    	if (item && item.constructor == qx.ui.form.ListItem)
+    	{
+    		this.removeFromSelection(item);
+    		item.destroy();
+    	}
+    },
+    /**
      * Adds an item to the selection
      *
      * @param item {qx.ui.form.ListItem} The List Item to be added to the selection
@@ -506,10 +517,20 @@ qx.Class.define("tokenfield.Token",
       if (item && item.constructor == qx.ui.form.ListItem)
       {
         var item = new qx.ui.form.ListItem(item.getModel().get(this.getLabelPath()));
+        
         item.setAppearance("tokenitem");
+        item.getChildControl('icon').setAnonymous(false);
+        item.getChildControl('icon').addListener("click", function(e) 
+        { 
+        	this._deselectItem(item); 
+        	e.stop(); 
+        	this.tabFocus(); 
+        }, this); 
         item.setIconPosition("right");
 
-        //item.setRich(true);
+        item.getChildControl('icon').addListener("mouseover", function() { item.addState('close'); });
+        item.getChildControl('icon').addListener("mouseout", function() { item.removeState('close'); });
+        
         if (this.getStyle() != "facebook")
         {
           item.setWidth(this.getWidth() - 4);
