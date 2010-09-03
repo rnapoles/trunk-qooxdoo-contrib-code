@@ -125,6 +125,17 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         li.setModel("qxVersion_" + versions[i]);
         this.__versionSelect.add(li);
       }
+      
+      if (this.__versionSelect.getSelection()[0].getLabel().indexOf("-pre")) {
+        var items = this.__versionSelect.getChildren();
+        for (var i=0,l=items.length; i<l; i++) {
+          if (items[i].getLabel().indexOf("-pre") < 0) {
+            this.__versionSelect.setSelection([items[i]]);
+            break;
+          }
+        }
+      }
+      
     },
     
     treeGetSelection : function(e)
