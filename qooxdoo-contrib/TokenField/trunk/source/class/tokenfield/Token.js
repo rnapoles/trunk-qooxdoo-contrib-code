@@ -232,6 +232,7 @@ qx.Class.define("tokenfield.Token",
           control = new qx.ui.form.TextField();
           control.setFocusable(false);
           control.addState("inner");
+          control.setFocusable(true);
           //control.addListener("changeValue", this._onTextFieldChangeValue, this);
           control.addListener("blur", this.close, this);
           this._add(control);
@@ -328,11 +329,11 @@ qx.Class.define("tokenfield.Token",
         e.stopPropagation();
         e.stop();
       }
-      else if (key == "Backspace")
+      else if (key == "Backspace" || key == "Delete")
       {
         var value = this.getChildControl('textfield').getValue();
 
-        if (value == null || value == "")
+        if ((value == null || value == "") && this.__selected == null && key != "Delete")
         {
           var children = this._getChildren();
 
@@ -346,7 +347,57 @@ qx.Class.define("tokenfield.Token",
             }
           }
         }
+        else if (this.__selected)
+        {
+        	this._deselectItem(this.__selected);
+        	this.__selected = null;
+        }
       }
+      else if (key == "Left" || key == 'Right')
+      {
+      	var textfield = this.getChildControl('textfield');
+      	var start = textfield.getTextSelectionStart();
+      	var length = textfield.getTextSelectionLength();
+      	var children = this._getChildren();
+      	var n_children = children.length;
+      	if (start == 0 && length == 0 && key == "Left")
+      	{
+      		if (this.__selected)
+      		{
+      			this.__selected.removeState('head');
+      			var index = children.indexOf(this.__selected);
+      			if (index > 0)
+      			{
+      				this.__selected = children[index-1];
+      			}
+      		}
+      		else if (n_children > 1)
+      		{
+      			this.__selected = children[n_children - 2];
+      		}
+      		if (this.__selected)
+      		{
+      			this.__selected.addState("head");
+      		}
+      		e.stop();
+      	}
+      	else if (key == "Right" && this.__selected)
+      	{
+      			this.__selected.removeState('head');
+      			var index = children.indexOf(this.__selected);
+      			if ((index+2) < n_children)
+      			{
+      				this.__selected = children[index+1];
+      				this.__selected.addState("head");
+      			}
+      			else
+      			{
+      				this.__selected = null;
+      				this.tabFocus();
+      			}
+      			e.stop();
+      	}
+      }	
       else if (key == "Enter" || key == "Space")
       {
         if (this._preSelectedItem)
@@ -497,7 +548,7 @@ qx.Class.define("tokenfield.Token",
     /**
      * Removes an item from the selection
      *
-     * @param item {qx.ui.form.ListItem} The List Item to be added to the selection
+     * @param item {qx.ui.form.ListItem} The List Item to be removed from the selection
      */
     _deselectItem : function(item)
     {
@@ -526,6 +577,17 @@ qx.Class.define("tokenfield.Token",
         	e.stop(); 
         	this.tabFocus(); 
         }, this); 
+        
+        item.addListener("click", function(e)
+        {
+        	if (this.__selected)
+        	{
+        		this.__selected.removeState("head");
+        	}
+        	this.__selected = item;
+        	item.addState("head");
+        	e.stop();
+        }, this);
         item.setIconPosition("right");
 
         item.getChildControl('icon').addListener("mouseover", function() { item.addState('close'); });
