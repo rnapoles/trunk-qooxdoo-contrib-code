@@ -2,15 +2,15 @@
 
    Copyright:
      2010 Guilherme R. Aiolfi
-     
+
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Guilherme R. Aiolfi (gradinf@gmail.com) - Original code
-     * Christian Boulanger (cboulanger) - Small additions
+     * Guilherme R. Aiolfi (guilhermeaiolfi)
+     * Christian Boulanger (cboulanger)
 
 ************************************************************************ */
 
@@ -28,18 +28,18 @@ qx.Class.define("tokenfield.demo.Application",
   extend : qx.application.Standalone,
 
   /*
-	*****************************************************************************
-	   MEMBERS
-	*****************************************************************************
-	*/
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
 
   members :
   {
     /**
-     * This method contains the initial application code and gets called 
+     * This method contains the initial application code and gets called
      * during startup of the application
      *
-     * @return {void} 
+     * @return {void}
      */
     main : function()
     {
@@ -62,12 +62,12 @@ qx.Class.define("tokenfield.demo.Application",
       t.setMaxWidth(500);
 
       t.setSelectionMode('multi');
-      
+
       /*
-       * listens for event to load data from the server. here, we 
+       * listens for event to load data from the server. here, we
        * do a simple mockup with a small timeout to simulate a server request
        */
-      t.addListener("loadData", function(e){        
+      t.addListener("loadData", function(e){
         var str = e.getData();
         var data = [];
         for( var i=0; i<(Math.floor(Math.random()*10)+3);i++ )

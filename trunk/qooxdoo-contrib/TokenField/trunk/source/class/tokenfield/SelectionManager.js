@@ -2,14 +2,14 @@
 
    Copyright:
      2010 Guilherme R. Aiolfi
-     
+
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Guilherme R. Aiolfi (gradinf@gmail.com)
+     * Guilherme R. Aiolfi (guilhermeaiolfi)
 
 ************************************************************************ */
 
@@ -22,13 +22,13 @@ qx.Class.define("tokenfield.SelectionManager",
 
   members :
   {
-	  handleKeyPress : function(event)
-	  {
-	  	var key = event.getKeyIdentifier();
-	  	if (key != "Left" && key != "Right")
-	  	{
-	  		qx.ui.core.selection.Abstract.prototype.handleKeyPress.apply(this, [event]);// this.base(arguments);
-	  	}
-	  }
+    handleKeyPress : function(event)
+    {
+      var key = event.getKeyIdentifier();
+      if (key != "Left" && key != "Right")
+      {
+        qx.ui.core.selection.Abstract.prototype.handleKeyPress.apply(this, [event]);// this.base(arguments);
+      }
+    }
   }
 });
