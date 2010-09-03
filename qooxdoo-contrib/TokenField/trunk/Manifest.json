@@ -4,7 +4,7 @@
     "name" : "TokenField",
 
     "summary" : "TokenField Contribution",
-    "description" : "A widget implementing the token field concept known from Mac OS X (http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/TokenField_Guide/Introduction/Introduction.html)",
+    "description" : "A widget implementing the token field concept known from Mac OS X",
     
     "homepage" : "http://contrib.qooxdoo.org/project/TokenField",
 
@@ -12,8 +12,8 @@
     "authors" : 
     [
       {
-        "name" : "Guilherme R. Aiolfi",
-        "email" : "gradinf@gmail.com"
+        "name" : "Guilherme R. Aiolfi (guilhermeaiolfi)",
+        "email" : "gradinf AT gmail DOT com"
       }
     ],
 

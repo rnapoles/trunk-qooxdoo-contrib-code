@@ -2,14 +2,14 @@
 
    Copyright:
      2010 Guilherme R. Aiolfi
-     
+
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Guilherme R. Aiolfi (gradinf@gmail.com)
+     * Guilherme R. Aiolfi (guilhermeaiolfi)
 
 ************************************************************************ */
 
@@ -44,7 +44,7 @@ qx.Class.define("tokenfield.Cache",
     /**
      * TODOC
      *
-     * @return {void} 
+     * @return {void}
      */
     flush : function()
     {
@@ -58,7 +58,7 @@ qx.Class.define("tokenfield.Cache",
      *
      * @param query {var} TODOC
      * @param results {var} TODOC
-     * @return {void} 
+     * @return {void}
      */
     add : function(query, results)
     {

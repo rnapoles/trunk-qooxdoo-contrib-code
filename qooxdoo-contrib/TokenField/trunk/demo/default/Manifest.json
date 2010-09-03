@@ -4,7 +4,7 @@
     "name" : "TokenField Demo",
 
     "summary" : "TokenField Demo",
-    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    "description" : "Demo for the TokenField contribution.",
     
     "homepage" : "http://demo.qooxdoo.org/contrib/TokenField",
 
@@ -12,8 +12,8 @@
     "authors" : 
     [
       {
-        "name" : "Guilherme R. Aiolfi",
-        "email" : "gradinf@gmail.com"
+        "name" : "Guilherme R. Aiolfi (guilhermeaiolfi)",
+        "email" : "gradinf AT gmail DOT com"
       }
     ],
 

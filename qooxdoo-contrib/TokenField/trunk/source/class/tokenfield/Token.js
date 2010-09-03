@@ -2,14 +2,14 @@
 
    Copyright:
      2010 Guilherme R. Aiolfi
-     
+
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Guilherme R. Aiolfi (gradinf@gmail.com)
+     * Guilherme R. Aiolfi (guilhermeaiolfi)
 
 ************************************************************************ */
 
@@ -26,20 +26,20 @@
 qx.Class.define("tokenfield.Token",
 {
   extend : qx.ui.form.AbstractSelectBox,
-  implement : [ 
-    qx.ui.core.IMultiSelection, 
-  	qx.ui.form.IModelSelection 
+  implement : [
+    qx.ui.core.IMultiSelection,
+    qx.ui.form.IModelSelection
   ],
-  include : [ 
-    qx.ui.core.MMultiSelectionHandling, 
-  	qx.ui.form.MModelSelection 
+  include : [
+    qx.ui.core.MMultiSelectionHandling,
+    qx.ui.form.MModelSelection
   ],
 
   /*
   *****************************************************************************
      EVENTS
   *****************************************************************************
-  */  
+  */
   events :
   {
     /**
@@ -51,32 +51,32 @@ qx.Class.define("tokenfield.Token",
 
 
     /**
-	   * This event is fired after a list item has been removed from the list.
-	   * The {@link qx.event.type.Data#getData} method of the event returns the
-	   * removed item.
-	   */
+     * This event is fired after a list item has been removed from the list.
+     * The {@link qx.event.type.Data#getData} method of the event returns the
+     * removed item.
+     */
     removeItem : "qx.event.type.Data",
-    
-    
+
+
     /**
      * This event is fired when the widget needs external data. The data dispatched
      * with the event is the string fragment to use to find matching items
-     * as the data. The event listener must then load the data from whereever 
-     * it may come and call populateList() with the string fragment and the 
+     * as the data. The event listener must then load the data from whereever
+     * it may come and call populateList() with the string fragment and the
      * received data.
      */
-    loadData : "qx.event.type.Data"    
+    loadData : "qx.event.type.Data"
   },
 
   /*
   *****************************************************************************
      PROPERTIES
   *****************************************************************************
-  */  
+  */
   properties :
   {
     /**
-     * 
+     *
      */
     orientation :
     {
@@ -86,7 +86,7 @@ qx.Class.define("tokenfield.Token",
     },
 
     /**
-     * 
+     *
      */
     appearance :
     {
@@ -95,72 +95,72 @@ qx.Class.define("tokenfield.Token",
     },
 
     /**
-     * 
+     *
      */
-    hintText : 
-    { 
-      init : "Type in a search term" 
-    },
-    
-    /**
-     * 
-     */
-    noResultsText : 
-    { 
-      init : "No results" 
-    },
-    
-    /**
-     * 
-     */
-    searchingText : 
-    { 
-      init : "Searching..." 
-    },
-    
-    /**
-     * 
-     */
-    searchDelay : 
-    { 
-      init : 300 
-    },
-    
-    /**
-     * 
-     */
-    minChars : 
-    { 
-      init : 2 
+    hintText :
+    {
+      init : "Type in a search term"
     },
 
     /**
-     * 
+     *
+     */
+    noResultsText :
+    {
+      init : "No results"
+    },
+
+    /**
+     *
+     */
+    searchingText :
+    {
+      init : "Searching..."
+    },
+
+    /**
+     *
+     */
+    searchDelay :
+    {
+      init : 300
+    },
+
+    /**
+     *
+     */
+    minChars :
+    {
+      init : 2
+    },
+
+    /**
+     *
      */
     tokenLimit :
     {
       init     : null,
       nullable : true
     },
-        
+
     /**
-     * 
+     *
      */
-    labelPath : 
-    { 
-      init : "label" 
+    labelPath :
+    {
+      init : "label"
     },
 
     /**
-     * 
+     *
      */
     style :
-    { 
-      init : "facebook" 
+    {
+      init : "facebook"
     }
   },
-  
-  
+
+
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -206,17 +206,17 @@ qx.Class.define("tokenfield.Token",
   *****************************************************************************
      MEMBERS
   *****************************************************************************
-  */  
+  */
   members :
   {
     SELECTION_MANAGER : tokenfield.SelectionManager,
-    
+
     /*
     ---------------------------------------------------------------------------
        WIDGET CREATION
     ---------------------------------------------------------------------------
-    */        
-    
+    */
+
     // overridden
     _createChildControlImpl : function(id)
     {
@@ -248,7 +248,7 @@ qx.Class.define("tokenfield.Token",
 
       return control || this.base(arguments, id);
     },
-    
+
     // overridden
     tabFocus : function()
     {
@@ -257,7 +257,7 @@ qx.Class.define("tokenfield.Token",
       field.getFocusElement().focus();
       //field.selectAllText();
     },
-    
+
     // overridden
     /**
      * @lint ignoreReferenceField(_forwardStates)
@@ -265,14 +265,14 @@ qx.Class.define("tokenfield.Token",
     _forwardStates : {
       focused : true
     },
-    
+
     /*
     ---------------------------------------------------------------------------
        EVENT HANDLERS
     ---------------------------------------------------------------------------
     */
-    
-    
+
+
     /**
      * Toggles the popup's visibility.
      *
@@ -358,16 +358,16 @@ qx.Class.define("tokenfield.Token",
         }
         else if (key == "Space")
         {
-        	var textfield = this.getChildControl('textfield');
-        	textfield.setValue(textfield.getValue() + " ");
+          var textfield = this.getChildControl('textfield');
+          textfield.setValue(textfield.getValue() + " ");
         }
         this.toggle();
       }
       else if (key == "Esc")
       {
-      	this.close();      	
+        this.close();
       }
-      else if (key != "Left" && key != "Right") 
+      else if (key != "Left" && key != "Right")
       {
         this.getChildControl("list").handleKeyPress(e);
       }
@@ -405,12 +405,12 @@ qx.Class.define("tokenfield.Token",
       },
       0, this, null, this.getSearchDelay());
     },
-    
+
     // overridden
     _onListMouseDown : function(e)
     {
       this._selectItem(this._preSelectedItem);
-    },    
+    },
 
     // overridden
     _onListChangeSelection : function(e)
@@ -431,8 +431,8 @@ qx.Class.define("tokenfield.Token",
           this._preSelectedItem = null;
         }
       }
-    },  
-    
+    },
+
     // overridden
     _onPopupChangeVisibility : function(e)
     {
@@ -449,13 +449,13 @@ qx.Class.define("tokenfield.Token",
         this.tabFocus();
       }
     },
-    
+
     /*
     ---------------------------------------------------------------------------
        API
     ---------------------------------------------------------------------------
     */
-    
+
     /**
      * Fire a event to search for a string
      *
@@ -467,23 +467,23 @@ qx.Class.define("tokenfield.Token",
       this._dummy.setLabel(this.getSearchingText());
       this.getChildControl('list').add(this._dummy);
       this.open();
-     
+
       this.fireDataEvent("loadData", str );
     },
-    
-   
+
+
     /**
      * Populates the list with the data received from the data source
      *
      * @param str {String} The string fragment that was used for retrieving
      *    the autoocomplete data.
      * @param data {Object} A javascript object that contains
-     * @return {void} 
+     * @return {void}
      */
     populateList : function( str, data )
     {
       this.cache.add( str, qx.data.marshal.Json.createModel(data) );
-      var result = this.cache.get(str);       
+      var result = this.cache.get(str);
       this.getChildControl('list').removeAll();
 
       for (var i=0; i<result.getLength(); i++)
@@ -499,7 +499,7 @@ qx.Class.define("tokenfield.Token",
     /**
      * Adds an item to the selection
      *
-     * @param item {qx.ui.form.ListItem} The List Item to be added to the selection 
+     * @param item {qx.ui.form.ListItem} The List Item to be added to the selection
      */
     _selectItem : function(item)
     {
@@ -534,6 +534,6 @@ qx.Class.define("tokenfield.Token",
     highlight : function(value, query) {
       return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + query + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
     }
-   
+
   }
 });
