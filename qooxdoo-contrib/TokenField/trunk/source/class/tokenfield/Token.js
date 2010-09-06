@@ -595,8 +595,7 @@ qx.Class.define("tokenfield.Token",
         
         if (this.getStyle() != "facebook")
         {
-          item.setWidth(this.getWidth() - 4);
-          item.setIconPosition("left");
+          item.getChildControl("label").setWidth(this.getWidth() - 29);
         }
 
         this._addBefore(item, this.getChildControl('textfield'));
