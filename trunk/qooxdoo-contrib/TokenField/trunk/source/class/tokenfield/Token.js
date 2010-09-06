@@ -176,6 +176,15 @@ qx.Class.define("tokenfield.Token",
 
     var textField = this._createChildControl("textfield");
 
+    var label = this._createChildControl("label");
+    this.getApplicationRoot().add(label, { top: -10, left: -1000 });
+    label.setAppearance(textField.getAppearance());
+    textField.bind("value", label, "value");
+    textField.addListener("keypress", function(e){
+    	//label.setValue(textField.getValue());
+    	textField.setWidth(label.getBounds()["width"] + 8);
+    }, this);
+    
     textField.addListener("mousedown", function(e) {
       e.stop();
     });
@@ -185,7 +194,7 @@ qx.Class.define("tokenfield.Token",
     // forward the focusin and focusout events to the textfield. The textfield
     // is not focusable so the events need to be forwarded manually.
     this.addListener("focusin", function(e) {
-      textField.fireNonBubblingEvent("focusin", qx.event.type.Focus);
+    	textField.fireNonBubblingEvent("focusin", qx.event.type.Focus);
     }, this);
 
     this.addListener("focusout", function(e) {
@@ -194,7 +203,7 @@ qx.Class.define("tokenfield.Token",
 
     textField.setLiveUpdate(true);
     textField.addListener("input", this._onInputChange, this);
-    textField.setMinWidth(100);
+    textField.setMinWidth(6);
 
     this._dummy = new qx.ui.form.ListItem();
     this._dummy.setEnabled(false);
@@ -224,6 +233,12 @@ qx.Class.define("tokenfield.Token",
 
       switch(id)
       {
+      	case "label":
+      		control = new qx.ui.basic.Label();
+      		//control.setWidth(10);
+      		control.hide();
+      		break;
+      	
         case "button":
           return null;
           break;
@@ -232,7 +247,6 @@ qx.Class.define("tokenfield.Token",
           control = new qx.ui.form.TextField();
           control.setFocusable(false);
           control.addState("inner");
-          control.setFocusable(true);
           //control.addListener("changeValue", this._onTextFieldChangeValue, this);
           control.addListener("blur", this.close, this);
           this._add(control);
@@ -245,11 +259,21 @@ qx.Class.define("tokenfield.Token",
           // Change selection mode
           control.setSelectionMode("single");
           break;
+          
+        case "popup":
+          control = new qx.ui.popup.Popup(new qx.ui.layout.VBox);
+          control.setAutoHide(true);
+          control.setKeepActive(true);
+          control.addListener("mouseup", this.close, this);
+          control.add(this.getChildControl("list"));
+          
+          control.addListener("changeVisibility", this._onPopupChangeVisibility, this);
+          break;
       }
 
       return control || this.base(arguments, id);
     },
-
+  
     // overridden
     tabFocus : function()
     {
@@ -257,6 +281,13 @@ qx.Class.define("tokenfield.Token",
 
       field.getFocusElement().focus();
       //field.selectAllText();
+    },
+    
+    tabBlur : function()
+    {
+    	var field = this.getChildControl("textfield");
+
+      field.getFocusElement().blur();
     },
 
     // overridden
@@ -273,48 +304,24 @@ qx.Class.define("tokenfield.Token",
     ---------------------------------------------------------------------------
     */
 
-
+    // overridden
+    _onBlur : function(e)
+    {
+    	return;
+    },
+    
     /**
      * Toggles the popup's visibility.
      *
      * @param e {qx.event.type.Mouse} Mouse click event
      */
     _onClick : function(e) {
-      this.toggle();
-    },
-
-    // overridden
-    _onPopupChangeVisibility : function(e)
-    {
-      // Synchronize the list with the current value on every
-      // opening of the popup. This is useful because through
-      // the quick selection mode, the list may keep an invalid
-      // selection on close or the user may enter text while
-      // the combobox is closed and reopen it afterwards.
-      var popup = this.getChildControl("popup");
-
-      if (popup.isVisible())
-      {
-        var list = this.getChildControl("list");
-        var value = this.getChildControl('textfield').getValue();
-        var item = null;
-
-        if (value) {
-          item = list.findItem(value);
-        }
-
-        if (item) {
-          list.setSelection([ item ]);
-        } else {
-          list.resetSelection();
-        }
-      }
-      else
-      {
-        // When closing the popup text should selected and field should
-        // have the focus. Identical to when reaching the field using the TAB key.
-        this.tabFocus();
-      }
+    	if (this.__selected)
+    	{
+    		this.__selected.removeState("head");
+    	}
+    	this.__selected = null;
+    	this.toggle();
     },
 
     // overridden
@@ -331,26 +338,31 @@ qx.Class.define("tokenfield.Token",
       }
       else if (key == "Backspace" || key == "Delete")
       {
-        var value = this.getChildControl('textfield').getValue();
-
-        if ((value == null || value == "") && this.__selected == null && key != "Delete")
+        var textfield = this.getChildControl('textfield');
+        var value = textfield.getValue();
+        var children = this._getChildren();
+        var index = children.indexOf(textfield);
+        if (value == null || value == "" && !this.__selected)
         {
-          var children = this._getChildren();
-
-          if (children && children.length > 0)
-          {
-            var item = null;
-
-            if (item = children[children.length - 2])
-            {
-              this._deselectItem(item);
-            }
-          }
+        	if (key == "Delete" && index < (children.length - 1))
+        	{
+        		this.__selected = children[index+1];
+        		this.__selected.addState("head");
+        		this.focus();
+        	}
+        	else if (key == "Backspace" && index > 0)
+        	{
+        		this.__selected = children[index-1];
+        		this.__selected.addState("head");
+        		this.focus();
+        	}
         }
         else if (this.__selected)
         {
         	this._deselectItem(this.__selected);
         	this.__selected = null;
+        	this.tabFocus();
+        	e.stop();
         }
       }
       else if (key == "Left" || key == 'Right')
@@ -360,61 +372,59 @@ qx.Class.define("tokenfield.Token",
       	var length = textfield.getTextSelectionLength();
       	var children = this._getChildren();
       	var n_children = children.length;
-      	if (start == 0 && length == 0 && key == "Left")
+      	
+      	var item = this.__selected? this.__selected : textfield;
+      	var index = children.indexOf(item);
+      	if (item == textfield)
       	{
-      		if (this.__selected)
-      		{
-      			this.__selected.removeState('head');
-      			var index = children.indexOf(this.__selected);
-      			if (index > 0)
-      			{
-      				this.__selected = children[index-1];
-      			}
-      		}
-      		else if (n_children > 1)
-      		{
-      			this.__selected = children[n_children - 2];
-      		}
-      		if (this.__selected)
-      		{
-      			this.__selected.addState("head");
-      		}
-      		e.stop();
+      		if (key == 'Left')
+      			index -= 1;
+      		else
+      			index += 1;
       	}
-      	else if (key == "Right" && this.__selected)
+      	
+      	var index_textfield = children.indexOf(textfield);
+      	
+				if (key == "Left" && index >= 0 && start == 0 && length == 0)
+				{
+					this._addBefore(textfield, children[index]);
+				}
+				else if (key == "Right" && index < n_children && start == textfield.getValue().length)
+				{
+					this._addAfter(textfield, children[index]);
+				}
+				
+				if (this.__selected)
       	{
-      			this.__selected.removeState('head');
-      			var index = children.indexOf(this.__selected);
-      			if ((index+2) < n_children)
-      			{
-      				this.__selected = children[index+1];
-      				this.__selected.addState("head");
-      			}
-      			else
-      			{
-      				this.__selected = null;
-      				this.tabFocus();
-      			}
-      			e.stop();
+      		this.__selected.removeState("head");
       	}
+      	this.__selected = null;
+      	
+      	// I really don't know, but FF needs the timer to be able to set the focus right
+      	// when there is a selected item and the key == 'Left'
+      	qx.util.TimerManager.getInstance().start(function(){
+      		this.tabFocus();
+        },null,this,null,20);
+				
       }	
       else if (key == "Enter" || key == "Space")
       {
-        if (this._preSelectedItem)
+      	if (this._preSelectedItem && this.getChildControl('popup').isVisible())
         {
           this._selectItem(this._preSelectedItem);
           this._preSelectedItem = null;
+          this.toggle();
         }
         else if (key == "Space")
         {
           var textfield = this.getChildControl('textfield');
           textfield.setValue(textfield.getValue() + " ");
+          e.stop();
         }
-        this.toggle();
       }
-      else if (key == "Esc")
+      else if (key == "Escape")
       {
-        this.close();
+      	this.close();
       }
       else if (key != "Left" && key != "Right")
       {
@@ -485,18 +495,7 @@ qx.Class.define("tokenfield.Token",
     // overridden
     _onPopupChangeVisibility : function(e)
     {
-      // Synchronize the list with the current value on every
-      // opening of the popup. This is useful because through
-      // the quick selection mode, the list may keep an invalid
-      // selection on close or the user may enter text while
-      // the combobox is closed and reopen it afterwards.
-      var popup = this.getChildControl("popup");
-      if (!popup.isVisible())
-      {
-        // When closing the popup text should selected and field should
-        // have the focus. Identical to when reaching the field using the TAB key.
-        this.tabFocus();
-      }
+    	this.tabFocus();
     },
 
     /*
@@ -573,6 +572,11 @@ qx.Class.define("tokenfield.Token",
         item.getChildControl('icon').setAnonymous(false);
         item.getChildControl('icon').addListener("click", function(e) 
         { 
+        	if (this.__selected)
+        	{
+        		this.__selected.removeState("head");
+        		this.__selected = null;
+        	}
         	this._deselectItem(item); 
         	e.stop(); 
         	this.tabFocus(); 
@@ -580,12 +584,12 @@ qx.Class.define("tokenfield.Token",
         
         item.addListener("click", function(e)
         {
-        	if (this.__selected)
+        	item.addState("head");
+        	if (this.__selected != null && this.__selected != item)
         	{
         		this.__selected.removeState("head");
         	}
         	this.__selected = item;
-        	item.addState("head");
         	e.stop();
         }, this);
         item.setIconPosition("right");
