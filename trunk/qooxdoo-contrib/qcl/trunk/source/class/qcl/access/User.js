@@ -38,9 +38,8 @@ qx.Class.define("qcl.access.User",
   {
     this.base(arguments);
     this.setNamedId(vName);
-    this._manager = qx.core.Init.getApplication().getAccessManager().getUserManager();
+    this._manager = qcl.access.UserManager.getInstance(); // FIXME
     this._manager.add(this);
-  
     this.setPermissions([]);
   },
 
@@ -170,7 +169,7 @@ qx.Class.define("qcl.access.User",
      */
     addPermissionsByName : function( names )
     {
-      var permMgr = qx.core.Init.getApplication().getAccessManager().getPermissionManager();
+      var permMgr = qcl.access.PermissionManager.getInstance(); // FIXME
       for( var i=0; i < names.length; i++)
       {
         this.getPermissions().push(

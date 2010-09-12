@@ -55,8 +55,20 @@ qx.Class.define("qcl.io.RpcManager",
       */
      serverUrl :
      {
-        check : "String",
-        nullable : false
+        check     : "String",
+        nullable  : false,
+        apply     : "_applyServerUrl"
+     },
+     
+     /**
+      * The timeout for server requests
+      * @type Integer
+      */
+     timeout :
+     {
+        check     : "Integer",
+        nullable  : true,
+        apply     : "_applyTimeout" 
      },
      
      /**
@@ -76,17 +88,27 @@ qx.Class.define("qcl.io.RpcManager",
   *****************************************************************************
   */  
 
-  construct : function()
+  /**
+   * Constructor. 
+   * @param core {qcl.application.Core} App core object
+   */
+  construct : function( core )
   {
     this.base(arguments);
+    this.__core = core;
     
     /*
-     * global rpc object to be reused by for all requests
+     * rpc object to be reused by for all requests. It must be reused
+     * because the session id is only updated on this object!
+     * @todo This must be solved differently with the new rpc layer.
      */
-    if ( ! this.getRpcObject() )
-    {
-      this.setRpcObject( new qx.io.remote.Rpc() );
-    }
+    var rpc = new qx.io.remote.Rpc();
+    this.__core.getSessionManager().bind("sessionId", rpc, "serverData", {
+      converter : function( value ){
+        return { "sessionId" : value };        
+      }
+    } );
+    this.setRpcObject( rpc );
   },
   
   /*
@@ -112,17 +134,14 @@ qx.Class.define("qcl.io.RpcManager",
     ---------------------------------------------------------------------------
     */ 
     
-    /**
-     * Applying the server url will automatically create a rpc object if it 
-     * does not exist.
-     */
     _applyServerUrl : function( url, old )
     {
-      if ( ! this.getRpcObject() )
-      {
-        this.setRpcObject( new qx.io.remote.Rpc );
-      }
       this.getRpcObject().setUrl(url);
+    },
+    
+    _applyTimeout : function( value, old )
+    {
+      this.getRpcObject().setTimeout(value);
     },
     
     /*
@@ -131,6 +150,54 @@ qx.Class.define("qcl.io.RpcManager",
     ---------------------------------------------------------------------------
     */     
         
+
+   
+    /** 
+     * Executes a jsonrpc service method with the rpc object configured in the 
+     * main application's constructor
+     * @param serviceName {String}
+     * @param serviceMethod {String}
+     * @param params {Array} Parameters to send to the method
+     * @param callback {Function} Callback function that is called with the data returned from the server
+     * @param context {Object} The object context in which the callback function is executed
+     * @return {void}
+     */
+    execute : function( serviceName, serviceMethod, params, callback, context )
+    {
+      /* 
+       * create all-purpose json store
+       */
+      if ( ! this._appStore )
+      {
+        this._appStore = new qcl.data.store.JsonRpc( 
+          null, serviceName, null, null, this.getRpcObject() 
+        );
+      }
+      this._appStore.execute( serviceMethod, params, callback, context);
+    },
+    
+//    /**
+//     * Registers a store with the server
+//     * @param store {qcl.data.store.JsonRpc}
+//     */
+//    registerStore : function( store )
+//    {
+//      this.load("register",[ store.getStoreId() ],function(data){
+//        //this.info(data);
+//      }, this );  
+//    },
+//    
+//    /**
+//     * Unregisters a store from the server
+//     * @param store {qcl.data.store.JsonRpc}
+//     */
+//    unregisterStore : function( store )
+//    {
+//      this.load("unregister",[ store.getStoreId() ],function(data){
+//        //this.info(data);
+//      }, this );  
+//    },
+    
     /**
      * Called when the page is closed and unregisteres stores on the server. 
      * If you want to have additional termination
@@ -155,55 +222,7 @@ qx.Class.define("qcl.io.RpcManager",
        {
          this._terminate();
        }
-    },
-   
-    /** 
-     * Executes a jsonrpc service method with the rpc object configured in the 
-     * main application's constructor
-     * @param serviceName {String}
-     * @param serviceMethod {String}
-     * @param params {Array} Parameters to send to the method
-     * @param callback {Function} Callback function that is called with the data returned from the server
-     * @param context {Object} The object context in which the callback function is executed
-     * @return {void}
-     */
-    execute : function( serviceName, serviceMethod, params, callback, context )
-    {
-      
-      /* 
-       * create all-purpose json store
-       */
-      if ( ! this._appStore )
-      {
-        this._appStore = new qcl.data.store.JsonRpc( 
-            null, null, null, null, this.getRpcObject() 
-        ); 
-      }
-      
-      this._appStore.setServiceName(serviceName);
-      this._appStore.execute( serviceMethod, params, callback, context);
-    },
-    
-    /**
-     * Registers a store with the server
-     * @param store {qcl.data.store.JsonRpc}
-     */
-    registerStore : function( store )
-    {
-      this.load("register",[ store.getStoreId() ],function(data){
-        //this.info(data);
-      }, this );  
-    },
-    
-    /**
-     * Unregisters a store from the server
-     * @param store {qcl.data.store.JsonRpc}
-     */
-    unregisterStore : function( store )
-    {
-      this.load("unregister",[ store.getStoreId() ],function(data){
-        //this.info(data);
-      }, this );  
     }    
+    
   }
 });

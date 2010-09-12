@@ -67,104 +67,7 @@
 qx.Class.define("qcl.data.store.JsonRpc", 
 {
   extend : qx.core.Object,
-
- /**  
-  * @param url {String|null} The url of the jsonrpc service. If no url is
-  *   given, the serverUrl property of the main application is used.
-  * @param serviceName {String|null} The name of the service, i.e. "foo.bar"   
-  * @param marshaler {Object|null} The marshaler to be used to create a model 
-  *   from the data. If not provided, {@link qx.data.marshal.Json} is used and
-  *   instantiated with the 'delegate' parameter as contstructor argument.
-  * @param delegate {Object|null} The delegate containing one of the methods 
-  *   specified in {@link qx.data.store.IStoreDelegate}. Ignored if a 
-  *   custom marshaler is provided
-  * @param rpc {qx.io.remote.Rpc|undefined} Optional qx.io.remote.Rpc object 
-  *   that can be shared between stores. If not given, try and get object
-  *   from application instance.
-  */
-  construct : function( url, serviceName, marshaler, delegate, rpc )
-  {
-    this.base(arguments);
   
-    /*
-     * set url, name and method of the service. If URL is null,
-     * the server url is used
-     */
-    if ( url != null) 
-    {
-      this.setUrl(url);
-    }
-    
-    if (serviceName != null) 
-    {
-      this.setServiceName( serviceName );
-    }
-
-  
-    /* 
-     * store the marshaler
-     */
-    if ( ! marshaler )
-    {
-      this.setMarshaler( new qx.data.marshal.Json(delegate) );
-    }
-    else
-    {
-      this.setMarshaler( marshaler );
-    }
-  
-    /* 
-     * use existing or create new JSON-RPC object
-     */
-    if ( rpc )
-    {
-      this.__rpc = rpc;
-    }
-    else if( qx.Class.hasMixin( qx.Class.getByName( qx.core.Init.getApplication().classname ), qcl.application.MAppManagerProvider ) )
-    {
-      this.__rpc = this.getApplication().getRpcManager().getRpcObject();
-    }
-    else
-    {
-      this.__rpc = new qx.io.remote.Rpc();
-    }
-  },
-
-  /*
-  *****************************************************************************
-     EVENTS
-  *****************************************************************************
-  */  
-  events : 
-  {
-    /**
-    * Data event fired after the model has been created. The data will be the 
-    * created model.
-    */
-    "loaded": "qx.event.type.Data",
-    
-    /**
-    * The change event which will be fired if there is a change in the array.
-    * The data contains a map with three key value pairs:
-    * <li>start: The start index of the change.</li>
-    * <li>end: The end index of the change.</li>
-    * <li>type: The type of the change as a String. This can be 'add',  
-    * 'remove' or 'order'</li>
-    * <li>items: The items which has been changed (as a JavaScript array).</li>
-    */
-   "change" : "qx.event.type.Data",
-   
-   /**
-    * Event signaling that the model data has changed
-    */
-   "changeBubble" : "qx.event.type.Data",
-   
-   /**
-    * Error event
-    */
-   "error" : "qx.event.type.Data"
-  },
-
   /*
   *****************************************************************************
      PROPERTIES
@@ -173,16 +76,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
 
   properties : 
   {
-    
-    /**
-     * The unique id of the store
-     */
-    storeId :
-    {
-      check : "String",
-      nullable : true,
-      init : null
-    },
     
    /**
     * Property for holding the loaded model instance.
@@ -251,7 +144,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
       init : false
     },
     
-    
     autoLoadMethod:
     {
       check     : "String",
@@ -266,7 +158,101 @@ qx.Class.define("qcl.data.store.JsonRpc",
       apply     : "_applyAutoLoadParams",
       event     : "changeAutoLoadParams"
     }
+  },  
+
+ /**  
+  * @param url {String|null} The url of the jsonrpc service. If no url is
+  *   given, the serverUrl property of the main application is used.
+  * @param serviceName {String|null} The name of the service, i.e. "foo.bar"   
+  * @param marshaler {Object|null} The marshaler to be used to create a model 
+  *   from the data. If not provided, {@link qx.data.marshal.Json} is used and
+  *   instantiated with the 'delegate' parameter as contstructor argument.
+  * @param delegate {Object|null} The delegate containing one of the methods 
+  *   specified in {@link qx.data.store.IStoreDelegate}. Ignored if a 
+  *   custom marshaler is provided
+  * @param rpc {qx.io.remote.Rpc|undefined} Optional qx.io.remote.Rpc object 
+  *   that can be shared between stores. If not given, a new object is created.
+  */
+  construct : function( url, serviceName, marshaler, delegate, rpc )
+  {
+    this.base(arguments);
+  
+    /*
+     * set url, name and method of the service. If URL is null,
+     * the server url is used
+     */
+    if ( url != null) 
+    {
+      this.setUrl(url);
+    }
+    
+    if (serviceName != null) 
+    {
+      this.setServiceName( serviceName );
+    }
+
+  
+    /* 
+     * store the marshaler
+     */
+    if ( ! marshaler )
+    {
+      this.setMarshaler( new qx.data.marshal.Json(delegate) );
+    }
+    else
+    {
+      this.setMarshaler( marshaler );
+    }
+  
+    /* 
+     * use existing or create new JSON-RPC object
+     */
+    if ( rpc )
+    {
+      this.__rpc = rpc;
+    }
+    else
+    {
+      this.warn( "Creating new rpc object!");
+      this.__rpc = new qx.io.remote.Rpc();
+    }
   },
+
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */  
+  events : 
+  {
+    /**
+    * Data event fired after the model has been created. The data will be the 
+    * created model.
+    */
+    "loaded": "qx.event.type.Data",
+    
+    /**
+    * The change event which will be fired if there is a change in the array.
+    * The data contains a map with three key value pairs:
+    * <li>start: The start index of the change.</li>
+    * <li>end: The end index of the change.</li>
+    * <li>type: The type of the change as a String. This can be 'add',  
+    * 'remove' or 'order'</li>
+    * <li>items: The items which has been changed (as a JavaScript array).</li>
+    */
+   "change" : "qx.event.type.Data",
+   
+   /**
+    * Event signaling that the model data has changed
+    */
+   "changeBubble" : "qx.event.type.Data",
+   
+   /**
+    * Error event
+    */
+   "error" : "qx.event.type.Data"
+  },
+
 
   /*
   *****************************************************************************
@@ -329,9 +315,6 @@ qx.Class.define("qcl.data.store.JsonRpc",
      */
     _configureRequest: function() 
     {
-      
-      var app = qx.core.Init.getApplication();
-      
       /* 
        * configure request object
        */
@@ -342,32 +325,15 @@ qx.Class.define("qcl.data.store.JsonRpc",
       {
         rpc.setUrl( this.getUrl() );
       }
-      else if( qx.Class.hasMixin( 
-            qx.Class.getByName( app.classname ), 
-            qcl.application.MAppManagerProvider ) )
+      else if ( ! rpc.getUrl() )
       {
-        rpc.setUrl( this.getApplication().getRpcManager().getServerUrl() );
-      }
-      else
-      {
-        this.error("Cannot determine URL for request.");
+        console.log(qx.dev.StackTrace.getStackTrace().join("\n"));
+        this.error("No url set.");
       }
       
       rpc.setServiceName( this.getServiceName() );
       rpc.setCrossDomain( this.getAllowCrossDomainRequests() );
 
-      /*
-       * Application state is sent as server data (piggybacking on the request
-       * to update the server about the state). (is ignored if application
-       * doesn't support application state) @todo rewrite, remove if we have a
-       * cometd implementation
-       */
-      if( qx.Class.hasMixin( 
-            qx.Class.getByName( app.classname ), 
-            qcl.application.MAppManagerProvider ) )
-      {
-        rpc.setServerData( app.getStateManager().getServerStates() );  
-      }
 
       return rpc;
     },
@@ -560,7 +526,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
        */
       if( data.messages && data.messages instanceof Array ){
         data.messages.forEach( function(message){
-          qx.event.message.Bus.dispatch( message.name, message.data ); 
+          qx.event.message.Bus.dispatchByName( message.name, message.data ); 
         });
       }
 

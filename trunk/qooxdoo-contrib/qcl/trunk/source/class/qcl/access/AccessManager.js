@@ -85,9 +85,10 @@ qx.Class.define("qcl.access.AccessManager",
   *****************************************************************************
   */  
 
-  construct : function()
+  construct : function( core )
   {
     this.base(arguments);
+    this.__core = core;
   },
   
   /*
@@ -123,7 +124,7 @@ qx.Class.define("qcl.access.AccessManager",
      */
     getSessionId : function()
     {
-      qx.core.Init.getApplication().getSessionManager().getSessionId();
+      this.__core.getSessionManager().getSessionId(); // FIXME
     },
     
     /**
@@ -158,7 +159,7 @@ qx.Class.define("qcl.access.AccessManager",
       if ( ! this.getStore() )
       {
         this.setStore(       
-          new qcl.data.store.JsonRpc( null, service ) 
+          new qcl.data.store.JsonRpc( null, service, null, null, this.__core.getRpcManager().getRpcObject() ) 
         );
       }
 
@@ -171,7 +172,7 @@ qx.Class.define("qcl.access.AccessManager",
        * bind the session id propery of the auth store to the session
        * id of the application
        */
-      this.getStore().bind("model.sessionId", qx.core.Init.getApplication().getSessionManager(), "sessionId" );
+      this.getStore().bind("model.sessionId", this.__core.getSessionManager(), "sessionId" );
       
       /*
        * bind the authentication state to a local boolean
@@ -198,19 +199,22 @@ qx.Class.define("qcl.access.AccessManager",
     /**
      * Authenticate with session id, if any, otherwise with null to get
      * guest access, if allowed.
+     * @param sessiongId {String}
      * @param callback {function|undefined} optional callback that is called
      *   when logout request returns from server.
      * @param context {object|undefined} Optional context for callback function
      */    
-    connect : function(callback,context)
+    connect : function( sessionId, callback, context)
     {
-      this.getStore().load("authenticate",[ this.getSessionId() || null ], callback, context );
+      if ( typeof sessionId != "string" )
+      {
+        this.error("Method signature change: connect() must be called with the session id as first parameter ");
+      }
+      this.getStore().load("authenticate",[ sessionId || null ], callback, context );
     },
     
     /**
-     * Authenticates a user with the given password. Since this is done
-     * asynchroneously, the method has no return value but uses a callback 
-     * instead.
+     * Authenticates a user with the given password asynchroneously.
      * @param username {String}
      * @param password {String}
      * @param callback {Function}
@@ -267,7 +271,6 @@ qx.Class.define("qcl.access.AccessManager",
      */
     logout : function( callback, context )
     {
-      qx.event.message.Bus.dispatch( new qx.event.message.Message("logout", true ) );
       this.getStore().load("logout", null, callback, context );
     }
    

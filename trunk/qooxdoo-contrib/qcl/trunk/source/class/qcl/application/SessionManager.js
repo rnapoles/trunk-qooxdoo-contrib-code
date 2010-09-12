@@ -51,18 +51,10 @@ qx.Class.define("qcl.application.SessionManager",
   *****************************************************************************
   */
 
-  construct : function()
+  construct : function( core )
   {  
-    this.base(arguments);
-    
-    /*
-     * subscribe to a message that usually comes from the server to set
-     * a new session id
-     */
-    qx.event.message.Bus.subscribe( "setSessionId", function( e ){
-      this.setSessionId( e.getData() );
-    }, this);    
-
+    this.base(arguments);    
+    this.__core = core;
   },
   
   /*
@@ -75,13 +67,6 @@ qx.Class.define("qcl.application.SessionManager",
   { 
     /* 
     ---------------------------------------------------------------------------
-       WIDGETS
-    ---------------------------------------------------------------------------
-    */
-
-    
-    /* 
-    ---------------------------------------------------------------------------
        PRIVATE MEMBERS
     ---------------------------------------------------------------------------
     */       
@@ -92,15 +77,22 @@ qx.Class.define("qcl.application.SessionManager",
        APPLY METHODS
     ---------------------------------------------------------------------------
     */   
+    
+    /**
+     * When the session changes, update the state
+     * @todo is this the right place to do that? Probably not. 
+     * @param {} sessionId
+     * @param {} old
+     */
     _applySessionId : function( sessionId, old )
     {
       if ( sessionId )
       {
-        qx.core.Init.getApplication().getStateManager().setState( "sessionId", sessionId );
+        this.__core.getStateManager().setState( "sessionId", sessionId );
       }
       else
       {
-        qx.core.Init.getApplication().getStateManager().removeState("sessionId");
+        this.__core.removeState("sessionId");
       }
     }
   }
