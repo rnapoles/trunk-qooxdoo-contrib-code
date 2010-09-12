@@ -38,6 +38,7 @@
  * the current application (not yet functional, depends on the resolution
  * of bug <a href="http://bugzilla.qooxdoo.org/show_bug.cgi?id=3086">3096</a>).</li>
  * </ul>
+ * @deprecated Use qcl.application.Core instead
  */
 qx.Mixin.define("qcl.application.MAppManagerProvider",
 {
@@ -253,22 +254,29 @@ qx.Mixin.define("qcl.application.MAppManagerProvider",
       /*
        * setup managers
        */ 
-      this.setSessionManager( new qcl.application.SessionManager );
-      this.setStateManager( new qcl.application.StateManager );
-      this.setRpcManager( new qcl.io.RpcManager );
-      this.setAccessManager( new qcl.access.AccessManager );
-      this.setConfigManager( new qcl.application.ConfigManager );
-      this.setPluginManager( new qcl.application.PluginManager );
-      // this.setClipboardManager ( new qcl.application.ClipboardManager );
+      this.setSessionManager( new qcl.application.SessionManager( this ) );
+      this.setStateManager( new qcl.application.StateManager( this ) );
+      this.setRpcManager( new qcl.io.RpcManager( this ) );
+      this.setAccessManager( new qcl.access.AccessManager( this ) );
+      this.setConfigManager( new qcl.application.ConfigManager( this ) );
+      this.setPluginManager( new qcl.application.PluginManager( this ) );
+      // this.setClipboardManager ( new qcl.application.ClipboardManager( this ) );
    
       /*
-       * session id
+       * set from state
        */
       var sid =  this.getStateManager().getState("sessionId");
       if ( sid )
       {
         this.getSessionManager().setSessionId( sid );  
-      }      
+      }
+      
+      /*
+       * set from message
+       */
+      qx.event.message.Bus.subscribe( "setSessionId", function( e ){
+        this.getSessionManager().setSessionId( e.getData() );
+      }, this);      
     },
     
 //    /**

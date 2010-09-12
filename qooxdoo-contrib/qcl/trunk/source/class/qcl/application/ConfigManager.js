@@ -132,9 +132,10 @@ qx.Class.define("qcl.application.ConfigManager",
   *****************************************************************************
   */  
 
-  construct : function()
+  construct : function( core )
   {
     this.base(arguments);
+    this.__core = core;
   },
   
   /*
@@ -247,7 +248,7 @@ qx.Class.define("qcl.application.ConfigManager",
       if ( ! this.getStore() )
       {
         this.setStore(
-          new qcl.data.store.JsonRpc( null, service )       
+          new qcl.data.store.JsonRpc( null, service, null, null, this.__core.getRpcManager().getRpcObject() )  
         );        
       }
            

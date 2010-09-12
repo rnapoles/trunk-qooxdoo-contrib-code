@@ -67,9 +67,10 @@ qx.Class.define("qcl.application.PluginManager",
   *****************************************************************************
   */
 
-  construct : function()
+  construct : function( core )
   {  
     this.base(arguments); 
+    this.__core = core;
   },
   
   /*

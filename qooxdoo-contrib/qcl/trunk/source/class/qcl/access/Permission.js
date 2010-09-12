@@ -44,7 +44,7 @@ qx.Class.define("qcl.access.Permission",
     this.setNamedId(vName);
     this.__conditions = [];
     this.__state = false;
-    this._manager = qx.core.Init.getApplication().getAccessManager().getPermissionManager();
+    this._manager = qcl.access.PermissionManager.getInstance();
     this._manager.add(this);
   },
 

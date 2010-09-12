@@ -18,8 +18,8 @@
       }
     ],
     
-    "version" : "trunk",
-    "qooxdoo-versions": ["1.0","1.1","trunk"]
+    "version" : "0.2",
+    "qooxdoo-versions": ["1.0","1.1","1.2"]
   },
   
   "provides" : 
