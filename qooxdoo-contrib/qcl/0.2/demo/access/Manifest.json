@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "access",
+
+    "summary" : "qcl access control demo",
+    "description" : "This is an application which demonstrates the access control features of the qcl library and is written with QxTransformer",
+    
+    "homepage" : "http://qooxdoo.org/contrib/project/qcl",
+
+    "license" : "SomeLicense",
+    "authors" : 
+    [
+      {
+        "name" : "Christian Boulanger (cboulanger)",
+        "email" : "c.boulanger@qxtransformer.org"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8.3-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "access",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
