@@ -1,0 +1,106 @@
+{
+  "name"    : "access",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    },
+    {
+      "path" : "${QXTRANSFORMER_PATH}/bin/qxtransformer.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation",
+    
+    // QxTransformer
+    "transform"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "access",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : ".",
+
+    // Contributions: download them from the repository (a)
+    // or use absolute path to an existing checkout (b)
+    // a)
+    //"CONTRIB_PATH" : "contrib",  
+    //"CONTRIB_LIB"  : "contrib:/",
+    // b)
+    "CONTRIB_PATH" : "../../../..", 
+    "CONTRIB_LIB" : "${CONTRIB_PATH}",    
+    
+    // QxTransformer
+    "PYTHON" : "/opt/local/bin/python2.5",
+    "QXTRANSFORMER_PATH": "${CONTRIB_PATH}/QxTransformer/trunk/tool"
+  },
+  
+  "jobs" :
+  {
+    "libraries" : 
+    {
+      "library" :
+      [
+       // QxTransformer
+       {
+         "manifest" : "${CONTRIB_LIB}/QxTransformer/trunk/Manifest.json"
+       },  
+       // qcl-js
+       {
+         "manifest" : "${CONTRIB_LIB}/qcl/trunk/Manifest.json"
+       },
+       // qcl-php
+       {
+         "manifest" : "${CONTRIB_LIB}/qcl-php/trunk/Manifest.json"
+       },
+       // PHP JSON-RPC server
+       {
+         "manifest" : "${CONTRIB_LIB}/RpcPhp/trunk/Manifest.json"
+       },     
+       // Dialogs 
+       {
+         "manifest" : "${CONTRIB_LIB}/Dialog/trunk/Manifest.json"
+       }      
+      ]
+    },
+    
+    // download contrib code to location that is accessible to 
+    // web server in source version
+    "source-script":
+    {
+      "cache" :
+      {
+        "downloads" : "contrib"
+      } 
+    },
+        
+    "common" :
+    {
+      "settings" :
+      {
+        "jsonrpc.backend" : "RpcPhp"
+      }
+    } 
+  }
+}
