@@ -12,7 +12,9 @@ qx.Class.define("qxprotovis.demo.Application", {
                 qx.log.appender.Console;
             }
             this.addLesMiserable();
-            this.addBzr();
+            if (!(qx.bom.client.Engine.MSHTML && qx.bom.client.Engine.VERSION < 9.0)){
+                this.addBzr();
+            }
             this.addChart();
             this.addStack();
         },
@@ -152,7 +154,7 @@ qx.Class.define("qxprotovis.demo.Application", {
             
         },
         addStack: function(){
-            var win = new qx.ui.window.Window("Bar Chart").set({
+            var win = new qx.ui.window.Window("Live Stacked Chart").set({
                 layout: new qx.ui.layout.Grow(),
                 width: 300,
                 height: 610,
