@@ -39,7 +39,7 @@ var getSampleLabel = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getLabe
 var getNextSampleCategory = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getParent().getLabel()';
 var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getLabel()';
 var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
-var shutdownSample = selWin + '.' + qxAppInst + '.infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
+var shutdownSample = selWin + '.' + qxAppInst + '._infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
 mySim.lastSample = "last";
 
@@ -163,7 +163,11 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     this.runScript(scriptCode, "Running sample");
     
     if (this.getConfigSetting("sampleGlobalErrorLogging")) {
-      this.addErrorHandlerToDemo();
+      try {
+        this.addErrorHandlerToDemo();
+      } catch(ex) {
+        this.log("Could not add global error handler to demo " + nextSampleCategory + ":" + nextSampleLabel);
+      }
     }
     
     //this.killBoxes();
@@ -245,6 +249,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   
   if (this.getConfigSetting("sampleGlobalErrorLogging")) {
     try {
+      this.log("Global error log contents for " + category + ":" + currentSample, "debug");
       this.logGlobalErrors();
     } 
     catch (ex) {
@@ -308,22 +313,19 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
 simulation.Simulation.prototype.addErrorHandlerToDemo = function()
 {
-  var sampleQxReady = selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow().qx";
+  var sampleQxReady = selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow().qx";
   
-  mySim.waitForCondition(sampleQxReady, 10000, 
-                         "Waiting for sample's qx");
+  mySim.__sel.waitForCondition(sampleQxReady, 10000);
                          
-  var sampleQxEventReady = selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow().qx.event";
+  var sampleQxEventReady = selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow().qx.event";
   
-  mySim.waitForCondition(sampleQxEventReady, 10000, 
-                         "Waiting for sample's qx.Event");                           
+  mySim.__sel.waitForCondition(sampleQxEventReady, 10000);                           
   
-  var globalEventReady = selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow().qx.event.GlobalError";
+  var globalEventReady = selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow().qx.event.GlobalError";
   
-  var isGlobalEventReady = mySim.waitForCondition(globalEventReady, 10000, 
-                                        "Waiting for qx.event.GlobalError");
+  var isGlobalEventReady = mySim.__sel.waitForCondition(globalEventReady, 10000);
   if (isGlobalEventReady) {
-    this.addGlobalErrorHandler(selWin + '.' + qxAppInst + ".infosplit.getChildren()[0].getWindow()");
+    this.addGlobalErrorHandler(selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow()");
   }   
 };
 
@@ -489,6 +491,7 @@ simulation.Simulation.prototype.runTest = function()
     
   }
   
+  mySim.log("Global error log contents for Demobrowser", "debug");
   mySim.logGlobalErrors();
   mySim.logResults();
 
