@@ -21,10 +21,23 @@ qx.Class.define("qxprotovis.Panel",{
     extend : qx.ui.core.Widget,
     construct : function() {
         this.base(arguments);
-        this.setPv(pv);
-        this.setPanel(new pv.Panel());
-        this.addListenerOnce('appear',this._setCanvas,this);
-        this.addListener('resize',this._setSize,this);
+        if  (document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")){                
+            this.setPv(pv);
+            this.setPanel(new pv.Panel());
+            this.addListenerOnce('appear',this._setCanvas,this);
+            this.addListener('resize',this._setSize,this);
+        }
+        else {
+            this._setLayout(new qx.ui.layout.Grow());
+            this._add(new qx.ui.basic.Atom('Your browser does not seem to have support for SVG. Try a recent copy of FF, Chrome, Safari or Opera.').set({
+                rich: true,
+                alignX: 'center',
+                alignY: 'middle',
+                padding: 20          
+            }));
+            this.setPv(null);
+            this.setPanel(null);
+        }                
     },
     properties: {
         pv: {},
@@ -7128,9 +7141,11 @@ pv.Mark.prototype.bind = function() {
 
   /* Any undefined properties are null. */
   var mark = this;
-  do for (var name in mark.properties) {
-    if (!(name in seen)) {
-      types[2].push(seen[name] = {name: name, type: 2, value: null});
+  do { 
+    for (var name in mark.properties) {
+        if (!(name in seen)) {
+           types[2].push(seen[name] = {name: name, type: 2, value: null});
+        }
     }
   } while (mark = mark.proto);
 
