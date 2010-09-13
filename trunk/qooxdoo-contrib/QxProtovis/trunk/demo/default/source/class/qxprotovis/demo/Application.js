@@ -11,12 +11,10 @@ qx.Class.define("qxprotovis.demo.Application", {
                 qx.log.appender.Native;
                 qx.log.appender.Console;
             }
-            this.addLesMiserable();
-            if (!(qx.bom.client.Engine.MSHTML && qx.bom.client.Engine.VERSION < 9.0)){
-                this.addBzr();
-            }
-            this.addChart();
-            this.addStack();
+            try { this.addLesMiserable(); } catch (e){};
+            try { this.addBzr(); } catch (e){};
+            try { this.addChart(); } catch (e){};
+            try { this.addStack(); } catch (e){};
         },
         addLesMiserable: function(){            
             var win = new qx.ui.window.Window("Les Misèrable").set({
