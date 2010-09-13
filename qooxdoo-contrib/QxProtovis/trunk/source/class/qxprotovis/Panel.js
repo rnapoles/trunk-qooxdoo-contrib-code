@@ -29,7 +29,7 @@ qx.Class.define("qxprotovis.Panel",{
         }
         else {
             this._setLayout(new qx.ui.layout.Grow());
-            this._add(new qx.ui.basic.Atom('Your browser does not seem to have support for SVG. Try a recent copy of FF, Chrome, Safari or Opera.').set({
+            this._add(new qx.ui.basic.Atom('Your browser does not seem to have support for SVG. Try a recent copy of Firefox, Chrome, Safari or Opera.').set({
                 rich: true,
                 alignX: 'center',
                 alignY: 'middle',
