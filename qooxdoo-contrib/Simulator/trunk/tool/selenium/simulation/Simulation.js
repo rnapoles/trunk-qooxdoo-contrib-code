@@ -1167,8 +1167,9 @@ simulation.Simulation.prototype.logGlobalErrors = function(win)
     for (var i = 0; i < exArr.length; i++) {
       this.log("Global Error Handler caught exception: " + exArr[i], "error");
     }
+    return exArr.length
   }
-  return ex.length;
+  return 0;
 };
 
 /**
