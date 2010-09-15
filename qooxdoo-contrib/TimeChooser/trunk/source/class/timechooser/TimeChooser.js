@@ -14,6 +14,7 @@
 
    Authors:
      * Derrell Lipman
+     * Christian Boulanger (Update to 1.2)
 
 ************************************************************************ */
 

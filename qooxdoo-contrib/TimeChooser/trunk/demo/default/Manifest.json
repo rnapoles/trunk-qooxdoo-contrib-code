@@ -1,24 +1,29 @@
 {
   "info" : 
   {
-    "name" : "demo",
+    "name" : "TimeChooserDemo",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "Widget to select a time of day",
+    "description" : "Widget to select a time of day",
     
-    "homepage" : "http://some.homepage.url/",
+    "keywords" : ["date", "time"],
+    "homepage" : "http://contrib.qooxdoo.org",
 
-    "license" : "SomeLicense",
+    "license" : "LGPL",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Derrell Lipman",
+        "email" : "derrell DOT lipman AT unwireduniverse DOT com"
+      },
+      {
+        "name" : "Christian Boulanger",
+        "email" : "c.boulanger@qxtransformer.org"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["0.8"]
+    "qooxdoo-versions": ["1.0","1.1","1.1"]
   },
   
   "provides" : 

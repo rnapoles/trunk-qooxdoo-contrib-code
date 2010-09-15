@@ -131,9 +131,9 @@ qx.Class.define("timechooser.spinner.TimeValue",
       }
 
       // handle the case that wraping is enabled
-      if (this.getWrap() && newValue > this.getMax())
+      if (this.getWrap() && newValue > this.getMaximum())
       {
-        newValue = this.getMin();
+        newValue = this.getMinimum();
       }
 
       this.gotoValue(newValue);
@@ -155,9 +155,9 @@ qx.Class.define("timechooser.spinner.TimeValue",
       }
 
       // handle the case that wraping is enabled
-      if (this.getWrap() && newValue < this.getMin())
+      if (this.getWrap() && newValue < this.getMinimum())
       {
-        newValue = this.getMax();
+        newValue = this.getMaximum();
       }
 
       this.gotoValue(newValue);
