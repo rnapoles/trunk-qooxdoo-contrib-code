@@ -29,7 +29,7 @@ qx.Class.define("timechooser.demo.Application",
       this.base(arguments);
 
       var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(4));
-      this.getRoot().add(container);
+      this.getRoot().add(container,{ top: 100, left:100});
 
       var d = new Date();
       var chooser = new timechooser.TimeChooser(Math.floor(d.getTime()/1000));
@@ -42,11 +42,9 @@ qx.Class.define("timechooser.demo.Application",
       var label = new qx.ui.basic.Label();
       container.add(label);
 
-      chooser.addListener("changeValue",
-                          function(e)
-                          {
-                            label.setContent(this.getValue().toString());
-                          });
+      chooser.addListener("changeValue", function(e){
+	      label.setValue(this.getValue().toString());
+	    });
 
       var o = new qx.ui.core.Spacer();
       o.setHeight(20);

@@ -15,11 +15,15 @@
       {
         "name" : "Derrell Lipman",
         "email" : "derrell DOT lipman AT unwireduniverse DOT com"
-      }
+      },
+      {
+        "name" : "Christian Boulanger",
+        "email" : "c.boulanger@qxtransformer.org"
+      }   
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["trunk"]
+    "qooxdoo-versions": ["1.0","1.1","1.1"]
   },
   
   "provides" : 
