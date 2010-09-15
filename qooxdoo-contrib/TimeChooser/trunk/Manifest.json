@@ -18,12 +18,12 @@
       },
       {
         "name" : "Christian Boulanger",
-        "email" : "c.boulanger@qxtransformer.org"
+        "email" : "c.boulanger AT qxtransformer DOT org"
       }   
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.0","1.1","1.1"]
+    "qooxdoo-versions": ["1.0","1.1","1.2"]
   },
   
   "provides" : 
@@ -33,7 +33,7 @@
     "class"       : "source/class",
     "resource"    : "source/resource",
     "translation" : "source/translation",
-    "type"        : "library"
+    "type"        : "contribution"
   }
 }
 

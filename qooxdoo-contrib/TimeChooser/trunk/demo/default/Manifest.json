@@ -1,7 +1,7 @@
 {
   "info" : 
   {
-    "name" : "TimeChooserDemo",
+    "name" : "TimeChooser Demo",
 
     "summary" : "Widget to select a time of day",
     "description" : "Widget to select a time of day",
@@ -18,17 +18,17 @@
       },
       {
         "name" : "Christian Boulanger",
-        "email" : "c.boulanger@qxtransformer.org"
+        "email" : "c.boulanger AT qxtransformer DOT org"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.0","1.1","1.1"]
+    "qooxdoo-versions": ["1.0","1.1","1.2"]
   },
   
   "provides" : 
   {
-    "namespace"   : "custom",
+    "namespace"   : "timechooser.demo",
     "encoding"    : "utf-8",
     "class"       : "source/class",
     "resource"    : "source/resource",
