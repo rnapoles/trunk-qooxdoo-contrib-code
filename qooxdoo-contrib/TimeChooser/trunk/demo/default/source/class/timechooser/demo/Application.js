@@ -18,7 +18,7 @@
 #require(timechooser.*)
 ************************************************************************ */
 
-qx.Class.define("custom.Application",
+qx.Class.define("timechooser.demo.Application",
 {
   extend : qx.application.Standalone,
 
@@ -57,10 +57,5 @@ qx.Class.define("custom.Application",
       var o = new qx.ui.form.Spinner(23);
       container.add(o);
     }
-  },
-
-  settings :
-  {
-    "custom.resourceUri" : "./resource"
   }
 });
