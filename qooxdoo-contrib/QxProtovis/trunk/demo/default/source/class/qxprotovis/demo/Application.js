@@ -1,7 +1,18 @@
 /* ************************************************************************
-   Copyright: Public Domain
-   Author: Tobi Oetiker
+
+   Copyright:
+     2010 OETIKER+PARTNER AG, http://www.oetiker.ch
+     
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Tobias Oetiker (oetiker)
+
 ************************************************************************ */
+
 qx.Class.define("qxprotovis.demo.Application", {
     extend : qx.application.Standalone,
     members : {
