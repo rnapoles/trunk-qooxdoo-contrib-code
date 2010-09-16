@@ -17,17 +17,20 @@ qx.Class.define("darktheme.demo.DateChooser",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.VBox();
-    this.set({layout: layout, contentPadding: 10});
-
-    this.add(this.createDateChooser());
-  },
-
-  createDateChooser: function()
-  {
-    var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.VBox();
+      this.set({layout: layout, contentPadding: 10});
+    
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(this.createDateChooser());
+	  }, this);
+    },
+    
+    createDateChooser: function()
+    {
+      var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
       var containerTop = new qx.ui.container.Composite(new qx.ui.layout.HBox(20));
       var containerRight = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
       var containerRightTop = new qx.ui.container.Composite(new qx.ui.layout.HBox(20));
@@ -91,9 +94,8 @@ qx.Class.define("darktheme.demo.DateChooser",
       containerDescription.add(new qx.ui.basic.Label("- Double-click or enter/space-key will fire an execute event."));
       containerDescription.add(new qx.ui.basic.Label("- Escape will remove the selection."));
 
-    return container;
+      return container;
     }
-
   }
 
 });

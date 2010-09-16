@@ -6,7 +6,7 @@ qx.Class.define("darktheme.demo.CalcWindow",
   {
     this.base(arguments);
 
-  this.setCaption("Calculator");
+    this.setCaption("Calculator");
     this._createControls();
   },
 
@@ -21,24 +21,27 @@ qx.Class.define("darktheme.demo.CalcWindow",
     __display : null,
     __cal : null,
 
-  _createControls: function()
-  {
-    this.__cal = new darktheme.demo.CalculatorLogic();
+    _createControls: function()
+    {
+      this.__cal = new darktheme.demo.CalculatorLogic();
 
-    var layout = new qx.ui.layout.VBox(16);
-    this.set({
-      layout: layout,
-      width: 260,
-    minWidth: 260,
-    height: 260,
-      icon: "icon/22/apps/utilities-calculator.png"
-    });
-    this.add(this.createCalculator(), { flex : 1 });
+      var layout = new qx.ui.layout.VBox(16);
+      this.set({
+        layout: layout,
+        width: 260,
+        minWidth: 260,
+        height: 260,
+        icon: "icon/22/apps/utilities-calculator.png"
+      });
 
-    this.addListener("appear", this.center, this);
-  },
+      this.addListenerOnce("appear", function(e)
+      {
+	    this.add(this.createCalculator(), { flex : 1 });
+		this.center();
+	  }, this);
+    },
 
-  createCalculator : function()
+    createCalculator : function()
     {
       var box = new qx.ui.container.Composite().set(
       {
@@ -56,7 +59,7 @@ qx.Class.define("darktheme.demo.CalcWindow",
       this.__display = new qx.ui.basic.Label(this.__cal.getCurrentValue().toString()).set(
       {
         decorator : "input",
-    textColor : "black",
+        textColor : "black",
         backgroundColor : "white",
         allowGrowX : true,
         allowGrowY : true,

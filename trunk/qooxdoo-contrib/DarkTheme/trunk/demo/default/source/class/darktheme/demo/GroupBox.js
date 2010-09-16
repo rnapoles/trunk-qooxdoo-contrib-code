@@ -17,21 +17,23 @@ qx.Class.define("darktheme.demo.GroupBox",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
-
-    // create the main layout
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+      // create the main layout
       var mainLayout = new qx.ui.layout.VBox();
       mainLayout.setSpacing(20);
 
       // add the main layout to a container widget and to the document root
       var container = new qx.ui.container.Composite(mainLayout);
       container.setPadding(20);
-      this.add(container, {left:0,top:0});
-
-
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container, {left:0,top:0});
+	  }, this);
 
       // create the first group box
       var box1 = new qx.ui.groupbox.GroupBox("Code Assist", "icon/16/apps/utilities-text-editor.png");
@@ -41,9 +43,6 @@ qx.Class.define("darktheme.demo.GroupBox",
       box1.add(new qx.ui.form.CheckBox("Show debugging content"));
       box1.add(new qx.ui.form.CheckBox("Enable code completion"));
       box1.add(new qx.ui.form.CheckBox("Show debugging console"));
-
-
-
 
       // create the second group box
       var box2 = new qx.ui.groupbox.CheckGroupBox("Expert Settings");
@@ -56,9 +55,6 @@ qx.Class.define("darktheme.demo.GroupBox",
 
       var textField2 = new qx.ui.form.TextField("");
       box2.add(textField2);
-
-
-
 
       // create the third group box
       var box3Helper = new qx.ui.container.Composite(new qx.ui.layout.VBox(4));

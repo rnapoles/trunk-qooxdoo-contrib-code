@@ -17,12 +17,12 @@ qx.Class.define("darktheme.demo.RadioButton",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
-
-    var label = new qx.ui.basic.Label("What is your favorite color?");
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+      var label = new qx.ui.basic.Label("What is your favorite color?");
 
       // create the main layout
       var mainLayout = new qx.ui.layout.VBox();
@@ -32,7 +32,10 @@ qx.Class.define("darktheme.demo.RadioButton",
       var container = new qx.ui.container.Composite(mainLayout);
       container.setPadding(20);
 
-      this.add(container, {left:0,top:0});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container, {left:0,top:0});
+	  }, this);
 
       container.add(label);
 

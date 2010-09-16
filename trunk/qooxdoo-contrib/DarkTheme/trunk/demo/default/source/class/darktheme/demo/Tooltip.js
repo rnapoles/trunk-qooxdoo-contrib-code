@@ -18,18 +18,21 @@ qx.Class.define("darktheme.demo.Tooltip",
   members:
   {
   _createControls: function()
-  {
+    {
       var layout = new qx.ui.layout.Grid(10, 10);
-    this.set({layout: layout});
+      this.set({layout: layout});
 
-      this.createSharedToolTip();
-      this.createIconToolTip();
-      this.createToolTip();
-      this.createShortTimeoutToolTip();
-      this.createRichToolTip();
-      this.createToolTipText();
-      this.createToolTipIcon();
-      this.createToolTipTextIcon();
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.createSharedToolTip();
+        this.createIconToolTip();
+        this.createToolTip();
+        this.createShortTimeoutToolTip();
+        this.createRichToolTip();
+        this.createToolTipText();
+        this.createToolTipIcon();
+        this.createToolTipTextIcon();
+	  }, this);
     },
 
 

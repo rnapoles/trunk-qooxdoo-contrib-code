@@ -22,261 +22,262 @@ qx.Class.define("darktheme.demo.FormWindow",
     {
       var layout = new qx.ui.layout.Grid(1, 5);
       this.set({layout: layout, status: "Status text"});
-      this.add(this.getTextFieldBox(), {row: 0, column: 0});
-    this.add(this.getButtonBox(), {row: 0, column: 1});
-    this.add(this.getSelectionBox(), {row: 1, column: 0, rowSpan: 2});
-    this.add(this.getBooleanBox(), {row: 1, column: 1});
-    this.add(this.getNumBox(), {row: 2, column: 1});
-    this.add(this.getBottomBox(), {row: 3, column: 0, colSpan: 2});
-
-      this.addListener("appear", function(e)
-    {
-      this.center();
-    }, this);
+      
+	  this.add(this.getTextFieldBox(), {row: 0, column: 0});
+      this.add(this.getButtonBox(), {row: 0, column: 1});
+      this.add(this.getSelectionBox(), {row: 1, column: 0, rowSpan: 2});
+      this.add(this.getBooleanBox(), {row: 1, column: 1});
+      this.add(this.getNumBox(), {row: 2, column: 1});
+      this.add(this.getBottomBox(), {row: 3, column: 0, colSpan: 2});
+      
+	  this.addListenerOnce("appear", function(e)
+      {
+	    this.center();
+	  }, this);
     },
 
-  getTextFieldBox: function()
-  {
-    var tfLabel1 = new qx.ui.basic.Label("TextField:");
-    var tf1 = new qx.ui.form.TextField();
-    tf1.setPlaceholder("placeholder");
-    tf1.setReadOnly(false);
-
-    var tfLabel2 = new qx.ui.basic.Label("PasswordField:");
-    var tf2 = new qx.ui.form.PasswordField();
-    tf2.setPlaceholder("placeholder");
-
-    var tfLabel3 = new qx.ui.basic.Label("TextArea:");
-    var tf3 = new qx.ui.form.TextArea();
-    tf3.setPlaceholder("placeholder");
-    tf3.setAlignY("top");
-
-    var comboLabel1 = new qx.ui.basic.Label("ComboBox");
-    var combo1 = new qx.ui.form.ComboBox();
-    combo1.setPlaceholder("placeholder");
-    combo1.add(new qx.ui.form.ListItem("Item 1"));
-    combo1.add(new qx.ui.form.ListItem("Item 2"));
-    combo1.add(new qx.ui.form.ListItem("Item 3"));
-    combo1.add(new qx.ui.form.ListItem("Item 4"));
-
-    var dfLabel1 = new qx.ui.basic.Label("DateField:");
-    var df1 = new qx.ui.form.DateField();
-
-    var tfBoxLayout = new qx.ui.layout.Grid(5, 5);
-    tfBoxLayout.setColumnAlign(0, "right", "middle");
-
-    var tfBox = new qx.ui.groupbox.GroupBox("Text");
-    tfBox.set({layout: tfBoxLayout, margin: 5});
-    tfBox.add(tfLabel1, {row: 0, column: 0});
-    tfBox.add(tf1, {row: 0, column: 1});
-    tfBox.add(tfLabel2, {row: 1, column: 0});
-    tfBox.add(tf2, {row: 1, column: 1});
-    tfBox.add(tfLabel3, {row: 2, column: 0});
-    tfBox.add(tf3, {row: 2, column: 1});
-    tfBox.add(comboLabel1, {row: 3, column: 0});
-    tfBox.add(combo1, {row: 3, column: 1});
-    tfBox.add(dfLabel1, {row: 4, column: 0});
-    tfBox.add(df1, {row: 4, column: 1});
-
-    return tfBox;
-  },
+    getTextFieldBox: function()
+    {
+      var tfLabel1 = new qx.ui.basic.Label("TextField:");
+      var tf1 = new qx.ui.form.TextField();
+      tf1.setPlaceholder("placeholder");
+      tf1.setReadOnly(false);
+    
+      var tfLabel2 = new qx.ui.basic.Label("PasswordField:");
+      var tf2 = new qx.ui.form.PasswordField();
+      tf2.setPlaceholder("placeholder");
+    
+      var tfLabel3 = new qx.ui.basic.Label("TextArea:");
+      var tf3 = new qx.ui.form.TextArea();
+      tf3.setPlaceholder("placeholder");
+      tf3.setAlignY("top");
+    
+      var comboLabel1 = new qx.ui.basic.Label("ComboBox");
+      var combo1 = new qx.ui.form.ComboBox();
+      combo1.setPlaceholder("placeholder");
+      combo1.add(new qx.ui.form.ListItem("Item 1"));
+      combo1.add(new qx.ui.form.ListItem("Item 2"));
+      combo1.add(new qx.ui.form.ListItem("Item 3"));
+      combo1.add(new qx.ui.form.ListItem("Item 4"));
+    
+      var dfLabel1 = new qx.ui.basic.Label("DateField:");
+      var df1 = new qx.ui.form.DateField();
+    
+      var tfBoxLayout = new qx.ui.layout.Grid(5, 5);
+      tfBoxLayout.setColumnAlign(0, "right", "middle");
+    
+      var tfBox = new qx.ui.groupbox.GroupBox("Text");
+      tfBox.set({layout: tfBoxLayout, margin: 5});
+      tfBox.add(tfLabel1, {row: 0, column: 0});
+      tfBox.add(tf1, {row: 0, column: 1});
+      tfBox.add(tfLabel2, {row: 1, column: 0});
+      tfBox.add(tf2, {row: 1, column: 1});
+      tfBox.add(tfLabel3, {row: 2, column: 0});
+      tfBox.add(tf3, {row: 2, column: 1});
+      tfBox.add(comboLabel1, {row: 3, column: 0});
+      tfBox.add(combo1, {row: 3, column: 1});
+      tfBox.add(dfLabel1, {row: 4, column: 0});
+      tfBox.add(df1, {row: 4, column: 1});
+    
+      return tfBox;
+    },
 
     getButtonBox: function()
-  {
-    var btnLabel0 = new qx.ui.basic.Label("Button:");
-    var btn0 = new qx.ui.form.Button("Button");
-    btn0.set({width: 100});
-
-    var btnLabel1 = new qx.ui.basic.Label("Red Button:");
-    var btn1 = new qx.ui.form.Button("Red Button");
-    btn1.setAppearance("button-red");
-
-    var btnLabel2 = new qx.ui.basic.Label("ToggleButton:");
-    var btn2 = this.btn2 = new qx.ui.form.ToggleButton("ToggleButton");
-
-    var btnLabel3 = new qx.ui.basic.Label("RepeatButton:");
-    var btn3 = new qx.ui.form.RepeatButton("0");
-    btn3.addListener("execute", function()
+    {
+      var btnLabel0 = new qx.ui.basic.Label("Button:");
+      var btn0 = new qx.ui.form.Button("Button");
+      btn0.set({width: 100});
+      
+      var btnLabel1 = new qx.ui.basic.Label("Red Button:");
+      var btn1 = new qx.ui.form.Button("Red Button");
+      btn1.setAppearance("button-red");
+      
+      var btnLabel2 = new qx.ui.basic.Label("ToggleButton:");
+      var btn2 = this.btn2 = new qx.ui.form.ToggleButton("ToggleButton");
+      
+      var btnLabel3 = new qx.ui.basic.Label("RepeatButton:");
+      var btn3 = new qx.ui.form.RepeatButton("0");
+      btn3.addListener("execute", function()
       {
         var tempValue = parseInt(btn3.getLabel()) + 1;
         btn3.setLabel(tempValue.toString());
       });
 
-    var btnLabel4 = new qx.ui.basic.Label("MenuButton:");
-    var btn4 = new qx.ui.form.MenuButton("MenuButton", null, this.getViewMenu());
+      var btnLabel4 = new qx.ui.basic.Label("MenuButton:");
+      var btn4 = new qx.ui.form.MenuButton("MenuButton", null, this.getViewMenu());
 
-    var btnLabel5 = new qx.ui.basic.Label("SplitButton:");
-    var btn5 = new qx.ui.form.SplitButton("SplitButton", null, this.getBackMenu());
+      var btnLabel5 = new qx.ui.basic.Label("SplitButton:");
+      var btn5 = new qx.ui.form.SplitButton("SplitButton", null, this.getBackMenu());
+      
+      var btnBoxLayout = new qx.ui.layout.Grid(5, 5);
+      btnBoxLayout.setColumnAlign(0, "right", "middle");
+      
+      var btnBox = new qx.ui.groupbox.GroupBox("Buttons");
+      btnBox.set({layout: btnBoxLayout, margin: 5});
+      btnBox.add(btnLabel0, {row: 0, column: 0});
+      btnBox.add(btn0, {row: 0, column: 1});
+      btnBox.add(btnLabel1, {row: 1, column: 0});
+      btnBox.add(btn1, {row: 1, column: 1});
+      btnBox.add(btnLabel2, {row: 2, column: 0});
+      btnBox.add(btn2, {row: 2, column: 1});
+      btnBox.add(btnLabel3, {row: 3, column: 0});
+      btnBox.add(btn3, {row: 3, column: 1});
+      btnBox.add(btnLabel4, {row: 4, column: 0});
+      btnBox.add(btn4, {row: 4, column: 1});
+      btnBox.add(btnLabel5, {row: 5, column: 0});
+      btnBox.add(btn5, {row: 5, column: 1});
+      
+      return btnBox;
+    },
 
-    var btnBoxLayout = new qx.ui.layout.Grid(5, 5);
-    btnBoxLayout.setColumnAlign(0, "right", "middle");
-
-    var btnBox = new qx.ui.groupbox.GroupBox("Buttons");
-    btnBox.set({layout: btnBoxLayout, margin: 5});
-    btnBox.add(btnLabel0, {row: 0, column: 0});
-    btnBox.add(btn0, {row: 0, column: 1});
-    btnBox.add(btnLabel1, {row: 1, column: 0});
-    btnBox.add(btn1, {row: 1, column: 1});
-    btnBox.add(btnLabel2, {row: 2, column: 0});
-    btnBox.add(btn2, {row: 2, column: 1});
-    btnBox.add(btnLabel3, {row: 3, column: 0});
-    btnBox.add(btn3, {row: 3, column: 1});
-    btnBox.add(btnLabel4, {row: 4, column: 0});
-    btnBox.add(btn4, {row: 4, column: 1});
-    btnBox.add(btnLabel5, {row: 5, column: 0});
-    btnBox.add(btn5, {row: 5, column: 1});
-
-    return btnBox;
-  },
-
-  /*
+    /*
     -------------------------------------------------------------------------
       Selection
     -------------------------------------------------------------------------
     */
-  getSelectionBox: function()
-  {
-    var selLabel1 = new qx.ui.basic.Label("SelectBox:");
-    var sel1 = new qx.ui.form.SelectBox();
+    getSelectionBox: function()
+    {
+      var selLabel1 = new qx.ui.basic.Label("SelectBox:");
+      var sel1 = new qx.ui.form.SelectBox();
+     
+      var listItem = new qx.ui.form.ListItem("Item 1");
+      sel1.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 2");
+      sel1.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 3");
+      sel1.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 4");
+      sel1.add(listItem);
+     
+      var selLabel2 = new qx.ui.basic.Label("List:");
+      var sel2 = new qx.ui.form.List();
+      sel2.set({height: 60, textColor: "text-active"});
+     
+      var listItem = new qx.ui.form.ListItem("Item 1");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 2");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 3");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 4");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 5");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 6");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 7");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 8");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 9");
+      sel2.add(listItem);
+      listItem = new qx.ui.form.ListItem("Item 10");
+      sel2.add(listItem);
+     
+      var selLabel3 = new qx.ui.basic.Label("RadioButtonGroup:");
+      var sel3 = new qx.ui.form.RadioButtonGroup(new qx.ui.layout.Grid(3, 3));
+     
+      var listItem = new qx.ui.form.RadioButton("Option 1");
+      sel3.add(listItem, {row: 0, column: 0});
+      listItem = new qx.ui.form.RadioButton("Option 2");
+      sel3.add(listItem, {row: 0, column: 1});
+      listItem = new qx.ui.form.RadioButton("Option 3");
+      sel3.add(listItem, {row: 1, column: 0});
+      listItem = new qx.ui.form.RadioButton("Option 4");
+      sel3.add(listItem, {row: 1, column: 1});
+     
+      var selBoxLayout = new qx.ui.layout.Grid(5, 5);
+      selBoxLayout.setColumnAlign(0, "right", "middle");
+     
+      var selBox = new qx.ui.groupbox.GroupBox("Selection");
+      selBox.set({layout: selBoxLayout, margin: 5});
+      selBox.add(selLabel1, {row: 0, column: 0});
+      selBox.add(sel1, {row: 0, column: 1});
+      selBox.add(selLabel2, {row: 1, column: 0});
+      selBox.add(sel2, {row: 1, column: 1});
+      selBox.add(selLabel3, {row: 2, column: 0});
+      selBox.add(sel3, {row: 2, column: 1});
+     
+      return selBox;
+    },
 
-    var listItem = new qx.ui.form.ListItem("Item 1");
-    sel1.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 2");
-    sel1.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 3");
-    sel1.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 4");
-    sel1.add(listItem);
-
-    var selLabel2 = new qx.ui.basic.Label("List:");
-    var sel2 = new qx.ui.form.List();
-    sel2.set({height: 60, textColor: "text-active"});
-
-    var listItem = new qx.ui.form.ListItem("Item 1");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 2");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 3");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 4");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 5");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 6");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 7");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 8");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 9");
-    sel2.add(listItem);
-    listItem = new qx.ui.form.ListItem("Item 10");
-    sel2.add(listItem);
-
-    var selLabel3 = new qx.ui.basic.Label("RadioButtonGroup:");
-    var sel3 = new qx.ui.form.RadioButtonGroup(new qx.ui.layout.Grid(3, 3));
-
-    var listItem = new qx.ui.form.RadioButton("Option 1");
-    sel3.add(listItem, {row: 0, column: 0});
-    listItem = new qx.ui.form.RadioButton("Option 2");
-    sel3.add(listItem, {row: 0, column: 1});
-    listItem = new qx.ui.form.RadioButton("Option 3");
-    sel3.add(listItem, {row: 1, column: 0});
-    listItem = new qx.ui.form.RadioButton("Option 4");
-    sel3.add(listItem, {row: 1, column: 1});
-
-    var selBoxLayout = new qx.ui.layout.Grid(5, 5);
-    selBoxLayout.setColumnAlign(0, "right", "middle");
-
-    var selBox = new qx.ui.groupbox.GroupBox("Selection");
-    selBox.set({layout: selBoxLayout, margin: 5});
-    selBox.add(selLabel1, {row: 0, column: 0});
-    selBox.add(sel1, {row: 0, column: 1});
-    selBox.add(selLabel2, {row: 1, column: 0});
-    selBox.add(sel2, {row: 1, column: 1});
-    selBox.add(selLabel3, {row: 2, column: 0});
-    selBox.add(sel3, {row: 2, column: 1});
-
-    return selBox;
-  },
-
-  /*
+    /*
     -------------------------------------------------------------------------
       Boolean
     -------------------------------------------------------------------------
     */
-  getBooleanBox: function()
-  {
-    var boolLabel1 = new qx.ui.basic.Label("CheckBox:");
-    var bool1 = new qx.ui.form.CheckBox("CheckBox");
-
-    var boolLabel2 = new qx.ui.basic.Label("RadioButtons:");
-    var bool2 = new qx.ui.form.RadioButton("RadioButton");
-
-    var boolBoxLayout = new qx.ui.layout.Grid(5, 5);
-    boolBoxLayout.setColumnAlign(0, "right", "middle");
-
-    var boolBox = new qx.ui.groupbox.GroupBox("Boolean");
-    boolBox.set({layout: boolBoxLayout, margin: 5});
-    boolBox.add(boolLabel1, {row: 0, column: 0});
-    boolBox.add(bool1, {row: 0, column: 1});
-    boolBox.add(boolLabel2, {row: 1, column: 0});
-    boolBox.add(bool2, {row: 1, column: 1});
-
-    return boolBox;
-  },
-
-  /*
+    getBooleanBox: function()
+    {
+      var boolLabel1 = new qx.ui.basic.Label("CheckBox:");
+      var bool1 = new qx.ui.form.CheckBox("CheckBox");
+    
+      var boolLabel2 = new qx.ui.basic.Label("RadioButtons:");
+      var bool2 = new qx.ui.form.RadioButton("RadioButton");
+    
+      var boolBoxLayout = new qx.ui.layout.Grid(5, 5);
+      boolBoxLayout.setColumnAlign(0, "right", "middle");
+    
+      var boolBox = new qx.ui.groupbox.GroupBox("Boolean");
+      boolBox.set({layout: boolBoxLayout, margin: 5});
+      boolBox.add(boolLabel1, {row: 0, column: 0});
+      boolBox.add(bool1, {row: 0, column: 1});
+      boolBox.add(boolLabel2, {row: 1, column: 0});
+      boolBox.add(bool2, {row: 1, column: 1});
+    
+      return boolBox;
+    },
+    
+    /*
     -------------------------------------------------------------------------
       Number
     -------------------------------------------------------------------------
     */
-  getNumBox: function()
-  {
-    var numLabel1 = new qx.ui.basic.Label("Spinner:");
-    var num1 = new qx.ui.form.Spinner(0, 0, 100);
+    getNumBox: function()
+    {
+      var numLabel1 = new qx.ui.basic.Label("Spinner:");
+      var num1 = new qx.ui.form.Spinner(0, 0, 100);
+    
+      var numLabel2 = new qx.ui.basic.Label("Slider:");
+      var num2 = new qx.ui.form.Slider();
+    
+      var numBoxLayout = new qx.ui.layout.Grid(5, 5);
+      numBoxLayout.setColumnAlign(0, "right", "middle");
+      numBoxLayout.setColumnWidth(1, 130);
+    
+      var numBox = new qx.ui.groupbox.GroupBox("Number");
+      numBox.set({layout: numBoxLayout, margin: 5});
+      numBox.add(numLabel1, {row: 0, column: 0});
+      numBox.add(num1, {row: 0, column: 1});
+      numBox.add(numLabel2, {row: 1, column: 0});
+      numBox.add(num2, {row: 1, column: 1});
+    
+      num1.bind("value", num2, "value");
+        num2.bind("value", num1, "value");
+    
+      return numBox;
+    },
+    
+    getBottomBox: function()
+    {
+      var okButton = new qx.ui.form.Button("OK");
+      okButton.set({width: 100});
+      okButton.addListener("execute", this.close, this);
+    
+      var cancelButton = new qx.ui.form.Button("Cancel");
+      cancelButton.set({width: 100, appearance: "button-red"});
+      cancelButton.addListener("execute", this.close, this);
+    
+      var layout = new qx.ui.layout.HBox(10);
+      layout.set({alignX: "center"});
+    
+      var bottomBox = new qx.ui.container.Composite(layout);
+      bottomBox.add(okButton);
+      bottomBox.add(cancelButton);
+    
+      return bottomBox;
+    },
 
-    var numLabel2 = new qx.ui.basic.Label("Slider:");
-    var num2 = new qx.ui.form.Slider();
-
-    var numBoxLayout = new qx.ui.layout.Grid(5, 5);
-    numBoxLayout.setColumnAlign(0, "right", "middle");
-    numBoxLayout.setColumnWidth(1, 130);
-
-    var numBox = new qx.ui.groupbox.GroupBox("Number");
-    numBox.set({layout: numBoxLayout, margin: 5});
-    numBox.add(numLabel1, {row: 0, column: 0});
-    numBox.add(num1, {row: 0, column: 1});
-    numBox.add(numLabel2, {row: 1, column: 0});
-    numBox.add(num2, {row: 1, column: 1});
-
-    num1.bind("value", num2, "value");
-      num2.bind("value", num1, "value");
-
-    return numBox;
-  },
-
-  getBottomBox: function()
-  {
-    var okButton = new qx.ui.form.Button("OK");
-    okButton.set({width: 100});
-    okButton.addListener("execute", this.close, this);
-
-    var cancelButton = new qx.ui.form.Button("Cancel");
-    cancelButton.set({width: 100, appearance: "button-red"});
-    cancelButton.addListener("execute", this.close, this);
-
-    var layout = new qx.ui.layout.HBox(10);
-    layout.set({alignX: "center"});
-
-    var bottomBox = new qx.ui.container.Composite(layout);
-    bottomBox.add(okButton);
-    bottomBox.add(cancelButton);
-
-    return bottomBox;
-  },
-
-  getViewMenu: function()
+    getViewMenu: function()
     {
       var menu = new qx.ui.menu.Menu;
 
@@ -297,7 +298,7 @@ qx.Class.define("darktheme.demo.FormWindow",
       return menu;
     },
 
-  getPanesMenu : function()
+    getPanesMenu : function()
     {
       var menu = new qx.ui.menu.Menu;
 
@@ -367,7 +368,7 @@ qx.Class.define("darktheme.demo.FormWindow",
       return menu;
     },
 
-  getBackMenu : function()
+    getBackMenu : function()
     {
       var menu = new qx.ui.menu.Menu;
 

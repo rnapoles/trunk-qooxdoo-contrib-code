@@ -19,17 +19,21 @@ qx.Class.define("darktheme.demo.TreeColumns",
   {
     container: null,
 
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var scroller = new qx.ui.container.Scroll();
       var container = new qx.ui.container.Composite(new qx.ui.layout.Basic());
       container.setAllowGrowX(false);
       container.setAllowStretchX(false);
       scroller.add(container);
-      this.add(scroller, {edge : 0});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, {edge : 0});
+	  }, this);
 
       var tree = new qx.ui.tree.Tree().set({
         width: 500,

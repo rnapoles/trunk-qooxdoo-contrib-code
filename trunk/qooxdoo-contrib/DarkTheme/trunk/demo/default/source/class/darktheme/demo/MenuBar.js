@@ -17,18 +17,22 @@ qx.Class.define("darktheme.demo.MenuBar",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
-
-    var scroller = new qx.ui.container.Scroll();
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+      var scroller = new qx.ui.container.Scroll();
 
       var container = new qx.ui.container.Composite(new qx.ui.layout.Canvas);
       container.setPadding(20);
       container.setAllowStretchX(false);
       scroller.add(container);
-      this.add(scroller, {edge : 0});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, {edge : 0});
+	  }, this);
 
       this.createCommands();
 

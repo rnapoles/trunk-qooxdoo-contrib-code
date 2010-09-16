@@ -6,7 +6,7 @@ qx.Class.define("darktheme.demo.EditorWindow",
   {
     this.base(arguments);
 
-  this.setCaption("HTML Editor");
+    this.setCaption("HTML Editor");
     this._createControls();
   },
 
@@ -21,43 +21,46 @@ qx.Class.define("darktheme.demo.EditorWindow",
     _createControls: function()
     {
       var layout = new qx.ui.layout.VBox(0);
-    this.set({layout: layout, contentPadding: 2, showStatusbar: true});
+      this.set({layout: layout, contentPadding: 2, showStatusbar: true});
 
-    var demoContent = '<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.</p>';
+      var demoContent = '<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.</p>';
 
-    var editor = this.editor = new qx.ui.embed.HtmlArea(demoContent, null,
-        qx.util.ResourceManager.getInstance().toUri("darktheme/editor/blank.html"));
-    editor.set({height: 400, width: 600});
+      var editor = this.editor = new qx.ui.embed.HtmlArea(demoContent, null,
+      qx.util.ResourceManager.getInstance().toUri("darktheme/editor/blank.html"));
+      editor.set({height: 400, width: 600});
+	  
+	  this.add(this.getMenuBar());
+      this.add(this.getToolBar());
+      this.add(editor, {flex: 1});
 
-    this.add(this.getMenuBar());
-    this.add(this.getToolBar());
-    this.add(editor, {flex: 1});
-
-      this.addListener("appear", this.center, this);
+      this.addListenerOnce("appear", function(e)
+      {
+		this.center();
+	  }, this);
     },
 
-  getMenuBar: function()
-  {
-    var fileMenu = new qx.ui.menubar.Button("File", null, this.getFileMenu());
-    var editMenu = new qx.ui.menubar.Button("Edit", null, this.getEditMenu());
-    var searchMenu = new qx.ui.menubar.Button("Search", null, this.getSearchMenu());
+    getMenuBar: function()
+    {
+      var fileMenu = new qx.ui.menubar.Button("File", null, this.getFileMenu());
+      var editMenu = new qx.ui.menubar.Button("Edit", null, this.getEditMenu());
+      var searchMenu = new qx.ui.menubar.Button("Search", null, this.getSearchMenu());
       var viewMenu = new qx.ui.menubar.Button("View", null, this.getViewMenu());
       var formatMenu = new qx.ui.menubar.Button("Format", null, this.getFormatMenu());
       var helpMenu = new qx.ui.menubar.Button("Help", null, this.getHelpMenu());
 
-    var menuBar = new qx.ui.menubar.MenuBar;
-    menuBar.add(fileMenu);
-    menuBar.add(editMenu);
-    menuBar.add(searchMenu);
+      var menuBar = new qx.ui.menubar.MenuBar;
+      menuBar.add(fileMenu);
+      menuBar.add(editMenu);
+      menuBar.add(searchMenu);
       menuBar.add(viewMenu);
       menuBar.add(formatMenu);
-    menuBar.addSpacer();
+      menuBar.addSpacer();
       menuBar.add(helpMenu);
 
-    return menuBar;
-  },
+      return menuBar;
+    },
 
-  getFileMenu : function()
+    getFileMenu : function()
     {
       var menu = new qx.ui.menu.Menu;
 
@@ -80,7 +83,7 @@ qx.Class.define("darktheme.demo.EditorWindow",
       return menu;
     },
 
-  getEditMenu : function()
+    getEditMenu : function()
     {
       var menu = new qx.ui.menu.Menu;
 
@@ -100,7 +103,7 @@ qx.Class.define("darktheme.demo.EditorWindow",
       return menu;
     },
 
-  getSearchMenu : function()
+    getSearchMenu : function()
     {
       var menu = new qx.ui.menu.Menu;
 

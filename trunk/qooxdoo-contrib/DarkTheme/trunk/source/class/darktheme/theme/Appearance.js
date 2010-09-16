@@ -39,7 +39,7 @@ qx.Theme.define("darktheme.theme.Appearance",
                         "button-checked" :
                      states.hovered && !states.disabled ?
                         "button-hovered" : "button",
-		  textColor: "button-label",
+		  textColor: "text-button",
 		  center: true
         };
       }
@@ -56,7 +56,7 @@ qx.Theme.define("darktheme.theme.Appearance",
                         "button-red-checked" :
                      states.hovered && !states.disabled ?
                         "button-red-hovered" : "button",
-		  textColor: "button-label",
+		  textColor: "text-button",
 		  center: true
         };
       }
@@ -75,7 +75,7 @@ qx.Theme.define("darktheme.theme.Appearance",
                         "button-simple-checked" :
                      states.hovered && !states.disabled ?
                         "button-simple-hovered" : "button-simple",
-		  textColor: "button-label"
+		  textColor: "text-button"
         };
       }
 	},
@@ -211,7 +211,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           padding : 2,
           decorator : decorator,
-          backgroundColor : "datechooser-background"
+          backgroundColor : "background-datechooser"
         };
       }
     },
@@ -378,7 +378,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          textColor: "menu-button",
+          textColor: "text-button",
 		  decorator: states.selected ? "menu-button-selected" : undefined,
           padding   : [ 3, 5 ]
         };
@@ -432,7 +432,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           decorator : states.pressed || states.hovered ? "menubar-selected" : undefined,
-          textColor : states.pressed || states.hovered ? "text-selected" : "menu-button",
+          textColor : states.pressed || states.hovered ? "text-selected" : "text-button",
           padding   : [ 3, 8 ]
         }
       }
@@ -484,8 +484,23 @@ qx.Theme.define("darktheme.theme.Appearance",
 
       style : function(states)
       {
-        var decorator = states.horizontal ? "scrollbar-slider-horizontal" :
-                                            "scrollbar-slider-vertical";
+        var decorator;
+		if (states.horizontal) 
+		{
+		  if (states.hovered) 
+		  {
+		    decorator = "scrollbar-slider-horizontal-hovered";
+		  } else {
+		    decorator = "scrollbar-slider-horizontal";
+		  }
+		} else {
+		  if (states.hovered) 
+		  {
+            decorator = "scrollbar-slider-vertical-hovered";
+		  } else {
+		    decorator = "scrollbar-slider-vertical";
+		  }
+		}
         return {
           decorator : decorator,
           minHeight : states.horizontal ? undefined : 9,
@@ -514,6 +529,11 @@ qx.Theme.define("darktheme.theme.Appearance",
 		  decorator = "scrollbar-slider-vertical";
         }
 		icon += "-invert.png";
+		
+		if (states.hovered)
+		{
+		  decorator += "-hovered";
+		}
 
         if (states.left || states.right)
         {
@@ -711,7 +731,7 @@ qx.Theme.define("darktheme.theme.Appearance",
                         "splitbutton-checked" :
                      states.hovered && !states.disabled ?
                         "splitbutton-hovered" : "splitbutton",
-		  textColor: "button-label",
+		  textColor: "text-button",
 		  center: true
         };
       }
@@ -1079,8 +1099,15 @@ qx.Theme.define("darktheme.theme.Appearance",
       alias: "atom",
       style: function(states)
       {
+	    var icon;
+	    if (states.hovered)
+		{
+		  icon = "darktheme/decoration/tabview/close-button-hovered.png";
+		} else {
+		  icon = "darktheme/decoration/tabview/close-button.png";
+		}
         return {
-          icon: "darktheme/decoration/tabview/close-button.png"
+          icon: icon
         };
       }
     },
@@ -1161,7 +1188,7 @@ qx.Theme.define("darktheme.theme.Appearance",
                         "toolbar-button-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-button-hovered" : undefined,
-		  textColor: "toolbar-button"
+		  textColor: "text-button"
         };
       }
     },
@@ -1179,7 +1206,7 @@ qx.Theme.define("darktheme.theme.Appearance",
                         "toolbar-button-light-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-button-light-hovered" : undefined,
-		  textColor: "toolbar-button"
+		  textColor: "text-button"
         };
       }
     },
@@ -1288,7 +1315,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           padding: [ 2, 6 ],
-          textColor: states.selected ? "text-selected" : "tree-item",
+          textColor: states.selected ? "text-selected" : "text-tree",
           decorator: states.selected ? "selected" : undefined
         }
       }
@@ -1320,7 +1347,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           alignY: "top",
-          textColor: "window-caption",
+          textColor: "text-caption",
 		  font: "bold",
 		  paddingTop: 5,
 		  paddingLeft: 8

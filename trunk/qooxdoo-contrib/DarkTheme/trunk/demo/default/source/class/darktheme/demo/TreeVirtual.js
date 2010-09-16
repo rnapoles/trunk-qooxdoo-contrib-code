@@ -20,16 +20,20 @@ qx.Class.define("darktheme.demo.TreeVirtual",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var hBox = new qx.ui.layout.HBox();
       hBox.set({spacing: 20});
 
       var container = new qx.ui.container.Composite(hBox);
-      this.add(container);
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container);
+	  }, this);
 
       var tree = this.getTree();
       container.add(tree);

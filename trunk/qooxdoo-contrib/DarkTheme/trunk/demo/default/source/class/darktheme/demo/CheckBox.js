@@ -17,31 +17,34 @@ qx.Class.define("darktheme.demo.CheckBox",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.VBox(8);
-
-    this.set({layout: layout, contentPadding: 10});
-
-    var label = new qx.ui.basic.Label("What do you need for the beach?");
-    var cbOil = new qx.ui.form.CheckBox("Sun Oil");
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.VBox(8);
+    
+      this.set({layout: layout, contentPadding: 10});
+    
+      var label = new qx.ui.basic.Label("What do you need for the beach?");
+      var cbOil = new qx.ui.form.CheckBox("Sun Oil");
       var cbTowel = new qx.ui.form.CheckBox("Towel");
       var cbBeer = new qx.ui.form.CheckBox("Beer");
       var cbBT =  new qx.ui.form.CheckBox("Bathing togs");
 
-    var btOk = new qx.ui.form.Button("OK");
+      var btOk = new qx.ui.form.Button("OK");
       btOk.addListener("execute", this._onExecute, this);
       btOk.setAllowGrowX(false);
 
       this._checkBoxes = [ cbOil, cbTowel, cbBeer, cbBT ];
 
-      this.add(label);
-    this.add(cbOil);
-    this.add(cbTowel);
-    this.add(cbBeer);
-    this.add(cbBT);
-    this.add(btOk);
-  },
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(label);
+        this.add(cbOil);
+        this.add(cbTowel);
+        this.add(cbBeer);
+        this.add(cbBT);
+        this.add(btOk);
+	  }, this);
+    },
 
   _onExecute : function(e)
     {

@@ -17,13 +17,16 @@ qx.Class.define("darktheme.demo.Slider",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
-      this.add(this._createVerticalLayout(), {left:20, top:20});
-      this.add(this._createHorizontalLayout(), {left:20, top:340});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(this._createVerticalLayout(), {left:20, top:20});
+        this.add(this._createHorizontalLayout(), {left:20, top:340});
+	  }, this);
     },
 
     _createVerticalLayout : function()

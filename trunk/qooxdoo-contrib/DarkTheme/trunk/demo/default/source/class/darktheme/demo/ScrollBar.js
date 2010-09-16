@@ -17,15 +17,19 @@ qx.Class.define("darktheme.demo.ScrollBar",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var container = new qx.ui.container.Composite(new qx.ui.layout.Grid()).set({
         padding: 20
       });
-      this.add(container, {edge: 0});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container, {edge: 0});
+	  }, this);
 
 
       var label = new qx.ui.basic.Label("Value: ").set({

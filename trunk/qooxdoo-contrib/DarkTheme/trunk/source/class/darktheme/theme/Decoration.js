@@ -29,7 +29,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-        backgroundColor: "selected"
+        backgroundColor: "background-selected"
       }
     },
 	
@@ -254,7 +254,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 	  
 	  style:
 	  {
-	    baseImage: "darktheme/decoration/menu/menu-pane3.png",
+	    baseImage: "darktheme/decoration/menu/menu-pane.png",
 		insets: [3, 3, 5, 3]
 	  }
     },
@@ -306,7 +306,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-		backgroundImage: "darktheme/decoration/menu/bar-background.png",
+		backgroundImage: "darktheme/decoration/bar/background.png",
 		backgroundRepeat: "scale"
       }
     },
@@ -317,7 +317,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-	    backgroundImage: "darktheme/decoration/menu/bar-background-selected.png",
+	    backgroundImage: "darktheme/decoration/bar/background-selected.png",
 		backgroundRepeat: "scale"
       }
     },
@@ -408,12 +408,40 @@ qx.Theme.define("darktheme.theme.Decoration",
       }
     },
 	
+	"scrollbar-slider-horizontal-hovered" :
+    {
+      decorator : qx.ui.decoration.Beveled,
+
+      style : {
+        backgroundImage : "darktheme/decoration/scrollbar/scrollbar-slider-horizontal-hovered.png",
+        backgroundRepeat : "scale",
+		
+        outerColor : "#525252",
+        innerColor : "#929292",
+        innerOpacity : 0.5
+      }
+    },
+	
 	"scrollbar-slider-vertical" :
     {
       decorator : qx.ui.decoration.Beveled,
 
       style : {
         backgroundImage : "darktheme/decoration/scrollbar/scrollbar-slider-vertical.png",
+        backgroundRepeat : "scale",
+		
+        outerColor : "#525252",
+        innerColor : "#929292",
+        innerOpacity : 0.5
+      }
+    },
+	
+	"scrollbar-slider-vertical-hovered" :
+    {
+      decorator : qx.ui.decoration.Beveled,
+
+      style : {
+        backgroundImage : "darktheme/decoration/scrollbar/scrollbar-slider-vertical-hovered.png",
         backgroundRepeat : "scale",
 		
         outerColor : "#525252",
@@ -453,7 +481,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-		backgroundImage: "darktheme/decoration/menu/bar-background.png",
+		backgroundImage: "darktheme/decoration/bar/background.png",
 		backgroundRepeat: "scale",
 		
 		widthRight : 1,
@@ -468,7 +496,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-	    backgroundImage: "darktheme/decoration/menu/bar-background-selected.png",
+	    backgroundImage: "darktheme/decoration/bar/background-selected.png",
 		backgroundRepeat: "scale"
       }
     },
@@ -479,7 +507,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-        backgroundImage: "darktheme/decoration/menu/bar-background.png",
+        backgroundImage: "darktheme/decoration/bar/background.png",
 		backgroundRepeat: "scale"
       }
     },
@@ -490,7 +518,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-	    backgroundColor: "window-background",
+	    backgroundColor: "background-window",
 		
         widthTop: 1,
         colorTop: "#525252",
@@ -513,7 +541,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-        backgroundImage: "darktheme/decoration/menu/bar-background.png",
+        backgroundImage: "darktheme/decoration/bar/background.png",
 		backgroundRepeat: "scale"
       }
 	},
@@ -681,7 +709,7 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style:
       {
-		backgroundImage: "darktheme/decoration/menu/bar-background.png",
+		backgroundImage: "darktheme/decoration/bar/background.png",
 		backgroundRepeat: "scale"
       }
     },
@@ -734,36 +762,6 @@ qx.Theme.define("darktheme.theme.Decoration",
       }
     },
 	
-	"toolbar-button-light-checked":
-    {
-	  decorator : qx.ui.decoration.Single,
-
-      style :
-      {
-		backgroundImage: "darktheme/decoration/menu/bar-background-selected.png",
-        backgroundRepeat : "scale",
-		
-		width: 1,
-
-		colorTop: "#323232",
-		colorLeft: "#323232",
-		colorBottom: "#929292",
-		colorRight: "#929292",
-
-        style: "solid"
-      }
-    },
-	
-	"toolbar-button-light-hovered" :
-    {
-	  decorator : qx.ui.decoration.Single,
-
-      style :
-      {
-		backgroundImage: "darktheme/decoration/menu/bar-background-selected.png",
-        backgroundRepeat : "scale"
-      }
-    },
 	
 	"toolbar-splitbutton-hovered":
 	{
@@ -787,36 +785,6 @@ qx.Theme.define("darktheme.theme.Decoration",
       style:
       {
 		backgroundImage: "darktheme/decoration/form/button-hovered-c.png",
-        backgroundRepeat: "scale",
-		
-        widthLeft: 1,
-		colorLeft: "silver",
-        styleLeft: "solid"
-      }
-	},
-	
-	"toolbar-splitbutton-light-hovered":
-	{
-      decorator: qx.ui.decoration.Single,
-
-      style:
-      {
-	    backgroundImage: "darktheme/decoration/menu/bar-background-selected.png",
-        backgroundRepeat: "scale",
-		
-        widthRight: 1,
-		colorRight: "#525252",
-        styleRight: "solid"
-      }
-	},
-	
-	"toolbar-splitbutton-light-arrow-hovered":
-	{
-      decorator: qx.ui.decoration.Single,
-
-      style:
-      {
-	    backgroundImage: "darktheme/decoration/menu/bar-background-selected.png",
         backgroundRepeat: "scale",
 		
         widthLeft: 1,

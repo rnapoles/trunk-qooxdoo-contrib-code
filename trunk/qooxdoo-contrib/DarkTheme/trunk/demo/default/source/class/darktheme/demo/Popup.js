@@ -17,18 +17,22 @@ qx.Class.define("darktheme.demo.Popup",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
-
-    var box = new qx.ui.layout.HBox();
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+      var box = new qx.ui.layout.HBox();
       box.setSpacing(20);
 
       var container = new qx.ui.container.Composite(box).set({
         padding: 20
       })
-      this.add(container);
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container);
+	  }, this);
 
       container.add(this._getPopupButton1());
       container.add(this._getPopupButton2());

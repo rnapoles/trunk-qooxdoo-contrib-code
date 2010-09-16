@@ -21,15 +21,18 @@ qx.Class.define("darktheme.demo.Window",
 
   _createControls: function()
   {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+      
+      var desktop = this.desktop = new qx.ui.window.Desktop(new qx.ui.window.Manager());
+      this.add(desktop, {edge: 0});
 
-    var desktop = this.desktop = new qx.ui.window.Desktop(new qx.ui.window.Manager());
-    this.add(desktop, {edge: 0});
-
-      this.createWindow1();
-      this.createWindow2();
-      this.createWindow3();
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.createWindow1();
+        this.createWindow2();
+        this.createWindow3();
+	  }, this);
     },
 
     createWindow1 : function()

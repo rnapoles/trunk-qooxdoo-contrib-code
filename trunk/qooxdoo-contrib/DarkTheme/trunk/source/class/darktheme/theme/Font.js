@@ -25,8 +25,7 @@ qx.Theme.define("darktheme.theme.Font",
       family : qx.bom.client.Platform.MAC ? [ "Lucida Grande" ] :
         (qx.bom.client.System.WINVISTA || qx.bom.client.System.WIN7) ?
         [ "Segoe UI", "Candara" ] :
-		// [ "Verdana", "Lucida Sans", "Tahoma", "Liberation Sans", "Arial", "sans-serif" ]
-        [ "Tahoma", "Liberation Sans", "Arial", "sans-serif" ]
+		[ "Verdana", "Lucida Sans", "Tahoma", "Liberation Sans", "Arial", "sans-serif" ]
     }
   }
 });

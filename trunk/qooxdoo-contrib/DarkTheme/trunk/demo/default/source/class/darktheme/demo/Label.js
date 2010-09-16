@@ -17,12 +17,16 @@ qx.Class.define("darktheme.demo.Label",
 
   members:
   {
-  _createControls: function()
-  {
-    this.setLayout(new qx.ui.layout.Grow());
-
-    var desktop = this.desktop = new qx.ui.window.Desktop(new qx.ui.window.Manager());
-    this.add(desktop);
+    _createControls: function()
+    {
+      this.setLayout(new qx.ui.layout.Grow());
+    
+      var desktop = this.desktop = new qx.ui.window.Desktop(new qx.ui.window.Manager());
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(desktop);
+	  }, this);
 
       var label1 = new qx.ui.basic.Label("text label").set({
         decorator: "main",
@@ -35,7 +39,7 @@ qx.Class.define("darktheme.demo.Label",
         decorator: "main",
         rich: true
       });
-    desktop.add(label2, {left: 20, top: 50});
+      desktop.add(label2, {left: 20, top: 50});
       this.desktop.add(this.createConfigureButton(label2, "configure rich label"), {left: 240, top: 60});
 
       var label3 = new qx.ui.basic.Label("My First Long Label Cutted").set({

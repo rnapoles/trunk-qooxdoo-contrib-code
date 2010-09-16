@@ -17,10 +17,10 @@ qx.Class.define("darktheme.demo.SelectBox",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var scroller = new qx.ui.container.Scroll();
 
@@ -33,7 +33,11 @@ qx.Class.define("darktheme.demo.SelectBox",
       box.add(this.createBox4());
 
       scroller.add(box, {left : 20, top : 20});
-      this.add(scroller, {edge : 0});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, {edge : 0});
+	  }, this);
     },
 
 
@@ -54,7 +58,7 @@ qx.Class.define("darktheme.demo.SelectBox",
         }
       }
 
-    selectBox.setEnabled(false);
+      // selectBox.setEnabled(false);
 
       selectBox.addListener("changeSelection", function(e) {
         this.debug("changeSelection: " + e.getData()[0]);

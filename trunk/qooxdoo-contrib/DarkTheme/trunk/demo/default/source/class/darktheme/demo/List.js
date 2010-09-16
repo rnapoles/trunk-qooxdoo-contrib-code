@@ -17,17 +17,21 @@ qx.Class.define("darktheme.demo.List",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
-     // scroll container
+      // scroll container
       var scroller = new qx.ui.container.Scroll();
       var container = new qx.ui.container.Composite(new qx.ui.layout.Basic());
       container.setAllowStretchX(false);
       scroller.add(container);
-      this.add(scroller, {edge : 0});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, {edge : 0});
+	  }, this);
 
       ////////////////////////////////////////////////////////////////
       // Configurable list

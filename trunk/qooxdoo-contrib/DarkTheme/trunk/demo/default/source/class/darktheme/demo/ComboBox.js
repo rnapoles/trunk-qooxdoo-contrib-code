@@ -17,20 +17,23 @@ qx.Class.define("darktheme.demo.ComboBox",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.createDefaultExample();
+        this.createIconExample();
+        this.createHtmlExample();
+        this.createWideExample();
+	  }, this);
+    },
 
-    this.createDefaultExample();
-    this.createIconExample();
-    this.createHtmlExample();
-    this.createWideExample();
-  },
-
-  createDefaultExample: function()
-  {
-    var label = new qx.ui.basic.Label("Default");
+    createDefaultExample: function()
+    {
+      var label = new qx.ui.basic.Label("Default");
       label.setFont("bold");
 
       this.add(label,
@@ -59,9 +62,9 @@ qx.Class.define("darktheme.demo.ComboBox",
         left : 20,
         top  : 40
       });
-  },
+    },
 
-  createIconExample : function()
+    createIconExample : function()
     {
       // create and add the describing label
       var label = new qx.ui.basic.Label("With icons");

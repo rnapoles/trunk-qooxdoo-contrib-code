@@ -17,10 +17,10 @@ qx.Class.define("darktheme.demo.Spinner",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var layout = new qx.ui.layout.Grid(10, 8);
       layout.setColumnAlign(0, "left", "middle");
@@ -30,7 +30,11 @@ qx.Class.define("darktheme.demo.Spinner",
 
       var container = new qx.ui.container.Composite(layout);
       container.setPadding(10);
-      this.add(container, {left:0,top:0});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container, {left:0,top:0});
+	  }, this);
 
       this.addSimpleSpinner(container, 0);
       this.addNonEditableSpinner(container, 1);
