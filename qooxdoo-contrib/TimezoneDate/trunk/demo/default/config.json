@@ -31,7 +31,7 @@
   "let" :
   {
     "APPLICATION"  : "timezonedate.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.2-pre",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.2",
     "QXTHEME"      : "timezonedate.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
