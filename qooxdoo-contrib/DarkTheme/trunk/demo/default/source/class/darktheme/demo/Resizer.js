@@ -17,13 +17,16 @@ qx.Class.define("darktheme.demo.Resizer",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
-      this.add(this._getResizer(), {left: 20, top: 20});
-      this.add(this._getResizerList(), {left: 400, top: 20});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(this._getResizer(), {left: 20, top: 20});
+        this.add(this._getResizerList(), {left: 400, top: 20});
+	  }, this);
     },
 
 
@@ -36,7 +39,7 @@ qx.Class.define("darktheme.demo.Resizer",
         minHeight: 100,
         maxHeight: 400,
         maxWidth: 500,
-    textColor: "text-active"
+        textColor: "text-active"
       });
 
       for (var i = 0; i < 100; i++) {

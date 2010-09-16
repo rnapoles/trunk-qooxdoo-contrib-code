@@ -17,23 +17,23 @@ qx.Class.define("darktheme.demo.ColorPopup",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.VBox();
-    this.set({layout: layout, contentPadding: 10});
-
-    var container = new qx.ui.container.Composite(new qx.ui.layout.HBox(10));
-
-    var mypop = new qx.ui.control.ColorPopup();
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.VBox();
+      this.set({layout: layout, contentPadding: 10});
+    
+      var container = new qx.ui.container.Composite(new qx.ui.layout.HBox(10));
+    
+      var mypop = new qx.ui.control.ColorPopup();
       mypop.exclude();
       mypop.setValue("#23F3C1");
 
-    mypop.addListener("changeValue", function(e) {
+      mypop.addListener("changeValue", function(e) {
         this.debug("Value Listener: " + e.getData());
         myview.setBackgroundColor(e.getData());
       });
 
-    var mybtn = new qx.ui.form.Button("Open Popup");
+      var mybtn = new qx.ui.form.Button("Open Popup");
       mybtn.addListener("execute", function(e)
       {
         mypop.placeToWidget(mybtn);
@@ -47,13 +47,13 @@ qx.Class.define("darktheme.demo.ColorPopup",
       });
 
       container.add(mybtn);
-    container.add(myview);
+      container.add(myview);
 
-    this.add(container);
-
-  }
-
-
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container);
+	  }, this);
+    }
   }
 
 });

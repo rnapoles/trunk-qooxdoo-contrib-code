@@ -17,13 +17,16 @@ qx.Class.define("darktheme.demo.StackContainer",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
-      this.addSimpleStack();
-      this.addDynamicStack();
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.addSimpleStack();
+        this.addDynamicStack();
+	  }, this);
     },
 
 
@@ -44,8 +47,6 @@ qx.Class.define("darktheme.demo.StackContainer",
 
       prev.addListener("execute", container.previous, container);
       next.addListener("execute", container.next, container);
-
-
 
       var colors = [ "red", "gray", "blue", "orange", "teal", "yellow", "green" ];
       var widget;
@@ -79,8 +80,6 @@ qx.Class.define("darktheme.demo.StackContainer",
 
       prev.addListener("execute", container.previous, container);
       next.addListener("execute", container.next, container);
-
-
 
       var colors = [ "red", "gray", "blue", "orange", "teal", "yellow", "green" ];
       var widget;

@@ -17,10 +17,10 @@ qx.Class.define("darktheme.demo.SplitPane",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       // Create a scroll container and an outer container
       var scroller = new qx.ui.container.Scroll();
@@ -32,7 +32,7 @@ qx.Class.define("darktheme.demo.SplitPane",
       var pane = new qx.ui.splitpane.Pane("horizontal").set({
         width : 450,
         height : 300,
-    decorator: "input"
+        decorator: "input"
       });
 
       this.__pane = pane;
@@ -53,7 +53,7 @@ qx.Class.define("darktheme.demo.SplitPane",
 
       // Create some content here ...
       var tree = this.__createDummyTree();
-    tree.setDecorator(null);
+      tree.setDecorator(null);
 
       var button = new qx.ui.form.Button("Toggle Splitpane Orientation").set({
         allowGrowX : false,
@@ -64,7 +64,7 @@ qx.Class.define("darktheme.demo.SplitPane",
       button.addListener("execute", this._toggle, this);
       var label = new qx.ui.basic.Label("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
       label.setRich(true);
-    label.setTextColor("black");
+      label.setTextColor("black");
 
       // ... and add it to the containers
       container1.add(tree);
@@ -84,7 +84,10 @@ qx.Class.define("darktheme.demo.SplitPane",
       outerContainer.add(pane, {left:20, top:40});
 
       // Finally add the scroll container to the root widget.
-      this.add(scroller, {edge : 0});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, {edge : 0});
+	  }, this);
 
       var controlLayout = new qx.ui.layout.VBox(5);
       var controlContainer = new qx.ui.container.Composite(controlLayout);

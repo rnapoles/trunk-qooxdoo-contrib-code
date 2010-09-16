@@ -50,8 +50,11 @@ qx.Class.define("darktheme.demo.SlideBar",
         slideBar.setWidth(e.getData() ? 800 : 300);
       });
 
-      this.add(toggle, {left:20, top:100});
-      this.add(slideBar, {left:20, top:20});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(toggle, {left:20, top:100});
+        this.add(slideBar, {left:20, top:20});
+	  }, this);
     }
 
   }

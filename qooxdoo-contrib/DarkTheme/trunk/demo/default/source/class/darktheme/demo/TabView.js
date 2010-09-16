@@ -17,10 +17,10 @@ qx.Class.define("darktheme.demo.TabView",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var scroller = new qx.ui.container.Scroll();
 
@@ -30,7 +30,10 @@ qx.Class.define("darktheme.demo.TabView",
 
       scroller.add(container);
 
-      this.add(scroller, {edge : 0});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, {edge : 0});
+	  }, this);
 
       container.add(this.getTabView1());
       container.add(this.getTabView2());

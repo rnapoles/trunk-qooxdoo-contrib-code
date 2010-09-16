@@ -19,22 +19,22 @@ qx.Class.define("darktheme.demo.TableWindow",
   members :
   {
     table: null,
-  nextId: 0,
+    nextId: 0,
 
     _createControls: function()
     {
       var layout = new qx.ui.layout.VBox(0);
-    this.setLayout(layout);
+      this.setLayout(layout);
 
-    this.table = this.createTable();
+	  this.add(this.createTable(), {flex: 1});
 
-    // this.add(this.createToolbar());
-    this.add(this.table, {flex: 1});
-
-      this.addListener("appear", this.center, this);
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.center();
+	  }, this);
     },
 
-  createTable : function()
+    createTable : function()
     {
       // Create the initial data
       var rowData = this.createRandomRows(50);
@@ -53,7 +53,7 @@ qx.Class.define("darktheme.demo.TableWindow",
       table.set({
         width: 600,
         height: 400,
-    showCellFocusIndicator: true
+        showCellFocusIndicator: true
       });
 
       table.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.MULTIPLE_INTERVAL_SELECTION);
@@ -69,7 +69,7 @@ qx.Class.define("darktheme.demo.TableWindow",
       return table;
     },
 
-  createRandomRows : function(rowCount)
+    createRandomRows : function(rowCount)
     {
       var rowData = [];
       var now = new Date().getTime();
@@ -81,7 +81,7 @@ qx.Class.define("darktheme.demo.TableWindow",
       return rowData;
     },
 
-  createToolbar : function()
+    createToolbar : function()
     {
       var bar = new qx.ui.toolbar.ToolBar();
       var button, part, checkBox;

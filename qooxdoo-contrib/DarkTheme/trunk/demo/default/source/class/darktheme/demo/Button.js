@@ -17,23 +17,26 @@ qx.Class.define("darktheme.demo.Button",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.VBox();
-    this.setLayout(layout);
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.VBox();
+      this.setLayout(layout);
 
-    var container = new qx.ui.container.Composite(new qx.ui.layout.HBox(10));
+      var container = new qx.ui.container.Composite(new qx.ui.layout.HBox(10));
 
       this.addNormalButtons(container);
-    this.addRedButton(container);
+      this.addRedButton(container);
       this.addToggleButton(container);
       this.addRepeatButton(container);
       this.addHoverButton(container);
 
-    this.add(container);
-  },
+	  this.addListenerOnce("appear", function(e)
+	  {
+        this.add(container);
+	  }, this);
+    },
 
-  addNormalButtons : function(container)
+    addNormalButtons : function(container)
     {
       var btn1 = new qx.ui.form.Button("Button A", "icon/22/apps/media-video-player.png");
       container.add(btn1);
@@ -43,10 +46,10 @@ qx.Class.define("darktheme.demo.Button",
       container.add(btn2);
     },
 
-  addRedButton : function(container)
+    addRedButton : function(container)
     {
       var btn1 = new qx.ui.form.Button("Red Button", "icon/22/apps/preferences-locale.png");
-    btn1.setAppearance("button-red");
+      btn1.setAppearance("button-red");
       container.add(btn1);
     },
 
@@ -70,7 +73,7 @@ qx.Class.define("darktheme.demo.Button",
       // Label
       var label = new qx.ui.basic.Label("0");
       label.setDecorator("input");
-    label.setTextColor("text-active");
+      label.setTextColor("text-active");
       label.setPadding(2, 4);
       container.add(label);
 
@@ -93,7 +96,7 @@ qx.Class.define("darktheme.demo.Button",
       // Label
       var label = new qx.ui.basic.Label("0");
       label.setDecorator("input");
-    label.setTextColor("text-active");
+      label.setTextColor("text-active");
       label.setPadding(2, 4);
       container.add(label);
 

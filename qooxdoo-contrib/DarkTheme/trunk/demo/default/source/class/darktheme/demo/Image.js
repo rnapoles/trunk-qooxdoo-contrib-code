@@ -17,16 +17,20 @@ qx.Class.define("darktheme.demo.Image",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
-
-    var box = new qx.ui.layout.HBox();
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+      var box = new qx.ui.layout.HBox();
       box.setSpacing(20);
 
       var container = new qx.ui.container.Composite(box);
-      this.add(container, {left:20,top:20});
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container, {left:20,top:20});
+	  }, this);
 
       container.add(new qx.ui.basic.Image("icon/32/devices/multimedia-player.png"));
 
@@ -56,7 +60,6 @@ qx.Class.define("darktheme.demo.Image",
       externalSmall.setHeight(40);
       externalSmall.setScale(true);
       container.add(externalSmall);
-
 
       // toggle button
       var btn = new qx.ui.form.ToggleButton("Toggle enabled");

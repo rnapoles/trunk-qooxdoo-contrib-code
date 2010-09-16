@@ -17,10 +17,10 @@ qx.Class.define("darktheme.demo.ToolBar",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       // create a scroll container
       var scroller = new qx.ui.container.Scroll();
@@ -33,7 +33,10 @@ qx.Class.define("darktheme.demo.ToolBar",
       scroller.add(mainContainer);
 
       // add the scroll container to the root
-      this.add(scroller, { edge: 0 } );
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(scroller, { edge: 0 } );
+	  }, this);
 
       ///////////////////////////////////////////////////////////////
       // Toolbar stuff

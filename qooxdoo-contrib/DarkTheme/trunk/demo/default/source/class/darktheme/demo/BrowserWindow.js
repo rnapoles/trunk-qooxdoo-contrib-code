@@ -6,7 +6,7 @@ qx.Class.define("darktheme.demo.BrowserWindow",
   {
     this.base(arguments);
 
-  this.setCaption("Web Browser");
+    this.setCaption("Web Browser");
     this._createControls();
   },
 
@@ -19,30 +19,33 @@ qx.Class.define("darktheme.demo.BrowserWindow",
   members:
   {
     iframe: null,
-  txtUrl: "",
+    txtUrl: "",
 
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.VBox();
-    layout.setSeparator("separator-vertical");
-    this.set({
-      layout: layout,
-      width: 600,
-    minWidth: 600,
-    height: 400,
-    // allowClose: false,
-    contentPadding: [2, 5, 5, 5],
-      icon: "icon/16/categories/internet.png"
-    });
-
-    var toolbar = this.createToolbar();
-    this.iframe = this.createBrowser();
-
-    this.add(toolbar);
-    this.add(this.iframe, { flex : 1 });
-
-    this.addListener("appear", this.center, this);
-  },
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.VBox();
+      layout.setSeparator("separator-vertical");
+      this.set({
+        layout: layout,
+        width: 600,
+      minWidth: 600,
+      height: 400,
+      // allowClose: false,
+      contentPadding: [2, 5, 5, 5],
+        icon: "icon/16/categories/internet.png"
+      });
+    
+      var toolbar = this.createToolbar();
+      this.iframe = this.createBrowser();
+    
+	  this.addListenerOnce("appear", function(e)
+      {
+	    this.add(toolbar);
+        this.add(this.iframe, { flex : 1 });
+		this.center();
+	  }, this);
+	  
+    },
 
   createToolbar: function()
   {

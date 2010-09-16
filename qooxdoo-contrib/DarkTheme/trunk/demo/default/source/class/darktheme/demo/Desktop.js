@@ -17,13 +17,17 @@ qx.Class.define("darktheme.demo.Desktop",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
-
-    var tabView = new qx.ui.tabview.TabView();
-      this.add(tabView, {edge: 0});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
+    
+      var tabView = this.tabView = new qx.ui.tabview.TabView();
+	  
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(tabView, {edge: 0});
+	  }, this);
 
       var page = new qx.ui.tabview.Page("Desktop", "icon/32/actions/go-home.png");
       page.setLayout(new qx.ui.layout.Grow());
@@ -54,7 +58,7 @@ qx.Class.define("darktheme.demo.Desktop",
         desktop.add(win);
         win.open();
       }
-  }
+    }
   }
 
 });

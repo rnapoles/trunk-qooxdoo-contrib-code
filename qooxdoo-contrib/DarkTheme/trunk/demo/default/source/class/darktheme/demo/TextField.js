@@ -17,18 +17,16 @@ qx.Class.define("darktheme.demo.TextField",
 
   members:
   {
-  _createControls: function()
-  {
-    var layout = new qx.ui.layout.Canvas();
-    this.set({layout: layout, contentPadding: 10});
+    _createControls: function()
+    {
+      var layout = new qx.ui.layout.Canvas();
+      this.set({layout: layout, contentPadding: 10});
 
       var box = new qx.ui.layout.VBox();
       box.setSpacing(10);
 
       var container = new qx.ui.container.Composite(box);
       container.setPadding(20);
-
-      this.add(container, {left:0,top:0});
 
       var input1 = new qx.ui.form.TextField("max15").set({
         maxLength: 15
@@ -50,7 +48,7 @@ qx.Class.define("darktheme.demo.TextField",
       });
       container.add(input6);
 
-    var input7 = new qx.ui.form.TextField("'red' background").set({
+      var input7 = new qx.ui.form.TextField("'red' background").set({
         decorator: "input-error"
       });
       container.add(input7);
@@ -66,10 +64,6 @@ qx.Class.define("darktheme.demo.TextField",
       input11.setFont("monospace");
       container.add(input11);
 
-
-
-
-
       var controls = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
       controls.setPadding(20);
 
@@ -79,7 +73,6 @@ qx.Class.define("darktheme.demo.TextField",
       });
       controls.add(btnLiveUpdate);
 
-
       var btnEnabled = new qx.ui.form.Button("Toggle enabled");
       var enable = false;
       btnEnabled.addListener("execute", function() {
@@ -87,7 +80,6 @@ qx.Class.define("darktheme.demo.TextField",
         enable = !enable;
       });
       controls.add(btnEnabled);
-
 
       controls.add(new qx.ui.core.Spacer(null, 20));
 
@@ -102,7 +94,6 @@ qx.Class.define("darktheme.demo.TextField",
         this.debug("Sending content: " + input1.getValue());
       });
       controls.add(btnSend1);
-
 
       var btnSendTextSelection = new qx.ui.form.Button("Send selection");
       btnSendTextSelection.setFocusable(false);
@@ -128,8 +119,11 @@ qx.Class.define("darktheme.demo.TextField",
       });
       controls.add(btnSendTextSelectionEnd);
 
-
-      this.add(controls, {left:200, top:0});
+	  this.addListenerOnce("appear", function(e)
+      {
+        this.add(container, {left:0,top:0});
+		this.add(controls, {left:200, top:0});
+	  }, this);
     }
 
   }
