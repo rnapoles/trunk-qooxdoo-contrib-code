@@ -26,7 +26,7 @@ qx.Class.define("darktheme.demo.EditorWindow",
       var demoContent = '<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.</p>';
 
       var editor = this.editor = new qx.ui.embed.HtmlArea(demoContent, null,
-      qx.util.ResourceManager.getInstance().toUri("darktheme/editor/blank.html"));
+      qx.util.ResourceManager.getInstance().toUri("darktheme.demo/editor/blank.html"));
       editor.set({height: 400, width: 600});
 	  
 	  this.add(this.getMenuBar());
@@ -302,8 +302,8 @@ qx.Class.define("darktheme.demo.EditorWindow",
         {
           fontFamily:          { custom: this.__fontFamilyToolbarEntry },
           fontSize:            { custom: this.__fontSizeToolbarEntry },
-          fontColor:           { text: "Set Text Color", image:  "darktheme/editor/format-text-color.png", action: this.__fontColorHandler },
-          textBackgroundColor: { text: "Set Text Background Color", image:  "darktheme/editor/format-fill-color.png", action: this.__textBackgroundColorHandler }
+          fontColor:           { text: "Set Text Color", image:  "darktheme.demo/editor/format-text-color.png", action: this.__fontColorHandler },
+          textBackgroundColor: { text: "Set Text Background Color", image:  "darktheme.demo/editor/format-fill-color.png", action: this.__textBackgroundColorHandler }
         },
 
         {
@@ -314,15 +314,15 @@ qx.Class.define("darktheme.demo.EditorWindow",
 
         {
           insertImage:         { text: "Insert Image", image: "qx/icon/Oxygen/16/actions/insert-image.png", action: this.__insertImageHandler },
-          insertTable:         { text: "Insert Table", image: "darktheme/editor/insert-table.png", action: this.__insertTableHandler },
+          insertTable:         { text: "Insert Table", image: "darktheme.demo/editor/insert-table.png", action: this.__insertTableHandler },
           insertLink:          { text: "Insert Link", image: "qx/icon/Oxygen/16/actions/insert-link.png", action: this.__insertLinkHandler },
-          insertHTML:          { text: "Insert HTML Code", image: "darktheme/editor/insert-text.png", action: this.__insertHTMLHandler },
-          insertHR:            { text: "Insert Horizontal Ruler", image: "darktheme/editor/insert-horizontal-rule.png", action: this.editor.insertHorizontalRuler }
+          insertHTML:          { text: "Insert HTML Code", image: "darktheme.demo/editor/insert-text.png", action: this.__insertHTMLHandler },
+          insertHR:            { text: "Insert Horizontal Ruler", image: "darktheme.demo/editor/insert-horizontal-rule.png", action: this.editor.insertHorizontalRuler }
         },
 
         {
-          ol:                  { text: "Insert Ordered List", image: "darktheme/editor/format-list-ordered.png", action: this.editor.insertOrderedList },
-          ul:                  { text: "Inserted Unordered List", image: "darktheme/editor/format-list-unordered.png", action: this.editor.insertUnorderedList }
+          ol:                  { text: "Insert Ordered List", image: "darktheme.demo/editor/format-list-ordered.png", action: this.editor.insertOrderedList },
+          ul:                  { text: "Inserted Unordered List", image: "darktheme.demo/editor/format-list-unordered.png", action: this.editor.insertUnorderedList }
         },
 
         {
@@ -370,7 +370,7 @@ qx.Class.define("darktheme.demo.EditorWindow",
      */
     __insertImageHandler : function(e)
     {
-      var attributes = { src    : qx.util.ResourceManager.getInstance().toUri("darktheme/editor/qooxdoo_logo.png"),
+      var attributes = { src    : qx.util.ResourceManager.getInstance().toUri("darktheme.demo/logo.png"),
                          border : 0,
                          title  : "qooxdoo logo",
                          alt    : "qooxdoo logo" };
@@ -570,8 +570,8 @@ qx.Class.define("darktheme.demo.EditorWindow",
         {
           fontFamily:          { custom: this.__fontFamilyToolbarEntry },
           fontSize:            { custom: this.__fontSizeToolbarEntry },
-          fontColor:           { text: "Set Text Color", image:  "darktheme/editor/format-text-color.png", action: this.__fontColorHandler },
-          textBackgroundColor: { text: "Set Text Background Color", image:  "darktheme/editor/format-fill-color.png", action: this.__textBackgroundColorHandler }
+          fontColor:           { text: "Set Text Color", image:  "darktheme.demo/editor/format-text-color.png", action: this.__fontColorHandler },
+          textBackgroundColor: { text: "Set Text Background Color", image:  "darktheme.demo/editor/format-fill-color.png", action: this.__textBackgroundColorHandler }
         },
 
         {
@@ -582,15 +582,15 @@ qx.Class.define("darktheme.demo.EditorWindow",
 
         {
           insertImage:         { text: "Insert Image", image: "qx/icon/Oxygen/16/actions/insert-image.png", action: this.__insertImageHandler },
-          insertTable:         { text: "Insert Table", image: "darktheme/editor/insert-table.png", action: this.__insertTableHandler },
+          insertTable:         { text: "Insert Table", image: "darktheme.demo/editor/insert-table.png", action: this.__insertTableHandler },
           insertLink:          { text: "Insert Link", image: "qx/icon/Oxygen/16/actions/insert-link.png", action: this.__insertLinkHandler },
-          insertHTML:          { text: "Insert HTML Code", image: "darktheme/editor/insert-text.png", action: this.__insertHTMLHandler },
-          insertHR:            { text: "Insert Horizontal Ruler", image: "darktheme/editor/insert-horizontal-rule.png", action: this.editor.insertHorizontalRuler }
+          insertHTML:          { text: "Insert HTML Code", image: "darktheme.demo/editor/insert-text.png", action: this.__insertHTMLHandler },
+          insertHR:            { text: "Insert Horizontal Ruler", image: "darktheme.demo/editor/insert-horizontal-rule.png", action: this.editor.insertHorizontalRuler }
         },
 
         {
-          ol:                  { text: "Insert Ordered List", image: "darktheme/editor/format-list-ordered.png", action: this.editor.insertOrderedList },
-          ul:                  { text: "Inserted Unordered List", image: "darktheme/editor/format-list-unordered.png", action: this.editor.insertUnorderedList }
+          ol:                  { text: "Insert Ordered List", image: "darktheme.demo/editor/format-list-ordered.png", action: this.editor.insertOrderedList },
+          ul:                  { text: "Inserted Unordered List", image: "darktheme.demo/editor/format-list-unordered.png", action: this.editor.insertUnorderedList }
         },
 
         {
