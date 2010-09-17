@@ -14,7 +14,7 @@
 
 /* ************************************************************************
 
-#asset(darktheme/*)
+#asset(darktheme.demo/*)
 
 #asset(qx/icon/Oxygen/16/actions/*)
 #asset(qx/icon/Oxygen/16/apps/*)
@@ -457,7 +457,7 @@ qx.Class.define("darktheme.demo.Application",
       var label = new qx.ui.basic.Atom("DarkTheme Demo");
       label.set({alignY: "middle", font: "bold"});
       
-      var version = new qx.ui.basic.Atom(qx.core.Setting.get("qx.version"), "darktheme/logo.png");
+      var version = new qx.ui.basic.Atom(qx.core.Setting.get("qx.version"), "darktheme.demo/logo.png");
       version.set({alignY: "middle", font: "bold"});
       
       header.add(label);
