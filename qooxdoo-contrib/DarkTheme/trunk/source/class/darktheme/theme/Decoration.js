@@ -17,6 +17,7 @@
 #asset(darktheme/decoration/*)
 
 ************************************************************************ */
+
 qx.Theme.define("darktheme.theme.Decoration",
 {
   extend: qx.theme.modern.Decoration,
