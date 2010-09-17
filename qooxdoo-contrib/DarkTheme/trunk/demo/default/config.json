@@ -33,7 +33,7 @@
   {
     "APPLICATION"  : "darktheme.demo",
     "QOOXDOO_PATH" : "../../../../qooxdoo/1.2",
-    "QXTHEME"      : "darktheme.theme.Theme",
+    "QXTHEME"      : "darktheme.DarkTheme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
