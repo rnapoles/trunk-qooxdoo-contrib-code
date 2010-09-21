@@ -557,18 +557,26 @@ qx.Class.define("tokenfield.Token",
     		item.destroy();
     	}
     },
+    
+    // overridden
+    getChildrenContainer : function() {
+      return this;
+    },
+    
     /**
      * Adds an item to the selection
      *
      * @param item {qx.ui.form.ListItem} The List Item to be added to the selection
      */
-    _selectItem : function(item)
+    _selectItem : function(old)
     {
-      if (item && item.constructor == qx.ui.form.ListItem)
+      if (old && old.constructor == qx.ui.form.ListItem)
       {
-        var item = new qx.ui.form.ListItem(item.getModel().get(this.getLabelPath()));
+        var item = new qx.ui.form.ListItem(old.getModel().get(this.getLabelPath()));
         
         item.setAppearance("tokenitem");
+        item.setModel(old.getModel());
+        
         item.getChildControl('icon').setAnonymous(false);
         item.getChildControl('icon').addListener("click", function(e) 
         { 
