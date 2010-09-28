@@ -28,7 +28,6 @@
 package com.zenesis.qx.remote;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,19 +55,12 @@ public class ProxyTypeArray implements ProxyType {
 		this.array = array;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.zenesis.qx.remote.ProxyType#getClassName()
+	 */
 	@Override
-	public void addEvents(HashMap<String, ProxyEvent> events) {
-		type.addEvents(events);
-	}
-
-	@Override
-	public void addProperties(HashMap<String, ProxyProperty> properties) {
-		type.addProperties(properties);
-	}
-
-	@Override
-	public Class getClazz() {
-		return type.getClazz();
+	public String getClassName() {
+		return type.getClassName();
 	}
 
 	/* (non-Javadoc)
@@ -102,16 +94,6 @@ public class ProxyTypeArray implements ProxyType {
 	@Override
 	public Map<String, ProxyProperty> getProperties() {
 		return type.getProperties();
-	}
-
-	@Override
-	public ProxyProperty getProperty(String propertyName) {
-		return type.getProperty(propertyName);
-	}
-
-	@Override
-	public Set<String> getPropertyEventNames() {
-		return type.getPropertyEventNames();
 	}
 
 	@Override

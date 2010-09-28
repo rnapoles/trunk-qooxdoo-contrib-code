@@ -29,7 +29,9 @@ package com.zenesis.qx.remote;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.zip.GZIPOutputStream;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
@@ -142,8 +144,28 @@ public class ProxyManager implements EventListener {
 	        String contentType = request.getContentType();
 			if (request.getMethod().toUpperCase().equals("POST") && contentType != null && contentType.startsWith("multipart/form-data"))
 				new UploadHandler(tracker).processUpload(request, response);
-			else
-				new RequestHandler(tracker).processRequest(request.getReader(), response.getWriter());
+			else {
+				String enc = request.getHeader("Accept-Encoding");
+				OutputStream os = response.getOutputStream();
+				
+				if (enc != null) {
+					/* Don't use deflate - this does not work for ajax calls on IE
+					if (enc.indexOf("deflate") > -1) {
+						enc = enc.indexOf("x-deflate") != -1 ? "x-deflate" : "deflate";
+						os = new DeflaterOutputStream(os, new Deflater(Deflater.BEST_SPEED));
+						
+					} else */ if (enc.indexOf("gzip") != -1) {
+						enc = enc.indexOf("x-gzip") != -1 ? "x-gzip" : "gzip";
+						os = new GZIPOutputStream(os);
+						
+					} else 
+						enc = null;
+				}
+				
+				if (enc != null)
+					response.addHeader("Content-Encoding", enc);
+				new RequestHandler(tracker).processRequest(request.getReader(), os);
+			}
 		}finally {
 			// Done
 			deselectTracker(tracker);
@@ -221,13 +243,44 @@ public class ProxyManager implements EventListener {
 		if (handler != null && handler.isSettingProperty(keyObject, propertyName))
 			return;
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
-		ProxyProperty property = type.getProperty(propertyName);
+		ProxyProperty property = getProperty(type, propertyName);
 		if (property.isOnDemand())
 			queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
 		else
 			queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, newValue);
 		if (property.getEvent() != null)
 			EventManager.getInstance().fireDataEvent(keyObject, property.getEvent().getName(), newValue);
+	}
+	
+	/**
+	 * Loads a proxy type onto the client
+	 * @param clazz
+	 */
+	public static void loadProxyType(Class<? extends Proxied> clazz) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(clazz);
+		if (type == null || tracker.isTypeDelivered(type))
+			return;
+		CommandQueue queue = tracker.getQueue();
+		queue.queueCommand(CommandId.CommandType.LOAD_TYPE, type, null, null);
+	}
+	
+	/**
+	 * Finds a property in a type, recursing up the class hierarchy
+	 * @param type
+	 * @param name
+	 * @return
+	 */
+	protected static ProxyProperty getProperty(ProxyType type, String name) {
+		while (type != null) {
+			ProxyProperty prop = type.getProperties().get(name);
+			if (prop != null)
+				return prop;
+			type = type.getSuperType();
+		}
+		return null;
 	}
 	
 	/**

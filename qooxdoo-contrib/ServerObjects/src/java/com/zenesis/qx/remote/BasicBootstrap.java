@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import com.zenesis.qx.remote.annotations.AlwaysProxy;
 import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
@@ -42,6 +43,19 @@ public class BasicBootstrap implements UploadReceiver {
 	public BasicBootstrap(AppFile appFilesRoot) {
 		super();
 		this.appFilesRoot = appFilesRoot;
+	}
+	
+	/**
+	 * Loads a proxy class on the client; this is necessary if the client wants to instantiate
+	 * a class before the class definition has been loaded on demand.
+	 * @param name name of the class to transfer
+	 */
+	@AlwaysProxy
+	public void loadProxyType(String name) throws ClassNotFoundException {
+		Class clazz = Class.forName(name);
+		if (!Proxied.class.isAssignableFrom(clazz))
+			throw new IllegalArgumentException(name);
+		ProxyManager.loadProxyType(clazz);
 	}
 	
 	/**

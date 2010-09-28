@@ -101,7 +101,7 @@ public class ProxyTypeManager {
 		//	this will recursively discover other interfaces
 		HashSet<ProxyType> interfaces = new HashSet<ProxyType>();
 		for (Class ifc : clazz.getInterfaces())
-			if (ifc != Proxied.class && Proxied.class.isAssignableFrom(ifc)) {
+			if (ifc != Proxied.class && ifc != DynamicTypeProvider.class && Proxied.class.isAssignableFrom(ifc)) {
 				ProxyType newType = getProxyType(ifc, factory);
 				if (newType != null)
 					interfaces.add(newType);

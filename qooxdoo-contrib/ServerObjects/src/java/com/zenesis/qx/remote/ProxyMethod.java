@@ -75,40 +75,43 @@ public class ProxyMethod implements JsonSerializable {
 		super();
 		this.method = method;
 		
-		Class arrayType = method.getReturnType();
+		Class returnType = method.getReturnType();
 		boolean prefetchResult = false;
 		boolean cacheResult = false;
+		com.zenesis.qx.remote.annotations.Method anno = method.getAnnotation(com.zenesis.qx.remote.annotations.Method.class);
 		
-		if (arrayType.isArray() || Iterable.class.isAssignableFrom(arrayType)) {
+		if (returnType.isArray() || Iterable.class.isAssignableFrom(returnType)) {
 			// How to present on the client - only ArrayList by default is wrapped on the client
 			Remote.Array array;
-			if (arrayType.isArray() || !ArrayList.class.isAssignableFrom(arrayType)) {
-				arrayType = arrayType.getComponentType();
+			if (returnType.isArray() || !ArrayList.class.isAssignableFrom(returnType)) {
+				returnType = returnType.getComponentType();
 				array = Remote.Array.NATIVE;
 			} else {
-				arrayType = Object.class;
+				returnType = Object.class;
 				array = Remote.Array.WRAP;
 			}
 			
 			// Component type
-			com.zenesis.qx.remote.annotations.Method anno = method.getAnnotation(com.zenesis.qx.remote.annotations.Method.class);
 			if (anno != null) {
 				if (anno.array() != Remote.Array.DEFAULT)
 					array = anno.array();
 				if (anno.arrayType() != Object.class)
-					arrayType = anno.arrayType();
-				method.getReturnType();
-				if (method.getParameterTypes().length == 0) {
-					prefetchResult = anno.prefetchResult();
-					cacheResult = anno.cacheResult()||prefetchResult;
-				}
+					returnType = anno.arrayType();
 			}
 			this.array = array;
-			this.arrayType = arrayType;
+			this.arrayType = returnType;
 		} else {
 			array = null;
 			this.arrayType = null;
 		}
+		
+		if (anno != null) {
+			if (method.getParameterTypes().length == 0) {
+				prefetchResult = anno.prefetchResult();
+				cacheResult = anno.cacheResult()||prefetchResult;
+			}
+		}
+		
 		this.prefetchResult = prefetchResult;
 		this.cacheResult = cacheResult;
 	}
@@ -125,9 +128,9 @@ public class ProxyMethod implements JsonSerializable {
 		if (Proxied.class.isAssignableFrom(clazz)) {
 			ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(clazz);
 			jgen.writeObjectField("returnType", type);
-			if (cacheResult)
-				jgen.writeBooleanField("cacheResult", cacheResult);
 		}
+		if (cacheResult)
+			jgen.writeBooleanField("cacheResult", cacheResult);
 		
 		// Whether to wrap the return
 		if (array != null)

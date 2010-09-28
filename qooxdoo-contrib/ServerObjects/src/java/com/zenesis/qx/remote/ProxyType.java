@@ -27,7 +27,6 @@
  */
 package com.zenesis.qx.remote;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,27 +43,15 @@ import org.codehaus.jackson.map.JsonSerializable;
 public interface ProxyType extends JsonSerializable {
 	
 	/**
-	 * Returns a list of event names that are property change notification events
-	 * @return
-	 */
-	public Set<String> getPropertyEventNames();
-	
-	/**
-	 * Adds all events recursively
-	 * @param events
-	 */
-	public void addEvents(HashMap<String, ProxyEvent> events);
-	
-	/**
 	 * Detects whether this type is for an interface
 	 * @return
 	 */
 	public boolean isInterface();
 	
 	/**
-	 * @return the clazz
+	 * @return the name of the class
 	 */
-	public Class getClazz() ;
+	public String getClassName();
 	
 	/**
 	 * Returns the ProxyType for the classes superclass, or null if there is no superclass 
@@ -93,7 +80,7 @@ public interface ProxyType extends JsonSerializable {
 	 * @param propertyName
 	 * @return
 	 */
-	public ProxyProperty getProperty(String propertyName);
+	//public ProxyProperty getProperty(String propertyName);
 
 	/**
 	 * Detects whether there is a property with a given name, in this class or
@@ -102,12 +89,6 @@ public interface ProxyType extends JsonSerializable {
 	 * @return
 	 */
 	public boolean isProperty(String name);
-	
-	/**
-	 * Adds all properties recursively
-	 * @param properties
-	 */
-	public void addProperties(HashMap<String, ProxyProperty> properties);
 	
 	/**
 	 * Returns the events; returns an empty map if no properties defined
