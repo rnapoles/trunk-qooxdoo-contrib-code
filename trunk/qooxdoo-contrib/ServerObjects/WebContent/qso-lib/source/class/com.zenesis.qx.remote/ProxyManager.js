@@ -266,6 +266,10 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					var eventData = elem.data ? this._readProxyObject(elem.data) : null;
 					obj.fireDataEvent(elem.name, eventData);
 					
+				// Explicitly load a type onto the client
+				} else if (type == "load-type") {
+					var clazz = this.getClassOrCreate(elem.object);
+					
 				// Unknown!
 				} else
 					qx.core.Assert.assertTrue(false, "Unexpected type of command from server: " + type);
@@ -359,7 +363,9 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					if (data.prefetch) {
 						for (var methodName in data.prefetch) {
 							var value = data.prefetch[methodName];
-							result.$$proxyDef.methods[methodName].cachedResult = value;
+							if (!result.$$proxy.cachedResults)
+								result.$$proxy.cachedResults = {};
+							result.$$proxy.cachedResults[methodName] = value;
 						}
 					}
 					
@@ -422,12 +428,13 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					def = {
 							construct: /*function(serverId) {
 								this.base(arguments, serverId);
-							},*/ new Function('serverId', 'this.base(arguments, serverId);'),
+							},*/ new Function('serverId', 'this.base(arguments, serverId); this.$$proxy = {};'),
 							members: { }
 						};
-					if (data.extend)
+					if (data.extend) {
 						def.extend = this.getClassOrCreate(data.extend);
-					else
+						data.extend = def.extend.prototype.$$proxyDef;
+					} else
 						def.extend = com.zenesis.qx.remote.Proxy;
 				}
 				
@@ -615,8 +622,8 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		callServerMethod: function(serverObject, methodName, args) {
 			// Can we get it from the cache?
 			var methodDef = this._getMethodDef(serverObject, methodName);
-			if (methodDef && methodDef.cacheResult && methodDef.cachedValue)
-				return methodDef.cachedValue;
+			if (methodDef && methodDef.cacheResult && serverObject.$$proxy.cachedResults && serverObject.$$proxy.cachedResults[methodName])
+				return serverObject.$$proxy.cachedResults[methodName];
 			
 			// Serialise the request
 			var parameters = [];
@@ -642,8 +649,11 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			}, this);
 			
 			// Store in the cache and return
-			if (methodDef && methodDef.cacheResult)
-				methodDef.cachedValue = result;
+			if (methodDef && methodDef.cacheResult) {
+				if (!serverObject.$$proxy.cachedResults)
+					serverObject.$$proxy.cachedResults = {};
+				serverObject.$$proxy.cachedResults[methodName] = result;
+			}
 			return result;
 		},
 		
@@ -707,10 +717,19 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				value: this.serializeValue(value)
 			};
 			var def = this.__classInfo[serverObject.classname];
-			var pd = def.properties[propertyName];
-			if (pd.sync == "queue")
+			var pd = serverObject.getPropertyDef(propertyName);
+			if (pd.sync == "queue") {
+				var queue = this.__queue;
+				if (queue)
+					for (var i = 0; i < queue.length; i++) {
+						var qd = queue[i];
+						if (qd.cmd == "set" && qd.serverId == serverObject.getServerId() && qd.propertyName == propertyName) {
+							queue.splice(i, 1);
+							break;
+						}
+					}
 				this._queueCommandToServer(data);
-			else
+			} else
 				this._sendCommandToServer(data);
 			
 			// OnDemand properties need to have their event fired for them
@@ -943,8 +962,8 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			for (var def = serverObject.$$proxyDef; def != null; def = def.extend) {
 				if (def.methods) {
 					var methodDef = def.methods[methodName];
-					if (def)
-						return def;
+					if (methodDef)
+						return methodDef;
 				}
 			}
 			return null;
