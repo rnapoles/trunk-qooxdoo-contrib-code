@@ -57,7 +57,13 @@ public class SimpleQueue implements CommandQueue, JsonSerializable {
 	public void queueCommand(CommandType type, Object object, String propertyName, Object data) {
 		if (closed)
 			throw new IllegalArgumentException("Outbound queue is closed, an exception has been thrown");
-		values.put(new CommandId(type, object, propertyName), data);
+		if (type == CommandType.BOOTSTRAP && !values.isEmpty()) {
+			LinkedHashMap<CommandId, Object> tmp = new LinkedHashMap<CommandId, Object>();
+			tmp.put(new CommandId(type, object, propertyName), data);
+			tmp.putAll(values);
+			values = tmp;
+		} else
+			values.put(new CommandId(type, object, propertyName), data);
 		if (type == CommandType.EXCEPTION)
 			closed = true;
 	}

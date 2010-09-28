@@ -28,7 +28,6 @@
 package com.zenesis.qx.remote;
 
 import java.lang.reflect.Method;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -37,10 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.SerializerProvider;
-
 import com.zenesis.qx.remote.annotations.AlwaysProxy;
 import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.Event;
@@ -48,10 +43,8 @@ import com.zenesis.qx.remote.annotations.Events;
 import com.zenesis.qx.remote.annotations.ExplicitProxyOnly;
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
-import com.zenesis.qx.remote.annotations.Remote;
-import com.zenesis.qx.remote.annotations.Remote.Array;
 
-public class ProxyTypeImpl implements ProxyType {
+public class ProxyTypeImpl extends AbstractProxyType {
 
 	/*
 	 * Helper class to track methods
@@ -111,7 +104,7 @@ public class ProxyTypeImpl implements ProxyType {
 		 * Removes any methods which are property accessor methods
 		 * @param prop
 		 */
-		public void removePropertyAccessors(ProxyProperty prop) {
+		public void removePropertyAccessors(ProxyPropertyImpl prop) {
 			String upname = Character.toUpperCase(prop.getName().charAt(0)) + prop.getName().substring(1);
 			methods.remove("get" + upname);
 			methods.remove("set" + upname);
@@ -163,9 +156,6 @@ public class ProxyTypeImpl implements ProxyType {
 	// Properties
 	private final HashMap<String, ProxyProperty> properties;
 	
-	// Property Event Names
-	private Set<String> propertyEventNames;
-	
 	// Events
 	private final HashMap<String, ProxyEvent> events;
 	
@@ -192,8 +182,13 @@ public class ProxyTypeImpl implements ProxyType {
 			HashSet<ProxyType> allInterfaces = new HashSet<ProxyType>();
 			getAllInterfaces(allInterfaces, interfaces);
 
-			for (ProxyType ifcType : allInterfaces)
-				methodsCompiler.addMethods(ifcType.getClazz(), true);
+			for (ProxyType ifcType : allInterfaces) {
+				try {
+					methodsCompiler.addMethods(Class.forName(ifcType.getClassName()), true);
+				}catch(ClassNotFoundException e) {
+					throw new IllegalStateException("Cannot find class " + ifcType.getClassName());
+				}
+			}
 		}
 		
 		// If the class does not have any proxied interfaces or the class is marked with
@@ -210,7 +205,7 @@ public class ProxyTypeImpl implements ProxyType {
 		if (clazz.isAnnotationPresent(Properties.class)) {
 			Properties annoProperties = (Properties)clazz.getAnnotation(Properties.class);
 			for (Property anno : annoProperties.value()) {
-				ProxyProperty property = new ProxyProperty(clazz, anno, annoProperties);
+				ProxyProperty property = new ProxyPropertyImpl(clazz, anno, annoProperties);
 				properties.put(anno.value(), property);
 				ProxyEvent event = property.getEvent();
 				if (event != null)
@@ -220,13 +215,13 @@ public class ProxyTypeImpl implements ProxyType {
 		
 		// Classes need to have all inherited properties added
 		if (!clazz.isInterface()) {
-			for (ProxyType type : interfaces)
-				type.addProperties(properties);
+			for (ProxyType ifc : interfaces)
+				addProperties((ProxyTypeImpl)ifc, properties);
 		}
 		
 		// Remove property accessors
 		for (ProxyProperty prop : properties.values())
-			methodsCompiler.removePropertyAccessors(prop);
+			methodsCompiler.removePropertyAccessors((ProxyPropertyImpl)prop);
 		
 		// Load events
 		if (clazz.isAnnotationPresent(Events.class)) {
@@ -240,7 +235,7 @@ public class ProxyTypeImpl implements ProxyType {
 		// Classes need to have all inherited events added
 		if (!clazz.isInterface()) {
 			for (ProxyType type : interfaces)
-				type.addEvents(events);
+				addEvents((ProxyTypeImpl)type, events);
 		}
 		
 		// Save
@@ -286,23 +281,6 @@ public class ProxyTypeImpl implements ProxyType {
 		return allInterfaces;
 	}
 	
-	@Override
-	public Set<String> getPropertyEventNames() {
-		if (propertyEventNames != null)
-			return propertyEventNames;
-		if (properties.isEmpty())
-			return propertyEventNames = Collections.EMPTY_SET;
-		propertyEventNames = new HashSet<String>();
-		for (ProxyProperty property : properties.values()) {
-			ProxyEvent event = property.getEvent();
-			if (event != null)
-				propertyEventNames.add(event.getName());
-		}
-		if (propertyEventNames.isEmpty())
-			propertyEventNames = Collections.EMPTY_SET;
-		return propertyEventNames;
-	}
-	
 	/**
 	 * Detects whether the method is a property accessor
 	 * @param method
@@ -327,24 +305,30 @@ public class ProxyTypeImpl implements ProxyType {
 		return false;
 	}
 	
-	@Override
-	public void addProperties(HashMap<String, ProxyProperty> properties) {
-		if (this.properties != null)
-			for (ProxyProperty prop : this.properties.values())
+	/**
+	 * Adds all properties recursively
+	 * @param properties
+	 */
+	public void addProperties(ProxyTypeImpl proxyType, HashMap<String, ProxyProperty> properties) {
+		if (proxyType.properties != null)
+			for (ProxyProperty prop : proxyType.properties.values())
 				properties.put(prop.getName(), prop);
-		if (interfaces != null)
-			for (ProxyType type : interfaces)
-				type.addProperties(properties);
+		if (proxyType.interfaces != null)
+			for (ProxyType type : proxyType.interfaces)
+				addProperties((ProxyTypeImpl)type, properties);
 	}
 	
-	@Override
-	public void addEvents(HashMap<String, ProxyEvent> events) {
-		if (this.events != null)
-			for (ProxyEvent event : this.events.values())
+	/**
+	 * Adds all events recursively
+	 * @param events
+	 */
+	public void addEvents(ProxyTypeImpl proxyType, HashMap<String, ProxyEvent> events) {
+		if (proxyType.events != null)
+			for (ProxyEvent event : proxyType.events.values())
 				events.put(event.getName(), event);
-		if (interfaces != null)
-			for (ProxyType type : interfaces)
-				type.addEvents(events);
+		if (proxyType.interfaces != null)
+			for (ProxyType type : proxyType.interfaces)
+				addEvents((ProxyTypeImpl)type, events);
 	}
 	
 	/**
@@ -360,6 +344,11 @@ public class ProxyTypeImpl implements ProxyType {
 		return clazz.isInterface();
 	}
 	
+	@Override
+	public String getClassName() {
+		return clazz.getName();
+	}
+
 	@Override
 	public Class getClazz() {
 		return clazz;
@@ -383,13 +372,6 @@ public class ProxyTypeImpl implements ProxyType {
 	}
 	
 	@Override
-	public ProxyProperty getProperty(String propertyName) {
-		if (properties == null)
-			return null;
-		return properties.get(propertyName);
-	}
-
-	@Override
 	public Map<String, ProxyEvent> getEvents() {
 		if (events == null)
 			return Collections.EMPTY_MAP;
@@ -410,75 +392,12 @@ public class ProxyTypeImpl implements ProxyType {
 		return events.get(eventName);
 	}
 	
-	/*package*/ void serialize(JsonGenerator gen, SerializerProvider sp, Remote.Array array) throws IOException, JsonProcessingException {
-		ProxySessionTracker tracker = ((ProxyObjectMapper)gen.getCodec()).getTracker();
-		
-		String className = clazz.getName();
-		if (array == Array.NATIVE)
-			className += "[]";
-		else if (array == Array.WRAP)
-			className += "[wrap]";
-		
-		if (tracker.isTypeDelivered(this)) {
-			gen.writeString(className);
-			return;
-		}
-
-		tracker.setTypeDelivered(this);
-		gen.writeStartObject();
-		gen.writeStringField("className", className);
-		if (clazz.isInterface())
-			gen.writeBooleanField("isInterface", true);
-		if (getSuperType() != null)
-			gen.writeObjectField("extend", getSuperType());
-		if (!interfaces.isEmpty()) {
-			gen.writeArrayFieldStart("interfaces");
-			for (ProxyType type : interfaces)
-				gen.writeObject(type);
-			gen.writeEndArray();
-		}
-		if (methods.length > 0) {
-			gen.writeObjectFieldStart("methods");
-			for (ProxyMethod method : methods)
-				gen.writeObjectField(method.getName(), method);
-			gen.writeEndObject();
-		}
-		if (!clazz.isInterface()) {
-			if (properties != null && !properties.isEmpty()) {
-				gen.writeObjectFieldStart("properties");
-				for (ProxyProperty property : properties.values())
-					gen.writeObjectField(property.getName(), property);
-				gen.writeEndObject();
-			}
-			if (events != null && !events.isEmpty()) {
-				gen.writeObjectFieldStart("events");
-				getPropertyEventNames();
-				for (ProxyEvent event : events.values()) {
-					gen.writeObjectFieldStart(event.getName());
-					if (propertyEventNames.contains(event.getName()))
-						gen.writeBooleanField("isProperty", true);
-					gen.writeEndObject();
-				}
-				gen.writeEndObject();
-			}
-		}
-		gen.writeEndObject();
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.codehaus.jackson.map.JsonSerializable#serialize(org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
-	 */
-	@Override
-	public void serialize(JsonGenerator gen, SerializerProvider sp) throws IOException, JsonProcessingException {
-		serialize(gen, sp, null);
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof ProxyType && ((ProxyType)obj).getClazz() == clazz;
+		return obj instanceof ProxyType && ((ProxyTypeImpl)obj).getClazz() == clazz;
 	}
 
 	/* (non-Javadoc)

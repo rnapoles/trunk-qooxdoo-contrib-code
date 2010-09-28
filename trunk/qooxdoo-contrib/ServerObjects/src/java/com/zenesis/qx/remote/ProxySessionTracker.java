@@ -304,14 +304,14 @@ public class ProxySessionTracker {
 		Integer serverId = objectIds.get(obj);
 		if (serverId != null) {
 			if (invalidObjects.remove(obj)) {
-				ProxyType type = ProxyTypeManager.INSTANCE.getProxyType((Class<Proxied>)obj.getClass());
+				ProxyType type = getProxyType(obj);
 				return new Proxy(obj, serverId, type, true);
 			}
 			return new Proxy(obj, serverId);
 		}
 		
 		// See if the client already knows about the type
-		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType((Class<Proxied>)obj.getClass());
+		ProxyType type = getProxyType(obj);
 		
 		// Get an ID
 		serverId = nextServerId++;
@@ -322,6 +322,20 @@ public class ProxySessionTracker {
 		
 		// Return the information for the client
 		return new Proxy(obj, serverId, type, true);
+	}
+	
+	/**
+	 * Returns the ProxyType to use for a specific object
+	 * @param obj
+	 * @return
+	 */
+	protected ProxyType getProxyType(Object obj) {
+		ProxyType type = null;
+		if (obj instanceof DynamicTypeProvider)
+			type = ((DynamicTypeProvider)obj).getProxyType();
+		if (type == null)
+			type = ProxyTypeManager.INSTANCE.getProxyType((Class<Proxied>)obj.getClass());
+		return type;
 	}
 	
 	/**

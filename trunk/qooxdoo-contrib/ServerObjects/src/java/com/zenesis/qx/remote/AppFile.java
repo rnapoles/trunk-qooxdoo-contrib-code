@@ -236,7 +236,7 @@ public class AppFile implements Proxied {
 	 * @return the url
 	 */
 	public String getThumbnailUrl() {
-		return url + "?gh:size=200x200";
+		return url + "?gh:size=200x200&enlarge=false";
 	}
 
 	/**

@@ -29,6 +29,7 @@ package com.zenesis.qx.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -57,11 +58,15 @@ public abstract class AbstractTestCase extends TestCase {
 					lineA++;
 				iA++;
 			}
+			if (iA == actual.length())
+				cA = 0;
 			while (iE < expected.length() && isSkippable(cE = expected.charAt(iE))) {
 				iE++;
 				if (cE == '\n')
 					lineE++;
 			}
+			if (iE == expected.length())
+				cE = 0;
 			if (cA == 0 && cE == 0)
 				return;
 			if (cA != cE)
@@ -78,17 +83,19 @@ public abstract class AbstractTestCase extends TestCase {
 	 * @param filename
 	 */
 	protected void assertFromFile(String actual, String filename) {
-		StringBuilder sb = new StringBuilder();
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(filename + ".txt")));
-			String line;
-			while ((line = br.readLine()) != null)
-				sb.append(line).append('\n');
-			br.close();
-		}catch(IOException e) {
-			throw new IllegalStateException("Error while loading " + filename + ": " + e.getMessage(), e);
-		}
-		try {
+			StringBuilder sb = new StringBuilder();
+			try {
+				InputStream is = getClass().getResourceAsStream(filename + ".txt");
+				assertNotNull("Cannot find a file called " + filename + ".txt", is);
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				String line;
+				while ((line = br.readLine()) != null)
+					sb.append(line).append('\n');
+				br.close();
+			}catch(IOException e) {
+				throw new IllegalStateException("Error while loading " + filename + ": " + e.getMessage(), e);
+			}
 			assertEqualsIgnoreSpace(sb.toString(), actual);
 		}catch(AssertionFailedError e) {
 			System.out.println("FAILED: " + e.getMessage() + ", FILE: " + filename + ", ACTUAL:\n" + actual);

@@ -28,6 +28,8 @@
 package com.zenesis.qx.remote;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Array;
@@ -141,6 +143,17 @@ public class RequestHandler {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	public void processRequest(Reader request, OutputStream response) throws ServletException, IOException {
+		processRequest(request, new OutputStreamWriter(response));
+	}
+
+	/**
+	 * Handles the callback from the client; expects either an object or an array of objects
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	public void processRequest(Reader request, Writer response) throws ServletException, IOException {
 		tracker.setRequestHandler(this);
 		ObjectMapper objectMapper = tracker.getObjectMapper();
@@ -234,35 +247,73 @@ public class RequestHandler {
 		// Find the method by hand - we have already guaranteed that there will not be conflicting
 		//	method names (ie no overridden methods) but Java needs a list of parameter types
 		//	so we do it ourselves.
-		Method method = null;
+		boolean found = false;
 		if (methodName.length() > 3 && (methodName.startsWith("get") || methodName.startsWith("set"))) {
 			String name = methodName.substring(3, 4).toLowerCase();
 			if (methodName.length() > 4)
 				name += methodName.substring(4);
 			for (ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass()); type != null; type = type.getSuperType()) {
-				ProxyProperty property = type.getProperty(name);
+				ProxyProperty property = type.getProperties().get(name);
 				if (property != null) {
-					if (methodName.startsWith("get"))
-						method = property.getGetMethod();
-					else
-						method = property.getSetMethod();
+					Object result = null;
+					if (methodName.startsWith("get")) {
+						readParameters(jp, null);
+						result = property.getValue(serverObject);
+					} else {
+						Object[] values = readParameters(jp, new Class[] { property.getPropertyClass().getJavaType() });
+						property.setValue(serverObject, values[0]);
+					}
+					tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, serverObject, null, result);
+					found = true;
 					break;
 				}
 			}
 		}
-		if (method == null)
-			for (ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass()); type != null && method == null; type = type.getSuperType()) {
+
+		if (!found)
+			for (ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass()); type != null && !found; type = type.getSuperType()) {
 				ProxyMethod[] methods = type.getMethods();
 				for (int i = 0; i < methods.length; i++)
 					if (methods[i].getName().equals(methodName)) {
-						method = methods[i].getMethod();
+						Method method = methods[i].getMethod();
+						
+						// Call the method
+						try {
+							Object[] values = readParameters(jp, method.getParameterTypes());
+							Object result = method.invoke(serverObject, values);
+							tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, serverObject, null, result);
+						}catch(InvocationTargetException e) {
+							Throwable t = e.getCause();
+							log.error("Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
+							throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
+						}catch(RuntimeException e) {
+							log.error("Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
+							throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
+						}catch(IllegalAccessException e) {
+							throw new ServletException("Exception while running " + method + ": " + e.getMessage(), e);
+						}
+						found = true;
 						break;
 					}
 			}
-		if (method == null)
+
+		if (!found)
 			throw new ServletException("Cannot find method called " + methodName + " in " + serverObject);
 		
-		Class[] types = method.getParameterTypes();
+		jp.nextToken();
+	}
+	
+	private Object[] readParameters(JsonParser jp, Class[] types) throws IOException {
+		if (types == null) {
+			// Check for parameters
+			if (jp.getCurrentToken() == JsonToken.FIELD_NAME &&
+					jp.getCurrentName().equals("parameters") &&
+					jp.nextToken() == JsonToken.START_ARRAY) {
+				while (jp.nextToken() != JsonToken.END_ARRAY)
+					;
+			}
+			return null;
+		}
 		Object[] values = new Object[types.length];
 		Object[] params = null;
 		
@@ -272,28 +323,15 @@ public class RequestHandler {
 				jp.nextToken() == JsonToken.START_ARRAY) {
 			
 			params = readArray(jp, types);
-			for (int i = 0; i < values.length; i++)
-				if (i < params.length)
-					values[i] = params[i];
-				else
-					values[i] = null;
 		}
 		
-		// Call the method
-		try {
-			Object result = method.invoke(serverObject, values);
-			tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, serverObject, null, result);
-		}catch(InvocationTargetException e) {
-			Throwable t = e.getCause();
-			log.error("Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
-			throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
-		}catch(RuntimeException e) {
-			log.error("Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
-			throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
-		}catch(IllegalAccessException e) {
-			throw new ServletException("Exception while running " + method + ": " + e.getMessage(), e);
-		}
-		jp.nextToken();
+		for (int i = 0; i < values.length; i++)
+			if (i < params.length)
+				values[i] = params[i];
+			else
+				values[i] = null;
+		
+		return values;
 	}
 	
 	/**
@@ -310,13 +348,17 @@ public class RequestHandler {
 
 		Proxied serverObject = getProxied(serverId);
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass());
-		ProxyProperty prop = type.getProperty(propertyName);
+		ProxyProperty prop = getProperty(type, propertyName);
 		
 		skipFieldName(jp, "value");
-		if (Proxied.class.isAssignableFrom(prop.getPropertyClass())) {
-			Integer id = jp.readValueAs(Integer.class);
-			if (id != null)
-				value = getProxied(id);
+		if (prop.getPropertyClass().isSubclassOf(Proxied.class)) {
+			if (prop.getPropertyClass().isArray())
+				value = readArray(jp, prop.getPropertyClass().getJavaType());
+			else {
+				Integer id = jp.readValueAs(Integer.class);
+				if (id != null)
+					value = getProxied(id);
+			}
 		} else
 			value = jp.readValueAs(Object.class);
 		
@@ -338,7 +380,7 @@ public class RequestHandler {
 
 		Proxied serverObject = getProxied(serverId);
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass());
-		ProxyProperty prop = type.getProperty(propertyName);
+		ProxyProperty prop = getProperty(type, propertyName);
 		prop.expire(serverObject);
 		
 		jp.nextToken();
@@ -368,14 +410,14 @@ public class RequestHandler {
 		// Get our info
 		Proxied serverObject = getProxied(serverId);
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(serverObject.getClass());
-		ProxyProperty prop = type.getProperty(propertyName);
+		ProxyProperty prop = getProperty(type, propertyName);
 		
 		// Get the optional array of items
 		if (jp.nextToken() == JsonToken.FIELD_NAME &&
 				jp.getCurrentName().equals("items") &&
 				jp.nextToken() == JsonToken.START_ARRAY) {
 			
-			items = readArray(jp, prop.getPropertyArrayClass());
+			items = readArray(jp, prop.getPropertyClass().getJavaType());
 		}
 		
 		// Quick logging
@@ -388,7 +430,7 @@ public class RequestHandler {
 		}
 		
 		if (action.equals("replaceAll")) {
-			if (ArrayList.class.isAssignableFrom(prop.getPropertyClass())) {
+			if (prop.getPropertyClass().isCollection()) {
 				ArrayList list = (ArrayList)prop.getValue(serverObject);
 				list.clear();
 				for (Object obj : items)
@@ -519,6 +561,22 @@ public class RequestHandler {
 	}
 	
 	/**
+	 * Finds a property in a type, recursing up the class hierarchy
+	 * @param type
+	 * @param name
+	 * @return
+	 */
+	protected ProxyProperty getProperty(ProxyType type, String name) {
+		while (type != null) {
+			ProxyProperty prop = type.getProperties().get(name);
+			if (prop != null)
+				return prop;
+			type = type.getSuperType();
+		}
+		return null;
+	}
+	
+	/**
 	 * Sets a property value, tracking which property is being set so that isSettingProperty can
 	 * detect recursive sets
 	 * @param type
@@ -532,7 +590,7 @@ public class RequestHandler {
 		setPropertyObject = proxied;
 		setPropertyName = propertyName;
 		try {
-			ProxyProperty property = type.getProperty(propertyName);
+			ProxyProperty property = getProperty(type, propertyName);
 			if (!property.isSendExceptions())
 				property.setValue(proxied, value);
 			else {
@@ -605,6 +663,8 @@ public class RequestHandler {
 				Integer id = jp.readValueAs(Integer.class);
 				if (id != null) {
 					Proxied obj = getProxied(id);
+					if (!clazz.isInstance(obj))
+						throw new ClassCastException("Cannot cast " + obj + " class " + obj.getClass() + " to " + clazz);
 					result.add(obj);
 				} else
 					result.add(null);

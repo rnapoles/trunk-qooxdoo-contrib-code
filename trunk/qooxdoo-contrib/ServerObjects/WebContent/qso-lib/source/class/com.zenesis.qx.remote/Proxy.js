@@ -167,7 +167,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				this.$$proxyUser = {};
 			else
 				oldValue = this.$$proxyUser[propName];
-			var propDef = this.getPropertyDef(propertyName);
+			var propDef = this.getPropertyDef(propName);
 			if (propDef.array == "wrap")
 				value = new qx.data.Array(value);
 			this.$$proxyUser[propName] = value;

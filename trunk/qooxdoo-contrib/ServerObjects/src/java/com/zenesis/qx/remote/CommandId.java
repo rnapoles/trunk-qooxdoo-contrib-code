@@ -39,7 +39,8 @@ public class CommandId {
 		SET_VALUE("set"),
 		EXPIRE("expire"),
 		DEFINE("define"),
-		EDIT_ARRAY("edit-array", true);
+		EDIT_ARRAY("edit-array", true),
+		LOAD_TYPE("load-type");
 		
 		public final String remoteId;
 		public final boolean cumulative;
