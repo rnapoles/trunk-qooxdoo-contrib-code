@@ -73,8 +73,17 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				},
 				isArray: qx.lang.Array.isArray, 
 				isDate: function(value) {
-					return this.getClass(value) == "Array";
-				}
+				      // Added "value !== null" because IE throws an exception "Object expected"
+				      // by executing "value instanceof Array" if value is a DOM element that
+				      // doesn't exist. It seems that there is a internal different between a
+				      // JavaScript null and a null returned from calling DOM.
+				      // e.q. by document.getElementById("ReturnedNull").
+				      return (
+				        value !== null && (
+				        this.getClass(value) == "Date" ||
+				        value instanceof Date)
+				      );
+				 }
 			};
 		}
 	},
