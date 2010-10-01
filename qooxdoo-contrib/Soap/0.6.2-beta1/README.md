@@ -68,4 +68,4 @@ line to appear. Then navigate to:
          http://localhost:7789/demo/default/source/
 
 and you should see the main screen which is a toolbar with two buttons to the
-upper right.
+upper left.
