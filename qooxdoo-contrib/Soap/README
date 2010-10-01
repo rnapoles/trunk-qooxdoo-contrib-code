@@ -1,8 +1,13 @@
 ==== Soap Module ====
 
 This package contains a soap rpc module, a sample remote table model and a soap
-backend written in python, using soaplib 0.8.1 and CherryPy 3.x.
+backend written in python, using soaplib 1.0.x. 
 
-See inside for more info.
+The project is being hosted at github. you can use either:
 
+svn co http://svn.github.com/arskom/qxsoap
+git clone http://github.com/arskom/qxsoap.git
 
+to get the latest trunk.
+
+See the README inside for further details.
