@@ -275,6 +275,13 @@ qx.Class.define("tokenfield.Token",
     },
   
     // overridden
+    focus : function() 
+    {
+      this.base(arguments);
+      this.getChildControl("textfield").getFocusElement().focus();
+    },
+    
+    // overridden
     tabFocus : function()
     {
       var field = this.getChildControl("textfield");
