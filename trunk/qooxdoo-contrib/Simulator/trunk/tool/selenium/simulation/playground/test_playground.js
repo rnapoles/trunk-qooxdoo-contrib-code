@@ -7,7 +7,8 @@ var baseConf = {
   'testBrowser' : '*custom /usr/lib/firefox-3.0.10/firefox -no-remote -P selenium-3',
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/application/playground/build/index.html',
-  'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator' 
+  'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
+  'editor' : 'Ace'
 };
 
 var args = arguments ? arguments : "";
@@ -124,6 +125,16 @@ simulation.Simulation.prototype.logSampleWarnings = function(logCont, sample)
   return foundErrors;
 };
 
+simulation.Simulation.prototype.getAceActive = function()
+{
+  try {
+    return this.__sel.isVisible('xpath=//div[contains(@class, "ace_editor")]');
+  } catch(ex) {
+    this.log("Unable to check syntax highlighting: " + ex, "error");
+    return false;
+  }
+};
+
 simulation.Simulation.prototype.getCodeMirrorActive = function()
 {
   try {
@@ -223,8 +234,14 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
   
 };
 
+simulation.Simulation.prototype.checkSyntaxHighlightingAce = function()
+{
+  
+};
+
 simulation.Simulation.prototype.checkSyntaxHighlighting = function()
 {
+  var editor = this.getConfigSetting("editor");
   var browser = this.getConfigSetting("testBrowser").toLowerCase();
   if( browser.indexOf("firefox") >= 0 && browser.indexOf("1.5") >= 0 ) {
     this.log("Skipping syntax highlighting check in Firefox 1.5", "info");
@@ -232,12 +249,12 @@ simulation.Simulation.prototype.checkSyntaxHighlighting = function()
   }
   
   // Check if syntax highlighting is on
-  if (this.getCodeMirrorActive()) {
+  if (this["get" + editor + "Active"]()) {
     this.log("Syntax highlighting is active", "info");
     // Turn off syntax highlighting
     this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
     Packages.java.lang.Thread.sleep(500);
-    if (this.getCodeMirrorActive()) {
+    if (this["get" + editor + "Active"]()) {
       this.log("Syntax highlighting was not deactivated!", "error");
     } else {
       this.log("Syntax highlighting deactivated correctly", "info");
@@ -245,7 +262,7 @@ simulation.Simulation.prototype.checkSyntaxHighlighting = function()
     // And turn it on again
     this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
     Packages.java.lang.Thread.sleep(500);
-    if (this.getCodeMirrorActive()) {
+    if (this["get" + editor + "Active"]()) {
       this.log("Syntax highlighting reactivated correctly", "info");
     } else {
       this.log("Syntax highlighting was not reactivated!", "error");
