@@ -58,6 +58,20 @@ class qcl_data_model_AbstractActiveRecord
    * @var bool
    */
   protected $_loaded = false;
+  
+	/**
+	 * Flag to indicate that a record has been deleted
+	 * @var bool
+	 */
+	protected $_isDeleted = false;  
+  
+  /**
+   * The number of seconds after which the record is automatically
+   * deleted if not modified. Defaults to null (= no expiration).
+   * @var int
+   */
+	protected $expiresAfter = null;   
+	
 
   //-------------------------------------------------------------
   // Model properties
@@ -229,13 +243,20 @@ class qcl_data_model_AbstractActiveRecord
   }
 
   /**
-   * Overridden to check if record has been loaded
+   * Gets the values of all properties as an associative
+   * array, keys being the property names. Overridden to check if
+   * record is loaded.
+   * 
+   * @param array $options 
+   * 		An associative array containing one or more of the following keys:
+   * 			include => Array of property names to include
+   * 			exclude	=> Array of property names to exclude
    * @return array
    */
-  public function data()
+  public function data( $options=null )
   {
     $this->checkLoaded();
-    return parent::data();
+    return parent::data( $options );
   }
 
   /**
@@ -259,6 +280,61 @@ class qcl_data_model_AbstractActiveRecord
   public function formData()
   {
     return $this->formData;
+  }
+  
+  //-------------------------------------------------------------
+  // UI-related getters
+  //-------------------------------------------------------------
+  
+  /**
+   * Returns the text for a 'label' that is used in a visual widget
+   * to represent the model record. Must be implemented if used. 
+   * @return string
+   */
+  public function label()
+  {
+  	$this->notImplemented(__CLASS__); 
+  }
+
+  /**
+   * Returns the model value that is used in a visual widget
+   * to represent the model record. Defaults to returning the
+   * id property.
+   * @return mixed
+   */
+	public function model()
+  {
+  	return $this->id(); 
+  }
+  
+  /**
+   * Returns the icon path that is used in a visual widget
+   * to represent the model record. Defaults to returning
+   * a NULL value
+   * @return string
+   */  
+	public function icon()
+  {
+  	return null; 
+  }
+  
+  /**
+   * Returns the data model of an UI element such as a ListItem or tree node
+   * @param string $modelKey 
+   * 		The name of the key that should have the model value. Defaults to "model".
+   * @param int|null $iconSize
+   * 		The pixel size of the icon, if any. Defaults to null (= no icon) 
+   * @param string $iconKey 
+   * 		The name of the key that should have the icon path. Defaults to "icon".  
+   * @return array
+   */
+  public function uiElementModel($modelKey="model", $iconKey="icon", $labelKey="label")
+  {
+  	return array(
+  		$modelKey	=> $this->model(),
+  		$labelKey	=> $this->label(),
+  		$iconKey	=> $this->icon()
+  	);
   }
 
   //-------------------------------------------------------------
@@ -364,6 +440,9 @@ class qcl_data_model_AbstractActiveRecord
    */
   public function load( $id )
   {
+  	
+  	qcl_assert_integer( $id, "Invalid parameter. Must be integer.");
+  	
     /*
      * initialize model and behaviors
      */
@@ -428,8 +507,9 @@ class qcl_data_model_AbstractActiveRecord
   {
     if ( ! $this->_loaded )
     {
-      //throw new qcl_data_model_NoRecordLoadedException("Model is not loaded yet.");
-      $this->raiseError("Model is not loaded yet.");
+      throw new qcl_data_model_NoRecordLoadedException(sprintf(
+      	"Model %s is not loaded yet.", $this->className()
+      ));
     }
   }
 
@@ -475,6 +555,7 @@ class qcl_data_model_AbstractActiveRecord
        * save a copy so we can check whether properties have changed
        */
       $this->_data = $this->data();
+        
 
       /*
        * return the number of rows found
@@ -515,14 +596,14 @@ class qcl_data_model_AbstractActiveRecord
 
   /**
    * find model records that match the given where array data
-   * for iteration
+   * for iteration.
    * @param array $where
    *    Array containing the where data
    * @param mixed $oderBy
    *    Optional data for the ordering of the retrieved records
    * @return qcl_data_db_Query Result query object
    */
-  public function findWhere( $query, $orderBy=null )
+  public function findWhere( $where, $orderBy=null )
   {
     /*
      * initialize model and behaviors
@@ -532,7 +613,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * execute query
      */
-    $this->lastQuery =  $this->getQueryBehavior()->selectWhere( $query, $orderBy );
+    $this->lastQuery = $this->getQueryBehavior()->selectWhere( $where, $orderBy );
     return $this->lastQuery;
   }
 
@@ -623,6 +704,58 @@ class qcl_data_model_AbstractActiveRecord
       ) );
     }
   }
+  
+  /**
+   * Find the models instances that are NOT linked with the target model
+   * for iteration. Current implementation is ineffective and very expensive 
+   * if you have a large number of records, because it simply creates a diff
+   * between ALL ids and the linked ones. 
+   *
+   * @param qcl_data_model_AbstractActiveRecord $targetModel
+   *    Target model
+   * @param qcl_data_model_AbstractActiveRecord|qcl_data_model_AbstractActiveRecord[] $dependencies
+   *    Optional model instance or array of model instances on which the link
+   *    between this model and the target model depends.
+   * @param string|array $orderBy
+   *    Optional order by argument
+   * @return qcl_data_db_Query
+   * @throws qcl_data_model_RecordNotFoundException
+   * @todo rewrite more efficiently
+   */
+  public function findNotLinked( $targetModel, $dependencies=null, $orderBy=null )
+  {
+    /*
+     * initialize model and behaviors
+     */
+    $this->init();
+
+    /*
+     * dependencies?
+     */
+    $dependencies = $this->argToArray( $dependencies );
+
+    /*
+     * all ids 
+     */
+    $allIds = $this->getQueryBehavior()->fetchValues("id");
+    
+    /*
+     * find linked ids
+     */
+    $ids = array_diff( $allIds, $this->getRelationBehavior()->linkedModelIds( $targetModel, $dependencies ) );
+    if ( count( $ids ) )
+    {
+      $this->lastQuery = $this->getQueryBehavior()->selectIds( $ids, $orderBy );
+      return $this->lastQuery;
+    }
+    else
+    {
+      throw new qcl_data_model_RecordNotFoundException( sprintf(
+        "No record of [%s] exists that is not linked to %s",
+        $this->className(), $targetModel
+      ) );
+    }
+  }  
 
   /**
    * Find the models instances that are linked with the target model,
@@ -749,7 +882,7 @@ class qcl_data_model_AbstractActiveRecord
     /*
      * save a copy so we can check whether properties have changed
      */
-    $this->_data = $this->data();
+    $this->_data = $this->data();     
 
     /*
      * return the record
@@ -930,17 +1063,13 @@ class qcl_data_model_AbstractActiveRecord
      */
     $this->init();
 
-    $this->checkLoaded();
-
     /*
      * check if we have a loaded record
      */
+    $this->checkLoaded();    
     $id = $this->getId();
 
-    $this->log( sprintf(
-      "Unlinking all linked records for [%s #%s] ...",
-      $this->className(), $id
-    ), QCL_LOG_MODEL );
+    $this->log( "Unlinking all linked records for $this ...", QCL_LOG_MODEL );
 
     /*
      * unlink all model records and delete dependend ones
@@ -982,8 +1111,22 @@ class qcl_data_model_AbstractActiveRecord
      */
     $this->log( sprintf( "Deleting record data for %s ...", $this ), QCL_LOG_MODEL );
     $succes = $this->getQueryBehavior()->deleteRow( $id );
+    
+    /*
+     * set flags
+     */
+    $this->_isDeleted = true;
 
     return $succes;
+  }
+  
+  /**
+   * Returns true if the current record has just been deleted
+   * @return bool
+   */
+  public  function isDeleted()
+  {
+  	return $this->_isDeleted;
   }
 
   /**
@@ -1469,11 +1612,12 @@ class qcl_data_model_AbstractActiveRecord
    *
    * @param qcl_data_model_AbstractActiveRecord $targetModel
    *    Target model instance. Does not need to be loaded.
-   * @param bool $allLinks If true, remove all links, i.e. not only
-   *   of the model instance (with the present id), but all other
-   *   instances as well.
-   * @param bool $delete If true, delete all linked records in addition
-   *   to unlinking them. This is needed for dependend models.
+   * @param bool $allLinks 
+   * 		If true, remove all links, i.e. not only of the currently loaded
+   * 	  model instance, but all other instances as well.
+   * @param bool $delete 
+   * 		If true, delete all linked records in addition
+   *    to unlinking them. This is needed for dependend models.
    * @return bool
    */
   public function unlinkAll( $targetModel, $allLinks = false, $delete = false )
@@ -1537,6 +1681,53 @@ class qcl_data_model_AbstractActiveRecord
   //-------------------------------------------------------------
   // Cleanup
   //-------------------------------------------------------------
+  
+  /**
+   * This method loads each model record and triggers the expiration
+   * feature on each record, if enabled. Since this is potentially 
+   * computation-expensive, call it only in a startup or shutdown method 
+   * that is called only once per user and session. 
+   */
+  public function cleanup()
+  {
+  	$this->findAll();
+  	while ( $this->loadNext() )
+  	{
+  		if ( $this->checkExpiration() )
+  		{
+  			$this->delete();
+  		}
+  	}
+  } 
+  
+  
+  /**
+   * Method called in the load() method to check whether the record auto-expires.
+   * By default, checks the expiresAfter property and removes the record if
+   * the record hasn't been touched for the number of seconds stored in the
+   * property (if not NULL). Returns true if record is expired and should be deleted,
+   * otherwise false.
+   * @return boolean
+   */
+  protected function checkExpiration()
+  {
+  	if ( $this->expiresAfter !== null )
+  	{
+  		$m  = $this->getModified();
+  		if ( $m instanceof  DateTime )
+  		{
+	  		$d 	= $m->diff( new DateTime() );
+	  		$s 	= $d->s + 
+				  		$d->i * 60 + 
+				  		$d->h * 3600 +
+				  		$d->d * 86400 +
+				  		$d->m * 2678400;
+				
+	  		return ( $s > $this->expiresAfter );
+  		}
+  	}
+  	return false;
+  }
 
   /**
    * Resets the internal cache used by the behaviors to avoid unneccessary

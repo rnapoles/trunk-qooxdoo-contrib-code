@@ -16,7 +16,7 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/ui/dialog/Dialog.php";
+qcl_import("qcl_ui_dialog_Dialog");
 
 class qcl_ui_dialog_Select
   extends qcl_ui_dialog_Dialog
@@ -30,7 +30,6 @@ class qcl_ui_dialog_Select
    * @param string $callbackService Service that will be called when the user clicks on the selected button
    * @param string $callbackMethod Service method
    * @param array $callbackParams Optional service params
-   * @return unknown_type
    */
   function __construct(
     $message,

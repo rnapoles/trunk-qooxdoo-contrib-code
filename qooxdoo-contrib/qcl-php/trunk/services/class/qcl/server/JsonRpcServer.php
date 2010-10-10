@@ -358,9 +358,9 @@ class qcl_server_JsonRpcServer
      */
     $app = $this->getApplication();
     $event_transport = $app->getIniValue("service.event_transport");
-    if ( $app and  $event_transport )
+    if ( $app and $event_transport )
     {
-      $events    = $app->getEventDispatcher()->getClientEvents();
+      $events    = $app->getEventDispatcher()->getClientEvents(); 
       $response->setEvents( $events );
       $sessionId = $app->getAccessController()->getSessionId();
       $messages  = $app->getMessageBus()->getClientMessages( $sessionId );

@@ -63,5 +63,32 @@ class qcl_ui_dialog_Confirm
      'params'  => $callbackParams
     ));
   }
+  
+  /**
+   * Static utility method to check whether the arguments passed to 
+   * a method are the result of a qcl_ui_dialog_Confirm response.
+   * This works only if the first argument of the method is not a 
+   * boolean value. Returns false if the confirmation response was 
+   * the equivalent of "no" and the method arguments as an array in
+   * the other case, with an additional "true" value appended to indicate
+   * that the confirmation was successful.
+   * 
+   * @param array $args
+   * @return false|array
+   */
+  static public function getArguments( $args )
+  {
+  	qcl_assert_array( $args );
+  	if ( gettype( $args[0] ) == "boolean" )
+  	{
+  		if ( $args[0] === false )
+  		{
+  			return false;	
+  		}
+  		array_shift( $args );
+  		array_push( $args, true );
+  	}
+		return $args;
+  }
 }
 ?>

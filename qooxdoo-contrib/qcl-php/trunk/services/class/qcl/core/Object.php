@@ -323,9 +323,13 @@ class qcl_core_Object
   /**
    * Gets the values of all properties as an associative
    * array, keys being the property names.
+   * @param array $options 
+   * 		An associative array containing one or more of the following keys:
+   * 			include => Array of property names to include
+   * 			exclude	=> Array of property names to exclude
    * @return array
    */
-  public function data()
+  public function data( $options=null )
   {
     /*
      * initialize object and behaviors
@@ -335,7 +339,31 @@ class qcl_core_Object
     /*
      * call the behvior method to do the work
      */
-    return $this->getPropertyBehavior()->data();
+    $data = $this->getPropertyBehavior()->data();
+    
+    /*
+     * options
+     */
+    if ( is_array( $options ) )
+    {
+    	if ( isset( $options['include'] ) )
+    	{
+    		$delete = array_diff( 
+    			$this->properties(),
+    			(array) $options['include']
+    		);
+    	}
+    	elseif ( isset( $options['exclude'] ) )
+    	{
+    		$delete = (array) $options['exclude'];
+    	} 
+    	foreach( $delete as $prop )
+    	{
+    		unset( $data[$prop] );
+    	}
+    }
+    
+    return $data;
   }
 
   /**
@@ -1152,12 +1180,17 @@ class qcl_core_Object
 
   /**
    * Broadcasts a message to all connected clients
-   * @param string $name Message name
-   * @param mixed $data Data dispatched with message
+   * @param string $name 
+   * 		Message name
+   * @param mixed $data 
+   * 		Data dispatched with message
+   * @param bool $excludeOwnSession 
+   * 		Whether the current session should be excluded from the broadcast
+   * 		(Default: false).
    */
-  public function broadcastClientMessage ( $name, $data=true  )
+  public function broadcastClientMessage ( $name, $data=true, $excludeOwnSession=false  )
   {
-    $this->getMessageBus()->broadcastClientMessage( $this, $name, $data );
+    $this->getMessageBus()->broadcastClientMessage( $this, $name, $data, $excludeOwnSession );
   }
 
   /**

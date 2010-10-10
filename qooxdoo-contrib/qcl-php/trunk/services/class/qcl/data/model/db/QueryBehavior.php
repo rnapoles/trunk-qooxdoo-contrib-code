@@ -647,7 +647,12 @@ class qcl_data_model_db_QueryBehavior
     }
     else
     {
-      if ( isset( $result["id"]) ) settype( $result["id"] , "integer" ); //FIXME
+    	// FIXME test performance
+    	foreach( $result as $key => $value )
+    	{
+    		$result[$key] = $this->getModel()->getPropertyBehavior()->typecast($key, $value);
+    	}
+      //if ( isset( $result["id"]) ) settype( $result["id"] , "integer" ); //FIXME
       return $result;
     }
   }

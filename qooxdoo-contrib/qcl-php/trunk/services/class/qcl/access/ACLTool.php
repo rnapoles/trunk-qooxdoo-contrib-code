@@ -1,21 +1,21 @@
 <?php
 /* ************************************************************************
 
-   Bibliograph: Collaborative Online Reference Management
-
-   http://www.bibliograph.org
-
+   qcl - the qooxdoo component library
+  
+   http://qooxdoo.org/contrib/project/qcl/
+  
    Copyright:
      2007-2010 Christian Boulanger
-
+  
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
      EPL: http://www.eclipse.org/org/documents/epl-v10.php
      See the LICENSE file in the project's top-level directory for details.
-
+  
    Authors:
-     * Chritian Boulanger (cboulanger)
-
+   *  Christian Boulanger (cboulanger)
+  
 ************************************************************************ */
 
 qcl_import("qcl_data_controller_Controller");
@@ -23,7 +23,7 @@ qcl_import("qcl_data_controller_Controller");
 /**
  * Backend service class for the access control tool widget
  */
-class qcl_access_ACToolController
+class qcl_access_ACLTool
   extends qcl_data_controller_Controller
 {
 
@@ -41,38 +41,43 @@ class qcl_access_ACToolController
    */
   protected function modelMap()
   {
-    return  array(
-      'user'        => array(
-        'model'       => $this->getAccessController()->getUserModel(),
-        'label'       => $this->tr("Users"),
-        'labelProp'   => "name",
-        'icon'        => "icon/16/apps/preferences-users.png"
-      ),
-      'role'        => array(
-        'model'       => $this->getAccessController()->getRoleModel(),
-        'label'       => $this->tr("Roles"),
-        'labelProp'   => "name",
-        'icon'        => "icon/16/apps/internet-feed-reader.png"
-      ),
-      'group'        => array(
-        'model'       => $this->getAccessController()->getGroupModel(),
-        'label'       => $this->tr("Groups"),
-        'labelProp'   => "name",
-        'icon'        => "icon/16/actions/address-book-new.png"
-      ),
-      'permission'  => array(
-        'model'       => $this->getAccessController()->getPermissionModel(),
-        'label'       => $this->tr("Permissions"),
-        'labelProp'   => "namedId",
-        'icon'        => "icon/16/apps/preferences-security.png"
-      ),
-      'datasource'  => array(
-        'model'       => $this->getDatasourceModel(),
-        'label'       => $this->tr("Datasources"),
-        'labelProp'   => "title",
-        'icon'        => "icon/16/apps/internet-transfer.png"
-      )
-    );
+  	static $map = null;
+  	if ( $map === null )
+  	{
+	    $map = array(
+	      'user'        => array(
+	        'model'       => $this->getAccessController()->getUserModel(),
+	        'label'       => $this->tr("Users"),
+	        'labelProp'   => "name",
+	        'icon'        => "icon/16/apps/preferences-users.png"
+	      ),
+	      'role'        => array(
+	        'model'       => $this->getAccessController()->getRoleModel(),
+	        'label'       => $this->tr("Roles"),
+	        'labelProp'   => "name",
+	        'icon'        => "icon/16/apps/internet-feed-reader.png"
+	      ),
+	      'group'        => array(
+	        'model'       => $this->getAccessController()->getGroupModel(),
+	        'label'       => $this->tr("Groups"),
+	        'labelProp'   => "name",
+	        'icon'        => "icon/16/actions/address-book-new.png"
+	      ),
+	      'permission'  => array(
+	        'model'       => $this->getAccessController()->getPermissionModel(),
+	        'label'       => $this->tr("Permissions"),
+	        'labelProp'   => "namedId",
+	        'icon'        => "icon/16/apps/preferences-security.png"
+	      ),
+	      'datasource'  => array(
+	        'model'       => $this->getDatasourceModel(),
+	        'label'       => $this->tr("Datasources"),
+	        'labelProp'   => "title",
+	        'icon'        => "icon/16/apps/internet-transfer.png"
+	      )
+	    );
+  	}
+  	return $map;
   }
 
 
@@ -81,9 +86,9 @@ class qcl_access_ACToolController
    *
    * @return array
    */
-  public function method_getAccessElementTypes()
+  public function method_getAccessElementTypeModel()
   {
-    $this->requirePermission("access.manage");
+    $this->requirePermission("qcl.access.manage");
     $models = $this->modelMap();
     return array(
       array(
@@ -115,64 +120,48 @@ class qcl_access_ACToolController
   }
 
   /**
-   * Return ListItem data for access models
+   * Returns data model for a qx.ui.list.List containing
+   * all the elements of the type, optionally filtered.
    *
    * @param $type
    * @return array
+   * @todo implement filter
    */
-  public function method_getAccessElements( $type )
+  public function method_getAccessElementModel( $type, $filter=null )
   {
-    $this->requirePermission("access.manage");
+    $this->requirePermission("qcl.access.manage");
     $activeUser   = $this->getActiveUser();
     $isAdmin      = $activeUser->hasRole( QCL_ROLE_ADMIN );
-
+    $models 			= $this->modelMap();
+		$model				= $models[$type]['model'];
+		$labelProp		= $models[$type]['labelProp'];
+		
     switch ( $type )
     {
       case "user":
-        $model = $this->getAccessController()->getUserModel();
-        $labelProp = "name";
         $model->findWhere( array( 'anonymous' => false ),"name" );
         break;
       case "role":
-        $model = $this->getAccessController()->getRoleModel();
-        $labelProp = "name";
         $model->findAllOrderBy( $labelProp );
         break;
       case "group":
-        $model = $this->getAccessController()->getGroupModel();
-        $labelProp = "name";
         $model->findAllOrderBy( $labelProp );
         break;
       case "permission":
-        $model = $this->getAccessController()->getPermissionModel();
-        $labelProp = "namedId";
         $model->findAllOrderBy( $labelProp );
         break;
       case "datasource":
-        $model = $this->getDatasourceModel();
-        $labelProp = "title";
         $model->findAllOrderBy( $labelProp );
         break;
       default:
-        throw new InvalidJsonRpcArgumentException("Invalid type $type");
+        throw new InvalidArgumentException("Invalid type '$type'");
     }
 
     $result = array();
-    $models = $this->modelMap();
+    
     while( $model->loadNext() )
     {
       $value  = $model->namedId();
-
-//      /*
-//       * don't show hidden records
-//       */
-//      if( $model->has("hidden" ) )
-//      {
-//        if( $model->get("hidden") )
-//        {
-//          continue;
-//        }
-//      }
 
       $icon   = $models[$type]['icon'];
       $label  = $model->get($labelProp);
@@ -205,12 +194,113 @@ class qcl_access_ACToolController
         'icon'      => $icon,
         'label'     => $label,
         'params'    => $type . "," . $value,
-        'type'      => $type,
         'value'     => $value
       );
     }
 
     return $result;
+  }
+  
+  /**
+   * Returns a model for a qx.ui.list.List of element of the $linkType that
+   * can be linked to the $targetType/$targetId instance.
+   * NOT YET IMPLEMENTED, currently just an alias of method_getAccessElementModel 
+   * 
+   * @param string $targetType
+   * @param string $targetId
+   * @param string $linkType
+   * @throws InvalidJsonRpcArgumentException
+   */
+  public function method_getLinkableElementModel( $targetType, $targetId, $linkType )
+  {
+  	
+  	/*
+  	 * not yet implemented
+  	 */
+  	return $this->method_getAccessElementModel( $linkType );
+  	
+  	////////////////////////////////////
+    $this->requirePermission("qcl.access.manage");
+    $activeUser   = $this->getActiveUser();
+    $isAdmin      = $activeUser->hasRole( QCL_ROLE_ADMIN );
+    
+    $models 			= $this->modelMap();
+    
+    
+		/* @var qcl_data_model_db_ActiveRecord */
+    $linkModel		= $models[$linkType]['model'];
+		$label				= $models[$linkType]['labelProp'];
+		
+		$targetModel  = $models[$targetType]['model'];
+		$targetModel->load( $targetId );
+		
+		$x = new qcl_data_model_db_ActiveRecord();
+		$x->findLinked($targetModel);
+		
+    switch ( $linkType )
+    {
+      case "user":
+        $linkModel->findNotLinked( $targetModel );
+        break;
+      case "role":
+        $model->findAllOrderBy( $labelProp );
+        break;
+      case "group":
+        $model->findAllOrderBy( $labelProp );
+        break;
+      case "permission":
+        $model->findAllOrderBy( $labelProp );
+        break;
+      case "datasource":
+        $model->findAllOrderBy( $labelProp );
+        break;
+      default:
+        throw new InvalidJsonRpcArgumentException("Invalid type $type");
+    }
+
+    $result = array();
+    
+    while( $model->loadNext() )
+    {
+      $value  = $model->namedId();
+
+      $icon   = $models[$type]['icon'];
+      $label  = $model->get($labelProp);
+
+      if ( $model->hasProperty("hidden") and $model->isHidden() and ! $isAdmin )
+      {
+        continue;
+      }
+
+      if ( ! trim($label ) )
+      {
+        $label = $value;
+      }
+
+      if ( $model->hasProperty("ldap") and $model->getLdap() )
+      {
+        $label .= " (LDAP)";
+      }
+
+      if ( $type == "permission" )
+      {
+        $description = $model->getDescription();
+        if ( $description )
+        {
+          $label .= sprintf( " (%s)", $description );
+        }
+      }
+
+      $result[] = array(
+        'icon'      => $icon,
+        'label'     => $label,
+        'params'    => $type . "," . $value,
+        'value'     => $value
+      );
+    }
+
+    return $result;
+		
   }
 
   /**
@@ -228,15 +318,33 @@ class qcl_access_ACToolController
     throw new InvalidJsonRpcArgumentException( "Invalid type '$type'" );
   }
 
+  
+//  /**
+//   * Returns the tree of model relationships based on the selected element
+//   * @param $elementType
+//   * @param $namedId
+//   * @return unknown_type
+//   */
+//  public function method_getTreeModelDialog( $elementType, $namedId )
+//  {
+//    $this->requirePermission("qcl.access.manage");
+//    qcl_import("qcl_ui_dialog_Prompt");
+//    return new qcl_ui_dialog_Prompt(
+//    	$this->tr("Please enter the id of the new %s", $this->tr($elementType) ),
+//    	$this->serviceName(),
+//    	""
+//    );
+//  }
+  
   /**
    * Returns the tree of model relationships based on the selected element
    * @param $elementType
    * @param $namedId
-   * @return unknown_type
+   * @return array
    */
-  public function method_getAccessElementTree( $elementType, $namedId )
+  public function method_getTreeModel( $elementType, $namedId )
   {
-    $this->requirePermission("access.manage");
+    $this->requirePermission("qcl.access.manage");
 
     $models = $this->modelMap();
 
@@ -278,7 +386,7 @@ class qcl_access_ACToolController
           'label'     => $data['label'],
           'value'     => $elementType . "=" . $namedId,
           'type'      => $type,
-          'mode'      => "link",
+          'action'    => "link",
           'children'  => array()
         );
 
@@ -306,7 +414,7 @@ class qcl_access_ACToolController
           /*
            * you cannot link to this node
            */
-          $node['mode'] = null;
+          $node['action'] = null;
 
           /*
            * find all groups that the user is member of
@@ -321,7 +429,7 @@ class qcl_access_ACToolController
                 'icon'      => $models['group']['icon'],
                 'label'     => $this->tr("in") . " " . $groupModel->get( $models['group']['labelProp'] ),
                 'type'      => "role",
-                'mode'      => "link",
+                'action'    => "link",
                 'value'     => "group=" . $groupModel->namedId() . ",user=" . $userModel->namedId(),
                 'children'  => array()
               );
@@ -335,7 +443,7 @@ class qcl_access_ACToolController
                     'icon'      => $models['role']['icon'],
                     'label'     => either( $label,$model->namedId()),
                     'type'      => "role",
-                    'mode'      => "unlink",
+                    'action'    => "unlink",
                     'value'     => "group=" . $groupModel->namedId() . ",role=" . $roleModel->namedId(),
                     'children'  => array()
                   );
@@ -360,7 +468,7 @@ class qcl_access_ACToolController
             'label'     => $this->tr("In all groups"),
             'type'      => "role",
             'value'     => "user=" . $userModel->namedId(),
-            'mode'      => "link",
+            'action'    => "link",
             'children'  => array()
           );
 
@@ -379,7 +487,7 @@ class qcl_access_ACToolController
                 'icon'      => $models['role']['icon'],
                 'label'     => either( $roleModel->get( $models['role']['labelProp'] ), $roleModel->namedId() ),
                 'type'      => "role",
-                'mode'      => "unlink",
+                'action'    => "unlink",
                 'value'     => "role=" . $roleModel->namedId(),
                 'children'  => array()
               );
@@ -411,7 +519,7 @@ class qcl_access_ACToolController
                 'label'     => either( $model->get($data['labelProp']),  $model->namedId() ),
                 'type'      => $type,
                 'value'     => $type . "=" . $model->namedId(),
-                'mode'      => "unlink",
+                'action'    => "unlink",
                 'children'  => array()
               );
             }
@@ -433,7 +541,7 @@ class qcl_access_ACToolController
    */
   public function method_addElement( $type, $namedId )
   {
-    $this->requirePermission("access.manage");
+    $this->requirePermission("qcl.access.manage");
     $models = $this->modelMap();
 
     if ( $type == "datasource" )
@@ -453,6 +561,7 @@ class qcl_access_ACToolController
         $models[$type]['labelProp'] => $namedId
       ));
     }
+    $this->broadcastClientMessage("qcl.access.AccessControlTool.reloadType", $type);
     return "OK";
   }
 
@@ -464,7 +573,7 @@ class qcl_access_ACToolController
    */
   public function method_deleteElement( $type, $ids )
   {
-    $this->requirePermission("access.manage");
+    $this->requirePermission("qcl.access.manage");
     switch( $type )
     {
       case "datasource":
@@ -484,7 +593,7 @@ class qcl_access_ACToolController
           $model->delete();
         }
     }
-
+		$this->broadcastClientMessage("qcl.access.AccessControlTool.reloadType", $type);
     return "OK";
   }
 
@@ -510,7 +619,7 @@ class qcl_access_ACToolController
       qcl_assert_boolean( $doDeleteModelData );
       qcl_import( "qcl_data_datasource_Manager" );
       qcl_data_datasource_Manager::getInstance()->deleteDatasource( $namedId, $doDeleteModelData );
-      $this->broadcastClientMessage("accessControlTool.reloadLeftList");
+      $this->broadcastClientMessage("qcl.access.AccessControlTool.reloadType", "datasource");
     }
     catch ( PDOException $e )
     {
@@ -521,6 +630,13 @@ class qcl_access_ACToolController
     return new  qcl_ui_dialog_Alert($this->tr("Datasource '%s' successfully deleted ... ",$namedId));
   }
 
+  /**
+   * Internal method to get the needed model instances 
+ 	 * 
+   * @param unknown_type $treeElement
+   * @param unknown_type $type
+   * @param unknown_type $namedId
+   */
   protected function getLinkModels( $treeElement, $type, $namedId )
   {
     $models = $this->modelMap();
@@ -560,10 +676,24 @@ class qcl_access_ACToolController
    * @param $namedId
    * @return "OK"
    */
-  public function method_linkElements( $treeElement, $type, $namedId )
+  public function method_linkElements( $treeElement, $type, $ids )
   {
+    
+    if ( is_array( $ids ) )
+    {
+    	foreach( $ids as $id )
+    	{
+    		$this->method_linkElements($treeElement, $type, $id );	
+    	}
+    	return;
+    }
+    else 
+    {
+    	$namedId = $ids;	
+    }
+    
     $this->requirePermission("access.manage");
-
+    
     list( $model1, $model2, $depModel ) =
       $this->getLinkModels( $treeElement, $type, $namedId );
 
@@ -587,10 +717,24 @@ class qcl_access_ACToolController
    * @param $namedId
    * @return "OK"
    */
-  public function method_unlinkElements( $treeElement, $type, $namedId )
+  public function method_unlinkElements( $treeElement, $type, $ids )
   {
-    $this->requirePermission("access.manage");
+    
+    if ( is_array( $ids ) )
+    {
+    	foreach( $ids as $id )
+    	{
+    		$this->method_unlinkElements($treeElement, $type, $id );	
+    	}
+    	return;
+    }
+    else 
+    {
+    	$namedId = $ids;	
+    }    
 
+    $this->requirePermission("access.manage");
+    
     list( $model1, $model2, $depModel ) =
       $this->getLinkModels( $treeElement, $type, $namedId );
 
@@ -664,6 +808,8 @@ class qcl_access_ACToolController
     {
       return "ABORTED";
     }
+    
+    $model = $this->getElementModel( $type );
 
     if( $type != "user" or $namedId != $this->getActiveUser()->namedId() )
     {
@@ -695,7 +841,7 @@ class qcl_access_ACToolController
       }
     }
 
-    $model = $this->getElementModel( $type );
+    
     $model->load( $namedId );
     $parsed = (object) $this->parseFormData( $model, $data );
 
@@ -736,11 +882,16 @@ class qcl_access_ACToolController
      */
     $model->set( $parsed );
     $model->save();
-
-    return "OK";
+		
+    /*
+     * broadcast changes
+     */
+    $this->broadcastClientMessage("qcl.access.AccessControlTool.reloadType", $type);
+    
+		return "OK";
   }
 
-  protected function sendConfirmationLinkEmail( $email, $username, $name, $password )
+  public function sendConfirmationLinkEmail( $email, $username, $name, $password )
   {
     $app = $this->getApplication();
 
@@ -760,7 +911,7 @@ class qcl_access_ACToolController
     $confirmationLink = qcl_server_Server::getUrl() .
       "?service="   . $this->serviceName() .
       "&method="    . "confirmEmail" .
-      "&params="    . $email;
+      "&params="    . "$username/$email";
 
     $body  = $this->tr("Dear %s,", $name);
     $body .= "\n\n" . $this->tr("You have been registered as a user at  '%s'.", $applicationTitle );
@@ -784,7 +935,7 @@ class qcl_access_ACToolController
     $mail->send();
   }
 
-  protected function sendPasswordChangeEmail( $email, $username, $name, $password )
+  public function sendPasswordChangeEmail( $email, $username, $name, $password )
   {
     $app = $this->getApplication();
 
@@ -820,21 +971,29 @@ class qcl_access_ACToolController
     $mail->send();
   }
 
-  public function method_confirmEmail( $email )
+  
+  /**
+   * Confirm the email address
+   * @param string $email
+   */
+  public function method_confirmEmail( $param )
   {
+  	list( $username, $email ) = explode( "/", $param );
     $app = $this->getApplication();
     $userModel = $app->getAccessController()->getUserModel();
+    header("Content-Type: text/html; charset=utf-8");
     try
     {
       $userModel->findWhere( array(
-        'email' => $email
+        'email' 	=> $email,
+      	'namedId'	=> $username
       ));
       while( $userModel->loadNext() )
       {
         $userModel->set("confirmed", true);
         $userModel->save();
       }
-
+			
       $msg1 = $this->tr( "Thank you, %s, your email address has been confirmed.", $userModel->getName() );
       $msg2 = $this->tr( "You can now log in at <a href='%s'>this link</a>", $app->getClientUrl() );
       echo "<p>$msg1<p>";
@@ -844,10 +1003,99 @@ class qcl_access_ACToolController
     catch( qcl_data_model_RecordNotFoundException $e )
     {
       // should never be the case
-      echo "Invalid email $email";
+      echo $this->tr("The email address %s is invalid", $email );
       exit;
     }
+    
+    echo $this->tr("Unknown error.");
+    exit;    
   }
+  
+  public function exportAccessModels($models=null)
+  {
+    $this->requirePermission("access.manage");
+    qcl_import("qcl_data_model_export_Xml");
+    $accessDatasource = $this->getDatasourceModel("access");
+    foreach( $accessDatasource->modelTypes() as $type )
+    {
+      if ( is_array( $models ) and ! in_array( $type, $models) )
+      {
+        continue;
+      }
+      $model = $accessDatasource->getModelOfType($type);
+      $xml   = $model->export( new qcl_data_model_export_Xml() );
+      $dir   = qcl_realpath( "logbuch/data");
+      if ( ! is_writable($dir) )
+      {
+        throw new JsonRpcException("'$dir' needs to be writable.'");
+      }
+      $file  = $dir . "/" . ucfirst( $type ) . ".exported.xml";
+      file_put_contents( $file, $xml );
+      chmod( $file, 0666 );
+    }
+    return $dir;
+  }
+
+  public function method_reloadAccessModelDialog( $modelType )
+  {
+    $this->requirePermission("access.manage");
+    qcl_import("qcl_ui_dialog_Confirm");
+    qcl_assert_valid_string( $modelType );
+    return new qcl_ui_dialog_Confirm(
+      sprintf( _( "Do you really want to reset/upgrade the '%s' data?") , $modelType ),
+      null,
+      $this->serviceName(), "reloadAccessModel", array( $modelType )
+    );
+  }
+
+  public function method_reloadAccessModel( $answer, $modelType )
+  {
+    if ( $answer == false )
+    {
+      return "ABORTED";
+    }
+    $this->requirePermission("access.manage");
+    qcl_assert_valid_string( $modelType );
+    qcl_import("qcl_ui_dialog_Alert");
+
+    $app = $this->getApplication();
+    $map = $app->getInitialDataMap();
+    if ( ! isset( $map[$modelType] ) )
+    {
+      throw new InvalidJsonRpcArgumentException("No data exists for '$modelType'");
+    }
+    $app->importInitialData(array(
+      $modelType => $map[$modelType]
+    ) );
+    $this->dispatchClientMessage("accessControlTool.reloadLeftList");
+    return new qcl_ui_dialog_Alert( sprintf( _("'%s' data reset."), $modelType ) );
+  }
+
+  public function method_exportAccessModelDialog( $modelType )
+  {
+    $this->requirePermission("access.manage");
+    qcl_import("qcl_ui_dialog_Confirm");
+
+    return new qcl_ui_dialog_Confirm(
+      sprintf( _( "Do you really want to export the '%s' data to the filesystem?") , $modelType ),
+      null,
+      $this->serviceName(), "exportAccessModel", array( $modelType )
+    );
+  }
+
+  public function method_exportAccessModel( $answer, $modelType )
+  {
+    if ( $answer == false )
+    {
+      return "ABORTED";
+    }
+    $this->requirePermission("access.manage");
+    qcl_assert_valid_string( $modelType );
+    qcl_import("qcl_ui_dialog_Alert");
+
+    $dir = $this->exportAccessModels( array( $modelType ) );
+    return new qcl_ui_dialog_Alert( sprintf( _("'%s' data exported to '%s'."), $modelType, $dir ) );
+  }  
 
 }
 ?>

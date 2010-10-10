@@ -313,11 +313,6 @@ class qcl_access_SessionController
      */
     $this->log( sprintf("Registering session '%s', for %s from IP %s ", $sessionId, $user, $remoteIp ), QCL_LOG_ACCESS );
     $this->getSessionModel()->registerSession( $sessionId, $user, $remoteIp );
-
-    /*
-     * remove stale users and sessions, doesn't work really well yet
-     */
-    $this->cleanup();
   }
 
   /**
@@ -444,48 +439,6 @@ class qcl_access_SessionController
     ));
 
     return $sessionId;
-  }
-
-  /**
-   * Clean up the access data:
-   * - Purge all anonymous guests that are inactive for more than
-   *   one day
-   * - delete all state sessions.
-   * FIXME rewrite as portable query!
-   */
-  public function cleanup()
-  {
-    /*
-     * clean up stale users
-     */
-    $userModel = $this->getUserModel();
-    $seconds = $this->secondsUntilPurge;
-    if ( $seconds )
-    {
-      $ids = $userModel->getQueryBehavior()->fetchValues("id",
-          "anonymous = 1 AND
-          ( TIME_TO_SEC( TIMEDIFF( NOW(), lastAction ) ) > 86400
-            OR TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400 )"
-      );
-      foreach( $ids as $id )
-      {
-        $userModel->load( $id );
-        $userModel->delete();
-      }
-
-      /* FIXME
-       * clean up stale sessions
-       */
-      $sessionModel = $this->getSessionModel();
-      $ids = $sessionModel->getQueryBehavior()->deleteWhere(
-        "TIME_TO_SEC( TIMEDIFF( NOW(), modified ) ) > 86400"
-      );
-      // FIXME
-      $msgModel = $this->getMessageBus()->getModel();
-      $msgModel->getQueryBehavior()->deleteWhere(
-        "sessionId NOT IN (SELECT namedId FROM data_Session )"
-      );
-    }
   }
 }
 ?>

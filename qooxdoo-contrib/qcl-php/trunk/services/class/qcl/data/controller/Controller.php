@@ -341,6 +341,8 @@ class qcl_data_controller_Controller
    * @param string $modelType
    * @return qcl_data_model_AbstractActiveRecord
    * @throws qcl_access_AccessDeniedException
+   * @todo Rename this to make it clearer that this a protected model
+   * access
    */
   protected function getModel( $datasource, $modelType )
   {

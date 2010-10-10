@@ -119,6 +119,10 @@ class qcl_event_message_Bus
     $name = $message->getName();
     $data = $message->getData();
 
+		$accessController = $this->getApplication()->getAccessController();
+    $sessionModel 		= $accessController->getSessionModel();
+    $sessionId    		= $accessController->getSessionId();    
+    
     /*
      * search message database
      */
@@ -152,10 +156,13 @@ class qcl_event_message_Bus
        */
       if ( $message->isBroadcast() )
       {
-        $sessionModel = $this->getApplication()->getAccessController()->getSessionModel();
         $sessionModel->findAll();
         while( $sessionModel->loadNext() )
         {
+        	if( $message->isExcludeOwnSession() and $sessionModel->namedId() == $sessionId )
+        	{
+        		continue;
+        	}
           $msgModel->create( array(
             'name'      => $name,
             'data'      => addSlashes( serialize( $data ) )
@@ -169,9 +176,6 @@ class qcl_event_message_Bus
        */
       else
       {
-        $accessController = $this->getApplication()->getAccessController();
-        $sessionModel = $accessController->getSessionModel();
-        $sessionId    = $accessController->getSessionId();
         $sessionModel->load( $sessionId );
         $msgModel->create( array(
           'name'      => $name,
@@ -222,15 +226,20 @@ class qcl_event_message_Bus
   /**
    * Broadcasts a message to all connected clients.
    * @param qcl_core_Object $sender
-   * @param mixed $message Message name or hash map of messages
-   * @param mixed $data Data dispatched with message
+   * @param mixed $message 
+   * 		Message name or hash map of messages
+   * @param mixed $data 
+   * 		Data dispatched with message
+   * @param bool $excludeOwnSession 
+   * 		Whether the current session should be excluded from the broadcast (Default: false).
    * @todo use into qcl_server_Response object
    */
-  public function broadcastClientMessage ( $sender, $name, $data )
+  public function broadcastClientMessage ( $sender, $name, $data, $excludeOwnSession=false )
   {
     qcl_import( "qcl_event_message_ClientMessage" );
     $message = new qcl_event_message_ClientMessage( $name, $data );
     $message->setBroadcast( true );
+    $message->setExcludeOwnSession( $excludeOwnSession );
     if ( $sender)
     {
       $message->setSender( $sender );
@@ -260,7 +269,7 @@ class qcl_event_message_Bus
     }
     catch( qcl_data_model_RecordNotFoundException $e )
     {
-      return array();
+    	return array();
     }
 
     /*
@@ -272,7 +281,7 @@ class qcl_event_message_Bus
       $messages[] = array(
         'name'  => $msgModel->get( "name" ),
         'data'  => unserialize( stripslashes( $msgModel->get("data") ) )
-      );
+      );    
       $msgModel->delete();
     }
 
