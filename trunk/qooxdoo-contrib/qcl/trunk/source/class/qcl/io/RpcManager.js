@@ -173,6 +173,10 @@ qx.Class.define("qcl.io.RpcManager",
           null, serviceName, null, null, this.getRpcObject() 
         );
       }
+      else
+      {
+        this._appStore.setServiceName( serviceName );  
+      }
       this._appStore.execute( serviceMethod, params, callback, context);
     },
     

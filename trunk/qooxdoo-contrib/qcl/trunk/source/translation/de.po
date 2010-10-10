@@ -1,0 +1,48 @@
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: you@your.org\n"
+"POT-Creation-Date: 2010-10-10 07:22+0100\n"
+"PO-Revision-Date: 2010-10-10 07:22+0100\n"
+"Last-Translator: you <you@your.org>\n"
+"Language-Team: Team <yourteam@your.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: qcl/application/MAppManagerProvider.js:351 qcl/application/Core.js:837
+msgid "Do you really want to quit %1?"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:192
+msgid "Access control tool"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:207
+msgid "Reload from file"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:220
+msgid "Export to file"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:234
+msgid "Exit"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:385
+msgid "Edited element"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:432
+msgid "Link"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:455
+msgid "Unlink"
+msgstr ""
+
+#: qcl/ui/component/AccessControlTool.js:471
+msgid "Linkable items"
+msgstr ""

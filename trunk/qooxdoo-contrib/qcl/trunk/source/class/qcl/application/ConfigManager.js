@@ -64,6 +64,19 @@
 qx.Class.define("qcl.application.ConfigManager",
 {
   extend : qx.core.Object,
+  
+
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */  
+
+  construct : function( core )
+  {
+    this.base(arguments);
+    this.__core = core;
+  },  
  
   /*
   *****************************************************************************
@@ -126,17 +139,6 @@ qx.Class.define("qcl.application.ConfigManager",
     "clientChange" : "qx.event.type.Data"    
   },  
 
-  /*
-  *****************************************************************************
-     CONSTRUCTOR
-  *****************************************************************************
-  */  
-
-  construct : function( core )
-  {
-    this.base(arguments);
-    this.__core = core;
-  },
   
   /*
   *****************************************************************************
@@ -166,32 +168,35 @@ qx.Class.define("qcl.application.ConfigManager",
       /* 
        * create index
        */
-       this._index = {};
-       
-       var keys = model.getKeys();
-       for( var i=0; i < keys.length; i++ )
-       {
-         var key = keys.getItem(i);
-         this._index[ key ] = i;
-         this.fireDataEvent( "change", key );
-       }
-       
-       /*
-        * attach event listener
-        */
-       model.getValues().addListener("changeBubble", function(event){
-         var data = event.getData();
-         var key = model.getKeys().getItem( data.name );
-         if ( data.value != data.old )
-         {
-           this.fireDataEvent( "change", key );
-         }
-       },this);
-        
-       /*
-        * inform the listeners that we're ready
-        */
-       this.fireEvent("ready"); 
+      this._index = {};
+      
+      if( model )
+      {
+	      var keys = model.getKeys();
+	      for( var i=0; i < keys.length; i++ )
+	      {
+	        var key = keys.getItem(i);
+	        this._index[ key ] = i;
+	        this.fireDataEvent( "change", key );
+	      }
+	       
+	      /*
+	       * attach event listener
+	       */
+	      model.getValues().addListener("changeBubble", function(event){
+	        var data = event.getData();
+	        var key = model.getKeys().getItem( data.name );
+	        if ( data.value != data.old )
+	        {
+	          this.fireDataEvent( "change", key );
+	        }
+	      },this);
+	        
+	      /*
+	       * inform the listeners that we're ready
+	       */
+	      this.fireEvent("ready");
+      }
     },
     
     /*
@@ -352,11 +357,6 @@ qx.Class.define("qcl.application.ConfigManager",
      */
     bindKey : function( key, targetObject, targetPath, updateSelfAlso )
     {
-      if ( ! this.getModel() )
-      {
-        this.error("You cannot bind a config key before config values have been loaded!");
-      }
-      
       if ( ! targetObject instanceof qx.core.Object )
       {
         this.error( "Invalid target object." );
@@ -366,6 +366,17 @@ qx.Class.define("qcl.application.ConfigManager",
       {
         this.error( "Invalid target path." );
       }
+      
+      /*
+       * if the model is not available yet, wait for it
+       */
+      if ( ! this.getModel() )
+      {
+        this.addListenerOnce("changeModel",function(){
+          this.bindKey( key, targetObject, targetPath, updateSelfAlso );
+        },this);
+        return;
+      }      
       
       /*
        * if the target path is a property and not a property chain,

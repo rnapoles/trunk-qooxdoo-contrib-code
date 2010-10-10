@@ -18,7 +18,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-#asset(qcl/ajax-loader.gif)
+#asset(qcl/icon/ajax-loader.gif)
 ************************************************************************ */
 
 /**
@@ -57,7 +57,7 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
         });
         this.__popupAtom = new qx.ui.basic.Atom().set({
           label : options.label !== undefined ? options.label : "Loading ...",
-          icon  : options.icon  !== undefined ? options.icon : "qcl/ajax-loader.gif",
+          icon  : options.icon  !== undefined ? options.icon : "qcl/icon/ajax-loader.gif",
           rich  : options.rich !== undefined ? options.rich :true,
           iconPosition  : options.iconPosition !== undefined ? options.iconPosition : "left",
           show  : options.show !== undefined ? options.show :  "both",
