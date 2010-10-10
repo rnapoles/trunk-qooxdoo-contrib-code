@@ -31,12 +31,12 @@
   {
     "APPLICATION"  : "dialog",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.1",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.2",
     //"QXTHEME"      : "dialog.theme.modern.Theme",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "dialog.demo.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
+    "CACHE"        : "${TMPDIR}/cache/1.2",
     "ROOT"         : "."
   }
 
