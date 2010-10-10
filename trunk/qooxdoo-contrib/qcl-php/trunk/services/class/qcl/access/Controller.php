@@ -31,9 +31,9 @@ class qcl_access_Controller
   implements IAccessibilityBehavior
 {
 
-  /**
-   * Access control list. Determines what role has access to what kind
-   * of information.
+	/**
+   * Class-based access control list. 
+   * Determines what role has access to what kind of model data.
    * @var array
    */
   private $modelAcl = array(
@@ -79,6 +79,10 @@ class qcl_access_Controller
    */
   private $activeUserId = null;
 
+  /**
+   * The active user object
+   * @var qcl_access_model_User
+   */
   private $activeUser = null;
 
   //-------------------------------------------------------------
@@ -132,7 +136,7 @@ class qcl_access_Controller
    * Gets the user data model
    * @param string|int $id Load record if given. Deprecated.
    * @return qcl_access_model_User
-   * @deprecated Do not pass id as argument
+   * FIXME Do not pass id as argument
    * FIXME Get from access datasource
    * FIXME Remove argument
    */
@@ -147,7 +151,7 @@ class qcl_access_Controller
    * Gets the permission data model
    * @param string|int $id Load record if given.Deprecated.
    * @return qcl_access_model_Permission
-   * @deprecated Do not pass id as argument
+   * FIXME Do not pass id as argument
    * FIXME Get from access datasource
    * FIXME Remove argument
    */
@@ -162,7 +166,7 @@ class qcl_access_Controller
    * Gets the role data model
    * @param string|int $id Load record if given.Deprecated.
    * @return qcl_access_model_Role
-   * @deprecated Do not pass id as argument
+   * FIXME Do not pass id as argument
    * FIXME Get from access datasource
    * FIXME Remove argument
    */
@@ -176,7 +180,7 @@ class qcl_access_Controller
   /**
    * Gets the group data model
    * @return qcl_access_model_Role
-   * @deprecated Do not pass id as argument
+   * FIXME Do not pass id as argument
    * FIXME Get from access datasource
    */
   public function getGroupModel()
@@ -477,17 +481,6 @@ class qcl_access_Controller
      */
     $savedPw = $userModel->getPassword();
 
-    /*
-     * upgrade md5-passwords to new sha1-salted passwords
-     * FIXME only for upgrade, will be removed
-     */
-    if( md5( $password ) == $savedPw )
-    {
-      $savedPw = $this->generateHash( $password );
-      $userModel->setPassword( $savedPw );
-      $userModel->save();
-    }
-
     if ( $password == $savedPw or
       $this->generateHash( $password, $savedPw ) == $savedPw )
     {
@@ -703,6 +696,7 @@ class qcl_access_Controller
    * Checks whether a timeout has occurred for a given user
    * @param int $userid id of user
    * @return bool true if user can stay logged in, false if logout should be forced
+   * FIXME Is this still used?
    */
   public function checkTimeout( $userId )
   {

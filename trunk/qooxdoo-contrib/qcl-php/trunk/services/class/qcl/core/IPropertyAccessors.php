@@ -68,7 +68,7 @@ interface qcl_core_IPropertyAccessors
    * array, keys being the property names.
    * @return array
    */
-  public function data();
+  public function data($options=null);
 
   /**
    * Returns a array of property values according to the

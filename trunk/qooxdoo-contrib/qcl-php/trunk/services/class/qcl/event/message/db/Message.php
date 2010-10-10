@@ -30,7 +30,14 @@ class qcl_event_message_db_Message
    * for this model
    * @var string
    */
-  protected $tableName = "data_Messages";
+  protected $tableName = "data_Messages";   
+  
+  /**
+   * The number of seconds after which the record is automatically
+   * deleted if not modified. Defaults to null (= no expiration).
+   * @var int
+   */
+	protected $expiresAfter = 60;   
 
   /**
    * The properties of this model

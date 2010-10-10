@@ -1903,8 +1903,6 @@ class qcl_data_model_db_RelationBehavior
   protected function linkedModelIdsOneToMany ( $relation, $targetModel )
   {
     return array();
-    //$targetForeignKey = $targetModel->getRelationBehavior()->getForeignKey( $relation );
-    //return array( $this->getModel()->get( $targetForeignKey ) );
   }
 
   /**

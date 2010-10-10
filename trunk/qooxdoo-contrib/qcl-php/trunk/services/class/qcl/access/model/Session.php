@@ -37,17 +37,19 @@ class qcl_access_model_Session
    * The foreign key of this model
    */
   protected $foreignKey = "SessionId";
-
+	
   /**
    * Properties of the model
    * @var unknown_type
    */
   private $properties = array(
+  
     'parentSessionId' => array(
       'check'     => QCL_PROPERTY_CHECK_STRING,
       'sqltype'   => "varchar(50)",
       'nullable'  => true
     ),
+    
     'ip' => array(
       'check'     => QCL_PROPERTY_CHECK_STRING,
       'sqltype'   => "varchar(32)"
@@ -201,24 +203,32 @@ class qcl_access_model_Session
     {
       $this->log( "Session #$sessionId does not exist.", QCL_LOG_ACCESS );
     }
-
-    /*
-     * clean up stale sessions
-     */
-    //$this->cleanUp();
   }
-
+  
   /**
-   * Purges timed out sessions
-   * @return void
+   * Overridden.
+   * @see qcl_data_model_AbstractActiveRecord::checkExpiration()
    */
-  public function cleanUp()
+  protected function checkExpiration()
   {
-    $this->findWhere("TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600");
-    while( $this->loadNext() )
-    {
-      $this->delete();
-    }
+  	if ( $this->datasourceModel() )
+  	{
+  		$userModel = $this->datasourceModel()->getModelOfType("user") ;	
+  	}
+  	else // FIXME
+  	{
+  		$userModel = $this->getApplication()->getAccessController()->getUserModel();
+  	}
+  	try 
+  	{
+  		$userModel->load( (int) $this->get("UserId") );
+  	}
+  	catch( qcl_data_model_RecordNotFoundException $e )
+  	{
+  		 $this->warn( "$this deleted ..." );
+  	}
+  	return false;
   }
+  
 }
 ?>

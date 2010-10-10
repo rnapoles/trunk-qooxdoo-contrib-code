@@ -182,7 +182,7 @@ abstract class qcl_data_db_adapter_Abstract
   }
 
   /**
-   * Setter for options
+   * Getter for options
    * return void
    */
   public function getOptions()

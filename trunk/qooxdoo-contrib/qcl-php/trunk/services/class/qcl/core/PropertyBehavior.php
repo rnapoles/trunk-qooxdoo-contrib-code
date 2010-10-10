@@ -66,9 +66,9 @@ class qcl_core_PropertyBehavior
   {
     if ( ! $this->isInitialized )
     {
-//      $this->getObject()->log( sprintf(
+//      $this->object->log( sprintf(
 //        "* Initializing object properties for '%s' using '%s'",
-//        $this->getObject()->className(), get_class( $this )
+//        $this->object->className(), get_class( $this )
 //      ), QCL_LOG_PROPERTIES );
 
       // do nothing at this point
@@ -133,19 +133,20 @@ class qcl_core_PropertyBehavior
    * Checks if property exists and throws an error if not.
    * @param $property
    * @return bool
+   * @throws InvalidArgumentException
    */
-  public function check( $property )
+  public function check( $property=null )
   {
-    if ( ! $property or ! is_string( $property ) )
-    {
-      $this->getObject()->raiseError("Invalid property '$property'");
-    }
+   	if ( ! $property or ! is_string($property) )
+  	{
+  		throw new InvalidArgumentException( "Invalid property argument" );
+  	}
     if ( ! $this->has( $property) )
     {
-      $this->getObject()->warn( $this->getObject()->backtrace() );
+      $this->object->warn( $this->object->backtrace() ); // @todo necessary?
       throw new qcl_core_PropertyBehaviorException( sprintf(
         "Class '%s': object property '%s' does not exist or is not accessible",#
-        get_class( $this->getObject() ), $property
+        get_class( $this->object ), $property
       ) );
     }
   }
@@ -153,15 +154,20 @@ class qcl_core_PropertyBehavior
   /**
    * Generic getter for properties
    * @param $property
-   * @return unknown_type
+   * @return mixed
+   * @throws InvalidArgumentException
    */
-  public function get( $property )
+  public function get( $property=null )
   {
-    //if( is_string($property ) ) $this->getObject()->info("get '$property'" );
+  	if ( ! $property or ! is_string($property) )
+  	{
+  		throw new InvalidArgumentException( "Invalid property argument" );
+  	}
+  	
     if ( $this->hasGetter( $property ) )
     {
       $getterMethod = $this->getterMethod( $property );
-      return $this->getObject()->$getterMethod();
+      return $this->object->$getterMethod();
     }
     return $this->_get( $property );
   }
@@ -177,9 +183,9 @@ class qcl_core_PropertyBehavior
     if ( $this->hasGetter( $property ) )
     {
       $getterMethod = $this->getterMethod( $property );
-      return $this->getObject()->$getterMethod();
+      return $this->object->$getterMethod();
     }
-    return $this->getObject()->$property;
+    return $this->object->$property;
   }
 
   /**
@@ -192,11 +198,11 @@ class qcl_core_PropertyBehavior
    */
   public function set( $property, $value=null )
   {
-    //if( is_string($property ) ) $this->getObject()->info("set '$property'" );
+    //if( is_string($property ) ) $this->object->info("set '$property'" );
     /*
      * readonly?
      */
-    if ( $this->getObject()->isReadonly() )
+    if ( $this->object->isReadonly() )
     {
       throw new LogicException("Object is readonly.");
     }
@@ -210,7 +216,7 @@ class qcl_core_PropertyBehavior
       {
         $this->set( $key, $value );
       }
-      return $this->getObject();
+      return $this->object;
     }
 
     /*
@@ -222,7 +228,7 @@ class qcl_core_PropertyBehavior
       {
         $this->set( $key, $value );
       }
-      return $this->getObject();
+      return $this->object;
     }
 
     /*
@@ -233,7 +239,7 @@ class qcl_core_PropertyBehavior
       if ( $this->hasSetter( $property ) )
       {
         $setterMethod = $this->setterMethod( $property );
-        return $this->getObject()->$setterMethod( $value );
+        return $this->object->$setterMethod( $value );
       }
       else
       {
@@ -246,7 +252,7 @@ class qcl_core_PropertyBehavior
      */
     else
     {
-      $this->getObject()->raiseError("Invalid arguments");
+      $this->object->raiseError("Invalid arguments");
     }
   }
 
@@ -259,8 +265,8 @@ class qcl_core_PropertyBehavior
   protected function _set( $property, $value )
   {
     $this->check( $property );
-    $this->getObject()->$property = $value;
-    return $this->getObject();
+    $this->object->$property = $value;
+    return $this->object;
   }
 
   /**
@@ -290,7 +296,7 @@ class qcl_core_PropertyBehavior
    */
   public function hasGetter( $property )
   {
-    return method_exists( $this->getObject(), $this->getterMethod( $property ) );
+    return method_exists( $this->object, $this->getterMethod( $property ) );
   }
 
   /**
@@ -300,7 +306,7 @@ class qcl_core_PropertyBehavior
    */
   public function hasSetter( $property )
   {
-    return method_exists( $this->getObject(), $this->setterMethod( $property ) );
+    return method_exists( $this->object, $this->setterMethod( $property ) );
   }
 
   /**
@@ -324,7 +330,7 @@ class qcl_core_PropertyBehavior
   public function type( $property )
   {
     $this->check( $property );
-    return gettype( $this->getObject()->$property );
+    return gettype( $this->object->$property );
   }
 
   /**
@@ -333,7 +339,7 @@ class qcl_core_PropertyBehavior
    */
   public function names()
   {
-    return array_keys( get_class_vars( get_class( $this->getObject() ) ) );
+    return array_keys( get_class_vars( get_class( $this->object ) ) );
   }
 
   /**

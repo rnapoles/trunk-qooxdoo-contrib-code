@@ -494,9 +494,10 @@ class qcl_data_model_PropertyBehavior
    */
   public function typecast( $propertyName, $value )
   {
-    if( $property == "id" ) return (int) $value;
+    if( $propertyName == "id" ) return (int) $value;
 
     $type = $this->type( $propertyName );
+    
     //$this->getModel()->debug( "$propertyName=$value($type)");
 
     /*
@@ -609,16 +610,33 @@ class qcl_data_model_PropertyBehavior
     /*
      * serialize the property if so defined
      */
-    if ( isset( $this->properties[$propertyName]['serialize'] )
-            and  $this->properties[$propertyName]['serialize'] === true )
+    if ( isset( $this->properties[$propertyName]['serializer'] ) )
+    {    
+    	$method = $this->properties[$propertyName]['serializer'];
+    	if ( ! method_exists($this->getModel(), $method ) )
+    	{
+	      throw new qcl_core_PropertyBehaviorException( sprintf(
+	        "Unable to stringify '%s' type value. " .
+	        "The serializer method '%s' for property '%s' doesn't exist in class '%s' .",
+	      	typeof( $value, true ), $method, $propertyName, $this->getModel()->className()
+	      ) );
+    	}
+    	return $this->getModel()->$method($value);
+    }
+    elseif ( isset( $this->properties[$propertyName]['serialize'] ) )
     {
+    	$serialize = $this->properties[$propertyName]['serialize'];
+    	qcl_assert_boolean( $serialize, sprintf(
+	        "The 'serialize key for property '%s' in class '%s' must be a boolean value .",
+	        $propertyName, $this->getModel()->className()
+	     ) );
       return serialize( $value );
     }
     elseif( ! is_object( $value) )
     {
       throw new qcl_core_PropertyBehaviorException(
         "Unable to stringify '" . typeof( $value, true ) . "' type value. " .
-        "Use the 'serialize' flag in the definition of property '$propertyName'."
+        "Use the 'serialize' or the 'serializer' keys in the definition of property '$propertyName'."
       );
     }
     elseif ( method_exists( $value, "__toString" ) )
@@ -629,7 +647,7 @@ class qcl_data_model_PropertyBehavior
     {
       throw new qcl_core_PropertyBehaviorException(
         "Unable to stringify a " . get_class( $value ) . " class object. " .
-        "Use the 'serialize' flag in the definition of property '$propertyName'."
+        "Use the 'serialize' or the 'serializer' keys in the definition of property '$propertyName'."
       );
     }
   }

@@ -48,10 +48,11 @@ class qcl_access_Service
    * Returns data for the authentication store. This will also try to authenticate
    * with a remote LDAP store if this is enabled in the application.ini.php file.
    *
-   * @param string $first If two arguments, this is the username. If one argument,
-   * this is the session id. If no argument, use the session id that has already
-   * been established by the access behavior.
-   * @param string $password (MD5-encoded) password
+   * @param string|null $first 
+   * 		If two arguments, this is the username. If one argument,
+   * 		this is the session id.
+   * @param string $password 
+   * 		Plaintext Password
    * @return qcl_access_AuthenticationResult
    * @throws qcl_access_AuthenticationException
    */
@@ -78,11 +79,6 @@ class qcl_access_Service
          );
       }
     }
-
-    /*
-     * purge inactive users and sessions
-     */
-    $accessController->cleanup();
 
     /*
      * authentication with session id
@@ -114,8 +110,8 @@ class qcl_access_Service
      */
     else
     {
-      $username   = utf8_decode($first);
-      $password   = utf8_decode($password);
+      $username = $first;
+      $password = $password;
 
       /*
        * is ldap authentication enabled? If yes, try to authenticate

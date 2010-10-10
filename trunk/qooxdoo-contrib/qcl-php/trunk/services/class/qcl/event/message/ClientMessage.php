@@ -29,6 +29,8 @@ class qcl_event_message_ClientMessage
    * @var bool
    */
   protected $broadcast = false;
+  
+  protected $excludeOwnSession = false;
 
 
   public function setBroadcast( $value )
@@ -41,6 +43,17 @@ class qcl_event_message_ClientMessage
   {
     return $this->broadcast;
   }
+  
+  public function setExcludeOwnSession( $value )
+  {
+    qcl_assert_type( $value, "boolean" );
+    $this->excludeOwnSession = $value;
+  }
+
+  public function isExcludeOwnSession()
+  {
+    return $this->excludeOwnSession;
+  }  
 
 }
 ?>

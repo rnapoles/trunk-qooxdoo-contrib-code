@@ -239,7 +239,7 @@ class qcl_data_model_AbstractNamedActiveRecord
         /*
          * Mark that we're loaded
          */
-        $this->_loaded = true;
+        $this->_loaded = true;           
 
         /*
          * return myself

@@ -32,6 +32,8 @@ class qcl_data_model_Exception extends LogicException{}
 class qcl_data_model_RecordExistsException extends qcl_data_model_Exception{}
 class qcl_data_model_RecordNotFoundException extends qcl_data_model_Exception{}
 class qcl_data_model_NoRecordLoadedException extends qcl_data_model_Exception{}
+class qcl_data_model_RecordExpiredException extends qcl_data_model_NoRecordLoadedException{}
+class qcl_data_model_RecordDeletedException extends qcl_data_model_NoRecordLoadedException{}
 
 /*
  * log filters

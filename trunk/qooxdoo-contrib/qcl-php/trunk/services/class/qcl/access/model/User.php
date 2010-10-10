@@ -318,13 +318,30 @@ class qcl_access_model_User
      */
     foreach( $permissions as $permission )
     {
-      if ( $permission == $requestedPermission )
+      /*
+       * exact match
+       */
+    	if ( $permission == $requestedPermission )
       {
         return true;
       }
-      elseif ( $useWildcard )
+      
+      /*
+       * else if the current permission name contains a wildcard
+       */
+      elseif ( ($pos = strpos($permission,"*") ) !== false )
       {
-        $pos = strpos($permission,"*");
+      	if ( substr($permission,0,$pos) == substr($requestedPermission,0,$pos) )
+        {
+          return true;
+        }
+      }
+      
+      /*
+       * else if the requested permission contains a wildcard
+       */
+      elseif ( $useWildcard and ($pos = strpos($requestedPermission,"*")) !== false )
+      {
         if ( substr($permission,0,$pos) == substr($requestedPermission,0,$pos) )
         {
           return true;
@@ -511,8 +528,13 @@ class qcl_access_model_User
   public function getSecondsSinceLastAction()
   {
     $now  = new qcl_data_db_Timestamp();
-    $d = $now->diff( $this->get( "lastAction") );
-    return (int) ( $d->s + 60 * $d->i + 3600 * $d->h + 3600*12 * $d->d );
+    $lastAction = $this->get( "lastAction" );
+    if ( $lastAction )
+    {
+	    $d = $now->diff( $lastAction );
+	    return (int) ( $d->s + ( 60 * $d->i ) + ( 3600 * $d->h ) + 3600*24 * $d->d );
+    }
+    return 0;
   }
 
   /**
@@ -532,6 +554,17 @@ class qcl_access_model_User
       throw new InvalidJsonRpcArgumentException( "Passwords do not match..." );
     }
     return $this->getApplication()->getAccessController()->generateHash( $value );
+  }
+  
+  /**
+   * Overridden.
+   * @see qcl_data_model_AbstractActiveRecord::checkExpiration()
+   */
+  protected function checkExpiration()
+  {
+  	$purge = ( $this->isAnonymous() && $this->getSecondsSinceLastAction() > 600 );
+  	if ( $purge ) $this->warn( "$this deleted ..." );
+  	return false;
   }
 }
 ?>
