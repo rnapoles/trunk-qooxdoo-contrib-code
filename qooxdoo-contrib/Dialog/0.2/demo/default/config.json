@@ -30,11 +30,11 @@
   "let" :
   {
     "APPLICATION"  : "dialog.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.2",
     "QXTHEME"      : "dialog.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
+    "CACHE"        : "${TMPDIR}/cache/1.2",
     "ROOT"         : "."
   },
 
