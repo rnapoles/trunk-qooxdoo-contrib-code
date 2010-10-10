@@ -416,6 +416,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
             /* 
              * create the model if requested
              */
+            var model = null;
             if ( createModel )
             {
               try
@@ -428,7 +429,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
                 /*
                  * create model
                  */
-                var model = this.getMarshaler().toModel(data);
+                model = this.getMarshaler().toModel(data);
                 
                 /*
                  * tear down old model?
@@ -466,7 +467,7 @@ qx.Class.define("qcl.data.store.JsonRpc",
             {
               try
               {
-                finalCallback.call( context, data );
+                finalCallback.call( context, data, model );
               }
               catch(e)
               {
@@ -481,6 +482,11 @@ qx.Class.define("qcl.data.store.JsonRpc",
              * dispatch error event  
              */
             this.fireDataEvent( "error", ex );
+            
+            /*
+             * publish message 
+             */
+            qx.event.message.Bus.dispatchByName("qcl.data.store.JsonRpc.error", ex);
             
             /*
              * handle event
@@ -568,10 +574,11 @@ qx.Class.define("qcl.data.store.JsonRpc",
       /*
        * alert error if the dialog package is loaded
        */
-      if ( qx.lang.Type.isObject( window.dialog ) && qx.lang.Type.isFunction( dialog.alert ) )
+      try
       {
-        dialog.alert(ex.message);  
+        dialog.Dialog.alert(ex.message);  
       }
+      catch(e){}
     },
     
     

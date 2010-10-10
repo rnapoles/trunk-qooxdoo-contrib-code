@@ -54,10 +54,13 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      * Turns remote server control on or off. If turned on, you can trigger the
      * display of dialogs using messages which can come from the server.
      * @see #_onServerDialog
+     * @param value {Boolean}
+     * @param core {qcl.application.Sandbox} The application sandbox instance
      */
-    allowServerDialogs : function( value )
+    allowServerDialogs : function( value, sandbox )
     {
       var messageName = "qcl.ui.dialog.Dialog.createDialog";
+      this.__sandbox = sandbox;
       if ( value )
       {
         qx.event.message.Bus.getInstance().subscribe( messageName, this._onServerDialog,this);
@@ -72,7 +75,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      * Handles the dialog request from the server. The message data has to be a
      * map with of the following structure: <pre>
      * {
-     *   type : "(alert|confirm|form|login|select|wizard)",
+     *   type : "(alert|confirm|form|login|prompt|select|wizard)",
      *   properties : { the dialog properties WITHOUT a callback },
      *   service : "the.name.of.the.rpc.service",
      *   method : "serviceMethod",
@@ -85,6 +88,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
       var data = message.getData();
       if ( data.service )
       {
+        var _this = this;
         data.properties.callback = function( result )
         {
           /*
@@ -99,8 +103,7 @@ qx.Class.define("qcl.ui.dialog.Dialog",
           /*
            * send request back to server
            */
-          var rpcManager = qx.core.Init.getApplication().getRpcManager();
-          rpcManager.execute( 
+          _this.__sandbox.rpcRequest( 
               data.service, data.method, data.params 
           );
         }

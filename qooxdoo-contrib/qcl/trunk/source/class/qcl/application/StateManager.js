@@ -23,20 +23,20 @@
 ************************************************************************ */
 
 /**
- * Provides synchronization between the application's properties and the 
- * application state saved in the URL hash.
+ * Manages an application state saved in the URL hash. This is useful to make
+ * qooxdoo applications "bookmarkable" and to navigate within the application
+ * with the "back" and "forward" buttons.
+ * 
  * The syntax is the similar to the URL GET parameters, i.e. state values are
  * saved as key-value pairs. You can freely choose the characters that represent
- * the "equal" and "ampersand" characters (including those), however the default
- * are "~" and "~~~"   #key1~value1~~~key2~value2~~~key3~value3 etc. (The reason
- * for the tilde is that it is not percent-encoded).
+ * the "equal" and "ampersand" characters (including those).
  *  
- * Any change to the state values (for example, by using the back or forward 
- * buttons or by manually changing the URL) will update a corresponding property, 
+ * If you set the syncApplicationProperties property to true, any change to the 
+ * state values will update a corresponding property of the application instance, 
  * if defined, dispatching change events or calling apply methods, if so configured. 
- * 
- * Since the state is not automatically updated when the property changes, 
- * you need to manually set the state in an "apply" method.
+ * The state is not automatically updated when the property changes. If you want to
+ * update the state if the application property changes,  you need to manually set 
+ * the state in an "apply" method:
  * 
  * <pre>
  * 
@@ -65,6 +65,23 @@ qx.Class.define("qcl.application.StateManager",
 {
   
   extend : qx.core.Object,
+  
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */  
+
+  construct : function()
+  {
+    this.base(arguments);
+    /*
+     * initialize history stacks
+     */
+    this.__backHistoryStack = [];
+    this.__forwardHistoryStack = [];
+    
+  },    
 
   /*
   *****************************************************************************
@@ -81,7 +98,7 @@ qx.Class.define("qcl.application.StateManager",
      * percent-encoded, such as the tilde ~. You can also use a 
      * combination of characters, such as '~~~'. The URI hash 
      * string is first split on this character(s), then on the
-     * {@link qcl.application.MAppManagerProviderState#stateDefineChar}
+     * {@link qcl.application.StateManager#stateDefineChar}
      * character(s).
      */
     stateSeparatorChar :
@@ -93,8 +110,6 @@ qx.Class.define("qcl.application.StateManager",
     
     /** 
      * The character which separates state variable name and state value.
-     * See {@link qcl.application.MAppManagerProviderState#stateSeparatorChar} for
-     * the choice of the character.
      */
     stateDefineChar :
     {
@@ -116,38 +131,26 @@ qx.Class.define("qcl.application.StateManager",
     },
     
     /**
-     * An array of names of the states that should be synchronized.
-     * with the server. By default, only the "sessionId" state is synchronized.
-     * @type Array
+     * Whether to automatically set properties of the application instance
+     * with the same name as the state, doing implicit type conversion.
      */
-    serverStateNames :
+    syncApplicationProperties :
     {
-      check : "Array",
-      event : "changeServerStateNames"
+      check : "Boolean",
+      init  : false
     }
-  
   }, 
   
   /*
   *****************************************************************************
-     CONSTRUCTOR
+     EVENTS
   *****************************************************************************
-  */  
-
-  construct : function()
+  */
+  
+  events :
   {
-    this.base(arguments);
-    /*
-     * initialize history stacks
-     */
-    this.__backHistoryStack = [];
-    this.__forwardHistoryStack = [];
-    
-    /*
-     * server states
-     */
-    this.setServerStateNames(["sessionId"]);
-  },  
+    "changeState" : "qx.event.type.Data"
+  },
 
   /*
   *****************************************************************************
@@ -432,9 +435,18 @@ qx.Class.define("qcl.application.StateManager",
         this.setHashParam( name, value );
          
         /*
+         * emit event
+         */
+        this.fireDataEvent( "changeState", {
+          name  : name,
+          value : value,
+          old   : oldValue
+        });
+        
+        /*
          * Update application property, if exists
          */ 
-        this._set( name, value );
+        this._setApplicationProperty( name, value );
         
         /*
          * qooxdoo browser navigation button support
@@ -450,8 +462,13 @@ qx.Class.define("qcl.application.StateManager",
      * @param value
      * @return {void}
      */
-    _set : function ( name, value )
+    _setApplicationProperty : function ( name, value )
     {
+      if ( ! this.isSyncApplicationProperties() )
+      {
+        return; 
+      }
+      
       var app = qx.core.Init.getApplication();
       var clazz = qx.Class.getByName( app.classname );
       
@@ -523,27 +540,7 @@ qx.Class.define("qcl.application.StateManager",
     {
       return this._analyzeHashString();
     },
-    
-    /**
-     * Returns a map with the application state values that
-     * should be tranparent to the server and will be synchronized
-     * with the server
-     * @return {Map}
-     */
-    getServerStates : function()
-    {
-      var states = this.getStates();
-      var names = this.getServerStateNames();
-      var serverStates = {};
-      for( key in states )
-      {
-        if ( qx.lang.Array.contains( names, key ) )
-        {
-          serverStates[key] = states[key];  
-        }
-      }
-      return serverStates;
-    },    
+       
 
     /**
      * Updates the current state, firing all change events even if 
@@ -579,7 +576,20 @@ qx.Class.define("qcl.application.StateManager",
       for(var key in stateMap)
       {
          if ( states && ! states[key] ) continue;
-         this._set( key, stateMap[key] );
+         
+         /*
+          * sett application property
+          */
+         this._setApplicationProperty( key, stateMap[key] );
+        
+        /*
+         * emit event
+         */
+        this.fireDataEvent( "changeState", {
+          name  : key,
+          value : stateMap[key],
+          old   : null
+        });
       }
       return stateMap;    
     },

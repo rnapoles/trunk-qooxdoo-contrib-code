@@ -248,6 +248,11 @@ qx.Class.define("qcl.application.Core",
      * initialize the manager objects
      */
     this.initializeManagers();
+    
+    /*
+     * prefix for message names
+     */
+    this.__prefix = this.randomString(4) + "/";
   },  
 
   /*
@@ -277,6 +282,7 @@ qx.Class.define("qcl.application.Core",
     /**
      * Registers the module, passing a sandbox instance to the 
      * module.
+     * FIXME Remove moduleId - module has a getName()
      * @param moduleId {String}
      * @param module {qcl.application.IModule}
      */
@@ -299,7 +305,8 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
-     * Return the module object, given its id
+     * Return the module object, given its id.
+     * FIXME Rename to byName() ?
      * @param moduleId {String}
      * @return {qcl.application.IModule}
      */
@@ -381,7 +388,7 @@ qx.Class.define("qcl.application.Core",
      */
     subscribe : function( name, callback, context )
     {
-      qx.event.message.Bus.subscribe( name, callback, context );
+      qx.event.message.Bus.subscribe( this.__prefix + name, callback, context );
     },
 
     
@@ -395,7 +402,7 @@ qx.Class.define("qcl.application.Core",
      */
     unsubscribe : function( name, callback, context )
     {
-      qx.event.message.Bus.unsubscribe( name, callback, context );
+      qx.event.message.Bus.unsubscribe( this.__prefix + name, callback, context );
     },
     
     /**
@@ -405,7 +412,62 @@ qx.Class.define("qcl.application.Core",
      */
     publish : function( name, message )
     {
-      qx.event.message.Bus.dispatchByName( name, message );
+      qx.event.message.Bus.dispatchByName( this.__prefix + name, message );
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      PERMISSIONS
+    ---------------------------------------------------------------------------
+    */
+    
+    /**
+     * Binds a permission object's 'state' property to the given target property
+     * chain.
+     * @param permission {String}
+     * @param target {qx.core.Object}
+     * @param propertyChain {String}
+     * @param options {Object}
+     */
+    bindPermissionState : function( permission, target, propertyChain, options )
+    {
+      this.getAccessManager().getPermissionManager()
+        .create( permission ).bind( "state", target, propertyChain, options );
+    },
+    
+    /**
+     * Returns true if the current user has the permission with the given name,
+     * otherwise false
+     * @param permission {String}
+     * @return {Boolean}
+     */
+    hasPermission : function( permission )
+    {
+      return this.getAccessManager().getPermissionManager().create( permission ).getState();
+    },
+    
+    /**
+     * Adds a listener for the change of the permission state
+     * @param permission {String}
+     * @param callback {Function}
+     * @param context {Object}
+     * @return {void}
+     */
+    addPermissionListener : function( permission, callback, context )
+    {
+      this.getAccessManager().getPermissionManager().create( permission ).addListener( "changeState", callback, context );
+    },
+    
+    /**
+     * Removes a listener for the change of the permission state
+     * @param permission {String}
+     * @param callback {Function}
+     * @param context {Object}
+     * @return {void}
+     */    
+    removePermissionListener : function( permission, callback, context )
+    {
+      this.getAccessManager().getPermissionManager().create( permission ).removeListener( "changeState", callback, context );
     },
     
     /*
@@ -483,8 +545,21 @@ qx.Class.define("qcl.application.Core",
      */
     allowServerDialogs : function( value )
     {
-      qcl.ui.dialog.Dialog.allowServerDialogs( value );    
+      qcl.ui.dialog.Dialog.allowServerDialogs( value, new qcl.application.Sandbox( this ) );    
     },    
+    
+    /**
+     * Launches a server request
+     * @param {} service
+     * @param {} method
+     * @param {} params
+     * @param {} callback
+     * @param {} context
+     */
+    rpcRequest : function( service, method, params, callback, context )
+    {
+      return this.getRpcManager().execute( service, method, params, callback, context );
+    },
     
     /*
     ---------------------------------------------------------------------------
@@ -499,6 +574,37 @@ qx.Class.define("qcl.application.Core",
     getSessionId : function()
     {
       return this.getSessionManager().getSessionId();  
+    },
+    
+    /**
+     * Returns a safe subset of the active user to the module
+     * @return {Object|null} if not null, a Map with the following keys: 
+     *   namedId  : (string) the user login name
+     *   username : (string) the user login name
+     *   fullname : (string) the full name of the user
+     */
+    getActiveUserData : function()
+    {
+      var activeUser = this.getActiveUser();
+      if ( activeUser )
+      {
+	      return {
+	        namedId   : activeUser.getNamedId(),
+	        username  : activeUser.getNamedId(),
+	        fullname  : activeUser.getFullname()
+	      };
+      }
+      else
+      {
+        return null;
+      }
+    },
+    
+    // FIXME make property! 
+    isAuthenticatedUser : function()
+    {
+      var activeUser = this.getActiveUser();
+      return ( activeUser && ! activeUser.isAnonymous() );
     },
     
     /**
@@ -562,14 +668,180 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
-     * Returns qx.core.Object with values used for application layout
-     * @return {qx.core.Object}
+     * Checks if a config key exists
+     * @param key {String}
+     * @return {Boolean}
      */
-    getLayoutConfig : function()
+    hasConfigKey : function( key )
     {
-      return qx.core.Init.getApplication().getLayoutConfig();
+      return this.getConfigManager().keyExists( key );
+    },
+   
+    /**
+     * Returns a config value
+     * @param key {String}
+     * @return {var}
+     */
+    getConfigKey : function ( key )
+    {
+      return this.getConfigManager().getKey( key );
+    },
+    
+    /**
+     * Sets a config value and fire a 'clientChange' event.
+     * @param key {String}
+     * @param value {unknown} 
+     */
+    setConfigKey : function (key, value)
+    {
+      this.getConfigManager().setKey( key, value );
+    },
+    
+    /**
+     * Binds a config value to a target widget property, optionally in both
+     * directions.
+     * @param key {String}
+     * @param targetObject {qx.core.Object}
+     * @param targetPath {String}
+     * @param updateSelfAlso {Boolean} 
+     *    Optional, default undefined. If true, change the config value if the 
+     *    target property changes
+     * @return {void}
+     */
+    bindConfigKey : function( key, targetObject, targetPath, updateSelfAlso )
+    {
+      this.getConfigManager().bindKey( key, targetObject, targetPath, updateSelfAlso );
+    },
+    
+    /**
+     * Returns object or qx.core.Object (default) with values used for application layout.
+     * @param nativeObject {Boolean|undefined} 
+     * @return {qx.core.Object|Object}
+     */
+    getLayoutConfig : function( nativeObject )
+    {
+      return qx.core.Init.getApplication().getLayoutConfig( nativeObject );
     },
 
+    
+   /*
+    ---------------------------------------------------------------------------
+      APPLICATION STATE
+    ---------------------------------------------------------------------------
+    */   
+    
+    /**
+     * Sets an application state. If value is NULL, the state is implicitly removed.
+     * @param {} name
+     * @param {} value
+     * @return {Boolean}
+     */
+    setApplicationState : function( name, value )
+    {
+      if ( value === null )
+      {
+        this.removeApplicationState( name );
+        return false;
+      }
+      else
+      {
+        this.getStateManager().setState( name, value );
+        return true;
+      }
+    },
+    
+    getApplicationState : function( name )
+    {
+      return this.getStateManager().getState( name );
+    },    
+    
+    removeApplicationState : function( name )
+    {
+      this.getStateManager().removeState( name, value );
+    },        
+    
+    getApplicationStateMap : function()
+    {
+      return this.getStateManager().getStates();
+    },
+    
+    /**
+     * Subscribes to an application state change
+     * @param name 
+     *    Name of the state or "*" to monitor all changes
+     * @param callback 
+     *    The callback is called with a data event containing a map with the 
+     *    'name' of the state, the 'value' and the 'old' value
+     * @param context {Object}
+     *    The execution context of the callback
+     * @return {void}
+     */
+    onApplicationStateChange : function( name, callback, context )
+    {
+      this.getStateManager().addListener("changeState", function(e){
+        if ( e.getData().name === name || e.getData().name == "*" )
+        {
+          callback.call( context, e );  
+        }
+      },this);
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       USER INTERACTION
+    ---------------------------------------------------------------------------
+    */
+    
+    /**
+     * Shows a user notification message in a popup or growl-like way,
+     * depending on implementation
+     * @param message {String}
+     */
+    showNotification : function( message )
+    {
+      this.showPopup( message );
+    },
+    
+    /**
+     * Hides the notification message
+     */
+    hideNotification : function()
+    {
+      this.hidePopup();
+    },
+    
+    /**
+     * Shows an alert box. 
+     * @param message {String}
+     * @param callback {Function|undefined} 
+     *    Optional callback function called when the user clicks on the
+     *    OK button.
+     * @param context {Object|undefined}
+     *    The context object of the callback
+     */
+    alert : function( message, callback, context )
+    {
+      dialog.Dialog.alert( message, callback, context );
+    },
+    
+    
+    /**
+     * Shows an confirmation dialog. 
+     * @param message {String}
+     * @param callback {Function} 
+     *    Callback function called when the user clicks on the
+     *    OK or CANCEL button. The callback takes one parameter,
+     *    which is true when the user has ok'ed the dialog or false
+     *    if she has cancelled.
+     * @param context {Object|undefined}
+     *    The context object of the callback
+     */    
+    confirm : function( message, callback, context )
+    {
+      dialog.Dialog.confirm( message, callback, context );
+    },
+    
+    // todo...
     
     /*
     ---------------------------------------------------------------------------
@@ -600,6 +872,24 @@ qx.Class.define("qcl.application.Core",
     {
       this.getRpcManager().terminate();
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+       UTILITY METHODS
+    ---------------------------------------------------------------------------
+    */        
+    
+    randomString : function( length ) 
+		{
+		  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+		  var randomstring = '';
+		  for (var i=0; i < length; i++) {
+		    var rnum = Math.floor(Math.random() * chars.length);
+		    randomstring += chars.substring(rnum,rnum+1);
+		  }
+		  return randomstring;
+		},
+
     
     /*
     ---------------------------------------------------------------------------

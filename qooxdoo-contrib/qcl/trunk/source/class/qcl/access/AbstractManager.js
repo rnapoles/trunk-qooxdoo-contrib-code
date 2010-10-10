@@ -227,6 +227,7 @@ qx.Class.define("qcl.access.AbstractManager",
   
   /**
    * This defer key is used to declare a couple of functions in the "qcl" scope.
+   * FIXME remove this!
    */
   defer : function()
   {

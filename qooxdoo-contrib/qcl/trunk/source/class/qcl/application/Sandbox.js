@@ -72,11 +72,24 @@ qx.Class.define("qcl.application.Sandbox",
 
   members :
   {
+    
+    /*
+    ---------------------------------------------------------------------------
+       PRIVATES
+    ---------------------------------------------------------------------------
+    */
+    
     /**
      * The core application library
-     * @type qx.application.Core
+     * @type qcl.application.Core
      */
     __core : null,
+    
+    /*
+    ---------------------------------------------------------------------------
+       MESSAGES
+    ---------------------------------------------------------------------------
+    */    
     
     /**
      * Subscribes to a message name
@@ -125,10 +138,22 @@ qx.Class.define("qcl.application.Sandbox",
      * Returns a qx.core.Object with the properties of the active user
      * @return {qx.core.Object}
      */
-    getActiveUser: function()
+    getActiveUserData: function()
     {
-      return this.__core.getActiveUser();
+      return this.__core.getActiveUserData();
     },
+    
+    /**
+     * Authenticates with a username and password
+     * @param username {String}
+     * @param password {String}
+     * @param callback {Function}
+     * @param context {Object}
+     */
+    authenticate : function( username, password, callback, context  )
+    {
+      this.__core.authenticate( username, password, callback, context );
+    },    
     
     /*
     ---------------------------------------------------------------------------
@@ -137,14 +162,244 @@ qx.Class.define("qcl.application.Sandbox",
     */
     
     /**
-     * Returns qx.core.Object with values used for application layout
-     * @return {qx.core.Object}
+     * Checks if a config key exists
+     * @param key {String}
+     * @return {Boolean}
      */
-    getLayoutConfig : function()
+    hasConfigKey : function( key )
     {
-      return this.__core.getLayoutConfig();
-    }
+      return this.__core.hasConfigKey( key );
+    },
+   
+    /**
+     * Returns a config value
+     * @param key {String}
+     * @return {var}
+     */
+    getConfigKey : function ( key )
+    {
+      return this.__core.getConfigKey( key );
+    },
     
+    /**
+     * Sets a config value and fire a 'clientChange' event.
+     * @param key {String}
+     * @param value {unknown} 
+     */
+    setConfigKey : function (key, value)
+    {
+      this.__core.setConfigKey( key, value );
+    },
+    
+    /**
+     * Binds a config value to a target widget property, optionally in both
+     * directions.
+     * @param key {String}
+     * @param targetObject {qx.core.Object}
+     * @param targetPath {String}
+     * @param updateSelfAlso {Boolean} 
+     *    Optional, default undefined. If true, change the config value if the 
+     *    target property changes
+     * @return {void}
+     */
+    bindConfigKey : function( key, targetObject, targetPath, updateSelfAlso )
+    {
+      this.__core.bindConfigKey( key, targetObject, targetPath, updateSelfAlso );
+    },
+    
+    /**
+     * Returns object or qx.core.Object (default) with values used for application layout.
+     * @param nativeObject {Boolean|undefined} 
+     * @return {qx.core.Object|Object}
+     */
+    getLayoutConfig : function( nativeObject )
+    {
+      return this.__core.getLayoutConfig( nativeObject );
+    },
+    
+    
+    /*
+    ---------------------------------------------------------------------------
+      PERMISSIONS
+    ---------------------------------------------------------------------------
+    */
+    
+    /**
+     * Binds a permission object's 'state' property to the given target property
+     * chain.
+     * @param permission {String}
+     * @param target {qx.core.Object}
+     * @param propertyChain {String}
+     * @param options {Object}
+     */ 
+    bindPermissionState : function( permission, target, propertyChain, options )
+    {
+      this.__core.bindPermissionState( permission, target, propertyChain, options );
+    },
+    
+    /**
+     * Returns true if the current user has the permission with the given name,
+     * otherwise false
+     * @param permission {String}
+     * @return {Boolean}
+     */
+    hasPermission : function( permission )
+    {
+      return this.__core.hasPermission( permission );
+    },
+    
+    /**
+     * Adds a listener for the change of the permission state
+     * @param permission {String}
+     * @param callback {Function}
+     * @param context {Object}
+     * @return {void}
+     */
+    addPermissionListener : function( permission, callback, context )
+    {
+      this.__core.addPermissionListener( permission, callback, context );
+    },
+    
+    /**
+     * Removes a listener for the change of the permission state
+     * @param permission {String}
+     * @param callback {Function}
+     * @param context {Object}
+     * @return {void}
+     */    
+    removePermissionListener : function( permission, callback, context )
+    {
+      this.__core.removePermissionListener( permission, callback, context );
+    },    
+    
+    /*
+    ---------------------------------------------------------------------------
+       MODULE REGISTRATION
+    ---------------------------------------------------------------------------
+    */    
+    
+    register : function( name, module )
+    {
+      this.__core.register( name, module );
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+       USER INTERACTION
+    ---------------------------------------------------------------------------
+    */
+    
+    /**
+     * Shows a user notification message in a popup or growl-like way,
+     * depending on implementation
+     * @param message {String}
+     */
+    showNotification : function( message )
+    {
+      this.__core.showNotification( message );
+    },
+    
+    /**
+     * Hides the notification message.
+     */
+    hideNotification : function()
+    {
+      this.__core.hideNotification();
+    },
+    
+    /**
+     * Shows an alert box. 
+     * @param message {String}
+     * @param callback {Function|undefined} 
+     *    Optional callback function called when the user clicks on the
+     *    OK button.
+     * @param context {Object|undefined}
+     *    The context object of the callback
+     */
+    alert : function( message, callback, context )
+    {
+      this.__core.alert( message, callback, context );
+    },    
+    
+    /**
+     * Shows an confirmation dialog. 
+     * @param message {String}
+     * @param callback {Function} 
+     *    Callback function called when the user clicks on the
+     *    OK or CANCEL button. The callback takes one parameter,
+     *    which is true when the user has ok'ed the dialog or false
+     *    if she has cancelled.
+     * @param context {Object|undefined}
+     *    The context object of the callback
+     */    
+    confirm : function( message, callback, context )
+    {
+      this.__core.confirm( message, callback, context );
+    },    
+    
+    /*
+    ---------------------------------------------------------------------------
+      I/O
+    ---------------------------------------------------------------------------
+    */   
+    
+    /**
+     * 
+     * @param {} service
+     * @param {} method
+     * @param {} params
+     * @param {} callback
+     * @param {} context
+     * @return {}
+     */
+    rpcRequest : function( service, method, params, callback, context )
+    {
+      return this.__core.rpcRequest( service, method, params, callback, context );
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      APPLICATION STATE
+    ---------------------------------------------------------------------------
+    */   
+    
+    setApplicationState : function( name, value )
+    {
+      return this.__core.setApplicationState( name, value );
+    },
+    
+    getApplicationState : function( name )
+    {
+      return this.__core.getApplicationState( name );
+    },    
+    
+    removeApplicationState : function( name )
+    {
+      return this.__core.removeApplicationState( name );
+    },     
+    
+    getApplicationStateMap : function()
+    {
+      return this.__core.getApplicationStateMap();
+    },        
+    
+    /**
+     * Subscribes to an application state change
+     * @param name 
+     *    Name of the state or "*" to monitor all changes
+     * @param callback 
+     *    The callback is called with a data event containing a map with the 
+     *    'name' of the state, the 'value' and the 'old' value
+     * @param context {Object}
+     *    The execution context of the callback
+     * @return {void}
+     */
+    onApplicationStateChange : function( name, callback, context )
+    {
+      return this.__core.onApplicationStateChange( name, callback, context );
+    },
+    
+    dummy : null
     
   }
 });
