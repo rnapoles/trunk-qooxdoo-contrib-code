@@ -239,9 +239,8 @@ simulation.Simulation.prototype.checkSyntaxHighlightingAce = function()
   
 };
 
-simulation.Simulation.prototype.checkSyntaxHighlighting = function()
+simulation.Simulation.prototype.checkSyntaxHighlighting = function(editor)
 {
-  var editor = this.getConfigSetting("editor");
   var browser = this.getConfigSetting("testBrowser").toLowerCase();
   if( browser.indexOf("firefox") >= 0 && browser.indexOf("1.5") >= 0 ) {
     this.log("Skipping syntax highlighting check in Firefox 1.5", "info");
@@ -310,7 +309,10 @@ simulation.Simulation.prototype.runTest = function()
   // Close the menu
   this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
   
-  this.checkSyntaxHighlighting();
+  var editor = this.getConfigSetting("editor");
+  if (editor) {
+    this.checkSyntaxHighlighting(editor);
+  }
   
   var editOk = this.checkEdit(sampleArr[0]);
   
