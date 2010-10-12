@@ -234,11 +234,6 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
   
 };
 
-simulation.Simulation.prototype.checkSyntaxHighlightingAce = function()
-{
-  
-};
-
 simulation.Simulation.prototype.checkSyntaxHighlighting = function(editor)
 {
   var browser = this.getConfigSetting("testBrowser").toLowerCase();
@@ -248,6 +243,10 @@ simulation.Simulation.prototype.checkSyntaxHighlighting = function(editor)
   }
   
   // Check if syntax highlighting is on
+  if (!this["get" + editor + "Active"]()) {
+    this.qxClick(locators.syntaxHighlightingButton, '', 'Activating syntax highlighting');
+  }
+  
   if (this["get" + editor + "Active"]()) {
     this.log("Syntax highlighting is active", "info");
     // Turn off syntax highlighting
