@@ -519,13 +519,21 @@ class qcl_data_model_PropertyBehavior
       /*
        * else, unserialize. This must fail without a default value
        */
-      else
+      elseif ( is_string( $value ) )
       {
         $value = unserialize( $value );
         if ( ! is_array( $value ) )
         {
           throw new qcl_core_PropertyBehaviorException("Serialized value is not an array!");
         }
+      }
+      
+      /*
+       * else, typcasting failed
+       */
+      elseif ( ! is_array( $value ) )
+      {
+      	throw new qcl_core_PropertyBehaviorException("Cannot convert saved value into an array!");
       }
     }
 

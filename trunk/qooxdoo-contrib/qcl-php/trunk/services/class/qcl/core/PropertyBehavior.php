@@ -15,7 +15,8 @@
  * Authors:
  *  * Christian Boulanger (cboulanger)
  */
-require_once "qcl/core/IPropertyBehavior.php";
+
+qcl_import("qcl_core_IPropertyBehavior") ;
 
 /**
  * Exceptions thrown in this class
@@ -135,7 +136,7 @@ class qcl_core_PropertyBehavior
    * @return bool
    * @throws InvalidArgumentException
    */
-  public function check( $property=null )
+  public function check( $property )
   {
    	if ( ! $property or ! is_string($property) )
   	{
@@ -157,7 +158,7 @@ class qcl_core_PropertyBehavior
    * @return mixed
    * @throws InvalidArgumentException
    */
-  public function get( $property=null )
+  public function get( $property )
   {
   	if ( ! $property or ! is_string($property) )
   	{

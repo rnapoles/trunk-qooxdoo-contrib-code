@@ -503,7 +503,7 @@ class qcl_data_model_AbstractActiveRecord
    * @return void
    * @throws qcl_data_model_NoRecordLoadedException
    */
-  protected function checkLoaded()
+  public function checkLoaded()
   {
     if ( ! $this->_loaded )
     {

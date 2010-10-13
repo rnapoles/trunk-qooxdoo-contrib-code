@@ -27,5 +27,14 @@ class qcl_data_db_Timestamp
   {
     return $this->format("Y-m-d H:i:s");
   }
+  
+  /**
+   * Overridden to make PHP 5.2-compatible
+   * @see DateTime::diff()
+   */
+  public function diff( $datetime )
+  {
+  	return date_diff( $this, $datetime );
+  }
 }
 ?>

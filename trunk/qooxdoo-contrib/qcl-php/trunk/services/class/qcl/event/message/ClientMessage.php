@@ -26,19 +26,35 @@ class qcl_event_message_ClientMessage
 
   /**
    * Whether the message should be broadcasted to all connected clients
-   * @var bool
+   * @var boolean
    */
   protected $broadcast = false;
   
+  /**
+   * Whether the message should be sent to the session of the current user
+   * @var boolean
+   */
   protected $excludeOwnSession = false;
-
-
+  
+  /**
+   * Arbitrary access control information
+   * @var array|null
+   */
+  protected $acl = null;
+  
+  /**
+   * Setter for broadcast
+   * @param bool $value
+   */
   public function setBroadcast( $value )
   {
-    qcl_assert_type( $value, "boolean" );
+    qcl_assert_boolean( $value );
     $this->broadcast = $value;
   }
 
+  /**
+   * Getter for broadcast
+   */
   public function isBroadcast()
   {
     return $this->broadcast;
@@ -46,14 +62,24 @@ class qcl_event_message_ClientMessage
   
   public function setExcludeOwnSession( $value )
   {
-    qcl_assert_type( $value, "boolean" );
+    qcl_assert_boolean( $value );
     $this->excludeOwnSession = $value;
   }
 
   public function isExcludeOwnSession()
   {
     return $this->excludeOwnSession;
-  }  
+  }
+  
+  public function setAcl( $acl )
+  {
+  	$this->acl = $acl;
+  }
+  
+  public function getAcl()
+  {
+  	return $this->acl;
+  }
 
 }
 ?>
