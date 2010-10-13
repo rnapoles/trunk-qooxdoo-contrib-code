@@ -237,12 +237,12 @@ class qcl_locale_Manager extends qcl_core_Object
     if ( $className and ( count( $segments = explode( "_", $className) ) > 1 ) )
     {
       $translation = dgettext( $segments[0], $messageId );
-      if ( $this->hasLog() ) $this->log( "Translating '$messageId' into '$translation' using domain '$segments[0]'", QCL_LOG_LOCALE);
+      //if ( $this->hasLog() ) $this->log( "Translating '$messageId' into '$translation' using domain '$segments[0]'", QCL_LOG_LOCALE);
     }
     else
     {
       $tranlation = gettext( $messageId );
-      if ( $this->hasLog() ) $this->log( "Translating '$messageId' into '$translation'.", QCL_LOG_LOCALE);
+      //if ( $this->hasLog() ) $this->log( "Translating '$messageId' into '$translation'.", QCL_LOG_LOCALE);
     }
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);

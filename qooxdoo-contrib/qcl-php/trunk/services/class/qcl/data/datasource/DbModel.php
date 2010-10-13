@@ -571,11 +571,22 @@ class qcl_data_datasource_DbModel
   }
 
   /**
-   * Return the model instance for the given type
+   * Return the shared model instance for the given type.
+   * @param string $type
+   * @return qcl_data_model_AbstractActiveRecord
+   * @deprecated Use getInstanceOfType() instead
+   */  
+  public function getModelOfType( $type )
+  {
+  	return $this->getInstanceOfType($type);
+  }
+
+  /**
+   * Return the shared model instance for the given type.
    * @param string $type
    * @return qcl_data_model_AbstractActiveRecord
    */
-  public function getModelOfType( $type )
+  public function getInstanceOfType( $type )
   {
     $this->checkLoaded();
 
@@ -598,6 +609,30 @@ class qcl_data_datasource_DbModel
 
     return $this->modelMap[$type]['model']['instance'];
   }
+  
+  /**
+   * Creates a model instance for the given type. Avoid using this
+   * method, use the shared instance instead whenever possible for
+   * performance reasons.
+   * 
+   * @param string $type
+   * @return qcl_data_model_AbstractActiveRecord
+   */
+  public function createInstanceOfType( $type )
+  {
+    $this->checkLoaded();
+
+    if ( ! isset( $this->modelMap[$type] ) )
+    {
+      throw new InvalidArgumentException("Model of type '$type' is not registered");
+    }
+    
+		/*
+     * create and return the model
+     */
+    $class = $this->modelMap[$type]['model']['class'];
+    return new $class( $this );    
+  }  
 
   /**
    * Returns the class name of the model of the given type.
@@ -613,13 +648,24 @@ class qcl_data_datasource_DbModel
     }
     return $this->modelMap[$type]['model']['class'];
   }
+  
+  /**
+   * Return the model that corresponds to the given class
+   * @param string $class
+   * @return qcl_data_model_db_AbstractActiveRecord
+   * @deprecated Use getInstanceByClass() instead
+   */
+  public function getModelByClass( $class )
+  {
+  	return $this->getInstanceByClass( $class );
+  }  
 
   /**
    * Return the model that corresponds to the given class
    * @param string $class
    * @return qcl_data_model_db_AbstractActiveRecord
    */
-  public function getModelByClass( $class )
+  public function getInstanceByClass( $class )
   {
     foreach( $this->modelMap as $type => $data )
     {
@@ -627,7 +673,7 @@ class qcl_data_datasource_DbModel
         or ( isset( $data['model']['replace'] )
         and $data['model']['replace'] == $class  ) )
       {
-        return $this->getModelOfType( $type );
+        return $this->getInstanceOfType($type);
       }
     }
     throw new InvalidArgumentException("Datasource $this does not have a model of class '$class'.");

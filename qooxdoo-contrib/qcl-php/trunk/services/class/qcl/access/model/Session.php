@@ -225,7 +225,8 @@ class qcl_access_model_Session
   	}
   	catch( qcl_data_model_RecordNotFoundException $e )
   	{
-  		 $this->warn( "$this deleted ..." );
+  		$this->delete();
+  		$this->info( "$this deleted ..." );
   	}
   	return false;
   }

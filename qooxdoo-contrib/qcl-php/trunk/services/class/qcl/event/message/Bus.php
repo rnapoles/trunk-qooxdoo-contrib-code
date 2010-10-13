@@ -25,6 +25,14 @@ class qcl_event_message_Bus
   extends qcl_core_Object
 {
 
+	/**
+	 * Array of handlers called before a message is broadcasted to
+	 * other clients
+	 * 
+	 * @var array
+	 */
+	private $onBeforeBroadcast = array();
+	
   /**
    * The message database
    * @var array
@@ -101,6 +109,23 @@ class qcl_event_message_Bus
       $message_db['data'][$index][] = array( $subscriberId, $method );
     }
   }
+  
+  /**
+   * Registers a callback which is called before a message is
+   * broadcasted to another client. This can be used to filter 
+   * the messages that are broadcasted. The callback is an array
+   * with the object and the name of the method as elements.
+   * The callback receives the message object and the session
+   * object that the message is about to be dispatched to.
+   * @param array $callback
+   */
+  public function registerOnBeforeBroadcastCallback( $callback )
+  {
+  	qcl_assert_array( $callback );
+  	qcl_assert_object( $callback[0] );
+  	qcl_assert_valid_string( $callback[1] );
+		$this->onBeforeBroadcast[] = $callback;
+  }
 
   /**
    * Dispatches a message. Filtering not yet supported, i.e. message name must
@@ -112,16 +137,26 @@ class qcl_event_message_Bus
    */
   public function dispatch ( qcl_event_message_Message $message )
   {
-
     /*
      * message data
      */
     $name = $message->getName();
     $data = $message->getData();
 
-		$accessController = $this->getApplication()->getAccessController();
-    $sessionModel 		= $accessController->getSessionModel();
-    $sessionId    		= $accessController->getSessionId();    
+    /*
+     * models
+     */
+    static $accessController 	= null;
+    static $sessionModel 			= null;
+    static $userModel 				= null;
+    if( $accessController === null )
+    {
+			$accessController = $this->getApplication()->getAccessController();
+	    $sessionModel 		= $accessController->getSessionModel();
+	    $userModel				= $accessController->getUserModel();
+    }
+    
+    $sessionId = $accessController->getSessionId();    
     
     /*
      * search message database
@@ -148,7 +183,8 @@ class qcl_event_message_Bus
      */
     if ( $message instanceof qcl_event_message_ClientMessage )
     {
-      $msgModel = $this->getModel();
+      
+    	$msgModel = $this->getModel();
 
       /*
        * if message is a broadcast, get the ids of all sessions and store
@@ -159,10 +195,52 @@ class qcl_event_message_Bus
         $sessionModel->findAll();
         while( $sessionModel->loadNext() )
         {
+        	/*
+        	 * check if user of this session exists, otherwise
+        	 * delete the session
+        	 */
+          try 
+			    {
+			    	$userModel->load( $sessionModel->get("UserId") );	
+			    } 
+			    catch ( qcl_data_model_RecordNotFoundException $e) 
+			    {
+			    	$this->warn( "Deleting session with non-existing user: " . $sessionModel->namedId() );
+			    	$sessionModel->delete();
+			    	continue;
+			    }        	
+        	
+        	/*
+        	 * do not dispatch if the message should not be returned to 
+        	 * the client itself
+        	 */
         	if( $message->isExcludeOwnSession() and $sessionModel->namedId() == $sessionId )
         	{
         		continue;
         	}
+        	
+			    /*
+			     * do not dispatch the message when one of the registered
+			     * callbacks returns false
+			     */
+        	$cancelDispatch = false;
+			    foreach( $this->onBeforeBroadcast as $callback )
+			    {
+			    	$callbackObject = $callback[0];
+			    	$callbackMethod = $callback[1];
+			    	if( $callbackObject->$callbackMethod( $message, $sessionModel, $userModel ) === false )
+			    	{
+			    		$cancelDispatch = true;
+			    	}
+			    } 
+			    if ( $cancelDispatch ) 
+			    {
+			    	continue;
+			    }
+			    
+			    /*
+			     * create a message entry in the database
+			     */
           $msgModel->create( array(
             'name'      => $name,
             'data'      => addSlashes( serialize( $data ) )
