@@ -28,9 +28,13 @@ interface qcl_core_IPropertyAccessors
 
   /**
    * Return the names of all properties of this object.
+   * @param boolean $ownPropertiesOnly
+   * 		If true, return only the properties defined in the class. If false 
+   * 		(default), return these properties plus all the inherited properties
+   * 		of the parent classes.
    * @return array
    */
-  public function properties();
+  public function properties( $ownPropertiesOnly = false );
 
   /**
    * Checks if class has this property.

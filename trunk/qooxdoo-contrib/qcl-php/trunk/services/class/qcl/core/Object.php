@@ -234,13 +234,30 @@ class qcl_core_Object
   }
 
   /**
-   * Return the names of all properties of this object.
+   * Returns an array of the names of the properties of this object.
+   * @param boolean $ownPropertiesOnly
+   * 		If true, return only the properties defined in the class. If false 
+   * 		(default), return these properties plus all the inherited properties
+   * 		of the parent classes.
    * @return array
    */
-  public function properties()
+  public function properties( $ownPropertiesOnly = false )
   {
-    return $this->getPropertyBehavior()->names();
+    return $this->getPropertyBehavior()->names( $ownPropertiesOnly );
   }
+  
+  /**
+   * Returns an array of names of the properties that are defined in the
+   * class, not excluding those defined in parent classes. This method
+   * must be overridden and implemented in each class for which this behavior
+   * is needed, since there is no generalizable way to determine these 
+   * property names.
+   * @return array
+   */
+  public function ownProperties()
+  {
+  	throw new qcl_core_NotImplementedException(__METHOD__);
+  }  
 
   /**
    * Checks if class has this property.
@@ -346,6 +363,11 @@ class qcl_core_Object
      */
     if ( is_array( $options ) )
     {
+    	$delete = array();
+    	
+    	/*
+    	 * include
+    	 */
     	if ( isset( $options['include'] ) )
     	{
     		$delete = array_diff( 
@@ -353,10 +375,21 @@ class qcl_core_Object
     			(array) $options['include']
     		);
     	}
-    	elseif ( isset( $options['exclude'] ) )
+
+    	/*
+    	 * exclude
+    	 */
+    	if ( isset( $options['exclude'] ) )
     	{
-    		$delete = (array) $options['exclude'];
-    	} 
+    		$delete = array_unique( array_merge(
+    			$delete,
+    			(array) $options['exclude']
+    		) );
+    	}     	
+    	
+    	/*
+    	 * unset the given property values
+    	 */
     	foreach( $delete as $prop )
     	{
     		unset( $data[$prop] );

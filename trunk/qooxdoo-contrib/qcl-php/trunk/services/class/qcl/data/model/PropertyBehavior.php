@@ -79,10 +79,10 @@ class qcl_data_model_PropertyBehavior
   protected static $core_properties = array( "id", "namedId", "created", "modified" );
 
   /**
-   * Cache of property definitions
+   * Property definitions of this class and all parent classes
    */
   protected $properties = array();
-
+  
   /**
    * The stored values for the managed properties
    * @var array
@@ -386,12 +386,23 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * The names of all the managed properties
+   * The names of all the managed properties of this class.
+   * @param boolean $ownPropertiesOnly
+   * 		If true, return only the properties defined in the class. If false 
+   * 		(default), return these properties plus all the inherited properties
+   * 		of the parent classes.
    * @return array
    */
-  public function names()
+  public function names( $ownPropertiesOnly=false )
   {
-    return array_keys( $this->properties );
+  	if ( $ownPropertiesOnly )
+  	{
+  		return $this->getModel()->ownProperties(); 
+  	}
+  	else 
+  	{
+  		return array_keys( $this->properties );	
+  	}
   }
 
 
