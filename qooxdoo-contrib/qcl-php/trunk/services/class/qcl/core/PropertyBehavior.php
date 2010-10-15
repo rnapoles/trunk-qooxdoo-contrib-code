@@ -335,14 +335,26 @@ class qcl_core_PropertyBehavior
   }
 
   /**
-   * The names of all the managed properties
+   * The names of all the managed properties of this class.
+   * @param boolean $ownPropertiesOnly
+   * 		If true, return only the properties defined in the class. If false 
+   * 		(default), return these properties plus all the inherited properties
+   * 		of the parent classes.
+   * FIXME $ownPropertiesOnly not impemented
    * @return array
    */
-  public function names()
+  public function names( $ownPropertiesOnly=false )
   {
-    return array_keys( get_class_vars( get_class( $this->object ) ) );
+  	if ( $ownPropertiesOnly )
+  	{
+  		return $this->object->ownProperties(); 	
+  	}
+  	else 
+  	{
+  		return array_keys( get_class_vars( get_class( $this->object ) ) );	
+  	}
   }
-
+  
   /**
    * Returns all the managed properties as a map
    * @return array Associative array of key-value pairs
