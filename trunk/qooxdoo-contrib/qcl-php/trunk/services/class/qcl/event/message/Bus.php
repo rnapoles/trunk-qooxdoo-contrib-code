@@ -243,10 +243,12 @@ class qcl_event_message_Bus
 			     */
           $msgModel->create( array(
             'name'      => $name,
-            'data'      => addSlashes( serialize( $data ) )
+            'data'      => addSlashes( serialize( $message->getData() ) )
           ) );
           $msgModel->linkModel( $sessionModel );
         }
+        
+        return $cancelDispatch ? false : true;
       }
 
       /*
@@ -254,12 +256,23 @@ class qcl_event_message_Bus
        */
       else
       {
+      	$userModel = $this->getApplication()->getAccessController()->getActiveUser();
+				foreach( $this->onBeforeBroadcast as $callback )
+		    {
+		    	$callbackObject = $callback[0];
+		    	$callbackMethod = $callback[1];
+		    	if( $callbackObject->$callbackMethod( $message, $sessionModel, $userModel ) === false )
+		    	{
+		    		return false;
+		    	}
+		    }       	
         $sessionModel->load( $sessionId );
         $msgModel->create( array(
           'name'      => $name,
-          'data'      => addSlashes( serialize( $data ) )
+          'data'      => addSlashes( serialize( $message->getData() ) )
         ) );
         $msgModel->linkModel( $sessionModel );
+        return true;
       }
     }
   }
