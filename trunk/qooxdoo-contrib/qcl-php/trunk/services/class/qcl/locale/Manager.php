@@ -135,19 +135,24 @@ class qcl_locale_Manager extends qcl_core_Object
     {
       $loc = $locale . "_" . strtoupper( $locale );
       $locales[] = $loc;
-      $locales[] = $loc . ".utf8";
+      $locales[] = $loc . ".UTF8";
     }
     else
     {
-      $locales[] = $locale . ".utf8";
+      $locales[] = $locale . ".UTF8";
     }
 
-    $locale = setlocale( LC_MESSAGES, $locales );
-    putenv("LC_MESSAGES=$locale");
-    $this->locale = $locale;
+    if ( ! $systemLocale = setlocale( LC_MESSAGES, $locales ) )
+    {
+    	$this->warn( "setlocale() returned false for '" . implode( ",", $locales ) . "' - check your server's i18n settings! Falling back to '$locale'");
+    	$systemLocale = $locale;
+    }
+    
+    putenv("LC_MESSAGES=$systemLocale");
+    $this->locale = $systemLocale;
     if ( $this->hasLog() )
     {
-      $this->log( "Setting locale '$locale'", QCL_LOG_LOCALE);
+      $this->log( "Setting locale '$systemLocale'", QCL_LOG_LOCALE);
       $this->logLocaleInfo();
     }
 	}
@@ -287,7 +292,7 @@ class qcl_locale_Manager extends qcl_core_Object
   public function logLocaleInfo()
   {
     $this->info( "Locale information: ");
-    $this->info( "  Available locales:  " . implode(",", $this->getAvailableLocales() ) . " ... ");
+    $this->info( "  Available locales:  " . implode(",", $this->getAvailableLocales() ) );
     $this->info( "  Browser locales :   " . $_SERVER["HTTP_ACCEPT_LANGUAGE"]  );
     $this->info( "  System locale :     " . getenv("LANGUAGE") );
     $this->info( "  User locale:        " . $this->getUserLocale() );
