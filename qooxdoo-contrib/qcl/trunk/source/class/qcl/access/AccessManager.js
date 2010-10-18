@@ -182,7 +182,7 @@ qx.Class.define("qcl.access.AccessManager",
        */
       this.getUserManager().bind("activeUser",this,"authenticatedUser",{
         converter : function(activeUser){ 
-          return ( ! activeUser || activeUser.isAnonymous() ? false : true ) 
+          return ( ! activeUser || activeUser.isAnonymous() ? false : true );
         }
       });
     }, 
@@ -237,6 +237,7 @@ qx.Class.define("qcl.access.AccessManager",
     
    /**
     * Shorthand method to return a permission object by name
+    * FIXME use this shorthand in the core !
     * @return {qcl.access.Permission}
     */    
     getPermission : function( name )
@@ -246,6 +247,7 @@ qx.Class.define("qcl.access.AccessManager",
     
     /**
      * Shorthand method to return a permission state
+     * FIXME use this shorthand in the core !
      * @return {Boolean}
      */    
      getPermissionState : function( name )
@@ -255,6 +257,7 @@ qx.Class.define("qcl.access.AccessManager",
 
     /**
      * Shorthand method to update a permission
+     * FIXME use this shorthand in the core !
      * @return {void}
      */        
     updatePermission : function( name )
