@@ -118,6 +118,8 @@ class qcl_event_message_Bus
    * The callback receives the message object and the session
    * object that the message is about to be dispatched to.
    * @param array $callback
+   * @return void
+   * @see qcl_event_message_Bus::filterMessage
    */
   public function registerOnBeforeBroadcastCallback( $callback )
   {
@@ -126,6 +128,25 @@ class qcl_event_message_Bus
   	qcl_assert_valid_string( $callback[1] );
 		$this->onBeforeBroadcast[] = $callback;
   }
+  
+  /**
+	 * Example filters callback for the registerOnBeforeBroadcastCallback()
+	 * method.
+	 * @param qcl_event_message_ClientMessage $message
+	 * 		The message to dispatch
+	 * @param qcl_access_model_Session $sessionModel
+	 * 		The loaded model of the session that is to receive the message
+	 * @param qcl_access_model_User $userModel
+	 * 		The loaded model of the user that is to receive the message
+	 * @return boolean True if message should be broadcast, false if not.
+	 */
+	public function filterMessage( 
+		qcl_event_message_ClientMessage $message, 
+		qcl_access_model_Session $sessionModel, 
+		qcl_access_model_User $userModel )
+	{
+		return true;
+	}
 
   /**
    * Dispatches a message. Filtering not yet supported, i.e. message name must
@@ -241,9 +262,10 @@ class qcl_event_message_Bus
 			    /*
 			     * create a message entry in the database
 			     */
+			    $data = $message->getData();
           $msgModel->create( array(
             'name'      => $name,
-            'data'      => addSlashes( serialize( $message->getData() ) )
+            'data'      => addSlashes( serialize( $data ) )
           ) );
           $msgModel->linkModel( $sessionModel );
         }
