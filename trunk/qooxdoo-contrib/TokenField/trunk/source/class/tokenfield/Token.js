@@ -99,7 +99,10 @@ qx.Class.define("tokenfield.Token",
      */
     hintText :
     {
-      init : "Type in a search term"
+      check     : "String",
+      nullable  : true,
+      event     : "changeHintText",
+      init      : "Type in a search term"
     },
 
     /**
@@ -107,7 +110,9 @@ qx.Class.define("tokenfield.Token",
      */
     noResultsText :
     {
-      init : "No results"
+      check     : "String",
+      nullable  : true,      
+      init      : "No results"
     },
 
     /**
@@ -115,7 +120,9 @@ qx.Class.define("tokenfield.Token",
      */
     searchingText :
     {
-      init : "Searching..."
+      check     : "String",
+      nullable  : true,      
+      init      : "Searching..."
     },
 
     /**
@@ -207,7 +214,7 @@ qx.Class.define("tokenfield.Token",
 
     this._dummy = new qx.ui.form.ListItem();
     this._dummy.setEnabled(false);
-    this._dummy.setLabel(this.getHintText());
+    this.bind("hintText", this._dummy, "label" );
     this.getChildControl('list').add(this._dummy);
   },
 
@@ -539,7 +546,15 @@ qx.Class.define("tokenfield.Token",
     {
       this.cache.add( str, qx.data.marshal.Json.createModel(data) );
       var result = this.cache.get(str);
-      this.getChildControl('list').removeAll();
+      var list = this.getChildControl('list');
+      list.removeAll();
+      
+      if ( result.getLength() == 0 )
+      {
+        this._dummy.setLabel( this.getNoResultsText() );
+        list.add( this._dummy );
+        return;
+      }
 
       for (var i=0; i<result.getLength(); i++)
       {
@@ -547,7 +562,7 @@ qx.Class.define("tokenfield.Token",
         var item = new qx.ui.form.ListItem( this.highlight(label, str) );
         item.setModel(result.getItem(i));
         item.setRich(true);
-        this.getChildControl('list').add(item);
+        list.add(item);
       }
     },
 
@@ -561,6 +576,7 @@ qx.Class.define("tokenfield.Token",
     	if (item && item.constructor == qx.ui.form.ListItem)
     	{
     		this.removeFromSelection(item);
+			this.fireDataEvent( "removeItem", item );
     		item.destroy();
     	}
     },
@@ -568,6 +584,32 @@ qx.Class.define("tokenfield.Token",
     // overridden
     getChildrenContainer : function() {
       return this;
+    },
+    
+    /**
+     * Resets the widget
+     */
+    reset : function()
+    {
+      this.getSelection().forEach( function(item){
+        if ( item instanceof qx.ui.form.ListItem )
+        {
+	        this.removeFromSelection(item);
+	        item.destroy();
+        }
+      },this);
+      
+      this.getChildren().forEach( function(item){
+        if ( item instanceof qx.ui.form.ListItem )
+        {
+          this.remove(item);
+          item.destroy();
+        }      
+      },this);
+      
+      this.getChildControl('textfield').setValue("");
+      this.getChildControl('list').removeAll();
+      this.getChildControl('list').add(this._dummy);
     },
     
     /**
@@ -616,10 +658,12 @@ qx.Class.define("tokenfield.Token",
         {
           item.getChildControl("label").setWidth(this.getWidth() - 29);
         }
-
+        
         this._addBefore(item, this.getChildControl('textfield'));
         this.addToSelection(item);
 
+        this.fireDataEvent( "addItem", item );
+        
         this.getChildControl('textfield').setValue("");
       }
     },
