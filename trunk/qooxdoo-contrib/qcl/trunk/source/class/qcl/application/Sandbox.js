@@ -134,6 +134,20 @@ qx.Class.define("qcl.application.Sandbox",
     ---------------------------------------------------------------------------
     */
     
+    callOnceWhenAuthenticated : function( callback, context )
+    {
+      this.__core.addListenerOnce("changeActiveUser",function(){
+        if ( this.__core.isAuthenticatedUser() )
+        {
+          callback.call( context );
+        }
+        else
+        {
+          this.callOnceWhenAuthenticated( callback, context );
+        }
+      },this);
+    },
+    
     /**
      * Returns a qx.core.Object with the properties of the active user
      * @return {qx.core.Object}
@@ -154,6 +168,11 @@ qx.Class.define("qcl.application.Sandbox",
     {
       this.__core.authenticate( username, password, callback, context );
     },    
+     
+    isAuthenticatedUser : function()
+    {
+      return this.__core.isAuthenticatedUser();
+    },
     
     /*
     ---------------------------------------------------------------------------
@@ -337,6 +356,20 @@ qx.Class.define("qcl.application.Sandbox",
       this.__core.confirm( message, callback, context );
     },    
     
+    /*
+    ---------------------------------------------------------------------------
+      SESSION
+    ---------------------------------------------------------------------------
+    */
+    
+    /**
+     * FIXME: Should the sandbox have access to the session id at all?
+     */
+    getSessionId : function()
+    {
+      return this.__core.getSessionId();  
+    },
+
     /*
     ---------------------------------------------------------------------------
       I/O

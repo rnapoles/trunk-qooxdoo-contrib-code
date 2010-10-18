@@ -253,6 +253,8 @@ qx.Class.define("qcl.application.Core",
      * prefix for message names
      */
     this.__prefix = this.randomString(4) + "/";
+    
+    
   },  
 
   /*
@@ -607,6 +609,7 @@ qx.Class.define("qcl.application.Core",
       return ( activeUser && ! activeUser.isAnonymous() );
     },
     
+        
     /**
      * Sets the name of the service that does access-related stuff
      * @param {} service
