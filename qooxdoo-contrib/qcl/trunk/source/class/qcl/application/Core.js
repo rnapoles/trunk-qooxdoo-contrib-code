@@ -249,11 +249,6 @@ qx.Class.define("qcl.application.Core",
      */
     this.initializeManagers();
     
-    /*
-     * prefix for message names
-     */
-    this.__prefix = this.randomString(4) + "/";
-    
     
   },  
 
@@ -390,7 +385,7 @@ qx.Class.define("qcl.application.Core",
      */
     subscribe : function( name, callback, context )
     {
-      qx.event.message.Bus.subscribe( this.__prefix + name, callback, context );
+      qx.event.message.Bus.subscribe( name, callback, context );
     },
 
     
@@ -404,7 +399,7 @@ qx.Class.define("qcl.application.Core",
      */
     unsubscribe : function( name, callback, context )
     {
-      qx.event.message.Bus.unsubscribe( this.__prefix + name, callback, context );
+      qx.event.message.Bus.unsubscribe( name, callback, context );
     },
     
     /**
@@ -414,8 +409,289 @@ qx.Class.define("qcl.application.Core",
      */
     publish : function( name, message )
     {
-      qx.event.message.Bus.dispatchByName( this.__prefix + name, message );
+      qx.event.message.Bus.dispatchByName( name, message );
     },
+    
+    /**
+     * Starts the message transport.
+     * @param options {Map} 
+     *    A map with the following structure:<pre>
+     *    {
+     *      mode : (String)  
+     *          The mode of the transport. Currently, only "polling" supported.
+     *      transport : (String)
+     *          The transport typ used. Currently, only "rpc" supported
+     *      service : (String)
+     *          (mode "rpc") The name of the service used. The service must 
+     *          implement the following methods: 
+     *            broadcast: Called with one argumen, an array, containing the
+     *                       message data  [{ channel: String, data: unknown }, ...]
+     *            subscribe:  Called with one argument, the name of the channel
+     *            unsubscribe: Called with one argument, the name of the channel
+     *            unsubscribeAll : Removes all subscriptions on the server
+     *      stopOnError : (Boolean)
+     *          Whether the transport should be halted when an error occurred 
+     *          on the server.
+     *      authenticated : (Boolean)
+     *          Whether the transport should be halted as long as there is not
+     *          authenticated user, i.e. no transport when the user is anoymous 
+     *      interval : (Integer)
+     *          Whne the mode is "poll", the number of seconds between polling
+     *          requests
+     *    }</pre>
+     */
+    startMessageTransport : function( options )
+    {
+      if ( this.__transportRunning )
+      {
+        this.error( "Message transport already running.");
+      }
+      
+     /*
+      * start transport dependent on mode
+      */
+     switch( options.mode )
+     {
+        /*
+         * use periodic polling
+         */
+        case "poll":
+        
+          // the message queue
+          this.__pollMessageQueue = [];
+          
+          switch( options.transport )
+          {
+            case "rpc":
+            
+              if ( ! options.service )
+              {
+                this.error("Invalid message transport service.");
+              }
+              this.__pollingFunc = function()
+              {
+                /*
+                 * is an authenticated user required?
+                 */
+                if ( options.authenticated && ! this.isAuthenticatedUser()  )
+                {
+                  return;
+                }
+                
+                /*
+                 * poll
+                 */
+                this.getRpcManager().execute(
+                  options.service, "broadcast", [this.__pollMessageQueue], 
+                  function(){},this
+                );
+                
+                /*
+                 * empty the queue
+                 */
+                this.__pollMessageQueue = [];
+        
+              };
+              break;
+              
+            default:
+              this.error("Unknow message transport type " + options.transport );
+          }
+          
+          /*
+           * periodically forward messages to the server and pick up the
+           * server messages
+           */
+          if ( ! typeof options.interval == "number" || options.interval < 3  )
+          {
+            this.error("Interval must be integer and be >= 3");
+          }
+          this.__pollTimerId = qx.util.TimerManager.getInstance().start(
+            this.__pollingFunc, options.interval*1000, this, null, 0
+          );
+          break;
+          
+        default:
+          this.error("Unknow message transport mode " + options.mode );
+      }
+     
+      /*
+       * stop the polling on error
+       */
+      if ( options.stopOnError )
+      {
+        qx.event.message.Bus.subscribe("qcl.data.store.JsonRpc.error",function(e){
+          this.stopMessageTransport();
+        },this);
+      }
+      this.__messageTransportOptions = options;
+      this.__transportRunning = true;
+    },
+    
+    /**
+     * Stops the message transport
+     */
+    stopMessageTransport : function()
+    {
+      if ( ! this.__transportRunning )
+      {
+        this.error( "Message transport is not running.");
+      }
+      
+      switch( this.__messageTransportOptions.mode )
+      {
+        case "poll":
+          qx.util.TimerManager.getInstance().stop( this.__pollTimerId );
+          break;
+      }
+      
+      this.__transportRunning = false;
+    },
+    
+    /**
+     * Returns true if the message transport is running.
+     * @return {Boolean}
+     */
+    isMessageTransportRunning : function()
+    {
+      return this.__transportRunning;
+    },
+    
+    /**
+     * Subscribes to a message channel on the server
+     * @param name {String} The name of the channel
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {void}
+     */
+    subscribeToChannel : function( name, callback, context )
+    {
+      if ( ! this.__transportRunning )
+      {
+        this.warn("Cannot subscribe to channel. Message transport is not running.");
+        return false;
+      }
+      
+      this.subscribe( name, callback, context );
+      
+      switch( this.__messageTransportOptions.mode )
+      {
+        case "poll":
+          switch( this.__messageTransportOptions.transport )
+          {
+            case "rpc":
+              this.rpcRequest( 
+                this.__messageTransportOptions.service, "subscribe", [name],
+                function() {
+                  this.info("Subscribed to channel " + name );
+                },this
+              );
+              break;
+          }
+          break;
+      }
+    },
+    
+    /**
+     * Unsubscribes from a message channel on the server
+     * @param name {String} The name of the channel
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {void}
+     */
+    unsubscribeFromChannel : function( name, callback, context )
+    {
+      if ( ! this.__transportRunning )
+      {
+        this.warn("Cannot unsubscribe from channel. Message transport is not running.");
+        return false;
+      }
+      switch( this.__messageTransportOptions.mode )
+      {
+        case "poll":
+          switch( this.__messageTransportOptions.transport )
+          {
+            case "rpc":
+              this.rpcRequest( 
+                this.__messageTransportOptions.service, "unsubscribe", [name],
+                function() {
+                  this.info("Unsubscribed from channel " + name );
+                  this.unsubscribe( name, callback, context );
+                },this
+              );
+              break;
+          }
+          break;
+      }
+    },    
+    
+    unsubscribeFromAllChannels : function()
+    {
+      if ( ! this.__transportRunning )
+      {
+        return false;
+      }
+      switch( this.__messageTransportOptions.mode )
+      {
+        case "poll":
+          switch( this.__messageTransportOptions.transport )
+          {
+            case "rpc":
+              this.rpcRequest( 
+                this.__messageTransportOptions.service, "unsubscribeAll", [],
+                function() {
+                  this.info("Unsubscribed from all channels ");
+                },this
+              );
+              break;
+          }
+          break;
+      }
+    },
+    
+    /**
+     * Publishes a message to a message channel on the server
+     * @param name {String} 
+     *    The name of the channel
+     * @param data {unknown} 
+     *    The message data
+     * @param now {Boolean|undefined} 
+     *    If true, publish immediately without waiting for polling.
+     *    Default to false.
+     * @param clientAlso {Boolean|undefined}
+     *    If true, publish the message also on the client. If false,
+     *    only forward to the server. Default to false.
+     * @return {void}
+     */
+    publishToChannel : function( name, data, now, clientAlso )
+    {
+      if ( ! this.__transportRunning )
+      {
+        this.warn("Cannot publish to channel. Message transport is not running.");
+        return false;
+      }      
+      switch( this.__messageTransportOptions.mode )
+      {
+        case "poll":
+          var msg = {
+            channel : name,
+            data    : data
+          };
+          this.__pollMessageQueue.push( msg );
+          if ( now )
+          {
+            this.__pollingFunc();
+          }
+          if( clientAlso )
+          {
+            this.publish( name, data );
+          }
+          break;
+      }
+    },        
+        
     
     /*
     ---------------------------------------------------------------------------
@@ -846,6 +1122,8 @@ qx.Class.define("qcl.application.Core",
     
     // todo...
     
+
+    
     /*
     ---------------------------------------------------------------------------
        STARTUP AND TERMINATION
@@ -853,16 +1131,17 @@ qx.Class.define("qcl.application.Core",
     */     
     
     /**
-     * Called before the page is closed. If you would like to override this
-     * method, define a close method in your main application. 
+     * Called before the page is closed. Call this from the close method 
+     * in your main application. 
      * @return
      */
     close : function()
     {  
-      if ( this.isMainApplication() && this.isConfirmQuit() )
+      if ( this.isConfirmQuit() )
       {  
         return this.tr("Do you really want to quit %1?",  this.getApplicationName() );
       }
+      this.unsubscribeFromAllChannels();
       return undefined;
     },
     
