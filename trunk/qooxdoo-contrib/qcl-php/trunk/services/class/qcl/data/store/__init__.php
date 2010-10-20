@@ -16,6 +16,5 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-trigger_error( "Package qcl_data_store is currently unfunctional." );
 
 ?>
