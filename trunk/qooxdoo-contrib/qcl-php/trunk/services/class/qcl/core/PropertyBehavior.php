@@ -165,6 +165,15 @@ class qcl_core_PropertyBehavior
   		throw new InvalidArgumentException( "Invalid property argument" );
   	}
   	
+  	if ( ! $this->has( $property ) )
+  	{
+  	  throw new InvalidArgumentException( sprintf(
+  	   "Class %s has no managed property %s", 
+  	   $this->getObject()->className(),
+  	   $property
+  	  ) );
+  	}
+  	
     if ( $this->hasGetter( $property ) )
     {
       $getterMethod = $this->getterMethod( $property );
