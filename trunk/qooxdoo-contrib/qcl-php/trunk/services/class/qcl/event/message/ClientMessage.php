@@ -60,26 +60,43 @@ class qcl_event_message_ClientMessage
     return $this->broadcast;
   }
   
+  /**
+   * Pass true if the session of the sender is to be excluded,
+   * false if not.
+   * @param boolean $value
+   */
   public function setExcludeOwnSession( $value )
   {
     qcl_assert_boolean( $value );
     $this->excludeOwnSession = $value;
   }
 
+  /**
+   * Returns true if the session of the sender is to be excluded,
+   * false if not.
+   * @return boolean
+   */
   public function isExcludeOwnSession()
   {
     return $this->excludeOwnSession;
   }
   
-  public function setAcl( $acl )
+  /**
+   * Sets access control data
+   * @param mixed $aclData
+   */
+  public function setAcl( $aclData )
   {
-  	$this->acl = $acl;
+  	$this->acl = $aclData;
   }
   
+  /**
+   * Getter for access control data
+   * @return mixed
+   */
   public function getAcl()
   {
   	return $this->acl;
   }
-
 }
 ?>
