@@ -119,14 +119,59 @@ qx.Class.define("qcl.application.Sandbox",
     
     /**
      * Publishes a message
-     * @param name {String}
-     * @param message {unknown}
+     * @param name {String} The name of the message
+     * @param data {unknown} The message data
      * @return {void}
      */
-    publish : function( name, message )
+    publish : function( name, data )
     {
-      this.__core.publish( name, message );
+      this.__core.publish( name, data );
     },
+    
+    /**
+     * Subscribes to a message channel on the server
+     * @param name {String} The name of the channel
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {void}
+     */
+    subscribeToChannel : function( name, callback, context )
+    {
+      this.__core.subscribeToChannel( name, callback, context );
+    },
+    
+    /**
+     * Unsubscribes from a message channel on the server
+     * @param name {String} The name of the channel
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {void}
+     */
+    unsubscribeFromChannel : function( name, callback, context )
+    {
+      this.__core.unsubscribeFromChannel( name, callback, context );
+    },    
+    
+    /**
+     * Publishes a message to a message channel on the server
+     * @param name {String} 
+     *    The name of the channel
+     * @param data {unknown} 
+     *    The message data
+     * @param now {Boolean|undefined} 
+     *    If true, publish immediately without waiting for polling.
+     *    Default to false.
+     * @param clientAlso {Boolean|undefined}
+     *    If true, publish the message also on the client. If false,
+     *    only forward to the server. Default to false.
+     * @return {void}
+     */
+    publishToChannel : function( name, data, now, clientAlso )
+    {
+      this.__core.publishToChannel( name, data, now, clientAlso );
+    },    
     
     /*
     ---------------------------------------------------------------------------

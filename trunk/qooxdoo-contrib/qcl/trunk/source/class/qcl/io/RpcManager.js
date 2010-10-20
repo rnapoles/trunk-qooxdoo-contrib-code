@@ -210,7 +210,6 @@ qx.Class.define("qcl.io.RpcManager",
      */
     terminate : function()
     {
-      
       /*
        * execute terminate function on server
        */
@@ -218,15 +217,6 @@ qx.Class.define("qcl.io.RpcManager",
       {
         this.execute( this.getServiceMethodOnTerminate() );
       }
-       
-      /*
-       * call application function
-       */
-       if ( typeof this._terminate == "function" )
-       {
-         this._terminate();
-       }
-    }    
-    
+    } 
   }
 });
