@@ -2701,7 +2701,7 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
         var currval = actobj.get(attrib);
         LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
 
-        if (typeof currval !== "string" && currval.toString) {
+        if (currval && typeof currval !== "string" && currval.toString) {
           currval = currval.toString();
         }
         
