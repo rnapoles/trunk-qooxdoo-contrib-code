@@ -2770,10 +2770,6 @@ PageBot.prototype._getQxNodeDescendants = function(node)
         c = [];      
       }
       descArr = descArr.concat(c);
-      if (node.getMenu) {
-        LOG.debug("Getting child menu");
-        descArr = descArr.push(node.getMenu());
-      }
     }
     
     // check TreeFolder items: Only neccessary for qooxdoo versions < 0.8.3
@@ -2784,15 +2780,16 @@ PageBot.prototype._getQxNodeDescendants = function(node)
       }
     }
     
+    if (node.getMenu) {
+      LOG.debug("Getting child menu");
+      descArr.push(node.getMenu());
+    }
+    
     // check internal children (e.g. child controls)
     if (node._getChildren) {
       LOG.debug("getQxNodeDescendants: using _getChildren() to retrieve descendants of " + node);
       c = node._getChildren();
       descArr = descArr.concat(c);
-      if (node.getMenu) {
-        LOG.debug("Getting child menu");
-        descArr.push(node.getMenu());
-      }
     }
     
     // use JS object members
