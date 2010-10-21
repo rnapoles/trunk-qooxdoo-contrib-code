@@ -2804,6 +2804,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
 
   // only select useful subnodes (only objects, no circular refs, etc.)
   // TODO: circular refs which are *not* immediate!
+  var qx = this.getQxGlobalObject();
   var descArr1 = [];
   for (var i=0; i<descArr.length; i++)
   {
@@ -2812,10 +2813,14 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     {
       if (!descArr[i].getVisibility) {
         // always select a subnode if we can't check its visibility
-        descArr1.push(descArr[i]);
+        if (!qx.lang.Array.contains(descArr1, descArr[i])) {
+          descArr1.push(descArr[i]);
+        }
       } else if (!this.qx.findOnlyVisible || (this.qx.findOnlyVisible && descArr[i].getVisibility() == "visible")) {
         // if findOnlyVisible is active, check the subnode's visibility property
-        descArr1.push(descArr[i]);
+        if (!qx.lang.Array.contains(descArr1, descArr[i])) {
+          descArr1.push(descArr[i]);
+        }
       }
     }
   }
