@@ -550,22 +550,12 @@ Selenium.prototype.isQxEnabled = function(locator)
 };
 
 
-/** Returns the qx global object so that we can use qx functionality
- *
+/** 
+ * Returns the qx global object so that we can use qx functionality
  */
 Selenium.prototype.getQxGlobalObject = function () 
 {
-  if (this.page()._globalQxObject) {
-    return this.page()._globalQxObject;
-  } 
-  else {
-    var autWindow = this.browserbot.currentWindow;
-    if (autWindow.wrappedJSObject) {
-      autWindow = autWindow.wrappedJSObject;
-    }
-    this.page()._globalQxObject = autWindow.qx;
-    return autWindow.qx;
-  }
+  return this.page().getQxGlobalObject();
 };
 
 
@@ -1665,6 +1655,33 @@ Selenium.prototype.getInputElement = function(element)
   return fieldWidgets[0].getContentElement().getDomElement();
 };
 
+/** 
+ * Returns the qx global object so that we can use qx functionality
+ */
+PageBot.prototype.getQxGlobalObject = function()
+{
+  if (this._qxGlobalObject) {
+    return this._qxGlobalObject;
+  }
+  
+  var inWindow = this.getCurrentWindow();
+  if (!inWindow) {
+    throw new Error("getQxGlobalObject: Couldn't get current window!");
+  }
+  if (!inWindow.qx) {
+    throw new Error("getQxGlobalObject: Current window has no global qx object!");
+  }
+  if (inWindow.wrappedJSObject.qx) {
+    inWindow.qx = inWindow.wrappedJSObject.qx;
+  }
+  if (inWindow.qx.wrappedJSObject) {
+    inWindow.qx = inWindow.qx.wrappedJSObject;
+  }
+  
+  this._qxGlobalObject = inWindow.qx;
+  return this._qxGlobalObject;
+};
+
 // ****************************************
 // qooxdoo-locator (qx=) and special (qxx=)
 // ****************************************
@@ -1893,7 +1910,7 @@ PageBot.prototype.locateElementByQxidv = function(qxLocator, inDocument, inWindo
     return null;
   }
   
-  var qx = inWindow.qx;
+  var qx = this.getQxGlobalObject();
   
   for (var i=0,l=result.length; i<l; i++) {
     var element = result[i];
@@ -1949,7 +1966,7 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
   if (inWindow.wrappedJSObject) {
     inWindow = inWindow.wrappedJSObject; 
   }
-  var qx = inWindow.qx;
+  var qx = this.getQxGlobalObject();
   
   var nextPart = locatorParts.shift();
   while (nextPart) {
@@ -2010,30 +2027,11 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
  */
 PageBot.prototype._getClientDocument = function(inWindow){
   try {
-    if ((inWindow != null)
-         && (inWindow.wrappedJSObject.qx != null)
-         && (inWindow.wrappedJSObject.qx.core.Init != null)
-         && (inWindow.wrappedJSObject.qx.core.Init.getApplication() != null)
-         && (inWindow.wrappedJSObject.qx.core.Init.getApplication().getRoot() != null)
-       ){
-      return inWindow.wrappedJSObject.qx.core.Init.getApplication().getRoot();
-    } else{
-      return null;
-    }
+    var qx = this.getQxGlobalObject();
+    return qx.core.Init.getApplication().getRoot();
+  } catch(ex) {
+    LOG.error("_getClientDocument unable to get application root: " + ex);
   }
-  catch(e) {
-    if ((inWindow != null)
-        && (inWindow.qx != null)
-        && (inWindow.qx.core.Init != null)
-        && (inWindow.qx.core.Init.getApplication() != null)
-        && (inWindow.qx.core.Init.getApplication().getRoot() != null)
-      ){
-     return inWindow.qx.core.Init.getApplication().getRoot();
-   } else{
-     return null;
-   }
-  }
-  
 };
 
 
@@ -2056,16 +2054,8 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
 
   // the AUT window must contain the qx-Object
   var qxAppRoot;
-  
-  try {
-    if (inWindow.wrappedJSObject.qx) {
-      inWindow.qx = inWindow.wrappedJSObject.qx;
-    }
-  } catch(e) {}
 
-  if (inWindow.qx)
-  {
-    this._globalQxObject = inWindow.qx;
+  if (this.getQxGlobalObject()) {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
     
     var locAndRoot = this._getLocatorAndRoot(qxLocator, inWindow);
@@ -2155,11 +2145,11 @@ PageBot.prototype._getLocatorAndRoot = function(locator, inWindow)
     
     // Get the inline root widget
     try {
-      appRoot = this._globalQxObject.ui.core.Widget.getWidgetByElement(domElem);
+      appRoot = this.getQxGlobalObject().ui.core.Widget.getWidgetByElement(domElem);
       // If the inline root instance is configured to to respect the dom 
       // element's original dimensions, an additional div is created: 
       if (!appRoot) {
-        appRoot = this._globalQxObject.ui.core.Widget.getWidgetByElement(domElem.firstChild);
+        appRoot = this.getQxGlobalObject().ui.core.Widget.getWidgetByElement(domElem.firstChild);
       }
       
     } catch(ex) {
@@ -2533,15 +2523,7 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
   var curr;
 
   // need to get to the global 'qx' object
-  var qx = this._globalQxObject;
-  if (!qx) {
-    if (this.currentWindow.wrappedJSObject) {
-      qx = this.currentWindow.wrappedJSObject.qx;
-    } else {
-      qx = this.currentWindow.qx;
-    }
-    this._globalQxObject = qx;
-  }
+  var qx = this.getQxGlobalObject();
   
   var myClass = qx.Class.getByName(qxclass);
 
@@ -2634,15 +2616,7 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
 
 
   // need to get to the global 'qx' object
-  var qx = this._globalQxObject;
-  if (!qx) {
-    if (this.currentWindow.wrappedJSObject) {
-      qx = this.currentWindow.wrappedJSObject.qx;
-    } else {
-      qx = this.currentWindow.qx;
-    }
-    this._globalQxObject = qx;
-  }
+  var qx = this.getQxGlobalObject();
 
   // extract attribute and value
   m = /\[@([^=]+)(?:=(.+))?\]$/.exec(attribspec);
