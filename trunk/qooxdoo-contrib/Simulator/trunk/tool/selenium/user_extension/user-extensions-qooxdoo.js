@@ -1704,6 +1704,7 @@ PageBot.prototype.getQxGlobalObject = function()
 PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate qooxdoo-Object by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.seenNodes = [];
   this.qx.findOnlyVisible = false;
 
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
@@ -1732,6 +1733,7 @@ PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.seenNodes = [];
   this.qx.findOnlyVisible = false;
 
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
@@ -1760,6 +1762,7 @@ PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo-UserData-XPath-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.seenNodes = [];
   this.qx.findOnlyVisible = false;
 
   var locatorParts = qxLocator.split('//');
@@ -1823,6 +1826,7 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.seenNodes = [];
   this.qx.findOnlyVisible = false;
 
   var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
@@ -1859,6 +1863,7 @@ PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
 PageBot.prototype.locateElementByQxhv = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate visible Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.seenNodes = [];
   this.qx.findOnlyVisible = true;
 
   var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
@@ -1887,7 +1892,7 @@ PageBot.prototype.locateElementByQxhv = function(qxLocator, inDocument, inWindow
 PageBot.prototype.locateElementByQxidv = function(qxLocator, inDocument, inWindow)
 {
   LOG.info("Locate visible qooxdoo widget by HTML ID=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
-  
+  this.qx.seenNodes = [];
   if (inWindow.wrappedJSObject) {
     inWindow = inWindow.wrappedJSObject;
   }
@@ -2288,6 +2293,7 @@ PageBot.prototype.qx.findOnlyVisible = false;
  */
 PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
 {
+  var qx = this.getQxGlobalObject();
   // recursive traverse the path
   // currently, we only return single elements, not sets of matching elements
   if (path.length == 0) {
@@ -2353,6 +2359,10 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
       try
       {
         LOG.debug("Qxh Locator: recursing with root: "+childs[i]+", path: "+path.join('/'));
+        if (qx.lang.Array.contains(this.qx.seenNodes, childs[i])) {
+          continue;
+        }
+        this.qx.seenNodes.push(childs[i]);
         res = this._searchQxObjectByQxHierarchy(childs[i], path);
       }
       catch (e)
@@ -2509,6 +2519,9 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
   for (var i=0; i<childs.length; i++)
   {
     curr = childs[i];
+    if (!curr.classname) {
+      continue;
+    }
     LOG.debug("Qxh Locator: Comparing found child " + curr.classname + " to wanted class " + qxclass);
     try {
       if (curr instanceof myClass || curr.classname === qxclass) {
@@ -2724,7 +2737,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
 
    /* If the node is one of the qooxdoo Iframes (html or ui.embed) containing 
     * another qooxdoo application, try to retrieve its root widget */
-  if ((node.classname.indexOf("Iframe") + 6 == node.classname.length) && node.getWindow) {
+  if ( node.classname && (node.classname.indexOf("Iframe") + 6 == node.classname.length) && node.getWindow) {
     LOG.debug("getQxNodeDescendants: using getWindow() to retrieve descendants");
     try {
       // store a reference to the iframe's qx object. This is used by 
@@ -2773,7 +2786,11 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     if (!(node.getChildren || node._getChildren)) {
       LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
       for (var m in node) {
-        descArr.push(node[m]);
+        var objMember = node[m];
+        if (!objMember) {
+          continue;
+        }
+        descArr.push(objMember);
       }
     }
     
@@ -2788,15 +2805,18 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     var curr = descArr[i];
     if ((typeof(curr) == "object") && (curr != node) && (curr != null))
     {
-      if (!descArr[i].getVisibility) {
+      if (curr.wrappedJSObject) {
+        curr = curr.wrappedJSObject;
+      }
+      if (!curr.getVisibility) {
         // always select a subnode if we can't check its visibility
-        if (!qx.lang.Array.contains(descArr1, descArr[i])) {
-          descArr1.push(descArr[i]);
+        if (!qx.lang.Array.contains(descArr1, curr)) {
+          descArr1.push(curr);
         }
-      } else if (!this.qx.findOnlyVisible || (this.qx.findOnlyVisible && descArr[i].getVisibility() == "visible")) {
+      } else if (!this.qx.findOnlyVisible || (this.qx.findOnlyVisible && curr.getVisibility() == "visible")) {
         // if findOnlyVisible is active, check the subnode's visibility property
-        if (!qx.lang.Array.contains(descArr1, descArr[i])) {
-          descArr1.push(descArr[i]);
+        if (!qx.lang.Array.contains(descArr1, curr)) {
+          descArr1.push(curr);
         }
       }
     }
@@ -3152,6 +3172,7 @@ Selenium.prototype.doQxDragAndDrop = function(locator, movementsString, targetLo
 PageBot.prototype.locateElementByQxscript = function(qxFunction, inDocument, inWindow)
 {
   LOG.info("Locate Element by qooxdoo function= " + qxFunction + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
+  this.qx.seenNodes = [];
   var qxObject = false;
   
   if (inWindow.wrappedJSObject) {
