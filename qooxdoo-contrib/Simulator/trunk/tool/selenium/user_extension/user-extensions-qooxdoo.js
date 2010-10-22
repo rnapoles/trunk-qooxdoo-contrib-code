@@ -1671,12 +1671,11 @@ PageBot.prototype.getQxGlobalObject = function()
   if (!inWindow.qx) {
     throw new Error("getQxGlobalObject: Current window has no global qx object!");
   }
-  if (inWindow.wrappedJSObject.qx) {
-    inWindow.qx = inWindow.wrappedJSObject.qx;
-  }
-  if (inWindow.qx.wrappedJSObject) {
-    inWindow.qx = inWindow.qx.wrappedJSObject;
-  }
+  try {
+    if (inWindow.wrappedJSObject.qx) {
+      inWindow.qx = inWindow.wrappedJSObject.qx;
+    }
+  } catch(ex) {}
   
   this._qxGlobalObject = inWindow.qx;
   return this._qxGlobalObject;
@@ -2183,31 +2182,9 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
     throw new Error("No AUT window. Internal Error.");
   }
 
-  var qxResultObject;
-  
-  try {
-    if (inWindow.wrappedJSObject.qx) {
-      inWindow.qx = inWindow.wrappedJSObject.qx;
-    }
-  } catch(e) {}
-
-  // the AUT window must contain the qx-Object
-  if (inWindow.qx)
-  {
-    LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance using (qx.ui.core.ClientDocument.getInstance())");
-    qxResultObject = this._getClientDocument(inWindow);
-    if (qxResultObject == null){
-      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
-      return null;
-    }
-  }
-  else
-  {
-    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
-
-    // do not throw here, as if the locator fails in the first place selenium will call this
-    // again with all frames (and windows?) which won't result in "element not found" but in
-    // qooxdoo not beeing availabel.
+  var qxResultObject = this._getClientDocument(inWindow);
+  if (qxResultObject == null) {
+    LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
     return null;
   }
 
