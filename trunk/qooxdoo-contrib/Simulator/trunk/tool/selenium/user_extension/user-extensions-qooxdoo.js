@@ -1668,14 +1668,14 @@ PageBot.prototype.getQxGlobalObject = function()
   if (!inWindow) {
     throw new Error("getQxGlobalObject: Couldn't get current window!");
   }
-  if (!inWindow.qx) {
-    throw new Error("getQxGlobalObject: Current window has no global qx object!");
-  }
   try {
     if (inWindow.wrappedJSObject.qx) {
       inWindow.qx = inWindow.wrappedJSObject.qx;
     }
   } catch(ex) {}
+  if (!inWindow.qx) {
+    throw new Error("getQxGlobalObject: Current window has no global qx object!");
+  }
   
   this._qxGlobalObject = inWindow.qx;
   return this._qxGlobalObject;
