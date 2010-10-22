@@ -122,7 +122,7 @@ simulation.Simulation.prototype.checkSearch = function()
 simulation.Simulation.prototype.checkViewerContent = function()
 {
   try {
-    var loc = 'qxh=[@classname="apiviewer.Viewer"]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tabview.TabView/qx.ui.container.Stack/child[1]/[@classname="apiviewer.ui.ClassViewer"]';
+    var loc = 'qxh=[@classname="apiviewer.Viewer"]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tabview.TabView/qx.ui.container.Stack/[@classname="apiviewer.ui.tabview.ClassPage"]/[@classname="apiviewer.ui.ClassViewer"]';
     var html = this.__sel.getEval(selWin + ".qx.Simulation.getInnerHtml('" + loc + "')");
     return html;
   } catch(ex) {
