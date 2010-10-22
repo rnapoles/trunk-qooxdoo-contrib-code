@@ -635,7 +635,6 @@ class qcl_access_Controller
     $this->log ("Granting anonymous access user #$userId.",QCL_LOG_ACCESS);
     $this->createSessionId();
     $this->createUserSessionByUserId( $userId );
-    $this->dispatchClientMessage("setSessionId", $this->getSessionId() );
     return $userId;
   }
 
