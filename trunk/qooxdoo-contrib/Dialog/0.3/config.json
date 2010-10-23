@@ -31,7 +31,7 @@
   {
     "APPLICATION"  : "dialog",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/0.9-pre",
+    //"QOOXDOO_PATH" : "../../qooxdoo/0.9-pre",
     //"QXTHEME"      : "dialog.theme.modern.Theme",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "dialog.demo.*"],
