@@ -1,0 +1,92 @@
+{
+  "serverId" : 0,
+  "clazz" : {
+    "className" : "my.package.OuterType",
+    "properties" : {
+      "arrayList" : {
+        "sync" : "queue",
+        "nullable" : true,
+        "array" : "wrap"
+      },
+      "complexElement" : {
+        "sync" : "queue",
+        "nullable" : false,
+        "clazz" : {
+          "className" : "my.package.ComplexElement",
+          "properties" : {
+            "secondAttr" : {
+              "sync" : "queue",
+              "nullable" : false,
+              "check" : "Boolean"
+            },
+            "myFirst" : {
+              "sync" : "queue",
+              "nullable" : false,
+              "onDemand" : true,
+              "readOnly" : true,
+              "check" : "Boolean"
+            }
+          }
+        }
+      },
+      "expandedElement" : {
+        "sync" : "queue",
+        "nullable" : false,
+        "clazz" : {
+          "className" : "my.package.ExpandedElement",
+          "properties" : {
+            "expandedElement" : {
+              "sync" : "queue",
+              "nullable" : false,
+              "check" : "String"
+            }
+          }
+        }
+      },
+      "myattr" : {
+        "sync" : "queue",
+        "nullable" : false,
+        "check" : "Boolean"
+      },
+      "simpleElement" : {
+        "sync" : "queue",
+        "nullable" : false,
+        "check" : "String"
+      },
+      "character" : {
+        "sync" : "queue",
+        "nullable" : true,
+        "onDemand" : true,
+        "clazz" : {
+          "className" : "my.package.Character",
+          "properties" : {
+            "second" : {
+              "sync" : "queue",
+              "nullable" : false,
+              "check" : "Boolean"
+            },
+            "first" : {
+              "sync" : "queue",
+              "nullable" : false,
+              "check" : "Boolean"
+            }
+          }
+        }
+      },
+      "nativeArray" : {
+        "sync" : "queue",
+        "nullable" : true,
+        "array" : "native"
+      }
+    }
+  },
+  "values" : {
+    "arrayList" : null,
+    "complexElement" : null,
+    "expandedElement" : null,
+    "myattr" : null,
+    "simpleElement" : null,
+    "nativeArray" : null
+  },
+  "order" : [ "arrayList", "complexElement", "expandedElement", "myattr", "simpleElement", "nativeArray" ]
+}

@@ -45,6 +45,40 @@ import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
 
 public class ProxyTypeImpl extends AbstractProxyType {
+	
+	private final static class MethodSig {
+		private final Method method;
+
+		public MethodSig(Method method) {
+			super();
+			this.method = method;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			return method.getName().hashCode();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			Method that = (Method)obj;
+			return that.getName().equals(method.getName()) && hasSameSignature(method, that);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return method.toString();
+		}		
+	}
 
 	/*
 	 * Helper class to track methods
@@ -54,7 +88,7 @@ public class ProxyTypeImpl extends AbstractProxyType {
 		final HashMap<String, Method> methods = new HashMap<String, Method>();
 		
 		// Methods that should not be proxied
-		final HashSet<String> doNotProxyMethods = new HashSet<String>();
+		final HashSet<MethodSig> doNotProxyMethods = new HashSet<ProxyTypeImpl.MethodSig>();
 		
 		/**
 		 * Adds all methods from a given class
@@ -70,7 +104,7 @@ public class ProxyTypeImpl extends AbstractProxyType {
 					continue;
 
 				if (method.isAnnotationPresent(DoNotProxy.class)) {
-					doNotProxyMethods.add(method.getName());
+					doNotProxyMethods.add(new MethodSig(method));
 					continue;
 				}
 				
@@ -120,11 +154,13 @@ public class ProxyTypeImpl extends AbstractProxyType {
 		 * @throws IllegalArgumentException
 		 */
 		public void checkValid() throws IllegalArgumentException {
-			for (String name : doNotProxyMethods)
-				if (methods.containsKey(name)) {
+			for (MethodSig sig : doNotProxyMethods) {
+				Method method = methods.get(sig.method.getName());
+				if (method != null && hasSameSignature(method, sig.method)) {
 					throw new IllegalArgumentException("Cannot create a proxy for " + clazz + 
-							" because it has conflicting DoNotProxy for method " + name);
+							" because it has conflicting DoNotProxy for method " + method);
 				}
+			}
 		}
 		
 		/**
@@ -251,11 +287,24 @@ public class ProxyTypeImpl extends AbstractProxyType {
 			Class[] epts = existing.getParameterTypes();
 			Class[] mpts = method.getParameterTypes();
 			if (epts.length == mpts.length) {
-				boolean ok = true;
-				for (int i = 0; ok && i < epts.length; i++)
+				for (int i = 0; i < epts.length; i++)
 					if (epts[i] != mpts[i])
 						return true;
+				return false;
 			}
+		}
+		
+		return true;
+	}
+	
+	protected static boolean hasSameSignature(Method method, Method existing) {
+		Class[] epts = existing.getParameterTypes();
+		Class[] mpts = method.getParameterTypes();
+		if (epts.length == mpts.length) {
+			for (int i = 0; i < epts.length; i++)
+				if (epts[i] != mpts[i])
+					return false;
+			return true;
 		}
 		
 		return false;

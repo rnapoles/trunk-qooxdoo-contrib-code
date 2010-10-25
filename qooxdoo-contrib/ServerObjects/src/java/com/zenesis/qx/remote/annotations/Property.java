@@ -123,4 +123,16 @@ public @interface Property {
 	 * @return
 	 */
 	public String expire() default "";
+	
+	/***
+	 * The name of the method to call to get the value of the property
+	 * @return
+	 */
+	public String get() default "";
+	
+	/**
+	 * The name of the method to call to set the value of the property
+	 * @return
+	 */
+	public String set() default "";
 }

@@ -28,8 +28,14 @@
 package com.zenesis.qx.remote;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.zip.GZIPOutputStream;
 
@@ -45,6 +51,7 @@ import com.zenesis.qx.event.Event;
 import com.zenesis.qx.event.EventListener;
 import com.zenesis.qx.event.EventManager;
 import com.zenesis.qx.remote.CommandId.CommandType;
+import com.zenesis.qx.remote.annotations.AlwaysProxy;
 
 /**
  * This class needs to be implemented by whatever software hosts the proxies
@@ -265,6 +272,93 @@ public class ProxyManager implements EventListener {
 			return;
 		CommandQueue queue = tracker.getQueue();
 		queue.queueCommand(CommandId.CommandType.LOAD_TYPE, type, null, null);
+	}
+	
+	/**
+	 * Loads proxy classes on the client; this is necessary if the client wants to instantiate
+	 * a class before the class definition has been loaded on demand.  The last part can be
+	 * an asterisk if all classes in a given package should be loaded
+	 * @param name name of the class to transfer, or array of names, or collection, etc
+	 */
+	public static void loadProxyType(Object data) throws ClassNotFoundException {
+		if (data == null)
+			return;
+		
+		if (data.getClass().isArray()) {
+			Object[] arr = (Object[])data;
+			for (Object obj : arr)
+				loadProxyType(obj);
+			
+		} else if (data instanceof Collection) {
+			Collection coll = (Collection)data;
+			for (Object obj : coll)
+				loadProxyType(obj);
+			
+		} else {
+			String name = data.toString();
+			if (!name.endsWith(".*")) {
+				Class clazz = Class.forName(name);
+				if (!Proxied.class.isAssignableFrom(clazz))
+					throw new IllegalArgumentException(name);
+				loadProxyType(clazz);
+			} else {
+				ArrayList<Class> list = new ArrayList<Class>();
+				name = name.substring(0, name.length() - 2);
+				if (name.length() == 0)
+					throw new IllegalArgumentException("Cannot return all classes to the client");
+				Package pkg = Package.getPackage(name);
+				if (pkg != null) {
+					try {
+						name = name.replace('.', '/') + "";
+						Enumeration<URL> resources = ProxyManager.class.getClassLoader().getResources(name);
+						while (resources.hasMoreElements()) {
+							URL url = resources.nextElement();
+							File dir = new File(URLDecoder.decode(url.getFile()));
+							searchForClasses(list, dir, pkg.getName(), false);
+						}
+					}catch(IOException e) {
+						log.error("Failed to access resources for " + name);
+					}
+				}
+				for (Class clazz : list)
+					loadProxyType(clazz);
+			}
+		}
+	}
+	
+	/***
+	 * Searches for classes - there is no way to get the list of classes in a package so the only
+	 * way to do it is to search for .class files on the classpath
+	 * @param list
+	 * @param dir
+	 * @param packageName
+	 * @param recurse
+	 */
+	private static void searchForClasses(final ArrayList<Class> list, File dir, final String packageName, final boolean recurse) {
+		dir.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				String name = file.getName();
+				
+				if (file.isDirectory()) {
+					if (recurse && name.charAt(0) != '.') {
+						searchForClasses(list, file, packageName + "." + name, recurse);
+					}
+					
+				} else if (name.endsWith(".class")) {
+					name = packageName + "." + name.substring(0, name.length() - 6);
+					try {
+						Class clazz = Class.forName(name);
+						if (Proxied.class.isAssignableFrom(clazz))
+							list.add(clazz);
+					}catch(ClassNotFoundException e) {
+						log.error("Could not load class " + name + ": " + e.getMessage());
+					}
+				}
+				
+				return false;
+			}
+		});
 	}
 	
 	/**

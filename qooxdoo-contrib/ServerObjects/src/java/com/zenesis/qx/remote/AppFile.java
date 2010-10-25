@@ -167,7 +167,7 @@ public class AppFile implements Proxied {
 				FileOutputStream os = new FileOutputStream(dest);
 				FileInputStream is = new FileInputStream(newFile);
 				try {
-					byte[] buffer = new byte[32 * 1024];
+					byte[] buffer = new byte[8 * 1024];  // 8K is Tomcat6 default and best optimized
 					int len;
 					while ((len = is.read(buffer)) > -1)
 						os.write(buffer, 0, len);
