@@ -2787,7 +2787,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
       LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
       for (var m in node) {
         var objMember = node[m];
-        if (!objMember) {
+        if (!objMember || typeof objMember !== "object" || !node.hasOwnProperty(m)) {
           continue;
         }
         descArr.push(objMember);
@@ -2803,8 +2803,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   for (var i=0; i<descArr.length; i++)
   {
     var curr = descArr[i];
-    if ((typeof(curr) == "object") && (curr != node) && (curr != null))
-    {
+    if ((typeof(curr) == "object") && (curr != node) && (curr != null)) {
       if (curr.wrappedJSObject) {
         curr = curr.wrappedJSObject;
       }
