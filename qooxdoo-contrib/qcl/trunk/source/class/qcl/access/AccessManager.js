@@ -65,18 +65,7 @@ qx.Class.define("qcl.access.AccessManager",
        check : "qx.core.Object", //@todo: interface
        nullable : true,
        event    : "changePermissionManager"
-     },
-     
-    /**
-     * Flag to indicate if we have an authenticated user
-     * @type 
-     */
-    authenticatedUser :
-    {
-      check    : "Boolean",
-      init     : false,
-      event    : "changeAuthenticatedUser"
-    }     
+     }
   },
 
   /*
@@ -120,14 +109,6 @@ qx.Class.define("qcl.access.AccessManager",
     */       
     
     /**
-     * Returns the session id of the current application instance
-     */
-    getSessionId : function()
-    {
-      this.__core.getSessionManager().getSessionId(); // FIXME
-    },
-    
-    /**
      * Setup the authentication mechanism.
      * @param authStore {qcl.data.store.JsonRpc}
      */
@@ -168,23 +149,6 @@ qx.Class.define("qcl.access.AccessManager",
        */
       this.getStore().bind("model", this.getUserManager(), "model");
 
-      /*
-       * bind the session id propery of the auth store to the session
-       * id of the application
-       */
-      this.getStore().bind("model.sessionId", this.__core.getSessionManager(), "sessionId" );
-      
-      /*
-       * bind the authentication state to a local boolean
-       * property, which will be false if there is no user logged 
-       * in (initial state) or the user is anonymous (after the backend
-       * has connected) and true when a real login has occurred 
-       */
-      this.getUserManager().bind("activeUser",this,"authenticatedUser",{
-        converter : function(activeUser){ 
-          return ( ! activeUser || activeUser.isAnonymous() ? false : true );
-        }
-      });
     }, 
 
     /**
@@ -206,7 +170,7 @@ qx.Class.define("qcl.access.AccessManager",
      */    
     connect : function( sessionId, callback, context)
     {
-      if ( typeof sessionId != "string" )
+      if ( typeof sessionId == "function" )
       {
         this.error("Method signature change: connect() must be called with the session id as first parameter ");
       }

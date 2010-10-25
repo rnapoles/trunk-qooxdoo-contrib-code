@@ -62,6 +62,8 @@ qx.Class.define("qcl.application.Sandbox",
     
     // save in "private" variable
     this.__core = core;
+    
+    this.__channels = [];
   },
 
   /*
@@ -85,6 +87,7 @@ qx.Class.define("qcl.application.Sandbox",
      */
     __core : null,
     
+    
     /*
     ---------------------------------------------------------------------------
        MESSAGES
@@ -103,6 +106,19 @@ qx.Class.define("qcl.application.Sandbox",
     {
       this.__core.subscribe( name, callback, context );
     },
+    
+    /**
+     * Returns true if the callback is already subscribed.
+     * @param name {String} The name of the message
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {Boolean}
+     */
+    isSubscribed : function( name, callback, context )
+    {
+      return this.__core.isSubscribed( name, callback, context );
+    },        
     
     /**
      * Unsubscribes from a message name
@@ -128,30 +144,62 @@ qx.Class.define("qcl.application.Sandbox",
       this.__core.publish( name, data );
     },
     
+    
     /**
-     * Subscribes to a message channel on the server
-     * @param name {String} The name of the channel
-     * @param callback {Function} A function that is called when the message is 
-     *    published 
-     * @param context {Object} The context object
-     * @return {void}
+     * Returns true if the message transport is running.
+     * @return {Boolean}
      */
-    subscribeToChannel : function( name, callback, context )
+    isMessageTransportRunning : function()
     {
-      this.__core.subscribeToChannel( name, callback, context );
+      return this.__core.isMessageTransportRunning();
     },
     
     /**
-     * Unsubscribes from a message channel on the server
-     * @param name {String} The name of the channel
-     * @param callback {Function} A function that is called when the message is 
-     *    published 
+     * Subscribes to a message channel on the server.
+     * @param name {String} 
+     *    The name of the channel
+     * @param callback {Function} 
+     *    A function that is called when the message is published 
      * @param context {Object} The context object
+     * @param finalCallback {Function} 
+     *    An optional callback which is called when the subscription has been made
+     * @param finalContext {Object}
+     *    The context of the finalCallback function 
      * @return {void}
      */
-    unsubscribeFromChannel : function( name, callback, context )
+    subscribeToChannel : function( name, callback, context, finalCallback, finalContext )
     {
-      this.__core.unsubscribeFromChannel( name, callback, context );
+      return this.__core.subscribeToChannel( name, callback, context, finalCallback, finalContext );
+    },
+    
+    /**
+     * Returns true if a channel of this name has been subscribed to,
+     * false if not
+     * @param name {String}
+     * @return {Boolean}
+     */
+    isSubscribedChannel : function( name )
+    {
+      return this.__core.isSubscribedChannel( name );
+    },    
+    
+    /**
+     * Unsubscribes from a message channel on the server
+     * @param name {String} 
+     *    The name of the channel
+     * @param callback {Function} 
+     *    A function that is called when the message is published 
+     * @param context {Object} 
+     *    The context object
+     * @param finalCallback {Function} 
+     *    An optional callback which is called when the subscription has been cancelled
+     * @param finalContext {Object}
+     *    The context of the finalCallback function 
+     * @return {void}
+     */
+    unsubscribeFromChannel : function( name, callback, context, finalCallback, finalContext  )
+    {
+      return this.__core.unsubscribeFromChannel( name, callback, context, finalCallback, finalContext );
     },    
     
     /**
@@ -179,18 +227,14 @@ qx.Class.define("qcl.application.Sandbox",
     ---------------------------------------------------------------------------
     */
     
+    /**
+     * Call the given function once the user has authenticated.
+     * @param callback {Function}
+     * @param context {Object}
+     */
     callOnceWhenAuthenticated : function( callback, context )
     {
-      this.__core.addListenerOnce("changeActiveUser",function(){
-        if ( this.__core.isAuthenticatedUser() )
-        {
-          callback.call( context );
-        }
-        else
-        {
-          this.callOnceWhenAuthenticated( callback, context );
-        }
-      },this);
+      this.__core.callOnceWhenAuthenticated( callback, context );
     },
     
     /**

@@ -32,6 +32,12 @@ qx.Class.define("qcl.ui.dialog.Dialog",
   */     
   statics :
   {
+    
+    /**
+     * The name of the message that is sent to display a dialog
+     * @type String
+     */
+    MESSAGE_NAME : "qcl.ui.dialog.Dialog.createDialog",
   
     /**
      * Returns a instance of the dialog type
@@ -59,15 +65,15 @@ qx.Class.define("qcl.ui.dialog.Dialog",
      */
     allowServerDialogs : function( value, sandbox )
     {
-      var messageName = "qcl.ui.dialog.Dialog.createDialog";
+      var channel = qcl.ui.dialog.Dialog.MESSAGE_NAME;
       this.__sandbox = sandbox;
       if ( value )
       {
-        qx.event.message.Bus.getInstance().subscribe( messageName, this._onServerDialog,this);
+        sandbox.subscribeToChannel( channel, this._onServerDialog,this);
       }
-      else
+      else if( sandbox.isSubscribedChannel( channel) )
       {
-        qx.event.message.Bus.getInstance().unsubscribe( messageName, this._onServerDialog,this);
+        sandbox.unsubscribeFromChannel( channel, this._onServerDialog,this);
       }
     },
     
