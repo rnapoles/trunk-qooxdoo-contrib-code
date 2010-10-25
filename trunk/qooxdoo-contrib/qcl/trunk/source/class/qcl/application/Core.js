@@ -48,6 +48,42 @@ qx.Class.define("qcl.application.Core",
   extend : qx.core.Object,
   
   include : [ qcl.ui.MLoadingPopup ], 
+  
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */
+
+  /**
+   * Constructor.
+   *  
+   * 
+   */
+  construct : function()
+  {  
+    this.base(arguments);
+    
+    /*
+     * initialize private members
+     */
+    this.__modules = {};
+    this.__widgets = {};
+    this.__channels = [];
+    
+    /*
+     * mixins
+     */
+    qx.Class.include( qx.core.Object, qcl.application.MGetApplication );
+    qx.Class.include( qx.core.Object, qcl.application.MWidgetId );
+    
+    /*
+     * initialize the manager objects
+     */
+    this.initializeManagers();
+    
+    
+  },    
 
   /*
   *****************************************************************************
@@ -78,16 +114,16 @@ qx.Class.define("qcl.application.Core",
       init : "A qooxdoo application"
     },
     
-    
-    /** 
-     * The session manager
-     * @type qcl.application.SessionManager
+    /**
+     * The session id
+     * @type String
      */
-    sessionManager :
+    sessionId :
     {
-      check    : "qx.core.Object", // @todo: create interface
-      nullable : false,
-      event    : "changeSessionManager"
+      check : "String",
+      nullable : true,
+      event : "changeSessionId",
+      apply : "_applySessionId"
     },
     
     /**
@@ -217,40 +253,7 @@ qx.Class.define("qcl.application.Core",
     
   },
 
-  /*
-  *****************************************************************************
-     CONSTRUCTOR
-  *****************************************************************************
-  */
 
-  /**
-   * Constructor.
-   *  
-   * 
-   */
-  construct : function()
-  {  
-    this.base(arguments);
-    
-    /*
-     * initialize private members
-     */
-    this.__modules = {};
-    this.__widgets = {};
-    
-    /*
-     * mixins
-     */
-    qx.Class.include( qx.core.Object, qcl.application.MGetApplication );
-    qx.Class.include( qx.core.Object, qcl.application.MWidgetId );
-    
-    /*
-     * initialize the manager objects
-     */
-    this.initializeManagers();
-    
-    
-  },  
 
   /*
   *****************************************************************************
@@ -267,8 +270,40 @@ qx.Class.define("qcl.application.Core",
     ---------------------------------------------------------------------------
     */         
     
+    /**
+     * An object mapping widget ids to widget objects
+     * @type 
+     */
     __widgets : null,   
+    
+    /**
+     * An object mapping module names to module objects
+     * @type 
+     */
     __modules : null,
+    
+    /**
+     * An array of names of channels subscribed on the server
+     * @type 
+     */
+    __channels : null,
+
+    /*
+    ---------------------------------------------------------------------------
+       APPLY METHODS
+    ---------------------------------------------------------------------------
+    */    
+    _applySessionId : function( value, old )
+    {
+      if( value )
+      {
+        this.getStateManager().setState("sessionId", value );
+      }
+      else
+      {
+        this.getStateManager().removeState("sessionId" );
+      }
+    },
     
     /*
     ---------------------------------------------------------------------------
@@ -387,6 +422,19 @@ qx.Class.define("qcl.application.Core",
     {
       qx.event.message.Bus.subscribe( name, callback, context );
     },
+    
+    /**
+     * Returns true if the callback is already subscribed
+     * @param name {String} The name of the message
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {Boolean}
+     */
+    isSubscribed : function( name, callback, context )
+    {
+      return qx.event.message.Bus.checkSubscription( name, callback, context );
+    },    
 
     
     /**
@@ -506,9 +554,24 @@ qx.Class.define("qcl.application.Core",
           {
             this.error("Interval must be integer and be >= 3");
           }
-          this.__pollTimerId = qx.util.TimerManager.getInstance().start(
-            this.__pollingFunc, options.interval*1000, this, null, 0
-          );
+          
+          /*
+           * start polling or wait until authenticated
+           */          
+          if ( options.authenticated )
+          {
+            this.callOnceWhenAuthenticated( function() {
+              this.__pollTimerId = qx.util.TimerManager.getInstance().start(
+                this.__pollingFunc, options.interval*1000, this, null, 0
+              );
+            },this);
+          }
+          else
+          {
+            this.__pollTimerId = qx.util.TimerManager.getInstance().start(
+              this.__pollingFunc, options.interval*1000, this, null, 0
+            );            
+          }
           break;
           
         default:
@@ -526,6 +589,7 @@ qx.Class.define("qcl.application.Core",
       }
       this.__messageTransportOptions = options;
       this.__transportRunning = true;
+      this.publish("messageTransportReady");
     },
     
     /**
@@ -558,23 +622,40 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
-     * Subscribes to a message channel on the server
-     * @param name {String} The name of the channel
-     * @param callback {Function} A function that is called when the message is 
-     *    published 
+     * Subscribes to a message channel on the server.
+     * @param name {String} 
+     *    The name of the channel
+     * @param callback {Function} 
+     *    A function that is called when the message is published 
      * @param context {Object} The context object
+     * @param finalCallback {Function} 
+     *    An optional callback which is called when the subscription has been made
+     * @param finalContext {Object}
+     *    The context of the finalCallback function 
      * @return {void}
      */
-    subscribeToChannel : function( name, callback, context )
+    subscribeToChannel : function( name, callback, context, finalCallback, finalContext )
     {
-      if ( ! this.__transportRunning )
+      /*
+       * check transport
+       */
+      if ( ! this.isMessageTransportRunning() )
       {
-        this.warn("Cannot subscribe to channel. Message transport is not running.");
+        this.warn("Cannot subscribe to channel '" + name + "'. Message transport is not running.");
         return false;
       }
       
-      this.subscribe( name, callback, context );
+      /*
+       * subscribe on client, where the messages are actually published
+       */
+      if ( ! this.isSubscribed( name ) )
+      {
+        this.subscribe( name, callback, context );  
+      }
       
+      /*
+       * subscribe on server dependend on transport mode
+       */
       switch( this.__messageTransportOptions.mode )
       {
         case "poll":
@@ -585,6 +666,11 @@ qx.Class.define("qcl.application.Core",
                 this.__messageTransportOptions.service, "subscribe", [name],
                 function() {
                   this.info("Subscribed to channel " + name );
+                  this.__channels.push( name );
+                  if ( typeof finalCallback == "function" )
+                  {
+                    finalCallback.call( finalContext );
+                  }
                 },this
               );
               break;
@@ -594,20 +680,53 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
+     * Returns true if a channel of this name has been subscribed to,
+     * false if not
+     * @param name {String}
+     * @return {Boolean}
+     */
+    isSubscribedChannel : function( name )
+    {
+      return qx.lang.Array.contains( this.__channels, name );
+    },
+    
+    /**
      * Unsubscribes from a message channel on the server
-     * @param name {String} The name of the channel
-     * @param callback {Function} A function that is called when the message is 
-     *    published 
-     * @param context {Object} The context object
+     * @param name {String} 
+     *    The name of the channel
+     * @param callback {Function} 
+     *    A function that is called when the message is published 
+     * @param context {Object} 
+     *    The context object
+     * @param finalCallback {Function} 
+     *    An optional callback which is called when the subscription has been cancelled
+     * @param finalContext {Object}
+     *    The context of the finalCallback function 
      * @return {void}
      */
-    unsubscribeFromChannel : function( name, callback, context )
+    unsubscribeFromChannel : function( name, callback, context, finalCallback, finalContext )
     {
-      if ( ! this.__transportRunning )
+      /*
+       * check transport
+       */
+      if ( ! this.isMessageTransportRunning() )
       {
-        this.warn("Cannot unsubscribe from channel. Message transport is not running.");
+        this.error( "Cannot unsubscribe from channel '" + name + "'. Message transport is not running.");
         return false;
       }
+      
+      /*
+       * Check subscription 
+       */
+      if ( ! this.isSubscribedChannel( name ) )
+      {
+        this.error( "Channel '" + "' is not subscribed to." );
+        return;
+      }
+      
+      /*
+       * unsubscribe dependent on transport mode
+       */
       switch( this.__messageTransportOptions.mode )
       {
         case "poll":
@@ -619,6 +738,11 @@ qx.Class.define("qcl.application.Core",
                 function() {
                   this.info("Unsubscribed from channel " + name );
                   this.unsubscribe( name, callback, context );
+                  if ( typeof finalCallback == "function" )
+                  {
+                    qx.lang.Array.remove( this.__channels, name );
+                    finalCallback.call( finalContext );
+                  }
                 },this
               );
               break;
@@ -627,9 +751,14 @@ qx.Class.define("qcl.application.Core",
       }
     },    
     
+    /**
+     * Unsubscribes from all channels. Returns false if no transport
+     * is running or no subscriptions have been made, otherwise true
+     * @return {Boolean}
+     */
     unsubscribeFromAllChannels : function()
     {
-      if ( ! this.__transportRunning )
+      if ( ! this.isMessageTransportRunning() || this.__channels.length == 0 )
       {
         return false;
       }
@@ -642,6 +771,7 @@ qx.Class.define("qcl.application.Core",
               this.rpcRequest( 
                 this.__messageTransportOptions.service, "unsubscribeAll", [],
                 function() {
+                  this.__channels = [];
                   this.info("Unsubscribed from all channels ");
                 },this
               );
@@ -649,6 +779,7 @@ qx.Class.define("qcl.application.Core",
           }
           break;
       }
+      return true;
     },
     
     /**
@@ -667,11 +798,26 @@ qx.Class.define("qcl.application.Core",
      */
     publishToChannel : function( name, data, now, clientAlso )
     {
+      /*
+       * check transport
+       */
       if ( ! this.__transportRunning )
       {
         this.warn("Cannot publish to channel. Message transport is not running.");
         return false;
-      }      
+      }
+      
+      /*
+       * Check subscription 
+       */
+      if ( qx.lang.Array.contains( this.__channels, name ) )
+      {
+        this.error( "Channel '" + "' is not subscribed to." );  
+      }
+      
+      /*
+       * publish according to transport mode
+       */
       switch( this.__messageTransportOptions.mode )
       {
         case "poll":
@@ -764,7 +910,6 @@ qx.Class.define("qcl.application.Core",
       /*
        * setup managers
        */ 
-      this.setSessionManager( new qcl.application.SessionManager( this ) );
       this.setStateManager( new qcl.application.StateManager( this ) );
       this.setRpcManager( new qcl.io.RpcManager( this ) );
       this.setAccessManager( new qcl.access.AccessManager( this ) );
@@ -773,20 +918,13 @@ qx.Class.define("qcl.application.Core",
       // this.setClipboardManager ( new qcl.application.ClipboardManager( this ) );
    
       /*
-       * set session id from state, if any. 
+       * set session id from state,
        */
       var sid =  this.getStateManager().getState("sessionId");
       if ( sid )
       {
-        this.getSessionManager().setSessionId( sid );  
+        this.setSessionId( sid );  
       }
-      
-      /*
-       * set session id from message
-       */
-		  this.subscribe( "setSessionId", function( e ){
-		    this.getSessionManager().setSessionId( e.getData() );
-		  }, this);
       
       /*
        * initialize some managers
@@ -799,6 +937,10 @@ qx.Class.define("qcl.application.Core",
        */
       this.getAccessManager().getUserManager().bind("activeUser", this, "activeUser" );
       
+      /*
+       * bind the active user's session id 
+       */
+      this.getAccessManager().getStore().bind("model.sessionId", this, "sessionId" );
     },
     
     /*
@@ -823,7 +965,7 @@ qx.Class.define("qcl.application.Core",
      */
     allowServerDialogs : function( value )
     {
-      qcl.ui.dialog.Dialog.allowServerDialogs( value, new qcl.application.Sandbox( this ) );    
+      qcl.ui.dialog.Dialog.allowServerDialogs( value, new qcl.application.Sandbox( this ) );
     },    
     
     /**
@@ -846,18 +988,9 @@ qx.Class.define("qcl.application.Core",
     */    
     
     /**
-     * Returns the session id, if set.
-     * @return {String}
-     */
-    getSessionId : function()
-    {
-      return this.getSessionManager().getSessionId();  
-    },
-    
-    /**
      * Returns a safe subset of the active user to the module
      * @return {Object|null} if not null, a Map with the following keys: 
-     *   namedId  : (string) the user login name
+     *   namedId  : (string) alias of username, deprecated
      *   username : (string) the user login name
      *   fullname : (string) the full name of the user
      */
@@ -878,13 +1011,35 @@ qx.Class.define("qcl.application.Core",
       }
     },
     
-    // FIXME make property! 
+    /**
+     * Returns true if the current user is not anonymous
+     * @return {Boolean}
+     */
     isAuthenticatedUser : function()
     {
       var activeUser = this.getActiveUser();
       return ( activeUser && ! activeUser.isAnonymous() );
     },
     
+    /**
+     * Call the given function once the user has authenticated. If 
+     * the user is already authenticated, call immediately.
+     * @param callback {Function}
+     * @param context {Object}
+     */    
+    callOnceWhenAuthenticated : function( callback, context )
+    {
+      if ( ! this.isAuthenticatedUser() )
+      {     
+        this.addListenerOnce("changeActiveUser",function(){
+          this.callOnceWhenAuthenticated( callback, context );
+        },this);
+      }
+      else
+      {
+        callback.call( context );
+      }
+    },    
         
     /**
      * Sets the name of the service that does access-related stuff

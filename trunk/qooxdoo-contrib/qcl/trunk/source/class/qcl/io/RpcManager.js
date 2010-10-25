@@ -103,7 +103,7 @@ qx.Class.define("qcl.io.RpcManager",
      * @todo This must be solved differently with the new rpc layer.
      */
     var rpc = new qx.io.remote.Rpc();
-    this.__core.getSessionManager().bind("sessionId", rpc, "serverData", {
+    this.__core.bind("sessionId", rpc, "serverData", {
       converter : function( value ){
         return { "sessionId" : value };        
       }
