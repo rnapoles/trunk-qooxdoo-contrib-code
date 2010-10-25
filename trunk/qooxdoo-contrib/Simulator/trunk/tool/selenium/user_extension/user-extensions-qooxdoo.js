@@ -2031,6 +2031,7 @@ PageBot.prototype.locateElementByQxhybrid = function(qxLocator, inDocument, inWi
  */
 PageBot.prototype._getClientDocument = function(inWindow){
   try {
+    this._qxGlobalObject = null;
     var qx = this.getQxGlobalObject();
     return qx.core.Init.getApplication().getRoot();
   } catch(ex) {
