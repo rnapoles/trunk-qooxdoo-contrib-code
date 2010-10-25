@@ -90,7 +90,10 @@ public class SimpleQueue implements CommandQueue, JsonSerializable {
 	@Override
 	public void serialize(JsonGenerator gen, SerializerProvider sp) throws IOException, JsonProcessingException {
 		gen.writeStartArray();
-		for (CommandId id : values.keySet()) {
+		while (!values.isEmpty()) {
+			CommandId id = values.keySet().iterator().next();
+			Object data = values.remove(id);
+
 			if (id.type == CommandType.DEFINE) {
 				ProxyType type = (ProxyType)id.object;
 				ProxySessionTracker tracker = ((ProxyObjectMapper)gen.getCodec()).getTracker();
@@ -104,7 +107,6 @@ public class SimpleQueue implements CommandQueue, JsonSerializable {
 				gen.writeObjectField("object", id.object);
 			if (id.name != null)
 				gen.writeObjectField("name", id.name);
-			Object data = values.get(id);
 			if (data != null)
 				gen.writeObjectField("data", data);
 			gen.writeEndObject();

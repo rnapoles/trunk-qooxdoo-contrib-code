@@ -1,9 +1,16 @@
 package com.zenesis.qx.remote;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import com.zenesis.qx.remote.annotations.AlwaysProxy;
 import com.zenesis.qx.remote.annotations.DoNotProxy;
@@ -25,6 +32,8 @@ import com.zenesis.qx.remote.annotations.Remote;
 	@Property("uploadFolder")
 })
 public class BasicBootstrap implements UploadReceiver {
+	
+	private static final Logger log = Logger.getLogger(BasicBootstrap.class);
 
 	private AppFile appFilesRoot;
 	private AppFile uploadFolder;
@@ -46,16 +55,14 @@ public class BasicBootstrap implements UploadReceiver {
 	}
 	
 	/**
-	 * Loads a proxy class on the client; this is necessary if the client wants to instantiate
-	 * a class before the class definition has been loaded on demand.
-	 * @param name name of the class to transfer
+	 * Loads proxy classes on the client; this is necessary if the client wants to instantiate
+	 * a class before the class definition has been loaded on demand.  The last part can be
+	 * an asterisk if all classes in a given package should be loaded
+	 * @param name name of the class to transfer, or array of names, or collection, etc
 	 */
 	@AlwaysProxy
-	public void loadProxyType(String name) throws ClassNotFoundException {
-		Class clazz = Class.forName(name);
-		if (!Proxied.class.isAssignableFrom(clazz))
-			throw new IllegalArgumentException(name);
-		ProxyManager.loadProxyType(clazz);
+	public void loadProxyType(Object data) throws ClassNotFoundException {
+		ProxyManager.loadProxyType(data);
 	}
 	
 	/**

@@ -119,7 +119,7 @@ public class QxUrlRewriteFilter implements Filter {
 				// Output
 				OutputStream os = response.getOutputStream();
 				FileInputStream fis = new FileInputStream(file);
-				byte[] buffer = new byte[64*1024];
+				byte[] buffer = new byte[8*1024];
 				int len;
 				while ((len = fis.read(buffer)) > -1)
 					os.write(buffer, 0, len);

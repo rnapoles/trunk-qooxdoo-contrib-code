@@ -351,16 +351,22 @@ public class RequestHandler {
 		ProxyProperty prop = getProperty(type, propertyName);
 		
 		skipFieldName(jp, "value");
-		if (prop.getPropertyClass().isSubclassOf(Proxied.class)) {
-			if (prop.getPropertyClass().isArray())
-				value = readArray(jp, prop.getPropertyClass().getJavaType());
+		MetaClass propClass = prop.getPropertyClass();
+		if (propClass.isSubclassOf(Proxied.class)) {
+			if (propClass.isArray() || propClass.isCollection())
+				value = readArray(jp, propClass.getJavaType());
 			else {
 				Integer id = jp.readValueAs(Integer.class);
 				if (id != null)
 					value = getProxied(id);
 			}
-		} else
+		} else {
 			value = jp.readValueAs(Object.class);
+			if (value != null && Enum.class.isAssignableFrom(propClass.getJavaType())) {
+				String str = camelCaseToEnum(value.toString());
+				value = Enum.valueOf(propClass.getJavaType(), str);
+			}
+		}
 		
 		setPropertyValue(type, serverObject, propertyName, value);
 		jp.nextToken();
@@ -498,7 +504,7 @@ public class RequestHandler {
 		clientObjects.put(clientId, proxied);
 		
 		// Tell the client about the new ID - do this before changing properties
-		tracker.getQueue().queueCommand(CommandId.CommandType.MAP_CLIENT_ID, null, null, new MapClientId(serverId, clientId));
+		tracker.getQueue().queueCommand(CommandId.CommandType.MAP_CLIENT_ID, proxied, null, new MapClientId(serverId, clientId));
 		
 		// Set property values
 		if (jp.nextToken() == JsonToken.FIELD_NAME) {
@@ -709,4 +715,24 @@ public class RequestHandler {
 			throw new ServletException("Cannot find field called " + fieldName + " found " + str);
 		jp.nextToken();
 	}
+	
+	public static String camelCaseToEnum(String str) {
+		if (str == null)
+			return null;
+		StringBuilder sb = new StringBuilder(str);
+		char lastC = 0;
+		for (int i = 0; i < sb.length(); i++) {
+			char c = sb.charAt(i);
+			if (Character.isUpperCase(c)) {
+				if (lastC != 0 && Character.isLowerCase(lastC)) {
+					sb.insert(i, '_');
+					i++; 
+				}
+			} else if (Character.isLowerCase(c))
+				sb.setCharAt(i, Character.toUpperCase(c));
+			lastC = c;
+		}
+		return sb.toString();
+	}
+
 }
