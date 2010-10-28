@@ -494,7 +494,7 @@ class qcl_event_message_Bus
     $channels = $this->getChannels();
     $channels[] = $name;
     $store->set($key, array_unique( $channels ) );
-    $this->debug( "Added channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ ); 
+    //$this->debug( "Added channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ ); 
   }
   
   /**
@@ -507,7 +507,7 @@ class qcl_event_message_Bus
     $store = new qcl_data_store_keyvalue_Session();
     $key = __CLASS__ . "_channels";
     $store->set($key, array_diff( $this->getChannels(), array( $name ) ) );
-    $this->debug( "Removed channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ );
+    //$this->debug( "Removed channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ );
   } 
   
   /**

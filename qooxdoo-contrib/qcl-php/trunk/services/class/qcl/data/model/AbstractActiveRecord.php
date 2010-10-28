@@ -643,7 +643,7 @@ class qcl_data_model_AbstractActiveRecord
    * Find all model records for iteration, ordered by a property
    * @return qcl_data_db_Query The query object to use for iteration
    */
-  public function findAllOrderBy( $property )
+  public function findAllOrderBy( $property=null )
   {
     /*
      * initialize model and behaviors

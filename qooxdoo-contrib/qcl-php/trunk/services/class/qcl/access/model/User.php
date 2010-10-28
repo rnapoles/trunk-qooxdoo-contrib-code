@@ -565,7 +565,6 @@ class qcl_access_model_User
   	$purge = ( $this->isAnonymous() && $this->getSecondsSinceLastAction() > 600 );
   	if ( $purge ) {
   		$this->delete();
-  		$this->info( "$this deleted ..." );
   	}
   	return false;
   }
