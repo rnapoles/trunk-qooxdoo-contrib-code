@@ -42,7 +42,7 @@ class qcl_server_Download
   public function start()
   {
 
-    $this->log("Starting upload ...",QCL_LOG_REQUEST);
+    $this->log("Starting download ...",QCL_LOG_REQUEST);
 
     qcl_assert_array_keys( $_REQUEST, array( 'sessionId', 'datasource','id', ) );
 

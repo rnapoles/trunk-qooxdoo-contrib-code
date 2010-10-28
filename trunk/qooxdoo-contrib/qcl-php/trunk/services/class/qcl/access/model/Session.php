@@ -213,12 +213,16 @@ class qcl_access_model_Session
   {
   	if ( $this->datasourceModel() )
   	{
-  		$userModel = $this->datasourceModel()->getModelOfType("user") ;	
+  		$userModel = $this->datasourceModel()->getInstanceOfType("user");	
   	}
   	else // FIXME
   	{
   		$userModel = $this->getApplication()->getAccessController()->getUserModel();
   	}
+  	
+  	/*
+  	 * delete this record if no corresponding user exists
+  	 */
   	try 
   	{
   		$userModel->load( (int) $this->get("UserId") );
@@ -226,10 +230,8 @@ class qcl_access_model_Session
   	catch( qcl_data_model_RecordNotFoundException $e )
   	{
   		$this->delete();
-  		$this->info( "$this deleted ..." );
   	}
   	return false;
   }
-  
 }
 ?>
