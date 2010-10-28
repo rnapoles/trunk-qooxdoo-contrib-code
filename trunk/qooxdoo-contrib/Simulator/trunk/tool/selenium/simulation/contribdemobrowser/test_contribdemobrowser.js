@@ -1,7 +1,7 @@
 var baseConf = {
   autName : 'ContribDemoBrowser',
   globalTimeout : 300000,
-  stepSpeed : '250',
+  stepSpeed : '1000',
   selServer : 'localhost',
   selPort : 4444,
   testBrowser : '*opera',
@@ -26,7 +26,8 @@ simulation.Simulation.prototype.__demos = {};
 simulation.Simulation.prototype.locators = {
   selectQxVersion : "qxhv=*/qx.ui.form.SelectBox",
   buttonNext : 'qxhv=*/[@label="Next"]',
-  tree : 'qxhv=*/qx.ui.tree.Tree'
+  tree : 'qxhv=*/qx.ui.tree.Tree',
+  treeRoot : 'qxhv=*/qx.ui.tree.Tree/[@label="Demos"]'
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -36,12 +37,12 @@ simulation.Simulation.prototype.runTest = function()
   for (var i=0; i<qxVersions.length; i++) {
     this.__qxVersion = qxVersions[i];
     this.__demos[this.__qxVersion] = [];
-    this.log("Checking demos compatible with qx version " + this.__qxVersion, "info");
+    this.log("Testing demos compatible with qx version " + this.__qxVersion, "info");
     this.qxClick(this.locators.selectQxVersion);
     Packages.java.lang.Thread.sleep(2000);
     this.qxClick(this.locators.selectQxVersion + '/[@label="' + this.__qxVersion + '"]');
     Packages.java.lang.Thread.sleep(1000);
-    this.resetTreeSelection();
+    this.qxClick(this.locators.treeRoot);
     this.testAllDemos();
   }
 };
@@ -73,11 +74,6 @@ simulation.Simulation.prototype.getTreeSelectionLabel = function()
   return evaledResult.join(" ");
 };
 
-simulation.Simulation.prototype.resetTreeSelection = function()
-{
-  this.__sel.getRunInContext(this.locators.tree, "this.setSelection([this.getRoot()]);");
-};
-
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
   this.__sel.waitForCondition(this.isDemoReady, 15000);
@@ -91,7 +87,7 @@ simulation.Simulation.prototype.testAllDemos = function()
   while (selectedItem != nextItem) {
     selectedItem = this.getTreeSelectionLabel();
     this.__demos[this.__qxVersion].push(selectedItem);
-    this.testDemo(selectedItem);
+    this.testDemo(this.__qxVersion + ": " + selectedItem);
     this.qxClick(this.locators.buttonNext);
     nextItem = this.getTreeSelectionLabel();
   }
@@ -103,7 +99,7 @@ simulation.Simulation.prototype.testDemo = function(demoName)
   try {
     this.waitForDemoApp();
   } catch(ex) {
-    this.log("Demo application did not load within timeout!", "error");
+    this.log("Error while waiting for demo " + demoName + " to load: " + ex, "error");
     return;
   }
   // TODO: attach global error handler to demo, get demo errors
