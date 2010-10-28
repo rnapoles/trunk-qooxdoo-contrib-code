@@ -249,7 +249,30 @@ qx.Class.define("qcl.application.Core",
     {
       check : "Boolean",
       init : true
-    }
+    },
+    
+    /**
+     * Whether to allow anonymous subscriptions, i.e. unauthenticated
+     * users can subscribe to channels on the server. Default: false
+     */
+    anonymousChannelSubscriptions :
+    {
+      check : "Boolean",
+      init : false
+    },
+    
+    /**
+     * Whether to delay a subscription until the authentication has been
+     * done. If true and anonymousChannelSubscriptions is true, automatically
+     * push off subscriptions until after authentication.
+     * If false, the attempt to anonymously subscribe before being
+     * authenticated will throw an error. Default: true
+     */
+    delayChannelSubscriptionsUntilAuthenticated :
+    {
+      check : "Boolean",
+      init : true
+    }    
     
   },
 
@@ -646,36 +669,64 @@ qx.Class.define("qcl.application.Core",
       }
       
       /*
-       * subscribe on client, where the messages are actually published
+       * check authentication state
        */
-      if ( ! this.isSubscribed( name ) )
+      if ( ! this.isAuthenticatedUser() )
       {
-        this.subscribe( name, callback, context );  
+        if ( ! this.isAnonymousChannelSubscriptions() )
+        {
+          if ( this.isDelayChannelSubscriptionsUntilAuthenticated() )
+          {
+            this.callOnceWhenAuthenticated( function(){
+              this.subscribeToChannel( name, callback, context, finalCallback, finalContext );
+            },this);  
+            return;
+          }
+          else
+          {
+            this.error("Cannot subscribe to channel '" + name + "'. Anonymous subscriptions are not allowed and user is not yet authenticated.");
+          }
+        }
       }
       
       /*
+       * subscribe on client, where the messages are actually published
+       */
+      if ( ! this.isSubscribed (name, callback, context ) )
+      {
+        this.subscribe( name, callback, context );  
+      }
+        
+      /*
        * subscribe on server dependend on transport mode
        */
-      switch( this.__messageTransportOptions.mode )
+      if ( ! this.isSubscribedChannel( name ) )
       {
-        case "poll":
-          switch( this.__messageTransportOptions.transport )
-          {
-            case "rpc":
-              this.rpcRequest( 
-                this.__messageTransportOptions.service, "subscribe", [name],
-                function() {
-                  this.info("Subscribed to channel " + name );
-                  this.__channels.push( name );
-                  if ( typeof finalCallback == "function" )
-                  {
-                    finalCallback.call( finalContext );
-                  }
-                },this
-              );
-              break;
-          }
-          break;
+        // FIXME We have to do this before we know that this will be successful
+        // otherwise we'll have a ton of subscription requests to the 
+        // server. So we'll need a way to remove the subscription
+        // from the list when an error occurs
+        this.__channels.push( name ); 
+        switch( this.__messageTransportOptions.mode )
+        {
+          case "poll":
+            switch( this.__messageTransportOptions.transport )
+            {
+              case "rpc":
+                this.rpcRequest( 
+                  this.__messageTransportOptions.service, "subscribe", [name],
+                  function() {
+                    this.info("Subscribed to channel " + name );
+                    if ( typeof finalCallback == "function" )
+                    {
+                      finalCallback.call( finalContext );
+                    }
+                  },this
+                );
+                break;
+            }
+            break;
+        }
       }
     },
     
@@ -720,9 +771,13 @@ qx.Class.define("qcl.application.Core",
        */
       if ( ! this.isSubscribedChannel( name ) )
       {
-        this.error( "Channel '" + "' is not subscribed to." );
+        this.warn( "No subscription to channel '" + name + "' exists." );
         return;
       }
+      
+      // need to remove already without knowing if the unsuscribe action
+      // will be successful.
+      qx.lang.Array.remove( this.__channels, name );
       
       /*
        * unsubscribe dependent on transport mode
@@ -740,7 +795,6 @@ qx.Class.define("qcl.application.Core",
                   this.unsubscribe( name, callback, context );
                   if ( typeof finalCallback == "function" )
                   {
-                    qx.lang.Array.remove( this.__channels, name );
                     finalCallback.call( finalContext );
                   }
                 },this
@@ -756,12 +810,16 @@ qx.Class.define("qcl.application.Core",
      * is running or no subscriptions have been made, otherwise true
      * @return {Boolean}
      */
-    unsubscribeFromAllChannels : function()
+    unsubscribeFromAllChannels : function( finalCallback, finalContext )
     {
       if ( ! this.isMessageTransportRunning() || this.__channels.length == 0 )
       {
         return false;
       }
+      
+      /*
+       * locally remove all
+       */
       switch( this.__messageTransportOptions.mode )
       {
         case "poll":
@@ -771,8 +829,15 @@ qx.Class.define("qcl.application.Core",
               this.rpcRequest( 
                 this.__messageTransportOptions.service, "unsubscribeAll", [],
                 function() {
-                  this.__channels = [];
                   this.info("Unsubscribed from all channels ");
+                  this.__channels.forEach( function(name){
+                    delete qx.event.message.Bus.getSubscriptions()[name];
+                  },this);
+                  this.__channels = [];
+                  if ( typeof finalCallback == "function" )
+                  {
+                    finalCallback.call( finalContext );
+                  }
                 },this
               );
               break;
@@ -810,9 +875,10 @@ qx.Class.define("qcl.application.Core",
       /*
        * Check subscription 
        */
-      if ( qx.lang.Array.contains( this.__channels, name ) )
+      if ( ! qx.lang.Array.contains( this.__channels, name ) )
       {
-        this.error( "Channel '" + "' is not subscribed to." );  
+        this.warn( "Channel '" + name + "' is not subscribed to." );
+        return false;
       }
       
       /*
@@ -1166,8 +1232,8 @@ qx.Class.define("qcl.application.Core",
     
     /**
      * Sets an application state. If value is NULL, the state is implicitly removed.
-     * @param {} name
-     * @param {} value
+     * @param name {String}
+     * @param value {String}
      * @return {Boolean}
      */
     setApplicationState : function( name, value )
@@ -1184,16 +1250,29 @@ qx.Class.define("qcl.application.Core",
       }
     },
     
+    /**
+     * Returns the value of an application state
+     * @param name {String}
+     * @return {unknown}
+     */
     getApplicationState : function( name )
     {
       return this.getStateManager().getState( name );
     },    
     
+    /**
+     * Removes an application state
+     * @param name {String}
+     */
     removeApplicationState : function( name )
     {
-      this.getStateManager().removeState( name, value );
+      this.getStateManager().removeState( name );
     },        
     
+    /**
+     * Returns a map with all application states
+     * @return {Map}
+     */
     getApplicationStateMap : function()
     {
       return this.getStateManager().getStates();
