@@ -107,6 +107,11 @@ var getDemosByCategory = function(category)
   return samples;
 };
 
+simulation.Simulation.prototype.waitForDemoApp = function()
+{
+  this.__sel.waitForCondition(this.isDemoReady, 20000);
+};
+
 /*
 *  Runs the given script, then gets the current sample's name and log output and
 *  sends them to Selenium's log.
@@ -158,9 +163,15 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     return [nextSampleCategory,nextSampleLabel];
   }
   else {
-    //this.log('Loading demo ' + nextSampleCategory + ' - ' + nextSampleLabel, "debug");
+    this.log('Loading demo ' + nextSampleCategory + ' - ' + nextSampleLabel, "debug");
     // run the sample
     this.runScript(scriptCode, "Running sample");
+    
+    try {
+      this.waitForDemoApp();
+    } catch(ex) {
+      this.log("Error while waiting for demo " + nextSampleCategory + " - " + nextSampleLabel + " to load: " + ex, "error");
+    }
     
     if (this.getConfigSetting("sampleGlobalErrorLogging")) {
       try {
@@ -168,17 +179,6 @@ simulation.Simulation.prototype.sampleRunner = function(script)
       } catch(ex) {
         this.log("Could not add global error handler to demo " + nextSampleCategory + ":" + nextSampleLabel);
       }
-    }
-    
-    //this.killBoxes();
-    //Packages.java.lang.Thread.sleep(2000);
-    
-    if (nextSampleCategory == "progressive" && nextSampleLabel == "ProgressiveLoader") {
-      print("Giving ProgressiveLoader some extra time.");
-      Packages.java.lang.Thread.sleep(12000);
-    }
-    else {
-      Packages.java.lang.Thread.sleep(2000);      
     }
     
     var currentSample = "Unknown demo";
@@ -313,20 +313,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
 simulation.Simulation.prototype.addErrorHandlerToDemo = function()
 {
-  var sampleQxReady = selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow().qx";
-  
-  mySim.__sel.waitForCondition(sampleQxReady, 10000);
-                         
-  var sampleQxEventReady = selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow().qx.event";
-  
-  mySim.__sel.waitForCondition(sampleQxEventReady, 10000);                           
-  
-  var globalEventReady = selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow().qx.event.GlobalError";
-  
-  var isGlobalEventReady = mySim.__sel.waitForCondition(globalEventReady, 10000);
-  if (isGlobalEventReady) {
-    this.addGlobalErrorHandler(selWin + '.' + qxAppInst + "._infosplit.getChildren()[0].getWindow()");
-  }   
+  this.addGlobalErrorHandler(selWin + '.' + qxAppInst + ".viewer._iframe.getWindow()");
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -460,6 +447,10 @@ simulation.Simulation.prototype.runTest = function()
 
 (function() {
   mySim.testFailed = false;
+  
+  mySim.isDemoReady = simulation.Simulation.SELENIUMWINDOW + '.'  
+  + simulation.Simulation.QXAPPINSTANCE
+  + '.viewer._iframe.getWindow().qx.core.Init.getApplication()';
 
   var sessionStarted = mySim.startSession();
   
