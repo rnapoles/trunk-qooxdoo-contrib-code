@@ -190,11 +190,15 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     var currentSample = "Unknown demo";
     var category = "Unknown category";
     
-    var sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
+    try {
+      var sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
+    } catch(ex) {}
     
     if (!sampleTemp) {
       // try again
-      sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
+      try {
+        sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
+      } catch(ex) {}
       if (!sampleTemp) {
         this.log("Unable to determine current demo", "error");
       }
@@ -203,11 +207,15 @@ simulation.Simulation.prototype.sampleRunner = function(script)
       currentSample = sampleTemp;
     }
     
-    var categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
+    try {
+      var categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
+    } catch(ex) {}
     
     if (!categoryTemp) {
       // try again
-      categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
+      try {
+        categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
+      } catch(ex) {}
       if (!categoryTemp) {
         this.log("Unable to determine current category", "error");
       }
@@ -476,9 +484,9 @@ simulation.Simulation.prototype.runTest = function()
   }
   catch(ex) {
     mySim.testFailed = true;
-    var msg = "Unexpected error while running test!";
+    var msg = "Unexpected error while running test: " + ex;
     if (mySim.getConfigSetting("debug")) {
-      print(msg + "\n" + ex);
+      print(msg);
     }
     mySim.log(msg, "error");
     
