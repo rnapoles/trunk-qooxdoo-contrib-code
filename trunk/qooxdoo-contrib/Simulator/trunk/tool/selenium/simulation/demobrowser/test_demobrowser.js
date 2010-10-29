@@ -31,7 +31,7 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE + '.viewer';
 
-var logPause = 5000; // millisecs to wait after loading sample
+var logPause = 3000; // millisecs to wait after loading sample
 var selectNextSample = qxAppInst + '.tree.addToSelection(' + qxAppInst + '.tree.getNextNodeOf(' + qxAppInst + '.tree.getSelection()[0]))';
 var runSample = qxAppInst + '.runSample()'; // play currently selected sample
 var getSampleCategory = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getParent().getLabel()'; // get category name
@@ -42,6 +42,10 @@ var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().
 var shutdownSample = selWin + '.' + qxAppInst + '._infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
 mySim.lastSample = "last";
+mySim.demoFrame = selWin + '.' + qxAppInst + '._iframe'; 
+mySim.demoWin = mySim.demoFrame + ".getWindow()";
+mySim.demoQx = mySim.demoWin + ".qx";
+mySim.demoQxApp = mySim.demoQx + '.core.Init.getApplication()';
 
 /*
 *  Returns a command that selects sample number [entry] from the sample tree 
@@ -109,7 +113,9 @@ var getDemosByCategory = function(category)
 
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
-  this.__sel.waitForCondition(this.isDemoReady, 20000);
+  this.__sel.waitForCondition(this.demoWin, 20000);
+  this.__sel.waitForCondition(this.demoQx, 20000);
+  this.__sel.waitForCondition(this.demoQxApp, 20000);
 };
 
 /*
@@ -447,10 +453,6 @@ simulation.Simulation.prototype.runTest = function()
 
 (function() {
   mySim.testFailed = false;
-  
-  mySim.isDemoReady = simulation.Simulation.SELENIUMWINDOW + '.'  
-  + simulation.Simulation.QXAPPINSTANCE
-  + '.viewer._iframe.getWindow().qx.core.Init.getApplication()';
 
   var sessionStarted = mySim.startSession();
   
