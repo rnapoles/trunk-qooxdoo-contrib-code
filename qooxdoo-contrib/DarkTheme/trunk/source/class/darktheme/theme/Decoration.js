@@ -378,6 +378,28 @@ qx.Theme.define("darktheme.theme.Decoration",
 	  }
     },
 	
+	"input-invalid":
+    {
+	  decorator: qx.ui.decoration.Grid,
+	  
+	  style:
+	  {
+	    baseImage: "darktheme/decoration/form/input-invalid.png",
+		insets: [3, 3, 3, 3]
+	  }
+    },
+	
+	"input-focused-invalid":
+    {
+	  decorator: qx.ui.decoration.Grid,
+	  
+	  style:
+	  {
+	    baseImage: "darktheme/decoration/form/input-error.png",
+		insets: [3, 3, 3, 3]
+	  }
+    },
+	
 	/*
     ---------------------------------------------------------------------------
       POPUP

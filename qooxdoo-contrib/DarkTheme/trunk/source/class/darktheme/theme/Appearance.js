@@ -342,6 +342,37 @@ qx.Theme.define("darktheme.theme.Appearance",
     ---------------------------------------------------------------------------
     */
 	
+	"list" :
+    {
+      alias : "scrollarea",
+
+      style : function(states)
+      {
+        var decorator;
+
+        var focused = !!states.focused;
+        var invalid = !!states.invalid;
+        var disabled = !!states.disabled;
+
+        if (focused && invalid && !disabled) {
+          decorator = "input-focused-invalid";
+        } else if (focused && !invalid && !disabled) {
+          decorator = "input-focused";
+        } else if (disabled) {
+          decorator = "input-disabled";
+        } else if (!focused && invalid && !disabled) {
+          decorator = "input-invalid";
+        } else {
+          decorator = "input";
+        }
+
+        return {
+          decorator: decorator,
+		  textColor: "text-active"
+        };
+      }
+    },
+	
 	"listitem" :
     {
       style : function(states)
@@ -555,7 +586,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         {
           return {
 		    decorator: decorator,
-            padding : [0, 0, 0, 2],
+            padding : [0, 2, 0, 1],
             icon : icon,
             width: 14,
             height: 15
@@ -819,7 +850,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           minWidth  : 13,
           minHeight : 20,
-          padding   : states.hovered ? [ 3, 4, 3, 4 ] : [ 3, 4 ],
+          // padding   : states.hovered ? [ 3, 4, 3, 4 ] : [ 3, 4 ],
+          padding   : states.hovered ? [ 1, 3, 3, 5 ] : [ 0, 4, 4, 4 ],
           decorator : states.hovered ? "table-header-cell-selected" : "table-header-cell",
           sortIcon  : states.sorted ?
               (states.sortedAscending ? "darktheme/decoration/arrows/down-invert.png" : "darktheme/decoration/arrows/up-invert.png")
@@ -1140,7 +1172,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         } else if (disabled) {
           decorator = "input-disabled";
         } else if (!focused && invalid && !disabled) {
-          decorator = "border-invalid";
+          decorator = "input-invalid";
         } else {
           decorator = "input";
         }
