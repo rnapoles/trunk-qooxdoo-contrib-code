@@ -837,7 +837,7 @@ Selenium.prototype.getQxObjectFunction = function(locator, functionName)
 /**
  * EXPERIMENTAL - NOT READY FOR PRODUCTION
  * 
- * Creates a new function with the value of the script paramater as body. This 
+ * Creates a new function with the value of the script parameter as body. This 
  * function is bound to the context of the qooxdoo widget returned by the given
  * locator, i.e. "this" within the script will refer to the widget. The function
  * is then called and the return value is serialized in JSON format (unless it
@@ -2684,14 +2684,15 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
       if (hasProp)
       {
         var currval = actobj.get(attrib);
-        LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
-
-        if (currval && typeof currval !== "string" && currval.toString) {
-          currval = currval.toString();
-        }
-        
-        if (currval && currval.match(rattval)) {
-          return actobj;
+        if (currval) {
+          LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
+          if (typeof currval !== "string" && currval.toString) {
+            currval = currval.toString();
+          }
+          
+          if (currval.match(rattval)) {
+            return actobj;
+          }
         }
       }
     }
@@ -2859,7 +2860,9 @@ PageBot.prototype.qx._getGeneralProperty = function(actobj, attrib, qx)
     {
       //LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
       var currval = actobj.get(attrib);
-      return currval;
+      if (currval) {
+        return currval;
+      }
     }
   }
 
