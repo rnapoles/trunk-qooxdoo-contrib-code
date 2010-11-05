@@ -327,7 +327,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
 simulation.Simulation.prototype.addErrorHandlerToDemo = function()
 {
-  this.addGlobalErrorHandler(selWin + '.' + qxAppInst + ".viewer._iframe.getWindow()");
+  this.addGlobalErrorHandler(selWin + '.' + qxAppInst + "._iframe.getWindow()");
 };
 
 simulation.Simulation.prototype.runTest = function()
