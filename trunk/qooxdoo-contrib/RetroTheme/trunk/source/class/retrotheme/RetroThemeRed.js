@@ -12,7 +12,7 @@
 
 ************************************************************************ */
 
-qx.Theme.define("retrotheme.RetroRedTheme",
+qx.Theme.define("retrotheme.RetroThemeRed",
 {
   meta :
   {

@@ -12,11 +12,11 @@
 
 ************************************************************************ */
 
-qx.Theme.define("retrotheme.RetroDarkTheme",
+qx.Theme.define("retrotheme.RetroThemeBlue",
 {
   meta :
   {
-    color : retrotheme.theme.ColorDark,
+    color : retrotheme.theme.ColorBlue,
     decoration : retrotheme.theme.Decoration,
     font : retrotheme.theme.Font,
     icon : qx.theme.icon.Oxygen,
