@@ -1,12 +1,7 @@
 package com.zenesis.qx.remote;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -38,6 +33,7 @@ public class BasicBootstrap implements UploadReceiver {
 	private AppFile appFilesRoot;
 	private AppFile uploadFolder;
 	private HashMap<String, UploadingFile> uploading = new HashMap<String, UploadingFile>();
+	private boolean restrictUploadFolder = true;
 
 	/**
 	 * Constructor
@@ -92,7 +88,7 @@ public class BasicBootstrap implements UploadReceiver {
 		StringTokenizer st = new StringTokenizer(strF, "/");
 		while (st.hasMoreTokens()) {
 			String name = st.nextToken();
-			appFile = appFile.getChild(name, true);
+			appFile = appFile.getChild(name);
 			if (appFile == null)
 				return null;
 		}
@@ -122,7 +118,7 @@ public class BasicBootstrap implements UploadReceiver {
 		StringTokenizer st = new StringTokenizer(partialUrl, "/");
 		while (st.hasMoreTokens()) {
 			String name = st.nextToken();
-			appFile = appFile.getChild(name, true);
+			appFile = appFile.getChild(name);
 			if (appFile == null)
 				return null;
 		}
@@ -151,7 +147,7 @@ public class BasicBootstrap implements UploadReceiver {
 		Object obj = upfile.getParams().get("uploadFolder");
 		AppFile uploadFolder = (AppFile)obj;
 		if (uploadFolder != null) {
-			if (getAppFilesRoot() != null) {
+			if (isRestrictUploadFolder() && getAppFilesRoot() != null) {
 				String strUF = uploadFolder.getFile().getAbsolutePath();
 				String strRF = getAppFilesRoot().getFile().getAbsolutePath();
 				int lenRF = strRF.length();
@@ -181,6 +177,21 @@ public class BasicBootstrap implements UploadReceiver {
 	@Override
 	public void clearUploadedFile(String uploadId) {
 		uploading.remove(uploadId);
+	}
+
+	/**
+	 * @return the restrictUploadFolder
+	 */
+	public boolean isRestrictUploadFolder() {
+		return restrictUploadFolder;
+	}
+
+	/**
+	 * @param restrictUploadFolder the restrictUploadFolder to set
+	 */
+	@DoNotProxy
+	public void setRestrictUploadFolder(boolean restrictUploadFolder) {
+		this.restrictUploadFolder = restrictUploadFolder;
 	}
 
 	/**

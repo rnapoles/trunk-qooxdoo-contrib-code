@@ -23,17 +23,21 @@ public class ArrayChanges implements CumulativeData {
 	/*
 	 * An individual delta
 	 */
-	private static final class Change {
+	public static final class Change {
 		public final Type type;
+		public final int startIndex;
+		public final int endIndex;
 		public final Object value;
 		
 		/**
 		 * @param type
 		 * @param value
 		 */
-		public Change(Type type, Object value) {
+		public Change(Type type, int startIndex, int endIndex, Object value) {
 			super();
 			this.type = type;
+			this.startIndex = startIndex;
+			this.endIndex = endIndex;
 			this.value = value;
 		}
 	}
@@ -49,8 +53,8 @@ public class ArrayChanges implements CumulativeData {
 	 * @param type
 	 * @param obj
 	 */
-	public ArrayChanges(Type type, Object obj) {
-		change = new Change(type, obj);
+	public ArrayChanges(Type type, int startIndex, int endIndex, Object obj) {
+		change = new Change(type, startIndex, endIndex, obj);
 	}
 	
 	/**
@@ -58,13 +62,13 @@ public class ArrayChanges implements CumulativeData {
 	 * @param type
 	 * @param obj
 	 */
-	public void add(Type type, Object obj) {
+	public void add(Type type, int startIndex, int endIndex, Object obj) {
 		if (changes == null) {
 			changes = new java.util.ArrayList<Change>();
 			changes.add(change);
 			change = null;
 		}
-		changes.add(new Change(type, obj));
+		changes.add(new Change(type, startIndex, endIndex, obj));
 	}
 	
 	/* (non-Javadoc)

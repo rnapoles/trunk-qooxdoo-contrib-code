@@ -263,6 +263,8 @@ public class RequestHandler {
 						Object[] values = readParameters(jp, new Class[] { property.getPropertyClass().getJavaType() });
 						property.setValue(serverObject, values[0]);
 					}
+					if (property.isOnDemand())
+						tracker.setClientHasValue(serverObject, property);
 					tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, serverObject, null, result);
 					found = true;
 					break;

@@ -44,18 +44,24 @@ public class AppFile implements Proxied {
 	private ArrayList<AppFile> children;
 
 	/**
-	 * Constructor, used for the root of the tree
+	 * Constructor
 	 * @param file
 	 * @param parent
 	 */
 	public AppFile(File file, String url) {
+		this(null, file, url);
+	}
+	
+	/**
+	 * Constructor
+	 * @param file
+	 * @param parent
+	 */
+	public AppFile(AppFile parent, File file, String url) {
 		super();
-		file.mkdirs();
-		if (!file.isDirectory())
-			throw new IllegalArgumentException("Cannot have a root folder which is not a directory!");
 		this.file = file;
 		this.url = url;
-		this.parent = null;
+		this.parent = parent;
 		
 		name = file.getName();
 		readOnly = !file.canWrite();
@@ -201,6 +207,105 @@ public class AppFile implements Proxied {
 	}
 	
 	/**
+	 * Returns the difference between this file and the given directory, i.e. a path
+	 * which when added to the directory <code>dir</code> will produce this file.
+	 * @param dir the directory to be reached from
+	 * @return the relative path
+	 */
+	public String getRelativePath(AppFile dir) {
+		String dirPath = dir.getFile().getAbsolutePath();
+		String myPath = file.getAbsolutePath();
+		boolean isCaseSensitive = !new File(file.getName().toUpperCase()).equals(new File(file.getName().toLowerCase()));
+		if (!isCaseSensitive) {
+			dirPath = dirPath.toLowerCase();
+			myPath = myPath.toLowerCase();
+		}
+		
+		// Check for easy ancestor relatives
+		if (myPath.startsWith(dirPath)) {
+			String str = myPath.substring(dirPath.length());
+			if (str.length() > 0 && str.charAt(0) == File.separatorChar)
+				str = str.substring(1);
+			return str;
+		}
+		
+		String strRoot = "";
+		
+		// Check for file on different root (i.e. different drive on windows)
+		File[] roots = File.listRoots();
+		for (int i = 0; i < roots.length; i++) {
+			strRoot = roots[i].getAbsolutePath();
+			if (myPath.startsWith(strRoot)) {
+				// Different root?  Then an explicit path is the only way
+				if (!dirPath.startsWith(strRoot))
+					return myPath;
+				
+				// Remove the common root
+				myPath = myPath.substring(strRoot.length());
+				dirPath = dirPath.substring(strRoot.length());
+				break;
+			}
+		}
+		
+		/*
+		 * (1) Easy parent dir - done above
+		 * 	Dir:	/a/b/c
+		 * 	My:		/a/b/c/d/e
+		 * 	Res:	d/e
+		 * 
+		 * (2) Partial path
+		 *	Dir:	/a/b/c
+		 *	My:		/a/d/e
+		 *	Res:	../../d/e
+		 *
+		 *	Dir:	/a/b/c/d/e
+		 *	My:		/a/x/y
+		 *	Res:	../../../../x/y
+		 *
+		 * (3) Nothing in common 
+		 *	Dir:	/a/b/c
+		 *	My:		/x/y/z
+		 *	Res:	/x/y/z
+		 *
+		 * (4) Trick question, same dir
+		 * 	Dir:	/a/b
+		 * 	My:		/a/b/c
+		 * 	Res:	c
+		 */
+		String[] dirSegs = dirPath.split(File.separator);
+		String[] mySegs = myPath.split(File.separator);
+		
+		// Nothing in common?  Retyurn the absolute path
+		if (dirSegs.length == 0 || mySegs.length == 0 || !dirSegs[0].equals(mySegs[0]))
+			return strRoot + myPath;
+		
+		// Look for the first disparity
+		int firstMismatch = 1; 
+		while (firstMismatch < dirSegs.length && firstMismatch < mySegs.length) {
+			if (!dirSegs[firstMismatch].equals(mySegs[firstMismatch]))
+				break;
+			firstMismatch++;
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		
+		// Add dots to make it back to the common relative
+		int dots = dirSegs.length - firstMismatch;
+		for (int i = 0; i < dots; i++)
+			sb.append("..").append(File.separatorChar);
+		
+		// Add the remainder
+		for (int i = firstMismatch; i < mySegs.length; i++) {
+			if (i != firstMismatch)
+				sb.append(File.separatorChar);
+			sb.append(mySegs[i]);
+		}
+		
+		// Done
+		return sb.toString();
+	}
+	
+	/**
 	 * Returns the actual, underlying file
 	 * @return
 	 */
@@ -297,26 +402,30 @@ public class AppFile implements Proxied {
 	/**
 	 * Returns a child with the given name, or null if the file could not be found
 	 * @param name
-	 * @param refreshIfNecessary if true, causes the children to be reloaded if the file was not found
 	 * @return
 	 */
-	public AppFile getChild(String name, boolean refreshIfNecessary) {
-		boolean alreadyLoadedChildren = children != null;
-		getChildren();
-		for (AppFile child : children) {
-			if (child.getName().equalsIgnoreCase(name))
-				return child;
-		}
-		if (alreadyLoadedChildren) {
-			loadChildren();
+	public AppFile getChild(String name) {
+		if (name.indexOf('/') > -1 || name.indexOf('\\') > -1)
+			throw new IllegalArgumentException("Cannot get child called '" + name + "', paths are not supported");
+		if (children == null) {
+			File file = new File(this.file, name);
+			if (!file.exists())
+				return null;
+			return new AppFile(this, file, url + '/' + name);
+		} else {
 			for (AppFile child : children) {
 				if (child.getName().equalsIgnoreCase(name))
 					return child;
 			}
+			File file = new File(this.file, name);
+			if (!file.exists())
+				return null;
+			AppFile child = new AppFile(this, file, url + '/' + name);
+			children.add(child);
+			return child;
 		}
-		return null;
 	}
-
+	
 	/**
 	 * @return the parent
 	 */
