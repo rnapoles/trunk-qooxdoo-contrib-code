@@ -51,7 +51,6 @@ import com.zenesis.qx.event.Event;
 import com.zenesis.qx.event.EventListener;
 import com.zenesis.qx.event.EventManager;
 import com.zenesis.qx.remote.CommandId.CommandType;
-import com.zenesis.qx.remote.annotations.AlwaysProxy;
 
 /**
  * This class needs to be implemented by whatever software hosts the proxies
@@ -251,8 +250,10 @@ public class ProxyManager implements EventListener {
 			return;
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
 		ProxyProperty property = getProperty(type, propertyName);
-		if (property.isOnDemand())
-			queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
+		if (property == null)
+			throw new IllegalArgumentException("Cannot find a property called " + propertyName);
+		if (property.isOnDemand() && !tracker.doesClientHaveValue(keyObject, property))
+			return; //queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
 		else
 			queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, newValue);
 		if (property.getEvent() != null)

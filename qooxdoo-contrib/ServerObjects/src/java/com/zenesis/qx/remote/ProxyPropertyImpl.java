@@ -126,6 +126,8 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 				} catch(NoSuchMethodException e) {
 					throw new IllegalArgumentException("Cannot find any accessor for property " + name + " in class " + clazz);
 				}
+			if (getMethod == null && field == null)
+				throw new IllegalArgumentException("Cannot find any accessor for property " + name + " in class " + clazz);
 		}
 		if (field != null)
 			propertyClass = new MetaClass(field.getType());
@@ -142,7 +144,7 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 		// Try for a setXxxx() method
 		if (setMethod == null && (readOnly == null || !readOnly))
 			try {
-				setMethod = clazz.getMethod("set" + upname, new Class[] { getMethod.getReturnType() });
+				setMethod = clazz.getMethod("set" + upname, new Class[] { propertyClass.getJavaType() });
 				setMethod.setAccessible(true); // Disable access tests, MAJOR performance improvement
 				if (sendExceptions == null && setMethod.getExceptionTypes().length > 0)
 					sendExceptions = true;

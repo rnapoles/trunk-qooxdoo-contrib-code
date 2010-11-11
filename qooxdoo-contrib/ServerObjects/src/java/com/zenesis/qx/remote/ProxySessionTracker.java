@@ -205,6 +205,37 @@ public class ProxySessionTracker {
 			jgen.writeEndObject();
 		}
 	}
+	
+	/*
+	 * Class used to identify a property
+	 */
+	private static final class PropertyId {
+		private final Proxied proxied;
+		private final String propertyName;
+		
+		public PropertyId(Proxied proxied, String propertyName) {
+			super();
+			this.proxied = proxied;
+			this.propertyName = propertyName;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			return proxied.hashCode() ^ propertyName.hashCode();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			PropertyId that = (PropertyId)obj;
+			return that.proxied == proxied && propertyName.equals(that.propertyName);
+		}
+	}
 
 	// All ProxyTypes which have already been sent to the client
 	private final HashSet<ProxyType> deliveredTypes = new HashSet<ProxyType>();
@@ -213,6 +244,7 @@ public class ProxySessionTracker {
 	private final HashMap<Integer, Proxied> objectsById = new HashMap<Integer, Proxied>();
 	private final HashMap<Proxied, Integer> objectIds = new HashMap<Proxied, Integer>();
 	private final HashSet<Proxied> invalidObjects = new HashSet<Proxied>();
+	private final HashSet<PropertyId> knownOnDemandProperties = new HashSet<ProxySessionTracker.PropertyId>();
 
 	// The Object mapper
 	private ProxyObjectMapper objectMapper = new ProxyObjectMapper(this);
@@ -399,6 +431,45 @@ public class ProxySessionTracker {
 		if (deliveredTypes.contains(type))
 			throw new IllegalArgumentException("ProxyType " + type + " has already been sent to the client");
 		deliveredTypes.add(type);
+	}
+	
+	/**
+	 * Expires the on-demand property value
+	 * @param proxied
+	 * @param propertyName
+	 * @return
+	 */
+	public boolean expireOnDemandProperty(Proxied proxied, String propertyName) {
+		boolean existed = knownOnDemandProperties.remove(new PropertyId(proxied, propertyName));
+		return existed;
+	}
+	
+	/**
+	 * Detects whether the client has a value for the given property of an object; this
+	 * returns true if the object has been sent and either the property is not ondemand
+	 * or the ondemand value has already been requested and sent.
+	 * @param proxied
+	 * @param prop
+	 * @return
+	 */
+	public boolean doesClientHaveValue(Proxied proxied, ProxyProperty prop) {
+		if (!objectIds.containsKey(proxied))
+			return false;
+		if (!prop.isOnDemand())
+			return true;
+		boolean existed = knownOnDemandProperties.contains(new PropertyId(proxied, prop.getName()));
+		return existed;
+	}
+	
+	/**
+	 * Records that the client has received an on-demand property value
+	 * @param proxied
+	 * @param prop
+	 */
+	public void setClientHasValue(Proxied proxied, ProxyProperty prop) {
+		if (!objectIds.containsKey(proxied) || !prop.isOnDemand())
+			return;
+		knownOnDemandProperties.add(new PropertyId(proxied, prop.getName()));
 	}
 	
 	/**
