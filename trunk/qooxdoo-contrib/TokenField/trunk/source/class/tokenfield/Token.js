@@ -598,10 +598,14 @@ qx.Class.define("tokenfield.Token",
       var item = new qx.ui.form.ListItem(this.highlight(label, this._search));
       item.setModel(model);
       item.setRich(true);
+      var list = this.getChildControl('list'); 
       if (!this.getSelectOnce() || (this.getSelectOnce() == true && !this._isSelected(model)))
     	{
-      	this.getChildControl('list').remove(this._dummy);
-	      this.getChildControl('list').add(item);
+      	if (list.hasChildren() && list.getChildren()[0] == this._dummy)
+      	{
+      		list.remove(this._dummy);
+      	}
+	      list.add(item);
     	}
       if (selected && !this._isSelected(model))
       {
