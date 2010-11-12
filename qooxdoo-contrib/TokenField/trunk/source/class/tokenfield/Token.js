@@ -94,6 +94,14 @@ qx.Class.define("tokenfield.Token",
       init   : "token"
     },
 
+    typeInText :
+    {
+      check     : "String",
+      nullable  : true,
+      event     : "changeTypeInText",
+      init      : "Type in a search term"
+    },
+    
     /**
      *
      */
@@ -102,7 +110,7 @@ qx.Class.define("tokenfield.Token",
       check     : "String",
       nullable  : true,
       event     : "changeHintText",
-      init      : "Type in a search term"
+      init      : null
     },
 
     /**
@@ -148,6 +156,12 @@ qx.Class.define("tokenfield.Token",
     {
       init     : null,
       nullable : true
+    },
+    
+    selectOnce :
+    {
+      init     : false,
+      check		 : "Boolean"
     },
 
     /**
@@ -212,8 +226,10 @@ qx.Class.define("tokenfield.Token",
     textField.addListener("input", this._onInputChange, this);
     textField.setMinWidth(6);
 
+    this._search = "";
     this._dummy = new qx.ui.form.ListItem();
     this._dummy.setEnabled(false);
+    this.setHintText(this.getTypeInText());
     this.bind("hintText", this._dummy, "label" );
     this.getChildControl('list').add(this._dummy);
   },
@@ -530,6 +546,7 @@ qx.Class.define("tokenfield.Token",
       this.getChildControl('list').add(this._dummy);
       this.open();
 
+      this._search = str;
       this.fireDataEvent("loadData", str );
     },
 
@@ -558,14 +575,63 @@ qx.Class.define("tokenfield.Token",
 
       for (var i=0; i<result.getLength(); i++)
       {
-        var label = result.getItem(i).get(this.getLabelPath());
-        var item = new qx.ui.form.ListItem( this.highlight(label, str) );
-        item.setModel(result.getItem(i));
-        item.setRich(true);
-        list.add(item);
+      	if (!this.getSelectOnce() || (this.getSelectOnce() == true && !this._isSelected(result.getItem(i))))
+      	{
+	        var label = result.getItem(i).get(this.getLabelPath());
+	        var item = new qx.ui.form.ListItem( this.highlight(label, str) );
+	        item.setModel(result.getItem(i));
+	        item.setRich(true);
+	        this.getChildControl('list').add(item);
+      	}
+      }
+    },
+    
+    /**
+     * 
+     * @param itemModelData
+     * @param selected
+     */
+    addToken : function( data, selected )
+    {
+      var model = qx.data.marshal.Json.createModel( data );
+      var label = model.get(this.getLabelPath());
+      var item = new qx.ui.form.ListItem(this.highlight(label, this._search));
+      item.setModel(model);
+      item.setRich(true);
+      if (!this.getSelectOnce() || (this.getSelectOnce() == true && !this._isSelected(model)))
+    	{
+      	this.getChildControl('list').remove(this._dummy);
+	      this.getChildControl('list').add(item);
+    	}
+      if (selected && !this._isSelected(model))
+      {
+      	this._selectItem( item );
       }
     },
 
+    /**
+     * Tests and see if the model is already selected or not
+     * 
+     * @param model Model to be tested
+     * @returns {Boolean}
+     */
+    _isSelected : function (model)
+    {
+    	var selection = this.getModelSelection();
+    	
+    	var item = null, item_model = null;
+    	for (var i = 0; i < selection.getLength(); i++)
+      {
+    		item = selection.getItem(i);
+    		
+    		if (item && model && item.get(this.getLabelPath()) == model.get(this.getLabelPath()))
+    		{
+    			return true;
+    		}
+      }
+    	return false;
+    },
+    
     /**
      * Removes an item from the selection
      *
@@ -576,7 +642,7 @@ qx.Class.define("tokenfield.Token",
     	if (item && item.constructor == qx.ui.form.ListItem)
     	{
     		this.removeFromSelection(item);
-			this.fireDataEvent( "removeItem", item );
+    		this.fireDataEvent( "removeItem", item );
     		item.destroy();
     	}
     },
@@ -621,9 +687,10 @@ qx.Class.define("tokenfield.Token",
     {
       if (old && old.constructor == qx.ui.form.ListItem)
       {
-        var item = new qx.ui.form.ListItem(old.getModel().get(this.getLabelPath()));
+        var item = this.getSelectOnce()? old : new qx.ui.form.ListItem();
         
         item.setAppearance("tokenitem");
+        item.setLabel(old.getModel().get(this.getLabelPath()));
         item.setModel(old.getModel());
         
         item.getChildControl('icon').setAnonymous(false);
@@ -661,10 +728,16 @@ qx.Class.define("tokenfield.Token",
         
         this._addBefore(item, this.getChildControl('textfield'));
         this.addToSelection(item);
-
         this.fireDataEvent( "addItem", item );
         
         this.getChildControl('textfield').setValue("");
+        
+        //if the selected one was the last one, include dummy item
+        if (this.getChildControl('list').getChildren() && this.getChildControl('list').getChildren().length == 0)
+        {
+        	this.setHintText(this.getTypeInText());
+        	this.getChildControl('list').add(this._dummy);
+        }
       }
     },
 
