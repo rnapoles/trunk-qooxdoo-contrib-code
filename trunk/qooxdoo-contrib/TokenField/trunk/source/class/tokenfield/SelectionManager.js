@@ -25,7 +25,7 @@ qx.Class.define("tokenfield.SelectionManager",
     handleKeyPress : function(event)
     {
       var key = event.getKeyIdentifier();
-      if (key != "Left" && key != "Right")
+      if (key != "Left" && key != "Right" && key != "Up" && key != "Down")
       {
         qx.ui.core.selection.Abstract.prototype.handleKeyPress.apply(this, [event]);// this.base(arguments);
       }
