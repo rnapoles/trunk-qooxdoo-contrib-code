@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "RetroTheme Demo (Dark)",
+
+    "summary" : "RetroTheme Demo (Dark)",
+    "description" : "A demo for the RetroTheme contribution.",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/RetroTheme",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Norbert Schröder (scro34)",
+        "email" : " schroeder AT scro34 DOT de"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.0", "1.1", "1.2"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "retrotheme.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
