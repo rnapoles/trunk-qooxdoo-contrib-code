@@ -1,5 +1,6 @@
 package com.zenesis.qx.remote;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -144,7 +145,8 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 		// Try for a setXxxx() method
 		if (setMethod == null && (readOnly == null || !readOnly))
 			try {
-				setMethod = clazz.getMethod("set" + upname, new Class[] { propertyClass.getJavaType() });
+				Class actualJavaType = propertyClass.isArray() ? Array.newInstance(propertyClass.getJavaType(), 0).getClass() : propertyClass.getJavaType();
+				setMethod = clazz.getMethod("set" + upname, new Class[] { actualJavaType });
 				setMethod.setAccessible(true); // Disable access tests, MAJOR performance improvement
 				if (sendExceptions == null && setMethod.getExceptionTypes().length > 0)
 					sendExceptions = true;
