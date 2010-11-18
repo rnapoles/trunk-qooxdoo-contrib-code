@@ -1189,7 +1189,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     /**
      * Selects a tree node by its server-side node id. If the tree is not
      * loaded, we wait for the "loaded" event first 
-     * @param {Integer} serverNodeId  
+     * @param serverNodeId {Integer}  
      */
     selectByServerNodeId : function( serverNodeId )
     {
@@ -1208,7 +1208,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     /**
      * Selects a tree node by its server-side node id. Implements 
      * the selectByServerNodeId() method.
-     * @param {Integer} serverNodeId  
+     * @param serverNodeId {Integer}  
      */
     _selectByServerNodeId : function( serverNodeId )
     {

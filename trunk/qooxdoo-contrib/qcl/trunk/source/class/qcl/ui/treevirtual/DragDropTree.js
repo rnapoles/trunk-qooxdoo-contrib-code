@@ -789,10 +789,10 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
     
     /**
      * Implementation of drag action for drag & dragover
-     * @param {} e
+     * @param e {qx.event.type.Drag}
      */
     __onDragAction : function(e)
-    {
+    { 
       var target = e.getTarget();      
       var sourceData  = e.getUserData("treevirtualnode");
       var dragDetails = this._getDragDetails(e);

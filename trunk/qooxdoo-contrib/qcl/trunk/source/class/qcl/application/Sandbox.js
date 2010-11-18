@@ -466,13 +466,16 @@ qx.Class.define("qcl.application.Sandbox",
     */   
     
     /**
-     * 
-     * @param {} service
-     * @param {} method
-     * @param {} params
-     * @param {} callback
-     * @param {} context
-     * @return {}
+     * Executes a JSON-RPC request.
+     * @param service {String} The name of the service
+     * @param method {String} The name of the method
+     * @param params {Array} An array of arguments passed to the method
+     * @param callback {Function} The callback called when the request returns
+     *    from the server
+     * @param  context {Object} The context of the callback
+     * @return {void}
+     * @todo The method should return some kind of "Deferred" object with a 
+     *    success and failure handler, then we don't need the callback in the arguments.
      */
     rpcRequest : function( service, method, params, callback, context )
     {
