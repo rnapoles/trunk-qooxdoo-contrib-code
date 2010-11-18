@@ -45,7 +45,7 @@ qx.Class.define("qcl.ui.component.AccessControlTool",
   
   /**
    * Constructor.
-   * @param {} sandbox
+   * @param sandbox {qcl.application.Sandbox}
    */
 	construct : function() 
   {

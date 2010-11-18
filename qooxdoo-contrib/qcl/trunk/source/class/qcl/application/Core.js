@@ -1036,11 +1036,11 @@ qx.Class.define("qcl.application.Core",
     
     /**
      * Launches a server request
-     * @param {} service
-     * @param {} method
-     * @param {} params
-     * @param {} callback
-     * @param {} context
+     * @param service {String}
+     * @param method {String}
+     * @param params {Array}
+     * @param callback {Function}
+     * @param context {Object}
      */
     rpcRequest : function( service, method, params, callback, context )
     {
@@ -1109,7 +1109,7 @@ qx.Class.define("qcl.application.Core",
         
     /**
      * Sets the name of the service that does access-related stuff
-     * @param {} service
+     * @param service {String}
      */
     setAccessService : function( service )
     {
@@ -1373,7 +1373,7 @@ qx.Class.define("qcl.application.Core",
     {  
       if ( this.isConfirmQuit() )
       {  
-        return this.tr("Do you really want to quit %1?",  this.getApplicationName() );
+        return qx.locale.Manager.tr("Do you really want to quit %1?",  this.getApplicationName() );
       }
       this.unsubscribeFromAllChannels();
       return undefined;

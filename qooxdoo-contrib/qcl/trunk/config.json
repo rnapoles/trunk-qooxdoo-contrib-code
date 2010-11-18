@@ -30,9 +30,10 @@
   "let" :
   {
     "APPLICATION"  : "qcl",
-    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
-    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+    "QOOXDOO_PATH"   : "../../qooxdoo/1.3-pre",
+    "API_EXCLUDE"  : ["qx.test.*"],
     "LOCALES"      : [ "en" ],
+    "CACHE"          : "${TMPDIR}/cache/1.3-pre",
     "ROOT"         : "."
   }
 }
