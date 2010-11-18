@@ -13,6 +13,7 @@
     "api",
     "build",
     "clean",
+    "clean-cache",
     "build",
     "distclean",
     "fix",
@@ -216,6 +217,15 @@
     
       "run" : ["clean-demos"]
     
+    },
+    
+    "clean-cache" :
+    {
+      "desc"    : "deletes the cache but leaves artifacts untouched",
+
+      "clean-files" : {
+        "Deleting nothing" : []
+      }
     },
     
     // -- Misc jobs ------------------------------------------------------------
