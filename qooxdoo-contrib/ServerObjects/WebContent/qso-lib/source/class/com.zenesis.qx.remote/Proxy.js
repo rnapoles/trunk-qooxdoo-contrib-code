@@ -221,6 +221,22 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				}
 			}
 			return null;
+		},
+		
+		/**
+		 * Gets the proxy event definition for a named event
+		 * @param name {String} the name of the event
+		 * @return {Map} the event definition received from the server
+		 */
+		getEventDef: function(name) {
+			for (var $$proxyDef = this.$$proxyDef; $$proxyDef; $$proxyDef = $$proxyDef.extend) {
+				if ($$proxyDef.events) {
+					var eventDef = $$proxyDef.events[name];
+					if (eventDef)
+						return eventDef;
+				}
+			}
+			return null;
 		}
 	}
 	
