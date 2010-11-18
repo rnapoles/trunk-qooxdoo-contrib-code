@@ -814,7 +814,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		addListener: function(serverObject, eventName) {
 			var className = serverObject.classname;
 			var def = this.__classInfo[className];
-			var event = def.events[eventName];
+			var event = serverObject.getEventDef(eventName);
 			
 			// If the event is not a server event, or it's for a property, or there is already
 			//	a server based listener, then skip (property change events will be triggered 
