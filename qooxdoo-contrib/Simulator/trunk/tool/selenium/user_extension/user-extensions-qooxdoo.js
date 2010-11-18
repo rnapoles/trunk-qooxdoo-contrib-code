@@ -1052,8 +1052,14 @@ Selenium.prototype.getQxTableRowColByCellValue = function(table, value)
     table = this.getQxWidgetByLocator(table);    
   }
   
-  var regEx = RegExp(value);
   var tableModel = table.getTableModel();
+  
+  if (this.isQxInstanceOf(tableModel, "qx.ui.treevirtual.SimpleTreeDataModel")) {
+    LOG.debug("getQxTableRowColByCellValue: Searching treevirtual.SimpleTreeDataModel for label " + value);
+    return this._getTreeVirtualRowColByLabel(tableModel, value);
+  } 
+  
+  var regEx = RegExp(value);
   var tableColumnModel = table.getTableColumnModel();
   var dataMapArray = tableModel.getDataAsMapArray();
   for (var i=0, l=dataMapArray.length; i<l; i++) {
@@ -1073,6 +1079,37 @@ Selenium.prototype.getQxTableRowColByCellValue = function(table, value)
     }
   }
   return null;  
+};
+
+/**
+ * Searches a TreeVirtual widget's SimpleTreeDataModel for a label matching the
+ * given string (using regEx matching) and returns the corresponding row and 
+ * column indexes to be used e.g. by qxTableClick.
+ * 
+ * @param model {qx.ui.treevirtual.SimpleTreeDataModel} The virtual tree's model
+ * @param label {String} The cell value to look for
+ * @return {Integer[]|null} Array containg the row and column indexes if the 
+ * value was found or null
+ */
+Selenium.prototype._getTreeVirtualRowColByLabel = function(model, label)
+{
+  var regEx = RegExp(label);
+  for (var i=0;i<model.getRowCount(); i++) {
+    var node = model.getNode(i);
+    if (node.label && regEx.exec(node.label)) {
+      LOG.debug("_getTreeVirtualRowColByLabel found row " + i + " col 0");
+      return [i,0];
+    } else if (node.columnData) {
+      for (var j=0,k=node.columnData.length; j<k; j++) {
+        var columnText = node.columnData[j];
+        if (columnText && regEx.exec(columnText)) {
+          LOG.debug("_getTreeVirtualRowColByLabel found row " + i + " col " + j);
+          return [i,j];
+        }
+      }
+    }
+  }
+  return null;
 };
 
 /**
