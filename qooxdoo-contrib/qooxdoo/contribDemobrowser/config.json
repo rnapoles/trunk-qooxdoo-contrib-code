@@ -225,6 +225,12 @@
 
       "clean-files" : {
         "Deleting nothing" : []
+      },
+      
+      "cache" : {
+        "compile"      : "${CACHE}",
+        "downloads"    : "${CACHE}/downloads",
+        "invalidate-on-tool-change" : true
       }
     },
     
