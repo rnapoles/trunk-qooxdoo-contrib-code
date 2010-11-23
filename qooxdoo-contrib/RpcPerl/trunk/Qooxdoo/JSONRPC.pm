@@ -319,7 +319,7 @@ sub handle_request
             print STDERR "$@\n" if $Qooxdoo::JSONRPC::debug;
 
             $error->set_error (JsonRpcError_Unknown,
-                               $@);
+                               "$@"); # force stringification for error objects
             $error->send;
             return;
         }
