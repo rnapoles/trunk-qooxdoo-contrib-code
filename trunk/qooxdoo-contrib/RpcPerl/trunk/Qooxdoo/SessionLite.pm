@@ -69,7 +69,12 @@ sub new {
     $self->{_data} = {};
     $self->{_file} = $self->{_path}.'/'.$self->id().'.'.$SESSION_EXT;
     _mkdirp($self->{_path});
-    $self->_cleandir();
+    my $clean_check = $self->{_path}.'/LAST_SESSSION_CLEAN';
+    my $last_clean = -M $clean_check;
+    if (not defined $last_clean or $last_clean > ( 1 / 24 / 6 ) ){
+        open (my $x, ">", $clean_check );
+        $self->_cleandir();
+    }
     return $self;
 }
 
@@ -93,7 +98,9 @@ sub _cleandir {
     my $now = time();
     my $maxage = $self->{_maxage};
     for my $file (<$path/*.$SESSION_EXT>){
-        if ($now - (stat $file)[9] > $maxage){
+        my $last = (stat $file)[9];
+        next not $last;
+        if ($now - $last > $maxage){
             unlink $file;
         }
     }
