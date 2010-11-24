@@ -158,11 +158,17 @@ sub _exclusive_data_op {
         }
         $operation->($self->{_data});
         if ($writeback){
+            # overwrite the existing file and fill it up to a block
+            # in that way all reasonable session files will be 4096
+            # bytes long and will never run into trouble even when
+            # when the disk gets full            
             seek $fh, 0, 0;
-            truncate $fh, 0;
             store_fd($self->{_data}, $fh) or do {
                 croak "SessionLite.$$ problem saveing $file: $!";
             };
+            my $size = tell $fh;
+            print $fh "\0" x (4096 - $size % 4096);
+            truncate $fh, tell $fh;            
             carp "SessionLite.$$ saved $file\n" if $Qooxdoo::SessionLite::debug;        
             $self->{_mtime} = -M $file;
         }
