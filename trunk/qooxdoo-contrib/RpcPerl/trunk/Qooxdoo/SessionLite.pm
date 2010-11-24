@@ -22,7 +22,7 @@ Qooxdoo::SessionLite - Simple Session handler race resistant
  $sess->param('key',$value);
  my $id = $sess->id();
  print $sess->header();
-    
+
 =head1 DESCRIPTION
 
 This is a simple file based session manager for qooxdoo. It supports only a
@@ -37,6 +37,7 @@ use vars qw($VERSION);
 $VERSION   = '0.01';
 our $COOKIE_NAME = 'SessionLiteId';
 our $SESSION_EXT = 'session';
+our $cleanInterval = 600;
 
 =head1 METHODS
 
@@ -58,7 +59,7 @@ sub new {
         _path   =>$_[1],
         _maxage =>$_[2] || 3600 ,
         _timeout =>$_[3] || 1.5
-    }, $class;    
+    }, $class;
     my $id = $self->{_cgi}->cookie($COOKIE_NAME);
     if (not defined $id){
         my $md5 = new Digest::MD5();
@@ -70,8 +71,8 @@ sub new {
     $self->{_file} = $self->{_path}.'/'.$self->id().'.'.$SESSION_EXT;
     _mkdirp($self->{_path});
     my $clean_check = $self->{_path}.'/LAST_SESSSION_CLEAN';
-    my $last_clean = -M $clean_check;
-    if (not defined $last_clean or $last_clean > ( 1 / 24 / 6 ) ){
+    my $last_clean = time - ((stat $clean_check)[9] || 0);
+    if ( $last_clean > $cleanInterval ){
         open (my $x, ">", $clean_check );
         $self->_cleandir();
     }
@@ -99,7 +100,7 @@ sub _cleandir {
     my $maxage = $self->{_maxage};
     for my $file (<$path/*.$SESSION_EXT>){
         my $last = (stat $file)[9];
-        next not $last;
+        next if not $last;
         if ($now - $last > $maxage){
             unlink $file;
         }
@@ -139,7 +140,7 @@ sub _exclusive_data_op {
         my $start = scalar gettimeofday();
         while (1) {
             last if flock($fh, $locktype);
-            my $elapsed = scalar gettimeofday() - $start;          
+            my $elapsed = scalar gettimeofday() - $start;
             croak "SessionLite.$$ faild to lock $file for $elapsed s" if $elapsed > $self->{_timeout};
             usleep(50*1000) # try again in 50ms;
         }
@@ -148,7 +149,7 @@ sub _exclusive_data_op {
             carp "SessionLite.$$ got lock on $file after $elapsed s" if $elapsed > 0.02;
         }
         binmode($fh);
-        my $size = tell $fh;        
+        my $size = tell $fh;
         if ($size > 0){
             seek $fh, 0, 0;
             $self->{_data} = eval { fd_retrieve $fh };
@@ -158,21 +159,15 @@ sub _exclusive_data_op {
         }
         $operation->($self->{_data});
         if ($writeback){
-            # overwrite the existing file and fill it up to a block
-            # in that way all reasonable session files will be 4096
-            # bytes long and will never run into trouble even when
-            # when the disk gets full            
             seek $fh, 0, 0;
+            truncate $fh, 0;
             store_fd($self->{_data}, $fh) or do {
                 croak "SessionLite.$$ problem saveing $file: $!";
             };
-            my $size = tell $fh;
-            print $fh "\0" x (4096 - $size % 4096);
-            truncate $fh, tell $fh;            
-            carp "SessionLite.$$ saved $file\n" if $Qooxdoo::SessionLite::debug;        
-            $self->{_mtime} = -M $file;
+            carp "SessionLite.$$ saved $file\n" if $Qooxdoo::SessionLite::debug;
         }
         close $fh;
+        $self->{_mtime} = (stat $file)[9];
     }
     else {
         croak "SessionLite.$$ faild to operate on $file";
@@ -192,10 +187,10 @@ sub param {
     my $value = shift;
     if (not defined $value){
         my $file = $self->{_file};
-        my $mtime = -M $file;
-        if (-r $file and not -z $file and (not defined $self->{_mtime} or $self->{_mtime} > $mtime)){
-            # exclusive data op will re-read the session ... 
-            $self->_exclusive_data_op( sub { 1 }, 0);
+        my $mtime = (stat $file)[9];
+        if (-r $file and not -z $file and (not defined $self->{_mtime} or $self->{_mtime} < $mtime)){
+            # exclusive data op will re-read the session ...
+            $self->_exclusive_data_op( sub { 1 }, 0);            
         };
     }
     else {
@@ -204,7 +199,7 @@ sub param {
             carp "SessionLite.$$ set $key => $value\n" if $Qooxdoo::SessionLite::debug;
         },1);
     }
-    return $self->{_data}{$key};   
+    return $self->{_data}{$key};
 }
 
 =item $sess->clear([$key1,$key2]) or $sess->clear($key)
@@ -220,11 +215,11 @@ sub clear {
         my $d = shift;
         if (ref $keys eq 'ARRAY'){
             for (@$keys){
-                carp "SessionLite.$$ remove $_" if $Qooxdoo::SessionLite::debug;        
+                carp "SessionLite.$$ remove $_" if $Qooxdoo::SessionLite::debug;
                 delete $d->{$_};
             }
         } else {
-            carp "SessionLite.$$ remove $keys" if $Qooxdoo::SessionLite::debug;        
+            carp "SessionLite.$$ remove $keys" if $Qooxdoo::SessionLite::debug;
             delete $d->{$keys}
         }
     },1);
