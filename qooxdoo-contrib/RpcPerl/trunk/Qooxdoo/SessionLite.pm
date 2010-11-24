@@ -124,37 +124,45 @@ sub header {
 sub _exclusive_data_op {
     my $self = shift;
     my $operation = shift;
+    my $writeback = shift;
     my $file = $self->{_file};
     my $fh;
+    my $locktype = $writeback ? (LOCK_EX|LOCK_NB) : ( LOCK_SH|LOCK_NB );
     if ( open ($fh, '+>>' , $file) ) {
         my $start = scalar gettimeofday();
         while (1) {
-            last if flock($fh, LOCK_EX | LOCK_NB);
+            last if flock($fh, $locktype);
             my $elapsed = scalar gettimeofday() - $start;          
-            croak "SessionLite.$$ faild to lock $file for $elapsed s. Giving up." if $elapsed > $self->{_timeout};
+            croak "SessionLite.$$ faild to lock $file for $elapsed s" if $elapsed > $self->{_timeout};
             usleep(50*1000) # try again in 50ms;
+        }
+        if ($Qooxdoo::SessionLite::debug){
+            my $elapsed = scalar gettimeofday() - $start; 
+            carp "SessionLite.$$ got lock on $file after $elapsed s" if $elapsed > 0.02;
         }
         binmode($fh);
         my $size = tell $fh;        
         if ($size > 0){
             seek $fh, 0, 0;
             $self->{_data} = eval { fd_retrieve $fh };
-            croak "Exclusive Reading $file ($size): $@" if $@;
+            croak "SessionLite.$$ Reading $file ($size): $@" if $@;
         } else {
             $self->{_data} = {};
         }
         $operation->($self->{_data});
-        seek $fh, 0, 0;
-        truncate $fh, 0;
-        store_fd($self->{_data}, $fh) or do {
-            croak "problem saveing $file: $!";
-        };
-        warn "saved $file\n" if $Qooxdoo::SessionLite::debug;        
-        $self->{_mtime} = -M $file;
+        if ($writeback){
+            seek $fh, 0, 0;
+            truncate $fh, 0;
+            store_fd($self->{_data}, $fh) or do {
+                croak "SessionLite.$$ problem saveing $file: $!";
+            };
+            carp "SessionLite.$$ saved $file\n" if $Qooxdoo::SessionLite::debug;        
+            $self->{_mtime} = -M $file;
+        }
         close $fh;
     }
     else {
-        croak "Faild to update session $file";
+        croak "SessionLite.$$ faild to operate on $file";
     }
 }
 
@@ -173,16 +181,15 @@ sub param {
         my $file = $self->{_file};
         my $mtime = -M $file;
         if (-r $file and not -z $file and (not defined $self->{_mtime} or $self->{_mtime} > $mtime)){
-            $self->{_data} = eval { lock_retrieve $file };
-            croak "Reading $file: $@" if $@;
-            $self->{_mtime} = $mtime;            
+            # exclusive data op will re-read the session ... 
+            $self->_exclusive_data_op( sub { 1 }, 0);
         };
     }
     else {
         $self->_exclusive_data_op( sub {
             shift->{$key}=$value;
-            warn "set $key => $value\n" if $Qooxdoo::SessionLite::debug;
-        });
+            carp "SessionLite.$$ set $key => $value\n" if $Qooxdoo::SessionLite::debug;
+        },1);
     }
     return $self->{_data}{$key};   
 }
@@ -200,11 +207,11 @@ sub clear {
         my $d = shift;
         if (ref $keys eq 'ARRAY'){
             for (@$keys){
-                warn "remove $_\n" if $Qooxdoo::SessionLite::debug;        
+                carp "SessionLite.$$ remove $_" if $Qooxdoo::SessionLite::debug;        
                 delete $d->{$_};
             }
         } else {
-            warn "remove $keys\n" if $Qooxdoo::SessionLite::debug;        
+            carp "SessionLite.$$ remove $keys" if $Qooxdoo::SessionLite::debug;        
             delete $d->{$keys}
         }
     });
