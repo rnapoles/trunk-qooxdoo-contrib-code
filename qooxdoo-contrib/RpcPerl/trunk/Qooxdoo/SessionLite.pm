@@ -1,9 +1,12 @@
 package Qooxdoo::SessionLite;
+use strict;
+use warnings;
+
 use Digest::MD5;
 use Storable qw(fd_retrieve lock_retrieve store_fd);
-use strict;
 use Carp;
-use Fcntl ':flock';
+use Fcntl qw(:flock);
+use Time::HiRes qw(usleep gettimeofday);
 
 =head1 NAME
 
@@ -39,7 +42,7 @@ our $SESSION_EXT = 'session';
 
 =over
 
-=item my $sess = Qooxdoo::SessionLite($cgi,'/tmp/mydir',$max_age);
+=item my $sess = Qooxdoo::SessionLite($cgi,'/tmp/mydir',$max_age, $timeout);
 
 The 'new' method expects a hash pointer as its first argument. The hash
 contains keys for all parameter keys of the new method the values of the
@@ -53,7 +56,9 @@ sub new {
     my $self    = bless {
         _cgi    =>$_[0],
         _path   =>$_[1],
-        _maxage =>$_[2] }, $class;    
+        _maxage =>$_[2] || 3600 ,
+        _timeout =>$_[3] || 1.5
+    }, $class;    
     my $id = $self->{_cgi}->cookie($COOKIE_NAME);
     if (not defined $id){
         my $md5 = new Digest::MD5();
@@ -62,6 +67,7 @@ sub new {
     }
     $self->{_id} = $id;
     $self->{_data} = {};
+    $self->{_file} = $self->{_path}.'/'.$self->id().'.'.$SESSION_EXT;
     _mkdirp($self->{_path});
     $self->_cleandir();
     return $self;
@@ -118,22 +124,37 @@ sub header {
 sub _exclusive_data_op {
     my $self = shift;
     my $operation = shift;
-    my $file = $self->{_path}.'/'.$self->id().'.'.$SESSION_EXT;
+    my $file = $self->{_file};
     my $fh;
-    if ( open ($fh, '+>>' , $file) and flock($fh, LOCK_EX) ){
-        seek $fh, 0, 0;
-        my $mtime = -M $file;
-        if (not defined $self->{_mtime} or $self->{_mtime} > $mtime){
+    if ( open ($fh, '+>>' , $file) ) {
+        my $start = scalar gettimeofday();
+        while (1) {
+            last if flock($fh, LOCK_EX | LOCK_NB);
+            my $elapsed = scalar gettimeofday() - $start;          
+            croak "SessionLite.$$ faild to lock $file for $elapsed s. Giving up." if $elapsed > $self->{_timeout};
+            usleep(50*1000) # try again in 50ms;
+        }
+        binmode($fh);
+        my $size = tell $fh;        
+        if ($size > 0){
+            seek $fh, 0, 0;
             $self->{_data} = eval { fd_retrieve $fh };
-            carp "Reading $file: $@" if $@;
-        };
-        $operation->();
+            croak "Exclusive Reading $file ($size): $@" if $@;
+        } else {
+            $self->{_data} = {};
+        }
+        $operation->($self->{_data});
         seek $fh, 0, 0;
         truncate $fh, 0;
-        store_fd($self->{_data}, $fh);
-        flock($fh, LOCK_UN);
+        store_fd($self->{_data}, $fh) or do {
+            croak "problem saveing $file: $!";
+        };
+        warn "saved $file\n" if $Qooxdoo::SessionLite::debug;        
         $self->{_mtime} = -M $file;
         close $fh;
+    }
+    else {
+        croak "Faild to update session $file";
     }
 }
 
@@ -149,23 +170,24 @@ sub param {
     my $key = shift;
     my $value = shift;
     if (not defined $value){
-        my $file = $self->{_path}.'/'.$self->id().'.session';
+        my $file = $self->{_file};
         my $mtime = -M $file;
-        if (-w $file and (not defined $self->{_mtime} or $self->{_mtime} > $mtime)){
+        if (-r $file and not -z $file and (not defined $self->{_mtime} or $self->{_mtime} > $mtime)){
             $self->{_data} = eval { lock_retrieve $file };
-            carp "Reading $file: $@" if $@;
-            $self->{_mtime} = $mtime;
+            croak "Reading $file: $@" if $@;
+            $self->{_mtime} = $mtime;            
         };
     }
     else {
         $self->_exclusive_data_op( sub {
-            $self->{_data}{$key}=$value;
+            shift->{$key}=$value;
+            warn "set $key => $value\n" if $Qooxdoo::SessionLite::debug;
         });
     }
     return $self->{_data}{$key};   
 }
 
-=item $sess->clear([$key1,$key2]);
+=item $sess->clear([$key1,$key2]) or $sess->clear($key)
 
 Clear one or several people work for you.
 
@@ -175,12 +197,29 @@ sub clear {
     my $self = shift;
     my $keys = shift;
     $self->_exclusive_data_op( sub {
-        for (@$keys){
-            delete $self->{_data}{$_};
+        my $d = shift;
+        if (ref $keys eq 'ARRAY'){
+            for (@$keys){
+                warn "remove $_\n" if $Qooxdoo::SessionLite::debug;        
+                delete $d->{$_};
+            }
+        } else {
+            warn "remove $keys\n" if $Qooxdoo::SessionLite::debug;        
+            delete $d->{$keys}
         }
     });
 }
 
+=item $sess->delete();
+
+Delete the session completely.
+
+=cut
+
+sub delete {
+    my $self = shift;
+    unlink $self->{_file};
+}
 
 =item $sess->id();
 
