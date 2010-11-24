@@ -214,7 +214,7 @@ sub clear {
             carp "SessionLite.$$ remove $keys" if $Qooxdoo::SessionLite::debug;        
             delete $d->{$keys}
         }
-    });
+    },1);
 }
 
 =item $sess->delete();
