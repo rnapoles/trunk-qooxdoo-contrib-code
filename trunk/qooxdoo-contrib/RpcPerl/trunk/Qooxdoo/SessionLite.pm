@@ -34,7 +34,7 @@ uses L<Storable> as its on-disk format.
 
 use Carp;
 use vars qw($VERSION);
-$VERSION   = '0.01';
+$VERSION   = '0.02';
 our $COOKIE_NAME = 'SessionLiteId';
 our $SESSION_EXT = 'session';
 our $cleanInterval = 600;
@@ -141,7 +141,7 @@ sub _exclusive_data_op {
         while (1) {
             last if flock($fh, $locktype);
             my $elapsed = scalar gettimeofday() - $start;
-            croak "SessionLite.$$ faild to lock $file for $elapsed s" if $elapsed > $self->{_timeout};
+            croak "SessionLite.$$ failed to lock $file for $elapsed s" if $elapsed > $self->{_timeout};
             usleep(50*1000) # try again in 50ms;
         }
         if ($Qooxdoo::SessionLite::debug){
@@ -149,7 +149,7 @@ sub _exclusive_data_op {
             carp "SessionLite.$$ got lock on $file after $elapsed s" if $elapsed > 0.02;
         }
         binmode($fh);
-        my $size = tell $fh;
+        my $size = (stat $fh)[7]; # size in bytes
         if ($size > 0){
             seek $fh, 0, 0;
             $self->{_data} = eval { fd_retrieve $fh };
@@ -159,8 +159,8 @@ sub _exclusive_data_op {
         }
         $operation->($self->{_data});
         if ($writeback){
-            seek $fh, 0, 0;
             truncate $fh, 0;
+            seek $fh, 0, 0;
             store_fd($self->{_data}, $fh) or do {
                 croak "SessionLite.$$ problem saveing $file: $!";
             };
@@ -170,7 +170,7 @@ sub _exclusive_data_op {
         $self->{_mtime} = (stat $file)[9];
     }
     else {
-        croak "SessionLite.$$ faild to operate on $file";
+        croak "SessionLite.$$ failed to operate on $file";
     }
 }
 
@@ -190,7 +190,7 @@ sub param {
         my $mtime = (stat $file)[9];
         if (-r $file and not -z $file and (not defined $self->{_mtime} or $self->{_mtime} < $mtime)){
             # exclusive data op will re-read the session ...
-            $self->_exclusive_data_op( sub { 1 }, 0);            
+            $self->_exclusive_data_op( sub { 1 }, 0);
         };
     }
     else {
