@@ -1,0 +1,4 @@
+This repo has been moved to our Github repo:
+
+https://github.com/inviscid/Blueprint
+
