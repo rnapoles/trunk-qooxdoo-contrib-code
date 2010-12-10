@@ -10,6 +10,7 @@ var baseConf = {
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
   'getAutLog' : false,
+  'logAutGlobalErrors' : true,
   'runAll' : false,
   'reloadRunner' : false
 };
@@ -239,7 +240,9 @@ simulation.Simulation.prototype.runPackage = function(packageName)
   }
   
   var testAppWindow = selWin + "." + qxAppInst + ".iframe.getWindow()";
-  this.addGlobalErrorHandler(testAppWindow);
+  if (this.getConfigSetting("logAutGlobalErrors") && !packageName.indexOf(("qx.test.io.remote") == 0 )) {
+    this.addGlobalErrorHandler(testAppWindow);
+  }
   
   var packageStartDate = new Date();
 
@@ -273,7 +276,9 @@ simulation.Simulation.prototype.runPackage = function(packageName)
     this.testFailed = true;
   }
   this.logErrors();
-  this.logGlobalErrors(testAppWindow);
+  if (this.getConfigSetting("logAutGlobalErrors")) {
+    this.logGlobalErrors(testAppWindow);
+  }
   
   if (this.getConfigSetting("getAutLog")) {
     this.logAutLog();
