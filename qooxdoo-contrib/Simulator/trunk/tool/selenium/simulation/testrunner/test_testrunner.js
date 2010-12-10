@@ -38,8 +38,8 @@ var testResults = selWin + '.qx.Simulation.sanitize(' + testResultHTML + ')';
 
 var locators = {
   buttonRun : 'qxh=[@classname=testrunner.runner.TestRunner]/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]',
-  treeFirstItem : 'qxh=child[1]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tree.Tree/qx.ui.tree.TreeFolder/qx.ui.tree.TreeFolder',
-  logEmbed : 'qxh=[@classname="testrunner.runner.TestRunner"]/qx.ui.splitpane.Pane/child[1]/qx.ui.splitpane.Pane/child[1]/child[1]/qx.ui.embed.Html',
+  treeFirstItem : 'qxhv=child[0]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.tree.Tree/*/qx.ui.tree.TreeFolder',
+  logEmbed : 'qxh=[@classname="testrunner.runner.TestRunner"]/qx.ui.splitpane.Pane/child[1]/qx.ui.splitpane.Pane/child[1]/child[1]/qx.ui.embed.Html'
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -245,9 +245,22 @@ simulation.Simulation.prototype.runPackage = function(packageName)
 
   this.qxClick(locators.treeFirstItem, "", "Selecting top node in tree");
   
-  //this.runScript(qxAppInst + '.runTest();', "Calling runTest");
   this.qxClick(locators.buttonRun, "", "Clicking Run button");
 
+  Packages.java.lang.Thread.sleep(1000);
+  var status = String(mySim.getEval(selWin + '.' + qxAppInst + qxStatusText));
+  
+  if (status.indexOf("Preparing") >= 0) {
+    this.qxClick(locators.buttonRun, "", "Clicking Stop button");
+    this.qxClick(locators.treeFirstItem, "double=true", "Selecting top node in tree");
+    this.qxClick(locators.treeFirstItem + "/qx.ui.tree.TreeFolder");
+    this.qxClick(locators.buttonRun, "", "Clicking Run button");
+    status = String(mySim.getEval(selWin + '.' + qxAppInst + qxStatusText));
+    if (status.indexOf("Preparing") >= 0) {
+      this.log("Test package stuck at 'preparing' stage: " + packageName, "error");  
+    }
+  }
+  
   var isPackageDone = mySim.waitForCondition(isStatusReady, 600000,
                     "Waiting for test package " + packageName + " to finish", "info");
 
