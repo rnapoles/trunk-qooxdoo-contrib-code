@@ -276,7 +276,7 @@ simulation.Simulation.prototype.runPackage = function(packageName)
     this.testFailed = true;
   }
   this.logErrors();
-  if (this.getConfigSetting("logAutGlobalErrors")) {
+  if (this.getConfigSetting("logAutGlobalErrors") && !packageName.indexOf(("qx.test.io.remote") == 0 )) {
     this.logGlobalErrors(testAppWindow);
   }
   
