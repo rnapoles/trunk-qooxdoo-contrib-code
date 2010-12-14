@@ -145,17 +145,24 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this.tests.selected = this.tests.handler.getFullName(modelNode);
       if (modelNode) {
         if (modelNode.manifest) {
+          var libJobs = [];
+          // Library version node
+          if (modelNode.jobsExecuted) {
+            // List of jobs that were run against this library
+            libJobs = modelNode.jobsExecuted;
+          }
           // Demo node
           if (modelNode.children.length == 0) {
             // Instruct Manifest to display "run" button(s)
-            modelNode.manifest.isPlayable = true;
+            libJobs.push("demo");
             // Don't display redundant "homepage" manifest entry
             if (modelNode.manifest.info.homepage) {
               delete modelNode.manifest.info.homepage; 
             }
           }
-          // Library version node
+          
           this.__infoView.setManifestData(modelNode.manifest);
+          this.__infoView.setFeatures(libJobs);
           this.setActiveView("manifest");
         }
         // Library node
@@ -210,6 +217,16 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       } else {
         this.playNext();
       }
+    },
+    
+    /**
+     * Opens the API Viewer for the selected library version
+     */
+    openApiViewer : function()
+    {
+      var file = this.tests.selected.replace(/\|/g, "/");
+      var apiViewerUrl = 'demo/' + file + '/api/index.html';
+      window.open(apiViewerUrl, "_blank");
     },
     
     /**
