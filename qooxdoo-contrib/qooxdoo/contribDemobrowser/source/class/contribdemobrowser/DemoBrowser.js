@@ -59,7 +59,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     __makeDemoStack : function()
     {
       var demoStack = new qx.ui.container.Stack();
-      this.__infoView = new demobrowser.Manifest();
+      this.__infoView = new contribdemobrowser.Manifest();
       this.__readmeView = new demobrowser.Readme();
       demoStack.add(this._demoView);
       demoStack.add(this.__infoView);
@@ -72,7 +72,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var versionComposite = new qx.ui.container.Composite();
       versionComposite.setLayout(new qx.ui.layout.HBox(3));
       this._leftComposite.add(versionComposite);
-      var versionLabel = new qx.ui.basic.Label("Compatible with: ")
+      var versionLabel = new qx.ui.basic.Label("Compatible with: ");
       versionLabel.setPadding(4, 5, 0, 2);
       versionComposite.add(versionLabel);
 
