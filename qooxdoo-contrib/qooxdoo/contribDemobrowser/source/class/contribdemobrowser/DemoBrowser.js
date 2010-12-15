@@ -222,10 +222,13 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     /**
      * Opens the API Viewer for the selected library version
      */
-    openApiViewer : function()
+    openApiViewer : function(nameSpace)
     {
       var file = this.tests.selected.replace(/\|/g, "/");
       var apiViewerUrl = 'demo/' + file + '/api/index.html';
+      if (nameSpace) {
+       apiViewerUrl += "#" + nameSpace
+      }
       window.open(apiViewerUrl, "_blank");
     },
     
