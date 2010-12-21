@@ -417,9 +417,11 @@ simulation.Simulation.prototype.checkGistFromList = function()
   
   this.addOwnFunction("checkGistReady", checkGistReady);
   
-  var gistReady = this.waitForCondition("selenium.browserbot.getCurrentWindow().qx.Simulation.checkGistReady()", 20000, "Waiting for Gists to load", "error");
-  
-  if (!gistReady) {
+  try {
+    this.__sel.waitForCondition("selenium.browserbot.getCurrentWindow().qx.Simulation.checkGistReady()", 25000);
+  } 
+  catch(ex) {
+    this.log("Gists not loaded after 25 seconds", "warn");
     return;
   }
   
