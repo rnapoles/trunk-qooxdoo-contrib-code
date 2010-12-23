@@ -5,6 +5,7 @@
     // Currently use the following contributions explicitly
     "include" : {
       "Accordion" : {},
+      "Aristo" : {},
       "CanvasCell" : {},
       "Cropper" : {},
       "DarkTheme" : {},
