@@ -9,7 +9,7 @@
 ************************************************************************ */
 
 /* ************************************************************************
-
+#asset(qx/icon/Tango/22/apps/utilities-dictionary.png)
 ************************************************************************ */
 
 /**
@@ -30,6 +30,13 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     
     this.__demoStack = this.__makeDemoStack();
     this._infosplit.add(this.__demoStack, 2);
+    
+    this._apiButton = new qx.ui.toolbar.Button("Open API Viewer", "icon/22/apps/utilities-dictionary.png");
+    this._apiButton.setEnabled(false);
+    this._apiButton.addListener("execute", function(ev) {
+      this.openApiViewer();
+    }, this);
+    this._navPart.add(this._apiButton);
   },
   
   members :
@@ -140,6 +147,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     
     treeGetSelection : function(e)
     {
+      this._apiButton.setEnabled(false);
       var treeNode = this.tree.getSelection()[0];
       var modelNode = treeNode.getUserData("modelLink");
       this.tests.selected = this.tests.handler.getFullName(modelNode);
@@ -150,6 +158,9 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           if (modelNode.jobsExecuted) {
             // List of jobs that were run against this library
             libJobs = modelNode.jobsExecuted;
+            if (qx.lang.Array.contains(libJobs, "api")) {
+              this._apiButton.setEnabled(true);
+            }
           }
           // Demo node
           if (modelNode.children.length == 0) {
@@ -159,6 +170,10 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
             if (modelNode.manifest.info.homepage) {
               delete modelNode.manifest.info.homepage; 
             }
+            if (modelNode.parent.jobsExecuted && 
+             qx.lang.Array.contains(modelNode.parent.jobsExecuted, "api")) {
+               this._apiButton.setEnabled(true);
+             }
           }
           
           this.__infoView.setManifestData(modelNode.manifest);
@@ -222,9 +237,21 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     /**
      * Opens the API Viewer for the selected library version
      */
-    openApiViewer : function(nameSpace)
+    openApiViewer : function()
     {
-      var file = this.tests.selected.replace(/\|/g, "/");
+      var nameSpace = null;
+      var treeNode = this.tree.getSelection()[0];
+      var modelNode = treeNode.getUserData("modelLink");
+      if (modelNode.children.length == 0) {
+        //demo selected, look at its parent library
+        modelNode = modelNode.parent;
+      }
+      
+      if (modelNode && modelNode.manifest.provides && modelNode.manifest.provides.namespace) {
+        nameSpace = modelNode.manifest.provides.namespace;
+      }
+      
+      var file = this.tests.handler.getFullName(modelNode).replace(/\|/g, "/");
       var apiViewerUrl = 'demo/' + file + '/api/index.html';
       if (nameSpace) {
        apiViewerUrl += "#" + nameSpace
