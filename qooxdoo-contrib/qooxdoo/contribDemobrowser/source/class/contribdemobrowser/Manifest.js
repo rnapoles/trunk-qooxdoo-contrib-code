@@ -191,11 +191,7 @@ qx.Class.define("contribdemobrowser.Manifest", {
       var apiviewerButton = new qx.ui.form.Button("Open API Viewer", "icon/22/apps/utilities-dictionary.png");
       apiviewerButton.setAllowGrowX(false);
       apiviewerButton.addListener("execute", function(ev) {
-        var nameSpace = null;
-        if (this.getManifestData() && this.getManifestData().provides && this.getManifestData().provides.namespace) {
-          nameSpace = this.getManifestData().provides.namespace;
-        }
-        qx.core.Init.getApplication().viewer.openApiViewer(nameSpace);
+        qx.core.Init.getApplication().viewer.openApiViewer();
       }, this);
       this.__apiviewerButton = apiviewerButton;
 
