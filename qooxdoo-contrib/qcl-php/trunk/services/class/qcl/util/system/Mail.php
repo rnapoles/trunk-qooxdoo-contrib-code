@@ -97,6 +97,16 @@ class qcl_util_system_Mail
     $this->log( "Sendmail from: " . ini_get("sendmail_from"), QCL_LOG_MAIL );
     $this->log( "Sendmail path: " . ini_get("sendmail_path"), QCL_LOG_MAIL );
   }
+  
+  
+  /**
+   * Returns a singleton instance of this class
+   * @return qcl_util_system_Mail
+   */
+  public static function getInstance()
+  {
+    return qcl_getInstance( __CLASS__ );
+  }  
 
   /**
    * Setter for sender
@@ -262,13 +272,16 @@ class qcl_util_system_Mail
    * Validate an email address.
    * Provide email address (raw input)
    * Returns true if the email address has the email
-   * address format and the domain exists.
+   * address format and the domain exists (optional).
    * @author (c) 2007 Douglas Lovell
    * @see http://www.linuxjournal.com/article/9585
    * @param string $email
-   * @return bool
+   *    The email address to check
+   * @param boolean $checkDns
+   *    Whether to do a live lookup of the mail host domain.
+   * @return boolean
    */
-  static public function isValidEmail( $email )
+  static public function isValidEmail( $email, $checkDns=false )
   {
     $isValid = true;
     $atIndex = strrpos($email, "@");
@@ -323,13 +336,31 @@ class qcl_util_system_Mail
           $isValid = false;
         }
       }
-      if ($isValid && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A")))
+      if ($isValid && $checkDns && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A")))
       {
         // domain not found in DNS
         $isValid = false;
       }
     }
     return $isValid;
+  }
+  
+  /**
+   * Resets the object properties. Should be called before 
+   * sending an email when using this class as a singleton
+   * instance. Returns the object for chaining.
+   * @return qcl_util_system_Mail
+   */
+  public function reset()
+  {
+    $this->additionalHeaders = array();
+    $this->sender = null;
+    $this->senderEmail = null;
+    $this->recipient  = null;
+    $this->recipientEmail = null;
+    $this->body = null; 
+    $this->subject = null;
+    return $this;
   }
 
   /*
