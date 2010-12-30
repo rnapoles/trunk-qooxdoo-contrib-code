@@ -1,3 +1,12 @@
+*** NOTE ***
+
+I'm currently reorganising the directory structure for simplicity and to match a getting started
+guide.  I don't think anyone's using this contrib, but if you are this should only take a few hours 
+and if you get stuck email me.
+
+john.spackman@zenesis.com
+
+
 
 
 QSO - Getting Started
