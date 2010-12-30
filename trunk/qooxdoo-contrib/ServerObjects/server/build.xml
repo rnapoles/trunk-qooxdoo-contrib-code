@@ -1,0 +1,30 @@
+<project default="jar">
+	
+	<property name="srcdir" value="src" />
+	<property name="builddir" value="tmp" />
+	<property name="version" value="1.0" />
+	<property name="jarfile" value="${builddir}/qso-${version}.jar" />
+	
+	<path id="classpath">
+		<fileset dir="other-libs" includes="*.jar" />
+		<fileset dir="WebContent/WEB-INF/lib" includes="*.jar" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${builddir}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${builddir}/classes" />
+		<javac srcdir="${srcdir}" destdir="${builddir}/classes">
+			<exclude name="com/zenesis/qx/remote/relaxng/**" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${jarfile}" basedir="${builddir}/classes">
+		</jar>
+	</target>
+
+</project>
