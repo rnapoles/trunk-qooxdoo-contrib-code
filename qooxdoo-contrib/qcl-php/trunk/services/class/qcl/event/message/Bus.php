@@ -78,8 +78,13 @@ class qcl_event_message_Bus
     {
       $this->raiseError("Invalid parameter.");
     }
+    
+    if ( ! method_exists( $subscriber, $method ) )
+    {
+      throw new BadMethodCallException("Method $method does not exist on given object");
+    }
 
-    $message_db = $this->messages;
+    $message_db =& $this->messages;
 
     /*
      * object id
@@ -163,14 +168,12 @@ class qcl_event_message_Bus
   }
 
   /**
-   * Publishes a message. Filtering not yet supported, i.e. message name must
-   * match the one that has been used when subscribing the message, i.e. no wildcards!
-   *
+   * Publishes a message. Wildcard support exists for local listeners only. 
    * @param qcl_event_message_Message $message Message
    * @param mixed $data Data dispatched with message
    * @return void
    */
-  public function publish ( qcl_event_message_Message $message )
+  public function publish( qcl_event_message_Message $message )
   {
     /*
      * message data
@@ -197,22 +200,50 @@ class qcl_event_message_Bus
      * search message database
      */
     $message_db = $this->messages;
-    $index = array_search ( $name, $message_db['filters'] );
-
-    /*
-     * call registered subscriber methods
-     */
-    if ( $index !== false )
+    if ( count ( $message_db['filters'] ) )
     {
-      foreach ( $message_db['data'][$index] as $subscriberData )
+      
+      $index = array_search ( $name, $message_db['filters'] );
+  
+      /*
+       * call registered subscriber methods if found
+       */
+      if ( $index !== false )
       {
-        list( $subscriberId, $method ) = $subscriberData;
-        $subscriber = $this->getObjectById( $subscriberId );
-        $subscriber->$method( $message );
+        foreach ( $message_db['data'][$index] as $subscriberData )
+        {
+          list( $subscriberId, $method ) = $subscriberData;
+          $subscriber = $this->getObjectById( $subscriberId );
+          $subscriber->$method( $message );
+        }
       }
-      return true;
+      
+      /*
+       * otherwise try the wildcard matching
+       */      
+      else 
+      {
+        $index = 0;
+        foreach( $message_db['filters'] as  $filter )
+        {
+          $pos = strpos( $filter, "*" );
+          if( substr( $name, 0, $pos ) == substr( $filter, 0, $pos ) )
+          {
+            /*
+             * found, call subscribers
+             */
+            foreach ( $message_db['data'][$index] as $subscriberData )
+            {
+              list( $subscriberId, $method ) = $subscriberData;
+              $subscriber = $this->getObjectById( $subscriberId );
+              $subscriber->$method( $message );
+            }
+          }
+          $index++;
+        }
+      }
     }
-
+    
     /**
      * Broadcast message to connected clients
      */
@@ -232,7 +263,8 @@ class qcl_event_message_Bus
         {
         	/*
         	 * check if user of this session exists, otherwise
-        	 * delete the session
+        	 * delete the session. This cleans up the session/user data
+        	 * on-the-fly.
         	 */
           try 
 			    {
@@ -449,6 +481,13 @@ class qcl_event_message_Bus
     {
       $channel = $msgModel->get( "name" );
       $data    = $msgModel->get("data");
+      /*
+       * check if channel is subscribed
+       * @todo this should be checked while dispatching and not
+       * while fetching! But the way it is set up requires the
+       * session active (since the subscribed channels are stored in
+       * the session).
+       */
       if ( array_search( $channel, $channels ) !== false )
       {
         //$this->debug( "Sending message to $sessionId, channel $channel", __CLASS__, __LINE__ );
@@ -495,6 +534,17 @@ class qcl_event_message_Bus
     $channels[] = $name;
     $store->set($key, array_unique( $channels ) );
     //$this->debug( "Added channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ ); 
+  }
+  
+  /**
+   * Returns true if the channel of the given name is subscribed
+   * by the current user.
+   * @param string $name
+   * @return boolean
+   */
+  public function isSubscribedChannel( $name )
+  {
+    return in_array($name, $this->getChannels() );
   }
   
   /**
