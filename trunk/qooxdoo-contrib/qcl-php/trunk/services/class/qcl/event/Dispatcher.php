@@ -170,26 +170,58 @@ class qcl_event_Dispatcher
       return false;
     }
 
-    $index = array_search ( $type, (array) $event_db['types'] );
-
+    $index = array_search ( $type, $event_db['types'] );
+    
     /*
-     * abort if no event listener for this message has been registered
+     * if event name was found
      */
-    if ( $index === false )
+    if ( $index !== false )
     {
-      $this->setError("Object #$targetObjectId has no listeners for event '$type'");
-      return false;
+      /*
+       * call object methods
+       */
+      foreach ( $event_db['data'][$index] as $listenerData )
+      {
+        list( $listenerObjectId, $method ) = $listenerData;
+        $listenerObject = $this->getObjectById( $listenerObjectId );
+        $listenerObject->$method($event);
+      }
+      return true;      
     }
 
     /*
-     * call object methods
+     * if event type is not found,try the wildcard match 
      */
-    foreach ( $event_db['data'][$index] as $listenerData )
+    $index = 0;
+    $found = false;
+    foreach( $event_db['types'] as $event_type )
     {
-      list( $listenerObjectId, $method ) = $listenerData;
-      $listenerObject = $this->getObjectById( $listenerObjectId );
-      $listenerObject->$method($event);
+      $pos = strpos( $event_type, "*" );
+      if( substr( $type, 0, $pos ) == substr( $event_type, 0, $pos ) )
+      {
+        /*
+         * found, call object methods
+         */
+        $found = true;
+        foreach ( $event_db['data'][$index] as $listenerData )
+        {
+          list( $listenerObjectId, $method ) = $listenerData;
+          $listenerObject = $this->getObjectById( $listenerObjectId );
+          $listenerObject->$method($event);
+        }
+      }
+      $index++;
     }
+    
+    /*
+     * not found, abort
+     */
+    if ( ! $found ) 
+    {
+      $this->setError("Object #$targetObjectId has no listeners for event '$type'");//FIXME
+      return false;  
+    }
+    return true;
   }
 
   /**
