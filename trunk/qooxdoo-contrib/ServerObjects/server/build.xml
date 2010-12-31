@@ -17,8 +17,12 @@
 
 	<target name="compile">
 		<mkdir dir="${build.dir}/classes" />
-		<javac fork="true" srcdir="${src.dir}/java" destdir="${build.dir}/classes">
-			<exclude name="com/zenesis/qx/remote/relaxng/**" />
+		<javac fork="true" debug="true" debuglevel="lines,vars,source"
+				srcdir="${src.dir}/java" destdir="${build.dir}/classes">
+			<classpath refid="classpath" />
+		</javac>
+		<javac fork="true" debug="true" debuglevel="lines,vars,source"
+				srcdir="${src.dir}/test" destdir="${build.dir}/classes">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
@@ -27,6 +31,7 @@
 		<jar destfile="${jarfile}">
 			<fileset dir="${build.dir}/classes" />
 			<fileset dir="${src.dir}/java" />
+			<fileset dir="${src.dir}/test" />
 		</jar>
 	</target>
 
