@@ -1,7 +1,7 @@
 <project default="jar">
 	
 	<property name="build.compiler" value="modern" />
-	<property name="srcdir" value="src" />
+	<property name="src.dir" value="src" />
 	<property name="build.dir" value="../build" />
 	<property name="version" value="1.0" />
 	<property name="jarfile" value="${build.dir}/qso-${version}.jar" />
@@ -17,14 +17,16 @@
 
 	<target name="compile">
 		<mkdir dir="${build.dir}/classes" />
-		<javac fork="true" srcdir="${srcdir}/java" destdir="${build.dir}/classes">
+		<javac fork="true" srcdir="${src.dir}/java" destdir="${build.dir}/classes">
 			<exclude name="com/zenesis/qx/remote/relaxng/**" />
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="jar" depends="compile">
-		<jar destfile="${jarfile}" basedir="${build.dir}/classes">
+		<jar destfile="${jarfile}">
+			<fileset dir="${build.dir}/classes" />
+			<fileset dir="${src.dir}/java" />
 		</jar>
 	</target>
 
