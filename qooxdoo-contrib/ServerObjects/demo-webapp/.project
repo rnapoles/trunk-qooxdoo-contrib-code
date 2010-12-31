@@ -33,4 +33,32 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>WebContent/arraytest</name>
+			<type>2</type>
+			<locationURI>QSO/client/arraytest</locationURI>
+		</link>
+		<link>
+			<name>WebContent/demoapp</name>
+			<type>2</type>
+			<locationURI>QSO/client/demoapp</locationURI>
+		</link>
+		<link>
+			<name>WebContent/explorer</name>
+			<type>2</type>
+			<locationURI>QSO/client/explorer</locationURI>
+		</link>
+		<link>
+			<name>WebContent/qso-lib</name>
+			<type>2</type>
+			<locationURI>QSO/client/qso-lib</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>QSO</name>
+			<value>file:/Volumes/MIRROR/Users/john/dev/Qooxdoo%20Server%20Objects</value>
+		</variable>
+	</variableList>
 </projectDescription>

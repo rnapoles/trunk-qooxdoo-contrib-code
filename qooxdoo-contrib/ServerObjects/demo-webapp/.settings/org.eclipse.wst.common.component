@@ -3,7 +3,7 @@
     <wb-module deploy-name="QSO Demo Webapp">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="QSO_Demo_Webapp"/>
         <property name="java-output-path" value="/QSO Demo Webapp/build/classes"/>
+        <property name="context-root" value="/"/>
     </wb-module>
 </project-modules>
