@@ -228,11 +228,32 @@ class qcl_access_SessionController
         throw new qcl_access_AccessDeniedException("Server data authentication failed.");
       }
     }
+    
+    /*
+     * getting it from the PHP session id
+     */
     else
     {
-      $this->log(sprintf(
-        "Getting session id from PHP session: '%s'", $this->getSessionId()
-      ), QCL_LOG_ACCESS );
+      /*
+       * create a child session if we already have one
+       */
+      if ( $this->sessionExists( $this->getSessionId() ) )
+      {
+        $this->createChildSession( $this->getSessionId() );
+        $this->log(sprintf(
+          "Creating child session id from PHP session: '%s'", $this->getSessionId()
+        ), QCL_LOG_ACCESS );
+      }
+      
+      /*
+       * otherwise, simply use the PHP session that is already established
+       */
+      else 
+      {
+        $this->log(sprintf(
+          "Getting session id from PHP session: '%s'", $this->getSessionId()
+        ), QCL_LOG_ACCESS );
+      }
     }
 
     /*
@@ -409,7 +430,7 @@ class qcl_access_SessionController
     $sessionModel = $this->getSessionModel();
     try
     {
-      $sessionModel->loadWhere( array( "sessionId" => $parentSessionId) );
+      $sessionModel->load( $parentSessionId );
     }
     catch ( qcl_data_model_RecordNotFoundException $e )
     {
@@ -430,11 +451,11 @@ class qcl_access_SessionController
 
     /*
      * register new session
+     * FIXME this is a manual hack, use API for this
      */
-    $sessionModel->insert(array(
-      'sessionId'       => $sessionId,
-      'userId'          => $userId,
-      'ip'              => qcl_server_Server::getInstance()->getRemoteIp(),
+    $sessionModel->create($sessionId, array(
+      'UserId'          => $userId,
+      'ip'              => qcl_server_Server::getInstance()->getServerInstance()->getRequest()->getIp(),
       'parentSessionId' => $parentSessionId
     ));
 
