@@ -311,10 +311,6 @@ class qcl_access_Controller
     $old = $this->getSessionId();
     if ( $sessionId != $old )
     {
-      if ( $this->isValidSessionId( $old ) )
-      {
-        $this->destroySession( $old );
-      }
       $this->log("Starting new session id #$sessionId",QCL_LOG_ACCESS);
       session_id( $sessionId );
       session_start();
