@@ -35,7 +35,7 @@
     "QXTHEME"      : "demoapp.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "../../qooxdoo/.cache",
+    "CACHE"        : "../../qooxdoo/cache",
     "ROOT"         : "."
   },
 

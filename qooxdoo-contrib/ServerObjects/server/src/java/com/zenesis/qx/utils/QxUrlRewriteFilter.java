@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -115,6 +116,14 @@ public class QxUrlRewriteFilter implements Filter {
 				File file = new File(rewrites.get(path), uri.substring(path.length()));
 				if (!file.exists())
 					continue;
+
+				// Check timestamps
+				response.setDateHeader("Last-Modified", file.lastModified());
+				long lastMod = request.getDateHeader("If-Modified-Since");
+				if (lastMod > 0 && Math.abs(file.lastModified() - lastMod) < 1000) {
+					response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+					return;
+				}
 				
 				// Send the file
 				String mimeType = context.getMimeType(file.getName());
