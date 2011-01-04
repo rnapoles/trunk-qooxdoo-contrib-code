@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -73,16 +74,20 @@ public class QxUrlRewriteFilter implements Filter {
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 		context = config.getServletContext();
-		Enumeration<String> e = config.getInitParameterNames();
-		while (e.hasMoreElements()) {
+		File root = new File(context.getRealPath("."));
+		String str = config.getInitParameter("rewrite-root");
+		if (str != null)
+			root = new File(str).getAbsoluteFile();
+			
+		for (Enumeration<String> e = config.getInitParameterNames(); e.hasMoreElements(); ) {
 			String name = e.nextElement();
-			if (name.startsWith("rewrite-")) {
+			if (name.startsWith("rewrite-") && !name.equals("rewrite-root")) {
 				String path = config.getInitParameter(name);
 				int pos = path.indexOf('=');
 				if (pos > 0) {
 					String mapTo = path.substring(pos + 1);
 					path = path.substring(0, pos);
-					File file = new File(mapTo);
+					File file = new File(root, mapTo);
 					rewrites.put(path, file);
 				}
 			}

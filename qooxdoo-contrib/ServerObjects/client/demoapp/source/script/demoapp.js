@@ -29,7 +29,7 @@ qx.$$loader = {
   boot : "boot",
   closureParts : {},
   bootIsInline : false,
-  addNoCacheParam : true,
+  addNoCacheParam : false,
   
   decodeUris : function(compressedUris)
   {
