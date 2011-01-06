@@ -72,6 +72,7 @@ class qcl_util_system_Mail
 
   /**
    * Constructor
+   * @throws LogicException
    * @return void
    */
   public function __construct( $data=null )
@@ -112,6 +113,7 @@ class qcl_util_system_Mail
    * Setter for sender
    * @param string $sender
    * @return void
+   * @throws LogicException
    */
   public function setSender( $sender )
   {
@@ -123,6 +125,7 @@ class qcl_util_system_Mail
    * Setter for sender email
    * @param string $senderEmail
    * @return void
+   * @throws LogicException
    */
   public function setSenderEmail( $senderEmail )
   {
@@ -134,6 +137,7 @@ class qcl_util_system_Mail
    * Setter for recipient
    * @param string $recipient
    * @return void
+   * @throws LogicException
    */
   public function setRecipient( $recipient )
   {
@@ -145,6 +149,7 @@ class qcl_util_system_Mail
    * Setter for recipient email
    * @param string $recipientEmail
    * @return void
+   * @throws LogicException
    */
   public function setRecipientEmail( $recipientEmail )
   {
@@ -156,6 +161,7 @@ class qcl_util_system_Mail
    * Setter for body
    * @param string $body
    * @return void
+   * @throws LogicException
    */
   public function setBody( $body )
   {
@@ -167,6 +173,7 @@ class qcl_util_system_Mail
    * Setter for subject
    * @param string $subject
    * @return void
+   * @throws LogicException
    */
   public function setSubject( $subject )
   {
@@ -178,6 +185,7 @@ class qcl_util_system_Mail
    * Setter for additional headers
    * @param array $additionalHeaders
    * @return void
+   * @throws LogicException
    */
   public function setAdditionalHeaders( $additionalHeaders )
   {
@@ -189,6 +197,7 @@ class qcl_util_system_Mail
    * Add a mail header
    * @param string $header
    * @return void
+   * @throws LogicException
    */
   public function addHeader( $header )
   {
@@ -199,6 +208,7 @@ class qcl_util_system_Mail
   /**
    * Returns an array of properties necessary to send the email
    * @return array
+   * @throws LogicException
    */
   protected function requiredProperties()
   {
@@ -207,7 +217,8 @@ class qcl_util_system_Mail
 
   /**
    * Send email
-   * @return
+   * @throws LogicException
+   * @return Boolean
    */
   public function send()
   {
