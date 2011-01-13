@@ -37,6 +37,7 @@ qx.Class.define("openflashchart.Chart",
 {
   extend : qx.ui.embed.Flash,
 
+
   /**
    * Constructs the wrapper class.
    */
@@ -47,6 +48,7 @@ qx.Class.define("openflashchart.Chart",
     var initData = qx.util.ResourceManager.getInstance().toUri("openflashchart/empty.json");
     this.setVariables({"data-file": initData});
   },
+
 
   members :
   {
@@ -67,6 +69,7 @@ qx.Class.define("openflashchart.Chart",
         this.__deferredLoad(data);
       }
     },
+
 
     /**
      * Loads the data deferred this is needed, when the movie is not ready at runtime.

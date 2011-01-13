@@ -1,24 +1,24 @@
 {
   "info" : 
   {
-    "name" : "ofc_js",
+    "name" : "OpenFlashChart JavaScript Demo",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "OpenFlashChart JavaScript Demo",
+    "description" : "This demo shows how to use a qooxdoo based wrapper for Open Flash Chart (OFC). It creates a chart structure with the JavaScript API from OFC. Fore more details about the structure, have a look at the Open Flash Chart project (http://teethgrinder.co.uk/open-flash-chart-2/).",
     
-    "homepage" : "http://some.homepage.url/",
+    "homepage" : "http://qooxdoo.org/contrib/project#openflashchart",
 
-    "license" : "SomeLicense",
+    "license" : "LGPL/EPL",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Christian Hagendorn (chris_schmidt)",
+        "email" : "chris_schmidt@users.sourceforge.net"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.1", "1.2"]
+    "qooxdoo-versions": ["1.1", "1.2", "1.3"]
   },
   
   "provides" : 

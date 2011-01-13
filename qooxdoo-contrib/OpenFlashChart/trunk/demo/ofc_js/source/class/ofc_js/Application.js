@@ -21,6 +21,10 @@
 
 #asset(ofc_js/*)
 
+#ignore(ofc_bar)
+#ignore(ofc_title)
+#ignore(ofc_chart)
+
 ************************************************************************ */
 
 /**
@@ -30,11 +34,15 @@ qx.Class.define("ofc_js.Application",
 {
   extend : qx.application.Standalone,
 
+
   members :
   {
     /**
-     * This method contains the initial application code and gets called 
+     * This method contains the initial application code and gets called
      * during startup of the application
+     *
+     * @lint ignoreDeprecated(alert)
+     * @lint ignoreUndefined(ofc_bar, ofc_title, ofc_chart)
      */
     main : function()
     {
@@ -56,20 +64,19 @@ qx.Class.define("ofc_js.Application",
       var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
       this.getRoot().add(container, {edge: 20});
 
-      var url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json.txt");
       container.add(new qx.ui.embed.Html("This demo shows how to use a qooxdoo based wrapper for " +
         "Open Flash Chart (OFC). It creates a chart structure with the JavaScript API from OFC. " +
-        "Fore more details about the structure, have a look at the <a href='" + 
+        "Fore more details about the structure, have a look at the <a href='" +
         "http://teethgrinder.co.uk/open-flash-chart-2/' target='_blank'>" +
         "Open Flash Chart</a> project."));
 
       var chart = new openflashchart.Chart();
       container.add(chart, {flex: 1});
-      
+
       var bar = new ofc_bar();
       bar.set_values([9,8,7,6,5,4,3,2,1]);
 
-      var title = new ofc_title("Test", "{font-size: 20px; " + 
+      var title = new ofc_title("Test", "{font-size: 20px; " +
         "font-family: Times New Roman; font-weight: bold; color: #A2ACBA; text-align: center;}");
 
       var chartData = new ofc_chart();

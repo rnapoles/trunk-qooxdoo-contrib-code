@@ -30,15 +30,20 @@ qx.Class.define("openflashchart.demo.Application",
 {
   extend : qx.application.Standalone,
 
+
   members :
   {
     __label : null,
 
+
     __data : null,
+
 
     /**
      * This method contains the initial application code and gets called
      * during startup of the application
+     *
+     * @lint ignoreDeprecated(alert)
      */
     main : function()
     {
@@ -63,7 +68,7 @@ qx.Class.define("openflashchart.demo.Application",
       var url = qx.util.ResourceManager.getInstance().toUri("openflashchart/demo/data.json.txt");
       container.add(new qx.ui.embed.Html("This demo shows how to use a qooxdoo based wrapper for " +
         "Open Flash Chart. It loads a <a href='" + url + "' target='_blank'>JSON</a> configuration file " +
-        "for Open Flash Chart and configer the chart. Fore more details about the JSON file structure, " +
+        "for Open Flash Chart and configure the chart. Fore more details about the JSON file structure, " +
         "have a look at the <a href='http://teethgrinder.co.uk/open-flash-chart-2/' target='_blank'>" +
         "Open Flash Chart</a> project."));
 
@@ -84,16 +89,35 @@ qx.Class.define("openflashchart.demo.Application",
       request.send();
     },
 
+
+    /**
+     * This is the callback method which is configured in the data.json file.
+     *
+     * @param index {Integer} The clicked index from the data.
+     */
     onLineOneClick : function(index) {
       var line = this.__data.elements[0];
       this.__log(line.text, line.values[index]);
     },
 
+
+    /**
+     * This is the callback method which is configured in the data.json file.
+     *
+     * @param index {Integer} The clicked index from the data.
+     */
     onLineTwoClick : function(index) {
       var line = this.__data.elements[1];
       this.__log(line.text, line.values[index]);
     },
 
+
+    /**
+     * Helper method to log the clicked value from a line.
+     *
+     * @param line {String} The clicked line name.
+     * @param value {Number} The clicked value.
+     */
     __log : function(line, value) {
       this.__label.setValue(line + " -> " + value + " clicked.");
     }
