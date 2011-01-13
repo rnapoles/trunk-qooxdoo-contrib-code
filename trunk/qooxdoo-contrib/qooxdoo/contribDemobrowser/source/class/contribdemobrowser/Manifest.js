@@ -129,7 +129,10 @@ qx.Class.define("contribdemobrowser.Manifest", {
     _getGroupBox : function(title, infoList)
     {
       var container = new qx.ui.groupbox.GroupBox(title);
-      container.setLayout(new qx.ui.layout.Grid(10, 10));
+      var layout = new qx.ui.layout.Grid(10, 10);
+      layout.setColumnFlex(1, 1);
+      container.setLayout(layout);
+
       var rowCount = 0;
 
       for (var c=0,e=infoList.length; c<e; c++) {
@@ -209,12 +212,15 @@ qx.Class.define("contribdemobrowser.Manifest", {
         minWidth: 100
       });
 
-      var content = new qx.ui.basic.Label();
+      var content = new qx.ui.basic.Label().set({
+        rich: true,
+        wrap: true
+      });
+
       if (value.indexOf("http") == 0) {
         value = '<a href="' + value + '" target="_blank">' + value + "</a>";
       }
       content.setValue(value);
-      content.setRich(true);
 
       return [label, content];
     },
