@@ -6,7 +6,7 @@
     "summary" : "OpenFlashChart Contribution",
     "description" : "qooxdoo-based wrapper for Open Flash Chart (OFC), it can be used to draw OFC charts.",
     
-    "homepage" : "http://contrib.qooxdoo.org/project/OpenFlashChart",
+    "homepage" : "http://qooxdoo.org/contrib/project#openflashchart",
 
     "license" : "LGPL/EPL",
     "authors" : 
@@ -18,7 +18,7 @@
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.1", "1.2"]
+    "qooxdoo-versions": ["1.1", "1.2", "1.3"]
   },
   
   "provides" : 
