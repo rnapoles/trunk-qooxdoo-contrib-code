@@ -27,7 +27,7 @@
     "source",
     "source-all",
     "source-data",
-    "source-with-build-data",
+    "source-with-build-demos",
     "test",
     "test-source",
     "translation"
@@ -123,7 +123,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build,store-data -d ./source --copy-demos"
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build,api,store-data -d ./source --copy-demos"
       }
     },
     
@@ -152,7 +152,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build,store-data -d $BUILD_PATH --copy-demos"
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build,api,store-data -d $BUILD_PATH --copy-demos"
       }
     },
     
