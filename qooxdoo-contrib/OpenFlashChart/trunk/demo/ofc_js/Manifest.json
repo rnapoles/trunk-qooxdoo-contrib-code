@@ -4,7 +4,7 @@
     "name" : "OpenFlashChart JavaScript Demo",
 
     "summary" : "OpenFlashChart JavaScript Demo",
-    "description" : "This demo shows how to use a qooxdoo based wrapper for Open Flash Chart (OFC). It creates a chart structure with the JavaScript API from OFC. Fore more details about the structure, have a look at the Open Flash Chart project (http://teethgrinder.co.uk/open-flash-chart-2/).",
+    "description" : "This demo shows how to use a qooxdoo based wrapper for Open Flash Chart (OFC). It creates a chart structure with the JavaScript API from OFC. Fore more details about the structure, have a look at the <a href=\"http://teethgrinder.co.uk/open-flash-chart-2/\" target=\"_blank\">Open Flash Chart project</a>.",
     
     "homepage" : "http://qooxdoo.org/contrib/project#openflashchart",
 
