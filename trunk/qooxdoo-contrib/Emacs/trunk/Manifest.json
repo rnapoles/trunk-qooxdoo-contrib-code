@@ -1,0 +1,29 @@
+{
+    "info" :
+    {
+      "name" : "Emacs",
+
+      "summary" : "minor-mode definition",
+      "description" : "qooxdoo minor mode for Emacs.",
+
+      "homepage" : "http://contrib.qooxdoo.org/project/Emacs",
+
+      "license" : "BSD",
+      "authors" :
+      [
+        {
+          "name" : "Jeremiah Dodds",
+          "email" : "jeremiah dot dodds at the gmail"
+        }
+      ],
+
+      "version" : "trunk",
+      "qooxdoo-versions": ["1.3"]
+    },
+
+    "provides" :
+    {
+      "type" : "tool"
+    }
+}
+      
