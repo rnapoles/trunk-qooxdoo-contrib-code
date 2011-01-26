@@ -24,7 +24,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
   aliases: {
     decoration: "silverbluetheme/decoration"
   },
-  
+
   appearances:
   {
     /*
@@ -44,7 +44,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
+
     /*
     ---------------------------------------------------------------------------
       BUTTON
@@ -55,18 +55,18 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [1, 3, 0, 3] : [0, 3, 1, 3], 
+      padding: states.pressed || states.checked
+               || (states.checked && states.disabled) ? [1, 3, 0, 3] : [0, 3, 1, 3],
           decorator: states.pressed || states.checked ?
                         "button-checked" :
                      (states.hovered || states.focused) && !states.disabled ?
                         "button-hovered" : "button",
-		  textColor: "text-button"
+      textColor: "text-button"
         };
       }
-	},
-	
-	"button-frame/image":
+  },
+
+  "button-frame/image":
     {
       style: function(states)
       {
@@ -75,8 +75,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"button":
+
+  "button":
     {
       alias: "button-frame",
       include: "button-frame",
@@ -88,12 +88,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"button-red":
+
+  "button-red":
     {
-	  alias: "button",
-	  include: "button",
-	  
+    alias: "button",
+    include: "button",
+
       style: function(states)
       {
         return {
@@ -103,9 +103,9 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
                         "button-red" : "button"
         };
       }
-	},
-	
-	"hover-button":
+  },
+
+  "hover-button":
     {
       alias: "button",
       include: "button",
@@ -114,31 +114,31 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       {
         return {
           decorator: states.hovered ? "button-hovered": "button",
-		  padding: states.hovered ? [1, 0, 0, 0] : [0, 0, 1, 0], 
+      padding: states.hovered ? [1, 0, 0, 0] : [0, 0, 1, 0],
           textColor: states.hovered ? "text-button" : undefined
         }
       }
     },
-	
-	"spinner-button":
+
+  "spinner-button":
     {
       alias: "atom",
 
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [1, 5, 0, 5] : [0, 5, 1, 5], 
+      padding: states.pressed || states.checked
+               || (states.checked && states.disabled) ? [1, 5, 0, 5] : [0, 5, 1, 5],
           decorator: states.pressed || states.checked ?
                         "spinner-button-checked" :
                      states.hovered && !states.disabled ?
                         "spinner-button-hovered" : "spinner-button",
-		  textColor: "text-button"
+      textColor: "text-button"
         };
       }
-	},
-	
-	/*
+  },
+
+  /*
     ---------------------------------------------------------------------------
       CHECKBOX
     ---------------------------------------------------------------------------
@@ -150,8 +150,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         var icon;
-        
-		// Checked
+
+    // Checked
         if (states.checked) {
           if (states.disabled) {
             icon = "checkbox-checked";
@@ -193,8 +193,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       COLOR POPUP
     ---------------------------------------------------------------------------
@@ -284,8 +284,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       COLORSELECTOR
     ---------------------------------------------------------------------------
@@ -378,8 +378,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "colorselector/brightness-pane": "widget",
     "colorselector/brightness-handle": "widget",
 
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       COMBOBOX
     ---------------------------------------------------------------------------
@@ -394,11 +394,11 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       }
     },
 
-    "combobox/popup": 
-	{
-	  alias: "popup",
-	  include: "popup",
-	  
+    "combobox/popup":
+  {
+    alias: "popup",
+    include: "popup",
+
       style: function(states)
       {
         var result =
@@ -419,14 +419,14 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         var ret = {
-		  icon: "decoration/arrows/combobox.png",
-		  padding: states.pressed || states.checked ? [1, 8, 0, 8] : [0, 8, 1, 8],
+      icon: "decoration/arrows/combobox.png",
+      padding: states.pressed || states.checked ? [1, 8, 0, 8] : [0, 8, 1, 8],
           decorator: states.pressed || states.checked ?
                         "combobox-button-checked" :
                      states.hovered && !states.disabled ?
                         "combobox-button-hovered" : "combobox-button"
         };
-		return ret;
+    return ret;
       }
     },
 
@@ -438,12 +438,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       {
         return {
           decorator: "combobox",
-		  padding: 4
+      padding: 4
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       CORE
     ---------------------------------------------------------------------------
@@ -520,13 +520,13 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "atom": {},
     "atom/label": "label",
     "atom/icon": "image",
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       DATE CHOOSER
     ---------------------------------------------------------------------------
     */
-	"datechooser":
+  "datechooser":
     {
       style: function(states)
       {
@@ -556,7 +556,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
 
     "datechooser/navigation-bar": {},
 
-	"datechooser/nav-button":
+  "datechooser/nav-button":
     {
       include: "button-frame",
       alias: "button-frame",
@@ -593,8 +593,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "datechooser/last-month-button": "datechooser/nav-button",
     "datechooser/next-month-button": "datechooser/nav-button",
     "datechooser/next-year-button": "datechooser/nav-button",
-	
-	"datechooser/month-year-label":
+
+  "datechooser/month-year-label":
     {
       style: function(states)
       {
@@ -602,13 +602,13 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
           font: "bold",
           textAlign: "center",
           textColor: states.disabled ? "text-disabled" : undefined,
-		  padding: [1, 0, 1, 0],
-		  decorator: "toolbar-blue"
+      padding: [1, 0, 1, 0],
+      decorator: "toolbar-blue"
         };
       }
     },
-	
-	"datechooser/date-pane":
+
+  "datechooser/date-pane":
     {
       style: function(states)
       {
@@ -657,8 +657,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       DATEFIELD
     ---------------------------------------------------------------------------
@@ -694,8 +694,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       GROUP BOX
     ---------------------------------------------------------------------------
@@ -769,8 +769,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       HTMLAREA
     ---------------------------------------------------------------------------
@@ -786,8 +786,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       IFRAME
     ---------------------------------------------------------------------------
@@ -803,12 +803,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       }
     },
 
-	/*
+  /*
     ---------------------------------------------------------------------------
       LIST
     ---------------------------------------------------------------------------
     */
-	"list":
+  "list":
     {
       alias: "scrollarea",
 
@@ -836,37 +836,37 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"list/pane": "widget",
-	
+
+  "list/pane": "widget",
+
     "listitem":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var decorator;
+      var decorator;
         if (states.dragover) {
           decorator = states.selected ? "selected-dragover" : "dragover";
         } else {
           decorator = states.selected ? "menu-selected" : undefined;
         }
-		
+
         return {
           padding: states.dragover ? [4, 4, 2, 4] : 3,
           textColor: states.selected ? "text-active" : undefined,
-		  backgroundColor: states.selected ? "selected" : undefined,
+      backgroundColor: states.selected ? "selected" : undefined,
           decorator: decorator
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       MENU
     ---------------------------------------------------------------------------
     */
-	"menu":
+  "menu":
     {
       style: function(states)
       {
@@ -1038,14 +1038,14 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       MENUBAR
     ---------------------------------------------------------------------------
     */
-	
-	"menubar":
+
+  "menubar":
     {
       style: function(states)
       {
@@ -1054,8 +1054,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         }
       }
     },
-	
-	"menubar-button":
+
+  "menubar-button":
    {
      alias: "atom",
 
@@ -1068,13 +1068,13 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
        };
      }
    },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       POPUP
     ---------------------------------------------------------------------------
     */
-	"popup": 
+  "popup":
     {
       style: function(states)
       {
@@ -1084,8 +1084,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         }
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       PROGRESSBAR
     ---------------------------------------------------------------------------
@@ -1108,8 +1108,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         }
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       PROGRESSIVE
     ---------------------------------------------------------------------------
@@ -1139,13 +1139,13 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       RADIOBUTTON
     ---------------------------------------------------------------------------
     */
-	"radiobutton":
+  "radiobutton":
     {
       alias: "atom",
 
@@ -1154,9 +1154,9 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         var icon;
         if (states.checked && states.focused) {
           icon = states.hovered ? "radiobutton-checked-hovered-focused" : "radiobutton-checked-focused";
-		} else if (states.checked) {
+    } else if (states.checked) {
           icon = states.hovered ? "radiobutton-checked-hovered" : "radiobutton-checked";
-		} else if (states.hovered && !states.disabled) {
+    } else if (states.hovered && !states.disabled) {
           icon = states.focused ? "radiobutton-hovered-focused" : "radiobutton-hovered";
         } else if (states.focused) {
           icon = "radiobutton-focused";
@@ -1165,8 +1165,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         } else {
           icon = "radiobutton";
         }
-		
-		var invalid = "";
+
+    var invalid = "";
 
         return {
           icon: "decoration/form/" + icon + invalid + ".png",
@@ -1174,8 +1174,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       RESIZER
     ---------------------------------------------------------------------------
@@ -1189,8 +1189,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SCROLLAREA
     ---------------------------------------------------------------------------
@@ -1219,7 +1219,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "scrollarea/pane": "widget",
     "scrollarea/scrollbar-x": "scrollbar",
     "scrollarea/scrollbar-y": "scrollbar",
-	
+
     /*
     ---------------------------------------------------------------------------
       SCROLLBAR
@@ -1262,10 +1262,10 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       {
         var decorator = states.horizontal ? "scrollbar-slider-horizontal" :
                                             "scrollbar-slider-vertical";
-		if (states.hovered)
-		{
-		  decorator += "-hovered";
-		}
+    if (states.hovered)
+    {
+      decorator += "-hovered";
+    }
 
         return {
           decorator: decorator,
@@ -1275,31 +1275,31 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       }
     },
 
-	"scrollbar/button":
+  "scrollbar/button":
     {
       style: function(states)
       {
-	    var decorator = "scrollbar-button";
-		
+      var decorator = "scrollbar-button";
+
         var icon = "decoration/scrollbar/scrollbar-";
         if (states.left) {
           icon += "left.png";
-		  decorator += "-horizontal";
+      decorator += "-horizontal";
         } else if (states.right) {
           icon += "right.png";
-		  decorator += "-horizontal";
+      decorator += "-horizontal";
         } else if (states.up) {
           icon += "up.png";
-		  decorator += "-vertical";
+      decorator += "-vertical";
         } else {
           icon += "down.png";
-		  decorator += "-vertical";
+      decorator += "-vertical";
         }
-		
-		if (states.hovered)
-		{
-		  decorator += "-hovered";
-		}
+
+    if (states.hovered)
+    {
+      decorator += "-hovered";
+    }
 
         if (states.left || states.right)
         {
@@ -1308,8 +1308,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
             icon: icon,
             width: 14,
             height: 14,
-			margin: 0,
-			decorator: decorator
+      margin: 0,
+      decorator: decorator
           };
         }
         else
@@ -1319,21 +1319,21 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
             icon: icon,
             width: 14,
             height: 14,
-			margin: 0,
-			decorator: decorator
+      margin: 0,
+      decorator: decorator
           };
         }
       }
     },
-	
-	"scrollbar/button-begin": "scrollbar/button",
+
+  "scrollbar/button-begin": "scrollbar/button",
     "scrollbar/button-end": "scrollbar/button",
-	
-	/*-------------------------------------------------------------------------
+
+  /*-------------------------------------------------------------------------
       SELECTBOX
     ---------------------------------------------------------------------------
     */
-	"selectbox":
+  "selectbox":
     {
       alias: "button-frame",
       include: "button-frame",
@@ -1347,12 +1347,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     },
 
     "selectbox/atom": "atom",
-	
+
     "selectbox/popup":
-	{
-	  alias: "popup",
-	  include: "popup",
-	  
+  {
+    alias: "popup",
+    include: "popup",
+
       style: function(states)
       {
         var result =
@@ -1367,8 +1367,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "selectbox/list": {
       alias: "list"
     },
-	
-	"selectbox/arrow":
+
+  "selectbox/arrow":
     {
       include: "image",
 
@@ -1380,8 +1380,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SLIDEBAR
     ---------------------------------------------------------------------------
@@ -1424,40 +1424,40 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*-------------------------------------------------------------------------
+
+  /*-------------------------------------------------------------------------
       SLIDER
     ---------------------------------------------------------------------------
     */
-	"slider":
+  "slider":
     {
       style: function(states)
       {
         return {
           decorator: states.horizontal ? "slider-horizontal" : "slider-vertical",
-		  maxHeight: states.horizontal ? 14 : undefined,
- 	      maxWidth: states.horizontal ? undefined : 14,
- 	      minHeight: states.horizontal ? 14 : undefined,
- 	      minWidth: states.horizontal ? undefined : 14,
-		  padding: states.horizontal ? [0, 1, 0, 1] : [1, 0, 1, 0]
+      maxHeight: states.horizontal ? 14 : undefined,
+         maxWidth: states.horizontal ? undefined : 14,
+         minHeight: states.horizontal ? 14 : undefined,
+         minWidth: states.horizontal ? undefined : 14,
+      padding: states.horizontal ? [0, 1, 0, 1] : [1, 0, 1, 0]
         }
       }
     },
-	
-	"slider/knob": 
+
+  "slider/knob":
     {
       style: function(states)
       {
-	    var decorator = "slider-knob";
-		
-		if (states.pressed)
-		{
-		  decorator += "-pressed";
-		} else if (states.hovered)
-		{
-		  decorator += "-hovered";
-		}
-		
+      var decorator = "slider-knob";
+
+    if (states.pressed)
+    {
+      decorator += "-pressed";
+    } else if (states.hovered)
+    {
+      decorator += "-hovered";
+    }
+
         return {
           decorator: decorator,
           maxHeight: 14,
@@ -1465,20 +1465,20 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SPINNER
     ---------------------------------------------------------------------------
     */
 
-    "spinner": 
+    "spinner":
     {
       style: function(states)
       {
         return {
           decorator: states.focused ? "box-blue" : "box-white",
-		  padding: 2
+      padding: 2
         };
       }
     },
@@ -1522,50 +1522,50 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*-------------------------------------------------------------------------
+
+  /*-------------------------------------------------------------------------
       SPLITBUTTON
     ---------------------------------------------------------------------------
     */
-	
-	"splitbutton": {},
-	
-    "splitbutton/button": 
+
+  "splitbutton": {},
+
+    "splitbutton/button":
     {
       alias: "atom",
 
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [5, 4, 4, 4] : [4, 4, 5, 4], 
+      padding: states.pressed || states.checked
+               || (states.checked && states.disabled) ? [5, 4, 4, 4] : [4, 4, 5, 4],
           decorator: states.pressed || states.checked ?
                         "splitbutton-checked" :
                      states.hovered && !states.disabled ?
                         "splitbutton-hovered" : "splitbutton",
-		  textColor: "text-button",
-		  center: true
+      textColor: "text-button",
+      center: true
         };
       }
-	},
-	
-	"splitbutton/arrow":
+  },
+
+  "splitbutton/arrow":
     {
       style: function(states)
       {
         return {
           icon: "decoration/arrows/down.png",
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [7, 7, 5, 7] : [6, 7, 6, 7], 
-		  decorator: states.pressed || states.checked ?
+      padding: states.pressed || states.checked
+               || (states.checked && states.disabled) ? [7, 7, 5, 7] : [6, 7, 6, 7],
+      decorator: states.pressed || states.checked ?
                         "combobox-button-checked" :
                      states.hovered && !states.disabled ?
                         "combobox-button-hovered" : "combobox-button"
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SPLITPANE
     ---------------------------------------------------------------------------
@@ -1586,7 +1586,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         return {
-		  decorator: states.horizontal ? "splitter-horizontal" : "splitter-vertical"
+      decorator: states.horizontal ? "splitter-horizontal" : "splitter-vertical"
         };
       }
     },
@@ -1596,8 +1596,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         return {
-          source: states.horizontal ? "decoration/button/knob-horizontal.png" : 
-		                              "decoration/button/knob-vertical.png"
+          source: states.horizontal ? "decoration/button/knob-horizontal.png" :
+                                  "decoration/button/knob-vertical.png"
         };
       }
     },
@@ -1607,12 +1607,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         return {
-		  decorator: states.horizontal ? "splitter-horizontal" : "splitter-vertical"
+      decorator: states.horizontal ? "splitter-horizontal" : "splitter-vertical"
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TABLE
     ---------------------------------------------------------------------------
@@ -1740,8 +1740,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
           minWidth: 0,
           alignY: "middle",
           paddingRight: 5,
-		  marginBottom: 3,
-		  marginTop: 0
+      marginBottom: 3,
+      marginTop: 0
         };
       }
     },
@@ -1810,8 +1810,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TABVIEW
     ---------------------------------------------------------------------------
@@ -1826,7 +1826,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       }
     },
 
-	"tabview/bar":
+  "tabview/bar":
     {
       alias: "slidebar",
 
@@ -1858,65 +1858,65 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         return result;
       }
     },
-	
-	"tabview/bar/button":
+
+  "tabview/bar/button":
     {
       include: "button-frame",
       alias: "button-frame",
 
       style: function(states)
       {
-	    var margin;
-		
-	    switch (true)
-		{
+      var margin;
+
+      switch (true)
+    {
           case states.barTop:
             margin = [4, 0, 0, 0];
-			break;
-		  
-		  case states.barBottom:
-		    margin =  [3, 0, 4, 0];
-			break;
-			
-		  case states.barLeft:
-			margin = [0, 0, 0, 5];
-			break;
-			
-		  case states.barRight:
-			margin = [0, 4, 0, 2];
-			break;
+      break;
+
+      case states.barBottom:
+        margin =  [3, 0, 4, 0];
+      break;
+
+      case states.barLeft:
+      margin = [0, 0, 0, 5];
+      break;
+
+      case states.barRight:
+      margin = [0, 4, 0, 2];
+      break;
         }
-		return {
-		  margin: margin,
-		  padding: 2,
-		  center: true
-		}
+    return {
+      margin: margin,
+      padding: 2,
+      center: true
+    }
       }
     },
 
-	"tabview/bar/button-forward":
+  "tabview/bar/button-forward":
     {
       include: "tabview/bar/button",
       alias: "tabview/bar/button",
 
       style: function(states)
       {
-		return {
+    return {
           icon: states.vertical ? "decoration/arrows/down.png" : "decoration/arrows/right.png"
-		}
+    }
       }
     },
-	
-	"tabview/bar/button-backward":
+
+  "tabview/bar/button-backward":
     {
       include: "tabview/bar/button",
       alias: "tabview/bar/button",
 
       style: function(states)
       {
-		return {
+    return {
           icon: states.vertical ? "decoration/arrows/up.png" : "decoration/arrows/left.png"
-		}
+    }
       }
     },
 
@@ -1940,7 +1940,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
 
     "tabview-page": "widget",
 
-	"tabview-page/button":
+  "tabview-page/button":
     {
       alias: "atom",
 
@@ -1952,30 +1952,30 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         if (states.barTop)
         {
           decorator = states.checked ? "tabview-page-button-top-active" :
-  	                  states.hovered ? "tabview-page-button-top-hovered" : 
-				                       "tabview-page-button-top-inactive";
+                      states.hovered ? "tabview-page-button-top-hovered" :
+                               "tabview-page-button-top-inactive";
           padding = states.checked ? [4, 10, 6] : [4, 10];
           marginTop = states.checked ? 2 : 4;
           marginRight = -2;
-	      marginBottom = 1;
+        marginBottom = 1;
         }
         else if (states.barBottom)
         {
           decorator = states.checked ? "tabview-page-button-bottom-active" :
-	                  states.hovered ? "tabview-page-button-bottom-hovered" :
-				                       "tabview-page-button-bottom-inactive";
+                    states.hovered ? "tabview-page-button-bottom-hovered" :
+                               "tabview-page-button-bottom-inactive";
           padding = states.checked ? [6, 10] : [4, 10];
           marginBottom = states.checked ? 2 : 4;
           marginRight = -2;
-	      marginTop = 4;
+        marginTop = 4;
         }
         else if (states.barRight)
         {
           decorator = states.checked ? "tabview-page-button-right-active" :
-		              states.hovered ? "tabview-page-button-right-hovered" : 
-					                   "tabview-page-button-right-inactive";
+                  states.hovered ? "tabview-page-button-right-hovered" :
+                             "tabview-page-button-right-inactive";
           // padding = states.checked ? [6, 8, 6, 10] : [6, 10, 6, 10];
-		  padding = states.checked ? [6, 10, 6, 12] : [6, 10];
+      padding = states.checked ? [6, 10, 6, 12] : [6, 10];
           marginRight = states.checked ? 2 : 4;
           marginBottom = -2;
           marginLeft = 3;
@@ -1983,8 +1983,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         else
         {
           decorator = states.checked ? "tabview-page-button-left-active" :
-		              states.hovered ? "tabview-page-button-left-hovered" : 
-					                   "tabview-page-button-left-inactive";
+                  states.hovered ? "tabview-page-button-left-hovered" :
+                             "tabview-page-button-left-inactive";
           padding = states.checked ? [6, 10, 6, 8] : [6, 10];
           marginLeft = states.checked ? 2 : 4;
           marginBottom = -2;
@@ -2002,7 +2002,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
           textColor: states.disabled ? "text-disabled" : "text-active"
         };
       }
-	},
+  },
 
     "tabview-page/button/label":
     {
@@ -2023,20 +2023,20 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       alias: "atom",
       style: function(states)
       {
-	    var icon;
-	    if (states.hovered)
-		{
-		  icon = "decoration/tabview/tab-close-button-hovered.png";
-		} else {
-		  icon = "decoration/tabview/tab-close-button.png";
-		}
+      var icon;
+      if (states.hovered)
+    {
+      icon = "decoration/tabview/tab-close-button-hovered.png";
+    } else {
+      icon = "decoration/tabview/tab-close-button.png";
+    }
         return {
           icon: icon
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TEXTAREA
     ---------------------------------------------------------------------------
@@ -2052,13 +2052,13 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TEXTFIELD
     ---------------------------------------------------------------------------
     */
-	"textfield":
+  "textfield":
     {
       style: function(states)
       {
@@ -2094,8 +2094,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TOOLBAR
     ---------------------------------------------------------------------------
@@ -2152,13 +2152,13 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       style: function(states)
       {
         return {
-		  margin: 1,
-		  padding: states.pressed || states.checked ? [8, 6, 4, 6] : [6, 6, 6, 6],
+      margin: 1,
+      padding: states.pressed || states.checked ? [8, 6, 4, 6] : [6, 6, 6, 6],
           decorator: states.pressed || states.checked ?
                         "toolbar-button-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-button-hovered" : undefined,
-		  textColor: states.pressed || states.checked ? "toolbar-button-checked" : "toolbar-button"
+      textColor: states.pressed || states.checked ? "toolbar-button-checked" : "toolbar-button"
         };
       }
     },
@@ -2200,12 +2200,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     },
 
     "toolbar-splitbutton/button": "toolbar-button",
-	
-	"toolbar-splitbutton/arrow":
+
+  "toolbar-splitbutton/arrow":
     {
-	  alias: "toolbar-button",
-	  include: "toolbar-button",
-	  
+    alias: "toolbar-button",
+    include: "toolbar-button",
+
       style: function(states)
       {
         return {
@@ -2213,7 +2213,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
+
     "toolbar-separator":
     {
       style: function(states)
@@ -2224,8 +2224,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TOOLTIP
     ---------------------------------------------------------------------------
@@ -2269,23 +2269,23 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     },
 
     "tooltip-error/atom": "atom",
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TREE
     ---------------------------------------------------------------------------
     */
     "tree":
-	{
-	  alias: "list",
-	  
-	  style: function(states)
+  {
+    alias: "list",
+
+    style: function(states)
       {
         return {
-		  decorator: "input"
-		};
-	  }
-	},
+      decorator: "input"
+    };
+    }
+  },
 
     "tree-item":
     {
@@ -2365,8 +2365,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"tree-file":
+
+  "tree-file":
     {
       include: "tree-item",
       alias: "tree-item",
@@ -2381,8 +2381,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TREEVIRTUAL
     ---------------------------------------------------------------------------
@@ -2476,8 +2476,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       VIRTUAL WIDGETS
     ---------------------------------------------------------------------------
@@ -2526,7 +2526,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "cell-boolean":
     {
       include: "cell",
-	  
+
       style: function(states)
       {
         return {
@@ -2539,8 +2539,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     "cell-date": "cell",
     "cell-html": "cell",
 
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       WINDOW
     ---------------------------------------------------------------------------
@@ -2553,12 +2553,12 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         return {
           shadow: "shadow-window",
           contentPadding: 5,
-		  padding: [0, 2, 2, 2]
+      padding: [0, 2, 2, 2]
         };
       }
     },
-	
-	"window/pane":
+
+  "window/pane":
     {
       style: function(states)
       {
@@ -2567,8 +2567,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"window/captionbar":
+
+  "window/captionbar":
     {
       style: function(states)
       {
@@ -2580,8 +2580,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"window/icon":
+
+  "window/icon":
     {
       style: function(states)
       {
@@ -2590,8 +2590,8 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"window/title":
+
+  "window/title":
     {
       style: function(states)
       {
@@ -2603,116 +2603,116 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
         };
       }
     },
-	
-	"window/close-button":
+
+  "window/close-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.hovered:
-		    icon = "decoration/window/close-hovered.png";
-			break;
-			
-		  case states.active:
-		    icon = "decoration/window/close-active.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/button-inactive.png";
-		}
+      var icon;
+    switch (true)
+    {
+      case states.hovered:
+        icon = "decoration/window/close-hovered.png";
+      break;
+
+      case states.active:
+        icon = "decoration/window/close-active.png";
+      break;
+
+      default:
+        icon = "decoration/window/button-inactive.png";
+    }
         return {
           icon: icon,
           margin: [3, 3, 3, 0]
         };
       }
     },
-	
-	"window/maximize-button":
+
+  "window/maximize-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.hovered:
-		    icon = "decoration/window/maximize-hovered.png";
-			break;
-			
-		  case states.active:
-		    icon = "decoration/window/maximize-active.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/button-inactive.png";
-		}
+      var icon;
+    switch (true)
+    {
+      case states.hovered:
+        icon = "decoration/window/maximize-hovered.png";
+      break;
+
+      case states.active:
+        icon = "decoration/window/maximize-active.png";
+      break;
+
+      default:
+        icon = "decoration/window/button-inactive.png";
+    }
         return {
           icon: icon,
           margin: [3, 3, 3, 0]
         };
       }
     },
-	
-	"window/minimize-button":
+
+  "window/minimize-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.hovered:
-		    icon = "decoration/window/minimize-hovered.png";
-			break;
-		  
-		  case states.active:
-		    icon = "decoration/window/minimize-active.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/button-inactive.png";
-		}
+      var icon;
+    switch (true)
+    {
+      case states.hovered:
+        icon = "decoration/window/minimize-hovered.png";
+      break;
+
+      case states.active:
+        icon = "decoration/window/minimize-active.png";
+      break;
+
+      default:
+        icon = "decoration/window/button-inactive.png";
+    }
         return {
           icon: icon,
           margin: [3, 3, 3, 0]
         };
       }
     },
-	
-	"window/restore-button":
+
+  "window/restore-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.hovered:
-		    icon = "decoration/window/restore-hovered.png";
-			break;
-			
-		  case states.active:
-		    icon = "decoration/window/maximize-active.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/button-inactive.png";
-		}
+      var icon;
+    switch (true)
+    {
+      case states.hovered:
+        icon = "decoration/window/restore-hovered.png";
+      break;
+
+      case states.active:
+        icon = "decoration/window/maximize-active.png";
+      break;
+
+      default:
+        icon = "decoration/window/button-inactive.png";
+    }
         return {
           icon: icon,
           margin: [3, 3, 3, 0]
         };
       }
     },
-	
-	"window/statusbar":
+
+  "window/statusbar":
     {
       style: function(states)
       {
@@ -2720,7 +2720,7 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
           padding: [5, 6],
           decorator: "window-statusbar",
           minHeight: 18,
-		  marginTop: -4
+      marginTop: -4
         };
       }
     },
