@@ -18,12 +18,12 @@
       "SVG" : {},
 //      "SearchBox" : {},
       "SmartTableModel" : {},
+      "SilverBlueTheme" : {},
       "TimeChooser" : {},
       "TokenField" : {},
 //      "VirtualData" : {},
-      "collapsablePanel" : {},
-      "progressbar" : {}
-      
+//      "progressbar" : {},
+      "collapsablePanel" : {}      
     /*
       // Use all supported contributions
       "*" : {
