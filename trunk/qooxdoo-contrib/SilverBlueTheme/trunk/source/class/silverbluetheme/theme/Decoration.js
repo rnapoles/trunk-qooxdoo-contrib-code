@@ -23,7 +23,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
   aliases: {
     decoration: "silverbluetheme/decoration"
   },
-  
+
   decorations:
   {
     /*
@@ -41,13 +41,13 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundRepeat: "scale"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       BOXES
     ---------------------------------------------------------------------------
     */
-	"box-blue":
+  "box-blue":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -55,8 +55,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/boxes/box-blue.png"
       }
     },
-	
-	"box-gradient":
+
+  "box-gradient":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -64,8 +64,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/boxes/box-gradient.png"
       }
     },
-	
-	"box-silver":
+
+  "box-silver":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -73,8 +73,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/boxes/box-silver.png"
       }
     },
-	
-	"box-transparent":
+
+  "box-transparent":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -83,8 +83,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/boxes/box-transparent.png"
       }
     },
-	
-	"box-white":
+
+  "box-white":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -92,95 +92,95 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/boxes/box-white.png"
       }
     },
-	
+
     /*
     ---------------------------------------------------------------------------
       BUTTON
     ---------------------------------------------------------------------------
     */
     "button":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button.png",
-		insets: [3]
-	  }
-	},
-	
-	"button-checked":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button-checked.png",
-		insets: [3]
-	  }
-	},
-	
-	"button-checked-focused":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button-checked.png",
-		insets: [3]
-	  }
-	},
-	
-	"button-focused":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button-hovered.png",
-		insets: [3]
-	  }
-	},
-	
-	"button-hovered":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button-hovered.png",
-		insets: [3]
-	  }
-	},
-	
-	"button-red":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button-red2.png",
-		insets: [3]
-	  }
-	},
-	
-	"button-red-checked":
-	{
-	  decorator: qx.ui.decoration.Grid,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/button/button-red-checked.png",
-		insets: [3]
-	  }
-	},
-	
-	/*
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button.png",
+    insets: [3]
+    }
+  },
+
+  "button-checked":
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button-checked.png",
+    insets: [3]
+    }
+  },
+
+  "button-checked-focused":
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button-checked.png",
+    insets: [3]
+    }
+  },
+
+  "button-focused":
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button-hovered.png",
+    insets: [3]
+    }
+  },
+
+  "button-hovered":
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button-hovered.png",
+    insets: [3]
+    }
+  },
+
+  "button-red":
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button-red2.png",
+    insets: [3]
+    }
+  },
+
+  "button-red-checked":
+  {
+    decorator: qx.ui.decoration.Grid,
+
+    style:
+    {
+      baseImage: "decoration/button/button-red-checked.png",
+    insets: [3]
+    }
+  },
+
+  /*
     ---------------------------------------------------------------------------
       COMBOBOX
     ---------------------------------------------------------------------------
     */
-	"combobox":
+  "combobox":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -188,8 +188,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/form/combobox.png"
       }
     },
-	
-	"combobox-button":
+
+  "combobox-button":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -197,8 +197,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/form/combobox-button.png"
       }
     },
-	
-	"combobox-button-hovered":
+
+  "combobox-button-hovered":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -206,8 +206,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/form/combobox-button-hovered.png"
       }
     },
-	
-	"combobox-button-checked":
+
+  "combobox-button-checked":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -215,13 +215,13 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/form/combobox-button-checked.png"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       CORE
     ---------------------------------------------------------------------------
     */
-	"border-invalid":
+  "border-invalid":
     {
       decorator: qx.ui.decoration.Beveled,
 
@@ -235,8 +235,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundColor: "background-light"
       }
     },
-	
-	"dragover":
+
+  "dragover":
     {
       decorator: qx.ui.decoration.Single,
 
@@ -245,8 +245,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         bottom: [2, "solid", "#33508D"]
       }
     },
-	
-	"keyboard-focus":
+
+  "keyboard-focus":
     {
       decorator: qx.ui.decoration.Single,
 
@@ -257,7 +257,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         style: "dotted"
       }
     },
-	
+
     "main":
     {
       decorator: qx.ui.decoration.Uniform,
@@ -268,8 +268,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         color: "border-frame"
       }
     },
-	
-	"pane":
+
+  "pane":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -279,7 +279,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         insets: [0, 2, 3, 0]
       }
     },
-	
+
     "selected":
     {
       decorator: qx.ui.decoration.Background,
@@ -289,7 +289,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundColor: "background-selected"
       }
     },
-	
+
     "selected-dragover":
     {
       decorator: qx.ui.decoration.Single,
@@ -301,12 +301,12 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-	/*
+  /*
     ---------------------------------------------------------------------------
       GROUPBOX
     ---------------------------------------------------------------------------
     */
-	"group":
+  "group":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -314,29 +314,29 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/boxes/box-silver.png"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       INPUT
     ---------------------------------------------------------------------------
     */
-	"input":
+  "input":
     {
       decorator: qx.ui.decoration.Grid,
 
       style: {
         baseImage: "decoration/boxes/box-white.png",
-		insets: [2]
+    insets: [2]
       }
     },
-	
-	"input-focused":
+
+  "input-focused":
     {
       decorator: qx.ui.decoration.Grid,
 
       style: {
         baseImage: "decoration/boxes/box-blue.png",
-		insets: [2]
+    insets: [2]
       }
     },
 
@@ -355,22 +355,22 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-	/*
+  /*
     ---------------------------------------------------------------------------
       LIST
     ---------------------------------------------------------------------------
     */
-	"list":
+  "list":
     {
       decorator : qx.ui.decoration.Grid,
 
       style : {
         baseImage : "decoration/form/list.png",
-		insets: [2]
+    insets: [2]
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       MENU
     ---------------------------------------------------------------------------
@@ -382,11 +382,11 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
 
       style:
       {
-		baseImage: "decoration/menu/menu-pane.png"
+    baseImage: "decoration/menu/menu-pane.png"
       }
     },
-	
-	"menu-separator":
+
+  "menu-separator":
     {
       decorator:  qx.ui.decoration.Single,
 
@@ -399,19 +399,19 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         colorBottom: "#FAFAFA"
       }
     },
-	
-	"menu-selected":
+
+  "menu-selected":
     {
       decorator: qx.ui.decoration.Background,
 
       style:
       {
-		backgroundImage: "decoration/menu/selected.png",
-		backgroundRepeat: "scale"
+    backgroundImage: "decoration/menu/selected.png",
+    backgroundRepeat: "scale"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       PROGRESSIVE
     ---------------------------------------------------------------------------
@@ -442,113 +442,113 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         style: "solid"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SCROLLBAR
     ---------------------------------------------------------------------------
     */
-	"scrollbar-horizontal" :
+  "scrollbar-horizontal" :
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/scrollbar/scrollbar-bg-horizontal.png"
-	  }
+    decorator: qx.ui.decoration.Background,
+
+    style:
+    {
+      backgroundImage: "decoration/scrollbar/scrollbar-bg-horizontal.png"
+    }
     },
 
     "scrollbar-vertical" :
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/scrollbar/scrollbar-bg-vertical.png"
-	  }
+    decorator: qx.ui.decoration.Background,
+
+    style:
+    {
+      backgroundImage: "decoration/scrollbar/scrollbar-bg-vertical.png"
+    }
     },
 
-	"scrollbar-button-horizontal":
+  "scrollbar-button-horizontal":
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-		backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal.png"
-	  }
-    },
-	
-	"scrollbar-button-horizontal-hovered":
+    decorator: qx.ui.decoration.Background,
+
+    style:
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-		backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal-hovered.png"
-	  }
+    backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal.png"
+    }
     },
-	
-	"scrollbar-button-vertical":
+
+  "scrollbar-button-horizontal-hovered":
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/scrollbar/scrollbar-button-vertical.png"
-	  }
-    },
-	
-	"scrollbar-button-vertical-hovered":
+    decorator: qx.ui.decoration.Background,
+
+    style:
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-		backgroundImage: "decoration/scrollbar/scrollbar-button-vertical-hovered.png"
-	  }
+    backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal-hovered.png"
+    }
     },
-	
-	"scrollbar-slider-horizontal":
+
+  "scrollbar-button-vertical":
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-		backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal.png"
-	  }
-    },
-	
-	"scrollbar-slider-horizontal-hovered":
+    decorator: qx.ui.decoration.Background,
+
+    style:
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-		backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal-hovered.png"
-	  }
+      backgroundImage: "decoration/scrollbar/scrollbar-button-vertical.png"
+    }
     },
-	
-	"scrollbar-slider-vertical":
+
+  "scrollbar-button-vertical-hovered":
     {
-	  decorator: qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/scrollbar/scrollbar-button-vertical.png"
-	  }
-    },
-	
-	"scrollbar-slider-vertical-hovered":
+    decorator: qx.ui.decoration.Background,
+
+    style:
     {
-	  decorator : qx.ui.decoration.Background,
-	  
-	  style:
-	  {
-		backgroundImage: "decoration/scrollbar/scrollbar-button-vertical-hovered.png"
-	  }
+    backgroundImage: "decoration/scrollbar/scrollbar-button-vertical-hovered.png"
+    }
     },
-	
-	/*
+
+  "scrollbar-slider-horizontal":
+    {
+    decorator: qx.ui.decoration.Background,
+
+    style:
+    {
+    backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal.png"
+    }
+    },
+
+  "scrollbar-slider-horizontal-hovered":
+    {
+    decorator: qx.ui.decoration.Background,
+
+    style:
+    {
+    backgroundImage: "decoration/scrollbar/scrollbar-button-horizontal-hovered.png"
+    }
+    },
+
+  "scrollbar-slider-vertical":
+    {
+    decorator: qx.ui.decoration.Background,
+
+    style:
+    {
+      backgroundImage: "decoration/scrollbar/scrollbar-button-vertical.png"
+    }
+    },
+
+  "scrollbar-slider-vertical-hovered":
+    {
+    decorator : qx.ui.decoration.Background,
+
+    style:
+    {
+    backgroundImage: "decoration/scrollbar/scrollbar-button-vertical-hovered.png"
+    }
+    },
+
+  /*
     ---------------------------------------------------------------------------
       SEPARATOR
     ---------------------------------------------------------------------------
@@ -574,8 +574,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         colorTop: "border-separator"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SHADOWS
     ---------------------------------------------------------------------------
@@ -599,33 +599,33 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         insets: [0, 3, 3, 3]
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SLIDER
     ---------------------------------------------------------------------------
     */
-	"slider-horizontal":
+  "slider-horizontal":
     {
-	  decorator : qx.ui.decoration.HBox,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/form/slider-horizontal.png"
-	  }
-    },
-	
-	"slider-vertical":
+    decorator : qx.ui.decoration.HBox,
+
+    style:
     {
-	  decorator : qx.ui.decoration.VBox,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/form/slider-vertical.png"
-	  }
+      baseImage: "decoration/form/slider-horizontal.png"
+    }
     },
-	
-	"slider-knob" :
+
+  "slider-vertical":
+    {
+    decorator : qx.ui.decoration.VBox,
+
+    style:
+    {
+      baseImage: "decoration/form/slider-vertical.png"
+    }
+    },
+
+  "slider-knob" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -633,8 +633,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundImage : "decoration/form/slider-knob.png"
       }
     },
-	
-	"slider-knob-hovered" :
+
+  "slider-knob-hovered" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -642,8 +642,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundImage : "decoration/form/slider-knob-hovered.png"
       }
     },
-	
-	"slider-knob-pressed" :
+
+  "slider-knob-pressed" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -651,60 +651,60 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundImage : "decoration/form/slider-knob-hovered.png"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SPINNER
     ---------------------------------------------------------------------------
     */
-	"spinner-button":
-	{
-	  decorator: qx.ui.decoration.Single,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/button/spinner-button.png",
-		
-		widthLeft: 1,
-        colorLeft: "border-frame",
-        styleLeft: "solid"
-	  }
-	},
-	
-	"spinner-button-hovered":
-	{
-	  decorator: qx.ui.decoration.Single,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/button/spinner-button-hovered.png",
-		
-		widthLeft: 1,
-        colorLeft: "border-frame",
-        styleLeft: "solid"
-	  }
-	},
-	
-	"spinner-button-checked":
-	{
-	  decorator: qx.ui.decoration.Single,
-	  
-	  style:
-	  {
-	    backgroundImage: "decoration/button/spinner-button-hovered.png",
-		
-		widthLeft: 1,
-        colorLeft: "border-frame",
-        styleLeft: "solid"
-	  }
-	},
+  "spinner-button":
+  {
+    decorator: qx.ui.decoration.Single,
 
-	/*
+    style:
+    {
+      backgroundImage: "decoration/button/spinner-button.png",
+
+    widthLeft: 1,
+        colorLeft: "border-frame",
+        styleLeft: "solid"
+    }
+  },
+
+  "spinner-button-hovered":
+  {
+    decorator: qx.ui.decoration.Single,
+
+    style:
+    {
+      backgroundImage: "decoration/button/spinner-button-hovered.png",
+
+    widthLeft: 1,
+        colorLeft: "border-frame",
+        styleLeft: "solid"
+    }
+  },
+
+  "spinner-button-checked":
+  {
+    decorator: qx.ui.decoration.Single,
+
+    style:
+    {
+      backgroundImage: "decoration/button/spinner-button-hovered.png",
+
+    widthLeft: 1,
+        colorLeft: "border-frame",
+        styleLeft: "solid"
+    }
+  },
+
+  /*
     ---------------------------------------------------------------------------
       SPLITBUTTON
     ---------------------------------------------------------------------------
     */
-	"splitbutton":
+  "splitbutton":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -712,8 +712,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/button/splitbutton.png"
       }
     },
-	
-	"splitbutton-hovered":
+
+  "splitbutton-hovered":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -721,8 +721,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/button/splitbutton-hovered.png"
       }
     },
-	
-	"splitbutton-checked":
+
+  "splitbutton-checked":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -730,8 +730,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/button/splitbutton-checked.png"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       SPLITPANE
     ---------------------------------------------------------------------------
@@ -749,28 +749,28 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         style: "solid"
       }
     },
-	
-	"splitter-horizontal":
+
+  "splitter-horizontal":
     {
       decorator: qx.ui.decoration.VBox,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/form/slider-vertical.png"
-	  }
+
+    style:
+    {
+      baseImage: "decoration/form/slider-vertical.png"
+    }
     },
-	
-	"splitter-vertical":
+
+  "splitter-vertical":
     {
       decorator: qx.ui.decoration.HBox,
-	  
-	  style:
-	  {
-	    baseImage: "decoration/form/slider-horizontal.png"
-	  }
+
+    style:
+    {
+      baseImage: "decoration/form/slider-horizontal.png"
+    }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TABLE
     ---------------------------------------------------------------------------
@@ -813,8 +813,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         style: "solid"
       }
     },
-	
-	"table-scroller-header-hovered":
+
+  "table-scroller-header-hovered":
     {
       decorator: qx.ui.decoration.Single,
 
@@ -838,8 +838,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         widthRight: 1,
         colorRight: "border-separator",
         styleRight: "solid",
-		
-		widthBottom: 1,
+
+    widthBottom: 1,
         colorBottom: "border-separator",
         styleBottom: "solid"
       }
@@ -851,9 +851,9 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
 
       style:
       {
-	    backgroundImage: "decoration/table/header-cell-hovered.png",
+      backgroundImage: "decoration/table/header-cell-hovered.png",
         backgroundRepeat: "scale",
-		
+
         widthRight: 1,
         colorRight: "border-separator",
         styleRight: "solid",
@@ -890,8 +890,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         style: "solid"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TABVIEW
     ---------------------------------------------------------------------------
@@ -907,84 +907,84 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-	"tabview-page-button-horizontal":
+  "tabview-page-button-horizontal":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		widthRight: 1,
-		style: "solid",
-		
-		colorRight: "silver"
+    widthRight: 1,
+    style: "solid",
+
+    colorRight: "silver"
       }
     },
-	
-	"tabview-page-button-vertical":
+
+  "tabview-page-button-vertical":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		widthBottom: 1,
-		style: "solid",
-		
-		colorBottom: "silver"
+    widthBottom: 1,
+    style: "solid",
+
+    colorBottom: "silver"
       }
     },
-	
-	"tabview-page-button-horizontal-hovered":
+
+  "tabview-page-button-horizontal-hovered":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		backgroundImage: "decoration/menu/selected.png",
-		backgroundRepeat: "scale",
-		
-		widthRight: 1,
-		style: "solid",
-		
-		colorRight: "silver"
+    backgroundImage: "decoration/menu/selected.png",
+    backgroundRepeat: "scale",
+
+    widthRight: 1,
+    style: "solid",
+
+    colorRight: "silver"
       }
     },
-	
-	"tabview-page-button-vertical-hovered":
+
+  "tabview-page-button-vertical-hovered":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		backgroundImage: "decoration/menu/selected.png",
-		backgroundRepeat: "scale",
-		
-		widthBottom: 1,
-		style: "solid",
-		
-		colorBottom: "silver"
+    backgroundImage: "decoration/menu/selected.png",
+    backgroundRepeat: "scale",
+
+    widthBottom: 1,
+    style: "solid",
+
+    colorBottom: "silver"
       }
     },
-	
-	"tabview-page-button-checked":
+
+  "tabview-page-button-checked":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		backgroundImage: "decoration/menu/selected.png",
-		backgroundRepeat: "scale",
-		
-		width: 1,
-		style: "solid",
+    backgroundImage: "decoration/menu/selected.png",
+    backgroundRepeat: "scale",
 
-		colorTop: "#323232",
-		colorLeft: "#323232",
-		colorBottom: "#929292",
-		colorRight: "#929292"
+    width: 1,
+    style: "solid",
+
+    colorTop: "#323232",
+    colorLeft: "#323232",
+    colorBottom: "#929292",
+    colorRight: "#929292"
       }
     },
-	
-	"tabview-page-button-top-active":
+
+  "tabview-page-button-top-active":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -1001,8 +1001,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/tabview/tab-button-top-inactive.png"
       }
     },
-	
-	"tabview-page-button-top-hovered":
+
+  "tabview-page-button-top-hovered":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -1028,8 +1028,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/tabview/tab-button-bottom-inactive.png"
       }
     },
-	
-	"tabview-page-button-bottom-hovered":
+
+  "tabview-page-button-bottom-hovered":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -1055,8 +1055,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/tabview/tab-button-left-inactive.png"
       }
     },
-	
-	"tabview-page-button-left-hovered":
+
+  "tabview-page-button-left-hovered":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -1082,8 +1082,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/tabview/tab-button-right-inactive.png"
       }
     },
-	
-	"tabview-page-button-right-hovered":
+
+  "tabview-page-button-right-hovered":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -1091,110 +1091,110 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/tabview/tab-button-right-hovered.png"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TOOLBAR
     ---------------------------------------------------------------------------
     */
-	"toolbar-silver":
+  "toolbar-silver":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		backgroundImage: "decoration/toolbar/toolbar-gradient.png",
-		backgroundRepeat: "scale",
-		
-		widthTop: 1,
-		colorTop: "#DADEE1",
-		
-		widthBottom: 1,
-		colorBottom: "#878C92"
+    backgroundImage: "decoration/toolbar/toolbar-gradient.png",
+    backgroundRepeat: "scale",
+
+    widthTop: 1,
+    colorTop: "#DADEE1",
+
+    widthBottom: 1,
+    colorBottom: "#878C92"
       }
     },
-	
+
     "toolbar-blue":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		backgroundImage: "decoration/toolbar/toolbar-blue.png",
-		backgroundRepeat: "scale",
-		
-		widthTop: 1,
-		colorTop: "#DADEE1",
-		
-		widthBottom: 1,
-		colorBottom: "#878C92"
+    backgroundImage: "decoration/toolbar/toolbar-blue.png",
+    backgroundRepeat: "scale",
+
+    widthTop: 1,
+    colorTop: "#DADEE1",
+
+    widthBottom: 1,
+    colorBottom: "#878C92"
       }
     },
-	
-	"toolbar-black":
+
+  "toolbar-black":
     {
-	  decorator: qx.ui.decoration.Single,
+    decorator: qx.ui.decoration.Single,
 
       style:
       {
-		backgroundImage: "decoration/toolbar/toolbar-black.png",
-		backgroundRepeat: "scale",
-		
-		widthTop: 1,
-		colorTop: "#DADEE1",
-		
-		widthBottom: 1,
-		colorBottom: "#878C92"
+    backgroundImage: "decoration/toolbar/toolbar-black.png",
+    backgroundRepeat: "scale",
+
+    widthTop: 1,
+    colorTop: "#DADEE1",
+
+    widthBottom: 1,
+    colorBottom: "#878C92"
       }
     },
-	
-	"toolbar-button" :
+
+  "toolbar-button" :
     {
-	  decorator: qx.ui.decoration.Grid,
+    decorator: qx.ui.decoration.Grid,
 
       style:
       {
-		baseImage: "decoration/toolbar/toolbar-button.png"
+    baseImage: "decoration/toolbar/toolbar-button.png"
       }
     },
-	
-	"toolbar-button-hovered" :
+
+  "toolbar-button-hovered" :
     {
-	  decorator: qx.ui.decoration.Grid,
+    decorator: qx.ui.decoration.Grid,
 
       style:
       {
-		baseImage: "decoration/toolbar/toolbar-button-hovered.png"
+    baseImage: "decoration/toolbar/toolbar-button-hovered.png"
       }
     },
-	
-	"toolbar-button-checked" :
+
+  "toolbar-button-checked" :
     {
-	  decorator: qx.ui.decoration.Grid,
+    decorator: qx.ui.decoration.Grid,
 
       style:
       {
-		baseImage: "decoration/toolbar/toolbar-button-checked.png"
+    baseImage: "decoration/toolbar/toolbar-button-checked.png"
       }
     },
-	
-	"toolbar-separator":
+
+  "toolbar-separator":
     {
       decorator : qx.ui.decoration.Single,
 
       style :
       {
         widthLeft : 1,
-		colorLeft: "#727272",
-		styleLeft : "solid",
-		
+    colorLeft: "#727272",
+    styleLeft : "solid",
+
         widthRight : 1,
-		colorRight: "#F5F5F5",
+    colorRight: "#F5F5F5",
         styleRight : "solid"
       }
-	},
-	
-	"toolbar-part" :
+  },
+
+  "toolbar-part" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -1204,8 +1204,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         backgroundRepeat : "repeat-y"
       }
     },
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       TOOLTIP
     ---------------------------------------------------------------------------
@@ -1234,43 +1234,43 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-	
-	/*
+
+  /*
     ---------------------------------------------------------------------------
       WINDOW
     ---------------------------------------------------------------------------
     */
-	"window":
+  "window":
     {
-	  decorator: qx.ui.decoration.Grid,
+    decorator: qx.ui.decoration.Grid,
 
       style:
       {
-		baseImage: "decoration/window/window.png"
+    baseImage: "decoration/window/window.png"
       }
     },
-	
-	"window-captionbar-active":
+
+  "window-captionbar-active":
     {
-	  decorator: qx.ui.decoration.Grid,
+    decorator: qx.ui.decoration.Grid,
 
       style:
       {
-		baseImage: "decoration/window/captionbar-active.png"
+    baseImage: "decoration/window/captionbar-active.png"
       }
     },
-	
-	"window-captionbar-inactive":
+
+  "window-captionbar-inactive":
     {
-	  decorator: qx.ui.decoration.Grid,
+    decorator: qx.ui.decoration.Grid,
 
       style:
       {
-		baseImage: "decoration/window/captionbar-inactive.png"
+    baseImage: "decoration/window/captionbar-inactive.png"
       }
     },
-	
-	"window-statusbar":
+
+  "window-statusbar":
     {
       decorator: qx.ui.decoration.Grid,
 
@@ -1278,6 +1278,6 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
         baseImage: "decoration/window/statusbar.png"
       }
     }
-    
+
   }
 });
