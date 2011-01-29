@@ -73,9 +73,9 @@ qx.Class.define("timechooser.spinner.TimeValue",
         value = this.getMin();
       }
 
-      // Zero-pad the value to two digits
-      var ret = ("0" + value).substr(-2);
-      return ret;
+      // Get a zero-padded 2-digit value
+      var zeropadded = ("0" + value);
+      return zeropadded.substring(zeropadded.length - 2);
     },
 
     /**
@@ -109,7 +109,10 @@ qx.Class.define("timechooser.spinner.TimeValue",
         this.__bInOnTextChange = true;
 
         var textField = this.getChildControl("textfield");
-        textField.setValue(("0" + this.getValue()).substr(-2));
+
+        // Get a zero-padded 2-digit value
+        var zeropadded = "0" + this.getValue();
+        textField.setValue(zeropadded.substring(zeropadded.length - 2));
 
         this.__bInOnTextChange = false;
       }
