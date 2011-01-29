@@ -52,9 +52,9 @@ qx.Class.define("rpcexample.RemoteDataModel",
     {
       // Create the handler for our remote procedure call
       var _this = this;
-      handler = function(result, ex, id)
+      var handler = function(result, ex, id)
       {
-        mycall = null;
+        var mycall = null;
         if (ex !== null)
         {
           alert("Async(" + id + ") exception: " + ex +
@@ -67,7 +67,7 @@ qx.Class.define("rpcexample.RemoteDataModel",
           // We got (presumably) valid data.  Apply it to the table
           _this._onRowCountLoaded(result);
         }
-      }
+      };
 
       // Issue the call to get the row count
       var req = this.rpc.callAsync(handler, "getRowCount");
@@ -77,9 +77,9 @@ qx.Class.define("rpcexample.RemoteDataModel",
     {
       // Create the handler for our remote procedure call
       var _this = this;
-      handler = function(result, ex, id)
+      var handler = function(result, ex, id)
       {
-        mycall = null;
+        var mycall = null;
         if (ex !== null)
         {
           alert("Async(" + id + ") exception: " + ex +
@@ -92,7 +92,7 @@ qx.Class.define("rpcexample.RemoteDataModel",
           // We got (presumably) valid data.  Apply it to the table
           _this._onRowDataLoaded(result);
         }
-      }
+      };
 
       // Issue the call to get the row count
       var req =
