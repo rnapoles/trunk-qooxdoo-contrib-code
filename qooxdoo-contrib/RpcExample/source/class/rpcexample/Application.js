@@ -35,11 +35,13 @@ qx.Class.define("rpcexample.Application",
       // Enable logging in debug variant
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
+        var appender;
+
         // support native logging capabilities, e.g. Firebug for Firefox
-        qx.log.appender.Native;
+        appender = qx.log.appender.Native;
 
         // support cross-browser console. Press F7 to toggle visibility
-        qx.log.appender.Console;
+        appender = qx.log.appender.Console;
       }
 
       // Create the list of tests
@@ -347,7 +349,7 @@ qx.Class.define("rpcexample.Application",
       var mycalls = [];
 
       start.addListener("execute", function() {
-        t0 = new Date().getTime();
+        var t0 = new Date().getTime();
 
         rpc.setCrossDomain(crossDomain.getValue());
 
@@ -355,7 +357,7 @@ qx.Class.define("rpcexample.Application",
         rpc.setServiceName(service.getValue());
 
         var seqnum;
-        for (i=(tooMany.getValue() ? 10 : 4); i > 0; i-=2) {
+        for (var i=(tooMany.getValue() ? 10 : 4); i > 0; i-=2) {
           /*
            * Always issue an asynchronous request!  Issuing a synchronous
            * request can lock up the entire browser until a response is
@@ -363,7 +365,7 @@ qx.Class.define("rpcexample.Application",
            */
           mycall = rpc.callAsync(function(result, ex, seqnum) {
             mycalls[seqnum] = null;
-            t = new Date().getTime() - t0;
+            var t = new Date().getTime() - t0;
             if (ex == null)
             {
               page.debug(t + ": response " + seqnum + ": " + result);
@@ -374,7 +376,7 @@ qx.Class.define("rpcexample.Application",
             }
           }, "sleep", i.toString());
 
-          t = new Date().getTime() - t0;
+          var t = new Date().getTime() - t0;
           seqnum = mycall.getSequenceNumber();
           mycalls[seqnum] = mycall;
           page.debug(t + ": request " + seqnum + " = " + i.toString());
@@ -382,7 +384,7 @@ qx.Class.define("rpcexample.Application",
       });
 
       abort.addListener("execute", function() {
-        for (seqnum in mycalls)
+        for (var seqnum in mycalls)
         {
           if (mycalls[seqnum] !== null) {
             rpc.abort(mycalls[seqnum]);
@@ -509,7 +511,7 @@ qx.Class.define("rpcexample.Application",
 
           var dataArray = new Array(5);
 
-          for (i=0; i<5; i++)
+          for (var i=0; i<5; i++)
           {
             dataArray[i] = i;
           };
@@ -545,7 +547,7 @@ qx.Class.define("rpcexample.Application",
 
           test = "isObject";
           page.warn("Calling '" + test + "'");
-          obj = new Object();
+          var obj = new Object();
           obj.s = "Hi there.";
           obj.n = 23;
           obj.o = new Object();
@@ -849,7 +851,7 @@ qx.Class.define("rpcexample.Application",
               {
                 dataArray = new Array(5);
 
-                for (i=0; i<5; i++)
+                for (var i=0; i<5; i++)
                 {
                   dataArray[i] = i;
                 };
@@ -871,7 +873,7 @@ qx.Class.define("rpcexample.Application",
               {
                 dataArray = new Array(5);
 
-                for (i=0; i<5; i++)
+                for (var i=0; i<5; i++)
                 {
                   dataArray[i] = "Element " + i;
                 };
@@ -1053,7 +1055,7 @@ qx.Class.define("rpcexample.Application",
               {
                 page.warn("result: {" + result + "}");
 
-                for (i=0; i< dataArray.length; i++)
+                for (var i=0; i< dataArray.length; i++)
                 {
                   page.warn("Returned parameter (" + i + ") value '" +
                             result[i] + "' matches '" + dataArray[i] + "': " +
@@ -1106,7 +1108,7 @@ qx.Class.define("rpcexample.Application",
          * exception if so; otherwise it calls the result validation function
          * and then starts the next test.
          */
-        handler = function(result, ex, id) {
+        var handler = function(result, ex, id) {
           mycall = null;
           if (ex !== null) {
             alert("Async(" + id + ") exception: " + ex);
@@ -1123,10 +1125,10 @@ qx.Class.define("rpcexample.Application",
             // Nope.  Run the next test.
             tests[testNum][0]();
           }
-        }
+        };
 
         // Determine which transport to use
-        rpc = new qx.io.remote.Rpc(url.getValue(), service.getValue());
+        var rpc = new qx.io.remote.Rpc(url.getValue(), service.getValue());
         rpc.setTimeout(10000);
         rpc.setCrossDomain(crossDomain.getValue());
 
