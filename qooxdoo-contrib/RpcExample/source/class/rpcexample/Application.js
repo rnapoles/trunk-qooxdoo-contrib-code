@@ -397,6 +397,17 @@ qx.Class.define("rpcexample.Application",
 
     rpcServerFunctionalitySync : function(page, description)
     {
+      // This is an old application that still requires qooxdoo-specific
+      // formatting and parsing of dates.
+      var convertDates = new qx.ui.form.CheckBox("Old-style 'qooxdoo' dates?");
+      convertDates.setValue(qx.util.Json.CONVERT_DATES);
+      convertDates.addListener("changeValue",
+                               function(e)
+                               {
+                                 qx.util.Json.CONVERT_DATES = e.getData();
+                               });
+      page.add(convertDates);
+
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
@@ -436,6 +447,18 @@ qx.Class.define("rpcexample.Application",
       var start = new qx.ui.form.Button("Start Test");
       hBox.add(start);
 
+      var textArea = new qx.ui.form.TextArea();
+      textArea.append = qx.lang.Function.bind(
+        function(newText)
+        {
+          var text = textArea.getValue();
+          text = (text ? text + "\n" : "") + newText;
+          textArea.setValue(text);
+        },
+        textArea);
+      page.add(textArea, { flex : 1 });
+
+
       var rpc;
       var mycall = null;
       var test;
@@ -443,69 +466,72 @@ qx.Class.define("rpcexample.Application",
       start.addListener("execute", function() {
         try
         {
+          // clear the results area
+          textArea.setValue(null);
+
           var rpc = new qx.io.remote.Rpc(url.getValue(), service.getValue());
           rpc.setTimeout(10000);
 
           test = "getCurrentTimestamp";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: now=" + result.now);
-          page.warn("result: jsonDate=" + result.json.toString());
+          textArea.append("result: now=" + result.now);
+          textArea.append("result: jsonDate=" + result.json.toString());
 
           test = "getInteger";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           var result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns a number, got " +
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns a number, got " +
                     typeof(result) + ": " +
                     (typeof(result) == "number" &&
                      isFinite(result) ? "true" : "false"));
 
           test = "isInteger";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, 1);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns an integer: " + result);
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns an integer: " + result);
 
           test = "getString";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns a string: " + (typeof(result) == "string"));
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns a string: " + (typeof(result) == "string"));
 
           test = "isString";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, "Hello World");
-          page.warn("result: {" + result + "}");
-          page.warn("Returns a string: " + result);
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns a string: " + result);
 
           test = "getNull";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           var result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns null: " +
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns null: " +
                     (typeof(result) == "object" &&
                      result === null ? "true" : "false"));
 
           test = "isNull";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, null);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns null: " + result);
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns null: " + result);
 
           test = "getArrayInteger";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns an array: " +
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns an array: " +
                     ((typeof(result) == "object") &&
                      (result instanceof Array)));
 
           test = "getArrayString";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns an array: " +
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns an array: " +
                     ((typeof(result) == "object") &&
                      (result instanceof Array)));
 
@@ -517,9 +543,9 @@ qx.Class.define("rpcexample.Application",
           };
 
           test = "isArray";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, dataArray);
-          page.warn("result: {" + result + "}");
+          textArea.append("result: {" + result + "}");
 
           dataArray = new Array(5);
 
@@ -529,71 +555,73 @@ qx.Class.define("rpcexample.Application",
           };
 
           test = "isArray";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, dataArray);
-          page.warn("result: {" + result + "}");
+          textArea.append("result: {" + result + "}");
 
           test = "getFloat";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns a float: " + (typeof(result) == "number"));
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns a float: " + (typeof(result) == "number"));
 
           test = "getObject";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns an object: " + (typeof(result) == "object"));
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns an object: " + (typeof(result) == "object"));
 
           test = "isObject";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           var obj = new Object();
           obj.s = "Hi there.";
           obj.n = 23;
           obj.o = new Object();
           obj.o.s = "This is a test.";
           result = rpc.callSync(test, obj);
-          page.warn("result: {" + result.toString() + "}");
-          page.warn("Returns an object: " + result);
+          textArea.append("result: {" + result.toString() + "}");
+          textArea.append("Returns an object: " + result);
 
           test = "getTrue";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result.toString() + "}");
-          page.warn("Returns a boolean = true: " +
+          textArea.append("result: {" + result.toString() + "}");
+          textArea.append("Returns a boolean = true: " +
                     (typeof(result) == "boolean"));
 
           test = "getFalse";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
-          page.warn("result: {" + result.toString() + "}");
-          page.warn("Returns a boolean = false: " +
+          textArea.append("result: {" + result.toString() + "}");
+          textArea.append("Returns a boolean = false: " +
                     (typeof(result) == "boolean"));
 
           test = "isBoolean";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, true);
-          page.warn("result: {" + result.toString() + "}");
-          page.warn("Returns a boolean: " +  result);
+          textArea.append("result: {" + result.toString() + "}");
+          textArea.append("Returns a boolean: " +  result);
 
           test = "isBoolean";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, false);
-          page.warn("result: {" + result.toString() + "}");
-          page.warn("Returns a boolean: " + result);
+          textArea.append("result: {" + result.toString() + "}");
+          textArea.append("Returns a boolean: " + result);
 
+/*
           Date.prototype.classname = "Date";
           var date = new Date();
           test = "getParam";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test, date);
-          page.warn("result: {" + result + "}");
-          page.warn("Returns a date object, got " +
+          textArea.append("result: {" + result + "}");
+          textArea.append("Returns a date object, got " +
                     (result.classname == date.classname));
-          page.warn("Returns matching time " +
+          textArea.append("Returns matching time " +
                     date.getTime() + " = " +
                     result.getTime() + " :" +
                     (result.getTime() == date.getTime()));
+*/
 
           dataArray = new Array();
           dataArray[0] = true;
@@ -603,10 +631,9 @@ qx.Class.define("rpcexample.Application",
           dataArray[4] = "Hello World";
           dataArray[5] = new Array(5);
           dataArray[6] = new Object();
-          dataArray[7] = new Date();
 
           test = "getParams";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test,
                                 dataArray[0],
                                 dataArray[1],
@@ -614,26 +641,25 @@ qx.Class.define("rpcexample.Application",
                                 dataArray[3],
                                 dataArray[4],
                                 dataArray[5],
-                                dataArray[6],
-                                dataArray[7]);
-          page.warn("result: {" + result + "}");
+                                dataArray[6]);
+          textArea.append("result: {" + result + "}");
 
           for (i=0; i< dataArray.length; i++)
           {
-            page.warn("Returned parameter (" + i + ") value '" + result[i] +
+            textArea.append("Returned parameter (" + i + ") value '" + result[i] +
                       "' matches '" + dataArray[i] + "': " +
                       (result[i].toString() == dataArray[i].toString()));
-            page.warn("Returned parameter (" + i + ") type '" +
+            textArea.append("Returned parameter (" + i + ") type '" +
                       typeof(result[i]) + "' matches '" +
                       typeof(dataArray[i]) + "': " +
                       (typeof(result[i]) == typeof(dataArray[i])));
           };
 
           test = "getError";
-          page.warn("Calling '" + test + "'");
+          textArea.append("Calling '" + test + "'");
           result = rpc.callSync(test);
           // should never get here; we should receive an exception
-          page.warn("ERROR: Should have received an exception!  Got: " + result);
+          textArea.append("ERROR: Should have received an exception!  Got: " + result);
 
         }
         catch (ex)
@@ -1011,8 +1037,9 @@ qx.Class.define("rpcexample.Application",
                 test = "getParam";
                 page.warn("Calling '" + test + "'");
                 mycall = rpc.callAsync(handler, test, date);
-              },
+              }
 
+/*
               function(result)
               {
                 page.warn("result: {" + result + "}");
@@ -1022,6 +1049,7 @@ qx.Class.define("rpcexample.Application",
                           result.getTime() + " :" +
                           (result.getTime() == date.getTime()));
               }
+*/
             ],
 
             [
@@ -1035,7 +1063,6 @@ qx.Class.define("rpcexample.Application",
                 dataArray[4] = "Hello World";
                 dataArray[5] = new Array(5);
                 dataArray[6] = new Object();
-                dataArray[7] = new Date();
 
                 test = "getParams";
                 page.warn("Calling '" + test + "'");
@@ -1047,8 +1074,7 @@ qx.Class.define("rpcexample.Application",
                                        dataArray[3],
                                        dataArray[4],
                                        dataArray[5],
-                                       dataArray[6],
-                                       dataArray[7]);
+                                       dataArray[6]);
               },
 
               function(result)
