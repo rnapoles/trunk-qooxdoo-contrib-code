@@ -1889,7 +1889,7 @@ qx.Theme.define("aristo.theme.Appearance",
      style : function(states)
      {
        return {
-         icon : "plygroud/window/close-active.png"
+         icon : "aristo/decoration/window/close-active.png"
        };
      }
    },
