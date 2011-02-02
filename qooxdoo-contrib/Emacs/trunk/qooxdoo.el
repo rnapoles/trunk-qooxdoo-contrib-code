@@ -31,31 +31,11 @@
 
 ;;; Commentary:
 
-;; You'll need espect, see <https://github.com/rafl/espect>.
+;; You'll need eproject, see <https://github.com/jrockway/eproject>.
 
-;; After that, something like:
-
-;; (require 'espect)
-;; (require 'qooxdoo)
-;;
-;; (setq qooxdoo-workspace-path "~/workspace")
-;; (setq qooxdoo-project-paths
-;;       '("/path/to/project/1"
-;;         "Foo/bar/baz/project2"))
-;; (setq espect-buffer-settings
-;;       '(((:qooxdoo)
-;;          (lambda ()
-;;            (qooxdoo-minor-mode t)))))
-
-;; in your .emacs should do just fine.
-
-;; `qooxdoo-workspace-path' should be the path to your root "coding" folder,
-;; assuming you keep one. It's just a slight typing saver.
-
-;; `qooxdoo-project-paths' should be a list of paths to directories containing
-;; qooxdoo projects. If you're not using `qooxdoo-workspace-path', these should
-;; be absolute. If you are using `qooxdoo-workspace-path', these are interpreted
-;; as relative to that.
+;; After that, just (require 'qooxdoo) in your .emacs and you should be good to
+;; go. By default, "generate.py source" will be run each time you save a file,
+;; and there's a handy api lookup variable bound to C-c C-f.
 
 ;;; Code:
 
@@ -78,42 +58,59 @@
   :type 'string
   :group 'qooxdoo)
 
-(defcustom qooxdoo-workspace-path nil
-  "If you store your code under a shared root, you can put it here"
+(defcustom qooxdoo-default-generate-job "source"
+  "The default job to have generate.py run"
   :type 'string
   :group 'qooxdoo)
 
-(defcustom qooxdoo-project-paths nil
-  "A list of paths containing qooxdoo projects.
-These are prefixed with `qooxdoo-workspace-path'"
+(defcustom qooxdoo-compile-on-save t
+  "Whether or not to auto-run compile when a file in the project is saved"
+  :type 'boolean
+  :group 'qooxdoo)
+
+(defcustom qooxdoo-compile-read-command nil
+  "Whether compile should ask about the command it's about to run"
+  :type 'boolean
+  :group 'qooxdoo)
+
+(defcustom qooxdoo-compile-ask-about-save t
+  "Whether compile should ask about saving buffers that are modified"
+  :type 'boolean
+  :group 'qooxdoo)
+
+(defcustom qooxdoo-compile-auto-jump-to-first-error t
+  "Whether compile should open the first (and in our case, last) error when it
+  finds one"
+  :type 'boolean
+  :group 'qooxdoo)
+
+(defcustom qooxdoo-compile-scroll-output t
+  "Whether compile should automatically scroll its output"
+  :type 'boolean
+  :group 'qooxdoo)
+
+(defcustom qooxdoo-compile-error-alist
+  '(qooxdoo
+    "[ .*-]+\\(Expected[^.]+\\)\. file:\\([^,]+\\), line:\\([^,]+\\), column:\\(.+\\)"
+    2 3 4 2 1)
+  "The alist to send to compile mode. This thing, which you can read all about
+  in compile.el, roughly reads like 'match these things in the output from our
+  compiler, the 2nd match is the file name, the 3rd the line number, the 4th the
+  line column, it's an error, and highlight the first match."
   :type 'list
   :group 'qooxdoo)
 
-;; set us up to load automatically, requres espect
-(require 'espect)
+(defcustom qooxdoo-code-root-prefix "source/class/"
+  "The path to where the main source of your app lives, relative to the
+  directory containing generate.py. You probably don't need to change this, but
+  if you're using a different layout than the qooxdoo default for some reason,
+  it might fill your needs.
 
-(defun qooxdoo-normalize-project-path (filename)
-  (concat
-   (file-name-as-directory workspace-path)
-   (file-name-as-directory filename)))
+  This is used when finding which file compile should open for an error, in
+  combination with eproject-root and the file reported by the source job"
+  :type 'string
+  :group 'qooxdoo)
 
-(defun qooxdoo-make-search-targets ()
-  (mapcar
-   '(lambda (i)
-      (cons i (file-name-as-directory buffer-file-name)))
-   (mapcar
-    'qooxdoo-normalize-project-path
-    qooxdoo-project-paths)))
-
-(define-espect-rule :qooxdoo ()
-  (if buffer-file-name  ;; this gets called in the minibuffer for completion as well
-      (and
-       (or
-        (mapcar
-         '(lambda (i)
-            (string-match (car i) (cdr i)))
-         (qooxdoo-make-search-targets)))
-       (string-match "\\.js$" buffer-file-name))))
 
 ;; thingatpt and api search utils
 (require 'thingatpt)
@@ -134,9 +131,67 @@ These are prefixed with `qooxdoo-workspace-path'"
   (interactive)
   (browse-url (concat qooxdoo-api-url (thing-at-point 'qooxdoo))))
 
+;; eproject setup, allows us to load when appropriate and provides a nice point
+;; for adding criteria-specific behaviours
+(require 'eproject)
+(require 'eproject-extras)
+
+(define-project-type qooxdoo (generic)
+  (look-for "generate.py")
+  :relevant-files ("\\.js")
+  :irrelevant-files ("cache/" "source/script/" "inspector/" "build/")
+  :main-file "Application.js")
+
+(add-hook 'qooxdoo-project-file-visit-hook
+          'qooxdoo-minor-mode-on)
+
+(defun qooxdoo--parse-errors-filename-function (filename)
+  (format "%s.js" (expand-file-name
+                   (replace-regexp-in-string "\\." "/" filename)
+                   qooxdoo-project-code-root)))
+
+(defvar qooxdoo-project-code-root nil)
+
+(defun qooxdoo-setup-compilation-mode ()
+  (set (make-local-variable 'compile-command)
+       (format "%sgenerate.py %s" (eproject-root) qooxdoo-default-generate-job))
+
+  (setq compilation-read-command
+        qooxdoo-compile-read-command)
+
+  (setq compilation-ask-about-save
+        qooxdoo-compile-ask-about-save)
+  
+  (setq compilation-auto-jump-to-first-error
+        qooxdoo-compile-auto-jump-to-first-error)
+  
+  (setq compilation-scroll-output
+        qooxdoo-compile-scroll-output)
+  
+  (setq qooxdoo-project-code-root
+        (expand-file-name
+         qooxdoo-code-root-prefix
+         (eproject-root)))
+
+  (if qooxdoo-compile-on-save
+      (add-hook 'after-save-hook
+                '(lambda ()
+                   (with-current-buffer (buffer-name)
+                     (call-interactively 'compile)))
+                nil t))
+  
+  (setq compilation-parse-errors-filename-function
+        'qooxdoo--parse-errors-filename-function)
+
+  (add-to-list 'compilation-error-regexp-alist 'qooxdoo)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               qooxdoo-compile-error-alist))
+
 (defvar qooxdoo-mode-keymap (make-keymap)
   "keymap for qooxdoo-mode")
-(define-key qooxdoo-mode-keymap (kbd "C-c f") 'qooxdoo-search-api)
+
+(define-key qooxdoo-mode-keymap (kbd "C-c C-f") 'qooxdoo-search-api)
 
 ;;;###autoload
 (define-minor-mode qooxdoo-minor-mode
@@ -148,7 +203,8 @@ These are prefixed with `qooxdoo-workspace-path'"
 
 (defun qooxdoo-minor-mode-on ()
   (interactive)
-  (qooxdoo-minor-mode t))
+  (qooxdoo-minor-mode t)
+  (qooxdoo-setup-compilation-mode))
 
 (defun qooxdoo-minor-mode-off ()
   (interactive)
