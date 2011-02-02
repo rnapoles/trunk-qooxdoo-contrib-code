@@ -343,9 +343,9 @@ qx.core.Init.getApplication().setTestData(
     requestData : {
       service : "qooxdoo.test",
       method  : "getParams",
-      params : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]
+      params : [ null, false, 1, 2.3, "one", [ 1,2,4], { "foo" : "bar" } ]
     },
-    checkResult : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]    
+    checkResult : [ null, false, 1, 2.3, "one", [ 1,2,4], { "foo" : "bar" } ]
   },
   
   "qooxdoo.test.getParam": 
@@ -354,34 +354,23 @@ qx.core.Init.getApplication().setTestData(
     requestData : {
       service : "qooxdoo.test",
       method  : "getParam",
-      params : [ null, false, 1, "one", [ 1,2,4], { "foo" : "bar" } ]
+      params : [ { "foo" : "bar" } ]
     },
-    checkResult : null
+    checkResult : { "foo" : "bar" }
   },
   
-  "qooxdoo.test.getCurrentTimestamp" :
-  {
-    visible : false,        
-    requestData : {
-      service : "qooxdoo.test",
-      method  : "getCurrentTimestamp"
-    },
-    params : [],
-    checkResult : function( result ) {
-// @todo reenable response check
-//      if ( qx.lang.Type.isDate( result ) )
-//      {
-//        return true;
-//      }
-//      return "Response is not a date!";
-      return true;
-    }
-  },
   "qooxdoo.test.getError":{
     "visible":false,
     "requestData":{
       service : "qooxdoo.test",
-      "method":"getError"
+      "method":"getError",
+      params : []
+    },
+    checkError : function(error)
+    {
+      // There are two implementations that return different error codes.
+      // Accept either.
+      return (error.code == 23 || error.code == 42);
     }
   } 
 });

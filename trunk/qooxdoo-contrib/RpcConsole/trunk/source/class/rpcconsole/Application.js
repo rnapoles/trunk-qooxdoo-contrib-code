@@ -631,6 +631,7 @@ qx.Class.define("rpcconsole.Application",
     {
       var doSendRequest = true; 
       var data = this.getTestData(testName);
+      var check;
       
       if ( ! data )
       {
@@ -686,7 +687,34 @@ qx.Class.define("rpcconsole.Application",
              */
             if ( response.error )
             {
-              this._handleTestFailed( testName, response.error.message );
+              /*
+               * Optional data to compare the error with an expected
+               * error. The value must be a function which must return true if
+               * the error is expected, false if the error is unexpected, or a
+               * string (also meaning the error is unexpected) which is used
+               * as the error message in place of the one returned in
+               * response.error.message.
+               */
+              if (! data.checkError)
+              {
+                this._handleTestFailed( testName, response.error.message );
+              }
+              else
+              {
+                check = data.checkError.call( this, response.error );
+                if (check === true)
+                {
+                  this._handleTestPassed( testName );
+                }
+                else
+                {
+                  this._handleTestFailed( testName, 
+                                          (check === false
+                                           ? response.error.message 
+                                           : check));
+                }
+              }
+              
             }
             
             /*
@@ -698,10 +726,12 @@ qx.Class.define("rpcconsole.Application",
              */
             else if ( qx.lang.Type.isFunction( data.checkResult ) )
             {
-              var check = data.checkResult.call( 
+              check = data.checkResult.call( 
                 this, 
-                qx.lang.Type.isObject( response.result ) && response.result.data !== undefined ?
-                  response.result.data : response.result
+                (qx.lang.Type.isObject( response.result ) && 
+                 response.result.data !== undefined 
+                 ? response.result.data 
+                 : response.result)
               );
               if ( check === true )
               {
