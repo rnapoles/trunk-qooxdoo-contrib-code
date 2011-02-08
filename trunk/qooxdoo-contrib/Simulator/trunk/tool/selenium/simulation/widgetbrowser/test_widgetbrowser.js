@@ -61,6 +61,10 @@ simulation.Simulation.prototype.getTabNames = function()
 
 simulation.Simulation.prototype.testTab = function(tabName)
 {
+  this.info("Clicking Tab " + tabName);
+  if (tabName.indexOf('/') >= 0) {
+    tabName = /(.*?)\//.exec(tabName)[1];
+  }
   this.qxClick(locators.tabView + locators.tabContainer + '/[@label=' + tabName + ']');
   
   // Give the demo part some time to appear
