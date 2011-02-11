@@ -61,7 +61,7 @@ simulation.Simulation.prototype.getTabNames = function()
 
 simulation.Simulation.prototype.testTab = function(tabName)
 {
-  this.info("Clicking Tab " + tabName);
+  this.log("Clicking Tab " + tabName, "info");
   if (tabName.indexOf('/') >= 0) {
     tabName = /(.*?)\//.exec(tabName)[1];
   }
