@@ -41,6 +41,7 @@ simulation.Simulation.prototype.runTest = function()
   this.clearGlobalErrorStore();
   
   var tabNames = this.getTabNames();
+  print("TAB NAMES " + tabNames);
   for (var i=0,l=tabNames.length; i<l; i++) {
     this.testTab(tabNames[i]);
   }
@@ -56,7 +57,11 @@ simulation.Simulation.prototype.getTabNames = function()
   return labels;';
   
   var strVal = String(this.__sel.getRunInContext(locators.tabView, labelGetter));
-  return eval(strVal);
+  try {
+    return eval(strVal);
+  } catch(ex) {
+    return strVal.split(",");
+  }
 };
 
 simulation.Simulation.prototype.testTab = function(tabName)
@@ -94,9 +99,10 @@ simulation.Simulation.prototype.testTab = function(tabName)
     return;
   }
 
-  try {
+  //try {
     mySim.addGlobalErrorHandler();
     mySim.runTest();
+  /*
   }
   catch(ex) {
     mySim.testFailed = true;
@@ -106,6 +112,7 @@ simulation.Simulation.prototype.testTab = function(tabName)
     }
     mySim.log(msg + "<br/>" + ex, "error");
   }
+  */
 
   mySim.logGlobalErrors();
   mySim.logResults();
