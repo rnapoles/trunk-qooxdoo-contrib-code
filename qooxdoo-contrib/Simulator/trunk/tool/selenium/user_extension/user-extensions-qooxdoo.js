@@ -134,7 +134,6 @@ Selenium.prototype.qx = {};
 * Helper to parse a param-String and provide access to the parameters with default-value handling
 *
 * @param customParameters string with name1=value1, name2=value2 whitespace will be ignored/stripped
-* @param isIEevent boolean if true treat buttons IE-like, false treat it like all other user-agents do
 */
 Selenium.prototype.qx.MouseEventParameters = function (customParameters)
 {
@@ -182,7 +181,7 @@ Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER =
  */
 Selenium.prototype.qx.MouseEventParameters.prototype.getButtonValue = function(buttonName)
 {
-  if (document.createEventObject)
+  if (document.createEventObject && (!document.documentMode || document.documentMode < 9))
   {
     LOG.debug("MouseEventParameters.prototype.getButtonValue - using IE Button-Mapping");
     return Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_IE[buttonName];
