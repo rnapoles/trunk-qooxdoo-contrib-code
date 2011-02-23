@@ -53,15 +53,12 @@ qx.Class.define("svg.demo.Application",
       
       var svgroot = svgWidget.getSvg();
       
-      x = svg.core.Types;
-
       // create a defs section
       var defs = new svg.struct.Defs();
       svgroot.add(defs);
 
       // prepare a pattern for the grid
       var gridPattern = new svg.paint.Pattern();
-      x = gridPattern;
       
       gridPattern.setId("gridPattern");
       gridPattern.setX(0);
