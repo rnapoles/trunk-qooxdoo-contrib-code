@@ -31,7 +31,7 @@
   "let" :
   {
     "APPLICATION"  : "svg.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.1",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.3",
     "QXTHEME"      : "svg.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
