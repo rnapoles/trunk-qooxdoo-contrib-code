@@ -1,0 +1,35 @@
+{
+  "info" : 
+  {
+    "name" : "Simulator",
+
+    "summary" : "Tools to run qooxdoo applications in batch mode (ie. simulate user interaction)",
+    "description" : "This module provides various pieces to utilize Selenium (http://www.openqa.org/selenium) to automate qooxdoo applications.",
+    
+    "homepage" : "http://qooxdoo.org/",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+      "name" : "Thomas Herchenroeder",
+      "user" : "thron7",
+      "email" : "thron7@users.sourceforge.net"
+    }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8.1", "trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "simulator",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
