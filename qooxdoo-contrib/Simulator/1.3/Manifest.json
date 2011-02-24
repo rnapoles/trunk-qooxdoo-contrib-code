@@ -12,14 +12,19 @@
     "authors" : 
     [
       {
-      "name" : "Thomas Herchenroeder",
-      "user" : "thron7",
-      "email" : "thron7@users.sourceforge.net"
-    }
+        "name" : "Thomas Herchenroeder",
+        "user" : "thron7",
+        "email" : "thron7@users.sourceforge.net"
+      },
+      {
+        "name" : "Daniel Wagner",
+        "user" : "d_wagner",
+        "email" : "daniel.wagner@1und1.de"
+      }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["0.8.1", "trunk"]
+    "qooxdoo-versions": ["1.0", "1.1", "1.2", "1.3"]
   },
   
   "provides" : 
