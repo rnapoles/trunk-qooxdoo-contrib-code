@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "QxExtJsCharts",
+
+    "summary" : "ExtJS Charts Integration for Qooxdoo",
+    "description" : "Create ExtJS 4 charts in your qooxdoo application.",
+    
+    "homepage" : "http://contrib.qooxdoo.org/project/QxExtJsCharts",
+
+    "license" : "same as ExtJS",
+    "authors" :
+    [
+      {
+        "name" : "Tobias Oetiker (oetiker)",
+        "email" : "tobi@oetiker.ch"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.3"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "qxextjscharts",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}
+
