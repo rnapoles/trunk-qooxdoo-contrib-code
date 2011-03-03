@@ -87,7 +87,6 @@ extend : qx.core.Object
 		var args = request.args;
 		// Now call the method
 		var returnz = service.dispatch(method, args);
-		console.log(returnz);
 		
 		// Call our callback method
 		callback(returnz);
