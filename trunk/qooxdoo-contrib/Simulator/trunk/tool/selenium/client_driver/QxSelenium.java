@@ -76,55 +76,55 @@ public class QxSelenium extends DefaultSelenium
     return this.commandProcessor.doCommand("captureScreenshot", new String[] {filename, geometry});
   }
 
-  public int qxTableGetRows(String locator) {
-    String ret = this.commandProcessor.getString("getQxTableRows", 
+  public int getQxTableRowCount(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableRowCount", 
       new String[] {locator,});
     return Integer.parseInt(ret);
   }
 
-  public int qxTableGetCols(String locator) {
-    String ret = this.commandProcessor.getString("getQxTableModelCols", 
+  public int getQxTableModelColCount(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableModelColCount", 
       new String[] {locator,});
     return Integer.parseInt(ret);    
   }
   
-  public int qxTableGetVisibleCols(String locator) {
-    String ret = this.commandProcessor.getString("getQxTableVisibleCols", 
+  public int getQxTableVisibleColCount(String locator) {
+    String ret = this.commandProcessor.getString("getQxTableVisibleColCount", 
       new String[] {locator,});
     return Integer.parseInt(ret);    
   }
 
-  public String qxTableGetValue(String locator, String opts) {
+  public String getQxTableValue(String locator, String opts) {
     String ret = this.commandProcessor.getString("getQxTableValue", 
       new String[] {locator, opts, });
     return ret;
   }
 
-  public String qxTableGetColumnIds(String locator) {
+  public String getQxTableModelColumnIds(String locator) {
     String ret = this.commandProcessor.getString("getQxTableModelColumnIds", 
       new String[] {locator,});
     return ret;
   }
   
-  public String qxTableGetVisibleColumnIds(String locator) {
+  public String getQxTableVisibleColumnIds(String locator) {
     String ret = this.commandProcessor.getString("getQxTableVisibleColumnIds", 
       new String[] {locator,});
     return ret;
   }
   
-  public String qxTableGetColumnIndexByName(String locator, String name) {
+  public String getQxTableColumnIndexByName(String locator, String name) {
     String ret = this.commandProcessor.getString("getQxTableColumnIndexByName",
       new String[] {locator, name});
     return ret;
   }
   
-  public String qxTableGetSelectedRowData(String locator) {
+  public String getQxTableSelectedRowData(String locator) {
     String ret = this.commandProcessor.getString("getQxTableSelectedRowData",
       new String[] {locator,});
     return ret;
   }
 
-  public String qxObjectExecFunction(String locator, String functionName) {
+  public String getQxObjectFunction(String locator, String functionName) {
     String ret = this.commandProcessor.getString("getQxObjectFunction", 
       new String[] {locator, functionName, });
     return ret;
