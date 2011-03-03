@@ -59,35 +59,35 @@ sub qxEditTableCell {
     return $self->do_command( "qxEditTableCell", $locator, $options );
 }
 
-sub qxTableGetRows {
+sub getQxTableRowCount {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
-    return $self->do_command( "getQxTableRows", $locator, $options );
+    return $self->do_command( "getQxTableRowCount", $locator, $options );
 }
 
-sub qxTableGetCols {
+sub getQxTableModelColCount {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
-    return $self->do_command( "getQxTableModelCols", $locator, $options );
+    return $self->do_command( "getQxTableModelColCount", $locator, $options );
 }
 
-sub qxTableGetVisibleCols {
+sub getQxTableVisibleColCount {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
-    return $self->do_command( "getQxTableVisibleCols", $locator, $options );
+    return $self->do_command( "getQxTableVisibleColCount", $locator, $options );
 }
 
-sub qxTableGetColumnIds {
+sub getQxTableModelColumnIds {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
     return $self->do_command( "getQxTableModelColumnIds", $locator, $options );
 }
 
-sub qxTableGetVisibleColumnIds {
+sub getQxTableVisibleColumnIds {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
@@ -95,7 +95,7 @@ sub qxTableGetVisibleColumnIds {
         $options );
 }
 
-sub qxTableGetColumnIndexByName {
+sub getQxTableColumnIndexByName {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
@@ -110,14 +110,14 @@ sub qxTableGetSelectedRowData {
     return $self->do_command( "getQxTableSelectedRowData", $locator, $options );
 }
 
-sub qxTableGetValue {
+sub getQxTableValue {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;
     return $self->do_command( "getQxTableValue", $locator, $options );
 }
 
-sub qxObjectExecFunction {
+sub getQxObjectFunction {
     my $self    = shift;
     my $locator = shift;
     my $options = shift;

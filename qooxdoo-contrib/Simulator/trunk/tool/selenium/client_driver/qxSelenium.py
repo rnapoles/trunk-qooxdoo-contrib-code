@@ -54,34 +54,34 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
         else:
             return self.do_command("qxEditTableCell", [locator, opts,])
     
-    def qxTableGetRows(self, locator):
-        return self.do_command("getQxTableRows", [locator,])
+    def getQxTableRowCount(self, locator):
+        return self.do_command("getQxTableRowCount", [locator,])
 
-    def qxTableGetCols(self, locator):
-        return self.do_command("getQxTableModelCols", [locator,])
+    def getQxTableModelColCount(self, locator):
+        return self.do_command("getQxTableModelColCount", [locator,])
     
-    def qxTableGetVisibleCols(self, locator):
-        return self.do_command("getQxTableVisibleCols", [locator,])
+    def getQxTableVisibleColCount(self, locator):
+        return self.do_command("getQxTableVisibleColCount", [locator,])
     
-    def qxTableGetColumnIds(self, locator):
+    def getQxTableModelColumnIds(self, locator):
         return self.do_command("getQxTableModelColumnIds", [locator,])
 
-    def qxTableGetVisibleColumnIds(self, locator):
+    def getQxTableVisibleColumnIds(self, locator):
         return self.do_command("getQxTableVisibleColumnIds", [locator,])
     
-    def qxTableGetColumnIndexByName(self, locator, name):
+    def getQxTableColumnIndexByName(self, locator, name):
         return self.do_command("getQxTableColumnIndexByName", [locator, name,])
     
-    def qxTableGetSelectedRowData(self, locator):
+    def getQxTableSelectedRowData(self, locator):
         return self.do_command("getQxTableSelectedRowData", [locator,])
     
-    def qxTableGetValue(self, locator, opts=None):
+    def getQxTableValue(self, locator, opts=None):
         if opts==None:
             return self.do_command("getQxTableValue", [locator,])
         else:
             return self.do_command("getQxTableValue", [locator, opts,])
           
-    def qxObjectExecFunction(self, locator, functionName):
+    def getQxObjectFunction(self, locator, functionName):
         return self.do_command("getQxObjectFunction", [locator, functionName,])
 
     def getRunInContext(self, locator, script):
