@@ -88,19 +88,21 @@ extend : qx.core.Object
 		 * background service implementation.
 		 */
 		var localcallback = function(returnz) {
-			console.log("Returned");
 			// Now package up the returnz and return them
-			if(qx.lang.Type.isArray(argz)) {
-				returnz = [returnz];
-				returnz = returnz.concat(argz);
-			}
-			callback.apply(scope, returnz);
+			returnz = [returnz];	// Get ready for .apply
+			if(argz)
+				returnz = returnz.concat(argz); // Append user arguments
+			if(scope)
+				callback.apply(scope, returnz);
+			else
+				callback.apply(callback, returnz);
 		};
 		var backArgs = {
 			service : this.__service
 			,method : method
-			,args : args
 		};
+		if(args) backArgs.args = args;
+		else backArgs.args = null;
 		chrome.extension.sendRequest(backArgs, localcallback);
 	}
 }
