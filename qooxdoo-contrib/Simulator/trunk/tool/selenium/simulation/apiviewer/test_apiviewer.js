@@ -29,6 +29,7 @@ var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
 
 simulation.Simulation.prototype.runTest = function()
 {
+  this.__sel.windowMaximize();
   // Make sure the locale is 'en' to simplify dealing with log messages.
   var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";  
   this.runScript(setLocale, "Setting application locale to EN");
@@ -97,7 +98,7 @@ simulation.Simulation.prototype.checkSearch = function()
   
   this.qxType("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
   // execute typeKeys once so all needed events are fired.
-  Packages.java.lang.Thread.sleep(5000);
+  Packages.java.lang.Thread.sleep(2000);
   this.qxTypeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "w");
 
   Packages.java.lang.Thread.sleep(1000);
