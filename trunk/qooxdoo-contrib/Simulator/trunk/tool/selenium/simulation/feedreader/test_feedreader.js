@@ -104,7 +104,7 @@ simulation.Simulation.prototype.checkCombinedImage = function()
   var imageBackground = this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation.getImageBackground("' + imgLoc +'")');
   imageBackground = String(imageBackground);
   
-  if (imageBackground.indexOf("combined") >= 0) {
+  if (imageBackground.indexOf("combined") >= 0 || imageBackground.indexOf("base64") >= 0) {
     this.log("Add Feed button icon uses combined image.", "info");
   } else {
     this.log("Add Feed button icon does not use combined image: " + imageBackground, "error");
