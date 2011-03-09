@@ -289,7 +289,8 @@ simulation.Simulation.prototype.runTest = function()
   // Simulating native key events doesn't work in WebKit
   // The Console window uses window.top to eval commands which doesn't work 
   // during IE tests because the Inspector is loaded in an Iframe 
-  if (browser.indexOf("AppleWebKit") < 0 && launcher.indexOf("*iexplore") < 0) {
+  if (browser.indexOf("AppleWebKit") < 0 && launcher.indexOf("*iexplore") < 0
+      && browser.indexOf("Firefox/4") < 0) {
     try {
       this.checkConsole();
     } catch(ex) {
