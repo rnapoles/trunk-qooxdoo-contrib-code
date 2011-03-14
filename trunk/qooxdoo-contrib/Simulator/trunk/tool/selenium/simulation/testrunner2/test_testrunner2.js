@@ -40,36 +40,20 @@ var isStatusFinished = selWin + "." + qxAppInst + ".runner.getTestSuiteState() =
  */
 simulation.Simulation.prototype.getPackageList = function()
 {
-  var packageList = [];
-  var snippet = selWin + '.qx.lang.Json.stringify(' + selWin + "." + qxAppInst + '.runner.testList)';
-  var fullList = String(this.__sel.getEval(snippet));
-  fullList = eval(fullList);
-  
-  for (var i=0,l=fullList.length; i<l; i++) {
-    var test = fullList[i];
-    var testClass = test.substring(test.indexOf(this.testNameSpace) + this.testNameSpace.length + 1, test.indexOf(":"));
-    var testPackage;
-    if (testClass.substr(0,1) === testClass.substr(0,1).toUpperCase()) {
-      testPackage = testClass;
-    } else {
-      var match = /^(.*?)\./.exec(testClass);
-      if (match[1]) {
-        testPackage = match[1];
-      }
+  var getPackages = function() {
+    var model = selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication().runner.getTestModel();
+    var qxTest = model.getChildren().getItem(0).getChildren();
+    var packages = [];
+    for (var i=0,l=qxTest.length; i<l; i++) {
+      packages.push(qxTest.getItem(i).fullName);
     }
-    var fullPackageName = this.testNameSpace + "." + testPackage;
-    if (testPackage) {
-      var known = false;
-      for (var x=0,y=packageList.length; x<y; x++) {
-        if (packageList[x] == fullPackageName) {
-          known = true;
-        }
-      }
-      if (!known) {
-        packageList.push(fullPackageName);
-      }
-    }
+    return selenium.qxStoredVars['autWindow'].qx.lang.Json.stringify(packages);
   }
+
+  mySim.addOwnFunction("getPackages", getPackages);
+  var packages = String(mySim.getEval(simulation.Simulation.SELENIUMWINDOW + ".qx.Simulation.getPackages()"));
+  var packageList = eval(packages);
+  
   return packageList;
 };
 
@@ -143,11 +127,11 @@ simulation.Simulation.prototype.removeIgnored = function(packagesOld)
  */
 simulation.Simulation.prototype.runTest = function()
 {
-  /*
-  this.autUri = String(this.__sel.getEval(selWin + "." + 'qx.core.Setting.get("qx.testPageUri")'));
+  
+  this.autUri = String(this.__sel.getEval(selWin + "." + 'qx.core.Environment.get("qx.testPageUri").toString()'));
   this.autUri += "?testclass=";
-  */
-  this.testNameSpace = String(this.__sel.getEval(selWin + "." + qxAppInst + ".runner._testNameSpace"));
+  
+  this.__sel.qxClickAt("qxhv=*/qx.ui.tree.VirtualTree/child[0]/child[0]/child[0]/child[0]");
   
   var packages = false;
   var include = this.getIncludeList();
@@ -157,7 +141,7 @@ simulation.Simulation.prototype.runTest = function()
   }
   else {
     packages = this.getPackageList();
-    packages.sort();
+    //packages.sort();
   }
 
   if (!packages) {
@@ -180,18 +164,6 @@ simulation.Simulation.prototype.runTest = function()
     }
     return false;
   }
-
-  /* Workaround for stability issues: Move qx.test.ui and qx.test.Xml to the 
-  back of the queue.  
-  if (entryAt(packages, "qx.test.ui") >= 0) {
-    var temp = packages.splice(entryAt(packages, "qx.test.ui"), 1);
-    packages = packages.concat(temp);
-  }
-  if (entryAt(packages, "qx.test.Xml") >= 0) {
-    temp = packages.splice(entryAt(packages, "qx.test.Xml"), 1);
-    packages = packages.concat(temp);
-  }
-  */
 
   if (this.getConfigSetting("debug")) {
     print("Final test package list: " + packages);
@@ -226,7 +198,7 @@ simulation.Simulation.prototype.runPackage = function(packageName)
   
   var packageStartDate = new Date();
 
-  this.__sel.getEval(selWin + "." + qxAppInst + ".runner.view.run()");
+  this.qxClick("qxhv=*/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]");
 
   Packages.java.lang.Thread.sleep(1000);
   
@@ -264,83 +236,98 @@ simulation.Simulation.prototype.runPackage = function(packageName)
  * Loads a test package.
  * 
  * @param packageName {String} The name of the package to be processed
+ * @return void
  */
 simulation.Simulation.prototype.loadPackage = function(packageName)
 {
   if (this.getConfigSetting("debug")) {
     print("Loading package: " + packageName);
   }
-  
-  try {
-    this.__sel.open("about:blank");
-  } catch(ex) {
-    Packages.java.lang.Thread.sleep(5000);
-    try {
-      this.__sel.open("about:blank");      
-    } catch(ex) {
-      this.log("WTF is wrong with this crap??? " + ex, "error");
-      this.testFailed = true;
-      return false;
-    }
-  }
-  
-  Packages.java.lang.Thread.sleep(2000);
-  
-  try {
-    this.qxOpen(this.getConfigSetting("autHost") + this.getConfigSetting("autPath") + "?testclass=" + packageName);
-    Packages.java.lang.Thread.sleep(2000);
-  } catch(ex) {
-    this.log("Unable to load package " + packageName + ": " + ex, "error");
-    this.testFailed = true;
-    return false;
-  }
-  
+  // Enter the test app URI with the current package's name after 'testclass='.
+  this.qxType("qxhv=*/qx.ui.toolbar.ToolBar/*/qx.ui.form.TextField", this.autUri + packageName);
+  //this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");
+
   var isAutReady = this.waitForCondition(isStatusReady, 120000,
                    "Waiting for test package " + packageName + " to load");
 
   if (!isAutReady) {
     this.testFailed = true;
-    return false;
+    return;
   }
-  
-  this.addGlobalErrorHandler();
   return true;
+
 };
 
 
-/**
- * Gets HTML content from the result iframe, splits it up into individual test
- * results, removes successful results and logs the rest.
- * 
- * @return void
- */
 simulation.Simulation.prototype.logErrors = function()
 {
-  var testResults = selWin + "." + qxAppInst + ".runner.view.getTestResults()";
-  var snippet = selWin + ".qx.lang.Json.stringify(" + testResults + ")";
-  var results = String(this.__sel.getEval(snippet));
-  results = results.replace(/\'/g, "\\'");
-  eval("results = " + results);
+  var findElem = 'selenium.page().findElement(\'xpath=//*[@qxclass="testrunner2.view.widget.TestResultView"]\').innerHTML';
+  var result = this.getEval(findElem);
+  result = String(result);
   
-  if (!results || typeof results !== "object") {
-    this.log("Unable to retrieve test result HTML!", "error");
-    return;
+  // split it up into individual entries.
+  var logArray = [];
+  if (result.indexOf("</div>") >0 ) {
+    logArray = result.split("</div>");
+  } else if (result.indexOf("</DIV>") >0 ) {
+    logArray = result.split("</DIV>");
   }
-  
-  for (var key in results) {
-    if (results[key].state !== "success") {
-      var msg = '<div class="testResult ' + results[key].state + '"><h3>' + key + '</h3>';
-      if (results[key].messages && results[key].messages.length > 0) {
-        for (var i=0,l=results[key].messages.length; i<l; i++) {
-          var line = results[key].messages[i];
-          line = line.replace(/\'/g, "\\'");
-          line = line.replace(/\n/g, "<br/>");
-          line = line.replace(/\r/g, "");
-          msg += line + "<br/>";
+
+  if (this.getConfigSetting("debug")) {
+    print("Split result into " + logArray.length + " array entries.");
+  }
+
+  for (var i=0, l=logArray.length; i<l; i++) {
+    var line = logArray[i];
+
+    // workaround for (rhino?) issue with replace() and single quotes.
+    line = line.split("'");
+    line = line.join("\'");
+
+    // ignore successful results
+    if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) 
+        && line.indexOf('testResult success') < 0
+        && line.indexOf('testResult skip') < 0) {
+
+      // strip uninformative stack trace
+      if (line.indexOf('Stack trace:') > 0) {
+        if (line.indexOf('<DIV class="trace') >= 0) {
+          line = line.substring(0,line.indexOf('<DIV class="trace'));
+        }
+        else if (line.indexOf('<DIV class=trace') >= 0) {
+          line = line.substring(0,line.indexOf('<DIV class=trace'));
+        }
+        else {
+          line = line.substring(0,line.indexOf('<div class="trace'));
         }
       }
-      msg += '</div>';
-      this.log(msg, "error");
+
+      // replace evil special characters
+      try {
+        line = line.replace(/\<br\>/gi, "<br/>");
+        line = line.replace(/\'/g, "\\'");
+        line = line.replace(/\n/g, "");
+        line = line.replace(/\r/g, "");
+      }
+      catch(ex) {
+        print("Error while replacing: " + ex);
+      }
+
+      // make sure all div tags are closed
+      var odivs = line.match(/\<div/gi);
+      var cdivs = line.match(/\<\/div/gi);
+      if (odivs) {
+        cdivs = cdivs ? cdivs : [];
+        var divdiff = odivs.length - cdivs.length;
+        if (divdiff > 0) {
+          for (var j=0; j<divdiff; j++) {
+            line += "</div>";
+          }
+        }
+      }
+
+      // log the result
+      this.log(line, "error");
     }
   }
 };
@@ -388,9 +375,10 @@ simulation.Simulation.prototype.logAutLog = function()
     return;
   }
 
-  try {
+  //try {
     mySim.addGlobalErrorHandler();
     mySim.runTest();
+  /*
   }
   catch(ex) {
     var msg = "Unexpected error while running tests: " + ex;
@@ -399,7 +387,7 @@ simulation.Simulation.prototype.logAutLog = function()
     }
     mySim.log(msg, "error");
   }
-  
+  */
   mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
