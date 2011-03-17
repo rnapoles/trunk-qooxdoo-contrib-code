@@ -127,223 +127,78 @@ simulation.Simulation.prototype.removeIgnored = function(packagesOld)
  */
 simulation.Simulation.prototype.runTest = function()
 {
+  var stateGetter = simulation.Simulation.SELENIUMWINDOW + "." 
+    + simulation.Simulation.QXAPPINSTANCE + ".runner.view.getStatus()";
   
-  this.autUri = String(this.__sel.getEval(selWin + "." + 'qx.core.Environment.get("qx.testPageUri").toString()'));
-  this.autUri += "?testclass=";
-  
-  this.__sel.qxClickAt("qxhv=*/qx.ui.tree.VirtualTree/child[0]/child[0]/child[0]/child[0]");
-  
-  var packages = false;
-  var include = this.getIncludeList();
-  
-  if (include.length > 0) {
-    packages = include;
-  }
-  else {
-    packages = this.getPackageList();
-    //packages.sort();
-  }
-
-  if (!packages) {
-    this.log("ERROR: Unable to get list of test packages.", "error");
-    this.testFailed = true;
-    return;
-  }
-
-  if (this.getConfigSetting("debug")) {
-    print("Initial test package list: " + packages);
-  }
-  
-  packages = this.removeIgnored(packages);
-
-  function entryAt(array, entry) {
-    for (var i=0;i<array.length;i++) {
-      if (array[i] === entry) {
-        return i;
-      }
-    }
-    return false;
-  }
-
-  if (this.getConfigSetting("debug")) {
-    print("Final test package list: " + packages);
-  }
-
-  var elapsedTotal = 0;
-  for (var i=0; i<packages.length; i++) {
-    var loaded = this.loadPackage(packages[i]);
-    if (loaded) {
-      this.runPackage(packages[i]);
+  while (true) {
+    Packages.java.lang.Thread.sleep(1000);
+    var suiteState = String(this.getEval(stateGetter));
+    
+    switch (suiteState) {
+      case "error":
+        this.log("Error loading test suite", "error");
+        return;
+      case "finished":
+        this.logErrors();
+        return;
+      default:
+        print("status: " + suiteState);
     }
   }
-
-};
-
-/**
- * Runs a test package and logs the results.
- * 
- * @param packageName {String} The name of the package to be processed
- * @return void
- */
-simulation.Simulation.prototype.runPackage = function(packageName)
-{
-  if (this.getConfigSetting("debug")) {
-    print("Starting tests in package " + packageName);
-  }
-  
-  var testAppWindow = selWin + "." + qxAppInst + ".runner.view.getIframeWindow()";
-  if (this.getConfigSetting("logAutGlobalErrors") && !packageName.indexOf(("qx.test.io.remote") == 0 )) {
-    this.addGlobalErrorHandler(testAppWindow);
-  }
-  
-  var packageStartDate = new Date();
-
-  this.qxClick("qxhv=*/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[0]");
-
-  Packages.java.lang.Thread.sleep(1000);
-  
-  var isPackageDone = mySim.waitForCondition(isStatusFinished, 600000,
-                    "Waiting for test package " + packageName + " to finish", "info");
-
-  if (!isPackageDone) {
-    isPackageDone = mySim.waitForCondition(isStatusFinished, 600000,
-                    "Waiting for test package " + packageName + " to finish");
-  }
-
-  if (!isPackageDone) {
-    this.testFailed = true;
-  }
-  
-  this.logErrors();
-  
-  if (this.getConfigSetting("logAutGlobalErrors") && !packageName.indexOf(("qx.test.io.remote") == 0 )) {
-    this.logGlobalErrors(testAppWindow);
-  }
-  
-  if (this.getConfigSetting("getAutLog")) {
-    this.logAutLog();
-  }
-
-  if (this.getConfigSetting("debug")) {
-    if (isPackageDone) {
-      this.logTestDuration(packageStartDate, "Test package " + packageName);
-    }
-  }
-};
-
-
-/**
- * Loads a test package.
- * 
- * @param packageName {String} The name of the package to be processed
- * @return void
- */
-simulation.Simulation.prototype.loadPackage = function(packageName)
-{
-  if (this.getConfigSetting("debug")) {
-    print("Loading package: " + packageName);
-  }
-  // Enter the test app URI with the current package's name after 'testclass='.
-  this.qxType("qxhv=*/qx.ui.toolbar.ToolBar/*/qx.ui.form.TextField", this.autUri + packageName);
-  //this.runScript(qxAppInst + '.reloadTestSuite();', "Calling reloadTestSuite");
-
-  var isAutReady = this.waitForCondition(isStatusReady, 120000,
-                   "Waiting for test package " + packageName + " to load");
-
-  if (!isAutReady) {
-    this.testFailed = true;
-    return;
-  }
-  return true;
-
 };
 
 
 simulation.Simulation.prototype.logErrors = function()
 {
-  var findElem = 'selenium.page().findElement(\'xpath=//*[@qxclass="testrunner2.view.widget.TestResultView"]\').innerHTML';
-  var result = this.getEval(findElem);
-  result = String(result);
+  var prefix = simulation.Simulation.SELENIUMWINDOW + "." 
+    + simulation.Simulation.QXAPPINSTANCE;
   
-  // split it up into individual entries.
-  var logArray = [];
-  if (result.indexOf("</div>") >0 ) {
-    logArray = result.split("</div>");
-  } else if (result.indexOf("</DIV>") >0 ) {
-    logArray = result.split("</DIV>");
-  }
-
-  if (this.getConfigSetting("debug")) {
-    print("Split result into " + logArray.length + " array entries.");
-  }
-
-  for (var i=0, l=logArray.length; i<l; i++) {
-    var line = logArray[i];
-
-    // workaround for (rhino?) issue with replace() and single quotes.
-    line = line.split("'");
-    line = line.join("\'");
-
-    // ignore successful results
-    if ( (line.indexOf('<div') >= 0 || line.indexOf('<DIV') >= 0) 
-        && line.indexOf('testResult success') < 0
-        && line.indexOf('testResult skip') < 0) {
-
-      // strip uninformative stack trace
-      if (line.indexOf('Stack trace:') > 0) {
-        if (line.indexOf('<DIV class="trace') >= 0) {
-          line = line.substring(0,line.indexOf('<DIV class="trace'));
-        }
-        else if (line.indexOf('<DIV class=trace') >= 0) {
-          line = line.substring(0,line.indexOf('<DIV class=trace'));
-        }
-        else {
-          line = line.substring(0,line.indexOf('<div class="trace'));
-        }
-      }
-
-      // replace evil special characters
-      try {
-        line = line.replace(/\<br\>/gi, "<br/>");
-        line = line.replace(/\'/g, "\\'");
-        line = line.replace(/\n/g, "");
-        line = line.replace(/\r/g, "");
-      }
-      catch(ex) {
-        print("Error while replacing: " + ex);
-      }
-
-      // make sure all div tags are closed
-      var odivs = line.match(/\<div/gi);
-      var cdivs = line.match(/\<\/div/gi);
-      if (odivs) {
-        cdivs = cdivs ? cdivs : [];
-        var divdiff = odivs.length - cdivs.length;
-        if (divdiff > 0) {
-          for (var j=0; j<divdiff; j++) {
-            line += "</div>";
-          }
-        }
-      }
-
-      // log the result
-      this.log(line, "error");
+  var errorGetter = simulation.Simulation.SELENIUMWINDOW
+  + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getUnsuccessfulResults())";
+  
+  var resultsString = String(this.__sel.getEval(errorGetter));
+  eval("var results=" + resultsString);
+    
+  for (var testName in results) {
+    var result = results[testName];
+    
+    var message = "";
+    for (var i=0,l=result.messages.length; i<l; i++) {
+      var msg = result.messages[i];
+      msg = this.replaceStrings(msg);
+      message += msg + "<br/><br/>";
     }
+    
+    var level = "info";
+    switch(result.state) {
+      case "skip":
+        level = "info";
+        break;
+      default:
+        level = "error";
+    };
+    
+    var html = '<div class="testResult ' + level + '">'
+      + '<h3>' + testName + '</h3>' + message + '</div>';
+    
+    this.log(html, level);
   }
 };
 
-
-/**
- * Logs the HTML content of the Test Runner's AUT log component.
- */
-simulation.Simulation.prototype.logAutLog = function()
+simulation.Simulation.prototype.replaceStrings = function(line)
 {
-  var findElem = 'selenium.page().findElement(\'' + locators.logEmbed + '\')';
-  var logContent = this.getEval(findElem + '.innerHTML');
-  this.log("AUT Log contents:", "info");
-  this.log(logContent);
+  try {
+    line = line.replace(/\<br\>/gi, "<br/>");
+    line = line.replace(/\'/g, "\\'");
+    line = line.replace(/\n/g, "");
+    line = line.replace(/\r/g, "");
+  }
+  catch(ex) {
+    print("Error while replacing: " + ex);
+    line = "LINE REPLACED DUE TO ILLEGAL CHARACTER";
+  }
+  return line;
 };
-
 
 // - Main --------------------------------------------------------------------
 
@@ -361,15 +216,6 @@ simulation.Simulation.prototype.logAutLog = function()
 
 
   if (!isAppReady) {
-    mySim.testFailed = true;
-    mySim.stop();
-    return;
-  }
-  
-  var isSuiteReady = mySim.waitForCondition(isStatusReady, 360000,
-                                            "Waiting for test suite to load");
-
-  if (!isSuiteReady) {
     mySim.testFailed = true;
     mySim.stop();
     return;
