@@ -131,7 +131,7 @@ simulation.Simulation.prototype.runTest = function()
     + simulation.Simulation.QXAPPINSTANCE + ".runner.view.getStatus()";
   
   while (true) {
-    Packages.java.lang.Thread.sleep(1000);
+    Packages.java.lang.Thread.sleep(10000);
     var suiteState = String(this.getEval(stateGetter));
     
     switch (suiteState) {
