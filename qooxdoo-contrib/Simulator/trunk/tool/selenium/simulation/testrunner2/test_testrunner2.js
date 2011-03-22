@@ -140,6 +140,7 @@ simulation.Simulation.prototype.runTest = function()
         return;
       case "finished":
         this.logErrors();
+        this.logAutErrors();
         return;
       default:
         print("status: " + suiteState);
@@ -154,7 +155,7 @@ simulation.Simulation.prototype.logErrors = function()
     + simulation.Simulation.QXAPPINSTANCE;
   
   var errorGetter = simulation.Simulation.SELENIUMWINDOW
-  + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getUnsuccessfulResults())";
+  + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getFailedResults())";
   
   var resultsString = String(this.__sel.getEval(errorGetter));
   eval("var results=" + resultsString);
@@ -182,6 +183,24 @@ simulation.Simulation.prototype.logErrors = function()
       + '<h3>' + testName + '</h3>' + message + '</div>';
     
     this.log(html, level);
+  }
+};
+
+simulation.Simulation.prototype.logAutErrors = function()
+{
+  var autErrorGetter = function()
+  {
+    var errors = selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication().runner.view.getFormattedAutErrors();
+    return selenium.qxStoredVars['autWindow'].qx.lang.Json.stringify(errors);
+  };
+  
+  this.addOwnFunction("getAutErrors", autErrorGetter);
+  var autErrors = String(this.__sel.getEval(selWin + ".qx.Simulation.getAutErrors()"));
+  if (autErrors.length != "") {
+    var errArr = eval(autErrors);
+    for (var i=0,l=errArr.length; i<l; i++) {
+      this.log(errArr[i], "error");
+    }
   }
 };
 
@@ -221,10 +240,9 @@ simulation.Simulation.prototype.replaceStrings = function(line)
     return;
   }
 
-  //try {
+  try {
     mySim.addGlobalErrorHandler();
     mySim.runTest();
-  /*
   }
   catch(ex) {
     var msg = "Unexpected error while running tests: " + ex;
@@ -233,7 +251,6 @@ simulation.Simulation.prototype.replaceStrings = function(line)
     }
     mySim.log(msg, "error");
   }
-  */
   mySim.logGlobalErrors();
 
   if (!mySim.testFailed) {
