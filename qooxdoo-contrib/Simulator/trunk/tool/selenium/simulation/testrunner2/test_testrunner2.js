@@ -10,7 +10,14 @@ var baseConf = {
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
   'getAutLog' : false,
-  'logAutGlobalErrors' : true
+  'logAutGlobalErrors' : true,
+  'ignoreGlobalErrors' : [ "testErrorEvent",
+                           "no load event should be fired",
+                           "loading a non existing file",
+                           "Expected exception",
+                           "test404",
+                           "testLoadError",
+                           "testRequireState" ]
 };
 
 var args = arguments ? arguments : "";
@@ -199,9 +206,21 @@ simulation.Simulation.prototype.logAutErrors = function()
   if (autErrors.length != "") {
     var errArr = eval(autErrors);
     for (var i=0,l=errArr.length; i<l; i++) {
-      this.log(errArr[i], "error");
+      if (!this.ignoreMessage(errArr[i])) {
+        this.log(errArr[i], "warn");
+      }
     }
   }
+};
+
+simulation.Simulation.prototype.ignoreMessage = function(msg) {
+  var ignored = this.getConfigSetting("ignoreGlobalErrors");
+  for (var i=0,l=ignored.length; i<l; i++) {
+    if (msg.match(new RegExp(ignored[i]))) {
+      return true;
+    }
+  }
+  return false;
 };
 
 simulation.Simulation.prototype.replaceStrings = function(line)
