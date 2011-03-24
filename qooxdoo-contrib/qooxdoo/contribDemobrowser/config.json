@@ -62,7 +62,7 @@
     {
       "variants" :
       {
-        "qx.contrib" : ["on"]
+        "qx.contrib" : [true]
       }    
     },
     
