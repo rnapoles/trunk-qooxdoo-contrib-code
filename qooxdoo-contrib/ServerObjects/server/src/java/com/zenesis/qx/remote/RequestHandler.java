@@ -515,7 +515,22 @@ public class RequestHandler {
 			while (jp.nextToken() != JsonToken.END_OBJECT) {
 				String propertyName = jp.getCurrentName();
 				jp.nextToken();
-				Object value = jp.readValueAs(Object.class);
+				
+				// Read a Proxied object?  
+				ProxyProperty prop = getProperty(type, propertyName);
+				MetaClass propClass = prop.getPropertyClass();
+				Object value = null;
+				if (propClass.isSubclassOf(Proxied.class)) {
+					if (propClass.isArray() || propClass.isCollection())
+						value = readArray(jp, propClass.getJavaType());
+					else {
+						Integer id = jp.readValueAs(Integer.class);
+						if (id != null)
+							value = getProxied(id);
+					}
+				} else {
+					value = jp.readValueAs(Object.class);
+				}
 				setPropertyValue(type, proxied, propertyName, value);
 			}
 		}
@@ -535,7 +550,7 @@ public class RequestHandler {
 		String eventName = getFieldValue(jp, "eventName", String.class);
 		
 		Proxied serverObject = getProxied(serverId);
-		EventManager.getInstance().addListener(serverObject, eventName, ProxyManager.getInstance());
+		EventManager.addListener(serverObject, eventName, ProxyManager.getInstance());
 		jp.nextToken();
 	}
 	
@@ -550,7 +565,7 @@ public class RequestHandler {
 		String eventName = getFieldValue(jp, "eventName", String.class);
 		
 		Proxied serverObject = getProxied(serverId);
-		EventManager.getInstance().removeListener(serverObject, eventName, ProxyManager.getInstance());
+		EventManager.removeListener(serverObject, eventName, ProxyManager.getInstance());
 		jp.nextToken();
 	}
 	
@@ -599,6 +614,9 @@ public class RequestHandler {
 		setPropertyName = propertyName;
 		try {
 			ProxyProperty property = getProperty(type, propertyName);
+			
+			value = coerce(property.getPropertyClass().getJavaType(), value);
+			
 			if (!property.isSendExceptions())
 				property.setValue(proxied, value);
 			else {
@@ -613,6 +631,41 @@ public class RequestHandler {
 			setPropertyObject = null;
 			setPropertyName = null;
 		}
+	}
+	
+	/**
+	 * Attempts to convert a native type - Jackson will interpret floating point numbers as
+	 * Double, which will cause an exception if the destination only accepts float.
+	 * @param clazz
+	 * @param value
+	 * @return
+	 */
+	protected Object coerce(Class clazz, Object value) {
+		if (value == null)
+			return null;
+		if (value.getClass() == clazz)
+			return value;
+		
+		if (value.getClass() == Double.class) {
+			double val = (Double)value;
+			if (clazz == float.class)
+				value = (float)val;
+			else if (clazz == int.class)
+				value = (int)val;
+			else if (clazz == long.class)
+				value = (long)val;
+			
+		} else if (value.getClass() == Long.class) {
+			long val = (Long)value;
+			if (clazz == float.class)
+				value = (float)val;
+			else if (clazz == int.class)
+				value = (int)val;
+			else if (clazz == long.class)
+				value = (long)val;
+		} 
+		
+		return value;
 	}
 	
 	/**

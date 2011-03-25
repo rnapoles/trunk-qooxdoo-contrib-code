@@ -250,14 +250,32 @@ public class ProxyManager implements EventListener {
 			return;
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
 		ProxyProperty property = getProperty(type, propertyName);
-		if (property == null)
-			throw new IllegalArgumentException("Cannot find a property called " + propertyName);
+		if (property == null) {
+			log.warn("Cannot find a property called " + propertyName);
+			return;
+		}
 		if (property.isOnDemand() && !tracker.doesClientHaveValue(keyObject, property))
 			return; //queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
 		else
 			queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, newValue);
-		if (property.getEvent() != null)
-			EventManager.getInstance().fireDataEvent(keyObject, property.getEvent().getName(), newValue);
+		if (property.getEvent() != null) {
+			EventManager.fireDataEvent(keyObject, property.getEvent().getName(), newValue);
+		}
+	}
+	
+	/**
+	 * Detects whether the object has a given property
+	 * @param keyObject
+	 * @param propertyName
+	 * @return
+	 */
+	public static boolean hasProperty(Proxied keyObject, String propertyName) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return false;
+		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
+		ProxyProperty property = getProperty(type, propertyName);
+		return property != null;
 	}
 	
 	/**

@@ -148,10 +148,13 @@ public class BasicBootstrap implements UploadReceiver {
 		AppFile uploadFolder = (AppFile)obj;
 		if (uploadFolder != null) {
 			if (isRestrictUploadFolder() && getAppFilesRoot() != null) {
-				String strUF = uploadFolder.getFile().getAbsolutePath();
-				String strRF = getAppFilesRoot().getFile().getAbsolutePath();
-				int lenRF = strRF.length();
-				if (!strUF.startsWith(strRF) || (strUF.length() > lenRF && "\\/".indexOf(strUF.charAt(lenRF)) < 0))
+				String strUF = uploadFolder.getFile().getAbsolutePath().replace('\\', '/');
+				String strRF = getAppFilesRoot().getFile().getAbsolutePath().replace('\\', '/');
+				if (strRF.charAt(strRF.length() - 1) != '/')
+					strRF += "/";
+				if (strUF.charAt(strUF.length() - 1) != '/')
+					strUF += "/";
+				if (!strUF.startsWith(strRF))
 					throw new IOException("Cannot upload " + upfile + " because the upload folder is outside the root folder");
 			}
 		} else
