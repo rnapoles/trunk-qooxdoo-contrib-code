@@ -128,7 +128,7 @@ public class ArrayList<T> extends java.util.ArrayList<T> {
 	}
 	
 	private void fire(Type type, int startIndex, int endIndex, Object element) {
-		EventManager.getInstance().fireDataEvent(this, "change", new ArrayChanges.Change(type, startIndex, endIndex, element));
+		EventManager.fireDataEvent(this, "change", new ArrayChanges.Change(type, startIndex, endIndex, element));
 	}
 	
 	/*

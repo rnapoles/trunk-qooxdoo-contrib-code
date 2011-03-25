@@ -77,7 +77,7 @@ public class AppFile implements Proxied {
 		super();
 		this.file = file;
 		this.parent = parent;
-		this.url = parent.url + '/' + file.getName();
+		this.url = addPath(parent.url, file.getName());
 		
 		name = file.getName();
 		readOnly = !file.canWrite();
@@ -357,11 +357,10 @@ public class AppFile implements Proxied {
 		if (to.exists() || !file.renameTo(to))
 			return false;
 		this.file = to;
-		this.name = ProxyManager.changeProperty(this, "name", name, this.name);
-		this.url = ProxyManager.changeProperty(this, "url", parent.url + '/' + file.getName(), this.url);
+		this.url = ProxyManager.changeProperty(this, "url", addPath(parent.url, file.getName()), this.url);
 		return true;
 	}
-
+	
 	/**
 	 * Gets a list of children, caching the result
 	 * @return
@@ -411,7 +410,7 @@ public class AppFile implements Proxied {
 			File file = new File(this.file, name);
 			if (!file.exists())
 				return null;
-			return new AppFile(this, file, url + '/' + name);
+			return new AppFile(this, file, addPath(url, name));
 		} else {
 			for (AppFile child : children) {
 				if (child.getName().equalsIgnoreCase(name))
@@ -420,7 +419,7 @@ public class AppFile implements Proxied {
 			File file = new File(this.file, name);
 			if (!file.exists())
 				return null;
-			AppFile child = new AppFile(this, file, url + '/' + name);
+			AppFile child = new AppFile(this, file, addPath(url, name));
 			children.add(child);
 			return child;
 		}
@@ -477,6 +476,20 @@ public class AppFile implements Proxied {
 	 */
 	public void deleteFile() {
 		// Not implemented!
+	}
+
+	/**
+	 * Appends the name to the base, taking care not to duplicate slashes
+	 * @param base
+	 * @param name
+	 * @return
+	 */
+	private String addPath(String base, String name) {
+		String str = base;
+		if (!str.endsWith("/"))
+			str += "/";
+		str += name;
+		return str;
 	}
 
 	/* (non-Javadoc)

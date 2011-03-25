@@ -286,7 +286,19 @@ public class EventManager {
 	 * @throws {@link IllegalArgumentException} if a listener is added twice
 	 * @return true if the event was added
 	 */
-	public boolean addListener(Object keyObject, String eventName, EventListener listener) throws IllegalArgumentException{
+	public static boolean addListener(Object keyObject, String eventName, EventListener listener) throws IllegalArgumentException{
+		return getInstance()._addListener(keyObject, eventName, listener);
+	}
+
+	/**
+	 * Adds an event listener
+	 * @param keyObject
+	 * @param eventName
+	 * @param listener
+	 * @throws {@link IllegalArgumentException} if a listener is added twice
+	 * @return true if the event was added
+	 */
+	protected boolean _addListener(Object keyObject, String eventName, EventListener listener) throws IllegalArgumentException{
 		if (!supportsEvent(keyObject, eventName))
 			return false;
 		
@@ -376,7 +388,18 @@ public class EventManager {
 	 * @param listener
 	 * @return
 	 */
-	public boolean removeListener(Object keyObject, String eventName, EventListener listener) {
+	public static boolean removeListener(Object keyObject, String eventName, EventListener listener) {
+		return getInstance()._removeListener(keyObject, eventName, listener);
+	}
+	
+	/**
+	 * Removes a listener from an object and eventName
+	 * @param keyObject
+	 * @param eventName
+	 * @param listener
+	 * @return
+	 */
+	protected boolean _removeListener(Object keyObject, String eventName, EventListener listener) {
 		Object current = listeners.get(keyObject);
 		if (current == null)
 			return false;
@@ -419,7 +442,18 @@ public class EventManager {
 	 * @param listener
 	 * @return
 	 */
-	public boolean hasListener(Object keyObject, String eventName, EventListener listener) {
+	public static boolean hasListener(Object keyObject, String eventName, EventListener listener) {
+		return getInstance()._hasListener(keyObject, eventName, listener);
+	}
+	
+	/**
+	 * Removes a listener from an object and eventName
+	 * @param keyObject
+	 * @param eventName
+	 * @param listener
+	 * @return
+	 */
+	protected boolean _hasListener(Object keyObject, String eventName, EventListener listener) {
 		Object current = listeners.get(keyObject);
 		if (current == null)
 			return false;
@@ -462,7 +496,18 @@ public class EventManager {
 	 * @param eventName
 	 * @return
 	 */
-	public boolean supportsEvent(Object obj, String eventName) {
+	public static boolean supportsEvent(Object obj, String eventName) {
+		return getInstance()._supportsEvent(obj, eventName);
+	}
+	
+	/**
+	 * Detects whether the object supports the given event name; by default, all objects
+	 * are considered to support events.
+	 * @param obj
+	 * @param eventName
+	 * @return
+	 */
+	protected boolean _supportsEvent(Object obj, String eventName) {
 		if (obj instanceof Eventable) {
 			Eventable ev = (Eventable)obj;
 			return ev.supportsEvent(eventName);
@@ -476,8 +521,8 @@ public class EventManager {
 	 * @param obj
 	 * @param eventName
 	 */
-	public void fireEvent(Object obj, String eventName) {
-		fireDataEvent(obj, eventName, null);
+	public static void fireEvent(Object keyObject, String eventName) {
+		getInstance().fireDataEvent(new Event(keyObject, keyObject, eventName, null));
 	}
 
 	/**
@@ -486,8 +531,8 @@ public class EventManager {
 	 * @param eventName
 	 * @param data
 	 */
-	public void fireDataEvent(Object keyObject, String eventName, Object data) {
-		fireDataEvent(new Event(keyObject, keyObject, eventName, data));
+	public static void fireDataEvent(Object keyObject, String eventName, Object data) {
+		getInstance().fireDataEvent(new Event(keyObject, keyObject, eventName, data));
 	}
 
 	/**
@@ -534,7 +579,7 @@ public class EventManager {
 	}
 
 	/**
-	 * Tests whether there are eny event listeners on any object
+	 * Tests whether there are any event listeners on any object
 	 * @return
 	 */
 	public boolean isEmpty() {

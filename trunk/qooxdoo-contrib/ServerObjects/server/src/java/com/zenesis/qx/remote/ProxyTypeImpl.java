@@ -67,8 +67,8 @@ public class ProxyTypeImpl extends AbstractProxyType {
 		 */
 		@Override
 		public boolean equals(Object obj) {
-			Method that = (Method)obj;
-			return that.getName().equals(method.getName()) && hasSameSignature(method, that);
+			MethodSig that = (MethodSig)obj;
+			return that.method.getName().equals(method.getName()) && hasSameSignature(method, that.method);
 		}
 
 		/* (non-Javadoc)

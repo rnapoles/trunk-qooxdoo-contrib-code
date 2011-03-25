@@ -39,8 +39,6 @@ public class MetaClass {
 		}
 		
 		this.proxyType = proxyType;
-		if (proxyType == null && Proxied.class.isAssignableFrom(this.clazz))
-			this.proxyType = ProxyTypeManager.INSTANCE.getProxyType(this.clazz);
 	}
 
 	public boolean isArray() {
@@ -96,6 +94,8 @@ public class MetaClass {
 	}
 
 	public ProxyType getProxyType() {
+		if (proxyType == null && Proxied.class.isAssignableFrom(this.clazz))
+			this.proxyType = ProxyTypeManager.INSTANCE.getProxyType(this.clazz);
 		return proxyType;
 	}
 

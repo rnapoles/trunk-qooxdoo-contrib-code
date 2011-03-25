@@ -11,8 +11,6 @@ import com.zenesis.qx.remote.CumulativeData;
  * 
  * @author John Spackman
  */
-@SuppressWarnings("unused")
-
 public class ArrayChanges implements CumulativeData {
 	
 	// The type of change

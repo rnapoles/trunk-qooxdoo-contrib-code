@@ -52,26 +52,13 @@ public class ProxyEventManager extends EventManager {
 	 * @see com.zenesis.qx.event.EventManager#supportsEvent(java.lang.Object, java.lang.String)
 	 */
 	@Override
-	public boolean supportsEvent(Object obj, String eventName) {
+	public boolean _supportsEvent(Object obj, String eventName) {
 		if (obj instanceof Proxied) {
 			Proxied proxied = (Proxied)obj;
 			ProxyType type = typeManager.getProxyType(proxied.getClass());
 			return type.supportsEvent(eventName);
 		}
-		return super.supportsEvent(obj, eventName);
-	}
-
-	@Override
-	public boolean addListener(Object keyObject, String eventName,
-			EventListener listener) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return super.addListener(keyObject, eventName, listener);
-	}
-
-	@Override
-	public boolean removeListener(Object keyObject, String eventName, EventListener listener) {
-		// TODO Auto-generated method stub
-		return super.removeListener(keyObject, eventName, listener);
+		return super._supportsEvent(obj, eventName);
 	}
 
 }
