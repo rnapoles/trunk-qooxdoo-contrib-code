@@ -35,107 +35,14 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
-var isStatusReady = selWin + "." + qxAppInst + ".runner.getTestSuiteState() == 'ready'";
-var isStatusFinished = selWin + "." + qxAppInst + ".runner.getTestSuiteState() == 'finished'";
-
 
 /**
- * Runs a function in the AUT context that reads the available test packages
- * from the tree.
- *
- * @return {Array} an array of test package names
- */
-simulation.Simulation.prototype.getPackageList = function()
-{
-  var getPackages = function() {
-    var model = selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication().runner.getTestModel();
-    var qxTest = model.getChildren().getItem(0).getChildren();
-    var packages = [];
-    for (var i=0,l=qxTest.length; i<l; i++) {
-      packages.push(qxTest.getItem(i).fullName);
-    }
-    return selenium.qxStoredVars['autWindow'].qx.lang.Json.stringify(packages);
-  }
-
-  mySim.addOwnFunction("getPackages", getPackages);
-  var packages = String(mySim.getEval(simulation.Simulation.SELENIUMWINDOW + ".qx.Simulation.getPackages()"));
-  var packageList = eval(packages);
-  
-  return packageList;
-};
-
-/**
- * Gets an array of packages to be tested from the "include" config option.
- *
- * @return {Array} an array of test package names
- */
-simulation.Simulation.prototype.getIncludeList = function()
-{
-  var include = [];
-  
-  try {
-    var includeStr = this.getConfigSetting("include");
-    this.log("Testing only the following packages: " + includeStr, "info");
-    include = includeStr.split(",");
-    if (this.getConfigSetting("debug")) {
-      print("Include list configured: " + include);
-    }
-  }
-  catch(ex) {
-    if (this.getConfigSetting("debug")) {
-      print("No include list configured.");
-    }
-  }
-  
-  return include;  
-};
-
-/**
- * Removes any package names listed in the "ignore" config option from the full
- * list of test packages.
- *
- * @param packagesOld {Array} Array of initial test package names
- * @return {Array} Array of remaining test package names
- */
-simulation.Simulation.prototype.removeIgnored = function(packagesOld)
-{
-  var packages = packagesOld.concat([])
-  var ignore = [];
-  
-  try {
-    var ignoreStr = this.getConfigSetting("ignore");
-    this.log("Ignoring the following packages: " + ignoreStr, "info");
-    ignore = ignoreStr.split(",");
-    if (this.getConfigSetting("debug")) {
-      print("Ignore list configured: " + ignore);
-    }
-  } 
-  catch (ex) {
-    if (this.getConfigSetting("debug")) {
-      print("No ignore list configured.");
-    }
-  }
-
-  if (ignore.length > 0) {
-    for (var x=packages.length-1; x > 0; x--) {
-      for (var j = 0; j < ignore.length; j++) {
-        if (packages[x] == ignore[j]) {
-          packages.splice(x, 1);
-        }
-      }
-    }
-  }
-  return packages;
-};
-
-
-/**
- * Determines which test packages should be run and processes them.
+ * Periodically checks if the test suite is done. Once it is, the results are
+ * logged.
  */
 simulation.Simulation.prototype.runTest = function()
 {
-  var stateGetter = simulation.Simulation.SELENIUMWINDOW + "." 
-    + simulation.Simulation.QXAPPINSTANCE + ".runner.view.getStatus()";
+  var stateGetter = selWin + "." + qxAppInst + ".runner.view.getStatus()";
   
   while (true) {
     Packages.java.lang.Thread.sleep(10000);
@@ -158,11 +65,9 @@ simulation.Simulation.prototype.runTest = function()
 
 simulation.Simulation.prototype.logErrors = function()
 {
-  var prefix = simulation.Simulation.SELENIUMWINDOW + "." 
-    + simulation.Simulation.QXAPPINSTANCE;
+  var prefix = selWin + "." + qxAppInst;
   
-  var errorGetter = simulation.Simulation.SELENIUMWINDOW
-  + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getFailedResults())";
+  var errorGetter = selWin + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getFailedResults())";
   
   var resultsString = String(this.__sel.getEval(errorGetter));
   eval("var results=" + resultsString);
