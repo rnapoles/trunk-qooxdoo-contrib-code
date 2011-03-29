@@ -97,7 +97,7 @@ public class JSONSerializer {
     }
 
     protected List<Object> JSONArrayToJava(final JSONArray jsonArray) {
-        ArrayList<Object> result = null;
+        List<Object> result = null;
 
         if (jsonArray != null) {
             result = new ArrayList<Object>(jsonArray.length());

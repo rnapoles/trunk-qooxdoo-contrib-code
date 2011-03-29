@@ -128,7 +128,7 @@ public class JavaSerializer {
                 // the serialized object represents a Map or a complex object
                 if (Map.class.isAssignableFrom(targetClass)) {
                     // the source map represents a map
-                    throw new UnserializationException("Cannot unserialize " + targetClass.getName() + "to a map");
+                    throw new UnserializationException("Cannot unserialize " + targetClass.getName() + " to a map");
                 } else {
                     // the source map represents an object
                     result = unserializeObject((Map<String, Object>) obj, targetClass);
@@ -202,7 +202,7 @@ public class JavaSerializer {
                     if (obj instanceof Map) {
                         result = unserializeMap((Map<String, Object>) obj, targetClass, typeArguments);
                     } else {
-                        throw new UnserializationException("Cannot unserialize object to a Map. The serialized object (" + obj.getClass().getName() + ")has not a map format.");
+                        throw new UnserializationException("Cannot unserialize object to a Map. The serialized object (" + obj.getClass().getName() + ") has not a map format.");
                     }
                 } else if (Collection.class.isAssignableFrom(targetClass)) { // we expect List, Set, or a 1D Collection
                     if (obj instanceof List) {

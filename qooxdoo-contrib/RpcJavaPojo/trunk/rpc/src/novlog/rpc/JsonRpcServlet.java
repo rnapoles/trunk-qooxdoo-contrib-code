@@ -259,7 +259,8 @@ public class JsonRpcServlet extends HttpServlet {
         } catch (IllegalAccessException e) {
             throw new RpcException(ERROR_FROM_SERVER, METHOD_NOT_FOUND, "Method " + method + " not found", e);
         } catch (InvocationTargetException e) {
-            throw new RpcException(ERROR_FROM_METHOD, null, "An exception was raised by the call to method " + method + "(...)", e);
+            final Throwable raisedException = e.getCause();
+            throw new RpcException(ERROR_FROM_METHOD, null, "An exception (" + raisedException.getClass() + ") was raised by the call to method " + method + "(...) : " + raisedException.getMessage(), raisedException);
         }
 
         return methodResult;
