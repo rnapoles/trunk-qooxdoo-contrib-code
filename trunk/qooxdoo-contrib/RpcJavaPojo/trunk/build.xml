@@ -24,7 +24,7 @@
     <property name="lib-dir" value="lib"/>
     <property name="bin-dir" value="bin"/>
 
-    <property  name="version" value="1.0.0"/>
+    <property  name="version" value="1.0.1"/>
     <property name="rpc-jar-name" value="json-rpc-${version}.jar"/>
     <property name="rpc-zip-name" value="java-json-rpc-${version}.zip"/>
 

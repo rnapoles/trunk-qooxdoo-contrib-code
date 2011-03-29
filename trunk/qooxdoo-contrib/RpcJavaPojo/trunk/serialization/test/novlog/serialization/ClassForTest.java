@@ -28,11 +28,11 @@ public class ClassForTest {
     public Float objectFloat = 5f;
 
     public LinkedHashSet<String> stringSet;
-    public List<String> stringList;
+    public Collection<String> stringList;
     public Map<String, String> stringsMap;
 
     public ClassForTest[] selfArray;
-    public List<ClassForTest> selfList;
+    public Collection<ClassForTest> selfList;
 
     transient double d = 1010d;
     static String staticString = "static";
@@ -55,7 +55,7 @@ public class ClassForTest {
         this.selfArray = selfArray;
     }
 
-    public void setSelfList(List<ClassForTest> selfList) {
+    public void setSelfList(Collection<ClassForTest> selfList) {
         this.selfList = selfList;
     }
 
