@@ -1,0 +1,106 @@
+<?xml version='1.0'?>
+
+<!--
+    Java JSON RPC
+    RPC Java POJO by Novlog
+    http://www.novlog.com
+
+    This library is dual-licensed under the GNU Lesser General Public License (LGPL) and the Eclipse Public License (EPL).
+    Check http://qooxdoo.org/license
+
+    This library is also licensed under the Apache license.
+    Check http://www.apache.org/licenses/LICENSE-2.0
+
+    Contribution:
+    This contribution is provided by Novlog company.
+    http://www.novlog.com
+-->
+
+<project name="Java JSON RPC build file" basedir="." default="jar">
+
+    <property name="org-json-src-dir" value="org-json/src"/>
+    <property name="serialization-src-dir" value="serialization/src"/>
+    <property name="rpc-src-dir" value="rpc/src"/>
+    <property name="lib-dir" value="lib"/>
+    <property name="bin-dir" value="bin"/>
+
+    <property  name="version" value="1.0.1"/>
+    <property name="rpc-jar-name" value="json-rpc-${version}.jar"/>
+    <property name="rpc-zip-name" value="java-json-rpc-${version}.zip"/>
+
+    <target name="compile">
+        <echo message="Compiling..."/>
+
+        <mkdir dir="${bin-dir}/classes"/>
+        <javac destdir="${bin-dir}/classes"
+               classpath="rpc/lib/j2ee/j2ee.jar"
+               verbose="yes" debug="yes" optimize="yes" target="1.6" source="1.6"
+               failonerror="yes">
+            <src path="${org-json-src-dir}"/>
+            <src path="${serialization-src-dir}"/>
+            <src path="${rpc-src-dir}"/>
+        </javac>
+
+        <echo message="Compiling. Done."/>
+    </target>
+
+    <target name="zip">
+        <echo message="Creating ${rpc-zip-name} ..."/>
+
+        <antcall target="distclean"/>
+        <antcall target="jar"/>
+        <antcall target="clean"/>
+        <antcall target="clean-root"/>
+
+        <zip destfile="${rpc-zip-name}"
+             compress="yes" level="9"
+             comment="Java JSON RPC by Novlog. http://www.novlog.com">
+            <fileset dir=".">
+                <exclude name="**/.subversion"/>
+                <exclude name="**/.svn"/>
+                <exclude name="**/._*"/>
+                <exclude name="**/._*"/>
+                <exclude name="**/__MAC*"/>
+                <exclude name="**/.DS_Store"/>
+            </fileset>
+        </zip>
+        <echo message="Creating ${rpc-zip-name}. Done."/>
+    </target>
+
+    <target name="jar" depends="distclean, compile">
+        <echo message="Creating ${rpc-jar-name} ..."/>
+        <delete file="${rpc-jar-name}"/>
+        <jar basedir="${bin-dir}/classes" destfile="${rpc-jar-name}"
+             compress="yes" index="true">
+            <manifest>
+                <attribute name="Created-By" value="Novlog"/>
+                <attribute name="Built-By" value="Novlog"/>
+                <attribute name="Implementation-Vendor" value="Novlog"/>
+                <attribute name="Implementation-Title" value="Java JSON RPC"/>
+                <attribute name="Implementation-Version" value="${version}"/>
+                <attribute name="Implementation-URL" value="http://www.novlog.com"/>
+            </manifest>
+            <metainf file="./license.txt"/>
+        </jar>
+        <delete dir="${bin-dir}"/>
+        <echo message="Creating ${rpc-jar-name}. Done."/>
+    </target>
+
+    <target name="clean-root">
+        <delete dir="${bin-dir}"/>
+        <delete dir="out"/>
+    </target>
+
+    <target name="clean" depends="clean-root">
+        <ant dir="org-json" target="clean"/>
+        <ant dir="serialization" target="clean"/>
+    </target>
+
+    <target name="distclean" depends="clean">
+        <delete file="${rpc-jar-name}"/>
+        <delete file="${rpc-zip-name}"/>
+        <ant dir="org-json" target="distclean"/>
+        <ant dir="serialization" target="distclean"/>
+    </target>
+
+</project>
