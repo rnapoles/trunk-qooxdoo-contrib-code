@@ -42,6 +42,12 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
  */
 simulation.Simulation.prototype.runTest = function()
 {
+  var suiteStateCheck = selWin + "." + qxAppInst + ".runner.getTestSuiteState() !== \"loading\"";
+  var suiteReady = this.waitForCondition(suiteStateCheck, 120000);
+  if (!suiteReady) {
+    this.log("Test suite not loaded within two minutes, aborting!", "error");
+  }
+  
   var stateGetter = selWin + "." + qxAppInst + ".runner.view.getStatus()";
   
   while (true) {
