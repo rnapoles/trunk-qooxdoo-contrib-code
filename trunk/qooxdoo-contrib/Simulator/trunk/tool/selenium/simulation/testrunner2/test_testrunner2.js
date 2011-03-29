@@ -46,6 +46,8 @@ simulation.Simulation.prototype.runTest = function()
   
   while (true) {
     Packages.java.lang.Thread.sleep(10000);
+    //Selenium doesn't like to execute the same command multiple times
+    this.__sel.getSpeed();
     var suiteState = String(this.getEval(stateGetter));
     
     switch (suiteState) {
