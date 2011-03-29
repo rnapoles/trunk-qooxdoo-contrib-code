@@ -1,0 +1,42 @@
+<?xml version='1.0'?>
+<project name="serialization build file" basedir="." default="jar">
+
+    <property name="src-dir" value="src"/>
+    <property name="lib-dir" value="lib"/>
+    <property name="bin-dir" value="bin"/>
+
+    <property name="serialization-jar-name" value="novlog.novlog.serialization.jar"/>
+
+    <target name="compile">
+        <echo message="Compiling..."/>
+
+        <mkdir dir="${bin-dir}/classes"/>
+        <javac srcdir="${src-dir}" destdir="${bin-dir}/classes"
+               includes="serialization/**" classpath="../org-json/lib/org-json.jar"
+               verbose="yes" debug="yes" optimize="yes" target="1.6" source="1.6"
+               failonerror="yes">
+        </javac>
+
+        <echo message="Compiling. Done."/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <echo message="Creating ${serialization-jar-name} ..."/>
+
+        <mkdir dir="${lib-dir}"/>
+        <jar basedir="${bin-dir}/classes" destfile="${lib-dir}/${serialization-jar-name}"
+             includes="serialization/**"
+             compress="yes" index="true">
+        </jar>
+
+        <echo message="Creating ${serialization-jar-name}. Done."/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${bin-dir}"/>
+    </target>
+
+    <target name="distclean" depends="clean">
+        <delete dir="${lib-dir}"/>
+    </target>
+</project>

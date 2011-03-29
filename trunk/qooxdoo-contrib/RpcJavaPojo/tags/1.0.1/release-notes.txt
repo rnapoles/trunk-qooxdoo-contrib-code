@@ -1,0 +1,8 @@
+
+2011-03-29 version 1.0.1
+    - cleanup the API. Use Collection instead of List.
+    - better error messages
+    - improve build. Remove tmp working folder after build.
+
+2010-05-15 version 1.0.0
+    First version.
