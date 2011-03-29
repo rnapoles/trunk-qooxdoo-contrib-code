@@ -2,7 +2,7 @@ Java JSON RPC
 RPC Java POJO by Novlog
 http://www.novlog.com
 
-This library is dual-licensed under the GNU Lesser General Public License (LGPL) and the Eclipse Public License (EPL).
+This library is dual-licensed under the GNU Lesser General Public License (LGPL) or the Eclipse Public License (EPL).
 Check http://qooxdoo.org/license
 
 This library is also licensed under the Apache license.
