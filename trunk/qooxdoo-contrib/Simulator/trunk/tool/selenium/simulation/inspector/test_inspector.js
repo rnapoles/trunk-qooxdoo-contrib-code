@@ -79,7 +79,7 @@ simulation.Simulation.prototype.addAppChecker = function()
 
 simulation.Simulation.prototype.getSelectedWidget = function()
 {
-  var inspectedWidget = String(this.__sel.qxObjectExecFunction(this.locators.inspectedWidgetLabel, "getValue"));
+  var inspectedWidget = String(this.__sel.getQxObjectFunction(this.locators.inspectedWidgetLabel, "getValue"));
   if (inspectedWidget.indexOf("<tt>") >= 0) {
     inspectedWidget = inspectedWidget.substring(4, inspectedWidget.length - 5);
   }
@@ -105,7 +105,7 @@ simulation.Simulation.prototype.checkConsole = function()
   this.__sel.type(loc, "this");
   this.qxClick(loc);
   this.__sel.keyDown(loc, "\\13");
-  var html = String(this.__sel.qxObjectExecFunction(this.locators.windowConsoleHtml, "getHtml"));
+  var html = String(this.__sel.getQxObjectFunction(this.locators.windowConsoleHtml, "getHtml"));
   if (html.indexOf(expectedWidget) >= 0) {
     this.log("this in console returned expected widget", "info");
   } else {
@@ -120,7 +120,7 @@ simulation.Simulation.prototype.checkButtons = function()
       var loc = this.locators[locName];
       var buttonValue = null;
       try {
-        buttonValue = this.__sel.qxObjectExecFunction(loc, "getValue");
+        buttonValue = this.__sel.getQxObjectFunction(loc, "getValue");
       } catch(ex) {
         this.log("Error checking button value: " + ex, "error");
       }
@@ -138,7 +138,7 @@ simulation.Simulation.prototype.checkProperties = function()
 {
   var expectedWidget = this.getSelectedWidget();
   expectedWidget = expectedWidget.split("[")[0];
-  var inspectedWidget = String(this.__sel.qxObjectExecFunction(this.locators.windowPropertyInspectedAtom, "getLabel"));
+  var inspectedWidget = String(this.__sel.getQxObjectFunction(this.locators.windowPropertyInspectedAtom, "getLabel"));
   if (inspectedWidget.indexOf("<b>") >= 0) {
     inspectedWidget = inspectedWidget.substring(3, inspectedWidget.length - 4);
   }
@@ -227,14 +227,14 @@ simulation.Simulation.prototype.checkWidgets = function()
 
 simulation.Simulation.prototype.checkSelenium = function()
 {
-  var firstPartEnabled = String(this.__sel.qxObjectExecFunction(this.locators.windowSeleniumToolbarFirstPart, "getEnabled"));
+  var firstPartEnabled = String(this.__sel.getQxObjectFunction(this.locators.windowSeleniumToolbarFirstPart, "getEnabled"));
   this.qxClick(this.locators.windowSeleniumOptionsButton);
   Packages.java.lang.Thread.sleep(1000);
   this.qxType(this.locators.windowSeleniumOptionsSeleniumCoreField, "http://172.17.12.142/selenium-core");
   this.qxType(this.locators.windowSeleniumOptionsUserExtensionsField, "http://172.17.12.142/user-extensions-qooxdoo.js");
   this.qxClick(this.locators.windowSeleniumOptionsOkButton);
   Packages.java.lang.Thread.sleep(1000);
-  var firstPartEnabled = String(this.__sel.qxObjectExecFunction(this.locators.windowSeleniumToolbarFirstPart, "getEnabled"));
+  var firstPartEnabled = String(this.__sel.getQxObjectFunction(this.locators.windowSeleniumToolbarFirstPart, "getEnabled"));
   if (firstPartEnabled != "true") {
     this.log("Selenium toolbar not enabled!", "error");
   } else {
@@ -266,7 +266,7 @@ simulation.Simulation.prototype.runTest = function()
 
   this.checkButtons();
   
-  var toolbarEnabled = String(this.__sel.qxObjectExecFunction(this.locators.inspectorToolBar, "getEnabled"));
+  var toolbarEnabled = String(this.__sel.getQxObjectFunction(this.locators.inspectorToolBar, "getEnabled"));
   if (toolbarEnabled == "false") {
     this.log("Inspector toolbar is disabled!", "error");
     return;
