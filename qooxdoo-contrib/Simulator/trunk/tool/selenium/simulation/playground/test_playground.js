@@ -157,7 +157,7 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
   try {
     this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
     var newButtonLabel = "Simulator was here";
-    var playAreaCode = new String(this.__sel.qxObjectExecFunction(locators.editorTextArea, 'getValue'));
+    var playAreaCode = new String(this.__sel.getQxObjectFunction(locators.editorTextArea, 'getValue'));
     var modifiedCode = playAreaCode.replace(/First Button/, newButtonLabel);
     this.__sel.type(locators.editorTextArea, modifiedCode);
     this.qxClick(locators.syntaxHighlightingButton, '', 'Deactivating syntax highlighting');
@@ -182,7 +182,7 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
   
   try {
     var playAppButtonLoc = locators.playgroundApplication + '/qx.ui.form.Button';
-    var playAppButtonLabel = new String(this.__sel.qxObjectExecFunction(playAppButtonLoc, 'getLabel'));
+    var playAppButtonLabel = new String(this.__sel.getQxObjectFunction(playAppButtonLoc, 'getLabel'));
     if (playAppButtonLabel == newButtonLabel) {
       this.log("Successfully ran modified sample " + sampleName, "info");
     } else {
@@ -221,7 +221,7 @@ simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
   
   try {
     var playAppButtonLoc = locators.playgroundApplication + '/qx.ui.form.Button';
-    var playAppButtonLabel = new String(this.__sel.qxObjectExecFunction(playAppButtonLoc, 'getLabel'));
+    var playAppButtonLabel = new String(this.__sel.getQxObjectFunction(playAppButtonLoc, 'getLabel'));
     if (playAppButtonLabel.indexOf(newButtonLabel) >= 0) {
       this.log("Successfully ran sample code from URL", "info");
     } else {
@@ -300,7 +300,7 @@ simulation.Simulation.prototype.runTest = function()
   
   // Click the menu button so the menu is created
   this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
-  var sampleMenuFirstChild = this.__sel.qxObjectExecFunction(locators.sampleMenuLocator + '/child[0]', 'toString');
+  var sampleMenuFirstChild = this.__sel.getQxObjectFunction(locators.sampleMenuLocator + '/child[0]', 'toString');
   
   if (sampleMenuFirstChild.indexOf("MenuSlideBar") > 0) {
     locators.sampleMenuLocator += '/qx.ui.menu.MenuSlideBar';
@@ -378,7 +378,7 @@ simulation.Simulation.prototype.checkGistFromList = function()
 {
   this.qxClick(locators.gitHubButton, "", "Clicking Gist button");
   
-  var filterActive = String(this.__sel.qxObjectExecFunction(locators.gistMenu + "/child[1]", "getValue"));
+  var filterActive = String(this.__sel.getQxObjectFunction(locators.gistMenu + "/child[1]", "getValue"));
   if (filterActive == "true") {
     this.log("Gist filter is active", "info");
   }
@@ -425,7 +425,7 @@ simulation.Simulation.prototype.checkGistFromList = function()
     return;
   }
   
-  var gistLabel = this.__sel.qxObjectExecFunction(locators.gistMenu + '/child[5]', "getLabel");
+  var gistLabel = this.__sel.getQxObjectFunction(locators.gistMenu + '/child[5]', "getLabel");
   this.log("Found a Gist with the label " + gistLabel, "info");
   this.qxClick(locators.gistMenu + '/child[5]', "", "Selecting Gist");
   
