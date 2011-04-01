@@ -141,20 +141,50 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				throw ex;
 			
 			// Update the cache and done
-			if (propDef.array == "wrap")
-				value = new qx.data.Array(value);
-			this.$$proxyUser[propName] = value;
+			return this.__storePropertyOnDemand(propDef, value);
+		},
+		
+		/**
+		 * Stores a value for an on-demand property, adding and removing listeners as required
+		 * @param propDef
+		 * @param value
+		 * @returns
+		 */
+		__storePropertyOnDemand: function(propDef, value) {
+			var oldValue;
+			if (this.$$proxyUser && (oldValue = this.$$proxyUser[propDef.name])) {
+				if (propDef.array = "wrap") {
+					oldValue.removeListenerById(propDef.changeListenerId);
+					delete propDef.changeListenerId;
+				}
+				delete this.$$proxyUser[propDef.name];
+			}
+			if (value !== undefined) {
+				if (value && propDef.array == "wrap") {
+					if (!qx.Class.isSubClassOf(value.constructor, qx.data.Array))
+						value = new qx.data.Array(value);
+					propDef.changeListenerId = value.addListener("change", function(evt) {
+						var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
+						PM.onWrappedArrayChange(evt, this, propDef); 
+					}, this);
+				}
+				this.$$proxyUser[propDef.name] = value;
+			}
 			return value;
 		},
 		
 		/**
 		 * Called when an on-demand property's expire method is called
 		 */
-		_expirePropertyOnDemand: function(propName, value) {
-			if (this.$$proxyUser)
-				delete this.$$proxyUser[propName];
-			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
-			PM.expireProperty(this, propName);
+		_expirePropertyOnDemand: function(propName, sendToServer) {
+			var oldValue;
+			if (this.$$proxyUser && (oldValue = this.$$proxyUser[propName]))
+				this.__storePropertyOnDemand(this.getPropertyDef(propName), undefined);
+			
+			if (sendToServer === undefined || sendToServer) {
+				var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
+				PM.expireProperty(this, propName);
+			}
 		},
 		
 		/**
@@ -167,6 +197,8 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 				this.$$proxyUser = {};
 			else
 				oldValue = this.$$proxyUser[propName];
+			
+			// Don't use __storePropertyOnDemand here - use _applyProperty instead
 			var propDef = this.getPropertyDef(propName);
 			if (propDef.array == "wrap")
 				value = new qx.data.Array(value);
@@ -191,7 +223,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 		addListener: function(name, listener, context, capture) {
 			var result = this.base(arguments, name, listener, context, capture);
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
-			PM.addListener(this, name);
+			PM.addServerListener(this, name);
 			return result;
 		},
 		
@@ -203,7 +235,7 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 			if (!existed)
 				return;
 			var PM = com.zenesis.qx.remote.ProxyManager.getInstance();
-			PM.removeListener(this, name);
+			PM.removeServerListener(this, name);
 			return existed;
 		},
 		
