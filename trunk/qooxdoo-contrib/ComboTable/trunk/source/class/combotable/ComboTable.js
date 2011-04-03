@@ -194,7 +194,7 @@ qx.Class.define("combotable.ComboTable", {
 
             // once the user starts modifying the text of the combo box
             // start watching for table changes
-            this.addListenerOnce('input',function(e){
+            this.getChildControl('textfield').addListenerOnce('input',function(e){
                 tm.addListener('dataChanged', this._onTableDataChanged, this);
             },this);
 
