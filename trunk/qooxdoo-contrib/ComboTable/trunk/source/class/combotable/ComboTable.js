@@ -192,7 +192,12 @@ qx.Class.define("combotable.ComboTable", {
                 alwaysUpdateCells : true
             });
 
-            tm.addListener('dataChanged', this._onTableDataChanged, this);
+            // once the user starts modifying the text of the combo box
+            // start watching for table changes
+            this.addListenerOnce('input',function(e){
+                tm.addListener('dataChanged', this._onTableDataChanged, this);
+            },this);
+
             table.getDataRowRenderer().setHighlightFocusRow(true);
 
             table.set({
