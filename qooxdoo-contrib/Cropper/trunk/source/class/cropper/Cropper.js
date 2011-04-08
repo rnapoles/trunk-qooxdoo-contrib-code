@@ -68,49 +68,41 @@ qx.Class.define("cropper.Cropper", {
             init  : 'full'
         },
 
-        /** Left Padding of the corpping area */
         cropPaddingLeft : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Right Padding of the corpping area */
         cropPaddingRight : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Top Padding of the corpping area */
         cropPaddingTop : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Bottom Padding of the corpping area */
         cropPaddingBottom : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Left Margin of the corpping area */
         cropMarginLeft : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Right Margin of the corpping area */
         cropMarginRight : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Top Margin of the corpping area */
         cropMarginTop : {
             check : 'Integer',
             init  : 0
         },
 
-        /** Bottom Margin of the corpping area */
         cropMarginBottom : {
             check : 'Integer',
             init  : 0
