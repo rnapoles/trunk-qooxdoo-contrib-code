@@ -76,7 +76,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-source,store-data -d ./source"
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -C /var/tmp -c config.demo.json -j demos-source,store-data -d ./source"
       }
     },
 
@@ -123,7 +123,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build,api,store-data -d ./source --copy-demos"
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -C /var/tmp -c config.demo.json -j demos-build,api,store-data -d ./source --copy-demos"
       }
     },
     
@@ -152,7 +152,7 @@
 
       "shell" :
       {
-        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j demos-build,api,store-data -d $BUILD_PATH --copy-demos"
+        "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -C /var/tmp -c config.demo.json -j demos-build,api,store-data -d $BUILD_PATH --copy-demos"
       }
     },
     
