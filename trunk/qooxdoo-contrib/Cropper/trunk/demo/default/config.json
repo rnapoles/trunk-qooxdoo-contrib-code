@@ -30,7 +30,7 @@
   "let" :
   {
     "APPLICATION"  : "cropper.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.3",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/trunk",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/cache",
