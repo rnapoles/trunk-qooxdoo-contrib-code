@@ -36,98 +36,104 @@ qx.Class.define("svg.shape.Rect",
   
   properties :
   {
-  	/**
-  	 * x-coord of the rectangle.
-  	 * 
+    /**
+     * x-coord of the rectangle.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementXAttribute</li>
      * </ul>
-  	 */
-  	x : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyX",
-  	  check: "Number"
+     */
+    x : {
+      nullable: true,
+      init: null,
+      apply: "_applyX",
+      check: "Number",
+      event: "changeX"
     },
     
-  	/**
-  	 * y-coord of the rectangle.
-  	 * 
+    /**
+     * y-coord of the rectangle.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementYAttribute</li>
      * </ul>
-  	 */
-  	y : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyY",
-  	  check: "Number"
+     */
+    y : {
+      nullable: true,
+      init: null,
+      apply: "_applyY",
+      check: "Number",
+      event: "changeY"
     },
     
-  	/**
-  	 * Width of the rectangle.
-  	 * A value of zero disables rendering of the element.
-  	 * 
+    /**
+     * Width of the rectangle.
+     * A value of zero disables rendering of the element.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementWidthAttribute</li>
      * </ul>
-  	 */
+     */
     width : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyWidth",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyWidth",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeWidth"
     },
     
-  	/**
-  	 * Height of the rectangle.
-  	 * A value of zero disables rendering of the element.
-  	 * 
+    /**
+     * Height of the rectangle.
+     * A value of zero disables rendering of the element.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementHeightAttribute</li>
      * </ul>
-  	 */
+     */
     height : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyHeight",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyHeight",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeWidth"
     },
     
     /**
      * For rounded rectangles, the x-axis radius of the ellipse used
      * to round off the corners of the rectangle.
-  	 * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementRXAttribute</li>
      * </ul>
      */
     roundX : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyRoundX",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyRoundX",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeRoundX"
     },
     
     /**
      * For rounded rectangles, the y-axis radius of the ellipse used
      * to round off the corners of the rectangle.
-  	 * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#RectElementRYAttribute</li>
      * </ul>
      */
     roundY : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyRoundY",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyRoundY",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeRoundY"
     }
     
     
@@ -135,59 +141,59 @@ qx.Class.define("svg.shape.Rect",
 
   members :
   {
-  	
-  	//applies x
-  	_applyX: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("x");
-	    } else {
+    
+    //applies x
+    _applyX: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("x");
+      } else {
         this.setAttribute("x", value);
-	    }
+      }
     },
   
-  	//applies y
-  	_applyY: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("y");
-	    } else {
+    //applies y
+    _applyY: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("y");
+      } else {
         this.setAttribute("y", value);
-	    }
+      }
     },
   
-  	//applies width
-  	_applyWidth: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("width");
-	    } else {
+    //applies width
+    _applyWidth: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("width");
+      } else {
         this.setAttribute("width", value);
-	    }
+      }
     },
   
-  	//applies height
-  	_applyHeight: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("height");
-	    } else {
+    //applies height
+    _applyHeight: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("height");
+      } else {
         this.setAttribute("height", value);
-	    }
+      }
     },
   
-  	//applies rx
-  	_applyRoundX: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("rx");
-	    } else {
+    //applies rx
+    _applyRoundX: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("rx");
+      } else {
         this.setAttribute("rx", value);
-	    }
+      }
     },
   
-  	//applies ry
-  	_applyRoundY: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("ry");
-	    } else {
+    //applies ry
+    _applyRoundY: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("ry");
+      } else {
         this.setAttribute("ry", value);
-	    }
+      }
     }
 
   }

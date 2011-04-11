@@ -37,104 +37,108 @@ qx.Class.define("svg.struct.Use",
   
   properties :
   {
-  	/**
-  	 * x-coord of the region into which the referenced element is placed.
-  	 * 
+    /**
+     * x-coord of the region into which the referenced element is placed.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementXAttribute</li>
      * </ul>
-  	 */
-  	x : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyX",
-  	  check: "Number"
+     */
+    x : {
+      nullable: true,
+      init: null,
+      apply: "_applyX",
+      check: "Number",
+      event: "changeX"
     },
     
-  	/**
-  	 * y-coord of the region into which the referenced element is placed.
-  	 * 
+    /**
+     * y-coord of the region into which the referenced element is placed.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementYAttribute</li>
      * </ul>
-  	 */
-  	y : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyY",
-  	  check: "Number"
+     */
+    y : {
+      nullable: true,
+      init: null,
+      apply: "_applyY",
+      check: "Number",
+      event: "changeY"
     },
     
-  	/**
-  	 * width of the region into which the referenced element is placed.
-  	 * 
+    /**
+     * width of the region into which the referenced element is placed.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementWidthAttribute</li>
      * </ul>
-  	 */
+     */
     width : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyWidth",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyWidth",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeWidth"
     },
     
-  	/**
-  	 * height of the region into which the referenced element is placed.
-  	 * 
+    /**
+     * height of the region into which the referenced element is placed.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#UseElementHeightAttribute</li>
      * </ul>
-  	 */
+     */
     height : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyHeight",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyHeight",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeHeight"
     }
   },
 
 
   members :
   {
-   	//applies x
-  	_applyX: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("x");
-	    } else {
+     //applies x
+    _applyX: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("x");
+      } else {
         this.setAttribute("x", value);
-	    }
+      }
     },
   
-  	//applies y
-  	_applyY: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("y");
-	    } else {
+    //applies y
+    _applyY: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("y");
+      } else {
         this.setAttribute("y", value);
-	    }
+      }
     },
   
-  	//applies width
-  	_applyWidth: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("width");
-	    } else {
+    //applies width
+    _applyWidth: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("width");
+      } else {
         this.setAttribute("width", value);
-	    }
+      }
     },
   
-  	//applies height
-  	_applyHeight: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("height");
-	    } else {
+    //applies height
+    _applyHeight: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("height");
+      } else {
         this.setAttribute("height", value);
-	    }
+      }
     }
   }  
   

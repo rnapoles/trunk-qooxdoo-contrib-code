@@ -33,22 +33,23 @@ qx.Class.define("svg.path.Path",
   
   properties :
   {
-  	/**
-  	 * The definition of the outline of a shape.
-  	 * 
-  	 * You can provide an instance of {@link PathData} (recommended!),
-  	 * or a string with hand-written path data. 
-  	 * 
+    /**
+     * The definition of the outline of a shape.
+     * 
+     * You can provide an instance of {@link PathData} (recommended!),
+     * or a string with hand-written path data. 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/paths.html#PathData</li>
      * </ul>
-  	 */
-  	pathData: {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyPathData",
-  	  check: "value instanceof svg.path.PathData || typeof(value) == 'string'"
+     */
+    pathData: {
+      nullable: true,
+      init: null,
+      apply: "_applyPathData",
+      check: "value instanceof svg.path.PathData || typeof(value) == 'string'",
+      event: "changePathData"
     },
     
     /**
@@ -62,52 +63,53 @@ qx.Class.define("svg.path.Path",
      * </ul>
      */
     pathLength: {
-    	nullable: true,
-    	init: null,
-    	apply: "_applyPathLength",
-    	check: "!isNaN(value) && value >= 0"
+      nullable: true,
+      init: null,
+      apply: "_applyPathLength",
+      check: "!isNaN(value) && value >= 0",
+      event: "changePathLength"
     }
   },
 
   members :
   {
-  	
-  	//applies path data
-  	_applyPathData: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("d");
-		  } else if (value instanceof svg.path.PathData) {
-		  	
-		  	if (old instanceof svg.path.PathData) {
-	  		  old.removeListener("change", this.__changeListener, this);
-		  	}
-		  	
-		  	this.setAttribute("d", value.toString());
-		  	value.addListener("change", this.__changeListener, this);
-		  	
-  	  } else {
+    
+    //applies path data
+    _applyPathData: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("d");
+      } else if (value instanceof svg.path.PathData) {
+        
+        if (old instanceof svg.path.PathData) {
+          old.removeListener("change", this.__changeListener, this);
+        }
+        
+        this.setAttribute("d", value.toString());
+        value.addListener("change", this.__changeListener, this);
+        
+      } else {
         this.setAttribute("d", value);
-		  }
+      }
     },
     
     //applies path length
     _applyPathLength: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("pathLength");
-  	  } else {
+      if (null == value) {
+        this.removeAttribute("pathLength");
+      } else {
         this.setAttribute("pathLength", value);
-		  }
-		},
-		
-		/**
-		 * Updates the "d" attribute when PathData has changed.
-		 * 
-		 * @param ev {qx.event.Data}
-		 *   data event fired by PathData
-		 */
-		__changeListener: function(ev) {
-			this._applyPathData(ev.getData());
-		}
+      }
+    },
+    
+    /**
+     * Updates the "d" attribute when PathData has changed.
+     * 
+     * @param ev {qx.event.Data}
+     *   data event fired by PathData
+     */
+    __changeListener: function(ev) {
+      this._applyPathData(ev.getData());
+    }
 
   }
 });

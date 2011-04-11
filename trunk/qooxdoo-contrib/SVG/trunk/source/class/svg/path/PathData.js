@@ -45,7 +45,7 @@ qx.Class.define("svg.path.PathData",
     /**
      * Fired when the path data changed. Event will contain the new value.
      */
-  	"change" : "qx.event.type.Data"
+    "change" : "qx.event.type.Data"
   },
 
   members :

@@ -40,15 +40,15 @@ qx.Class.define("svg.core.Element",
   },
 
   statics : {
-  	SVG_NAMESPACE : "http://www.w3.org/2000/svg"
+    SVG_NAMESPACE : "http://www.w3.org/2000/svg"
   },
   
   properties :
   {
-  	/**
-  	 * Unique name for this element.
-  	 */
-  	id : {
+    /**
+     * Unique name for this element.
+     */
+    id : {
       nullable: true,
       init: null,
       apply: "_applyId",
@@ -63,12 +63,12 @@ qx.Class.define("svg.core.Element",
 
     //applies id
     _applyId : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("id");
-		  } else {
+      if (null == value) {
+        this.removeAttribute("id");
+      } else {
         this.setAttribute("id", value);
-		  }
-		},
+      }
+    },
 
     /**
      * Internal helper to generate the DOM element
@@ -102,15 +102,15 @@ qx.Class.define("svg.core.Element",
      *   an uri reference, i.e.  
      */
     getUri : function () {
-    	var id = this.getId();
-    	
-    	if (null == id) {
+      var id = this.getId();
+      
+      if (null == id) {
         if ((qx.core.Environment.get("qx.debug"))) {
-    		  this.warn("Can't create uri reference; id is null.");
-    	  }
-    		return null;
-    	}
-  		return "url(#" + id + ")"; 
+          this.warn("Can't create uri reference; id is null.");
+        }
+        return null;
+      }
+      return "url(#" + id + ")"; 
     }
 
   },

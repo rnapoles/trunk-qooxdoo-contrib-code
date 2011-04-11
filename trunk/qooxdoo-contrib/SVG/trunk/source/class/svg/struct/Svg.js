@@ -40,130 +40,134 @@ qx.Class.define("svg.struct.Svg",
     this.base(arguments, "svg");
 
     this.setAttributes({
-  		"version"     : "1.1",
+      "version"     : "1.1",
       "baseProfile" : "full",
       "xmlns"       : "http://www.w3.org/2000/svg",
       "xmlns:xlink" : "http://www.w3.org/1999/xlink",
       "xmlns:ev"    : "http://www.w3.org/2001/xml-events"
     });
-	  
+    
   },
 
   properties :
   {
-  	/**
+    /**
      * The x-axis coordinate of one corner of the rectangular region into which an embedded
      * 'svg' element is placed. If the attribute is not specified, the effect is as if a
      * value of "0" were specified.
      *
      * Has no meaning or effect on outermost 'svg' elements.
-  	 * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementXAttribute</li>
      * </ul>
-  	 */
-  	x : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyX",
-  	  check: "Number"
+     */
+    x : {
+      nullable: true,
+      init: null,
+      apply: "_applyX",
+      check: "Number",
+      event: "changeX"
     },
     
-  	/**
+    /**
      * The y-axis coordinate of one corner of the rectangular region into which an embedded
      * 'svg' element is placed. If the attribute is not specified, the effect is as if a
      * value of "0" were specified.
      *
      * Has no meaning or effect on outermost 'svg' elements.
-  	 * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementYAttribute</li>
      * </ul>
-  	 */
-  	y : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyY",
-  	  check: "Number"
+     */
+    y : {
+      nullable: true,
+      init: null,
+      apply: "_applyY",
+      check: "Number",
+      event: "changeY"
     },
     
-  	/**
+    /**
      * For outermost 'svg' elements, the intrinsic width of the SVG document fragment.
      * For embedded 'svg' elements, the width of the rectangular region into which the
      * 'svg' element is placed. A negative value is an error. A value of zero disables
      * rendering of the element. If the attribute is not specified, the effect is as
      * if a value of "100%" were specified.
-  	 * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementWidthAttribute</li>
      * </ul>
-  	 */
+     */
     width : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyWidth",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyWidth",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeWidth"
     },
     
-  	/**
+    /**
      * For outermost 'svg' elements, the intrinsic height of the SVG document fragment.
      * For embedded 'svg' elements, the height of the rectangular region into which the
      * 'svg' element is placed. A negative value is an error. A value of zero disables
      * rendering of the element. If the attribute is not specified, the effect is as
      * if a value of "100%" were specified.
-  	 * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementHeightAttribute</li>
      * </ul>
-  	 */
+     */
     height : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyHeight",
-  	  check: "svg.core.Types.isLength(value)"
+      nullable: true,
+      init: null,
+      apply: "_applyHeight",
+      check: "svg.core.Types.isLength(value)",
+      event: "changeHeight"
     }
   },
   
   members :
   {
-   	//applies x
-  	_applyX: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("x");
-	    } else {
+     //applies x
+    _applyX: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("x");
+      } else {
         this.setAttribute("x", value);
-	    }
+      }
     },
   
-  	//applies y
-  	_applyY: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("y");
-	    } else {
+    //applies y
+    _applyY: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("y");
+      } else {
         this.setAttribute("y", value);
-	    }
+      }
     },
   
-  	//applies width
-  	_applyWidth: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("width");
-	    } else {
+    //applies width
+    _applyWidth: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("width");
+      } else {
         this.setAttribute("width", value);
-	    }
+      }
     },
   
-  	//applies height
-  	_applyHeight: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("height");
-	    } else {
+    //applies height
+    _applyHeight: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("height");
+      } else {
         this.setAttribute("height", value);
-	    }
+      }
     }
   }
 

@@ -37,10 +37,10 @@
  */
 qx.Mixin.define("svg.paint.MFillProperties",
 {
-	
-	properties :
-	{
-	
+  
+  properties :
+  {
+  
     /**
      * The paint used for filling the interior.
      * The interior is determined according to the rules associated with the
@@ -60,10 +60,11 @@ qx.Mixin.define("svg.paint.MFillProperties",
      *   <li>http://www.w3.org/TR/SVG/painting.html#FillProperty</li>
      * </ul>
      */
-	  fill: {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyFill"
+    fill: {
+      nullable: true,
+      init: null,
+      apply: "_applyFill",
+      event: "changeFill"
     },
     
     /**
@@ -75,10 +76,11 @@ qx.Mixin.define("svg.paint.MFillProperties",
      * </ul>
      */
     fillRule: {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyFillRule",
-	    check: ["nonzero", "evenodd", "inherit"]
+      nullable: true,
+      init: null,
+      apply: "_applyFillRule",
+      check: ["nonzero", "evenodd", "inherit"],
+      event: "changeFillRule"
     },
     
     /**
@@ -90,47 +92,48 @@ qx.Mixin.define("svg.paint.MFillProperties",
      * </ul>
      */
     fillOpacity: {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyFillOpacity",
-	    check: "!isNaN(value) && value >= 0 && value <= 1"
+      nullable: true,
+      init: null,
+      apply: "_applyFillOpacity",
+      check: "!isNaN(value) && value >= 0 && value <= 1",
+      event: "changeFillOpacity"
     }
-	
-	},
-	
+  
+  },
+  
   members :
   {
-		
-		//applies fill
-		_applyFill : function(value, old) {
-		
-		  if (null == value) {
-		  	this.removeAttribute("fill");
-		  	return;
-		  }
-	    if (value instanceof svg.core.Element) {
-  	    value = value.getUri();
-  	  }
+    
+    //applies fill
+    _applyFill : function(value, old) {
+    
+      if (null == value) {
+        this.removeAttribute("fill");
+        return;
+      }
+      if (value instanceof svg.core.Element) {
+        value = value.getUri();
+      }
       this.setAttribute("fill", value);
-		},
-		
-		//applies fill-rule
-		_applyFillRule : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("fill-rule");
-		  } else {
+    },
+    
+    //applies fill-rule
+    _applyFillRule : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("fill-rule");
+      } else {
         this.setAttribute("fill-rule", value);
-		  }
-		},
+      }
+    },
 
-		//applies fill-opacity
-		_applyFillOpacity : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("fill-opacity");
-		  } else {
+    //applies fill-opacity
+    _applyFillOpacity : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("fill-opacity");
+      } else {
         this.setAttribute("fill-opacity", value);
-		  }
-		}
+      }
+    }
 
   }
 });
