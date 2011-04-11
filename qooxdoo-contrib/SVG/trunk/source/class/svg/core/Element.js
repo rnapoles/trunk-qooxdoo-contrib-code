@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2010  Marc Puts
+     2010-2011  Marc Puts
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -26,7 +26,9 @@ qx.Class.define("svg.core.Element",
 {
   extend : qx.html.Element,
   
-  include : [ svg.core.MTitleDescription ],
+  include : [ svg.core.MTitleDescription,
+              svg.core.dom.MElement,
+              svg.core.dom.MLocatable],
 
 
   /**
@@ -35,7 +37,6 @@ qx.Class.define("svg.core.Element",
    */
   construct : function(tagName)
   {
-    this.__svgElement = document.createElementNS(svg.core.Element.SVG_NAMESPACE, tagName);
     this.base(arguments, tagName);
   },
 
@@ -74,10 +75,12 @@ qx.Class.define("svg.core.Element",
      * Internal helper to generate the DOM element
      * *override*
      *
-     * @return {var} TODOC
+     * @return {svg.core.Element}
      */
     _createDomElement : function() {
-      return this.__svgElement;
+      var el = document.createElementNS(svg.core.Element.SVG_NAMESPACE, this.getNodeName());
+      this.__svgElement = el;
+      return el;
     },
 
     /**
@@ -87,7 +90,8 @@ qx.Class.define("svg.core.Element",
      *
      * *override*
      *
-     * @return {Element} The DOM element node
+     * @return {Element}
+     *   The DOM element node
      */
     getDomElement : function() {
       return this.__svgElement;
@@ -101,7 +105,7 @@ qx.Class.define("svg.core.Element",
      * @return {String}
      *   an uri reference, i.e.  
      */
-    getUri : function () {
+    getUri : function() {
       var id = this.getId();
       
       if (null == id) {
@@ -111,6 +115,52 @@ qx.Class.define("svg.core.Element",
         return null;
       }
       return "url(#" + id + ")"; 
+    },
+    
+    
+    /**
+     * Checks if the DOM element is currently in the document tree. Note that this returns the *actual*
+     * state of the DOM element, which may change when the framework's element queue is flushed.
+     * 
+     * @return {Boolean}
+     *   true if the DOM element is now in the document tree, false otherwise.
+     */
+    inDocumentTree : function() {
+      var el = this.__svgElement;
+      
+      //return "element is created AND ("element has parent" OR "element is the document root")
+      return (null !== el) && ((null !== el.parentNode) || (el.ownerDocument.documentElement === el));
+    },
+    
+    /**
+     * Searches the current element's ancestor tree for the element that wraps the specified
+     * DOM element. The search includes the current element.
+     * 
+     * <pre>
+     * var eSvg = new svg.struct.Svg();
+     * var eGroup = new svg.struct.Group();
+     * var eRect = new svg.shape.Rect();
+     * 
+     * eSvg.add(eGroup);
+     * eGroup.add(eRect);
+     * 
+     * var x = eRect.parentByDomElement(eSvg.getDomElement()); //x === eSvg
+     * 
+     * </pre>
+     * 
+     * @param domElement {Element} DOM Element
+     * 
+     * @return {svg.core.Element|null}
+     *   The found svg element, or <pre>null</pre> if nothing was found.
+     */
+    parentByDomElement : function(domElement) {
+      var el = this;
+      
+      while (el !== null && el.getDomElement() !== domElement) {
+        el = el.getParent();
+      }
+      
+      return el;
     }
 
   },

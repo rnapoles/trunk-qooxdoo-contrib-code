@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2010  Marc Puts
+     2010-2011  Marc Puts
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -33,7 +33,8 @@ qx.Class.define("svg.struct.Svg",
   extend : svg.core.Element,
   
   include : [ svg.coords.MViewBox,
-              svg.coords.MPreserveAspectRatio ],
+              svg.coords.MPreserveAspectRatio,
+              svg.core.dom.MSvgElement ],
 
   construct : function()
   {
