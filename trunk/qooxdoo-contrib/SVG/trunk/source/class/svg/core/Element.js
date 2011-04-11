@@ -105,7 +105,7 @@ qx.Class.define("svg.core.Element",
     	var id = this.getId();
     	
     	if (null == id) {
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
+        if ((qx.core.Environment.get("qx.debug"))) {
     		  this.warn("Can't create uri reference; id is null.");
     	  }
     		return null;

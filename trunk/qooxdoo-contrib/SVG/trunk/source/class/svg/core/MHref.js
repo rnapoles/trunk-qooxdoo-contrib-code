@@ -104,7 +104,7 @@ qx.Mixin.define("svg.core.MHref",
 	  			//the target element does not have an id
 		  	  this.removeAttribute("xlink:href");
 		  	  
-		  	  if (qx.core.Variant.isSet("qx.debug", "on")) {
+		  	  if ((qx.core.Environment.get("qx.debug"))) {
 		      	this.warn("Refering to element requires an id!");
 		      }
 	  		}
