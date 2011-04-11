@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2010  Marc Puts
+     2010-2011  Marc Puts
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
