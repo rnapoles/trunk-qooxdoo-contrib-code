@@ -238,7 +238,7 @@ qx.Class.define("svg.path.PathData",
         return this;
       }
 
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
+      if ((qx.core.Environment.get("qx.debug"))) {
         qx.core.Assert.fail("This line should never be reached.");
       }
     },
@@ -472,7 +472,7 @@ qx.Class.define("svg.path.PathData",
      */
     qCurveSmooth : function(x, y, relative)
     {
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if ((qx.core.Environment.get("qx.debug")))
       {
         if ((this.__lastCommand.toUpperCase() !== 'Q') && (this.__lastCommand.toUpperCase() !== 'T')) {
           this.warn("A smooth quadratic curve should be preceded by another quadratic curve (regular or smooth).");
@@ -563,7 +563,7 @@ qx.Class.define("svg.path.PathData",
      */
     cCurveSmooth : function(x2, y2, x, y, relative)
     {
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if ((qx.core.Environment.get("qx.debug")))
       {
         if ((this.__lastCommand.toUpperCase() !== 'C') && (this.__lastCommand.toUpperCase() !== 'S')) {
           this.warn("A cubic curve should be preceded by another cubic curve (regular or smooth).");
