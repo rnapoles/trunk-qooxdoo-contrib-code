@@ -35,9 +35,9 @@ qx.Class.define("svg.shape.Polyline",
   },
   
   properties : {
-  	
-  	/**
-  	 * The points that make up the polyline. All coordinate values are in the
+    
+    /**
+     * The points that make up the polyline. All coordinate values are in the
      * user coordinate system.
      * 
      * More info:
@@ -45,25 +45,26 @@ qx.Class.define("svg.shape.Polyline",
      *   <li>http://www.w3.org/TR/SVG/shapes.html#PolylineElementPointsAttribute</li>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#PointsBNF</li>
      * </ul>
-  	 */
-  	points : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyPoints",
-  	  check: "String"
+     */
+    points : {
+      nullable: true,
+      init: null,
+      apply: "_applyPoints",
+      check: "String",
+      event: "changePoints"
     }
   },
 
   members :
   {
-  	
-  	//applies points
-  	_applyPoints: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("points");
-	    } else {
+    
+    //applies points
+    _applyPoints: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("points");
+      } else {
         this.setAttribute("points", value);
-	    }
+      }
     }
   }
 

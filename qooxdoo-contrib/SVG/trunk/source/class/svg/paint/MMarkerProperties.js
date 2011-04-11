@@ -23,9 +23,9 @@
  */
 qx.Mixin.define("svg.paint.MMarkerProperties",
 {
-	properties :
-	{
-	
+  properties :
+  {
+  
     /**
      * The marker that must be drawn at the first vertex.
      * 
@@ -34,10 +34,11 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
      *   <li>http://www.w3.org/TR/SVG/painting.html#MarkerStartProperty</li>
      * </ul>
      */
-	  markerStart: {
+    markerStart: {
       nullable: true,
       init: null,
-      apply: "_applyMarkerStart"
+      apply: "_applyMarkerStart",
+      event: "changeMarkerStart"      
     },
 
     /**
@@ -52,7 +53,8 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     markerMid: {
       nullable: true,
       init: null,
-      apply: "_applyMarkerMid"
+      apply: "_applyMarkerMid",
+      event: "changeMarkerMid"
     },
 
     /**
@@ -66,7 +68,8 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     markerEnd: {
       nullable: true,
       init: null,
-      apply: "_applyMarkerEnd"
+      apply: "_applyMarkerEnd",
+      event: "changeMarkerEnd"
     },
     
     /**
@@ -80,54 +83,55 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
      * </ul>
      */
     marker: {
-    	nullable: true,
-    	init: null,
-    	apply: "_applyMarker"
+      nullable: true,
+      init: null,
+      apply: "_applyMarker",
+      event: "changeMarker"
     }
     
-	},
-	
+  },
+  
   members :
   {
-    	
+      
     //applies marker-start 
-   	_applyMarkerStart: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("marker-start");
-		  } else {
+     _applyMarkerStart: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("marker-start");
+      } else {
         this.setAttribute("marker-start", value);
-		  }
-		},
-		
+      }
+    },
+    
     //applies marker-mid
-		_applyMarkerMid: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("marker-mid");
-		  } else {
+    _applyMarkerMid: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("marker-mid");
+      } else {
         this.setAttribute("marker-mid", value);
-		  }
-		},
-		
+      }
+    },
+    
     //applies marker-end
-		_applyMarkerEnd: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("marker-end");
-		  } else {
+    _applyMarkerEnd: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("marker-end");
+      } else {
         this.setAttribute("marker-end", value);
-		  }
-		},
-		
+      }
+    },
+    
     //applies marker
-		_applyMarker: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("marker");
-		  } else {
-		  	//should the other marker properties be reset here??
-		  	//this.resetMarkerStart();
-		  	//this.resetMarkerMid();
-		  	//this.resetMarkerEnd();
+    _applyMarker: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("marker");
+      } else {
+        //should the other marker properties be reset here??
+        //this.resetMarkerStart();
+        //this.resetMarkerMid();
+        //this.resetMarkerEnd();
         this.setAttribute("marker", value);
-		  }
-		}
+      }
+    }
   }
 });

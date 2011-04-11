@@ -37,21 +37,22 @@
  */
 qx.Mixin.define("svg.paint.MStrokeProperties",
 {
-	
-	properties :
-	{
-	  /**
-	   * The paint used when stroking the shape outline.
-	   * 
+  
+  properties :
+  {
+    /**
+     * The paint used when stroking the shape outline.
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeProperty</li>
      * </ul>
-   	 */
-	  stroke : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyStroke"
+      */
+    stroke : {
+      nullable: true,
+      init: null,
+      apply: "_applyStroke",
+      event: "changeStroke"
     },
     
     /**
@@ -62,17 +63,18 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * viewport.
      *
      * A zero value causes no stroke to be painted.
-	   * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeWidthProperty</li>
      * </ul>
      */
     strokeWidth : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyStrokeWidth",
-	    check: "!isNaN(value) && value >= 0"
+      nullable: true,
+      init: null,
+      apply: "_applyStrokeWidth",
+      check: "!isNaN(value) && value >= 0",
+      event: "changeStrokeWidth"
     },
     
     /**
@@ -84,10 +86,11 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * </ul>
      */
     strokeOpacity : {
-    	nullable: true,
-    	init: null,
-    	apply: "_applyStrokeOpacity",
-    	check: "!isNaN(value) && value >= 0 && value <= 1"
+      nullable: true,
+      init: null,
+      apply: "_applyStrokeOpacity",
+      check: "!isNaN(value) && value >= 0 && value <= 1",
+      event: "changeStrokeOpacity"
     },
     
     /**
@@ -99,25 +102,27 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * </ul>
      */
     linecap : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyLinecap",
-	    check: ["butt", "round", "square"]
+      nullable: true,
+      init: null,
+      apply: "_applyLinecap",
+      check: ["butt", "round", "square"],
+      event: "changeLineCap"
     },
     
     /**
      * The shape to be used at the corners of paths or basic shapes when they are stroked.
-	   * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeLinejoinProperty</li>
      * </ul>
      */
     linejoin : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyLinejoin",
-	    check: ["miter", "round", "bevel"]
+      nullable: true,
+      init: null,
+      apply: "_applyLinejoin",
+      check: ["miter", "round", "bevel"],
+      event: "changeLineJoin"
     },
     
     /**
@@ -132,17 +137,18 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * miter to a bevel.
      * 
      * Value must be 1 or greater.
-	   * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeMiterlimitProperty</li>
      * </ul>
      */
     miterLimit : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyMiterLimit",
-	    check: "!isNaN(value) && value >= 1"
+      nullable: true,
+      init: null,
+      apply: "_applyMiterLimit",
+      check: "!isNaN(value) && value >= 1",
+      event: "changeMiterLimit"
     },
     
     /**
@@ -154,17 +160,18 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * If an odd number of values is provided, then the list of values is repeated
      * to yield an even number of values. Thus, stroke-dasharray: 5,3,2 is equivalent
      * to stroke-dasharray: 5,3,2,5,3,2.
-	   * 
+     * 
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty</li>
      * </ul>
      */
     dashArray : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyDashArray",
-	    check: "String"
+      nullable: true,
+      init: null,
+      apply: "_applyDashArray",
+      check: "String",
+      event: "changeDashArray"
     },
     
     /**
@@ -179,89 +186,90 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * </ul>
      */
     dashOffset : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyDashOffset"
+      nullable: true,
+      init: null,
+      apply: "_applyDashOffset",
+      event: "changeDashOffset"
     }
    
-	},
-	
+  },
+  
   members :
   {
     //applies stroke
-		_applyStroke : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke");
-		  	return;
-		  }
-		  if (value instanceof svg.core.Element) {
-		  	value = value.getUri();
-		  }
+    _applyStroke : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke");
+        return;
+      }
+      if (value instanceof svg.core.Element) {
+        value = value.getUri();
+      }
       this.setAttribute("stroke", value);
-		  
+      
     },
 
     //applies stroke-width
-		_applyStrokeWidth : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-width");
-		  } else {
+    _applyStrokeWidth : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-width");
+      } else {
         this.setAttribute("stroke-width", value);
-		  }
+      }
     },
 
     //applies stroke-opacity
-		_applyStrokeOpacity : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-opacity");
-		  } else {
+    _applyStrokeOpacity : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-opacity");
+      } else {
         this.setAttribute("stroke-opacity", value);
-		  }
+      }
     },
 
     //applies stroke-linecap
-		_applyLinecap : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-linecap");
-		  } else {
+    _applyLinecap : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-linecap");
+      } else {
         this.setAttribute("stroke-linecap", value);
-		  }
+      }
     },
     
     //applies stroke-linejoin
-		_applyLinejoin : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-linejoin");
-		  } else {
+    _applyLinejoin : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-linejoin");
+      } else {
         this.setAttribute("stroke-linejoin", value);
-		  }
+      }
     },
     
     //applies stroke-miterlimit
-		_applyMiterLimit : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-miterlimit");
-		  } else {
+    _applyMiterLimit : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-miterlimit");
+      } else {
         this.setAttribute("stroke-miterlimit", value);
-		  }
+      }
     },
 
     //applies stroke-dasharray
-		_applyDashArray : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-dasharray");
-		  } else {
+    _applyDashArray : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-dasharray");
+      } else {
         this.setAttribute("stroke-dasharray", value);
-		  }
+      }
     },
 
     //applies stroke-dashoffset
-		_applyDashOffset : function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("stroke-dashoffset");
-		  } else {
+    _applyDashOffset : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("stroke-dashoffset");
+      } else {
         this.setAttribute("stroke-dashoffset", value);
-		  }
+      }
     }
 
   }

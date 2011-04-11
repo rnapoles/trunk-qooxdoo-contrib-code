@@ -58,38 +58,39 @@
  */
 qx.Mixin.define("svg.coords.MTransform",
 {
-	
-	properties :
-	{
-	  /**
-	   * A list of transformations which are applied in order.
-	   * 
-	   * Possible transforms are matrix, translate, scale, rotate, skewX and skewY.
-	   * 
+  
+  properties :
+  {
+    /**
+     * A list of transformations which are applied in order.
+     * 
+     * Possible transforms are matrix, translate, scale, rotate, skewX and skewY.
+     * 
      * More info:
      * <ul>
      *   <li>{@link MTransform}</li>
      *   <li>http://www.w3.org/TR/SVG/coords.html#TransformAttribute</li>
      * </ul>
      */
-	  transform : {
-	    nullable: true,
-	    init: null,
-	    apply: "_applyTransform",
-	    check: "String"
+    transform : {
+      nullable: true,
+      init: null,
+      apply: "_applyTransform",
+      check: "String",
+      event: "changeTransform"
     }
-	},
-	
+  },
+  
   members :
   {
-		
-		//applies transform
-		_applyTransform: function(value, old) {
-		  if (null == value) {
-		  	this.removeAttribute("transform");
-		  } else {
+
+    //applies transform
+    _applyTransform: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("transform");
+      } else {
         this.setAttribute("transform", value);
-		  }
-	  }
+      }
+    }
   }
 });

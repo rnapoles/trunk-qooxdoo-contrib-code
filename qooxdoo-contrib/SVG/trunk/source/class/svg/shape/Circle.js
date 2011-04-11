@@ -35,81 +35,84 @@ qx.Class.define("svg.shape.Circle",
   
   properties :
   {
-  	/**
-  	 * The x-axis coordinate of the center of the circle.
+    /**
+     * The x-axis coordinate of the center of the circle.
      *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElementCXAttribute</li>
      * </ul>
-  	 */
-  	cx : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyCx",
-  	  check: "Number"
+     */
+    cx : {
+      nullable: true,
+      init: null,
+      apply: "_applyCx",
+      check: "Number",
+      event: "changeCx"
     },
     
-  	/**
-  	 * The y-axis coordinate of the center of the circle.
+    /**
+     * The y-axis coordinate of the center of the circle.
      *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElementCYAttribute</li>
      * </ul>
-  	 */
-  	cy : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyCy",
-  	  check: "Number"
+     */
+    cy : {
+      nullable: true,
+      init: null,
+      apply: "_applyCy",
+      check: "Number",
+      event: "changeCy"
     },
 
-  	/**
-  	 * The radius of the circle. A value of zero disables rendering of the element.
+    /**
+     * The radius of the circle. A value of zero disables rendering of the element.
      *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/shapes.html#CircleElementRAttribute</li>
      * </ul>
-  	 */
+     */
     radius : {
-  	  nullable: true,
-  	  init: null,
-  	  apply: "_applyRadius",
-  	  check: "!isNaN(value) && value >= 0"
+      nullable: true,
+      init: null,
+      apply: "_applyRadius",
+      check: "!isNaN(value) && value >= 0",
+      event: "changeRadius"
     }
     
   },
 
   members :
   {
-  	
-  	//applies cx
-  	_applyCx: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("cx");
-	    } else {
+    
+    //applies cx
+    _applyCx: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("cx");
+      } else {
         this.setAttribute("cx", value);
-	    }
+      }
     },
     
-  	//applies cy
-  	_applyCy: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("cy");
-	    } else {
+    //applies cy
+    _applyCy: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("cy");
+      } else {
         this.setAttribute("cy", value);
-	    }
+      }
     },
 
-  	//applies r
-  	_applyRadius: function(value, old) {
-	    if (null == value) {
-	  	  this.removeAttribute("r");
-	    } else {
+    //applies r
+    _applyRadius: function(value, old) {
+      if (null == value) {
+        this.removeAttribute("r");
+      } else {
         this.setAttribute("r", value);
-	    }
+      }
     }
 
   }
