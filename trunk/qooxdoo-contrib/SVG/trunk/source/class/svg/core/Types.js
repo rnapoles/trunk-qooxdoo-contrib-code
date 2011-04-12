@@ -29,6 +29,23 @@ qx.Class.define("svg.core.Types", {
   statics :
   {
     
+    /**
+     * Checks if value is a valid angle.
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/types.html#DataTypeAngle</li>
+     * </ul>
+     * 
+     * @param value {var}
+     *   value to check
+     *   
+     * @param allowNegative {Boolean ? true}
+     *   whether or not negative values are allowed
+     *   
+     * @return {Boolean}
+     *   true if value is a valid angle
+     */
     isAngle : function(value, allowNegative) {
       
       //if allowNegative is undefined, use default value
