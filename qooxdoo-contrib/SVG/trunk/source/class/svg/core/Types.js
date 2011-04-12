@@ -28,6 +28,41 @@ qx.Class.define("svg.core.Types", {
   
   statics :
   {
+    
+    isAngle : function(value, allowNegative) {
+      
+      //if allowNegative is undefined, use default value
+      allowNegative = allowNegative || true;
+  
+      //if value is a number, just check for sign (if needed)  
+      if (!isNaN(value)) {
+        return allowNegative || value >= 0;
+      }
+      
+      //exclude types other than strings
+      if (typeof(value) !== "string") {
+        return false;
+      }
+
+      //is a 3 character suffix (deg/rad)?
+      var exp = /^\d+(deg|rad)?$/;
+      if (exp.test(value)) {
+        value = value.slice(0, -3);
+        return !isNaN(value) && (allowNegative || value >= 0);
+      }
+      
+      //is it a 4 character suffix (grad)?
+      var exp = /^\d+(grad)?$/;
+      if (exp.test(value)) {
+        value = value.slice(0, -4);
+        return !isNaN(value) && (allowNegative || value >= 0);
+      }
+      
+      //all checks failed.
+      return false;
+      
+    },
+    
   
     /**
      * Checks if value is a valid coordinate.
@@ -83,12 +118,12 @@ qx.Class.define("svg.core.Types", {
       }
       
       //exclude types other than strings
-      if (typeof(value) != "string") {
+      if (typeof(value) !== "string") {
         return false;
       }
       
       //is it a percentage?
-      if (value.slice(-1) == "%") {
+      if (value.slice(-1) === "%") {
         value = value.slice(0, -1);
         return !isNaN(value) && (allowNegative || value >= 0);
       }
@@ -142,7 +177,7 @@ qx.Class.define("svg.core.Types", {
      *   true if value is a valid percentage
      */
     isPercentage : function(value) {
-      if (value.slice(-1) == "%") {
+      if (value.slice(-1) === "%") {
         return !isNaN(value.slice(0,-1));
       }
     }
