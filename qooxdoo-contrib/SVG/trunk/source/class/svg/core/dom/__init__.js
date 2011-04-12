@@ -1,5 +1,5 @@
 /** 
- * Implementations/wrappers for some basic SVG interfaces.
+ * Implementations/wrappers for SVG's basic DOM interfaces.
  * 
  * More info:
  * <ul>

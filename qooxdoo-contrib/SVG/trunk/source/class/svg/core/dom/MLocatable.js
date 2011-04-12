@@ -34,7 +34,7 @@ qx.Mixin.define("svg.core.dom.MLocatable", {
      * 
      * More info:
      * <ul>
-     *   <li>http://www.w3.org/TR/SVG11/types.html#__svg__SVGLocatable__nearestViewportElement</li>
+     *   <li>http://www.w3.org/TR/SVG/types.html#__svg__SVGLocatable__nearestViewportElement</li>
      * </ul>
      * 
      * @return {svg.core.Element}
@@ -91,9 +91,10 @@ qx.Mixin.define("svg.core.dom.MLocatable", {
      * 
      * More info:
      * <ul>
-     *   <li>{@link #getNearestViewport}</li>
      *   <li>http://www.w3.org/TR/SVG/types.html#__svg__SVGLocatable__getCTM</li>
      * </ul>
+     * 
+     * @see #getNearestViewport
      * 
      * @return {SVGMatrix}
      */
