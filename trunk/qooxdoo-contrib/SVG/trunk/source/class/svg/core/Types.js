@@ -16,11 +16,11 @@
 /**
  * Validation functions to check values for special SVG data types.
  * 
-     * More info:
-     * <ul>
-     *   <li>http://www.w3.org/TR/SVG/types.html</li>
-     *   <li>http://www.w3.org/TR/SVG/types.html#BasicDataTypes</li>
-     * </ul>
+ * More info:
+ * <ul>
+ *   <li>http://www.w3.org/TR/SVG/types.html</li>
+ *   <li>http://www.w3.org/TR/SVG/types.html#BasicDataTypes</li>
+ * </ul>
  */
 qx.Class.define("svg.core.Types", {
   
@@ -28,6 +28,30 @@ qx.Class.define("svg.core.Types", {
   
   statics :
   {
+    
+    /**
+     * Splits given list value into an array of strings, using whitespace
+     * characters as separators.
+     * 
+     * @param value {String}
+     *   value to split
+     * 
+     * @return {array | null}
+     *   returns an <code>array</code> (possibly empty), or
+     *   <code>null</code> if value was not a string.
+     */
+    splitList : function(value) {
+      
+      if ("string" === typeof(value)) {
+        var exp = /\w+/g;
+        var matches = value.match(exp);
+        return matches ? matches : []; 
+      }
+      
+      //not a string, return null
+      return null;
+    },
+    
     
     /**
      * Checks if value is a valid angle.
@@ -79,7 +103,6 @@ qx.Class.define("svg.core.Types", {
       return false;
       
     },
-    
   
     /**
      * Checks if value is a valid coordinate.
@@ -103,6 +126,26 @@ qx.Class.define("svg.core.Types", {
     isCoordinate : function(value, allowNegative) {
       return svg.core.Types.isLength(value, allowNegative);
     },
+    
+    
+    /**
+     * Checks if value is a valid list of coordinates.
+     * 
+     * Follows the same restrictions as {@link #isLengthList}
+     * 
+     * @param value {var}
+     *   value to check
+     *    
+     * @param allowNegative {Boolean ? true}
+     *   whether or not negative values are allowed
+     * 
+     * @return {Boolean}
+     *   true if value is a valid list of coordinates
+     */
+    isCoordinateList : function(value, allowNegative) {
+        return svg.core.Types.isLengthList(value, allowNegative);
+    },
+    
     
     /**
      * Checks if value is a valid length.
@@ -156,6 +199,37 @@ qx.Class.define("svg.core.Types", {
       //all checks failed.
       return false;
     },
+    
+    
+    /**
+     * Checks if value is a valid list of lenghts.
+     * 
+     * A length list specifies one or more lengths,
+     * separated by whitespace.
+     * 
+     * @param value {var}
+     *   value to check
+     *    
+     * @param allowNegative {Boolean ? true}
+     *   whether or not negative values are allowed
+     * 
+     * @return {Boolean}
+     *   true if value is a valid list of lengths
+     */
+    isLengthList : function(value, allowNegative) {
+      
+      var values = svg.core.Types.splitList(value);
+      
+      for (var i=0, j=values.length; i<j; i++) {
+        if (!svg.core.Types.isLength(values[i], allowNegative)) {
+          return false;
+        }
+      }
+      
+      //all values passed the check.
+      return true;
+    },
+    
     
     /**
      * Checks if value is valid paint. Paint is used for fill and stroke properties.
