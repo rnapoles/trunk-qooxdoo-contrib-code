@@ -38,6 +38,7 @@ qx.Class.define("svg.core.Element",
   construct : function(tagName)
   {
     this.base(arguments, tagName);
+    this.__svgElement = document.createElementNS(svg.core.Element.SVG_NAMESPACE, this.getNodeName());
   },
 
   statics : {
@@ -78,9 +79,7 @@ qx.Class.define("svg.core.Element",
      * @return {svg.core.Element}
      */
     _createDomElement : function() {
-      var el = document.createElementNS(svg.core.Element.SVG_NAMESPACE, this.getNodeName());
-      this.__svgElement = el;
-      return el;
+      return this.__svgElement;
     },
 
     /**
