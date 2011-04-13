@@ -48,7 +48,7 @@ qx.Class.define("svg.behavior.Draggable",
     __mouseUpListenerId : null,
     __mouseDownListenerId : null,
     __mouseMoveListenerId : null,
-    __offset : null,
+    __offsets : null,
 
     /**
      * The SVG element made draggable.
