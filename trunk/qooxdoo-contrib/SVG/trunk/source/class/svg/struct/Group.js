@@ -14,13 +14,16 @@
 ************************************************************************ */
 
 /**
- * A container element for grouping together related graphics elements.
+ * A container element for grouping together related elements, somewhat
+ * similar to {@link Defs}.
  *
- * Grouping constructs provides information about document struct and semantics.
+ * The differences between groups and defs are:
+ * <ul>
+ *   <li>The group itself is a rendered element (unlike {@link Defs}).</li>
+ *   <li>It can be reused by a {@link Use} element.</li>
+ * </ul>
  *
- * A group of elements, as well as individual objects, can be given a name using the id
- * attribute. Named groups are needed for several purposes such as animation and re-usable
- * objects.
+ * Grouping constructs provides information about document structure and semantics.
  *
  * More info:
  * <ul>

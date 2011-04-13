@@ -21,10 +21,9 @@ qx.Class.define("svg.coords.Convert",
   statics :
   {
     /**
-     * Converts client (document) coordinates to svg userspace coordinates,
-     * using the coordinate system of the specified element.
+     * Converts client (document) coordinates to svg userspace coordinates.
      * 
-     * This is the inverse of {#userspaceToClient}.
+     * This is the inverse of {@link #userspaceToClient}.
      * 
      * @param el {svg.core.Element}
      *   Element of which to use coordinate system.
@@ -36,8 +35,7 @@ qx.Class.define("svg.coords.Convert",
      *   y coordinate in client (pixels)
      * 
      * @return {SVGPoint}
-     *   An object containing the converted coordinates <code>x</code> and
-     *   <code>y</code> in userspace.
+     *   An object with coordinates <code>x</code> and <code>y</code> in userspace.
      *   
      */
     clientToUserspace : function(el, clientx, clienty) {
@@ -53,10 +51,9 @@ qx.Class.define("svg.coords.Convert",
     },
     
     /**
-     * Converts svg userspace coordinates to client (document) coordinates
-     * using the coordinate system of the specified element.
+     * Converts svg userspace coordinates to client (document) coordinates.
      * 
-     * This is the inverse of {#clientToUserspace}.
+     * This is the inverse of {@link #clientToUserspace}.
      * 
      * @param el {svg.core.Element}
      *   Element of which to use coordinate system.
@@ -68,8 +65,7 @@ qx.Class.define("svg.coords.Convert",
      *   y coordinate in userspace
      * 
      * @return {SVGPoint}
-     *   An object containing the converted coordinates <code>x</code> and
-     *   <code>y</code> in client (document).
+     *   An object with coordinates <code>x</code> and <code>y</code> in client (document).
      */
     userspaceToClient : function(el, usX, usY) {
       var vp = el.getNearestViewport() || el;
