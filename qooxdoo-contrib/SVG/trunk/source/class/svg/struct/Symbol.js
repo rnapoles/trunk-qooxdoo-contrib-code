@@ -14,22 +14,24 @@
 ************************************************************************ */
 
 /**
- * Defines graphical template objects which can be instantiated by a {@link svg.Use} element.
- *
- * The use of Symbols for graphics that are used multiple times in the same document adds
- * struct and semantics.
- *
- * The key distinctions between a symbol and a {@link svg.Group} are:
+ * A container element, somewhat similar to {@link Group} and {@link Defs}.
+ * 
+ * The differences between symbols, groups and defs are:
  * <ul>
  *   <li>
- *     A symbol itself is not rendered. Only instances of a symbol element are rendered.
+ *     A symbol contains graphic elements and other container elements (like groups).
  *   </li>
  *   <li>
- *     A symbol can be scaled to fit within a rectangular viewport defined by
- *     the referencing Use element.
+ *     A symbol itself is never rendered. It must be instantiated
+ *     by a {@link Use} element (like defs). 
+ *   </li>
+ *   <li>
+ *     A symbol will be scaled to fit within a rectangular viewport. The rectangle
+ *     will be defined by the _width_ and _height_ properties of the referencing
+ *     use element. 
  *   </li>
  * </ul>
- *
+ * 
  * More info:
  * <ul>
  *   <li>http://www.w3.org/TR/SVG/struct.html#SymbolElement</li>

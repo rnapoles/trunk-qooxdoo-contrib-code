@@ -14,11 +14,11 @@
 ************************************************************************ */
 
 /**
- * The 'use' element references another element and includes/draws it
+ * The use element references another element and includes/draws it
  * at that given point in the document.
  * 
- * Any svg, symbol, group, graphics element or other use element is
- * potentially a template object that can be re-used ("instanced"). 
+ * Any {@link Svg}, {@link Symbol}, {@link Group}, graphics element or other
+ * use element is potentially a template object that can be reused ("instanced"). 
  *
  * More info:
  * <ul>
@@ -31,8 +31,8 @@ qx.Class.define("svg.struct.Use",
   
   include : [ svg.core.MHref ],
 
-  construct : function() {
-    this.base(arguments, "use");
+  construct : function(href) {
+    this.base(arguments);
   },
   
   properties :

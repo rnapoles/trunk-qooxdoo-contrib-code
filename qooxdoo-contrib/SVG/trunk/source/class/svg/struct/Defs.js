@@ -14,10 +14,15 @@
 ************************************************************************ */
 
 /**
- * A container element for referenced elements. For
- * understandability and accessibility reasons, it is recommended that,
- * whenever possible, referenced elements be defined inside of a Defs.
- *
+ * A container element for elements, somewhat similar to {@link Group}.
+ * 
+ * The differences between defs and groups are:
+ * <ul>
+ *   <li>The defs element itself is never rendered (unlike {@link Group}).</li>
+ *   <li>It must be instantiated by a {@link Use} element.</li>
+ *   </li>
+ * </ul>
+ *  
  * More info: http://www.w3.org/TR/SVG/struct.html#DefsElement
  */
 qx.Class.define("svg.struct.Defs",
