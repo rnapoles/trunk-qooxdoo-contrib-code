@@ -220,6 +220,11 @@ qx.Class.define("svg.core.Types", {
       
       var values = svg.core.Types.splitList(value);
       
+      //no array returned means it was an invalid list 
+      if (!values) {
+        return false;
+      }
+      
       for (var i=0, j=values.length; i<j; i++) {
         if (!svg.core.Types.isLength(values[i], allowNegative)) {
           return false;
@@ -271,6 +276,40 @@ qx.Class.define("svg.core.Types", {
       if (value.slice(-1) === "%") {
         return !isNaN(value.slice(0,-1));
       }
+    },
+    
+    /**
+     * Checks if value is a valid list of numbers.
+     * 
+     * @param value {String}
+     *   value to be checked
+     * 
+     * @param allowNegative {Boolean ? true}
+     *   whether or not negative values are allowed
+     * 
+     * @return {Boolean}
+     *   true if value is a valid list of numbers
+     */
+    isNumberList : function(value, allowNegative) {
+      var values = svg.core.Types.splitList(values);
+      
+      //no array returned means no valid list
+      if (!values) {
+        return false;
+      }
+      
+      //default value if not set
+      allowNegative = allowNegative || true;
+      
+      for (var i=0, j=values.length; i++; i<j) {
+        if (isNaN(values[i]) || (!allowNegative && value < 0 )) {
+          //at least one element failed the check
+          return false;
+        }
+      }
+      
+      //all checks passed
+      return true;
     }
   }
   
