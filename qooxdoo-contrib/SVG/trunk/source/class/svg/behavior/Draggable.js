@@ -19,6 +19,7 @@
  * The required mouse listeners are attached to the element's parent.
  * 
  * *HIGHLY EXPERIMENTAL*
+ * Currently only works for elements that have the X/Y or CX/CY attributes.
  */
 qx.Class.define("svg.behavior.Draggable",
 {
@@ -26,7 +27,7 @@ qx.Class.define("svg.behavior.Draggable",
 
   /**
    * @param svgElement {svg.core.Element}
-   *   Element that should become draggable. 
+   *   Element that 50should become draggable. 
    */
   construct : function(svgElement)
   {
@@ -45,9 +46,9 @@ qx.Class.define("svg.behavior.Draggable",
     __convert : null,
     __element : null,
     __mouseUpListenerId : null,
-    __mouseDownListenerId: null,
-    __mouseMoveListenerId: null,
-    __offsets : null,
+    __mouseDownListenerId : null,
+    __mouseMoveListenerId : null,
+    __offset : null,
 
     /**
      * The SVG element made draggable.
@@ -79,15 +80,15 @@ qx.Class.define("svg.behavior.Draggable",
         return;
       }
 
-      var mousepos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
-      var elempos = this.__convert(this.__element,
+      var mousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
+      var elemPos = this.__convert(this.__element,
                                    qx.bom.element.Location.getLeft(this.__element.getDomElement()),
                                    qx.bom.element.Location.getTop(this.__element.getDomElement()));
                                 
                                    
       this.__offsets = {
-        left : mousepos.x - elempos.x,
-        top  : mousepos.y - elempos.y
+        left : mousePos.x - elemPos.x,
+        top  : mousePos.y - elemPos.y
       };
       
       var parent = this.__element.getParent();
@@ -138,13 +139,20 @@ qx.Class.define("svg.behavior.Draggable",
     {
       e.stopPropagation();
       
-      var mousepos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
+      var mousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
       
-      var left = mousepos.x - this.__offsets.left;
-      var top  = mousepos.y - this.__offsets.top;
+      var left = mousePos.x - this.__offsets.left;
+      var top  = mousePos.y - this.__offsets.top;
 
-      this.__element.setX(left);
-      this.__element.setY(top);
+      if (this.__element.setX && this.__element.setY) {
+        this.__element.setX(left);
+        this.__element.setY(top);
+        return; //exit function
+      }
+      
+      //this should never be reached
+      qx.core.Assert.fail("Dragging elements that don't have the X/Y attributes is not supported yet!", true);
+      
     }
 
   },
