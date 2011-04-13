@@ -14,12 +14,14 @@
 ************************************************************************ */
 
 /**
- * Makes an svg element draggable.
+ * Makes any visible svg element draggable.
  * 
  * The required mouse listeners are attached to the element's parent.
  * 
- * *HIGHLY EXPERIMENTAL*
- * Currently only works for elements that have the X/Y or CX/CY attributes.
+ * _NOTE_
+ * The current implementation will *overwrite* the *transform* attribute of the
+ * element that's being dragged. This will be changed in the future.
+ * 
  */
 qx.Class.define("svg.behavior.Draggable",
 {
@@ -27,7 +29,7 @@ qx.Class.define("svg.behavior.Draggable",
 
   /**
    * @param svgElement {svg.core.Element}
-   *   Element that 50should become draggable. 
+   *   Element that should become draggable. 
    */
   construct : function(svgElement)
   {
@@ -35,7 +37,7 @@ qx.Class.define("svg.behavior.Draggable",
 
     this.__element = svgElement;
     
-    this.__offsets = null;
+    this.__offsets = {x:0, y:0};
     this.__addListener();
     
     this.__convert = svg.coords.Convert.clientToUserspace; //shortcut to much used function
@@ -48,6 +50,7 @@ qx.Class.define("svg.behavior.Draggable",
     __mouseUpListenerId : null,
     __mouseDownListenerId : null,
     __mouseMoveListenerId : null,
+    __lastMousePos : null,
     __offsets : null,
 
     /**
@@ -79,16 +82,14 @@ qx.Class.define("svg.behavior.Draggable",
       if (!e.isLeftPressed()) {
         return;
       }
-
-      var mousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
-      var elemPos = this.__convert(this.__element,
-                                   qx.bom.element.Location.getLeft(this.__element.getDomElement()),
-                                   qx.bom.element.Location.getTop(this.__element.getDomElement()));
-                                
-                                   
-      this.__offsets = {
-        left : mousePos.x - elemPos.x,
-        top  : mousePos.y - elemPos.y
+      
+      //convert mouse coordinates to userspace
+      var curMousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
+      
+      //store mouse coordinates
+      this.__lastMousePos = {
+        x : curMousePos.x,
+        y : curMousePos.y
       };
       
       var parent = this.__element.getParent();
@@ -139,20 +140,18 @@ qx.Class.define("svg.behavior.Draggable",
     {
       e.stopPropagation();
       
-      var mousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
-      
-      var left = mousePos.x - this.__offsets.left;
-      var top  = mousePos.y - this.__offsets.top;
+      var curMousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
+      var lastMousePos = this.__lastMousePos;
 
-      if (this.__element.setX && this.__element.setY) {
-        this.__element.setX(left);
-        this.__element.setY(top);
-        return; //exit function
-      }
+      //calculate new offsets by adding delta's 
+      this.__offsets.x += curMousePos.x - lastMousePos.x;
+      this.__offsets.y += curMousePos.y - lastMousePos.y;
       
-      //this should never be reached
-      qx.core.Assert.fail("Dragging elements that don't have the X/Y attributes is not supported yet!", true);
+      //apply new offsets to element
+      this.__element.setAttribute("transform", "translate(" + this.__offsets.x + "," + this.__offsets.y + ")");
       
+      //store current mouse position as last know mouse position
+      this.__lastMousePos = curMousePos;
     }
 
   },
@@ -180,6 +179,7 @@ qx.Class.define("svg.behavior.Draggable",
     
     this.__element = null;
     this.__offsets = null;
+    this.__lastMousePos = null;
     this.__convert = null;
   }
 });
