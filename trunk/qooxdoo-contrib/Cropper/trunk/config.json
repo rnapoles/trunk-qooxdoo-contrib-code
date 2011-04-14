@@ -31,9 +31,9 @@
   {
     "APPLICATION"  : "cropper",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../../../../../usr/pack/qooxdoo-0.8svn-to/frontend",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.4",
     "QXTHEME"      : "qx.theme.Modern",
-    "API_EXCLUDE"  : ["qx.legacy.*", "qx.test.*", "cropper.demo.*"],
+    "API_EXCLUDE"  : ["qx.*", "cropper.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/${USER}_qx_cache",
     "ROOT"         : "."
