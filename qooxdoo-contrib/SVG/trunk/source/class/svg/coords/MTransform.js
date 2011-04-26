@@ -14,42 +14,7 @@
 ************************************************************************ */
 
 /**
- * Set a list of transform definitions, which are applied in the order provided.
- *
- * The available types of transform definitions include:
- * 
- * <ul>
- *   <li><em>matrix(a, b, c, d, e, f)</em>,
- *     which specifies a transformation in the form of a transformation matrix of
- *     six values. It is equivalent to applying the transformation
- *     matrix [a b c d e f].
- *   </li>
- *
- *   <li><em>translate(tx, [ty])</em>,
- *     which specifies a translation by tx and ty. If ty is not provided,
- *     it is assumed to be zero.
- *   </li>
- *
- *   <li><em>scale(sx, [sy])</em>,
- *     which specifies a scale operation by sx and sy. If sy is not provided,
- *     it is assumed to be equal to sx.
- *   </li>
- *
- *   <li><em>rotate(rotate-angle, cx, cy)</em>,
- *     which specifies a rotation by rotate-angle degrees about a given point.
- *     If optional parameters cx and cy are not supplied, the rotate is about the
- *     origin of the current user coordinate system. If optional parameters
- *     cx, cy are supplied, the rotate is about the point (cx, cy).
- *   </li>
- *
- *   <li><em>skewX(skew-angle)</em>,
- *     which specifies a skew transformation along the x-axis.
- *   </li>
- *
- *   <li><em>skewY(skew-angle)</em>,
- *     which specifies a skew transformation along the y-axis.
- *   </li>
- * </ul>
+ * Set a (list of) transformations, which are applied in the order provided.
  *
  * More info:
  * <ul>
@@ -75,22 +40,71 @@ qx.Mixin.define("svg.coords.MTransform",
     transform : {
       nullable: true,
       init: null,
-      apply: "_applyTransform",
-      check: "String",
+      check: function(value) {
+               return qx.lang.Type.isString(value) ||
+                 value instanceof svg.coords.transform.Transformation;
+             },
+      apply: "__applyTransform",
       event: "changeTransform"
+    },
+    
+    transformMode : {
+      nullable: false,
+      init: "normal",
+      check: ["normal", "matrix"],
+      apply: "__applyTransformMode"
     }
   },
   
   members :
   {
 
-    //applies transform
-    _applyTransform: function(value, old) {
-      if (null == value) {
-        this.removeAttribute("transform");
-      } else {
-        this.setAttribute("transform", value);
+    //applies transform property
+    __applyTransform: function(value, old) {
+
+      this.__setTransformAttribute(value, this.getTransformMode());
+
+      if (value instanceof svg.coords.transform.Transformation) {
+        value.addListener("change", this.__changeListener, this);
       }
+      
+      if (old instanceof svg.coords.transform.Transformation) {
+        old.removeListener("change", this.__changeListener, this);
+      }
+      
+    },
+    
+    //applies transformMode property
+    __applyTransformMode: function(value, old) {
+      this.__setTransformAttribute(this.getTransform(), value);
+    },
+    
+    //sets the transform attribute, either directly to the value
+    //or the derived value from an Transform
+    __setTransformAttribute : function(value, transformMode) {
+      if (null === value) {
+        this.removeAttribute("transform");
+        return;
+      }
+      
+      if (value instanceof svg.coords.transform.Transformation) {
+        switch (transformMode) {
+          case "normal":
+            this.setAttribute("transform", value.toString());
+            return;
+          case "matrix":
+            this.setAttribute("transform", value.toMatrixString());
+            return;
+          default:
+            qx.core.Assert.fail("Default case should be unreachable!", false);
+        }
+      }
+      this.setAttribute("transform", value);
+    },
+    
+    __changeListener: function() {
+      this.__setTransformAttribute(this.getTransform(), this.getTransformMode());
     }
+    
   }
 });
