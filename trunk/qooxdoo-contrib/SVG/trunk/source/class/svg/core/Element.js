@@ -25,7 +25,7 @@
 qx.Class.define("svg.core.Element",
 {
   extend : qx.html.Element,
-  
+
   include : [ svg.core.MTitleDescription,
               svg.core.dom.MElement,
               svg.core.dom.MLocatable],
@@ -38,13 +38,13 @@ qx.Class.define("svg.core.Element",
   construct : function(tagName)
   {
     this.base(arguments, tagName);
-    this.__svgElement = document.createElementNS(svg.core.Element.SVG_NAMESPACE, this.getNodeName());
+    this.__svgElement = document.createElementNS(svg.core.Element.SVG_NAMESPACE, tagName);
   },
 
   statics : {
     SVG_NAMESPACE : "http://www.w3.org/2000/svg"
   },
-  
+
   properties :
   {
     /**
@@ -95,70 +95,75 @@ qx.Class.define("svg.core.Element",
     getDomElement : function() {
       return this.__svgElement;
     },
-    
+
     /**
-     * Gets an Uri reference to this element. An {@link #id} must have been set for this.
-     * 
-     * Returns _null_ if no id is set. 
-     * 
+     * Gets an FuncIRI reference to this element. An {@link #id} must have been set for this.
+     *
+     * Returns _null_ if no id is set.
+     *
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/types.html#DataTypeFuncIRI</li>
+     * </ul>
+     *
      * @return {String}
-     *   an uri reference, i.e.  
+     *   an FuncIRI reference, i.e. url(#abc)
      */
-    getUri : function() {
+    getFuncIri : function() {
       var id = this.getId();
-      
+
       if (null == id) {
         if ((qx.core.Environment.get("qx.debug"))) {
           this.warn("Can't create uri reference; id is null.");
         }
         return null;
       }
-      return "url(#" + id + ")"; 
+      return "url(#" + id + ")";
     },
-    
-    
+
+
     /**
      * Checks if the DOM element is currently in the document tree. Note that this returns the *actual*
      * state of the DOM element, which may change when the framework's element queue is flushed.
-     * 
+     *
      * @return {Boolean}
      *   true if the DOM element is now in the document tree, false otherwise.
      */
     inDocumentTree : function() {
       var el = this.__svgElement;
-      
+
       //return "element is created AND ("element has parent" OR "element is the document root")
       return (null !== el) && ((null !== el.parentNode) || (el.ownerDocument.documentElement === el));
     },
-    
+
     /**
      * Searches the current element's ancestor tree for the element that wraps the specified
      * DOM element. The search includes the current element.
-     * 
+     *
      * <pre>
      * var eSvg = new svg.struct.Svg();
      * var eGroup = new svg.struct.Group();
      * var eRect = new svg.shape.Rect();
-     * 
+     *
      * eSvg.add(eGroup);
      * eGroup.add(eRect);
-     * 
+     *
      * var x = eRect.parentByDomElement(eSvg.getDomElement()); //x === eSvg
-     * 
+     *
      * </pre>
-     * 
+     *
      * @param domElement {Element} DOM Element
-     * 
+     *
      * @return {svg.core.Element|null}
      *   The found svg element, or <pre>null</pre> if nothing was found.
      */
     parentByDomElement : function(domElement) {
       var el = this;
-      
+
       while (el !== null && el.getDomElement() !== domElement) {
         el = el.getParent();
       }
-      
+
       return el;
     }
 

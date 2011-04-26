@@ -37,12 +37,12 @@
  */
 qx.Mixin.define("svg.paint.MStrokeProperties",
 {
-  
+
   properties :
   {
     /**
      * The paint used when stroking the shape outline.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeProperty</li>
@@ -54,7 +54,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       apply: "_applyStroke",
       event: "changeStroke"
     },
-    
+
     /**
      * The width of the stroke on the current object.
      * The value can either be a _length_ or a _percentage_.
@@ -63,7 +63,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * viewport.
      *
      * A zero value causes no stroke to be painted.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeWidthProperty</li>
@@ -76,7 +76,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       check: "!isNaN(value) && value >= 0",
       event: "changeStrokeWidth"
     },
-    
+
     /**
      * The opacity of the stroke.
      *
@@ -92,10 +92,10 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       check: "!isNaN(value) && value >= 0 && value <= 1",
       event: "changeStrokeOpacity"
     },
-    
+
     /**
      * The shape to be used at the end of open subpaths when they are stroked.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeLinecapProperty</li>
@@ -108,10 +108,10 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       check: ["butt", "round", "square"],
       event: "changeLineCap"
     },
-    
+
     /**
      * The shape to be used at the corners of paths or basic shapes when they are stroked.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeLinejoinProperty</li>
@@ -124,10 +124,10 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       check: ["miter", "round", "bevel"],
       event: "changeLineJoin"
     },
-    
+
     /**
      * The limit on the ratio of the miter length to the {@link #strokeWidth}.
-     * 
+     *
      * When two line segments meet at a sharp angle and miter joins have been
      * specified, it is possible for the miter to extend far beyond the thickness
      * of the line stroking the path.
@@ -135,9 +135,9 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
      * A miterlimit imposes a limit on the ratio of the miter length to the
      * strokeWidth. When the limit is exceeded, the join is converted from a
      * miter to a bevel.
-     * 
+     *
      * Value must be 1 or greater.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeMiterlimitProperty</li>
@@ -150,17 +150,17 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       check: "!isNaN(value) && value >= 1",
       event: "changeMiterLimit"
     },
-    
+
     /**
      * The pattern of dashes and gaps used to stroke paths.
-     * 
+     *
      * It contains a list of comma and/or white space separated lengths
      * and percentages that specify the lengths of alternating dashes and gaps.
      *
      * If an odd number of values is provided, then the list of values is repeated
      * to yield an even number of values. Thus, stroke-dasharray: 5,3,2 is equivalent
      * to stroke-dasharray: 5,3,2,5,3,2.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty</li>
@@ -173,13 +173,13 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       check: "String",
       event: "changeDashArray"
     },
-    
+
     /**
      * Distance into the dash pattern to start the dash.
-     * 
+     *
      * If a percentage is used, the value represents a percentage of the current
      * viewport. Values can be negative.
-     *  
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#StrokeDashoffsetProperty</li>
@@ -191,9 +191,9 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
       apply: "_applyDashOffset",
       event: "changeDashOffset"
     }
-   
+
   },
-  
+
   members :
   {
     //applies stroke
@@ -203,10 +203,10 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
         return;
       }
       if (value instanceof svg.core.Element) {
-        value = value.getUri();
+        value = value.getFuncIri();
       }
       this.setAttribute("stroke", value);
-      
+
     },
 
     //applies stroke-width
@@ -235,7 +235,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
         this.setAttribute("stroke-linecap", value);
       }
     },
-    
+
     //applies stroke-linejoin
     _applyLinejoin : function(value, old) {
       if (null == value) {
@@ -244,7 +244,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
         this.setAttribute("stroke-linejoin", value);
       }
     },
-    
+
     //applies stroke-miterlimit
     _applyMiterLimit : function(value, old) {
       if (null == value) {

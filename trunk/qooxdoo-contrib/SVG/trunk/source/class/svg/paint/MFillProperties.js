@@ -37,10 +37,10 @@
  */
 qx.Mixin.define("svg.paint.MFillProperties",
 {
-  
+
   properties :
   {
-  
+
     /**
      * The paint used for filling the interior.
      * The interior is determined according to the rules associated with the
@@ -66,10 +66,10 @@ qx.Mixin.define("svg.paint.MFillProperties",
       apply: "_applyFill",
       event: "changeFill"
     },
-    
+
     /**
-     * The algorithm used to determine the interior. 
-     * 
+     * The algorithm used to determine the interior.
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#FillRuleProperty</li>
@@ -82,10 +82,10 @@ qx.Mixin.define("svg.paint.MFillProperties",
       check: ["nonzero", "evenodd", "inherit"],
       event: "changeFillRule"
     },
-    
+
     /**
      * The opacity of the interior.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/painting.html#FillOpacityProperty</li>
@@ -98,25 +98,25 @@ qx.Mixin.define("svg.paint.MFillProperties",
       check: "!isNaN(value) && value >= 0 && value <= 1",
       event: "changeFillOpacity"
     }
-  
+
   },
-  
+
   members :
   {
-    
+
     //applies fill
     _applyFill : function(value, old) {
-    
+
       if (null == value) {
         this.removeAttribute("fill");
         return;
       }
       if (value instanceof svg.core.Element) {
-        value = value.getUri();
+        value = value.getFuncIri();
       }
       this.setAttribute("fill", value);
     },
-    
+
     //applies fill-rule
     _applyFillRule : function(value, old) {
       if (null == value) {
