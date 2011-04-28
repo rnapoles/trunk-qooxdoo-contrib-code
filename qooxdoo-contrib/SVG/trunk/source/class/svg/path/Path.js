@@ -22,23 +22,24 @@
 qx.Class.define("svg.path.Path",
 {
   extend : svg.core.Element,
-  
+
   include : [ svg.paint.MFillProperties,
               svg.paint.MStrokeProperties,
-              svg.paint.MMarkerProperties ],
+              svg.paint.MMarkerProperties,
+              svg.path.dom.MPathElement],
 
   construct : function() {
     this.base(arguments, "path");
   },
-  
+
   properties :
   {
     /**
      * The definition of the outline of a shape.
-     * 
+     *
      * You can provide an instance of {@link PathData} (recommended!),
-     * or a string with hand-written path data. 
-     * 
+     * or a string with hand-written path data.
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/paths.html#PathData</li>
@@ -51,12 +52,12 @@ qx.Class.define("svg.path.Path",
       check: "value instanceof svg.path.PathData || typeof(value) == 'string'",
       event: "changePathData"
     },
-    
+
     /**
      * The author's computation of the total length of the path, in user units.
      * This value is used to calibrate the user agent's own distance-along-a-path
      * calculations with that of the author.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/paths.html#PathLengthAttribute</li>
@@ -73,7 +74,7 @@ qx.Class.define("svg.path.Path",
 
   members :
   {
-    
+
     //applies path data
     _applyPathData: function(value, old) {
       if (null === value) {
@@ -86,24 +87,24 @@ qx.Class.define("svg.path.Path",
       else {
         this.setAttribute("d", value);
       }
-      
+
       if (old instanceof svg.path.PathData) {
         old.removeListener("change", this.__changeListener, this);
       }
     },
-    
+
     //applies path length
     _applyPathLength: function(value, old) {
-      if (null == value) {
+      if (null === value) {
         this.removeAttribute("pathLength");
       } else {
         this.setAttribute("pathLength", value);
       }
     },
-    
+
     /**
      * Updates the "d" attribute when PathData has changed.
-     * 
+     *
      * @param ev {qx.event.Data}
      *   data event fired by PathData
      */
