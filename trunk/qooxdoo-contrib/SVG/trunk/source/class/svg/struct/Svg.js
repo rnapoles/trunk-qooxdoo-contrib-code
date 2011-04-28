@@ -34,7 +34,7 @@ qx.Class.define("svg.struct.Svg",
   
   include : [ svg.coords.MViewBox,
               svg.coords.MPreserveAspectRatio,
-              svg.core.dom.MSvgElement ],
+              svg.struct.dom.MSvgElement ],
 
   construct : function()
   {

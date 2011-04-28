@@ -21,7 +21,7 @@
  *   <li>http://www.w3.org/TR/SVG/struct.html#InterfaceSVGSVGElement</li>
  * </ul>
  */
-qx.Mixin.define("svg.core.dom.MSvgElement", {
+qx.Mixin.define("svg.struct.dom.MSvgElement", {
 
   members :
   {
