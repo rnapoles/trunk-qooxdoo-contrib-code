@@ -368,6 +368,7 @@ simulation.Simulation.prototype.runTest = function()
   this.qxType('qxh=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Composite/qx.ui.form.TextField', "");
 
   if (include.length === 0) {
+    var firstSample = true;
     this.runScript(treeSelect(2), "Selecting first category");
     this.runScript(qxAppInst + '.tree.getSelection()[0].setOpen(true)', "Opening first category");
     var finalSampleScript = selWin + '.' + qxAppInst + '.tree.getItems()[' + selWin + '.' + qxAppInst + '.tree.getItems().length - 1].getLabel()';
@@ -379,13 +380,6 @@ simulation.Simulation.prototype.runTest = function()
     this.currentCategory = this.lastCategory = currentCatSam[0];
     this.currentSample = currentCatSam[1];
     
-    if (this.getConfigSetting("theme", false)) {
-      var chosenTheme = this.getConfigSetting("theme");
-      this.log("Switching theme to " + chosenTheme, "info");
-      this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]', "", "Clicking Theme button");
-      this.qxClick('qxh=[@classname="demobrowser.DemoBrowser"]/qx.ui.toolbar.ToolBar/child[1]/[@label="Theme"]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
-    }
-    
     while (this.currentSample != this.lastSample) {
       if (this.lastCategory) {
         if (this.currentCategory != this.lastCategory && this.getConfigSetting("reloadBrowser")) {
@@ -395,6 +389,16 @@ simulation.Simulation.prototype.runTest = function()
           this.addGlobalErrorHandler();
           this.addOwnFunction("chooseDemo", chooseDemo);
           this.getEval(selWin + ".qx.Simulation.chooseDemo('" + this.currentCategory + "','" + this.currentSample + "');");
+        }
+      }
+      
+      if (firstSample) {
+        firstSample = false;
+        if (this.getConfigSetting("theme", false)) {
+          var chosenTheme = this.getConfigSetting("theme");
+          this.log("Switching theme to " + chosenTheme, "info");
+          this.qxClick('qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Theme]', "", "Clicking Theme button");
+          this.qxClick('qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Theme]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
         }
       }
       
