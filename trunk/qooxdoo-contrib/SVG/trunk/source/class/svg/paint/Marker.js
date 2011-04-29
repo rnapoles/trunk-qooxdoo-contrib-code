@@ -57,7 +57,7 @@ qx.Class.define("svg.paint.Marker",
     markerUnits : {
       nullable: true,
       init: null,
-      apply: "_applyMarkerUnits",
+      apply: "__applyMarkerUnits",
       check: ["strokeWidth", "userSpaceOnUse"],
       event: "changeMarkerUnits"
     },
@@ -77,7 +77,7 @@ qx.Class.define("svg.paint.Marker",
     refX : {
       nullable: true,
       init: null,
-      apply: "_applyRefX",
+      apply: "__applyRefX",
       check: "Number",
       event: "changeRefX"
     },
@@ -97,7 +97,7 @@ qx.Class.define("svg.paint.Marker",
     refY : {
       nullable: true,
       init: null,
-      apply: "_applyRefY",
+      apply: "__applyRefY",
       check: "Number",
       event: "changeRefY"
     },
@@ -116,7 +116,7 @@ qx.Class.define("svg.paint.Marker",
     markerWidth : {
       nullable: true,
       init: null,
-      apply: "_applyMarkerWidth",
+      apply: "__applyMarkerWidth",
       check: "!isNaN(value) && value >= 0",
       event: "changeMarkerWidth"
     },
@@ -135,7 +135,7 @@ qx.Class.define("svg.paint.Marker",
     markerHeight : {
       nullable: true,
       init: null,
-      apply: "_applyMarkerHeight",
+      apply: "__applyMarkerHeight",
       check: "!isNaN(value) && value >= 0",
       event: "changeMarkerHeight"
     },
@@ -151,7 +151,7 @@ qx.Class.define("svg.paint.Marker",
     orient : {
       nullable: true,
       init: null,
-      apply: "_applyOrient",
+      apply: "__applyOrient",
       check: "!isNaN(value) || value == 'auto'",
       event: "changeOrient"
     }
@@ -162,7 +162,7 @@ qx.Class.define("svg.paint.Marker",
   {
     
     //applies markerUnits
-    _applyMarkerUnits: function(value, old) {
+    __applyMarkerUnits: function(value, old) {
       if (null == value) {
         this.removeAttribute("markerUnits");
       } else {
@@ -171,7 +171,7 @@ qx.Class.define("svg.paint.Marker",
     },
 
     //applies refX
-    _applyRefX: function(value, old) {
+    __applyRefX: function(value, old) {
       if (null == value) {
         this.removeAttribute("refX");
       } else {
@@ -180,7 +180,7 @@ qx.Class.define("svg.paint.Marker",
     },
 
     //applies refY
-    _applyRefY: function(value, old) {
+    __applyRefY: function(value, old) {
       if (null == value) {
         this.removeAttribute("refY");
       } else {
@@ -189,7 +189,7 @@ qx.Class.define("svg.paint.Marker",
     },
 
     //applies markerWidth
-    _applyMarkerWidth: function(value, old) {
+    __applyMarkerWidth: function(value, old) {
       if (null == value) {
         this.removeAttribute("markerWidth");
       } else {
@@ -198,7 +198,7 @@ qx.Class.define("svg.paint.Marker",
     },
 
     //applies markerHeight
-    _applyMarkerHeight: function(value, old) {
+    __applyMarkerHeight: function(value, old) {
       if (null == value) {
         this.removeAttribute("markerHeight");
       } else {
@@ -207,7 +207,7 @@ qx.Class.define("svg.paint.Marker",
     },
 
     //applies orient
-    _applyOrient: function(value, old) {
+    __applyOrient: function(value, old) {
       if (null == value) {
         this.removeAttribute("orient");
       } else {

@@ -47,7 +47,7 @@ qx.Class.define("svg.shape.Rect",
     x : {
       nullable: true,
       init: null,
-      apply: "_applyX",
+      apply: "__applyX",
       check: "Number",
       event: "changeX"
     },
@@ -63,7 +63,7 @@ qx.Class.define("svg.shape.Rect",
     y : {
       nullable: true,
       init: null,
-      apply: "_applyY",
+      apply: "__applyY",
       check: "Number",
       event: "changeY"
     },
@@ -80,7 +80,7 @@ qx.Class.define("svg.shape.Rect",
     width : {
       nullable: true,
       init: null,
-      apply: "_applyWidth",
+      apply: "__applyWidth",
       check: "svg.core.Types.isLength(value)",
       event: "changeWidth"
     },
@@ -97,7 +97,7 @@ qx.Class.define("svg.shape.Rect",
     height : {
       nullable: true,
       init: null,
-      apply: "_applyHeight",
+      apply: "__applyHeight",
       check: "svg.core.Types.isLength(value)",
       event: "changeWidth"
     },
@@ -114,7 +114,7 @@ qx.Class.define("svg.shape.Rect",
     roundX : {
       nullable: true,
       init: null,
-      apply: "_applyRoundX",
+      apply: "__applyRoundX",
       check: "svg.core.Types.isLength(value)",
       event: "changeRoundX"
     },
@@ -131,7 +131,7 @@ qx.Class.define("svg.shape.Rect",
     roundY : {
       nullable: true,
       init: null,
-      apply: "_applyRoundY",
+      apply: "__applyRoundY",
       check: "svg.core.Types.isLength(value)",
       event: "changeRoundY"
     }
@@ -143,7 +143,7 @@ qx.Class.define("svg.shape.Rect",
   {
     
     //applies x
-    _applyX: function(value, old) {
+    __applyX: function(value, old) {
       if (null == value) {
         this.removeAttribute("x");
       } else {
@@ -152,7 +152,7 @@ qx.Class.define("svg.shape.Rect",
     },
   
     //applies y
-    _applyY: function(value, old) {
+    __applyY: function(value, old) {
       if (null == value) {
         this.removeAttribute("y");
       } else {
@@ -161,7 +161,7 @@ qx.Class.define("svg.shape.Rect",
     },
   
     //applies width
-    _applyWidth: function(value, old) {
+    __applyWidth: function(value, old) {
       if (null == value) {
         this.removeAttribute("width");
       } else {
@@ -170,7 +170,7 @@ qx.Class.define("svg.shape.Rect",
     },
   
     //applies height
-    _applyHeight: function(value, old) {
+    __applyHeight: function(value, old) {
       if (null == value) {
         this.removeAttribute("height");
       } else {
@@ -179,7 +179,7 @@ qx.Class.define("svg.shape.Rect",
     },
   
     //applies rx
-    _applyRoundX: function(value, old) {
+    __applyRoundX: function(value, old) {
       if (null == value) {
         this.removeAttribute("rx");
       } else {
@@ -188,7 +188,7 @@ qx.Class.define("svg.shape.Rect",
     },
   
     //applies ry
-    _applyRoundY: function(value, old) {
+    __applyRoundY: function(value, old) {
       if (null == value) {
         this.removeAttribute("ry");
       } else {

@@ -29,7 +29,7 @@ qx.Class.define("svg.coords.transform.Rotate",
       nullable: false,
       deferredInit: true,
       check: "Number",
-      apply: "_applyProperty"
+      apply: "__applyProperty"
     },
     
     /**
@@ -39,7 +39,7 @@ qx.Class.define("svg.coords.transform.Rotate",
       nullable: false,
       deferredInit: true,
       check: "Number",
-      apply: "_applyProperty"
+      apply: "__applyProperty"
     },
     
     /**
@@ -49,7 +49,7 @@ qx.Class.define("svg.coords.transform.Rotate",
       nullable: false,
       deferredInit: true,
       check: "Number",
-      apply: "_applyProperty"
+      apply: "__applyProperty"
     }
   },
 
@@ -120,7 +120,7 @@ qx.Class.define("svg.coords.transform.Rotate",
     /**
      * Apply handler of all properties.
      */
-    _applyProperty : function() {
+    __applyProperty : function() {
       this._invalidateCache();
       this.fireEvent("change");
     }

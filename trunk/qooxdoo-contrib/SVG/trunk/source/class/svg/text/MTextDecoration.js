@@ -36,7 +36,7 @@ qx.Mixin.define("svg.text.MTextDecoration", {
       nullable: true,
       init: null,
       check: ["underline", "overline", "line-through", "blink", "inherit"],
-      apply: "_applyTextDecoration",
+      apply: "__applyTextDecoration",
       event: "changeTextDecoration"
     }
   
@@ -45,7 +45,7 @@ qx.Mixin.define("svg.text.MTextDecoration", {
   members :
   {
     //applies text-decoration
-    _applyTextDecoration: function(value, old) {
+    __applyTextDecoration: function(value, old) {
       if (null == value) {
         this.removeAttribute("text-decoration");
       } else {

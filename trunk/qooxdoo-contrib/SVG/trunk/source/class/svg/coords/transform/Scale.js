@@ -29,7 +29,7 @@ qx.Class.define("svg.coords.transform.Scale",
       nullable: false,
       deferredInit: true,
       check: "Number",
-      apply: "_applyProperty"
+      apply: "__applyProperty"
     },
     
     /**
@@ -39,7 +39,7 @@ qx.Class.define("svg.coords.transform.Scale",
       nullable: true,
       deferredInit: true,
       check: "Number",
-      apply: "_applyProperty"
+      apply: "__applyProperty"
     }
   },
 
@@ -98,7 +98,7 @@ qx.Class.define("svg.coords.transform.Scale",
     /**
      * Apply handler of all properties.
      */
-    _applyProperty : function() {
+    __applyProperty : function() {
       this._invalidateCache();
       this.fireEvent("change");
     }

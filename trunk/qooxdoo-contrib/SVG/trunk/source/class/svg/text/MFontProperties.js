@@ -38,7 +38,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
       nullable: true,
       init: null,
       check: "String",
-      apply: "_applyFontFamily",
+      apply: "__applyFontFamily",
       event: "changeFontFamily"
     },
     
@@ -55,7 +55,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
       nullable: true,
       init: null,
       check: ["normal", "italic", "oblique", "inherit"],
-      apply: "_applyFontStyle",
+      apply: "__applyFontStyle",
       event: "changeFontStyle"
     },
     
@@ -72,7 +72,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
       nullable: true,
       init: null,
       check: ["normal", "small-caps", "inherit"],
-      apply: "_applyFontVariant",
+      apply: "__applyFontVariant",
       event: "changeFontVariant"
     },
     
@@ -90,7 +90,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
       init: null,
       check: ["normal", "bold", "bolder", "lighter", "100", "200", "300", "400",
               "500", "600", "700", "800", "900", "inherit"],
-      apply: "_applyFontWeight",
+      apply: "__applyFontWeight",
       event: "changeFontWeight"
     },
     
@@ -109,7 +109,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
       check: ["normal", "wider", "narrower",
               "ultra-condensed", "extra-condensed", "condensed", "semi-condensed",
               "semi-expanded", "expanded", "extra-expanded", "ultra-expanded"],
-      apply: "_applyFontStretch",
+      apply: "__applyFontStretch",
       event: "changeFontStretch"
     },
     
@@ -127,7 +127,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
     fontSize : {
       nullable: true,
       init: null,
-      apply: "_applyFontSize",
+      apply: "__applyFontSize",
       event: "changeFontSize"
     }
   
@@ -136,7 +136,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
   members :
   {
     //applies font-family
-    _applyFontFamily: function(value, old) {
+    __applyFontFamily: function(value, old) {
       if (null == value) {
         this.removeAttribute("font-family");
       } else {
@@ -145,7 +145,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
     },    
 
     //applies font-style
-    _applyFontStyle: function(value, old) {
+    __applyFontStyle: function(value, old) {
       if (null == value) {
         this.removeAttribute("font-style");
       } else {
@@ -154,7 +154,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
     },
     
     //applies font-variant
-    _applyFontVariant: function(value, old) {
+    __applyFontVariant: function(value, old) {
       if (null == value) {
         this.removeAttribute("font-variant");
       } else {
@@ -163,7 +163,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
     },
     
     //applies font-weight
-    _applyFontWeight: function(value, old) {
+    __applyFontWeight: function(value, old) {
       if (null == value) {
         this.removeAttribute("font-weight");
       } else {
@@ -172,7 +172,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
     },
     
     //applies font-size
-    _applyFontStretch: function(value, old) {
+    __applyFontStretch: function(value, old) {
       if (null == value) {
         this.removeAttribute("font-stretch");
       } else {
@@ -181,7 +181,7 @@ qx.Mixin.define("svg.text.MFontProperties", {
     },
 
     //applies font-size
-    _applyFontSize: function(value, old) {
+    __applyFontSize: function(value, old) {
       if (null == value) {
         this.removeAttribute("font-size");
       } else {

@@ -37,7 +37,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     markerStart: {
       nullable: true,
       init: null,
-      apply: "_applyMarkerStart",
+      apply: "__applyMarkerStart",
       event: "changeMarkerStart"      
     },
 
@@ -53,7 +53,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     markerMid: {
       nullable: true,
       init: null,
-      apply: "_applyMarkerMid",
+      apply: "__applyMarkerMid",
       event: "changeMarkerMid"
     },
 
@@ -68,7 +68,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     markerEnd: {
       nullable: true,
       init: null,
-      apply: "_applyMarkerEnd",
+      apply: "__applyMarkerEnd",
       event: "changeMarkerEnd"
     },
     
@@ -85,7 +85,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     marker: {
       nullable: true,
       init: null,
-      apply: "_applyMarker",
+      apply: "__applyMarker",
       event: "changeMarker"
     }
     
@@ -95,7 +95,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
   {
       
     //applies marker-start 
-     _applyMarkerStart: function(value, old) {
+     __applyMarkerStart: function(value, old) {
       if (null == value) {
         this.removeAttribute("marker-start");
       } else {
@@ -104,7 +104,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     },
     
     //applies marker-mid
-    _applyMarkerMid: function(value, old) {
+    __applyMarkerMid: function(value, old) {
       if (null == value) {
         this.removeAttribute("marker-mid");
       } else {
@@ -113,7 +113,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     },
     
     //applies marker-end
-    _applyMarkerEnd: function(value, old) {
+    __applyMarkerEnd: function(value, old) {
       if (null == value) {
         this.removeAttribute("marker-end");
       } else {
@@ -122,7 +122,7 @@ qx.Mixin.define("svg.paint.MMarkerProperties",
     },
     
     //applies marker
-    _applyMarker: function(value, old) {
+    __applyMarker: function(value, old) {
       if (null == value) {
         this.removeAttribute("marker");
       } else {

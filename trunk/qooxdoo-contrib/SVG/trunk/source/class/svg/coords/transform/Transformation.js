@@ -49,37 +49,37 @@ qx.Class.define("svg.coords.transform.Transformation",
      * Cached string value.
      * @type {String} 
      */
-    _asString : null,
+    __asString : null,
     
     /**
      * Cached matrix value.
      * @type {SVGMatrix}
      */
-    _asMatrix : null,
+    __asMatrix : null,
     
     /**
      * Cached matrix string value.
      * @type {String}
      */
-    _asMatrixString : null,
+    __asMatrixString : null,
     
     /**
      * Whether the cached string value is still up-to-date.
      * @type Boolean
      */
-    _cachedString : false,
+    __cachedString : false,
     
     /**
      * Whether the cached matrix value is still up-to-date.
      * @type Boolean
      */
-    _cachedMatrix : false,
+    __cachedMatrix : false,
     
     /**
      * Whether the cached matrix string value is still up-to-date.
      * @type Boolean
      */
-    _cachedMatrixString : false,
+    __cachedMatrixString : false,
     
     /**
      * SVG element.
@@ -119,11 +119,11 @@ qx.Class.define("svg.coords.transform.Transformation",
      * @return {String}
      */
     toString : function() {
-      if (!this._cachedString) {
-        this._asString = this._composeString();
-        this._cachedString = true;
+      if (!this.__cachedString) {
+        this.__asString = this._composeString();
+        this.__cachedString = true;
       }
-      return this._asString;
+      return this.__asString;
     },
 
     /**
@@ -132,11 +132,11 @@ qx.Class.define("svg.coords.transform.Transformation",
      * @return {SVGMatrix}
      */
     toMatrix : function() {
-      if (!this.__cachedMatrix) {
-        this._asMatrix = this._composeMatrix();
-        this._cachedMatrix = true;
+      if (!this.___cachedMatrix) {
+        this.__asMatrix = this._composeMatrix();
+        this.__cachedMatrix = true;
       }
-      return this._asMatrix;
+      return this.__asMatrix;
     },
     
     /**
@@ -147,21 +147,21 @@ qx.Class.define("svg.coords.transform.Transformation",
      */
     toMatrixString : function() {
       
-      if (!this.__cachedMatrixString) {
+      if (!this.___cachedMatrixString) {
         var mx = this.toMatrix();
-        this._asMatrixString = "matrix("+ mx.a+","+mx.b+","+mx.c+","+mx.d+","+mx.e+","+mx.f+")";
-        this._cachedMatrixString = true;
+        this.__asMatrixString = "matrix("+ mx.a+","+mx.b+","+mx.c+","+mx.d+","+mx.e+","+mx.f+")";
+        this.__cachedMatrixString = true;
       }
-      return this._asMatrixString;
+      return this.__asMatrixString;
     },
     
     /**
      * Marks all cached values as invalid.
      */
     _invalidateCache : function() {
-      this._cachedString = false;
-      this._cachedMatrix = false;
-      this._cachedMatrixString = false;
+      this.__cachedString = false;
+      this.__cachedMatrix = false;
+      this.__cachedMatrixString = false;
     },
     
     /**

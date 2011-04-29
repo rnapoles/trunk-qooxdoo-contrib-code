@@ -50,7 +50,7 @@ qx.Class.define("svg.text.Text", {
       nullable: true,
       init: null,
       check: "svg.core.Types.isCoordinate(value)",
-      apply: "_applyX",
+      apply: "__applyX",
       event: "changeX"
     },
     
@@ -66,7 +66,7 @@ qx.Class.define("svg.text.Text", {
       nullable: true,
       init: null, 
       check: "svg.core.Types.isCoordinate(value)",
-      apply: "_applyY",
+      apply: "__applyY",
       event: "changeY"
     },
     
@@ -82,7 +82,7 @@ qx.Class.define("svg.text.Text", {
       nullable: true,
       init: null,
       check: "svg.core.Types.isLength(value)",
-      apply: "_applyOffsetX",
+      apply: "__applyOffsetX",
       event: "changeOffsetX"
     },
     
@@ -98,7 +98,7 @@ qx.Class.define("svg.text.Text", {
       nullable: true,
       init: null, 
       check: "svg.core.Types.isLength(value)",
-      apply: "_applyOffsetY",
+      apply: "__applyOffsetY",
       event: "changeOffsetY"
     },
     
@@ -118,7 +118,7 @@ qx.Class.define("svg.text.Text", {
       nullable: true,
       init: null,
       check: "svg.core.Types.isLength(value)",
-      apply: "_applyTextLength",
+      apply: "__applyTextLength",
       event: "changeTextLength"
     },
     
@@ -140,7 +140,7 @@ qx.Class.define("svg.text.Text", {
       nullable: true,
       init: null,
       check: ["spacing", "spacingAndGlyphs"],
-      apply: "_applyLengthAdjust",
+      apply: "__applyLengthAdjust",
       event: "changeLengthAdjust"
     },
     
@@ -155,7 +155,7 @@ qx.Class.define("svg.text.Text", {
     rotate : {
       nullable: true,
       init: null,
-      apply: "_applyRotate",
+      apply: "__applyRotate",
       event: "changeRotate"
     }
   },
@@ -163,7 +163,7 @@ qx.Class.define("svg.text.Text", {
   members :
   {
     //applies x
-    _applyX: function(value, old) {
+    __applyX: function(value, old) {
       if (null == value) {
         this.removeAttribute("x");
       } else {
@@ -172,7 +172,7 @@ qx.Class.define("svg.text.Text", {
     },
     
     //applies y
-    _applyY: function(value, old) {
+    __applyY: function(value, old) {
       if (null == value) {
         this.removeAttribute("y");
       } else {
@@ -181,7 +181,7 @@ qx.Class.define("svg.text.Text", {
     },
     
     //applies dx
-    _applyOffsetX: function(value, old) {
+    __applyOffsetX: function(value, old) {
       if (null == value) {
         this.removeAttribute("dx");
       } else {
@@ -190,7 +190,7 @@ qx.Class.define("svg.text.Text", {
     },
     
     //applies dy
-    _applyOffsetY: function(value, old) {
+    __applyOffsetY: function(value, old) {
       if (null == value) {
         this.removeAttribute("dy");
       } else {
@@ -199,7 +199,7 @@ qx.Class.define("svg.text.Text", {
     },
     
     //applies textLength
-    _applyTextLength: function(value, old) {
+    __applyTextLength: function(value, old) {
       if (null == value) {
         this.removeAttribute("textLength");
       } else {
@@ -208,7 +208,7 @@ qx.Class.define("svg.text.Text", {
     },
     
     //applies lengthAdjust
-    _applyLengthAdjust: function(value, old) {
+    __applyLengthAdjust: function(value, old) {
       if (null == value) {
         this.removeAttribute("lengthAdjust");
       } else {
@@ -217,7 +217,7 @@ qx.Class.define("svg.text.Text", {
     },
     
     //applies rotate
-    _applyRotate: function(value, old) {
+    __applyRotate: function(value, old) {
       if (null == value) {
         this.removeAttribute("rotate");
       } else {

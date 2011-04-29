@@ -49,7 +49,7 @@ qx.Class.define("svg.struct.Image",
     x : {
       nullable: true,
       init: null,
-      apply: "_applyX",
+      apply: "__applyX",
       check: "Number",
       event: "changeX"
     },
@@ -65,7 +65,7 @@ qx.Class.define("svg.struct.Image",
     y : {
       nullable: true,
       init: null,
-      apply: "_applyY",
+      apply: "__applyY",
       check: "Number",
       event: "changeY"
     },
@@ -81,7 +81,7 @@ qx.Class.define("svg.struct.Image",
     width : {
       nullable: true,
       init: null,
-      apply: "_applyWidth",
+      apply: "__applyWidth",
       check: "svg.core.Types.isLength(value)",
       event: "changeWidth"
     },
@@ -97,7 +97,7 @@ qx.Class.define("svg.struct.Image",
     height : {
       nullable: true,
       init: null,
-      apply: "_applyHeight",
+      apply: "__applyHeight",
       check: "svg.core.Types.isLength(value)",
       event: "changeHeight"
     }
@@ -106,7 +106,7 @@ qx.Class.define("svg.struct.Image",
   members :
   {
      //applies x
-    _applyX: function(value, old) {
+    __applyX: function(value, old) {
       if (null == value) {
         this.removeAttribute("x");
       } else {
@@ -115,7 +115,7 @@ qx.Class.define("svg.struct.Image",
     },
   
     //applies y
-    _applyY: function(value, old) {
+    __applyY: function(value, old) {
       if (null == value) {
         this.removeAttribute("y");
       } else {
@@ -124,7 +124,7 @@ qx.Class.define("svg.struct.Image",
     },
   
     //applies width
-    _applyWidth: function(value, old) {
+    __applyWidth: function(value, old) {
       if (null == value) {
         this.removeAttribute("width");
       } else {
@@ -133,7 +133,7 @@ qx.Class.define("svg.struct.Image",
     },
   
     //applies height
-    _applyHeight: function(value, old) {
+    __applyHeight: function(value, old) {
       if (null == value) {
         this.removeAttribute("height");
       } else {

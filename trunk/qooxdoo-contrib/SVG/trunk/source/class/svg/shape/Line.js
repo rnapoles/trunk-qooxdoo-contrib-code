@@ -48,7 +48,7 @@ qx.Class.define("svg.shape.Line",
     x1: {
       nullable: true,
       init: null,
-      apply: "_applyX1",
+      apply: "__applyX1",
       check: "Number",
       event: "changeX1"
     },
@@ -64,7 +64,7 @@ qx.Class.define("svg.shape.Line",
     y1: {
       nullable: true,
       init: null,
-      apply: "_applyY1",
+      apply: "__applyY1",
       check: "Number",
       event: "changeY1"
     },
@@ -80,7 +80,7 @@ qx.Class.define("svg.shape.Line",
     x2: {
       nullable: true,
       init: null,
-      apply: "_applyX2",
+      apply: "__applyX2",
       check: "Number",
       event: "changeX2"
     },
@@ -96,7 +96,7 @@ qx.Class.define("svg.shape.Line",
     y2: {
       nullable: true,
       init: null,
-      apply: "_applyY2",
+      apply: "__applyY2",
       check: "Number",
       event: "changeY2"
     },
@@ -121,7 +121,7 @@ qx.Class.define("svg.shape.Line",
   {
     
     //applies x1
-    _applyX1: function(value, old) {
+    __applyX1: function(value, old) {
       if (null == value) {
         this.removeAttribute("x1");
       } else {
@@ -130,7 +130,7 @@ qx.Class.define("svg.shape.Line",
     },
   
     //applies y1
-    _applyY1: function(value, old) {
+    __applyY1: function(value, old) {
       if (null == value) {
         this.removeAttribute("y1");
       } else {
@@ -139,7 +139,7 @@ qx.Class.define("svg.shape.Line",
     },
   
     //applies x2
-    _applyX2: function(value, old) {
+    __applyX2: function(value, old) {
       if (null == value) {
         this.removeAttribute("x2");
       } else {
@@ -148,7 +148,7 @@ qx.Class.define("svg.shape.Line",
     },
   
     //applies y2
-    _applyY2: function(value, old) {
+    __applyY2: function(value, old) {
       if (null == value) {
         this.removeAttribute("y2");
       } else {

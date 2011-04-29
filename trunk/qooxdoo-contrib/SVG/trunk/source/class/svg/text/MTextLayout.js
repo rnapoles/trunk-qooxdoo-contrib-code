@@ -43,7 +43,7 @@ qx.Mixin.define("svg.text.MTextLayout", {
       nullable: true,
       init: null,
       check: ["lr", "rl", "tb", "inherit"],
-      apply: "_applyWritingMode",
+      apply: "__applyWritingMode",
       event: "changeWritingMode"
     },
     
@@ -68,7 +68,7 @@ qx.Mixin.define("svg.text.MTextLayout", {
                       value === "inherit" ||
                       svg.core.Types.isAngle(value);
       },
-      apply: "_applyGlyphOrientV",
+      apply: "__applyGlyphOrientV",
       event: "changeGlyphOrientV"
     },
     
@@ -92,7 +92,7 @@ qx.Mixin.define("svg.text.MTextLayout", {
                       value === "inherit" ||
                       svg.core.Types.isAngle(value);
       },
-      apply: "_applyGlyphOrientH",
+      apply: "__applyGlyphOrientH",
       event: "changeGlyphOrientH"
     }
     
@@ -101,7 +101,7 @@ qx.Mixin.define("svg.text.MTextLayout", {
   members :
   {
     //applies writing-mode
-    _applyWritingMode: function(value, old) {
+    __applyWritingMode: function(value, old) {
       if (null == value) {
         this.removeAttribute("writing-mode");
       } else {
@@ -110,7 +110,7 @@ qx.Mixin.define("svg.text.MTextLayout", {
     },
     
     //applies glyph-orientation-vertical
-    _applyGlyphOrientV: function(value, old) {
+    __applyGlyphOrientV: function(value, old) {
       if (null == value) {
         this.removeAttribute("glyph-orientation-vertical");
       } else {
@@ -119,7 +119,7 @@ qx.Mixin.define("svg.text.MTextLayout", {
     },
     
     //glyph-orientation-horizontal
-    _applyGlyphOrientH: function(value, old) {
+    __applyGlyphOrientH: function(value, old) {
       if (null == value) {
         this.removeAttribute("glyph-orientation-horizontal");
       } else {

@@ -60,7 +60,7 @@ qx.Class.define("svg.path.PathData",
     /**
      * Internally track the starting of a subpath.
      */
-    _startSubPath : function()
+    __startSubPath : function()
     {
       this.__subPaths.push(
       {
@@ -73,7 +73,7 @@ qx.Class.define("svg.path.PathData",
     /**
      * Internally track the closure of a subpath.
      */
-    _endSubPath : function()
+    __endSubPath : function()
     {
       var sp = this.__subPaths.pop();
       if (sp) {
@@ -186,7 +186,7 @@ qx.Class.define("svg.path.PathData",
     {
       this._addCmd(relative ? "m" : "M", x + "," + y);
       this._setPen(x, y, relative);
-      this._startSubPath();
+      this.__startSubPath();
       return this;
     },
 
@@ -315,7 +315,7 @@ qx.Class.define("svg.path.PathData",
     {
       // The "Z" command should not be cut short.
       this._addCmd("Z", null, false);
-      this._endSubPath();
+      this.__endSubPath();
       return this;
     },
 

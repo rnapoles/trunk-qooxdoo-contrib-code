@@ -51,7 +51,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     stroke : {
       nullable: true,
       init: null,
-      apply: "_applyStroke",
+      apply: "__applyStroke",
       event: "changeStroke"
     },
 
@@ -72,7 +72,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     strokeWidth : {
       nullable: true,
       init: null,
-      apply: "_applyStrokeWidth",
+      apply: "__applyStrokeWidth",
       check: "!isNaN(value) && value >= 0",
       event: "changeStrokeWidth"
     },
@@ -88,7 +88,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     strokeOpacity : {
       nullable: true,
       init: null,
-      apply: "_applyStrokeOpacity",
+      apply: "__applyStrokeOpacity",
       check: "!isNaN(value) && value >= 0 && value <= 1",
       event: "changeStrokeOpacity"
     },
@@ -104,7 +104,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     linecap : {
       nullable: true,
       init: null,
-      apply: "_applyLinecap",
+      apply: "__applyLinecap",
       check: ["butt", "round", "square"],
       event: "changeLineCap"
     },
@@ -120,7 +120,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     linejoin : {
       nullable: true,
       init: null,
-      apply: "_applyLinejoin",
+      apply: "__applyLinejoin",
       check: ["miter", "round", "bevel"],
       event: "changeLineJoin"
     },
@@ -146,7 +146,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     miterLimit : {
       nullable: true,
       init: null,
-      apply: "_applyMiterLimit",
+      apply: "__applyMiterLimit",
       check: "!isNaN(value) && value >= 1",
       event: "changeMiterLimit"
     },
@@ -169,7 +169,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     dashArray : {
       nullable: true,
       init: null,
-      apply: "_applyDashArray",
+      apply: "__applyDashArray",
       check: "String",
       event: "changeDashArray"
     },
@@ -188,7 +188,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     dashOffset : {
       nullable: true,
       init: null,
-      apply: "_applyDashOffset",
+      apply: "__applyDashOffset",
       event: "changeDashOffset"
     }
 
@@ -197,7 +197,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
   members :
   {
     //applies stroke
-    _applyStroke : function(value, old) {
+    __applyStroke : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke");
         return;
@@ -210,7 +210,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-width
-    _applyStrokeWidth : function(value, old) {
+    __applyStrokeWidth : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-width");
       } else {
@@ -219,7 +219,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-opacity
-    _applyStrokeOpacity : function(value, old) {
+    __applyStrokeOpacity : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-opacity");
       } else {
@@ -228,7 +228,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-linecap
-    _applyLinecap : function(value, old) {
+    __applyLinecap : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-linecap");
       } else {
@@ -237,7 +237,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-linejoin
-    _applyLinejoin : function(value, old) {
+    __applyLinejoin : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-linejoin");
       } else {
@@ -246,7 +246,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-miterlimit
-    _applyMiterLimit : function(value, old) {
+    __applyMiterLimit : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-miterlimit");
       } else {
@@ -255,7 +255,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-dasharray
-    _applyDashArray : function(value, old) {
+    __applyDashArray : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-dasharray");
       } else {
@@ -264,7 +264,7 @@ qx.Mixin.define("svg.paint.MStrokeProperties",
     },
 
     //applies stroke-dashoffset
-    _applyDashOffset : function(value, old) {
+    __applyDashOffset : function(value, old) {
       if (null == value) {
         this.removeAttribute("stroke-dashoffset");
       } else {

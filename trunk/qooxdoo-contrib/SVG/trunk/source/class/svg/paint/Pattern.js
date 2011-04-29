@@ -51,7 +51,7 @@ qx.Class.define("svg.paint.Pattern",
     patternUnits : {
       nullable: true,
       init: null,
-      apply: "_applyPatternUnits",
+      apply: "__applyPatternUnits",
       check: ["userSpaceOnUse", "objectBoundingBox"],
       event: "changePatternUnits"
     },
@@ -68,7 +68,7 @@ qx.Class.define("svg.paint.Pattern",
     contentUnits : {
       nullable: true,
       init: null,
-      apply: "_applyContentUnits",
+      apply: "__applyContentUnits",
       check: ["userSpaceOnUse", "objectBoundingBox"],
       event: "changeContentUnits"
     },
@@ -89,7 +89,7 @@ qx.Class.define("svg.paint.Pattern",
     patternTransform : {
       nullable: true,
       init: null,
-      apply: "_applyPatternTransform",
+      apply: "__applyPatternTransform",
       check: ["userSpaceOnUse", "objectBoundingBox"],
       event: "changePatternTransform"
     },
@@ -106,7 +106,7 @@ qx.Class.define("svg.paint.Pattern",
     x : {
       nullable: true,
       init: null,
-      apply: "_applyX",
+      apply: "__applyX",
       check: "Number",
       event: "changeX"
     },
@@ -123,7 +123,7 @@ qx.Class.define("svg.paint.Pattern",
     y : {
       nullable: true,
       init: null,
-      apply: "_applyY",
+      apply: "__applyY",
       check: "Number",
       event: "changeY"
     },
@@ -141,7 +141,7 @@ qx.Class.define("svg.paint.Pattern",
     width : {
       nullable: true,
       init: null,
-      apply: "_applyWidth",
+      apply: "__applyWidth",
       check: "!isNaN(value) && value >= 0",
       event: "changeWidth"
     },
@@ -159,7 +159,7 @@ qx.Class.define("svg.paint.Pattern",
     height : {
       nullable: true,
       init: null,
-      apply: "_applyHeight",
+      apply: "__applyHeight",
       check: "!isNaN(value) && value >= 0",
       event: "changeHeight"
     },
@@ -181,7 +181,7 @@ qx.Class.define("svg.paint.Pattern",
   {
     
     //applies patternUnits
-    _applyPatternUnits: function(value, old) {
+    __applyPatternUnits: function(value, old) {
       if (null == value) {
         this.removeAttribute("patternUnits");
       } else {
@@ -190,7 +190,7 @@ qx.Class.define("svg.paint.Pattern",
     },
     
     //applies patternContentUnits
-    _applyContentUnits: function(value, old) {
+    __applyContentUnits: function(value, old) {
       if (null == value) {
         this.removeAttribute("patternContentUnits");
       } else {
@@ -199,7 +199,7 @@ qx.Class.define("svg.paint.Pattern",
     },
     
     //applies patternTransform
-    _applyPatternTransform: function(value, old) {
+    __applyPatternTransform: function(value, old) {
       if (null == value) {
         this.removeAttribute("patternTransform");
       } else {
@@ -208,7 +208,7 @@ qx.Class.define("svg.paint.Pattern",
     },
     
     //applies x
-    _applyX: function(value, old) {
+    __applyX: function(value, old) {
       if (null == value) {
         this.removeAttribute("x");
       } else {
@@ -217,7 +217,7 @@ qx.Class.define("svg.paint.Pattern",
     },
     
     //applies y
-    _applyY: function(value, old) {
+    __applyY: function(value, old) {
       if (null == value) {
         this.removeAttribute("y");
       } else {
@@ -226,7 +226,7 @@ qx.Class.define("svg.paint.Pattern",
     },
     
     //applies width
-    _applyWidth: function(value, old) {
+    __applyWidth: function(value, old) {
       if (null == value) {
         this.removeAttribute("width");
       } else {
@@ -235,7 +235,7 @@ qx.Class.define("svg.paint.Pattern",
     },
     
     //applies height
-    _applyHeight: function(value, old) {
+    __applyHeight: function(value, old) {
       if (null == value) {
         this.removeAttribute("height");
       } else {

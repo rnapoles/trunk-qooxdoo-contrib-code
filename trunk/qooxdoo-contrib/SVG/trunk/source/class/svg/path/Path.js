@@ -48,7 +48,7 @@ qx.Class.define("svg.path.Path",
     pathData: {
       nullable: true,
       init: null,
-      apply: "_applyPathData",
+      apply: "__applyPathData",
       check: "value instanceof svg.path.PathData || typeof(value) == 'string'",
       event: "changePathData"
     },
@@ -66,7 +66,7 @@ qx.Class.define("svg.path.Path",
     pathLength: {
       nullable: true,
       init: null,
-      apply: "_applyPathLength",
+      apply: "__applyPathLength",
       check: "!isNaN(value) && value >= 0",
       event: "changePathLength"
     }
@@ -76,7 +76,7 @@ qx.Class.define("svg.path.Path",
   {
 
     //applies path data
-    _applyPathData: function(value, old) {
+    __applyPathData: function(value, old) {
       if (null === value) {
         this.removeAttribute("d");
       }
@@ -94,7 +94,7 @@ qx.Class.define("svg.path.Path",
     },
 
     //applies path length
-    _applyPathLength: function(value, old) {
+    __applyPathLength: function(value, old) {
       if (null === value) {
         this.removeAttribute("pathLength");
       } else {
@@ -109,7 +109,7 @@ qx.Class.define("svg.path.Path",
      *   data event fired by PathData
      */
     __changeListener: function(ev) {
-      this._applyPathData(ev.getData(), ev.getOldData());
+      this.__applyPathData(ev.getData(), ev.getOldData());
     }
 
   }

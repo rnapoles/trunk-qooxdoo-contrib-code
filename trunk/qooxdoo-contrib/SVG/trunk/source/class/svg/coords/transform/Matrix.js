@@ -46,7 +46,7 @@ qx.Class.define("svg.coords.transform.Matrix",
       nullable: false,
       deferredInit: true,
       check: "value instanceof SVGMatrix",
-      apply: "_applyProperty"
+      apply: "__applyProperty"
     }
   },
 
@@ -81,7 +81,7 @@ qx.Class.define("svg.coords.transform.Matrix",
     },
     
     //apply matrix property
-    _applyProperty : function() {
+    __applyProperty : function() {
       this._invalidateCache();
       this.fireEvent("change");
     }
