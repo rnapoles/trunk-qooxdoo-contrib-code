@@ -37,7 +37,7 @@ qx.Class.define("svg.coords.transform.TransformList",
       nullable: false,
       deferredInit: true,
       check: ["concat", "multiply"],
-      apply: "_onPropertyChange"
+      apply: "__onPropertyChange"
     }
   },
 
@@ -66,11 +66,16 @@ qx.Class.define("svg.coords.transform.TransformList",
     
     /**
      * Handler for array change event.
-     * 
-     * @param event {qx.event.type.Data}
-     *   Event object.
      */
-    __onArrayChange : function(event) {
+    __onArrayChange : function() {
+      this._invalidateCache();
+      this.fireEvent("change");
+    },
+    
+    /**
+     * Handler for change event of array elements.  
+     */
+    __onArrayElementChange : function() {
       this._invalidateCache();
       this.fireEvent("change");
     },
@@ -221,6 +226,7 @@ qx.Class.define("svg.coords.transform.TransformList",
      */
     insertAfter : function(after, transformation) {
       this.__array.insertAfter(after, transformation);
+      transformation.addListener("change", this.__onArrayElementChange, this);
     },
     
     /**
@@ -234,6 +240,7 @@ qx.Class.define("svg.coords.transform.TransformList",
      */
     insertAt : function(index, transformation) {
       this.__array.insertAt(index, transformation);
+      transformation.addListener("change", this.__onArrayElementChange, this);
     },
     
     /**
@@ -247,6 +254,7 @@ qx.Class.define("svg.coords.transform.TransformList",
      */
     insertBefore : function(before, transformation) {
       this.__array.insertBefore(before, transformation);
+      transformation.addListener("change", this.__onArrayElementChange, this);
     },
     
     /**
@@ -257,6 +265,7 @@ qx.Class.define("svg.coords.transform.TransformList",
      * 
      */
     pop : function() {
+      transformation.removeListener("change", this.__onArrayElementChange, this);
       return this.__array.pop();
     },
 
@@ -269,6 +278,9 @@ qx.Class.define("svg.coords.transform.TransformList",
      */
     push : function(varargs) {
       this.__array.push.apply(this.__array, arguments);
+      for (var i=0,j=arguments.length; i<j; i++) {
+        arguments[i].addListener("change", this.__onArrayElementChange, this);
+      }
     },
     
     /**
@@ -281,6 +293,7 @@ qx.Class.define("svg.coords.transform.TransformList",
      *   The removed transformation.
      */
     remove : function(transformation) {
+      transformation.removeListener("change", this.__onArrayElementChange, this);
       return this.__array.remove(transformation);
     },
     
@@ -291,7 +304,11 @@ qx.Class.define("svg.coords.transform.TransformList",
      *   A native array containing the removed transformations. 
      */
     removeAll : function() {
-      return this.__array.removeAll();
+      var removed = this.__array.removeAll();
+      for (var i=0,j=removed.length; i<j; i++) {
+        removed[i].removeListener("change", this.__onArrayElementChange, this);
+      }
+      return removed;
     },
     
     /**
@@ -304,6 +321,7 @@ qx.Class.define("svg.coords.transform.TransformList",
      *   The removed transformation.
      */
     removeAt : function(index) {
+      this.__array.getItem(index).removeListener("change", this.__onArrayElementChange, this);
       return this.__array.removeAt(index);
     },
     
@@ -324,7 +342,9 @@ qx.Class.define("svg.coords.transform.TransformList",
      *   Transformation to set.
      */
     setItem : function(index, transformation) {
+      this.__array.getItem(index).removeListener("change", this.__onArrayElementChange, this);
       this.__array.setItem(index, transformation);
+      transformation.addListener("change", this.__onArrayElementChange, this);
     },
     
     /**
@@ -334,7 +354,9 @@ qx.Class.define("svg.coords.transform.TransformList",
      *   The first transformation in the list.
      */
     shift : function() {
-      return this.__array.shift();
+      var tf = this.__array.shift();
+      tf.removeListener("change", this.__onArrayElementChange, this);
+      return tf;
     },
     
     /**
@@ -346,6 +368,9 @@ qx.Class.define("svg.coords.transform.TransformList",
      */
     unshift : function(varargs) {
       this.__array.unshift.apply(this.__array, arguments);
+      for (var i=0,j=varargs.length; i<j; i++) {
+        arguments[i].addListener("change", this.__onArrayElementChange, this);
+      }
     }
    
   },
