@@ -63,7 +63,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
     fill: {
       nullable: true,
       init: null,
-      apply: "_applyFill",
+      apply: "__applyFill",
       event: "changeFill"
     },
 
@@ -78,7 +78,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
     fillRule: {
       nullable: true,
       init: null,
-      apply: "_applyFillRule",
+      apply: "__applyFillRule",
       check: ["nonzero", "evenodd", "inherit"],
       event: "changeFillRule"
     },
@@ -94,7 +94,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
     fillOpacity: {
       nullable: true,
       init: null,
-      apply: "_applyFillOpacity",
+      apply: "__applyFillOpacity",
       check: "!isNaN(value) && value >= 0 && value <= 1",
       event: "changeFillOpacity"
     }
@@ -105,7 +105,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
   {
 
     //applies fill
-    _applyFill : function(value, old) {
+    __applyFill : function(value, old) {
 
       if (null == value) {
         this.removeAttribute("fill");
@@ -118,7 +118,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
     },
 
     //applies fill-rule
-    _applyFillRule : function(value, old) {
+    __applyFillRule : function(value, old) {
       if (null == value) {
         this.removeAttribute("fill-rule");
       } else {
@@ -127,7 +127,7 @@ qx.Mixin.define("svg.paint.MFillProperties",
     },
 
     //applies fill-opacity
-    _applyFillOpacity : function(value, old) {
+    __applyFillOpacity : function(value, old) {
       if (null == value) {
         this.removeAttribute("fill-opacity");
       } else {

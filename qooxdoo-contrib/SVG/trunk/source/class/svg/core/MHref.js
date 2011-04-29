@@ -54,7 +54,7 @@ qx.Mixin.define("svg.core.MHref",
     href : {
       nullable: true,
       init: null,
-      apply: "_applyHref",
+      apply: "__applyHref",
       check: "value instanceof svg.core.Element || typeof(value) == 'string'",
       event: "changeHref"
     }
@@ -63,7 +63,7 @@ qx.Mixin.define("svg.core.MHref",
   members :
   {
 
-    _applyHref : function(value, old) {
+    __applyHref : function(value, old) {
 
       if (null === value) {
         this.removeAttribute("xlink:href");

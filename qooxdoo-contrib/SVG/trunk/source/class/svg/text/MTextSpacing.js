@@ -41,7 +41,7 @@ qx.Mixin.define("svg.text.MTextSpacing", {
                       value == "inherit" ||
                       svg.core.Types.isLength(value);
              },
-      apply: "_applyLetterSpacing",
+      apply: "__applyLetterSpacing",
       event: "changeLetterSpacing"
     },
     
@@ -62,7 +62,7 @@ qx.Mixin.define("svg.text.MTextSpacing", {
                       value == "inherit" ||
                       svg.core.Types.isLength(value);
              },
-      apply: "_applyKerning",
+      apply: "__applyKerning",
       event: "changeKerning"
     },
 
@@ -82,7 +82,7 @@ qx.Mixin.define("svg.text.MTextSpacing", {
                       value == "inherit" ||
                       svg.core.Types.isLength(value);
              },
-      apply: "_applyWordSpacing",
+      apply: "__applyWordSpacing",
       event: "changeWordSpacing"
     }    
     
@@ -91,7 +91,7 @@ qx.Mixin.define("svg.text.MTextSpacing", {
   members :
   {
     //applies letter-spacing
-    _applyLetterSpacing: function(value, old) {
+    __applyLetterSpacing: function(value, old) {
       if (null == value) {
         this.removeAttribute("letter-spacing");
       } else {
@@ -100,7 +100,7 @@ qx.Mixin.define("svg.text.MTextSpacing", {
     },
 
     //applies word-spacing
-    _applyWordSpacing: function(value, old) {
+    __applyWordSpacing: function(value, old) {
       if (null == value) {
         this.removeAttribute("word-spacing");
       } else {
@@ -109,7 +109,7 @@ qx.Mixin.define("svg.text.MTextSpacing", {
     },
 
     //applies kerning
-    _applyKerning: function(value, old) {
+    __applyKerning: function(value, old) {
       if (null == value) {
         this.removeAttribute("kerning");
       } else {

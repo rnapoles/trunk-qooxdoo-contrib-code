@@ -48,7 +48,7 @@ qx.Class.define("svg.shape.Ellipse",
     cx : {
       nullable: true,
       init: null,
-      apply: "_applyCx",
+      apply: "__applyCx",
       check: "Number",
       event: "changeCx"
     },
@@ -64,7 +64,7 @@ qx.Class.define("svg.shape.Ellipse",
     cy : {
       nullable: true,
       init: null,
-      apply: "_applyCy",
+      apply: "__applyCy",
       check: "Number",
       event: "changeCy"
     },
@@ -81,7 +81,7 @@ qx.Class.define("svg.shape.Ellipse",
     radiusX : {
       nullable: true,
       init: null,
-      apply: "_applyRadiusX",
+      apply: "__applyRadiusX",
       check: "!isNaN(value) && value >= 0",
       event: "changeRadiusX"
     },
@@ -98,7 +98,7 @@ qx.Class.define("svg.shape.Ellipse",
     radiusY : {
       nullable: true,
       init: null,
-      apply: "_applyRadiusY",
+      apply: "__applyRadiusY",
       check: "!isNaN(value) && value >= 0",
       event: "changeRadiusY"
     },
@@ -118,7 +118,7 @@ qx.Class.define("svg.shape.Ellipse",
   {
     
     //applies cx
-    _applyCx: function(value, old) {
+    __applyCx: function(value, old) {
       if (null == value) {
         this.removeAttribute("cx");
       } else {
@@ -127,7 +127,7 @@ qx.Class.define("svg.shape.Ellipse",
     },
     
     //applies cy
-    _applyCy: function(value, old) {
+    __applyCy: function(value, old) {
       if (null == value) {
         this.removeAttribute("cy");
       } else {
@@ -136,7 +136,7 @@ qx.Class.define("svg.shape.Ellipse",
     },
 
     //applies rx
-    _applyRadiusX: function(value, old) {
+    __applyRadiusX: function(value, old) {
       if (null == value) {
         this.removeAttribute("rx");
       } else {
@@ -145,7 +145,7 @@ qx.Class.define("svg.shape.Ellipse",
     },
 
     //applies ry
-    _applyRadiusY: function(value, old) {
+    __applyRadiusY: function(value, old) {
       if (null == value) {
         this.removeAttribute("ry");
       } else {

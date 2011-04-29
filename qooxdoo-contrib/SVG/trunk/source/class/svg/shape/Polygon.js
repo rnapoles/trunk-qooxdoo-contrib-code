@@ -49,7 +49,7 @@ qx.Class.define("svg.shape.Polygon",
     points : {
       nullable: true,
       init: null,
-      apply: "_applyPoints",
+      apply: "__applyPoints",
       check: "String",
       event: "changePoints"
     }
@@ -59,7 +59,7 @@ qx.Class.define("svg.shape.Polygon",
   {
     
     //applies points
-    _applyPoints: function(value, old) {
+    __applyPoints: function(value, old) {
       if (null == value) {
         this.removeAttribute("points");
       } else {

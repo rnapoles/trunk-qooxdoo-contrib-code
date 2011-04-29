@@ -36,7 +36,7 @@ qx.Mixin.define("svg.text.MTextAlignment", {
       nullable: true,
       init: null,
       check: ["start", "middle", "end"],
-      apply: "_applyTextAnchor",
+      apply: "__applyTextAnchor",
       event: "changeTextAnchor"
     }
 
@@ -45,7 +45,7 @@ qx.Mixin.define("svg.text.MTextAlignment", {
   members :
   {
     //applies text-anchor
-    _applyTextAnchor: function(value, old) {
+    __applyTextAnchor: function(value, old) {
       if (null == value) {
         this.removeAttribute("text-anchor");
       } else {

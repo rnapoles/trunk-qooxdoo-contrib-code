@@ -46,7 +46,7 @@ qx.Class.define("svg.shape.Circle",
     cx : {
       nullable: true,
       init: null,
-      apply: "_applyCx",
+      apply: "__applyCx",
       check: "Number",
       event: "changeCx"
     },
@@ -62,7 +62,7 @@ qx.Class.define("svg.shape.Circle",
     cy : {
       nullable: true,
       init: null,
-      apply: "_applyCy",
+      apply: "__applyCy",
       check: "Number",
       event: "changeCy"
     },
@@ -78,7 +78,7 @@ qx.Class.define("svg.shape.Circle",
     radius : {
       nullable: true,
       init: null,
-      apply: "_applyRadius",
+      apply: "__applyRadius",
       check: "!isNaN(value) && value >= 0",
       event: "changeRadius"
     }
@@ -89,7 +89,7 @@ qx.Class.define("svg.shape.Circle",
   {
     
     //applies cx
-    _applyCx: function(value, old) {
+    __applyCx: function(value, old) {
       if (null == value) {
         this.removeAttribute("cx");
       } else {
@@ -98,7 +98,7 @@ qx.Class.define("svg.shape.Circle",
     },
     
     //applies cy
-    _applyCy: function(value, old) {
+    __applyCy: function(value, old) {
       if (null == value) {
         this.removeAttribute("cy");
       } else {
@@ -107,7 +107,7 @@ qx.Class.define("svg.shape.Circle",
     },
 
     //applies r
-    _applyRadius: function(value, old) {
+    __applyRadius: function(value, old) {
       if (null == value) {
         this.removeAttribute("r");
       } else {
