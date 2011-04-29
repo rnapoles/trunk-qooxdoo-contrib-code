@@ -14,7 +14,7 @@
 ************************************************************************ */
 
 /**
- * Set a (list of) transformations, which are applied in the order provided.
+ * Apply transformations to elements.
  *
  * More info:
  * <ul>
@@ -27,13 +27,12 @@ qx.Mixin.define("svg.coords.MTransform",
   properties :
   {
     /**
-     * A list of transformations which are applied in order.
+     * A (list of) transformations which are applied in order.
      * 
-     * Possible transforms are matrix, translate, scale, rotate, skewX and skewY.
+     * The value can either be a string or an instance of {@link svg.coords.transform.Transformation}.
      * 
      * More info:
      * <ul>
-     *   <li>{@link MTransform}</li>
      *   <li>http://www.w3.org/TR/SVG/coords.html#TransformAttribute</li>
      * </ul>
      */
@@ -48,6 +47,17 @@ qx.Mixin.define("svg.coords.MTransform",
       event: "changeTransform"
     },
     
+    /**
+     * Notation to use when setting the transform attribute.
+     * 
+     * Allowed values are:
+     * <ul>
+     *   <li><code>normal</code> - use normal notation, e.g. rotate(x,x)</li>
+     *   <li><code>matrix</code> - use matrix notation, e.g. matrix(a,b,c,d,e,f)</li>
+     * </ul>
+     * 
+     * This setting has no effect when {@link #transform} is a string.
+     */
     transformMode : {
       nullable: false,
       init: "normal",
@@ -79,8 +89,18 @@ qx.Mixin.define("svg.coords.MTransform",
       this.__setTransformAttribute(this.getTransform(), value);
     },
     
-    //sets the transform attribute, either directly to the value
-    //or the derived value from an Transform
+    /**
+     * Sets the transform attribute of the element, either directly to
+     * the specified string value or to the derived value from a
+     * Transformation object.
+     * 
+     * @param value {svg.coords.transform.Transformation | String} 
+     *   Value to set.
+     * 
+     * @param transformMode {String}
+     *   Mode to use when setting value. See description of {@link #transformMode}
+     *   for a list of valid values. 
+     */
     __setTransformAttribute : function(value, transformMode) {
       if (null === value) {
         this.removeAttribute("transform");
@@ -102,6 +122,10 @@ qx.Mixin.define("svg.coords.MTransform",
       this.setAttribute("transform", value);
     },
     
+    /**
+     * Handler for _change_ event of Transformation object when the transform property
+     * is set instance of {@link svg.coords.transform.Transformation}. 
+     */
     __changeListener: function() {
       this.__setTransformAttribute(this.getTransform(), this.getTransformMode());
     }

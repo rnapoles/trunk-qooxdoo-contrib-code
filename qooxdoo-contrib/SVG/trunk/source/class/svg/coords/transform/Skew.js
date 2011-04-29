@@ -1,9 +1,30 @@
+/* ************************************************************************
+
+   Copyright:
+     2010-2011  Marc Puts
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Marc Puts (marcputs)
+
+************************************************************************ */
+
+/**
+ * Skew (shear) transformation.
+ */
 qx.Class.define("svg.coords.transform.Skew",
 {
   extend : svg.coords.transform.Transformation,
   
   properties :
   {
+    /**
+     * Skewing angle 
+     */
     angle : {
       nullable: false,
       deferredInit: true,
@@ -11,6 +32,9 @@ qx.Class.define("svg.coords.transform.Skew",
       apply: "_applyProperty"
     },
     
+    /**
+     * Skewing mode (x or y axis) 
+     */
     mode : {
       nullable: false,
       deferredInit: true,
@@ -19,6 +43,16 @@ qx.Class.define("svg.coords.transform.Skew",
     }
   },
 
+  /**
+   * @param svg {svg.struct.Svg}
+   *   Any instance of SVG Element. May be null when not using matrix notation.
+   * 
+   * @param angle {Number}
+   *   Skewing angle.
+   * 
+   * @param mode {String?}
+   *   Skewing mode. Must be <code>x</code> or <code>y</code>. Default <code>x</code>.
+   */
   construct : function(svg, angle, mode) {
     this.base(arguments, svg);
     this.initAngle(angle);
@@ -27,6 +61,12 @@ qx.Class.define("svg.coords.transform.Skew",
   
   members :
   {
+    /**
+     * Creates a string that describes the skewing transformation.
+     * in the format <code>skewX(angle)</code> or <code>skewY(angle)</code>.  
+     * 
+     * @return {String}
+     */
     _composeString : function() {
       
       switch (this.getMode()) {
@@ -39,6 +79,11 @@ qx.Class.define("svg.coords.transform.Skew",
       }
     },
 
+    /**
+     * Creates the matrix that represents the skewing transformation.
+     * 
+     * @return {SVGMatrix}
+     */
     _composeMatrix : function() {
 
       //get angle in rad
@@ -51,14 +96,14 @@ qx.Class.define("svg.coords.transform.Skew",
         case "x":
           matrix.a = 1;
           matrix.b = 0;
-          matrix.c = Math.tan(r);
+          matrix.c = Math.tan(r).toFixed(10);
           matrix.d = 1;
           matrix.e = 0;
           matrix.f = 0;
           break;
         case "y":
           matrix.a = 1;
-          matrix.b = Math.tan(r);
+          matrix.b = Math.tan(r).toFixed(10);
           matrix.c = 0;
           matrix.d = 1;
           matrix.e = 0;
@@ -71,6 +116,9 @@ qx.Class.define("svg.coords.transform.Skew",
       return matrix;
     },
     
+    /**
+     * Apply handler of all properties.
+     */
     _applyProperty : function() {
       this._invalidateCache();
       this.fireEvent("change");

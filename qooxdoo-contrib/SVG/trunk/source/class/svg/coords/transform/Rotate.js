@@ -1,3 +1,21 @@
+/* ************************************************************************
+
+   Copyright:
+     2010-2011  Marc Puts
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Marc Puts (marcputs)
+
+************************************************************************ */
+
+/**
+ * Rotation transformation.
+ */
 qx.Class.define("svg.coords.transform.Rotate",
 {
   extend : svg.coords.transform.Transformation,
@@ -6,8 +24,6 @@ qx.Class.define("svg.coords.transform.Rotate",
   {
     /**
      * Rotation angle (in degrees)
-     * 
-     * @type Number
      */
     angle : {
       nullable: false,
@@ -16,6 +32,9 @@ qx.Class.define("svg.coords.transform.Rotate",
       apply: "_applyProperty"
     },
     
+    /**
+     * X-coordinate of rotation point.
+     */
     cx : {
       nullable: false,
       deferredInit: true,
@@ -23,6 +42,9 @@ qx.Class.define("svg.coords.transform.Rotate",
       apply: "_applyProperty"
     },
     
+    /**
+     * Y-coordinate of rotation point.
+     */
     cy : {
       nullable: false,
       deferredInit: true,
@@ -31,6 +53,19 @@ qx.Class.define("svg.coords.transform.Rotate",
     }
   },
 
+  /**
+   * @param svg {svg.struct.Svg}
+   *   Any instance of SVG Element. May be null when not using matrix notation.
+   * 
+   * @param angle {Number}
+   *   Angle (in degrees) for rotation.
+   * 
+   * @param cx {Number?}
+   *   X-coord of point to rotate around (default 0).
+   * 
+   * @param cy {Number?}
+   *   Y-coord of point to rotate around (default 0).
+   */
   construct : function(svg, angle, cx, cy) {
     this.base(arguments, svg);
     this.initAngle(angle);
@@ -40,6 +75,12 @@ qx.Class.define("svg.coords.transform.Rotate",
   
   members :
   {
+    /**
+     * Creates a string that describes the rotation.
+     * in the format <code>rotate(angle, cx, cy)</code>
+     * 
+     * @return {String}
+     */
     _composeString : function() {
       var str = "rotate(" + this.getAngle();
       
@@ -49,6 +90,11 @@ qx.Class.define("svg.coords.transform.Rotate",
       return str + ")";
     },
     
+    /**
+     * Creates the matrix that represents the rotation.
+     * 
+     * @return {SVGMatrix}
+     */
     _composeMatrix : function() {
 
       //get angle in rad
@@ -71,6 +117,9 @@ qx.Class.define("svg.coords.transform.Rotate",
       return matrix;
     },
     
+    /**
+     * Apply handler of all properties.
+     */
     _applyProperty : function() {
       this._invalidateCache();
       this.fireEvent("change");
