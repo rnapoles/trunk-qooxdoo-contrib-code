@@ -14,14 +14,15 @@
 ************************************************************************ */
 
 /**
- * It is often desirable to specify that a given set of graphics stretch to fit a
- * particular container element. The _viewBox_ attribute provides this capability.
- *
- * The value of the viewBox attribute specifies a rectangle in user space which
- * should be mapped to the bounds of the viewport established by the given element,
- * taking into account attribute {@link MPreserveAspectRatio}. If specified, an
- * additional transformation is applied to all descendants of the given element to
- * achieve the specified effect.
+ * Set which part of the SVG graphic is visible.
+ * 
+ * The _ViewBox_ can be used to set which part of the SVG graphic should be
+ * visible in the ViewPort. This can be used for zooming and/or panning the
+ * image.
+ * 
+ * If the aspect ratio of the ViewBox and ViewPort don't match, then the
+ * {@link MPreserveAspectRatio} attribute will specify how and if the aspect
+ * ratio should be preserved.
  *
  * More info:
  * <ul>

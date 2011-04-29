@@ -1,9 +1,30 @@
+/* ************************************************************************
+
+   Copyright:
+     2010-2011  Marc Puts
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Marc Puts (marcputs)
+
+************************************************************************ */
+
+/**
+ * Translate transformation
+ */
 qx.Class.define("svg.coords.transform.Translate",
 {
   extend : svg.coords.transform.Transformation,
   
   properties :
   {
+    /**
+     * X-distance of translation. 
+     */
     tx : {
       nullable: false,
       deferredInit: true,
@@ -11,6 +32,9 @@ qx.Class.define("svg.coords.transform.Translate",
       apply: "_applyProperty"
     },
     
+    /**
+     * Y-distance of translation.
+     */
     ty : {
       nullable: false,
       deferredInit: true,
@@ -19,6 +43,17 @@ qx.Class.define("svg.coords.transform.Translate",
     }
   },
 
+  /**
+   * 
+   * @param svg {svg.struct.Svg}
+   *   Any instance of SVG Element. May be null when not using matrix notation.
+   * 
+   * @param tx {Number?}
+   *   X-distance of translation.
+   *   
+   * @param ty {Number?}
+   *   Y-distance of translation.
+   */
   construct : function(svg, tx, ty) {
     this.base(arguments, svg);
     this.initTx(tx || 0);
@@ -27,10 +62,22 @@ qx.Class.define("svg.coords.transform.Translate",
   
   members :
   {
+    
+    /**
+     * Creates a string that describes the translation.
+     * in the format <code>translate(tx, ty)</code>.  
+     * 
+     * @return {String}
+     */
     _composeString : function() {
       return "translate(" + this.getTx() + "," + this.getTy() + ")";
     },
     
+    /**
+     * Creates the matrix that represents the translation.
+     * 
+     * @return {SVGMatrix}
+     */
     _composeMatrix : function() {
 
       //create matrix object
@@ -47,6 +94,9 @@ qx.Class.define("svg.coords.transform.Translate",
       return matrix;
     },
     
+    /**
+     * Apply handler of all properties.
+     */
     _applyProperty : function() {
       this._invalidateCache();
       this.fireEvent("change");
