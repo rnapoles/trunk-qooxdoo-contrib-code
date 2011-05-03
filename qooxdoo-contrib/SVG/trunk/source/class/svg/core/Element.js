@@ -165,6 +165,89 @@ qx.Class.define("svg.core.Element",
       }
 
       return el;
+    },
+    
+    /**
+     * Add event listener to this object. The event can be either a native
+     * event that's supported by the DOM element (like mousedown), or a
+     * qooxdoo event defined by the element class.
+     *
+     * @param type {String} name of the event type
+     * @param listener {Function} event callback function
+     * @param self {Object ? null} Reference to the 'this' variable inside
+     *         the event listener. When not given, the corresponding dispatcher
+     *         usually falls back to a default, which is the target
+     *         by convention. Note this is not a strict requirement, i.e.
+     *         custom dispatchers can follow a different strategy.
+     * @param capture {Boolean ? false} Whether to attach the event to the
+     *         capturing phase or the bubbling phase of the event. The default is
+     *         to attach the event handler to the bubbling phase.
+     * @return {String} An opaque id, which can be used to remove the event listener
+     *         using the {@link #removeListenerById} method.
+     */
+    addListener : function(type, listener, self, capture) {
+      if (this.$$disposed) {
+        return null;
+      }
+      
+      if (qx.bom.Event.supportsEvent(this.__svgElement, type)) {
+        //attach listener to native event
+        return this.base(arguments, type, listener, self, capture);
+      }
+      else {
+        //attach listener to qooxdoo event
+        return qx.event.Registration.addListener(this, type, listener, self, capture);        
+      }
+    },
+    
+    /**
+     * Remove event listener from this object
+     *
+     * @param type {String} name of the event type
+     * @param listener {Function} event callback function
+     * @param self {Object ? null} reference to the 'this' variable inside the callback
+     * @param capture {Boolean} Whether to remove the event listener of
+     *   the bubbling or of the capturing phase.
+     * @return {Boolean} Whether the event was removed successfully (has existed)
+     */
+    removeListener: function(type, listener, self, capture) {
+      if (this.$$disposed) {
+        return false;
+      }
+      
+      if (qx.bom.Event.supportsEvent(this.__svgElement, type)) {
+        //remove listener from native event
+        return this.base(arguments, type, listener, self, capture);
+      }
+      else {
+        //remove listener from qooxdoo event
+        return qx.event.Registration.removeListener(this, type, listener, self, capture);        
+      }
+    },
+    
+    /**
+     * Removes an event listener from an event target by an id returned by
+     * {@link #addListener}
+     *
+     * @param id {String} The id returned by {@link #addListener}
+     * @return {Boolean} Whether the event was removed successfully (has existed)
+     */
+    removeListenerById: function(id) {
+      if (this.$$disposed) {
+        return false;
+      }
+      
+      //get event type from listener id
+      var type = id.split("|")[0];
+      
+      if (qx.bom.Event.supportsEvent(this.__svgElement, type)) {
+        //remove listener from native event
+        return this.base(arguments, id);
+      }
+      else {
+        //remove listener from qooxdoo event
+        return qx.event.Registration.removeListenerById(this, id);
+      }
     }
 
   },
