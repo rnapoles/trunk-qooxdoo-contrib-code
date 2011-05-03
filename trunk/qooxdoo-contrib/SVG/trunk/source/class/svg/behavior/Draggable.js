@@ -162,18 +162,16 @@ qx.Class.define("svg.behavior.Draggable",
    * ******************************************************/
   destruct : function() {
     
-    var remove = this.__element.removeListenerById;
-    
     if (null !== this.__mouseUpListenerId) {
-      remove(this.__mouseUpListenerId);
+      this.__element.removeListenerById(this.__mouseUpListenerId);
       this.__mouseUpListenerId = null;
     }
     if (null !== this.__mouseDownListenerId) {
-      remove(this.__mouseDownListenerId);
+      this.__element.removeListenerById(this.__mouseDownListenerId);
       this.__mouseDownListenerId = null;
     }
     if (null !== this.__mouseMoveListenerId) {
-      remove(this.__mouseMoveListenerId);
+      this.__element.removeListenerById(this.__mouseMoveListenerId);
       this.__mouseMoveListenerId = null;
     }
     
