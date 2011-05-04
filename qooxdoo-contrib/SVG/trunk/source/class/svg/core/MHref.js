@@ -10,6 +10,7 @@
 
    Authors:
      * Marc Puts (marcputs)
+     * Martijn Evers (mevers)
 
 ************************************************************************ */
 
@@ -62,27 +63,58 @@ qx.Mixin.define("svg.core.MHref",
 
   members :
   {
+    /**
+     * reference to the object referred by href, null when
+     * href contains a string instead of an object reference
+     */
+    __listenTo : null,
 
-    __applyHref : function(value, old) {
+    //applies href
+    __applyHref : function(value, old)
+    {
+      // remove listener
+      if (this.__listenTo) {
+        this.__listenTo.removeListener("changeId", this.__changeIdListener, this);
+      }
 
+      // if null, remove xlink:href attribute
       if (null === value) {
         this.removeAttribute("xlink:href");
+        this.__listenTo = null;
         return;
       }
 
+      // when object reference
       if (value instanceof svg.core.Element) {
         var id = value.getId();
         if (null === id) {
-          if ((qx.core.Environment.get("qx.debug"))) {
-            this.warn("Can't create uri reference; id is null.");
-          }
-          return;
+          id = value.toString();
+          value.setId(id);
         }
-        value = '#' + id;
+
+        if (this.__listenTo !== value) {
+          this.__listenTo = value;
+          value.addListener("changeId", this.__changeIdListener, this);
+        }
+
+        var iri = "#" + id;
+      } else {
+        this.__listenTo = null;
+        var iri = value;
       }
-      this.getDomElement().setAttributeNS(svg.core.MHref.XLINK_NAMESPACE, "xlink:href", value);
 
+      this.getDomElement().setAttributeNS(svg.core.MHref.XLINK_NAMESPACE, "xlink:href", iri);
+    },
+
+    /**
+     * Updates the "href" attribute when the referenced element id has changed.
+     *
+     * @param event {qx.event.Data}
+     *   data event fired by referring element
+     */
+    __changeIdListener : function(event) {
+      this.getDomElement().setAttributeNS(
+        svg.core.MHref.XLINK_NAMESPACE, "xlink:href", '#' + event.getData());
     }
-
   }
 });
