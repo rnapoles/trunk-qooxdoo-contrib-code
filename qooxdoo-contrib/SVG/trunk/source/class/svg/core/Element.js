@@ -10,6 +10,7 @@
 
    Authors:
      * Marc Puts (marcputs)
+     * Martijn Evers (mevers)
 
 ************************************************************************ */
 /*
@@ -27,8 +28,7 @@ qx.Class.define("svg.core.Element",
   extend : qx.html.Element,
 
   include : [ svg.core.MTitleDescription,
-              svg.core.dom.MElement,
-              svg.core.dom.MLocatable],
+              svg.core.dom.MElement],
 
 
   /**

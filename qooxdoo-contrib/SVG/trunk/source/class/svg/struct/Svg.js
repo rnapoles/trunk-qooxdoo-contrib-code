@@ -15,26 +15,27 @@
 
 /**
  * An SVG document fragment.
- * 
+ *
  * The SVG element is the root element of any SVG document. It can also appear
  * in the middle of SVG content. This allows SVG document fragments to be
  * embedded within other SVG document fragments.
- * 
+ *
  * The SVG element can also be used to establish a new viewport.
- * 
+ *
  * More info:
  * <ul>
- *   <li><b>SVG element:</b> http://www.w3.org/TR/SVG/struct.html#SVGElement</li> 
- *   <li><b>Viewport:</b> http://www.w3.org/TR/SVG/coords.html#EstablishingANewViewport</li> 
+ *   <li><b>SVG element:</b> http://www.w3.org/TR/SVG/struct.html#SVGElement</li>
+ *   <li><b>Viewport:</b> http://www.w3.org/TR/SVG/coords.html#EstablishingANewViewport</li>
  *  </ul>
  */
 qx.Class.define("svg.struct.Svg",
 {
   extend : svg.core.Element,
-  
+
   include : [ svg.coords.MViewBox,
               svg.coords.MPreserveAspectRatio,
-              svg.struct.dom.MSvgElement ],
+              svg.struct.dom.MSvgElement,
+              svg.core.dom.MLocatable ],
 
   construct : function()
   {
@@ -47,7 +48,7 @@ qx.Class.define("svg.struct.Svg",
       "xmlns:xlink" : "http://www.w3.org/1999/xlink",
       "xmlns:ev"    : "http://www.w3.org/2001/xml-events"
     });
-    
+
   },
 
   properties :
@@ -58,7 +59,7 @@ qx.Class.define("svg.struct.Svg",
      * value of "0" were specified.
      *
      * Has no meaning or effect on outermost 'svg' elements.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementXAttribute</li>
@@ -71,14 +72,14 @@ qx.Class.define("svg.struct.Svg",
       check: "Number",
       event: "changeX"
     },
-    
+
     /**
      * The y-axis coordinate of one corner of the rectangular region into which an embedded
      * 'svg' element is placed. If the attribute is not specified, the effect is as if a
      * value of "0" were specified.
      *
      * Has no meaning or effect on outermost 'svg' elements.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementYAttribute</li>
@@ -91,14 +92,14 @@ qx.Class.define("svg.struct.Svg",
       check: "Number",
       event: "changeY"
     },
-    
+
     /**
      * For outermost 'svg' elements, the intrinsic width of the SVG document fragment.
      * For embedded 'svg' elements, the width of the rectangular region into which the
      * 'svg' element is placed. A negative value is an error. A value of zero disables
      * rendering of the element. If the attribute is not specified, the effect is as
      * if a value of "100%" were specified.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementWidthAttribute</li>
@@ -111,14 +112,14 @@ qx.Class.define("svg.struct.Svg",
       check: "svg.core.Types.isLength(value)",
       event: "changeWidth"
     },
-    
+
     /**
      * For outermost 'svg' elements, the intrinsic height of the SVG document fragment.
      * For embedded 'svg' elements, the height of the rectangular region into which the
      * 'svg' element is placed. A negative value is an error. A value of zero disables
      * rendering of the element. If the attribute is not specified, the effect is as
      * if a value of "100%" were specified.
-     * 
+     *
      * More info:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/struct.html#SVGElementHeightAttribute</li>
@@ -132,7 +133,7 @@ qx.Class.define("svg.struct.Svg",
       event: "changeHeight"
     }
   },
-  
+
   members :
   {
      //applies x
@@ -143,7 +144,7 @@ qx.Class.define("svg.struct.Svg",
         this.setAttribute("x", value);
       }
     },
-  
+
     //applies y
     __applyY: function(value, old) {
       if (null == value) {
@@ -152,7 +153,7 @@ qx.Class.define("svg.struct.Svg",
         this.setAttribute("y", value);
       }
     },
-  
+
     //applies width
     __applyWidth: function(value, old) {
       if (null == value) {
@@ -161,7 +162,7 @@ qx.Class.define("svg.struct.Svg",
         this.setAttribute("width", value);
       }
     },
-  
+
     //applies height
     __applyHeight: function(value, old) {
       if (null == value) {
