@@ -15,7 +15,7 @@
 
 /**
  * Implements the SVGElement interface.
- * 
+ *
  * More info:
  * <ul>
  *   <li>http://www.w3.org/TR/SVG/types.html#InterfaceSVGElement</li>
@@ -25,16 +25,16 @@ qx.Mixin.define("svg.core.dom.MElement", {
 
   members :
   {
-    
+
     /**
      * Gets the nearest ancestor SVG element. Returns null if the current element
      * is the outermost svg element.
-     * 
+     *
      * This is the implementation of:
      * <ul>
      *   <li>http://www.w3.org/TR/SVG/types.html#__svg__SVGElement__ownerSVGElement</li>
      * </ul>
-     * 
+     *
      * @return {svg.struct.Svg | null}
      */
     getOwnerSVG : function() {
@@ -43,13 +43,18 @@ qx.Mixin.define("svg.core.dom.MElement", {
       }
       return this.parentByDomElement(this.getDomElement().ownerSVGElement);
     },
-    
+
     /**
      * Gets the {@link svg.core.Element} which established the current viewport. This is often the same as
      * the nearest ancestor svg element.
-     * 
-     * Returns _null_ when this element is the outermost svg element. 
-     * 
+     *
+     * Returns _null_ when this element is the outermost svg element.
+     *
+     * This is the implementation of:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/types.html#__svg__SVGElement__viewportElement</li>
+     * </ul>
+     *
      * @return {svg.core.Element}
      */
     getViewport : function() {

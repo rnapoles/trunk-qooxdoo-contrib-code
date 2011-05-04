@@ -10,6 +10,7 @@
 
    Authors:
      * Marc Puts (marcputs)
+     * Martijn Evers (mevers)
 
 ************************************************************************ */
 
@@ -34,6 +35,7 @@
 qx.Class.define("svg.struct.Group",
 {
   extend : svg.core.Element,
+  include : [ svg.core.dom.MLocatable ],
 
   construct : function() {
     this.base(arguments, "g");
