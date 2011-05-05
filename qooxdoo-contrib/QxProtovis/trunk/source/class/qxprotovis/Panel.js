@@ -21,7 +21,7 @@ qx.Class.define("qxprotovis.Panel",{
     extend : qx.ui.core.Widget,
     construct : function() {
         this.base(arguments);
-        if  (document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")){                
+        if  (qx.core.Environment.get('html.svg')){
             this.setPv(pv);
             this.setPanel(new pv.Panel());
             this.addListenerOnce('appear',this._setCanvas,this);
@@ -29,7 +29,7 @@ qx.Class.define("qxprotovis.Panel",{
         }
         else {
             this._setLayout(new qx.ui.layout.Grow());
-            this._add(new qx.ui.basic.Atom('Your browser does not seem to have support for SVG. Try a recent copy of Firefox, Chrome, Safari or Opera.').set({
+            this._add(new qx.ui.basic.Atom('Your browser does not seem to have support for SVG. Try a recent copy of Firefox, Chrome, Safari, Opera or IE9.').set({
                 rich: true,
                 alignX: 'center',
                 alignY: 'middle',

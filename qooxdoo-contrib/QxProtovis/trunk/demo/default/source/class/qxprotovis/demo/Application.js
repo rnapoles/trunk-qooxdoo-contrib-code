@@ -18,7 +18,7 @@ qx.Class.define("qxprotovis.demo.Application", {
     members : {
         main : function() {
             this.base(arguments);
-            if (qx.core.Variant.isSet("qx.debug", "on")) {
+            if (qx.core.Environment.get("qx.debug") == "on") {
                 qx.log.appender.Native;
                 qx.log.appender.Console;
             }
