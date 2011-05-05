@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "QxProtovis Demo",
+
+    "summary" : "QxProtovis Demo",
+    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/QxProtovis",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Tobias Oetiker (oetiker)",
+        "email" : "tobi@oetiker.ch"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.2"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "qxprotovis.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
