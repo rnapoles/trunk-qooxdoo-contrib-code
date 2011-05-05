@@ -29,7 +29,7 @@
   {
     "APPLICATION"  : "qxprotovis",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.2",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.4",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "qxprotovis.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
