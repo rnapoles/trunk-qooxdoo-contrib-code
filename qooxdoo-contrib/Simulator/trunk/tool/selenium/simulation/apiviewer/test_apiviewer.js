@@ -57,7 +57,7 @@ simulation.Simulation.prototype.runTest = function()
   
   this.checkSearch();
   this.checkView("getActive", "Properties");
-  this.checkView("addChildrenToQueue", "Inherited");
+  //this.checkView("addChildrenToQueue", "Inherited");
   this.checkView("_activateMoveHandle", "Protected");
   this.checkView("__computeMoveCoordinates", "Private");
   
