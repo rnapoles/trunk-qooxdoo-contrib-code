@@ -60,9 +60,9 @@
     
     "common" :
     {
-      "variants" :
+      "environment" :
       {
-        "qx.contrib" : [true]
+        "qx.contrib" : true
       }    
     },
     
